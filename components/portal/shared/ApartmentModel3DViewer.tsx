@@ -12,7 +12,6 @@ import {
   Wind, 
   Droplets, 
   Lock, 
-  LockKeyhole,
   Sparkles, 
   Sun, 
   ShieldCheck, 
@@ -22,8 +21,8 @@ import {
   Info,
   Radio,
   SplitSquareVertical,
-  ShieldAlert,
-  SlidersHorizontal
+  SlidersHorizontal,
+  CheckCircle2
 } from 'lucide-react';
 import { useAuth } from '@/lib/authContext';
 
@@ -83,8 +82,8 @@ export default function ApartmentModel3DViewer({
 }: ApartmentModel3DViewerProps) {
   const { currentUser } = useAuth();
   const userRole = currentUser?.role; // 'OWNER' | 'TENANT' | 'ADMIN' | undefined
-  const isOwnerOfThisApt = userRole === 'OWNER' && (currentUser?.apartment_code === apartmentCode || !currentUser?.apartment_code);
-  const isTenantOfThisApt = userRole === 'TENANT' && (currentUser?.apartment_code === apartmentCode || !currentUser?.apartment_code);
+  const isOwner = userRole === 'OWNER';
+  const isTenant = userRole === 'TENANT';
   const isAdmin = userRole === 'ADMIN';
   const isGuest = !currentUser;
 
@@ -93,12 +92,6 @@ export default function ApartmentModel3DViewer({
   const [selectedRoom, setSelectedRoom] = useState<string>('living');
   const [showDimensions, setShowDimensions] = useState(true);
   const [showIotNodes, setShowIotNodes] = useState(true);
-  const [feedbackToast, setFeedbackToast] = useState<string | null>(null);
-
-  const showToast = (msg: string) => {
-    setFeedbackToast(msg);
-    setTimeout(() => setFeedbackToast(null), 3500);
-  };
 
   // Architectural Massing Block Catalog (Non-overlapping strict boundaries)
   const rooms: Record<string, RoomDetails> = {
@@ -189,41 +182,6 @@ export default function ApartmentModel3DViewer({
   };
 
   const activeRoom = rooms[selectedRoom] || rooms['living'];
-
-  // Role Action Handlers
-  const handleActionToggleLight = (room: 'livingRoom' | 'bedroomMaster' | 'kitchen' | 'balcony') => {
-    if (isAdmin) {
-      showToast('🛡️ Ban Quản Lý không có quyền điều khiển thiết bị phòng riêng của cư dân (Bảo mật riêng tư).');
-      return;
-    }
-    if (onToggleLight) {
-      onToggleLight(room);
-    }
-  };
-
-  const handleActionToggleCurtains = () => {
-    if (isAdmin) {
-      showToast('🛡️ Ban Quản Lý không có quyền đóng/mở rèm phòng riêng của cư dân.');
-      return;
-    }
-    if (onToggleCurtains) {
-      onToggleCurtains();
-    }
-  };
-
-  const handleActionToggleDoor = () => {
-    if (isAdmin) {
-      showToast('🛡️ Ban Quản Lý không được phép mở khóa căn hộ riêng của cư dân từ xa.');
-      return;
-    }
-    if (isTenantOfThisApt) {
-      showToast('⚠️ Quyền Chủ Hộ: Chỉ Chủ Hộ đứng tên căn hộ mới có quyền khóa/mở khóa chốt Master FaceID.');
-      return;
-    }
-    if (onToggleDoor) {
-      onToggleDoor();
-    }
-  };
 
   return (
     <div className="w-full bg-[#080B10] border border-[#222B35] rounded-lg shadow-2xl flex flex-col overflow-hidden select-none">
@@ -317,19 +275,11 @@ export default function ApartmentModel3DViewer({
         </div>
       </div>
 
-      {/* Toast Feedback Notification */}
-      {feedbackToast && (
-        <div className="mx-4 mt-3 p-3 bg-[#121E2A] border border-[#C5A880] text-[#C5A880] text-xs font-mono rounded animate-fadeIn flex items-center gap-2 shadow-lg">
-          <Sparkles className="w-4 h-4 text-[#C5A880] flex-shrink-0" />
-          <span>{feedbackToast}</span>
-        </div>
-      )}
-
       {/* ------------------------------------------------------------- */}
-      {/* 2. CLEAN ARCHITECTURAL SIMULATION CANVAS (ZERO OVERLAP)        */}
+      {/* 2. CLEAN ARCHITECTURAL SIMULATION CANVAS                       */}
       {/* ------------------------------------------------------------- */}
       <div className="relative w-full h-[440px] sm:h-[480px] bg-[#05070A] overflow-hidden flex items-center justify-center">
-        {/* Background Architectural Blueprint Grid */}
+        {/* Background Blueprint Grid */}
         <div 
           className="absolute inset-0 opacity-15 pointer-events-none"
           style={{
@@ -338,7 +288,7 @@ export default function ApartmentModel3DViewer({
           }}
         />
 
-        {/* Dynamic Architectural 3D Stage with Smooth Isometric Transformation */}
+        {/* Dynamic Architectural 3D Stage */}
         <div 
           className="relative transition-all duration-700 ease-out transform"
           style={{
@@ -380,7 +330,7 @@ export default function ApartmentModel3DViewer({
             </defs>
 
             {/* ======================================================= */}
-            {/* 1. KHỐI TIỀN SẢNH (Foyer Block: x=70, y=240, w=110, h=130)*/}
+            {/* 1. KHỐI TIỀN SẢNH (Foyer: x=70, y=240, w=110, h=130)   */}
             {/* ======================================================= */}
             <g 
               onClick={() => setSelectedRoom('foyer')}
@@ -622,10 +572,10 @@ export default function ApartmentModel3DViewer({
                 {/* Node 2: Master FaceID Door Lock */}
                 <g 
                   transform="translate(75, 300)" 
-                  className="cursor-pointer"
-                  onClick={handleActionToggleDoor}
+                  className={isOwner ? "cursor-pointer" : "cursor-default"}
+                  onClick={isOwner ? onToggleDoor : undefined}
                 >
-                  <title>Khóa Cửa FaceID Master</title>
+                  <title>{isOwner ? "Khóa Cửa FaceID Master" : "Khóa Cửa FaceID (Chủ Hộ)"}</title>
                   <circle cx="0" cy="0" r="13" fill={doorLocked ? '#059669' : '#DC2626'} stroke="#FFFFFF" strokeWidth="1.5" />
                   <text x="0" y="4" fill="#FFFFFF" fontSize="8" fontWeight="bold" textAnchor="middle">ID</text>
                 </g>
@@ -640,8 +590,8 @@ export default function ApartmentModel3DViewer({
                 {/* Node 4: Balcony Smart Curtain */}
                 <g 
                   transform="translate(645, 460)" 
-                  className="cursor-pointer"
-                  onClick={handleActionToggleCurtains}
+                  className={!isAdmin ? "cursor-pointer" : "cursor-default"}
+                  onClick={!isAdmin ? onToggleCurtains : undefined}
                 >
                   <title>Rèm ban công tự động</title>
                   <circle cx="0" cy="0" r="12" fill={curtainsOpen ? '#D97706' : '#475569'} stroke="#FFFFFF" strokeWidth="1.5" />
@@ -668,12 +618,12 @@ export default function ApartmentModel3DViewer({
 
         {/* Interactive Click Tip */}
         <div className="absolute bottom-3 right-3 bg-[#1C2533]/90 border border-[#C5A880]/60 px-3 py-1.5 text-[10px] text-[#C5A880] font-mono rounded backdrop-blur-md">
-          * Nhấp vào từng khối phòng để kiểm tra thông số & bật/tắt thiết bị
+          * Nhấp vào từng khối phòng để kiểm tra thông số kỹ thuật
         </div>
       </div>
 
       {/* ------------------------------------------------------------- */}
-      {/* 3. BOTTOM INSPECTION PANEL & ROLE-AWARE DEVICE CONTROLS       */}
+      {/* 3. BOTTOM INSPECTION PANEL & CLEAN ROLE-BASED UI RENDERING    */}
       {/* ------------------------------------------------------------- */}
       {activeRoom && (
         <div className="p-4 bg-[#0D1117] border-t border-[#222B35] grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
@@ -710,58 +660,111 @@ export default function ApartmentModel3DViewer({
             </div>
           </div>
 
-          {/* Role-Aware Device Controls */}
+          {/* Role-Based Controls (Rendered cleanly per role) */}
           <div className="md:col-span-4 flex flex-wrap items-center justify-end gap-2">
-            {/* Light Switch */}
-            <button
-              type="button"
-              onClick={() => {
-                if (selectedRoom === 'living') handleActionToggleLight('livingRoom');
-                else if (selectedRoom === 'masterBed') handleActionToggleLight('bedroomMaster');
-                else if (selectedRoom === 'diningKitchen') handleActionToggleLight('kitchen');
-                else if (selectedRoom === 'balcony') handleActionToggleLight('balcony');
-                else handleActionToggleLight('livingRoom');
-              }}
-              className="px-3 py-2 bg-[#161B22] hover:bg-[#C5A880] hover:text-[#0D1117] border border-gray-700 hover:border-[#C5A880] text-xs font-bold uppercase tracking-wider transition-colors rounded flex items-center gap-1.5 text-white shadow"
-            >
-              <Zap className="w-3.5 h-3.5" /> Bật/Tắt Đèn
-            </button>
-
-            {/* Curtain Switch */}
-            {selectedRoom === 'balcony' && (
-              <button
-                type="button"
-                onClick={handleActionToggleCurtains}
-                className="px-3 py-2 bg-[#C5A880] hover:bg-white text-[#0D1117] text-xs font-bold uppercase tracking-wider transition-colors rounded flex items-center gap-1.5 shadow"
-              >
-                <Sun className="w-3.5 h-3.5" /> {curtainsOpen ? 'Đóng Rèm' : 'Mở Rèm'}
-              </button>
+            {/* Case 1: Ban Quản Lý (Admin) -> Pure Inspection Display */}
+            {isAdmin && (
+              <div className="flex items-center gap-1.5 px-3 py-2 bg-[#121820] border border-blue-500/50 text-blue-300 text-xs font-mono rounded">
+                <ShieldCheck className="w-3.5 h-3.5 text-blue-400" />
+                <span>Giám Sát Kỹ Thuật BQL • Thiết Bị Bình Thường</span>
+              </div>
             )}
 
-            {/* Master Door Switch (Owner Exclusive) */}
-            {selectedRoom === 'foyer' && (
-              <button
-                type="button"
-                onClick={handleActionToggleDoor}
-                className={`px-3 py-2 text-xs font-bold uppercase tracking-wider transition-colors rounded flex items-center gap-1.5 shadow ${
-                  isTenantOfThisApt
-                    ? 'bg-amber-950/80 border border-amber-500 text-amber-300'
-                    : 'bg-[#C5A880] hover:bg-white text-[#0D1117]'
-                }`}
-                title={isTenantOfThisApt ? 'Quyền Chủ Hộ: Thành viên gia đình không có quyền mở/đổi mã PIN Master Door' : 'Khóa/Mở chốt FaceID'}
-              >
-                {isTenantOfThisApt ? (
-                  <>
-                    <LockKeyhole className="w-3.5 h-3.5 text-amber-400" />
-                    <span>Khóa Của Chủ Hộ</span>
-                  </>
-                ) : (
-                  <>
-                    <Lock className="w-3.5 h-3.5" />
-                    <span>{doorLocked ? 'Mở Khóa' : 'Khóa Chốt'}</span>
-                  </>
+            {/* Case 2: Chủ Hộ (Owner) -> Full Master Controls */}
+            {isOwner && (
+              <>
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (selectedRoom === 'living') onToggleLight?.('livingRoom');
+                    else if (selectedRoom === 'masterBed') onToggleLight?.('bedroomMaster');
+                    else if (selectedRoom === 'diningKitchen') onToggleLight?.('kitchen');
+                    else if (selectedRoom === 'balcony') onToggleLight?.('balcony');
+                    else onToggleLight?.('livingRoom');
+                  }}
+                  className="px-3 py-2 bg-[#161B22] hover:bg-[#C5A880] hover:text-[#0D1117] border border-gray-700 hover:border-[#C5A880] text-xs font-bold uppercase tracking-wider transition-colors rounded flex items-center gap-1.5 text-white shadow"
+                >
+                  <Zap className="w-3.5 h-3.5" /> Bật/Tắt Đèn
+                </button>
+
+                {selectedRoom === 'balcony' && (
+                  <button
+                    type="button"
+                    onClick={onToggleCurtains}
+                    className="px-3 py-2 bg-[#C5A880] hover:bg-white text-[#0D1117] text-xs font-bold uppercase tracking-wider transition-colors rounded flex items-center gap-1.5 shadow"
+                  >
+                    <Sun className="w-3.5 h-3.5" /> {curtainsOpen ? 'Đóng Rèm' : 'Mở Rèm'}
+                  </button>
                 )}
-              </button>
+
+                {selectedRoom === 'foyer' && (
+                  <button
+                    type="button"
+                    onClick={onToggleDoor}
+                    className="px-3 py-2 bg-[#C5A880] hover:bg-white text-[#0D1117] text-xs font-bold uppercase tracking-wider transition-colors rounded flex items-center gap-1.5 shadow"
+                  >
+                    <Lock className="w-3.5 h-3.5" /> {doorLocked ? 'Mở Khóa FaceID' : 'Khóa Chốt FaceID'}
+                  </button>
+                )}
+              </>
+            )}
+
+            {/* Case 3: Cư Dân Thành Viên / Thuê (Tenant) -> Daily Comfort Controls */}
+            {isTenant && (
+              <>
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (selectedRoom === 'living') onToggleLight?.('livingRoom');
+                    else if (selectedRoom === 'masterBed') onToggleLight?.('bedroomMaster');
+                    else if (selectedRoom === 'diningKitchen') onToggleLight?.('kitchen');
+                    else if (selectedRoom === 'balcony') onToggleLight?.('balcony');
+                    else onToggleLight?.('livingRoom');
+                  }}
+                  className="px-3 py-2 bg-[#161B22] hover:bg-[#C5A880] hover:text-[#0D1117] border border-gray-700 hover:border-[#C5A880] text-xs font-bold uppercase tracking-wider transition-colors rounded flex items-center gap-1.5 text-white shadow"
+                >
+                  <Zap className="w-3.5 h-3.5" /> Bật/Tắt Đèn
+                </button>
+
+                {selectedRoom === 'balcony' && (
+                  <button
+                    type="button"
+                    onClick={onToggleCurtains}
+                    className="px-3 py-2 bg-[#C5A880] hover:bg-white text-[#0D1117] text-xs font-bold uppercase tracking-wider transition-colors rounded flex items-center gap-1.5 shadow"
+                  >
+                    <Sun className="w-3.5 h-3.5" /> {curtainsOpen ? 'Đóng Rèm' : 'Mở Rèm'}
+                  </button>
+                )}
+              </>
+            )}
+
+            {/* Case 4: Khách Vãng Lai (Guest / Landing Page) -> Interactive Simulation Preview */}
+            {isGuest && (
+              <>
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (selectedRoom === 'living') onToggleLight?.('livingRoom');
+                    else if (selectedRoom === 'masterBed') onToggleLight?.('bedroomMaster');
+                    else if (selectedRoom === 'diningKitchen') onToggleLight?.('kitchen');
+                    else if (selectedRoom === 'balcony') onToggleLight?.('balcony');
+                    else onToggleLight?.('livingRoom');
+                  }}
+                  className="px-3 py-2 bg-[#161B22] hover:bg-[#C5A880] hover:text-[#0D1117] border border-gray-700 hover:border-[#C5A880] text-xs font-bold uppercase tracking-wider transition-colors rounded flex items-center gap-1.5 text-white shadow"
+                >
+                  <Zap className="w-3.5 h-3.5" /> Bật/Tắt Đèn Demo
+                </button>
+
+                {selectedRoom === 'balcony' && (
+                  <button
+                    type="button"
+                    onClick={onToggleCurtains}
+                    className="px-3 py-2 bg-[#C5A880] hover:bg-white text-[#0D1117] text-xs font-bold uppercase tracking-wider transition-colors rounded flex items-center gap-1.5 shadow"
+                  >
+                    <Sun className="w-3.5 h-3.5" /> {curtainsOpen ? 'Đóng Rèm' : 'Mở Rèm'}
+                  </button>
+                )}
+              </>
             )}
           </div>
         </div>
