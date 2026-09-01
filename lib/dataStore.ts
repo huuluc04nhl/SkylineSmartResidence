@@ -20,6 +20,8 @@ export interface User {
   apartment_code?: string;
   relationship?: 'Owner' | 'Family' | 'Tenant' | 'Staff';
   license_plate?: string;
+  dob?: string;
+  pob?: string;
 }
 
 export interface Block {
@@ -742,6 +744,8 @@ export function updateDemoUser(identifier: string, updates: Partial<User>): User
     if (updates.id_card_number) matched.id_card_number = updates.id_card_number;
     if (updates.avatar_url) matched.avatar_url = updates.avatar_url;
     if (updates.license_plate) matched.license_plate = updates.license_plate;
+    if (updates.dob) matched.dob = updates.dob;
+    if (updates.pob) matched.pob = updates.pob;
     return matched;
   }
   return null;

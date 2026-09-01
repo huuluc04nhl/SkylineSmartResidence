@@ -46,7 +46,7 @@ import {
 } from '@/lib/nksApiClient';
 import { useAuth } from '@/lib/authContext';
 import CccdOcrScannerModal from './CccdOcrScannerModal';
-import { OcrCccdResult } from '@/lib/ocrParser';
+import { OcrCccdResult, formatToDateInput } from '@/lib/ocrParser';
 
 interface ProfileEkycProps {
   currentUser: User;
@@ -137,10 +137,9 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
           setPhone(apiUser.phone || apiUser.username || '');
           setEmail(apiUser.email || '');
           setGender(apiUser.gender !== undefined ? (apiUser.gender.toString() as '1' | '0') : '1');
-          setIdCardNumber(apiUser.id_number || (apiUser as any).id_card_no || '');
-          setIdDate(apiUser.id_date || '');
+          setIdDate(formatToDateInput(apiUser.id_date || ''));
           setIdPlace(apiUser.id_place || '');
-          setBirthday(apiUser.dob || '');
+          setBirthday(formatToDateInput(apiUser.dob || ''));
           setPob(apiUser.pob || '');
           setProvince(apiUser.province || '');
           setIntro(apiUser.intro || '');
@@ -212,6 +211,8 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
         updateUserInfo({
           ...res.user as any,
           id_card_no: idCardNumber.trim(),
+          dob: birthday,
+          pob: pob,
         });
 
         // Real-time synchronization across entire portal shell
@@ -223,6 +224,10 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
         setEmail(res.user.email || email);
         setIdCardNumber(res.user.id_number || idCardNumber);
         setLicensePlate(res.user.license_plate || licensePlate);
+        if (res.user.pob) setPob(res.user.pob);
+        if (res.user.dob) setBirthday(formatToDateInput(res.user.dob));
+        if (res.user.id_date) setIdDate(formatToDateInput(res.user.id_date));
+        if (res.user.id_place) setIdPlace(res.user.id_place);
 
         setSavedSuccess(true);
         setOcrFilledNotice(false);

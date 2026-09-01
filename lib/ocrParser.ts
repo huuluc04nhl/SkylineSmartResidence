@@ -237,12 +237,28 @@ export function parseCccdText(rawText: string, isBackSide: boolean = false): Par
     }
 
     // -------------------------------------------------------------
+    // -------------------------------------------------------------
     // 3. EXTRACT DATE OF BIRTH (NGÀY SINH)
     // -------------------------------------------------------------
-    const dobMatch = rawText.match(/(?:Ngày sinh|Date of birth|Sinh ngày|DOB)[:\s]+(\d{1,2}[\/\-\.]\d{1,2}[\/\-\.]\d{4})/i) ||
-                     rawText.match(/\b(\d{2}[\/\-\.]\d{2}[\/\-\.]\d{4})\b/);
+    // Handles: "Ngày, tháng, năm sinh", "Date of birth", "Ngày sinh", "Sinh ngày", "DOB"
+    // Handles delimiters with spaces: "15 / 08 / 1990", "15. 08. 1990", "15 - 08 - 1990"
+    const dobLabelPattern = /(?:ngày[,\s]+tháng[,\s]+năm\s+sinh|ngày\s*sinh|date\s*of\s*birth|sinh\s*ngày|sinh|dob)[:\s\/\.]*([0-9]{1,2}\s*[\/\-\.\s]\s*[0-9]{1,2}\s*[\/\-\.\s]\s*(?:19|20)[0-9]{2})/i;
+    const dobMatch = rawText.match(dobLabelPattern) ||
+                     rawText.match(/\b([0-9]{1,2}\s*[\/\-\.]\s*[0-9]{1,2}\s*[\/\-\.]\s*(?:19|20)[0-9]{2})\b/);
     if (dobMatch && dobMatch[1]) {
-      result.dob = formatToDateInput(dobMatch[1]);
+      result.dob = formatToDateInput(dobMatch[1].replace(/\s+/g, ''));
+    }
+
+    if (!result.dob) {
+      for (const line of lines) {
+        if (/(?:ngày.*sinh|date\s*of\s*birth|sinh)/i.test(line)) {
+          const m = line.match(/([0-9]{1,2}\s*[\/\-\.\s]\s*[0-9]{1,2}\s*[\/\-\.\s]\s*(?:19|20)[0-9]{2})/);
+          if (m) {
+            result.dob = formatToDateInput(m[1].replace(/\s+/g, ''));
+            break;
+          }
+        }
+      }
     }
 
     // -------------------------------------------------------------
@@ -307,11 +323,12 @@ export function parseCccdText(rawText: string, isBackSide: boolean = false): Par
     const cleanPob = cleanAddress(rawPob);
     const cleanResidence = cleanAddress(rawResidence);
 
+    // Quê quán / Nơi sinh (Place of origin / birth)
+    result.pob = cleanPob || cleanResidence || '';
+    result.residence = cleanResidence || cleanPob || '';
+
     const primaryAddress = cleanResidence || cleanPob;
     if (primaryAddress) {
-      result.pob = primaryAddress;
-      result.residence = cleanResidence || cleanPob;
-
       // Extract Province
       const lower = primaryAddress.toLowerCase();
       if (lower.includes('hồ chí minh') || lower.includes('hcm') || lower.includes('sài gòn') || lower.includes('tp.hcm')) {

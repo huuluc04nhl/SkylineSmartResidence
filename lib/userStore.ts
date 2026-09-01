@@ -272,6 +272,8 @@ export function updateUserStore(identifier: string, updates: Partial<StoredUser>
     id_card_no: updated.id_number || updated.id_card_no,
     avatar_url: updated.avatar_url,
     license_plate: updated.license_plate,
+    dob: updated.dob,
+    pob: updated.pob,
   });
 
   return updated;

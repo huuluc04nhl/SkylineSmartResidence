@@ -2,6 +2,27 @@ import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import { DEMO_USERS } from '@/lib/dataStore';
 
+function formatToDateInput(d?: string): string {
+  if (!d) return '';
+  const cleanD = d.replace(/[^\d\/\-\.]/g, '');
+  const parts = cleanD.split(/[\/\-\.]/);
+  if (parts.length === 3) {
+    if (parts[2].length === 4) {
+      const day = parts[0].padStart(2, '0');
+      const month = parts[1].padStart(2, '0');
+      const year = parts[2];
+      return `${year}-${month}-${day}`;
+    }
+    if (parts[0].length === 4) {
+      const year = parts[0];
+      const month = parts[1].padStart(2, '0');
+      const day = parts[2].padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    }
+  }
+  return d;
+}
+
 export async function POST(req: Request) {
   try {
     const body = await req.json();
@@ -57,11 +78,12 @@ export async function POST(req: Request) {
             apartment_code: '12A05',
             avatar_url: apiUser.avatar ? (apiUser.avatar.startsWith('http') ? apiUser.avatar : `https://data.nks.vn/${apiUser.avatar}`) : undefined,
             id_number: apiUser.id_number || '079095001234',
-            id_date: apiUser.id_date || '',
+            id_date: formatToDateInput(apiUser.id_date || apiUser.formatedCccdDate || ''),
             id_place: apiUser.id_place || '',
             province: apiUser.province || 'Thành phố Hồ Chí Minh',
             gender: apiUser.gender ?? 1,
-            dob: apiUser.dob || '',
+            dob: formatToDateInput(apiUser.dob || apiUser.formatedDob || ''),
+            pob: apiUser.pob || '',
           };
 
           const response = NextResponse.json({
