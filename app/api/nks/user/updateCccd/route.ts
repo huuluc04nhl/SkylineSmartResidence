@@ -7,24 +7,30 @@ export async function POST(req: Request) {
     const body = await req.json();
     const { front, back, number, date, place, access_token } = body;
 
-    // 1. Forward to remote official NKS API if available
-    try {
-      const remoteRes = await fetch('https://account.nks.vn/api/nks/user/updateCccd', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body),
-      });
-
-      if (remoteRes.ok) {
-        const data = await remoteRes.json();
-        return NextResponse.json(data);
-      }
-    } catch (e) {
-      // Remote unavailable
-    }
-
     const cookieStore = cookies();
     const token = access_token || cookieStore.get('nks_token')?.value || '';
+
+    // 1. Forward directly to live official NKS API (https://account.nks.vn/api/nks/user/updateCccd)
+    try {
+      if (token) {
+        const formData = new URLSearchParams();
+        formData.append('access_token', token);
+        if (front) formData.append('front', front);
+        if (back) formData.append('back', back);
+        if (number) formData.append('number', number);
+        if (date) formData.append('date', date);
+        if (place) formData.append('place', place);
+
+        await fetch('https://account.nks.vn/api/nks/user/updateCccd', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: formData.toString(),
+        });
+      }
+    } catch (e) {
+      console.warn('Remote updateCccd error:', e);
+    }
+
     const roleKey = token.includes('ADMIN') ? 'ADMIN' : token.includes('TENANT') ? 'TENANT' : 'OWNER';
 
     const updated = updateUserStore(roleKey, {

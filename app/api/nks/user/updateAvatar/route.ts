@@ -9,15 +9,32 @@ export async function POST(req: Request) {
 
     const cookieStore = cookies();
     const token = access_token || cookieStore.get('nks_token')?.value || '';
-    const roleKey = token.includes('ADMIN') ? 'ADMIN' : token.includes('TENANT') ? 'TENANT' : 'OWNER';
 
-    const updated = updateUserStore(roleKey, {
+    // 1. Forward directly to live official NKS API
+    try {
+      if (token) {
+        const formData = new URLSearchParams();
+        formData.append('access_token', token);
+        if (avatar) formData.append('avatar', avatar);
+
+        await fetch('https://account.nks.vn/api/nks/user/updateAvatar', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: formData.toString(),
+        });
+      }
+    } catch (e) {
+      console.warn('Remote updateAvatar error:', e);
+    }
+
+    const userIdentifier = body.username || token;
+    const updated = updateUserStore(userIdentifier, {
       avatar_url: avatar
     });
 
     return NextResponse.json({
       success: true,
-      message: 'Cập nhật ảnh đại diện NKS thành công',
+      message: 'Cập nhật ảnh đại diện NKS API thành công',
       avatar_url: updated.avatar_url,
       user: updated
     });

@@ -24,20 +24,60 @@ export async function POST(req: Request) {
       access_token 
     } = body;
 
-    // 1. Forward to remote official NKS API if live
-    try {
-      const remoteRes = await fetch('https://account.nks.vn/api/nks/user/updateInfo', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body),
-      });
+    const cookieStore = cookies();
+    const token = access_token || cookieStore.get('nks_token')?.value || '';
 
-      if (remoteRes.ok) {
-        const data = await remoteRes.json();
-        return NextResponse.json(data);
+    // 1. Forward directly to live official NKS API (https://account.nks.vn/api/nks/user/updateInfo)
+    try {
+      if (token) {
+        const formData = new URLSearchParams();
+        formData.append('access_token', token);
+        if (firstname) formData.append('firstname', firstname);
+        if (lastname) formData.append('lastname', lastname);
+        if (intro) formData.append('intro', intro);
+        if (phone) formData.append('phone', phone);
+        if (gender !== undefined) formData.append('gender', String(gender));
+        if (website) formData.append('website', website);
+        if (dob) formData.append('dob', dob);
+        if (pob) formData.append('pob', pob);
+        if (id_number) formData.append('id_number', id_number);
+        if (id_date) formData.append('id_date', id_date);
+        if (id_place) formData.append('id_place', id_place);
+        if (province) formData.append('province', province);
+
+        const remoteRes = await fetch('https://account.nks.vn/api/nks/user/updateInfo', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: formData.toString(),
+        });
+
+        if (remoteRes.ok) {
+          const data = await remoteRes.json();
+          if (data.success && data.data) {
+            const apiUser = data.data;
+            const updated = updateUserStore(body.username || email || phone || token, {
+              firstname: apiUser.firstname || firstname,
+              lastname: apiUser.lastname || lastname,
+              fullname: apiUser.name || fullname,
+              full_name: apiUser.name || fullname,
+              phone: apiUser.phone || phone,
+              email: apiUser.email || email,
+              dob: apiUser.dob || dob,
+              pob: apiUser.pob || pob,
+              id_number: apiUser.id_number || id_number,
+              id_card_no: apiUser.id_number || id_number,
+              id_date: apiUser.id_date || id_date,
+              id_place: apiUser.id_place || id_place,
+              province: apiUser.province || province,
+              intro: apiUser.intro || intro,
+              license_plate: license_plate,
+            });
+            return NextResponse.json({ success: true, message: 'Đã cập nhật trực tiếp lên NKS API thành công', user: updated });
+          }
+        }
       }
     } catch (e) {
-      // Remote unavailable
+      console.warn('Remote NKS updateInfo error:', e);
     }
 
     // Determine clean names
@@ -51,8 +91,6 @@ export async function POST(req: Request) {
 
     const resolvedFullname = fullname || `${computedLastname} ${computedFirstname}`.trim();
 
-    const cookieStore = cookies();
-    const token = access_token || cookieStore.get('nks_token')?.value || '';
     const userIdentifier = body.username || email || phone || (token.includes('ADMIN') ? 'ADMIN' : token.includes('TECHNICIAN') ? 'TECHNICIAN' : token.includes('TENANT') ? 'TENANT' : 'OWNER');
 
     const updatedUser = updateUserStore(userIdentifier, {

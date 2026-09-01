@@ -16,30 +16,75 @@ export async function POST(req: Request) {
 
     const u = username.toLowerCase().trim();
 
-    // 1. Attempt remote NKS Server if live
+    // 1. Call official live NKS Server (https://account.nks.vn/api/nks/user/login)
     try {
-      const remoteRes = await fetch('https://account.nks.vn/api/user/login', {
+      const formData = new URLSearchParams();
+      formData.append('username', username.trim());
+      formData.append('password', password || '12345678');
+      formData.append('system', 'NKS');
+      formData.append('device', 'Web Browser');
+
+      const remoteRes = await fetch('https://account.nks.vn/api/nks/user/login', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body),
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: formData.toString(),
       });
 
       if (remoteRes.ok) {
         const data = await remoteRes.json();
-        const response = NextResponse.json(data);
-        if (data.access_token) {
-          response.cookies.set('nks_token', data.access_token, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: 'lax',
-            path: '/',
-            maxAge: 60 * 60 * 24 * 7,
+        if (data.success && data.data) {
+          const apiUser = data.data.user || {};
+          const accessToken = data.data.access_token || '';
+
+          const role = (u.includes('manager01') || u.includes('admin')) 
+            ? 'ADMIN' 
+            : u.includes('manager02')
+            ? 'TECHNICIAN'
+            : (u.includes('nhut') || u.includes('cuong') || u.includes('hai') || u.includes('thinh'))
+            ? 'TENANT'
+            : 'OWNER';
+
+          const formattedUser = {
+            id: String(apiUser.id || 'usr-120'),
+            username: apiUser.email || username,
+            firstname: apiUser.firstname || '',
+            lastname: apiUser.lastname || '',
+            fullname: apiUser.name || `${apiUser.lastname || ''} ${apiUser.firstname || ''}`.trim() || 'Nguyễn Hữu Lực',
+            full_name: apiUser.name || `${apiUser.lastname || ''} ${apiUser.firstname || ''}`.trim() || 'Nguyễn Hữu Lực',
+            email: apiUser.email || username,
+            phone: apiUser.phone || '0903112233',
+            role: role,
+            apartment_code: '12A05',
+            avatar_url: apiUser.avatar ? (apiUser.avatar.startsWith('http') ? apiUser.avatar : `https://data.nks.vn/${apiUser.avatar}`) : undefined,
+            id_number: apiUser.id_number || '079095001234',
+            id_date: apiUser.id_date || '',
+            id_place: apiUser.id_place || '',
+            province: apiUser.province || 'Thành phố Hồ Chí Minh',
+            gender: apiUser.gender ?? 1,
+            dob: apiUser.dob || '',
+          };
+
+          const response = NextResponse.json({
+            success: true,
+            message: 'Đăng nhập thành công từ NKS API',
+            access_token: accessToken,
+            user: formattedUser,
           });
+
+          if (accessToken) {
+            response.cookies.set('nks_token', accessToken, {
+              httpOnly: true,
+              secure: process.env.NODE_ENV === 'production',
+              sameSite: 'lax',
+              path: '/',
+              maxAge: 60 * 60 * 24 * 7,
+            });
+          }
+          return response;
         }
-        return response;
       }
     } catch (e) {
-      // Remote unavailable, proceed with internal database authentication
+      console.warn('Remote NKS login error:', e);
     }
 
     // 2. Query User Database (Exact Matching)
@@ -104,9 +149,10 @@ export async function POST(req: Request) {
     });
 
     return res;
-  } catch (error) {
+  } catch (error: any) {
+    console.error('Login route error:', error?.message || error);
     return NextResponse.json(
-      { success: false, message: 'Lỗi máy chủ xử lý đăng nhập.' },
+      { success: false, message: 'Lỗi máy chủ xử lý đăng nhập: ' + (error?.message || '') },
       { status: 500 }
     );
   }

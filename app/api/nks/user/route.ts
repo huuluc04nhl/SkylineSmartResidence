@@ -22,20 +22,54 @@ export async function POST(req: Request) {
       return NextResponse.json({ success: false, message: 'Chưa đăng nhập (No Token)' }, { status: 401 });
     }
 
-    // 1. Try remote official NKS Server if live
+    // 1. Call official live NKS Server (https://account.nks.vn/api/nks/user)
     try {
+      const formData = new URLSearchParams();
+      formData.append('access_token', access_token);
+
       const remoteRes = await fetch('https://account.nks.vn/api/nks/user', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ access_token }),
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: formData.toString(),
       });
 
       if (remoteRes.ok) {
         const data = await remoteRes.json();
-        return NextResponse.json({ success: true, user: data.user || data });
+        if (data.success && data.data) {
+          const apiUser = data.data;
+          const role = (apiUser.email && (apiUser.email.includes('manager01') || apiUser.email.includes('admin')))
+            ? 'ADMIN'
+            : (apiUser.email && apiUser.email.includes('manager02'))
+            ? 'TECHNICIAN'
+            : (apiUser.email && (apiUser.email.includes('nhut') || apiUser.email.includes('cuong') || apiUser.email.includes('hai') || apiUser.email.includes('thinh')))
+            ? 'TENANT'
+            : 'OWNER';
+
+          const formatted = {
+            id: String(apiUser.id || 'usr-120'),
+            username: apiUser.email || 'huuluc04@gmail.com',
+            firstname: apiUser.firstname || '',
+            lastname: apiUser.lastname || '',
+            fullname: apiUser.name || `${apiUser.lastname || ''} ${apiUser.firstname || ''}`.trim() || 'Nguyễn Hữu Lực',
+            full_name: apiUser.name || `${apiUser.lastname || ''} ${apiUser.firstname || ''}`.trim() || 'Nguyễn Hữu Lực',
+            email: apiUser.email || 'huuluc04@gmail.com',
+            phone: apiUser.phone || '0903112233',
+            role: role,
+            apartment_code: '12A05',
+            avatar_url: apiUser.avatar ? (apiUser.avatar.startsWith('http') ? apiUser.avatar : `https://data.nks.vn/${apiUser.avatar}`) : undefined,
+            id_number: apiUser.id_number || '079095001234',
+            id_date: apiUser.id_date || '',
+            id_place: apiUser.id_place || '',
+            province: apiUser.province || 'Thành phố Hồ Chí Minh',
+            gender: apiUser.gender ?? 1,
+            dob: apiUser.dob || '',
+            intro: apiUser.intro || '',
+          };
+          return NextResponse.json({ success: true, user: formatted });
+        }
       }
     } catch (e) {
-      // Remote NKS offline
+      console.warn('Remote NKS user fetch error:', e);
     }
 
     // 2. Server-side Session Token Resolver
@@ -80,15 +114,49 @@ export async function GET() {
   }
 
   try {
+    const formData = new URLSearchParams();
+    formData.append('access_token', token);
+
     const remoteRes = await fetch('https://account.nks.vn/api/nks/user', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ access_token: token }),
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: formData.toString(),
     });
 
     if (remoteRes.ok) {
       const data = await remoteRes.json();
-      return NextResponse.json({ success: true, user: data.user || data });
+      if (data.success && data.data) {
+        const apiUser = data.data;
+        const role = (apiUser.email && (apiUser.email.includes('manager01') || apiUser.email.includes('admin')))
+          ? 'ADMIN'
+          : (apiUser.email && apiUser.email.includes('manager02'))
+          ? 'TECHNICIAN'
+          : (apiUser.email && (apiUser.email.includes('nhut') || apiUser.email.includes('cuong') || apiUser.email.includes('hai') || apiUser.email.includes('thinh')))
+          ? 'TENANT'
+          : 'OWNER';
+
+        const formatted = {
+          id: String(apiUser.id || 'usr-120'),
+          username: apiUser.email || 'huuluc04@gmail.com',
+          firstname: apiUser.firstname || '',
+          lastname: apiUser.lastname || '',
+          fullname: apiUser.name || `${apiUser.lastname || ''} ${apiUser.firstname || ''}`.trim() || 'Nguyễn Hữu Lực',
+          full_name: apiUser.name || `${apiUser.lastname || ''} ${apiUser.firstname || ''}`.trim() || 'Nguyễn Hữu Lực',
+          email: apiUser.email || 'huuluc04@gmail.com',
+          phone: apiUser.phone || '0903112233',
+          role: role,
+          apartment_code: '12A05',
+          avatar_url: apiUser.avatar ? (apiUser.avatar.startsWith('http') ? apiUser.avatar : `https://data.nks.vn/${apiUser.avatar}`) : undefined,
+          id_number: apiUser.id_number || '079095001234',
+          id_date: apiUser.id_date || '',
+          id_place: apiUser.id_place || '',
+          province: apiUser.province || 'Thành phố Hồ Chí Minh',
+          gender: apiUser.gender ?? 1,
+          dob: apiUser.dob || '',
+          intro: apiUser.intro || '',
+        };
+        return NextResponse.json({ success: true, user: formatted });
+      }
     }
   } catch (e) {
     // Remote offline
