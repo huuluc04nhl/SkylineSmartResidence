@@ -227,8 +227,8 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
         setIdCardNumber(res.user.id_number || idCardNumber);
         setLicensePlate(res.user.license_plate || licensePlate);
         setPob(res.user.pob || '');
-        if (res.user.dob) setBirthday(formatToDisplayDate(res.user.dob));
-        if (res.user.id_date) setIdDate(formatToDisplayDate(res.user.id_date));
+        if (res.user.dob) setBirthday(formatToApiDate(res.user.dob));
+        if (res.user.id_date) setIdDate(formatToApiDate(res.user.id_date));
         if (res.user.id_place) setIdPlace(res.user.id_place);
 
         setSavedSuccess(true);
@@ -682,34 +682,15 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
 
             {/* Field 6: Ngày Cấp CCCD */}
             <div className="space-y-1.5">
-              <div className="flex items-center justify-between">
-                <label className="text-gray-300 flex items-center gap-1.5 font-semibold">
-                  <Calendar className="w-3.5 h-3.5 text-[#C5A880]" /> Ngày Cấp CCCD:
-                </label>
-                {idDate && (
-                  <span className="text-[10px] font-mono text-[#C5A880] bg-[#C5A880]/10 px-2 py-0.5 rounded border border-[#C5A880]/30">
-                    {formatToDisplayDate(idDate)}
-                  </span>
-                )}
-              </div>
-              <div className="relative flex items-center">
-                <input
-                  type="text"
-                  value={formatToDisplayDate(idDate)}
-                  onChange={(e) => setIdDate(formatToApiDate(e.target.value))}
-                  placeholder="DD/MM/YYYY (ví dụ: 19/04/2021)"
-                  className="w-full bg-[#161B22] border border-[#2D3748] p-3 text-white font-mono focus:outline-none focus:border-[#C5A880] transition-colors rounded pr-12"
-                />
-                <input
-                  type="date"
-                  value={formatToApiDate(idDate)}
-                  onChange={(e) => {
-                    if (e.target.value) setIdDate(e.target.value);
-                  }}
-                  className="absolute right-3 opacity-70 hover:opacity-100 cursor-pointer bg-transparent border-none text-[#C5A880] w-6 h-6 p-0 outline-none"
-                  title="Chọn ngày từ lịch"
-                />
-              </div>
+              <label className="text-gray-300 flex items-center gap-1.5 font-semibold">
+                <Calendar className="w-3.5 h-3.5 text-[#C5A880]" /> Ngày Cấp CCCD:
+              </label>
+              <input
+                type="date"
+                value={formatToApiDate(idDate)}
+                onChange={(e) => setIdDate(e.target.value)}
+                className="w-full bg-[#161B22] border border-[#2D3748] p-3 text-white font-mono focus:outline-none focus:border-[#C5A880] transition-colors rounded"
+              />
             </div>
 
             {/* Field 7: Nơi Cấp CCCD */}
@@ -728,37 +709,15 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
 
             {/* Field 8: Ngày Sinh */}
             <div className="space-y-1.5">
-              <div className="flex items-center justify-between">
-                <label className="text-gray-300 flex items-center gap-1.5 font-semibold">
-                  <Calendar className="w-3.5 h-3.5 text-[#C5A880]" /> Ngày Sinh (DOB):
-                </label>
-                {birthday && (
-                  <span className="text-[10px] font-mono text-[#C5A880] bg-[#C5A880]/10 px-2 py-0.5 rounded border border-[#C5A880]/30">
-                    {formatToDisplayDate(birthday)} (Chuẩn API: {formatToApiDate(birthday)})
-                  </span>
-                )}
-              </div>
-              <div className="relative flex items-center">
-                <input
-                  type="text"
-                  value={formatToDisplayDate(birthday)}
-                  onChange={(e) => setBirthday(formatToApiDate(e.target.value))}
-                  placeholder="DD/MM/YYYY (ví dụ: 02/11/2004)"
-                  className="w-full bg-[#161B22] border border-[#2D3748] p-3 text-white font-mono focus:outline-none focus:border-[#C5A880] transition-colors rounded pr-12"
-                />
-                <input
-                  type="date"
-                  value={formatToApiDate(birthday)}
-                  onChange={(e) => {
-                    if (e.target.value) setBirthday(e.target.value);
-                  }}
-                  className="absolute right-3 opacity-70 hover:opacity-100 cursor-pointer bg-transparent border-none text-[#C5A880] w-6 h-6 p-0 outline-none"
-                  title="Chọn ngày từ lịch"
-                />
-              </div>
-              <p className="text-[10px] text-gray-400">
-                Hiển thị định dạng Việt Nam: <strong>DD/MM/YYYY</strong>. Có thể nhập tay trực tiếp hoặc bấm biểu tượng lịch để chọn.
-              </p>
+              <label className="text-gray-300 flex items-center gap-1.5 font-semibold">
+                <Calendar className="w-3.5 h-3.5 text-[#C5A880]" /> Ngày Sinh:
+              </label>
+              <input
+                type="date"
+                value={formatToApiDate(birthday)}
+                onChange={(e) => setBirthday(e.target.value)}
+                className="w-full bg-[#161B22] border border-[#2D3748] p-3 text-white font-mono focus:outline-none focus:border-[#C5A880] transition-colors rounded"
+              />
             </div>
 
             {/* Field 9: Nơi Sinh / Nguyên Quán */}

@@ -540,24 +540,12 @@ export default function CccdOcrScannerModal({
 
               <div className="space-y-1">
                 <label className="text-[10px] text-gray-400 font-mono font-semibold">3. Ngày Sinh (DOB):</label>
-                <div className="relative flex items-center">
-                  <input
-                    type="text"
-                    value={formatToDisplayDate(editDob)}
-                    onChange={(e) => setEditDob(formatToApiDate(e.target.value))}
-                    placeholder="02/11/2004"
-                    className="w-full bg-[#0D1117] border border-gray-700 p-2 text-white font-mono rounded focus:border-[#C5A880] outline-none pr-8"
-                  />
-                  <input
-                    type="date"
-                    value={formatToApiDate(editDob)}
-                    onChange={(e) => {
-                      if (e.target.value) setEditDob(e.target.value);
-                    }}
-                    className="absolute right-1 opacity-70 hover:opacity-100 cursor-pointer bg-transparent border-none text-[#C5A880] w-6 h-6 p-0 outline-none"
-                    title="Chọn ngày từ lịch"
-                  />
-                </div>
+                <input
+                  type="date"
+                  value={formatToApiDate(editDob)}
+                  onChange={(e) => setEditDob(e.target.value)}
+                  className="w-full bg-[#0D1117] border border-gray-700 p-2 text-white font-mono rounded focus:border-[#C5A880] outline-none"
+                />
               </div>
 
               <div className="space-y-1">
@@ -585,24 +573,12 @@ export default function CccdOcrScannerModal({
 
               <div className="space-y-1">
                 <label className="text-[10px] text-gray-400 font-mono font-semibold">6. Ngày Cấp (Mặt Sau):</label>
-                <div className="relative flex items-center">
-                  <input
-                    type="text"
-                    value={formatToDisplayDate(editIdDate)}
-                    onChange={(e) => setEditIdDate(formatToApiDate(e.target.value))}
-                    placeholder="19/04/2021"
-                    className="w-full bg-[#0D1117] border border-gray-700 p-2 text-cyan-400 font-mono rounded focus:border-[#C5A880] outline-none pr-8"
-                  />
-                  <input
-                    type="date"
-                    value={formatToApiDate(editIdDate)}
-                    onChange={(e) => {
-                      if (e.target.value) setEditIdDate(e.target.value);
-                    }}
-                    className="absolute right-1 opacity-70 hover:opacity-100 cursor-pointer bg-transparent border-none text-cyan-400 w-6 h-6 p-0 outline-none"
-                    title="Chọn ngày từ lịch"
-                  />
-                </div>
+                <input
+                  type="date"
+                  value={formatToApiDate(editIdDate)}
+                  onChange={(e) => setEditIdDate(e.target.value)}
+                  className="w-full bg-[#0D1117] border border-gray-700 p-2 text-cyan-400 font-mono rounded focus:border-[#C5A880] outline-none"
+                />
               </div>
 
               <div className="space-y-1">
