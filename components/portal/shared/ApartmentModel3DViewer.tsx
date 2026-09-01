@@ -740,41 +740,50 @@ export default function ApartmentModel3DViewer({
           </div>
         </div>
 
-        {/* Interactive Controls */}
+        {/* Interactive Controls or Public Read-Only Badge */}
         <div className="md:col-span-4 flex flex-wrap items-center justify-end gap-2">
-          {interactive && onToggleLight && (
-            <button
-              type="button"
-              onClick={() => {
-                if (selectedRoom === 'living' || selectedRoom === 'dining') onToggleLight('livingRoom');
-                else if (selectedRoom === 'masterBed') onToggleLight('bedroomMaster');
-                else if (selectedRoom === 'kitchen') onToggleLight('kitchen');
-                else if (selectedRoom === 'balcony') onToggleLight('balcony');
-              }}
-              className="px-3 py-2 bg-[#161B22] hover:bg-[#C5A880] hover:text-[#0D1117] border border-gray-700 hover:border-[#C5A880] text-xs font-bold uppercase tracking-wider transition-colors rounded flex items-center gap-1.5 text-white shadow"
-            >
-              <Zap className="w-3.5 h-3.5" /> Bật/Tắt Đèn
-            </button>
-          )}
+          {!interactive ? (
+            <div className="flex items-center gap-1.5 px-3 py-2 bg-[#161B22] border border-[#C5A880]/60 text-[#C5A880] text-xs font-mono rounded shadow">
+              <Lock className="w-3.5 h-3.5 flex-shrink-0" />
+              <span className="truncate">Chế Độ Xem (Chỉ Đọc) • Đăng nhập để điều khiển</span>
+            </div>
+          ) : (
+            <>
+              {onToggleLight && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (selectedRoom === 'living' || selectedRoom === 'dining') onToggleLight('livingRoom');
+                    else if (selectedRoom === 'masterBed') onToggleLight('bedroomMaster');
+                    else if (selectedRoom === 'kitchen') onToggleLight('kitchen');
+                    else if (selectedRoom === 'balcony') onToggleLight('balcony');
+                  }}
+                  className="px-3 py-2 bg-[#161B22] hover:bg-[#C5A880] hover:text-[#0D1117] border border-gray-700 hover:border-[#C5A880] text-xs font-bold uppercase tracking-wider transition-colors rounded flex items-center gap-1.5 text-white shadow"
+                >
+                  <Zap className="w-3.5 h-3.5" /> Bật/Tắt Đèn
+                </button>
+              )}
 
-          {selectedRoom === 'balcony' && onToggleCurtains && (
-            <button
-              type="button"
-              onClick={onToggleCurtains}
-              className="px-3 py-2 bg-[#C5A880] hover:bg-white text-[#0D1117] text-xs font-bold uppercase tracking-wider transition-colors rounded flex items-center gap-1.5 shadow"
-            >
-              <Sun className="w-3.5 h-3.5" /> {curtainsOpen ? 'Đóng Rèm' : 'Mở Rèm'}
-            </button>
-          )}
+              {selectedRoom === 'balcony' && onToggleCurtains && (
+                <button
+                  type="button"
+                  onClick={onToggleCurtains}
+                  className="px-3 py-2 bg-[#C5A880] hover:bg-white text-[#0D1117] text-xs font-bold uppercase tracking-wider transition-colors rounded flex items-center gap-1.5 shadow"
+                >
+                  <Sun className="w-3.5 h-3.5" /> {curtainsOpen ? 'Đóng Rèm' : 'Mở Rèm'}
+                </button>
+              )}
 
-          {selectedRoom === 'foyer' && onToggleDoor && (
-            <button
-              type="button"
-              onClick={onToggleDoor}
-              className="px-3 py-2 bg-[#C5A880] hover:bg-white text-[#0D1117] text-xs font-bold uppercase tracking-wider transition-colors rounded flex items-center gap-1.5 shadow"
-            >
-              <Lock className="w-3.5 h-3.5" /> {doorLocked ? 'Mở Khóa' : 'Khóa Chốt'}
-            </button>
+              {selectedRoom === 'foyer' && onToggleDoor && (
+                <button
+                  type="button"
+                  onClick={onToggleDoor}
+                  className="px-3 py-2 bg-[#C5A880] hover:bg-white text-[#0D1117] text-xs font-bold uppercase tracking-wider transition-colors rounded flex items-center gap-1.5 shadow"
+                >
+                  <Lock className="w-3.5 h-3.5" /> {doorLocked ? 'Mở Khóa' : 'Khóa Chốt'}
+                </button>
+              )}
+            </>
           )}
         </div>
       </div>
