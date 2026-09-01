@@ -535,29 +535,29 @@ export default function CccdOcrScannerModal({
 
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 text-xs">
               <div className="space-y-1">
-                <label className="text-[10px] text-gray-400 font-mono">Số CCCD (12 Số):</label>
+                <label className="text-[10px] text-gray-400 font-mono font-semibold">1. Số CCCD (12 Số):</label>
                 <input
                   type="text"
                   value={editIdNumber}
                   onChange={(e) => setEditIdNumber(e.target.value)}
                   className="w-full bg-[#0D1117] border border-gray-700 p-2 text-[#C5A880] font-mono font-bold rounded focus:border-[#C5A880] outline-none"
-                  placeholder="12 số CCCD..."
+                  placeholder="12 số định danh..."
                 />
               </div>
 
               <div className="space-y-1">
-                <label className="text-[10px] text-gray-400 font-mono">Họ và Tên:</label>
+                <label className="text-[10px] text-gray-400 font-mono font-semibold">2. Họ và Tên:</label>
                 <input
                   type="text"
                   value={editFullName}
                   onChange={(e) => setEditFullName(e.target.value)}
-                  className="w-full bg-[#0D1117] border border-gray-700 p-2 text-white font-bold rounded focus:border-[#C5A880] outline-none"
+                  className="w-full bg-[#0D1117] border border-gray-700 p-2 text-white font-bold rounded focus:border-[#C5A880] outline-none uppercase"
                   placeholder="Họ và tên..."
                 />
               </div>
 
               <div className="space-y-1">
-                <label className="text-[10px] text-gray-400 font-mono">Ngày Sinh (DOB):</label>
+                <label className="text-[10px] text-gray-400 font-mono font-semibold">3. Ngày Sinh (DOB):</label>
                 <input
                   type="date"
                   value={editDob}
@@ -567,7 +567,7 @@ export default function CccdOcrScannerModal({
               </div>
 
               <div className="space-y-1">
-                <label className="text-[10px] text-gray-400 font-mono">Giới Tính:</label>
+                <label className="text-[10px] text-gray-400 font-mono font-semibold">4. Giới Tính:</label>
                 <select
                   value={editGender}
                   onChange={(e) => setEditGender(e.target.value as '1' | '0')}
@@ -578,8 +578,19 @@ export default function CccdOcrScannerModal({
                 </select>
               </div>
 
+              <div className="space-y-1 sm:col-span-2">
+                <label className="text-[10px] text-gray-400 font-mono font-semibold">5. Quê Quán / Nơi Sinh (Place of Origin):</label>
+                <input
+                  type="text"
+                  value={editPob}
+                  onChange={(e) => setEditPob(e.target.value)}
+                  className="w-full bg-[#0D1117] border border-gray-700 p-2 text-white rounded focus:border-[#C5A880] outline-none"
+                  placeholder="Xã/Phường, Quận/Huyện, Tỉnh/Thành phố..."
+                />
+              </div>
+
               <div className="space-y-1">
-                <label className="text-[10px] text-gray-400 font-mono">Ngày Cấp (Mặt Sau):</label>
+                <label className="text-[10px] text-gray-400 font-mono font-semibold">6. Ngày Cấp (Mặt Sau):</label>
                 <input
                   type="date"
                   value={editIdDate}
@@ -588,8 +599,8 @@ export default function CccdOcrScannerModal({
                 />
               </div>
 
-              <div className="space-y-1 md:col-span-3">
-                <label className="text-[10px] text-gray-400 font-mono">Nơi Cấp (Mặt Sau):</label>
+              <div className="space-y-1">
+                <label className="text-[10px] text-gray-400 font-mono font-semibold">7. Nơi Cấp (Mặt Sau):</label>
                 <input
                   type="text"
                   value={editIdPlace}
@@ -598,18 +609,19 @@ export default function CccdOcrScannerModal({
                   placeholder="Cục Cảnh sát QLHC về TTXH..."
                 />
               </div>
-
-              <div className="space-y-1 sm:col-span-2 md:col-span-4">
-                <label className="text-[10px] text-gray-400 font-mono">Quê Quán / Nơi Thường Trú:</label>
-                <input
-                  type="text"
-                  value={editPob}
-                  onChange={(e) => setEditPob(e.target.value)}
-                  className="w-full bg-[#0D1117] border border-gray-700 p-2 text-white rounded focus:border-[#C5A880] outline-none"
-                  placeholder="Địa chỉ thường trú..."
-                />
-              </div>
             </div>
+
+            {/* Raw OCR Text Accordion */}
+            {ocrResult.rawText && (
+              <details className="text-[11px] bg-[#0D1117] border border-gray-800 rounded p-2.5 text-gray-400">
+                <summary className="cursor-pointer font-mono text-[#C5A880] hover:text-white select-none">
+                  🔍 Xem Ký Tự Nhận Diện Thô Trực Tiếp Từ 2 Mặt (Raw OCR Inspector)
+                </summary>
+                <pre className="mt-2 p-2 bg-black/60 rounded font-mono text-[10px] text-gray-300 whitespace-pre-wrap max-h-36 overflow-y-auto border border-gray-800">
+                  {ocrResult.rawText}
+                </pre>
+              </details>
+            )}
           </div>
         )}
 
