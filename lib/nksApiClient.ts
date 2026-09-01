@@ -163,3 +163,60 @@ export async function nksUpdateCccd(payload: {
 
   return await res.json();
 }
+
+/**
+ * 7. Get Family Members API (GET /api/nks/user/family)
+ */
+export async function nksGetFamilyMembers(): Promise<{ success: boolean; members: any[] }> {
+  const res = await fetch('/api/nks/user/family', {
+    method: 'GET',
+    headers: { 'Content-Type': 'application/json' },
+  });
+
+  if (!res.ok) {
+    throw new Error('NKS GetFamily API failed');
+  }
+
+  return await res.json();
+}
+
+/**
+ * 8. Add Family Member API (POST /api/nks/user/family)
+ */
+export async function nksAddFamilyMember(payload: {
+  fullName: string;
+  phone: string;
+  role?: string;
+  relationship?: string;
+  idCard?: string;
+  licensePlate?: string;
+}): Promise<{ success: boolean; message: string; members: any[] }> {
+  const res = await fetch('/api/nks/user/family', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+
+  if (!res.ok) {
+    throw new Error('NKS AddFamily API failed');
+  }
+
+  return await res.json();
+}
+
+/**
+ * 9. Remove Family Member API (DELETE /api/nks/user/family)
+ */
+export async function nksRemoveFamilyMember(memberId: string): Promise<{ success: boolean; message: string; members: any[] }> {
+  const res = await fetch('/api/nks/user/family', {
+    method: 'DELETE',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ memberId }),
+  });
+
+  if (!res.ok) {
+    throw new Error('NKS RemoveFamily API failed');
+  }
+
+  return await res.json();
+}

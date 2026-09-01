@@ -28,10 +28,26 @@ export interface StoredUser {
   updated_at?: string;
 }
 
+export interface ApartmentMember {
+  id: string;
+  username?: string;
+  fullName: string;
+  role: 'Family' | 'Tenant';
+  relationship: string;
+  phone: string;
+  idCard: string;
+  licensePlate?: string;
+  faceStatus: string;
+  avatarUrl?: string;
+  addedDate: string;
+}
+
 // Global server memory store to maintain live user updates
 declare global {
   // eslint-disable-next-line no-var
   var __NKS_USER_STORE: Record<string, StoredUser> | undefined;
+  // eslint-disable-next-line no-var
+  var __NKS_FAMILY_STORE: Record<string, ApartmentMember[]> | undefined;
 }
 
 if (!global.__NKS_USER_STORE) {
@@ -108,6 +124,26 @@ if (!global.__NKS_USER_STORE) {
   };
 }
 
+if (!global.__NKS_FAMILY_STORE) {
+  global.__NKS_FAMILY_STORE = {
+    '12A05': [
+      {
+        id: 'mem-nhut-01',
+        username: 'nguyenhuunhut1309@gmail.com',
+        fullName: 'Nguyễn Hữu Nhựt',
+        role: 'Family',
+        relationship: 'Thành viên gia đình (Em trai)',
+        phone: '0908776655',
+        idCard: '079198005678',
+        licensePlate: '59P1-886.79',
+        faceStatus: 'Đã Xác Thực FaceID',
+        avatarUrl: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400',
+        addedDate: '10/01/2026',
+      }
+    ]
+  };
+}
+
 export function getUserStore(roleKey: 'ADMIN' | 'OWNER' | 'TENANT'): StoredUser {
   return global.__NKS_USER_STORE![roleKey] || global.__NKS_USER_STORE!['OWNER'];
 }
@@ -120,5 +156,35 @@ export function updateUserStore(roleKey: 'ADMIN' | 'OWNER' | 'TENANT', updates: 
     updated_at: new Date().toISOString()
   };
   global.__NKS_USER_STORE![roleKey] = updated;
+  return updated;
+}
+
+export function getApartmentMembers(aptCode: string): ApartmentMember[] {
+  if (!global.__NKS_FAMILY_STORE) {
+    global.__NKS_FAMILY_STORE = {};
+  }
+  return global.__NKS_FAMILY_STORE[aptCode] || global.__NKS_FAMILY_STORE['12A05'] || [];
+}
+
+export function addApartmentMember(aptCode: string, member: ApartmentMember): ApartmentMember[] {
+  if (!global.__NKS_FAMILY_STORE) {
+    global.__NKS_FAMILY_STORE = {};
+  }
+  const current = getApartmentMembers(aptCode);
+  const updated = [
+    ...current.filter(m => m.id !== member.id && m.phone !== member.phone),
+    member
+  ];
+  global.__NKS_FAMILY_STORE[aptCode] = updated;
+  return updated;
+}
+
+export function removeApartmentMember(aptCode: string, memberId: string): ApartmentMember[] {
+  if (!global.__NKS_FAMILY_STORE) {
+    global.__NKS_FAMILY_STORE = {};
+  }
+  const current = getApartmentMembers(aptCode);
+  const updated = current.filter(m => m.id !== memberId);
+  global.__NKS_FAMILY_STORE[aptCode] = updated;
   return updated;
 }

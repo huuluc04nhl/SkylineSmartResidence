@@ -34,7 +34,16 @@ import {
 } from 'lucide-react';
 import { User } from '@/lib/dataStore';
 import ResidentSmartCard from './ResidentSmartCard';
-import { nksGetUserInfo, nksUpdateInfo, nksUpdateCccd, nksUpdateAvatar, nksUpdatePassword } from '@/lib/nksApiClient';
+import { 
+  nksGetUserInfo, 
+  nksUpdateInfo, 
+  nksUpdateCccd, 
+  nksUpdateAvatar, 
+  nksUpdatePassword,
+  nksGetFamilyMembers,
+  nksAddFamilyMember,
+  nksRemoveFamilyMember
+} from '@/lib/nksApiClient';
 import { useAuth } from '@/lib/authContext';
 import CccdOcrScannerModal from './CccdOcrScannerModal';
 import { OcrCccdResult } from '@/lib/ocrParser';
@@ -90,34 +99,32 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
   const [cccdImage, setCccdImage] = useState('https://images.unsplash.com/photo-1633332755192-727a05c4013d?w=400');
   const [matchScore, setMatchScore] = useState(99.8);
 
-  // Family Members State
-  const [members, setMembers] = useState([
-    {
-      id: 'mem-1',
-      fullName: 'Trần Thị Mai',
-      role: 'Family',
-      relationship: 'Vợ (Thành viên gia đình)',
-      phone: '0908776655',
-      idCard: '079302008765',
-      faceStatus: 'Đã Xác Thực FaceID',
-      addedDate: '15/06/2026',
-    },
-    {
-      id: 'mem-2',
-      fullName: 'Nguyễn Văn Minh',
-      role: 'Family',
-      relationship: 'Con trai',
-      phone: '0912334455',
-      idCard: '079201009988',
-      faceStatus: 'Đã Xác Thực FaceID',
-      addedDate: '10/01/2026',
-    },
-  ]);
+  // Family Members State (Loaded directly from NKS Apartment API)
+  const [members, setMembers] = useState<any[]>([]);
+  const [isLoadingMembers, setIsLoadingMembers] = useState(false);
 
   const [showAddMemberModal, setShowAddMemberModal] = useState(false);
   const [newMemName, setNewMemName] = useState('');
   const [newMemPhone, setNewMemPhone] = useState('');
   const [newMemRole, setNewMemRole] = useState<'Family' | 'Tenant'>('Family');
+
+  // Load live family members from NKS API
+  useEffect(() => {
+    async function loadFamilyData() {
+      setIsLoadingMembers(true);
+      try {
+        const famRes = await nksGetFamilyMembers();
+        if (famRes.success && famRes.members) {
+          setMembers(famRes.members);
+        }
+      } catch (e) {
+        console.warn('Load family API error:', e);
+      } finally {
+        setIsLoadingMembers(false);
+      }
+    }
+    loadFamilyData();
+  }, [currentUser]);
 
   // Load live user info directly from API endpoint on mount
   useEffect(() => {
@@ -333,32 +340,43 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
     }, 1500);
   };
 
-  const handleAddMember = (e: React.FormEvent) => {
+  const handleAddMember = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newMemName || !newMemPhone) return;
 
-    setMembers([
-      ...members,
-      {
-        id: `mem-${Date.now()}`,
-        fullName: newMemName,
+    try {
+      const res = await nksAddFamilyMember({
+        fullName: newMemName.trim(),
+        phone: newMemPhone.trim(),
         role: newMemRole,
         relationship: newMemRole === 'Family' ? 'Cư dân thuộc chủ hộ' : 'Cư dân tạm trú',
-        phone: newMemPhone,
-        idCard: '079' + Math.floor(100000000 + Math.random() * 900000000),
-        faceStatus: 'Đã Xác Thực FaceID',
-        addedDate: new Date().toLocaleDateString('vi-VN'),
-      },
-    ]);
+      });
+
+      if (res.success && res.members) {
+        setMembers(res.members);
+      }
+    } catch (err) {
+      console.warn('Add member API error:', err);
+    }
 
     setNewMemName('');
     setNewMemPhone('');
     setShowAddMemberModal(false);
   };
 
-  const handleRemoveMember = (id: string) => {
+  const handleRemoveMember = async (id: string) => {
     if (confirm('Bạn có chắc chắn muốn hủy phân quyền thành viên này khỏi căn hộ?')) {
-      setMembers(members.filter((m) => m.id !== id));
+      try {
+        const res = await nksRemoveFamilyMember(id);
+        if (res.success && res.members) {
+          setMembers(res.members);
+        } else {
+          setMembers(members.filter((m) => m.id !== id));
+        }
+      } catch (err) {
+        console.warn('Remove member API error:', err);
+        setMembers(members.filter((m) => m.id !== id));
+      }
     }
   };
 
