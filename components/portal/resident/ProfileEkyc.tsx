@@ -52,6 +52,7 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
   const [activeTab, setActiveTab] = useState<'INFO' | 'EKYC' | 'PASSWORD' | 'FAMILY'>('INFO');
   const [isOcrModalOpen, setIsOcrModalOpen] = useState(false);
   const [isLoadingApi, setIsLoadingApi] = useState(true);
+  const [ocrFilledNotice, setOcrFilledNotice] = useState(false);
 
   // Form State (Populated 100% directly from API response)
   const [fullName, setFullName] = useState('');
@@ -156,7 +157,7 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
     loadApiUserData();
   }, [currentUser]);
 
-  // 1. Submit Update Profile Info to NKS API (POST /api/nks/user/updateInfo)
+  // 1. Submit Update Profile Info to NKS API (POST /api/nks/user/updateInfo + updateCccd)
   const handleSaveInfo = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSaving(true);
@@ -185,9 +186,25 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
         license_plate: licensePlate,
       });
 
+      // Also synchronize CCCD card images to NKS Server
+      try {
+        await nksUpdateCccd({
+          number: idCardNumber.trim(),
+          date: idDate,
+          place: idPlace,
+          front: cccdImage,
+          back: cccdBackImage,
+        });
+      } catch (cccdErr) {
+        console.warn('Sync CCCD on save error:', cccdErr);
+      }
+
       if (res.success && res.user) {
         // Synchronize state across active session and components
-        updateUserInfo(res.user as any);
+        updateUserInfo({
+          ...res.user as any,
+          id_card_no: idCardNumber.trim(),
+        });
 
         // Update local state directly with returned API payload
         setFullName(res.user.fullname || res.user.full_name || fullName);
@@ -197,6 +214,7 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
         setLicensePlate(res.user.license_plate || licensePlate);
 
         setSavedSuccess(true);
+        setOcrFilledNotice(false);
         setTimeout(() => setSavedSuccess(false), 4000);
       } else {
         setSaveError('Không thể lưu thông tin vào máy chủ NKS.');
@@ -272,8 +290,8 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
 
   const [cccdBackImage, setCccdBackImage] = useState('https://images.unsplash.com/photo-1544717305-2782549b5136?w=600');
 
-  // 4. Handle auto-filling data from OCR Scanner Modal (2 sides)
-  const handleApplyOcrData = async (ocrData: OcrCccdResult, frontSrc: string, backSrc: string) => {
+  // 4. Handle auto-filling data from OCR Scanner Modal (2 sides) - NO API CALL YET
+  const handleApplyOcrData = (ocrData: OcrCccdResult, frontSrc: string, backSrc: string) => {
     setIdCardNumber(ocrData.idNumber);
     setFullName(ocrData.fullName);
     setBirthday(ocrData.dob);
@@ -282,30 +300,15 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
     setProvince(ocrData.province);
     setIdDate(ocrData.idDate);
     setIdPlace(ocrData.idPlace);
-    setCccdImage(frontSrc);
-    setCccdBackImage(backSrc);
+    if (frontSrc) setCccdImage(frontSrc);
+    if (backSrc) setCccdBackImage(backSrc);
 
-    // Call CCCD API
-    try {
-      await nksUpdateCccd({
-        number: ocrData.idNumber,
-        date: ocrData.idDate,
-        place: ocrData.idPlace,
-        front: frontSrc,
-        back: backSrc,
-      });
-    } catch (e) {
-      console.warn('Sync CCCD API error', e);
-    }
+    // Switch to tab 1 (Thông tin cá nhân) so the user can review all fields
+    setActiveTab('INFO');
 
-    // Synchronize to active context & state
-    updateUserInfo({
-      full_name: ocrData.fullName,
-      id_card_no: ocrData.idNumber,
-    });
-
-    setSavedSuccess(true);
-    setTimeout(() => setSavedSuccess(false), 4000);
+    // Display clear notice that data is auto-filled and ready to be saved
+    setOcrFilledNotice(true);
+    setTimeout(() => setOcrFilledNotice(false), 10000);
   };
 
   const handleRetakeEkyc = async () => {
@@ -537,6 +540,25 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
           </div>
 
           {/* Feedback Alerts */}
+          {ocrFilledNotice && (
+            <div className="p-4 bg-amber-950/90 border-2 border-amber-500 text-amber-200 text-xs flex items-center justify-between gap-3 animate-fadeIn shadow-2xl rounded-lg">
+              <div className="flex items-center gap-3">
+                <Sparkles className="w-5 h-5 text-amber-300 flex-shrink-0 animate-pulse" />
+                <div>
+                  <strong className="text-white block text-sm font-semibold">✨ Đã tự động điền thông tin từ CCCD 2 mặt vào Form!</strong>
+                  <span className="text-gray-300 text-[11px]">Thông tin chỉ mới được điền tạm vào form bên dưới. Vui lòng kiểm tra lại và nhấn nút <strong>[Lưu & Cập Nhật NKS User API]</strong> ở cuối form để chính thức lưu lên hệ thống.</span>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setOcrFilledNotice(false)}
+                className="px-2 py-1 bg-black/40 hover:bg-black/80 text-amber-300 hover:text-white text-[11px] font-bold rounded transition-colors"
+              >
+                Đã Hiểu
+              </button>
+            </div>
+          )}
+
           {savedSuccess && (
             <div className="p-3.5 bg-emerald-950/90 border border-emerald-500 text-emerald-300 text-xs flex items-center gap-2 animate-fadeIn shadow-lg rounded">
               <CheckCircle2 className="w-4 h-4 flex-shrink-0" />

@@ -201,9 +201,8 @@ export default function CccdOcrScannerModal({
     }
   };
 
-  const handleApply = async () => {
+  const handleApply = () => {
     if (!ocrResult) return;
-    setIsSyncingApi(true);
 
     const finalResult: OcrCccdResult = {
       ...ocrResult,
@@ -217,26 +216,9 @@ export default function CccdOcrScannerModal({
       idPlace: editIdPlace.trim(),
     };
 
-    try {
-      // Call official NKS CCCD Update API with 2 sides
-      await nksUpdateCccd({
-        number: finalResult.idNumber,
-        date: finalResult.idDate,
-        place: finalResult.idPlace,
-        front: frontImage,
-        back: backImage,
-      });
-
-      // Callback to parent form to auto-fill all profile fields
-      onApplyOcrData(finalResult, frontImage, backImage);
-      onClose();
-    } catch (err) {
-      console.warn('Sync CCCD error', err);
-      onApplyOcrData(finalResult, frontImage, backImage);
-      onClose();
-    } finally {
-      setIsSyncingApi(false);
-    }
+    // Auto-fill into parent form fields only - user will review and click Save to update API
+    onApplyOcrData(finalResult, frontImage, backImage);
+    onClose();
   };
 
   const hasBothImages = Boolean(frontImage && backImage);
@@ -638,15 +620,15 @@ export default function CccdOcrScannerModal({
           <button
             type="button"
             onClick={handleApply}
-            disabled={!ocrResult || isSyncingApi}
+            disabled={!ocrResult}
             className={`px-6 py-2.5 text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-2 rounded-lg shadow-xl ${
-              !ocrResult || isSyncingApi
+              !ocrResult
                 ? 'bg-gray-800 text-gray-500 cursor-not-allowed'
                 : 'bg-[#C5A880] hover:bg-white text-[#0D1117]'
             }`}
           >
-            {isSyncingApi ? <RefreshCw className="w-4 h-4 animate-spin" /> : <ShieldCheck className="w-4 h-4" />}
-            {isSyncingApi ? 'Đang Lưu NKS API...' : 'Áp Dụng Dữ Liệu 2 Mặt & Lưu Lên NKS API'}
+            <CheckCircle2 className="w-4 h-4" />
+            <span>Áp Dụng Điền Tự Động Vào Form</span>
           </button>
         </div>
       </div>
