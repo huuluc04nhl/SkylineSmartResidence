@@ -127,9 +127,9 @@ export function cleanAddress(raw: string): string {
 }
 
 /**
- * Format DD/MM/YYYY to YYYY-MM-DD for standard HTML5 date input fields
+ * Format DD/MM/YYYY to YYYY-MM-DD for standard HTML5/API date fields
  */
-export function formatToDateInput(d: string): string {
+export function formatToDateInput(d?: string): string {
   if (!d) return '';
   const cleanD = d.replace(/[^\d\/\-\.]/g, '');
   const parts = cleanD.split(/[\/\-\.]/);
@@ -145,6 +145,32 @@ export function formatToDateInput(d: string): string {
       const month = parts[1].padStart(2, '0');
       const day = parts[2].padStart(2, '0');
       return `${year}-${month}-${day}`;
+    }
+  }
+  return d;
+}
+
+export const formatToApiDate = formatToDateInput;
+
+/**
+ * Format YYYY-MM-DD to Vietnamese display DD/MM/YYYY
+ */
+export function formatToDisplayDate(d?: string): string {
+  if (!d) return '';
+  const cleanD = d.replace(/[^\d\/\-\.]/g, '');
+  const parts = cleanD.split(/[\/\-\.]/);
+  if (parts.length === 3) {
+    if (parts[0].length === 4) {
+      const year = parts[0];
+      const month = parts[1].padStart(2, '0');
+      const day = parts[2].padStart(2, '0');
+      return `${day}/${month}/${year}`;
+    }
+    if (parts[2].length === 4) {
+      const day = parts[0].padStart(2, '0');
+      const month = parts[1].padStart(2, '0');
+      const year = parts[2];
+      return `${day}/${month}/${year}`;
     }
   }
   return d;
