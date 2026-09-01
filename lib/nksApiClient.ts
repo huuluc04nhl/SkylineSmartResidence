@@ -9,6 +9,7 @@ export interface NksUserInfo {
   firstname: string;
   lastname: string;
   fullname: string;
+  full_name?: string;
   email: string;
   phone: string;
   avatar_url?: string;
@@ -17,6 +18,7 @@ export interface NksUserInfo {
   dob?: string;
   pob?: string;
   id_number?: string;
+  id_card_no?: string;
   id_date?: string;
   id_place?: string;
   province?: string;

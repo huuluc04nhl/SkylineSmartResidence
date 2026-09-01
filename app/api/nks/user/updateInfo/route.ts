@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
+import { updateUserStore } from '@/lib/userStore';
 
 export async function POST(req: Request) {
   try {
@@ -36,7 +37,7 @@ export async function POST(req: Request) {
         return NextResponse.json(data);
       }
     } catch (e) {
-      // Remote unavailable, proceed with NKS compliant resolution
+      // Remote unavailable
     }
 
     // Determine clean names
@@ -50,25 +51,29 @@ export async function POST(req: Request) {
 
     const resolvedFullname = fullname || `${computedLastname} ${computedFirstname}`.trim();
 
-    const updatedUser = {
+    const cookieStore = cookies();
+    const token = access_token || cookieStore.get('nks_token')?.value || '';
+    const roleKey = token.includes('ADMIN') ? 'ADMIN' : token.includes('TENANT') ? 'TENANT' : 'OWNER';
+
+    const updatedUser = updateUserStore(roleKey, {
       firstname: computedFirstname,
       lastname: computedLastname,
       fullname: resolvedFullname,
       full_name: resolvedFullname,
-      intro: intro || 'Cư Dân SKYLINE Smart Residence',
-      phone: phone || '0903112233',
-      email: email || 'huuluc04@gmail.com',
-      gender: gender !== undefined ? gender : 1,
-      website: website || 'https://skyline.vn',
-      dob: dob || '1990-08-15',
-      pob: pob || 'TP. Hồ Chí Minh',
-      id_number: id_number || '079095001234',
-      id_date: id_date || '2022-08-15',
-      id_place: id_place || 'Cục Cảnh sát QLHC về TTXH',
-      province: province || 'TP. Hồ Chí Minh',
-      license_plate: license_plate || '51K-889.99',
-      updated_at: new Date().toISOString(),
-    };
+      intro: intro,
+      phone: phone,
+      email: email,
+      gender: gender !== undefined ? Number(gender) as 0 | 1 : 1,
+      website: website,
+      dob: dob,
+      pob: pob,
+      id_number: id_number,
+      id_card_no: id_number,
+      id_date: id_date,
+      id_place: id_place,
+      province: province,
+      license_plate: license_plate,
+    });
 
     return NextResponse.json({
       success: true,

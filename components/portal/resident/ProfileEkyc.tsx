@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { 
   User as UserIcon, 
   ShieldCheck, 
@@ -34,7 +34,7 @@ import {
 } from 'lucide-react';
 import { User } from '@/lib/dataStore';
 import ResidentSmartCard from './ResidentSmartCard';
-import { nksUpdateInfo, nksUpdateCccd, nksUpdateAvatar, nksUpdatePassword } from '@/lib/nksApiClient';
+import { nksGetUserInfo, nksUpdateInfo, nksUpdateCccd, nksUpdateAvatar, nksUpdatePassword } from '@/lib/nksApiClient';
 import { useAuth } from '@/lib/authContext';
 import CccdOcrScannerModal from './CccdOcrScannerModal';
 import { OcrCccdResult } from '@/lib/ocrParser';
@@ -51,30 +51,28 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
 
   const [activeTab, setActiveTab] = useState<'INFO' | 'EKYC' | 'PASSWORD' | 'FAMILY'>('INFO');
   const [isOcrModalOpen, setIsOcrModalOpen] = useState(false);
+  const [isLoadingApi, setIsLoadingApi] = useState(true);
 
-  // Form State (Aligned with NKS API Specifications)
-  const initialName = currentUser.full_name || (currentUser as any)?.fullname || 'Nguyễn Hữu Lực';
-  const [fullName, setFullName] = useState(initialName);
-  const [phone, setPhone] = useState(currentUser.phone || currentUser.username || '0903112233');
-  const [email, setEmail] = useState(currentUser.email || (isOwner ? 'huuluc04@gmail.com' : 'nguyenhuunhut1309@gmail.com'));
+  // Form State (Populated 100% directly from API response)
+  const [fullName, setFullName] = useState('');
+  const [phone, setPhone] = useState('');
+  const [email, setEmail] = useState('');
   const [gender, setGender] = useState<'1' | '0'>('1');
-  const [idCardNumber, setIdCardNumber] = useState(currentUser.id_card_no || currentUser.id_card_number || '079095001234');
-  const [idDate, setIdDate] = useState('2022-08-15');
-  const [idPlace, setIdPlace] = useState('Cục Cảnh sát QLHC về TTXH');
-  const [birthday, setBirthday] = useState('1990-08-15');
-  const [pob, setPob] = useState('TP. Hồ Chí Minh');
-  const [province, setProvince] = useState('TP. Hồ Chí Minh');
-  const [intro, setIntro] = useState(`Cư Dân Căn Hộ ${aptCode} - SKYLINE Smart Residence`);
-  const [licensePlate, setLicensePlate] = useState(isOwner ? '51K-889.99' : '59P1-886.79');
-
-  // Avatar & Portrait State
-  const [avatarUrl, setAvatarUrl] = useState(currentUser.avatar_url || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400');
-  const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
+  const [idCardNumber, setIdCardNumber] = useState('');
+  const [idDate, setIdDate] = useState('');
+  const [idPlace, setIdPlace] = useState('');
+  const [birthday, setBirthday] = useState('');
+  const [pob, setPob] = useState('');
+  const [province, setProvince] = useState('');
+  const [intro, setIntro] = useState('');
+  const [licensePlate, setLicensePlate] = useState('');
+  const [avatarUrl, setAvatarUrl] = useState('');
 
   // Status & Feedback
   const [isSaving, setIsSaving] = useState(false);
   const [savedSuccess, setSavedSuccess] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
+  const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
 
   // Change Password State
   const [oldPassword, setOldPassword] = useState('');
@@ -120,6 +118,44 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
   const [newMemPhone, setNewMemPhone] = useState('');
   const [newMemRole, setNewMemRole] = useState<'Family' | 'Tenant'>('Family');
 
+  // Load live user info directly from API endpoint on mount
+  useEffect(() => {
+    async function loadApiUserData() {
+      setIsLoadingApi(true);
+      try {
+        const apiUser = await nksGetUserInfo();
+        if (apiUser) {
+          setFullName(apiUser.fullname || apiUser.full_name || '');
+          setPhone(apiUser.phone || apiUser.username || '');
+          setEmail(apiUser.email || '');
+          setGender(apiUser.gender !== undefined ? (apiUser.gender.toString() as '1' | '0') : '1');
+          setIdCardNumber(apiUser.id_number || (apiUser as any).id_card_no || '');
+          setIdDate(apiUser.id_date || '');
+          setIdPlace(apiUser.id_place || '');
+          setBirthday(apiUser.dob || '');
+          setPob(apiUser.pob || '');
+          setProvince(apiUser.province || '');
+          setIntro(apiUser.intro || '');
+          setLicensePlate(apiUser.license_plate || '');
+          setAvatarUrl(apiUser.avatar_url || apiUser.avatar || '');
+        } else {
+          // Fallback to currentUser if offline
+          setFullName(currentUser.full_name || '');
+          setPhone(currentUser.phone || currentUser.username || '');
+          setEmail(currentUser.email || '');
+          setIdCardNumber(currentUser.id_card_no || '');
+          setAvatarUrl(currentUser.avatar_url || '');
+        }
+      } catch (err) {
+        console.warn('Failed to fetch live API user info:', err);
+      } finally {
+        setIsLoadingApi(false);
+      }
+    }
+
+    loadApiUserData();
+  }, [currentUser]);
+
   // 1. Submit Update Profile Info to NKS API (POST /api/nks/user/updateInfo)
   const handleSaveInfo = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -149,14 +185,16 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
         license_plate: licensePlate,
       });
 
-      if (res.success) {
+      if (res.success && res.user) {
         // Synchronize state across active session and components
-        updateUserInfo({
-          full_name: fullName.trim(),
-          phone: phone.trim(),
-          email: email.trim(),
-          id_card_no: idCardNumber.trim(),
-        });
+        updateUserInfo(res.user as any);
+
+        // Update local state directly with returned API payload
+        setFullName(res.user.fullname || res.user.full_name || fullName);
+        setPhone(res.user.phone || phone);
+        setEmail(res.user.email || email);
+        setIdCardNumber(res.user.id_number || idCardNumber);
+        setLicensePlate(res.user.license_plate || licensePlate);
 
         setSavedSuccess(true);
         setTimeout(() => setSavedSuccess(false), 4000);
@@ -323,7 +361,7 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#222B35] pb-4">
         <div>
           <div className="text-[10px] uppercase tracking-[0.25em] text-[#C5A880] font-semibold flex items-center gap-1.5">
-            <ScanFace className="w-3.5 h-3.5" /> Module 3.2.1 • Quản Lý Hồ Sơ & Định Danh NKS API
+            <ScanFace className="w-3.5 h-3.5" /> Module 3.2.1 • Dữ Liệu Thực Trực Tiếp Từ NKS Core User API
           </div>
           <h2 className="font-serif text-2xl text-white font-bold mt-1">
             Hồ Sơ Cá Nhân & Định Danh e-KYC Căn Hộ {aptCode}
@@ -401,17 +439,25 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
         )}
       </div>
 
+      {/* Loading Indicator while fetching from API */}
+      {isLoadingApi && (
+        <div className="p-8 bg-[#121820] border border-[#222B35] flex items-center justify-center gap-3 text-xs text-[#C5A880] font-mono rounded-lg">
+          <RefreshCw className="w-5 h-5 animate-spin text-[#C5A880]" />
+          <span>Đang tải dữ liệu hồ sơ thực tế từ NKS Core User API...</span>
+        </div>
+      )}
+
       {/* ------------------------------------------------------------- */}
       {/* TAB 1: PERSONAL INFORMATION & VEHICLE REGISTRATION (NKS API)   */}
       {/* ------------------------------------------------------------- */}
-      {activeTab === 'INFO' && (
+      {!isLoadingApi && activeTab === 'INFO' && (
         <form onSubmit={handleSaveInfo} className="p-6 sm:p-8 bg-[#121820] border border-[#222B35] space-y-6 shadow-2xl rounded-lg">
           {/* Avatar & Fast Profile Header */}
           <div className="flex flex-col sm:flex-row items-center gap-6 p-4 bg-[#161D26] border border-[#222B35] rounded">
             {/* Avatar with Upload Trigger */}
             <div className="relative group">
               <img
-                src={avatarUrl}
+                src={avatarUrl || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400'}
                 alt="Avatar"
                 className="w-20 h-20 rounded-full object-cover border-2 border-[#C5A880] shadow-lg"
               />
@@ -435,13 +481,13 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
 
             <div className="space-y-1 text-center sm:text-left flex-1">
               <div className="text-white font-bold text-lg flex items-center justify-center sm:justify-start gap-2">
-                <span>{fullName}</span>
+                <span>{fullName || 'Chưa cập nhật họ tên'}</span>
                 <span className="px-2 py-0.5 text-[10px] bg-[#C5A880] text-[#0D1117] font-bold uppercase rounded">
                   {currentUser.role}
                 </span>
               </div>
               <div className="text-xs text-gray-400 font-mono">
-                Căn hộ: <strong className="text-white">{aptCode}</strong> • SĐT: <strong className="text-gray-300">{phone}</strong> • Biển số: <strong className="text-[#C5A880]">{licensePlate}</strong>
+                Căn hộ: <strong className="text-white">{aptCode}</strong> • SĐT: <strong className="text-gray-300">{phone || 'Chưa có'}</strong> • Biển số: <strong className="text-[#C5A880]">{licensePlate || 'Chưa đăng ký'}</strong>
               </div>
             </div>
 
@@ -512,7 +558,7 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
                 type="text"
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
-                placeholder="VD: Nguyễn Hữu Lực"
+                placeholder="Nhập họ và tên..."
                 className="w-full bg-[#161B22] border border-[#2D3748] p-3 text-white focus:outline-none focus:border-[#C5A880] transition-colors rounded"
                 required
               />
@@ -527,7 +573,7 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
                 type="tel"
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
-                placeholder="VD: 0903112233"
+                placeholder="Nhập số điện thoại..."
                 className="w-full bg-[#161B22] border border-[#2D3748] p-3 text-white font-mono focus:outline-none focus:border-[#C5A880] transition-colors rounded"
                 required
               />
@@ -542,7 +588,7 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="VD: huuluc04@gmail.com"
+                placeholder="Nhập địa chỉ email..."
                 className="w-full bg-[#161B22] border border-[#2D3748] p-3 text-white font-mono focus:outline-none focus:border-[#C5A880] transition-colors rounded"
                 required
               />
@@ -600,7 +646,7 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
                 type="text"
                 value={idPlace}
                 onChange={(e) => setIdPlace(e.target.value)}
-                placeholder="Cục Cảnh sát QLHC về TTXH"
+                placeholder="Nhập nơi cấp CCCD..."
                 className="w-full bg-[#161B22] border border-[#2D3748] p-3 text-white focus:outline-none focus:border-[#C5A880] transition-colors rounded"
               />
             </div>
@@ -627,7 +673,7 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
                 type="text"
                 value={pob}
                 onChange={(e) => setPob(e.target.value)}
-                placeholder="TP. Hồ Chí Minh"
+                placeholder="Nhập nơi sinh..."
                 className="w-full bg-[#161B22] border border-[#2D3748] p-3 text-white focus:outline-none focus:border-[#C5A880] transition-colors rounded"
               />
             </div>
@@ -641,7 +687,7 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
                 type="text"
                 value={province}
                 onChange={(e) => setProvince(e.target.value)}
-                placeholder="TP. Hồ Chí Minh"
+                placeholder="Nhập tỉnh thành..."
                 className="w-full bg-[#161B22] border border-[#2D3748] p-3 text-white focus:outline-none focus:border-[#C5A880] transition-colors rounded"
               />
             </div>
@@ -769,7 +815,7 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
 
               <div className="h-48 bg-black border border-emerald-500/60 overflow-hidden relative flex items-center justify-center rounded">
                 <img
-                  src={avatarUrl}
+                  src={avatarUrl || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400'}
                   alt="Portrait"
                   className="h-full w-full object-cover"
                 />
