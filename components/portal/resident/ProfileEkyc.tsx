@@ -139,7 +139,7 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
           setGender(apiUser.gender !== undefined ? (apiUser.gender.toString() as '1' | '0') : '1');
           setIdDate(formatToDateInput(apiUser.id_date || ''));
           setIdPlace(apiUser.id_place || '');
-          setBirthday(formatToDateInput(apiUser.dob || ''));
+          setBirthday(formatToDateInput(apiUser.dob || (apiUser as any).formatedDob || ''));
           setPob(apiUser.pob || '');
           setProvince(apiUser.province || '');
           setIntro(apiUser.intro || '');
@@ -151,6 +151,8 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
           setPhone(currentUser.phone || currentUser.username || '');
           setEmail(currentUser.email || '');
           setIdCardNumber(currentUser.id_card_no || '');
+          setBirthday(currentUser.dob ? formatToDateInput(currentUser.dob) : '');
+          setPob(currentUser.pob || '');
           setAvatarUrl(currentUser.avatar_url || '');
         }
       } catch (err) {
@@ -183,10 +185,10 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
         phone: phone.trim(),
         email: email.trim(),
         gender: gender === '1' ? 1 : 0,
-        dob: birthday,
-        pob: pob,
+        dob: formatToDateInput(birthday),
+        pob: pob || '',
         id_number: idCardNumber.trim(),
-        id_date: idDate,
+        id_date: formatToDateInput(idDate),
         id_place: idPlace,
         province: province,
         intro: intro,

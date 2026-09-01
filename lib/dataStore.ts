@@ -261,6 +261,8 @@ export const DEMO_USERS: User[] = [
     apartment_code: '12A05',
     relationship: 'Owner',
     license_plate: '51K-889.99',
+    dob: '2004-11-02',
+    pob: '',
   },
 
   // 4. Customer / Tenant (Thành viên gia đình căn hộ 12A05)

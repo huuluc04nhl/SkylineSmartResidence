@@ -251,16 +251,16 @@ export function parseCccdText(rawText: string, isBackSide: boolean = false): Par
       cccdYear = century + yearTwoDigits;
     }
 
-    // Collect all valid dates in text: DD/MM/YYYY, DD-MM-YYYY, DD.MM.YYYY
+    // Collect all valid dates in text: DD/MM/YYYY, DD-MM-YYYY, DD.MM.YYYY, DD 11 2004, DD|MM|YYYY
     const dateCandidates: { raw: string; formatted: string; year: number }[] = [];
-    const dateRegex = /(?:(\d{1,2})\s*[\/\-\.]\s*(\d{1,2})\s*[\/\-\.]\s*(19\d{2}|20\d{2}))/g;
+    const dateRegex = /(?:(\d{1,2})\s*[\/\-\.\s\|]\s*(\d{1,2})\s*[\/\-\.\s\|]\s*(19\d{2}|20\d{2}))/g;
     let dateM;
     while ((dateM = dateRegex.exec(rawText)) !== null) {
       const day = dateM[1].padStart(2, '0');
       const month = dateM[2].padStart(2, '0');
       const year = parseInt(dateM[3], 10);
       // Valid birth years are strictly between 1930 and 2012 (excludes expiry dates like 2029, 2026)
-      if (year >= 1930 && year <= 2012) {
+      if (year >= 1930 && year <= 2012 && parseInt(month, 10) >= 1 && parseInt(month, 10) <= 12 && parseInt(day, 10) >= 1 && parseInt(day, 10) <= 31) {
         dateCandidates.push({ raw: dateM[0], formatted: `${year}-${month}-${day}`, year });
       }
     }
@@ -275,22 +275,43 @@ export function parseCccdText(rawText: string, isBackSide: boolean = false): Par
 
     // 3.2. Match label line: "Ngày, tháng, năm sinh", "Date of birth", "Ngày sinh"
     if (!result.dob) {
-      const dobLabelPattern = /(?:ngày[,\s]+tháng[,\s]+năm\s+sinh|ngày\s*sinh|date\s*of\s*birth|sinh\s*ngày|sinh|dob)[:\s\/\.]*([0-9]{1,2}\s*[\/\-\.\s]\s*[0-9]{1,2}\s*[\/\-\.\s]\s*(?:19|20)[0-9]{2})/i;
+      const dobLabelPattern = /(?:ngày[,\s]+tháng[,\s]+năm\s+sinh|ngày\s*sinh|date\s*of\s*birth|sinh\s*ngày|sinh|dob)[:\s\/\.]*([0-9]{1,2})\s*[\/\-\.\s\|]\s*([0-9]{1,2})\s*[\/\-\.\s\|]\s*(19[0-9]{2}|20[0-9]{2})/i;
       const dobMatch = rawText.match(dobLabelPattern);
-      if (dobMatch && dobMatch[1]) {
-        const sub = dobMatch[1].replace(/\s+/g, '').split(/[\/\-\.]/);
-        if (sub.length === 3) {
-          const year = parseInt(sub[2], 10);
-          if (year >= 1930 && year <= 2012) {
-            result.dob = `${year}-${sub[1].padStart(2, '0')}-${sub[0].padStart(2, '0')}`;
+      if (dobMatch && dobMatch[1] && dobMatch[2] && dobMatch[3]) {
+        const year = parseInt(dobMatch[3], 10);
+        if (year >= 1930 && year <= 2012) {
+          result.dob = `${year}-${dobMatch[2].padStart(2, '0')}-${dobMatch[1].padStart(2, '0')}`;
+        }
+      }
+    }
+
+    // 3.3. Check lines containing "sinh" or "birth" or "dob"
+    if (!result.dob) {
+      for (const line of lines) {
+        if (/(?:ngày.*sinh|date\s*of\s*birth|sinh|dob)/i.test(line) && !line.includes('Quê') && !line.includes('trú')) {
+          const m = line.match(/([0-9]{1,2})\s*[\/\-\.\s\|]\s*([0-9]{1,2})\s*[\/\-\.\s\|]\s*(19\d{2}|20\d{2})/);
+          if (m) {
+            const year = parseInt(m[3], 10);
+            if (year >= 1930 && year <= 2012) {
+              result.dob = `${year}-${m[2].padStart(2, '0')}-${m[1].padStart(2, '0')}`;
+              break;
+            }
           }
         }
       }
     }
 
-    // 3.3. Pick first candidate date with valid birth year
+    // 3.4. Pick first candidate date with valid birth year
     if (!result.dob && dateCandidates.length > 0) {
       result.dob = dateCandidates[0].formatted;
+    }
+
+    // 3.5. Smart fallback: if CCCD year is known (e.g. 2004) and there is DD/MM
+    if (!result.dob && cccdYear) {
+      const dmMatch = rawText.match(/\b(0[1-9]|[12][0-9]|3[01])\s*[\/\-\.\s]\s*(0[1-9]|1[0-2])\b/);
+      if (dmMatch) {
+        result.dob = `${cccdYear}-${dmMatch[2].padStart(2, '0')}-${dmMatch[1].padStart(2, '0')}`;
+      }
     }
 
     // -------------------------------------------------------------
