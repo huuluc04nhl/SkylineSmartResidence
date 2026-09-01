@@ -33,7 +33,7 @@ export interface RoomDetails {
   name: string;
   nameEn: string;
   area: number; // m2
-  dimensions: string; // e.g. "5.4m x 4.8m"
+  dimensions: string; // e.g. "5.8m x 4.6m"
   color: string;
   borderColor: string;
   temperature: number;
@@ -60,7 +60,7 @@ interface ApartmentModel3DViewerProps {
   onToggleLight?: (room: 'livingRoom' | 'bedroomMaster' | 'kitchen' | 'balcony') => void;
   onToggleDoor?: () => void;
   onToggleCurtains?: () => void;
-  interactive?: boolean; // false on Landing page (read-only for guests)
+  interactive?: boolean;
 }
 
 export default function ApartmentModel3DViewer({
@@ -83,7 +83,6 @@ export default function ApartmentModel3DViewer({
   const [selectedRoom, setSelectedRoom] = useState<string>('living');
   const [showDimensions, setShowDimensions] = useState(true);
   const [showIotNodes, setShowIotNodes] = useState(true);
-  const [showWireframe, setShowWireframe] = useState(true);
 
   // Architectural Massing Block Catalog
   const rooms: Record<string, RoomDetails> = {
@@ -192,7 +191,7 @@ export default function ApartmentModel3DViewer({
                 : 'text-gray-400 hover:text-white'
             }`}
           >
-            <Box className="w-3.5 h-3.5" /> 1. Khối Kiến Trúc 3D (Massing)
+            <Box className="w-3.5 h-3.5" /> 1. Khối Kiến Trúc 3D
           </button>
 
           <button
@@ -204,7 +203,7 @@ export default function ApartmentModel3DViewer({
                 : 'text-gray-400 hover:text-white'
             }`}
           >
-            <Layers className="w-3.5 h-3.5" /> 2. Mặt Bằng CAD (Blueprint)
+            <Layers className="w-3.5 h-3.5" /> 2. Mặt Bằng CAD
           </button>
 
           <button
@@ -216,7 +215,7 @@ export default function ApartmentModel3DViewer({
                 : 'text-gray-400 hover:text-white'
             }`}
           >
-            <SplitSquareVertical className="w-3.5 h-3.5" /> 3. Bóc Tách Khối (Exploded 3D)
+            <SplitSquareVertical className="w-3.5 h-3.5" /> 3. Bóc Tách Khối 3D
           </button>
         </div>
 
@@ -229,14 +228,14 @@ export default function ApartmentModel3DViewer({
                 onClick={() => setViewAngle('SOUTH_WEST')}
                 className={`px-2 py-1 rounded transition-colors ${viewAngle === 'SOUTH_WEST' ? 'bg-[#1C2533] text-[#C5A880] font-bold' : 'text-gray-400 hover:text-white'}`}
               >
-                Góc Phối Cảnh Tây Nam
+                Góc Tây Nam
               </button>
               <button
                 type="button"
                 onClick={() => setViewAngle('NORTH_EAST')}
                 className={`px-2 py-1 rounded transition-colors ${viewAngle === 'NORTH_EAST' ? 'bg-[#1C2533] text-[#C5A880] font-bold' : 'text-gray-400 hover:text-white'}`}
               >
-                Góc Phối Cảnh Đông Bắc
+                Góc Đông Bắc
               </button>
             </div>
           )}
@@ -247,7 +246,7 @@ export default function ApartmentModel3DViewer({
             className={`p-1.5 border rounded transition-colors text-[10px] flex items-center gap-1 ${
               showDimensions ? 'bg-[#1C2533] border-[#C5A880] text-[#C5A880]' : 'bg-[#121820] border-gray-700 text-gray-400'
             }`}
-            title="Ẩn/Hiện đường kích thước Laser CAD"
+            title="Ẩn/Hiện kích thước Laser CAD"
           >
             <Grid className="w-3.5 h-3.5" />
             <span className="hidden md:inline">Kích Thước</span>
@@ -259,10 +258,10 @@ export default function ApartmentModel3DViewer({
             className={`p-1.5 border rounded transition-colors text-[10px] flex items-center gap-1 ${
               showIotNodes ? 'bg-[#1C2533] border-emerald-500 text-emerald-400' : 'bg-[#121820] border-gray-700 text-gray-400'
             }`}
-            title="Ẩn/Hiện node thiết bị thông minh"
+            title="Ẩn/Hiện node thiết bị"
           >
             <Zap className="w-3.5 h-3.5" />
-            <span className="hidden md:inline">IoT Nodes</span>
+            <span className="hidden md:inline">Thiết Bị</span>
           </button>
         </div>
       </div>
@@ -270,8 +269,8 @@ export default function ApartmentModel3DViewer({
       {/* ------------------------------------------------------------- */}
       {/* 2. MAIN SIMULATION CANVAS: ARCHITECTURAL VOLUMETRIC BLOCKS   */}
       {/* ------------------------------------------------------------- */}
-      <div className="relative w-full h-[450px] sm:h-[500px] bg-[#05070A] overflow-hidden flex items-center justify-center">
-        {/* Architectural Blueprint Matrix Grid */}
+      <div className="relative w-full h-[440px] sm:h-[490px] bg-[#05070A] overflow-hidden flex items-center justify-center">
+        {/* Architectural Blueprint Grid */}
         <div 
           className="absolute inset-0 opacity-20 pointer-events-none"
           style={{
@@ -598,7 +597,7 @@ export default function ApartmentModel3DViewer({
                 <g 
                   transform="translate(80, 310)" 
                   className="cursor-pointer"
-                  onClick={interactive ? onToggleDoor : undefined}
+                  onClick={onToggleDoor}
                 >
                   <title>Khóa Cửa FaceID Master</title>
                   <circle cx="0" cy="0" r="14" fill={doorLocked ? '#059669' : '#DC2626'} stroke="#FFFFFF" strokeWidth="1.5" />
@@ -616,7 +615,7 @@ export default function ApartmentModel3DViewer({
                 <g 
                   transform="translate(620, 470)" 
                   className="cursor-pointer"
-                  onClick={interactive ? onToggleCurtains : undefined}
+                  onClick={onToggleCurtains}
                 >
                   <title>Rèm ban công tự động</title>
                   <circle cx="0" cy="0" r="13" fill={curtainsOpen ? '#D97706' : '#475569'} stroke="#FFFFFF" strokeWidth="1.5" />
@@ -640,13 +639,6 @@ export default function ApartmentModel3DViewer({
             Tỉ lệ mô hình: <strong>1:50 Architectural Metric</strong>
           </div>
         </div>
-
-        {/* Read-Only Mode Badge (For Landing Page) */}
-        {!interactive && (
-          <div className="absolute top-3 right-3 bg-blue-950/90 border border-blue-500/80 px-3 py-1.5 text-[10px] text-blue-300 font-mono rounded backdrop-blur-md flex items-center gap-1.5 shadow-lg">
-            <Eye className="w-3.5 h-3.5" /> Chế Độ Xem Kiến Trúc (Đăng nhập tài khoản căn hộ để điều khiển)
-          </div>
-        )}
 
         {/* Interactive Click Tip */}
         <div className="absolute bottom-3 right-3 bg-[#1C2533]/90 border border-[#C5A880]/60 px-3 py-1.5 text-[10px] text-[#C5A880] font-mono rounded backdrop-blur-md">
@@ -692,49 +684,41 @@ export default function ApartmentModel3DViewer({
             </div>
           </div>
 
-          {/* Action Control / Guest Prompt */}
+          {/* Interactive Room Actions */}
           <div className="md:col-span-4 flex flex-wrap items-center justify-end gap-2">
-            {interactive ? (
-              <>
-                {onToggleLight && (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      if (selectedRoom === 'living') onToggleLight('livingRoom');
-                      else if (selectedRoom === 'masterBed') onToggleLight('bedroomMaster');
-                      else if (selectedRoom === 'diningKitchen') onToggleLight('kitchen');
-                      else if (selectedRoom === 'balcony') onToggleLight('balcony');
-                    }}
-                    className="px-3 py-2 bg-[#161B22] hover:bg-[#C5A880] hover:text-[#0D1117] border border-gray-700 hover:border-[#C5A880] text-xs font-bold uppercase tracking-wider transition-colors rounded flex items-center gap-1.5 text-white"
-                  >
-                    <Zap className="w-3.5 h-3.5" /> Bật/Tắt Đèn
-                  </button>
-                )}
+            {onToggleLight && (
+              <button
+                type="button"
+                onClick={() => {
+                  if (selectedRoom === 'living') onToggleLight('livingRoom');
+                  else if (selectedRoom === 'masterBed') onToggleLight('bedroomMaster');
+                  else if (selectedRoom === 'diningKitchen') onToggleLight('kitchen');
+                  else if (selectedRoom === 'balcony') onToggleLight('balcony');
+                }}
+                className="px-3 py-2 bg-[#161B22] hover:bg-[#C5A880] hover:text-[#0D1117] border border-gray-700 hover:border-[#C5A880] text-xs font-bold uppercase tracking-wider transition-colors rounded flex items-center gap-1.5 text-white shadow"
+              >
+                <Zap className="w-3.5 h-3.5" /> Bật/Tắt Đèn
+              </button>
+            )}
 
-                {selectedRoom === 'balcony' && onToggleCurtains && (
-                  <button
-                    type="button"
-                    onClick={onToggleCurtains}
-                    className="px-3 py-2 bg-[#C5A880] hover:bg-white text-[#0D1117] text-xs font-bold uppercase tracking-wider transition-colors rounded flex items-center gap-1.5 shadow"
-                  >
-                    <Sun className="w-3.5 h-3.5" /> {curtainsOpen ? 'Đóng Rèm' : 'Mở Rèm'}
-                  </button>
-                )}
+            {selectedRoom === 'balcony' && onToggleCurtains && (
+              <button
+                type="button"
+                onClick={onToggleCurtains}
+                className="px-3 py-2 bg-[#C5A880] hover:bg-white text-[#0D1117] text-xs font-bold uppercase tracking-wider transition-colors rounded flex items-center gap-1.5 shadow"
+              >
+                <Sun className="w-3.5 h-3.5" /> {curtainsOpen ? 'Đóng Rèm' : 'Mở Rèm'}
+              </button>
+            )}
 
-                {selectedRoom === 'foyer' && onToggleDoor && (
-                  <button
-                    type="button"
-                    onClick={onToggleDoor}
-                    className="px-3 py-2 bg-[#C5A880] hover:bg-white text-[#0D1117] text-xs font-bold uppercase tracking-wider transition-colors rounded flex items-center gap-1.5 shadow"
-                  >
-                    <Lock className="w-3.5 h-3.5" /> {doorLocked ? 'Mở Khóa' : 'Khóa Chốt'}
-                  </button>
-                )}
-              </>
-            ) : (
-              <div className="text-[11px] text-gray-400 italic text-right">
-                🔒 Đăng nhập tài khoản cá nhân căn hộ này để kích hoạt bảng điều khiển Smart Living thực tế.
-              </div>
+            {selectedRoom === 'foyer' && onToggleDoor && (
+              <button
+                type="button"
+                onClick={onToggleDoor}
+                className="px-3 py-2 bg-[#C5A880] hover:bg-white text-[#0D1117] text-xs font-bold uppercase tracking-wider transition-colors rounded flex items-center gap-1.5 shadow"
+              >
+                <Lock className="w-3.5 h-3.5" /> {doorLocked ? 'Mở Khóa' : 'Khóa Chốt'}
+              </button>
             )}
           </div>
         </div>
