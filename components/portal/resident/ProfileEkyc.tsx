@@ -270,8 +270,10 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
     }
   };
 
-  // 4. Handle auto-filling data from OCR Scanner Modal
-  const handleApplyOcrData = async (ocrData: OcrCccdResult, imageSrc: string) => {
+  const [cccdBackImage, setCccdBackImage] = useState('https://images.unsplash.com/photo-1544717305-2782549b5136?w=600');
+
+  // 4. Handle auto-filling data from OCR Scanner Modal (2 sides)
+  const handleApplyOcrData = async (ocrData: OcrCccdResult, frontSrc: string, backSrc: string) => {
     setIdCardNumber(ocrData.idNumber);
     setFullName(ocrData.fullName);
     setBirthday(ocrData.dob);
@@ -280,7 +282,8 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
     setProvince(ocrData.province);
     setIdDate(ocrData.idDate);
     setIdPlace(ocrData.idPlace);
-    setCccdImage(imageSrc);
+    setCccdImage(frontSrc);
+    setCccdBackImage(backSrc);
 
     // Call CCCD API
     try {
@@ -288,7 +291,8 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
         number: ocrData.idNumber,
         date: ocrData.idDate,
         place: ocrData.idPlace,
-        front: imageSrc
+        front: frontSrc,
+        back: backSrc,
       });
     } catch (e) {
       console.warn('Sync CCCD API error', e);
