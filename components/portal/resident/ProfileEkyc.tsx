@@ -309,14 +309,14 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
 
   // 4. Handle auto-filling data from OCR Scanner Modal (2 sides) - NO API CALL YET
   const handleApplyOcrData = (ocrData: OcrCccdResult, frontSrc: string, backSrc: string) => {
-    setIdCardNumber(ocrData.idNumber);
-    setFullName(ocrData.fullName);
-    setBirthday(ocrData.dob);
-    setGender(ocrData.gender);
-    setPob(ocrData.pob);
-    setProvince(ocrData.province);
-    setIdDate(ocrData.idDate);
-    setIdPlace(ocrData.idPlace);
+    setIdCardNumber(ocrData.idNumber || '');
+    setFullName(ocrData.fullName || '');
+    setBirthday(formatToDateInput(ocrData.dob || ''));
+    setGender(ocrData.gender || '1');
+    setPob(ocrData.pob || '');
+    setProvince(ocrData.province || 'TP. Hồ Chí Minh');
+    setIdDate(formatToDateInput(ocrData.idDate || ''));
+    setIdPlace(ocrData.idPlace || 'Cục Cảnh sát QLHC về TTXH');
     if (frontSrc) setCccdImage(frontSrc);
     if (backSrc) setCccdBackImage(backSrc);
 

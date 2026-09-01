@@ -211,7 +211,7 @@ export default function CccdOcrScannerModal({
       dob: editDob,
       gender: editGender,
       pob: editPob.trim(),
-      province: editPob.trim().includes('Hồ Chí Minh') ? 'TP. Hồ Chí Minh' : editPob.trim().includes('Hà Nội') ? 'Hà Nội' : editPob.trim(),
+      province: editPob.trim().includes('Hồ Chí Minh') ? 'TP. Hồ Chí Minh' : editPob.trim().includes('Hà Nội') ? 'Hà Nội' : (ocrResult.province || 'TP. Hồ Chí Minh'),
       idDate: editIdDate,
       idPlace: editIdPlace.trim(),
     };

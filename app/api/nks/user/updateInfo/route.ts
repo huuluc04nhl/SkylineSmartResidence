@@ -2,6 +2,27 @@ import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import { updateUserStore } from '@/lib/userStore';
 
+function formatToDateInput(d?: string): string {
+  if (!d) return '';
+  const cleanD = d.replace(/[^\d\/\-\.]/g, '');
+  const parts = cleanD.split(/[\/\-\.]/);
+  if (parts.length === 3) {
+    if (parts[2].length === 4) {
+      const day = parts[0].padStart(2, '0');
+      const month = parts[1].padStart(2, '0');
+      const year = parts[2];
+      return `${year}-${month}-${day}`;
+    }
+    if (parts[0].length === 4) {
+      const year = parts[0];
+      const month = parts[1].padStart(2, '0');
+      const day = parts[2].padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    }
+  }
+  return d;
+}
+
 export async function POST(req: Request) {
   try {
     const body = await req.json();
@@ -38,10 +59,10 @@ export async function POST(req: Request) {
         if (phone) formData.append('phone', phone);
         if (gender !== undefined) formData.append('gender', String(gender));
         if (website) formData.append('website', website);
-        if (dob) formData.append('dob', dob);
-        if (pob) formData.append('pob', pob);
+        if (dob) formData.append('dob', formatToDateInput(dob));
+        formData.append('pob', pob || '');
         if (id_number) formData.append('id_number', id_number);
-        if (id_date) formData.append('id_date', id_date);
+        if (id_date) formData.append('id_date', formatToDateInput(id_date));
         if (id_place) formData.append('id_place', id_place);
         if (province) formData.append('province', province);
 
@@ -62,8 +83,8 @@ export async function POST(req: Request) {
               full_name: apiUser.name || fullname,
               phone: apiUser.phone || phone,
               email: apiUser.email || email,
-              dob: apiUser.dob || dob,
-              pob: apiUser.pob || pob,
+              dob: formatToDateInput(apiUser.dob || dob),
+              pob: apiUser.pob !== undefined ? apiUser.pob : (pob || ''),
               id_number: apiUser.id_number || id_number,
               id_card_no: apiUser.id_number || id_number,
               id_date: apiUser.id_date || id_date,
@@ -103,11 +124,11 @@ export async function POST(req: Request) {
       email: email,
       gender: gender !== undefined ? Number(gender) as 0 | 1 : 1,
       website: website,
-      dob: dob,
-      pob: pob,
+      dob: formatToDateInput(dob),
+      pob: pob || '',
       id_number: id_number,
       id_card_no: id_number,
-      id_date: id_date,
+      id_date: formatToDateInput(id_date),
       id_place: id_place,
       province: province,
       license_plate: license_plate,

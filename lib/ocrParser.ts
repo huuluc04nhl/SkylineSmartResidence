@@ -240,25 +240,57 @@ export function parseCccdText(rawText: string, isBackSide: boolean = false): Par
     // -------------------------------------------------------------
     // 3. EXTRACT DATE OF BIRTH (NGÀY SINH)
     // -------------------------------------------------------------
-    // Handles: "Ngày, tháng, năm sinh", "Date of birth", "Ngày sinh", "Sinh ngày", "DOB"
-    // Handles delimiters with spaces: "15 / 08 / 1990", "15. 08. 1990", "15 - 08 - 1990"
-    const dobLabelPattern = /(?:ngày[,\s]+tháng[,\s]+năm\s+sinh|ngày\s*sinh|date\s*of\s*birth|sinh\s*ngày|sinh|dob)[:\s\/\.]*([0-9]{1,2}\s*[\/\-\.\s]\s*[0-9]{1,2}\s*[\/\-\.\s]\s*(?:19|20)[0-9]{2})/i;
-    const dobMatch = rawText.match(dobLabelPattern) ||
-                     rawText.match(/\b([0-9]{1,2}\s*[\/\-\.]\s*[0-9]{1,2}\s*[\/\-\.]\s*(?:19|20)[0-9]{2})\b/);
-    if (dobMatch && dobMatch[1]) {
-      result.dob = formatToDateInput(dobMatch[1].replace(/\s+/g, ''));
+    // Determine expected birth year from 12-digit CCCD number if available
+    let cccdYear: number | null = null;
+    if (result.idNumber && result.idNumber.length === 12) {
+      const centuryDigit = parseInt(result.idNumber[3], 10);
+      const yearTwoDigits = parseInt(result.idNumber.substring(4, 6), 10);
+      let century = 1900;
+      if (centuryDigit === 2 || centuryDigit === 3) century = 2000;
+      else if (centuryDigit === 4 || centuryDigit === 5) century = 2100;
+      cccdYear = century + yearTwoDigits;
     }
 
+    // Collect all valid dates in text: DD/MM/YYYY, DD-MM-YYYY, DD.MM.YYYY
+    const dateCandidates: { raw: string; formatted: string; year: number }[] = [];
+    const dateRegex = /(?:(\d{1,2})\s*[\/\-\.]\s*(\d{1,2})\s*[\/\-\.]\s*(19\d{2}|20\d{2}))/g;
+    let dateM;
+    while ((dateM = dateRegex.exec(rawText)) !== null) {
+      const day = dateM[1].padStart(2, '0');
+      const month = dateM[2].padStart(2, '0');
+      const year = parseInt(dateM[3], 10);
+      // Valid birth years are strictly between 1930 and 2012 (excludes expiry dates like 2029, 2026)
+      if (year >= 1930 && year <= 2012) {
+        dateCandidates.push({ raw: dateM[0], formatted: `${year}-${month}-${day}`, year });
+      }
+    }
+
+    // 3.1. Match against CCCD year if known
+    if (cccdYear && dateCandidates.length > 0) {
+      const matchCccd = dateCandidates.find(d => d.year === cccdYear);
+      if (matchCccd) {
+        result.dob = matchCccd.formatted;
+      }
+    }
+
+    // 3.2. Match label line: "Ngày, tháng, năm sinh", "Date of birth", "Ngày sinh"
     if (!result.dob) {
-      for (const line of lines) {
-        if (/(?:ngày.*sinh|date\s*of\s*birth|sinh)/i.test(line)) {
-          const m = line.match(/([0-9]{1,2}\s*[\/\-\.\s]\s*[0-9]{1,2}\s*[\/\-\.\s]\s*(?:19|20)[0-9]{2})/);
-          if (m) {
-            result.dob = formatToDateInput(m[1].replace(/\s+/g, ''));
-            break;
+      const dobLabelPattern = /(?:ngày[,\s]+tháng[,\s]+năm\s+sinh|ngày\s*sinh|date\s*of\s*birth|sinh\s*ngày|sinh|dob)[:\s\/\.]*([0-9]{1,2}\s*[\/\-\.\s]\s*[0-9]{1,2}\s*[\/\-\.\s]\s*(?:19|20)[0-9]{2})/i;
+      const dobMatch = rawText.match(dobLabelPattern);
+      if (dobMatch && dobMatch[1]) {
+        const sub = dobMatch[1].replace(/\s+/g, '').split(/[\/\-\.]/);
+        if (sub.length === 3) {
+          const year = parseInt(sub[2], 10);
+          if (year >= 1930 && year <= 2012) {
+            result.dob = `${year}-${sub[1].padStart(2, '0')}-${sub[0].padStart(2, '0')}`;
           }
         }
       }
+    }
+
+    // 3.3. Pick first candidate date with valid birth year
+    if (!result.dob && dateCandidates.length > 0) {
+      result.dob = dateCandidates[0].formatted;
     }
 
     // -------------------------------------------------------------
@@ -323,9 +355,10 @@ export function parseCccdText(rawText: string, isBackSide: boolean = false): Par
     const cleanPob = cleanAddress(rawPob);
     const cleanResidence = cleanAddress(rawResidence);
 
-    // Quê quán / Nơi sinh (Place of origin / birth)
-    result.pob = cleanPob || cleanResidence || '';
-    result.residence = cleanResidence || cleanPob || '';
+    // Quê quán / Nơi sinh: Nếu không quét được hoặc không hợp lệ thì để trống theo đúng yêu cầu người dùng
+    const isValidPob = cleanPob && cleanPob.length >= 4 && !/gia\s*dân|coment|cee/i.test(cleanPob);
+    result.pob = isValidPob ? cleanPob : '';
+    result.residence = cleanResidence || '';
 
     const primaryAddress = cleanResidence || cleanPob;
     if (primaryAddress) {
