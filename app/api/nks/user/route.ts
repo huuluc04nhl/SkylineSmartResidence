@@ -46,6 +46,13 @@ export async function POST(req: Request) {
       });
     }
 
+    if (access_token.includes('TECHNICIAN')) {
+      return NextResponse.json({
+        success: true,
+        user: getUserStore('TECHNICIAN'),
+      });
+    }
+
     if (access_token.includes('TENANT')) {
       return NextResponse.json({
         success: true,
@@ -91,6 +98,13 @@ export async function GET() {
     return NextResponse.json({
       success: true,
       user: getUserStore('ADMIN'),
+    });
+  }
+
+  if (token.includes('TECHNICIAN')) {
+    return NextResponse.json({
+      success: true,
+      user: getUserStore('TECHNICIAN'),
     });
   }
 

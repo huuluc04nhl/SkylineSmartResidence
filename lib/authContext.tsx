@@ -59,6 +59,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       // Map quick role to standard NKS account if role string is provided
       let usernameToSubmit = roleOrUsername;
       if (roleOrUsername === 'ADMIN') usernameToSubmit = 'nks.manager01@gmail.com';
+      else if (roleOrUsername === 'TECHNICIAN') usernameToSubmit = 'nks.manager02@gmail.com';
       else if (roleOrUsername === 'OWNER') usernameToSubmit = 'huuluc04@gmail.com';
       else if (roleOrUsername === 'TENANT') usernameToSubmit = 'nguyenhuunhut1309@gmail.com';
 

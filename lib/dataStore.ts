@@ -19,6 +19,7 @@ export interface User {
   ui_language: 'vi' | 'en';
   apartment_code?: string;
   relationship?: 'Owner' | 'Family' | 'Tenant' | 'Staff';
+  license_plate?: string;
 }
 
 export interface Block {
@@ -212,7 +213,7 @@ export interface Survey {
 // ============================================================================
 
 export const DEMO_USERS: User[] = [
-  // 1. Manager (Ban Quản Lý Tòa Nhà Skyline)
+  // 1. Manager (Trưởng Ban Quản Lý)
   {
     id: 'user-manager-1',
     role: 'ADMIN',
@@ -227,7 +228,22 @@ export const DEMO_USERS: User[] = [
     relationship: 'Staff',
   },
 
-  // 2. Citizen / Owner (Chủ hộ căn hộ 12A05)
+  // 2. Kỹ Thuật (Kỹ Sư Vận Hành Tòa Nhà)
+  {
+    id: 'user-tech-1',
+    role: 'TECHNICIAN',
+    username: 'nks.manager02@gmail.com',
+    phone: '0901888998',
+    email: 'nks.manager02@gmail.com',
+    full_name: 'Trần Văn Kỹ Thuật (Kỹ Sư Vận Hành)',
+    avatar_url: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&auto=format&fit=crop&q=80',
+    ui_language: 'vi',
+    emergency_phone: '0901888998',
+    apartment_code: 'TECH_ROOM',
+    relationship: 'Staff',
+  },
+
+  // 3. Citizen / Owner (Chủ hộ căn hộ 12A05)
   {
     id: 'user-owner-1',
     role: 'OWNER',
@@ -242,9 +258,10 @@ export const DEMO_USERS: User[] = [
     ui_language: 'vi',
     apartment_code: '12A05',
     relationship: 'Owner',
+    license_plate: '51K-889.99',
   },
 
-  // 3. Customer / Tenant (Người nhà chủ hộ căn hộ 12A05)
+  // 4. Customer / Tenant (Thành viên gia đình căn hộ 12A05)
   {
     id: 'user-tenant-1',
     role: 'TENANT',
@@ -259,20 +276,48 @@ export const DEMO_USERS: User[] = [
     ui_language: 'vi',
     apartment_code: '12A05',
     relationship: 'Family',
+    license_plate: '59P1-886.79',
   },
 
-  // 4. Driver / Technician (Kỹ thuật viên bảo trì tòa nhà)
+  // 5. Member (Thành viên cư dân & gia đình)
   {
-    id: 'user-tech-1',
-    role: 'TECHNICIAN',
-    username: 'nks.driver01@gmail.com',
-    phone: '0905667788',
-    email: 'nks.driver01@gmail.com',
-    full_name: 'Lê Văn Kỹ Thuật (Kỹ sư điện nước)',
-    avatar_url: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&auto=format&fit=crop&q=80',
+    id: 'user-member-1',
+    role: 'TENANT',
+    username: 'vanncuong1614@gmail.com',
+    phone: '0902114455',
+    email: 'vanncuong1614@gmail.com',
+    full_name: 'Văn Cường',
+    id_card_no: '079201004455',
+    avatar_url: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=150&auto=format&fit=crop&q=80',
     ui_language: 'vi',
-    emergency_phone: '0905667788',
-    relationship: 'Staff',
+    apartment_code: '12A05',
+    relationship: 'Tenant',
+  },
+  {
+    id: 'user-member-2',
+    role: 'TENANT',
+    username: 'lehai17082004@gmail.com',
+    phone: '0903889911',
+    email: 'lehai17082004@gmail.com',
+    full_name: 'Lê Hải',
+    id_card_no: '079204001708',
+    avatar_url: 'https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?w=150&auto=format&fit=crop&q=80',
+    ui_language: 'vi',
+    apartment_code: '12A05',
+    relationship: 'Tenant',
+  },
+  {
+    id: 'user-member-3',
+    role: 'TENANT',
+    username: '26vucatthinh@gmail.com',
+    phone: '0909262626',
+    email: '26vucatthinh@gmail.com',
+    full_name: 'Vũ Cát Thịnh',
+    id_card_no: '079201002626',
+    avatar_url: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=150&auto=format&fit=crop&q=80',
+    ui_language: 'vi',
+    apartment_code: '12A05',
+    relationship: 'Family',
   },
 ];
 

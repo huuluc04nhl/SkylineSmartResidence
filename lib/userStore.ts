@@ -120,6 +120,29 @@ if (!global.__NKS_USER_STORE) {
       avatar_url: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400',
       role: 'TENANT',
       apartment_code: '12A05',
+    },
+    'TECHNICIAN': {
+      id: 'usr-tech-01',
+      username: 'nks.manager02@gmail.com',
+      firstname: 'Kỹ Thuật',
+      lastname: 'Trần Văn',
+      fullname: 'Trần Văn Kỹ Thuật',
+      full_name: 'Trần Văn Kỹ Thuật (Kỹ Sư Vận Hành)',
+      email: 'nks.manager02@gmail.com',
+      phone: '0901888998',
+      gender: 1,
+      dob: '1988-11-25',
+      pob: 'Đà Nẵng',
+      id_number: '048088001122',
+      id_card_no: '048088001122',
+      id_date: '2021-08-10',
+      id_place: 'Cục Cảnh sát QLHC về TTXH',
+      province: 'TP. Hồ Chí Minh',
+      intro: 'Đội Trưởng Đội Kỹ Thuật Vận Hành & PCCC Tòa Nhà SKYLINE',
+      license_plate: '51D-882.11',
+      avatar_url: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=300',
+      role: 'TECHNICIAN',
+      apartment_code: 'TECH_ROOM',
     }
   };
 }
@@ -139,16 +162,29 @@ if (!global.__NKS_FAMILY_STORE) {
         faceStatus: 'Đã Xác Thực FaceID',
         avatarUrl: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400',
         addedDate: '10/01/2026',
+      },
+      {
+        id: 'mem-thinh-02',
+        username: '26vucatthinh@gmail.com',
+        fullName: 'Vũ Cát Thịnh',
+        role: 'Family',
+        relationship: 'Thành viên gia đình (Gia phả TreeFamily)',
+        phone: '0909262626',
+        idCard: '079201002626',
+        licensePlate: '59P1-926.26',
+        faceStatus: 'Đã Xác Thực FaceID',
+        avatarUrl: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=400',
+        addedDate: '15/02/2026',
       }
     ]
   };
 }
 
-export function getUserStore(roleKey: 'ADMIN' | 'OWNER' | 'TENANT'): StoredUser {
+export function getUserStore(roleKey: 'ADMIN' | 'OWNER' | 'TENANT' | 'TECHNICIAN'): StoredUser {
   return global.__NKS_USER_STORE![roleKey] || global.__NKS_USER_STORE!['OWNER'];
 }
 
-export function updateUserStore(roleKey: 'ADMIN' | 'OWNER' | 'TENANT', updates: Partial<StoredUser>): StoredUser {
+export function updateUserStore(roleKey: 'ADMIN' | 'OWNER' | 'TENANT' | 'TECHNICIAN', updates: Partial<StoredUser>): StoredUser {
   const current = getUserStore(roleKey);
   const updated: StoredUser = {
     ...current,
