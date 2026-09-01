@@ -213,22 +213,22 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
         updateUserInfo({
           ...res.user as any,
           id_card_no: idCardNumber.trim(),
-          dob: birthday,
-          pob: pob,
+          dob: formatToApiDate(birthday),
+          pob: pob || '',
         });
 
         // Real-time synchronization across entire portal shell
         await refreshUser();
 
-        // Update local state directly with returned API payload
+        // Update local state directly with returned API payload (replacing old data)
         setFullName(res.user.fullname || res.user.full_name || fullName);
         setPhone(res.user.phone || phone);
         setEmail(res.user.email || email);
         setIdCardNumber(res.user.id_number || idCardNumber);
         setLicensePlate(res.user.license_plate || licensePlate);
-        if (res.user.pob) setPob(res.user.pob);
-        if (res.user.dob) setBirthday(formatToDateInput(res.user.dob));
-        if (res.user.id_date) setIdDate(formatToDateInput(res.user.id_date));
+        setPob(res.user.pob || '');
+        if (res.user.dob) setBirthday(formatToDisplayDate(res.user.dob));
+        if (res.user.id_date) setIdDate(formatToDisplayDate(res.user.id_date));
         if (res.user.id_place) setIdPlace(res.user.id_place);
 
         setSavedSuccess(true);

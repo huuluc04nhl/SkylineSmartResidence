@@ -55,7 +55,11 @@ export async function POST(req: Request) {
         formData.append('access_token', token);
         if (firstname) formData.append('firstname', firstname);
         if (lastname) formData.append('lastname', lastname);
-        if (intro) formData.append('intro', intro);
+        if (fullname) {
+          formData.append('name', fullname);
+          formData.append('fullname', fullname);
+        }
+        if (intro !== undefined) formData.append('intro', intro || '');
         if (phone) formData.append('phone', phone);
         if (gender !== undefined) formData.append('gender', String(gender));
         if (website) formData.append('website', website);
@@ -64,7 +68,7 @@ export async function POST(req: Request) {
         if (id_number) formData.append('id_number', id_number);
         if (id_date) formData.append('id_date', formatToDateInput(id_date));
         if (id_place) formData.append('id_place', id_place);
-        if (province) formData.append('province', province);
+        // Note: Do not send province as string since NKS API crashes with 500 when string province is received
 
         const remoteRes = await fetch('https://account.nks.vn/api/nks/user/updateInfo', {
           method: 'POST',
