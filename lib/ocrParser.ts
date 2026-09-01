@@ -266,7 +266,30 @@ export function parseCccdText(rawText: string, isBackSide: boolean = false): Par
     // -------------------------------------------------------------
     // 3. EXTRACT DATE OF BIRTH (NGÀY SINH)
     // -------------------------------------------------------------
-    // Determine expected birth year from 12-digit CCCD number if available
+    // 3.1. HIGHEST PRIORITY: Look directly at and under 'Ngày, tháng, năm sinh' / 'Date of birth'
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i];
+      if (/(?:ngày[,\s]*tháng[,\s]*năm\s*sinh|ngày\s*sinh|date\s*of\s*birth|sinh\s*ngày|sinh|dob)/i.test(line) && !line.includes('Quê') && !line.includes('trú')) {
+        // Search current line AND next 2 lines (in case date is on the line below the label)
+        const windowText = [lines[i], lines[i + 1] || '', lines[i + 2] || ''].join(' ');
+        const m = windowText.match(/(?:(?:ngày|ngay)\s*)?([0-3]?[0-9])\s*(?:[\/\-\.\s\|]|tháng|thang)\s*([0-1]?[0-9])\s*(?:[\/\-\.\s\|]|năm|nam)\s*(19\d{2}|20\d{2})/i) ||
+                  windowText.match(/([0-3]?[0-9])\s*[\/\-\.\s\|]\s*([0-1]?[0-9])\s*[\/\-\.\s\|]\s*(19\d{2}|20\d{2})/);
+        if (m) {
+          const day = m[1].padStart(2, '0');
+          const month = m[2].padStart(2, '0');
+          const year = m[3];
+          const yNum = parseInt(year, 10);
+          const mNum = parseInt(month, 10);
+          const dNum = parseInt(day, 10);
+          if (yNum >= 1930 && yNum <= 2015 && mNum >= 1 && mNum <= 12 && dNum >= 1 && dNum <= 31) {
+            result.dob = `${year}-${month}-${day}`;
+            break;
+          }
+        }
+      }
+    }
+
+    // 3.2. SECOND PRIORITY: Determine expected birth year from 12-digit CCCD number if available
     let cccdYear: number | null = null;
     if (result.idNumber && result.idNumber.length === 12) {
       const centuryDigit = parseInt(result.idNumber[3], 10);
@@ -291,39 +314,11 @@ export function parseCccdText(rawText: string, isBackSide: boolean = false): Par
       }
     }
 
-    // 3.1. Match against CCCD year if known
-    if (cccdYear && dateCandidates.length > 0) {
+    // 3.3. If not found by label, match candidate dates against CCCD year
+    if (!result.dob && cccdYear && dateCandidates.length > 0) {
       const matchCccd = dateCandidates.find(d => d.year === cccdYear);
       if (matchCccd) {
         result.dob = matchCccd.formatted;
-      }
-    }
-
-    // 3.2. Match label line: "Ngày, tháng, năm sinh", "Date of birth", "Ngày sinh"
-    if (!result.dob) {
-      const dobLabelPattern = /(?:ngày[,\s]+tháng[,\s]+năm\s+sinh|ngày\s*sinh|date\s*of\s*birth|sinh\s*ngày|sinh|dob)[:\s\/\.]*([0-9]{1,2})\s*[\/\-\.\s\|]\s*([0-9]{1,2})\s*[\/\-\.\s\|]\s*(19[0-9]{2}|20[0-9]{2})/i;
-      const dobMatch = rawText.match(dobLabelPattern);
-      if (dobMatch && dobMatch[1] && dobMatch[2] && dobMatch[3]) {
-        const year = parseInt(dobMatch[3], 10);
-        if (year >= 1930 && year <= 2012) {
-          result.dob = `${year}-${dobMatch[2].padStart(2, '0')}-${dobMatch[1].padStart(2, '0')}`;
-        }
-      }
-    }
-
-    // 3.3. Check lines containing "sinh" or "birth" or "dob"
-    if (!result.dob) {
-      for (const line of lines) {
-        if (/(?:ngày.*sinh|date\s*of\s*birth|sinh|dob)/i.test(line) && !line.includes('Quê') && !line.includes('trú')) {
-          const m = line.match(/([0-9]{1,2})\s*[\/\-\.\s\|]\s*([0-9]{1,2})\s*[\/\-\.\s\|]\s*(19\d{2}|20\d{2})/);
-          if (m) {
-            const year = parseInt(m[3], 10);
-            if (year >= 1930 && year <= 2012) {
-              result.dob = `${year}-${m[2].padStart(2, '0')}-${m[1].padStart(2, '0')}`;
-              break;
-            }
-          }
-        }
       }
     }
 
