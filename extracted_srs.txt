@@ -1,0 +1,823 @@
+﻿Tài liệu Đặc tả Yêu cầu Phần mềm (SRS) – Xây dựng Website Ứng dụng AI tự động hóa quy trình Quản lý Chung cư SKYLINE
+Dự án: SKYLINE Smart ResidencePhiên bản: 1.0.0Tác giả: Nguyễn Hữu LựcNgày: 10/08/2026  
+1. Giới thiệu (Introduction)
+1.1 Mục đích
+Tài liệu này cung cấp các đặc tả chi tiết về chức năng, phi chức năng và kiến trúc hệ thống cho dự án SKYLINE Smart Residence. Mục tiêu là xây dựng một nền tảng thông minh tích hợp AI nhằm số hóa toàn bộ quy trình vận hành, nâng cao trải nghiệm của cư dân và tối ưu hóa hiệu suất làm việc của Ban quản lý.
+1.2 Phạm vi hệ thống
+Hệ thống tập trung vào việc cung cấp một bộ khung (framework) để:
+Số hóa công tác quản lý thông tin căn hộ, cư dân, và các khoản phí dịch vụ.
+Tích hợp AI Chatbot để tự động hóa khâu chăm sóc khách hàng (CSKH) và giải đáp thắc mắc cho cư dân 24/7.
+Ứng dụng AI để phân tích phản hồi của cư dân và dự báo lịch bảo trì hệ thống kỹ thuật tòa nhà.
+Quản lý vòng đời của các yêu cầu hỗ trợ (Ticketing) từ lúc cư dân báo cáo đến khi kỹ thuật viên xử lý xong.
+1.3 Đối tượng hướng đến
+Ban quản lý tòa nhà: Để điều hành, giám sát tổng thể tình hình chung cư và các chỉ số tài chính, vận hành.
+Cư dân/Chủ căn hộ: Để sử dụng các tiện ích, thanh toán phí và tương tác với hệ thống.
+Đội ngũ phát triển (Developer): Để hiểu cấu trúc module, luồng dữ liệu và tích hợp API.
+2. Mô tả tổng quan (Overall Description)
+2.1 Bối cảnh sản phẩm
+Trong công tác quản lý bất động sản hiện đại, việc vận hành các chung cư quy mô lớn bằng phương pháp thủ công hoặc phần mềm cũ thường gây ra sự chậm trễ trong xử lý yêu cầu, sai sót tài chính và thiếu gắn kết với cư dân. Hệ thống SKYLINE Smart Residence ra đời nhằm thay thế các quy trình thủ công bằng một nền tảng tự động hóa cao, sử dụng AI để xử lý thông tin tức thời và ra quyết định thông minh.
+2.2 Kiến trúc tổng quan
+Hệ thống được thiết kế theo mô hình Client-Server với lõi AI, bao gồm các thành phần:
+2.3 Các nhóm người dùng
+Hệ thống được thiết kế cho 2 nhóm người dùng chính và các role phân cấp với các quyền hạn khác nhau:
+Nhóm người dùng
+Vai trò & Trách nhiệm
+Ban quản lý (Admin)
+Là tài khoản Siêu quản trị (Super Admin) điều hành toàn bộ hệ thống lõi. Admin chịu trách nhiệm:
+- Quản lý không gian & Nhân sự: Thiết lập dữ liệu căn hộ, duyệt hồ sơ định danh (e-KYC) của cư dân và kiểm soát luồng khách thăm.
+- Điều phối vận hành: Tiếp nhận Ticket báo sự cố từ cư dân, tự điều phối nhân sự kỹ thuật ngoài hệ thống và cập nhật trạng thái hoàn thành lên Web.
+- Kiểm soát AI & An ninh: Giám sát cảnh báo từ Camera AI, cập nhật tri thức cho AI Chatbot, xem báo cáo cảm xúc cộng đồng.
+- Tài chính: Giám sát tổng quan doanh thu, duyệt và phát hành hóa đơn hàng tháng.
+Cư dân (Resident)
+Là người dùng cuối sinh sống tại tòa nhà. Nền tảng tự động phân tách quyền hạn truy cập dựa trên vai trò của cư dân đối với căn hộ:
+Chủ hộ (Owner)
+(Toàn quyền - Full Access): Là người đứng tên pháp lý của căn hộ.
+- Quyền Tự trị: Được phép tự thêm mới, phê duyệt hoặc xóa tài khoản của Người nhà/Khách thuê ra khỏi căn hộ trên hệ thống.
+- Quyền Tài chính: Độc quyền xem, tải hóa đơn chi tiết, nhận thông báo nhắc nợ từ AI và thực hiện thanh toán trực tuyến.
+- Quyền Biểu quyết: Độc quyền tham gia các cuộc khảo sát mang tính pháp lý (Bầu Ban quản trị, Đóng góp quỹ).
+Người nhà / Khách thuê
+(Quyền Sinh hoạt cơ bản): Là tài khoản phụ (Child account) được Chủ hộ thêm vào hệ thống.
+- Sử dụng hệ thống: Được cấp quyền FaceID qua cổng, tạo QR đón khách, đặt lịch tiện ích chung (Gym, BBQ), tương tác hỏi đáp với AI Chatbot và tạo Ticket báo sự cố hỏng hóc trong nhà.
+- Giới hạn bảo mật: Bị khóa hoàn toàn các chức năng liên quan đến tài chính, công nợ, hồ sơ pháp lý và biểu quyết của tòa nhà.
+3. Các Module chức năng chi tiết (Functional Modules)
+3.1. Các Module
+3.1.1 Module Resident Management
+Quản lý không gian vật lý của tòa nhà, thông tin hồ sơ cư dân, khách thuê và cấp phát quyền truy cập.
+3.1.2 Module Operation Management
+Kiểm soát luồng công việc của Ban quản lý và hệ thống tiếp nhận, xử lý yêu cầu (Ticketing) từ cư dân.
+3.1.3 Module Maintenance Management
+Số hóa danh mục tài sản kỹ thuật, lên lịch bảo dưỡng và lưu trữ nhật ký sửa chữa thiết bị.
+3.1.4 Module Smart Security
+Kiểm soát khách thăm ra vào tòa nhà, cấp quyền thẻ từ phân tầng và ghi nhận nhật ký an ninh.
+3.1.5 Module Community Management
+Kiến tạo không gian truyền thông nội bộ, quản lý đặt lịch tiện ích chung (Gym, BBQ) và khảo sát ý kiến cư dân.
+3.1.6 Module Smart Dashboard
+Bảng điều khiển trung tâm giúp Ban quản lý trực quan hóa các chỉ số tài chính, công nợ và hiệu suất vận hành.
+3.1.7 Module AI Resident Assistant
+Trợ lý ảo (Chatbot) thông minh hỗ trợ giải đáp thắc mắc và cung cấp thông tin cho cư dân 24/7.
+3.1.8 Module Smart Search
+Công cụ tìm kiếm hiểu ngữ nghĩa tự nhiên, giúp người dùng tra cứu nhanh mọi tính năng và tài liệu trên hệ thống.
+3.1.9 Module Maintenance Assistant
+Ứng dụng AI phân tích dữ liệu để dự báo trước các hỏng hóc thiết bị và chấm điểm sức khỏe tài sản.
+3.1.10 Module AI Security
+Tích hợp nhận diện khuôn mặt (FaceID) để mở cửa tự động và phân tích Camera CCTV để phát hiện sự cố nguy hiểm.
+3.1.11 Module Billing Assistant
+Trợ lý ảo tự động phân tích thói quen để nhắc nợ cá nhân hóa và rà soát các bất thường trong hóa đơn dịch vụ.
+3.1.12 AI Community Assistant
+Hệ thống tự động kiểm duyệt nội dung độc hại trên diễn đàn nội bộ và đánh giá cảm xúc (Sentiment) của cư dân.
+3.1.13 AI Analytics
+Khai phá khối lượng dữ liệu khổng lồ của tòa nhà để đưa ra các đề xuất chiến lược tối ưu hóa nguồn lực.
+3.1.14 AI Energy Management
+Học hỏi thói quen tiêu thụ điện/nước của từng căn hộ và phát cảnh báo ngay lập tức nếu có dấu hiệu rò rỉ.
+3.1.15 AI Smart Parking
+Hệ thống Camera AI nhận diện biển số xe tự động tốc độ cao để kiểm soát rào chắn (Barrier) và quản lý sức chứa hầm xe.
+3.2. Chi tiết các Module
+3.2.1 Module Resident Management
+Quản lý Danh mục Căn hộ: Cho phép Ban quản lý khởi tạo hồ sơ căn hộ, cập nhật các thông số kỹ thuật (diện tích tim tường/thông thủy, mã căn) và thay đổi trạng thái từ "Đang trống" sang "Đã bàn giao".
+Quản lý Chủ hộ & Khách thuê: Hỗ trợ thiết lập quyền sở hữu, thêm thành viên gia đình, hoặc khởi tạo hồ sơ khách thuê có thời hạn. Tự động lưu vết lịch sử khi có sự thay đổi chủ sở hữu.
+Duyệt hồ sơ Định danh (e-KYC): Cung cấp giao diện để Lễ tân kiểm tra, đối chiếu thông tin và phê duyệt hoặc từ chối hồ sơ đăng ký của cư dân mới gửi từ App.
+Quản lý Chuyển đến/Chuyển đi (Move-in/Move-out): Tự động cấp quyền truy cập hệ thống (kích hoạt thẻ từ, mở giới hạn tiện ích) khi cư dân dọn đến và tự động khóa/thu hồi các quyền này khi cư dân làm thủ tục chuyển đi.
+3.2.2 Module Operation Management
+Tiếp nhận Yêu cầu (Ticketing): Cư dân gửi báo cáo sự cố (điện, nước, vệ sinh), khiếu nại kèm theo hình ảnh/video thực tế trực tiếp qua Ứng dụng.
+Điều phối & Giao việc (Task Assignment): Cung cấp Bảng điều khiển công việc (Kanban Board) để Ban quản lý kéo-thả, phân công xử lý sự cố cho đích danh từng Kỹ thuật viên/Nhân viên vệ sinh.
+Cập nhật Tiến độ: Kỹ thuật viên báo cáo tiến độ theo thời gian thực (Đã tiếp nhận, Đang xử lý, Hoàn thành) và bắt buộc tải lên hình ảnh nghiệm thu "Trước/Sau khi sửa".
+Giám sát Cam kết Dịch vụ (SLA): Hệ thống tự động đếm ngược thời gian xử lý sự cố. Nếu quá hạn, cảnh báo đỏ sẽ được bật và tự động gửi thông báo báo cáo (Escalation) lên Trưởng Ban quản lý.
+3.2.3 Module Maintenance Management
+Hồ sơ Thiết bị Kỹ thuật: Lưu trữ toàn bộ lý lịch của hệ thống lõi tòa nhà (Thang máy, máy bơm, PCCC) bao gồm: ngày lắp đặt, thông số vận hành, và thời hạn bảo hành.
+Lập lịch Bảo trì Định kỳ: Ban quản lý thiết lập chu kỳ bảo dưỡng (hàng tháng/quý/năm). Hệ thống tự động sinh ra các "Phiếu công việc" nhắc nhở đội bảo trì trước ngày đến hạn.
+Nhật ký Sửa chữa: Ghi nhận lịch sử các lần thay thế linh kiện, chi phí vật tư phát sinh và nhân sự chịu trách nhiệm.
+Xuất Báo cáo Kỹ thuật: Cho phép kết xuất dữ liệu tài sản và lịch sử bảo trì ra định dạng PDF/Excel phục vụ công tác kiểm toán nội bộ.
+3.2.4 Module Smart Security
+Đăng ký Khách thăm (Visitor Registration): Cư dân tạo mã QR Code chứa thông tin khách/shipper và quy định khung giờ hợp lệ, sau đó gửi trực tiếp cho khách qua Zalo/Message.
+Kiểm soát Ra vào (Access Control): Lễ tân hoặc thiết bị quét tự động tại sảnh sẽ quét mã QR để mở cổng/thang máy, đồng thời ghi nhận chính xác thời điểm check-in/check-out.
+Quản lý Thẻ Từ & Phân tầng: Cấp phát mã số thẻ cứng, cấu hình phân tầng thang máy (Cư dân tầng 12 chỉ được bấm thang lên tầng 12 và khu tiện ích chung).
+Truy xuất Nhật ký An ninh: Trích xuất nhanh chóng lịch sử ra/vào của toàn bộ cư dân và khách thăm khi cần điều tra sự cố.
+3.2.5 Module Community Management
+Truyền thông Nội bộ (Newsfeed): Kênh phát ngôn chính thức để BQL đăng tải thông báo cắt điện, cắt nước, quy định mới. Hỗ trợ tính năng ghim bài quan trọng và gửi Push Notification khẩn cấp.
+Quản lý Đặt chỗ Tiện ích (Facility Booking): Cư dân đăng ký sử dụng không gian chung (Hồ bơi, Vườn BBQ, Gym). Hệ thống tự động kiểm tra sức chứa, trừ lượt sử dụng (quota) và quản lý thanh toán nếu là tiện ích có thu phí.
+Khảo sát & Biểu quyết (Surveys): BQL tạo các chiến dịch lấy ý kiến (Ví dụ: Biểu quyết bầu Ban quản trị) và hệ thống thống kê kết quả trực quan theo thời gian thực.
+Diễn đàn Cư dân: Không gian mạng chia sẻ thông tin, rao vặt, trao đổi đồ cũ giữa các cư dân sinh sống trong tòa nhà.
+3.2.6 Module Smart Dashboard
+Tổng quan Tài chính: Trực quan hóa doanh thu, tỷ lệ thu hồi công nợ, tổng số hóa đơn chưa thanh toán thông qua các biểu đồ (Pie chart, Bar chart).
+Báo cáo Hiệu suất Vận hành: Thống kê số lượng Ticket sự cố đang mở, tỷ lệ hoàn thành công việc của đội ngũ kỹ thuật viên.
+Bản đồ Cảnh báo Thời gian thực (Live Alert Map): Hiển thị sơ đồ cảnh báo nhấp nháy trên màn hình trung tâm khi phát hiện sự cố an ninh hoặc thiết bị quan trọng báo lỗi.
+3.2.7 Module AI Resident Assistant
+Tư vấn viên ảo 24/7: AI Chatbot giao tiếp bằng ngôn ngữ tự nhiên, tự động giải đáp các thắc mắc lặp đi lặp lại của cư dân (Cách đăng ký xe, Giờ mở cửa hồ bơi, Biểu phí quản lý).
+Truy xuất Sổ tay Thông minh (RAG): Trợ lý ảo tự động đọc hiểu tài liệu "Sổ tay cư dân", "Nội quy tòa nhà" để đưa ra hướng dẫn chính xác theo đặc thù của riêng chung cư SKYLINE.
+Chuyển tiếp Lễ tân (Live Agent Handoff): Khi cư dân yêu cầu gặp nhân viên thật hoặc câu hỏi nằm ngoài phạm vi xử lý, AI tự động chuyển tiếp toàn bộ đoạn chat sang màn hình làm việc của Lễ tân.
+3.2.8 Module Smart Search
+Tìm kiếm Ngữ nghĩa (Semantic Search): Hệ thống không tìm theo từ khóa cứng nhắc mà hiểu ý định người dùng. (Ví dụ: Cư dân gõ "nhà bị ngập nước", hệ thống sẽ trả về nút bấm "Tạo yêu cầu sửa chữa ống nước").
+Gợi ý Tốc độ cao: Tự động đề xuất các kết quả, tính năng hoặc tài liệu phổ biến ngay khi người dùng đang gõ phím trên thanh tìm kiếm.
+3.2.9 Module Maintenance Assistant
+Chấm điểm Tình trạng (Health Score): AI tổng hợp dữ liệu từ hệ thống cảm biến (IoT) và tuổi thọ linh kiện để tự động đánh giá điểm "sức khỏe" (0-100) cho máy móc mỗi ngày.
+Dự báo Hỏng hóc (Predictive Alert): AI phát hiện các dấu hiệu rung lắc hoặc quá nhiệt bất thường, tự động sinh ra một Ticket "Đề xuất kiểm tra" gửi cho kỹ sư trưởng trước khi thiết bị thực sự chết máy.
+3.2.10 Module AI Security
+Mở khóa Sinh trắc học (FaceID Unlock): Đối chiếu khuôn mặt cư dân với cơ sở dữ liệu Vector trong tích tắc (<0.5s) để mở cửa sảnh và tự động bấm tầng thang máy (Trải nghiệm rảnh tay hoàn toàn).
+Giám sát Bất thường (Vision AI): Camera AI tự động quan sát 24/24, phát hiện ngay lập tức các tình huống: Có khói/lửa, Đám đông xô xát, Người ngã gục để kích hoạt chuông báo động về phòng bảo vệ trung tâm.
+3.2.11 Module Billing Assistant
+Nhắc nợ Cá nhân hóa: AI học thói quen đóng tiền của cư dân để tối ưu hóa thời điểm gửi thông báo (VD: Tự động gửi SMS nhắc nợ vào lúc 20h tối cho cư dân thường xuyên làm việc muộn).
+Kiểm soát Bất thường Hóa đơn: AI tự động quét hàng ngàn dòng chi tiết điện/nước của toàn tòa nhà trước ngày phát hành, bôi đỏ cảnh báo các căn hộ có chi phí tăng/giảm bất thường (>50%) để Kế toán rà soát lại, chống sai sót.
+3.2.12 AI Community Assistant
+Kiểm duyệt Tự động (Auto-Moderation): AI quét toàn bộ nội dung cư dân đăng tải. Tự động làm mờ/ẩn các bài viết, bình luận có chứa ngôn từ độc hại, chửi thề, hoặc quảng cáo sai quy định.
+Phân tích Cảm xúc (Sentiment Analysis): Đọc và chấm điểm thái độ (Tích cực, Tiêu cực, Bức xúc) từ các luồng phản hồi, đánh giá của cư dân, giúp BQL nhận diện sớm các "điểm nóng" cần xoa dịu.
+3.2.13 AI Analytics
+Khai phá Insight Vận hành: Phân tích chéo dữ liệu từ các module khác nhau để đưa ra quy luật. (VD: "Lưu lượng sử dụng phòng Gym tăng 30% vào khung giờ 18h-20h, dẫn đến quá tải").
+Gợi ý Quyết định (Actionable Recommendations): AI tự động sinh ra các khuyến nghị chiến lược bằng văn bản cho Trưởng BQL (VD: Đề xuất điều chỉnh tăng mức giới hạn đặt chỗ BBQ vào các dịp cuối tuần do nhu cầu tăng cao).
+3.2.14 AI Energy Management
+Lập Hồ sơ Tiêu dùng: Thu thập lịch sử sử dụng điện/nước để xây dựng định mức tiêu thụ chuẩn của từng loại căn hộ.
+Cảnh báo Rò rỉ (Leakage Detection): Nếu phát hiện một căn hộ tiêu thụ lượng nước tăng vọt, chảy liên tục vào khung giờ 2h-4h sáng, AI lập tức gửi cảnh báo rò rỉ đến điện thoại chủ nhà và đội kỹ thuật để can thiệp kịp thời.
+3.2.15 AI Smart Parking
+Nhận diện Biển số Tốc độ cao (ALPR): Camera AI đọc biển số xe bất chấp điều kiện thiếu sáng hoặc xe đang di chuyển, tự động đối chiếu với danh sách xe đã đăng ký để đóng/mở barrier.
+Kiểm soát Sức chứa (Capacity Management): Đếm lưu lượng xe ra vào hầm, tự động cảnh báo khi sức chứa đạt ngưỡng 95%, và kích hoạt kịch bản từ chối nhận xe khách vãng lai nhằm đảm bảo chỗ đỗ cho cư dân.
+4. Thiết kế Cơ sở dữ liệu (Database Design)
+4.1 Sơ đồ quan hệ thực thể (ERD)
+Hệ thống sử dụng cơ sở dữ liệu quan hệ để quản lý người dùng và lịch sử, kết hợp với lưu trữ tệp tin cho các file mô hình (.pth, .onnx).
+4.2 Đặc tả các bảng dữ liệu chính
+PHÂN HỆ 1: LÕI HỆ THỐNG & QUẢN LÝ KHÔNG GIAN
+Bảng blocks (Danh mục Tòa nhà)
+Cột
+Kiểu dữ liệu
+Ràng buộc
+Mô tả
+id
+INT
+Primary Key
+Định danh Tòa nhà (Tự động tăng).
+block_code
+VARCHAR(20)
+Unique, Not Null
+Mã tòa nhà (VD: Tòa A, S1.01).
+total_floors
+INT
+Not Null
+Tổng số tầng của tòa nhà.
+manager_id
+UUID
+Foreign Key
+ID của Trưởng ban quản lý phụ trách tòa này.
+created_at
+TIMESTAMP
+Default NOW()
+Thời gian khởi tạo bản ghi.
+updated_at
+TIMESTAMP
+Default NOW()
+Thời gian cập nhật bản ghi gần nhất.
+deleted_at
+TIMESTAMP
+Nullable
+Thời gian xóa (Soft Delete) để ẩn khỏi Website.
+Bảng apartments (Danh sách căn hộ)
+Cột
+Kiểu dữ liệu
+Ràng buộc
+Mô tả
+id
+UUID
+Primary Key
+Định danh duy nhất của căn hộ.
+block_id
+INT
+Foreign Key
+Thuộc tòa nhà nào.
+floor_number
+INT
+Not Null
+Nằm ở tầng số mấy (Hỗ trợ kỹ thuật viên tìm vị trí).
+apt_code
+VARCHAR(20)
+Unique, Not Null
+Mã số căn hộ chi tiết (VD: 12A05).
+apt_type
+VARCHAR(50)
+Not Null
+Loại hình: Studio, 1PN, 2PN, 3PN, Duplex.
+wall_area
+FLOAT
+Not Null
+Diện tích tim tường (m2) - Pháp lý hợp đồng.
+clear_area
+FLOAT
+Not Null
+Diện tích thông thủy (m2) - Tính phí quản lý.
+legal_status
+VARCHAR(50)
+Default 'SPA'
+Tình trạng sổ: SPA (HĐMB), Pink_Book (Sổ hồng).
+thumbnail_url
+VARCHAR(255)
+Nullable
+[Website UI] Link ảnh chụp thực tế đại diện căn hộ.
+floor_plan_url
+VARCHAR(255)
+Nullable
+[Website UI] Link bản vẽ mặt bằng 2D/3D.
+smart_widgets
+JSONB
+Nullable
+[Website UI] Lưu tọa độ các nút điều khiển Smart Home.
+created_at
+TIMESTAMP
+Default NOW()
+Thời gian khởi tạo bản ghi.
+updated_at
+TIMESTAMP
+Default NOW()
+Thời gian cập nhật bản ghi gần nhất.
+deleted_at
+TIMESTAMP
+Nullable
+Thời gian xóa (Soft Delete) để ẩn khỏi Website.
+Bảng users (Hồ sơ Người dùng & Sinh trắc học)
+Cột
+Kiểu dữ liệu
+Ràng buộc
+Mô tả
+id
+UUID
+Primary Key
+Định danh người dùng.
+role
+VARCHAR(20)
+Not Null
+Quyền: Admin, Resident, Technician, Receptionist.
+username
+VARCHAR(50)
+Unique, Not Null
+Số điện thoại dùng để đăng nhập.
+full_name
+VARCHAR(100)
+Not Null
+Họ và tên đầy đủ.
+id_card_no
+VARCHAR(20)
+Unique
+[AI OCR] Số CCCD trích xuất tự động khi đăng ký e-KYC.
+face_vector
+VECTOR(512)
+Nullable
+[AI Vision] Vector khuôn mặt để mở sảnh/thang máy.
+emergency_phone
+VARCHAR(20)
+Nullable
+Số điện thoại khẩn cấp (Phục vụ cứu hộ).
+avatar_url
+VARCHAR(255)
+Nullable
+[Website UI] Link ảnh đại diện cá nhân.
+ui_language
+VARCHAR(10)
+Default 'vi'
+Ngôn ngữ hiển thị (vi, en, ko).
+created_at
+TIMESTAMP
+Default NOW()
+Thời gian khởi tạo bản ghi.
+updated_at
+TIMESTAMP
+Default NOW()
+Thời gian cập nhật bản ghi gần nhất.
+deleted_at
+TIMESTAMP
+Nullable
+Thời gian xóa (Soft Delete) để ẩn khỏi Website.
+Bảng apartment_residents (Quan hệ Cư dân - Căn hộ)
+Cột
+Kiểu dữ liệu
+Ràng buộc
+Mô tả
+id
+UUID
+Primary Key
+Định danh bản ghi.
+apartment_id
+UUID
+Foreign Key
+Thuộc căn hộ nào.
+user_id
+UUID
+Foreign Key
+Hồ sơ của cư dân nào.
+relationship
+VARCHAR(50)
+Not Null
+Vai trò: Owner (Chủ hộ), Family, Tenant (Khách thuê).
+created_at
+TIMESTAMP
+Default NOW()
+Thời gian tạo liên kết.
+updated_at
+TIMESTAMP
+Default NOW()
+Thời gian cập nhật liên kết.
+Bảng consumption_logs (Nhật ký Tiêu thụ Điện/Nước)
+Cột
+Kiểu dữ liệu
+Ràng buộc
+Mô tả
+id
+UUID
+Primary Key
+Định danh bản ghi.
+apartment_id
+UUID
+Foreign Key
+Căn hộ sử dụng.
+usage_amount
+FLOAT
+Not Null
+Lượng tiêu thụ trong kỳ (kWh hoặc m3).
+ai_anomaly
+BOOLEAN
+Default FALSE
+[AI] Cảnh báo nếu mức dùng tăng vọt bất thường (rò rỉ).
+chart_data
+JSONB
+Nullable
+[Website UI] Mảng số liệu đúc sẵn để render Biểu đồ đường.
+created_at
+TIMESTAMP
+Default NOW()
+Thời gian chốt chỉ số.
+updated_at
+TIMESTAMP
+Default NOW()
+Thời gian cập nhật chỉ số (nếu có sai sót).
+deleted_at
+TIMESTAMP
+Nullable
+Thời gian xóa (Soft Delete).
+Bảng bills (Hóa đơn Tổng)
+Cột
+Kiểu dữ liệu
+Ràng buộc
+Mô tả
+id
+UUID
+Primary Key
+Định danh Hóa đơn.
+apartment_id
+UUID
+Foreign Key
+Căn hộ cần thanh toán.
+due_date
+TIMESTAMP
+Not Null
+Hạn chót thanh toán.
+total_amount
+FLOAT
+Not Null
+Tổng tiền cuối cùng cư dân phải thanh toán (VNĐ).
+status
+VARCHAR(20)
+Default 'Unpaid'
+Trạng thái: Draft, Unpaid, Partial, Paid, Overdue.
+status_color
+VARCHAR(10)
+Not Null
+[Website UI] Mã màu Hex (VD: #28a745 - Xanh, #dc3545 - Đỏ).
+payment_qr_url
+VARCHAR(255)
+Nullable
+[Website UI] Link ảnh QR Code tĩnh/động để quét thanh toán.
+invoice_pdf_url
+VARCHAR(255)
+Nullable
+[Website UI] Link tải Hóa đơn điện tử PDF.
+created_at
+TIMESTAMP
+Default NOW()
+Thời gian tạo hóa đơn.
+updated_at
+TIMESTAMP
+Default NOW()
+Thời gian cập nhật hóa đơn.
+deleted_at
+TIMESTAMP
+Nullable
+Thời gian hủy hóa đơn (Soft Delete).
+Bảng bill_details (Chi tiết hạng mục Hóa đơn)
+Cột
+Kiểu dữ liệu
+Ràng buộc
+Mô tả
+id
+UUID
+Primary Key
+Định danh dòng chi tiết.
+bill_id
+UUID
+Foreign Key
+Thuộc hóa đơn tổng nào.
+service_type
+VARCHAR(50)
+Not Null
+Loại phí: Electricity, Water, Management_Fee, Parking.
+total_line_amount
+FLOAT
+Not Null
+Thành tiền của riêng dòng này.
+created_at
+TIMESTAMP
+Default NOW()
+Thời gian tạo.
+updated_at
+TIMESTAMP
+Default NOW()
+Thời gian cập nhật.
+deleted_at
+TIMESTAMP
+Nullable
+Thời gian xóa.
+Bảng service_requests (Yêu cầu hỗ trợ - Ticketing)
+Cột
+Kiểu dữ liệu
+Ràng buộc
+Mô tả
+id
+UUID
+Primary Key
+Mã Ticket (VD: TICK-001).
+apartment_id
+UUID
+Foreign Key
+Căn hộ báo sự cố.
+content
+TEXT
+Not Null
+Nội dung phản ánh gốc.
+ai_category
+VARCHAR(50)
+Nullable
+[AI NLP] Phân loại lỗi tự động (Điện, Nước).
+ai_priority
+INT
+Default 3
+[AI] Điểm ưu tiên do AI đánh giá (1: Gấp, 3: Bình thường).
+sla_deadline
+TIMESTAMP
+Not Null
+Hạn chót xử lý (Tự động cảnh báo quá hạn).
+status
+VARCHAR(20)
+Default 'Open'
+Trạng thái: Open, Assigned, In_Progress, Resolved.
+priority_color
+VARCHAR(10)
+Nullable
+[Website UI] Màu viền thẻ Ticket trên Bảng Kanban.
+before_after
+JSONB
+Nullable
+[Website UI] Ảnh slider so sánh "Trước - Sau khi sửa".
+created_at
+TIMESTAMP
+Default NOW()
+Thời gian gửi yêu cầu.
+updated_at
+TIMESTAMP
+Default NOW()
+Thời gian cập nhật tiến độ xử lý.
+deleted_at
+TIMESTAMP
+Nullable
+Thời gian xóa Ticket.
+Bảng devices (Thiết bị kỹ thuật & AI Dự báo)
+Cột
+Kiểu dữ liệu
+Ràng buộc
+Mô tả
+id
+UUID
+Primary Key
+Định danh tài sản/thiết bị.
+name
+VARCHAR(100)
+Not Null
+Tên thiết bị (VD: Thang máy số 1).
+health_score
+FLOAT
+Default 100.0
+[AI] Điểm "sức khỏe" thiết bị do AI tự động chấm.
+predict_date
+TIMESTAMP
+Nullable
+[AI] Ngày dự báo bảo trì trước khi thiết bị hỏng.
+created_at
+TIMESTAMP
+Default NOW()
+Thời gian thêm thiết bị.
+updated_at
+TIMESTAMP
+Default NOW()
+Thời gian cập nhật thông tin thiết bị.
+deleted_at
+TIMESTAMP
+Nullable
+Thời gian hủy/thanh lý thiết bị.
+Bảng vehicles (Đăng ký xe & AI Nhận diện)
+Cột
+Kiểu dữ liệu
+Ràng buộc
+Mô tả
+id
+UUID
+Primary Key
+Định danh phương tiện.
+apartment_id
+UUID
+Foreign Key
+Căn hộ chủ xe.
+license_plate
+VARCHAR(20)
+Unique
+[AI ALPR] Biển số để Camera AI quét mở barrier tự động.
+priority_level
+INT
+Default 1
+Ưu tiên chỗ đỗ xe dưới hầm.
+created_at
+TIMESTAMP
+Default NOW()
+Thời gian đăng ký xe.
+updated_at
+TIMESTAMP
+Default NOW()
+Thời gian cập nhật thông tin xe.
+deleted_at
+TIMESTAMP
+Nullable
+Thời gian hủy đăng ký xe.
+Bảng visitor_logs (Quản lý Khách thăm)
+Cột
+Kiểu dữ liệu
+Ràng buộc
+Mô tả
+id
+UUID
+Primary Key
+Định danh lượt khách.
+apartment_id
+UUID
+Foreign Key
+Khách đến thăm căn nào.
+qr_invite_code
+VARCHAR(255)
+Unique, Null
+Mã QR cư dân tạo để khách tự quét qua cổng an ninh.
+check_in_time
+TIMESTAMP
+Nullable
+Thời gian quẹt QR vào tòa nhà.
+created_at
+TIMESTAMP
+Default NOW()
+Thời gian tạo mã khách thăm.
+updated_at
+TIMESTAMP
+Default NOW()
+Thời gian cập nhật thông tin khách.
+deleted_at
+TIMESTAMP
+Nullable
+Thời gian xóa lịch sử khách thăm.
+Bảng security_alerts (Cảnh báo Camera AI Vision)
+Cột
+Kiểu dữ liệu
+Ràng buộc
+Mô tả
+id
+UUID
+Primary Key
+Mã cảnh báo an ninh.
+alert_type
+VARCHAR(50)
+Not Null
+[AI Vision] Loại sự cố phát hiện: Fire (Khói lửa), Violence (Xô xát).
+snapshot_url
+VARCHAR(255)
+Not Null
+[Website UI] Link ảnh tĩnh chụp khoảnh khắc sự cố.
+confidence
+FLOAT
+Not Null
+[AI] Độ tin cậy của cảnh báo (VD: 0.95 = 95%).
+created_at
+TIMESTAMP
+Default NOW()
+Thời gian hệ thống phát cảnh báo.
+updated_at
+TIMESTAMP
+Default NOW()
+Thời gian cập nhật trạng thái xử lý cảnh báo.
+deleted_at
+TIMESTAMP
+Nullable
+Thời gian xóa cảnh báo.
+Bảng facilities (Danh mục Tiện ích & Đặt chỗ)
+Cột
+Kiểu dữ liệu
+Ràng buộc
+Mô tả
+id
+UUID
+Primary Key
+Định danh tiện ích (BBQ, Bể bơi).
+max_quota_per_month
+INT
+Nullable
+Giới hạn lượt sử dụng/tháng (Chống quá tải).
+hero_image_url
+VARCHAR(255)
+Nullable
+[Website UI] Ảnh Banner khổ rộng sắc nét trên trang Booking.
+rating_score
+FLOAT
+Default 0
+[Website UI] Điểm đánh giá (Render 5 Ngôi sao).
+created_at
+TIMESTAMP
+Default NOW()
+Thời gian tạo tiện ích.
+updated_at
+TIMESTAMP
+Default NOW()
+Thời gian cập nhật thông tin tiện ích.
+deleted_at
+TIMESTAMP
+Nullable
+Thời gian đóng cửa/xóa tiện ích.
+Bảng community_posts (Bảng tin chung & Forum)
+Cột
+Kiểu dữ liệu
+Ràng buộc
+Mô tả
+id
+UUID
+Primary Key
+Định danh bài viết.
+content
+TEXT
+Not Null
+Nội dung thông báo/bài đăng.
+ai_moderation
+VARCHAR(20)
+Default 'Pending'
+[AI] Kiểm duyệt tự động: Clean, Toxic (Tự động ẩn bài vi phạm).
+ai_sentiment
+FLOAT
+Nullable
+[AI] Điểm cảm xúc văn bản do AI phân tích (-1.0 đến 1.0).
+tags
+JSONB
+Nullable
+[Website UI] Nhãn dán chủ đề render thành các Huy hiệu (Badge).
+created_at
+TIMESTAMP
+Default NOW()
+Thời gian đăng bài.
+updated_at
+TIMESTAMP
+Default NOW()
+Thời gian chỉnh sửa bài.
+deleted_at
+TIMESTAMP
+Nullable
+Thời gian xóa bài.
+5. Yêu cầu giao diện (Interface Requirements)
+5.1 Phân cấp Giao diện & Cấu trúc Bố cục (Layout Hierarchy)
+Tiêu chí
+Phân hệ Ban Quản Lý (Admin Dashboard)
+Phân hệ Cư dân (Resident Portal)
+Thiết bị tối ưu
+Máy tính bàn (PC), Laptop, Tablet lớn.
+Điện thoại thông minh (Smartphone).
+Cấu trúc Bố cục
+Sidebar Navigation: Menu cố định bên trái (có thể thu gọn/mở rộng).
+Top-bar: Thanh công cụ chứa ô Tìm kiếm và Chuông thông báo đỏ.
+App-like Layout: Thiết kế cuộn dọc như ứng dụng di động.
+Bottom Tab: Thanh menu dưới đáy để thao tác bằng một ngón tay cái.
+Vùng làm việc chính
+Sử dụng Data Grid (Bảng dữ liệu), Kanban Board (Bảng kéo thả) và Split-screen (Chia đôi màn hình).
+Sử dụng Card-based UI (Dạng thẻ bo góc, đổ bóng). Các nút bấm lớn (tối thiểu 44x44px).
+Dynamic UI
+(Hiển thị động)
+Hiển thị toàn bộ 15 Module cốt lõi.
+- Nếu là Chủ hộ: Đầy đủ 5 Tab (Home, Booking, Tài chính, Biểu quyết, Cá nhân).
+- Nếu là Khách thuê: Ẩn Tab Tài chính và Biểu quyết.
+Điểm chạm AI
+Tích hợp biểu đồ Cảm xúc (Sentiment) và Bản đồ Cảnh báo Camera AI nhấp nháy.
+Nút FAB (Floating Action Button) hình Robot ảo luôn nổi ở góc phải màn hình để gọi Chatbot.
+5.2 Bản đồ Màn hình cốt lõi (Core Screens Map)
+Phân hệ
+Tên màn hình
+Thành phần UI / Chức năng nổi bật
+Admin
+Command Center
+4 thẻ KPI (Doanh thu, Dư nợ, Ticket). Biểu đồ Line/Pie và Bản đồ Live Alert (Cảnh báo an ninh AI thời gian thực).
+Admin
+Operation Board
+Bảng Kanban (Chờ xử lý  Đang xử lý  Hoàn thành) để Admin kéo thả Ticket sửa chữa. Hỗ trợ upload ảnh nghiệm thu.
+Admin
+Billing Studio
+Lưới dữ liệu hóa đơn. Có bôi đỏ các dòng "Tiêu thụ điện/nước bất thường" do AI phát hiện để Admin rà soát.
+Resident
+Home Feed
+Thẻ mã QR mở cửa (tự làm mới mỗi 60s). Khối 4 nút truy cập nhanh. Bảng tin (Newsfeed) cuộn ngang.
+Resident
+Payment Gateway
+(Chỉ dành cho Chủ hộ). Hiển thị chi tiết số tiền, biểu đồ tiêu thụ nước và cổng thanh toán VNPay/Momo.
+Resident
+AI Chat Window
+Trượt từ dưới lên (Bottom Sheet). Giao diện chat có hiệu ứng "AI đang gõ..." và các nút câu hỏi gợi ý nhanh (Quick Replies).
+5.3 Bảng định nghĩa Màu sắc & Ngữ nghĩa (Semantic Color System)
+Nhóm màu sắc
+Hiển thị màu
+Ý nghĩa sử dụng (Semantic)
+Áp dụng cho các thành phần UI
+Màu Chủ đạo
+(Primary)
+Xanh dương
+(Blue)
+Đại diện cho công nghệ, sự chuyên nghiệp, và tính định hướng chính.
+Thanh Header, Nút bấm chính (Call to Action), Điểm nhấn logo, Link liên kết.
+Màu Thành công
+(Success)
+Xanh lá cây
+(Green)
+Báo hiệu sự an toàn, hoàn tất hoặc tình trạng tích cực.
+Trạng thái: "Đã thanh toán", "Đã sửa xong", "Hồ sơ hợp lệ", Chữ số doanh thu tăng.
+Màu Cảnh báo
+(Warning)
+Vàng / Cam
+(Yellow/Orange)
+Cần sự chú ý nhẹ, đang chờ xử lý, hoặc có nguy cơ tiềm ẩn.
+Trạng thái: "Đang chờ duyệt", Ticket "Đang xử lý", Thông báo nợ sắp đến hạn, AI dự báo thiết bị sắp hỏng.
+Màu Nguy hiểm
+(Danger)
+Đỏ
+(Red)
+Tình trạng khẩn cấp, lỗi nghiêm trọng, nguy hiểm an ninh.
+Báo động Camera AI (Cháy, Xô xát), Trạng thái "Nợ quá hạn", Nút Xóa/Hủy dữ liệu.
+Màu Nền / Chữ
+(Neutral)
+Trắng / Xám / Đen
+Tạo độ tương phản tốt nhất để đọc dữ liệu (Chuẩn WCAG 2.1).
+Nền bảng dữ liệu (Trắng), Chữ tiêu đề (Đen), Chữ chú thích phụ (Xám), Hiệu ứng bộ khung tải dữ liệu.
+5.4 Yêu cầu Trạng thái Trải nghiệm (UX States)
+Quy định cách giao diện phản hồi lại người dùng trong các điều kiện hệ thống khác nhau (mạng yếu, không có dữ liệu, v.v.).
+Trạng thái (State)
+Yêu cầu xử lý giao diện (UI Behavior)
+Tải dữ liệu (Loading)
+Tuyệt đối không hiển thị màn hình trắng. Phải dùng hiệu ứng Skeleton Loading (Bộ khung xương xám nhấp nháy mô phỏng cấu trúc nội dung sắp hiện).
+Dữ liệu trống (Empty)
+Khi cư dân chưa có hóa đơn hoặc chưa có ticket, phải hiển thị một Hình ảnh minh họa vui vẻ kèm dòng chữ: "Bạn hiện không có khoản nợ nào!" thay vì để trang giấy trắng.
+Xử lý Lỗi (Error)
+Khi mất mạng hoặc Server lỗi (400, 500), tự động hiển thị Popup thân thiện: "Kết nối bị gián đoạn, vui lòng thử lại". Cấm tuyệt đối việc in mã code lỗi kỹ thuật thô ra màn hình người dùng.
+Giao diện Tối/Sáng
+Hỗ trợ tính năng Dark Mode / Light Mode tự động thay đổi theo cài đặt hệ điều hành của thiết bị, giúp bảo vệ mắt cư dân khi xem App vào ban đêm.
+5.4 Yêu cầu Trạng thái Trải nghiệm (UX States)
+Hệ thống sử dụng kiến trúc Single Page Application (SPA), yêu cầu phân tách Frontend – Backend.
+Chuẩn kết nối
+Mục đích sử dụng
+Yêu cầu kỹ thuật
+RESTful API
+Tải dữ liệu danh sách (cư dân, hóa đơn, lịch sử bảo trì).
+Định dạng JSON. Thời gian phản hồi < 500ms.
+WebSocket
+Luồng dữ liệu thời gian thực (Real-time).
+Dùng cho: Chatbot AI và Đẩy thông báo (Push Notification) cảnh báo an ninh lên màn hình Admin (Độ trễ < 1s).
+Webhooks (3rd Party)
+Giao tiếp với các dịch vụ bên ngoài hệ thống.
+- Nhận IPN từ cổng VNPay/Momo để gạch nợ tự động.
+- Giao tiếp API SMS (Zalo ZNS/Twilio) gửi OTP.
+6. Yêu cầu phi chức năng (Non-functional Requirements)
+6.1 Yêu cầu về Hiệu năng (Performance Requirements)
+Vì hệ thống phục vụ cư dân thao tác hàng ngày và phải xử lý lượng lớn dữ liệu luồng (stream) từ camera/IoT của tòa nhà, các chỉ số hiệu năng được quy định khắt khe như sau:
+Thời gian phản hồi giao diện (Response Time): Thời gian tải trang (Page load time) đối với các giao diện Web dành cho Cư dân và Ban quản lý phải đạt tốc độ dưới 2 giây ở điều kiện mạng tiêu chuẩn (4G/Wifi).
+Độ trễ xử lý Trí tuệ nhân tạo (AI Latency):
+Thời gian phản hồi tin nhắn của AI Chatbot (Inference Latency) phải dưới 2.5 giây để duy trì cảm giác giao tiếp tự nhiên như người thật.
+Tốc độ phản hồi của hệ thống AI nhận diện khuôn mặt (FaceID) và nhận diện biển số (ALPR) phải dưới 0.5 giây để đảm bảo luồng giao thông qua cổng/barrier không bị ùn tắc.
+Khả năng chịu tải (Concurrency & Throughput): Hệ thống Backend phải được thiết kế để xử lý tối thiểu 1.000 kết nối đồng thời (Concurrent Users) mà không bị suy giảm hiệu năng. Đặc biệt phải đáp ứng được các đợt cao điểm tải trọng vào ngày đầu tháng (khi hàng loạt cư dân cùng đăng nhập xem và thanh toán hóa đơn).
+Xử lý bất đồng bộ (Asynchronous Processing): Các tác vụ tính toán nặng của AI (phân tích hàng ngàn bình luận để chấm điểm cảm xúc, tính toán dự báo bảo trì từ dữ liệu IoT, gửi email/SMS hàng loạt) bắt buộc phải được đẩy vào hàng đợi chạy ngầm (Background jobs/Message Queue) để không làm treo hoặc chậm giao diện Web của người dùng.
+6.2 Độ tin cậy và Khả năng phục hồi (Reliability & Availability)
+Độ sẵn sàng (Uptime): Hệ thống cốt lõi cần đảm bảo thời gian hoạt động đạt 99.9% (High Availability - HA), nhằm giảm thiểu tối đa thời gian gián đoạn ảnh hưởng đến sinh hoạt, an ninh của cư dân.
+Sao lưu dữ liệu (Automated Backup): Toàn bộ cơ sở dữ liệu (PostgreSQL) chứa thông tin tài chính, công nợ và hồ sơ cư dân phải được thiết lập cơ chế sao lưu tự động (Automated Backup) diễn ra hàng ngày vào giờ thấp điểm (VD: 3h00 sáng).
+Khả năng phục hồi sau thảm họa (Disaster Recovery): Trong trường hợp xảy ra sự cố nghiêm trọng sập máy chủ, hệ thống phải có quy trình khôi phục lại trạng thái dữ liệu từ bản backup gần nhất với Thời gian phục hồi (RTO - Recovery Time Objective) tối đa là 2 giờ.
+6.3 Yêu cầu về Bảo mật (Security Requirements)
+Bảo mật là yếu tố sống còn do hệ thống nắm giữ dữ liệu cá nhân của hàng ngàn cư dân, hình ảnh camera riêng tư và các giao dịch tài chính.
+Mã hóa dữ liệu truyền tải (Data in-transit): Mọi giao tiếp giữa trình duyệt Web (Client) của người dùng và Máy chủ (Server) bắt buộc phải được mã hóa qua giao thức HTTPS (TLS/SSL chuẩn mới nhất).
+Mã hóa dữ liệu lưu trữ (Data at-rest): Các thông tin nhạy cảm (như Mật khẩu người dùng, mã số định danh, mã thẻ từ) phải được băm (hashing) một chiều bằng các thuật toán mã hóa mạnh như bcrypt hoặc Argon2 trước khi lưu vào cơ sở dữ liệu.
+Xác thực và Quản lý phiên (Authentication): Sử dụng chuẩn JSON Web Token (JWT) kết hợp với các cơ chế chống XSS/CSRF để quản lý phiên đăng nhập (Session) an toàn trên Web
+Phân quyền chặt chẽ (Authorization): Áp dụng mô hình Kiểm soát truy cập dựa trên vai trò (RBAC - Role-Based Access Control) khắt khe ở cấp độ API. Cư dân chỉ được phép xem hóa đơn của chính mình, Kỹ thuật viên chỉ xem được task được giao, và chỉ Admin cấp cao mới có quyền xuất báo cáo tài chính tổng.
+Xác thực hai yếu tố (2FA/OTP): Bắt buộc tích hợp mã xác thực OTP (gửi qua SMS hoặc Email) khi cư dân thực hiện các hành động nhạy cảm như: Đổi mật khẩu, thay đổi số điện thoại, đăng ký xe mới, hoặc thanh toán hóa đơn có giá trị lớn.
+6.4 Khả năng mở rộng và Bảo trì (Scalability & Maintainability)
+Kiến trúc linh hoạt (Modular Architecture): Backend nên được xây dựng theo hướng Modular Monolith hoặc Microservices. Việc tách biệt rõ ràng "Lõi Web Nghiệp vụ" và "Lõi Xử lý AI" thành các dịch vụ (services) độc lập sẽ giúp dễ dàng nâng cấp mô hình AI (Model Weights) hoặc mở rộng tài nguyên máy chủ cho riêng module nào bị quá tải mà không ảnh hưởng toàn hệ thống.
+Tiêu chuẩn Mã nguồn (Clean Code): Mã nguồn hệ thống phải được viết minh bạch, có chú thích (comments) đầy đủ chức năng, tuân thủ nghiêm ngặt các nguyên tắc thiết kế phần mềm linh hoạt (SOLID).
+Quản lý Phiên bản (Version Control): Bắt buộc sử dụng Git để quản lý mã nguồn, hỗ trợ CI/CD để tự động hóa kiểm thử và triển khai, giúp đội ngũ kỹ thuật dễ dàng bàn giao, bảo trì và mở rộng tính năng trong tương lai.
+6.4 Khả năng mở rộng và Bảo trì (Scalability & Maintainability)
+Tính tương thích Trình duyệt (Cross-browser): Giao diện Web phải hoạt động trơn tru, ổn định và không vỡ bố cục trên các trình duyệt phổ biến hiện nay: Google Chrome (phiên bản 90+), Apple Safari (phiên bản 14+), Microsoft Edge và Mozilla Firefox.
+Thiết kế Đáp ứng (Responsive Design): Áp dụng nguyên tắc Mobile-first, hệ thống phải tự động căn chỉnh và thay đổi giao diện mượt mà theo các điểm neo (breakpoints) màn hình chuẩn: Mobile (<768px), Tablet (768px - 1024px) và Desktop (>1024px).
+Thân thiện với người dùng (UX/UI Accessibility): Bố cục không gian thoáng, sử dụng các gam màu có độ tương phản cao, phông chữ dễ đọc (Arial, Roboto). Đặc biệt, các nút bấm thao tác trên giao diện Mobile phải lớn (touch-friendly) để tối ưu trải nghiệm cho cả những cư dân lớn tuổi.
+7. Kết luận
+Tài liệu SRS này đặt nền móng cho việc phát triển SKYLINE Smart Residence. Việc tuân thủ các đặc tả này sẽ đảm bảo tính nhất quán, khả năng mở rộng và hiệu quả trong việc triển khai các giải pháp trí tuệ nhân tạo vào quy trình vận hành tòa nhà, từ đó nâng cao chất lượng dịch vụ và tối ưu hóa trải nghiệm của cư dân.

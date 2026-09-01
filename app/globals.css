@@ -1,0 +1,154 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --font-serif: 'Playfair Display', Georgia, serif;
+  --font-sans: 'Plus Jakarta Sans', system-ui, sans-serif;
+  --color-gold: #C5A880;
+  --color-gold-dark: #9E8057;
+  --color-noir: #0D1117;
+  --color-charcoal: #161B22;
+  --color-border: #E2E8F0;
+  --color-dark-border: #2D3748;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: #FAFAFA;
+  color: #1A202C;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Luxury Editorial Headings */
+h1, h2, h3, .font-editorial {
+  font-family: var(--font-serif);
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+
+/* Sharp Architectural Buttons & Elements */
+.hendon-btn-primary {
+  background-color: #0D1117;
+  color: #FFFFFF;
+  border: 1px solid #0D1117;
+  padding: 10px 24px;
+  font-size: 0.8125rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  font-weight: 600;
+  border-radius: 0px;
+  transition: all 0.2s ease-in-out;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.hendon-btn-primary:hover {
+  background-color: #C5A880;
+  border-color: #C5A880;
+  color: #0D1117;
+}
+
+.hendon-btn-gold {
+  background-color: #C5A880;
+  color: #0D1117;
+  border: 1px solid #C5A880;
+  padding: 10px 24px;
+  font-size: 0.8125rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  font-weight: 600;
+  border-radius: 0px;
+  transition: all 0.2s ease-in-out;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.hendon-btn-gold:hover {
+  background-color: #0D1117;
+  color: #FFFFFF;
+  border-color: #0D1117;
+}
+
+.hendon-btn-outline {
+  background-color: transparent;
+  color: #0D1117;
+  border: 1px solid #0D1117;
+  padding: 10px 24px;
+  font-size: 0.8125rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  font-weight: 600;
+  border-radius: 0px;
+  transition: all 0.2s ease-in-out;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.hendon-btn-outline:hover {
+  background-color: #0D1117;
+  color: #FFFFFF;
+}
+
+/* Sharp Architectural Panels (No large border radius) */
+.hendon-panel {
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  border-radius: 0px;
+}
+
+.hendon-panel-dark {
+  background: #121820;
+  border: 1px solid #232D3B;
+  color: #F8FAFC;
+  border-radius: 0px;
+}
+
+/* Clean Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #F1F5F9;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #CBD5E1;
+  border-radius: 0px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94A3B8;
+}
+
+/* Subtle Sonar Radar Animation */
+@keyframes radar-ping {
+  0% {
+    transform: scale(0.95);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(2.2);
+    opacity: 0;
+  }
+}
+
+.animate-radar {
+  animation: radar-ping 2s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
