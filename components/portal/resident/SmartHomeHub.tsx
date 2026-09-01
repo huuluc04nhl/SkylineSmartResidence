@@ -21,9 +21,11 @@ import {
   AlertTriangle,
   Sliders,
   Users,
-  EyeOff
+  EyeOff,
+  Box
 } from 'lucide-react';
 import { User, UserRole, DEMO_APARTMENTS } from '@/lib/dataStore';
+import ApartmentModel3DViewer from '@/components/portal/shared/ApartmentModel3DViewer';
 
 interface SmartHomeHubProps {
   currentUser: User;
@@ -50,18 +52,31 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
   const [fireSensorActive, setFireSensorActive] = useState(true);
   const [toastMsg, setToastMsg] = useState<string | null>(null);
 
-  // Tenant Delegation Permissions (Managed by Owner)
-  const [tenantAllowedDevices, setTenantAllowedDevices] = useState({
-    lights: true,
-    ac: true,
-    curtains: true,
-    masterDoor: false,
-    securitySensors: false,
-  });
-
   const showToast = (msg: string) => {
     setToastMsg(msg);
     setTimeout(() => setToastMsg(null), 3500);
+  };
+
+  const handleToggleLight = (room: 'livingRoom' | 'bedroomMaster' | 'kitchen' | 'balcony') => {
+    setLights(prev => {
+      const next = { ...prev, [room]: !prev[room] };
+      showToast(`⚡ Đã chuyển trạng thái đèn: ${room === 'livingRoom' ? 'Phòng khách' : room === 'bedroomMaster' ? 'Phòng ngủ' : room === 'kitchen' ? 'Bếp' : 'Ban công'}`);
+      return next;
+    });
+  };
+
+  const handleToggleDoor = () => {
+    if (!isOwner) {
+      showToast('⚠️ Chỉ Chủ Hộ mới có quyền đóng/mở khóa Master Door.');
+      return;
+    }
+    setMasterDoorLocked(!masterDoorLocked);
+    showToast(masterDoorLocked ? '🔓 Đã mở chốt khóa cửa chính FaceID.' : '🔒 Đã khóa chốt an toàn FaceID.');
+  };
+
+  const handleToggleCurtains = () => {
+    setCurtainsOpen(!curtainsOpen);
+    showToast(curtainsOpen ? '🌘 Đang đóng rèm cửa ban công.' : '☀️ Đang mở rèm đón ánh sáng tự nhiên.');
   };
 
   // Scene Automation Trigger
@@ -101,26 +116,26 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
   };
 
   return (
-    <div className="space-y-6 w-full animate-fadeIn">
+    <div className="space-y-6 w-full animate-fadeIn select-none">
       {/* Header & Status */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#222B35] pb-4">
         <div>
           <div className="text-[10px] uppercase tracking-[0.25em] text-[#C5A880] font-semibold flex items-center gap-2">
-            <Cpu className="w-3.5 h-3.5" /> Module 3.2.14 • IoT Smart Living Hub
+            <Cpu className="w-3.5 h-3.5" /> Module 3.2.14 • IoT Smart Living Hub (Digital Twin)
           </div>
           <h2 className="font-serif text-2xl text-white font-bold mt-1">
-            Trung Tâm Điều Khiển Smart Home Căn {aptCode}
+            Trung Tâm Điều Khiển & Mô Hình 3D Căn Hộ {aptCode}
           </h2>
         </div>
 
         {/* Role Badge Indicator */}
         <div className="flex items-center gap-2">
           {isOwner ? (
-            <span className="px-3 py-1 bg-emerald-950/80 border border-emerald-500 text-emerald-300 text-xs font-bold uppercase tracking-wider flex items-center gap-1.5">
+            <span className="px-3 py-1 bg-emerald-950/80 border border-emerald-500 text-emerald-300 text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 rounded shadow">
               <ShieldCheck className="w-3.5 h-3.5" /> Toàn Quyền Quản Trị Master (Chủ Hộ)
             </span>
           ) : (
-            <span className="px-3 py-1 bg-amber-950/80 border border-amber-500 text-amber-300 text-xs font-semibold uppercase tracking-wider flex items-center gap-1.5">
+            <span className="px-3 py-1 bg-amber-950/80 border border-amber-500 text-amber-300 text-xs font-semibold uppercase tracking-wider flex items-center gap-1.5 rounded shadow">
               <LockKeyhole className="w-3.5 h-3.5" /> Quyền Cư Dân Thuộc Chủ Hộ (Gia Đình)
             </span>
           )}
@@ -129,7 +144,7 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
 
       {/* Toast Notification */}
       {toastMsg && (
-        <div className="p-3.5 bg-[#121E2A] border border-[#C5A880] text-[#C5A880] text-xs font-medium flex items-center gap-2 animate-fadeIn shadow-lg">
+        <div className="p-3.5 bg-[#121E2A] border border-[#C5A880] text-[#C5A880] text-xs font-medium flex items-center gap-2 animate-fadeIn shadow-lg rounded">
           <Sparkles className="w-4 h-4 text-[#C5A880] flex-shrink-0" />
           <span>{toastMsg}</span>
         </div>
@@ -137,7 +152,7 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
 
       {/* Environment IoT Metrics Strip */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        <div className="p-3.5 bg-[#121820] border border-[#222B35] flex items-center justify-between">
+        <div className="p-3.5 bg-[#121820] border border-[#222B35] flex items-center justify-between rounded">
           <div>
             <div className="text-[10px] uppercase tracking-wider text-gray-400">Nhiệt Độ Phòng</div>
             <div className="text-xl font-mono font-bold text-white mt-0.5">{acTemp}.5 °C</div>
@@ -145,15 +160,15 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
           <Thermometer className="w-6 h-6 text-[#C5A880]" />
         </div>
 
-        <div className="p-3.5 bg-[#121820] border border-[#222B35] flex items-center justify-between">
+        <div className="p-3.5 bg-[#121820] border border-[#222B35] flex items-center justify-between rounded">
           <div>
             <div className="text-[10px] uppercase tracking-wider text-gray-400">Độ Ẩm Không Khí</div>
-            <div className="text-xl font-mono font-bold text-white mt-0.5">58 %</div>
+            <div className="text-xl font-mono font-bold text-blue-400 mt-0.5">58 %</div>
           </div>
           <Droplets className="w-6 h-6 text-blue-400" />
         </div>
 
-        <div className="p-3.5 bg-[#121820] border border-[#222B35] flex items-center justify-between">
+        <div className="p-3.5 bg-[#121820] border border-[#222B35] flex items-center justify-between rounded">
           <div>
             <div className="text-[10px] uppercase tracking-wider text-gray-400">Chất Lượng AQI</div>
             <div className="text-xl font-mono font-bold text-emerald-400 mt-0.5">18 (Trong Lành)</div>
@@ -161,7 +176,7 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
           <Wind className="w-6 h-6 text-emerald-400" />
         </div>
 
-        <div className="p-3.5 bg-[#121820] border border-[#222B35] flex items-center justify-between">
+        <div className="p-3.5 bg-[#121820] border border-[#222B35] flex items-center justify-between rounded">
           <div>
             <div className="text-[10px] uppercase tracking-wider text-gray-400">Điện Năng Tức Thời</div>
             <div className="text-xl font-mono font-bold text-[#C5A880] mt-0.5">1.38 kW/h</div>
@@ -170,8 +185,38 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
         </div>
       </div>
 
+      {/* ------------------------------------------------------------- */}
+      {/* DIGITAL TWIN 3D / 2D INTERACTIVE SIMULATION MODEL CANVAS     */}
+      {/* ------------------------------------------------------------- */}
+      <div className="space-y-2">
+        <div className="flex items-center justify-between">
+          <div className="text-xs uppercase tracking-wider text-[#C5A880] font-bold flex items-center gap-1.5">
+            <Box className="w-3.5 h-3.5" /> Mô Hình Digital Twin 3D / 2D Tương Tác Trực Tuyến:
+          </div>
+          <span className="text-[10px] text-gray-400 font-mono">
+            * Đồng bộ 1:1 theo thời gian thực với thiết bị IoT căn hộ
+          </span>
+        </div>
+
+        <ApartmentModel3DViewer
+          apartmentCode={aptCode}
+          apartmentType="2PN - 2WC (Master Suite)"
+          clearArea={78.5}
+          lights={lights}
+          acPower={acPower}
+          acTemp={acTemp}
+          curtainsOpen={curtainsOpen}
+          doorLocked={masterDoorLocked}
+          waterLeakActive={waterLeakSensorActive}
+          onToggleLight={handleToggleLight}
+          onToggleDoor={handleToggleDoor}
+          onToggleCurtains={handleToggleCurtains}
+          interactive={true}
+        />
+      </div>
+
       {/* 1-Click Scenes Automation Strip */}
-      <div className="p-5 bg-[#121820] border border-[#222B35] space-y-3">
+      <div className="p-5 bg-[#121820] border border-[#222B35] space-y-3 rounded">
         <div className="flex items-center justify-between">
           <div className="text-xs uppercase tracking-wider text-[#C5A880] font-bold flex items-center gap-1.5">
             <Sparkles className="w-3.5 h-3.5" /> Ngữ Cảnh Tự Động Hóa 1-Chạm (Scene Automation):
@@ -186,7 +231,7 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
           <button
             onClick={() => handleTriggerScene('AWAY')}
-            className={`p-3 border text-left transition-all ${
+            className={`p-3 border text-left transition-all rounded ${
               activeScene === 'AWAY'
                 ? 'bg-[#1C2533] border-[#C5A880] text-white ring-1 ring-[#C5A880]'
                 : 'bg-[#0D1117] border-[#222B35] text-gray-400 hover:border-gray-500'
@@ -202,7 +247,7 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
 
           <button
             onClick={() => handleTriggerScene('CINEMA')}
-            className={`p-3 border text-left transition-all ${
+            className={`p-3 border text-left transition-all rounded ${
               activeScene === 'CINEMA'
                 ? 'bg-[#1C2533] border-[#C5A880] text-white ring-1 ring-[#C5A880]'
                 : 'bg-[#0D1117] border-[#222B35] text-gray-400 hover:border-gray-500'
@@ -218,7 +263,7 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
 
           <button
             onClick={() => handleTriggerScene('SLEEP')}
-            className={`p-3 border text-left transition-all ${
+            className={`p-3 border text-left transition-all rounded ${
               activeScene === 'SLEEP'
                 ? 'bg-[#1C2533] border-[#C5A880] text-white ring-1 ring-[#C5A880]'
                 : 'bg-[#0D1117] border-[#222B35] text-gray-400 hover:border-gray-500'
@@ -234,7 +279,7 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
 
           <button
             onClick={() => handleTriggerScene('WELCOME')}
-            className={`p-3 border text-left transition-all ${
+            className={`p-3 border text-left transition-all rounded ${
               activeScene === 'WELCOME'
                 ? 'bg-[#1C2533] border-[#C5A880] text-white ring-1 ring-[#C5A880]'
                 : 'bg-[#0D1117] border-[#222B35] text-gray-400 hover:border-gray-500'
@@ -260,13 +305,13 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
 
           {/* Lights Subgrid */}
           <div className="grid grid-cols-2 gap-3">
-            <div className="p-4 bg-[#121820] border border-[#222B35] flex items-center justify-between">
+            <div className="p-4 bg-[#121820] border border-[#222B35] flex items-center justify-between rounded">
               <div>
                 <div className="text-xs font-semibold text-white">Đèn Phòng Khách</div>
                 <div className="text-[10px] text-gray-400">{lights.livingRoom ? 'Đang sáng 100%' : 'Đã tắt'}</div>
               </div>
               <button
-                onClick={() => setLights(prev => ({ ...prev, livingRoom: !prev.livingRoom }))}
+                onClick={() => handleToggleLight('livingRoom')}
                 className={`w-12 h-6 rounded-full transition-colors relative p-0.5 ${
                   lights.livingRoom ? 'bg-[#C5A880]' : 'bg-gray-700'
                 }`}
@@ -275,13 +320,13 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
               </button>
             </div>
 
-            <div className="p-4 bg-[#121820] border border-[#222B35] flex items-center justify-between">
+            <div className="p-4 bg-[#121820] border border-[#222B35] flex items-center justify-between rounded">
               <div>
-                <div className="text-xs font-semibold text-white">Đèn Phòng Ngủ</div>
+                <div className="text-xs font-semibold text-white">Đèn Phòng Ngủ Master</div>
                 <div className="text-[10px] text-gray-400">{lights.bedroomMaster ? 'Đang sáng' : 'Đã tắt'}</div>
               </div>
               <button
-                onClick={() => setLights(prev => ({ ...prev, bedroomMaster: !prev.bedroomMaster }))}
+                onClick={() => handleToggleLight('bedroomMaster')}
                 className={`w-12 h-6 rounded-full transition-colors relative p-0.5 ${
                   lights.bedroomMaster ? 'bg-[#C5A880]' : 'bg-gray-700'
                 }`}
@@ -290,13 +335,13 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
               </button>
             </div>
 
-            <div className="p-4 bg-[#121820] border border-[#222B35] flex items-center justify-between">
+            <div className="p-4 bg-[#121820] border border-[#222B35] flex items-center justify-between rounded">
               <div>
                 <div className="text-xs font-semibold text-white">Đèn Bếp & Bar</div>
                 <div className="text-[10px] text-gray-400">{lights.kitchen ? 'Đang sáng' : 'Đã tắt'}</div>
               </div>
               <button
-                onClick={() => setLights(prev => ({ ...prev, kitchen: !prev.kitchen }))}
+                onClick={() => handleToggleLight('kitchen')}
                 className={`w-12 h-6 rounded-full transition-colors relative p-0.5 ${
                   lights.kitchen ? 'bg-[#C5A880]' : 'bg-gray-700'
                 }`}
@@ -305,14 +350,14 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
               </button>
             </div>
 
-            <div className="p-4 bg-[#121820] border border-[#222B35] flex items-center justify-between">
+            <div className="p-4 bg-[#121820] border border-[#222B35] flex items-center justify-between rounded">
               <div>
                 <div className="text-xs font-semibold text-white">Rèm Cửa Ban Công</div>
                 <div className="text-[10px] text-gray-400">{curtainsOpen ? 'Đang mở (100%)' : 'Đã đóng kín'}</div>
               </div>
               <button
-                onClick={() => setCurtainsOpen(!curtainsOpen)}
-                className={`px-3 py-1.5 text-xs font-bold uppercase tracking-wider transition-colors ${
+                onClick={handleToggleCurtains}
+                className={`px-3 py-1.5 text-xs font-bold uppercase tracking-wider transition-colors rounded ${
                   curtainsOpen ? 'bg-[#C5A880] text-[#0D1117]' : 'bg-gray-800 text-gray-300'
                 }`}
               >
@@ -322,15 +367,18 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
           </div>
 
           {/* AC Climate Control */}
-          <div className="p-4 bg-[#121820] border border-[#222B35] space-y-3">
+          <div className="p-4 bg-[#121820] border border-[#222B35] space-y-3 rounded">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Wind className="w-4 h-4 text-[#C5A880]" />
                 <span className="text-xs font-semibold text-white">Điều Hòa Trung Tâm Daikin Inverter</span>
               </div>
               <button
-                onClick={() => setAcPower(!acPower)}
-                className={`px-2.5 py-1 text-[10px] uppercase tracking-wider font-bold ${
+                onClick={() => {
+                  setAcPower(!acPower);
+                  showToast(acPower ? '❄️ Đã tắt điều hòa trung tâm.' : '❄️ Đã bật điều hòa Daikin Inverter.');
+                }}
+                className={`px-2.5 py-1 text-[10px] uppercase tracking-wider font-bold rounded ${
                   acPower ? 'bg-emerald-950 text-emerald-300 border border-emerald-500' : 'bg-red-950 text-red-300 border border-red-500'
                 }`}
               >
@@ -343,13 +391,13 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => setAcTemp(t => Math.max(16, t - 1))}
-                  className="w-8 h-8 bg-[#161B22] border border-gray-600 text-white font-bold hover:border-[#C5A880]"
+                  className="w-8 h-8 bg-[#161B22] border border-gray-600 text-white font-bold hover:border-[#C5A880] rounded"
                 >
                   -
                 </button>
                 <button
                   onClick={() => setAcTemp(t => Math.min(30, t + 1))}
-                  className="w-8 h-8 bg-[#161B22] border border-gray-600 text-white font-bold hover:border-[#C5A880]"
+                  className="w-8 h-8 bg-[#161B22] border border-gray-600 text-white font-bold hover:border-[#C5A880] rounded"
                 >
                   +
                 </button>
@@ -358,7 +406,7 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
           </div>
         </div>
 
-        {/* Right Column: Master Security & Sensitive Sensors (Owner Full, Tenant Locked) */}
+        {/* Right Column: Master Security & Sensitive Sensors */}
         <div className="lg:col-span-5 space-y-4">
           <div className="text-xs uppercase tracking-wider text-[#C5A880] font-bold flex items-center justify-between">
             <span className="flex items-center gap-1.5">
@@ -370,7 +418,7 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
           </div>
 
           {/* Master FaceID Door Lock */}
-          <div className={`p-4 border transition-all ${
+          <div className={`p-4 border transition-all rounded ${
             isOwner ? 'bg-[#121820] border-[#222B35]' : 'bg-[#161B22]/60 border-amber-900/40 relative'
           }`}>
             <div className="flex items-center justify-between">
@@ -384,31 +432,23 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
 
               {isOwner ? (
                 <button
-                  onClick={() => {
-                    setMasterDoorLocked(!masterDoorLocked);
-                    showToast(masterDoorLocked ? '🔓 Đã mở khóa cửa chính căn hộ.' : '🔒 Đã khóa chốt an toàn cửa chính.');
-                  }}
-                  className={`px-3 py-1.5 text-xs font-bold uppercase tracking-wider ${
+                  onClick={handleToggleDoor}
+                  className={`px-3 py-1.5 text-xs font-bold uppercase tracking-wider rounded ${
                     masterDoorLocked ? 'bg-[#C5A880] text-[#0D1117]' : 'bg-red-600 text-white'
                   }`}
                 >
                   {masterDoorLocked ? 'Mở Khóa' : 'Khóa Chốt'}
                 </button>
               ) : (
-                <div className="p-1.5 bg-amber-950/80 border border-amber-500/50 text-amber-400 text-[10px] font-mono flex items-center gap-1">
+                <div className="p-1.5 bg-amber-950/80 border border-amber-500/50 text-amber-400 text-[10px] font-mono flex items-center gap-1 rounded">
                   <LockKeyhole className="w-3 h-3" /> Khóa Chủ Hộ
                 </div>
               )}
             </div>
-            {!isOwner && (
-              <div className="mt-2 text-[10px] text-gray-400 italic">
-                * Chỉ Chủ hộ mới có quyền thay đổi mã PIN và quản lý danh sách khuôn mặt FaceID.
-              </div>
-            )}
           </div>
 
           {/* AI Night Water Leakage Sensor */}
-          <div className={`p-4 border transition-all ${
+          <div className={`p-4 border transition-all rounded ${
             isOwner ? 'bg-[#121820] border-[#222B35]' : 'bg-[#161B22]/60 border-amber-900/40'
           }`}>
             <div className="flex items-center justify-between">
@@ -420,7 +460,7 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
                 </div>
               </div>
               {isOwner ? (
-                <span className="px-2 py-0.5 bg-emerald-950 text-emerald-300 border border-emerald-500 text-[10px] font-mono">
+                <span className="px-2 py-0.5 bg-emerald-950 text-emerald-300 border border-emerald-500 text-[10px] font-mono rounded">
                   ACTIVE
                 </span>
               ) : (
@@ -430,7 +470,7 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
           </div>
 
           {/* Fire & Smoke Alarm PCCC */}
-          <div className={`p-4 border transition-all ${
+          <div className={`p-4 border transition-all rounded ${
             isOwner ? 'bg-[#121820] border-[#222B35]' : 'bg-[#161B22]/60 border-amber-900/40'
           }`}>
             <div className="flex items-center justify-between">
@@ -441,7 +481,7 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
                   <div className="text-[10px] text-emerald-400">Nồng độ CO: 0.0 ppm (Bình thường)</div>
                 </div>
               </div>
-              <span className="px-2 py-0.5 bg-emerald-950 text-emerald-300 border border-emerald-500 text-[10px] font-mono">
+              <span className="px-2 py-0.5 bg-emerald-950 text-emerald-300 border border-emerald-500 text-[10px] font-mono rounded">
                 24/7 AUTO
               </span>
             </div>
@@ -449,7 +489,7 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
 
           {/* Main Circuit Breaker (Owner Exclusive) */}
           {isOwner ? (
-            <div className="p-4 bg-[#121820] border border-[#222B35] flex items-center justify-between">
+            <div className="p-4 bg-[#121820] border border-[#222B35] flex items-center justify-between rounded">
               <div className="flex items-center gap-2">
                 <Power className="w-4 h-4 text-[#C5A880]" />
                 <div>
@@ -462,7 +502,7 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
                   setMainPowerActive(!mainPowerActive);
                   showToast(mainPowerActive ? '⚠️ Đã ngắt nguồn điện tổng căn hộ.' : '⚡ Đã cấp lại nguồn điện tổng.');
                 }}
-                className={`px-3 py-1 text-xs font-bold uppercase ${
+                className={`px-3 py-1 text-xs font-bold uppercase rounded ${
                   mainPowerActive ? 'bg-emerald-900 text-emerald-200 border border-emerald-500' : 'bg-red-600 text-white'
                 }`}
               >
@@ -470,7 +510,7 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
               </button>
             </div>
           ) : (
-            <div className="p-3 bg-amber-950/40 border border-amber-900/60 text-[11px] text-amber-300 flex items-start gap-2">
+            <div className="p-3 bg-amber-950/40 border border-amber-900/60 text-[11px] text-amber-300 flex items-start gap-2 rounded">
               <LockKeyhole className="w-3.5 h-3.5 mt-0.5 flex-shrink-0 text-amber-400" />
               <span>
                 <strong>Cơ chế bảo vệ:</strong> Nguồn điện tổng và hệ thống cảm biến kỹ thuật chỉ thuộc quyền quản lý của Chủ sở hữu (Owner).
