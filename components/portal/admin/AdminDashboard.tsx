@@ -32,34 +32,25 @@ import {
   MapPin,
   Waves,
   ShieldCheck,
-  AlertCircle,
-  CornerUpLeft,
-  CornerDownRight,
-  ChevronRight
+  AlertCircle
 } from 'lucide-react';
-
-export type StickDirection = 'TOP_LEFT' | 'TOP_RIGHT' | 'BOTTOM_LEFT' | 'BOTTOM_RIGHT';
-
-export interface ThreatItem {
-  id: string;
-  type: 'FIRE' | 'WATER' | 'INTRUSION' | 'PARKING';
-  code: string;
-  title: string;
-  location: string;
-  severity: 'LOW' | 'MEDIUM' | 'HIGH';
-  confidence: number;
-  snapshot: string;
-  time: string;
-  coords: { x: number; y: number }; // Percentage on map canvas
-  stickDirection: StickDirection;
-}
 
 interface FloorThreatData {
   floor: 'B1' | 'L1' | '12' | '25';
   floorName: string;
   threatLevel: 'NORMAL' | 'WARNING' | 'CRITICAL';
   activeNodes: number;
-  threats: ThreatItem[];
+  threats: {
+    id: string;
+    type: 'FIRE' | 'WATER' | 'INTRUSION' | 'PARKING';
+    title: string;
+    location: string;
+    severity: 'LOW' | 'MEDIUM' | 'HIGH';
+    confidence: number;
+    snapshot: string;
+    time: string;
+    coords: { x: number; y: number };
+  }[];
 }
 
 const FLOOR_THREAT_DATABASE: Record<string, FloorThreatData> = {
@@ -72,28 +63,24 @@ const FLOOR_THREAT_DATABASE: Record<string, FloorThreatData> = {
       {
         id: 'T-B1-01',
         type: 'FIRE',
-        code: 'CAM-B1-08',
-        title: 'Tụ Điểm Khói Ngầm Bốc Lên',
-        location: 'Khu Bãi Xe Ô Tô Block A (Cột B1-08)',
+        title: 'Camera AI Phát Hiện Tụ Điểm Khói Ngầm (96%)',
+        location: 'Khu Vực Đỗ Xe Ô Tô Block A (Cột B1-08)',
         severity: 'HIGH',
         confidence: 0.96,
         snapshot: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600',
         time: '13:42:15',
-        coords: { x: 35, y: 44 },
-        stickDirection: 'TOP_LEFT' // Stick chĩa xéo lên góc trên-trái
+        coords: { x: 45, y: 38 }
       },
       {
         id: 'T-B1-02',
         type: 'PARKING',
-        code: 'ALPR-B1-02',
-        title: 'Đỗ Xe Chắn Lối Thoát Nạn',
-        location: 'Lối Cửa Thoát Hiểm B1-North',
+        title: 'Cảnh Báo Đỗ Xe Sai Vị Trí / Chắn Lối Thoát Hiểm',
+        location: 'Lối Thoát Nạn Cửa B1-North',
         severity: 'MEDIUM',
         confidence: 0.89,
         snapshot: 'https://images.unsplash.com/photo-1506521781263-d8422e82f27a?w=600',
         time: '13:30:00',
-        coords: { x: 68, y: 58 },
-        stickDirection: 'BOTTOM_RIGHT' // Stick chĩa xéo xuống góc dưới-phải
+        coords: { x: 75, y: 65 }
       }
     ]
   },
@@ -106,15 +93,13 @@ const FLOOR_THREAT_DATABASE: Record<string, FloorThreatData> = {
       {
         id: 'T-L1-01',
         type: 'INTRUSION',
-        code: 'DOOR-L1-02',
-        title: 'Cửa Thoát Hiểm Mở Quá 5 Phút',
+        title: 'Cửa Thoát Hiểm Cầu Thang Bộ Mở Quá 5 Phút',
         location: 'Sảnh Đón Tháp B (Cửa Stair-02)',
         severity: 'LOW',
         confidence: 0.92,
         snapshot: 'https://images.unsplash.com/photo-1541888946425-d0fbb18086f6?w=600',
         time: '13:15:00',
-        coords: { x: 32, y: 48 },
-        stickDirection: 'TOP_LEFT'
+        coords: { x: 30, y: 55 }
       }
     ]
   },
@@ -127,15 +112,13 @@ const FLOOR_THREAT_DATABASE: Record<string, FloorThreatData> = {
       {
         id: 'T-12-01',
         type: 'WATER',
-        code: 'LEAK-12A05',
-        title: 'Áp Lực Nước Bất Thường (+115%)',
-        location: 'Trục Kỹ Thuật Căn Hộ 12A05',
+        title: 'Cảm Biến AI Phát Hiện Áp Lực Nước Bất Thường (+115%)',
+        location: 'Trục Kỹ Thuật Căn 12A05',
         severity: 'MEDIUM',
         confidence: 0.94,
         snapshot: 'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?w=600',
         time: '12:50:20',
-        coords: { x: 64, y: 46 },
-        stickDirection: 'TOP_RIGHT' // Stick chĩa xéo lên góc trên-phải
+        coords: { x: 60, y: 42 }
       }
     ]
   },
@@ -158,19 +141,17 @@ export default function AdminDashboard() {
   const activeThreat = currentFloorData.threats.find(t => t.id === selectedThreatId) || currentFloorData.threats[0] || {
     id: 'NONE',
     type: 'FIRE' as const,
-    code: 'SAFE',
-    title: 'Hệ Thống An Ninh Tòa Nhà Hoạt Động Bình Thường',
+    title: 'Không Có Sự Cố An Ninh Nào Tại Tầng Này',
     location: currentFloorData.floorName,
     severity: 'LOW' as const,
     confidence: 1.0,
     snapshot: 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=600',
-    time: 'Trực Tiếp',
-    coords: { x: 50, y: 50 },
-    stickDirection: 'TOP_LEFT' as const
+    time: 'Bình thường',
+    coords: { x: 50, y: 50 }
   };
 
   const handleDispatchSecurity = () => {
-    setDispatchStatus(`📡 ĐÃ ĐIỀU ĐỘNG: Đội Bảo Vệ Trực Ban đang phản ứng nhanh đến ${currentFloorData.floorName} (Cam kết SLA 3 phút)!`);
+    setDispatchStatus(`📡 LỆNH ĐIỀU ĐỘNG: Đã phát lệnh phản ứng nhanh tới Đội Bảo Vệ Trực Ban tại ${currentFloorData.floorName} (Cam kết có mặt & xử lý trong 3 phút theo chuẩn SLA BQL)!`);
     setTimeout(() => setDispatchStatus(null), 6000);
   };
 
@@ -246,130 +227,112 @@ export default function AdminDashboard() {
       </div>
 
       {/* ------------------------------------------------------------- */}
-      {/* MAIN SECTION: LIVE BUILDING THREAT RADAR WITH OUTWARD STICKS  */}
+      {/* MAIN SECTION: LIVE BUILDING THREAT MAP & VISION AI RADAR      */}
       {/* ------------------------------------------------------------- */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        {/* Left 7 Cols: Multi-Floor Threat Radar with Directional Stick Callouts */}
-        <div className="lg:col-span-7 bg-[#121820] border border-[#222B35] p-5 space-y-4 shadow-xl rounded flex flex-col justify-between">
+        {/* Left 7 Cols: Multi-Floor Security & PCCC Warning Map */}
+        <div className="lg:col-span-7 bg-[#121820] border border-[#222B35] p-5 space-y-4 shadow-xl rounded">
           {/* Top Floor Switcher & Threat Level */}
-          <div className="space-y-3">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#222B35] pb-3">
-              <div className="flex items-center gap-2">
-                <Radio className="w-4 h-4 text-red-500 animate-pulse" />
-                <span className="font-serif text-base text-white font-bold">
-                  Bản Đồ Cảnh Báo An Ninh Đa Tầng (Live Threat Radar)
-                </span>
-              </div>
-
-              {/* Floor Switcher Tabs */}
-              <div className="flex gap-1 border border-[#2D3748] bg-[#0D1117] p-0.5 rounded">
-                {(['B1', 'L1', '12', '25'] as const).map((floor) => {
-                  const fData = FLOOR_THREAT_DATABASE[floor];
-                  const hasCritical = fData.threatLevel === 'CRITICAL';
-                  const hasWarning = fData.threatLevel === 'WARNING';
-                  return (
-                    <button
-                      key={floor}
-                      type="button"
-                      onClick={() => {
-                        setSelectedFloor(floor);
-                        if (fData.threats.length > 0) {
-                          setSelectedThreatId(fData.threats[0].id);
-                        }
-                      }}
-                      className={`px-3 py-1.5 text-xs font-mono font-bold transition-all rounded relative ${
-                        selectedFloor === floor
-                          ? 'bg-[#C5A880] text-[#0D1117] shadow'
-                          : 'text-gray-400 hover:bg-[#1C2533] hover:text-white'
-                      }`}
-                    >
-                      <span>Tầng {floor}</span>
-                      {hasCritical && (
-                        <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-red-500 rounded-full animate-ping"></span>
-                      )}
-                      {hasWarning && !hasCritical && (
-                        <span className="absolute -top-1 -right-1 w-2 h-2 bg-amber-400 rounded-full"></span>
-                      )}
-                    </button>
-                  );
-                })}
-              </div>
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#222B35] pb-3">
+            <div className="flex items-center gap-2">
+              <Radio className="w-4 h-4 text-red-500 animate-pulse" />
+              <span className="font-serif text-base text-white font-bold">
+                Bản Đồ Cảnh Báo An Ninh Đa Tầng (Live Threat Radar)
+              </span>
             </div>
 
-            {/* Current Floor Threat Status Banner */}
-            <div className="flex items-center justify-between px-3.5 py-2 bg-[#0D1117] border border-[#222B35] text-xs font-mono rounded">
-              <div className="flex items-center gap-2">
-                <Building className="w-3.5 h-3.5 text-[#C5A880]" />
-                <span className="text-white font-bold">{currentFloorData.floorName}</span>
-              </div>
-              <span className={`px-2.5 py-0.5 text-[10px] font-bold uppercase rounded ${
-                currentFloorData.threatLevel === 'CRITICAL'
-                  ? 'bg-red-950 text-red-300 border border-red-500 shadow'
-                  : currentFloorData.threatLevel === 'WARNING'
-                    ? 'bg-amber-950 text-amber-300 border border-amber-500 shadow'
-                    : 'bg-emerald-950 text-emerald-300 border border-emerald-500'
-              }`}>
-                {currentFloorData.threatLevel === 'CRITICAL' ? '⚠️ NGUY HIỂM CAO' : currentFloorData.threatLevel === 'WARNING' ? '⚡ CẢNH BÁO' : '🟢 BÌNH THƯỜNG'}
-              </span>
+            {/* Floor Switcher */}
+            <div className="flex gap-1 border border-[#2D3748] bg-[#0D1117] p-0.5 rounded">
+              {(['B1', 'L1', '12', '25'] as const).map((floor) => {
+                const fData = FLOOR_THREAT_DATABASE[floor];
+                const hasCritical = fData.threatLevel === 'CRITICAL';
+                const hasWarning = fData.threatLevel === 'WARNING';
+                return (
+                  <button
+                    key={floor}
+                    type="button"
+                    onClick={() => {
+                      setSelectedFloor(floor);
+                      if (fData.threats.length > 0) {
+                        setSelectedThreatId(fData.threats[0].id);
+                      }
+                    }}
+                    className={`px-3 py-1 text-xs font-mono font-bold transition-all rounded relative ${
+                      selectedFloor === floor
+                        ? 'bg-[#C5A880] text-[#0D1117] shadow'
+                        : 'text-gray-400 hover:bg-[#1C2533] hover:text-white'
+                    }`}
+                  >
+                    <span>Tầng {floor}</span>
+                    {hasCritical && (
+                      <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-red-500 rounded-full animate-ping"></span>
+                    )}
+                    {hasWarning && !hasCritical && (
+                      <span className="absolute -top-1 -right-1 w-2 h-2 bg-amber-400 rounded-full"></span>
+                    )}
+                  </button>
+                );
+              })}
             </div>
           </div>
 
-          {/* Sơ đồ radar mặt bằng với các Stick chĩa ra từng hướng */}
-          <div className="relative h-[380px] bg-[#070A0F] border border-[#222B35] flex items-center justify-center overflow-hidden rounded shadow-inner my-2">
-            {/* Background architectural CAD grid */}
+          {/* Current Floor Threat Status Banner */}
+          <div className="flex items-center justify-between px-3.5 py-2 bg-[#0D1117] border border-[#222B35] text-xs font-mono rounded">
+            <div className="flex items-center gap-2">
+              <Building className="w-3.5 h-3.5 text-[#C5A880]" />
+              <span className="text-white font-bold">{currentFloorData.floorName}</span>
+            </div>
+            <span className={`px-2 py-0.5 text-[10px] font-bold uppercase rounded ${
+              currentFloorData.threatLevel === 'CRITICAL'
+                ? 'bg-red-950 text-red-300 border border-red-500'
+                : currentFloorData.threatLevel === 'WARNING'
+                  ? 'bg-amber-950 text-amber-300 border border-amber-500'
+                  : 'bg-emerald-950 text-emerald-300 border border-emerald-500'
+            }`}>
+              {currentFloorData.threatLevel === 'CRITICAL' ? '⚠️ NGUY HIỂM CAO' : currentFloorData.threatLevel === 'WARNING' ? '⚡ CẢNH BÁO' : '🟢 BÌNH THƯỜNG'}
+            </span>
+          </div>
+
+          {/* Sơ đồ radar mặt bằng tòa nhà tương tác */}
+          <div className="relative h-80 bg-[#070A0F] border border-[#222B35] flex items-center justify-center overflow-hidden rounded">
+            {/* Background architectural grid */}
             <div 
-              className="absolute inset-0 opacity-20 pointer-events-none"
+              className="absolute inset-0 opacity-25 pointer-events-none"
               style={{
                 backgroundImage: 'linear-gradient(to right, #1E293B 1px, transparent 1px), linear-gradient(to bottom, #1E293B 1px, transparent 1px)',
                 backgroundSize: '20px 20px'
               }}
             />
 
-            {/* Architectural Floor Blueprint Boundary Box */}
-            <div className="relative z-10 w-[92%] h-[90%] border-2 border-dashed border-gray-700 bg-[#0D1117]/85 rounded p-3 flex flex-col justify-between shadow-2xl">
+            {/* Simulated Architectural Floor Blueprint Canvas */}
+            <div className="relative z-10 w-[90%] h-[85%] border-2 border-dashed border-gray-700 bg-[#0D1117]/80 rounded p-4 flex flex-col justify-between shadow-2xl">
               {/* Floor Header Label */}
-              <div className="flex justify-between items-center text-[10px] font-mono text-gray-400 border-b border-gray-800 pb-1">
+              <div className="flex justify-between items-center text-[10px] font-mono text-gray-400 border-b border-gray-800 pb-1.5">
                 <span className="text-[#C5A880] font-bold">Khu Vực: Trục Tháp Sapphire (Tầng {selectedFloor})</span>
                 <span>Cảm Biến IoT: {currentFloorData.activeNodes} Nodes Active</span>
               </div>
 
-              {/* Main Blueprint Center Stage */}
-              <div className="relative flex-1 my-1">
-                {/* Fixed Central Element: Thang Máy Schindler (Placed cleanly in Center without overlap) */}
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 px-4 py-2.5 bg-[#161D26] border border-gray-600 text-[10px] font-mono text-gray-300 text-center rounded shadow-lg z-10">
-                  <div className="font-bold text-white flex items-center justify-center gap-1.5">
-                    <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                    Trục 06 Thang Máy Schindler
-                  </div>
-                  <div className="text-[9px] text-emerald-400 mt-0.5">Tốc độ: 4.0 m/s • Tải: 100% Bình thường</div>
-                </div>
-
-                {/* Infrastructure Safe Nodes (Spaced Out) */}
-                <div className="absolute top-2 left-3 px-2 py-1 bg-[#121820] border border-gray-700 text-[9px] font-mono text-gray-400 rounded">
+              {/* Architectural Zones & Sensor Pins */}
+              <div className="relative flex-1 my-2">
+                {/* Zone 1: North Emergency Stairwell */}
+                <div className="absolute top-2 left-4 px-2 py-1 bg-[#161B22] border border-gray-700 text-[9px] font-mono text-gray-400 rounded">
                   Cầu Thang Thoát Hiểm N-01
                 </div>
 
-                <div className="absolute bottom-2 right-3 px-2 py-1 bg-[#121820] border border-gray-700 text-[9px] font-mono text-gray-400 rounded">
+                {/* Zone 2: Central Elevator Shaft */}
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 px-3 py-2 bg-[#1C2533] border border-gray-600 text-[10px] font-mono text-gray-300 text-center rounded">
+                  <div className="font-bold text-white">Trục 06 Thang Máy Schindler</div>
+                  <div className="text-[8px] text-emerald-400">Tốc độ: 4.0 m/s • Tải: Bình thường</div>
+                </div>
+
+                {/* Zone 3: South Fire Station */}
+                <div className="absolute bottom-2 right-4 px-2 py-1 bg-[#161B22] border border-gray-700 text-[9px] font-mono text-gray-400 rounded">
                   Hộp Họng Nước PCCC S-02
                 </div>
 
-                <div className="absolute bottom-2 left-3 flex items-center gap-1 text-[9px] text-emerald-400 font-mono bg-[#121820]/80 px-2 py-0.5 border border-gray-800 rounded">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Barrier-Gate 02
-                </div>
-
-                <div className="absolute top-2 right-3 flex items-center gap-1 text-[9px] text-emerald-400 font-mono bg-[#121820]/80 px-2 py-0.5 border border-gray-800 rounded">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Cam-AI-14
-                </div>
-
-                {/* ======================================================= */}
-                {/* ACTIVE THREATS WITH DIRECTIONAL STICKS (CHĨA RA TỪNG HƯỚNG) */}
-                {/* ======================================================= */}
+                {/* Active Threat Pins on Floor */}
                 {currentFloorData.threats.map((threat) => {
                   const isSelected = activeThreat.id === threat.id;
-                  const isHigh = threat.severity === 'HIGH';
-                  const beaconColor = isHigh ? '#EF4444' : '#F59E0B';
-                  const cardBg = isHigh ? 'bg-red-950/95 border-red-500' : 'bg-amber-950/95 border-amber-500';
-
                   return (
                     <div
                       key={threat.id}
@@ -377,139 +340,37 @@ export default function AdminDashboard() {
                       style={{ left: `${threat.coords.x}%`, top: `${threat.coords.y}%` }}
                       className="absolute -translate-x-1/2 -translate-y-1/2 cursor-pointer z-20 group"
                     >
-                      {/* 1. Tâm Điểm Cảnh Báo (Beacon Dot on Map) */}
                       <div className="relative flex items-center justify-center">
-                        <span 
-                          className="w-8 h-8 rounded-full absolute animate-ping opacity-60"
-                          style={{ backgroundColor: beaconColor }}
-                        />
-                        <span 
-                          className="w-5 h-5 rounded-full flex items-center justify-center text-[10px] text-white font-bold shadow-2xl border-2 border-white transition-transform group-hover:scale-125"
-                          style={{ backgroundColor: beaconColor }}
-                        >
+                        <span className={`w-8 h-8 rounded-full absolute ${
+                          threat.severity === 'HIGH' ? 'bg-red-600/50 animate-ping' : 'bg-amber-500/50 animate-pulse'
+                        }`} />
+                        <span className={`w-6 h-6 rounded-full flex items-center justify-center text-xs text-white font-bold shadow-2xl border-2 border-white ${
+                          threat.severity === 'HIGH' ? 'bg-red-600' : 'bg-amber-500'
+                        } ${isSelected ? 'ring-4 ring-white' : ''}`}>
                           !
                         </span>
                       </div>
-
-                      {/* 2. Thanh Stick Chĩa Ra Hướng Tương Ứng (Leader Line + Card Callout) */}
-                      {/* Case A: Stick chĩa lên góc TRÊN-TRÁI (TOP_LEFT) */}
-                      {threat.stickDirection === 'TOP_LEFT' && (
-                        <div className="absolute bottom-4 right-2 flex flex-col items-end pointer-events-auto">
-                          {/* Floating Alert Card */}
-                          <div className={`p-2 border rounded shadow-2xl backdrop-blur-md transition-all whitespace-nowrap ${cardBg} ${isSelected ? 'ring-2 ring-white scale-105' : 'opacity-90 hover:opacity-100'}`}>
-                            <div className="flex items-center gap-1.5 text-[10px] font-bold text-white font-mono">
-                              <span className="w-1.5 h-1.5 rounded-full bg-red-400 animate-pulse" />
-                              <span>{threat.code}: {threat.title}</span>
-                            </div>
-                            <div className="text-[9px] text-red-200 mt-0.5">{threat.location}</div>
-                          </div>
-                          {/* Pointer Stick SVG Line */}
-                          <svg className="w-16 h-8 text-red-500 overflow-visible" viewBox="0 0 64 32">
-                            <polyline
-                              points="64,32 32,16 0,16"
-                              fill="none"
-                              stroke={beaconColor}
-                              strokeWidth="2"
-                              strokeDasharray="4 2"
-                            />
-                            <circle cx="64" cy="32" r="3" fill={beaconColor} />
-                            <circle cx="0" cy="16" r="3" fill={beaconColor} />
-                          </svg>
-                        </div>
-                      )}
-
-                      {/* Case B: Stick chĩa lên góc TRÊN-PHẢI (TOP_RIGHT) */}
-                      {threat.stickDirection === 'TOP_RIGHT' && (
-                        <div className="absolute bottom-4 left-2 flex flex-col items-start pointer-events-auto">
-                          {/* Floating Alert Card */}
-                          <div className={`p-2 border rounded shadow-2xl backdrop-blur-md transition-all whitespace-nowrap ${cardBg} ${isSelected ? 'ring-2 ring-white scale-105' : 'opacity-90 hover:opacity-100'}`}>
-                            <div className="flex items-center gap-1.5 text-[10px] font-bold text-white font-mono">
-                              <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
-                              <span>{threat.code}: {threat.title}</span>
-                            </div>
-                            <div className="text-[9px] text-amber-200 mt-0.5">{threat.location}</div>
-                          </div>
-                          {/* Pointer Stick SVG Line */}
-                          <svg className="w-16 h-8 text-amber-500 overflow-visible" viewBox="0 0 64 32">
-                            <polyline
-                              points="0,32 32,16 64,16"
-                              fill="none"
-                              stroke={beaconColor}
-                              strokeWidth="2"
-                              strokeDasharray="4 2"
-                            />
-                            <circle cx="0" cy="32" r="3" fill={beaconColor} />
-                            <circle cx="64" cy="16" r="3" fill={beaconColor} />
-                          </svg>
-                        </div>
-                      )}
-
-                      {/* Case C: Stick chĩa xuống góc DƯỚI-PHẢI (BOTTOM_RIGHT) */}
-                      {threat.stickDirection === 'BOTTOM_RIGHT' && (
-                        <div className="absolute top-4 left-2 flex flex-col items-start pointer-events-auto">
-                          {/* Pointer Stick SVG Line */}
-                          <svg className="w-16 h-8 text-amber-500 overflow-visible" viewBox="0 0 64 32">
-                            <polyline
-                              points="0,0 32,16 64,16"
-                              fill="none"
-                              stroke={beaconColor}
-                              strokeWidth="2"
-                              strokeDasharray="4 2"
-                            />
-                            <circle cx="0" cy="0" r="3" fill={beaconColor} />
-                            <circle cx="64" cy="16" r="3" fill={beaconColor} />
-                          </svg>
-                          {/* Floating Alert Card */}
-                          <div className={`p-2 border rounded shadow-2xl backdrop-blur-md transition-all whitespace-nowrap ${cardBg} ${isSelected ? 'ring-2 ring-white scale-105' : 'opacity-90 hover:opacity-100'}`}>
-                            <div className="flex items-center gap-1.5 text-[10px] font-bold text-white font-mono">
-                              <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
-                              <span>{threat.code}: {threat.title}</span>
-                            </div>
-                            <div className="text-[9px] text-amber-200 mt-0.5">{threat.location}</div>
-                          </div>
-                        </div>
-                      )}
-
-                      {/* Case D: Stick chĩa xuống góc DƯỚI-TRÁI (BOTTOM_LEFT) */}
-                      {threat.stickDirection === 'BOTTOM_LEFT' && (
-                        <div className="absolute top-4 right-2 flex flex-col items-end pointer-events-auto">
-                          {/* Pointer Stick SVG Line */}
-                          <svg className="w-16 h-8 text-red-500 overflow-visible" viewBox="0 0 64 32">
-                            <polyline
-                              points="64,0 32,16 0,16"
-                              fill="none"
-                              stroke={beaconColor}
-                              strokeWidth="2"
-                              strokeDasharray="4 2"
-                            />
-                            <circle cx="64" cy="0" r="3" fill={beaconColor} />
-                            <circle cx="0" cy="16" r="3" fill={beaconColor} />
-                          </svg>
-                          {/* Floating Alert Card */}
-                          <div className={`p-2 border rounded shadow-2xl backdrop-blur-md transition-all whitespace-nowrap ${cardBg} ${isSelected ? 'ring-2 ring-white scale-105' : 'opacity-90 hover:opacity-100'}`}>
-                            <div className="flex items-center gap-1.5 text-[10px] font-bold text-white font-mono">
-                              <span className="w-1.5 h-1.5 rounded-full bg-red-400 animate-pulse" />
-                              <span>{threat.code}: {threat.title}</span>
-                            </div>
-                            <div className="text-[9px] text-red-200 mt-0.5">{threat.location}</div>
-                          </div>
-                        </div>
-                      )}
+                      <div className="mt-1.5 px-2 py-0.5 bg-[#0D1117]/95 border border-[#C5A880] text-white text-[9px] font-mono whitespace-nowrap rounded shadow-lg">
+                        {threat.title.substring(0, 24)}...
+                      </div>
                     </div>
                   );
                 })}
 
-                {/* All Safe Status on Floor 25 */}
-                {currentFloorData.threats.length === 0 && (
-                  <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 px-4 py-2 bg-emerald-950/80 border border-emerald-500 text-emerald-300 text-xs font-mono rounded flex items-center gap-2 shadow-lg">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                    <span>Toàn Bộ Tiện Ích Tầng 25 Đang Hoạt Động An Toàn 100%</span>
-                  </div>
-                )}
+                {/* Normal Static Sensor Nodes */}
+                <div className="absolute top-1/4 left-1/4 flex items-center gap-1 text-[9px] text-emerald-400 font-mono">
+                  <span className="w-2 h-2 rounded-full bg-emerald-500"></span> Sensor Smoke-01
+                </div>
+                <div className="absolute bottom-1/4 left-1/3 flex items-center gap-1 text-[9px] text-emerald-400 font-mono">
+                  <span className="w-2 h-2 rounded-full bg-emerald-500"></span> Barrier-Gate 02
+                </div>
+                <div className="absolute top-1/3 right-1/4 flex items-center gap-1 text-[9px] text-emerald-400 font-mono">
+                  <span className="w-2 h-2 rounded-full bg-emerald-500"></span> Cam-AI-14
+                </div>
               </div>
 
               {/* Status Legend Bar */}
-              <div className="flex justify-between items-center text-[9px] text-gray-400 font-mono pt-1 border-t border-gray-800">
+              <div className="flex justify-between items-center text-[9px] text-gray-400 font-mono pt-1.5 border-t border-gray-800">
                 <span className="flex items-center gap-1 text-emerald-400">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Cửa Thoát Hiểm: An Toàn
                 </span>
@@ -524,7 +385,7 @@ export default function AdminDashboard() {
           </div>
 
           <div className="flex items-center justify-between text-xs text-gray-400 pt-1">
-            <span>* Các thanh stick chĩa chỉ điểm chính xác vị trí sự cố trên sơ đồ để không che khuất hạ tầng.</span>
+            <span>* Nhấp vào các điểm nhấp nháy đỏ trên bản đồ để mở luồng camera snapshot & điều động bảo vệ trực ban.</span>
           </div>
         </div>
 
@@ -548,7 +409,7 @@ export default function AdminDashboard() {
                 className="w-full h-full object-cover"
               />
               <div className="absolute top-2 left-2 bg-black/90 px-2 py-0.5 text-[9px] font-mono text-red-400 border border-red-800 rounded">
-                LIVE SNAPSHOT • {activeThreat.code}
+                LIVE SNAPSHOT • ID: {activeThreat.id}
               </div>
               <div className="absolute bottom-2 right-2 bg-black/90 px-2 py-0.5 text-[9px] font-mono text-gray-300 rounded">
                 Thời Gian: {activeThreat.time}
