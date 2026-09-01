@@ -5,6 +5,8 @@ import {
   Box, 
   Layers, 
   Eye, 
+  Maximize2, 
+  RotateCw, 
   Zap, 
   Cpu, 
   Wind, 
@@ -14,14 +16,15 @@ import {
   Sun, 
   ShieldCheck, 
   Grid, 
-  Flame, 
+  Move,
+  Flame,
+  Info,
   Radio,
-  Sliders,
-  CheckCircle2,
-  ChevronRight
+  SplitSquareVertical,
+  Compass
 } from 'lucide-react';
 
-export type ViewMode = '3D_ISOMETRIC' | '2D_CAD' | 'XRAY_IOT';
+export type ViewMode = '3D_BLOCKS' | '2D_BLUEPRINT' | '3D_EXPLODED';
 export type ViewAngle = 'SOUTH_WEST' | 'NORTH_EAST' | 'TOP_DOWN';
 
 export interface RoomDetails {
@@ -30,7 +33,9 @@ export interface RoomDetails {
   name: string;
   nameEn: string;
   area: number; // m2
+  dimensions: string; // e.g. "5.4m x 4.8m"
   color: string;
+  borderColor: string;
   temperature: number;
   humidity: number;
   lightState: boolean;
@@ -55,12 +60,12 @@ interface ApartmentModel3DViewerProps {
   onToggleLight?: (room: 'livingRoom' | 'bedroomMaster' | 'kitchen' | 'balcony') => void;
   onToggleDoor?: () => void;
   onToggleCurtains?: () => void;
-  interactive?: boolean;
+  interactive?: boolean; // false on Landing page (read-only for guests)
 }
 
 export default function ApartmentModel3DViewer({
   apartmentCode = '12A05',
-  apartmentType = '2PN - 2WC (Master Suite)',
+  apartmentType = '2PN - 2WC (Luxury Corner)',
   clearArea = 78.5,
   lights = { livingRoom: true, bedroomMaster: true, kitchen: true, balcony: false },
   acPower = true,
@@ -73,188 +78,165 @@ export default function ApartmentModel3DViewer({
   onToggleCurtains,
   interactive = true
 }: ApartmentModel3DViewerProps) {
-  const [viewMode, setViewMode] = useState<ViewMode>('3D_ISOMETRIC');
+  const [viewMode, setViewMode] = useState<ViewMode>('3D_BLOCKS');
   const [viewAngle, setViewAngle] = useState<ViewAngle>('SOUTH_WEST');
   const [selectedRoom, setSelectedRoom] = useState<string>('living');
   const [showDimensions, setShowDimensions] = useState(true);
   const [showIotNodes, setShowIotNodes] = useState(true);
+  const [showWireframe, setShowWireframe] = useState(true);
 
-  // Detailed Architectural Room Catalog
+  // Architectural Massing Block Catalog
   const rooms: Record<string, RoomDetails> = {
     foyer: {
       id: 'foyer',
-      code: 'TS',
-      name: 'Tiền Sảnh & Tủ Giày',
-      nameEn: 'Smart Foyer',
-      area: 3.8,
-      color: '#E2E8F0',
+      code: 'TS-01',
+      name: 'Khối Tiền Sảnh & Cửa Chính FaceID',
+      nameEn: 'Smart Foyer & Entry Block',
+      area: 4.2,
+      dimensions: '2.1m x 2.0m',
+      color: '#334155',
+      borderColor: '#64748B',
       temperature: 26,
       humidity: 55,
       lightState: true,
-      devices: ['Khóa Cửa FaceID Master', 'Cảm Biến Mở Cửa Từ Tính', 'Đèn Welcome Auto']
+      devices: ['Khóa Cửa Thông Minh FaceID 512D', 'Đèn Chào Mừng Cảm Biến Hiện Diện']
     },
     living: {
       id: 'living',
-      code: 'PK',
-      name: 'Phòng Khách Luxury',
-      nameEn: 'Grand Living Room',
-      area: 24.6,
+      code: 'PK-01',
+      name: 'Khối Không Gian Phòng Khách',
+      nameEn: 'Grand Living Lounge Block',
+      area: 26.8,
+      dimensions: '5.8m x 4.6m',
       color: '#C5A880',
+      borderColor: '#E2D4BF',
       temperature: acTemp,
       humidity: 56,
       lightState: lights.livingRoom,
-      devices: ['Sofa Chữ L Da Bò Ý', 'Smart TV 85" 4K', 'Điều Hòa VRV Daikin Inverter']
+      devices: ['Smart Ambient LED Bar (Dimmable)', 'Điều Hòa Daikin VRV Inverter', 'Smart TV 75"']
     },
-    dining: {
-      id: 'dining',
-      code: 'BA',
-      name: 'Khu Vực Bàn Ăn',
-      nameEn: 'Dining Area',
-      area: 7.2,
-      color: '#CBD5E1',
-      temperature: acTemp,
-      humidity: 56,
-      lightState: lights.livingRoom,
-      devices: ['Bàn Ăn Đá Marble 6 Ghế', 'Đèn Thả Nghệ Thuật Dimmable']
-    },
-    kitchen: {
-      id: 'kitchen',
-      code: 'BP',
-      name: 'Bếp & Đảo Bếp Gourmet',
-      nameEn: 'Kitchen & Island',
-      area: 9.8,
+    diningKitchen: {
+      id: 'diningKitchen',
+      code: 'BP-01',
+      name: 'Khối Bếp & Đảo Bếp Gourmet',
+      nameEn: 'Open Kitchen & Island Block',
+      area: 12.5,
+      dimensions: '3.8m x 3.3m',
       color: '#F59E0B',
+      borderColor: '#FDE68A',
       temperature: 26,
       humidity: 52,
       lightState: lights.kitchen,
-      devices: ['Bếp Từ Âm Bosch 3 Vùng', 'Hút Mùi Tự Động', 'Cảm Biến Rò Rỉ Nước AI']
+      devices: ['Bếp Từ Bosch 3 Vùng Nấu', 'Hệ Thống Hút Mùi Cảm Biến', 'Cảm Biến Rò Rỉ Nước AI']
     },
     masterBed: {
       id: 'masterBed',
-      code: 'PN1',
-      name: 'Phòng Ngủ Master',
-      nameEn: 'Master Suite',
-      area: 17.5,
+      code: 'PN-01',
+      name: 'Khối Phòng Ngủ Master Suite',
+      nameEn: 'Master Bedroom Suite Block',
+      area: 18.2,
+      dimensions: '4.8m x 3.8m',
       color: '#818CF8',
+      borderColor: '#C7D2FE',
       temperature: acTemp - 1,
       humidity: 58,
       lightState: lights.bedroomMaster,
-      devices: ['Giường King Size 2m x 2.2m', 'Tủ Áo Cánh Kính LED', 'Cảm Biến Hiện Diện mmWave']
-    },
-    masterWc: {
-      id: 'masterWc',
-      code: 'WC1',
-      name: 'WC Master & Bồn Tắm',
-      nameEn: 'En-suite Bath & Tub',
-      area: 5.8,
-      color: '#38BDF8',
-      temperature: 25,
-      humidity: 72,
-      lightState: true,
-      devices: ['Bồn Tắm Nằm Thư Giãn', 'Bồn Cầu Thông Minh TOTO', 'Vách Tắm Đứng Kính']
+      devices: ['Đèn Ngủ Cảm Ứng SleepMode', 'Cảm Biến Hiện Diện mmWave', 'Rèm Tự Động']
     },
     secondBed: {
       id: 'secondBed',
-      code: 'PN2',
-      name: 'Phòng Ngủ Phụ',
-      nameEn: 'Second Bedroom',
-      area: 12.2,
-      color: '#A78BFA',
+      code: 'PN-02',
+      name: 'Khối Phòng Ngủ Phụ / Studio',
+      nameEn: 'Guest Suite / Workspace Block',
+      area: 12.4,
+      dimensions: '3.6m x 3.4m',
+      color: '#38BDF8',
+      borderColor: '#BAE6FD',
       temperature: 25,
       humidity: 60,
       lightState: true,
-      devices: ['Giường Queen Size 1.6m', 'Bàn Học & Giá Sách', 'Đèn Bàn Chống Cận']
-    },
-    guestWc: {
-      id: 'guestWc',
-      code: 'WC2',
-      name: 'WC Khách',
-      nameEn: 'Guest Bathroom',
-      area: 4.2,
-      color: '#06B6D4',
-      temperature: 26,
-      humidity: 70,
-      lightState: false,
-      devices: ['Cabin Tắm Đứng', 'Vòi Sen Cây Hansgrohe', 'Lavabo Mặt Đá']
+      devices: ['Đèn Bàn Công Tắc Cảm Ứng', 'Cảm Biến Khói PCCC']
     },
     balcony: {
       id: 'balcony',
-      code: 'BC',
-      name: 'Ban Công Sky Lounge',
-      nameEn: 'Skyline Balcony',
-      area: 7.2,
+      code: 'BC-01',
+      name: 'Khối Ban Công Kính Panorama',
+      nameEn: 'Skyline Terrace Glass Block',
+      area: 7.8,
+      dimensions: '4.6m x 1.7m',
       color: '#10B981',
+      borderColor: '#A7F3D0',
       temperature: 29,
       humidity: 68,
       lightState: lights.balcony,
-      devices: ['Rèm Chắn Nắng Tự Động', 'Sàn Gỗ Ngoài Trời', 'Cây Cảnh & Hoa Leo']
+      devices: ['Hệ Thống Rèm Chắn Nắng Thông Minh', 'Cảm Biến Mưa & Gió']
     }
   };
 
   const activeRoom = rooms[selectedRoom] || rooms['living'];
 
   return (
-    <div className="w-full bg-[#0A0E14] border border-[#222B35] rounded shadow-2xl flex flex-col overflow-hidden select-none">
+    <div className="w-full bg-[#080B10] border border-[#222B35] rounded-lg shadow-2xl flex flex-col overflow-hidden select-none">
       {/* ------------------------------------------------------------- */}
-      {/* 1. TOP TOOLBAR: COMPACT CONTROLS & CAMERA ANGLES              */}
+      {/* 1. TOP TOOLBAR: ARCHITECTURAL MODES & CAMERA ANGLES           */}
       {/* ------------------------------------------------------------- */}
-      <div className="p-3 bg-[#121820] border-b border-[#222B35] flex flex-wrap items-center justify-between gap-3 text-xs">
-        {/* Left: View Mode Pills */}
-        <div className="flex items-center gap-1 bg-[#0D1117] p-1 border border-[#222B35] rounded">
+      <div className="p-3 bg-[#0D1117] border-b border-[#222B35] flex flex-wrap items-center justify-between gap-3 text-xs">
+        {/* Left: Architectural Mode Switcher */}
+        <div className="flex items-center gap-1.5 bg-[#121820] p-1 border border-[#222B35] rounded">
           <button
             type="button"
-            onClick={() => setViewMode('3D_ISOMETRIC')}
+            onClick={() => setViewMode('3D_BLOCKS')}
             className={`px-3 py-1.5 font-bold uppercase tracking-wider text-[10px] rounded flex items-center gap-1.5 transition-all ${
-              viewMode === '3D_ISOMETRIC'
+              viewMode === '3D_BLOCKS'
                 ? 'bg-[#C5A880] text-[#0D1117] shadow'
                 : 'text-gray-400 hover:text-white'
             }`}
           >
-            <Box className="w-3.5 h-3.5" /> 3D Isometric
+            <Box className="w-3.5 h-3.5" /> 1. Khối Kiến Trúc 3D (Massing)
           </button>
 
           <button
             type="button"
-            onClick={() => setViewMode('2D_CAD')}
+            onClick={() => setViewMode('2D_BLUEPRINT')}
             className={`px-3 py-1.5 font-bold uppercase tracking-wider text-[10px] rounded flex items-center gap-1.5 transition-all ${
-              viewMode === '2D_CAD'
+              viewMode === '2D_BLUEPRINT'
                 ? 'bg-[#C5A880] text-[#0D1117] shadow'
                 : 'text-gray-400 hover:text-white'
             }`}
           >
-            <Layers className="w-3.5 h-3.5" /> 2D CAD
+            <Layers className="w-3.5 h-3.5" /> 2. Mặt Bằng CAD (Blueprint)
           </button>
 
           <button
             type="button"
-            onClick={() => setViewMode('XRAY_IOT')}
+            onClick={() => setViewMode('3D_EXPLODED')}
             className={`px-3 py-1.5 font-bold uppercase tracking-wider text-[10px] rounded flex items-center gap-1.5 transition-all ${
-              viewMode === 'XRAY_IOT'
+              viewMode === '3D_EXPLODED'
                 ? 'bg-cyan-500 text-[#0D1117] shadow'
                 : 'text-gray-400 hover:text-white'
             }`}
           >
-            <Radio className="w-3.5 h-3.5" /> X-Ray Heatmap
+            <SplitSquareVertical className="w-3.5 h-3.5" /> 3. Bóc Tách Khối (Exploded 3D)
           </button>
         </div>
 
-        {/* Right: Camera Angles & Toggles */}
+        {/* Right: Technical Display Toggles */}
         <div className="flex items-center gap-2">
-          {viewMode === '3D_ISOMETRIC' && (
-            <div className="hidden sm:flex items-center gap-1 bg-[#0D1117] p-1 border border-[#222B35] rounded text-[10px]">
+          {viewMode !== '2D_BLUEPRINT' && (
+            <div className="hidden sm:flex items-center gap-1 bg-[#121820] p-1 border border-[#222B35] rounded text-[10px]">
               <button
                 type="button"
                 onClick={() => setViewAngle('SOUTH_WEST')}
                 className={`px-2 py-1 rounded transition-colors ${viewAngle === 'SOUTH_WEST' ? 'bg-[#1C2533] text-[#C5A880] font-bold' : 'text-gray-400 hover:text-white'}`}
               >
-                Tây Nam
+                Góc Phối Cảnh Tây Nam
               </button>
               <button
                 type="button"
                 onClick={() => setViewAngle('NORTH_EAST')}
                 className={`px-2 py-1 rounded transition-colors ${viewAngle === 'NORTH_EAST' ? 'bg-[#1C2533] text-[#C5A880] font-bold' : 'text-gray-400 hover:text-white'}`}
               >
-                Đông Bắc
+                Góc Phối Cảnh Đông Bắc
               </button>
             </div>
           )}
@@ -263,21 +245,21 @@ export default function ApartmentModel3DViewer({
             type="button"
             onClick={() => setShowDimensions(!showDimensions)}
             className={`p-1.5 border rounded transition-colors text-[10px] flex items-center gap-1 ${
-              showDimensions ? 'bg-[#1C2533] border-[#C5A880] text-[#C5A880]' : 'bg-[#0D1117] border-gray-700 text-gray-400'
+              showDimensions ? 'bg-[#1C2533] border-[#C5A880] text-[#C5A880]' : 'bg-[#121820] border-gray-700 text-gray-400'
             }`}
-            title="Ẩn/Hiện diện tích m²"
+            title="Ẩn/Hiện đường kích thước Laser CAD"
           >
             <Grid className="w-3.5 h-3.5" />
-            <span className="hidden md:inline">Nhãn m²</span>
+            <span className="hidden md:inline">Kích Thước</span>
           </button>
 
           <button
             type="button"
             onClick={() => setShowIotNodes(!showIotNodes)}
             className={`p-1.5 border rounded transition-colors text-[10px] flex items-center gap-1 ${
-              showIotNodes ? 'bg-[#1C2533] border-emerald-500 text-emerald-400' : 'bg-[#0D1117] border-gray-700 text-gray-400'
+              showIotNodes ? 'bg-[#1C2533] border-emerald-500 text-emerald-400' : 'bg-[#121820] border-gray-700 text-gray-400'
             }`}
-            title="Ẩn/Hiện Node IoT"
+            title="Ẩn/Hiện node thiết bị thông minh"
           >
             <Zap className="w-3.5 h-3.5" />
             <span className="hidden md:inline">IoT Nodes</span>
@@ -286,507 +268,477 @@ export default function ApartmentModel3DViewer({
       </div>
 
       {/* ------------------------------------------------------------- */}
-      {/* 2. MAIN SIMULATION CANVAS: RICH ARCHITECTURAL LAYOUT          */}
+      {/* 2. MAIN SIMULATION CANVAS: ARCHITECTURAL VOLUMETRIC BLOCKS   */}
       {/* ------------------------------------------------------------- */}
-      <div className="relative w-full h-[440px] sm:h-[500px] bg-[#07090D] overflow-hidden flex items-center justify-center">
-        {/* Subtle Background Grid */}
+      <div className="relative w-full h-[450px] sm:h-[500px] bg-[#05070A] overflow-hidden flex items-center justify-center">
+        {/* Architectural Blueprint Matrix Grid */}
         <div 
-          className="absolute inset-0 opacity-15 pointer-events-none"
+          className="absolute inset-0 opacity-20 pointer-events-none"
           style={{
-            backgroundImage: 'linear-gradient(to right, #222B35 1px, transparent 1px), linear-gradient(to bottom, #222B35 1px, transparent 1px)',
-            backgroundSize: '24px 24px'
+            backgroundImage: 'linear-gradient(to right, #1E293B 1px, transparent 1px), linear-gradient(to bottom, #1E293B 1px, transparent 1px)',
+            backgroundSize: '25px 25px'
           }}
         />
 
-        {/* Ambient Living Room Glow */}
-        {lights.livingRoom && (
-          <div className="absolute w-80 h-80 bg-amber-500/15 rounded-full blur-3xl pointer-events-none -translate-x-20 -translate-y-10 animate-pulse" />
+        {/* Ambient Living Room Light Atmosphere */}
+        {lights.livingRoom && viewMode !== '2D_BLUEPRINT' && (
+          <div className="absolute w-[420px] h-[420px] bg-amber-500/10 rounded-full blur-3xl pointer-events-none -translate-x-12 -translate-y-8 animate-pulse" />
         )}
 
-        {/* Dynamic Architectural Simulation Canvas */}
+        {/* 3D Massing Stage */}
         <div 
           className="relative transition-all duration-700 ease-out transform"
           style={{
-            transform: viewMode === '3D_ISOMETRIC'
-              ? viewAngle === 'SOUTH_WEST'
-                ? 'perspective(1200px) rotateX(54deg) rotateZ(-38deg) scale(0.92)'
-                : 'perspective(1200px) rotateX(54deg) rotateZ(142deg) scale(0.92)'
-              : 'perspective(0px) rotateX(0deg) rotateZ(0deg) scale(0.94)'
+            transform: viewMode === '2D_BLUEPRINT'
+              ? 'perspective(0px) rotateX(0deg) rotateZ(0deg) scale(0.95)'
+              : viewAngle === 'SOUTH_WEST'
+                ? 'perspective(1400px) rotateX(55deg) rotateZ(-36deg) scale(0.92)'
+                : 'perspective(1400px) rotateX(55deg) rotateZ(144deg) scale(0.92)'
           }}
         >
           <svg
-            viewBox="0 0 880 620"
-            className="w-[660px] sm:w-[780px] h-[460px] sm:h-[540px] drop-shadow-[0_30px_60px_rgba(0,0,0,0.9)] cursor-pointer"
+            viewBox="0 0 900 620"
+            className="w-[660px] sm:w-[780px] h-[470px] sm:h-[530px] drop-shadow-[0_30px_60px_rgba(0,0,0,0.95)] cursor-pointer"
           >
             <defs>
-              {/* Floor Textures */}
-              <pattern id="oakWood" width="36" height="18" patternUnits="userSpaceOnUse">
-                <rect width="36" height="18" fill="#1C1814" stroke="#26201B" strokeWidth="0.8" />
-                <line x1="0" y1="9" x2="36" y2="9" stroke="#26201B" strokeWidth="0.6" />
-                <line x1="18" y1="0" x2="18" y2="9" stroke="#26201B" strokeWidth="0.6" />
+              {/* Floor Materials & CAD Hatches */}
+              <pattern id="oakFlooring" width="40" height="20" patternUnits="userSpaceOnUse">
+                <rect width="40" height="20" fill="#141820" stroke="#1F2633" strokeWidth="1" />
+                <line x1="0" y1="10" x2="40" y2="10" stroke="#1F2633" strokeWidth="0.8" />
+                <line x1="20" y1="0" x2="20" y2="10" stroke="#1F2633" strokeWidth="0.8" />
               </pattern>
 
-              <pattern id="marbleTile" width="28" height="28" patternUnits="userSpaceOnUse">
-                <rect width="28" height="28" fill="#13171E" stroke="#1E2530" strokeWidth="0.8" />
+              <pattern id="marbleTile" width="30" height="30" patternUnits="userSpaceOnUse">
+                <rect width="30" height="30" fill="#10141C" stroke="#1E2533" strokeWidth="1" />
               </pattern>
 
-              <pattern id="terrazzoBath" width="16" height="16" patternUnits="userSpaceOnUse">
-                <rect width="16" height="16" fill="#0F172A" stroke="#1E293B" strokeWidth="0.6" />
-                <circle cx="8" cy="8" r="1.5" fill="#38BDF8" opacity="0.4" />
-              </pattern>
-
-              {/* Lighting Glow */}
-              <radialGradient id="glowWarm" cx="50%" cy="50%" r="50%">
-                <stop offset="0%" stopColor="#FFE082" stopOpacity="0.85" />
+              {/* Lighting Radial Cones */}
+              <radialGradient id="lightWarmGlow" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stopColor="#FFE4A0" stopOpacity="0.9" />
                 <stop offset="50%" stopColor="#C5A880" stopOpacity="0.3" />
                 <stop offset="100%" stopColor="#C5A880" stopOpacity="0" />
               </radialGradient>
 
-              <radialGradient id="glowCool" cx="50%" cy="50%" r="50%">
-                <stop offset="0%" stopColor="#BAE6FD" stopOpacity="0.8" />
-                <stop offset="50%" stopColor="#38BDF8" stopOpacity="0.3" />
+              <radialGradient id="lightCoolGlow" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stopColor="#BAE6FD" stopOpacity="0.85" />
+                <stop offset="50%" stopColor="#38BDF8" stopOpacity="0.25" />
                 <stop offset="100%" stopColor="#38BDF8" stopOpacity="0" />
               </radialGradient>
-
-              {/* Heatmap */}
-              <linearGradient id="heatMap" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="#06B6D4" stopOpacity="0.6" />
-                <stop offset="50%" stopColor="#3B82F6" stopOpacity="0.4" />
-                <stop offset="100%" stopColor="#8B5CF6" stopOpacity="0.6" />
-              </linearGradient>
             </defs>
 
             {/* ======================================================= */}
-            {/* 1. ARCHITECTURAL OUTER WALLS (Độ Dày Tường Bê Tông)     */}
+            {/* 1. KHỐI TIỀN SẢNH & CỬA CHÍNH (Foyer Massing Block)    */}
             {/* ======================================================= */}
-            <polygon
-              points="70,110 810,110 810,550 70,550"
-              fill="none"
-              stroke="#334155"
-              strokeWidth="12"
-              strokeLinejoin="round"
-            />
-
-            {/* ======================================================= */}
-            {/* 2. ZONE: TIỀN SẢNH & CỬA CHÍNH (Foyer & Main Door)     */}
-            {/* ======================================================= */}
-            <g onClick={() => setSelectedRoom('foyer')} className="group">
+            <g 
+              onClick={() => setSelectedRoom('foyer')}
+              className="transition-all duration-300 group"
+              transform={viewMode === '3D_EXPLODED' ? 'translate(-20, 0)' : 'translate(0, 0)'}
+            >
+              {/* Floor Base */}
               <polygon
                 points="80,240 180,240 180,360 80,360"
-                fill={viewMode === 'XRAY_IOT' ? 'url(#heatMap)' : 'url(#marbleTile)'}
-                stroke={selectedRoom === 'foyer' ? '#C5A880' : '#1E293B'}
-                strokeWidth={selectedRoom === 'foyer' ? '2.5' : '1'}
+                fill="url(#marbleTile)"
+                stroke={selectedRoom === 'foyer' ? '#C5A880' : '#334155'}
+                strokeWidth={selectedRoom === 'foyer' ? '3' : '1.5'}
               />
-              {/* Smart Shoe Cabinet */}
-              <rect x="85" y="250" width="18" height="55" rx="2" fill="#334155" stroke="#64748B" />
-              {/* Door Swing Arc */}
-              <path d="M 80,320 A 40,40 0 0,1 120,360" fill="none" stroke="#C5A880" strokeWidth="1.2" strokeDasharray="3 3" />
-              <line x1="80" y1="320" x2="80" y2="360" stroke="#C5A880" strokeWidth="3" />
-              {/* Micro Badge */}
-              <g transform="translate(130, 300)">
-                <rect x="-24" y="-10" width="48" height="20" rx="4" fill="#0D1117" stroke="#64748B" strokeWidth="1" />
-                <text x="0" y="4" fill="#FFFFFF" fontSize="9" fontWeight="bold" textAnchor="middle" fontFamily="monospace">
-                  {showDimensions ? 'TS 3.8m²' : 'TS'}
-                </text>
-              </g>
-            </g>
-
-            {/* ======================================================= */}
-            {/* 3. ZONE: PHÒNG KHÁCH (Grand Living Room)               */}
-            {/* ======================================================= */}
-            <g onClick={() => setSelectedRoom('living')} className="group">
-              <polygon
-                points="180,120 460,120 460,390 180,390"
-                fill={viewMode === 'XRAY_IOT' ? 'url(#heatMap)' : 'url(#oakWood)'}
-                stroke={selectedRoom === 'living' ? '#C5A880' : '#1E293B'}
-                strokeWidth={selectedRoom === 'living' ? '3' : '1'}
-              />
-              {/* Warm Light Glow */}
-              {lights.livingRoom && viewMode !== '2D_CAD' && (
-                <ellipse cx="320" cy="250" rx="120" ry="90" fill="url(#glowWarm)" pointerEvents="none" />
+              {/* 3D Extruded Wall Block */}
+              {viewMode !== '2D_BLUEPRINT' && (
+                <>
+                  <polygon points="80,240 80,180 180,180 180,240" fill="#1E2633" stroke="#475569" strokeWidth="1" />
+                  <polygon points="80,240 40,270 40,390 80,360" fill="#131922" stroke="#334155" strokeWidth="1" />
+                </>
               )}
-              {/* Luxury Sectional Sofa */}
-              <rect x="230" y="240" width="130" height="42" rx="6" fill="#334155" stroke="#64748B" strokeWidth="1.5" />
-              <rect x="230" y="282" width="42" height="50" rx="6" fill="#334155" stroke="#64748B" strokeWidth="1.5" />
-              {/* Marble Coffee Table */}
-              <rect x="295" y="295" width="55" height="30" rx="3" fill="#C5A880" stroke="#E2D4BF" strokeWidth="1.2" opacity="0.9" />
+              {/* Door Swing Arc */}
+              <path d="M 80,310 A 40,40 0 0,1 120,350" fill="none" stroke="#C5A880" strokeWidth="1.5" strokeDasharray="3 3" />
+              <line x1="80" y1="310" x2="80" y2="350" stroke="#C5A880" strokeWidth="3" strokeLinecap="round" />
+              {/* Block Code Label */}
+              <rect x="105" y="285" width="50" height="22" rx="3" fill="#0D1117" stroke="#475569" strokeWidth="1" />
+              <text x="130" y="300" fill="#FFFFFF" fontSize="10" fontWeight="bold" textAnchor="middle" fontFamily="monospace">
+                {showDimensions ? 'TS 4.2m²' : 'SẢNH'}
+              </text>
+            </g>
+
+            {/* ======================================================= */}
+            {/* 2. KHỐI PHÒNG KHÁCH (Grand Living Room Massing Block)  */}
+            {/* ======================================================= */}
+            <g 
+              onClick={() => setSelectedRoom('living')}
+              className="transition-all duration-300 group"
+              transform={viewMode === '3D_EXPLODED' ? 'translate(-15, -15)' : 'translate(0, 0)'}
+            >
+              {/* Floor Base */}
+              <polygon
+                points="180,130 480,130 480,410 180,410"
+                fill="url(#oakFlooring)"
+                stroke={selectedRoom === 'living' ? '#C5A880' : '#334155'}
+                strokeWidth={selectedRoom === 'living' ? '3' : '1.5'}
+                className="transition-all hover:fill-[#1C202B]"
+              />
+
+              {/* Ambient Light Cone */}
+              {lights.livingRoom && viewMode !== '2D_BLUEPRINT' && (
+                <ellipse cx="330" cy="270" rx="140" ry="110" fill="url(#lightWarmGlow)" pointerEvents="none" />
+              )}
+
+              {/* 3D Extruded Architectural Walls */}
+              {viewMode !== '2D_BLUEPRINT' && (
+                <>
+                  <polygon points="180,130 180,70 480,70 480,130" fill="#252F3F" stroke="#475569" strokeWidth="1" />
+                  <polygon points="180,130 140,160 140,440 180,410" fill="#18202C" stroke="#334155" strokeWidth="1" />
+                </>
+              )}
+
+              {/* Architectural Furniture Silhouettes */}
+              <rect x="240" y="250" width="140" height="48" rx="4" fill="#1E293B" stroke="#475569" strokeWidth="1.5" />
+              <rect x="240" y="298" width="48" height="55" rx="4" fill="#1E293B" stroke="#475569" strokeWidth="1.5" />
+              <rect x="310" y="315" width="65" height="35" rx="3" fill="#C5A880" stroke="#E2D4BF" strokeWidth="1.5" opacity="0.95" />
               {/* TV Wall Console */}
-              <rect x="420" y="200" width="16" height="110" rx="2" fill="#0F172A" stroke="#475569" strokeWidth="1.2" />
-              <line x1="426" y1="215" x2="426" y2="295" stroke="#38BDF8" strokeWidth="2.5" strokeLinecap="round" />
-              {/* Plant Pot */}
-              <circle cx="210" cy="150" r="10" fill="#10B981" />
-              {/* Minimalist Micro Badge */}
-              <g transform="translate(320, 160)">
-                <rect x="-42" y="-11" width="84" height="22" rx="4" fill="#0D1117" stroke="#C5A880" strokeWidth="1.5" />
-                <text x="0" y="4" fill="#C5A880" fontSize="10" fontWeight="bold" textAnchor="middle" fontFamily="monospace">
-                  {showDimensions ? 'PK • 24.6 m²' : 'PHÒNG KHÁCH'}
+              <rect x="440" y="210" width="18" height="120" rx="2" fill="#0D1117" stroke="#475569" strokeWidth="1.2" />
+              <line x1="446" y1="225" x2="446" y2="315" stroke="#38BDF8" strokeWidth="3" strokeLinecap="round" />
+
+              {/* Laser Measurement Dimensions */}
+              {showDimensions && (
+                <g className="opacity-80">
+                  <line x1="180" y1="115" x2="480" y2="115" stroke="#C5A880" strokeWidth="1" strokeDasharray="3 3" />
+                  <text x="330" y="110" fill="#C5A880" fontSize="10" fontFamily="monospace" fontWeight="bold" textAnchor="middle">5.80 m</text>
+                </g>
+              )}
+
+              {/* Block Badge */}
+              <g transform="translate(330, 180)">
+                <rect x="-55" y="-12" width="110" height="24" rx="4" fill="#0D1117" stroke="#C5A880" strokeWidth="1.5" />
+                <text x="0" y="5" fill="#C5A880" fontSize="11" fontWeight="bold" textAnchor="middle" fontFamily="monospace">
+                  PK-01 • 26.8 m²
                 </text>
               </g>
             </g>
 
             {/* ======================================================= */}
-            {/* 4. ZONE: KHU BÀN ĂN (Dining Area)                      */}
+            {/* 3. KHỐI BẾP & ĐẢO BẾP (Kitchen & Island Block)          */}
             {/* ======================================================= */}
-            <g onClick={() => setSelectedRoom('dining')} className="group">
+            <g 
+              onClick={() => setSelectedRoom('diningKitchen')}
+              className="transition-all duration-300 group"
+              transform={viewMode === '3D_EXPLODED' ? 'translate(-15, 20)' : 'translate(0, 0)'}
+            >
+              {/* Floor Base */}
               <polygon
-                points="180,390 320,390 320,540 180,540"
-                fill={viewMode === 'XRAY_IOT' ? 'url(#heatMap)' : 'url(#marbleTile)'}
-                stroke={selectedRoom === 'dining' ? '#CBD5E1' : '#1E293B'}
-                strokeWidth={selectedRoom === 'dining' ? '2.5' : '1'}
+                points="180,410 480,410 480,560 180,560"
+                fill="url(#marbleTile)"
+                stroke={selectedRoom === 'diningKitchen' ? '#F59E0B' : '#334155'}
+                strokeWidth={selectedRoom === 'diningKitchen' ? '3' : '1.5'}
+                className="transition-all hover:fill-[#1C202B]"
               />
-              {/* 6-Chair Dining Table */}
-              <rect x="210" y="430" width="80" height="42" rx="4" fill="#1E293B" stroke="#64748B" strokeWidth="1.5" />
-              <circle cx="230" cy="415" r="7" fill="#C5A880" />
-              <circle cx="250" cy="415" r="7" fill="#C5A880" />
-              <circle cx="270" cy="415" r="7" fill="#C5A880" />
-              <circle cx="230" cy="487" r="7" fill="#C5A880" />
-              <circle cx="250" cy="487" r="7" fill="#C5A880" />
-              <circle cx="270" cy="487" r="7" fill="#C5A880" />
-              {/* Micro Badge */}
-              <g transform="translate(250, 515)">
-                <rect x="-26" y="-10" width="52" height="20" rx="4" fill="#0D1117" stroke="#64748B" strokeWidth="1" />
-                <text x="0" y="4" fill="#FFFFFF" fontSize="9" fontWeight="bold" textAnchor="middle" fontFamily="monospace">
-                  {showDimensions ? 'BA 7.2m²' : 'BÀN ĂN'}
+
+              {/* 3D Extruded Walls */}
+              {viewMode !== '2D_BLUEPRINT' && (
+                <polygon points="180,560 140,590 440,590 480,560" fill="#131922" stroke="#334155" strokeWidth="1" />
+              )}
+
+              {/* Kitchen Island with Bar Stools */}
+              <rect x="250" y="440" width="140" height="42" rx="3" fill="#1E293B" stroke="#F59E0B" strokeWidth="1.5" />
+              <circle cx="280" cy="505" r="9" fill="#C5A880" />
+              <circle cx="320" cy="505" r="9" fill="#C5A880" />
+              <circle cx="360" cy="505" r="9" fill="#C5A880" />
+
+              {/* Induction Cooktop & Sink */}
+              <rect x="420" y="440" width="45" height="90" rx="3" fill="#0D1117" stroke="#64748B" strokeWidth="1" />
+              <circle cx="442" cy="465" r="10" fill="#EF4444" opacity="0.85" />
+              <rect x="430" y="495" width="25" height="25" rx="2" fill="#334155" />
+
+              {/* Block Badge */}
+              <g transform="translate(330, 535)">
+                <rect x="-48" y="-11" width="96" height="22" rx="4" fill="#0D1117" stroke="#F59E0B" strokeWidth="1.5" />
+                <text x="0" y="4" fill="#F59E0B" fontSize="10" fontWeight="bold" textAnchor="middle" fontFamily="monospace">
+                  BP-01 • 12.5 m²
                 </text>
               </g>
             </g>
 
             {/* ======================================================= */}
-            {/* 5. ZONE: BẾP & ĐẢO BẾP (Kitchen & Island)              */}
+            {/* 4. KHỐI PHÒNG NGỦ MASTER (Master Suite Block)           */}
             {/* ======================================================= */}
-            <g onClick={() => setSelectedRoom('kitchen')} className="group">
+            <g 
+              onClick={() => setSelectedRoom('masterBed')}
+              className="transition-all duration-300 group"
+              transform={viewMode === '3D_EXPLODED' ? 'translate(20, -15)' : 'translate(0, 0)'}
+            >
+              {/* Floor Base */}
               <polygon
-                points="320,390 460,390 460,540 320,540"
-                fill={viewMode === 'XRAY_IOT' ? 'url(#heatMap)' : 'url(#marbleTile)'}
-                stroke={selectedRoom === 'kitchen' ? '#F59E0B' : '#1E293B'}
-                strokeWidth={selectedRoom === 'kitchen' ? '2.5' : '1'}
+                points="480,130 760,130 760,340 480,340"
+                fill="url(#oakFlooring)"
+                stroke={selectedRoom === 'masterBed' ? '#818CF8' : '#334155'}
+                strokeWidth={selectedRoom === 'masterBed' ? '3' : '1.5'}
+                className="transition-all hover:fill-[#1E2232]"
               />
-              {/* L-Shaped Kitchen Counter */}
-              <rect x="330" y="480" width="120" height="50" rx="3" fill="#1E293B" stroke="#F59E0B" strokeWidth="1.2" />
-              {/* Induction Cooktop with Red Burner */}
-              <rect x="345" y="490" width="35" height="25" rx="2" fill="#0F172A" />
-              <circle cx="355" cy="502" r="5" fill="#EF4444" opacity="0.9" />
-              <circle cx="370" cy="502" r="5" fill="#EF4444" opacity="0.9" />
-              {/* Sink */}
-              <rect x="400" y="490" width="35" height="25" rx="2" fill="#334155" />
-              <circle cx="417" cy="502" r="3" fill="#38BDF8" />
-              {/* Island Stools */}
-              <circle cx="360" cy="425" r="7" fill="#C5A880" />
-              <circle cx="395" cy="425" r="7" fill="#C5A880" />
-              <circle cx="430" cy="425" r="7" fill="#C5A880" />
-              {/* Micro Badge */}
-              <g transform="translate(390, 455)">
-                <rect x="-26" y="-10" width="52" height="20" rx="4" fill="#0D1117" stroke="#F59E0B" strokeWidth="1.2" />
-                <text x="0" y="4" fill="#F59E0B" fontSize="9" fontWeight="bold" textAnchor="middle" fontFamily="monospace">
-                  {showDimensions ? 'BP 9.8m²' : 'BẾP'}
+
+              {/* Cool Blue Lighting Glow */}
+              {lights.bedroomMaster && viewMode !== '2D_BLUEPRINT' && (
+                <ellipse cx="620" cy="235" rx="120" ry="90" fill="url(#lightCoolGlow)" pointerEvents="none" />
+              )}
+
+              {/* 3D Extruded Architectural Walls */}
+              {viewMode !== '2D_BLUEPRINT' && (
+                <>
+                  <polygon points="480,130 480,70 760,70 760,130" fill="#222840" stroke="#475569" strokeWidth="1" />
+                  <polygon points="760,130 800,160 800,370 760,340" fill="#151A2C" stroke="#334155" strokeWidth="1" />
+                </>
+              )}
+
+              {/* King Bed 2.0m x 2.2m */}
+              <rect x="560" y="170" width="125" height="115" rx="5" fill="#1E293B" stroke="#818CF8" strokeWidth="1.5" />
+              <rect x="575" y="180" width="42" height="24" rx="3" fill="#F1F5F9" opacity="0.9" />
+              <rect x="628" y="180" width="42" height="24" rx="3" fill="#F1F5F9" opacity="0.9" />
+              {/* Nightstands */}
+              <rect x="525" y="185" width="25" height="25" rx="2" fill="#334155" stroke="#64748B" />
+              <rect x="695" y="185" width="25" height="25" rx="2" fill="#334155" stroke="#64748B" />
+
+              {/* Block Badge */}
+              <g transform="translate(620, 310)">
+                <rect x="-52" y="-11" width="104" height="22" rx="4" fill="#0D1117" stroke="#818CF8" strokeWidth="1.5" />
+                <text x="0" y="4" fill="#818CF8" fontSize="10" fontWeight="bold" textAnchor="middle" fontFamily="monospace">
+                  PN-01 • 18.2 m²
                 </text>
               </g>
             </g>
 
             {/* ======================================================= */}
-            {/* 6. ZONE: BAN CÔNG SKY LOUNGE (Balcony)                 */}
+            {/* 5. KHỐI PHÒNG NGỦ PHỤ (Second Bedroom Block)            */}
             {/* ======================================================= */}
-            <g onClick={() => setSelectedRoom('balcony')} className="group">
+            <g 
+              onClick={() => setSelectedRoom('secondBed')}
+              className="transition-all duration-300 group"
+              transform={viewMode === '3D_EXPLODED' ? 'translate(20, 10)' : 'translate(0, 0)'}
+            >
+              {/* Floor Base */}
               <polygon
-                points="460,390 640,390 640,540 460,540"
-                fill={viewMode === 'XRAY_IOT' ? 'url(#heatMap)' : 'url(#marbleTile)'}
-                stroke={selectedRoom === 'balcony' ? '#10B981' : '#1E293B'}
-                strokeWidth={selectedRoom === 'balcony' ? '2.5' : '1'}
+                points="480,340 760,340 760,470 480,470"
+                fill="url(#oakFlooring)"
+                stroke={selectedRoom === 'secondBed' ? '#38BDF8' : '#334155'}
+                strokeWidth={selectedRoom === 'secondBed' ? '3' : '1.5'}
+                className="transition-all hover:fill-[#1A2330]"
               />
-              {/* 3D Glass Railing */}
-              <line x1="460" y1="540" x2="640" y2="540" stroke="#38BDF8" strokeWidth="4" strokeDasharray="8 4" opacity="0.85" />
-              {/* Balcony Coffee Table & Chairs */}
-              <rect x="520" y="440" width="40" height="30" rx="4" fill="#1E293B" stroke="#10B981" strokeWidth="1.2" />
-              <circle cx="500" cy="455" r="9" fill="#334155" />
-              <circle cx="580" cy="455" r="9" fill="#334155" />
-              {/* Green Planter Row */}
-              <circle cx="480" cy="515" r="10" fill="#10B981" opacity="0.8" />
-              <circle cx="510" cy="518" r="8" fill="#10B981" opacity="0.8" />
-              <circle cx="615" cy="515" r="10" fill="#10B981" opacity="0.8" />
+
+              {/* Queen Bed & Study Desk */}
+              <rect x="630" y="360" width="100" height="85" rx="4" fill="#1E293B" stroke="#38BDF8" strokeWidth="1.5" />
+              <rect x="645" y="368" width="70" height="18" rx="2" fill="#F1F5F9" opacity="0.9" />
+              <rect x="510" y="360" width="75" height="35" rx="3" fill="#334155" stroke="#64748B" />
+
+              {/* Block Badge */}
+              <g transform="translate(560, 440)">
+                <rect x="-48" y="-11" width="96" height="22" rx="4" fill="#0D1117" stroke="#38BDF8" strokeWidth="1.5" />
+                <text x="0" y="4" fill="#38BDF8" fontSize="10" fontWeight="bold" textAnchor="middle" fontFamily="monospace">
+                  PN-02 • 12.4 m²
+                </text>
+              </g>
+            </g>
+
+            {/* ======================================================= */}
+            {/* 6. KHỐI BAN CÔNG KÍNH (Glass Balcony Block)             */}
+            {/* ======================================================= */}
+            <g 
+              onClick={() => setSelectedRoom('balcony')}
+              className="transition-all duration-300 group"
+              transform={viewMode === '3D_EXPLODED' ? 'translate(20, 25)' : 'translate(0, 0)'}
+            >
+              {/* Floor Base */}
+              <polygon
+                points="480,470 760,470 760,560 480,560"
+                fill="url(#marbleTile)"
+                stroke={selectedRoom === 'balcony' ? '#10B981' : '#334155'}
+                strokeWidth={selectedRoom === 'balcony' ? '3' : '1.5'}
+                className="transition-all hover:fill-[#162A22]"
+              />
+
+              {/* 3D Glass Curtain Railing */}
+              <line x1="760" y1="470" x2="760" y2="560" stroke="#38BDF8" strokeWidth="4" strokeDasharray="8 4" opacity="0.9" />
+              <line x1="480" y1="560" x2="760" y2="560" stroke="#38BDF8" strokeWidth="4" strokeDasharray="8 4" opacity="0.9" />
+
+              {/* Outdoor Lounge & Green Planters */}
+              <circle cx="520" cy="515" r="14" fill="#10B981" opacity="0.75" />
+              <circle cx="550" cy="515" r="10" fill="#10B981" opacity="0.75" />
+              <rect x="620" y="495" width="90" height="40" rx="6" fill="#1E293B" stroke="#10B981" strokeWidth="1.5" />
+
               {/* Curtain Line */}
               <line
-                x1="460"
-                y1="390"
-                x2="640"
-                y2="390"
+                x1="480"
+                y1="470"
+                x2="760"
+                y2="470"
                 stroke={curtainsOpen ? '#C5A880' : '#EF4444'}
                 strokeWidth="3.5"
                 strokeDasharray={curtainsOpen ? '6 4' : '0'}
               />
-              {/* Micro Badge */}
-              <g transform="translate(550, 415)">
-                <rect x="-26" y="-10" width="52" height="20" rx="4" fill="#0D1117" stroke="#10B981" strokeWidth="1.2" />
-                <text x="0" y="4" fill="#10B981" fontSize="9" fontWeight="bold" textAnchor="middle" fontFamily="monospace">
-                  {showDimensions ? 'BC 7.2m²' : 'BAN CÔNG'}
+
+              {/* Block Badge */}
+              <g transform="translate(620, 465)">
+                <rect x="-46" y="-10" width="92" height="20" rx="3" fill="#0D1117" stroke="#10B981" strokeWidth="1.5" />
+                <text x="0" y="4" fill="#10B981" fontSize="10" fontWeight="bold" textAnchor="middle" fontFamily="monospace">
+                  BC-01 • 7.8 m²
                 </text>
               </g>
             </g>
 
             {/* ======================================================= */}
-            {/* 7. ZONE: PHÒNG NGỦ MASTER (Master Suite)               */}
-            {/* ======================================================= */}
-            <g onClick={() => setSelectedRoom('masterBed')} className="group">
-              <polygon
-                points="460,120 680,120 680,310 460,310"
-                fill={viewMode === 'XRAY_IOT' ? 'url(#heatMap)' : 'url(#oakWood)'}
-                stroke={selectedRoom === 'masterBed' ? '#818CF8' : '#1E293B'}
-                strokeWidth={selectedRoom === 'masterBed' ? '3' : '1'}
-              />
-              {/* Cool Blue Glow */}
-              {lights.bedroomMaster && viewMode !== '2D_CAD' && (
-                <ellipse cx="570" cy="210" rx="90" ry="70" fill="url(#glowCool)" pointerEvents="none" />
-              )}
-              {/* King Bed with Dual Pillows */}
-              <rect x="525" y="150" width="95" height="95" rx="5" fill="#1E293B" stroke="#818CF8" strokeWidth="1.5" />
-              <rect x="535" y="158" width="32" height="20" rx="3" fill="#F1F5F9" opacity="0.9" />
-              <rect x="578" y="158" width="32" height="20" rx="3" fill="#F1F5F9" opacity="0.9" />
-              {/* Nightstands */}
-              <rect x="495" y="165" width="22" height="20" rx="2" fill="#334155" stroke="#64748B" />
-              <rect x="628" y="165" width="22" height="20" rx="2" fill="#334155" stroke="#64748B" />
-              {/* Wardrobe with Glass Slider */}
-              <rect x="470" y="270" width="140" height="25" rx="2" fill="#0F172A" stroke="#818CF8" strokeWidth="1.2" />
-              {/* Micro Badge */}
-              <g transform="translate(570, 275)">
-                <rect x="-38" y="-11" width="76" height="22" rx="4" fill="#0D1117" stroke="#818CF8" strokeWidth="1.5" />
-                <text x="0" y="4" fill="#818CF8" fontSize="10" fontWeight="bold" textAnchor="middle" fontFamily="monospace">
-                  {showDimensions ? 'PN1 • 17.5m²' : 'PN MASTER'}
-                </text>
-              </g>
-            </g>
-
-            {/* ======================================================= */}
-            {/* 8. ZONE: WC MASTER & BỒN TẮM (En-suite Bath & Tub)     */}
-            {/* ======================================================= */}
-            <g onClick={() => setSelectedRoom('masterWc')} className="group">
-              <polygon
-                points="680,120 800,120 800,260 680,260"
-                fill={viewMode === 'XRAY_IOT' ? 'url(#heatMap)' : 'url(#terrazzoBath)'}
-                stroke={selectedRoom === 'masterWc' ? '#38BDF8' : '#1E293B'}
-                strokeWidth={selectedRoom === 'masterWc' ? '2.5' : '1'}
-              />
-              {/* Oval Bathtub */}
-              <ellipse cx="740" cy="155" rx="42" ry="22" fill="#F8FAFC" stroke="#38BDF8" strokeWidth="1.5" />
-              {/* Smart TOTO Toilet */}
-              <rect x="695" y="210" width="24" height="34" rx="10" fill="#F8FAFC" stroke="#64748B" />
-              {/* Lavabo with LED Mirror */}
-              <rect x="745" y="225" width="40" height="22" rx="2" fill="#334155" stroke="#38BDF8" />
-              <circle cx="765" cy="236" r="6" fill="#F8FAFC" />
-              {/* Micro Badge */}
-              <g transform="translate(740, 195)">
-                <rect x="-26" y="-10" width="52" height="20" rx="4" fill="#0D1117" stroke="#38BDF8" strokeWidth="1.2" />
-                <text x="0" y="4" fill="#38BDF8" fontSize="9" fontWeight="bold" textAnchor="middle" fontFamily="monospace">
-                  {showDimensions ? 'WC1 5.8m²' : 'WC1'}
-                </text>
-              </g>
-            </g>
-
-            {/* ======================================================= */}
-            {/* 9. ZONE: PHÒNG NGỦ PHỤ (Second Bedroom)                */}
-            {/* ======================================================= */}
-            <g onClick={() => setSelectedRoom('secondBed')} className="group">
-              <polygon
-                points="680,260 800,260 800,430 680,430"
-                fill={viewMode === 'XRAY_IOT' ? 'url(#heatMap)' : 'url(#oakWood)'}
-                stroke={selectedRoom === 'secondBed' ? '#A78BFA' : '#1E293B'}
-                strokeWidth={selectedRoom === 'secondBed' ? '2.5' : '1'}
-              />
-              {/* Queen Bed */}
-              <rect x="700" y="280" width="80" height="75" rx="4" fill="#1E293B" stroke="#A78BFA" strokeWidth="1.2" />
-              <rect x="715" y="288" width="50" height="16" rx="2" fill="#F1F5F9" opacity="0.9" />
-              {/* Study Desk & Chair */}
-              <rect x="700" y="380" width="50" height="22" rx="2" fill="#334155" stroke="#64748B" />
-              <circle cx="725" cy="415" r="7" fill="#C5A880" />
-              {/* Micro Badge */}
-              <g transform="translate(740, 360)">
-                <rect x="-28" y="-10" width="56" height="20" rx="4" fill="#0D1117" stroke="#A78BFA" strokeWidth="1.2" />
-                <text x="0" y="4" fill="#A78BFA" fontSize="9" fontWeight="bold" textAnchor="middle" fontFamily="monospace">
-                  {showDimensions ? 'PN2 12.2m²' : 'PN2'}
-                </text>
-              </g>
-            </g>
-
-            {/* ======================================================= */}
-            {/* 10. ZONE: WC KHÁCH (Guest Bathroom)                    */}
-            {/* ======================================================= */}
-            <g onClick={() => setSelectedRoom('guestWc')} className="group">
-              <polygon
-                points="640,430 800,430 800,540 640,540"
-                fill={viewMode === 'XRAY_IOT' ? 'url(#heatMap)' : 'url(#terrazzoBath)'}
-                stroke={selectedRoom === 'guestWc' ? '#06B6D4' : '#1E293B'}
-                strokeWidth={selectedRoom === 'guestWc' ? '2.5' : '1'}
-              />
-              {/* Glass Shower Cabin */}
-              <rect x="650" y="445" width="45" height="45" rx="2" fill="none" stroke="#06B6D4" strokeWidth="1.5" />
-              <circle cx="672" cy="467" r="4" fill="#38BDF8" />
-              {/* Toilet & Sink */}
-              <rect x="710" y="450" width="22" height="30" rx="8" fill="#F8FAFC" />
-              <rect x="745" y="455" width="35" height="20" rx="2" fill="#334155" />
-              {/* Micro Badge */}
-              <g transform="translate(720, 510)">
-                <rect x="-26" y="-10" width="52" height="20" rx="4" fill="#0D1117" stroke="#06B6D4" strokeWidth="1.2" />
-                <text x="0" y="4" fill="#06B6D4" fontSize="9" fontWeight="bold" textAnchor="middle" fontFamily="monospace">
-                  {showDimensions ? 'WC2 4.2m²' : 'WC2'}
-                </text>
-              </g>
-            </g>
-
-            {/* ======================================================= */}
-            {/* 11. ACTIVE IOT SMART HOTSPOT NODES                      */}
+            {/* 7. ACTIVE IOT SMART HOTSPOT NODES                       */}
             {/* ======================================================= */}
             {showIotNodes && (
               <g className="pointer-events-auto">
                 {/* Node 1: Living Room AC */}
-                <g transform="translate(440, 140)" className="cursor-pointer">
-                  <title>Daikin VRV AC</title>
-                  <circle cx="0" cy="0" r="13" fill={acPower ? '#0284C7' : '#475569'} stroke="#FFFFFF" strokeWidth="1.5" />
-                  <text x="0" y="4" fill="#FFFFFF" fontSize="8" fontWeight="bold" textAnchor="middle" fontFamily="monospace">AC</text>
+                <g transform="translate(460, 150)" className="cursor-pointer">
+                  <title>Daikin VRV Inverter AC</title>
+                  <circle cx="0" cy="0" r="14" fill={acPower ? '#0284C7' : '#475569'} stroke="#FFFFFF" strokeWidth="1.5" />
+                  <text x="0" y="4" fill="#FFFFFF" fontSize="9" fontWeight="bold" textAnchor="middle" fontFamily="monospace">AC</text>
                   {acPower && (
-                    <circle cx="0" cy="0" r="20" fill="none" stroke="#38BDF8" strokeWidth="1.5" className="animate-ping opacity-60" />
+                    <circle cx="0" cy="0" r="22" fill="none" stroke="#38BDF8" strokeWidth="1.5" className="animate-ping opacity-60" />
                   )}
                 </g>
 
                 {/* Node 2: Master FaceID Door Lock */}
-                <g transform="translate(90, 320)" className="cursor-pointer" onClick={onToggleDoor}>
-                  <title>Khóa FaceID Master</title>
-                  <circle cx="0" cy="0" r="13" fill={doorLocked ? '#059669' : '#DC2626'} stroke="#FFFFFF" strokeWidth="1.5" />
+                <g 
+                  transform="translate(80, 310)" 
+                  className="cursor-pointer"
+                  onClick={interactive ? onToggleDoor : undefined}
+                >
+                  <title>Khóa Cửa FaceID Master</title>
+                  <circle cx="0" cy="0" r="14" fill={doorLocked ? '#059669' : '#DC2626'} stroke="#FFFFFF" strokeWidth="1.5" />
                   <text x="0" y="4" fill="#FFFFFF" fontSize="8" fontWeight="bold" textAnchor="middle">ID</text>
                 </g>
 
                 {/* Node 3: Water Leak Sensor in Kitchen */}
-                <g transform="translate(445, 520)" className="cursor-pointer">
+                <g transform="translate(430, 530)" className="cursor-pointer">
                   <title>Cảm biến rò rỉ nước AI</title>
-                  <circle cx="0" cy="0" r="11" fill={waterLeakActive ? '#0284C7' : '#94A3B8'} stroke="#FFFFFF" strokeWidth="1" />
-                  <text x="0" y="3" fill="#FFFFFF" fontSize="7" fontWeight="bold" textAnchor="middle">H2O</text>
+                  <circle cx="0" cy="0" r="12" fill={waterLeakActive ? '#0284C7' : '#94A3B8'} stroke="#FFFFFF" strokeWidth="1" />
+                  <text x="0" y="3" fill="#FFFFFF" fontSize="8" fontWeight="bold" textAnchor="middle">H2O</text>
                 </g>
 
                 {/* Node 4: Balcony Smart Curtain */}
-                <g transform="translate(550, 390)" className="cursor-pointer" onClick={onToggleCurtains}>
+                <g 
+                  transform="translate(620, 470)" 
+                  className="cursor-pointer"
+                  onClick={interactive ? onToggleCurtains : undefined}
+                >
                   <title>Rèm ban công tự động</title>
-                  <circle cx="0" cy="0" r="12" fill={curtainsOpen ? '#D97706' : '#475569'} stroke="#FFFFFF" strokeWidth="1.5" />
-                  <text x="0" y="4" fill="#FFFFFF" fontSize="7" fontWeight="bold" textAnchor="middle">RÈM</text>
+                  <circle cx="0" cy="0" r="13" fill={curtainsOpen ? '#D97706' : '#475569'} stroke="#FFFFFF" strokeWidth="1.5" />
+                  <text x="0" y="4" fill="#FFFFFF" fontSize="8" fontWeight="bold" textAnchor="middle">RÈM</text>
                 </g>
               </g>
             )}
           </svg>
         </div>
 
-        {/* Compact HUD Overlay: Top Left */}
-        <div className="absolute top-3 left-3 bg-[#0D1117]/95 border border-[#222B35] px-3 py-2 text-[10px] space-y-0.5 backdrop-blur-md rounded shadow-lg">
-          <div className="text-white font-bold flex items-center gap-1.5 truncate">
-            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse flex-shrink-0"></span>
-            <span>Căn {apartmentCode} ({clearArea} m²)</span>
+        {/* Compass & Architectural HUD: Top Left */}
+        <div className="absolute top-3 left-3 bg-[#0D1117]/95 border border-[#222B35] px-3.5 py-2.5 text-[10px] space-y-1 backdrop-blur-md rounded shadow-xl">
+          <div className="text-white font-bold flex items-center gap-1.5">
+            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+            Căn Hộ {apartmentCode} ({clearArea} m²)
           </div>
-          <div className="text-gray-400 font-mono text-[9px] truncate">
-            Chế độ: <span className="text-[#C5A880] font-bold">{viewMode}</span>
+          <div className="text-gray-400 font-mono">
+            Chế độ: <strong className="text-[#C5A880]">{viewMode}</strong>
           </div>
-        </div>
-
-        {/* Compact Legend: Bottom Left */}
-        <div className="absolute bottom-3 left-3 hidden sm:flex items-center gap-2.5 bg-[#0D1117]/95 border border-[#222B35] px-3 py-1.5 text-[10px] backdrop-blur-md rounded text-gray-300">
-          <div className="flex items-center gap-1">
-            <span className="w-2 h-2 rounded-full bg-sky-500"></span> AC VRV
-          </div>
-          <div className="flex items-center gap-1">
-            <span className="w-2 h-2 rounded-full bg-emerald-500"></span> FaceID
-          </div>
-          <div className="flex items-center gap-1">
-            <span className="w-2 h-2 rounded-full bg-amber-500"></span> Rèm Auto
-          </div>
-          <div className="flex items-center gap-1">
-            <span className="w-2 h-2 rounded-full bg-blue-400"></span> Cảm Biến Nước
+          <div className="text-gray-400 font-mono">
+            Tỉ lệ mô hình: <strong>1:50 Architectural Metric</strong>
           </div>
         </div>
 
-        {/* Action Tip: Bottom Right */}
-        <div className="absolute bottom-3 right-3 bg-[#1C2533]/90 border border-[#C5A880]/60 px-2.5 py-1 text-[10px] text-[#C5A880] font-mono rounded backdrop-blur-md">
-          * Nhấp từng phòng để kiểm tra & điều khiển
+        {/* Read-Only Mode Badge (For Landing Page) */}
+        {!interactive && (
+          <div className="absolute top-3 right-3 bg-blue-950/90 border border-blue-500/80 px-3 py-1.5 text-[10px] text-blue-300 font-mono rounded backdrop-blur-md flex items-center gap-1.5 shadow-lg">
+            <Eye className="w-3.5 h-3.5" /> Chế Độ Xem Kiến Trúc (Đăng nhập tài khoản căn hộ để điều khiển)
+          </div>
+        )}
+
+        {/* Interactive Click Tip */}
+        <div className="absolute bottom-3 right-3 bg-[#1C2533]/90 border border-[#C5A880]/60 px-3 py-1.5 text-[10px] text-[#C5A880] font-mono rounded backdrop-blur-md">
+          * Nhấp vào từng khối phòng để kiểm tra thông số kỹ thuật
         </div>
       </div>
 
       {/* ------------------------------------------------------------- */}
-      {/* 3. CLEAN BOTTOM INSPECTION PANEL (Zero Text Overflow)          */}
+      {/* 3. BOTTOM INSPECTION PANEL: ACTIVE ROOM SPECIFICATIONS        */}
       {/* ------------------------------------------------------------- */}
-      <div className="p-4 bg-[#0D1117] border-t border-[#222B35] grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
-        {/* Active Room Focus */}
-        <div className="md:col-span-4 border-r border-[#222B35] pr-3 space-y-1 overflow-hidden">
-          <div className="text-[10px] uppercase tracking-wider text-gray-400 font-mono flex items-center justify-between">
-            <span>Phòng Đang Chọn</span>
-            <span className="text-[#C5A880] font-bold">{activeRoom.code}</span>
-          </div>
-          <div className="text-sm font-bold text-white flex items-center gap-2 truncate">
-            <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: activeRoom.color }} />
-            <span className="truncate">{activeRoom.name}</span>
-          </div>
-          <div className="text-xs text-gray-400 font-mono truncate">
-            Diện tích: <strong className="text-[#C5A880]">{activeRoom.area} m²</strong> ({((activeRoom.area / clearArea) * 100).toFixed(1)}% căn hộ)
-          </div>
-        </div>
-
-        {/* Environmental Telemetry */}
-        <div className="md:col-span-4 grid grid-cols-3 gap-2 text-center text-xs">
-          <div className="p-2 bg-[#121820] border border-[#222B35] rounded">
-            <div className="text-[9px] text-gray-400 truncate">Nhiệt Độ</div>
-            <div className="font-mono font-bold text-white mt-0.5">{activeRoom.temperature}°C</div>
-          </div>
-          <div className="p-2 bg-[#121820] border border-[#222B35] rounded">
-            <div className="text-[9px] text-gray-400 truncate">Độ Ẩm</div>
-            <div className="font-mono font-bold text-blue-400 mt-0.5">{activeRoom.humidity}%</div>
-          </div>
-          <div className="p-2 bg-[#121820] border border-[#222B35] rounded">
-            <div className="text-[9px] text-gray-400 truncate">Ánh Sáng</div>
-            <div className={`font-mono font-bold mt-0.5 ${activeRoom.lightState ? 'text-amber-400' : 'text-gray-500'}`}>
-              {activeRoom.lightState ? 'SÁNG' : 'TẮT'}
+      {activeRoom && (
+        <div className="p-4 bg-[#0D1117] border-t border-[#222B35] grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
+          {/* Room Name, Code & Dimensions */}
+          <div className="md:col-span-4 border-r border-[#222B35] pr-4 space-y-1">
+            <div className="text-[10px] uppercase tracking-wider text-gray-400 font-mono flex items-center justify-between">
+              <span>Khối Không Gian Đang Soi</span>
+              <span className="text-[#C5A880] font-bold font-mono">{activeRoom.code}</span>
+            </div>
+            <div className="text-sm font-bold text-white flex items-center gap-2">
+              <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: activeRoom.color }} />
+              <span>{activeRoom.name}</span>
+            </div>
+            <div className="text-xs text-gray-300 font-mono">
+              Diện tích: <strong className="text-[#C5A880]">{activeRoom.area} m²</strong> • Kích thước: <strong>{activeRoom.dimensions}</strong>
             </div>
           </div>
-        </div>
 
-        {/* Interactive Controls or Public Read-Only Badge */}
-        <div className="md:col-span-4 flex flex-wrap items-center justify-end gap-2">
-          {!interactive ? (
-            <div className="flex items-center gap-1.5 px-3 py-2 bg-[#161B22] border border-[#C5A880]/60 text-[#C5A880] text-xs font-mono rounded shadow">
-              <Lock className="w-3.5 h-3.5 flex-shrink-0" />
-              <span className="truncate">Chế Độ Xem (Chỉ Đọc) • Đăng nhập để điều khiển</span>
+          {/* Environmental Sensors for Selected Room */}
+          <div className="md:col-span-4 grid grid-cols-3 gap-2 text-center text-xs">
+            <div className="p-2 bg-[#121820] border border-[#222B35] rounded">
+              <div className="text-[10px] text-gray-400">Nhiệt Độ</div>
+              <div className="font-mono font-bold text-white mt-0.5">{activeRoom.temperature}°C</div>
             </div>
-          ) : (
-            <>
-              {onToggleLight && (
-                <button
-                  type="button"
-                  onClick={() => {
-                    if (selectedRoom === 'living' || selectedRoom === 'dining') onToggleLight('livingRoom');
-                    else if (selectedRoom === 'masterBed') onToggleLight('bedroomMaster');
-                    else if (selectedRoom === 'kitchen') onToggleLight('kitchen');
-                    else if (selectedRoom === 'balcony') onToggleLight('balcony');
-                  }}
-                  className="px-3 py-2 bg-[#161B22] hover:bg-[#C5A880] hover:text-[#0D1117] border border-gray-700 hover:border-[#C5A880] text-xs font-bold uppercase tracking-wider transition-colors rounded flex items-center gap-1.5 text-white shadow"
-                >
-                  <Zap className="w-3.5 h-3.5" /> Bật/Tắt Đèn
-                </button>
-              )}
+            <div className="p-2 bg-[#121820] border border-[#222B35] rounded">
+              <div className="text-[10px] text-gray-400">Độ Ẩm</div>
+              <div className="font-mono font-bold text-blue-400 mt-0.5">{activeRoom.humidity}%</div>
+            </div>
+            <div className="p-2 bg-[#121820] border border-[#222B35] rounded">
+              <div className="text-[10px] text-gray-400">Ánh Sáng</div>
+              <div className={`font-mono font-bold mt-0.5 ${activeRoom.lightState ? 'text-amber-400' : 'text-gray-500'}`}>
+                {activeRoom.lightState ? 'SÁNG' : 'TẮT'}
+              </div>
+            </div>
+          </div>
 
-              {selectedRoom === 'balcony' && onToggleCurtains && (
-                <button
-                  type="button"
-                  onClick={onToggleCurtains}
-                  className="px-3 py-2 bg-[#C5A880] hover:bg-white text-[#0D1117] text-xs font-bold uppercase tracking-wider transition-colors rounded flex items-center gap-1.5 shadow"
-                >
-                  <Sun className="w-3.5 h-3.5" /> {curtainsOpen ? 'Đóng Rèm' : 'Mở Rèm'}
-                </button>
-              )}
+          {/* Action Control / Guest Prompt */}
+          <div className="md:col-span-4 flex flex-wrap items-center justify-end gap-2">
+            {interactive ? (
+              <>
+                {onToggleLight && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (selectedRoom === 'living') onToggleLight('livingRoom');
+                      else if (selectedRoom === 'masterBed') onToggleLight('bedroomMaster');
+                      else if (selectedRoom === 'diningKitchen') onToggleLight('kitchen');
+                      else if (selectedRoom === 'balcony') onToggleLight('balcony');
+                    }}
+                    className="px-3 py-2 bg-[#161B22] hover:bg-[#C5A880] hover:text-[#0D1117] border border-gray-700 hover:border-[#C5A880] text-xs font-bold uppercase tracking-wider transition-colors rounded flex items-center gap-1.5 text-white"
+                  >
+                    <Zap className="w-3.5 h-3.5" /> Bật/Tắt Đèn
+                  </button>
+                )}
 
-              {selectedRoom === 'foyer' && onToggleDoor && (
-                <button
-                  type="button"
-                  onClick={onToggleDoor}
-                  className="px-3 py-2 bg-[#C5A880] hover:bg-white text-[#0D1117] text-xs font-bold uppercase tracking-wider transition-colors rounded flex items-center gap-1.5 shadow"
-                >
-                  <Lock className="w-3.5 h-3.5" /> {doorLocked ? 'Mở Khóa' : 'Khóa Chốt'}
-                </button>
-              )}
-            </>
-          )}
+                {selectedRoom === 'balcony' && onToggleCurtains && (
+                  <button
+                    type="button"
+                    onClick={onToggleCurtains}
+                    className="px-3 py-2 bg-[#C5A880] hover:bg-white text-[#0D1117] text-xs font-bold uppercase tracking-wider transition-colors rounded flex items-center gap-1.5 shadow"
+                  >
+                    <Sun className="w-3.5 h-3.5" /> {curtainsOpen ? 'Đóng Rèm' : 'Mở Rèm'}
+                  </button>
+                )}
+
+                {selectedRoom === 'foyer' && onToggleDoor && (
+                  <button
+                    type="button"
+                    onClick={onToggleDoor}
+                    className="px-3 py-2 bg-[#C5A880] hover:bg-white text-[#0D1117] text-xs font-bold uppercase tracking-wider transition-colors rounded flex items-center gap-1.5 shadow"
+                  >
+                    <Lock className="w-3.5 h-3.5" /> {doorLocked ? 'Mở Khóa' : 'Khóa Chốt'}
+                  </button>
+                )}
+              </>
+            ) : (
+              <div className="text-[11px] text-gray-400 italic text-right">
+                🔒 Đăng nhập tài khoản cá nhân căn hộ này để kích hoạt bảng điều khiển Smart Living thực tế.
+              </div>
+            )}
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }
