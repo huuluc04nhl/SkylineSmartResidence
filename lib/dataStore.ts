@@ -212,7 +212,7 @@ export interface Survey {
 // ============================================================================
 
 export const DEMO_USERS: User[] = [
-  // 1. Manager (BQL Tòa Nhà)
+  // 1. Manager (Ban Quản Lý Tòa Nhà Skyline)
   {
     id: 'user-manager-1',
     role: 'ADMIN',
@@ -221,19 +221,6 @@ export const DEMO_USERS: User[] = [
     email: 'nks.manager01@gmail.com',
     full_name: 'Nguyễn Văn Quản Trị (Trưởng BQL)',
     avatar_url: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80',
-    ui_language: 'vi',
-    emergency_phone: '19001088',
-    apartment_code: 'BQL_OFFICE',
-    relationship: 'Staff',
-  },
-  {
-    id: 'user-manager-2',
-    role: 'ADMIN',
-    username: 'nks.manager02@gmail.com',
-    phone: '0901888998',
-    email: 'nks.manager02@gmail.com',
-    full_name: 'Trần Thị Quản Lý (Phó BQL)',
-    avatar_url: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150&auto=format&fit=crop&q=80',
     ui_language: 'vi',
     emergency_phone: '19001088',
     apartment_code: 'BQL_OFFICE',
@@ -257,7 +244,7 @@ export const DEMO_USERS: User[] = [
     relationship: 'Owner',
   },
 
-  // 3. Customer / Tenant (Thành viên gia đình căn hộ 12A05)
+  // 3. Customer / Tenant (Người nhà chủ hộ căn hộ 12A05)
   {
     id: 'user-tenant-1',
     role: 'TENANT',
@@ -274,7 +261,7 @@ export const DEMO_USERS: User[] = [
     relationship: 'Family',
   },
 
-  // 4. Driver / Technical (Bộ phận kỹ thuật & vận tải)
+  // 4. Driver / Technician (Kỹ thuật viên bảo trì tòa nhà)
   {
     id: 'user-tech-1',
     role: 'TECHNICIAN',
@@ -286,100 +273,6 @@ export const DEMO_USERS: User[] = [
     ui_language: 'vi',
     emergency_phone: '0905667788',
     relationship: 'Staff',
-  },
-  {
-    id: 'user-tech-2',
-    role: 'TECHNICIAN',
-    username: 'nks.driver02@gmail.com',
-    phone: '0905667789',
-    email: 'nks.driver02@gmail.com',
-    full_name: 'Trần Văn Điều Phối (Kỹ thuật PCCC)',
-    avatar_url: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=150&auto=format&fit=crop&q=80',
-    ui_language: 'vi',
-    emergency_phone: '0905667789',
-    relationship: 'Staff',
-  },
-
-  // 5. Member (Thành viên cư dân)
-  {
-    id: 'user-member-1',
-    role: 'TENANT',
-    username: 'vanncuong1614@gmail.com',
-    phone: '0902114455',
-    email: 'vanncuong1614@gmail.com',
-    full_name: 'Văn Cường',
-    id_card_no: '079201004455',
-    avatar_url: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=150&auto=format&fit=crop&q=80',
-    ui_language: 'vi',
-    apartment_code: '12A05',
-    relationship: 'Tenant',
-  },
-  {
-    id: 'user-member-2',
-    role: 'TENANT',
-    username: 'lehai17082004@gmail.com',
-    phone: '0903889911',
-    email: 'lehai17082004@gmail.com',
-    full_name: 'Lê Hải',
-    id_card_no: '079204001708',
-    avatar_url: 'https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?w=150&auto=format&fit=crop&q=80',
-    ui_language: 'vi',
-    apartment_code: '12A05',
-    relationship: 'Tenant',
-  },
-  {
-    id: 'user-member-3',
-    role: 'TENANT',
-    username: '26vucatthinh@gmail.com',
-    phone: '0909262626',
-    email: '26vucatthinh@gmail.com',
-    full_name: 'Vũ Cát Thịnh',
-    id_card_no: '079201002626',
-    avatar_url: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=150&auto=format&fit=crop&q=80',
-    ui_language: 'vi',
-    apartment_code: '12A05',
-    relationship: 'Family',
-  },
-
-  // 6. Faculty / Teacher
-  {
-    id: 'user-faculty-1',
-    role: 'ADMIN',
-    username: 'nks.teacher01@gmail.com',
-    phone: '0901234501',
-    email: 'nks.teacher01@gmail.com',
-    full_name: 'Đào Tạo NKS 01 (Giảng viên nội bộ)',
-    avatar_url: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&auto=format&fit=crop&q=80',
-    ui_language: 'vi',
-    apartment_code: 'BQL_OFFICE',
-    relationship: 'Staff',
-  },
-  {
-    id: 'user-faculty-2',
-    role: 'ADMIN',
-    username: 'nks.teacher02@gmail.com',
-    phone: '0901234502',
-    email: 'nks.teacher02@gmail.com',
-    full_name: 'Đào Tạo NKS 02 (Giảng viên nội bộ)',
-    avatar_url: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=150&auto=format&fit=crop&q=80',
-    ui_language: 'vi',
-    apartment_code: 'BQL_OFFICE',
-    relationship: 'Staff',
-  },
-
-  // 7. Student
-  {
-    id: 'user-student-1',
-    role: 'TENANT',
-    username: 'ducanhnguyen030303@gmail.com',
-    phone: '0903030303',
-    email: 'ducanhnguyen030303@gmail.com',
-    full_name: 'Nguyễn Đức Anh',
-    id_card_no: '079203003030',
-    avatar_url: 'https://images.unsplash.com/photo-1501196354995-cbb51c65aaea?w=150&auto=format&fit=crop&q=80',
-    ui_language: 'vi',
-    apartment_code: '12A05',
-    relationship: 'Family',
   },
 ];
 

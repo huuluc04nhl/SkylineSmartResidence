@@ -139,19 +139,6 @@ if (!global.__NKS_FAMILY_STORE) {
         faceStatus: 'Đã Xác Thực FaceID',
         avatarUrl: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400',
         addedDate: '10/01/2026',
-      },
-      {
-        id: 'mem-thinh-02',
-        username: '26vucatthinh@gmail.com',
-        fullName: 'Vũ Cát Thịnh',
-        role: 'Family',
-        relationship: 'Thành viên gia đình (Gia phả TreeFamily)',
-        phone: '0909262626',
-        idCard: '079201002626',
-        licensePlate: '59P1-926.26',
-        faceStatus: 'Đã Xác Thực FaceID',
-        avatarUrl: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=400',
-        addedDate: '15/02/2026',
       }
     ]
   };
