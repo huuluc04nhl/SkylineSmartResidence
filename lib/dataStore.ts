@@ -720,3 +720,29 @@ export const DEMO_SURVEYS: Survey[] = [
     user_voted: 'opt-1',
   },
 ];
+
+/**
+ * Real-time updater for DEMO_USERS in dataStore
+ */
+export function updateDemoUser(identifier: string, updates: Partial<User>): User | null {
+  const norm = identifier.toLowerCase().trim();
+  const matched = DEMO_USERS.find(u => 
+    u.id === identifier ||
+    (u.username && u.username.toLowerCase().trim() === norm) ||
+    (u.email && u.email.toLowerCase().trim() === norm) ||
+    (u.phone && u.phone.toLowerCase().trim() === norm) ||
+    u.role === identifier
+  );
+
+  if (matched) {
+    if (updates.full_name) matched.full_name = updates.full_name;
+    if (updates.email) matched.email = updates.email;
+    if (updates.phone) matched.phone = updates.phone;
+    if (updates.id_card_no) matched.id_card_no = updates.id_card_no;
+    if (updates.id_card_number) matched.id_card_number = updates.id_card_number;
+    if (updates.avatar_url) matched.avatar_url = updates.avatar_url;
+    if (updates.license_plate) matched.license_plate = updates.license_plate;
+    return matched;
+  }
+  return null;
+}

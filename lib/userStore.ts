@@ -1,6 +1,6 @@
 // ============================================================================
 // SERVER-SIDE USER STORE (Dynamic in-memory storage for NKS User APIs)
-// ============================================================================
+import { DEMO_USERS, updateDemoUser } from '@/lib/dataStore';
 
 export interface StoredUser {
   id: string;
@@ -23,7 +23,7 @@ export interface StoredUser {
   website?: string;
   license_plate?: string;
   avatar_url?: string;
-  role: 'ADMIN' | 'OWNER' | 'TENANT' | 'TECHNICIAN';
+  role: 'ADMIN' | 'OWNER' | 'TENANT' | 'TECHNICIAN' | 'RECEPTIONIST';
   apartment_code: string;
   updated_at?: string;
 }
@@ -180,18 +180,100 @@ if (!global.__NKS_FAMILY_STORE) {
   };
 }
 
-export function getUserStore(roleKey: 'ADMIN' | 'OWNER' | 'TENANT' | 'TECHNICIAN'): StoredUser {
-  return global.__NKS_USER_STORE![roleKey] || global.__NKS_USER_STORE!['OWNER'];
+export function getUserStore(identifier: string): StoredUser {
+  if (!global.__NKS_USER_STORE) {
+    global.__NKS_USER_STORE = {};
+  }
+
+  // 1. Direct key match (e.g. 'OWNER', 'ADMIN', 'TENANT', 'TECHNICIAN' or email/username)
+  if (global.__NKS_USER_STORE[identifier]) {
+    return global.__NKS_USER_STORE[identifier];
+  }
+
+  const norm = identifier.toLowerCase().trim();
+
+  // 2. Match by email, username, or id in store
+  for (const key in global.__NKS_USER_STORE) {
+    const u = global.__NKS_USER_STORE[key];
+    if (
+      u.id === identifier ||
+      (u.username && u.username.toLowerCase().trim() === norm) ||
+      (u.email && u.email.toLowerCase().trim() === norm) ||
+      (u.phone && u.phone.toLowerCase().trim() === norm)
+    ) {
+      return u;
+    }
+  }
+
+  // 3. Fallback to DEMO_USERS from dataStore if not yet in userStore
+  const fromDemo = DEMO_USERS.find(u => 
+    u.id === identifier ||
+    (u.username && u.username.toLowerCase().trim() === norm) ||
+    (u.email && u.email.toLowerCase().trim() === norm) ||
+    (u.phone && u.phone.toLowerCase().trim() === norm) ||
+    u.role === identifier
+  );
+
+  if (fromDemo) {
+    const newUser: StoredUser = {
+      id: fromDemo.id,
+      username: fromDemo.username,
+      firstname: fromDemo.full_name.split(' ').slice(-1)[0] || '',
+      lastname: fromDemo.full_name.split(' ').slice(0, -1).join(' ') || '',
+      fullname: fromDemo.full_name,
+      full_name: fromDemo.full_name,
+      email: fromDemo.email || '',
+      phone: fromDemo.phone || fromDemo.username,
+      role: fromDemo.role,
+      apartment_code: fromDemo.apartment_code || '12A05',
+      id_number: fromDemo.id_card_no || '079095001234',
+      id_card_no: fromDemo.id_card_no || '079095001234',
+      avatar_url: fromDemo.avatar_url,
+      license_plate: fromDemo.license_plate,
+    };
+    global.__NKS_USER_STORE[fromDemo.role] = newUser;
+    global.__NKS_USER_STORE[fromDemo.username] = newUser;
+    if (fromDemo.email) global.__NKS_USER_STORE[fromDemo.email] = newUser;
+    return newUser;
+  }
+
+  return global.__NKS_USER_STORE['OWNER'] || {
+    id: 'usr-default',
+    username: 'huuluc04@gmail.com',
+    fullname: 'Nguyễn Hữu Lực',
+    full_name: 'Nguyễn Hữu Lực',
+    email: 'huuluc04@gmail.com',
+    phone: '0903112233',
+    role: 'OWNER',
+    apartment_code: '12A05',
+  };
 }
 
-export function updateUserStore(roleKey: 'ADMIN' | 'OWNER' | 'TENANT' | 'TECHNICIAN', updates: Partial<StoredUser>): StoredUser {
-  const current = getUserStore(roleKey);
+export function updateUserStore(identifier: string, updates: Partial<StoredUser>): StoredUser {
+  const current = getUserStore(identifier);
   const updated: StoredUser = {
     ...current,
     ...updates,
     updated_at: new Date().toISOString()
   };
-  global.__NKS_USER_STORE![roleKey] = updated;
+
+  // Sync to all alias keys
+  global.__NKS_USER_STORE![identifier] = updated;
+  if (updated.role) global.__NKS_USER_STORE![updated.role] = updated;
+  if (updated.username) global.__NKS_USER_STORE![updated.username] = updated;
+  if (updated.email) global.__NKS_USER_STORE![updated.email] = updated;
+  if (updated.id) global.__NKS_USER_STORE![updated.id] = updated;
+
+  // Real-time synchronization to DEMO_USERS in dataStore
+  updateDemoUser(identifier, {
+    full_name: updated.fullname || updated.full_name,
+    email: updated.email,
+    phone: updated.phone,
+    id_card_no: updated.id_number || updated.id_card_no,
+    avatar_url: updated.avatar_url,
+    license_plate: updated.license_plate,
+  });
+
   return updated;
 }
 

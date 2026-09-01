@@ -53,9 +53,9 @@ export async function POST(req: Request) {
 
     const cookieStore = cookies();
     const token = access_token || cookieStore.get('nks_token')?.value || '';
-    const roleKey = token.includes('ADMIN') ? 'ADMIN' : token.includes('TENANT') ? 'TENANT' : 'OWNER';
+    const userIdentifier = body.username || email || phone || (token.includes('ADMIN') ? 'ADMIN' : token.includes('TECHNICIAN') ? 'TECHNICIAN' : token.includes('TENANT') ? 'TENANT' : 'OWNER');
 
-    const updatedUser = updateUserStore(roleKey, {
+    const updatedUser = updateUserStore(userIdentifier, {
       firstname: computedFirstname,
       lastname: computedLastname,
       fullname: resolvedFullname,

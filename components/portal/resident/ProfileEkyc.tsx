@@ -53,7 +53,7 @@ interface ProfileEkycProps {
 }
 
 export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
-  const { updateUserInfo } = useAuth();
+  const { updateUserInfo, refreshUser } = useAuth();
   const isOwner = currentUser.role === 'OWNER';
   const aptCode = currentUser.apartment_code || '12A05';
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -177,6 +177,7 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
       const lastname = parts.slice(0, -1).join(' ') || '';
 
       const res = await nksUpdateInfo({
+        username: currentUser?.username || currentUser?.email || phone.trim(),
         firstname,
         lastname,
         fullname: fullName.trim(),
@@ -207,11 +208,14 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
       }
 
       if (res.success && res.user) {
-        // Synchronize state across active session and components
+        // Synchronize state across active session and components immediately
         updateUserInfo({
           ...res.user as any,
           id_card_no: idCardNumber.trim(),
         });
+
+        // Real-time synchronization across entire portal shell
+        await refreshUser();
 
         // Update local state directly with returned API payload
         setFullName(res.user.fullname || res.user.full_name || fullName);
@@ -249,6 +253,7 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
         const res = await nksUpdateAvatar(base64Data);
         if (res.success) {
           updateUserInfo({ avatar_url: base64Data });
+          await refreshUser();
           setSavedSuccess(true);
           setTimeout(() => setSavedSuccess(false), 3000);
         }
