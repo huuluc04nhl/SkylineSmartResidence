@@ -1,5 +1,5 @@
 // ============================================================================
-// OCR & CCCD CHIP PARSER WITH TESSERACT.JS (ROBUST VIETNAMESE CCCD PARSER)
+// OCR & CCCD CHIP PARSER WITH TESSERACT.JS (PRECISE CLEANING ENGINE - NO NOISE)
 // ============================================================================
 
 export interface OcrCccdResult {
@@ -19,14 +19,67 @@ export interface OcrCccdResult {
 }
 
 /**
- * Clean & normalize extracted Vietnamese text
+ * Advanced sanitizer for Full Name
+ * Removes labels (Họ và tên, Full name), noise characters (|, :, /, numbers, punctuation)
+ * Leaves ONLY clean Vietnamese words in UPPERCASE
  */
-function cleanText(text: string): string {
-  return text
-    .replace(/[\r\t]/g, ' ')
-    .replace(/[\|_~]/g, '')
-    .replace(/\s+/g, ' ')
-    .trim();
+export function cleanFullName(raw: string): string {
+  if (!raw) return '';
+
+  let s = raw;
+  // Remove known labels in Vietnamese & English
+  s = s.replace(/(?:họ(?:,\s*chữ\s*đệm)?\s*và\s*tên|full\s*name|họ\s*tên|họ\s*và\s*tên\s*\/\s*full\s*name)/gi, ' ');
+
+  // Remove numbers and punctuation symbols
+  s = s.replace(/[0-9:;\/\\\.\,\-\_\!\?\"\'\*\#\$\%\^\&\(\)\[\]\{\}\|\=\+~`<>]/g, ' ');
+
+  // Keep only Vietnamese letters and spaces
+  s = s.replace(/[^A-Za-zÀ-ỹ\s]/g, ' ');
+
+  // Remove duplicate spaces
+  s = s.replace(/\s+/g, ' ').trim();
+
+  // Filter out any national header words that might have crept in
+  const forbidden = [
+    'CỘNG', 'HÒA', 'XÃ', 'HỘI', 'CHỦ', 'NGHĨA', 'VIỆT', 'NAM', 
+    'ĐỘC', 'LẬP', 'TỰ', 'DO', 'HẠNH', 'PHÚC', 
+    'CĂN', 'CƯỚC', 'CÔNG', 'DÂN', 'IDENTITY', 'CARD', 'REPUBLIC'
+  ];
+  
+  const words = s.split(' ').filter(w => {
+    const up = w.toUpperCase();
+    return !forbidden.includes(up) && w.length > 1;
+  });
+
+  return words.join(' ').toUpperCase();
+}
+
+/**
+ * Advanced sanitizer for Address (Quê quán / Nơi thường trú)
+ * Strips label prefixes, trailing section labels, barcodes, and stray noise symbols
+ */
+export function cleanAddress(raw: string): string {
+  if (!raw) return '';
+
+  let s = raw;
+
+  // 1. Remove label prefixes
+  s = s.replace(/(?:quê\s*quán|nguyên\s*quán|place\s*of\s*origin|nơi\s*thường\s*trú|place\s*of\s*residence|nơi\s*cư\s*trú|thường\s*trú)[:\s\/\.]*/gi, ' ');
+
+  // 2. Cut off any trailing labels from subsequent card sections
+  s = s.replace(/(?:có\s*giá\s*trị\s*đến|date\s*of\s*expiry|hạn\s*sử\s*dụng|không\s*thời\s*hạn|đặc\s*điểm|giới\s*tính|quốc\s*tịch|dân\s*tộc|tôn\s*giáo).*$/gi, '');
+
+  // 3. Remove garbage noise symbols while keeping letters, digits, comma, period, slash, hyphen
+  s = s.replace(/[\|_~{}\[\]\\=\+*\^><@#\$%\:;\"\'`]/g, ' ');
+
+  // 4. Clean up commas & separators
+  s = s.replace(/,\s*,+/g, ', ');
+  s = s.replace(/\s+/g, ' ');
+
+  // 5. Clean leading & trailing punctuation
+  s = s.replace(/^[\s,.:;/\-]+/, '').replace(/[\s,.:;/\-]+$/, '');
+
+  return s.trim();
 }
 
 /**
@@ -34,7 +87,6 @@ function cleanText(text: string): string {
  */
 export function formatToDateInput(d: string): string {
   if (!d) return '';
-  // Clean date string
   const cleanD = d.replace(/[^\d\/\-\.]/g, '');
   const parts = cleanD.split(/[\/\-\.]/);
   if (parts.length === 3) {
@@ -72,7 +124,7 @@ export function parseCccdText(rawText: string, isBackSide: boolean = false): Par
 
   if (!rawText) return result;
 
-  const lines = rawText.split(/\r?\n/).map(l => cleanText(l)).filter(Boolean);
+  const lines = rawText.split(/\r?\n/).map(l => l.replace(/[\r\t]/g, ' ').trim()).filter(Boolean);
 
   if (!isBackSide) {
     // -------------------------------------------------------------
@@ -86,15 +138,14 @@ export function parseCccdText(rawText: string, isBackSide: boolean = false): Par
     }
 
     // -------------------------------------------------------------
-    // 2. EXTRACT FULL NAME (HỌ VÀ TÊN)
-    // Strategy 1: Multi-line / Same-line Regex with Vietnamese uppercase characters
+    // 2. EXTRACT FULL NAME (HỌ VÀ TÊN) WITH NOISE STRIPPING
     // -------------------------------------------------------------
+    // Strategy 1: Same-line or immediate next-line after "Họ và tên"
     const nameBlockMatch = rawText.match(/(?:Họ(?:,\s*chữ\s*đệm)?\s*và\s*tên|Full\s*name|Họ\s*tên)[:\s\/\.]*\n*\s*([A-ZÀ-Ỹ\s]{3,45})/i);
     if (nameBlockMatch && nameBlockMatch[1]) {
-      const candidate = cleanText(nameBlockMatch[1]);
-      const forbidden = ['CỘNG HÒA', 'VIỆT NAM', 'ĐỘC LẬP', 'TỰ DO', 'HẠNH PHÚC', 'CĂN CƯỚC', 'CÔNG DÂN', 'FULL NAME'];
-      if (!forbidden.some(w => candidate.toUpperCase().includes(w)) && candidate.length > 2) {
-        result.fullName = candidate.toUpperCase();
+      const cleaned = cleanFullName(nameBlockMatch[1]);
+      if (cleaned.length >= 3) {
+        result.fullName = cleaned;
       }
     }
 
@@ -105,23 +156,27 @@ export function parseCccdText(rawText: string, isBackSide: boolean = false): Par
         if (/(?:họ.*tên|full\s*name)/i.test(line)) {
           // Check same line after label
           const afterLabel = line.replace(/.*(?:họ.*tên|full\s*name)[:\s\/\.]*/i, '').trim();
-          if (afterLabel.length >= 3 && /^[A-ZÀ-Ỹ\s]+$/i.test(afterLabel)) {
-            result.fullName = afterLabel.toUpperCase();
+          const cleanedSame = cleanFullName(afterLabel);
+          if (cleanedSame.length >= 3) {
+            result.fullName = cleanedSame;
             break;
           }
           // Check next line
           if (i + 1 < lines.length) {
             const nextLine = lines[i + 1].trim();
-            if (nextLine.length >= 3 && !/(?:ngày|sinh|giới|sex|quốc|quê|nơi|thường\s*trú)/i.test(nextLine)) {
-              result.fullName = nextLine.toUpperCase();
-              break;
+            if (!/(?:ngày|sinh|giới|sex|quốc|quê|nơi|thường\s*trú)/i.test(nextLine)) {
+              const cleanedNext = cleanFullName(nextLine);
+              if (cleanedNext.length >= 3) {
+                result.fullName = cleanedNext;
+                break;
+              }
             }
           }
         }
       }
     }
 
-    // Strategy 3: Find any all-caps line situated between CCCD ID line and DOB line
+    // Strategy 3: Find all-caps line between CCCD ID line and DOB line
     if (!result.fullName) {
       let foundIdIndex = -1;
       let foundDobIndex = -1;
@@ -133,9 +188,9 @@ export function parseCccdText(rawText: string, isBackSide: boolean = false): Par
 
       if (foundIdIndex !== -1 && foundDobIndex > foundIdIndex) {
         for (let i = foundIdIndex + 1; i < foundDobIndex; i++) {
-          const candidate = lines[i].replace(/.*(?:họ.*tên|full\s*name)[:\s\/\.]*/i, '').trim();
-          if (/^[A-ZÀ-Ỹ\s]{4,35}$/.test(candidate) && !candidate.includes('CỘNG HÒA') && !candidate.includes('VIỆT NAM')) {
-            result.fullName = candidate.toUpperCase();
+          const candidate = cleanFullName(lines[i]);
+          if (candidate.length >= 4) {
+            result.fullName = candidate;
             break;
           }
         }
@@ -161,7 +216,7 @@ export function parseCccdText(rawText: string, isBackSide: boolean = false): Par
     }
 
     // -------------------------------------------------------------
-    // 5. EXTRACT QUÊ QUÁN & NƠI THƯỜNG TRÚ (MULTI-LINE CAPTURE)
+    // 5. EXTRACT QUÊ QUÁN & NƠI THƯỜNG TRÚ WITH NOISE STRIPPING
     // -------------------------------------------------------------
     const pobLines: string[] = [];
     const residenceLines: string[] = [];
@@ -173,7 +228,7 @@ export function parseCccdText(rawText: string, isBackSide: boolean = false): Par
       // Switch to Quê quán mode
       if (/(?:quê\s*quán|place\s*of\s*origin|nguyên\s*quán)/i.test(line)) {
         currentMode = 'POB';
-        const stripped = line.replace(/.*(?:quê\s*quán|place\s*of\s*origin|nguyên\s*quán)[:\s\/\.]*/i, '').trim();
+        const stripped = cleanAddress(line);
         if (stripped.length > 1) pobLines.push(stripped);
         continue;
       }
@@ -181,12 +236,12 @@ export function parseCccdText(rawText: string, isBackSide: boolean = false): Par
       // Switch to Nơi thường trú mode
       if (/(?:nơi\s*thường\s*trú|place\s*of\s*residence|thường\s*trú|nơi\s*cư\s*trú)/i.test(line)) {
         currentMode = 'RESIDENCE';
-        const stripped = line.replace(/.*(?:nơi\s*thường\s*trú|place\s*of\s*residence|thường\s*trú|nơi\s*cư\s*trú)[:\s\/\.]*/i, '').trim();
+        const stripped = cleanAddress(line);
         if (stripped.length > 1) residenceLines.push(stripped);
         continue;
       }
 
-      // Stop condition (expiry date or other section)
+      // Stop condition
       if (/(?:có\s*giá\s*trị\s*đến|date\s*of\s*expiry|hạn\s*sử\s*dụng|giá\s*trị)/i.test(line)) {
         currentMode = 'NONE';
         continue;
@@ -194,23 +249,27 @@ export function parseCccdText(rawText: string, isBackSide: boolean = false): Par
 
       if (currentMode === 'POB') {
         if (!/(?:nơi\s*thường\s*trú|place\s*of\s*residence|có\s*giá\s*trị)/i.test(line)) {
-          pobLines.push(line);
+          const cleanedLine = cleanAddress(line);
+          if (cleanedLine.length > 1) pobLines.push(cleanedLine);
         }
       } else if (currentMode === 'RESIDENCE') {
         if (!/(?:có\s*giá\s*trị|date\s*of\s*expiry|đặc\s*điểm)/i.test(line)) {
-          residenceLines.push(line);
+          const cleanedLine = cleanAddress(line);
+          if (cleanedLine.length > 1) residenceLines.push(cleanedLine);
         }
       }
     }
 
-    const fullPob = pobLines.join(', ').replace(/,\s*,/g, ',').trim();
-    const fullResidence = residenceLines.join(', ').replace(/,\s*,/g, ',').trim();
+    const rawPob = pobLines.join(', ');
+    const rawResidence = residenceLines.join(', ');
 
-    // Prefer full residence or full pob
-    const primaryAddress = fullResidence || fullPob;
+    const cleanPob = cleanAddress(rawPob);
+    const cleanResidence = cleanAddress(rawResidence);
+
+    const primaryAddress = cleanResidence || cleanPob;
     if (primaryAddress) {
       result.pob = primaryAddress;
-      result.residence = fullResidence || fullPob;
+      result.residence = cleanResidence || cleanPob;
 
       // Extract Province
       const lower = primaryAddress.toLowerCase();
@@ -229,7 +288,6 @@ export function parseCccdText(rawText: string, isBackSide: boolean = false): Par
       } else if (lower.includes('đồng nai')) {
         result.province = 'Đồng Nai';
       } else {
-        // Last segment of address is usually the province
         const parts = primaryAddress.split(',');
         result.province = parts.slice(-1)[0]?.trim() || primaryAddress;
       }
@@ -252,7 +310,7 @@ export function parseCccdText(rawText: string, isBackSide: boolean = false): Par
 
   const placeMatch = rawText.match(/(?:CỤC TRƯỞNG|CỤC CẢNH SÁT|GIÁM ĐỐC|Nơi cấp)[:\s]*([^\n\r]+)/i);
   if (placeMatch && placeMatch[1]) {
-    result.idPlace = cleanText(placeMatch[1]);
+    result.idPlace = cleanAddress(placeMatch[1]);
   } else if (rawText.toLowerCase().includes('cảnh sát qlhc') || rawText.toLowerCase().includes('ttxh') || isBackSide) {
     result.idPlace = 'Cục Cảnh sát QLHC về TTXH';
   }
@@ -303,28 +361,28 @@ export async function runDualSideCccdOcr(
     const retBack = await workerBack.recognize(backSource);
     await workerBack.terminate();
 
-    if (onProgress) onProgress(92, 'Đang bóc tách Họ tên, Quê quán & Nơi thường trú...');
+    if (onProgress) onProgress(92, 'Đang chuẩn hóa & lọc sạch ký tự thừa trên Họ tên và Địa chỉ...');
 
     const parsedFront = parseCccdText(retFront.data.text, false);
     const parsedBack = parseCccdText(retBack.data.text, true);
 
     const merged: OcrCccdResult = {
       idNumber: parsedFront.idNumber || '',
-      fullName: parsedFront.fullName || '',
+      fullName: cleanFullName(parsedFront.fullName || ''),
       dob: parsedFront.dob || '',
       gender: parsedFront.gender || '1',
-      pob: parsedFront.pob || parsedFront.residence || '',
-      residence: parsedFront.residence || parsedFront.pob || '',
+      pob: cleanAddress(parsedFront.pob || parsedFront.residence || ''),
+      residence: cleanAddress(parsedFront.residence || parsedFront.pob || ''),
       province: parsedFront.province || '',
       idDate: parsedBack.idDate || parsedFront.idDate || '',
-      idPlace: parsedBack.idPlace || parsedFront.idPlace || 'Cục Cảnh sát QLHC về TTXH',
+      idPlace: cleanAddress(parsedBack.idPlace || parsedFront.idPlace || 'Cục Cảnh sát QLHC về TTXH'),
       confidence: Math.max(75, Math.round(((retFront.data.confidence || 90) + (retBack.data.confidence || 90)) / 2)),
       rawTextFront: retFront.data.text,
       rawTextBack: retBack.data.text,
       rawText: `[MẶT TRƯỚC]:\n${retFront.data.text}\n\n[MẶT SAU]:\n${retBack.data.text}`,
     };
 
-    if (onProgress) onProgress(100, 'Hoàn tất quét OCR 2 mặt!');
+    if (onProgress) onProgress(100, 'Hoàn tất quét và chuẩn hóa OCR 2 mặt!');
     return merged;
   } catch (error) {
     console.error('Tesseract OCR error:', error);
