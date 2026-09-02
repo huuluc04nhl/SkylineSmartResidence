@@ -216,7 +216,7 @@ export default function PortalPage() {
                   <>
                     {activeModule === 'resident-finance' && <FinanceBilling />}
                     {activeModule === 'resident-surveys' && <SurveysVoting />}
-                    {activeModule === 'resident-family' && <FamilyMembers />}
+                    {activeModule === 'resident-family' && <FamilyMembers currentUser={currentUser} />}
                   </>
                 )}
 

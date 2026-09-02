@@ -121,20 +121,20 @@ export default function Sidebar({
       case 'OWNER':
         return [
           { id: 'resident-home', label: 'Trang Chủ & Mã QR Động', shortLabel: 'Trang Chủ QR', icon: QrCode },
-          { id: 'resident-profile', label: 'Hồ Sơ Cá Nhân & e-KYC', shortLabel: 'Hồ Sơ e-KYC', icon: UserCheck },
+          { id: 'resident-profile', label: 'Hồ Sơ Cá Nhân & FaceID', shortLabel: 'Hồ Sơ Cá Nhân', icon: UserCheck },
+          { id: 'resident-family', label: 'Quản Lý Thành Viên Căn Hộ', shortLabel: 'Thành Viên', icon: Users },
           { id: 'resident-smarthome', label: 'Smart Home Master (12A05)', shortLabel: 'Smart Home', icon: Cpu },
           { id: 'resident-facilities', label: 'Quẹt Thẻ Tiện Ích (Sky Pool)', shortLabel: 'Sky Pool/Gym', icon: Waves },
           { id: 'resident-finance', label: 'Tài Chính & Hóa Đơn AI', shortLabel: 'Tài Chính', icon: CreditCard },
           { id: 'resident-tickets', label: 'Báo Hỏng & Nghiệm Thu', shortLabel: 'Báo Hỏng', icon: Wrench },
           { id: 'resident-surveys', label: 'Biểu Quyết BQT (Chủ Hộ)', shortLabel: 'Biểu Quyết', icon: Vote },
-          { id: 'resident-family', label: 'Quản Lý Cư Dân & e-KYC', shortLabel: 'Quản Lý Cư Dân', icon: Users },
           { id: 'resident-ai-assistant', label: 'Trợ Lý Ảo Skyline AI', shortLabel: 'Skyline AI', icon: Bot },
         ];
 
       case 'TENANT':
         return [
           { id: 'resident-home', label: 'Trang Chủ & Mã QR Động', shortLabel: 'Trang Chủ QR', icon: QrCode },
-          { id: 'resident-profile', label: 'Hồ Sơ Cá Nhân & e-KYC', shortLabel: 'Hồ Sơ e-KYC', icon: UserCheck },
+          { id: 'resident-profile', label: 'Hồ Sơ Cá Nhân & FaceID', shortLabel: 'Hồ Sơ Cá Nhân', icon: UserCheck },
           { id: 'resident-smarthome', label: 'Smart Home Phòng (12A05)', shortLabel: 'Smart Home', icon: Cpu },
           { id: 'resident-facilities', label: 'Quẹt Thẻ Tiện Ích (Sky Pool)', shortLabel: 'Sky Pool/Gym', icon: Waves },
           { id: 'resident-tickets', label: 'Báo Hỏng Hóc (Ticketing)', shortLabel: 'Báo Hỏng', icon: Wrench },
