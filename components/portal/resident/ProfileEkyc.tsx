@@ -46,6 +46,7 @@ import {
 } from '@/lib/nksApiClient';
 import { useAuth } from '@/lib/authContext';
 import CccdOcrScannerModal from './CccdOcrScannerModal';
+import AvatarEditorModal from './AvatarEditorModal';
 import { OcrCccdResult, formatToDateInput, formatToDisplayDate, formatToApiDate } from '@/lib/ocrParser';
 
 interface ProfileEkycProps {
@@ -60,6 +61,7 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
 
   const [activeTab, setActiveTab] = useState<'INFO' | 'EKYC' | 'PASSWORD' | 'FAMILY'>('INFO');
   const [isOcrModalOpen, setIsOcrModalOpen] = useState(false);
+  const [isAvatarModalOpen, setIsAvatarModalOpen] = useState(false);
   const [isLoadingApi, setIsLoadingApi] = useState(true);
   const [ocrFilledNotice, setOcrFilledNotice] = useState(false);
 
@@ -501,20 +503,13 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
               />
               <button
                 type="button"
-                onClick={() => fileInputRef.current?.click()}
-                disabled={isUploadingAvatar}
-                className="absolute inset-0 bg-black/60 rounded-full flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-white text-[10px] font-bold"
+                onClick={() => setIsAvatarModalOpen(true)}
+                className="absolute inset-0 bg-black/60 rounded-full flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-white text-[10px] font-bold cursor-pointer"
+                title="Chỉnh sửa & Cắt ảnh tự do"
               >
                 <Camera className="w-4 h-4 mb-0.5" />
-                {isUploadingAvatar ? 'Đang Tải...' : 'Đổi Ảnh'}
+                Đổi Ảnh
               </button>
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept="image/*"
-                onChange={handleAvatarFileChange}
-                className="hidden"
-              />
             </div>
 
             <div className="space-y-1 text-center sm:text-left flex-1">
@@ -531,10 +526,10 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
 
             <button
               type="button"
-              onClick={() => fileInputRef.current?.click()}
-              className="px-3.5 py-2 bg-[#1C2533] hover:bg-[#C5A880] hover:text-[#0D1117] border border-gray-700 hover:border-[#C5A880] text-xs font-bold uppercase tracking-wider text-white transition-colors rounded flex items-center gap-1.5"
+              onClick={() => setIsAvatarModalOpen(true)}
+              className="px-4 py-2.5 bg-[#1C2533] hover:bg-[#C5A880] hover:text-[#0D1117] border border-gray-700 hover:border-[#C5A880] text-xs font-bold uppercase tracking-wider text-white transition-all rounded flex items-center gap-2 shadow"
             >
-              <Upload className="w-3.5 h-3.5" /> Cập Nhật Ảnh Đại Diện
+              <Upload className="w-3.5 h-3.5 text-[#C5A880]" /> Tùy Chỉnh & Đổi Avatar
             </button>
           </div>
 
@@ -1140,6 +1135,20 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
         isOpen={isOcrModalOpen}
         onClose={() => setIsOcrModalOpen(false)}
         onApplyOcrData={handleApplyOcrData}
+      />
+
+      {/* Avatar Studio Editor Modal */}
+      <AvatarEditorModal
+        isOpen={isAvatarModalOpen}
+        onClose={() => setIsAvatarModalOpen(false)}
+        currentAvatarUrl={avatarUrl}
+        onAvatarUpdated={async (newAvatarUrl) => {
+          setAvatarUrl(newAvatarUrl);
+          updateUserInfo({ avatar_url: newAvatarUrl, avatar: newAvatarUrl } as any);
+          await refreshUser();
+          setSavedSuccess(true);
+          setTimeout(() => setSavedSuccess(false), 3000);
+        }}
       />
     </div>
   );
