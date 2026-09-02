@@ -7,22 +7,27 @@ import {
   Trash2, 
   ShieldCheck, 
   CheckCircle2, 
-  AlertCircle,
-  RefreshCw,
-  X,
-  CreditCard,
-  Car,
-  Phone,
-  ScanFace,
-  User,
-  Sparkles,
-  Lock
+  AlertCircle, 
+  RefreshCw, 
+  X, 
+  CreditCard, 
+  Car, 
+  Phone, 
+  ScanFace, 
+  User, 
+  Sparkles, 
+  Lock,
+  Search,
+  Check,
+  CheckCircle,
+  Clock
 } from 'lucide-react';
 import { User as UserType } from '@/lib/dataStore';
 import { 
   nksGetFamilyMembers, 
   nksAddFamilyMember, 
-  nksRemoveFamilyMember
+  nksRemoveFamilyMember,
+  nksSearchFamilyAccount
 } from '@/lib/nksApiClient';
 
 export interface FamilyMemberItem {
@@ -47,8 +52,9 @@ export interface BqlEligibleAccount {
   idCard: string;
   licensePlate?: string;
   avatarUrl?: string;
-  role: 'Family' | 'Tenant';
+  role: 'Family';
   relationship?: string;
+  isAdded?: boolean;
 }
 
 interface FamilyMembersProps {
@@ -62,24 +68,26 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
   const [members, setMembers] = useState<FamilyMemberItem[]>([]);
   const [bqlAccounts, setBqlAccounts] = useState<BqlEligibleAccount[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [selectedBqlAccountId, setSelectedBqlAccountId] = useState<string | null>(null);
 
   // Add Member Modal State
   const [showAddModal, setShowAddModal] = useState<boolean>(false);
+  const [modalMode, setModalMode] = useState<'PRE_APPROVED' | 'SEARCH_API'>('PRE_APPROVED');
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [actionSuccess, setActionSuccess] = useState<string | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
 
-  // Form State
-  const [newFullName, setNewFullName] = useState<string>('');
-  const [newPhone, setNewPhone] = useState<string>('');
-  const [newIdCard, setNewIdCard] = useState<string>('');
+  // Selected Account from API
+  const [selectedAccount, setSelectedAccount] = useState<BqlEligibleAccount | null>(null);
   const [newRelationship, setNewRelationship] = useState<string>('Vợ / Chồng');
-  const [newRole, setNewRole] = useState<'Family' | 'Tenant'>('Family');
   const [newLicensePlate, setNewLicensePlate] = useState<string>('');
-  const [newAvatarUrl, setNewAvatarUrl] = useState<string>('');
 
-  // Load Family Members & BQL Accounts from API on mount
+  // Live API Search State
+  const [searchQuery, setSearchQuery] = useState<string>('');
+  const [isSearchingApi, setIsSearchingApi] = useState<boolean>(false);
+  const [searchResult, setSearchResult] = useState<BqlEligibleAccount | null>(null);
+  const [searchNotFound, setSearchNotFound] = useState<string | null>(null);
+
+  // Load Family Members & Pre-verified API Accounts
   const fetchMembers = async () => {
     setIsLoading(true);
     try {
@@ -91,7 +99,7 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
         setBqlAccounts(res.bqlAccounts);
       }
     } catch (err) {
-      console.warn('Load family error:', err);
+      console.warn('Load family API error:', err);
     } finally {
       setIsLoading(false);
     }
@@ -101,23 +109,43 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
     fetchMembers();
   }, []);
 
-  // Quick-select account pre-approved by BQL
-  const handleSelectBqlAccount = (acc: BqlEligibleAccount) => {
-    setSelectedBqlAccountId(acc.id);
-    setNewFullName(acc.fullName);
-    setNewPhone(acc.phone);
-    setNewIdCard(acc.idCard);
+  // Select account from pre-verified list
+  const handleSelectPreApproved = (acc: BqlEligibleAccount) => {
+    setSelectedAccount(acc);
+    setNewRelationship(acc.relationship || 'Vợ / Chồng');
     setNewLicensePlate(acc.licensePlate || '');
-    setNewAvatarUrl(acc.avatarUrl || '');
-    setNewRole('Family');
-    setNewRelationship(acc.relationship || 'Thành Viên Gia Đình');
+    setActionError(null);
   };
 
-  // Submit Add Member
+  // Search account via live API
+  const handleSearchApi = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!searchQuery.trim()) return;
+
+    setIsSearchingApi(true);
+    setSearchNotFound(null);
+    setSearchResult(null);
+    setActionError(null);
+
+    try {
+      const res = await nksSearchFamilyAccount(searchQuery.trim());
+      if (res.success && res.found && res.account) {
+        setSearchResult(res.account);
+      } else {
+        setSearchNotFound(res.message || `Không tìm thấy tài khoản nào khớp với "${searchQuery}" trên hệ thống API.`);
+      }
+    } catch (err) {
+      setSearchNotFound('Lỗi kết nối khi tra cứu API người dùng.');
+    } finally {
+      setIsSearchingApi(false);
+    }
+  };
+
+  // Submit Add Member strictly via API
   const handleAddMember = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newFullName || !newPhone) {
-      setActionError('Vui lòng nhập họ tên và số điện thoại của thành viên.');
+    if (!selectedAccount) {
+      setActionError('Vui lòng chọn hoặc tra cứu một tài khoản hợp lệ từ hệ thống API.');
       return;
     }
 
@@ -126,34 +154,34 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
 
     try {
       const res = await nksAddFamilyMember({
-        fullName: newFullName,
-        phone: newPhone,
-        idCard: newIdCard,
+        accountId: selectedAccount.id,
+        username: selectedAccount.username,
+        phone: selectedAccount.phone,
+        fullName: selectedAccount.fullName,
+        idCard: selectedAccount.idCard,
+        licensePlate: newLicensePlate.trim() || selectedAccount.licensePlate,
+        avatarUrl: selectedAccount.avatarUrl,
         relationship: newRelationship,
-        role: newRole,
-        licensePlate: newLicensePlate,
-        avatarUrl: newAvatarUrl
       });
 
       if (res.success && res.members) {
         setMembers(res.members);
         setShowAddModal(false);
-        setActionSuccess(`✓ Đã thêm thành viên "${newFullName}" vào Căn hộ ${aptCode} thành công!`);
+        setActionSuccess(`✓ Đã thêm thành viên "${selectedAccount.fullName}" vào Căn hộ ${aptCode} theo hồ sơ API thành công!`);
         setTimeout(() => setActionSuccess(null), 4000);
 
-        // Reset form
-        setSelectedBqlAccountId(null);
-        setNewFullName('');
-        setNewPhone('');
-        setNewIdCard('');
+        // Reset
+        setSelectedAccount(null);
+        setSearchResult(null);
+        setSearchQuery('');
         setNewRelationship('Vợ / Chồng');
         setNewLicensePlate('');
-        setNewAvatarUrl('');
+        fetchMembers();
       } else {
         setActionError(res.message || 'Không thể thêm thành viên. Vui lòng thử lại.');
       }
     } catch (err: any) {
-      setActionError(err.message || 'Lỗi kết nối khi thêm thành viên.');
+      setActionError(err.message || 'Lỗi kết nối API khi thêm thành viên.');
     } finally {
       setIsSubmitting(false);
     }
@@ -171,6 +199,7 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
         setMembers(prev => prev.filter(m => m.id !== id));
         setActionSuccess(`✓ Đã hủy phân quyền thành viên "${name}".`);
         setTimeout(() => setActionSuccess(null), 3000);
+        fetchMembers();
       } else {
         alert(res.message || 'Không thể xóa thành viên.');
       }
@@ -185,28 +214,33 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#222B35] pb-4">
         <div>
           <div className="text-[10px] uppercase tracking-[0.25em] text-[#C5A880] font-semibold flex items-center gap-1.5">
-            <Users className="w-3.5 h-3.5" /> Quyền Quản Trị Căn Hộ • Chủ Sở Hữu
+            <Users className="w-3.5 h-3.5" /> Quyền Quản Trị Căn Hộ • Dữ Liệu API Cư Dân
           </div>
           <h2 className="font-serif text-2xl text-white font-bold mt-1">
-            Quản Lý Thành Viên Căn Hộ {aptCode}
+            Quản Lý Cư Dân & Thành Viên Căn Hộ {aptCode}
           </h2>
           <p className="text-xs text-gray-400 mt-0.5">
-            Căn hộ: <strong className="text-white font-mono">{aptCode}</strong> • Cấp quyền ra vào tự động, FaceID và sử dụng tiện ích cho người nhà
+            Căn hộ: <strong className="text-white font-mono">{aptCode}</strong> • Phân quyền ra vào tự động, FaceID và sử dụng tiện ích cho người nhà theo hồ sơ API
           </p>
         </div>
 
         {isOwner && (
           <button
             type="button"
-            onClick={() => setShowAddModal(true)}
+            onClick={() => {
+              setShowAddModal(true);
+              setSelectedAccount(null);
+              setSearchResult(null);
+              setActionError(null);
+            }}
             className="px-5 py-2.5 bg-[#C5A880] hover:bg-white text-[#0D1117] text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-2 rounded shadow-lg flex-shrink-0"
           >
-            <UserPlus className="w-4 h-4" /> Thêm Thành Viên Mới
+            <UserPlus className="w-4 h-4" /> Thêm Thành Viên (Theo API)
           </button>
         )}
       </div>
 
-      {/* Success / Error Alerts */}
+      {/* Success Alerts */}
       {actionSuccess && (
         <div className="p-3.5 bg-emerald-950/90 border border-emerald-500 text-emerald-300 text-xs flex items-center gap-2 rounded animate-fadeIn shadow-lg">
           <CheckCircle2 className="w-4 h-4 flex-shrink-0" />
@@ -218,11 +252,11 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div className="p-4 bg-[#121820] border border-[#222B35] rounded-lg">
           <div className="text-[10px] uppercase tracking-wider text-gray-400 font-semibold">
-            Tổng Số Thành Viên
+            Thành Viên Đang Cư Trú
           </div>
           <div className="text-2xl font-bold font-serif text-white mt-1 flex items-baseline gap-2">
             <span>{members.length}</span>
-            <span className="text-xs text-gray-500 font-normal font-sans">/ 6 người tối đa</span>
+            <span className="text-xs text-gray-400 font-normal">/ 6 người tối đa</span>
           </div>
         </div>
 
@@ -249,20 +283,20 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
       <div className="bg-[#121820] border border-[#222B35] rounded-lg overflow-hidden shadow-2xl">
         <div className="p-4 border-b border-[#222B35] flex items-center justify-between">
           <div className="text-xs font-bold uppercase tracking-wider text-white flex items-center gap-2">
-            <Users className="w-4 h-4 text-[#C5A880]" /> Danh Sách Người Được Cấp Quyền Căn Hộ ({members.length})
+            <Users className="w-4 h-4 text-[#C5A880]" /> Danh Sách Người Nhà Được Cấp Quyền Căn Hộ ({members.length})
           </div>
           <button
             onClick={fetchMembers}
             disabled={isLoading}
             className="text-xs text-gray-400 hover:text-[#C5A880] flex items-center gap-1 transition-colors"
           >
-            <RefreshCw className={`w-3.5 h-3.5 ${isLoading ? 'animate-spin' : ''}`} /> Làm mới
+            <RefreshCw className={`w-3.5 h-3.5 ${isLoading ? 'animate-spin' : ''}`} /> Làm mới API
           </button>
         </div>
 
         {isLoading ? (
           <div className="p-12 text-center text-xs text-[#C5A880] font-mono flex items-center justify-center gap-2">
-            <RefreshCw className="w-4 h-4 animate-spin" /> Đang tải danh sách thành viên...
+            <RefreshCw className="w-4 h-4 animate-spin" /> Đang tải danh sách thành viên từ API...
           </div>
         ) : members.length === 0 ? (
           <div className="p-12 text-center text-gray-400 text-xs space-y-2">
@@ -274,7 +308,7 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
                 onClick={() => setShowAddModal(true)}
                 className="text-[#C5A880] font-bold underline hover:text-white"
               >
-                + Thêm thành viên đầu tiên
+                + Thêm thành viên đầu tiên từ API
               </button>
             )}
           </div>
@@ -318,16 +352,14 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
                 </div>
 
                 {isOwner && (
-                  <div className="flex items-center gap-2 sm:self-center self-end">
-                    <button
-                      onClick={() => handleRemoveMember(m.id, m.fullName)}
-                      className="px-3 py-1.5 text-gray-400 hover:text-rose-300 hover:bg-rose-950/50 border border-gray-800 hover:border-rose-500 text-xs rounded transition-colors flex items-center gap-1.5"
-                      title="Hủy phân quyền thành viên"
-                    >
-                      <Trash2 className="w-3.5 h-3.5" />
-                      <span>Xóa Quyền</span>
-                    </button>
-                  </div>
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveMember(m.id, m.fullName)}
+                    className="self-end sm:self-center px-3 py-1.5 text-xs text-rose-400 hover:text-white hover:bg-rose-950/60 border border-rose-900/60 rounded transition-colors flex items-center gap-1.5"
+                    title="Hủy quyền thành viên"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" /> Hủy Quyền
+                  </button>
                 )}
               </div>
             ))}
@@ -335,18 +367,22 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
         )}
       </div>
 
-      {/* Add Member Modal with BQL Approved Accounts Quick-Selector */}
+      {/* =================================================================== */}
+      {/* MODAL: THÊM THÀNH VIÊN THEO DỮ LIỆU API                              */}
+      {/* =================================================================== */}
       {showAddModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-black/85 backdrop-blur-sm animate-fadeIn">
-          <div className="bg-[#121820] border border-[#C5A880]/80 max-w-2xl w-full p-6 text-white space-y-5 shadow-2xl rounded-xl max-h-[92vh] overflow-y-auto">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/85 backdrop-blur-sm animate-fadeIn">
+          <div className="bg-[#0D1117] border border-[#C5A880]/70 max-w-2xl w-full p-5 sm:p-6 text-white space-y-4 shadow-2xl rounded-xl max-h-[90vh] overflow-y-auto">
+            
+            {/* Modal Header */}
             <div className="flex items-center justify-between border-b border-[#222B35] pb-3">
               <div>
-                <h4 className="font-serif text-lg font-bold text-white flex items-center gap-2">
-                  <UserPlus className="w-5 h-5 text-[#C5A880]" /> Thêm Thành Viên Căn Hộ {aptCode}
-                </h4>
-                <p className="text-xs text-gray-400 mt-0.5">
-                  Chọn nhanh tài khoản đã được Ban Quản Lý phê duyệt hoặc nhập thông tin thành viên mới
-                </p>
+                <div className="text-[10px] uppercase tracking-wider text-[#C5A880] font-semibold flex items-center gap-1.5">
+                  <ShieldCheck className="w-4 h-4 text-emerald-400" /> Đồng Bộ Theo Dữ Liệu API
+                </div>
+                <h3 className="font-serif text-lg font-bold text-white">
+                  Thêm Thành Viên Căn Hộ {aptCode}
+                </h3>
               </div>
               <button
                 onClick={() => setShowAddModal(false)}
@@ -356,7 +392,7 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
               </button>
             </div>
 
-            {/* Error in modal */}
+            {/* Error Message */}
             {actionError && (
               <div className="p-3 bg-rose-950/80 border border-rose-500 text-rose-300 text-xs flex items-center gap-2 rounded">
                 <AlertCircle className="w-4 h-4 flex-shrink-0" />
@@ -364,160 +400,249 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
               </div>
             )}
 
-            {/* Section 1: Quick Selector from BQL Pre-Approved Accounts */}
-            {bqlAccounts.length > 0 && (
-              <div className="space-y-2.5">
-                <div className="flex items-center justify-between">
-                  <label className="text-xs font-bold text-[#C5A880] uppercase tracking-wider flex items-center gap-1.5">
-                    <ShieldCheck className="w-4 h-4 text-emerald-400" /> Tài Khoản Được BQL Xác Minh Cho Căn Hộ {aptCode}:
-                  </label>
-                  <span className="text-[10px] text-gray-400">Bấm để chọn nhanh</span>
+            {/* Mode Switcher Tabs */}
+            <div className="grid grid-cols-2 gap-2 bg-[#121820] p-1 rounded-lg border border-[#222B35] text-xs">
+              <button
+                type="button"
+                onClick={() => setModalMode('PRE_APPROVED')}
+                className={`py-2 px-3 rounded text-center font-medium transition-all ${
+                  modalMode === 'PRE_APPROVED'
+                    ? 'bg-[#C5A880] text-[#0D1117] font-bold shadow'
+                    : 'text-gray-300 hover:text-white'
+                }`}
+              >
+                1. Tài Khoản Đã Đăng Ký ({bqlAccounts.length})
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setModalMode('SEARCH_API')}
+                className={`py-2 px-3 rounded text-center font-medium transition-all ${
+                  modalMode === 'SEARCH_API'
+                    ? 'bg-[#C5A880] text-[#0D1117] font-bold shadow'
+                    : 'text-gray-300 hover:text-white'
+                }`}
+              >
+                2. Tra Cứu API Bằng SĐT / CCCD
+              </button>
+            </div>
+
+            {/* ------------------------------------------------------------- */}
+            {/* MODE 1: CHỌN TỪ TÀI KHOẢN ĐÃ ĐĂNG KÝ CHO CĂN HỘ               */}
+            {/* ------------------------------------------------------------- */}
+            {modalMode === 'PRE_APPROVED' && (
+              <div className="space-y-3">
+                <div className="flex items-center justify-between text-xs text-gray-400">
+                  <span>Chọn tài khoản người nhà có trong hệ thống API của căn hộ:</span>
+                  <span className="text-[11px] text-[#C5A880] font-mono">Căn {aptCode}</span>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                  {bqlAccounts.map((acc) => {
-                    const isAlreadyAdded = members.some(
-                      (m) => m.username === acc.username || m.phone === acc.phone
-                    );
-                    const isSelected = selectedBqlAccountId === acc.id;
+                {bqlAccounts.length === 0 ? (
+                  <div className="p-6 text-center text-xs text-gray-400 border border-[#222B35] rounded-lg">
+                    Chưa có tài khoản người nhà nào được đăng ký trong hệ thống API cho Căn hộ {aptCode}.
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 max-h-56 overflow-y-auto pr-1">
+                    {bqlAccounts.map((acc) => {
+                      const isAlreadyAdded = members.some(
+                        (m) => m.username === acc.username || m.phone === acc.phone || m.id === acc.id
+                      );
+                      const isSelected = selectedAccount?.id === acc.id;
 
-                    return (
-                      <div
-                        key={acc.id}
-                        onClick={() => {
-                          if (!isAlreadyAdded) handleSelectBqlAccount(acc);
-                        }}
-                        className={`p-3 rounded-lg border transition-all flex items-center gap-3 cursor-pointer ${
-                          isAlreadyAdded
-                            ? 'bg-[#0E131A] border-gray-800 opacity-60 cursor-not-allowed'
-                            : isSelected
-                            ? 'bg-[#1C2533] border-[#C5A880] ring-1 ring-[#C5A880] shadow-lg'
-                            : 'bg-[#161D26] border-[#222B35] hover:border-gray-600 hover:bg-[#1A232E]'
-                        }`}
-                      >
-                        <img
-                          src={acc.avatarUrl || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150'}
-                          alt={acc.fullName}
-                          className="w-10 h-10 rounded-full object-cover border border-[#C5A880]/50 flex-shrink-0"
-                        />
-                        <div className="flex-1 min-w-0 text-xs">
-                          <div className="flex items-center justify-between gap-1">
-                            <span className="font-bold text-white truncate">{acc.fullName}</span>
-                            {isAlreadyAdded ? (
-                              <span className="text-[9px] text-emerald-400 font-bold bg-emerald-950 px-1.5 py-0.5 rounded border border-emerald-500/40 flex-shrink-0">
-                                Đã Thêm
-                              </span>
-                            ) : isSelected ? (
-                              <span className="text-[9px] text-[#0D1117] font-bold bg-[#C5A880] px-1.5 py-0.5 rounded flex-shrink-0">
-                                Đang Chọn ✓
-                              </span>
-                            ) : null}
+                      return (
+                        <div
+                          key={acc.id}
+                          onClick={() => {
+                            if (!isAlreadyAdded) handleSelectPreApproved(acc);
+                          }}
+                          className={`p-3 rounded-lg border transition-all flex items-center gap-3 cursor-pointer ${
+                            isAlreadyAdded
+                              ? 'bg-[#0E131A] border-gray-800 opacity-60 cursor-not-allowed'
+                              : isSelected
+                              ? 'bg-[#1C2533] border-[#C5A880] ring-1 ring-[#C5A880] shadow-lg'
+                              : 'bg-[#161D26] border-[#222B35] hover:border-gray-600 hover:bg-[#1A232E]'
+                          }`}
+                        >
+                          <img
+                            src={acc.avatarUrl || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150'}
+                            alt={acc.fullName}
+                            className="w-10 h-10 rounded-full object-cover border border-[#C5A880]/50 flex-shrink-0"
+                          />
+                          <div className="flex-1 min-w-0 text-xs">
+                            <div className="flex items-center justify-between gap-1">
+                              <span className="font-bold text-white truncate">{acc.fullName}</span>
+                              {isAlreadyAdded ? (
+                                <span className="text-[9px] text-emerald-400 font-bold bg-emerald-950 px-1.5 py-0.5 rounded border border-emerald-500/40 flex-shrink-0">
+                                  Đã Cấp Quyền
+                                </span>
+                              ) : isSelected ? (
+                                <span className="text-[9px] text-[#0D1117] font-bold bg-[#C5A880] px-1.5 py-0.5 rounded flex-shrink-0">
+                                  Đang Chọn ✓
+                                </span>
+                              ) : null}
+                            </div>
+                            <div className="text-[11px] text-gray-400 font-mono truncate">{acc.phone}</div>
+                            <div className="text-[10px] text-[#C5A880] font-mono truncate">CCCD: {acc.idCard}</div>
                           </div>
-                          <div className="text-[11px] text-gray-400 font-mono truncate">{acc.phone}</div>
-                          <div className="text-[10px] text-[#C5A880] font-mono truncate">CCCD: {acc.idCard}</div>
                         </div>
-                      </div>
-                    );
-                  })}
-                </div>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
             )}
 
-            {/* Section 2: Details & Custom Confirmation Form */}
-            <form onSubmit={handleAddMember} className="space-y-3.5 text-xs pt-3 border-t border-[#222B35]">
-              <div className="text-[11px] font-bold text-gray-300 uppercase tracking-wider">
-                Thông Tin Xác Nhận & Phân Quyền:
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div>
-                  <label className="text-gray-300 font-medium block mb-1">Họ và Tên Đầy Đủ:</label>
+            {/* ------------------------------------------------------------- */}
+            {/* MODE 2: TRA CỨU TÀI KHOẢN QUA API BẰNG SĐT / CCCD             */}
+            {/* ------------------------------------------------------------- */}
+            {modalMode === 'SEARCH_API' && (
+              <div className="space-y-3">
+                <form onSubmit={handleSearchApi} className="flex gap-2">
                   <input
                     type="text"
-                    value={newFullName}
-                    onChange={(e) => setNewFullName(e.target.value)}
-                    className="w-full bg-[#161B22] border border-[#2D3748] p-2.5 text-white rounded focus:border-[#C5A880] outline-none"
-                    placeholder="VD: Nguyễn Văn A"
-                    required
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    placeholder="Nhập SĐT hoặc CCCD người nhà (VD: 0908776655)..."
+                    className="flex-1 bg-[#161B22] border border-[#2D3748] p-2.5 text-white text-xs font-mono rounded focus:border-[#C5A880] outline-none"
                   />
-                </div>
-
-                <div>
-                  <label className="text-gray-300 font-medium block mb-1">Số Điện Thoại:</label>
-                  <input
-                    type="text"
-                    value={newPhone}
-                    onChange={(e) => setNewPhone(e.target.value)}
-                    className="w-full bg-[#161B22] border border-[#2D3748] p-2.5 text-white font-mono rounded focus:border-[#C5A880] outline-none"
-                    placeholder="VD: 0903112233"
-                    required
-                  />
-                </div>
-
-                <div>
-                  <label className="text-gray-300 font-medium block mb-1">Số CCCD / Định Danh:</label>
-                  <input
-                    type="text"
-                    value={newIdCard}
-                    onChange={(e) => setNewIdCard(e.target.value)}
-                    className="w-full bg-[#161B22] border border-[#2D3748] p-2.5 text-white font-mono rounded focus:border-[#C5A880] outline-none"
-                    placeholder="12 số CCCD"
-                  />
-                </div>
-
-                <div>
-                  <label className="text-gray-300 font-medium block mb-1">Biển Số Xe Đăng Ký:</label>
-                  <input
-                    type="text"
-                    value={newLicensePlate}
-                    onChange={(e) => setNewLicensePlate(e.target.value)}
-                    className="w-full bg-[#161B22] border border-[#2D3748] p-2.5 text-white font-mono rounded focus:border-[#C5A880] outline-none"
-                    placeholder="VD: 51K-999.88"
-                  />
-                </div>
-
-                <div className="sm:col-span-2">
-                  <label className="text-gray-300 font-medium block mb-1">Mối Quan Hệ Với Chủ Hộ:</label>
-                  <select
-                    value={newRelationship}
-                    onChange={(e) => setNewRelationship(e.target.value)}
-                    className="w-full bg-[#161B22] border border-[#2D3748] p-2.5 text-white rounded focus:border-[#C5A880] outline-none"
+                  <button
+                    type="submit"
+                    disabled={isSearchingApi || !searchQuery.trim()}
+                    className="px-4 py-2.5 bg-[#C5A880] hover:bg-white text-[#0D1117] text-xs font-bold rounded flex items-center gap-1.5 transition-colors whitespace-nowrap"
                   >
-                    <option value="Vợ / Chồng">Vợ / Chồng</option>
-                    <option value="Con Cái">Con Cái</option>
-                    <option value="Bố / Mẹ">Bố / Mẹ</option>
-                    <option value="Anh / Chị / Em">Anh / Chị / Em</option>
-                    <option value="Người Thân Gia Đình">Người Thân Gia Đình</option>
-                  </select>
+                    {isSearchingApi ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Search className="w-3.5 h-3.5" />}
+                    Tra Cứu API
+                  </button>
+                </form>
+
+                {searchNotFound && (
+                  <div className="p-3 bg-[#161D26] border border-gray-700 text-gray-300 text-xs rounded">
+                    {searchNotFound}
+                  </div>
+                )}
+
+                {searchResult && (
+                  <div className="p-4 bg-[#161D26] border border-emerald-500/60 rounded-lg space-y-3 animate-fadeIn">
+                    <div className="flex items-center justify-between text-xs text-emerald-400 font-bold border-b border-[#222B35] pb-2">
+                      <span className="flex items-center gap-1.5">
+                        <CheckCircle className="w-4 h-4" /> Đã Tìm Thấy Hồ Sơ Hợp Lệ Từ API Hệ Thống:
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setSelectedAccount(searchResult);
+                          setNewRelationship(searchResult.relationship || 'Vợ / Chồng');
+                          setNewLicensePlate(searchResult.licensePlate || '');
+                        }}
+                        className="px-3 py-1 bg-[#C5A880] text-[#0D1117] font-bold text-[11px] rounded hover:bg-white transition-colors"
+                      >
+                        {selectedAccount?.id === searchResult.id ? 'Đang Chọn ✓' : '+ Chọn Tài Khoản Này'}
+                      </button>
+                    </div>
+
+                    <div className="flex items-center gap-3">
+                      <img
+                        src={searchResult.avatarUrl || 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150'}
+                        alt={searchResult.fullName}
+                        className="w-12 h-12 rounded-full object-cover border border-[#C5A880]/60 flex-shrink-0"
+                      />
+                      <div className="space-y-0.5 text-xs">
+                        <div className="font-bold text-white text-sm">{searchResult.fullName}</div>
+                        <div className="text-gray-300 font-mono">SĐT: {searchResult.phone}</div>
+                        <div className="text-[#C5A880] font-mono">CCCD: {searchResult.idCard}</div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* ------------------------------------------------------------- */}
+            {/* CONFIRMATION & ROLE ASSIGNMENT SECTION                        */}
+            {/* ------------------------------------------------------------- */}
+            {selectedAccount ? (
+              <form onSubmit={handleAddMember} className="pt-3 border-t border-[#222B35] space-y-3.5 text-xs">
+                <div className="p-3 bg-[#161D26] border border-[#C5A880]/60 rounded-lg space-y-2">
+                  <div className="text-[11px] font-bold uppercase tracking-wider text-[#C5A880] flex items-center justify-between">
+                    <span>Hồ Sơ Cư Dân Đã Khóa Theo API:</span>
+                    <span className="text-emerald-400 text-[10px] font-mono">Đã Xác Thực e-KYC</span>
+                  </div>
+                  <div className="grid grid-cols-2 gap-2 text-gray-200">
+                    <div>• Họ tên: <strong className="text-white">{selectedAccount.fullName}</strong></div>
+                    <div>• SĐT: <strong className="font-mono text-white">{selectedAccount.phone}</strong></div>
+                    <div>• Số CCCD: <strong className="font-mono text-[#C5A880]">{selectedAccount.idCard}</strong></div>
+                    <div>• Vai trò cấp phát: <strong className="text-purple-300">Người Nhà / Gia Đình</strong></div>
+                  </div>
                 </div>
-              </div>
 
-              <div className="p-3 bg-purple-950/40 border border-purple-500/40 rounded text-purple-300 text-[11px] flex items-center gap-2">
-                <ShieldCheck className="w-4 h-4 text-purple-400 flex-shrink-0" />
-                <span>Người nhà sau khi thêm sẽ được tự động kích hoạt FaceID sảnh đón, thang máy và tiện ích sinh hoạt. Quyền tài chính & biểu quyết thuộc độc quyền của chủ hộ.</span>
-              </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label className="text-gray-300 font-medium block mb-1">Mối Quan Hệ Với Chủ Hộ:</label>
+                    <select
+                      value={newRelationship}
+                      onChange={(e) => setNewRelationship(e.target.value)}
+                      className="w-full bg-[#161B22] border border-[#2D3748] p-2.5 text-white rounded focus:border-[#C5A880] outline-none"
+                    >
+                      <option value="Vợ / Chồng">Vợ / Chồng</option>
+                      <option value="Con Cái">Con Cái</option>
+                      <option value="Bố / Mẹ">Bố / Mẹ</option>
+                      <option value="Anh / Chị / Em">Anh / Chị / Em</option>
+                      <option value="Người Thân Gia Đình">Người Thân Gia Đình</option>
+                    </select>
+                  </div>
 
-              <div className="pt-3 flex justify-end gap-2.5 border-t border-[#222B35]">
-                <button
-                  type="button"
-                  onClick={() => setShowAddModal(false)}
-                  className="px-4 py-2 bg-transparent hover:bg-[#161D26] text-gray-400 hover:text-white rounded transition-colors"
-                >
-                  Hủy
-                </button>
-                <button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className="px-6 py-2 bg-[#C5A880] hover:bg-white text-[#0D1117] font-bold uppercase tracking-wider rounded transition-all flex items-center gap-2 shadow-lg disabled:opacity-50"
-                >
-                  {isSubmitting ? <RefreshCw className="w-4 h-4 animate-spin" /> : <CheckCircle2 className="w-4 h-4" />}
-                  <span>{isSubmitting ? 'Đang Thêm...' : 'Xác Nhận Cấp Quyền'}</span>
-                </button>
+                  <div>
+                    <label className="text-gray-300 font-medium block mb-1">Biển Số Xe (Nếu có):</label>
+                    <input
+                      type="text"
+                      value={newLicensePlate}
+                      onChange={(e) => setNewLicensePlate(e.target.value)}
+                      placeholder="VD: 59P1-886.79"
+                      className="w-full bg-[#161B22] border border-[#2D3748] p-2.5 text-white font-mono rounded focus:border-[#C5A880] outline-none"
+                    />
+                  </div>
+                </div>
+
+                <div className="p-3 bg-purple-950/40 border border-purple-500/40 rounded text-purple-300 text-[11px] flex items-center gap-2">
+                  <ShieldCheck className="w-4 h-4 text-purple-400 flex-shrink-0" />
+                  <span>Sau khi xác nhận, tài khoản người nhà sẽ được cấp quyền FaceID sảnh đón, thang máy và tiện ích sinh hoạt qua API.</span>
+                </div>
+
+                <div className="pt-2 flex justify-end gap-2.5 border-t border-[#222B35]">
+                  <button
+                    type="button"
+                    onClick={() => setShowAddModal(false)}
+                    className="px-4 py-2 bg-transparent hover:bg-[#161D26] text-gray-400 hover:text-white rounded transition-colors"
+                  >
+                    Hủy
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={isSubmitting}
+                    className="px-5 py-2.5 bg-[#C5A880] hover:bg-white text-[#0D1117] font-bold text-xs uppercase tracking-wider rounded shadow-lg transition-colors flex items-center gap-2"
+                  >
+                    {isSubmitting ? (
+                      <>
+                        <RefreshCw className="w-4 h-4 animate-spin" /> Đang Đồng Bộ API...
+                      </>
+                    ) : (
+                      <>
+                        <Check className="w-4 h-4" /> Xác Nhận Thêm Thành Viên
+                      </>
+                    )}
+                  </button>
+                </div>
+              </form>
+            ) : (
+              <div className="p-4 bg-[#121820] border border-[#222B35] rounded-lg text-center text-xs text-gray-400">
+                Vui lòng chọn một tài khoản người nhà ở trên để tiếp tục thiết lập quan hệ và cấp quyền.
               </div>
-            </form>
+            )}
+
           </div>
         </div>
       )}
+
     </div>
   );
 }

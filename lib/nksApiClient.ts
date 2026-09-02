@@ -181,9 +181,26 @@ export async function nksGetFamilyMembers(): Promise<{ success: boolean; members
 }
 
 /**
- * 8. Add Family Member API (POST /api/nks/user/family)
+ * 8. Search Resident Account from API (GET /api/nks/user/family?search=...)
+ */
+export async function nksSearchFamilyAccount(query: string): Promise<{ success: boolean; found: boolean; account?: any; message?: string }> {
+  const res = await fetch(`/api/nks/user/family?search=${encodeURIComponent(query)}`, {
+    method: 'GET',
+    headers: { 'Content-Type': 'application/json' },
+  });
+
+  if (!res.ok) {
+    throw new Error('NKS SearchFamilyAccount API failed');
+  }
+
+  return await res.json();
+}
+
+/**
+ * 9. Add Family Member API (POST /api/nks/user/family)
  */
 export async function nksAddFamilyMember(payload: {
+  accountId?: string;
   fullName: string;
   phone: string;
   role?: string;
