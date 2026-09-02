@@ -27,6 +27,7 @@ import BillingStudio from '@/components/portal/admin/BillingStudio';
 import DeviceHealth from '@/components/portal/admin/DeviceHealth';
 import SmartParking from '@/components/portal/admin/SmartParking';
 import SurveysVoting from '@/components/portal/resident/SurveysVoting';
+import AdminVisitorControl from '@/components/portal/admin/AdminVisitorControl';
 
 // Resident Core Modules
 import ResidentHome from '@/components/portal/resident/ResidentHome';
@@ -178,6 +179,7 @@ export default function PortalPage() {
                 {activeModule === 'admin-dashboard' && <AdminDashboard />}
                 {activeModule === 'admin-apartments' && <FloorPlanExplorer />}
                 {activeModule === 'admin-ekyc' && <EkycApproval />}
+                {activeModule === 'admin-visitors' && <AdminVisitorControl />}
                 {activeModule === 'admin-kanban' && <KanbanBoard />}
                 {activeModule === 'admin-billing' && <BillingStudio />}
                 {activeModule === 'admin-devices' && <DeviceHealth />}

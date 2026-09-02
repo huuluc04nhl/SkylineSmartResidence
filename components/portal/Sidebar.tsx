@@ -110,12 +110,13 @@ export default function Sidebar({
           { id: 'admin-dashboard', label: '1. Trung Tâm Vận Hành (KPI)', shortLabel: 'Trung Tâm KPI', icon: LayoutDashboard },
           { id: 'admin-apartments', label: '2. Quản Lý Căn Hộ (Spaces)', shortLabel: 'Căn Hộ', icon: Building },
           { id: 'admin-ekyc', label: '3. Duyệt Hồ Sơ e-KYC', shortLabel: 'Duyệt e-KYC', icon: UserCheck },
-          { id: 'admin-kanban', label: '4. Điều Phối Sự Cố (SLA)', shortLabel: 'Sự Cố SLA', icon: KanbanSquare },
-          { id: 'admin-billing', label: '5. Studio Hóa Đơn AI', shortLabel: 'Hóa Đơn AI', icon: Receipt },
-          { id: 'admin-devices', label: '6. Sức Khỏe Thiết Bị IoT', shortLabel: 'Thiết Bị IoT', icon: Activity },
-          { id: 'admin-parking', label: '7. Bãi Đỗ Xe Thông Minh (ALPR)', shortLabel: 'Bãi Xe ALPR', icon: Car },
-          { id: 'admin-facilities', label: '8. Quản Lý Tiện Ích 5 Sao', shortLabel: 'Tiện Ích', icon: CalendarCheck },
-          { id: 'admin-community', label: '9. Cảm Xúc Cộng Đồng AI', shortLabel: 'Cộng Đồng', icon: MessageSquareQuote },
+          { id: 'admin-visitors', label: '4. Duyệt Khách & Quét Mã QR', shortLabel: 'Duyệt Khách QR', icon: QrCode },
+          { id: 'admin-kanban', label: '5. Điều Phối Sự Cố (SLA)', shortLabel: 'Sự Cố SLA', icon: KanbanSquare },
+          { id: 'admin-billing', label: '6. Studio Hóa Đơn AI', shortLabel: 'Hóa Đơn AI', icon: Receipt },
+          { id: 'admin-devices', label: '7. Sức Khỏe Thiết Bị IoT', shortLabel: 'Thiết Bị IoT', icon: Activity },
+          { id: 'admin-parking', label: '8. Bãi Đỗ Xe Thông Minh (ALPR)', shortLabel: 'Bãi Xe ALPR', icon: Car },
+          { id: 'admin-facilities', label: '9. Quản Lý Tiện Ích 5 Sao', shortLabel: 'Tiện Ích', icon: CalendarCheck },
+          { id: 'admin-community', label: '10. Cảm Xúc Cộng Đồng AI', shortLabel: 'Cộng Đồng', icon: MessageSquareQuote },
         ];
 
       case 'OWNER':
