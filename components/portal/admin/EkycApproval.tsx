@@ -10,7 +10,7 @@ export default function EkycApproval() {
     {
       id: 'ekyc-1',
       fullName: 'Trần Thị Mai',
-      role: 'Khách thuê (Căn 12A05)',
+      role: 'Thành viên gia đình (Căn 12A05)',
       phone: '0908776655',
       idCardNo: '079302008765',
       faceScore: 98.4,

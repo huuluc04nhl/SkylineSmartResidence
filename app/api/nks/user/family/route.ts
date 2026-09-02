@@ -24,8 +24,8 @@ export async function GET(req: Request) {
         idCard: u.id_card_no || u.id_number || '',
         avatarUrl: u.avatar_url,
         licensePlate: u.license_plate || '',
-        role: u.relationship === 'Family' ? 'Family' : 'Tenant',
-        relationship: u.relationship === 'Family' ? 'Thành viên gia đình' : 'Cư dân tạm trú',
+        role: 'Family',
+        relationship: u.relationship || 'Thành viên gia đình',
         isAdded: members.some((m) => m.username === u.username || m.phone === u.phone),
       }));
 
@@ -60,8 +60,8 @@ export async function POST(req: Request) {
       id: `mem-${Date.now()}`,
       username: username || phone,
       fullName: fullName.trim(),
-      role: role || 'Family',
-      relationship: relationship || (role === 'Tenant' ? 'Cư dân tạm trú' : 'Thành viên gia đình'),
+      role: 'Family',
+      relationship: relationship || 'Thành viên gia đình',
       phone: phone.trim(),
       idCard: idCard || '079' + Math.floor(100000000 + Math.random() * 900000000),
       licensePlate: licensePlate || '',

@@ -109,9 +109,9 @@ export default function AiConciergeFloating({
         actionLink = { label: 'Tạo Phiếu Kỹ Thuật (SLA 60p)', moduleId: 'resident-tickets' };
         suggestions = ['Tra cứu tiến độ sửa chữa', 'Gọi hotline kỹ thuật 1900 1088'];
       } else if (lower.includes('faceid') || lower.includes('người nhà') || lower.includes('thành viên') || lower.includes('cư dân')) {
-        aiReply = 'Để cấp quyền FaceID hoặc thẻ mở cửa cho người nhà Căn 12A05, Quý chủ hộ chỉ cần vào mục "Quản Lý Cư Dân & e-KYC", bấm [Thêm Thành Viên Cư Dân] và chụp ảnh CCCD/Khuôn mặt. AI sẽ tự động kích hoạt nhận diện trong 30 giây!';
-        actionLink = { label: 'Quản Lý Cư Dân & e-KYC', moduleId: 'resident-family' };
-        suggestions = ['Số lượng người nhà tối đa?', 'Gia hạn quyền tạm trú'];
+        aiReply = 'Để cấp quyền FaceID hoặc thẻ mở cửa cho người nhà Căn 12A05, Quý chủ hộ chỉ cần vào mục "Quản Lý Thành Viên Căn Hộ", bấm [Thêm Thành Viên] và chọn tài khoản người nhà. AI sẽ tự động kích hoạt nhận diện trong 30 giây!';
+        actionLink = { label: 'Quản Lý Thành Viên Căn Hộ', moduleId: 'resident-family' };
+        suggestions = ['Số lượng người nhà tối đa?', 'Đăng ký thêm người nhà'];
       } else {
         aiReply = `Dạ, tôi đã nắm được yêu cầu "${text}" từ Căn 12A05. Tôi đang đồng bộ thông tin đến Ban Quản Lý SKYLINE. Bạn có thể chọn nhanh các chủ đề phổ biến bên dưới hoặc tôi sẽ kết nối nhân viên trực ban hỗ trợ bạn nhé!`;
         suggestions = ['Tra cứu nội quy tòa nhà', 'Đăng ký gửi xe ô tô Hầm B1', 'Đặt lịch bảo trì máy lạnh'];

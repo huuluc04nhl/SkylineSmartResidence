@@ -286,7 +286,7 @@ export const DEMO_USERS: User[] = [
     license_plate: '59P1-886.79',
   },
 
-  // 5. Member (Thành viên cư dân & gia đình)
+  // 5. Member (Thành viên gia đình căn hộ 12A05)
   {
     id: 'user-member-1',
     role: 'TENANT',
@@ -298,7 +298,7 @@ export const DEMO_USERS: User[] = [
     avatar_url: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=150&auto=format&fit=crop&q=80',
     ui_language: 'vi',
     apartment_code: '12A05',
-    relationship: 'Tenant',
+    relationship: 'Family',
   },
   {
     id: 'user-member-2',
@@ -311,7 +311,7 @@ export const DEMO_USERS: User[] = [
     avatar_url: 'https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?w=150&auto=format&fit=crop&q=80',
     ui_language: 'vi',
     apartment_code: '12A05',
-    relationship: 'Tenant',
+    relationship: 'Family',
   },
   {
     id: 'user-member-3',

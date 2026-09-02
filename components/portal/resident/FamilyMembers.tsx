@@ -109,8 +109,8 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
     setNewIdCard(acc.idCard);
     setNewLicensePlate(acc.licensePlate || '');
     setNewAvatarUrl(acc.avatarUrl || '');
-    setNewRole(acc.role === 'Tenant' ? 'Tenant' : 'Family');
-    setNewRelationship(acc.relationship || (acc.role === 'Tenant' ? 'Người Thuê' : 'Thành Viên'));
+    setNewRole('Family');
+    setNewRelationship(acc.relationship || 'Thành Viên Gia Đình');
   };
 
   // Submit Add Member
@@ -227,20 +227,20 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
         </div>
 
         <div className="p-4 bg-[#121820] border border-[#222B35] rounded-lg">
-          <div className="text-[10px] uppercase tracking-wider text-purple-300 font-semibold">
-            Thành Viên Gia Đình
+          <div className="text-[10px] uppercase tracking-wider text-emerald-300 font-semibold">
+            Đã Kích Hoạt FaceID
           </div>
-          <div className="text-2xl font-bold font-serif text-purple-400 mt-1">
-            {members.filter(m => m.role === 'Family').length} người
+          <div className="text-2xl font-bold font-serif text-emerald-400 mt-1">
+            {members.length} người
           </div>
         </div>
 
         <div className="p-4 bg-[#121820] border border-[#222B35] rounded-lg">
-          <div className="text-[10px] uppercase tracking-wider text-blue-300 font-semibold">
-            Người Nhà / Khách Thuê
+          <div className="text-[10px] uppercase tracking-wider text-cyan-300 font-semibold">
+            Phương Tiện Đăng Ký
           </div>
-          <div className="text-2xl font-bold font-serif text-blue-400 mt-1">
-            {members.filter(m => m.role === 'Tenant').length} người
+          <div className="text-2xl font-bold font-serif text-cyan-400 mt-1">
+            {members.filter(m => m.licensePlate).length} xe
           </div>
         </div>
       </div>
@@ -294,12 +294,8 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
                   <div className="space-y-1">
                     <div className="flex items-center gap-2 flex-wrap">
                       <span className="font-bold text-white text-sm sm:text-base">{m.fullName}</span>
-                      <span className={`px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider rounded border ${
-                        m.role === 'Tenant'
-                          ? 'bg-blue-950/80 text-blue-300 border-blue-600/60'
-                          : 'bg-purple-950/80 text-purple-300 border-purple-600/60'
-                      }`}>
-                        {m.role === 'Tenant' ? 'Người Nhà / Thuê' : 'Thành Viên Gia Đình'}
+                      <span className="px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider rounded border bg-purple-950/80 text-purple-300 border-purple-600/60">
+                        Người Nhà / Gia Đình
                       </span>
                     </div>
 
@@ -480,8 +476,8 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
                   />
                 </div>
 
-                <div>
-                  <label className="text-gray-300 font-medium block mb-1">Quan Hệ Với Chủ Hộ:</label>
+                <div className="sm:col-span-2">
+                  <label className="text-gray-300 font-medium block mb-1">Mối Quan Hệ Với Chủ Hộ:</label>
                   <select
                     value={newRelationship}
                     onChange={(e) => setNewRelationship(e.target.value)}
@@ -491,22 +487,14 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
                     <option value="Con Cái">Con Cái</option>
                     <option value="Bố / Mẹ">Bố / Mẹ</option>
                     <option value="Anh / Chị / Em">Anh / Chị / Em</option>
-                    <option value="Người Thuê">Người Thuê</option>
-                    <option value="Khách Ở Nhờ">Khách Ở Nhờ</option>
+                    <option value="Người Thân Gia Đình">Người Thân Gia Đình</option>
                   </select>
                 </div>
+              </div>
 
-                <div>
-                  <label className="text-gray-300 font-medium block mb-1">Nhóm Quyền Căn Hộ:</label>
-                  <select
-                    value={newRole}
-                    onChange={(e) => setNewRole(e.target.value as 'Family' | 'Tenant')}
-                    className="w-full bg-[#161B22] border border-[#2D3748] p-2.5 text-white rounded focus:border-[#C5A880] outline-none"
-                  >
-                    <option value="Family">Thành Viên Gia Đình (Toàn quyền tiện ích)</option>
-                    <option value="Tenant">Người Nhà / Khách Thuê (Quyền có hạn)</option>
-                  </select>
-                </div>
+              <div className="p-3 bg-purple-950/40 border border-purple-500/40 rounded text-purple-300 text-[11px] flex items-center gap-2">
+                <ShieldCheck className="w-4 h-4 text-purple-400 flex-shrink-0" />
+                <span>Người nhà sau khi thêm sẽ được tự động kích hoạt FaceID sảnh đón, thang máy và tiện ích sinh hoạt. Quyền tài chính & biểu quyết thuộc độc quyền của chủ hộ.</span>
               </div>
 
               <div className="pt-3 flex justify-end gap-2.5 border-t border-[#222B35]">

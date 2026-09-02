@@ -295,29 +295,10 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
                   className="p-2 bg-[#161D26] hover:bg-[#1E2631] border border-blue-600/60 rounded text-left transition-colors"
                 >
                   <div className="font-bold text-blue-300 flex items-center gap-1">
-                    👤 Gia Đình (12A05)
+                    👤 Người Nhà (12A05)
                   </div>
                   <div className="text-gray-300 truncate">Nguyễn Hữu Nhựt</div>
-                  <div className="text-[9px] text-gray-400 font-mono">0908776655 • Giới hạn quyền</div>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={async () => {
-                    setPhone('0902114455');
-                    setIsSubmitting(true);
-                    await login('0902114455', '12345678');
-                    setIsSubmitting(false);
-                    onClose();
-                    router.push('/portal');
-                  }}
-                  className="p-2 bg-[#161D26] hover:bg-[#1E2631] border border-cyan-600/60 rounded text-left transition-colors"
-                >
-                  <div className="font-bold text-cyan-300 flex items-center gap-1">
-                    👤 Khách Thuê (12A05)
-                  </div>
-                  <div className="text-gray-300 truncate">Văn Cường</div>
-                  <div className="text-[9px] text-gray-400 font-mono">0902114455 • Cư dân thuê</div>
+                  <div className="text-[9px] text-gray-400 font-mono">0908776655 • Thành viên gia đình</div>
                 </button>
 
                 <button
@@ -330,7 +311,7 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
                     onClose();
                     router.push('/portal');
                   }}
-                  className="p-2 bg-[#161D26] hover:bg-[#1E2631] border border-purple-600/60 rounded text-left transition-colors"
+                  className="p-2 bg-[#161D26] hover:bg-[#1E2631] border border-purple-600/60 rounded text-left transition-colors col-span-2 sm:col-span-1"
                 >
                   <div className="font-bold text-purple-300 flex items-center gap-1">
                     🛡️ Ban Quản Lý (BQL)

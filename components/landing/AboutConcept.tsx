@@ -36,7 +36,7 @@ export default function AboutConcept() {
             <div className="grid grid-cols-2 gap-6 pt-4">
               <div className="border-l-2 border-[#C5A880] pl-4 space-y-1">
                 <div className="font-serif text-lg text-[#0D1117] font-semibold">Quyền Tự Trị Căn Hộ</div>
-                <div className="text-xs text-gray-500">Chủ hộ toàn quyền cấp phát FaceID và quản lý khách thuê.</div>
+                <div className="text-xs text-gray-500">Chủ hộ toàn quyền cấp phát FaceID và quản lý người nhà.</div>
               </div>
               <div className="border-l-2 border-[#C5A880] pl-4 space-y-1">
                 <div className="font-serif text-lg text-[#0D1117] font-semibold">An Ninh Đa Lớp</div>

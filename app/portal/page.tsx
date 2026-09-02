@@ -237,7 +237,7 @@ export default function PortalPage() {
                         • Quyền Tài chính (Hóa đơn, thanh toán), Quyền Tự trị (Thêm/xóa thành viên) và Quyền Biểu quyết pháp lý (Bầu BQT, Đóng quỹ) <strong>thuộc độc quyền của Chủ hộ (Owner)</strong>.
                       </p>
                       <p className="text-gray-400">
-                        • Tài khoản Cư dân thuộc chủ hộ (Người nhà/Thành viên gia đình) được cấp quyền sinh hoạt tiện ích (Mã QR ra vào, FaceID, Smart Home phòng riêng, Quẹt thẻ tiện ích Sky Pool/Gym, Báo hỏng, Chatbot AI).
+                        • Tài khoản Người nhà / Thành viên gia đình được cấp quyền sinh hoạt tiện ích (Mã QR ra vào, FaceID, Smart Home phòng riêng, Quẹt thẻ tiện ích Sky Pool/Gym, Báo hỏng, Chatbot AI).
                       </p>
                     </div>
                     <button

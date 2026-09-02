@@ -247,8 +247,7 @@ export default function Topbar({
               {[
                 { role: 'ADMIN' as UserRole, username: 'nks.manager01@gmail.com', name: '🛡️ Ban Quản Lý (Admin)', desc: 'Nguyễn Văn Quản Trị • Điều hành toàn tòa nhà' },
                 { role: 'OWNER' as UserRole, username: 'huuluc04@gmail.com', name: '👑 Chủ Hộ (Căn 12A05)', desc: 'Nguyễn Hữu Lực • Độc quyền tài chính, thành viên' },
-                { role: 'TENANT' as UserRole, username: 'nguyenhuunhut1309@gmail.com', name: '👤 Thành Viên Gia Đình (12A05)', desc: 'Nguyễn Hữu Nhựt • Sinh hoạt tiện ích, FaceID' },
-                { role: 'TENANT' as UserRole, username: 'vanncuong1614@gmail.com', name: '👤 Cư Dân Thuê (12A05)', desc: 'Văn Cường • Cư dân tạm trú' },
+                { role: 'TENANT' as UserRole, username: 'nguyenhuunhut1309@gmail.com', name: '👤 Người Nhà (12A05)', desc: 'Nguyễn Hữu Nhựt • Sinh hoạt tiện ích, FaceID' },
               ].map((r, idx) => {
                 const isCurrent = currentUser.username === r.username || (currentUser.role === r.role && !r.username);
                 return (

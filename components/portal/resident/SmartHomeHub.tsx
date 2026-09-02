@@ -223,7 +223,7 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
           </div>
           {!isOwner && (
             <span className="text-[10px] text-gray-400 italic">
-              * Khách thuê chỉ kích hoạt ngữ cảnh sinh hoạt
+              * Người nhà kích hoạt ngữ cảnh sinh hoạt
             </span>
           )}
         </div>
