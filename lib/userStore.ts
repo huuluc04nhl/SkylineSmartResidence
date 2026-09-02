@@ -105,9 +105,7 @@ function initUserStore(): Record<string, StoredUser> {
   return store;
 }
 
-if (!global.__NKS_USER_STORE) {
-  global.__NKS_USER_STORE = initUserStore();
-}
+global.__NKS_USER_STORE = initUserStore();
 
 /**
  * Extract specific user ID from session token

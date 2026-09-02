@@ -21,7 +21,7 @@ export interface User {
   avatar_url?: string;
   ui_language: 'vi' | 'en';
   apartment_code?: string;
-  relationship?: 'Owner' | 'Family' | 'Tenant' | 'Staff';
+  relationship?: string;
   license_plate?: string;
   dob?: string;
   pob?: string;
@@ -268,7 +268,7 @@ export const DEMO_USERS: User[] = [
     pob: '',
   },
 
-  // 4. Customer / Tenant (Thành viên gia đình căn hộ 12A05)
+  // 4. Member 1 - Em trai (Thành viên gia đình căn hộ 12A05)
   {
     id: 'user-tenant-1',
     role: 'TENANT',
@@ -282,49 +282,64 @@ export const DEMO_USERS: User[] = [
     avatar_url: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&auto=format&fit=crop&q=80',
     ui_language: 'vi',
     apartment_code: '12A05',
-    relationship: 'Family',
+    relationship: 'Anh / Chị / Em',
     license_plate: '59P1-886.79',
+    dob: '1998-09-13',
+    pob: 'TP. Hồ Chí Minh',
   },
 
-  // 5. Member (Thành viên gia đình căn hộ 12A05)
-  {
-    id: 'user-member-1',
-    role: 'TENANT',
-    username: 'vanncuong1614@gmail.com',
-    phone: '0902114455',
-    email: 'vanncuong1614@gmail.com',
-    full_name: 'Văn Cường',
-    id_card_no: '079201004455',
-    avatar_url: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=150&auto=format&fit=crop&q=80',
-    ui_language: 'vi',
-    apartment_code: '12A05',
-    relationship: 'Family',
-  },
+  // 5. Member 2 - Vợ / Chồng (Thành viên gia đình căn hộ 12A05)
   {
     id: 'user-member-2',
     role: 'TENANT',
     username: 'lehai17082004@gmail.com',
     phone: '0903889911',
     email: 'lehai17082004@gmail.com',
-    full_name: 'Lê Hải',
+    full_name: 'Lê Thị Hải',
     id_card_no: '079204001708',
-    avatar_url: 'https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?w=150&auto=format&fit=crop&q=80',
+    avatar_url: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&auto=format&fit=crop&q=80',
     ui_language: 'vi',
     apartment_code: '12A05',
-    relationship: 'Family',
+    relationship: 'Vợ / Chồng',
+    license_plate: '51A-888.66',
+    dob: '1982-08-17',
+    pob: 'TP. Hồ Chí Minh',
   },
+
+  // 6. Member 3 - Con trai (Thành viên gia đình căn hộ 12A05)
+  {
+    id: 'user-member-1',
+    role: 'TENANT',
+    username: 'vanncuong1614@gmail.com',
+    phone: '0902114455',
+    email: 'vanncuong1614@gmail.com',
+    full_name: 'Nguyễn Văn Cường',
+    id_card_no: '079201004455',
+    avatar_url: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=150&auto=format&fit=crop&q=80',
+    ui_language: 'vi',
+    apartment_code: '12A05',
+    relationship: 'Con Cái',
+    license_plate: '51K-678.90',
+    dob: '2006-03-24',
+    pob: 'TP. Hồ Chí Minh',
+  },
+
+  // 7. Member 4 - Con trai (Thành viên gia đình căn hộ 12A05)
   {
     id: 'user-member-3',
     role: 'TENANT',
     username: '26vucatthinh@gmail.com',
     phone: '0909262626',
     email: '26vucatthinh@gmail.com',
-    full_name: 'Vũ Cát Thịnh',
+    full_name: 'Nguyễn Cát Thịnh',
     id_card_no: '079201002626',
     avatar_url: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=150&auto=format&fit=crop&q=80',
     ui_language: 'vi',
     apartment_code: '12A05',
-    relationship: 'Family',
+    relationship: 'Con Cái',
+    license_plate: '59T2-126.26',
+    dob: '2010-06-26',
+    pob: 'TP. Hồ Chí Minh',
   },
 ];
 
