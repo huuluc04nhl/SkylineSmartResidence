@@ -167,7 +167,7 @@ export async function nksUpdateCccd(payload: {
 /**
  * 7. Get Family Members API (GET /api/nks/user/family)
  */
-export async function nksGetFamilyMembers(): Promise<{ success: boolean; members: any[] }> {
+export async function nksGetFamilyMembers(): Promise<{ success: boolean; members: any[]; bqlAccounts?: any[] }> {
   const res = await fetch('/api/nks/user/family', {
     method: 'GET',
     headers: { 'Content-Type': 'application/json' },
@@ -190,6 +190,8 @@ export async function nksAddFamilyMember(payload: {
   relationship?: string;
   idCard?: string;
   licensePlate?: string;
+  avatarUrl?: string;
+  username?: string;
 }): Promise<{ success: boolean; message: string; members: any[] }> {
   const res = await fetch('/api/nks/user/family', {
     method: 'POST',

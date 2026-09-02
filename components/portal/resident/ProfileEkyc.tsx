@@ -30,7 +30,9 @@ import {
   Upload,
   KeyRound,
   Eye,
-  EyeOff
+  EyeOff,
+  X,
+  Check
 } from 'lucide-react';
 import { User } from '@/lib/dataStore';
 import ResidentSmartCard from './ResidentSmartCard';
@@ -59,7 +61,7 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
   const aptCode = currentUser.apartment_code || '12A05';
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const [activeTab, setActiveTab] = useState<'INFO' | 'EKYC' | 'PASSWORD' | 'FAMILY'>('INFO');
+  const [activeTab, setActiveTab] = useState<'INFO' | 'EKYC' | 'FAMILY'>('INFO');
   const [isOcrModalOpen, setIsOcrModalOpen] = useState(false);
   const [isAvatarModalOpen, setIsAvatarModalOpen] = useState(false);
   const [isLoadingApi, setIsLoadingApi] = useState(true);
@@ -86,38 +88,38 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
   const [saveError, setSaveError] = useState<string | null>(null);
   const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
 
-  // Change Password State
-  const [oldPassword, setOldPassword] = useState('');
-  const [newPassword, setNewPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
-  const [isUpdatingPass, setIsUpdatingPass] = useState(false);
-  const [passSuccess, setPassSuccess] = useState(false);
-  const [passError, setPassError] = useState<string | null>(null);
-
   // e-KYC State
   const [ekycStatus, setEkycStatus] = useState<'VERIFIED' | 'PENDING' | 'REJECTED'>('VERIFIED');
   const [isScanningOcr, setIsScanningOcr] = useState(false);
-  const [cccdImage, setCccdImage] = useState('https://images.unsplash.com/photo-1633332755192-727a05c4013d?w=400');
+  const [cccdImage, setCccdImage] = useState('');
   const [matchScore, setMatchScore] = useState(99.8);
 
-  // Family Members State (Loaded directly from NKS Apartment API)
+  // Family Members & BQL Approved Accounts State
   const [members, setMembers] = useState<any[]>([]);
+  const [bqlAccounts, setBqlAccounts] = useState<any[]>([]);
   const [isLoadingMembers, setIsLoadingMembers] = useState(false);
 
+  // Add Member Modal State
   const [showAddMemberModal, setShowAddMemberModal] = useState(false);
+  const [selectedBqlAccountId, setSelectedBqlAccountId] = useState<string>('');
   const [newMemName, setNewMemName] = useState('');
   const [newMemPhone, setNewMemPhone] = useState('');
+  const [newMemIdCard, setNewMemIdCard] = useState('');
+  const [newMemLicensePlate, setNewMemLicensePlate] = useState('');
+  const [newMemAvatarUrl, setNewMemAvatarUrl] = useState('');
   const [newMemRole, setNewMemRole] = useState<'Family' | 'Tenant'>('Family');
+  const [newMemRelationship, setNewMemRelationship] = useState('Thành viên gia đình');
+  const [isAddingMember, setIsAddingMember] = useState(false);
 
-  // Load live family members from NKS API
+  // Load live family members & BQL eligible accounts from API
   useEffect(() => {
     async function loadFamilyData() {
       setIsLoadingMembers(true);
       try {
         const famRes = await nksGetFamilyMembers();
-        if (famRes.success && famRes.members) {
-          setMembers(famRes.members);
+        if (famRes.success) {
+          if (famRes.members) setMembers(famRes.members);
+          if (famRes.bqlAccounts) setBqlAccounts(famRes.bqlAccounts);
         }
       } catch (e) {
         console.warn('Load family API error:', e);
@@ -276,50 +278,28 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
     }
   };
 
-  // 3. Submit Update Password to NKS API (POST /api/nks/user/updatePass)
-  const handleUpdatePassword = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setPassError(null);
-    setPassSuccess(false);
+  const [cccdBackImage, setCccdBackImage] = useState('');
 
-    if (newPassword.length < 6) {
-      setPassError('Mật khẩu mới phải có tối thiểu 6 ký tự.');
-      return;
-    }
-    if (newPassword !== confirmPassword) {
-      setPassError('Mật khẩu xác nhận không khớp với mật khẩu mới.');
-      return;
-    }
-
-    setIsUpdatingPass(true);
-    try {
-      const res = await nksUpdatePassword(oldPassword, newPassword);
-      if (res.success) {
-        setPassSuccess(true);
-        setOldPassword('');
-        setNewPassword('');
-        setConfirmPassword('');
-        setTimeout(() => setPassSuccess(false), 4000);
-      } else {
-        setPassError(res.message || 'Cập nhật mật khẩu thất bại.');
-      }
-    } catch (err: any) {
-      setPassError('Lỗi kết nối máy chủ khi đổi mật khẩu.');
-    } finally {
-      setIsUpdatingPass(false);
-    }
+  // 2. Select a BQL-approved account to autofill member details
+  const handleSelectBqlAccount = (acc: any) => {
+    setSelectedBqlAccountId(acc.id);
+    setNewMemName(acc.fullName);
+    setNewMemPhone(acc.phone);
+    setNewMemIdCard(acc.idCard || '');
+    setNewMemLicensePlate(acc.licensePlate || '');
+    setNewMemAvatarUrl(acc.avatarUrl || '');
+    setNewMemRole(acc.role);
+    setNewMemRelationship(acc.relationship || (acc.role === 'Family' ? 'Thành viên gia đình' : 'Cư dân tạm trú'));
   };
 
-  const [cccdBackImage, setCccdBackImage] = useState('https://images.unsplash.com/photo-1544717305-2782549b5136?w=600');
-
-  // 4. Handle auto-filling data from OCR Scanner Modal (2 sides) - NO API CALL YET
+  // 3. Handle auto-filling data from OCR Scanner Modal (2 sides)
   const handleApplyOcrData = (ocrData: OcrCccdResult, frontSrc: string, backSrc: string) => {
     setIdCardNumber(ocrData.idNumber || '');
     setFullName(ocrData.fullName || '');
     setBirthday(formatToDateInput(ocrData.dob || ''));
     setGender(ocrData.gender || '1');
     setPob(ocrData.pob || '');
-    setProvince(ocrData.province || 'TP. Hồ Chí Minh');
+    setProvince(ocrData.province || 'Thành phố Hồ Chí Minh');
     setIdDate(formatToDateInput(ocrData.idDate || ''));
     setIdPlace(ocrData.idPlace || 'Cục Cảnh sát QLHC về TTXH');
     if (frontSrc) setCccdImage(frontSrc);
@@ -351,32 +331,48 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
       setIsScanningOcr(false);
       setMatchScore(99.9);
       setEkycStatus('VERIFIED');
-      alert('✨ AI OCR đã quét thành công CCCD và cập nhật Face Vector 512D mới lên NKS Server & hệ thống Barrier tòa nhà!');
-    }, 1500);
+      alert('✨ AI Vision đã kích hoạt Face Vector 512D và đồng bộ quyền mở cổng Barrier Sảnh A/B & Thang máy!');
+    }, 1200);
   };
 
+  // 4. Add Member (either selected from BQL or custom input)
   const handleAddMember = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newMemName || !newMemPhone) return;
 
+    setIsAddingMember(true);
     try {
+      const selectedAccount = bqlAccounts.find((a) => a.id === selectedBqlAccountId);
+
       const res = await nksAddFamilyMember({
         fullName: newMemName.trim(),
         phone: newMemPhone.trim(),
         role: newMemRole,
-        relationship: newMemRole === 'Family' ? 'Cư dân thuộc chủ hộ' : 'Cư dân tạm trú',
+        relationship: newMemRelationship.trim() || (newMemRole === 'Family' ? 'Thành viên gia đình' : 'Cư dân tạm trú'),
+        idCard: newMemIdCard.trim() || (selectedAccount?.idCard || ''),
+        licensePlate: newMemLicensePlate.trim() || (selectedAccount?.licensePlate || ''),
+        avatarUrl: newMemAvatarUrl || selectedAccount?.avatarUrl || '',
+        username: selectedAccount?.username || newMemPhone.trim(),
       });
 
       if (res.success && res.members) {
         setMembers(res.members);
+        // Refresh BQL accounts status
+        const famRes = await nksGetFamilyMembers();
+        if (famRes.bqlAccounts) setBqlAccounts(famRes.bqlAccounts);
       }
     } catch (err) {
       console.warn('Add member API error:', err);
+    } finally {
+      setIsAddingMember(false);
+      setShowAddMemberModal(false);
+      setSelectedBqlAccountId('');
+      setNewMemName('');
+      setNewMemPhone('');
+      setNewMemIdCard('');
+      setNewMemLicensePlate('');
+      setNewMemAvatarUrl('');
     }
-
-    setNewMemName('');
-    setNewMemPhone('');
-    setShowAddMemberModal(false);
   };
 
   const handleRemoveMember = async (id: string) => {
@@ -452,18 +448,6 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
           <ScanFace className="w-4 h-4" /> 2. Định Danh e-KYC & Thẻ Thông Minh
         </button>
 
-        <button
-          type="button"
-          onClick={() => setActiveTab('PASSWORD')}
-          className={`pb-3 px-4 flex items-center gap-2 border-b-2 transition-colors ${
-            activeTab === 'PASSWORD'
-              ? 'border-[#C5A880] text-[#C5A880] font-bold'
-              : 'border-transparent text-gray-400 hover:text-gray-200'
-          }`}
-        >
-          <KeyRound className="w-4 h-4" /> 3. Đổi Mật Khẩu (Security)
-        </button>
-
         {isOwner && (
           <button
             type="button"
@@ -474,7 +458,7 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
                 : 'border-transparent text-gray-400 hover:text-gray-200'
             }`}
           >
-            <Users className="w-4 h-4" /> 4. Thành Viên Gia Đình ({members.length})
+            <Users className="w-4 h-4" /> 3. Thành Viên Căn Hộ ({members.length})
           </button>
         )}
       </div>
@@ -814,45 +798,125 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
 
           {/* e-KYC Visual Matcher Cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Card 1: CCCD OCR Data */}
+            {/* Card 1: National Chip ID Card Mockup with Real Verified Data */}
             <div className="p-5 bg-[#121820] border border-[#222B35] space-y-4 rounded-lg">
               <div className="flex items-center justify-between border-b border-[#222B35] pb-2">
                 <span className="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-2">
-                  <CreditCard className="w-4 h-4 text-[#C5A880]" /> 1. Ảnh Căn Cước Công Dân (CCCD Chip)
+                  <CreditCard className="w-4 h-4 text-[#C5A880]" /> 1. Căn Cước Công Dân Gắn Chip (ICAO Doc 9303)
                 </span>
                 <button
                   type="button"
                   onClick={() => setIsOcrModalOpen(true)}
-                  className="text-[10px] text-[#C5A880] hover:underline font-mono flex items-center gap-1"
+                  className="px-2.5 py-1 bg-[#1C2533] hover:bg-[#C5A880] hover:text-[#0D1117] border border-[#C5A880]/50 text-[#C5A880] text-[10px] font-bold rounded flex items-center gap-1 transition-all"
                 >
-                  <Scan className="w-3 h-3" /> Quét lại OCR
+                  <Scan className="w-3 h-3" /> Quét Lại Bằng AI OCR
                 </button>
               </div>
 
-              <div className="h-48 bg-black border border-gray-700 overflow-hidden relative group rounded">
-                <img
-                  src={cccdImage}
-                  alt="CCCD"
-                  className="w-full h-full object-cover opacity-80 group-hover:scale-105 transition-transform"
-                />
-                <div className="absolute bottom-2 left-2 bg-black/80 px-2 py-1 text-[10px] font-mono text-gray-200 rounded">
-                  Số CCCD: {idCardNumber}
+              {/* High-Tech Realistic Vietnamese CCCD Card Mockup */}
+              <div className="relative p-4 rounded-xl bg-gradient-to-br from-[#1E2734] via-[#141B24] to-[#0D1117] border border-[#C5A880]/40 shadow-2xl overflow-hidden text-white font-sans">
+                {/* Holographic Watermark / Emblem Header */}
+                <div className="flex items-center justify-between border-b border-white/10 pb-2 mb-3">
+                  <div className="flex items-center gap-2">
+                    <div className="w-6 h-6 rounded-full bg-amber-500/20 border border-amber-400 flex items-center justify-center text-amber-300 font-bold text-[10px]">
+                      ★
+                    </div>
+                    <div>
+                      <div className="text-[9px] uppercase font-bold tracking-wider text-amber-300 leading-tight">
+                        CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM
+                      </div>
+                      <div className="text-[7.5px] text-gray-300 font-medium">Độc lập - Tự do - Hạnh phúc</div>
+                    </div>
+                  </div>
+                  <span className="text-[8px] font-mono text-[#C5A880] bg-[#C5A880]/10 px-1.5 py-0.5 rounded border border-[#C5A880]/30 font-bold">
+                    CHIP ENCRYPTED
+                  </span>
+                </div>
+
+                {/* Card Title */}
+                <div className="text-center mb-3">
+                  <div className="text-xs font-bold uppercase tracking-wider text-[#C5A880]">CĂN CƯỚC CÔNG DÂN</div>
+                  <div className="text-[8px] text-gray-400 font-mono tracking-widest">IDENTITY CARD</div>
+                </div>
+
+                {/* Card Body: Portrait + Chip + Info */}
+                <div className="flex gap-4">
+                  {/* Left: Avatar portrait & Smart Chip */}
+                  <div className="flex flex-col items-center gap-2">
+                    <div className="w-20 h-24 rounded border border-gray-600 bg-black overflow-hidden shadow">
+                      <img
+                        src={avatarUrl || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400'}
+                        alt="CCCD Portrait"
+                        className="w-full h-full object-cover grayscale"
+                      />
+                    </div>
+                    {/* Simulated EMV Smart Chip */}
+                    <div className="w-9 h-7 bg-gradient-to-tr from-amber-600 via-amber-300 to-amber-500 rounded border border-amber-600 shadow-sm relative overflow-hidden">
+                      <div className="absolute inset-0 border border-amber-700/60 rounded" />
+                      <div className="absolute top-1/2 left-0 right-0 h-[1px] bg-amber-800" />
+                      <div className="absolute top-0 bottom-0 left-1/3 w-[1px] bg-amber-800" />
+                      <div className="absolute top-0 bottom-0 right-1/3 w-[1px] bg-amber-800" />
+                    </div>
+                  </div>
+
+                  {/* Right: Data fields */}
+                  <div className="flex-1 space-y-1 text-[11px] leading-tight">
+                    <div>
+                      <span className="text-gray-400 text-[9px] block">Số / No.:</span>
+                      <span className="font-mono text-sm font-bold text-amber-300 tracking-wider">
+                        {idCardNumber || '067204000961'}
+                      </span>
+                    </div>
+
+                    <div>
+                      <span className="text-gray-400 text-[9px] block">Họ và tên / Full name:</span>
+                      <span className="font-bold text-white uppercase text-xs">
+                        {fullName || 'Trần Hữu Lực'}
+                      </span>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-2 pt-0.5">
+                      <div>
+                        <span className="text-gray-400 text-[9px] block">Ngày sinh / DOB:</span>
+                        <span className="font-mono text-gray-200 text-[10px]">
+                          {birthday ? formatToDisplayDate(birthday) : '02/11/2004'}
+                        </span>
+                      </div>
+                      <div>
+                        <span className="text-gray-400 text-[9px] block">Giới tính / Sex:</span>
+                        <span className="text-gray-200 text-[10px]">{gender === '1' ? 'Nam' : 'Nữ'}</span>
+                      </div>
+                    </div>
+
+                    <div>
+                      <span className="text-gray-400 text-[9px] block">Quê quán / Place of origin:</span>
+                      <span className="text-gray-200 text-[10px] line-clamp-1">
+                        {pob || 'Đồng Nai'}
+                      </span>
+                    </div>
+
+                    <div>
+                      <span className="text-gray-400 text-[9px] block">Nơi cấp & Ngày cấp:</span>
+                      <span className="text-gray-300 text-[10px] line-clamp-1 font-mono">
+                        {idDate ? formatToDisplayDate(idDate) : '19/04/2021'} • {idPlace || 'Cục Cảnh sát QLHC về TTXH'}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Footer MRZ Line */}
+                <div className="mt-3 pt-2 border-t border-white/10 font-mono text-[8px] text-gray-400 tracking-widest select-none">
+                  IDVNM{idCardNumber || '067204000961'}9&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;
+                  <br />
+                  {formatToDateInput(birthday).replace(/-/g, '').slice(2)}5M2609027VNM&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;8
                 </div>
               </div>
 
-              <div className="space-y-1.5 text-xs text-gray-300 bg-[#161B22] p-3 border border-[#222B35] rounded">
-                <div className="flex justify-between">
-                  <span className="text-gray-400">Họ và tên:</span>
-                  <strong className="text-white">{fullName}</strong>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-400">Số định danh:</span>
-                  <span className="font-mono text-[#C5A880]">{idCardNumber}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-400">Ngày sinh:</span>
-                  <span className="text-gray-200">{birthday}</span>
-                </div>
+              <div className="flex items-center justify-between text-[11px] text-gray-400 pt-1">
+                <span className="flex items-center gap-1.5 text-emerald-400 font-semibold">
+                  <CheckCircle2 className="w-3.5 h-3.5" /> Thẻ Chip Đã Định Danh Hợp Lệ
+                </span>
+                <span className="font-mono text-gray-400">Độ tin cậy: 99.9%</span>
               </div>
             </div>
 
@@ -860,36 +924,55 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
             <div className="p-5 bg-[#121820] border border-[#222B35] space-y-4 rounded-lg">
               <div className="flex items-center justify-between border-b border-[#222B35] pb-2">
                 <span className="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-2">
-                  <ScanFace className="w-4 h-4 text-[#C5A880]" /> 2. Ảnh Chân Dung & Liveness Check
+                  <ScanFace className="w-4 h-4 text-[#C5A880]" /> 2. Ảnh Chân Dung & Liveness Check (512D Vector)
                 </span>
-                <span className="text-[10px] text-emerald-400 font-mono">Match: {matchScore}%</span>
+                <button
+                  type="button"
+                  onClick={() => setIsAvatarModalOpen(true)}
+                  className="px-2.5 py-1 bg-[#1C2533] hover:bg-[#C5A880] hover:text-[#0D1117] border border-[#C5A880]/50 text-[#C5A880] text-[10px] font-bold rounded flex items-center gap-1 transition-all"
+                >
+                  <Camera className="w-3 h-3" /> Chụp & Căn Chỉnh FaceID
+                </button>
               </div>
 
-              <div className="h-48 bg-black border border-emerald-500/60 overflow-hidden relative flex items-center justify-center rounded">
+              <div className="h-56 bg-black border border-emerald-500/60 overflow-hidden relative flex items-center justify-center rounded-xl shadow-inner group">
                 <img
                   src={avatarUrl || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400'}
                   alt="Portrait"
                   className="h-full w-full object-cover"
                 />
-                {/* Laser Overlay */}
-                <div className="absolute inset-0 border-2 border-emerald-500/40 pointer-events-none"></div>
-                <div className="absolute top-2 right-2 bg-emerald-950/90 border border-emerald-500 text-emerald-300 px-2 py-0.5 text-[10px] font-bold font-mono rounded">
-                  Liveness: Real Person ✓
+                {/* AI Laser Scanner Overlay */}
+                <div className="absolute inset-0 border-2 border-emerald-500/40 pointer-events-none" />
+                <div className="absolute top-4 left-4 w-8 h-8 border-t-2 border-l-2 border-emerald-400 pointer-events-none" />
+                <div className="absolute top-4 right-4 w-8 h-8 border-t-2 border-r-2 border-emerald-400 pointer-events-none" />
+                <div className="absolute bottom-4 left-4 w-8 h-8 border-b-2 border-l-2 border-emerald-400 pointer-events-none" />
+                <div className="absolute bottom-4 right-4 w-8 h-8 border-b-2 border-r-2 border-emerald-400 pointer-events-none" />
+
+                <div className="absolute top-3 right-3 bg-emerald-950/90 border border-emerald-500 text-emerald-300 px-2.5 py-1 text-[10px] font-bold font-mono rounded shadow">
+                  Liveness: Real Person ✓ • {matchScore}%
+                </div>
+
+                <div className="absolute bottom-3 left-3 bg-black/80 px-2.5 py-1 text-[10px] font-mono text-[#C5A880] rounded border border-[#C5A880]/40">
+                  512-Dimensional Facial Embedding: Active
                 </div>
               </div>
 
-              <div className="space-y-1.5 text-xs text-gray-300 bg-[#161B22] p-3 border border-[#222B35] rounded">
+              <div className="space-y-1.5 text-xs text-gray-300 bg-[#161B22] p-3 border border-[#222B35] rounded-lg">
                 <div className="flex justify-between">
-                  <span className="text-gray-400">Tốc độ nhận diện:</span>
-                  <strong className="text-emerald-400 font-mono">&lt; 0.35s</strong>
+                  <span className="text-gray-400">Tốc độ nhận diện AI:</span>
+                  <strong className="text-emerald-400 font-mono">&lt; 0.35 giây (Không cần chạm)</strong>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-400">Trạng thái Barrier:</span>
-                  <span className="text-emerald-400 font-bold">Đã Phân Quyền Mở Cổng</span>
+                  <span className="text-gray-400">Trạng thái Cổng Barrier:</span>
+                  <span className="text-emerald-400 font-bold">Đã Phân Quyền Mở Cổng Tự Động</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-400">Tiện ích áp dụng:</span>
-                  <span className="text-gray-200">Sảnh A/B, Thang máy, Sky Pool, Gym</span>
+                  <span className="text-gray-200">Sảnh A/B, Thang máy Tầng 12, Sky Pool, Gym</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-400">Biển số xe ALPR:</span>
+                  <strong className="text-[#C5A880] font-mono">{licensePlate || '51K-889.99'}</strong>
                 </div>
               </div>
             </div>
@@ -906,221 +989,267 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
       )}
 
       {/* ------------------------------------------------------------- */}
-      {/* TAB 3: CHANGE PASSWORD (POST /api/nks/user/updatePass)          */}
-      {/* ------------------------------------------------------------- */}
-      {activeTab === 'PASSWORD' && (
-        <form onSubmit={handleUpdatePassword} className="p-6 sm:p-8 bg-[#121820] border border-[#222B35] space-y-6 shadow-2xl max-w-2xl rounded-lg">
-          <div className="border-b border-[#222B35] pb-3">
-            <h3 className="font-serif text-xl font-bold text-white flex items-center gap-2">
-              <KeyRound className="w-5 h-5 text-[#C5A880]" /> Thay Đổi Mật Khẩu Đăng Nhập
-            </h3>
-            <p className="text-xs text-gray-400 mt-0.5">
-              Cập nhật trực tiếp qua API <code className="text-[#C5A880] font-mono">POST /api/nks/user/updatePass</code>
-            </p>
-          </div>
-
-          {passSuccess && (
-            <div className="p-3.5 bg-emerald-950/90 border border-emerald-500 text-emerald-300 text-xs flex items-center gap-2 animate-fadeIn rounded">
-              <CheckCircle2 className="w-4 h-4 flex-shrink-0" />
-              <span>✓ Đã đổi mật khẩu NKS thành công! Vui lòng ghi nhớ mật khẩu mới của bạn.</span>
-            </div>
-          )}
-
-          {passError && (
-            <div className="p-3.5 bg-rose-950/90 border border-rose-500 text-rose-300 text-xs flex items-center gap-2 animate-fadeIn rounded">
-              <AlertCircle className="w-4 h-4 flex-shrink-0" />
-              <span>{passError}</span>
-            </div>
-          )}
-
-          <div className="space-y-4 text-xs">
-            {/* Old Password */}
-            <div className="space-y-1.5">
-              <label className="text-gray-300 font-semibold">Mật Khẩu Hiện Tại:</label>
-              <div className="relative">
-                <input
-                  type={showPassword ? 'text' : 'password'}
-                  value={oldPassword}
-                  onChange={(e) => setOldPassword(e.target.value)}
-                  placeholder="Nhập mật khẩu hiện tại..."
-                  className="w-full bg-[#161B22] border border-[#2D3748] p-3 text-white focus:outline-none focus:border-[#C5A880] rounded font-mono"
-                  required
-                />
-              </div>
-            </div>
-
-            {/* New Password */}
-            <div className="space-y-1.5">
-              <label className="text-gray-300 font-semibold">Mật Khẩu Mới (Tối thiểu 6 ký tự):</label>
-              <div className="relative">
-                <input
-                  type={showPassword ? 'text' : 'password'}
-                  value={newPassword}
-                  onChange={(e) => setNewPassword(e.target.value)}
-                  placeholder="Nhập mật khẩu mới..."
-                  className="w-full bg-[#161B22] border border-[#2D3748] p-3 text-white focus:outline-none focus:border-[#C5A880] rounded font-mono"
-                  required
-                />
-              </div>
-            </div>
-
-            {/* Confirm New Password */}
-            <div className="space-y-1.5">
-              <label className="text-gray-300 font-semibold">Xác Nhận Mật Khẩu Mới:</label>
-              <div className="relative">
-                <input
-                  type={showPassword ? 'text' : 'password'}
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  placeholder="Nhập lại mật khẩu mới..."
-                  className="w-full bg-[#161B22] border border-[#2D3748] p-3 text-white focus:outline-none focus:border-[#C5A880] rounded font-mono"
-                  required
-                />
-              </div>
-            </div>
-
-            <div className="flex items-center gap-2 pt-1">
-              <input
-                type="checkbox"
-                id="showPassToggle"
-                checked={showPassword}
-                onChange={(e) => setShowPassword(e.target.checked)}
-                className="rounded bg-[#161B22] border-gray-700 text-[#C5A880] focus:ring-0"
-              />
-              <label htmlFor="showPassToggle" className="text-gray-400 cursor-pointer">
-                Hiển thị mật khẩu
-              </label>
-            </div>
-          </div>
-
-          <div className="flex justify-end pt-4 border-t border-[#222B35]">
-            <button
-              type="submit"
-              disabled={isUpdatingPass}
-              className="px-6 py-2.5 bg-[#C5A880] hover:bg-white text-[#0D1117] text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-2 rounded shadow-lg"
-            >
-              {isUpdatingPass ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-              {isUpdatingPass ? 'Đang Đổi Mật Khẩu...' : 'Cập Nhật Mật Khẩu Mới'}
-            </button>
-          </div>
-        </form>
-      )}
-
-      {/* ------------------------------------------------------------- */}
-      {/* TAB 4: OWNER AUTONOMY - FAMILY MEMBERS                        */}
+      {/* TAB 3: OWNER AUTONOMY - FAMILY MEMBERS & BQL ACCOUNT SELECTOR */}
       {/* ------------------------------------------------------------- */}
       {activeTab === 'FAMILY' && isOwner && (
         <div className="space-y-4">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-[#121820] p-4 border border-[#222B35] rounded-lg">
             <div>
-              <h3 className="font-serif text-base font-bold text-white">
-                Danh Sách Cư Dân & Thành Viên Căn Hộ {aptCode}
+              <h3 className="font-serif text-base font-bold text-white flex items-center gap-2">
+                <Users className="w-4 h-4 text-[#C5A880]" /> Danh Sách Cư Dân & Thành Viên Căn Hộ {aptCode}
               </h3>
               <p className="text-xs text-gray-400">
-                Chủ hộ có toàn quyền thêm/xóa thành viên và cấp quyền mở cổng FaceID
+                Chủ hộ có toàn quyền thêm/xóa thành viên và cấp quyền mở cổng FaceID từ danh sách BQL đã duyệt
               </p>
             </div>
 
             <button
-              onClick={() => setShowAddMemberModal(true)}
-              className="px-4 py-2 bg-[#C5A880] hover:bg-white text-[#0D1117] text-xs font-bold uppercase tracking-wider transition-colors flex items-center gap-1.5 flex-shrink-0 rounded"
+              onClick={() => {
+                setSelectedBqlAccountId('');
+                setNewMemName('');
+                setNewMemPhone('');
+                setNewMemIdCard('');
+                setNewMemLicensePlate('');
+                setNewMemAvatarUrl('');
+                setNewMemRole('Family');
+                setNewMemRelationship('Thành viên gia đình');
+                setShowAddMemberModal(true);
+              }}
+              className="px-4 py-2.5 bg-[#C5A880] hover:bg-white text-[#0D1117] text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 flex-shrink-0 rounded shadow"
             >
               <UserPlus className="w-4 h-4" /> Thêm Thành Viên Cư Dân
             </button>
           </div>
 
+          {/* Members List */}
           <div className="divide-y divide-[#222B35] border border-[#222B35] bg-[#121820] rounded-lg overflow-hidden">
-            {members.map((m) => (
-              <div key={m.id} className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-[#161B22] transition-colors text-xs">
-                <div className="space-y-1">
-                  <div className="flex items-center gap-2">
-                    <span className="font-bold text-white text-sm">{m.fullName}</span>
-                    <span className={`px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider rounded ${
-                      m.role === 'Tenant' ? 'bg-blue-950 text-blue-300 border border-blue-600' : 'bg-purple-950 text-purple-300 border border-purple-600'
-                    }`}>
-                      {m.role === 'Tenant' ? 'Người Nhà' : 'Gia Đình'}
-                    </span>
-                  </div>
-                  <div className="text-gray-400 text-[11px]">
-                    Quan hệ: {m.relationship} • SĐT: <strong className="font-mono text-gray-300">{m.phone}</strong> • CCCD: {m.idCard}
-                  </div>
-                  <div className="text-[10px] text-emerald-400 flex items-center gap-1">
-                    <CheckCircle2 className="w-3 h-3" /> {m.faceStatus} (Đã cấp quyền FaceID)
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-3">
-                  <button
-                    onClick={() => handleRemoveMember(m.id)}
-                    className="p-2 text-gray-400 hover:text-red-400 hover:bg-red-950/40 border border-transparent hover:border-red-500 transition-colors rounded"
-                    title="Xóa quyền truy cập"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
-                </div>
+            {members.length === 0 ? (
+              <div className="p-8 text-center text-gray-400 text-xs">
+                Chưa có thành viên nào được phân quyền. Bấm "Thêm Thành Viên Cư Dân" để chọn từ danh sách BQL.
               </div>
-            ))}
+            ) : (
+              members.map((m) => (
+                <div key={m.id} className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-[#161B22] transition-colors text-xs">
+                  <div className="flex items-center gap-3.5">
+                    <img
+                      src={m.avatarUrl || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150'}
+                      alt={m.fullName}
+                      className="w-11 h-11 rounded-full object-cover border border-[#C5A880]/60 shadow"
+                    />
+                    <div className="space-y-1">
+                      <div className="flex items-center gap-2">
+                        <span className="font-bold text-white text-sm">{m.fullName}</span>
+                        <span className={`px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider rounded border ${
+                          m.role === 'Tenant'
+                            ? 'bg-blue-950/80 text-blue-300 border-blue-600/60'
+                            : 'bg-purple-950/80 text-purple-300 border-purple-600/60'
+                        }`}>
+                          {m.role === 'Tenant' ? 'Người Nhà / Thuê' : 'Thành Viên Gia Đình'}
+                        </span>
+                      </div>
+                      <div className="text-gray-400 text-[11px]">
+                        Quan hệ: <strong className="text-gray-200">{m.relationship}</strong> • SĐT: <strong className="font-mono text-gray-200">{m.phone}</strong> • CCCD: <strong className="font-mono text-[#C5A880]">{m.idCard}</strong>
+                        {m.licensePlate && <> • Biển số: <strong className="font-mono text-cyan-400">{m.licensePlate}</strong></>}
+                      </div>
+                      <div className="text-[10px] text-emerald-400 flex items-center gap-1">
+                        <CheckCircle2 className="w-3 h-3" /> {m.faceStatus || 'Đã Xác Thực FaceID'} (Cấp quyền mở cổng & Thang máy Tầng 12)
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-3">
+                    <button
+                      onClick={() => handleRemoveMember(m.id)}
+                      className="p-2 text-gray-400 hover:text-rose-400 hover:bg-rose-950/40 border border-transparent hover:border-rose-500 transition-colors rounded"
+                      title="Hủy phân quyền thành viên"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+              ))
+            )}
           </div>
 
-          {/* Add Member Modal */}
+          {/* Add Member Modal (BQL Approved Accounts Selector) */}
           {showAddMemberModal && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-              <div className="bg-[#0D1117] border border-[#C5A880] max-w-md w-full p-6 text-white space-y-4 shadow-2xl rounded-lg">
-                <div className="border-b border-[#222B35] pb-2">
-                  <h4 className="font-serif text-lg font-bold">Thêm Thành Viên Cư Dân Căn Hộ</h4>
-                  <p className="text-xs text-gray-400">Cấp quyền FaceID và thẻ mở cổng tòa nhà</p>
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-black/85 backdrop-blur-sm animate-fadeIn">
+              <div className="bg-[#121820] border border-[#C5A880]/70 max-w-2xl w-full p-6 text-white space-y-5 shadow-2xl rounded-xl max-h-[90vh] overflow-y-auto">
+                <div className="flex items-center justify-between border-b border-[#222B35] pb-3">
+                  <div>
+                    <h4 className="font-serif text-lg font-bold text-white flex items-center gap-2">
+                      <UserPlus className="w-5 h-5 text-[#C5A880]" /> Thêm Thành Viên Căn Hộ {aptCode}
+                    </h4>
+                    <p className="text-xs text-gray-400 mt-0.5">
+                      Chọn tài khoản BQL đã phê duyệt cấp quyền cho căn hộ của bạn để thêm nhanh
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => setShowAddMemberModal(false)}
+                    className="p-1 rounded text-gray-400 hover:text-white"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
                 </div>
 
-                <form onSubmit={handleAddMember} className="space-y-3 text-xs">
-                  <div>
-                    <label className="text-gray-300">Họ và tên người nhận quyền:</label>
-                    <input
-                      type="text"
-                      value={newMemName}
-                      onChange={(e) => setNewMemName(e.target.value)}
-                      placeholder="VD: Trần Thị Mai..."
-                      className="w-full bg-[#161B22] border border-[#2D3748] p-2.5 text-white mt-1 focus:outline-none focus:border-[#C5A880] rounded"
-                      required
-                    />
+                {/* Section 1: BQL Approved Accounts Quick Selector */}
+                <div className="space-y-2.5">
+                  <div className="flex items-center justify-between">
+                    <label className="text-xs font-bold text-[#C5A880] uppercase tracking-wider flex items-center gap-1.5">
+                      <ShieldCheck className="w-4 h-4 text-emerald-400" /> Tài Khoản Được BQL Xác Minh Cho Căn Hộ {aptCode}:
+                    </label>
+                    <span className="text-[10px] text-gray-400">Bấm để chọn nhanh</span>
                   </div>
 
-                  <div>
-                    <label className="text-gray-300">Số điện thoại:</label>
-                    <input
-                      type="tel"
-                      value={newMemPhone}
-                      onChange={(e) => setNewMemPhone(e.target.value)}
-                      placeholder="09xx xxx xxx"
-                      className="w-full bg-[#161B22] border border-[#2D3748] p-2.5 text-white mt-1 font-mono focus:outline-none focus:border-[#C5A880] rounded"
-                      required
-                    />
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                    {bqlAccounts.map((acc) => {
+                      const isAlreadyAdded = members.some(
+                        (m) => m.username === acc.username || m.phone === acc.phone
+                      );
+                      const isSelected = selectedBqlAccountId === acc.id;
+
+                      return (
+                        <div
+                          key={acc.id}
+                          onClick={() => {
+                            if (!isAlreadyAdded) handleSelectBqlAccount(acc);
+                          }}
+                          className={`p-3 rounded-lg border transition-all flex items-center gap-3 cursor-pointer ${
+                            isAlreadyAdded
+                              ? 'bg-[#0E131A] border-gray-800 opacity-60 cursor-not-allowed'
+                              : isSelected
+                              ? 'bg-[#1C2533] border-[#C5A880] ring-1 ring-[#C5A880] shadow-lg'
+                              : 'bg-[#161D26] border-[#222B35] hover:border-gray-600 hover:bg-[#1A232E]'
+                          }`}
+                        >
+                          <img
+                            src={acc.avatarUrl || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150'}
+                            alt={acc.fullName}
+                            className="w-10 h-10 rounded-full object-cover border border-[#C5A880]/50 flex-shrink-0"
+                          />
+                          <div className="flex-1 min-w-0 text-xs">
+                            <div className="flex items-center justify-between gap-1">
+                              <span className="font-bold text-white truncate">{acc.fullName}</span>
+                              {isAlreadyAdded ? (
+                                <span className="text-[9px] text-emerald-400 font-bold bg-emerald-950 px-1.5 py-0.5 rounded border border-emerald-500/40 flex-shrink-0">
+                                  Đã Thêm
+                                </span>
+                              ) : isSelected ? (
+                                <span className="text-[9px] text-[#0D1117] font-bold bg-[#C5A880] px-1.5 py-0.5 rounded flex-shrink-0">
+                                  Đang Chọn ✓
+                                </span>
+                              ) : null}
+                            </div>
+                            <div className="text-[11px] text-gray-400 font-mono truncate">{acc.phone}</div>
+                            <div className="text-[10px] text-[#C5A880] font-mono truncate">CCCD: {acc.idCard}</div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Section 2: Details & Custom Confirmation Form */}
+                <form onSubmit={handleAddMember} className="space-y-3.5 text-xs pt-3 border-t border-[#222B35]">
+                  <div className="text-[11px] font-bold text-gray-300 uppercase tracking-wider">
+                    Thông Tin Xác Nhận & Cấp Quyền:
                   </div>
 
-                  <div>
-                    <label className="text-gray-300">Loại thành viên:</label>
-                    <select
-                      value={newMemRole}
-                      onChange={(e) => setNewMemRole(e.target.value as any)}
-                      className="w-full bg-[#161B22] border border-[#2D3748] p-2.5 text-white mt-1 focus:outline-none focus:border-[#C5A880] rounded"
-                    >
-                      <option value="Family">Cư Dân Thuộc Chủ Hộ (Thành Viên Gia Đình)</option>
-                      <option value="Tenant">Cư Dân Tạm Trú Căn Hộ</option>
-                    </select>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                      <label className="text-gray-300 font-semibold block mb-1">Họ và tên thành viên:</label>
+                      <input
+                        type="text"
+                        value={newMemName}
+                        onChange={(e) => setNewMemName(e.target.value)}
+                        placeholder="VD: Nguyễn Hữu Nhựt..."
+                        className="w-full bg-[#161B22] border border-[#2D3748] p-2.5 text-white focus:outline-none focus:border-[#C5A880] rounded"
+                        required
+                      />
+                    </div>
+
+                    <div>
+                      <label className="text-gray-300 font-semibold block mb-1">Số điện thoại liên hệ:</label>
+                      <input
+                        type="tel"
+                        value={newMemPhone}
+                        onChange={(e) => setNewMemPhone(e.target.value)}
+                        placeholder="09xx xxx xxx"
+                        className="w-full bg-[#161B22] border border-[#2D3748] p-2.5 text-white font-mono focus:outline-none focus:border-[#C5A880] rounded"
+                        required
+                      />
+                    </div>
                   </div>
 
-                  <div className="flex justify-end gap-2 pt-3 border-t border-[#222B35]">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                      <label className="text-gray-300 font-semibold block mb-1">Số CCCD (Định danh e-KYC):</label>
+                      <input
+                        type="text"
+                        value={newMemIdCard}
+                        onChange={(e) => setNewMemIdCard(e.target.value)}
+                        placeholder="12 chữ số CCCD..."
+                        className="w-full bg-[#161B22] border border-[#2D3748] p-2.5 text-white font-mono focus:outline-none focus:border-[#C5A880] rounded"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="text-gray-300 font-semibold block mb-1">Biển số xe đăng ký:</label>
+                      <input
+                        type="text"
+                        value={newMemLicensePlate}
+                        onChange={(e) => setNewMemLicensePlate(e.target.value)}
+                        placeholder="VD: 59P1-886.79"
+                        className="w-full bg-[#161B22] border border-[#2D3748] p-2.5 text-[#C5A880] font-mono font-bold focus:outline-none focus:border-[#C5A880] rounded"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                      <label className="text-gray-300 font-semibold block mb-1">Loại cư dân:</label>
+                      <select
+                        value={newMemRole}
+                        onChange={(e) => setNewMemRole(e.target.value as any)}
+                        className="w-full bg-[#161B22] border border-[#2D3748] p-2.5 text-white focus:outline-none focus:border-[#C5A880] rounded"
+                      >
+                        <option value="Family">Cư Dân Thuộc Chủ Hộ (Thành Viên Gia Đình)</option>
+                        <option value="Tenant">Cư Dân Tạm Trú Căn Hộ (Người Nhà / Thuê)</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="text-gray-300 font-semibold block mb-1">Mối quan hệ chi tiết:</label>
+                      <input
+                        type="text"
+                        value={newMemRelationship}
+                        onChange={(e) => setNewMemRelationship(e.target.value)}
+                        placeholder="VD: Vợ, Con cái, Em trai, Bố mẹ..."
+                        className="w-full bg-[#161B22] border border-[#2D3748] p-2.5 text-white focus:outline-none focus:border-[#C5A880] rounded"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="p-3 bg-emerald-950/40 border border-emerald-500/40 rounded-lg text-emerald-300 text-[11px] flex items-center gap-2">
+                    <ShieldCheck className="w-4 h-4 text-emerald-400 flex-shrink-0" />
+                    <span>Sau khi thêm, thành viên sẽ tự động được kích hoạt quyền mở cổng FaceID tại Sảnh A/B và Thang máy Tầng 12.</span>
+                  </div>
+
+                  <div className="flex justify-end gap-2.5 pt-3 border-t border-[#222B35]">
                     <button
                       type="button"
                       onClick={() => setShowAddMemberModal(false)}
-                      className="px-4 py-2 bg-gray-800 text-gray-300 hover:text-white rounded"
+                      className="px-4 py-2 bg-[#1C2533] hover:bg-[#222B35] text-gray-300 text-xs font-bold rounded-lg border border-gray-700"
                     >
                       Hủy Bỏ
                     </button>
                     <button
                       type="submit"
-                      className="px-4 py-2 bg-[#C5A880] text-[#0D1117] font-bold rounded"
+                      disabled={isAddingMember}
+                      className="px-6 py-2 bg-[#C5A880] hover:bg-white text-[#0D1117] text-xs font-bold uppercase tracking-wider rounded-lg shadow-xl flex items-center gap-1.5 transition-all disabled:opacity-50"
                     >
-                      Xác Nhận Cấp Quyền
+                      {isAddingMember ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4 stroke-[3]" />}
+                      {isAddingMember ? 'Đang Cấp Quyền...' : 'Xác Nhận Cấp Quyền & Thêm'}
                     </button>
                   </div>
                 </form>
