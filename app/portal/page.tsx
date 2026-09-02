@@ -267,6 +267,7 @@ export default function PortalPage() {
         isOpen={isVisitorModalOpen}
         onClose={() => setIsVisitorModalOpen(false)}
         apartmentCode={currentUser.apartment_code || '12A05'}
+        currentUser={currentUser}
       />
     </div>
   );
