@@ -137,6 +137,7 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
           setPhone(apiUser.phone || apiUser.username || '');
           setEmail(apiUser.email || '');
           setGender(apiUser.gender !== undefined ? (apiUser.gender.toString() as '1' | '0') : '1');
+          setIdCardNumber(apiUser.id_number || (apiUser as any).id_card_no || (apiUser as any).id_card_number || '');
           setIdDate(formatToDateInput(apiUser.id_date || ''));
           setIdPlace(apiUser.id_place || '');
           setBirthday(formatToDateInput(apiUser.dob || (apiUser as any).formatedDob || ''));
@@ -150,7 +151,7 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
           setFullName(currentUser.full_name || '');
           setPhone(currentUser.phone || currentUser.username || '');
           setEmail(currentUser.email || '');
-          setIdCardNumber(currentUser.id_card_no || '');
+          setIdCardNumber(currentUser.id_card_no || (currentUser as any).id_number || '');
           setBirthday(currentUser.dob ? formatToDateInput(currentUser.dob) : '');
           setPob(currentUser.pob || '');
           setAvatarUrl(currentUser.avatar_url || '');

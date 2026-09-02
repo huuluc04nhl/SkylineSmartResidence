@@ -13,6 +13,9 @@ export interface User {
   email?: string;
   id_card_no?: string; // [AI OCR]
   id_card_number?: string;
+  id_number?: string;
+  id_date?: string;
+  id_place?: string;
   face_vector?: string; // [AI Vision]
   emergency_phone?: string;
   avatar_url?: string;
