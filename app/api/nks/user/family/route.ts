@@ -48,7 +48,7 @@ export async function GET(req: Request) {
             fullName: userDetails.fullname || userDetails.full_name,
             phone: userDetails.phone,
             idCard: userDetails.id_number || userDetails.id_card_no || '',
-            avatarUrl: userDetails.avatar_url,
+            avatarUrl: (userDetails.avatar_url || '').replace('data.nks.vn//', 'data.nks.vn/') || 'https://data.nks.vn/storage/users/default.png',
             licensePlate: userDetails.license_plate || '',
             role: 'Family',
             relationship: userDetails.relationship || 'Thành viên gia đình',
@@ -72,6 +72,8 @@ export async function GET(req: Request) {
       .filter((u) => u.apartment_code === aptCode && u.role !== 'OWNER' && u.role !== 'ADMIN' && u.role !== 'TECHNICIAN')
       .map((u) => {
         const liveUser = getUserStore(u.id);
+        const rawAvatar = liveUser.avatar_url || u.avatar_url || '';
+        const cleanAvatar = rawAvatar ? rawAvatar.replace('data.nks.vn//', 'data.nks.vn/') : 'https://data.nks.vn/storage/users/default.png';
         return {
           id: liveUser.id,
           username: liveUser.username,
@@ -79,7 +81,7 @@ export async function GET(req: Request) {
           email: liveUser.email,
           phone: liveUser.phone,
           idCard: liveUser.id_number || liveUser.id_card_no || '',
-          avatarUrl: liveUser.avatar_url,
+          avatarUrl: cleanAvatar,
           licensePlate: liveUser.license_plate || '',
           role: 'Family',
           relationship: liveUser.relationship || 'Thành viên gia đình',
@@ -149,7 +151,7 @@ export async function POST(req: Request) {
     const finalFullName = (resolvedUser?.fullname || resolvedUser?.full_name || fullName || '').trim();
     const finalPhone = (resolvedUser?.phone || phone || '').trim();
     const finalIdCard = resolvedUser?.id_number || resolvedUser?.id_card_no || idCard || '079' + Math.floor(100000000 + Math.random() * 900000000);
-    const finalAvatar = resolvedUser?.avatar_url || avatarUrl || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150';
+    const finalAvatar = (resolvedUser?.avatar_url || avatarUrl || '').replace('data.nks.vn//', 'data.nks.vn/') || 'https://data.nks.vn/storage/users/default.png';
     const finalLicense = (licensePlate || resolvedUser?.license_plate || '').trim();
 
     if (!finalFullName || !finalPhone) {

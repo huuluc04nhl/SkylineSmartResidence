@@ -321,9 +321,12 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
               >
                 <div className="flex items-center gap-4">
                   <img
-                    src={m.avatarUrl || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150'}
+                    src={m.avatarUrl ? m.avatarUrl.replace('data.nks.vn//', 'data.nks.vn/') : 'https://data.nks.vn/storage/users/default.png'}
                     alt={m.fullName}
-                    className="w-12 h-12 rounded-full object-cover border-2 border-[#C5A880]/60 shadow-md flex-shrink-0"
+                    onError={(e) => {
+                      e.currentTarget.src = 'https://data.nks.vn/storage/users/default.png';
+                    }}
+                    className="w-12 h-12 rounded-full object-cover border-2 border-[#C5A880]/60 shadow-md flex-shrink-0 bg-[#161D26]"
                   />
                   <div className="space-y-1">
                     <div className="flex items-center gap-2 flex-wrap">
@@ -464,9 +467,12 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
                           }`}
                         >
                           <img
-                            src={acc.avatarUrl || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150'}
+                            src={acc.avatarUrl ? acc.avatarUrl.replace('data.nks.vn//', 'data.nks.vn/') : 'https://data.nks.vn/storage/users/default.png'}
                             alt={acc.fullName}
-                            className="w-10 h-10 rounded-full object-cover border border-[#C5A880]/50 flex-shrink-0"
+                            onError={(e) => {
+                              e.currentTarget.src = 'https://data.nks.vn/storage/users/default.png';
+                            }}
+                            className="w-10 h-10 rounded-full object-cover border border-[#C5A880]/50 flex-shrink-0 bg-[#161D26]"
                           />
                           <div className="flex-1 min-w-0 text-xs">
                             <div className="flex items-center justify-between gap-1">
@@ -479,17 +485,10 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
                                 <span className="text-[9px] text-[#0D1117] font-bold bg-[#C5A880] px-1.5 py-0.5 rounded flex-shrink-0">
                                   Đang Chọn ✓
                                 </span>
-                              ) : (
-                                <span className="text-[9px] text-purple-300 font-medium bg-purple-950/60 px-1.5 py-0.5 rounded border border-purple-800/40 flex-shrink-0">
-                                  {acc.relationship || 'Người Nhà'}
-                                </span>
-                              )}
+                              ) : null}
                             </div>
-                            <div className="text-[11px] text-gray-300 font-mono truncate">{acc.phone}</div>
+                            <div className="text-[11px] text-gray-400 font-mono truncate">{acc.phone}</div>
                             <div className="text-[10px] text-[#C5A880] font-mono truncate">CCCD: {acc.idCard}</div>
-                            {acc.licensePlate && (
-                              <div className="text-[10px] text-cyan-400 font-mono truncate">Xe: {acc.licensePlate}</div>
-                            )}
                           </div>
                         </div>
                       );
@@ -549,22 +548,17 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
 
                     <div className="flex items-center gap-3">
                       <img
-                        src={searchResult.avatarUrl || 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150'}
+                        src={searchResult.avatarUrl ? searchResult.avatarUrl.replace('data.nks.vn//', 'data.nks.vn/') : 'https://data.nks.vn/storage/users/default.png'}
                         alt={searchResult.fullName}
-                        className="w-12 h-12 rounded-full object-cover border border-[#C5A880]/60 flex-shrink-0"
+                        onError={(e) => {
+                          e.currentTarget.src = 'https://data.nks.vn/storage/users/default.png';
+                        }}
+                        className="w-12 h-12 rounded-full object-cover border border-[#C5A880]/60 flex-shrink-0 bg-[#161D26]"
                       />
                       <div className="space-y-0.5 text-xs">
-                        <div className="font-bold text-white text-sm flex items-center gap-2">
-                          <span>{searchResult.fullName}</span>
-                          <span className="text-[10px] text-purple-300 font-normal bg-purple-950/60 px-1.5 py-0.5 rounded border border-purple-800/40">
-                            {searchResult.relationship || 'Người Nhà'}
-                          </span>
-                        </div>
+                        <div className="font-bold text-white text-sm">{searchResult.fullName}</div>
                         <div className="text-gray-300 font-mono">SĐT: {searchResult.phone}</div>
                         <div className="text-[#C5A880] font-mono">CCCD: {searchResult.idCard}</div>
-                        {searchResult.licensePlate && (
-                          <div className="text-cyan-400 font-mono">Biển số xe: {searchResult.licensePlate}</div>
-                        )}
                       </div>
                     </div>
                   </div>
@@ -586,10 +580,7 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
                     <div>• Họ tên: <strong className="text-white">{selectedAccount.fullName}</strong></div>
                     <div>• SĐT: <strong className="font-mono text-white">{selectedAccount.phone}</strong></div>
                     <div>• Số CCCD: <strong className="font-mono text-[#C5A880]">{selectedAccount.idCard}</strong></div>
-                    <div>• Quan hệ mặc định: <strong className="text-purple-300">{selectedAccount.relationship || 'Người Nhà'}</strong></div>
-                    {selectedAccount.licensePlate && (
-                      <div className="col-span-2">• Biển số xe đăng ký: <strong className="font-mono text-cyan-400">{selectedAccount.licensePlate}</strong></div>
-                    )}
+                    <div>• Vai trò cấp phát: <strong className="text-purple-300">Người Nhà / Gia Đình</strong></div>
                   </div>
                 </div>
 

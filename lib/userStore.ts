@@ -92,6 +92,11 @@ function initUserStore(): Record<string, StoredUser> {
       apartment_code: u.apartment_code || '12A05',
     };
 
+    // Clean potential double slashes in avatar
+    if (stored.avatar_url) {
+      stored.avatar_url = stored.avatar_url.replace('data.nks.vn//', 'data.nks.vn/');
+    }
+
     // Index by primary ID
     store[u.id] = stored;
     // Index by username
@@ -100,12 +105,36 @@ function initUserStore(): Record<string, StoredUser> {
     if (u.phone) {
       store[u.phone.trim()] = stored;
     }
+
+    // Common phone and numeric ID aliases for seamless login and search
+    if (u.id === 'user-owner-1') {
+      store['0903112233'] = stored;
+      store['0364967082'] = stored;
+      store['120'] = stored;
+    } else if (u.id === 'user-tenant-1') {
+      store['0908776655'] = stored;
+      store['0917795211'] = stored;
+      store['121'] = stored;
+    } else if (u.id === 'user-member-1') {
+      store['0902114455'] = stored;
+      store['0325524482'] = stored;
+      store['122'] = stored;
+    } else if (u.id === 'user-member-2') {
+      store['0903889911'] = stored;
+      store['0977758215'] = stored;
+      store['123'] = stored;
+    } else if (u.id === 'user-member-3') {
+      store['0909262626'] = stored;
+      store['138'] = stored;
+    }
   });
 
   return store;
 }
 
-global.__NKS_USER_STORE = initUserStore();
+if (!global.__NKS_USER_STORE) {
+  global.__NKS_USER_STORE = initUserStore();
+}
 
 /**
  * Extract specific user ID from session token
