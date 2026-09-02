@@ -76,6 +76,8 @@ export async function POST(req: Request) {
             phone: apiUser.phone || '0903112233',
             role: role,
             apartment_code: '12A05',
+            avatar_url: apiUser.avatar ? (apiUser.avatar.startsWith('http') ? apiUser.avatar : `https://data.nks.vn/${apiUser.avatar}`) : undefined,
+            avatar: apiUser.avatar ? (apiUser.avatar.startsWith('http') ? apiUser.avatar : `https://data.nks.vn/${apiUser.avatar}`) : undefined,
             id_number: apiUser.id_number || '',
             id_card_no: apiUser.id_number || '',
             id_card_number: apiUser.id_number || '',
