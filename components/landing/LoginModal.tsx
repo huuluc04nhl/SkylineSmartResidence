@@ -256,6 +256,91 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
               </div>
             </div>
 
+            {/* Quick Demo Role Selector */}
+            <div className="space-y-1.5 pt-1">
+              <div className="text-[10px] uppercase tracking-wider text-[#C5A880] font-bold flex items-center justify-between">
+                <span>Chọn Nhanh Tài Khoản Theo Role:</span>
+                <span className="text-gray-400 font-normal">Bấm để đăng nhập ngay</span>
+              </div>
+              <div className="grid grid-cols-2 gap-1.5 text-[11px]">
+                <button
+                  type="button"
+                  onClick={async () => {
+                    setPhone('0903112233');
+                    setIsSubmitting(true);
+                    await login('0903112233', '12345678');
+                    setIsSubmitting(false);
+                    onClose();
+                    router.push('/portal');
+                  }}
+                  className="p-2 bg-[#161D26] hover:bg-[#1E2631] border border-[#C5A880]/60 rounded text-left transition-colors"
+                >
+                  <div className="font-bold text-amber-300 flex items-center gap-1">
+                    👑 Chủ Hộ (12A05)
+                  </div>
+                  <div className="text-gray-300 truncate">Nguyễn Hữu Lực</div>
+                  <div className="text-[9px] text-gray-400 font-mono">0903112233 • Đầy đủ quyền</div>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={async () => {
+                    setPhone('0908776655');
+                    setIsSubmitting(true);
+                    await login('0908776655', '12345678');
+                    setIsSubmitting(false);
+                    onClose();
+                    router.push('/portal');
+                  }}
+                  className="p-2 bg-[#161D26] hover:bg-[#1E2631] border border-blue-600/60 rounded text-left transition-colors"
+                >
+                  <div className="font-bold text-blue-300 flex items-center gap-1">
+                    👤 Gia Đình (12A05)
+                  </div>
+                  <div className="text-gray-300 truncate">Nguyễn Hữu Nhựt</div>
+                  <div className="text-[9px] text-gray-400 font-mono">0908776655 • Giới hạn quyền</div>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={async () => {
+                    setPhone('0902114455');
+                    setIsSubmitting(true);
+                    await login('0902114455', '12345678');
+                    setIsSubmitting(false);
+                    onClose();
+                    router.push('/portal');
+                  }}
+                  className="p-2 bg-[#161D26] hover:bg-[#1E2631] border border-cyan-600/60 rounded text-left transition-colors"
+                >
+                  <div className="font-bold text-cyan-300 flex items-center gap-1">
+                    👤 Khách Thuê (12A05)
+                  </div>
+                  <div className="text-gray-300 truncate">Văn Cường</div>
+                  <div className="text-[9px] text-gray-400 font-mono">0902114455 • Cư dân thuê</div>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={async () => {
+                    setPhone('0901888999');
+                    setIsSubmitting(true);
+                    await login('0901888999', '12345678');
+                    setIsSubmitting(false);
+                    onClose();
+                    router.push('/portal');
+                  }}
+                  className="p-2 bg-[#161D26] hover:bg-[#1E2631] border border-purple-600/60 rounded text-left transition-colors"
+                >
+                  <div className="font-bold text-purple-300 flex items-center gap-1">
+                    🛡️ Ban Quản Lý (BQL)
+                  </div>
+                  <div className="text-gray-300 truncate">Nguyễn Văn Quản Trị</div>
+                  <div className="text-[9px] text-gray-400 font-mono">0901888999 • Quản trị viên</div>
+                </button>
+              </div>
+            </div>
+
             {/* OTP Message Gateway Simulation */}
             {isOtpSent && (
               <div className="p-3 bg-[#121E2A] border border-[#C5A880]/70 text-xs space-y-1.5 animate-fadeIn">

@@ -112,10 +112,10 @@ export default function PortalPage() {
     );
   }
 
-  // Handle Switch Role via Server API
-  const handleSwitchRole = async (newRole: UserRole) => {
-    await login(newRole);
-    if (newRole === 'ADMIN') {
+  // Handle Switch Role / Account via Server API
+  const handleSwitchRole = async (newRoleOrUser: string) => {
+    await login(newRoleOrUser);
+    if (newRoleOrUser === 'ADMIN' || newRoleOrUser.includes('admin') || newRoleOrUser.includes('manager01')) {
       setActiveModule('admin-dashboard');
     } else {
       setActiveModule('resident-home');

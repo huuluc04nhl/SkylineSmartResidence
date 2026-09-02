@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
-import { updateUserStore } from '@/lib/userStore';
+import { updateUserStore, extractUserIdFromToken } from '@/lib/userStore';
 
 export async function POST(req: Request) {
   try {
@@ -46,7 +46,7 @@ export async function POST(req: Request) {
     }
 
     const finalAvatar = liveAvatarUrl || avatar;
-    const userIdentifier = body.username || token;
+    const userIdentifier = extractUserIdFromToken(token) || body.username || body.phone || 'user-owner-1';
     const updated = updateUserStore(userIdentifier, {
       avatar_url: finalAvatar
     });

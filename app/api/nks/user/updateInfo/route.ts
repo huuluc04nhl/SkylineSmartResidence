@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
-import { updateUserStore } from '@/lib/userStore';
+import { updateUserStore, extractUserIdFromToken } from '@/lib/userStore';
 
 function formatToDateInput(d?: string): string {
   if (!d) return '';
@@ -116,7 +116,8 @@ export async function POST(req: Request) {
 
     const resolvedFullname = fullname || `${computedLastname} ${computedFirstname}`.trim();
 
-    const userIdentifier = body.username || email || phone || (token.includes('ADMIN') ? 'ADMIN' : token.includes('TECHNICIAN') ? 'TECHNICIAN' : token.includes('TENANT') ? 'TENANT' : 'OWNER');
+    const extractedId = extractUserIdFromToken(token);
+    const userIdentifier = extractedId || body.username || email || phone || 'user-owner-1';
 
     const updatedUser = updateUserStore(userIdentifier, {
       firstname: computedFirstname,

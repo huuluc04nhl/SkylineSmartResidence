@@ -245,29 +245,33 @@ export default function Topbar({
                 Chuyển đổi vai trò:
               </div>
               {[
-                { role: 'ADMIN' as UserRole, name: '1. Ban Quản Lý', desc: 'Vận hành toàn tòa nhà & Radar an ninh' },
-                { role: 'OWNER' as UserRole, name: '2. Chủ Hộ 12A05', desc: 'Quản trị căn hộ, thành viên & hóa đơn' },
-                { role: 'TENANT' as UserRole, name: '3. Thành Viên Cư Dân', desc: 'Thiết bị phòng & tiện ích đặc quyền' },
-              ].map((r) => (
-                <button
-                  key={r.role}
-                  onClick={() => {
-                    onSwitchRole(r.role);
-                    setShowRoleDropdown(false);
-                  }}
-                  className={`w-full text-left p-2 text-xs flex items-center justify-between transition-colors ${
-                    currentUser.role === r.role ? 'bg-[#C5A880] text-[#0D1117] font-bold' : 'text-gray-300 hover:bg-[#1C2533]'
-                  }`}
-                >
-                  <div className="truncate pr-1">
-                    <div className="truncate">{r.name}</div>
-                    <div className={`text-[10px] ${currentUser.role === r.role ? 'text-gray-800' : 'text-gray-500'}`}>
-                      {r.desc}
+                { role: 'ADMIN' as UserRole, username: 'nks.manager01@gmail.com', name: '🛡️ Ban Quản Lý (Admin)', desc: 'Nguyễn Văn Quản Trị • Điều hành toàn tòa nhà' },
+                { role: 'OWNER' as UserRole, username: 'huuluc04@gmail.com', name: '👑 Chủ Hộ (Căn 12A05)', desc: 'Nguyễn Hữu Lực • Độc quyền tài chính, thành viên' },
+                { role: 'TENANT' as UserRole, username: 'nguyenhuunhut1309@gmail.com', name: '👤 Thành Viên Gia Đình (12A05)', desc: 'Nguyễn Hữu Nhựt • Sinh hoạt tiện ích, FaceID' },
+                { role: 'TENANT' as UserRole, username: 'vanncuong1614@gmail.com', name: '👤 Cư Dân Thuê (12A05)', desc: 'Văn Cường • Cư dân tạm trú' },
+              ].map((r, idx) => {
+                const isCurrent = currentUser.username === r.username || (currentUser.role === r.role && !r.username);
+                return (
+                  <button
+                    key={idx}
+                    onClick={() => {
+                      onSwitchRole(r.username as any);
+                      setShowRoleDropdown(false);
+                    }}
+                    className={`w-full text-left p-2 text-xs flex items-center justify-between transition-colors rounded ${
+                      isCurrent ? 'bg-[#C5A880] text-[#0D1117] font-bold' : 'text-gray-300 hover:bg-[#1C2533]'
+                    }`}
+                  >
+                    <div className="truncate pr-1">
+                      <div className="truncate">{r.name}</div>
+                      <div className={`text-[10px] ${isCurrent ? 'text-gray-800' : 'text-gray-400'}`}>
+                        {r.desc}
+                      </div>
                     </div>
-                  </div>
-                  {currentUser.role === r.role && <Check className="w-4 h-4 flex-shrink-0" />}
-                </button>
-              ))}
+                    {isCurrent && <Check className="w-4 h-4 flex-shrink-0" />}
+                  </button>
+                );
+              })}
 
               {/* Logout Button */}
               <div className="pt-2 border-t border-[#222B35] mt-1">

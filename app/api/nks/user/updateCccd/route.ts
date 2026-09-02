@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
-import { updateUserStore } from '@/lib/userStore';
+import { updateUserStore, extractUserIdFromToken } from '@/lib/userStore';
 
 export async function POST(req: Request) {
   try {
@@ -31,9 +31,9 @@ export async function POST(req: Request) {
       console.warn('Remote updateCccd error:', e);
     }
 
-    const roleKey = token.includes('ADMIN') ? 'ADMIN' : token.includes('TENANT') ? 'TENANT' : 'OWNER';
+    const targetUserId = extractUserIdFromToken(token) || body.username || body.phone || 'user-owner-1';
 
-    const updated = updateUserStore(roleKey, {
+    const updated = updateUserStore(targetUserId, {
       id_number: number || '079095001234',
       id_card_no: number || '079095001234',
       id_date: date || '2022-08-15',

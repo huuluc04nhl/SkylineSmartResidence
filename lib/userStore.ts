@@ -1,6 +1,7 @@
 // ============================================================================
-// SERVER-SIDE USER STORE (Dynamic in-memory storage for NKS User APIs)
-import { DEMO_USERS, updateDemoUser } from '@/lib/dataStore';
+// SERVER-SIDE USER STORE (Multi-User, Role-Isolated Storage for NKS User APIs)
+// ============================================================================
+import { DEMO_USERS, updateDemoUser, User } from '@/lib/dataStore';
 
 export interface StoredUser {
   id: string;
@@ -24,6 +25,7 @@ export interface StoredUser {
   license_plate?: string;
   avatar_url?: string;
   role: 'ADMIN' | 'OWNER' | 'TENANT' | 'TECHNICIAN' | 'RECEPTIONIST';
+  relationship?: string;
   apartment_code: string;
   updated_at?: string;
 }
@@ -50,149 +52,103 @@ declare global {
   var __NKS_FAMILY_STORE: Record<string, ApartmentMember[]> | undefined;
 }
 
-if (!global.__NKS_USER_STORE) {
-  global.__NKS_USER_STORE = {
-    'ADMIN': {
-      id: 'usr-admin-01',
-      username: 'nks.manager01@gmail.com',
-      firstname: 'Quản Trị',
-      lastname: 'Ban Quản Lý',
-      fullname: 'Ban Quản Lý Tòa Nhà Skyline',
-      full_name: 'Ban Quản Lý Tòa Nhà Skyline',
-      email: 'nks.manager01@gmail.com',
-      phone: '0901888999',
+/**
+ * Initialize individual, isolated user records from DEMO_USERS
+ */
+function initUserStore(): Record<string, StoredUser> {
+  const store: Record<string, StoredUser> = {};
+
+  DEMO_USERS.forEach((u) => {
+    const parts = (u.full_name || '').split(' ');
+    const firstname = parts.slice(-1)[0] || '';
+    const lastname = parts.slice(0, -1).join(' ') || '';
+
+    const stored: StoredUser = {
+      id: u.id,
+      username: u.username,
+      firstname,
+      lastname,
+      fullname: u.full_name,
+      full_name: u.full_name,
+      email: u.email || `${u.username}@skyline.vn`,
+      phone: u.phone || u.username,
       gender: 1,
-      dob: '1985-05-20',
-      pob: 'Hà Nội',
-      id_number: '001085009988',
-      id_card_no: '001085009988',
-      id_date: '2021-05-20',
-      id_place: 'Cục Cảnh sát QLHC về TTXH',
-      province: 'TP. Hồ Chí Minh',
-      intro: 'Trưởng Ban Quản Lý Tòa Nhà SKYLINE Smart Residence',
-      license_plate: '51A-999.88',
-      avatar_url: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300',
-      role: 'ADMIN',
-      apartment_code: 'BQL_OFFICE',
-    },
-    'OWNER': {
-      id: 'usr-owner-01',
-      username: 'huuluc04@gmail.com',
-      firstname: 'Lực',
-      lastname: 'Nguyễn Hữu',
-      fullname: 'Nguyễn Hữu Lực',
-      full_name: 'Nguyễn Hữu Lực',
-      email: 'huuluc04@gmail.com',
-      phone: '0903112233',
-      gender: 1,
-      dob: '2004-11-02',
-      pob: '',
-      id_number: '079095001234',
-      id_card_no: '079095001234',
+      dob: u.dob || (u.role === 'OWNER' ? '2004-11-02' : '1996-09-13'),
+      pob: u.pob || 'TP. Hồ Chí Minh',
+      id_number: u.id_card_no || '',
+      id_card_no: u.id_card_no || '',
       id_date: '2022-08-15',
       id_place: 'Cục Cảnh sát QLHC về TTXH',
       province: 'TP. Hồ Chí Minh',
-      intro: 'Chủ Hộ Căn Hộ 12A05 - SKYLINE Smart Residence',
-      license_plate: '51K-889.99',
-      avatar_url: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400',
-      role: 'OWNER',
-      apartment_code: '12A05',
-    },
-    'TENANT': {
-      id: 'usr-tenant-01',
-      username: 'nguyenhuunhut1309@gmail.com',
-      firstname: 'Nhựt',
-      lastname: 'Nguyễn Hữu',
-      fullname: 'Nguyễn Hữu Nhựt',
-      full_name: 'Nguyễn Hữu Nhựt',
-      email: 'nguyenhuunhut1309@gmail.com',
-      phone: '0908776655',
-      gender: 1,
-      dob: '1996-09-13',
-      pob: 'TP. Hồ Chí Minh',
-      id_number: '079198005678',
-      id_card_no: '079198005678',
-      id_date: '2023-01-10',
-      id_place: 'Cục Cảnh sát QLHC về TTXH',
-      province: 'TP. Hồ Chí Minh',
-      intro: 'Cư Dân Thành Viên Căn Hộ 12A05',
-      license_plate: '59P1-886.79',
-      avatar_url: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400',
-      role: 'TENANT',
-      apartment_code: '12A05',
-    },
-    'TECHNICIAN': {
-      id: 'usr-tech-01',
-      username: 'nks.manager02@gmail.com',
-      firstname: 'Kỹ Thuật',
-      lastname: 'Trần Văn',
-      fullname: 'Trần Văn Kỹ Thuật',
-      full_name: 'Trần Văn Kỹ Thuật (Kỹ Sư Vận Hành)',
-      email: 'nks.manager02@gmail.com',
-      phone: '0901888998',
-      gender: 1,
-      dob: '1988-11-25',
-      pob: 'Đà Nẵng',
-      id_number: '048088001122',
-      id_card_no: '048088001122',
-      id_date: '2021-08-10',
-      id_place: 'Cục Cảnh sát QLHC về TTXH',
-      province: 'TP. Hồ Chí Minh',
-      intro: 'Đội Trưởng Đội Kỹ Thuật Vận Hành & PCCC Tòa Nhà SKYLINE',
-      license_plate: '51D-882.11',
-      avatar_url: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=300',
-      role: 'TECHNICIAN',
-      apartment_code: 'TECH_ROOM',
+      intro: u.role === 'ADMIN' 
+        ? 'Ban Quản Lý Tòa Nhà Skyline' 
+        : u.role === 'OWNER' 
+        ? 'Chủ Hộ Căn Hộ 12A05' 
+        : u.relationship || 'Cư Dân Căn Hộ 12A05',
+      license_plate: u.license_plate || '',
+      avatar_url: u.avatar_url,
+      role: u.role as any,
+      relationship: u.relationship,
+      apartment_code: u.apartment_code || '12A05',
+    };
+
+    // Index by primary ID
+    store[u.id] = stored;
+    // Index by username
+    store[u.username.toLowerCase().trim()] = stored;
+    // Index by phone
+    if (u.phone) {
+      store[u.phone.trim()] = stored;
     }
-  };
+  });
+
+  return store;
 }
 
-if (!global.__NKS_FAMILY_STORE) {
-  global.__NKS_FAMILY_STORE = {
-    '12A05': [
-      {
-        id: 'mem-nhut-01',
-        username: 'nguyenhuunhut1309@gmail.com',
-        fullName: 'Nguyễn Hữu Nhựt',
-        role: 'Family',
-        relationship: 'Thành viên gia đình (Em trai)',
-        phone: '0908776655',
-        idCard: '079198005678',
-        licensePlate: '59P1-886.79',
-        faceStatus: 'Đã Xác Thực FaceID',
-        avatarUrl: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400',
-        addedDate: '10/01/2026',
-      },
-      {
-        id: 'mem-thinh-02',
-        username: '26vucatthinh@gmail.com',
-        fullName: 'Vũ Cát Thịnh',
-        role: 'Family',
-        relationship: 'Thành viên gia đình (Gia phả TreeFamily)',
-        phone: '0909262626',
-        idCard: '079201002626',
-        licensePlate: '59P1-926.26',
-        faceStatus: 'Đã Xác Thực FaceID',
-        avatarUrl: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=400',
-        addedDate: '15/02/2026',
-      }
-    ]
-  };
+if (!global.__NKS_USER_STORE) {
+  global.__NKS_USER_STORE = initUserStore();
 }
 
-export function getUserStore(identifier: string): StoredUser {
-  if (!global.__NKS_USER_STORE) {
-    global.__NKS_USER_STORE = {};
+/**
+ * Extract specific user ID from session token
+ * Token format: NKS_SESSION_{userId}_{role}_{timestamp}
+ */
+export function extractUserIdFromToken(token?: string): string | null {
+  if (!token) return null;
+
+  if (token.startsWith('NKS_SESSION_')) {
+    const parts = token.split('_');
+    if (parts.length >= 3) {
+      return parts[2]; // Extracted user ID
+    }
   }
 
-  // 1. Direct key match (e.g. 'OWNER', 'ADMIN', 'TENANT', 'TECHNICIAN' or email/username)
+  // Check if token contains user id directly
+  const foundUser = DEMO_USERS.find(u => token.includes(u.id));
+  if (foundUser) return foundUser.id;
+
+  return null;
+}
+
+/**
+ * Get distinct user profile by specific ID, username, phone, or email
+ */
+export function getUserStore(identifier: string): StoredUser {
+  if (!global.__NKS_USER_STORE) {
+    global.__NKS_USER_STORE = initUserStore();
+  }
+
+  // 1. Direct key match (id, username, phone)
   if (global.__NKS_USER_STORE[identifier]) {
     return global.__NKS_USER_STORE[identifier];
   }
 
   const norm = identifier.toLowerCase().trim();
+  if (global.__NKS_USER_STORE[norm]) {
+    return global.__NKS_USER_STORE[norm];
+  }
 
-  // 2. Match by email, username, or id in store
+  // 2. Iterate store to match id, username, email, or phone
   for (const key in global.__NKS_USER_STORE) {
     const u = global.__NKS_USER_STORE[key];
     if (
@@ -205,50 +161,62 @@ export function getUserStore(identifier: string): StoredUser {
     }
   }
 
-  // 3. Fallback to DEMO_USERS from dataStore if not yet in userStore
+  // 3. Match from DEMO_USERS
   const fromDemo = DEMO_USERS.find(u => 
     u.id === identifier ||
     (u.username && u.username.toLowerCase().trim() === norm) ||
     (u.email && u.email.toLowerCase().trim() === norm) ||
-    (u.phone && u.phone.toLowerCase().trim() === norm) ||
-    u.role === identifier
+    (u.phone && u.phone.toLowerCase().trim() === norm)
   );
 
   if (fromDemo) {
+    const parts = (fromDemo.full_name || '').split(' ');
+    const firstname = parts.slice(-1)[0] || '';
+    const lastname = parts.slice(0, -1).join(' ') || '';
+
     const newUser: StoredUser = {
       id: fromDemo.id,
       username: fromDemo.username,
-      firstname: fromDemo.full_name.split(' ').slice(-1)[0] || '',
-      lastname: fromDemo.full_name.split(' ').slice(0, -1).join(' ') || '',
+      firstname,
+      lastname,
       fullname: fromDemo.full_name,
       full_name: fromDemo.full_name,
       email: fromDemo.email || '',
       phone: fromDemo.phone || fromDemo.username,
       role: fromDemo.role,
+      relationship: fromDemo.relationship,
       apartment_code: fromDemo.apartment_code || '12A05',
-      id_number: fromDemo.id_card_no || '079095001234',
-      id_card_no: fromDemo.id_card_no || '079095001234',
+      id_number: fromDemo.id_card_no || '',
+      id_card_no: fromDemo.id_card_no || '',
       avatar_url: fromDemo.avatar_url,
       license_plate: fromDemo.license_plate,
     };
-    global.__NKS_USER_STORE[fromDemo.role] = newUser;
-    global.__NKS_USER_STORE[fromDemo.username] = newUser;
-    if (fromDemo.email) global.__NKS_USER_STORE[fromDemo.email] = newUser;
+
+    global.__NKS_USER_STORE[fromDemo.id] = newUser;
+    global.__NKS_USER_STORE[fromDemo.username.toLowerCase().trim()] = newUser;
+    if (fromDemo.phone) global.__NKS_USER_STORE[fromDemo.phone.trim()] = newUser;
+
     return newUser;
   }
 
-  return global.__NKS_USER_STORE['OWNER'] || {
-    id: 'usr-default',
-    username: 'huuluc04@gmail.com',
-    fullname: 'Nguyễn Hữu Lực',
-    full_name: 'Nguyễn Hữu Lực',
-    email: 'huuluc04@gmail.com',
-    phone: '0903112233',
-    role: 'OWNER',
-    apartment_code: '12A05',
-  };
+  // 4. Role default fallback ONLY when role keyword is explicitly passed
+  if (identifier === 'ADMIN') {
+    return global.__NKS_USER_STORE['user-manager-1'] || Object.values(global.__NKS_USER_STORE).find(u => u.role === 'ADMIN')!;
+  }
+  if (identifier === 'TECHNICIAN') {
+    return global.__NKS_USER_STORE['user-tech-1'] || Object.values(global.__NKS_USER_STORE).find(u => u.role === 'TECHNICIAN')!;
+  }
+  if (identifier === 'TENANT') {
+    return global.__NKS_USER_STORE['user-tenant-1'] || Object.values(global.__NKS_USER_STORE).find(u => u.role === 'TENANT')!;
+  }
+
+  // Fallback to Owner
+  return global.__NKS_USER_STORE['user-owner-1'] || Object.values(global.__NKS_USER_STORE).find(u => u.role === 'OWNER')!;
 }
 
+/**
+ * Update ONLY the targeted user's record without affecting other accounts
+ */
 export function updateUserStore(identifier: string, updates: Partial<StoredUser>): StoredUser {
   const current = getUserStore(identifier);
   const updated: StoredUser = {
@@ -257,15 +225,24 @@ export function updateUserStore(identifier: string, updates: Partial<StoredUser>
     updated_at: new Date().toISOString()
   };
 
-  // Sync to all alias keys
-  global.__NKS_USER_STORE![identifier] = updated;
-  if (updated.role) global.__NKS_USER_STORE![updated.role] = updated;
-  if (updated.username) global.__NKS_USER_STORE![updated.username] = updated;
-  if (updated.email) global.__NKS_USER_STORE![updated.email] = updated;
-  if (updated.id) global.__NKS_USER_STORE![updated.id] = updated;
+  if (!global.__NKS_USER_STORE) {
+    global.__NKS_USER_STORE = initUserStore();
+  }
 
-  // Real-time synchronization to DEMO_USERS in dataStore
-  updateDemoUser(identifier, {
+  // Save STRICTLY under this user's unique identifiers (ID, username, phone)
+  global.__NKS_USER_STORE[updated.id] = updated;
+  if (updated.username) {
+    global.__NKS_USER_STORE[updated.username.toLowerCase().trim()] = updated;
+  }
+  if (updated.phone) {
+    global.__NKS_USER_STORE[updated.phone.trim()] = updated;
+  }
+  if (updated.email) {
+    global.__NKS_USER_STORE[updated.email.toLowerCase().trim()] = updated;
+  }
+
+  // Sync to DEMO_USERS in dataStore
+  updateDemoUser(updated.id, {
     full_name: updated.fullname || updated.full_name,
     email: updated.email,
     phone: updated.phone,

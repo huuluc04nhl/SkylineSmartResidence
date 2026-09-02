@@ -140,8 +140,8 @@ export async function POST(req: Request) {
       }
     }
 
-    // 4. Generate Access Token & Build User Profile
-    const token = `NKS_TOKEN_${matched.role}_${Date.now()}`;
+    // 4. Generate Access Token & Build User Profile with specific user ID
+    const token = `NKS_SESSION_${matched.id}_${matched.role}_${Date.now()}`;
     const userProfile = {
       id: matched.id,
       username: matched.username,
@@ -152,9 +152,14 @@ export async function POST(req: Request) {
       email: matched.email || `${matched.username}@skyline.vn`,
       phone: matched.phone || matched.username,
       role: matched.role,
+      relationship: matched.relationship,
       apartment_code: matched.apartment_code || (matched.role === 'ADMIN' ? 'BQL_OFFICE' : '12A05'),
       avatar_url: matched.avatar_url,
-      id_number: matched.id_card_no || '079095001234',
+      license_plate: matched.license_plate || '',
+      id_number: matched.id_card_no || '',
+      id_card_no: matched.id_card_no || '',
+      dob: matched.dob,
+      pob: matched.pob,
     };
 
     const res = NextResponse.json({

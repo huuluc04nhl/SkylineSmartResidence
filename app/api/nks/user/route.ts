@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
-import { getUserStore } from '@/lib/userStore';
+import { getUserStore, extractUserIdFromToken } from '@/lib/userStore';
 
 function formatToDateInput(d?: string): string {
   if (!d) return '';
@@ -97,32 +97,40 @@ export async function POST(req: Request) {
       console.warn('Remote NKS user fetch error:', e);
     }
 
-    // 2. Server-side Session Token Resolver
+    // 2. Server-side Session Token Resolver (Direct Per-User Identification)
+    const targetUserId = extractUserIdFromToken(access_token);
+    if (targetUserId) {
+      return NextResponse.json({
+        success: true,
+        user: getUserStore(targetUserId),
+      });
+    }
+
     if (access_token.includes('ADMIN') || access_token.includes('MANAGER')) {
       return NextResponse.json({
         success: true,
-        user: getUserStore('ADMIN'),
+        user: getUserStore('user-manager-1'),
       });
     }
 
     if (access_token.includes('TECHNICIAN')) {
       return NextResponse.json({
         success: true,
-        user: getUserStore('TECHNICIAN'),
+        user: getUserStore('user-tech-1'),
       });
     }
 
     if (access_token.includes('TENANT')) {
       return NextResponse.json({
         success: true,
-        user: getUserStore('TENANT'),
+        user: getUserStore('user-tenant-1'),
       });
     }
 
     // Default Owner
     return NextResponse.json({
       success: true,
-      user: getUserStore('OWNER'),
+      user: getUserStore('user-owner-1'),
     });
   } catch (error) {
     return NextResponse.json({ success: false, message: 'Lỗi xác thực NKS User Info' }, { status: 500 });
@@ -191,29 +199,37 @@ export async function GET() {
     // Remote offline
   }
 
+  const targetUserId = extractUserIdFromToken(token);
+  if (targetUserId) {
+    return NextResponse.json({
+      success: true,
+      user: getUserStore(targetUserId),
+    });
+  }
+
   if (token.includes('ADMIN') || token.includes('MANAGER')) {
     return NextResponse.json({
       success: true,
-      user: getUserStore('ADMIN'),
+      user: getUserStore('user-manager-1'),
     });
   }
 
   if (token.includes('TECHNICIAN')) {
     return NextResponse.json({
       success: true,
-      user: getUserStore('TECHNICIAN'),
+      user: getUserStore('user-tech-1'),
     });
   }
 
   if (token.includes('TENANT')) {
     return NextResponse.json({
       success: true,
-      user: getUserStore('TENANT'),
+      user: getUserStore('user-tenant-1'),
     });
   }
 
   return NextResponse.json({
     success: true,
-    user: getUserStore('OWNER'),
+    user: getUserStore('user-owner-1'),
   });
 }
