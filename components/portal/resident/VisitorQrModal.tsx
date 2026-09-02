@@ -734,7 +734,6 @@ export default function VisitorQrModal({
                 >
                   <div className="text-xs font-bold text-emerald-400 flex items-center justify-between mb-1">
                     <span>🟢 1. Quét QR Đúng (Hợp Lệ)</span>
-                    <span className="text-[10px] bg-emerald-950 px-1.5 py-0.5 rounded border border-emerald-600">TEST 1</span>
                   </div>
                   <div className="text-xs text-gray-200">Mã BQL đã phê duyệt & còn thời hạn</div>
                   <div className="text-[10px] text-gray-400 mt-2 flex items-center gap-1 group-hover:text-emerald-300">
@@ -753,7 +752,6 @@ export default function VisitorQrModal({
                 >
                   <div className="text-xs font-bold text-rose-400 flex items-center justify-between mb-1">
                     <span>🔴 2. Quét QR Sai / Chưa Duyệt</span>
-                    <span className="text-[10px] bg-rose-950 px-1.5 py-0.5 rounded border border-rose-600">TEST 2</span>
                   </div>
                   <div className="text-xs text-gray-200">Mã giả mạo hoặc BQL chưa phê duyệt</div>
                   <div className="text-[10px] text-gray-400 mt-2 flex items-center gap-1 group-hover:text-rose-300">
@@ -772,7 +770,6 @@ export default function VisitorQrModal({
                 >
                   <div className="text-xs font-bold text-amber-400 flex items-center justify-between mb-1">
                     <span>🟡 3. Quét QR Quá Hạn</span>
-                    <span className="text-[10px] bg-amber-950 px-1.5 py-0.5 rounded border border-amber-600">TEST 3</span>
                   </div>
                   <div className="text-xs text-gray-200">Mã đã quá 24h hoặc hết thời gian mời</div>
                   <div className="text-[10px] text-gray-400 mt-2 flex items-center gap-1 group-hover:text-amber-300">
@@ -789,7 +786,7 @@ export default function VisitorQrModal({
                   </div>
                   <div className="flex items-center gap-2">
                     <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
-                    <span className="text-[11px] font-mono text-emerald-400">Live 1080p 60fps</span>
+                    <span className="text-[11px] font-mono text-emerald-400">Trực Tuyến</span>
                   </div>
                 </div>
 

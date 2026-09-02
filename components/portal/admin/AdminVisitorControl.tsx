@@ -154,7 +154,7 @@ export default function AdminVisitorControl() {
           >
             <div className="flex items-center justify-between mb-1">
               <span className="text-xs font-bold text-emerald-300 flex items-center gap-1.5 uppercase">
-                <CheckCircle2 className="w-4 h-4 text-emerald-400" /> 1. Test: QR Đúng
+                <CheckCircle2 className="w-4 h-4 text-emerald-400" /> Mã QR Đúng (Hợp Lệ)
               </span>
               <span className="text-[10px] bg-emerald-500 text-black font-bold px-2 py-0.5 rounded">Hợp Lệ</span>
             </div>
@@ -172,7 +172,7 @@ export default function AdminVisitorControl() {
           >
             <div className="flex items-center justify-between mb-1">
               <span className="text-xs font-bold text-rose-300 flex items-center gap-1.5 uppercase">
-                <XCircle className="w-4 h-4 text-rose-400" /> 2. Test: QR Sai
+                <XCircle className="w-4 h-4 text-rose-400" /> Mã QR Sai / Chưa Duyệt
               </span>
               <span className="text-[10px] bg-rose-500 text-white font-bold px-2 py-0.5 rounded">Không Hợp Lệ</span>
             </div>
@@ -193,7 +193,7 @@ export default function AdminVisitorControl() {
           >
             <div className="flex items-center justify-between mb-1">
               <span className="text-xs font-bold text-amber-300 flex items-center gap-1.5 uppercase">
-                <Clock className="w-4 h-4 text-amber-400" /> 3. Test: QR Hết Hạn
+                <Clock className="w-4 h-4 text-amber-400" /> Mã QR Quá Hạn
               </span>
               <span className="text-[10px] bg-amber-500 text-black font-bold px-2 py-0.5 rounded">Quá Hạn</span>
             </div>

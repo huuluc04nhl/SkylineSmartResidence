@@ -327,7 +327,7 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
               <div className="p-3 bg-[#121E2A] border border-[#C5A880]/70 text-xs space-y-1.5 animate-fadeIn">
                 <div className="flex items-center justify-between text-[#C5A880] font-bold">
                   <span className="flex items-center gap-1.5">
-                    <Sparkles className="w-3.5 h-3.5" /> SMS Gateway gửi đến {phone}:
+                    <Sparkles className="w-3.5 h-3.5" /> Mã xác thực gửi đến {phone}:
                   </span>
                   <span className="font-mono bg-[#C5A880] text-[#0D1117] px-2 py-0.5 text-xs font-bold">
                     {generatedOtp}

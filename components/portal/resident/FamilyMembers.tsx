@@ -214,13 +214,13 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#222B35] pb-4">
         <div>
           <div className="text-[10px] uppercase tracking-[0.25em] text-[#C5A880] font-semibold flex items-center gap-1.5">
-            <Users className="w-3.5 h-3.5" /> Quyền Quản Trị Căn Hộ • Dữ Liệu API Cư Dân
+            <Users className="w-3.5 h-3.5" /> Quyền Quản Trị Căn Hộ • Ban Quản Lý & Chủ Hộ
           </div>
           <h2 className="font-serif text-2xl text-white font-bold mt-1">
             Quản Lý Cư Dân & Thành Viên Căn Hộ {aptCode}
           </h2>
           <p className="text-xs text-gray-400 mt-0.5">
-            Căn hộ: <strong className="text-white font-mono">{aptCode}</strong> • Phân quyền ra vào tự động, FaceID và sử dụng tiện ích cho người nhà theo hồ sơ API
+            Căn hộ: <strong className="text-white font-mono">{aptCode}</strong> • Phân quyền ra vào tự động, FaceID và sử dụng tiện ích cho người nhà
           </p>
         </div>
 
@@ -235,7 +235,7 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
             }}
             className="px-5 py-2.5 bg-[#C5A880] hover:bg-white text-[#0D1117] text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-2 rounded shadow-lg flex-shrink-0"
           >
-            <UserPlus className="w-4 h-4" /> Thêm Thành Viên (Theo API)
+            <UserPlus className="w-4 h-4" /> Thêm Thành Viên Mới
           </button>
         )}
       </div>
@@ -290,13 +290,13 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
             disabled={isLoading}
             className="text-xs text-gray-400 hover:text-[#C5A880] flex items-center gap-1 transition-colors"
           >
-            <RefreshCw className={`w-3.5 h-3.5 ${isLoading ? 'animate-spin' : ''}`} /> Làm mới API
+            <RefreshCw className={`w-3.5 h-3.5 ${isLoading ? 'animate-spin' : ''}`} /> Làm mới
           </button>
         </div>
 
         {isLoading ? (
           <div className="p-12 text-center text-xs text-[#C5A880] font-mono flex items-center justify-center gap-2">
-            <RefreshCw className="w-4 h-4 animate-spin" /> Đang tải danh sách thành viên từ API...
+            <RefreshCw className="w-4 h-4 animate-spin" /> Đang tải danh sách thành viên...
           </div>
         ) : members.length === 0 ? (
           <div className="p-12 text-center text-gray-400 text-xs space-y-2">
@@ -308,7 +308,7 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
                 onClick={() => setShowAddModal(true)}
                 className="text-[#C5A880] font-bold underline hover:text-white"
               >
-                + Thêm thành viên đầu tiên từ API
+                + Thêm thành viên đầu tiên
               </button>
             )}
           </div>
@@ -378,7 +378,7 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
             <div className="flex items-center justify-between border-b border-[#222B35] pb-3">
               <div>
                 <div className="text-[10px] uppercase tracking-wider text-[#C5A880] font-semibold flex items-center gap-1.5">
-                  <ShieldCheck className="w-4 h-4 text-emerald-400" /> Đồng Bộ Theo Dữ Liệu API
+                  <ShieldCheck className="w-4 h-4 text-emerald-400" /> Xác Thực Hồ Sơ Người Nhà
                 </div>
                 <h3 className="font-serif text-lg font-bold text-white">
                   Thêm Thành Viên Căn Hộ {aptCode}
@@ -411,7 +411,7 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
                     : 'text-gray-300 hover:text-white'
                 }`}
               >
-                1. Tài Khoản Đã Đăng Ký ({bqlAccounts.length})
+                1. Danh Sách Đã Đăng Ký ({bqlAccounts.length})
               </button>
 
               <button
@@ -423,7 +423,7 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
                     : 'text-gray-300 hover:text-white'
                 }`}
               >
-                2. Tra Cứu API Bằng SĐT / CCCD
+                2. Tìm Kiếm Theo SĐT / CCCD
               </button>
             </div>
 
@@ -433,7 +433,7 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
             {modalMode === 'PRE_APPROVED' && (
               <div className="space-y-3">
                 <div className="flex items-center justify-between text-xs text-gray-400">
-                  <span>Chọn tài khoản người nhà có trong hệ thống API của căn hộ:</span>
+                  <span>Chọn tài khoản người nhà đã đăng ký với Ban Quản Lý:</span>
                   <span className="text-[11px] text-[#C5A880] font-mono">Căn {aptCode}</span>
                 </div>
 
@@ -511,7 +511,7 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
                     className="px-4 py-2.5 bg-[#C5A880] hover:bg-white text-[#0D1117] text-xs font-bold rounded flex items-center gap-1.5 transition-colors whitespace-nowrap"
                   >
                     {isSearchingApi ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Search className="w-3.5 h-3.5" />}
-                    Tra Cứu API
+                    Tìm Kiếm
                   </button>
                 </form>
 
@@ -525,7 +525,7 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
                   <div className="p-4 bg-[#161D26] border border-emerald-500/60 rounded-lg space-y-3 animate-fadeIn">
                     <div className="flex items-center justify-between text-xs text-emerald-400 font-bold border-b border-[#222B35] pb-2">
                       <span className="flex items-center gap-1.5">
-                        <CheckCircle className="w-4 h-4" /> Đã Tìm Thấy Hồ Sơ Hợp Lệ Từ API Hệ Thống:
+                        <CheckCircle className="w-4 h-4" /> Thông Tin Người Nhà Tìm Thấy:
                       </span>
                       <button
                         type="button"
@@ -564,7 +564,7 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
               <form onSubmit={handleAddMember} className="pt-3 border-t border-[#222B35] space-y-3.5 text-xs">
                 <div className="p-3 bg-[#161D26] border border-[#C5A880]/60 rounded-lg space-y-2">
                   <div className="text-[11px] font-bold uppercase tracking-wider text-[#C5A880] flex items-center justify-between">
-                    <span>Hồ Sơ Cư Dân Đã Khóa Theo API:</span>
+                    <span>Thông Tin Người Nhà Xác Thực:</span>
                     <span className="text-emerald-400 text-[10px] font-mono">Đã Xác Thực e-KYC</span>
                   </div>
                   <div className="grid grid-cols-2 gap-2 text-gray-200">
@@ -605,7 +605,7 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
 
                 <div className="p-3 bg-purple-950/40 border border-purple-500/40 rounded text-purple-300 text-[11px] flex items-center gap-2">
                   <ShieldCheck className="w-4 h-4 text-purple-400 flex-shrink-0" />
-                  <span>Sau khi xác nhận, tài khoản người nhà sẽ được cấp quyền FaceID sảnh đón, thang máy và tiện ích sinh hoạt qua API.</span>
+                  <span>Sau khi xác nhận, tài khoản người nhà sẽ được cấp quyền FaceID sảnh đón, thang máy và tiện ích sinh hoạt.</span>
                 </div>
 
                 <div className="pt-2 flex justify-end gap-2.5 border-t border-[#222B35]">
@@ -623,7 +623,7 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
                   >
                     {isSubmitting ? (
                       <>
-                        <RefreshCw className="w-4 h-4 animate-spin" /> Đang Đồng Bộ API...
+                        <RefreshCw className="w-4 h-4 animate-spin" /> Đang Xử Lý...
                       </>
                     ) : (
                       <>

@@ -61,7 +61,7 @@ export default function PortalPage() {
         <div className="text-center space-y-3">
           <RefreshCw className="w-8 h-8 text-[#C5A880] animate-spin mx-auto" />
           <div className="font-serif text-lg tracking-wider text-[#C5A880]">
-            Đang Đồng Bộ Dữ Liệu NKS...
+            Đang Đồng Bộ Dữ Liệu Căn Hộ...
           </div>
         </div>
       </div>
