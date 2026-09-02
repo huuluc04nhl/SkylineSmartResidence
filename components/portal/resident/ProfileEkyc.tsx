@@ -60,11 +60,8 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
   const isOwner = currentUser.role === 'OWNER';
   const aptCode = currentUser.apartment_code || '12A05';
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const cccdFrontInputRef = useRef<HTMLInputElement>(null);
-  const cccdBackInputRef = useRef<HTMLInputElement>(null);
 
   const [activeTab, setActiveTab] = useState<'INFO' | 'EKYC' | 'FAMILY'>('INFO');
-  const [activeCccdSide, setActiveCccdSide] = useState<'FRONT' | 'BACK'>('FRONT');
   const [isOcrModalOpen, setIsOcrModalOpen] = useState(false);
   const [isAvatarModalOpen, setIsAvatarModalOpen] = useState(false);
   const [isLoadingApi, setIsLoadingApi] = useState(true);
@@ -282,30 +279,6 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
   };
 
   const [cccdBackImage, setCccdBackImage] = useState('');
-
-  // Handle uploading CCCD Front side directly in Profile
-  const handleCccdFrontFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = (ev) => {
-      const base64 = ev.target?.result as string;
-      setCccdImage(base64);
-    };
-    reader.readAsDataURL(file);
-  };
-
-  // Handle uploading CCCD Back side directly in Profile
-  const handleCccdBackFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = (ev) => {
-      const base64 = ev.target?.result as string;
-      setCccdBackImage(base64);
-    };
-    reader.readAsDataURL(file);
-  };
 
   // 2. Select a BQL-approved account to autofill member details
   const handleSelectBqlAccount = (acc: any) => {
@@ -562,150 +535,6 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
             >
               <Scan className="w-3.5 h-3.5" /> Quét OCR CCCD Ngay
             </button>
-          </div>
-
-          {/* CCCD Dual-Side Upload Section */}
-          <div className="p-4 bg-[#121820] border border-[#222B35] space-y-3 rounded-lg">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#222B35] pb-2">
-              <div>
-                <span className="text-xs font-bold text-[#C5A880] uppercase tracking-wider flex items-center gap-1.5">
-                  <CreditCard className="w-4 h-4 text-[#C5A880]" /> Ảnh Căn Cước Công Dân (Mặt Trước & Mặt Sau)
-                </span>
-                <p className="text-[11px] text-gray-400 mt-0.5">
-                  Tải lên ảnh chụp thực tế CCCD của bạn để đồng bộ hiển thị sang thẻ e-KYC và lưu vào máy chủ NKS
-                </p>
-              </div>
-
-              <div className="flex items-center gap-2">
-                <button
-                  type="button"
-                  onClick={() => setIsOcrModalOpen(true)}
-                  className="px-3 py-1.5 bg-[#1C2533] hover:bg-[#C5A880] hover:text-[#0D1117] border border-[#C5A880]/60 text-[#C5A880] text-[11px] font-bold rounded flex items-center gap-1.5 transition-all"
-                >
-                  <Scan className="w-3.5 h-3.5" /> Quét AI OCR Tự Động
-                </button>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {/* CCCD Front Upload Box */}
-              <div className="space-y-2">
-                <div className="flex items-center justify-between text-xs">
-                  <span className="font-semibold text-gray-200 flex items-center gap-1">
-                    <span className="w-2 h-2 rounded-full bg-[#C5A880]" /> 1. Mặt Trước CCCD (Ảnh thẻ & Chip)
-                  </span>
-                  {cccdImage ? (
-                    <span className="text-[10px] text-emerald-400 font-mono font-bold">✓ Đã tải ảnh mặt trước</span>
-                  ) : (
-                    <span className="text-[10px] text-gray-400 font-mono">Chưa có ảnh</span>
-                  )}
-                </div>
-
-                <input
-                  type="file"
-                  ref={cccdFrontInputRef}
-                  onChange={handleCccdFrontFileChange}
-                  accept="image/*"
-                  className="hidden"
-                />
-
-                <div
-                  onClick={() => cccdFrontInputRef.current?.click()}
-                  className={`h-48 rounded-xl border-2 border-dashed transition-all flex flex-col items-center justify-center p-2.5 cursor-pointer relative overflow-hidden group ${
-                    cccdImage
-                      ? 'border-[#C5A880]/70 bg-black/60 hover:border-[#C5A880]'
-                      : 'border-gray-700 hover:border-[#C5A880] bg-[#161B22]'
-                  }`}
-                >
-                  {cccdImage ? (
-                    <>
-                      <img
-                        src={cccdImage}
-                        alt="CCCD Mặt Trước"
-                        className="w-full h-full object-cover rounded-lg group-hover:scale-105 transition-transform duration-300"
-                      />
-                      <div className="absolute inset-0 bg-black/65 opacity-0 group-hover:opacity-100 flex flex-col items-center justify-center gap-1.5 text-white transition-opacity">
-                        <Upload className="w-5 h-5 text-[#C5A880]" />
-                        <span className="text-[11px] font-bold">Bấm để thay đổi ảnh mặt trước</span>
-                      </div>
-                      <div className="absolute bottom-2 left-2 bg-black/85 px-2 py-0.5 text-[9px] font-mono text-[#C5A880] rounded border border-[#C5A880]/40">
-                        Mặt trước đã chọn ✓
-                      </div>
-                    </>
-                  ) : (
-                    <div className="text-center space-y-2 text-gray-400 group-hover:text-[#C5A880] transition-colors p-4">
-                      <CreditCard className="w-9 h-9 mx-auto text-gray-500 group-hover:text-[#C5A880]" />
-                      <div>
-                        <span className="text-xs font-bold text-white block">Tải Lên Ảnh Mặt Trước CCCD</span>
-                        <span className="text-[10px] text-gray-400">PNG, JPG, JPEG (tối đa 10MB)</span>
-                      </div>
-                      <span className="inline-block text-[10px] px-2.5 py-1 bg-[#1C2533] border border-gray-700 text-[#C5A880] font-bold rounded">
-                        Chọn tệp ảnh
-                      </span>
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              {/* CCCD Back Upload Box */}
-              <div className="space-y-2">
-                <div className="flex items-center justify-between text-xs">
-                  <span className="font-semibold text-gray-200 flex items-center gap-1">
-                    <span className="w-2 h-2 rounded-full bg-gray-400" /> 2. Mặt Sau CCCD (Vân tay & MRZ)
-                  </span>
-                  {cccdBackImage ? (
-                    <span className="text-[10px] text-emerald-400 font-mono font-bold">✓ Đã tải ảnh mặt sau</span>
-                  ) : (
-                    <span className="text-[10px] text-gray-400 font-mono">Chưa có ảnh</span>
-                  )}
-                </div>
-
-                <input
-                  type="file"
-                  ref={cccdBackInputRef}
-                  onChange={handleCccdBackFileChange}
-                  accept="image/*"
-                  className="hidden"
-                />
-
-                <div
-                  onClick={() => cccdBackInputRef.current?.click()}
-                  className={`h-48 rounded-xl border-2 border-dashed transition-all flex flex-col items-center justify-center p-2.5 cursor-pointer relative overflow-hidden group ${
-                    cccdBackImage
-                      ? 'border-[#C5A880]/70 bg-black/60 hover:border-[#C5A880]'
-                      : 'border-gray-700 hover:border-[#C5A880] bg-[#161B22]'
-                  }`}
-                >
-                  {cccdBackImage ? (
-                    <>
-                      <img
-                        src={cccdBackImage}
-                        alt="CCCD Mặt Sau"
-                        className="w-full h-full object-cover rounded-lg group-hover:scale-105 transition-transform duration-300"
-                      />
-                      <div className="absolute inset-0 bg-black/65 opacity-0 group-hover:opacity-100 flex flex-col items-center justify-center gap-1.5 text-white transition-opacity">
-                        <Upload className="w-5 h-5 text-[#C5A880]" />
-                        <span className="text-[11px] font-bold">Bấm để thay đổi ảnh mặt sau</span>
-                      </div>
-                      <div className="absolute bottom-2 left-2 bg-black/85 px-2 py-0.5 text-[9px] font-mono text-[#C5A880] rounded border border-[#C5A880]/40">
-                        Mặt sau đã chọn ✓
-                      </div>
-                    </>
-                  ) : (
-                    <div className="text-center space-y-2 text-gray-400 group-hover:text-[#C5A880] transition-colors p-4">
-                      <CreditCard className="w-9 h-9 mx-auto text-gray-500 group-hover:text-[#C5A880]" />
-                      <div>
-                        <span className="text-xs font-bold text-white block">Tải Lên Ảnh Mặt Sau CCCD</span>
-                        <span className="text-[10px] text-gray-400">PNG, JPG, JPEG (tối đa 10MB)</span>
-                      </div>
-                      <span className="inline-block text-[10px] px-2.5 py-1 bg-[#1C2533] border border-gray-700 text-[#C5A880] font-bold rounded">
-                        Chọn tệp ảnh
-                      </span>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
           </div>
 
           <div className="border-b border-[#222B35] pb-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
@@ -967,177 +796,48 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
             </div>
           </div>
 
-          {/* e-KYC Visual Matcher Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Card 1: Real Uploaded CCCD Front Image & Verification Data */}
-            <div className="p-5 bg-[#121820] border border-[#222B35] space-y-4 rounded-lg">
-              <div className="flex items-center justify-between border-b border-[#222B35] pb-2">
-                <span className="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-2">
-                  <CreditCard className="w-4 h-4 text-[#C5A880]" /> 1. Ảnh Căn Cước Công Dân (CCCD Mặt Trước)
-                </span>
-                <div className="flex items-center gap-2">
-                  {cccdBackImage && (
-                    <div className="flex rounded bg-[#161B22] p-0.5 border border-[#222B35] text-[10px]">
-                      <button
-                        type="button"
-                        onClick={() => setActiveCccdSide('FRONT')}
-                        className={`px-2 py-0.5 rounded font-bold transition-colors ${
-                          activeCccdSide === 'FRONT' ? 'bg-[#C5A880] text-[#0D1117]' : 'text-gray-400 hover:text-white'
-                        }`}
-                      >
-                        Mặt Trước
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setActiveCccdSide('BACK')}
-                        className={`px-2 py-0.5 rounded font-bold transition-colors ${
-                          activeCccdSide === 'BACK' ? 'bg-[#C5A880] text-[#0D1117]' : 'text-gray-400 hover:text-white'
-                        }`}
-                      >
-                        Mặt Sau
-                      </button>
-                    </div>
-                  )}
+          {/* e-KYC Visual Matcher & Smart Pass Cards */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Biometric FaceID & 512D Vector Card */}
+            <div className="p-5 bg-[#121820] border border-[#222B35] space-y-4 rounded-lg flex flex-col justify-between">
+              <div>
+                <div className="flex items-center justify-between border-b border-[#222B35] pb-2 mb-4">
+                  <span className="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-2">
+                    <ScanFace className="w-4 h-4 text-[#C5A880]" /> Định Danh Sinh Trắc Học & FaceID (Vector 512D)
+                  </span>
                   <button
                     type="button"
-                    onClick={() => setIsOcrModalOpen(true)}
+                    onClick={() => setIsAvatarModalOpen(true)}
                     className="px-2.5 py-1 bg-[#1C2533] hover:bg-[#C5A880] hover:text-[#0D1117] border border-[#C5A880]/50 text-[#C5A880] text-[10px] font-bold rounded flex items-center gap-1 transition-all"
                   >
-                    <Scan className="w-3 h-3" /> Quét Lại AI OCR
+                    <Camera className="w-3 h-3" /> Chụp & Căn Chỉnh FaceID
                   </button>
                 </div>
-              </div>
 
-              {/* Display the Actual Front CCCD Image Uploaded in Tab 1 */}
-              <div className="relative h-56 bg-black border border-[#C5A880]/50 overflow-hidden rounded-xl shadow-2xl group flex items-center justify-center">
-                {activeCccdSide === 'FRONT' ? (
-                  cccdImage ? (
-                    <>
-                      <img
-                        src={cccdImage}
-                        alt="Ảnh CCCD Mặt Trước"
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                      />
-                      {/* Laser scanner animation overlay */}
-                      <div className="absolute inset-0 border-2 border-[#C5A880]/30 pointer-events-none" />
-                      <div className="absolute top-2.5 left-2.5 bg-black/85 backdrop-blur-sm border border-[#C5A880]/60 text-[#C5A880] px-2.5 py-0.5 text-[9px] font-bold font-mono rounded shadow">
-                        MẶT TRƯỚC ĐÃ ĐỒNG BỘ TỪ HỒ SƠ
-                      </div>
-                      <div className="absolute top-2.5 right-2.5 bg-emerald-950/90 border border-emerald-500 text-emerald-300 px-2.5 py-0.5 text-[9px] font-bold font-mono rounded shadow">
-                        ICAO Doc 9303 ✓
-                      </div>
-                      <div className="absolute bottom-2 left-2 right-2 bg-black/85 backdrop-blur-md px-3 py-1.5 rounded-lg border border-[#C5A880]/30 flex justify-between items-center text-xs">
-                        <span className="font-mono text-amber-300 font-bold">Số: {idCardNumber || 'Chưa cập nhật'}</span>
-                        <span className="text-white font-bold uppercase truncate ml-2">{fullName || 'Chưa cập nhật'}</span>
-                      </div>
-                    </>
-                  ) : (
-                    <div
-                      onClick={() => setActiveTab('INFO')}
-                      className="text-center space-y-2 text-gray-400 p-4 cursor-pointer hover:text-[#C5A880] transition-colors"
-                    >
-                      <CreditCard className="w-10 h-10 mx-auto text-[#C5A880]/60 animate-bounce" />
-                      <div className="text-xs font-bold text-white">Chưa có ảnh CCCD mặt trước</div>
-                      <p className="text-[11px] text-gray-400 max-w-xs">
-                        Bấm vào đây để chuyển sang mục <strong className="text-[#C5A880]">1. Thông Tin Cá Nhân</strong> tải ảnh CCCD mặt trước lên hoặc bấm "Quét Lại AI OCR".
-                      </p>
-                    </div>
-                  )
-                ) : (
-                  cccdBackImage ? (
-                    <>
-                      <img
-                        src={cccdBackImage}
-                        alt="Ảnh CCCD Mặt Sau"
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                      />
-                      <div className="absolute top-2.5 left-2.5 bg-black/85 backdrop-blur-sm border border-[#C5A880]/60 text-[#C5A880] px-2.5 py-0.5 text-[9px] font-bold font-mono rounded shadow">
-                        MẶT SAU (MRZ & VÂN TAY)
-                      </div>
-                      <div className="absolute bottom-2 left-2 right-2 bg-black/85 backdrop-blur-md px-3 py-1.5 rounded-lg border border-[#C5A880]/30 text-[10px] font-mono text-gray-300 truncate">
-                        IDVNM{idCardNumber}&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;
-                      </div>
-                    </>
-                  ) : (
-                    <div className="text-center text-gray-400 text-xs">Chưa tải ảnh mặt sau</div>
-                  )
-                )}
-              </div>
+                <div className="h-64 bg-black border border-emerald-500/60 overflow-hidden relative flex items-center justify-center rounded-xl shadow-inner group">
+                  <img
+                    src={avatarUrl || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400'}
+                    alt="Portrait"
+                    className="h-full w-full object-cover"
+                  />
+                  {/* AI Laser Scanner Overlay */}
+                  <div className="absolute inset-0 border-2 border-emerald-500/40 pointer-events-none" />
+                  <div className="absolute top-4 left-4 w-8 h-8 border-t-2 border-l-2 border-emerald-400 pointer-events-none" />
+                  <div className="absolute top-4 right-4 w-8 h-8 border-t-2 border-r-2 border-emerald-400 pointer-events-none" />
+                  <div className="absolute bottom-4 left-4 w-8 h-8 border-b-2 border-l-2 border-emerald-400 pointer-events-none" />
+                  <div className="absolute bottom-4 right-4 w-8 h-8 border-b-2 border-r-2 border-emerald-400 pointer-events-none" />
 
-              {/* Verified Personal Details */}
-              <div className="space-y-1.5 text-xs text-gray-300 bg-[#161B22] p-3 border border-[#222B35] rounded-lg">
-                <div className="flex justify-between">
-                  <span className="text-gray-400">Họ và tên:</span>
-                  <strong className="text-white uppercase">{fullName || 'Chưa cập nhật'}</strong>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-400">Số định danh CCCD:</span>
-                  <span className="font-mono text-amber-300 font-bold">{idCardNumber || 'Chưa cập nhật'}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-400">Ngày sinh:</span>
-                  <span className="text-gray-200 font-mono">{birthday ? formatToDisplayDate(birthday) : 'Chưa cập nhật'}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-400">Quê quán / Nơi sinh:</span>
-                  <span className="text-gray-200">{pob || 'Chưa cập nhật'}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-400">Nơi thường trú:</span>
-                  <span className="text-gray-200">{province || 'Thành phố Hồ Chí Minh'}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-400">Ngày & Nơi cấp:</span>
-                  <span className="text-gray-300 font-mono text-[11px]">{idDate ? formatToDisplayDate(idDate) : ''} • {idPlace || 'Cục Cảnh sát QLHC về TTXH'}</span>
+                  <div className="absolute top-3 right-3 bg-emerald-950/90 border border-emerald-500 text-emerald-300 px-2.5 py-1 text-[10px] font-bold font-mono rounded shadow">
+                    Liveness: Real Person ✓ • {matchScore}%
+                  </div>
+
+                  <div className="absolute bottom-3 left-3 bg-black/80 px-2.5 py-1 text-[10px] font-mono text-[#C5A880] rounded border border-[#C5A880]/40">
+                    512-Dimensional Facial Embedding: Active
+                  </div>
                 </div>
               </div>
 
-              <div className="flex items-center justify-between text-[11px] text-gray-400 pt-1">
-                <span className="flex items-center gap-1.5 text-emerald-400 font-semibold">
-                  <CheckCircle2 className="w-3.5 h-3.5" /> Thẻ CCCD Đã Xác Thực e-KYC
-                </span>
-                <span className="font-mono text-gray-400">Độ tin cậy: 99.9%</span>
-              </div>
-            </div>
-
-            {/* Card 2: Live Portrait & Face Vector */}
-            <div className="p-5 bg-[#121820] border border-[#222B35] space-y-4 rounded-lg">
-              <div className="flex items-center justify-between border-b border-[#222B35] pb-2">
-                <span className="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-2">
-                  <ScanFace className="w-4 h-4 text-[#C5A880]" /> 2. Ảnh Chân Dung & Liveness Check (512D Vector)
-                </span>
-                <button
-                  type="button"
-                  onClick={() => setIsAvatarModalOpen(true)}
-                  className="px-2.5 py-1 bg-[#1C2533] hover:bg-[#C5A880] hover:text-[#0D1117] border border-[#C5A880]/50 text-[#C5A880] text-[10px] font-bold rounded flex items-center gap-1 transition-all"
-                >
-                  <Camera className="w-3 h-3" /> Chụp & Căn Chỉnh FaceID
-                </button>
-              </div>
-
-              <div className="h-56 bg-black border border-emerald-500/60 overflow-hidden relative flex items-center justify-center rounded-xl shadow-inner group">
-                <img
-                  src={avatarUrl || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400'}
-                  alt="Portrait"
-                  className="h-full w-full object-cover"
-                />
-                {/* AI Laser Scanner Overlay */}
-                <div className="absolute inset-0 border-2 border-emerald-500/40 pointer-events-none" />
-                <div className="absolute top-4 left-4 w-8 h-8 border-t-2 border-l-2 border-emerald-400 pointer-events-none" />
-                <div className="absolute top-4 right-4 w-8 h-8 border-t-2 border-r-2 border-emerald-400 pointer-events-none" />
-                <div className="absolute bottom-4 left-4 w-8 h-8 border-b-2 border-l-2 border-emerald-400 pointer-events-none" />
-                <div className="absolute bottom-4 right-4 w-8 h-8 border-b-2 border-r-2 border-emerald-400 pointer-events-none" />
-
-                <div className="absolute top-3 right-3 bg-emerald-950/90 border border-emerald-500 text-emerald-300 px-2.5 py-1 text-[10px] font-bold font-mono rounded shadow">
-                  Liveness: Real Person ✓ • {matchScore}%
-                </div>
-
-                <div className="absolute bottom-3 left-3 bg-black/80 px-2.5 py-1 text-[10px] font-mono text-[#C5A880] rounded border border-[#C5A880]/40">
-                  512-Dimensional Facial Embedding: Active
-                </div>
-              </div>
-
-              <div className="space-y-1.5 text-xs text-gray-300 bg-[#161B22] p-3 border border-[#222B35] rounded-lg">
+              <div className="space-y-2 text-xs text-gray-300 bg-[#161B22] p-3.5 border border-[#222B35] rounded-lg mt-4">
                 <div className="flex justify-between">
                   <span className="text-gray-400">Tốc độ nhận diện AI:</span>
                   <strong className="text-emerald-400 font-mono">&lt; 0.35 giây (Không cần chạm)</strong>
@@ -1156,14 +856,25 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
                 </div>
               </div>
             </div>
-          </div>
 
-          {/* Render 3D Resident Smart Pass Card */}
-          <div className="p-6 bg-[#121820] border border-[#222B35] space-y-3 rounded-lg">
-            <div className="text-xs uppercase tracking-wider text-[#C5A880] font-bold">
-              Thẻ Định Danh Cư Dân Kim Loại (3D Smart Business Pass):
+            {/* Render 3D Resident Smart Pass Card */}
+            <div className="p-5 bg-[#121820] border border-[#222B35] space-y-4 rounded-lg flex flex-col justify-between">
+              <div>
+                <div className="border-b border-[#222B35] pb-2 mb-4">
+                  <span className="text-xs font-bold text-[#C5A880] uppercase tracking-wider flex items-center gap-2">
+                    <CreditCard className="w-4 h-4 text-[#C5A880]" /> Thẻ Định Danh Cư Dân Kim Loại (3D Smart Business Pass)
+                  </span>
+                </div>
+                <ResidentSmartCard currentUser={currentUser} />
+              </div>
+
+              <div className="p-3 bg-[#161B22] border border-[#222B35] rounded-lg text-[11px] text-gray-400 flex items-center justify-between">
+                <span className="flex items-center gap-1.5 text-emerald-400 font-semibold">
+                  <CheckCircle2 className="w-3.5 h-3.5" /> Thẻ Điện Tử Đã Kích Hoạt NFC / RFID
+                </span>
+                <span className="font-mono text-gray-400">Mã thẻ: SKY-12A05-PASS</span>
+              </div>
             </div>
-            <ResidentSmartCard currentUser={currentUser} />
           </div>
         </div>
       )}
