@@ -705,7 +705,7 @@ export default function AvatarEditorModal({
               className="px-6 py-2.5 bg-[#C5A880] hover:bg-white text-[#0D1117] text-xs font-bold uppercase tracking-wider rounded-lg shadow-xl flex items-center gap-2 transition-all disabled:opacity-50"
             >
               {isSaving ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4 stroke-[3]" />}
-              {isSaving ? 'Đang Lưu Lên NKS API...' : 'Cắt & Lưu Ảnh Đại Diện'}
+              {isSaving ? 'Đang Lưu...' : 'Cắt & Lưu Ảnh Đại Diện'}
             </button>
           </div>
         </div>

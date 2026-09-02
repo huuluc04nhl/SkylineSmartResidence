@@ -382,11 +382,6 @@ export default function FinanceBilling() {
                     </button>
                   </div>
                 )}
-
-                {/* Developer API Note */}
-                <div className="text-[10px] text-gray-500 border-t border-[#222B35] pt-2 text-center">
-                  💡 <em>Sẵn sàng tích hợp API: Endpoint IPN/Webhook (`/api/v1/payments/vnpay-ipn` & `/api/v1/payments/momo-ipn`).</em>
-                </div>
               </div>
             )}
           </div>

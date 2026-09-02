@@ -230,13 +230,13 @@ export default function CccdOcrScannerModal({
         <div className="flex items-center justify-between border-b border-[#222B35] pb-4">
           <div className="space-y-1">
             <div className="text-[10px] uppercase tracking-[0.2em] text-[#C5A880] font-bold flex items-center gap-1.5">
-              <Sparkles className="w-3.5 h-3.5" /> 3D Flip Card AI Vision • e-KYC CCCD Chip
+              <Sparkles className="w-3.5 h-3.5" /> Định Danh Căn Cước Công Dân (e-KYC)
             </div>
             <h3 className="font-serif text-xl sm:text-2xl font-bold text-white flex items-center gap-2">
-              <Scan className="w-5 h-5 text-[#C5A880]" /> Quét OCR Thẻ CCCD Lật 3D Tự Động
+              <Scan className="w-5 h-5 text-[#C5A880]" /> Quét Căn Cước Công Dân (2 Mặt)
             </h3>
             <p className="text-xs text-gray-400">
-              Tải lên mặt trước, bấm <strong>Lật Thẻ 3D</strong> để tải mặt sau. Khi quét, AI sẽ tự động lật và quét tuần tự 2 mặt.
+              Tải lên ảnh 2 mặt của Căn cước công dân để tự động nhận diện và cập nhật thông tin hồ sơ.
             </p>
           </div>
 
@@ -592,18 +592,6 @@ export default function CccdOcrScannerModal({
                 />
               </div>
             </div>
-
-            {/* Raw OCR Text Accordion */}
-            {ocrResult.rawText && (
-              <details className="text-[11px] bg-[#0D1117] border border-gray-800 rounded p-2.5 text-gray-400">
-                <summary className="cursor-pointer font-mono text-[#C5A880] hover:text-white select-none">
-                  🔍 Xem Ký Tự Nhận Diện Thô Trực Tiếp Từ 2 Mặt (Raw OCR Inspector)
-                </summary>
-                <pre className="mt-2 p-2 bg-black/60 rounded font-mono text-[10px] text-gray-300 whitespace-pre-wrap max-h-36 overflow-y-auto border border-gray-800">
-                  {ocrResult.rawText}
-                </pre>
-              </details>
-            )}
           </div>
         )}
 

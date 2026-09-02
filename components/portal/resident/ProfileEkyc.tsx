@@ -397,13 +397,13 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#222B35] pb-4">
         <div>
           <div className="text-[10px] uppercase tracking-[0.25em] text-[#C5A880] font-semibold flex items-center gap-1.5">
-            <ScanFace className="w-3.5 h-3.5" /> Module 3.2.1 • Dữ Liệu Thực Trực Tiếp Từ NKS Core User API
+            <ScanFace className="w-3.5 h-3.5" /> Skyline Smart Residence • Cư Dân
           </div>
           <h2 className="font-serif text-2xl text-white font-bold mt-1">
-            Hồ Sơ Cá Nhân & Định Danh e-KYC Căn Hộ {aptCode}
+            Hồ Sơ Cá Nhân & Định Danh e-KYC
           </h2>
           <p className="text-xs text-gray-400 mt-0.5">
-            Đồng bộ trực tiếp qua NKS Core User API • Căn hộ: <strong className="text-white font-mono">{aptCode}</strong>
+            Căn hộ: <strong className="text-white font-mono">{aptCode}</strong> • Thông tin được bảo mật và phân quyền tự động
           </p>
         </div>
 
@@ -413,7 +413,7 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
             onClick={() => setIsOcrModalOpen(true)}
             className="px-4 py-2 bg-gradient-to-r from-[#1E2631] to-[#121820] border border-[#C5A880] text-[#C5A880] hover:text-white hover:border-white text-xs font-bold uppercase tracking-wider flex items-center gap-2 transition-all shadow rounded"
           >
-            <Scan className="w-4 h-4 text-[#C5A880]" /> Quét OCR CCCD (Tesseract)
+            <Scan className="w-4 h-4 text-[#C5A880]" /> Quét Căn Cước (OCR)
           </button>
 
           <span className="px-3 py-1 bg-emerald-950/80 border border-emerald-500 text-emerald-300 text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 rounded">
@@ -433,7 +433,7 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
               : 'border-transparent text-gray-400 hover:text-gray-200'
           }`}
         >
-          <UserIcon className="w-4 h-4" /> 1. Thông Tin Cá Nhân (NKS API)
+          <UserIcon className="w-4 h-4" /> 1. Thông Tin Cá Nhân
         </button>
 
         <button
@@ -467,12 +467,12 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
       {isLoadingApi && (
         <div className="p-8 bg-[#121820] border border-[#222B35] flex items-center justify-center gap-3 text-xs text-[#C5A880] font-mono rounded-lg">
           <RefreshCw className="w-5 h-5 animate-spin text-[#C5A880]" />
-          <span>Đang tải dữ liệu hồ sơ thực tế từ NKS Core User API...</span>
+          <span>Đang tải thông tin hồ sơ...</span>
         </div>
       )}
 
       {/* ------------------------------------------------------------- */}
-      {/* TAB 1: PERSONAL INFORMATION & VEHICLE REGISTRATION (NKS API)   */}
+      {/* TAB 1: PERSONAL INFORMATION & VEHICLE REGISTRATION             */}
       {/* ------------------------------------------------------------- */}
       {!isLoadingApi && activeTab === 'INFO' && (
         <form onSubmit={handleSaveInfo} className="p-6 sm:p-8 bg-[#121820] border border-[#222B35] space-y-6 shadow-2xl rounded-lg">
@@ -521,10 +521,10 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
           <div className="p-4 bg-gradient-to-r from-[#1A232E] via-[#161D26] to-[#121820] border border-[#C5A880]/60 flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded">
             <div className="space-y-1">
               <div className="text-[#C5A880] font-bold text-xs flex items-center gap-1.5">
-                <Zap className="w-4 h-4 text-amber-300" /> Tính Năng Quét OCR Tự Động Điền Form (Tesseract AI)
+                <Zap className="w-4 h-4 text-amber-300" /> Quét Thông Tin Tự Động Từ Căn Cước Công Dân
               </div>
               <p className="text-xs text-gray-300">
-                Tự động nhận diện 12 số CCCD, Họ tên, Ngày sinh, Quê quán từ ảnh chụp và điền form tức thì trong 3 giây.
+                Tự động trích xuất thông tin Số CCCD, Họ tên, Ngày sinh từ ảnh chụp để điền nhanh vào biểu mẫu.
               </p>
             </div>
 
@@ -533,17 +533,17 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
               onClick={() => setIsOcrModalOpen(true)}
               className="px-4 py-2 bg-[#C5A880] hover:bg-white text-[#0D1117] text-xs font-bold uppercase tracking-wider transition-colors flex items-center gap-1.5 flex-shrink-0 shadow rounded"
             >
-              <Scan className="w-3.5 h-3.5" /> Quét OCR CCCD Ngay
+              <Scan className="w-3.5 h-3.5" /> Quét Thẻ Căn Cước
             </button>
           </div>
 
           <div className="border-b border-[#222B35] pb-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
             <div>
               <h3 className="font-serif text-xl font-bold text-white">
-                Chi Tiết Thông Tin Cá Nhân Cư Dân
+                Chi Tiết Thông Tin Cư Dân
               </h3>
               <p className="text-xs text-gray-400 mt-0.5">
-                Dữ liệu được cập nhật trực tiếp qua endpoint <code className="text-[#C5A880] font-mono">POST /api/nks/user/updateInfo</code>
+                Hồ sơ thông tin cư dân được bảo mật theo tiêu chuẩn Skyline Smart Residence
               </p>
             </div>
             <span className="text-[11px] text-gray-400 font-mono">Căn Hộ: <strong className="text-white">{aptCode}</strong></span>
@@ -555,8 +555,8 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
               <div className="flex items-center gap-3">
                 <Sparkles className="w-5 h-5 text-amber-300 flex-shrink-0 animate-pulse" />
                 <div>
-                  <strong className="text-white block text-sm font-semibold">✨ Đã tự động điền thông tin từ CCCD 2 mặt vào Form!</strong>
-                  <span className="text-gray-300 text-[11px]">Thông tin chỉ mới được điền tạm vào form bên dưới. Vui lòng kiểm tra lại và nhấn nút <strong>[Lưu & Cập Nhật NKS User API]</strong> ở cuối form để chính thức lưu lên hệ thống.</span>
+                  <strong className="text-white block text-sm font-semibold">✨ Đã trích xuất thông tin từ CCCD vào biểu mẫu!</strong>
+                  <span className="text-gray-300 text-[11px]">Vui lòng kiểm tra lại thông tin và nhấn nút <strong>[Lưu Thay Đổi]</strong> ở cuối biểu mẫu để lưu dữ liệu.</span>
                 </div>
               </div>
               <button
@@ -572,7 +572,7 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
           {savedSuccess && (
             <div className="p-3.5 bg-emerald-950/90 border border-emerald-500 text-emerald-300 text-xs flex items-center gap-2 animate-fadeIn shadow-lg rounded">
               <CheckCircle2 className="w-4 h-4 flex-shrink-0" />
-              <span>✓ Đã cập nhật và đồng bộ thành công hồ sơ cá nhân lên máy chủ NKS!</span>
+              <span>✓ Đã cập nhật thành công thông tin hồ sơ cá nhân!</span>
             </div>
           )}
 
@@ -750,7 +750,7 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
               className="px-8 py-3 bg-[#C5A880] hover:bg-white text-[#0D1117] text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-2 shadow-xl rounded"
             >
               {isSaving ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-              {isSaving ? 'Đang Lưu Lên NKS Server...' : 'Lưu & Cập Nhật NKS User API'}
+              {isSaving ? 'Đang Lưu...' : 'Lưu Thay Đổi'}
             </button>
           </div>
         </form>
@@ -765,13 +765,13 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
           <div className="p-5 bg-gradient-to-r from-[#121820] to-[#161D26] border border-[#C5A880]/70 flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-xl rounded-lg">
             <div className="space-y-1">
               <div className="flex items-center gap-2 text-[#C5A880] font-bold text-xs uppercase tracking-wider">
-                <Sparkles className="w-4 h-4" /> Chuẩn Sinh Trắc Học Tòa Nhà Thông Minh
+                <Sparkles className="w-4 h-4" /> Hệ Thống Nhận Diện Cư Dân
               </div>
               <h3 className="font-serif text-lg font-bold text-white">
-                Dữ Liệu Khuôn Mặt & Thẻ Căn Cước Điện Tử (512D Face Vector)
+                Định Danh Khuôn Mặt & Thẻ Cư Dân Thông Minh
               </h3>
               <p className="text-xs text-gray-300 max-w-2xl font-light">
-                Hồ sơ e-KYC đã được AI Vision so khớp với độ tin cậy <strong>{matchScore}%</strong>. Khuôn mặt của bạn đã được nạp vào hệ thống Barrier tự động tại Sảnh A/B, Thang máy và Cổng tiện ích.
+                Hồ sơ định danh đã được kích hoạt. Khuôn mặt của bạn đã được phân quyền ra vào tự động tại Sảnh A/B, thang máy và các tiện ích đặc quyền tòa nhà.
               </p>
             </div>
 
@@ -781,7 +781,7 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
                 onClick={() => setIsOcrModalOpen(true)}
                 className="px-4 py-2.5 bg-[#1C2533] hover:bg-[#C5A880] hover:text-[#0D1117] border border-[#C5A880] text-[#C5A880] text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-2 shadow rounded"
               >
-                <Scan className="w-4 h-4" /> Quét OCR CCCD Chip
+                <Scan className="w-4 h-4" /> Quét Thẻ Căn Cước
               </button>
 
               <button
@@ -791,7 +791,7 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
                 className="px-4 py-2.5 bg-[#C5A880] hover:bg-white text-[#0D1117] text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-2 shadow rounded"
               >
                 {isScanningOcr ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Camera className="w-4 h-4" />}
-                {isScanningOcr ? 'Đang Quét AI...' : 'Chụp Lại FaceID'}
+                {isScanningOcr ? 'Đang Cập Nhật...' : 'Cập Nhật FaceID'}
               </button>
             </div>
           </div>
@@ -803,7 +803,7 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
               <div>
                 <div className="flex items-center justify-between border-b border-[#222B35] pb-2 mb-4">
                   <span className="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-2">
-                    <ScanFace className="w-4 h-4 text-[#C5A880]" /> Định Danh Sinh Trắc Học & FaceID (Vector 512D)
+                    <ScanFace className="w-4 h-4 text-[#C5A880]" /> Định Danh Khuôn Mặt (FaceID)
                   </span>
                   <button
                     type="button"
@@ -828,30 +828,30 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
                   <div className="absolute bottom-4 right-4 w-8 h-8 border-b-2 border-r-2 border-emerald-400 pointer-events-none" />
 
                   <div className="absolute top-3 right-3 bg-emerald-950/90 border border-emerald-500 text-emerald-300 px-2.5 py-1 text-[10px] font-bold font-mono rounded shadow">
-                    Liveness: Real Person ✓ • {matchScore}%
+                    Trạng Thái: Đã Kích Hoạt ✓
                   </div>
 
                   <div className="absolute bottom-3 left-3 bg-black/80 px-2.5 py-1 text-[10px] font-mono text-[#C5A880] rounded border border-[#C5A880]/40">
-                    512-Dimensional Facial Embedding: Active
+                    Nhận Diện Tự Động: Đang Hoạt Động
                   </div>
                 </div>
               </div>
 
               <div className="space-y-2 text-xs text-gray-300 bg-[#161B22] p-3.5 border border-[#222B35] rounded-lg mt-4">
                 <div className="flex justify-between">
-                  <span className="text-gray-400">Tốc độ nhận diện AI:</span>
+                  <span className="text-gray-400">Tốc độ mở cửa:</span>
                   <strong className="text-emerald-400 font-mono">&lt; 0.35 giây (Không cần chạm)</strong>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-400">Trạng thái Cổng Barrier:</span>
-                  <span className="text-emerald-400 font-bold">Đã Phân Quyền Mở Cổng Tự Động</span>
+                  <span className="text-gray-400">Trạng thái ra vào:</span>
+                  <span className="text-emerald-400 font-bold">Đã Cấp Quyền Tự Động</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-400">Tiện ích áp dụng:</span>
                   <span className="text-gray-200">Sảnh A/B, Thang máy Tầng 12, Sky Pool, Gym</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-400">Biển số xe ALPR:</span>
+                  <span className="text-gray-400">Biển số xe:</span>
                   <strong className="text-[#C5A880] font-mono">{licensePlate || '51K-889.99'}</strong>
                 </div>
               </div>
