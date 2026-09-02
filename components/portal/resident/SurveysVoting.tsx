@@ -20,7 +20,7 @@ export default function SurveysVoting() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#222B35] pb-4">
         <div>
           <div className="text-[10px] uppercase tracking-[0.25em] text-[#C5A880] font-semibold">
-            Module 3.2.5 (Quyền Biểu Quyết Pháp Lý - Độc Quyền Chủ Hộ)
+            Quyền Biểu Quyết Cư Dân • Dành Cho Chủ Hộ
           </div>
           <h2 className="font-serif text-2xl text-white font-bold mt-1">
             Khảo Sát Ý Kiến & Biểu Quyết Ban Quản Trị

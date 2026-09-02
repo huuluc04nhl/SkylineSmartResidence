@@ -242,12 +242,12 @@ export default function Topbar({
           {showRoleDropdown && (
             <div className="absolute right-0 top-full mt-2 w-64 bg-[#121820] border border-[#C5A880] p-2 shadow-2xl z-50 space-y-1">
               <div className="px-2 py-1 text-[10px] text-[#C5A880] uppercase tracking-wider font-semibold border-b border-[#222B35]">
-                Chuyển vai trò thử nghiệm:
+                Chuyển đổi vai trò:
               </div>
               {[
-                { role: 'ADMIN' as UserRole, name: '1. Ban Quản Lý (Admin)', desc: '15 Module lõi & Radar CCTV' },
-                { role: 'OWNER' as UserRole, name: '2. Chủ Hộ 12A05 (Owner)', desc: 'Full Smart Home Master & Tài chính' },
-                { role: 'TENANT' as UserRole, name: '3. Cư Dân Thuộc Chủ Hộ (Gia Đình)', desc: 'Smart Home phòng & Quẹt thẻ tiện ích' },
+                { role: 'ADMIN' as UserRole, name: '1. Ban Quản Lý', desc: 'Vận hành toàn tòa nhà & Radar an ninh' },
+                { role: 'OWNER' as UserRole, name: '2. Chủ Hộ 12A05', desc: 'Quản trị căn hộ, thành viên & hóa đơn' },
+                { role: 'TENANT' as UserRole, name: '3. Thành Viên Cư Dân', desc: 'Thiết bị phòng & tiện ích đặc quyền' },
               ].map((r) => (
                 <button
                   key={r.role}

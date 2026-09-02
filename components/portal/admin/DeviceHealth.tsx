@@ -11,10 +11,10 @@ export default function DeviceHealth() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#222B35] pb-4">
         <div>
           <div className="text-[10px] uppercase tracking-[0.25em] text-[#C5A880] font-semibold">
-            Module 3.2.9 (SRS Specification)
+            Hạ Tầng Tòa Nhà • IoT & Giám Sát Kỹ Thuật
           </div>
           <h2 className="font-serif text-2xl text-white font-bold mt-1">
-            Chấm Điểm Sức Khỏe Thiết Bị & Dự Báo Bảo Trì AI (Health Score)
+            Chấm Điểm Tình Trạng Thiết Bị & Dự Báo Bảo Trì
           </h2>
         </div>
 

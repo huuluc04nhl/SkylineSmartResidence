@@ -63,10 +63,10 @@ export default function TicketService() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#222B35] pb-4">
         <div>
           <div className="text-[10px] uppercase tracking-[0.25em] text-[#C5A880] font-semibold">
-            Module 3.2.2 (SRS Specification)
+            Hỗ Trợ Kỹ Thuật & Dịch Vụ Cư Dân
           </div>
           <h2 className="font-serif text-2xl text-white font-bold mt-1">
-            Yêu Cầu Hỗ Trợ & Nghiệm Thu Trước - Sau (Ticketing)
+            Yêu Cầu Hỗ Trợ & Nghiệm Thu Kỹ Thuật
           </h2>
         </div>
 
@@ -137,10 +137,10 @@ export default function TicketService() {
         <div className="flex items-center justify-between border-b border-[#222B35] pb-3">
           <div>
             <div className="text-[10px] uppercase tracking-wider text-[#C5A880] font-semibold flex items-center gap-1.5">
-              <Sliders className="w-3.5 h-3.5" /> Tính Năng UI Đặc Thù (SRS Mục 4 & 5)
+              <Sliders className="w-3.5 h-3.5" /> Nghiệm Thu Hình Ảnh Trực Quan
             </div>
             <h3 className="font-serif text-lg text-white font-bold mt-0.5">
-              Thanh Trượt So Sánh Hình Ảnh Nghiệm Thu (Before / After Comparison)
+              Thanh Trượt So Sánh Hiện Trạng Trước & Sau Sửa Chữa
             </h3>
           </div>
           <span className="text-xs font-mono text-gray-400">Phiếu: {activeComparisonTicket.id}</span>

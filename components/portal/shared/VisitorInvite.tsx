@@ -34,7 +34,7 @@ export default function VisitorInvite({ isOpen, onClose, aptCode = '12A05' }: Vi
         <div className="flex items-center justify-between border-b border-[#222B35] pb-3">
           <div>
             <div className="text-[10px] uppercase tracking-wider text-[#C5A880] font-semibold">
-              Module 3.2.4 (SRS Visitor Pass)
+              Dịch Vụ Đón Khách & Giao Nhận Thông Minh
             </div>
             <h3 className="font-serif text-lg font-bold">Tạo Mã QR Đón Khách / Shipper</h3>
           </div>

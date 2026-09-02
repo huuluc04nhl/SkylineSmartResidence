@@ -121,7 +121,7 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#222B35] pb-4">
         <div>
           <div className="text-[10px] uppercase tracking-[0.25em] text-[#C5A880] font-semibold flex items-center gap-2">
-            <Cpu className="w-3.5 h-3.5" /> Module 3.2.14 • IoT Smart Living Hub (Digital Twin)
+            <Cpu className="w-3.5 h-3.5" /> Điều Khiển Thiết Bị Thông Minh • Mô Hình Số 3D
           </div>
           <h2 className="font-serif text-2xl text-white font-bold mt-1">
             Trung Tâm Điều Khiển & Mô Hình 3D Căn Hộ {aptCode}

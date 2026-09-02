@@ -27,10 +27,10 @@ export default function SmartParking() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#222B35] pb-4">
         <div>
           <div className="text-[10px] uppercase tracking-[0.25em] text-[#C5A880] font-semibold">
-            Module 3.2.15 (SRS Specification)
+            Hạ Tầng Tòa Nhà • Kiểm Soát Ra Vào
           </div>
           <h2 className="font-serif text-2xl text-white font-bold mt-1">
-            Bãi Đỗ Xe Thông Minh & Camera Nhận Diện Biển Số (AI Smart Parking)
+            Bãi Đỗ Xe Thông Minh & Nhận Diện Biển Số Tự Động
           </h2>
         </div>
 

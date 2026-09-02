@@ -7,39 +7,39 @@ export default function SmartTechSection() {
   const features = [
     {
       icon: Eye,
-      code: 'Module 3.2.10',
+      code: 'An Ninh & FaceID',
       title: 'Vision AI & FaceID Sinh Trắc Học',
       desc: 'Mở sảnh đón và tự động bấm tầng thang máy với độ trễ < 0.5s. Camera AI giám sát phát hiện ngay lập tức khói lửa hoặc xô xát.',
     },
     {
       icon: Activity,
-      code: 'Module 3.2.9',
-      title: 'Chấm Điểm Sức Khỏe Thiết Bị & Dự Báo',
-      desc: 'AI tổng hợp dữ liệu IoT để tính điểm Health Score (0-100) cho thang máy, máy bơm và tự động phát lệnh bảo trì trước khi hỏng hóc.',
+      code: 'Bảo Trì Dự Đoán',
+      title: 'Chấm Điểm Tình Trạng Thiết Bị & Dự Báo',
+      desc: 'AI tổng hợp dữ liệu IoT để tính điểm Health Score cho thang máy, máy bơm và tự động phát lệnh bảo trì trước khi hỏng hóc.',
     },
     {
       icon: Zap,
-      code: 'Module 3.2.14',
+      code: 'Năng Lượng Thông Minh',
       title: 'AI Energy & Cảnh Báo Rò Rỉ Nước',
       desc: 'Học thói quen sinh hoạt và phát cảnh báo lập tức nếu phát hiện nước chảy liên tục vào khung giờ 2h - 4h sáng, chống ngập nhà.',
     },
     {
       icon: Car,
-      code: 'Module 3.2.15',
+      code: 'Bãi Xe Tự Động',
       title: 'Bãi Đỗ Xe Thông Minh ALPR',
       desc: 'Nhận diện biển số xe tốc độ cao trong mọi điều kiện ánh sáng, kiểm soát sức chứa hầm tự động đóng/mở barrier an toàn.',
     },
     {
       icon: MessageSquare,
-      code: 'Module 3.2.7',
+      code: 'Trợ Lý Ảo 24/7',
       title: 'Trợ Lý Ảo Skyline AI Concierge 24/7',
-      desc: 'Tích hợp RAG đọc hiểu toàn bộ Sổ tay cư dân và Nội quy tòa nhà để giải đáp thắc mắc tức thời và chuyển tiếp Lễ tân khi cần.',
+      desc: 'Đọc hiểu toàn bộ Sổ tay cư dân và Nội quy tòa nhà để giải đáp thắc mắc tức thời và chuyển tiếp Ban Quản Lý khi cần.',
     },
     {
       icon: FileCheck,
-      code: 'Module 3.2.11',
-      title: 'AI Billing & Rà Soát Hóa Đơn Bất Thường',
-      desc: 'Tự động bôi đỏ cảnh báo các căn hộ có chi phí điện nước biến động > 50% trước ngày phát hành để Kế toán rà soát chống sai sót.',
+      code: 'Rà Soát Tài Chính',
+      title: 'Smart Billing & Rà Soát Hóa Đơn Tự Động',
+      desc: 'Tự động phát hiện các căn hộ có chi phí điện nước biến động bất thường trước ngày phát hành để bộ phận quản lý rà soát.',
     },
   ];
 
@@ -52,7 +52,7 @@ export default function SmartTechSection() {
             Công Nghệ Tự Động Hóa
           </div>
           <h2 className="text-3xl sm:text-4xl font-serif text-[#FAFAFA]">
-            Hệ Sinh Thái 15 Module AI Vận Hành Tòa Nhà
+            Hệ Sinh Thái Công Nghệ Thông Minh Vận Hành Tòa Nhà
           </h2>
           <p className="text-gray-400 text-sm sm:text-base font-light">
             Số hóa toàn diện từ quản lý vận hành, bảo dưỡng dự đoán, quản lý năng lượng đến an ninh thông minh.

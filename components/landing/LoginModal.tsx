@@ -324,7 +324,7 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
                 <span className="flex items-center gap-1.5">
                   <Smartphone className="w-3.5 h-3.5 text-[#C5A880]" /> Số Điện Thoại / Căn Hộ:
                 </span>
-                <span className="text-[10px] text-gray-400 font-mono">Đối chiếu CSDL Face Vector</span>
+                <span className="text-[10px] text-gray-400 font-mono">Xác thực tài khoản</span>
               </label>
               <input
                 type="text"
@@ -362,17 +362,17 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
                 )}
                 {faceScanStatus === 'SCANNING' && (
                   <span className="text-[11px] text-amber-400 font-mono flex items-center gap-1.5 animate-pulse">
-                    <RefreshCw className="w-3.5 h-3.5 animate-spin" /> Đang định vị khuôn mặt (Face Detection)...
+                    <RefreshCw className="w-3.5 h-3.5 animate-spin" /> Đang định vị khuôn mặt...
                   </span>
                 )}
                 {faceScanStatus === 'LIVENESS' && (
                   <span className="text-[11px] text-blue-400 font-mono flex items-center gap-1.5 animate-pulse">
-                    <RefreshCw className="w-3.5 h-3.5 animate-spin" /> Kiểm tra thực thể sống Liveness Check...
+                    <RefreshCw className="w-3.5 h-3.5 animate-spin" /> Kiểm tra độ chính xác...
                   </span>
                 )}
                 {faceScanStatus === 'MATCHING' && (
                   <span className="text-[11px] text-[#C5A880] font-mono flex items-center gap-1.5 animate-pulse">
-                    <RefreshCw className="w-3.5 h-3.5 animate-spin" /> So khớp Face Vector 512D...
+                    <RefreshCw className="w-3.5 h-3.5 animate-spin" /> Đang đối chiếu hồ sơ...
                   </span>
                 )}
                 {faceScanStatus === 'SUCCESS' && (

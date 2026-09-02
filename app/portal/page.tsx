@@ -225,11 +225,11 @@ export default function PortalPage() {
                   <div className="p-10 bg-[#121820] border border-[#C5A880]/80 text-center space-y-4 max-w-2xl mx-auto my-12 shadow-2xl animate-fadeIn">
                     <ShieldAlert className="w-12 h-12 text-[#C5A880] mx-auto" />
                     <h3 className="font-serif text-xl font-bold text-white">
-                      Tính Năng Dành Riêng Cho Chủ Hộ Đứng Tên (Owner Only)
+                      Tính Năng Dành Riêng Cho Chủ Hộ Đứng Tên
                     </h3>
                     <div className="p-4 bg-[#161B22] border border-[#222B35] text-xs text-gray-300 space-y-2 text-left">
                       <p>
-                        <strong>Căn cứ Điều 2.3 & 5.1 Tài liệu Đặc tả SRS:</strong>
+                        <strong>Quy định Phân quyền Cư dân Tòa nhà:</strong>
                       </p>
                       <p className="text-gray-400">
                         • Quyền Tài chính (Hóa đơn, thanh toán), Quyền Tự trị (Thêm/xóa thành viên) và Quyền Biểu quyết pháp lý (Bầu BQT, Đóng quỹ) <strong>thuộc độc quyền của Chủ hộ (Owner)</strong>.

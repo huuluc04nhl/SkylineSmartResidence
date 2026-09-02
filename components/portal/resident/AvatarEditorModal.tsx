@@ -346,7 +346,7 @@ export default function AvatarEditorModal({
           onClose();
         }, 1200);
       } else {
-        setSaveError('Không thể cập nhật ảnh đại diện lên máy chủ NKS.');
+        setSaveError('Không thể cập nhật ảnh đại diện. Vui lòng thử lại.');
       }
     } catch (err: any) {
       console.error('Error saving avatar:', err);
@@ -668,7 +668,7 @@ export default function AvatarEditorModal({
                 {saveSuccess && (
                   <div className="p-3 bg-emerald-950/70 border border-emerald-500/50 text-emerald-300 text-xs flex items-center gap-2 rounded animate-fadeIn">
                     <Check className="w-4 h-4 flex-shrink-0" />
-                    <span>Đã cập nhật ảnh đại diện lên máy chủ NKS thành công!</span>
+                    <span>Đã cập nhật ảnh đại diện thành công!</span>
                   </div>
                 )}
                 {saveError && (

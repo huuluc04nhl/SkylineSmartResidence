@@ -161,7 +161,7 @@ export default function AdminDashboard() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#222B35] pb-4">
         <div>
           <div className="text-[10px] uppercase tracking-[0.25em] text-[#C5A880] font-bold flex items-center gap-1.5">
-            <Sparkles className="w-3.5 h-3.5" /> Module 3.2.6 & 3.2.10 • SRS Central Command
+            <Sparkles className="w-3.5 h-3.5" /> Trung Tâm Chỉ Huy Vận Hành Tòa Nhà
           </div>
           <h2 className="font-serif text-2xl sm:text-3xl text-white font-bold mt-1 tracking-wide">
             Trung Tâm Vận Hành & Bản Đồ Cảnh Báo Toàn Tòa Nhà

@@ -22,10 +22,10 @@ export default function FacilityBook() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#222B35] pb-4">
         <div>
           <div className="text-[10px] uppercase tracking-[0.25em] text-[#C5A880] font-semibold">
-            Module 3.2.5 (SRS Specification)
+            Tiện Ích Cao Cấp • Dành Cho Cư Dân
           </div>
           <h2 className="font-serif text-2xl text-white font-bold mt-1">
-            Đặt Chỗ Tiện Ích Chung (Facility Booking)
+            Đặt Chỗ Tiện Ích Đặc Quyền
           </h2>
         </div>
 

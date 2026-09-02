@@ -30,10 +30,10 @@ export default function BillingStudio() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#222B35] pb-4">
         <div>
           <div className="text-[10px] uppercase tracking-[0.25em] text-[#C5A880] font-semibold">
-            Module 3.2.11 (SRS Specification)
+            Quản Trị Tài Chính • Hóa Đơn & Dịch Vụ
           </div>
           <h2 className="font-serif text-2xl text-white font-bold mt-1">
-            Studio Rà Soát Hóa Đơn & AI Phát Hiện Bất Thường (Smart Billing Studio)
+            Quản Lý & Rà Soát Hóa Đơn Căn Hộ
           </h2>
         </div>
 

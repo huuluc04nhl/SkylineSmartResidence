@@ -59,7 +59,7 @@ export default function FinanceBilling() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#222B35] pb-4">
         <div>
           <div className="text-[10px] uppercase tracking-[0.25em] text-[#C5A880] font-semibold flex items-center gap-1.5">
-            <Shield className="w-3.5 h-3.5" /> Module 3.2.11 & 3.2.14 • Tài Chính & Cảnh Báo AI (Chủ Hộ)
+            <Shield className="w-3.5 h-3.5" /> Quản Lý Tài Chính & Hóa Đơn Căn Hộ
           </div>
           <h2 className="font-serif text-2xl text-white font-bold mt-1">
             Hóa Đơn Dịch Vụ & Cổng Thanh Toán Trực Tuyến

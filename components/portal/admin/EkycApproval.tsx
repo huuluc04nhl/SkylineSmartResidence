@@ -41,7 +41,7 @@ export default function EkycApproval() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#222B35] pb-4">
         <div>
           <div className="text-[10px] uppercase tracking-[0.25em] text-[#C5A880] font-semibold">
-            Module 3.2.1 (SRS Specification)
+            Hồ Sơ Cư Dân • Xác Thực Danh Tính
           </div>
           <h2 className="font-serif text-2xl text-white font-bold mt-1">
             Phê Duyệt Hồ Sơ Định Danh e-KYC & Cấp Quyền FaceID
@@ -50,7 +50,7 @@ export default function EkycApproval() {
 
         <div className="flex items-center gap-2 text-xs text-gray-300">
           <span className="px-3 py-1 bg-[#161B22] border border-[#2D3748] text-[#C5A880]">
-            AI OCR + Face Recognition Matching (Vector 512)
+            Xác Minh Tự Động & So Khớp Khuôn Mặt
           </span>
         </div>
       </div>
@@ -116,7 +116,7 @@ export default function EkycApproval() {
                         onClick={() => handleApprove(user.id)}
                         className="py-2.5 bg-[#C5A880] hover:bg-white text-[#0D1117] text-xs font-bold uppercase tracking-wider transition-colors flex items-center justify-center gap-1.5"
                       >
-                        <UserCheck className="w-4 h-4" /> Duyệt & Tạo Face Vector
+                        <UserCheck className="w-4 h-4" /> Phê Duyệt & Cấp Quyền FaceID
                       </button>
                       <button className="py-1.5 bg-transparent border border-red-800 hover:bg-red-950 text-red-400 text-xs font-semibold uppercase tracking-wider transition-colors">
                         Từ Chối Hồ Sơ

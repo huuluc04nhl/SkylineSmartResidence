@@ -16,7 +16,7 @@ export default function Footer() {
               Dự án Khu Căn hộ Cao cấp & Hệ thống Quản lý Chung cư Ứng dụng AI Tự động hóa Vận hành.
             </p>
             <div className="text-[11px] text-gray-500">
-              Tác giả SRS: <strong>Nguyễn Hữu Lực</strong> (v1.0.0)
+              Phát triển bởi: <strong>Nguyễn Hữu Lực</strong>
             </div>
           </div>
 
@@ -27,7 +27,7 @@ export default function Footer() {
               <li><a href="#concept" className="hover:text-[#C5A880]">Triết lý thiết kế</a></li>
               <li><a href="#floorplans" className="hover:text-[#C5A880]">Mặt bằng căn hộ</a></li>
               <li><a href="#amenities" className="hover:text-[#C5A880]">Tiện ích đặc quyền</a></li>
-              <li><a href="#smart-tech" className="hover:text-[#C5A880]">15 Phân hệ AI</a></li>
+              <li><a href="#smart-tech" className="hover:text-[#C5A880]">Công nghệ thông minh</a></li>
             </ul>
           </div>
 

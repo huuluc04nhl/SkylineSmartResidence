@@ -240,7 +240,7 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
         setOcrFilledNotice(false);
         setTimeout(() => setSavedSuccess(false), 4000);
       } else {
-        setSaveError('Không thể lưu thông tin vào máy chủ NKS.');
+        setSaveError('Không thể lưu thông tin. Vui lòng thử lại sau.');
       }
     } catch (err: any) {
       console.warn('NKS save info error', err);
@@ -331,7 +331,7 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
       setIsScanningOcr(false);
       setMatchScore(99.9);
       setEkycStatus('VERIFIED');
-      alert('✨ AI Vision đã kích hoạt Face Vector 512D và đồng bộ quyền mở cổng Barrier Sảnh A/B & Thang máy!');
+      alert('✨ Đã kích hoạt nhận diện khuôn mặt (FaceID) và phân quyền mở sảnh đón, thang máy thành công!');
     }, 1200);
   };
 

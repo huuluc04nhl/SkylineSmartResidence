@@ -148,10 +148,10 @@ export default function AiConciergePage({ currentUser, onNavigateModule }: AiCon
         actionButton = { label: 'Tạo Phiếu Kỹ Thuật Khẩn Cấp (SLA 60p)', moduleId: 'resident-tickets' };
         suggestions = ['Tra cứu tiến độ kỹ thuật viên', 'Gọi hotline ban quản lý 1900 1088'];
       } else if (lower.includes('faceid') || lower.includes('người nhà') || lower.includes('thành viên') || lower.includes('cccd')) {
-        aiReply = `Để cấp quyền FaceID hoặc thẻ ra vào cho thành viên/người nhà Căn ${aptCode}, Quý chủ hộ chỉ cần vào mục "Quản Lý Cư Dân & e-KYC", bấm [Thêm Thành Viên Cư Dân] và quét CCCD (tích hợp Tesseract OCR tự điền trong 3 giây). Hệ thống Barrier sẽ tự động kích hoạt nhận diện khuôn mặt tức thì!`;
-        ragSource = 'Hệ Thống Kiểm Soát Ra Vào Sinh Trắc Học 512D Face Vector';
+        aiReply = `Để cấp quyền FaceID hoặc thẻ ra vào cho thành viên/người nhà Căn ${aptCode}, Quý chủ hộ chỉ cần vào mục "Quản Lý Cư Dân & e-KYC", bấm [Thêm Thành Viên Cư Dân] và quét CCCD (tự động nhận diện thông tin trong 3 giây). Hệ thống sẽ tự động kích hoạt mở cửa và phân quyền nhận diện khuôn mặt tức thì!`;
+        ragSource = 'Hệ Thống Kiểm Soát Ra Vào & FaceID Tòa Nhà';
         actionButton = { label: 'Quản Lý Cư Dân & e-KYC', moduleId: 'resident-family' };
-        suggestions = ['Cấp mã QR đón khách vãng lai', 'Gia hạn thời gian lưu trú'];
+        suggestions = ['Tra cứu nội quy tòa nhà', 'Đăng ký gửi xe ô tô Hầm B1', 'Cập nhật định danh e-KYC'];
       } else {
         aiReply = `Dạ, tôi đã tra cứu kho tri thức RAG của SKYLINE Smart Residence về nội dung "${query}". Tôi đang đồng bộ dữ liệu tới Ban Quản Lý. Bạn có thể bấm vào các chủ đề gợi ý bên dưới hoặc kết nối trực tiếp với nhân viên trực ban nhé!`;
         ragSource = 'Cơ Sở Dữ Liệu Quản Trị Tòa Nhà Thông Minh SKYLINE RAG v2.4';
@@ -170,7 +170,7 @@ export default function AiConciergePage({ currentUser, onNavigateModule }: AiCon
 
       setMessages((prev) => [...prev, aiMsg]);
       setIsTyping(false);
-    }, 700);
+    }, 1200);
   };
 
   const handleAction = (modId: string) => {
@@ -185,12 +185,12 @@ export default function AiConciergePage({ currentUser, onNavigateModule }: AiCon
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#222B35] pb-4">
         <div>
           <div className="text-[10px] uppercase tracking-[0.25em] text-[#C5A880] font-semibold flex items-center gap-1.5">
-            <Bot className="w-4 h-4 text-[#C5A880]" /> Module 3.2.16 • Trợ Lý Ảo Ngữ Nghĩa (RAG AI Concierge)
+            <Bot className="w-4 h-4 text-[#C5A880]" /> Trợ Lý Ảo Thông Minh • Phục Vụ Cư Dân 24/7
           </div>
           <h2 className="font-serif text-2xl text-white font-bold mt-1 flex items-center gap-2.5">
             Trợ Lý Ảo Skyline AI Concierge 24/7
             <span className="px-2 py-0.5 bg-[#C5A880] text-[#0D1117] text-[10px] font-mono font-bold uppercase rounded">
-              Llama-3 RAG v2.4
+              AI Assistant
             </span>
           </h2>
           <p className="text-xs text-gray-400 mt-0.5">
@@ -201,7 +201,7 @@ export default function AiConciergePage({ currentUser, onNavigateModule }: AiCon
         <div className="flex items-center gap-2">
           <span className="px-3 py-1 bg-[#121820] border border-emerald-500/80 text-emerald-300 text-xs font-mono font-bold flex items-center gap-1.5 shadow">
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-            Milvus VectorDB Online (~240ms)
+            Hệ Thống Trực Tuyến 24/7
           </span>
         </div>
       </div>
