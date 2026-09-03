@@ -55,7 +55,7 @@ function PortalContent() {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [isAiChatOpen, setIsAiChatOpen] = useState(false);
 
-  // Auto-route to the appropriate screen according to role on mount or role change
+  // Auto-route to the appropriate screen according to role
   useEffect(() => {
     if (currentUser) {
       const tabParam = searchParams.get('tab');
@@ -80,7 +80,7 @@ function PortalContent() {
         }
       }
     }
-  }, [currentUser?.role]);
+  }, [currentUser, searchParams]);
 
   // 1. Loading State
   if (isLoading) {
@@ -134,23 +134,6 @@ function PortalContent() {
     );
   }
 
-  // Handle Switch Role / Account via Server API
-  const handleSwitchRole = async (newRoleOrUser: string) => {
-    const loggedUser = await login(newRoleOrUser, '12345678');
-    if (loggedUser) {
-      let targetTab = 'resident-home';
-      if (loggedUser.role === 'ADMIN') {
-        targetTab = 'admin-dashboard';
-      } else if (loggedUser.role === 'TECHNICIAN') {
-        targetTab = 'admin-kanban';
-      } else {
-        targetTab = 'resident-home';
-      }
-      setActiveModule(targetTab);
-      router.replace(`/portal?tab=${targetTab}`);
-    }
-  };
-
   const handleLogout = async () => {
     await logout();
     router.push('/');
@@ -158,7 +141,6 @@ function PortalContent() {
 
   const handleSelectModule = (modId: string) => {
     setActiveModule(modId);
-    router.replace(`/portal?tab=${modId}`);
   };
 
   const handleSemanticSearchSelect = (targetModuleId: string) => {
@@ -175,7 +157,6 @@ function PortalContent() {
       {/* Topbar Header (Fixed Top) */}
       <Topbar
         currentUser={currentUser}
-        onSwitchRole={handleSwitchRole}
         onSemanticSearchSelect={handleSemanticSearchSelect}
         onToggleMobileSidebar={() => setIsMobileSidebarOpen(!isMobileSidebarOpen)}
       />

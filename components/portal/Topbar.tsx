@@ -19,7 +19,8 @@ import {
   PhoneCall,
   Flame,
   Radio,
-  SlidersHorizontal
+  SlidersHorizontal,
+  ArrowRight
 } from 'lucide-react';
 import { UserRole, User as UserType } from '@/lib/dataStore';
 import SkylineLogo from '@/components/shared/SkylineLogo';
@@ -27,14 +28,12 @@ import { useAuth } from '@/lib/authContext';
 
 interface TopbarProps {
   currentUser: UserType;
-  onSwitchRole: (role: UserRole) => void;
   onSemanticSearchSelect?: (action: string) => void;
   onToggleMobileSidebar?: () => void;
 }
 
 export default function Topbar({ 
   currentUser, 
-  onSwitchRole, 
   onSemanticSearchSelect,
   onToggleMobileSidebar
 }: TopbarProps) {
@@ -215,19 +214,19 @@ export default function Topbar({
           )}
         </div>
 
-        {/* User Role Badge & Instant Switcher Dropdown */}
+        {/* Authentic User Profile Menu (No Fake Role Switcher) */}
         <div className="relative">
           <button
             onClick={() => setShowRoleDropdown(!showRoleDropdown)}
-            className="px-2.5 sm:px-3 py-1.5 bg-[#161B22] border border-[#2D3748] hover:border-[#C5A880] text-xs flex items-center gap-2 text-gray-200 transition-colors shadow rounded-lg"
+            className="px-2.5 sm:px-3 py-1.5 bg-[#161B22] border border-[#2D3748] hover:border-[#C5A880] text-xs flex items-center gap-2 text-gray-200 transition-colors shadow rounded"
           >
-            <div className="w-6 h-6 rounded-full overflow-hidden border border-[#C5A880]/60 flex-shrink-0 bg-[#0D1117]">
+            <div className="w-6 h-6 rounded-full overflow-hidden border border-[#C5A880]/60 flex-shrink-0 bg-[#0E131A]">
               <img
                 src={currentUser.avatar_url ? currentUser.avatar_url.replace('data.nks.vn//', 'data.nks.vn/') : 'https://data.nks.vn/storage/users/default.png'}
+                alt={userName}
                 onError={(e) => {
                   e.currentTarget.src = 'https://data.nks.vn/storage/users/default.png';
                 }}
-                alt={userName}
                 className="w-full h-full object-cover"
               />
             </div>
@@ -236,90 +235,89 @@ export default function Topbar({
                 {userName}
               </div>
               <div className="text-[9px] text-[#C5A880] font-mono uppercase font-bold tracking-wider">
-                {currentUser.role === 'ADMIN' ? 'Ban Quản Lý (Admin)' : currentUser.role === 'TECHNICIAN' ? 'Kỹ Thuật Viên' : currentUser.role === 'OWNER' ? `Căn ${currentUser.apartment_code || '12A05'} (Chủ Hộ)` : `Căn ${currentUser.apartment_code || '12A05'} (Người Nhà)`}
+                {isAdmin ? 'Ban Quản Lý' : isOwner ? `Căn ${currentUser.apartment_code || '12A05'} (Chủ Hộ)` : `Căn ${currentUser.apartment_code || '12A05'} (Người Nhà)`}
               </div>
             </div>
             <ChevronDown className="w-3.5 h-3.5 text-gray-400 ml-1" />
           </button>
 
           {showRoleDropdown && (
-            <div className="absolute right-0 top-full mt-2 w-72 bg-[#121820] border border-[#C5A880] p-2.5 shadow-2xl z-50 space-y-1.5 rounded-xl animate-fadeIn">
-              <div className="px-2 py-1 text-[10px] text-[#C5A880] uppercase tracking-wider font-semibold border-b border-[#222B35] flex items-center justify-between">
-                <span>Chuyển đổi vai trò tài khoản:</span>
-                <span className="text-[9px] text-gray-400 font-mono">Role Matrix</span>
-              </div>
-              {[
-                { 
-                  role: 'ADMIN' as UserRole, 
-                  username: 'nks.manager01@gmail.com', 
-                  name: '🛡️ Ban Quản Lý (Admin)', 
-                  desc: 'Quản trị điều hành, duyệt e-KYC & barrier',
-                  badge: 'ADMIN' 
-                },
-                { 
-                  role: 'TECHNICIAN' as UserRole, 
-                  username: 'nks.manager02@gmail.com', 
-                  name: '🔧 Kỹ Thuật Viên', 
-                  desc: 'Điều phối sự cố SLA, thiết bị IoT & bãi xe',
-                  badge: 'TECH' 
-                },
-                { 
-                  role: 'OWNER' as UserRole, 
-                  username: 'huuluc04@gmail.com', 
-                  name: '👑 Chủ Hộ (Căn 12A05)', 
-                  desc: 'Nguyễn Hữu Lực • Độc quyền tài chính, thành viên',
-                  badge: 'CHỦ HỘ' 
-                },
-                { 
-                  role: 'TENANT' as UserRole, 
-                  username: 'nguyenhuunhut1309@gmail.com', 
-                  name: '👤 Người Nhà (Căn 12A05)', 
-                  desc: 'Nguyễn Hữu Nhựt • Sinh hoạt tiện ích, FaceID',
-                  badge: 'NGƯỜI NHÀ' 
-                },
-              ].map((r, idx) => {
-                const isCurrent = currentUser.role === r.role || 
-                  (currentUser.email && currentUser.email.toLowerCase() === r.username.toLowerCase()) ||
-                  (currentUser.username && currentUser.username.toLowerCase() === r.username.toLowerCase());
-                return (
-                  <button
-                    key={idx}
-                    type="button"
-                    onClick={() => {
-                      onSwitchRole(r.username as any);
-                      setShowRoleDropdown(false);
+            <div className="absolute right-0 top-full mt-2 w-72 bg-[#121820] border border-[#C5A880] p-3 shadow-2xl z-50 space-y-3 rounded-lg animate-fadeIn">
+              {/* Profile Summary Header */}
+              <div className="flex items-center gap-3 pb-3 border-b border-[#222B35]">
+                <div className="w-10 h-10 rounded-full overflow-hidden border border-[#C5A880] flex-shrink-0 bg-[#0E131A]">
+                  <img
+                    src={currentUser.avatar_url ? currentUser.avatar_url.replace('data.nks.vn//', 'data.nks.vn/') : 'https://data.nks.vn/storage/users/default.png'}
+                    alt={userName}
+                    onError={(e) => {
+                      e.currentTarget.src = 'https://data.nks.vn/storage/users/default.png';
                     }}
-                    className={`w-full text-left p-2 text-xs flex items-center justify-between transition-colors rounded-lg ${
-                      isCurrent ? 'bg-[#C5A880] text-[#0D1117] font-bold shadow' : 'text-gray-300 hover:bg-[#1C2533]'
-                    }`}
-                  >
-                    <div className="truncate pr-1">
-                      <div className="truncate font-semibold flex items-center gap-1.5">
-                        <span>{r.name}</span>
-                        <span className={`text-[8px] font-mono px-1 py-0.2 rounded border ${
-                          isCurrent ? 'bg-black/20 text-[#0D1117] border-black/30' : 'bg-[#161B22] text-[#C5A880] border-[#2D3748]'
-                        }`}>
-                          {r.badge}
-                        </span>
-                      </div>
-                      <div className={`text-[10px] mt-0.5 truncate ${isCurrent ? 'text-gray-900 font-medium' : 'text-gray-400'}`}>
-                        {r.desc}
-                      </div>
-                    </div>
-                    {isCurrent && <Check className="w-4 h-4 flex-shrink-0" />}
-                  </button>
-                );
-              })}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="font-bold text-white text-xs truncate">{userName}</div>
+                  <div className="text-[10px] text-gray-400 truncate">{currentUser.email || currentUser.username}</div>
+                  <div className="mt-1">
+                    <span className={`px-2 py-0.5 text-[9px] font-bold uppercase rounded border ${
+                      isAdmin 
+                        ? 'bg-purple-950 text-purple-300 border-purple-600' 
+                        : isOwner 
+                        ? 'bg-amber-950 text-amber-300 border-amber-600' 
+                        : 'bg-blue-950 text-blue-300 border-blue-600'
+                    }`}>
+                      {isAdmin ? '🛡️ Ban Quản Lý' : isOwner ? '👑 Chủ Hộ Căn Hộ' : '👤 Người Nhà Căn Hộ'}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Account Quick Details */}
+              <div className="space-y-1.5 text-[11px] text-gray-300 bg-[#161D26] p-2.5 rounded border border-[#222B35]">
+                <div className="flex justify-between">
+                  <span className="text-gray-400">Vị trí căn:</span>
+                  <span className="font-mono font-bold text-white">{currentUser.apartment_code || '12A05'}</span>
+                </div>
+                {currentUser.phone && (
+                  <div className="flex justify-between">
+                    <span className="text-gray-400">Số điện thoại:</span>
+                    <span className="font-mono text-gray-200">{currentUser.phone}</span>
+                  </div>
+                )}
+                {currentUser.id_card_no && (
+                  <div className="flex justify-between">
+                    <span className="text-gray-400">Số CCCD:</span>
+                    <span className="font-mono text-[#C5A880]">{currentUser.id_card_no}</span>
+                  </div>
+                )}
+              </div>
+
+              {/* Quick Navigation to Profile (if Resident) */}
+              {!isAdmin && onSemanticSearchSelect && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    onSemanticSearchSelect('resident-profile');
+                    setShowRoleDropdown(false);
+                  }}
+                  className="w-full py-2 px-2.5 bg-[#1C2533] hover:bg-[#253245] text-white text-xs font-semibold rounded flex items-center justify-between border border-[#2D3748] transition-colors"
+                >
+                  <span className="flex items-center gap-1.5">
+                    <User className="w-3.5 h-3.5 text-[#C5A880]" /> Hồ Sơ Cá Nhân & FaceID
+                  </span>
+                  <ArrowRight className="w-3.5 h-3.5 text-gray-400" />
+                </button>
+              )}
 
               {/* Logout Button */}
-              <div className="pt-2 border-t border-[#222B35] mt-1">
+              <div className="pt-2 border-t border-[#222B35]">
                 <button
                   type="button"
                   onClick={handleLogout}
-                  className="w-full p-2 text-left text-xs text-rose-400 hover:bg-rose-950/50 flex items-center gap-2 transition-colors font-semibold rounded-lg"
+                  className="w-full p-2 text-left text-xs text-rose-400 hover:bg-rose-950/50 flex items-center gap-2 transition-colors font-semibold rounded"
                 >
                   <LogOut className="w-3.5 h-3.5" />
-                  Đăng Xuất Khỏi Hệ Thống
+                  Đăng Xuất Tài Khoản
                 </button>
               </div>
             </div>
