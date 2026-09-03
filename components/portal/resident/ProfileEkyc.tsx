@@ -51,6 +51,7 @@ import {
 import { useAuth } from '@/lib/authContext';
 import CccdOcrScannerModal from './CccdOcrScannerModal';
 import AvatarEditorModal from './AvatarEditorModal';
+import CccdCardViewer from '@/components/portal/shared/CccdCardViewer';
 import { OcrCccdResult, formatToDateInput, formatToDisplayDate, formatToApiDate } from '@/lib/ocrParser';
 import { 
   getEkycForUser, 
@@ -71,6 +72,7 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
   const [activeTab, setActiveTab] = useState<'INFO' | 'EKYC'>('INFO');
   const [isOcrModalOpen, setIsOcrModalOpen] = useState(false);
   const [isAvatarModalOpen, setIsAvatarModalOpen] = useState(false);
+  const [isCardViewerOpen, setIsCardViewerOpen] = useState(false);
   const [isLoadingApi, setIsLoadingApi] = useState(true);
   const [ocrFilledNotice, setOcrFilledNotice] = useState(false);
 
@@ -760,6 +762,14 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
             <div className="flex flex-wrap items-center gap-2.5 flex-shrink-0">
               <button
                 type="button"
+                onClick={() => setIsCardViewerOpen(true)}
+                className="px-3.5 py-2.5 bg-[#161B22] hover:bg-[#1C2533] border border-[#C5A880] text-[#C5A880] text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-2 shadow rounded"
+              >
+                <Eye className="w-4 h-4" /> Xem Ảnh Thẻ CCCD
+              </button>
+
+              <button
+                type="button"
                 onClick={() => setIsOcrModalOpen(true)}
                 className="px-3.5 py-2.5 bg-[#1C2533] hover:bg-[#C5A880] hover:text-[#0D1117] border border-[#C5A880] text-[#C5A880] text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-2 shadow rounded"
               >
@@ -879,6 +889,28 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
           await refreshUser();
           setSavedSuccess(true);
           setTimeout(() => setSavedSuccess(false), 3000);
+        }}
+      />
+
+      {/* Exact Resident CCCD Card Viewer (Front & Back) */}
+      <CccdCardViewer
+        isOpen={isCardViewerOpen}
+        onClose={() => setIsCardViewerOpen(false)}
+        fullName={fullName || currentUser.full_name}
+        idCardNo={idCardNumber || currentUser.id_card_no || '067204000961'}
+        apartmentCode={aptCode}
+        frontImage={cccdImage}
+        backImage={cccdBackImage}
+        idDate={idDate || '18/08/2022'}
+        idPlace={idPlace || 'Cục Cảnh sát QLHC về TTXH'}
+        dob={birthday || '18/08/2004'}
+        gender={gender === '1' ? 'Nam' : 'Nữ'}
+        pob={pob || 'Quảng Trị'}
+        avatarUrl={avatarUrl || currentUser.avatar_url || ''}
+        allowUpload={true}
+        onUpdateImages={(front, back) => {
+          setCccdImage(front);
+          setCccdBackImage(back);
         }}
       />
     </div>

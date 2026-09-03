@@ -25,6 +25,7 @@ import {
   EkycRequest, 
   EkycStatus 
 } from '@/lib/ekycStore';
+import CccdCardViewer from '@/components/portal/shared/CccdCardViewer';
 
 export default function EkycApproval() {
   const [requests, setRequests] = useState<EkycRequest[]>([]);
@@ -281,59 +282,22 @@ export default function EkycApproval() {
         )}
       </div>
 
-      {/* Modal: View ID Card Images (Front & Back) */}
+      {/* Real-time CCCD Card Inspection Viewer */}
       {selectedRequest && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-sm animate-fadeIn">
-          <div className="bg-[#0D1117] border border-[#C5A880] max-w-2xl w-full p-5 rounded-xl space-y-4 shadow-2xl">
-            <div className="flex items-center justify-between border-b border-[#222B35] pb-3">
-              <div>
-                <h3 className="font-serif text-lg font-bold text-white">Ảnh Thẻ Căn Cước (e-KYC)</h3>
-                <div className="text-xs text-[#C5A880]">{selectedRequest.fullName} • Căn {selectedRequest.apartmentCode} • Số: {selectedRequest.idCardNo}</div>
-              </div>
-              <button
-                type="button"
-                onClick={() => setSelectedRequest(null)}
-                className="text-gray-400 hover:text-white p-1"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="space-y-1.5 text-center">
-                <span className="text-xs font-semibold text-gray-300">1. Mặt Trước Thẻ CCCD</span>
-                <div className="h-44 bg-black border border-[#222B35] rounded-lg overflow-hidden flex items-center justify-center">
-                  <img
-                    src={selectedRequest.idCardFrontUrl}
-                    alt="CCCD Mặt Trước"
-                    className="w-full h-full object-contain"
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-1.5 text-center">
-                <span className="text-xs font-semibold text-gray-300">2. Mặt Sau Thẻ CCCD</span>
-                <div className="h-44 bg-black border border-[#222B35] rounded-lg overflow-hidden flex items-center justify-center">
-                  <img
-                    src={selectedRequest.idCardBackUrl}
-                    alt="CCCD Mặt Sau"
-                    className="w-full h-full object-contain"
-                  />
-                </div>
-              </div>
-            </div>
-
-            <div className="flex justify-end pt-2 border-t border-[#222B35]">
-              <button
-                type="button"
-                onClick={() => setSelectedRequest(null)}
-                className="px-4 py-2 bg-[#1C2533] hover:bg-[#253245] text-white text-xs font-semibold rounded"
-              >
-                Đóng
-              </button>
-            </div>
-          </div>
-        </div>
+        <CccdCardViewer
+          isOpen={Boolean(selectedRequest)}
+          onClose={() => setSelectedRequest(null)}
+          fullName={selectedRequest.fullName}
+          idCardNo={selectedRequest.idCardNo}
+          apartmentCode={selectedRequest.apartmentCode}
+          frontImage={selectedRequest.idCardFrontUrl}
+          backImage={selectedRequest.idCardBackUrl}
+          idDate={selectedRequest.idDate}
+          idPlace={selectedRequest.idPlace}
+          dob={selectedRequest.dob}
+          pob={selectedRequest.pob}
+          avatarUrl={selectedRequest.avatarUrl}
+        />
       )}
 
       {/* Modal: Rejection Reason Dialog */}

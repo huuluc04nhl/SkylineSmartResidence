@@ -31,7 +31,7 @@ export interface EkycRequest {
   rejectionReason?: string;
 }
 
-const STORAGE_KEY = 'skyline_ekyc_requests_v2';
+const STORAGE_KEY = 'skyline_ekyc_requests_v3';
 
 export const INITIAL_EKYC_REQUESTS: EkycRequest[] = [
   {
@@ -43,14 +43,14 @@ export const INITIAL_EKYC_REQUESTS: EkycRequest[] = [
     phone: '0364967082',
     email: 'huuluc04@gmail.com',
     idCardNo: '067204000961',
-    idDate: '2022-08-18',
+    idDate: '18/08/2022',
     idPlace: 'Cục Cảnh sát QLHC về TTXH',
-    dob: '2004-08-18',
+    dob: '18/08/2004',
     pob: 'Triệu Trạch, Triệu Phong, Quảng Trị',
     faceScore: 99.4,
     avatarUrl: 'https://data.nks.vn/storage/users/202609021654232258.jpg',
-    idCardFrontUrl: 'https://images.unsplash.com/photo-1578852612716-854e527abf2e?w=600',
-    idCardBackUrl: 'https://images.unsplash.com/photo-1578852612716-854e527abf2e?w=600',
+    idCardFrontUrl: '',
+    idCardBackUrl: '',
     submittedAt: '02/09/2026 14:30',
     status: 'APPROVED',
     reviewedAt: '02/09/2026 15:10',
@@ -65,13 +65,14 @@ export const INITIAL_EKYC_REQUESTS: EkycRequest[] = [
     phone: '0917795211',
     email: 'nguyenhuunhut1309@gmail.com',
     idCardNo: '079198005678',
-    idDate: '2023-01-10',
+    idDate: '10/01/2023',
     idPlace: 'Cục Cảnh sát QLHC về TTXH',
-    dob: '2004-09-02',
+    dob: '02/09/2004',
+    pob: 'TP. Hồ Chí Minh',
     faceScore: 98.6,
     avatarUrl: 'https://data.nks.vn/storage/users/202607191405195335.jpg',
-    idCardFrontUrl: 'https://images.unsplash.com/photo-1578852612716-854e527abf2e?w=600',
-    idCardBackUrl: 'https://images.unsplash.com/photo-1578852612716-854e527abf2e?w=600',
+    idCardFrontUrl: '',
+    idCardBackUrl: '',
     submittedAt: '03/09/2026 09:15',
     status: 'PENDING',
   },
@@ -84,14 +85,14 @@ export const INITIAL_EKYC_REQUESTS: EkycRequest[] = [
     phone: '0325524482',
     email: 'vanncuong1614@gmail.com',
     idCardNo: '074204001708',
-    idDate: '2022-11-20',
+    idDate: '20/11/2022',
     idPlace: 'Cục Cảnh sát QLHC về TTXH',
-    dob: '2004-01-16',
+    dob: '16/01/2004',
     pob: 'Tỉnh Thanh Hóa',
     faceScore: 97.8,
     avatarUrl: 'https://data.nks.vn/storage/users/202608301345022366.jpg',
-    idCardFrontUrl: 'https://images.unsplash.com/photo-1578852612716-854e527abf2e?w=600',
-    idCardBackUrl: 'https://images.unsplash.com/photo-1578852612716-854e527abf2e?w=600',
+    idCardFrontUrl: '',
+    idCardBackUrl: '',
     submittedAt: '03/09/2026 10:45',
     status: 'PENDING',
   }
