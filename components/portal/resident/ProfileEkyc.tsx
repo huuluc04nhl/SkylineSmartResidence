@@ -318,6 +318,10 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
       alert('Vui lòng quét thẻ CCCD hoặc nhập số CCCD trước khi gửi hồ sơ duyệt!');
       return;
     }
+    if (!cccdImage) {
+      alert('Vui lòng quét hoặc tải lên ảnh chụp thật của thẻ Căn cước công dân trước khi gửi duyệt!');
+      return;
+    }
     setIsScanningOcr(true);
     try {
       const req = submitEkycRequest({
@@ -333,13 +337,13 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
         dob: birthday,
         pob: pob,
         avatarUrl: avatarUrl || currentUser.avatar_url || '',
-        idCardFrontUrl: cccdImage || 'https://images.unsplash.com/photo-1578852612716-854e527abf2e?w=600',
-        idCardBackUrl: cccdBackImage || 'https://images.unsplash.com/photo-1578852612716-854e527abf2e?w=600',
+        idCardFrontUrl: cccdImage,
+        idCardBackUrl: cccdBackImage || '',
         faceScore: 98.8,
       });
       setCurrentEkyc(req);
       setEkycStatus('PENDING');
-      alert('✅ Hồ sơ e-KYC đã được chuyển tới Ban Quản Lý tòa nhà để xét duyệt!');
+      alert('✅ Hồ sơ e-KYC kèm ảnh chụp CCCD thật đã được chuyển tới Ban Quản Lý tòa nhà để xét duyệt!');
     } finally {
       setIsScanningOcr(false);
     }
