@@ -110,7 +110,7 @@ export default function Sidebar({
           { id: 'admin-dashboard', label: '1. Trung Tâm Vận Hành (KPI)', shortLabel: 'Trung Tâm KPI', icon: LayoutDashboard },
           { id: 'admin-apartments', label: '2. Quản Lý Căn Hộ (Spaces)', shortLabel: 'Căn Hộ', icon: Building },
           { id: 'admin-ekyc', label: '3. Duyệt Hồ Sơ e-KYC', shortLabel: 'Duyệt e-KYC', icon: UserCheck },
-          { id: 'admin-visitors', label: '4. Duyệt Khách & Quét Mã QR', shortLabel: 'Duyệt Khách QR', icon: QrCode },
+          { id: 'admin-visitors', label: '4. Kiểm Soát Barrier & Quét Mã Khách', shortLabel: 'Quét Mã Barrier', icon: QrCode },
           { id: 'admin-kanban', label: '5. Điều Phối Sự Cố (SLA)', shortLabel: 'Sự Cố SLA', icon: KanbanSquare },
           { id: 'admin-billing', label: '6. Studio Hóa Đơn AI', shortLabel: 'Hóa Đơn AI', icon: Receipt },
           { id: 'admin-devices', label: '7. Sức Khỏe Thiết Bị IoT', shortLabel: 'Thiết Bị IoT', icon: Activity },

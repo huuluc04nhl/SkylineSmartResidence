@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { 
   QrCode, 
   Check, 
@@ -10,65 +10,73 @@ import {
   XCircle, 
   AlertTriangle, 
   Scan, 
-  Search, 
-  Filter, 
-  Building, 
-  Phone, 
-  Car, 
   Lock, 
   Unlock, 
   Camera, 
   RefreshCw, 
   ShieldCheck, 
+  Building,
+  ShieldAlert,
   Sparkles,
-  UserCheck
+  Search,
+  Activity
 } from 'lucide-react';
 import { 
-  VisitorPass, 
-  getVisitorPassesFromStorage, 
-  approveVisitorPass, 
-  rejectVisitorPass, 
   verifyVisitorQr,
   VerificationScanResult
 } from '@/lib/visitorStore';
 
-export default function AdminVisitorControl() {
-  const [passes, setPasses] = useState<VisitorPass[]>([]);
-  const [filterStatus, setFilterStatus] = useState<string>('ALL');
-  const [searchQuery, setSearchQuery] = useState<string>('');
+interface ScanHistoryEntry {
+  id: string;
+  qrCode: string;
+  result: 'VALID' | 'INVALID' | 'EXPIRED';
+  title: string;
+  apartmentCode?: string;
+  timestamp: string;
+}
 
-  // Scanner Simulator State
+export default function AdminVisitorControl() {
   const [customQrInput, setCustomQrInput] = useState('');
   const [scanResult, setScanResult] = useState<VerificationScanResult | null>(null);
-  const [isScanningSimulation, setIsScanningSimulation] = useState(false);
+  const [isScanning, setIsScanning] = useState(false);
   const [barrierState, setBarrierState] = useState<'CLOSED' | 'OPEN' | 'LOCKED'>('CLOSED');
+  
+  // Realtime scan log
+  const [scanHistory, setScanHistory] = useState<ScanHistoryEntry[]>([
+    {
+      id: 'LOG-1',
+      qrCode: 'SKY_TOKEN_12A05_8832_1788299000_A9F2',
+      result: 'VALID',
+      title: 'Mã Hợp Lệ Căn 12A05',
+      apartmentCode: '12A05',
+      timestamp: '11:45:10'
+    },
+    {
+      id: 'LOG-2',
+      qrCode: 'INVALID_QR_FAKE_CODE_001',
+      result: 'INVALID',
+      title: 'Mã Không Hợp Lệ (Khóa Cổng)',
+      timestamp: '11:32:05'
+    },
+    {
+      id: 'LOG-3',
+      qrCode: 'EXP_VISITOR_EXPIRED_MOCK_DATA',
+      result: 'EXPIRED',
+      title: 'Mã Quá Hạn Sử Dụng',
+      apartmentCode: '14B02',
+      timestamp: '10:15:22'
+    }
+  ]);
 
-  const refreshPasses = () => {
-    setPasses(getVisitorPassesFromStorage());
-  };
-
-  useEffect(() => {
-    refreshPasses();
-  }, []);
-
-  const handleApprove = (id: string) => {
-    approveVisitorPass(id, 'BQL Trực Ban Sảnh A');
-    refreshPasses();
-  };
-
-  const handleReject = (id: string) => {
-    rejectVisitorPass(id, 'BQL từ chối - Chưa xác thực nhân thân');
-    refreshPasses();
-  };
-
-  const handleSimulateScan = (qrCodeToTest: string) => {
-    setIsScanningSimulation(true);
+  const handleScan = (qrCodeToTest: string) => {
+    if (!qrCodeToTest.trim()) return;
+    setIsScanning(true);
     setScanResult(null);
 
     setTimeout(() => {
       const result = verifyVisitorQr(qrCodeToTest);
       setScanResult(result);
-      setIsScanningSimulation(false);
+      setIsScanning(false);
 
       if (result.canEnter && result.scanResult === 'VALID') {
         setBarrierState('OPEN');
@@ -77,18 +85,21 @@ export default function AdminVisitorControl() {
       } else {
         setBarrierState('LOCKED');
       }
-    }, 600);
-  };
 
-  // Filter passes
-  const filteredPasses = passes.filter((p) => {
-    const matchesFilter = filterStatus === 'ALL' || p.status === filterStatus;
-    const matchesQuery = !searchQuery || 
-      p.visitorName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      p.apartmentCode.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      p.visitorPhone.includes(searchQuery);
-    return matchesFilter && matchesQuery;
-  });
+      // Add to audit log
+      setScanHistory(prev => [
+        {
+          id: `LOG-${Date.now()}`,
+          qrCode: qrCodeToTest,
+          result: result.scanResult,
+          title: result.title,
+          apartmentCode: result.apartmentCode,
+          timestamp: result.scannedAt
+        },
+        ...prev.slice(0, 9)
+      ]);
+    }, 450);
+  };
 
   return (
     <div className="space-y-6 animate-fadeIn select-none">
@@ -96,257 +107,255 @@ export default function AdminVisitorControl() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#222B35] pb-4">
         <div>
           <div className="text-[10px] uppercase tracking-[0.25em] text-[#C5A880] font-semibold flex items-center gap-1.5">
-            <QrCode className="w-3.5 h-3.5" /> An Ninh Sảnh Đón • Kiểm Soát Khách Vãng Lai
+            <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" /> Trạm Kiểm Soát Ra Vào Tự Động • Sảnh & Barrier
           </div>
           <h2 className="font-serif text-2xl text-white font-bold mt-1">
-            Duyệt Khách Đón & Kiểm Soát Cổng Sảnh (Visitor QR Gate)
+            Kiểm Soát Barrier & Quét Mã Khách
           </h2>
           <p className="text-xs text-gray-400 mt-0.5">
-            Xem xét phê duyệt mã QR đón khách từ cư dân và kiểm soát Barrier sảnh A/B
+            Hệ thống tự động xác thực chữ ký số mã QR của căn hộ, tự động điều khiển Barrier và phân quyền thang máy
           </p>
         </div>
 
         <div className="flex items-center gap-2">
-          <span className="px-3 py-1 bg-amber-950/80 border border-amber-500 text-amber-300 text-xs font-bold rounded">
-            Chờ Duyệt: {passes.filter(p => p.status === 'PENDING_APPROVAL').length}
-          </span>
-          <span className="px-3 py-1 bg-emerald-950/80 border border-emerald-500 text-emerald-300 text-xs font-bold rounded">
-            Đã Duyệt: {passes.filter(p => p.status === 'APPROVED').length}
-          </span>
-        </div>
-      </div>
-
-      {/* SECTION 1: CỔNG QUÉT SCANNER SIMULATOR (3 TRƯỜNG HỢP: ĐÚNG - SAI - HẾT HẠN) */}
-      <div className="p-5 bg-gradient-to-r from-[#121820] to-[#161D26] border border-[#C5A880] rounded-xl space-y-4 shadow-xl">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#222B35] pb-3">
-          <div>
-            <h3 className="font-serif text-lg font-bold text-white flex items-center gap-2">
-              <Scan className="w-5 h-5 text-[#C5A880]" /> Máy Quét Barrier Tại Cổng Sảnh A/B (Gate Scanner)
-            </h3>
-            <p className="text-xs text-gray-400">
-              Kiểm tra trực quan 3 kịch bản: <strong>QR Đúng</strong>, <strong>QR Sai</strong> và <strong>QR Hết Hạn</strong>
-            </p>
-          </div>
-
-          <div className={`px-4 py-1.5 rounded-lg font-bold text-xs font-mono flex items-center gap-2 border ${
+          <div className={`px-4 py-2 rounded-xl font-bold text-xs font-mono flex items-center gap-2 border shadow-lg ${
             barrierState === 'OPEN'
               ? 'bg-emerald-950 text-emerald-300 border-emerald-500 shadow-[0_0_15px_rgba(16,185,129,0.3)]'
               : barrierState === 'LOCKED'
-              ? 'bg-rose-950 text-rose-300 border-rose-500'
-              : 'bg-gray-900 text-gray-400 border-gray-700'
+              ? 'bg-rose-950 text-rose-300 border-rose-500 shadow-[0_0_15px_rgba(244,63,94,0.3)]'
+              : 'bg-[#121820] text-gray-400 border-gray-700'
           }`}>
             {barrierState === 'OPEN' ? <Unlock className="w-4 h-4 text-emerald-400 animate-bounce" /> : <Lock className="w-4 h-4" />}
-            <span>TRẠNG THÁI BARRIER: {barrierState === 'OPEN' ? 'ĐÃ MỞ TỰ ĐỘNG' : barrierState === 'LOCKED' ? 'KHÓA CHẶT' : 'ĐANG ĐÓNG'}</span>
+            <span>BARRIER: {barrierState === 'OPEN' ? 'ĐÃ MỞ (CHO QUA)' : barrierState === 'LOCKED' ? 'KHÓA CỨNG (BÁO ĐỘNG)' : 'ĐANG ĐÓNG (CHỜ QUÉT)'}</span>
           </div>
         </div>
+      </div>
 
-        {/* 3 Quick-Test Buttons */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-          {/* Button 1: QR ĐÚNG */}
-          <button
-            type="button"
-            onClick={() => {
-              const validPass = passes.find(p => p.status === 'APPROVED');
-              handleSimulateScan(validPass ? validPass.qrData : 'SKYLINE_PASS_VALID_12A05_101');
-            }}
-            disabled={isScanningSimulation}
-            className="p-3.5 bg-emerald-950/80 hover:bg-emerald-900 border-2 border-emerald-500 rounded-lg text-left transition-all shadow group"
-          >
-            <div className="flex items-center justify-between mb-1">
-              <span className="text-xs font-bold text-emerald-300 flex items-center gap-1.5 uppercase">
-                <CheckCircle2 className="w-4 h-4 text-emerald-400" /> Mã QR Đúng (Hợp Lệ)
-              </span>
-              <span className="text-[10px] bg-emerald-500 text-black font-bold px-2 py-0.5 rounded">Hợp Lệ</span>
-            </div>
-            <p className="text-[11px] text-emerald-200/80">
-              Mã đã được BQL duyệt & còn hạn. Barrier mở tự động mời khách vào!
-            </p>
-          </button>
-
-          {/* Button 2: QR SAI */}
-          <button
-            type="button"
-            onClick={() => handleSimulateScan('SIM_QR_INVALID')}
-            disabled={isScanningSimulation}
-            className="p-3.5 bg-rose-950/80 hover:bg-rose-900 border-2 border-rose-500 rounded-lg text-left transition-all shadow group"
-          >
-            <div className="flex items-center justify-between mb-1">
-              <span className="text-xs font-bold text-rose-300 flex items-center gap-1.5 uppercase">
-                <XCircle className="w-4 h-4 text-rose-400" /> Mã QR Sai / Chưa Duyệt
-              </span>
-              <span className="text-[10px] bg-rose-500 text-white font-bold px-2 py-0.5 rounded">Không Hợp Lệ</span>
-            </div>
-            <p className="text-[11px] text-rose-200/80">
-              Mã giả mạo, chưa được BQL duyệt hoặc bị từ chối. Khóa Barrier ngay!
-            </p>
-          </button>
-
-          {/* Button 3: QR HẾT HẠN */}
-          <button
-            type="button"
-            onClick={() => {
-              const expiredPass = passes.find(p => p.status === 'EXPIRED');
-              handleSimulateScan(expiredPass ? expiredPass.qrData : 'SKYLINE_PASS_EXPIRED_12A05_103');
-            }}
-            disabled={isScanningSimulation}
-            className="p-3.5 bg-amber-950/80 hover:bg-amber-900 border-2 border-amber-500 rounded-lg text-left transition-all shadow group"
-          >
-            <div className="flex items-center justify-between mb-1">
-              <span className="text-xs font-bold text-amber-300 flex items-center gap-1.5 uppercase">
-                <Clock className="w-4 h-4 text-amber-400" /> Mã QR Quá Hạn
-              </span>
-              <span className="text-[10px] bg-amber-500 text-black font-bold px-2 py-0.5 rounded">Quá Hạn</span>
-            </div>
-            <p className="text-[11px] text-amber-200/80">
-              Mã đã quá thời gian 24 giờ. Từ chối vào, yêu cầu chủ hộ tạo mã mới!
-            </p>
-          </button>
+      {/* Privacy Notice Banner */}
+      <div className="p-3.5 bg-[#121E2A] border border-[#1E3A5F] rounded-xl flex items-center justify-between text-xs text-cyan-200">
+        <div className="flex items-center gap-2">
+          <ShieldCheck className="w-4 h-4 text-cyan-400 flex-shrink-0" />
+          <span>
+            <strong>Cơ Chế Bảo Mật Tự Động:</strong> Ban Quản Lý chỉ kiểm soát tính hợp lệ của mã ra vào qua hệ thống máy quét. Danh tính và đời tư khách thăm được bảo mật trực tiếp theo thẩm quyền tạo mã của từng chủ hộ.
+          </span>
         </div>
+        <span className="text-[10px] text-cyan-400 font-mono px-2 py-0.5 bg-cyan-950 rounded border border-cyan-800">
+          Zero-Dossier Privacy
+        </span>
+      </div>
 
-        {/* Scan Result Feedback Box */}
-        {scanResult && (
-          <div className={`p-4 rounded-lg border-2 animate-fadeIn transition-all ${
-            scanResult.scanResult === 'VALID'
-              ? 'bg-emerald-950/90 border-emerald-500 text-emerald-200'
-              : scanResult.scanResult === 'EXPIRED'
-              ? 'bg-amber-950/90 border-amber-500 text-amber-200'
-              : 'bg-rose-950/90 border-rose-500 text-rose-200'
-          }`}>
-            <div className="flex items-center justify-between mb-2">
+      {/* MAIN SCANNER CONTROLLER */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        
+        {/* Left 2 Cols: Scanner Terminal */}
+        <div className="lg:col-span-2 space-y-4">
+          <div className="p-5 bg-gradient-to-r from-[#121820] to-[#161D26] border border-[#C5A880]/70 rounded-xl space-y-4 shadow-xl">
+            <div className="flex items-center justify-between border-b border-[#222B35] pb-3">
               <div className="flex items-center gap-2">
-                {scanResult.scanResult === 'VALID' && <CheckCircle2 className="w-5 h-5 text-emerald-400" />}
-                {scanResult.scanResult === 'INVALID' && <XCircle className="w-5 h-5 text-rose-400" />}
-                {scanResult.scanResult === 'EXPIRED' && <Clock className="w-5 h-5 text-amber-400" />}
-                <span className="font-serif font-bold text-base text-white">{scanResult.title}</span>
+                <Camera className="w-5 h-5 text-[#C5A880]" />
+                <div>
+                  <h3 className="font-serif text-base font-bold text-white">Máy Quét Mã QR Barrier (Sảnh A / Sảnh B / Hầm B1)</h3>
+                  <div className="text-[11px] text-gray-400">Kiểm tra tức thì 3 trạng thái: Hợp lệ, Không hợp lệ hoặc Quá hạn</div>
+                </div>
               </div>
-              <span className={`px-2.5 py-0.5 rounded font-mono text-xs font-bold uppercase ${
-                scanResult.canEnter ? 'bg-emerald-500 text-black' : 'bg-rose-600 text-white'
-              }`}>
-                {scanResult.canEnter ? 'MỜI VÀO SẢNH' : 'TỪ CHỐI VÀO'}
+              <span className="px-2.5 py-1 bg-emerald-950 text-emerald-300 text-[10px] font-mono rounded border border-emerald-600 animate-pulse">
+                Camera AI Online
               </span>
             </div>
-            <p className="text-xs leading-relaxed text-gray-100">{scanResult.message}</p>
-            {scanResult.pass && (
-              <div className="text-[11px] text-gray-300 mt-2 pt-2 border-t border-white/10 flex flex-wrap gap-4 font-mono">
-                <span>Khách: <strong>{scanResult.pass.visitorName}</strong></span>
-                <span>Căn hộ: <strong>Căn {scanResult.pass.apartmentCode}</strong></span>
-                <span>SĐT: <strong>{scanResult.pass.visitorPhone}</strong></span>
-                <span>Duyệt bởi: <strong>{scanResult.pass.approvedBy || 'Chưa duyệt'}</strong></span>
+
+            {/* 3 Quick-Action Verification Scenarios */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <button
+                type="button"
+                onClick={() => {
+                  const validDemo = 'SKYLINE_PASS_VALID_12A05_101';
+                  setCustomQrInput(validDemo);
+                  handleScan(validDemo);
+                }}
+                disabled={isScanning}
+                className="p-3.5 bg-emerald-950/70 hover:bg-emerald-900 border-2 border-emerald-500 rounded-xl text-left transition-all shadow-lg group"
+              >
+                <div className="flex items-center justify-between mb-1">
+                  <span className="text-xs font-bold text-emerald-300 flex items-center gap-1.5 uppercase">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-400" /> Mã QR Đúng
+                  </span>
+                  <span className="text-[10px] bg-emerald-500 text-black font-bold px-1.5 py-0.2 rounded">Hợp Lệ</span>
+                </div>
+                <p className="text-[11px] text-emerald-200/80">
+                  Mã đúng chữ ký căn hộ & còn trong thời hạn. Mở Barrier tự động!
+                </p>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  const invalidDemo = 'SIM_QR_INVALID';
+                  setCustomQrInput(invalidDemo);
+                  handleScan(invalidDemo);
+                }}
+                disabled={isScanning}
+                className="p-3.5 bg-rose-950/70 hover:bg-rose-900 border-2 border-rose-500 rounded-xl text-left transition-all shadow-lg group"
+              >
+                <div className="flex items-center justify-between mb-1">
+                  <span className="text-xs font-bold text-rose-300 flex items-center gap-1.5 uppercase">
+                    <XCircle className="w-4 h-4 text-rose-400" /> Mã QR Sai
+                  </span>
+                  <span className="text-[10px] bg-rose-500 text-white font-bold px-1.5 py-0.2 rounded">Không Hợp Lệ</span>
+                </div>
+                <p className="text-[11px] text-rose-200/80">
+                  Mã giả mạo hoặc không thuộc tòa nhà. Khóa chặt Barrier ngay!
+                </p>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  const expDemo = 'EXP_VISITOR_EXPIRED_MOCK_DATA';
+                  setCustomQrInput(expDemo);
+                  handleScan(expDemo);
+                }}
+                disabled={isScanning}
+                className="p-3.5 bg-amber-950/70 hover:bg-amber-900 border-2 border-amber-500 rounded-xl text-left transition-all shadow-lg group"
+              >
+                <div className="flex items-center justify-between mb-1">
+                  <span className="text-xs font-bold text-amber-300 flex items-center gap-1.5 uppercase">
+                    <Clock className="w-4 h-4 text-amber-400" /> Mã QR Quá Hạn
+                  </span>
+                  <span className="text-[10px] bg-amber-500 text-black font-bold px-1.5 py-0.2 rounded">Quá Hạn</span>
+                </div>
+                <p className="text-[11px] text-amber-200/80">
+                  Mã đã hết thời gian được phép ra vào. Từ chối vào sảnh!
+                </p>
+              </button>
+            </div>
+
+            {/* Custom Input Scanner Form */}
+            <form 
+              onSubmit={(e) => {
+                e.preventDefault();
+                handleScan(customQrInput);
+              }}
+              className="flex gap-2 pt-2"
+            >
+              <input
+                type="text"
+                value={customQrInput}
+                onChange={(e) => setCustomQrInput(e.target.value)}
+                placeholder="Quét mã QR từ camera hoặc nhập mã PIN số..."
+                className="flex-1 bg-[#161B22] border border-[#2D3748] p-3 text-white text-xs font-mono rounded-lg focus:border-[#C5A880] outline-none"
+              />
+              <button
+                type="submit"
+                disabled={isScanning || !customQrInput.trim()}
+                className="px-5 py-3 bg-[#C5A880] hover:bg-white text-[#0D1117] text-xs font-bold uppercase tracking-wider rounded-lg transition-colors whitespace-nowrap flex items-center gap-1.5 shadow"
+              >
+                {isScanning ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Scan className="w-4 h-4" />}
+                Xác Thực Mã
+              </button>
+            </form>
+
+            {/* Scan Result Feedback Card */}
+            {scanResult && (
+              <div className="space-y-3 pt-2 animate-fadeIn">
+                <div className={`p-4 rounded-xl border flex items-start gap-3.5 shadow-lg ${
+                  scanResult.canEnter && scanResult.scanResult === 'VALID'
+                    ? 'bg-emerald-950/70 border-emerald-500 text-emerald-200'
+                    : scanResult.scanResult === 'EXPIRED'
+                    ? 'bg-amber-950/70 border-amber-500 text-amber-200'
+                    : 'bg-rose-950/70 border-rose-500 text-rose-200'
+                }`}>
+                  {scanResult.canEnter && scanResult.scanResult === 'VALID' ? (
+                    <CheckCircle2 className="w-7 h-7 text-emerald-400 flex-shrink-0" />
+                  ) : scanResult.scanResult === 'EXPIRED' ? (
+                    <AlertTriangle className="w-7 h-7 text-amber-400 flex-shrink-0" />
+                  ) : (
+                    <XCircle className="w-7 h-7 text-rose-400 flex-shrink-0" />
+                  )}
+
+                  <div className="space-y-1 text-xs flex-1">
+                    <div className="font-bold text-sm sm:text-base">{scanResult.title}</div>
+                    <div className="text-gray-200">{scanResult.message}</div>
+                    {scanResult.apartmentCode && (
+                      <div className="text-[11px] text-[#C5A880] pt-1 font-semibold">
+                        • Quyền truy cập: Căn hộ {scanResult.apartmentCode} • Thang máy Tầng 12
+                      </div>
+                    )}
+                    <div className="text-[10px] text-gray-400 pt-0.5">Thời gian quét: {scanResult.scannedAt}</div>
+                  </div>
+                </div>
+
+                {/* Barrier Control Override */}
+                <div className="p-4 bg-[#121820] border border-[#222B35] rounded-xl flex items-center justify-between">
+                  <div className="text-xs text-gray-300">
+                    <div>Lệnh Phần Cứng Cổng: <strong className="text-white">{barrierState === 'OPEN' ? 'MỞ BARRIER (OPEN_GATE)' : barrierState === 'LOCKED' ? 'KHÓA CỨNG (LOCK_SECURITY)' : 'ĐÓNG (GATE_IDLE)'}</strong></div>
+                  </div>
+
+                  <div className="flex gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setBarrierState('OPEN')}
+                      className="px-3 py-1.5 bg-emerald-950 hover:bg-emerald-900 border border-emerald-500 text-emerald-300 text-xs font-semibold rounded-lg transition-colors"
+                    >
+                      Mở Cưỡng Bức
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setBarrierState('CLOSED')}
+                      className="px-3 py-1.5 bg-[#161B22] hover:bg-[#202936] border border-gray-600 text-gray-300 text-xs font-semibold rounded-lg transition-colors"
+                    >
+                      Đóng Cổng
+                    </button>
+                  </div>
+                </div>
               </div>
             )}
           </div>
-        )}
-      </div>
-
-      {/* SECTION 2: BẢNG DUYỆT YÊU CẦU ĐÓN KHÁCH */}
-      <div className="bg-[#121820] border border-[#222B35] rounded-xl p-5 space-y-4 shadow-xl">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#222B35] pb-3">
-          <div className="flex items-center gap-2">
-            <UserCheck className="w-5 h-5 text-[#C5A880]" />
-            <h3 className="font-serif text-base font-bold text-white uppercase tracking-wider">
-              Danh Sách Yêu Cầu Đón Khách Toàn Tòa Nhà ({filteredPasses.length})
-            </h3>
-          </div>
-
-          <div className="flex items-center gap-2 flex-wrap">
-            <div className="relative">
-              <Search className="w-3.5 h-3.5 text-gray-500 absolute left-2.5 top-1/2 -translate-y-1/2" />
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Tìm theo tên khách, căn hộ, SĐT..."
-                className="bg-[#161B22] border border-gray-700 pl-8 pr-3 py-1.5 text-xs text-white rounded focus:border-[#C5A880] outline-none w-56"
-              />
-            </div>
-
-            <select
-              value={filterStatus}
-              onChange={(e) => setFilterStatus(e.target.value)}
-              className="bg-[#161B22] border border-gray-700 px-3 py-1.5 text-xs text-white rounded focus:border-[#C5A880] outline-none"
-            >
-              <option value="ALL">Tất cả trạng thái</option>
-              <option value="PENDING_APPROVAL">Chờ BQL duyệt</option>
-              <option value="APPROVED">Đã phê duyệt</option>
-              <option value="REJECTED">Đã từ chối</option>
-              <option value="EXPIRED">Đã hết hạn</option>
-            </select>
-          </div>
         </div>
 
-        {/* Passes Table */}
-        <div className="divide-y divide-[#222B35] border border-[#222B35] rounded-lg overflow-hidden">
-          {filteredPasses.length === 0 ? (
-            <div className="p-8 text-center text-xs text-gray-400">
-              Không tìm thấy yêu cầu đón khách nào phù hợp.
-            </div>
-          ) : (
-            filteredPasses.map((pass) => (
-              <div
-                key={pass.id}
-                className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-[#161B22] transition-colors"
-              >
-                <div className="space-y-1">
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <span className="px-2 py-0.5 bg-[#C5A880] text-[#0D1117] font-bold text-[10px] rounded">
-                      Căn {pass.apartmentCode}
-                    </span>
-                    <span className="font-bold text-white text-sm">{pass.visitorName}</span>
-                    <span className="text-xs text-gray-400">({pass.purposeLabel})</span>
-                    <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
-                      pass.status === 'APPROVED' ? 'bg-emerald-950 text-emerald-300 border border-emerald-600' :
-                      pass.status === 'PENDING_APPROVAL' ? 'bg-amber-950 text-amber-300 border border-amber-600 animate-pulse' :
-                      pass.status === 'EXPIRED' ? 'bg-gray-800 text-gray-400' : 'bg-rose-950 text-rose-300 border border-rose-600'
-                    }`}>
-                      {pass.status === 'APPROVED' ? 'Đã Duyệt ✓' :
-                       pass.status === 'PENDING_APPROVAL' ? 'Chờ BQL Duyệt' :
-                       pass.status === 'EXPIRED' ? 'Đã Hết Hạn' : 'Bị Từ Chối'}
-                    </span>
-                  </div>
-
-                  <div className="text-xs text-gray-400 flex flex-wrap items-center gap-x-3 gap-y-1">
-                    <span>Chủ hộ: <strong className="text-gray-200">{pass.hostName}</strong></span>
-                    <span>• SĐT Khách: <strong className="font-mono text-gray-200">{pass.visitorPhone}</strong></span>
-                    {pass.licensePlate && (
-                      <span>• Biển số: <strong className="font-mono text-cyan-400">{pass.licensePlate}</strong></span>
-                    )}
-                    <span>• Thời hạn: <strong className="text-[#C5A880]">{pass.validHours} giờ</strong></span>
-                  </div>
-                </div>
-
-                {/* Actions */}
-                <div className="flex items-center gap-2 flex-shrink-0 self-end sm:self-center">
-                  {pass.status === 'PENDING_APPROVAL' && (
-                    <>
-                      <button
-                        type="button"
-                        onClick={() => handleApprove(pass.id)}
-                        className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded flex items-center gap-1 shadow transition-colors"
-                      >
-                        <Check className="w-3.5 h-3.5 stroke-[3]" /> Phê Duyệt
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => handleReject(pass.id)}
-                        className="px-3 py-1.5 bg-rose-950 hover:bg-rose-900 text-rose-300 border border-rose-600 text-xs font-semibold rounded flex items-center gap-1 transition-colors"
-                      >
-                        <X className="w-3.5 h-3.5" /> Từ Chối
-                      </button>
-                    </>
-                  )}
-
-                  <button
-                    type="button"
-                    onClick={() => handleSimulateScan(pass.qrData)}
-                    className="px-3 py-1.5 bg-[#1C2533] hover:bg-[#C5A880] hover:text-[#0D1117] text-[#C5A880] text-xs font-semibold rounded border border-[#C5A880]/50 flex items-center gap-1 transition-colors"
-                  >
-                    <Scan className="w-3.5 h-3.5" /> Quét Thử
-                  </button>
-                </div>
+        {/* Right 1 Col: Realtime Access Verification Stream */}
+        <div className="space-y-4">
+          <div className="bg-[#121820] border border-[#222B35] rounded-xl p-4 space-y-3 shadow-xl">
+            <div className="flex items-center justify-between border-b border-[#222B35] pb-2.5">
+              <div className="text-xs font-bold uppercase tracking-wider text-white flex items-center gap-2">
+                <Activity className="w-4 h-4 text-[#C5A880]" /> Nhật Ký Quét Cổng Thời Gian Thực
               </div>
-            ))
-          )}
+              <span className="text-[10px] text-gray-400 font-mono">Live Logs</span>
+            </div>
+
+            <div className="space-y-2 max-h-[420px] overflow-y-auto pr-1 text-xs">
+              {scanHistory.map((log) => (
+                <div 
+                  key={log.id} 
+                  className={`p-2.5 rounded-lg border transition-all ${
+                    log.result === 'VALID'
+                      ? 'bg-emerald-950/30 border-emerald-500/40 text-emerald-300'
+                      : log.result === 'EXPIRED'
+                      ? 'bg-amber-950/30 border-amber-500/40 text-amber-300'
+                      : 'bg-rose-950/30 border-rose-500/40 text-rose-300'
+                  }`}
+                >
+                  <div className="flex items-center justify-between font-bold text-[11px]">
+                    <span className="flex items-center gap-1.5">
+                      {log.result === 'VALID' ? (
+                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+                      ) : log.result === 'EXPIRED' ? (
+                        <Clock className="w-3.5 h-3.5 text-amber-400" />
+                      ) : (
+                        <XCircle className="w-3.5 h-3.5 text-rose-400" />
+                      )}
+                      {log.title}
+                    </span>
+                    <span className="font-mono text-gray-400 text-[10px]">{log.timestamp}</span>
+                  </div>
+                  <div className="text-[10px] text-gray-400 font-mono truncate mt-1">
+                    Mã: {log.qrCode}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
+
       </div>
     </div>
   );
