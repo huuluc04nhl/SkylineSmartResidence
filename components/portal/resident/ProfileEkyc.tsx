@@ -56,6 +56,7 @@ import { OcrCccdResult, formatToDateInput, formatToDisplayDate, formatToApiDate 
 import { 
   getEkycForUser, 
   submitEkycRequest, 
+  updateEkycCardImages,
   EkycRequest 
 } from '@/lib/ekycStore';
 
@@ -143,9 +144,19 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
 
     loadApiUserData();
 
+    const userKey = currentUser.phone || currentUser.email || currentUser.username || currentUser.id;
+
+    // Check persistent resident localStorage for real uploaded CCCD images
+    if (typeof window !== 'undefined') {
+      const savedFront = localStorage.getItem('skyline_cccd_front_' + userKey);
+      const savedBack = localStorage.getItem('skyline_cccd_back_' + userKey);
+      if (savedFront) setCccdImage(savedFront);
+      if (savedBack) setCccdBackImage(savedBack);
+    }
+
     // Synchronize live e-KYC status with BQL approval center
     const syncEkycStatus = () => {
-      const userRecord = getEkycForUser(currentUser.phone || currentUser.email || currentUser.username || currentUser.id);
+      const userRecord = getEkycForUser(userKey);
       if (userRecord) {
         setCurrentEkyc(userRecord);
         setEkycStatus(userRecord.status === 'APPROVED' ? 'VERIFIED' : userRecord.status);
@@ -272,6 +283,8 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
 
   // 2. Handle auto-filling data from OCR Scanner Modal (2 sides)
   const handleApplyOcrData = (ocrData: OcrCccdResult, frontSrc: string, backSrc: string) => {
+    const userKey = currentUser.phone || currentUser.email || currentUser.username || currentUser.id;
+
     setIdCardNumber(ocrData.idNumber || '');
     setFullName(ocrData.fullName || '');
     setBirthday(formatToDateInput(ocrData.dob || ''));
@@ -280,8 +293,29 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
     setProvince(ocrData.province || 'Thành phố Hồ Chí Minh');
     setIdDate(formatToDateInput(ocrData.idDate || ''));
     setIdPlace(ocrData.idPlace || 'Cục Cảnh sát QLHC về TTXH');
-    if (frontSrc) setCccdImage(frontSrc);
-    if (backSrc) setCccdBackImage(backSrc);
+
+    if (frontSrc) {
+      setCccdImage(frontSrc);
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('skyline_cccd_front_' + userKey, frontSrc);
+      }
+    }
+    if (backSrc) {
+      setCccdBackImage(backSrc);
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('skyline_cccd_back_' + userKey, backSrc);
+      }
+    }
+
+    updateEkycCardImages(userKey, frontSrc, backSrc);
+
+    nksUpdateCccd({
+      front: frontSrc,
+      back: backSrc,
+      number: ocrData.idNumber || idCardNumber,
+      date: ocrData.idDate || idDate,
+      place: ocrData.idPlace || idPlace,
+    }).catch(e => console.warn('Sync CCCD error:', e));
 
     // Switch to tab 1 (Thông tin cá nhân) so the user can review all fields
     setActiveTab('INFO');
@@ -913,8 +947,27 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
         avatarUrl={avatarUrl || currentUser.avatar_url || ''}
         allowUpload={true}
         onUpdateImages={(front, back) => {
-          setCccdImage(front);
-          setCccdBackImage(back);
+          const userKey = currentUser.phone || currentUser.email || currentUser.username || currentUser.id;
+          if (front) {
+            setCccdImage(front);
+            if (typeof window !== 'undefined') {
+              localStorage.setItem('skyline_cccd_front_' + userKey, front);
+            }
+          }
+          if (back) {
+            setCccdBackImage(back);
+            if (typeof window !== 'undefined') {
+              localStorage.setItem('skyline_cccd_back_' + userKey, back);
+            }
+          }
+          updateEkycCardImages(userKey, front, back);
+          nksUpdateCccd({
+            front,
+            back,
+            number: idCardNumber,
+            date: idDate,
+            place: idPlace,
+          }).catch(e => console.warn('Sync CCCD error:', e));
         }}
       />
     </div>

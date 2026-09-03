@@ -24,6 +24,8 @@ export interface StoredUser {
   website?: string;
   license_plate?: string;
   avatar_url?: string;
+  cccd_front_url?: string;
+  cccd_back_url?: string;
   role: 'ADMIN' | 'OWNER' | 'TENANT' | 'TECHNICIAN' | 'RECEPTIONIST';
   relationship?: string;
   apartment_code: string;

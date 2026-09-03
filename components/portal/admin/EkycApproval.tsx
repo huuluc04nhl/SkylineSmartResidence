@@ -290,8 +290,22 @@ export default function EkycApproval() {
           fullName={selectedRequest.fullName}
           idCardNo={selectedRequest.idCardNo}
           apartmentCode={selectedRequest.apartmentCode}
-          frontImage={selectedRequest.idCardFrontUrl}
-          backImage={selectedRequest.idCardBackUrl}
+          frontImage={
+            selectedRequest.idCardFrontUrl || 
+            (typeof window !== 'undefined' 
+              ? (localStorage.getItem('skyline_cccd_front_' + selectedRequest.phone) || 
+                 localStorage.getItem('skyline_cccd_front_' + (selectedRequest.email || '')) || 
+                 localStorage.getItem('skyline_cccd_front_' + selectedRequest.userId) || '') 
+              : '')
+          }
+          backImage={
+            selectedRequest.idCardBackUrl || 
+            (typeof window !== 'undefined' 
+              ? (localStorage.getItem('skyline_cccd_back_' + selectedRequest.phone) || 
+                 localStorage.getItem('skyline_cccd_back_' + (selectedRequest.email || '')) || 
+                 localStorage.getItem('skyline_cccd_back_' + selectedRequest.userId) || '') 
+              : '')
+          }
           idDate={selectedRequest.idDate}
           idPlace={selectedRequest.idPlace}
           dob={selectedRequest.dob}

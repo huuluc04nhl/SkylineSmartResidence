@@ -89,6 +89,8 @@ export async function POST(req: Request) {
             dob: formatToDateInput(apiUser.dob || apiUser.formatedDob || ''),
             pob: apiUser.pob || '',
             intro: apiUser.intro || '',
+            cccd_front_url: getUserStore(role === 'OWNER' ? 'user-owner-1' : role === 'ADMIN' ? 'user-manager-1' : 'user-tenant-1')?.cccd_front_url,
+            cccd_back_url: getUserStore(role === 'OWNER' ? 'user-owner-1' : role === 'ADMIN' ? 'user-manager-1' : 'user-tenant-1')?.cccd_back_url,
           };
           return NextResponse.json({ success: true, user: formatted });
         }

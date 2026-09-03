@@ -38,6 +38,8 @@ export async function POST(req: Request) {
       id_card_no: number || '079095001234',
       id_date: date || '2022-08-15',
       id_place: place || 'Cục Cảnh sát QLHC về TTXH',
+      cccd_front_url: front || undefined,
+      cccd_back_url: back || undefined,
     });
 
     return NextResponse.json({
@@ -48,8 +50,8 @@ export async function POST(req: Request) {
         number: updated.id_number,
         date: updated.id_date,
         place: updated.id_place,
-        front_url: front ? 'cccd_front.jpg' : undefined,
-        back_url: back ? 'cccd_back.jpg' : undefined,
+        front_url: front || updated.cccd_front_url,
+        back_url: back || updated.cccd_back_url,
         status: 'VERIFIED',
         ocr_engine: 'Tesseract OCR v5 + AI Dual-Side Vision',
         verified_at: new Date().toISOString(),

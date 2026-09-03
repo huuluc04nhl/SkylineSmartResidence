@@ -144,6 +144,26 @@ export function getEkycForUser(userIdentifier: string): EkycRequest | undefined 
 }
 
 /**
+ * Update the exact real uploaded card images for a resident
+ */
+export function updateEkycCardImages(userIdentifier: string, front: string, back: string): void {
+  const requests = getEkycRequests();
+  const clean = (userIdentifier || '').toLowerCase().trim();
+  const existing = requests.find(r => 
+    r.userId.toLowerCase() === clean || 
+    r.phone.toLowerCase() === clean || 
+    (r.email && r.email.toLowerCase() === clean) ||
+    r.idCardNo === clean
+  );
+
+  if (existing) {
+    if (front) existing.idCardFrontUrl = front;
+    if (back) existing.idCardBackUrl = back;
+    saveEkycRequests(requests);
+  }
+}
+
+/**
  * Resident submits or updates their e-KYC dossier
  */
 export function submitEkycRequest(data: {
