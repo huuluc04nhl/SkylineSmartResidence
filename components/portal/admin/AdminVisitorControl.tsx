@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   QrCode, 
   Check, 
@@ -19,54 +19,36 @@ import {
   ShieldAlert,
   Sparkles,
   Search,
-  Activity
+  Activity,
+  Zap,
+  Repeat,
+  Filter
 } from 'lucide-react';
 import { 
   verifyVisitorQr,
-  VerificationScanResult
+  VerificationScanResult,
+  getGateAuditLogs,
+  GateAuditLog
 } from '@/lib/visitorStore';
-
-interface ScanHistoryEntry {
-  id: string;
-  qrCode: string;
-  result: 'VALID' | 'INVALID' | 'EXPIRED';
-  title: string;
-  apartmentCode?: string;
-  timestamp: string;
-}
 
 export default function AdminVisitorControl() {
   const [customQrInput, setCustomQrInput] = useState('');
   const [scanResult, setScanResult] = useState<VerificationScanResult | null>(null);
   const [isScanning, setIsScanning] = useState(false);
   const [barrierState, setBarrierState] = useState<'CLOSED' | 'OPEN' | 'LOCKED'>('CLOSED');
+  const [selectedCheckpoint, setSelectedCheckpoint] = useState('Barrier Cổng Sảnh A');
+  const [filterResult, setFilterResult] = useState<'ALL' | 'VALID' | 'INVALID' | 'EXPIRED'>('ALL');
   
   // Realtime scan log
-  const [scanHistory, setScanHistory] = useState<ScanHistoryEntry[]>([
-    {
-      id: 'LOG-1',
-      qrCode: 'SKY_TOKEN_12A05_8832_1788299000_A9F2',
-      result: 'VALID',
-      title: 'Mã Hợp Lệ Căn 12A05',
-      apartmentCode: '12A05',
-      timestamp: '11:45:10'
-    },
-    {
-      id: 'LOG-2',
-      qrCode: 'INVALID_QR_FAKE_CODE_001',
-      result: 'INVALID',
-      title: 'Mã Không Hợp Lệ (Khóa Cổng)',
-      timestamp: '11:32:05'
-    },
-    {
-      id: 'LOG-3',
-      qrCode: 'EXP_VISITOR_EXPIRED_MOCK_DATA',
-      result: 'EXPIRED',
-      title: 'Mã Quá Hạn Sử Dụng',
-      apartmentCode: '14B02',
-      timestamp: '10:15:22'
-    }
-  ]);
+  const [scanHistory, setScanHistory] = useState<GateAuditLog[]>([]);
+
+  const refreshLogs = () => {
+    setScanHistory([...getGateAuditLogs()]);
+  };
+
+  useEffect(() => {
+    refreshLogs();
+  }, []);
 
   const handleScan = (qrCodeToTest: string) => {
     if (!qrCodeToTest.trim()) return;
@@ -74,7 +56,7 @@ export default function AdminVisitorControl() {
     setScanResult(null);
 
     setTimeout(() => {
-      const result = verifyVisitorQr(qrCodeToTest);
+      const result = verifyVisitorQr(qrCodeToTest, selectedCheckpoint);
       setScanResult(result);
       setIsScanning(false);
 
@@ -86,20 +68,14 @@ export default function AdminVisitorControl() {
         setBarrierState('LOCKED');
       }
 
-      // Add to audit log
-      setScanHistory(prev => [
-        {
-          id: `LOG-${Date.now()}`,
-          qrCode: qrCodeToTest,
-          result: result.scanResult,
-          title: result.title,
-          apartmentCode: result.apartmentCode,
-          timestamp: result.scannedAt
-        },
-        ...prev.slice(0, 9)
-      ]);
+      refreshLogs();
     }, 450);
   };
+
+  const filteredLogs = scanHistory.filter(l => {
+    if (filterResult === 'ALL') return true;
+    return l.result === filterResult;
+  });
 
   return (
     <div className="space-y-6 animate-fadeIn select-none">
@@ -113,7 +89,7 @@ export default function AdminVisitorControl() {
             Kiểm Soát Barrier & Quét Mã Khách
           </h2>
           <p className="text-xs text-gray-400 mt-0.5">
-            Hệ thống tự động xác thực chữ ký số mã QR của căn hộ, tự động điều khiển Barrier và phân quyền thang máy
+            Hệ thống tự động xác thực chữ ký số mã QR căn hộ, tự động điều khiển Barrier và phân quyền thang máy
           </p>
         </div>
 
@@ -136,10 +112,10 @@ export default function AdminVisitorControl() {
         <div className="flex items-center gap-2">
           <ShieldCheck className="w-4 h-4 text-cyan-400 flex-shrink-0" />
           <span>
-            <strong>Cơ Chế Bảo Mật Tự Động:</strong> Ban Quản Lý chỉ kiểm soát tính hợp lệ của mã ra vào qua hệ thống máy quét. Danh tính và đời tư khách thăm được bảo mật trực tiếp theo thẩm quyền tạo mã của từng chủ hộ.
+            <strong>Bảo Mật Quyền Riêng Tư:</strong> Ban Quản Lý chỉ kiểm tra tính hợp lệ của mã ra vào qua hệ thống máy quét. Không lưu vết thông tin cá nhân khách thăm để đảm bảo quyền riêng tư của từng căn hộ.
           </span>
         </div>
-        <span className="text-[10px] text-cyan-400 font-mono px-2 py-0.5 bg-cyan-950 rounded border border-cyan-800">
+        <span className="text-[10px] text-cyan-400 font-mono px-2 py-0.5 bg-cyan-950 rounded border border-cyan-800 flex-shrink-0 ml-2">
           Zero-Dossier Privacy
         </span>
       </div>
@@ -150,17 +126,29 @@ export default function AdminVisitorControl() {
         {/* Left 2 Cols: Scanner Terminal */}
         <div className="lg:col-span-2 space-y-4">
           <div className="p-5 bg-gradient-to-r from-[#121820] to-[#161D26] border border-[#C5A880]/70 rounded-xl space-y-4 shadow-xl">
-            <div className="flex items-center justify-between border-b border-[#222B35] pb-3">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#222B35] pb-3">
               <div className="flex items-center gap-2">
                 <Camera className="w-5 h-5 text-[#C5A880]" />
                 <div>
-                  <h3 className="font-serif text-base font-bold text-white">Máy Quét Mã QR Barrier (Sảnh A / Sảnh B / Hầm B1)</h3>
-                  <div className="text-[11px] text-gray-400">Kiểm tra tức thì 3 trạng thái: Hợp lệ, Không hợp lệ hoặc Quá hạn</div>
+                  <h3 className="font-serif text-base font-bold text-white">Máy Quét Mã QR Cổng (Gate Security Scanner)</h3>
+                  <div className="text-[11px] text-gray-400">Tự động phân loại: Vé 1 Lần (Shipper) & Vé Nhiều Lần (Khách Thăm)</div>
                 </div>
               </div>
-              <span className="px-2.5 py-1 bg-emerald-950 text-emerald-300 text-[10px] font-mono rounded border border-emerald-600 animate-pulse">
-                Camera AI Online
-              </span>
+
+              {/* Checkpoint selector */}
+              <div className="flex items-center gap-2">
+                <span className="text-[11px] text-gray-400">Trạm quét:</span>
+                <select
+                  value={selectedCheckpoint}
+                  onChange={(e) => setSelectedCheckpoint(e.target.value)}
+                  className="bg-[#161B22] border border-[#2D3748] text-xs text-[#C5A880] font-semibold py-1 px-2.5 rounded-lg outline-none"
+                >
+                  <option value="Barrier Cổng Sảnh A">Barrier Cổng Sảnh A</option>
+                  <option value="Barrier Cổng Sảnh B">Barrier Cổng Sảnh B</option>
+                  <option value="Barrier Cổng Hầm B1">Barrier Cổng Hầm B1</option>
+                  <option value="Cửa Tự Động Sảnh A">Cửa Tự Động Sảnh A</option>
+                </select>
+              </div>
             </div>
 
             {/* 3 Quick-Action Verification Scenarios */}
@@ -177,7 +165,7 @@ export default function AdminVisitorControl() {
               >
                 <div className="flex items-center justify-between mb-1">
                   <span className="text-xs font-bold text-emerald-300 flex items-center gap-1.5 uppercase">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-400" /> Mã QR Đúng
+                    <CheckCircle2 className="w-4 h-4 text-emerald-400" /> 1. Mã QR Đúng
                   </span>
                   <span className="text-[10px] bg-emerald-500 text-black font-bold px-1.5 py-0.2 rounded">Hợp Lệ</span>
                 </div>
@@ -198,7 +186,7 @@ export default function AdminVisitorControl() {
               >
                 <div className="flex items-center justify-between mb-1">
                   <span className="text-xs font-bold text-rose-300 flex items-center gap-1.5 uppercase">
-                    <XCircle className="w-4 h-4 text-rose-400" /> Mã QR Sai
+                    <XCircle className="w-4 h-4 text-rose-400" /> 2. Mã QR Sai
                   </span>
                   <span className="text-[10px] bg-rose-500 text-white font-bold px-1.5 py-0.2 rounded">Không Hợp Lệ</span>
                 </div>
@@ -219,7 +207,7 @@ export default function AdminVisitorControl() {
               >
                 <div className="flex items-center justify-between mb-1">
                   <span className="text-xs font-bold text-amber-300 flex items-center gap-1.5 uppercase">
-                    <Clock className="w-4 h-4 text-amber-400" /> Mã QR Quá Hạn
+                    <Clock className="w-4 h-4 text-amber-400" /> 3. Mã QR Quá Hạn
                   </span>
                   <span className="text-[10px] bg-amber-500 text-black font-bold px-1.5 py-0.2 rounded">Quá Hạn</span>
                 </div>
@@ -273,14 +261,27 @@ export default function AdminVisitorControl() {
                   )}
 
                   <div className="space-y-1 text-xs flex-1">
-                    <div className="font-bold text-sm sm:text-base">{scanResult.title}</div>
+                    <div className="flex items-center justify-between">
+                      <span className="font-bold text-sm sm:text-base">{scanResult.title}</span>
+                      {scanResult.entryType && (
+                        <span className={`px-2 py-0.5 text-[10px] font-bold uppercase rounded border ${
+                          scanResult.entryType === 'SINGLE'
+                            ? 'bg-amber-950 text-amber-300 border-amber-500'
+                            : 'bg-cyan-950 text-cyan-300 border-cyan-500'
+                        }`}>
+                          {scanResult.entryType === 'SINGLE' ? 'Vé 1 Lần (Shipper)' : 'Vé Nhiều Lần'}
+                        </span>
+                      )}
+                    </div>
                     <div className="text-gray-200">{scanResult.message}</div>
                     {scanResult.apartmentCode && (
                       <div className="text-[11px] text-[#C5A880] pt-1 font-semibold">
-                        • Quyền truy cập: Căn hộ {scanResult.apartmentCode} • Thang máy Tầng 12
+                        • Căn hộ bảo lãnh: Căn {scanResult.apartmentCode} • Lệnh phần cứng: {scanResult.gateAction}
                       </div>
                     )}
-                    <div className="text-[10px] text-gray-400 pt-0.5">Thời gian quét: {scanResult.scannedAt}</div>
+                    <div className="text-[10px] text-gray-400 pt-0.5">
+                      Thời gian: {scanResult.scannedAt} • Trạm quét: {scanResult.checkpoint}
+                    </div>
                   </div>
                 </div>
 
@@ -312,43 +313,92 @@ export default function AdminVisitorControl() {
           </div>
         </div>
 
-        {/* Right 1 Col: Realtime Access Verification Stream */}
+        {/* Right 1 Col: Realtime Access Security Audit Stream */}
         <div className="space-y-4">
           <div className="bg-[#121820] border border-[#222B35] rounded-xl p-4 space-y-3 shadow-xl">
             <div className="flex items-center justify-between border-b border-[#222B35] pb-2.5">
               <div className="text-xs font-bold uppercase tracking-wider text-white flex items-center gap-2">
-                <Activity className="w-4 h-4 text-[#C5A880]" /> Nhật Ký Quét Cổng Thời Gian Thực
+                <Activity className="w-4 h-4 text-[#C5A880]" /> Nhật Ký An Ninh Cổng Barrier
               </div>
-              <span className="text-[10px] text-gray-400 font-mono">Live Logs</span>
+              <button 
+                onClick={refreshLogs}
+                className="text-[10px] text-gray-400 hover:text-[#C5A880] flex items-center gap-1 font-mono transition-colors"
+              >
+                <RefreshCw className="w-3 h-3" /> Làm mới
+              </button>
             </div>
 
-            <div className="space-y-2 max-h-[420px] overflow-y-auto pr-1 text-xs">
-              {scanHistory.map((log) => (
+            {/* Filter Tabs */}
+            <div className="flex gap-1 bg-[#161B22] p-1 rounded-lg border border-[#222B35] text-[10px]">
+              <button
+                type="button"
+                onClick={() => setFilterResult('ALL')}
+                className={`flex-1 py-1 rounded transition-colors ${filterResult === 'ALL' ? 'bg-[#C5A880] text-[#0D1117] font-bold' : 'text-gray-400'}`}
+              >
+                Tất Cả
+              </button>
+              <button
+                type="button"
+                onClick={() => setFilterResult('VALID')}
+                className={`flex-1 py-1 rounded transition-colors ${filterResult === 'VALID' ? 'bg-emerald-500 text-black font-bold' : 'text-gray-400'}`}
+              >
+                Hợp Lệ
+              </button>
+              <button
+                type="button"
+                onClick={() => setFilterResult('INVALID')}
+                className={`flex-1 py-1 rounded transition-colors ${filterResult === 'INVALID' ? 'bg-rose-500 text-white font-bold' : 'text-gray-400'}`}
+              >
+                Khóa
+              </button>
+              <button
+                type="button"
+                onClick={() => setFilterResult('EXPIRED')}
+                className={`flex-1 py-1 rounded transition-colors ${filterResult === 'EXPIRED' ? 'bg-amber-500 text-black font-bold' : 'text-gray-400'}`}
+              >
+                Quá Hạn
+              </button>
+            </div>
+
+            {/* Audit Log Stream */}
+            <div className="space-y-2 max-h-[460px] overflow-y-auto pr-1 text-xs">
+              {filteredLogs.map((log) => (
                 <div 
                   key={log.id} 
                   className={`p-2.5 rounded-lg border transition-all ${
                     log.result === 'VALID'
-                      ? 'bg-emerald-950/30 border-emerald-500/40 text-emerald-300'
+                      ? 'bg-emerald-950/25 border-emerald-500/40 text-emerald-300'
                       : log.result === 'EXPIRED'
-                      ? 'bg-amber-950/30 border-amber-500/40 text-amber-300'
-                      : 'bg-rose-950/30 border-rose-500/40 text-rose-300'
+                      ? 'bg-amber-950/25 border-amber-500/40 text-amber-300'
+                      : 'bg-rose-950/25 border-rose-500/40 text-rose-300'
                   }`}
                 >
                   <div className="flex items-center justify-between font-bold text-[11px]">
                     <span className="flex items-center gap-1.5">
                       {log.result === 'VALID' ? (
-                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 flex-shrink-0" />
                       ) : log.result === 'EXPIRED' ? (
-                        <Clock className="w-3.5 h-3.5 text-amber-400" />
+                        <Clock className="w-3.5 h-3.5 text-amber-400 flex-shrink-0" />
                       ) : (
-                        <XCircle className="w-3.5 h-3.5 text-rose-400" />
+                        <XCircle className="w-3.5 h-3.5 text-rose-400 flex-shrink-0" />
                       )}
-                      {log.title}
+                      Căn: {log.apartmentCode}
                     </span>
-                    <span className="font-mono text-gray-400 text-[10px]">{log.timestamp}</span>
+                    <span className="font-mono text-gray-400 text-[9px]">{log.timestamp}</span>
                   </div>
-                  <div className="text-[10px] text-gray-400 font-mono truncate mt-1">
-                    Mã: {log.qrCode}
+
+                  <div className="flex items-center justify-between text-[10px] text-gray-300 mt-1">
+                    <span>Mục đích: <strong>{log.purposeLabel}</strong></span>
+                    <span className={`px-1.5 py-0.2 rounded text-[9px] font-mono ${
+                      log.entryType === 'SINGLE' ? 'bg-amber-950 text-amber-300 border border-amber-700' : 'bg-cyan-950 text-cyan-300 border border-cyan-700'
+                    }`}>
+                      {log.entryType === 'SINGLE' ? '⚡ 1 Lần' : '🔁 Nhiều Lần'}
+                    </span>
+                  </div>
+
+                  <div className="text-[10px] text-gray-400 flex items-center justify-between mt-1 pt-1 border-t border-[#222B35]/60">
+                    <span>📍 {log.checkpoint}</span>
+                    <span className="text-gray-200 font-medium truncate max-w-[150px]">{log.gateAction}</span>
                   </div>
                 </div>
               ))}

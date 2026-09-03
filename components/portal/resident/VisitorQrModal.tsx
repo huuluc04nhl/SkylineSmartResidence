@@ -26,10 +26,13 @@ import {
   XCircle,
   Camera,
   ShieldAlert,
-  Info
+  Info,
+  Zap,
+  Repeat
 } from 'lucide-react';
 import { 
   GeneratedVisitorPass,
+  PassEntryType,
   generateVisitorPassToken,
   verifyVisitorQr,
   VerificationScanResult
@@ -62,6 +65,7 @@ export default function VisitorQrModal({
   const [visitorName, setVisitorName] = useState('Khách Thăm Nhà');
   const [validHours, setValidHours] = useState('4');
   const [purpose, setPurpose] = useState<'VISITOR' | 'DELIVERY' | 'TECH' | 'OTHER'>('VISITOR');
+  const [entryType, setEntryType] = useState<PassEntryType>('MULTI');
   const [activePass, setActivePass] = useState<GeneratedVisitorPass | null>(null);
   const [copied, setCopied] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
@@ -72,6 +76,24 @@ export default function VisitorQrModal({
   const [isScanningSimulation, setIsScanningSimulation] = useState(false);
   const [barrierState, setBarrierState] = useState<'CLOSED' | 'OPEN' | 'LOCKED'>('CLOSED');
 
+  // Purpose change auto-suggests entry mode
+  const handlePurposeChange = (val: 'VISITOR' | 'DELIVERY' | 'TECH' | 'OTHER') => {
+    setPurpose(val);
+    if (val === 'DELIVERY') {
+      setEntryType('SINGLE');
+      setValidHours('1');
+      if (visitorName === 'Khách Thăm Nhà') setVisitorName('Shipper Giao Hàng');
+    } else if (val === 'TECH') {
+      setEntryType('MULTI');
+      setValidHours('4');
+      if (visitorName === 'Shipper Giao Hàng') setVisitorName('Thợ Dịch Vụ / Kỹ Thuật');
+    } else {
+      setEntryType('MULTI');
+      setValidHours('4');
+      if (visitorName === 'Shipper Giao Hàng') setVisitorName('Khách Thăm Nhà');
+    }
+  };
+
   // Generate initial pass on open
   useEffect(() => {
     if (isOpen) {
@@ -80,6 +102,7 @@ export default function VisitorQrModal({
           apartmentCode,
           visitorName: 'Khách Thăm Nhà',
           purpose: 'VISITOR',
+          entryType: 'MULTI',
           validHours: 4,
         });
         setActivePass(pass);
@@ -99,6 +122,7 @@ export default function VisitorQrModal({
         apartmentCode,
         visitorName: visitorName.trim() || 'Khách Thăm Nhà',
         purpose,
+        entryType,
         validHours: parseInt(validHours, 10) || 2,
       });
       setActivePass(pass);
@@ -111,7 +135,8 @@ export default function VisitorQrModal({
     if (!activePass) return;
     const expTime = new Date(activePass.validUntil).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
     const expDate = new Date(activePass.validUntil).toLocaleDateString('vi-VN');
-    const shareText = `[SKYLINE SMART RESIDENCE] Mã mời đón khách Căn hộ ${activePass.apartmentCode}\nKhách: ${activePass.visitorName}\nMã PIN Thẻ Cổng: ${activePass.pinCode}\nThời hạn hiệu lực: Đến ${expTime} ngày ${expDate}\nQuý khách vui lòng xuất trình mã QR này trước camera Barrier hoặc Sảnh Thang Máy để vào tòa nhà.`;
+    const typeLabel = activePass.entryType === 'SINGLE' ? 'Vé 1 Lần Duy Nhất (Tự hủy sau khi qua cổng)' : 'Vé Nhiều Lần (Trong hạn)';
+    const shareText = `[SKYLINE SMART RESIDENCE] Mã mời đón khách Căn hộ ${activePass.apartmentCode}\nKhách: ${activePass.visitorName}\nLoại thẻ: ${typeLabel}\nMã PIN Thẻ Cổng: ${activePass.pinCode}\nThời hạn hiệu lực: Đến ${expTime} ngày ${expDate}\nQuý khách vui lòng xuất trình mã QR này trước camera Barrier hoặc Sảnh Thang Máy để vào tòa nhà.`;
     navigator.clipboard.writeText(shareText);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
@@ -197,7 +222,7 @@ export default function VisitorQrModal({
             <div className="p-3 bg-[#121E2A] border border-[#1E3A5F] rounded-xl flex items-start gap-2.5 text-xs text-cyan-200/90">
               <ShieldCheck className="w-4 h-4 text-cyan-400 flex-shrink-0 mt-0.5" />
               <span>
-                <strong>Bảo Mật Quyền Riêng Tư:</strong> Mã QR được mã hóa chữ ký số và tự động hết hạn. Hệ thống không lưu trữ danh bạ khách vãng lai trong cơ sở dữ liệu để bảo vệ tuyệt đối thông tin cá nhân của căn hộ.
+                <strong>Bảo Mật Quyền Riêng Tư:</strong> Mã QR được mã hóa chữ ký số thời gian thực. Hệ thống không lưu trữ danh bạ khách vãng lai trong cơ sở dữ liệu để bảo vệ tuyệt đối thông tin cá nhân của căn hộ.
               </span>
             </div>
 
@@ -214,13 +239,63 @@ export default function VisitorQrModal({
                     type="text"
                     value={visitorName}
                     onChange={(e) => setVisitorName(e.target.value)}
-                    placeholder="VD: Anh Minh, Shipper Giao Hàng..."
+                    placeholder="VD: Anh Minh, Shipper Shopee..."
                     className="w-full bg-[#161B22] border border-[#2D3748] p-2.5 text-white rounded-lg focus:border-[#C5A880] outline-none"
                     required
                   />
                 </div>
 
+                {/* Single-use vs Multi-use Selector */}
+                <div>
+                  <label className="text-gray-300 font-medium block mb-1.5">Số Lần Sử Dụng Mã:</label>
+                  <div className="grid grid-cols-2 gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setEntryType('SINGLE')}
+                      className={`p-2.5 rounded-lg border text-left transition-all ${
+                        entryType === 'SINGLE'
+                          ? 'bg-[#1C2533] border-[#C5A880] ring-1 ring-[#C5A880]'
+                          : 'bg-[#161B22] border-[#2D3748] text-gray-400 hover:text-white'
+                      }`}
+                    >
+                      <div className="font-bold flex items-center gap-1 text-white text-[11px]">
+                        <Zap className="w-3.5 h-3.5 text-amber-400" /> Quét 1 Lần
+                      </div>
+                      <div className="text-[10px] text-gray-400 mt-0.5">Tự hủy ngay khi qua cổng (Shipper)</div>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => setEntryType('MULTI')}
+                      className={`p-2.5 rounded-lg border text-left transition-all ${
+                        entryType === 'MULTI'
+                          ? 'bg-[#1C2533] border-[#C5A880] ring-1 ring-[#C5A880]'
+                          : 'bg-[#161B22] border-[#2D3748] text-gray-400 hover:text-white'
+                      }`}
+                    >
+                      <div className="font-bold flex items-center gap-1 text-white text-[11px]">
+                        <Repeat className="w-3.5 h-3.5 text-cyan-400" /> Quét Nhiều Lần
+                      </div>
+                      <div className="text-[10px] text-gray-400 mt-0.5">Ra vào tự do trong thời hạn (Khách)</div>
+                    </button>
+                  </div>
+                </div>
+
                 <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="text-gray-300 font-medium block mb-1">Mục Đích:</label>
+                    <select
+                      value={purpose}
+                      onChange={(e) => handlePurposeChange(e.target.value as any)}
+                      className="w-full bg-[#161B22] border border-[#2D3748] p-2.5 text-white rounded-lg focus:border-[#C5A880] outline-none"
+                    >
+                      <option value="VISITOR">Khách Thăm Nhà</option>
+                      <option value="DELIVERY">Giao Hàng Shipper</option>
+                      <option value="TECH">Thợ Dịch Vụ</option>
+                      <option value="OTHER">Mục Đích Khác</option>
+                    </select>
+                  </div>
+
                   <div>
                     <label className="text-gray-300 font-medium block mb-1">Thời Gian Hiệu Lực:</label>
                     <select
@@ -233,20 +308,6 @@ export default function VisitorQrModal({
                       <option value="4">4 Giờ</option>
                       <option value="8">8 Giờ</option>
                       <option value="24">24 Giờ</option>
-                    </select>
-                  </div>
-
-                  <div>
-                    <label className="text-gray-300 font-medium block mb-1">Mục Đích:</label>
-                    <select
-                      value={purpose}
-                      onChange={(e) => setPurpose(e.target.value as any)}
-                      className="w-full bg-[#161B22] border border-[#2D3748] p-2.5 text-white rounded-lg focus:border-[#C5A880] outline-none"
-                    >
-                      <option value="VISITOR">Khách Thăm Nhà</option>
-                      <option value="DELIVERY">Giao Hàng Shipper</option>
-                      <option value="TECH">Thợ Dịch Vụ</option>
-                      <option value="OTHER">Mục Đích Khác</option>
                     </select>
                   </div>
                 </div>
@@ -276,9 +337,16 @@ export default function VisitorQrModal({
                       <div className="font-bold text-white text-sm truncate">{activePass.visitorName}</div>
                       <div className="text-[11px] text-[#C5A880]">Điểm đến: Căn hộ {activePass.apartmentCode} • {activePass.purposeLabel}</div>
                     </div>
-                    <span className="px-2 py-0.5 bg-emerald-950 text-emerald-300 text-[10px] font-bold uppercase rounded border border-emerald-500/60">
-                      Hiệu Lực Ngay
-                    </span>
+                    <div className="flex flex-col items-end gap-1">
+                      <span className={`px-2 py-0.5 text-[9px] font-bold uppercase rounded border ${
+                        activePass.entryType === 'SINGLE'
+                          ? 'bg-amber-950 text-amber-300 border-amber-500/60'
+                          : 'bg-cyan-950 text-cyan-300 border-cyan-500/60'
+                      }`}>
+                        {activePass.entryType === 'SINGLE' ? 'Vé 1 Lần (Tự hủy)' : 'Vé Nhiều Lần'}
+                      </span>
+                      <span className="text-[9px] text-emerald-400 font-mono">Hiệu Lực Ngay</span>
+                    </div>
                   </div>
 
                   {/* QR Image Container */}
@@ -465,7 +533,7 @@ export default function VisitorQrModal({
                   <div className="space-y-1 text-xs">
                     <div className="font-bold text-sm">{scanResult.title}</div>
                     <div className="text-gray-200">{scanResult.message}</div>
-                    <div className="text-[10px] text-gray-400 pt-0.5">Thời gian quét: {scanResult.scannedAt}</div>
+                    <div className="text-[10px] text-gray-400 pt-0.5">Thời gian quét: {scanResult.scannedAt} • Điểm kiểm soát: {scanResult.checkpoint || 'Barrier Cổng Sảnh A'}</div>
                   </div>
                 </div>
 
