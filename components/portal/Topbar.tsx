@@ -219,51 +219,90 @@ export default function Topbar({
         <div className="relative">
           <button
             onClick={() => setShowRoleDropdown(!showRoleDropdown)}
-            className="px-2.5 sm:px-3 py-1.5 bg-[#161B22] border border-[#2D3748] hover:border-[#C5A880] text-xs flex items-center gap-2 text-gray-200 transition-colors shadow"
+            className="px-2.5 sm:px-3 py-1.5 bg-[#161B22] border border-[#2D3748] hover:border-[#C5A880] text-xs flex items-center gap-2 text-gray-200 transition-colors shadow rounded-lg"
           >
-            <div className="w-5 h-5 rounded-full overflow-hidden border border-[#C5A880]/60 flex-shrink-0">
+            <div className="w-6 h-6 rounded-full overflow-hidden border border-[#C5A880]/60 flex-shrink-0 bg-[#0D1117]">
               <img
-                src={currentUser.avatar_url || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150'}
+                src={currentUser.avatar_url ? currentUser.avatar_url.replace('data.nks.vn//', 'data.nks.vn/') : 'https://data.nks.vn/storage/users/default.png'}
+                onError={(e) => {
+                  e.currentTarget.src = 'https://data.nks.vn/storage/users/default.png';
+                }}
                 alt={userName}
                 className="w-full h-full object-cover"
               />
             </div>
             <div className="text-left hidden sm:block">
-              <div className="text-[11px] font-bold text-white truncate max-w-[110px] leading-tight">
+              <div className="text-[11px] font-bold text-white truncate max-w-[120px] leading-tight">
                 {userName}
               </div>
               <div className="text-[9px] text-[#C5A880] font-mono uppercase font-bold tracking-wider">
-                {isAdmin ? 'Ban Quản Lý' : isOwner ? `Căn ${currentUser.apartment_code || '12A05'} (Chủ Hộ)` : `Căn ${currentUser.apartment_code || '12A05'} (Người Nhà)`}
+                {currentUser.role === 'ADMIN' ? 'Ban Quản Lý (Admin)' : currentUser.role === 'TECHNICIAN' ? 'Kỹ Thuật Viên' : currentUser.role === 'OWNER' ? `Căn ${currentUser.apartment_code || '12A05'} (Chủ Hộ)` : `Căn ${currentUser.apartment_code || '12A05'} (Người Nhà)`}
               </div>
             </div>
             <ChevronDown className="w-3.5 h-3.5 text-gray-400 ml-1" />
           </button>
 
           {showRoleDropdown && (
-            <div className="absolute right-0 top-full mt-2 w-64 bg-[#121820] border border-[#C5A880] p-2 shadow-2xl z-50 space-y-1">
-              <div className="px-2 py-1 text-[10px] text-[#C5A880] uppercase tracking-wider font-semibold border-b border-[#222B35]">
-                Chuyển đổi vai trò:
+            <div className="absolute right-0 top-full mt-2 w-72 bg-[#121820] border border-[#C5A880] p-2.5 shadow-2xl z-50 space-y-1.5 rounded-xl animate-fadeIn">
+              <div className="px-2 py-1 text-[10px] text-[#C5A880] uppercase tracking-wider font-semibold border-b border-[#222B35] flex items-center justify-between">
+                <span>Chuyển đổi vai trò tài khoản:</span>
+                <span className="text-[9px] text-gray-400 font-mono">Role Matrix</span>
               </div>
               {[
-                { role: 'ADMIN' as UserRole, username: 'nks.manager01@gmail.com', name: '🛡️ Ban Quản Lý (Admin)', desc: 'Nguyễn Văn Quản Trị • Điều hành toàn tòa nhà' },
-                { role: 'OWNER' as UserRole, username: 'huuluc04@gmail.com', name: '👑 Chủ Hộ (Căn 12A05)', desc: 'Nguyễn Hữu Lực • Độc quyền tài chính, thành viên' },
-                { role: 'TENANT' as UserRole, username: 'nguyenhuunhut1309@gmail.com', name: '👤 Người Nhà (12A05)', desc: 'Nguyễn Hữu Nhựt • Sinh hoạt tiện ích, FaceID' },
+                { 
+                  role: 'ADMIN' as UserRole, 
+                  username: 'nks.manager01@gmail.com', 
+                  name: '🛡️ Ban Quản Lý (Admin)', 
+                  desc: 'Quản trị điều hành, duyệt e-KYC & barrier',
+                  badge: 'ADMIN' 
+                },
+                { 
+                  role: 'TECHNICIAN' as UserRole, 
+                  username: 'nks.manager02@gmail.com', 
+                  name: '🔧 Kỹ Thuật Viên', 
+                  desc: 'Điều phối sự cố SLA, thiết bị IoT & bãi xe',
+                  badge: 'TECH' 
+                },
+                { 
+                  role: 'OWNER' as UserRole, 
+                  username: 'huuluc04@gmail.com', 
+                  name: '👑 Chủ Hộ (Căn 12A05)', 
+                  desc: 'Nguyễn Hữu Lực • Độc quyền tài chính, thành viên',
+                  badge: 'CHỦ HỘ' 
+                },
+                { 
+                  role: 'TENANT' as UserRole, 
+                  username: 'nguyenhuunhut1309@gmail.com', 
+                  name: '👤 Người Nhà (Căn 12A05)', 
+                  desc: 'Nguyễn Hữu Nhựt • Sinh hoạt tiện ích, FaceID',
+                  badge: 'NGƯỜI NHÀ' 
+                },
               ].map((r, idx) => {
-                const isCurrent = currentUser.username === r.username || (currentUser.role === r.role && !r.username);
+                const isCurrent = currentUser.role === r.role || 
+                  (currentUser.email && currentUser.email.toLowerCase() === r.username.toLowerCase()) ||
+                  (currentUser.username && currentUser.username.toLowerCase() === r.username.toLowerCase());
                 return (
                   <button
                     key={idx}
+                    type="button"
                     onClick={() => {
                       onSwitchRole(r.username as any);
                       setShowRoleDropdown(false);
                     }}
-                    className={`w-full text-left p-2 text-xs flex items-center justify-between transition-colors rounded ${
-                      isCurrent ? 'bg-[#C5A880] text-[#0D1117] font-bold' : 'text-gray-300 hover:bg-[#1C2533]'
+                    className={`w-full text-left p-2 text-xs flex items-center justify-between transition-colors rounded-lg ${
+                      isCurrent ? 'bg-[#C5A880] text-[#0D1117] font-bold shadow' : 'text-gray-300 hover:bg-[#1C2533]'
                     }`}
                   >
                     <div className="truncate pr-1">
-                      <div className="truncate">{r.name}</div>
-                      <div className={`text-[10px] ${isCurrent ? 'text-gray-800' : 'text-gray-400'}`}>
+                      <div className="truncate font-semibold flex items-center gap-1.5">
+                        <span>{r.name}</span>
+                        <span className={`text-[8px] font-mono px-1 py-0.2 rounded border ${
+                          isCurrent ? 'bg-black/20 text-[#0D1117] border-black/30' : 'bg-[#161B22] text-[#C5A880] border-[#2D3748]'
+                        }`}>
+                          {r.badge}
+                        </span>
+                      </div>
+                      <div className={`text-[10px] mt-0.5 truncate ${isCurrent ? 'text-gray-900 font-medium' : 'text-gray-400'}`}>
                         {r.desc}
                       </div>
                     </div>
@@ -277,10 +316,10 @@ export default function Topbar({
                 <button
                   type="button"
                   onClick={handleLogout}
-                  className="w-full p-2 text-left text-xs text-rose-400 hover:bg-rose-950/50 flex items-center gap-2 transition-colors font-semibold"
+                  className="w-full p-2 text-left text-xs text-rose-400 hover:bg-rose-950/50 flex items-center gap-2 transition-colors font-semibold rounded-lg"
                 >
                   <LogOut className="w-3.5 h-3.5" />
-                  Đăng Xuất Tài Khoản
+                  Đăng Xuất Khỏi Hệ Thống
                 </button>
               </div>
             </div>
