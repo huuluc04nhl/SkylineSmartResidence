@@ -8,7 +8,7 @@ interface AuthContextType {
   currentUser: User | null;
   isAuthenticated: boolean;
   isLoading: boolean;
-  login: (roleOrUsername: UserRole | string, password?: string) => Promise<boolean>;
+  login: (roleOrUsername: UserRole | string, password?: string) => Promise<User | null>;
   logout: () => Promise<void>;
   canAccess: (feature: 'FINANCE' | 'VOTING' | 'MANAGE_MEMBERS' | 'ADMIN_CORE' | 'SMART_HOME_WRITE' | 'CREATE_TICKET' | 'BOOK_FACILITY') => boolean;
   refreshUser: () => Promise<void>;
@@ -53,7 +53,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   // 2. Login via NKS API (Server sets HTTP-Only Cookie)
-  const login = async (roleOrUsername: UserRole | string, password?: string): Promise<boolean> => {
+  const login = async (roleOrUsername: UserRole | string, password?: string): Promise<User | null> => {
     setIsLoading(true);
     try {
       // Map quick role to standard NKS account if role string is provided
@@ -65,15 +65,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       const nksRes = await nksLogin(usernameToSubmit, password || '12345678');
       if (nksRes.success && nksRes.user) {
-        setCurrentUser(nksRes.user as any);
-        return true;
+        const u = nksRes.user as any as User;
+        setCurrentUser(u);
+        return u;
       }
     } catch (err) {
       console.error('Login API error', err);
     } finally {
       setIsLoading(false);
     }
-    return false;
+    return null;
   };
 
   // 3. Logout via Server API (Clears HTTP-Only Cookie)

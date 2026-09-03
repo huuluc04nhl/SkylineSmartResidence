@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import React, { useState, useEffect, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { 
   ShieldAlert, 
   Sparkles, 
@@ -43,8 +43,9 @@ import AiConciergePage from '@/components/portal/resident/AiConciergePage';
 // Floating Luxury AI Concierge Widget
 import AiConciergeFloating from '@/components/portal/shared/AiConciergeFloating';
 
-export default function PortalPage() {
+function PortalContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { currentUser, isLoading, login, logout } = useAuth();
 
   const [activeModule, setActiveModule] = useState<string>('resident-home');
@@ -53,6 +54,33 @@ export default function PortalPage() {
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [isAiChatOpen, setIsAiChatOpen] = useState(false);
+
+  // Auto-route to the appropriate screen according to role
+  useEffect(() => {
+    if (currentUser) {
+      const tabParam = searchParams.get('tab');
+      if (currentUser.role === 'ADMIN') {
+        if (tabParam && tabParam.startsWith('admin-')) {
+          setActiveModule(tabParam);
+        } else {
+          setActiveModule('admin-dashboard');
+        }
+      } else if (currentUser.role === 'TECHNICIAN') {
+        if (tabParam && tabParam.startsWith('admin-')) {
+          setActiveModule(tabParam);
+        } else {
+          setActiveModule('admin-kanban');
+        }
+      } else {
+        // OWNER or TENANT (Family)
+        if (tabParam && tabParam.startsWith('resident-')) {
+          setActiveModule(tabParam);
+        } else {
+          setActiveModule('resident-home');
+        }
+      }
+    }
+  }, [currentUser, searchParams]);
 
   // 1. Loading State
   if (isLoading) {
@@ -77,23 +105,17 @@ export default function PortalPage() {
             <Lock className="w-7 h-7" />
           </div>
           <div className="space-y-2">
-            <h2 className="font-serif text-2xl font-bold">Yêu Cầu Xác Thực</h2>
+            <h2 className="font-serif text-2xl font-bold">Yêu Cầu Đăng Nhập</h2>
             <p className="text-xs text-gray-400">
-              Vui lòng đăng nhập qua Cổng Cư Dân (OTP / FaceID) hoặc Cổng Ban Quản Lý để truy cập hệ thống.
+              Vui lòng đăng nhập tài khoản Cư Dân hoặc Ban Quản Lý để truy cập hệ thống SKYLINE.
             </p>
           </div>
           <div className="space-y-3 pt-2">
             <button
               onClick={() => setIsLoginModalOpen(true)}
-              className="w-full py-3 bg-[#C5A880] hover:bg-white text-[#0D1117] font-bold text-xs uppercase tracking-wider transition-colors"
+              className="w-full py-3 bg-[#C5A880] hover:bg-white text-[#0D1117] font-bold text-xs uppercase tracking-wider transition-colors shadow-lg"
             >
-              Đăng Nhập Cổng Cư Dân (OTP / FaceID)
-            </button>
-            <button
-              onClick={() => router.push('/admin')}
-              className="w-full py-2.5 bg-[#161B22] hover:bg-[#1C2533] border border-gray-700 text-[#C5A880] text-xs font-semibold uppercase tracking-wider transition-colors"
-            >
-              🛡️ Cổng Dành Cho Ban Quản Lý (Admin)
+              Đăng Nhập Tài Khoản (Email / SĐT)
             </button>
             <button
               onClick={() => router.push('/')}
@@ -270,5 +292,22 @@ export default function PortalPage() {
         currentUser={currentUser}
       />
     </div>
+  );
+}
+
+export default function PortalPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-[#0A0E14] flex items-center justify-center text-white">
+        <div className="text-center space-y-3">
+          <RefreshCw className="w-8 h-8 text-[#C5A880] animate-spin mx-auto" />
+          <div className="font-serif text-lg tracking-wider text-[#C5A880]">
+            Đang Đồng Bộ Dữ Liệu...
+          </div>
+        </div>
+      </div>
+    }>
+      <PortalContent />
+    </Suspense>
   );
 }

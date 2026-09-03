@@ -49,14 +49,6 @@ export default function Footer() {
               <div>Đại lộ Skyline, Trung tâm Khu Đô Thị Mới</div>
               <div>Hotline Kỹ thuật: <strong>1900 1088</strong></div>
               <div>Email: bql@skyline-residence.vn</div>
-              <div className="pt-2">
-                <Link
-                  href="/admin"
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#121820] hover:bg-[#1C2533] border border-[#C5A880]/60 hover:border-[#C5A880] text-[#C5A880] text-[11px] font-semibold uppercase tracking-wider transition-colors"
-                >
-                  <span>🛡️ Cổng Ban Quản Lý (Admin)</span>
-                </Link>
-              </div>
             </div>
           </div>
         </div>
