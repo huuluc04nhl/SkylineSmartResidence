@@ -27,6 +27,8 @@ import {
   Scan,
   Zap,
   ArrowRight,
+  Clock,
+  XCircle,
   Upload,
   KeyRound,
   Eye,
@@ -50,6 +52,11 @@ import { useAuth } from '@/lib/authContext';
 import CccdOcrScannerModal from './CccdOcrScannerModal';
 import AvatarEditorModal from './AvatarEditorModal';
 import { OcrCccdResult, formatToDateInput, formatToDisplayDate, formatToApiDate } from '@/lib/ocrParser';
+import { 
+  getEkycForUser, 
+  submitEkycRequest, 
+  EkycRequest 
+} from '@/lib/ekycStore';
 
 interface ProfileEkycProps {
   currentUser: User;
@@ -90,11 +97,12 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
 
   // e-KYC State
   const [ekycStatus, setEkycStatus] = useState<'VERIFIED' | 'PENDING' | 'REJECTED'>('VERIFIED');
+  const [currentEkyc, setCurrentEkyc] = useState<EkycRequest | null>(null);
   const [isScanningOcr, setIsScanningOcr] = useState(false);
   const [cccdImage, setCccdImage] = useState('');
   const [matchScore, setMatchScore] = useState(99.8);
 
-  // Load live user info directly from API endpoint on mount
+  // Load live user info directly from API endpoint on mount & sync e-KYC status
   useEffect(() => {
     async function loadApiUserData() {
       setIsLoadingApi(true);
@@ -132,6 +140,22 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
     }
 
     loadApiUserData();
+
+    // Synchronize live e-KYC status with BQL approval center
+    const syncEkycStatus = () => {
+      const userRecord = getEkycForUser(currentUser.phone || currentUser.email || currentUser.username || currentUser.id);
+      if (userRecord) {
+        setCurrentEkyc(userRecord);
+        setEkycStatus(userRecord.status === 'APPROVED' ? 'VERIFIED' : userRecord.status);
+        if (userRecord.idCardFrontUrl) setCccdImage(userRecord.idCardFrontUrl);
+        if (userRecord.idCardBackUrl) setCccdBackImage(userRecord.idCardBackUrl);
+        if (userRecord.faceScore) setMatchScore(userRecord.faceScore);
+      }
+    };
+
+    syncEkycStatus();
+    window.addEventListener('skyline_ekyc_updated', syncEkycStatus);
+    return () => window.removeEventListener('skyline_ekyc_updated', syncEkycStatus);
   }, [currentUser]);
 
   // 1. Submit Update Profile Info to NKS API (POST /api/nks/user/updateInfo + updateCccd)
@@ -287,6 +311,38 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
     }, 1200);
   };
 
+  const handleSubmitEkycToBql = async () => {
+    if (!idCardNumber.trim()) {
+      alert('Vui lòng quét thẻ CCCD hoặc nhập số CCCD trước khi gửi hồ sơ duyệt!');
+      return;
+    }
+    setIsScanningOcr(true);
+    try {
+      const req = submitEkycRequest({
+        userId: currentUser.id || currentUser.username,
+        fullName: fullName.trim() || currentUser.full_name,
+        roleLabel: isOwner ? `Chủ Hộ (Căn ${aptCode})` : `Người Nhà (Căn ${aptCode})`,
+        apartmentCode: aptCode,
+        phone: phone.trim() || currentUser.phone || '',
+        email: email.trim() || currentUser.email || '',
+        idCardNo: idCardNumber.trim(),
+        idDate: idDate,
+        idPlace: idPlace,
+        dob: birthday,
+        pob: pob,
+        avatarUrl: avatarUrl || currentUser.avatar_url || '',
+        idCardFrontUrl: cccdImage || 'https://images.unsplash.com/photo-1578852612716-854e527abf2e?w=600',
+        idCardBackUrl: cccdBackImage || 'https://images.unsplash.com/photo-1578852612716-854e527abf2e?w=600',
+        faceScore: 98.8,
+      });
+      setCurrentEkyc(req);
+      setEkycStatus('PENDING');
+      alert('✅ Hồ sơ e-KYC đã được chuyển tới Ban Quản Lý tòa nhà để xét duyệt!');
+    } finally {
+      setIsScanningOcr(false);
+    }
+  };
+
   return (
     <div className="space-y-6 w-full animate-fadeIn select-none">
       {/* Header */}
@@ -312,9 +368,23 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
             <Scan className="w-4 h-4 text-[#C5A880]" /> Quét Căn Cước (OCR)
           </button>
 
-          <span className="px-3 py-1 bg-emerald-950/80 border border-emerald-500 text-emerald-300 text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 rounded">
-            <ShieldCheck className="w-4 h-4 text-emerald-400" /> FaceID Đã Xác Thực
-          </span>
+          {ekycStatus === 'VERIFIED' && (
+            <span className="px-3 py-1 bg-emerald-950/80 border border-emerald-500 text-emerald-300 text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 rounded">
+              <ShieldCheck className="w-4 h-4 text-emerald-400" /> FaceID Đã Xác Thực
+            </span>
+          )}
+
+          {ekycStatus === 'PENDING' && (
+            <span className="px-3 py-1 bg-amber-950/80 border border-amber-500 text-amber-300 text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 rounded animate-pulse">
+              <Clock className="w-4 h-4 text-amber-400" /> Đang Chờ BQL Duyệt
+            </span>
+          )}
+
+          {ekycStatus === 'REJECTED' && (
+            <span className="px-3 py-1 bg-rose-950/80 border border-rose-500 text-rose-300 text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 rounded">
+              <XCircle className="w-4 h-4 text-rose-400" /> BQL Yêu Cầu Chụp Lại
+            </span>
+          )}
         </div>
       </div>
 
@@ -643,37 +713,67 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
       {/* ------------------------------------------------------------- */}
       {activeTab === 'EKYC' && (
         <div className="space-y-6">
-          {/* Status Box */}
-          <div className="p-5 bg-gradient-to-r from-[#121820] to-[#161D26] border border-[#C5A880]/70 flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-xl rounded-lg">
+          {/* Status Box & BQL Sync Banner */}
+          <div className={`p-5 border flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-xl rounded-lg ${
+            ekycStatus === 'PENDING'
+              ? 'bg-gradient-to-r from-[#1A1810] to-[#121820] border-amber-500/80'
+              : ekycStatus === 'REJECTED'
+              ? 'bg-gradient-to-r from-[#201014] to-[#121820] border-rose-500/80'
+              : 'bg-gradient-to-r from-[#121820] to-[#161D26] border-[#C5A880]/70'
+          }`}>
             <div className="space-y-1">
-              <div className="flex items-center gap-2 text-[#C5A880] font-bold text-xs uppercase tracking-wider">
-                <Sparkles className="w-4 h-4" /> Hệ Thống Nhận Diện Cư Dân
+              <div className="flex items-center gap-2 font-bold text-xs uppercase tracking-wider">
+                {ekycStatus === 'PENDING' && (
+                  <span className="text-amber-400 flex items-center gap-1.5 font-mono">
+                    <Clock className="w-4 h-4 animate-pulse" /> Đang Chờ Ban Quản Lý Phê Duyệt
+                  </span>
+                )}
+                {ekycStatus === 'REJECTED' && (
+                  <span className="text-rose-400 flex items-center gap-1.5 font-mono">
+                    <XCircle className="w-4 h-4" /> BQL Yêu Cầu Chụp Lại Hồ Sơ
+                  </span>
+                )}
+                {ekycStatus === 'VERIFIED' && (
+                  <span className="text-emerald-400 flex items-center gap-1.5 font-mono">
+                    <CheckCircle2 className="w-4 h-4" /> Đã Phê Duyệt & Kích Hoạt Quyền FaceID
+                  </span>
+                )}
               </div>
+
               <h3 className="font-serif text-lg font-bold text-white">
                 Định Danh Khuôn Mặt & Thẻ Cư Dân Thông Minh
               </h3>
+
               <p className="text-xs text-gray-300 max-w-2xl font-light">
-                Hồ sơ định danh đã được kích hoạt. Khuôn mặt của bạn đã được phân quyền ra vào tự động tại Sảnh A/B, thang máy và các tiện ích đặc quyền tòa nhà.
+                {ekycStatus === 'PENDING' && (
+                  `Hồ sơ e-KYC đã gửi đến BQL lúc ${currentEkyc?.submittedAt || 'hôm nay'}. Hệ thống đang chờ nhân sự BQL rà soát đối chiếu ảnh CCCD & khuôn mặt.`
+                )}
+                {ekycStatus === 'REJECTED' && (
+                  `Lý do từ chối từ BQL: "${currentEkyc?.rejectionReason || 'Ảnh chụp không đạt tiêu chuẩn độ nét'}". Quý cư dân vui lòng chụp lại ảnh CCCD và khuôn mặt.`
+                )}
+                {ekycStatus === 'VERIFIED' && (
+                  `Hồ sơ định danh đã được BQL phê duyệt. Khuôn mặt của bạn đã được phân quyền ra vào tự động tại Sảnh A/B, thang máy và các tiện ích đặc quyền tòa nhà.`
+                )}
               </p>
             </div>
 
-            <div className="flex items-center gap-2.5 flex-shrink-0">
+            <div className="flex flex-wrap items-center gap-2.5 flex-shrink-0">
               <button
                 type="button"
                 onClick={() => setIsOcrModalOpen(true)}
-                className="px-4 py-2.5 bg-[#1C2533] hover:bg-[#C5A880] hover:text-[#0D1117] border border-[#C5A880] text-[#C5A880] text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-2 shadow rounded"
+                className="px-3.5 py-2.5 bg-[#1C2533] hover:bg-[#C5A880] hover:text-[#0D1117] border border-[#C5A880] text-[#C5A880] text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-2 shadow rounded"
               >
                 <Scan className="w-4 h-4" /> Quét Thẻ Căn Cước
               </button>
 
               <button
                 type="button"
-                onClick={handleRetakeEkyc}
+                onClick={handleSubmitEkycToBql}
                 disabled={isScanningOcr}
-                className="px-4 py-2.5 bg-[#C5A880] hover:bg-white text-[#0D1117] text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-2 shadow rounded"
+                className="px-4 py-2.5 bg-[#C5A880] hover:bg-white text-[#0D1117] text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-2 shadow-lg rounded"
               >
-                {isScanningOcr ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Camera className="w-4 h-4" />}
-                {isScanningOcr ? 'Đang Cập Nhật...' : 'Cập Nhật FaceID'}
+                {isScanningOcr ? <RefreshCw className="w-4 h-4 animate-spin" /> : <ShieldCheck className="w-4 h-4" />}
+                {isScanningOcr ? 'Đang Gửi Hồ Sơ...' : 'Gửi Hồ Sơ Cho BQL Duyệt'}
               </button>
             </div>
           </div>
