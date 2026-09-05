@@ -76,7 +76,6 @@ export default function ApartmentModel3DViewer({
   const userRole = currentUser?.role; // 'OWNER' | 'TENANT' | 'ADMIN' | undefined
   const isOwner = userRole === 'OWNER';
   const isTenant = userRole === 'TENANT';
-  const isAdmin = userRole === 'ADMIN';
 
   // Chỉ cho phép điều khiển khi được đặt interactive=true VÀ người dùng đã đăng nhập đúng vai trò quản lý căn hộ
   const canControl = interactive && (isOwner || isTenant);
@@ -199,7 +198,7 @@ export default function ApartmentModel3DViewer({
     switch (mode) {
       case '3D_BLOCKS': return 'Mô Hình 3D';
       case '2D_BLUEPRINT': return 'Mặt Bằng 2D Kỹ Thuật';
-      case '3D_EXPLODED': return 'Bóc Tách Khối 3D';
+      case '3D_EXPLODED': return 'Bóc Tách Khối';
     }
   };
 
@@ -341,10 +340,14 @@ export default function ApartmentModel3DViewer({
               <line x1="55" y1="330" x2="55" y2="370" stroke="#C5A880" strokeWidth="3.5" strokeLinecap="round" />
               <rect x="115" y="280" width="45" height="25" rx="3" fill="#1E293B" stroke="#475569" strokeWidth="1" />
               
-              <g transform="translate(110, 375)">
-                <rect x="-44" y="-10" width="88" height="20" rx="3" fill="#0D1117" stroke="#64748B" strokeWidth="1" />
-                <text x="0" y="4" fill="#E2E8F0" fontSize="9.5" fontWeight="bold" textAnchor="middle" fontFamily="monospace">
-                  Sảnh Đón • 4.2 m²
+              {/* Thẻ Nhãn Phòng 2 Dòng Gọn Gàng, Không Tràn Viền */}
+              <g transform="translate(110, 345)">
+                <rect x="-42" y="-16" width="84" height="32" rx="4" fill="#0A0E17" fillOpacity="0.92" stroke="#64748B" strokeWidth="1.2" />
+                <text x="0" y="-3" fill="#E2E8F0" fontSize="9" fontWeight="bold" textAnchor="middle" fontFamily="system-ui, sans-serif" letterSpacing="0.05em">
+                  SẢNH ĐÓN
+                </text>
+                <text x="0" y="10" fill="#94A3B8" fontSize="8.5" fontWeight="600" textAnchor="middle" fontFamily="system-ui, sans-serif">
+                  4.2 m²
                 </text>
               </g>
             </g>
@@ -373,10 +376,13 @@ export default function ApartmentModel3DViewer({
               <circle cx="134" cy="161" r="6" fill="#F8FAFC" />
               <rect x="120" y="200" width="30" height="38" rx="5" fill="#1E293B" stroke="#64748B" />
 
-              <g transform="translate(110, 235)">
-                <rect x="-42" y="-10" width="84" height="20" rx="3" fill="#0D1117" stroke="#06B6D4" strokeWidth="1" />
-                <text x="0" y="4" fill="#06B6D4" fontSize="9.5" fontWeight="bold" textAnchor="middle" fontFamily="monospace">
-                  WC Chung • 3.8 m²
+              <g transform="translate(110, 205)">
+                <rect x="-42" y="-16" width="84" height="32" rx="4" fill="#0A0E17" fillOpacity="0.92" stroke="#06B6D4" strokeWidth="1.2" />
+                <text x="0" y="-3" fill="#06B6D4" fontSize="9" fontWeight="bold" textAnchor="middle" fontFamily="system-ui, sans-serif" letterSpacing="0.05em">
+                  WC CHUNG
+                </text>
+                <text x="0" y="10" fill="#67E8F9" fontSize="8.5" fontWeight="600" textAnchor="middle" fontFamily="system-ui, sans-serif">
+                  3.8 m²
                 </text>
               </g>
             </g>
@@ -427,10 +433,13 @@ export default function ApartmentModel3DViewer({
                 </g>
               )}
 
-              <g transform="translate(340, 315)">
-                <rect x="-56" y="-11" width="112" height="22" rx="4" fill="#0D1117" stroke="#C5A880" strokeWidth="1.5" />
-                <text x="0" y="4.5" fill="#C5A880" fontSize="10.5" fontWeight="bold" textAnchor="middle" fontFamily="monospace">
-                  Phòng Khách • 26.8 m²
+              <g transform="translate(340, 310)">
+                <rect x="-56" y="-17" width="112" height="34" rx="4" fill="#0A0E17" fillOpacity="0.92" stroke="#C5A880" strokeWidth="1.5" />
+                <text x="0" y="-3" fill="#C5A880" fontSize="9.5" fontWeight="bold" textAnchor="middle" fontFamily="system-ui, sans-serif" letterSpacing="0.05em">
+                  PHÒNG KHÁCH
+                </text>
+                <text x="0" y="10" fill="#FDE68A" fontSize="9" fontWeight="600" textAnchor="middle" fontFamily="system-ui, sans-serif">
+                  26.8 m²
                 </text>
               </g>
             </g>
@@ -464,10 +473,13 @@ export default function ApartmentModel3DViewer({
               <circle cx="463" cy="445" r="6" fill="#EF4444" opacity="0.7" />
               <rect x="450" y="465" width="26" height="18" rx="2" fill="#334155" />
 
-              <g transform="translate(340, 520)">
-                <rect x="-52" y="-11" width="104" height="22" rx="4" fill="#0D1117" stroke="#F59E0B" strokeWidth="1.5" />
-                <text x="0" y="4.5" fill="#F59E0B" fontSize="10.5" fontWeight="bold" textAnchor="middle" fontFamily="monospace">
-                  Bếp & Ăn • 12.5 m²
+              <g transform="translate(340, 515)">
+                <rect x="-52" y="-17" width="104" height="34" rx="4" fill="#0A0E17" fillOpacity="0.92" stroke="#F59E0B" strokeWidth="1.2" />
+                <text x="0" y="-3" fill="#F59E0B" fontSize="9.5" fontWeight="bold" textAnchor="middle" fontFamily="system-ui, sans-serif" letterSpacing="0.05em">
+                  BẾP & BÀN ĂN
+                </text>
+                <text x="0" y="10" fill="#FDE68A" fontSize="8.5" fontWeight="600" textAnchor="middle" fontFamily="system-ui, sans-serif">
+                  12.5 m²
                 </text>
               </g>
             </g>
@@ -502,10 +514,13 @@ export default function ApartmentModel3DViewer({
               <rect x="710" y="135" width="22" height="20" rx="2" fill="#334155" stroke="#64748B" />
               <rect x="525" y="240" width="150" height="28" rx="2" fill="#1E293B" stroke="#64748B" />
 
-              <g transform="translate(645, 270)">
-                <rect x="-56" y="-11" width="112" height="22" rx="4" fill="#0D1117" stroke="#818CF8" strokeWidth="1.5" />
-                <text x="0" y="4.5" fill="#818CF8" fontSize="10.5" fontWeight="bold" textAnchor="middle" fontFamily="monospace">
-                  PN Master • 18.2 m²
+              <g transform="translate(645, 260)">
+                <rect x="-54" y="-17" width="108" height="34" rx="4" fill="#0A0E17" fillOpacity="0.92" stroke="#818CF8" strokeWidth="1.2" />
+                <text x="0" y="-3" fill="#818CF8" fontSize="9.5" fontWeight="bold" textAnchor="middle" fontFamily="system-ui, sans-serif" letterSpacing="0.05em">
+                  PN MASTER
+                </text>
+                <text x="0" y="10" fill="#C7D2FE" fontSize="8.5" fontWeight="600" textAnchor="middle" fontFamily="system-ui, sans-serif">
+                  18.2 m²
                 </text>
               </g>
             </g>
@@ -535,10 +550,13 @@ export default function ApartmentModel3DViewer({
               <circle cx="850" cy="182" r="6" fill="#FFFFFF" />
               <rect x="830" y="220" width="40" height="45" rx="8" fill="#1E293B" stroke="#64748B" />
 
-              <g transform="translate(850, 270)">
-                <rect x="-44" y="-10" width="88" height="20" rx="3" fill="#0D1117" stroke="#3B82F6" strokeWidth="1" />
-                <text x="0" y="4" fill="#60A5FA" fontSize="9.5" fontWeight="bold" textAnchor="middle" fontFamily="monospace">
-                  WC Master • 4.5 m²
+              <g transform="translate(850, 260)">
+                <rect x="-44" y="-16" width="88" height="32" rx="4" fill="#0A0E17" fillOpacity="0.92" stroke="#3B82F6" strokeWidth="1.2" />
+                <text x="0" y="-3" fill="#60A5FA" fontSize="9" fontWeight="bold" textAnchor="middle" fontFamily="system-ui, sans-serif" letterSpacing="0.05em">
+                  WC MASTER
+                </text>
+                <text x="0" y="10" fill="#93C5FD" fontSize="8.5" fontWeight="600" textAnchor="middle" fontFamily="system-ui, sans-serif">
+                  4.5 m²
                 </text>
               </g>
             </g>
@@ -566,10 +584,13 @@ export default function ApartmentModel3DViewer({
               <rect x="670" y="333" width="75" height="18" rx="2" fill="#F1F5F9" opacity="0.9" />
               <rect x="530" y="325" width="80" height="35" rx="3" fill="#334155" stroke="#64748B" />
 
-              <g transform="translate(585, 420)">
-                <rect x="-48" y="-11" width="96" height="22" rx="4" fill="#0D1117" stroke="#38BDF8" strokeWidth="1.5" />
-                <text x="0" y="4.5" fill="#38BDF8" fontSize="10" fontWeight="bold" textAnchor="middle" fontFamily="monospace">
-                  Phòng Ngủ 2 • 12.4 m²
+              <g transform="translate(585, 415)">
+                <rect x="-50" y="-17" width="100" height="34" rx="4" fill="#0A0E17" fillOpacity="0.92" stroke="#38BDF8" strokeWidth="1.2" />
+                <text x="0" y="-3" fill="#38BDF8" fontSize="9.5" fontWeight="bold" textAnchor="middle" fontFamily="system-ui, sans-serif" letterSpacing="0.05em">
+                  PHÒNG NGỦ 2
+                </text>
+                <text x="0" y="10" fill="#BAE6FD" fontSize="8.5" fontWeight="600" textAnchor="middle" fontFamily="system-ui, sans-serif">
+                  12.4 m²
                 </text>
               </g>
             </g>
@@ -610,10 +631,13 @@ export default function ApartmentModel3DViewer({
                 strokeDasharray={curtainsOpen ? '8 4' : '0'}
               />
 
-              <g transform="translate(830, 525)">
-                <rect x="-50" y="-10" width="100" height="20" rx="3" fill="#0D1117" stroke="#10B981" strokeWidth="1.5" />
-                <text x="0" y="4" fill="#10B981" fontSize="10" fontWeight="bold" textAnchor="middle" fontFamily="monospace">
-                  Ban Công • 7.8 m²
+              <g transform="translate(830, 515)">
+                <rect x="-45" y="-16" width="90" height="32" rx="4" fill="#0A0E17" fillOpacity="0.92" stroke="#10B981" strokeWidth="1.2" />
+                <text x="0" y="-3" fill="#10B981" fontSize="9" fontWeight="bold" textAnchor="middle" fontFamily="system-ui, sans-serif" letterSpacing="0.05em">
+                  BAN CÔNG
+                </text>
+                <text x="0" y="10" fill="#A7F3D0" fontSize="8.5" fontWeight="600" textAnchor="middle" fontFamily="system-ui, sans-serif">
+                  7.8 m²
                 </text>
               </g>
             </g>
@@ -639,10 +663,10 @@ export default function ApartmentModel3DViewer({
         </div>
 
         {/* HUD Góc Trên Bên Trái */}
-        <div className="absolute top-3 left-3 bg-[#0D1117]/95 border border-[#222B35] px-3.5 py-2.5 text-[10px] space-y-1 backdrop-blur-md rounded shadow-xl">
-          <div className="text-white font-bold flex items-center gap-1.5">
-            <span className="w-2 h-2 rounded-full bg-emerald-400"></span>
-            Căn Hộ {apartmentCode} ({clearArea} m²)
+        <div className="absolute top-3 left-3 bg-[#0D1117]/95 border border-[#222B35] px-3.5 py-2.5 text-[10px] space-y-1 backdrop-blur-md rounded shadow-xl max-w-[calc(100%-2rem)]">
+          <div className="text-white font-bold flex items-center gap-1.5 truncate">
+            <span className="w-2 h-2 rounded-full bg-emerald-400 flex-shrink-0"></span>
+            <span className="truncate">Căn Hộ {apartmentCode} ({clearArea} m²)</span>
           </div>
           <div className="text-gray-300 font-mono">
             Chế độ: <strong className="text-[#C5A880]">{getModeLabel(viewMode)}</strong>
@@ -650,8 +674,8 @@ export default function ApartmentModel3DViewer({
         </div>
 
         {/* Gợi ý tương tác */}
-        <div className="absolute bottom-3 right-3 bg-[#1C2533]/90 border border-[#C5A880]/60 px-3 py-1.5 text-[10px] text-[#C5A880] font-mono rounded backdrop-blur-md">
-          * Nhấp vào từng phòng để xem thông tin chi tiết
+        <div className="absolute bottom-3 right-3 bg-[#1C2533]/90 border border-[#C5A880]/60 px-3 py-1.5 text-[10px] text-[#C5A880] font-mono rounded backdrop-blur-md hidden sm:block">
+          * Nhấp vào từng phòng để xem chi tiết
         </div>
       </div>
 
@@ -661,18 +685,18 @@ export default function ApartmentModel3DViewer({
       {activeRoom && (
         <div className="p-4 bg-[#0D1117] border-t border-[#222B35] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           {/* Thông Tin Khối Không Gian */}
-          <div className="space-y-1">
-            <div className="text-[10.5px] uppercase tracking-wider text-gray-400 font-mono flex items-center gap-2">
+          <div className="space-y-1 min-w-0">
+            <div className="text-[10.5px] uppercase tracking-wider text-gray-400 font-mono flex items-center gap-2 flex-wrap">
               <span>Khối Đang Chọn:</span>
               <span className="text-[#C5A880] font-bold font-mono px-2 py-0.5 bg-[#1C2533] border border-[#2D3748] rounded">
                 {activeRoom.code}
               </span>
-              <span className="text-white font-bold text-sm ml-1">{activeRoom.name}</span>
+              <span className="text-white font-bold text-sm ml-1 truncate">{activeRoom.name}</span>
             </div>
             <div className="text-xs text-gray-300">
               Diện tích: <strong className="text-[#C5A880]">{activeRoom.area} m²</strong> • Kích thước: <strong>{activeRoom.dimensions}</strong>
             </div>
-            <div className="text-xs text-gray-400">
+            <div className="text-xs text-gray-400 break-words">
               {activeRoom.description}
             </div>
           </div>
