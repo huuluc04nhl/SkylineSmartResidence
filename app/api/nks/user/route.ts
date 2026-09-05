@@ -145,7 +145,7 @@ export async function GET() {
   const token = cookieStore.get('nks_token')?.value;
 
   if (!token) {
-    return NextResponse.json({ success: false, message: 'Chưa đăng nhập' }, { status: 401 });
+    return NextResponse.json({ success: false, user: null, message: 'Chưa đăng nhập' }, { status: 200 });
   }
 
   try {

@@ -84,8 +84,6 @@ export default function LoginModal({ isOpen, onClose, defaultAccount = '' }: Log
     return () => clearInterval(timer);
   }, [isCounting, countdown]);
 
-  if (!isOpen) return null;
-
   // Helper: Redirect based on role
   const handleRoleRedirect = (loggedUser: any) => {
     const role = loggedUser.role;
@@ -325,6 +323,7 @@ export default function LoginModal({ isOpen, onClose, defaultAccount = '' }: Log
     }, 2200);
   };
 
+  if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md animate-fadeIn">

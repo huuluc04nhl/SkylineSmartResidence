@@ -103,6 +103,7 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
   const [currentEkyc, setCurrentEkyc] = useState<EkycRequest | null>(null);
   const [isScanningOcr, setIsScanningOcr] = useState(false);
   const [cccdImage, setCccdImage] = useState('');
+  const [cccdBackImage, setCccdBackImage] = useState('');
   const [matchScore, setMatchScore] = useState(99.8);
 
   // Load live user info directly from API endpoint on mount & sync e-KYC status
@@ -285,8 +286,6 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
       setIsUploadingAvatar(false);
     }
   };
-
-  const [cccdBackImage, setCccdBackImage] = useState('');
 
   // 2. Handle auto-filling data from OCR Scanner Modal (2 sides)
   const handleApplyOcrData = (ocrData: OcrCccdResult, frontSrc: string, backSrc: string) => {
