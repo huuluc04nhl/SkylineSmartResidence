@@ -27,12 +27,15 @@ export async function POST(request: Request) {
 
     // 1. Generate ephemeral QR token
     if (action === 'GENERATE' || action === 'CREATE') {
-      const { apartmentCode, visitorName, purpose, validHours } = body;
+      const { apartmentCode, visitorName, phoneNumber, licensePlate, entryType, validHours, note } = body;
       const pass = generateVisitorPassToken({
         apartmentCode: apartmentCode || '12A05',
         visitorName: visitorName || 'Khách Thăm Nhà',
-        purpose: purpose || 'VISITOR',
-        validHours: validHours || 2,
+        phoneNumber,
+        licensePlate,
+        entryType: entryType || 'MULTI',
+        validHours: validHours || 4,
+        note,
       });
 
       return NextResponse.json({

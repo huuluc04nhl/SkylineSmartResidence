@@ -20,7 +20,7 @@ import LoginModal from '@/components/landing/LoginModal';
 
 // Admin Core Modules (Includes Tech Desk)
 import AdminDashboard from '@/components/portal/admin/AdminDashboard';
-import FloorPlanExplorer from '@/components/landing/FloorPlanExplorer';
+import AdminBuildingApartmentManager from '@/components/portal/admin/AdminBuildingApartmentManager';
 import EkycApproval from '@/components/portal/admin/EkycApproval';
 import KanbanBoard from '@/components/portal/admin/KanbanBoard';
 import BillingStudio from '@/components/portal/admin/BillingStudio';
@@ -188,7 +188,7 @@ function PortalContent() {
             {currentUser.role === 'ADMIN' && (
               <>
                 {activeModule === 'admin-dashboard' && <AdminDashboard />}
-                {activeModule === 'admin-apartments' && <FloorPlanExplorer />}
+                {activeModule === 'admin-apartments' && <AdminBuildingApartmentManager />}
                 {activeModule === 'admin-ekyc' && <EkycApproval />}
                 {activeModule === 'admin-visitors' && <AdminVisitorControl />}
                 {activeModule === 'admin-kanban' && <KanbanBoard />}

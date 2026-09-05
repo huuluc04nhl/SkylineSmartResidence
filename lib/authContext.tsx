@@ -2,13 +2,14 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { User, UserRole } from './dataStore';
-import { nksLogin } from './nksApiClient';
+import { nksLogin, nksFaceLogin } from './nksApiClient';
 
 interface AuthContextType {
   currentUser: User | null;
   isAuthenticated: boolean;
   isLoading: boolean;
   login: (roleOrUsername: UserRole | string, password?: string) => Promise<User | null>;
+  faceLogin: (payload?: { faceImage?: string; faceVector?: string; targetUserId?: string; account?: string; isTestMode?: boolean }) => Promise<{ success: boolean; user?: User; matchScore?: number; message?: string }>;
   logout: () => Promise<void>;
   canAccess: (feature: 'FINANCE' | 'VOTING' | 'MANAGE_MEMBERS' | 'ADMIN_CORE' | 'SMART_HOME_WRITE' | 'CREATE_TICKET' | 'BOOK_FACILITY') => boolean;
   refreshUser: () => Promise<void>;
@@ -77,6 +78,25 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return null;
   };
 
+  // 2.1 Biometric FaceID Login via Server API (Sets HTTP-Only Cookie)
+  const faceLogin = async (payload?: { faceImage?: string; faceVector?: string; targetUserId?: string; account?: string; isTestMode?: boolean }) => {
+    setIsLoading(true);
+    try {
+      const res = await nksFaceLogin(payload || {});
+      if (res.success && res.user) {
+        const u = res.user as any as User;
+        setCurrentUser(u);
+        return { success: true, user: u, matchScore: res.matchScore, message: res.message };
+      }
+      return { success: false, message: res.message || 'Nhận diện khuôn mặt không thành công' };
+    } catch (err: any) {
+      console.error('FaceLogin error', err);
+      return { success: false, message: err?.message || 'Lỗi kết nối hệ thống FaceID AI' };
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   // 3. Logout via Server API (Clears HTTP-Only Cookie)
   const logout = async () => {
     setIsLoading(true);
@@ -124,6 +144,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         isAuthenticated: !!currentUser,
         isLoading,
         login,
+        faceLogin,
         logout,
         canAccess,
         refreshUser,

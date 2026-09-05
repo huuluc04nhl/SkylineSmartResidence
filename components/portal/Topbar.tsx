@@ -303,7 +303,7 @@ export default function Topbar({
                   className="w-full py-2 px-2.5 bg-[#1C2533] hover:bg-[#253245] text-white text-xs font-semibold rounded flex items-center justify-between border border-[#2D3748] transition-colors"
                 >
                   <span className="flex items-center gap-1.5">
-                    <User className="w-3.5 h-3.5 text-[#C5A880]" /> Hồ Sơ Cá Nhân & FaceID
+                    <User className="w-3.5 h-3.5 text-[#C5A880]" /> {currentUser.role === 'OWNER' ? 'Hồ Sơ & Thẻ e-KYC' : 'Hồ Sơ Cá Nhân'}
                   </span>
                   <ArrowRight className="w-3.5 h-3.5 text-gray-400" />
                 </button>

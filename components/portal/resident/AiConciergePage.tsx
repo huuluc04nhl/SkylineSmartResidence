@@ -70,7 +70,7 @@ const KNOWLEDGE_CATEGORIES = [
     prompts: [
       'Cách cấp quyền mở cửa FaceID cho người nhà',
       'Thủ tục đăng ký vé gửi xe ô tô Hầm B1 (ALPR)',
-      'Tạo mã QR đón khách / shipper lên thẳng căn hộ',
+      'Tạo mã QR đón khách lên thẳng căn hộ',
     ]
   }
 ];

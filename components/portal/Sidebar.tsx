@@ -122,7 +122,7 @@ export default function Sidebar({
       case 'OWNER':
         return [
           { id: 'resident-home', label: 'Trang Chủ & Mã QR Động', shortLabel: 'Trang Chủ QR', icon: QrCode },
-          { id: 'resident-profile', label: 'Hồ Sơ Cá Nhân & FaceID', shortLabel: 'Hồ Sơ Cá Nhân', icon: UserCheck },
+          { id: 'resident-profile', label: 'Hồ Sơ & Thẻ e-KYC', shortLabel: 'e-KYC & Thẻ', icon: UserCheck },
           { id: 'resident-family', label: 'Quản Lý Thành Viên Căn Hộ', shortLabel: 'Thành Viên', icon: Users },
           { id: 'resident-smarthome', label: 'Smart Home Master (12A05)', shortLabel: 'Smart Home', icon: Cpu },
           { id: 'resident-facilities', label: 'Quẹt Thẻ Tiện Ích (Sky Pool)', shortLabel: 'Sky Pool/Gym', icon: Waves },
@@ -135,7 +135,7 @@ export default function Sidebar({
       case 'TENANT':
         return [
           { id: 'resident-home', label: 'Trang Chủ & Mã QR Động', shortLabel: 'Trang Chủ QR', icon: QrCode },
-          { id: 'resident-profile', label: 'Hồ Sơ Cá Nhân & FaceID', shortLabel: 'Hồ Sơ Cá Nhân', icon: UserCheck },
+          { id: 'resident-profile', label: 'Hồ Sơ Cá Nhân', shortLabel: 'Hồ Sơ', icon: UserCheck },
           { id: 'resident-smarthome', label: 'Smart Home Phòng (12A05)', shortLabel: 'Smart Home', icon: Cpu },
           { id: 'resident-facilities', label: 'Quẹt Thẻ Tiện Ích (Sky Pool)', shortLabel: 'Sky Pool/Gym', icon: Waves },
           { id: 'resident-tickets', label: 'Báo Hỏng Hóc (Ticketing)', shortLabel: 'Báo Hỏng', icon: Wrench },

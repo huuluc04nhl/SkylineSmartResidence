@@ -63,10 +63,14 @@ export default function ResidentHome({ currentUser, onNavigate, onOpenVisitorMod
             <span>Căn Hộ: <strong className="text-white font-mono text-sm">Căn {aptCode}</strong></span>
             <span>•</span>
             <span>Vai Trò: <strong className="text-[#C5A880]">{isOwner ? 'Chủ Hộ (Full Access)' : 'Người Nhà Căn 12A05 (Thành Viên Gia Đình)'}</strong></span>
-            <span>•</span>
-            <span className="text-emerald-400 font-mono flex items-center gap-1">
-              <ShieldCheck className="w-3.5 h-3.5" /> FaceID Sinh Trắc Học Đã Kích Hoạt
-            </span>
+            {isOwner && (
+              <>
+                <span>•</span>
+                <span className="text-emerald-400 font-mono flex items-center gap-1">
+                  <ShieldCheck className="w-3.5 h-3.5" /> Thẻ e-KYC Đã Kích Hoạt
+                </span>
+              </>
+            )}
           </div>
         </div>
 
@@ -186,24 +190,26 @@ export default function ResidentHome({ currentUser, onNavigate, onOpenVisitorMod
         </div>
       </div>
 
-      {/* Main Grid: VIP 3D Card on Left, Quick Business Action Cards on Right */}
+      {/* Main Grid: VIP 3D Card on Left (Chỉ hiển thị cho Chủ Hộ), Quick Business Action Cards on Right */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-        {/* Left Column: 3D Flip Smart Business Card & Tap Simulator */}
-        <div className="lg:col-span-5 bg-[#121820] border border-[#222B35] p-5 space-y-4 shadow-2xl">
-          <div className="border-b border-[#222B35] pb-2 text-left">
-            <div className="text-[10px] uppercase tracking-[0.2em] text-[#C5A880] font-bold">
-              Thẻ Cư Dân Kim Loại Mạ Vàng (VIP NFC Pass)
+        {/* Left Column: 3D Flip Smart Business Card & Tap Simulator (CHỦ HỘ ONLY) */}
+        {isOwner && (
+          <div className="lg:col-span-5 bg-[#121820] border border-[#222B35] p-5 space-y-4 shadow-2xl">
+            <div className="border-b border-[#222B35] pb-2 text-left">
+              <div className="text-[10px] uppercase tracking-[0.2em] text-[#C5A880] font-bold">
+                Thẻ e-KYC Kim Loại Mạ Vàng (VIP NFC Pass)
+              </div>
+              <p className="text-xs text-gray-400">
+                Nhấp vào thẻ để lật xem 2 mặt hoặc quẹt mở Barrier 0.28s
+              </p>
             </div>
-            <p className="text-xs text-gray-400">
-              Nhấp vào thẻ để lật xem 2 mặt hoặc quẹt mở Barrier 0.28s
-            </p>
-          </div>
 
-          <ResidentSmartCard currentUser={currentUser} />
-        </div>
+            <ResidentSmartCard currentUser={currentUser} />
+          </div>
+        )}
 
         {/* Right Column: Quick Action Grid & Notification Snippets */}
-        <div className="lg:col-span-7 space-y-6">
+        <div className={`${isOwner ? 'lg:col-span-7' : 'lg:col-span-12'} space-y-6`}>
           {/* Quick Actions 4-Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {/* Action 1: QR Đón Khách */}

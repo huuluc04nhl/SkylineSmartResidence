@@ -131,7 +131,7 @@ export default function AdminVisitorControl() {
                 <Camera className="w-5 h-5 text-[#C5A880]" />
                 <div>
                   <h3 className="font-serif text-base font-bold text-white">Máy Quét Mã QR Cổng (Gate Security Scanner)</h3>
-                  <div className="text-[11px] text-gray-400">Tự động phân loại: Vé 1 Lần (Shipper) & Vé Nhiều Lần (Khách Thăm)</div>
+                  <div className="text-[11px] text-gray-400">Kiểm soát ra vào tự động: Vé 1 Lần & Vé Nhiều Lần (Khách Thăm)</div>
                 </div>
               </div>
 
@@ -269,7 +269,7 @@ export default function AdminVisitorControl() {
                             ? 'bg-amber-950 text-amber-300 border-amber-500'
                             : 'bg-cyan-950 text-cyan-300 border-cyan-500'
                         }`}>
-                          {scanResult.entryType === 'SINGLE' ? 'Vé 1 Lần (Shipper)' : 'Vé Nhiều Lần'}
+                          {scanResult.entryType === 'SINGLE' ? 'Vé 1 Lần' : 'Vé Nhiều Lần'}
                         </span>
                       )}
                     </div>

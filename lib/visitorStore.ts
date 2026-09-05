@@ -4,8 +4,8 @@
  * Architecture:
  * - Ephemeral & Privacy-First: No persistent personal guest dossiers stored in DB to guarantee resident privacy.
  * - Single-Use vs Multi-Use Entry Modes:
- *   + SINGLE (1 lần): Default for Shipper/Delivery, automatically revokes upon first barrier entry.
- *   + MULTI (Nhiều lần): For Guests/Technicians, valid for multiple entries within the time window.
+ *   + SINGLE (1 lần): Automatically revokes upon first barrier entry.
+ *   + MULTI (Nhiều lần): For Guests/Relatives, valid for multiple entries within the time window.
  * - Realtime Security Audit Log:
  *   + Records timestamp, apartment code, entry type, checkpoint, and access result (Without exposing personal guest identity).
  */
@@ -16,14 +16,17 @@ export interface GeneratedVisitorPass {
   id: string;
   apartmentCode: string;
   visitorName: string;
+  phoneNumber?: string;
+  licensePlate?: string;
   entryType: PassEntryType;
-  purpose: 'VISITOR' | 'DELIVERY' | 'TECH' | 'OTHER';
+  purpose?: string;
   purposeLabel: string;
   validHours: number;
   createdAt: string;
   validUntil: string;
   qrData: string;
   pinCode: string;
+  note?: string;
 }
 
 export interface VerificationScanResult {
@@ -65,19 +68,19 @@ const INITIAL_GATE_LOGS: GateAuditLog[] = [
     id: 'LOG-001',
     timestamp: '11:45:10 03/09/2026',
     apartmentCode: '12A05',
-    entryType: 'SINGLE',
-    purposeLabel: 'Giao Hàng / Shipper',
-    checkpoint: 'Barrier Cổng Hầm B1',
+    entryType: 'MULTI',
+    purposeLabel: 'Khách Thăm Căn Hộ',
+    checkpoint: 'Barrier Cổng Sảnh A',
     result: 'VALID',
     gateAction: 'Mở Barrier & Cấp Thang Máy Tầng 12',
-    qrSnippet: 'SKY_TOKEN_12A05_SINGLE_8832'
+    qrSnippet: 'SKY_TOKEN_12A05_MULTI_8832'
   },
   {
     id: 'LOG-002',
     timestamp: '11:32:05 03/09/2026',
     apartmentCode: 'Khách vãng lai',
     entryType: 'SINGLE',
-    purposeLabel: 'Không xác định',
+    purposeLabel: 'Mã không xác định',
     checkpoint: 'Sảnh A - Cửa Tự Động',
     result: 'INVALID',
     gateAction: 'Khóa Cổng & Cảnh Báo An Ninh',
@@ -88,7 +91,7 @@ const INITIAL_GATE_LOGS: GateAuditLog[] = [
     timestamp: '10:15:22 03/09/2026',
     apartmentCode: '14B02',
     entryType: 'MULTI',
-    purposeLabel: 'Khách Thăm Nhà',
+    purposeLabel: 'Khách Thăm Căn Hộ',
     checkpoint: 'Barrier Cổng Sảnh A',
     result: 'EXPIRED',
     gateAction: 'Từ Chối Vào (Mã Quá Hạn)',
@@ -115,35 +118,31 @@ export function addGateAuditLog(log: Omit<GateAuditLog, 'id'>): GateAuditLog {
 
 /**
  * Generate an ephemeral, time-bounded secure QR token for apartment guest
- * No database persistence - guarantees 100% personal data privacy.
+ * Only stores guest name, phone, license plate, apartment code and validity window.
  */
 export function generateVisitorPassToken(params: {
   apartmentCode: string;
   visitorName?: string;
+  phoneNumber?: string;
+  licensePlate?: string;
   entryType?: PassEntryType;
-  purpose?: 'VISITOR' | 'DELIVERY' | 'TECH' | 'OTHER';
   validHours?: number;
+  note?: string;
+  purpose?: string; // backwards compatibility
 }): GeneratedVisitorPass {
   const aptCode = params.apartmentCode || '12A05';
-  const name = params.visitorName?.trim() || 'Khách Thăm Căn Hộ';
-  const hours = params.validHours || 2;
+  const name = params.visitorName?.trim() || 'Khách Thăm Nhà';
+  const phone = params.phoneNumber?.trim() || '';
+  const plate = params.licensePlate?.trim().toUpperCase() || '';
+  const hours = params.validHours || 4;
   const now = Date.now();
   const expiresAt = now + hours * 3600 * 1000;
   
   const randomPin = Math.floor(100000 + Math.random() * 900000).toString();
   const passId = `SKY-PASS-${Math.floor(1000 + Math.random() * 9000)}`;
 
-  // Purpose mapping & Auto-assign entryType
-  const purposeMap: Record<string, string> = {
-    VISITOR: 'Khách Thăm Nhà',
-    DELIVERY: 'Giao Hàng / Shipper',
-    TECH: 'Thợ Kỹ Thuật / Dịch Vụ',
-    OTHER: 'Khách Vãng Lai'
-  };
-  const selectedPurpose = params.purpose || 'VISITOR';
-  
-  // Default entry type: Shipper is SINGLE-USE by default, Visitor is MULTI-USE
-  const resolvedEntryType: PassEntryType = params.entryType || (selectedPurpose === 'DELIVERY' ? 'SINGLE' : 'MULTI');
+  // Default entry type: MULTI (Ra vào tự do trong thời hạn hiệu lực)
+  const resolvedEntryType: PassEntryType = params.entryType || 'MULTI';
 
   // Secure stateless QR token payload format:
   // SKY_TOKEN_{aptCode}_{passId}_{expiresAt}_{entryType}_{signature}
@@ -154,14 +153,17 @@ export function generateVisitorPassToken(params: {
     id: passId,
     apartmentCode: aptCode,
     visitorName: name,
+    phoneNumber: phone,
+    licensePlate: plate,
     entryType: resolvedEntryType,
-    purpose: selectedPurpose,
-    purposeLabel: purposeMap[selectedPurpose] || 'Khách Thăm Nhà',
+    purpose: 'VISITOR',
+    purposeLabel: 'Khách Thăm Căn Hộ',
     validHours: hours,
     createdAt: new Date(now).toISOString(),
     validUntil: new Date(expiresAt).toISOString(),
     qrData,
     pinCode: randomPin,
+    note: params.note || '',
   };
 }
 
@@ -271,7 +273,7 @@ export function verifyVisitorQr(qrInput: string, checkpoint: string = 'Barrier C
         const result: VerificationScanResult = {
           scanResult: 'INVALID',
           title: 'MÃ 1 LẦN ĐÃ ĐƯỢC SỬ DỤNG (ĐÃ QUA CỔNG)',
-          message: `Mã giao hàng/shipper của Căn ${aptCode} đã được quét sử dụng trước đó và tự động vô hiệu lực để bảo vệ an ninh.`,
+          message: `Mã đón khách (vé 1 lần) của Căn ${aptCode} đã được quét sử dụng trước đó và tự động vô hiệu lực để bảo vệ an ninh.`,
           canEnter: false,
           apartmentCode: aptCode,
           entryType: 'SINGLE',
@@ -284,7 +286,7 @@ export function verifyVisitorQr(qrInput: string, checkpoint: string = 'Barrier C
           timestamp: fullTimestamp,
           apartmentCode: aptCode,
           entryType: 'SINGLE',
-          purposeLabel: 'Giao Hàng / Shipper',
+          purposeLabel: 'Khách Thăm Căn Hộ',
           checkpoint,
           result: 'INVALID',
           gateAction: 'Từ Chối (Đã Dùng 1 Lần)',
@@ -328,7 +330,7 @@ export function verifyVisitorQr(qrInput: string, checkpoint: string = 'Barrier C
           timestamp: fullTimestamp,
           apartmentCode: aptCode,
           entryType,
-          purposeLabel: entryType === 'SINGLE' ? 'Giao Hàng' : 'Khách Thăm',
+          purposeLabel: 'Khách Thăm Căn Hộ',
           checkpoint,
           result: 'EXPIRED',
           gateAction: 'Từ Chối Vào (Quá Hạn)',
@@ -351,7 +353,7 @@ export function verifyVisitorQr(qrInput: string, checkpoint: string = 'Barrier C
         canEnter: true,
         apartmentCode: aptCode,
         entryType,
-        purposeLabel: entryType === 'SINGLE' ? 'Giao Hàng / Shipper' : 'Khách Thăm Nhà',
+        purposeLabel: 'Khách Thăm Căn Hộ',
         validUntil: new Date(expiryTimestamp).toISOString(),
         scannedAt: nowStr,
         checkpoint,
@@ -362,7 +364,7 @@ export function verifyVisitorQr(qrInput: string, checkpoint: string = 'Barrier C
         timestamp: fullTimestamp,
         apartmentCode: aptCode,
         entryType,
-        purposeLabel: entryType === 'SINGLE' ? 'Giao Hàng / Shipper' : 'Khách Thăm Nhà',
+        purposeLabel: 'Khách Thăm Căn Hộ',
         checkpoint,
         result: 'VALID',
         gateAction: `Mở Barrier & Cấp Thang Máy Căn ${aptCode}`,

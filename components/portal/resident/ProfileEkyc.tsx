@@ -171,6 +171,13 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
     return () => window.removeEventListener('skyline_ekyc_updated', syncEkycStatus);
   }, [currentUser]);
 
+  // Đảm bảo thành viên gia đình (không phải chủ hộ) chỉ xem thông tin cá nhân, không truy cập thẻ e-KYC
+  useEffect(() => {
+    if (!isOwner && activeTab === 'EKYC') {
+      setActiveTab('INFO');
+    }
+  }, [isOwner, activeTab]);
+
   // 1. Submit Update Profile Info to NKS API (POST /api/nks/user/updateInfo + updateCccd)
   const handleSaveInfo = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -389,71 +396,84 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#222B35] pb-4">
         <div>
           <div className="text-[10px] uppercase tracking-[0.25em] text-[#C5A880] font-semibold flex items-center gap-1.5">
-            <ScanFace className="w-3.5 h-3.5" /> Skyline Smart Residence • Cư Dân
+            <ScanFace className="w-3.5 h-3.5" /> Skyline Smart Residence • {isOwner ? 'Chủ Hộ Căn Hộ' : 'Thành Viên Cư Dân'}
           </div>
           <h2 className="font-serif text-2xl text-white font-bold mt-1">
-            Hồ Sơ Cá Nhân & Định Danh FaceID
+            {isOwner ? 'Hồ Sơ Cá Nhân & Thẻ Định Danh e-KYC' : 'Hồ Sơ Cá Nhân Thành Viên'}
           </h2>
           <p className="text-xs text-gray-400 mt-0.5">
-            Căn hộ: <strong className="text-white font-mono">{aptCode}</strong> • Quản lý thông tin cá nhân và nhận diện khuôn mặt ra vào
+            {isOwner
+              ? `Căn hộ: ${aptCode} • Quản lý hồ sơ chủ hộ, thẻ e-KYC và phân quyền cư trú`
+              : `Căn hộ: ${aptCode} • Thông tin cá nhân của thành viên gia đình (được Chủ Hộ bảo lãnh)`}
           </p>
         </div>
 
-        <div className="flex items-center gap-2.5 flex-shrink-0">
+        {/* Cụm Nút e-KYC & Trạng Thái: CHỈ HIỂN THỊ CHO CHỦ HỘ (Người nhà được ẩn đi) */}
+        {isOwner ? (
+          <div className="flex items-center gap-2.5 flex-shrink-0">
+            <button
+              type="button"
+              onClick={() => setIsOcrModalOpen(true)}
+              className="px-4 py-2 bg-gradient-to-r from-[#1E2631] to-[#121820] border border-[#C5A880] text-[#C5A880] hover:text-white hover:border-white text-xs font-bold uppercase tracking-wider flex items-center gap-2 transition-all shadow rounded"
+            >
+              <Scan className="w-4 h-4 text-[#C5A880]" /> Quét Căn Cước (OCR)
+            </button>
+
+            {ekycStatus === 'VERIFIED' && (
+              <span className="px-3 py-1 bg-emerald-950/80 border border-emerald-500 text-emerald-300 text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 rounded">
+                <ShieldCheck className="w-4 h-4 text-emerald-400" /> Thẻ e-KYC Đã Xác Thực
+              </span>
+            )}
+
+            {ekycStatus === 'PENDING' && (
+              <span className="px-3 py-1 bg-amber-950/80 border border-amber-500 text-amber-300 text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 rounded animate-pulse">
+                <Clock className="w-4 h-4 text-amber-400" /> Đang Chờ BQL Duyệt
+              </span>
+            )}
+
+            {ekycStatus === 'REJECTED' && (
+              <span className="px-3 py-1 bg-rose-950/80 border border-rose-500 text-rose-300 text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 rounded">
+                <XCircle className="w-4 h-4 text-rose-400" /> BQL Yêu Cầu Chụp Lại
+              </span>
+            )}
+          </div>
+        ) : (
+          <div className="flex items-center gap-2">
+            <span className="px-3 py-1.5 bg-[#161D26] border border-purple-500/50 text-purple-300 text-xs font-semibold rounded flex items-center gap-2">
+              <Users className="w-4 h-4 text-purple-400" /> Thành Viên Gia Đình (Được Chủ Hộ Cấp Quyền)
+            </span>
+          </div>
+        )}
+      </div>
+
+      {/* Tab Navigation: CHỈ HIỂN THỊ TAB 2 (ĐỊNH DANH E-KYC & THẺ CƯ DÂN) CHO CHỦ HỘ */}
+      {isOwner && (
+        <div className="flex flex-wrap border-b border-[#222B35] text-xs font-semibold uppercase tracking-wider gap-2">
           <button
             type="button"
-            onClick={() => setIsOcrModalOpen(true)}
-            className="px-4 py-2 bg-gradient-to-r from-[#1E2631] to-[#121820] border border-[#C5A880] text-[#C5A880] hover:text-white hover:border-white text-xs font-bold uppercase tracking-wider flex items-center gap-2 transition-all shadow rounded"
+            onClick={() => setActiveTab('INFO')}
+            className={`pb-3 px-4 flex items-center gap-2 border-b-2 transition-colors ${
+              activeTab === 'INFO'
+                ? 'border-[#C5A880] text-[#C5A880] font-bold'
+                : 'border-transparent text-gray-400 hover:text-gray-200'
+            }`}
           >
-            <Scan className="w-4 h-4 text-[#C5A880]" /> Quét Căn Cước (OCR)
+            <UserIcon className="w-4 h-4" /> 1. Thông Tin Cá Nhân
           </button>
 
-          {ekycStatus === 'VERIFIED' && (
-            <span className="px-3 py-1 bg-emerald-950/80 border border-emerald-500 text-emerald-300 text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 rounded">
-              <ShieldCheck className="w-4 h-4 text-emerald-400" /> FaceID Đã Xác Thực
-            </span>
-          )}
-
-          {ekycStatus === 'PENDING' && (
-            <span className="px-3 py-1 bg-amber-950/80 border border-amber-500 text-amber-300 text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 rounded animate-pulse">
-              <Clock className="w-4 h-4 text-amber-400" /> Đang Chờ BQL Duyệt
-            </span>
-          )}
-
-          {ekycStatus === 'REJECTED' && (
-            <span className="px-3 py-1 bg-rose-950/80 border border-rose-500 text-rose-300 text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 rounded">
-              <XCircle className="w-4 h-4 text-rose-400" /> BQL Yêu Cầu Chụp Lại
-            </span>
-          )}
+          <button
+            type="button"
+            onClick={() => setActiveTab('EKYC')}
+            className={`pb-3 px-4 flex items-center gap-2 border-b-2 transition-colors ${
+              activeTab === 'EKYC'
+                ? 'border-[#C5A880] text-[#C5A880] font-bold'
+                : 'border-transparent text-gray-400 hover:text-gray-200'
+            }`}
+          >
+            <ScanFace className="w-4 h-4" /> 2. Thẻ Định Danh e-KYC & Thẻ Cư Dân
+          </button>
         </div>
-      </div>
-
-      {/* Tab Navigation */}
-      <div className="flex flex-wrap border-b border-[#222B35] text-xs font-semibold uppercase tracking-wider gap-2">
-        <button
-          type="button"
-          onClick={() => setActiveTab('INFO')}
-          className={`pb-3 px-4 flex items-center gap-2 border-b-2 transition-colors ${
-            activeTab === 'INFO'
-              ? 'border-[#C5A880] text-[#C5A880] font-bold'
-              : 'border-transparent text-gray-400 hover:text-gray-200'
-          }`}
-        >
-          <UserIcon className="w-4 h-4" /> 1. Thông Tin Cá Nhân
-        </button>
-
-        <button
-          type="button"
-          onClick={() => setActiveTab('EKYC')}
-          className={`pb-3 px-4 flex items-center gap-2 border-b-2 transition-colors ${
-            activeTab === 'EKYC'
-              ? 'border-[#C5A880] text-[#C5A880] font-bold'
-              : 'border-transparent text-gray-400 hover:text-gray-200'
-          }`}
-        >
-          <ScanFace className="w-4 h-4" /> 2. Định Danh FaceID & Thẻ Cư Dân
-        </button>
-      </div>
+      )}
 
       {/* Loading Indicator while fetching from API */}
       {isLoadingApi && (
@@ -749,9 +769,9 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
       )}
 
       {/* ------------------------------------------------------------- */}
-      {/* TAB 2: E-KYC BIOMETRIC IDENTIFICATION & SMART CARD            */}
+      {/* TAB 2: E-KYC BIOMETRIC IDENTIFICATION & SMART CARD (CHỦ HỘ)   */}
       {/* ------------------------------------------------------------- */}
-      {activeTab === 'EKYC' && (
+      {isOwner && activeTab === 'EKYC' && (
         <div className="space-y-6">
           {/* Status Box & BQL Sync Banner */}
           <div className={`p-5 border flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-xl rounded-lg ${

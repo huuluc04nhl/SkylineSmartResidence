@@ -239,3 +239,27 @@ export async function nksRemoveFamilyMember(memberId: string): Promise<{ success
 
   return await res.json();
 }
+
+/**
+ * 10. FaceID Biometric Login API (POST /api/nks/user/face-login)
+ */
+export async function nksFaceLogin(payload: {
+  faceImage?: string;
+  faceVector?: string;
+  targetUserId?: string;
+  account?: string;
+  isTestMode?: boolean;
+}): Promise<{ success: boolean; user?: any; matchScore?: number; message?: string }> {
+  const res = await fetch('/api/nks/user/face-login', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    throw new Error(data.message || `FaceID Login thất bại (Mã lỗi: ${res.status})`);
+  }
+
+  return data;
+}

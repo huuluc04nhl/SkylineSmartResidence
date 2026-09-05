@@ -62,9 +62,10 @@ export default function VisitorQrModal({
   );
 
   // Form State
-  const [visitorName, setVisitorName] = useState('Khách Thăm Nhà');
+  const [visitorName, setVisitorName] = useState('');
+  const [visitorPhone, setVisitorPhone] = useState('');
+  const [licensePlate, setLicensePlate] = useState('');
   const [validHours, setValidHours] = useState('4');
-  const [purpose, setPurpose] = useState<'VISITOR' | 'DELIVERY' | 'TECH' | 'OTHER'>('VISITOR');
   const [entryType, setEntryType] = useState<PassEntryType>('MULTI');
   const [activePass, setActivePass] = useState<GeneratedVisitorPass | null>(null);
   const [copied, setCopied] = useState(false);
@@ -76,24 +77,6 @@ export default function VisitorQrModal({
   const [isScanningSimulation, setIsScanningSimulation] = useState(false);
   const [barrierState, setBarrierState] = useState<'CLOSED' | 'OPEN' | 'LOCKED'>('CLOSED');
 
-  // Purpose change auto-suggests entry mode
-  const handlePurposeChange = (val: 'VISITOR' | 'DELIVERY' | 'TECH' | 'OTHER') => {
-    setPurpose(val);
-    if (val === 'DELIVERY') {
-      setEntryType('SINGLE');
-      setValidHours('1');
-      if (visitorName === 'Khách Thăm Nhà') setVisitorName('Shipper Giao Hàng');
-    } else if (val === 'TECH') {
-      setEntryType('MULTI');
-      setValidHours('4');
-      if (visitorName === 'Shipper Giao Hàng') setVisitorName('Thợ Dịch Vụ / Kỹ Thuật');
-    } else {
-      setEntryType('MULTI');
-      setValidHours('4');
-      if (visitorName === 'Shipper Giao Hàng') setVisitorName('Khách Thăm Nhà');
-    }
-  };
-
   // Generate initial pass on open
   useEffect(() => {
     if (isOpen) {
@@ -101,7 +84,6 @@ export default function VisitorQrModal({
         const pass = generateVisitorPassToken({
           apartmentCode,
           visitorName: 'Khách Thăm Nhà',
-          purpose: 'VISITOR',
           entryType: 'MULTI',
           validHours: 4,
         });
@@ -121,9 +103,10 @@ export default function VisitorQrModal({
       const pass = generateVisitorPassToken({
         apartmentCode,
         visitorName: visitorName.trim() || 'Khách Thăm Nhà',
-        purpose,
+        phoneNumber: visitorPhone.trim(),
+        licensePlate: licensePlate.trim().toUpperCase(),
         entryType,
-        validHours: parseInt(validHours, 10) || 2,
+        validHours: parseInt(validHours, 10) || 4,
       });
       setActivePass(pass);
       setIsGenerating(false);
@@ -135,8 +118,19 @@ export default function VisitorQrModal({
     if (!activePass) return;
     const expTime = new Date(activePass.validUntil).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
     const expDate = new Date(activePass.validUntil).toLocaleDateString('vi-VN');
-    const typeLabel = activePass.entryType === 'SINGLE' ? 'Vé 1 Lần Duy Nhất (Tự hủy sau khi qua cổng)' : 'Vé Nhiều Lần (Trong hạn)';
-    const shareText = `[SKYLINE SMART RESIDENCE] Mã mời đón khách Căn hộ ${activePass.apartmentCode}\nKhách: ${activePass.visitorName}\nLoại thẻ: ${typeLabel}\nMã PIN Thẻ Cổng: ${activePass.pinCode}\nThời hạn hiệu lực: Đến ${expTime} ngày ${expDate}\nQuý khách vui lòng xuất trình mã QR này trước camera Barrier hoặc Sảnh Thang Máy để vào tòa nhà.`;
+    const typeLabel = activePass.entryType === 'SINGLE' ? 'Vé 1 Lần (Tự hủy sau khi vào cổng)' : 'Vé Nhiều Lần (Ra vào tự do trong thời hạn)';
+    
+    let shareText = `[SKYLINE SMART RESIDENCE] Thư Mời Khách Thăm Căn Hộ ${activePass.apartmentCode}\n`;
+    shareText += `Kính gửi: ${activePass.visitorName}\n`;
+    if (activePass.phoneNumber) shareText += `Số điện thoại: ${activePass.phoneNumber}\n`;
+    if (activePass.licensePlate) shareText += `Biển số xe: ${activePass.licensePlate}\n`;
+    shareText += `Điểm đến: Căn hộ ${activePass.apartmentCode} - Tòa ${activePass.apartmentCode.includes('A') ? 'A' : 'B'}\n`;
+    shareText += `Mã PIN Thẻ Cổng: ${activePass.pinCode}\n`;
+    shareText += `Thời hạn hiệu lực: Đến ${expTime} ngày ${expDate} (${activePass.validHours} giờ)\n`;
+    shareText += `Loại thẻ: ${typeLabel}\n\n`;
+    shareText += `Quý khách vui lòng xuất trình mã QR này trước camera Barrier hoặc Sảnh Thang Máy để vào tòa nhà.\n`;
+    shareText += `(Lưu ý: Chung cư có Điểm Giao Nhận Hàng tại Sảnh Lễ Tân cho Shipper, mã này chỉ cấp quyền đón khách lên căn hộ).`;
+
     navigator.clipboard.writeText(shareText);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
@@ -170,7 +164,7 @@ export default function VisitorQrModal({
         <div className="flex items-center justify-between border-b border-[#222B35] pb-4">
           <div>
             <div className="text-[10px] uppercase tracking-[0.25em] text-[#C5A880] font-semibold flex items-center gap-1.5">
-              <QrCode className="w-3.5 h-3.5" /> Dịch Vụ Đón Khách & Giao Nhận Căn Hộ
+              <QrCode className="w-3.5 h-3.5" /> Dịch Vụ Đón Khách Thăm Căn Hộ
             </div>
             <h2 className="font-serif text-xl sm:text-2xl font-bold text-white mt-0.5">
               Mã QR Đón Khách • Căn Hộ {apartmentCode}
@@ -218,52 +212,87 @@ export default function VisitorQrModal({
         {/* ================================================================= */}
         {activeTab === 'RESIDENT' && (
           <div className="space-y-4">
-            {/* Privacy Guarantee Banner */}
-            <div className="p-3 bg-[#121E2A] border border-[#1E3A5F] rounded-xl flex items-start gap-2.5 text-xs text-cyan-200/90">
-              <ShieldCheck className="w-4 h-4 text-cyan-400 flex-shrink-0 mt-0.5" />
-              <span>
-                <strong>Bảo Mật Quyền Riêng Tư:</strong> Mã QR được mã hóa chữ ký số thời gian thực. Hệ thống không lưu trữ danh bạ khách vãng lai trong cơ sở dữ liệu để bảo vệ tuyệt đối thông tin cá nhân của căn hộ.
-              </span>
+            {/* Building Policy & Privacy Guarantee Banner */}
+            <div className="p-3.5 bg-[#121E2A] border border-[#1E3A5F] rounded-xl flex items-start gap-2.5 text-xs text-cyan-200/95 leading-relaxed">
+              <Info className="w-4 h-4 text-cyan-400 flex-shrink-0 mt-0.5" />
+              <div>
+                <strong>Quy Định Tòa Nhà & Bảo Mật:</strong> Chung cư đã có <strong>Điểm Nhận Hàng & Bưu Phẩm Tập Trung tại Sảnh Lễ Tân</strong> dành cho Shipper. Mã QR này dành riêng để cư dân đón <strong>Khách Thăm</strong> trực tiếp lên căn hộ. Thông tin được mã hóa bảo mật thời gian thực và tự động hết hạn.
+              </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-              {/* Form tạo mã */}
+              {/* Form tạo mã thông tin khách */}
               <form onSubmit={handleGeneratePass} className="space-y-3.5 bg-[#121820] border border-[#222B35] p-4 sm:p-5 rounded-xl text-xs">
                 <div className="text-xs font-bold uppercase tracking-wider text-[#C5A880] flex items-center gap-1.5 pb-2 border-b border-[#222B35]">
-                  <Sparkles className="w-3.5 h-3.5" /> Thiết Lập Mã Mời
+                  <UserCheck className="w-3.5 h-3.5" /> Thông Tin Khách Thăm
                 </div>
 
+                {/* 1. Họ tên khách */}
                 <div>
-                  <label className="text-gray-300 font-medium block mb-1">Tên Khách Thăm / Đơn Vị:</label>
+                  <label className="text-gray-300 font-medium block mb-1">
+                    Họ Tên Khách Thăm <span className="text-rose-400">*</span>:
+                  </label>
                   <input
                     type="text"
                     value={visitorName}
                     onChange={(e) => setVisitorName(e.target.value)}
-                    placeholder="VD: Anh Minh, Shipper Shopee..."
+                    placeholder="VD: Anh Minh, Chị Lan..."
                     className="w-full bg-[#161B22] border border-[#2D3748] p-2.5 text-white rounded-lg focus:border-[#C5A880] outline-none"
                     required
                   />
                 </div>
 
-                {/* Single-use vs Multi-use Selector */}
+                {/* 2. Số điện thoại khách */}
                 <div>
-                  <label className="text-gray-300 font-medium block mb-1.5">Số Lần Sử Dụng Mã:</label>
-                  <div className="grid grid-cols-2 gap-2">
-                    <button
-                      type="button"
-                      onClick={() => setEntryType('SINGLE')}
-                      className={`p-2.5 rounded-lg border text-left transition-all ${
-                        entryType === 'SINGLE'
-                          ? 'bg-[#1C2533] border-[#C5A880] ring-1 ring-[#C5A880]'
-                          : 'bg-[#161B22] border-[#2D3748] text-gray-400 hover:text-white'
-                      }`}
-                    >
-                      <div className="font-bold flex items-center gap-1 text-white text-[11px]">
-                        <Zap className="w-3.5 h-3.5 text-amber-400" /> Quét 1 Lần
-                      </div>
-                      <div className="text-[10px] text-gray-400 mt-0.5">Tự hủy ngay khi qua cổng (Shipper)</div>
-                    </button>
+                  <label className="text-gray-300 font-medium block mb-1">
+                    Số Điện Thoại Khách:
+                  </label>
+                  <input
+                    type="tel"
+                    value={visitorPhone}
+                    onChange={(e) => setVisitorPhone(e.target.value)}
+                    placeholder="VD: 0912 345 678 (Dùng liên hệ khi cần)"
+                    className="w-full bg-[#161B22] border border-[#2D3748] p-2.5 text-white rounded-lg focus:border-[#C5A880] outline-none"
+                  />
+                </div>
 
+                {/* 3. Biển số xe & Thời gian hiệu lực */}
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="text-gray-300 font-medium block mb-1">
+                      Biển Số Xe (Nếu Có):
+                    </label>
+                    <input
+                      type="text"
+                      value={licensePlate}
+                      onChange={(e) => setLicensePlate(e.target.value)}
+                      placeholder="VD: 51F-123.45"
+                      className="w-full bg-[#161B22] border border-[#2D3748] p-2.5 text-white font-mono uppercase rounded-lg focus:border-[#C5A880] outline-none"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-gray-300 font-medium block mb-1">
+                      Thời Gian Hiệu Lực:
+                    </label>
+                    <select
+                      value={validHours}
+                      onChange={(e) => setValidHours(e.target.value)}
+                      className="w-full bg-[#161B22] border border-[#2D3748] p-2.5 text-white rounded-lg focus:border-[#C5A880] outline-none"
+                    >
+                      <option value="1">1 Giờ (Gặp nhanh)</option>
+                      <option value="2">2 Giờ (Tiếp khách)</option>
+                      <option value="4">4 Giờ (Nửa ngày)</option>
+                      <option value="8">8 Giờ (Trong ngày)</option>
+                      <option value="24">24 Giờ (Cả ngày)</option>
+                    </select>
+                  </div>
+                </div>
+
+                {/* 4. Lượt sử dụng mã */}
+                <div>
+                  <label className="text-gray-300 font-medium block mb-1.5">Hình Thức Ra Vào Cổng:</label>
+                  <div className="grid grid-cols-2 gap-2">
                     <button
                       type="button"
                       onClick={() => setEntryType('MULTI')}
@@ -276,39 +305,23 @@ export default function VisitorQrModal({
                       <div className="font-bold flex items-center gap-1 text-white text-[11px]">
                         <Repeat className="w-3.5 h-3.5 text-cyan-400" /> Quét Nhiều Lần
                       </div>
-                      <div className="text-[10px] text-gray-400 mt-0.5">Ra vào tự do trong thời hạn (Khách)</div>
+                      <div className="text-[10px] text-gray-400 mt-0.5">Ra vào tự do trong thời hạn hiệu lực</div>
                     </button>
-                  </div>
-                </div>
 
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <label className="text-gray-300 font-medium block mb-1">Mục Đích:</label>
-                    <select
-                      value={purpose}
-                      onChange={(e) => handlePurposeChange(e.target.value as any)}
-                      className="w-full bg-[#161B22] border border-[#2D3748] p-2.5 text-white rounded-lg focus:border-[#C5A880] outline-none"
+                    <button
+                      type="button"
+                      onClick={() => setEntryType('SINGLE')}
+                      className={`p-2.5 rounded-lg border text-left transition-all ${
+                        entryType === 'SINGLE'
+                          ? 'bg-[#1C2533] border-[#C5A880] ring-1 ring-[#C5A880]'
+                          : 'bg-[#161B22] border-[#2D3748] text-gray-400 hover:text-white'
+                      }`}
                     >
-                      <option value="VISITOR">Khách Thăm Nhà</option>
-                      <option value="DELIVERY">Giao Hàng Shipper</option>
-                      <option value="TECH">Thợ Dịch Vụ</option>
-                      <option value="OTHER">Mục Đích Khác</option>
-                    </select>
-                  </div>
-
-                  <div>
-                    <label className="text-gray-300 font-medium block mb-1">Thời Gian Hiệu Lực:</label>
-                    <select
-                      value={validHours}
-                      onChange={(e) => setValidHours(e.target.value)}
-                      className="w-full bg-[#161B22] border border-[#2D3748] p-2.5 text-white rounded-lg focus:border-[#C5A880] outline-none"
-                    >
-                      <option value="1">1 Giờ</option>
-                      <option value="2">2 Giờ</option>
-                      <option value="4">4 Giờ</option>
-                      <option value="8">8 Giờ</option>
-                      <option value="24">24 Giờ</option>
-                    </select>
+                      <div className="font-bold flex items-center gap-1 text-white text-[11px]">
+                        <Zap className="w-3.5 h-3.5 text-amber-400" /> Quét 1 Lần
+                      </div>
+                      <div className="text-[10px] text-gray-400 mt-0.5">Tự hủy ngay sau khi vào cổng</div>
+                    </button>
                   </div>
                 </div>
 
@@ -323,7 +336,7 @@ export default function VisitorQrModal({
                     </>
                   ) : (
                     <>
-                      <QrCode className="w-4 h-4" /> Tạo / Cấp Lại Mã QR
+                      <QrCode className="w-4 h-4" /> Tạo Mã QR Mời Khách
                     </>
                   )}
                 </button>
@@ -334,16 +347,20 @@ export default function VisitorQrModal({
                 <div className="bg-gradient-to-b from-[#161D26] to-[#0E131A] border-2 border-[#C5A880] p-5 rounded-xl space-y-3.5 shadow-2xl flex flex-col justify-between">
                   <div className="flex items-center justify-between border-b border-[#222B35] pb-2.5">
                     <div className="space-y-0.5">
-                      <div className="font-bold text-white text-sm truncate">{activePass.visitorName}</div>
-                      <div className="text-[11px] text-[#C5A880]">Điểm đến: Căn hộ {activePass.apartmentCode} • {activePass.purposeLabel}</div>
+                      <div className="font-bold text-white text-base truncate">{activePass.visitorName}</div>
+                      <div className="text-[11px] text-[#C5A880]">
+                        Điểm đến: Căn hộ {activePass.apartmentCode}
+                        {activePass.phoneNumber && ` • SĐT: ${activePass.phoneNumber}`}
+                        {activePass.licensePlate && ` • Xe: ${activePass.licensePlate}`}
+                      </div>
                     </div>
-                    <div className="flex flex-col items-end gap-1">
+                    <div className="flex flex-col items-end gap-1 shrink-0 ml-2">
                       <span className={`px-2 py-0.5 text-[9px] font-bold uppercase rounded border ${
                         activePass.entryType === 'SINGLE'
                           ? 'bg-amber-950 text-amber-300 border-amber-500/60'
                           : 'bg-cyan-950 text-cyan-300 border-cyan-500/60'
                       }`}>
-                        {activePass.entryType === 'SINGLE' ? 'Vé 1 Lần (Tự hủy)' : 'Vé Nhiều Lần'}
+                        {activePass.entryType === 'SINGLE' ? 'Vé 1 Lần' : 'Vé Nhiều Lần'}
                       </span>
                       <span className="text-[9px] text-emerald-400 font-mono">Hiệu Lực Ngay</span>
                     </div>
@@ -369,7 +386,7 @@ export default function VisitorQrModal({
 
                       <div className="text-[11px] text-gray-300 space-y-1">
                         <div className="flex items-center gap-1.5 text-emerald-400">
-                          <Clock className="w-3.5 h-3.5" />
+                          <Clock className="w-3.5 h-3.5 shrink-0" />
                           <span>Thời hạn: {activePass.validHours} giờ</span>
                         </div>
                         <div className="text-[10px] text-gray-400">
@@ -392,7 +409,7 @@ export default function VisitorQrModal({
                         </>
                       ) : (
                         <>
-                          <Copy className="w-3.5 h-3.5 text-[#C5A880]" /> Sao Chép Mã
+                          <Copy className="w-3.5 h-3.5 text-[#C5A880]" /> Sao Chép Mã Mời
                         </>
                       )}
                     </button>
