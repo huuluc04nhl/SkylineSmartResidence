@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { 
   Box, 
   Layers, 
@@ -16,7 +16,10 @@ import {
   Grid, 
   SplitSquareVertical,
   CheckCircle2,
-  Info
+  Info,
+  Plus,
+  Minus,
+  Maximize2
 } from 'lucide-react';
 import { useAuth } from '@/lib/authContext';
 
@@ -83,6 +86,33 @@ export default function ApartmentModel3DViewer({
   const [viewMode, setViewMode] = useState<ViewMode>('3D_BLOCKS');
   const [selectedRoom, setSelectedRoom] = useState<string>('living');
   const [showDimensions, setShowDimensions] = useState(true);
+  const [zoomLevel, setZoomLevel] = useState<number>(1);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [containerWidth, setContainerWidth] = useState<number>(840);
+
+  // Theo dõi bề rộng khung chứa để tự động tính toán hệ số thu phóng vừa vặn trên mọi thiết bị
+  useEffect(() => {
+    if (!containerRef.current) return;
+    const updateSize = () => {
+      if (containerRef.current) {
+        setContainerWidth(containerRef.current.clientWidth);
+      }
+    };
+    updateSize();
+    const observer = new ResizeObserver(updateSize);
+    observer.observe(containerRef.current);
+    return () => observer.disconnect();
+  }, []);
+
+  // Tính toán baseScale theo containerWidth:
+  // SVG gốc 960x640:
+  // - Mobile (< 480px): scale ~0.40 - 0.52
+  // - Tablet (480px - 768px): scale ~0.55 - 0.75
+  // - Desktop (> 768px): scale ~0.82 - 0.92
+  const targetCanvasWidth = viewMode === '2D_BLUEPRINT' ? 960 : 860;
+  const calculatedBase = (containerWidth - 32) / targetCanvasWidth;
+  const baseScale = Math.min(Math.max(calculatedBase, 0.38), 0.92);
+  const finalScale = Number((baseScale * zoomLevel).toFixed(2));
 
   // Danh Mục Khối Không Gian Căn Hộ Chung Cư (Chuẩn Kiến Trúc Thực Tế)
   const rooms: Record<string, RoomDetails> = {
@@ -205,66 +235,103 @@ export default function ApartmentModel3DViewer({
   return (
     <div className="w-full bg-[#080B10] border border-[#222B35] rounded-lg shadow-2xl flex flex-col overflow-hidden select-none">
       {/* ------------------------------------------------------------- */}
-      {/* 1. THANH CÔNG CỤ CHẾ ĐỘ HIỂN THỊ (GỌN GÀNG, KHÔNG DƯ THỪA)  */}
+      {/* 1. THANH CÔNG CỤ CHẾ ĐỘ HIỂN THỊ (RESPONSIVE TOÀN DIỆN)      */}
       {/* ------------------------------------------------------------- */}
-      <div className="p-3 bg-[#0D1117] border-b border-[#222B35] flex flex-wrap items-center justify-between gap-3 text-xs">
+      <div className="p-2 sm:p-3 bg-[#0D1117] border-b border-[#222B35] flex flex-wrap items-center justify-between gap-2 text-xs">
         {/* Bộ Chuyển Đổi Chế Độ Xem Căn Hộ */}
-        <div className="flex items-center gap-1.5 bg-[#121820] p-1 border border-[#222B35] rounded">
+        <div className="flex items-center gap-1 bg-[#121820] p-1 border border-[#222B35] rounded">
           <button
             type="button"
             onClick={() => setViewMode('3D_BLOCKS')}
-            className={`px-3 py-1.5 font-bold uppercase tracking-wider text-[10.5px] rounded flex items-center gap-1.5 transition-all ${
+            className={`px-2.5 sm:px-3 py-1.5 font-bold uppercase tracking-wider text-[10px] sm:text-[10.5px] rounded flex items-center gap-1.5 transition-all ${
               viewMode === '3D_BLOCKS'
                 ? 'bg-[#C5A880] text-[#0D1117] shadow font-extrabold'
                 : 'text-gray-400 hover:text-white'
             }`}
           >
-            <Box className="w-3.5 h-3.5" /> Mô Hình 3D
+            <Box className="w-3.5 h-3.5 shrink-0" />
+            <span><span className="hidden sm:inline">Mô Hình </span>3D</span>
           </button>
 
           <button
             type="button"
             onClick={() => setViewMode('2D_BLUEPRINT')}
-            className={`px-3 py-1.5 font-bold uppercase tracking-wider text-[10.5px] rounded flex items-center gap-1.5 transition-all ${
+            className={`px-2.5 sm:px-3 py-1.5 font-bold uppercase tracking-wider text-[10px] sm:text-[10.5px] rounded flex items-center gap-1.5 transition-all ${
               viewMode === '2D_BLUEPRINT'
                 ? 'bg-[#C5A880] text-[#0D1117] shadow font-extrabold'
                 : 'text-gray-400 hover:text-white'
             }`}
           >
-            <Layers className="w-3.5 h-3.5" /> Mặt Bằng 2D Kỹ Thuật
+            <Layers className="w-3.5 h-3.5 shrink-0" />
+            <span><span className="hidden sm:inline">Mặt Bằng </span>2D</span>
           </button>
 
           <button
             type="button"
             onClick={() => setViewMode('3D_EXPLODED')}
-            className={`px-3 py-1.5 font-bold uppercase tracking-wider text-[10.5px] rounded flex items-center gap-1.5 transition-all ${
+            className={`px-2.5 sm:px-3 py-1.5 font-bold uppercase tracking-wider text-[10px] sm:text-[10.5px] rounded flex items-center gap-1.5 transition-all ${
               viewMode === '3D_EXPLODED'
                 ? 'bg-amber-400 text-[#0D1117] shadow font-extrabold'
                 : 'text-gray-400 hover:text-white'
             }`}
           >
-            <SplitSquareVertical className="w-3.5 h-3.5" /> Bóc Tách Khối
+            <SplitSquareVertical className="w-3.5 h-3.5 shrink-0" />
+            <span><span className="hidden sm:inline">Bóc Tách </span>Khối</span>
           </button>
         </div>
 
-        {/* Nút Ẩn / Hiện Kích Thước Laser */}
-        <button
-          type="button"
-          onClick={() => setShowDimensions(!showDimensions)}
-          className={`px-2.5 py-1.5 border rounded transition-colors text-[10.5px] flex items-center gap-1.5 ${
-            showDimensions ? 'bg-[#1C2533] border-[#C5A880] text-[#C5A880]' : 'bg-[#121820] border-gray-700 text-gray-400'
-          }`}
-          title="Ẩn / Hiện kích thước kỹ thuật CAD"
-        >
-          <Grid className="w-3.5 h-3.5" />
-          <span className="font-medium">Kích Thước Đo</span>
-        </button>
+        {/* Cụm Tiện Ích: Kích Thước Đo & Nút Zoom Tương Tác */}
+        <div className="flex items-center gap-1.5">
+          {/* Nút Ẩn / Hiện Kích Thước Laser */}
+          <button
+            type="button"
+            onClick={() => setShowDimensions(!showDimensions)}
+            className={`px-2 sm:px-2.5 py-1.5 border rounded transition-colors text-[10px] sm:text-[10.5px] flex items-center gap-1.5 ${
+              showDimensions ? 'bg-[#1C2533] border-[#C5A880] text-[#C5A880]' : 'bg-[#121820] border-gray-700 text-gray-400'
+            }`}
+            title="Ẩn / Hiện kích thước kỹ thuật CAD"
+          >
+            <Grid className="w-3.5 h-3.5 shrink-0" />
+            <span className="hidden xs:inline">Đo CAD</span>
+          </button>
+
+          {/* Bộ Điều Khiển Zoom Thông Minh Cho Cả Mobile & Desktop */}
+          <div className="flex items-center bg-[#121820] border border-[#222B35] rounded overflow-hidden">
+            <button 
+              type="button" 
+              onClick={() => setZoomLevel(prev => Math.max(Number((prev - 0.15).toFixed(2)), 0.6))} 
+              className="px-2 py-1.5 text-gray-400 hover:text-white hover:bg-[#1C2533] transition-colors"
+              title="Thu nhỏ mô hình"
+            >
+              <Minus className="w-3 h-3" />
+            </button>
+            <button 
+              type="button" 
+              onClick={() => setZoomLevel(1)} 
+              className="px-2 py-1.5 font-mono text-[9.5px] sm:text-[10px] text-[#C5A880] hover:bg-[#1C2533] transition-colors border-x border-[#222B35]"
+              title="Khôi phục kích thước chuẩn vừa khung (Fit)"
+            >
+              {Math.round(zoomLevel * 100)}%
+            </button>
+            <button 
+              type="button" 
+              onClick={() => setZoomLevel(prev => Math.min(Number((prev + 0.15).toFixed(2)), 1.8))} 
+              className="px-2 py-1.5 text-gray-400 hover:text-white hover:bg-[#1C2533] transition-colors"
+              title="Phóng to mô hình"
+            >
+              <Plus className="w-3 h-3" />
+            </button>
+          </div>
+        </div>
       </div>
 
       {/* ------------------------------------------------------------- */}
       {/* 2. KHÔNG GIAN BẢN VẼ / MÔ HÌNH CĂN HỘ CHUNG CƯ                 */}
       {/* ------------------------------------------------------------- */}
-      <div className="relative w-full h-[460px] sm:h-[490px] bg-[#05070A] overflow-hidden flex items-center justify-center">
+      <div 
+        ref={containerRef}
+        className="relative w-full h-[380px] sm:h-[460px] md:h-[500px] bg-[#05070A] overflow-hidden flex items-center justify-center"
+      >
         {/* Lưới Nền Kiến Trúc */}
         <div 
           className="absolute inset-0 opacity-20 pointer-events-none"
@@ -276,18 +343,18 @@ export default function ApartmentModel3DViewer({
           }}
         />
 
-        {/* Khung Chiếu Phối Cảnh Không Gian */}
+        {/* Khung Chiếu Phối Cảnh Không Gian (Tự Co Giãn 100% Khung Chứa Mobile & Desktop) */}
         <div 
-          className="relative transition-all duration-700 ease-out transform"
+          className="relative transition-all duration-700 ease-out transform origin-center flex items-center justify-center shrink-0"
           style={{
             transform: viewMode === '2D_BLUEPRINT'
-              ? 'perspective(0px) rotateX(0deg) rotateZ(0deg) scale(0.92)'
-              : 'perspective(1500px) rotateX(52deg) rotateZ(-34deg) scale(0.88)'
+              ? `perspective(0px) rotateX(0deg) rotateZ(0deg) scale(${finalScale})`
+              : `perspective(1400px) rotateX(52deg) rotateZ(-34deg) scale(${finalScale})`
           }}
         >
           <svg
             viewBox="0 0 960 640"
-            className="w-[700px] sm:w-[840px] h-[480px] sm:h-[540px] drop-shadow-[0_35px_70px_rgba(0,0,0,0.95)] cursor-pointer"
+            className="w-[960px] h-[640px] max-w-none drop-shadow-[0_35px_70px_rgba(0,0,0,0.95)] cursor-pointer"
           >
             <defs>
               {/* Sàn Gỗ Tự Nhiên */}
@@ -662,28 +729,28 @@ export default function ApartmentModel3DViewer({
           </svg>
         </div>
 
-        {/* HUD Góc Trên Bên Trái */}
-        <div className="absolute top-3 left-3 bg-[#0D1117]/95 border border-[#222B35] px-3.5 py-2.5 text-[10px] space-y-1 backdrop-blur-md rounded shadow-xl max-w-[calc(100%-2rem)]">
+        {/* HUD Góc Trên Bên Trái (Co giãn linh hoạt, không cản trở thao tác chạm trên mobile) */}
+        <div className="absolute top-2.5 left-2.5 sm:top-3 sm:left-3 bg-[#0D1117]/95 border border-[#222B35] px-2.5 py-1.5 sm:px-3.5 sm:py-2 text-[9px] sm:text-[10px] space-y-0.5 sm:space-y-1 backdrop-blur-md rounded shadow-xl max-w-[calc(100%-6rem)] pointer-events-none">
           <div className="text-white font-bold flex items-center gap-1.5 truncate">
-            <span className="w-2 h-2 rounded-full bg-emerald-400 flex-shrink-0"></span>
+            <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-emerald-400 shrink-0"></span>
             <span className="truncate">Căn Hộ {apartmentCode} ({clearArea} m²)</span>
           </div>
-          <div className="text-gray-300 font-mono">
+          <div className="text-gray-300 font-mono truncate">
             Chế độ: <strong className="text-[#C5A880]">{getModeLabel(viewMode)}</strong>
           </div>
         </div>
 
-        {/* Gợi ý tương tác */}
-        <div className="absolute bottom-3 right-3 bg-[#1C2533]/90 border border-[#C5A880]/60 px-3 py-1.5 text-[10px] text-[#C5A880] font-mono rounded backdrop-blur-md hidden sm:block">
-          * Nhấp vào từng phòng để xem chi tiết
+        {/* Gợi ý tương tác (Hiển thị tinh tế trên mọi màn hình) */}
+        <div className="absolute bottom-2.5 right-2.5 sm:bottom-3 sm:right-3 bg-[#1C2533]/90 border border-[#C5A880]/60 px-2.5 py-1 text-[9px] sm:text-[10px] text-[#C5A880] font-mono rounded backdrop-blur-md pointer-events-none">
+          * Chạm / Click vào phòng để xem
         </div>
       </div>
 
       {/* ------------------------------------------------------------- */}
-      {/* 3. BẢNG THÔNG TIN KHỐI PHÒNG (KHÔNG DƯ THỪA, CHUẨN MỰC)       */}
+      {/* 3. BẢNG THÔNG TIN KHỐI PHÒNG (RESPONSIVE CHUẨN MỰC)           */}
       {/* ------------------------------------------------------------- */}
       {activeRoom && (
-        <div className="p-4 bg-[#0D1117] border-t border-[#222B35] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="p-3 sm:p-4 bg-[#0D1117] border-t border-[#222B35] flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
           {/* Thông Tin Khối Không Gian */}
           <div className="space-y-1 min-w-0">
             <div className="text-[10.5px] uppercase tracking-wider text-gray-400 font-mono flex items-center gap-2 flex-wrap">
