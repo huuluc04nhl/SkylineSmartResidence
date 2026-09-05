@@ -134,8 +134,10 @@ function initUserStore(): Record<string, StoredUser> {
   return store;
 }
 
-if (!global.__NKS_USER_STORE) {
-  global.__NKS_USER_STORE = initUserStore();
+const globalScope = (typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : {}) as any;
+
+if (!globalScope.__NKS_USER_STORE) {
+  globalScope.__NKS_USER_STORE = initUserStore();
 }
 
 /**
@@ -163,23 +165,23 @@ export function extractUserIdFromToken(token?: string): string | null {
  * Get distinct user profile by specific ID, username, phone, or email
  */
 export function getUserStore(identifier: string): StoredUser {
-  if (!global.__NKS_USER_STORE) {
-    global.__NKS_USER_STORE = initUserStore();
+  if (!globalScope.__NKS_USER_STORE) {
+    globalScope.__NKS_USER_STORE = initUserStore();
   }
 
   // 1. Direct key match (id, username, phone)
-  if (global.__NKS_USER_STORE[identifier]) {
-    return global.__NKS_USER_STORE[identifier];
+  if (globalScope.__NKS_USER_STORE[identifier]) {
+    return globalScope.__NKS_USER_STORE[identifier];
   }
 
   const norm = identifier.toLowerCase().trim();
-  if (global.__NKS_USER_STORE[norm]) {
-    return global.__NKS_USER_STORE[norm];
+  if (globalScope.__NKS_USER_STORE[norm]) {
+    return globalScope.__NKS_USER_STORE[norm];
   }
 
   // 2. Iterate store to match id, username, email, or phone
-  for (const key in global.__NKS_USER_STORE) {
-    const u = global.__NKS_USER_STORE[key];
+  for (const key in globalScope.__NKS_USER_STORE) {
+    const u = globalScope.__NKS_USER_STORE[key];
     if (
       u.id === identifier ||
       (u.username && u.username.toLowerCase().trim() === norm) ||
@@ -221,26 +223,26 @@ export function getUserStore(identifier: string): StoredUser {
       license_plate: fromDemo.license_plate,
     };
 
-    global.__NKS_USER_STORE[fromDemo.id] = newUser;
-    global.__NKS_USER_STORE[fromDemo.username.toLowerCase().trim()] = newUser;
-    if (fromDemo.phone) global.__NKS_USER_STORE[fromDemo.phone.trim()] = newUser;
+    globalScope.__NKS_USER_STORE[fromDemo.id] = newUser;
+    globalScope.__NKS_USER_STORE[fromDemo.username.toLowerCase().trim()] = newUser;
+    if (fromDemo.phone) globalScope.__NKS_USER_STORE[fromDemo.phone.trim()] = newUser;
 
     return newUser;
   }
 
   // 4. Role default fallback ONLY when role keyword is explicitly passed
   if (identifier === 'ADMIN') {
-    return global.__NKS_USER_STORE['user-manager-1'] || Object.values(global.__NKS_USER_STORE).find(u => u.role === 'ADMIN')!;
+    return globalScope.__NKS_USER_STORE['user-manager-1'] || Object.values(globalScope.__NKS_USER_STORE).find(u => (u as any).role === 'ADMIN')!;
   }
   if (identifier === 'TECHNICIAN') {
-    return global.__NKS_USER_STORE['user-tech-1'] || Object.values(global.__NKS_USER_STORE).find(u => u.role === 'TECHNICIAN')!;
+    return globalScope.__NKS_USER_STORE['user-tech-1'] || Object.values(globalScope.__NKS_USER_STORE).find(u => (u as any).role === 'TECHNICIAN')!;
   }
   if (identifier === 'TENANT') {
-    return global.__NKS_USER_STORE['user-tenant-1'] || Object.values(global.__NKS_USER_STORE).find(u => u.role === 'TENANT')!;
+    return globalScope.__NKS_USER_STORE['user-tenant-1'] || Object.values(globalScope.__NKS_USER_STORE).find(u => (u as any).role === 'TENANT')!;
   }
 
   // Fallback to Owner
-  return global.__NKS_USER_STORE['user-owner-1'] || Object.values(global.__NKS_USER_STORE).find(u => u.role === 'OWNER')!;
+  return globalScope.__NKS_USER_STORE['user-owner-1'] || Object.values(globalScope.__NKS_USER_STORE).find(u => (u as any).role === 'OWNER')!;
 }
 
 /**
@@ -254,20 +256,20 @@ export function updateUserStore(identifier: string, updates: Partial<StoredUser>
     updated_at: new Date().toISOString()
   };
 
-  if (!global.__NKS_USER_STORE) {
-    global.__NKS_USER_STORE = initUserStore();
+  if (!globalScope.__NKS_USER_STORE) {
+    globalScope.__NKS_USER_STORE = initUserStore();
   }
 
   // Save STRICTLY under this user's unique identifiers (ID, username, phone)
-  global.__NKS_USER_STORE[updated.id] = updated;
+  globalScope.__NKS_USER_STORE[updated.id] = updated;
   if (updated.username) {
-    global.__NKS_USER_STORE[updated.username.toLowerCase().trim()] = updated;
+    globalScope.__NKS_USER_STORE[updated.username.toLowerCase().trim()] = updated;
   }
   if (updated.phone) {
-    global.__NKS_USER_STORE[updated.phone.trim()] = updated;
+    globalScope.__NKS_USER_STORE[updated.phone.trim()] = updated;
   }
   if (updated.email) {
-    global.__NKS_USER_STORE[updated.email.toLowerCase().trim()] = updated;
+    globalScope.__NKS_USER_STORE[updated.email.toLowerCase().trim()] = updated;
   }
 
   // Sync to DEMO_USERS in dataStore
@@ -286,31 +288,31 @@ export function updateUserStore(identifier: string, updates: Partial<StoredUser>
 }
 
 export function getApartmentMembers(aptCode: string): ApartmentMember[] {
-  if (!global.__NKS_FAMILY_STORE) {
-    global.__NKS_FAMILY_STORE = {};
+  if (!globalScope.__NKS_FAMILY_STORE) {
+    globalScope.__NKS_FAMILY_STORE = {};
   }
-  return global.__NKS_FAMILY_STORE[aptCode] || global.__NKS_FAMILY_STORE['12A05'] || [];
+  return globalScope.__NKS_FAMILY_STORE[aptCode] || globalScope.__NKS_FAMILY_STORE['12A05'] || [];
 }
 
 export function addApartmentMember(aptCode: string, member: ApartmentMember): ApartmentMember[] {
-  if (!global.__NKS_FAMILY_STORE) {
-    global.__NKS_FAMILY_STORE = {};
+  if (!globalScope.__NKS_FAMILY_STORE) {
+    globalScope.__NKS_FAMILY_STORE = {};
   }
   const current = getApartmentMembers(aptCode);
   const updated = [
     ...current.filter(m => m.id !== member.id && m.phone !== member.phone),
     member
   ];
-  global.__NKS_FAMILY_STORE[aptCode] = updated;
+  globalScope.__NKS_FAMILY_STORE[aptCode] = updated;
   return updated;
 }
 
 export function removeApartmentMember(aptCode: string, memberId: string): ApartmentMember[] {
-  if (!global.__NKS_FAMILY_STORE) {
-    global.__NKS_FAMILY_STORE = {};
+  if (!globalScope.__NKS_FAMILY_STORE) {
+    globalScope.__NKS_FAMILY_STORE = {};
   }
   const current = getApartmentMembers(aptCode);
   const updated = current.filter(m => m.id !== memberId);
-  global.__NKS_FAMILY_STORE[aptCode] = updated;
+  globalScope.__NKS_FAMILY_STORE[aptCode] = updated;
   return updated;
 }

@@ -99,11 +99,13 @@ const INITIAL_GATE_LOGS: GateAuditLog[] = [
   }
 ];
 
+const globalScope = (typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : {}) as any;
+
 export function getGateAuditLogs(): GateAuditLog[] {
-  if (!global.__SKYLINE_GATE_LOGS) {
-    global.__SKYLINE_GATE_LOGS = [...INITIAL_GATE_LOGS];
+  if (!globalScope.__SKYLINE_GATE_LOGS) {
+    globalScope.__SKYLINE_GATE_LOGS = [...INITIAL_GATE_LOGS];
   }
-  return global.__SKYLINE_GATE_LOGS;
+  return globalScope.__SKYLINE_GATE_LOGS;
 }
 
 export function addGateAuditLog(log: Omit<GateAuditLog, 'id'>): GateAuditLog {
@@ -112,7 +114,7 @@ export function addGateAuditLog(log: Omit<GateAuditLog, 'id'>): GateAuditLog {
     ...log
   };
   const current = getGateAuditLogs();
-  global.__SKYLINE_GATE_LOGS = [newLog, ...current.slice(0, 19)]; // Keep latest 20 logs
+  globalScope.__SKYLINE_GATE_LOGS = [newLog, ...current.slice(0, 19)]; // Keep latest 20 logs
   return newLog;
 }
 
