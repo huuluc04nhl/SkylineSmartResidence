@@ -6,7 +6,7 @@ import {
   approveEkycRequest, 
   rejectEkycRequest 
 } from '@/lib/ekycStore';
-import { updateUserStore } from '@/lib/userStore';
+import { updateUserStore, updateApartmentMember } from '@/lib/userStore';
 
 /**
  * GET /api/nks/ekyc
@@ -78,6 +78,17 @@ export async function POST(req: Request) {
         faceScore
       });
 
+      // Synchronize apartment member face status
+      try {
+        updateApartmentMember(apartmentCode || '12A05', userId || phone, {
+          faceStatus: 'Đang Chờ BQL Phê Duyệt',
+          avatarUrl: avatarUrl,
+          idCard: idCardNo,
+        });
+      } catch (memErr) {
+        console.warn('Sync member face status on submit error:', memErr);
+      }
+
       return NextResponse.json({
         success: true,
         message: 'Hồ sơ e-KYC đã được gửi đến Ban Quản Lý thành công.',
@@ -106,6 +117,11 @@ export async function POST(req: Request) {
           pob: approved.pob,
           avatar_url: approved.avatarUrl,
         });
+        updateApartmentMember(approved.apartmentCode || '12A05', approved.userId, {
+          faceStatus: 'Đã Kích Hoạt FaceID',
+          avatarUrl: approved.avatarUrl,
+          idCard: approved.idCardNo,
+        });
       } catch (err) {
         console.warn('Sync userStore on ekyc approve error:', err);
       }
@@ -124,6 +140,15 @@ export async function POST(req: Request) {
       if (!rejected) {
         return NextResponse.json({ success: false, message: 'Không tìm thấy hồ sơ e-KYC' }, { status: 404 });
       }
+
+      try {
+        updateApartmentMember(rejected.apartmentCode || '12A05', rejected.userId, {
+          faceStatus: 'BQL Yêu Cầu Chụp Lại',
+        });
+      } catch (memErr) {
+        console.warn('Sync member face status on reject error:', memErr);
+      }
+
       return NextResponse.json({
         success: true,
         message: 'Đã từ chối hồ sơ e-KYC.',

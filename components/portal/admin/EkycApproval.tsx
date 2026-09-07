@@ -451,8 +451,13 @@ export default function EkycApproval() {
             {/* Modal Header */}
             <div className="flex items-center justify-between border-b border-[#222B35] pb-3">
               <div>
-                <div className="text-[10px] uppercase font-mono text-[#C5A880] font-bold flex items-center gap-1.5">
+                <div className="text-[10px] uppercase font-mono text-[#C5A880] font-bold flex items-center gap-1.5 flex-wrap">
                   <Shield className="w-3.5 h-3.5" /> Thẩm Định Hồ Sơ e-KYC • Căn Hộ {inspectingRequest.apartmentCode}
+                  {inspectingRequest.roleLabel.includes('Bảo lãnh') && (
+                    <span className="px-2 py-0.5 bg-purple-950/90 border border-purple-500/80 text-purple-300 font-sans text-[10px] rounded normal-case font-semibold flex items-center gap-1">
+                      <Users className="w-3 h-3 text-purple-400" /> Được Chủ Hộ Bảo Lãnh Kê Khai
+                    </span>
+                  )}
                 </div>
                 <h3 className="font-serif text-lg font-bold text-white mt-0.5">
                   Đối Chiếu Sinh Trắc Học & Thẻ Căn Cước Công Dân
