@@ -98,8 +98,12 @@ export const INITIAL_EKYC_REQUESTS: EkycRequest[] = [
   }
 ];
 
-// In-memory fallback
-let inMemoryRequests: EkycRequest[] = [...INITIAL_EKYC_REQUESTS];
+// In-memory global store for server-side Next.js route handlers
+const globalScope = (typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : {}) as any;
+
+if (!globalScope.__SKYLINE_EKYC_STORE) {
+  globalScope.__SKYLINE_EKYC_STORE = [...INITIAL_EKYC_REQUESTS];
+}
 
 export function getEkycRequests(): EkycRequest[] {
   if (typeof window !== 'undefined') {
@@ -113,11 +117,11 @@ export function getEkycRequests(): EkycRequest[] {
       console.warn('e-KYC localStorage read error', e);
     }
   }
-  return inMemoryRequests;
+  return globalScope.__SKYLINE_EKYC_STORE || INITIAL_EKYC_REQUESTS;
 }
 
 export function saveEkycRequests(requests: EkycRequest[]): void {
-  inMemoryRequests = requests;
+  globalScope.__SKYLINE_EKYC_STORE = requests;
   if (typeof window !== 'undefined') {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(requests));

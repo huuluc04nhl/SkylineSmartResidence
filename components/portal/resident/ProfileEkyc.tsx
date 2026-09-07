@@ -364,7 +364,7 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
     }
     setIsScanningOcr(true);
     try {
-      const req = submitEkycRequest({
+      const reqPayload = {
         userId: currentUser.id || currentUser.username,
         fullName: fullName.trim() || currentUser.full_name,
         roleLabel: isOwner ? `Chủ Hộ (Căn ${aptCode})` : `Người Nhà (Căn ${aptCode})`,
@@ -380,9 +380,26 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
         idCardFrontUrl: cccdImage,
         idCardBackUrl: cccdBackImage || '',
         faceScore: 98.8,
-      });
+      };
+
+      const req = submitEkycRequest(reqPayload);
       setCurrentEkyc(req);
       setEkycStatus('PENDING');
+
+      // Synchronize to server API endpoint for real-time BQL processing
+      try {
+        await fetch('/api/nks/ekyc', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            action: 'SUBMIT',
+            ...reqPayload,
+          }),
+        });
+      } catch (apiErr) {
+        console.warn('Sync ekyc submit API error:', apiErr);
+      }
+
       alert('✅ Hồ sơ e-KYC kèm ảnh chụp CCCD thật đã được chuyển tới Ban Quản Lý tòa nhà để xét duyệt!');
     } finally {
       setIsScanningOcr(false);

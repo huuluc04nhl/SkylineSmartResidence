@@ -6,6 +6,7 @@ import {
   approveEkycRequest, 
   rejectEkycRequest 
 } from '@/lib/ekycStore';
+import { updateUserStore } from '@/lib/userStore';
 
 /**
  * GET /api/nks/ekyc
@@ -87,10 +88,28 @@ export async function POST(req: Request) {
     // 2. BQL Approves e-KYC
     if (action === 'APPROVE') {
       const { id, approverName } = body;
-      const approved = approveEkycRequest(id, approverName);
+      const approved = approveEkycRequest(id, approverName || 'Ban Quản Lý Skyline');
       if (!approved) {
         return NextResponse.json({ success: false, message: 'Không tìm thấy hồ sơ e-KYC' }, { status: 404 });
       }
+
+      // Synchronize approved legal identity to user store
+      try {
+        updateUserStore(approved.userId, {
+          fullname: approved.fullName,
+          full_name: approved.fullName,
+          id_number: approved.idCardNo,
+          id_card_no: approved.idCardNo,
+          id_date: approved.idDate,
+          id_place: approved.idPlace,
+          dob: approved.dob,
+          pob: approved.pob,
+          avatar_url: approved.avatarUrl,
+        });
+      } catch (err) {
+        console.warn('Sync userStore on ekyc approve error:', err);
+      }
+
       return NextResponse.json({
         success: true,
         message: 'Đã phê duyệt hồ sơ e-KYC và cấp quyền FaceID thành công.',
