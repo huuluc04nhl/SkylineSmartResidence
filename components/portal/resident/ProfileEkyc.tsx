@@ -56,9 +56,10 @@ import { OcrCccdResult, formatToDateInput, formatToDisplayDate, formatToApiDate 
 import { 
   getEkycForUser, 
   submitEkycRequest, 
-  updateEkycCardImages,
+  updateEkycCardImages, 
   EkycRequest 
 } from '@/lib/ekycStore';
+import { validateCccdCard, verifyFaceWithCccd } from '@/lib/ekycValidator';
 
 interface ProfileEkycProps {
   currentUser: User;
@@ -362,6 +363,33 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
       alert('Vui lòng quét hoặc tải lên ảnh chụp thật của thẻ Căn cước công dân trước khi gửi duyệt!');
       return;
     }
+
+    // 1. Kiểm tra định dạng và góc chụp ảnh CCCD mặt trước
+    const frontCheck = validateCccdCard(cccdImage, 'Mặt trước CCCD');
+    if (!frontCheck.isValid) {
+      alert(`❌ Ảnh chụp CCCD mặt trước không hợp lệ:\n${frontCheck.reason}\n\nVui lòng tải lên ảnh chụp thẻ CCCD nằm ngang (tỷ lệ chuẩn ~1.58:1) và rõ nét.`);
+      return;
+    }
+
+    // 2. Kiểm tra CCCD mặt sau nếu có
+    if (cccdBackImage) {
+      const backCheck = validateCccdCard(cccdBackImage, 'Mặt sau CCCD');
+      if (!backCheck.isValid) {
+        alert(`❌ Ảnh chụp CCCD mặt sau không hợp lệ:\n${backCheck.reason}\n\nVui lòng tải lên ảnh chụp mặt sau thẻ CCCD nằm ngang rõ nét.`);
+        return;
+      }
+    }
+
+    // 3. Đối chiếu sinh trắc học khuôn mặt FaceID với ảnh thẻ CCCD
+    const currentAvatar = avatarUrl || currentUser.avatar_url || '';
+    const bioMatch = verifyFaceWithCccd(currentAvatar, cccdImage);
+    if (!bioMatch.isMatch) {
+      alert(
+        `❌ Xác thực khuôn mặt với CCCD không thành công:\n- Lý do: ${bioMatch.reason}\n- Độ tương đồng: ${bioMatch.similarity.toFixed(1)}% (Yêu cầu tối thiểu: 85.0%)\n\nĐể đảm bảo an ninh tòa nhà, ảnh chân dung FaceID phải trùng khớp với người trên thẻ CCCD. Vui lòng cập nhật đúng ảnh chân dung hoặc ảnh CCCD chính chủ.`
+      );
+      return;
+    }
+
     setIsScanningOcr(true);
     try {
       const reqPayload = {
@@ -376,10 +404,10 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
         idPlace: idPlace,
         dob: birthday,
         pob: pob,
-        avatarUrl: avatarUrl || currentUser.avatar_url || '',
+        avatarUrl: currentAvatar,
         idCardFrontUrl: cccdImage,
         idCardBackUrl: cccdBackImage || '',
-        faceScore: 98.8,
+        faceScore: bioMatch.similarity,
       };
 
       const req = submitEkycRequest(reqPayload);
@@ -388,7 +416,7 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
 
       // Synchronize to server API endpoint for real-time BQL processing
       try {
-        await fetch('/api/nks/ekyc', {
+        const res = await fetch('/api/nks/ekyc', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -396,11 +424,17 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
             ...reqPayload,
           }),
         });
+        const resJson = await res.json();
+        if (!res.ok) {
+          alert(`❌ Máy chủ từ chối tiếp nhận hồ sơ:\n${resJson.message || 'Lỗi kiểm tra thẻ hoặc sinh trắc học'}`);
+          setEkycStatus('REJECTED');
+          return;
+        }
       } catch (apiErr) {
         console.warn('Sync ekyc submit API error:', apiErr);
       }
 
-      alert('✅ Hồ sơ e-KYC kèm ảnh chụp CCCD thật đã được chuyển tới Ban Quản Lý tòa nhà để xét duyệt!');
+      alert(`✅ Hồ sơ e-KYC kèm ảnh chụp CCCD thật đã được chuyển tới Ban Quản Lý tòa nhà để xét duyệt!\n- Độ trùng khớp khuôn mặt đạt: ${bioMatch.similarity.toFixed(1)}%`);
     } finally {
       setIsScanningOcr(false);
     }

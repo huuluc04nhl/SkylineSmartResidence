@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { getEkycRequests } from '@/lib/ekycStore';
 import { getUserStore, StoredUser } from '@/lib/userStore';
 import { DEMO_USERS } from '@/lib/dataStore';
+import { identifyFaceResident } from '@/lib/ekycValidator';
 
 function formatToDateInput(d?: string): string {
   if (!d) return '';
@@ -97,88 +98,76 @@ export async function POST(req: Request) {
       }
     }
 
-    // 3. Cơ sở dữ liệu e-KYC từ Ban Quản Lý
+    // 3. Cơ sở dữ liệu e-KYC từ Ban Quản Lý và User Store
     const ekycList = getEkycRequests();
-    const approvedRequests = ekycList.filter((r) => r.status === 'APPROVED');
-    const pendingRequests = ekycList.filter((r) => r.status === 'PENDING');
+    
+    // Xây dựng danh sách ứng viên đối chiếu sinh trắc học
+    const candidateResidents = ekycList.map(r => ({
+      userId: r.userId,
+      fullName: r.fullName,
+      avatarUrl: r.avatarUrl,
+      status: r.status,
+      apartmentCode: r.apartmentCode,
+    }));
 
-    // 4. Đối chiếu 1:N với cơ sở dữ liệu khuôn mặt cư dân (e-KYC)
-    let matchedUserId: string | null = null;
-    let matchScore = 98.8;
-
-    if (isCameraCapture) {
-      // Khi quét trực tiếp từ Camera Laptop hoặc Camera Mobile
-      // Hệ thống trích xuất vector khuôn mặt và nhận diện cư dân có hồ sơ e-KYC hợp lệ
-      const primaryResident = approvedRequests[0];
-      if (primaryResident) {
-        matchedUserId = primaryResident.userId;
-        matchScore = primaryResident.faceScore || 99.2;
+    // Bổ sung các tài khoản demo nếu chưa có trong ekycList
+    DEMO_USERS.forEach(u => {
+      if (!candidateResidents.some(c => c.userId === u.id)) {
+        candidateResidents.push({
+          userId: u.id,
+          fullName: u.full_name,
+          avatarUrl: u.avatar_url || '',
+          status: u.role === 'OWNER' ? 'APPROVED' : 'APPROVED',
+          apartmentCode: u.apartment_code || '12A05',
+        });
       }
-    } else {
-      // Khi tải ảnh: đối chiếu với hồ sơ ảnh e-KYC cư dân đã lưu
-      for (const req of ekycList) {
-        if (req.avatarUrl && faceImage.includes(req.avatarUrl)) {
-          matchedUserId = req.userId;
-          matchScore = req.faceScore || 98.5;
-          break;
-        }
+    });
+
+    // 4. Nhận diện sinh trắc học 1:N chuẩn xác
+    const faceResult = identifyFaceResident(imageBuffer || faceImage, candidateResidents);
+
+    // 5. Nếu không khớp bất kỳ cư dân nào
+    if (!faceResult.matched) {
+      if (faceResult.status === 'PENDING') {
+        return NextResponse.json(
+          {
+            success: false,
+            matchScore: faceResult.score,
+            message: faceResult.message,
+          },
+          { status: 403 }
+        );
       }
 
-      // Nếu ảnh chân dung hợp lệ và có độ nét tốt
-      if (!matchedUserId && imageBuffer && imageBuffer.length >= 5000) {
-        const approvedResident = approvedRequests[0];
-        if (approvedResident) {
-          matchedUserId = approvedResident.userId;
-          matchScore = 98.6;
-        }
+      if (faceResult.status === 'REJECTED') {
+        return NextResponse.json(
+          {
+            success: false,
+            matchScore: faceResult.score,
+            message: faceResult.message,
+          },
+          { status: 403 }
+        );
       }
-    }
 
-    // 5. Nếu không khớp bất kỳ hồ sơ nào trong hệ thống
-    if (!matchedUserId) {
       return NextResponse.json(
         {
           success: false,
-          matchScore: 45.0,
-          message: 'Khuôn mặt không khớp với hồ sơ cư dân nào trong hệ thống.',
+          matchScore: faceResult.score || 42.0,
+          message: faceResult.message,
         },
         { status: 401 }
       );
     }
+
+    const matchedUserId = faceResult.resident!.userId;
+    const matchScore = faceResult.score;
 
     const matchedUserRecord = getUserStore(matchedUserId);
     if (!matchedUserRecord) {
       return NextResponse.json(
         { success: false, message: 'Tài khoản cư dân không tồn tại.' },
         { status: 404 }
-      );
-    }
-
-    // 6. Kiểm tra trạng thái phê duyệt e-KYC từ Ban Quản Lý
-    const userEkycRecord = ekycList.find((r) => r.userId === matchedUserId);
-    const isApproved = 
-      (userEkycRecord && userEkycRecord.status === 'APPROVED') ||
-      (matchedUserId === 'user-owner-1' && (!userEkycRecord || userEkycRecord.status !== 'REJECTED'));
-
-    if (userEkycRecord && userEkycRecord.status === 'PENDING') {
-      return NextResponse.json(
-        {
-          success: false,
-          matchScore: 97.5,
-          message: 'Hồ sơ e-KYC đang chờ Ban Quản Lý phê duyệt.',
-        },
-        { status: 403 }
-      );
-    }
-
-    if (!isApproved) {
-      return NextResponse.json(
-        {
-          success: false,
-          matchScore: 95.0,
-          message: 'Hồ sơ e-KYC chưa được Ban Quản Lý phê duyệt.',
-        },
-        { status: 403 }
       );
     }
 

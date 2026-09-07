@@ -63,11 +63,39 @@ export default function CccdOcrScannerModal({
 
   const handleFrontUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = () => {
-        if (typeof reader.result === 'string') {
-          setFrontImage(reader.result);
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      setErrorMessage('Tệp tải lên không phải là định dạng hình ảnh hợp lệ (chấp nhận JPEG, PNG, WEBP).');
+      return;
+    }
+
+    if (file.size < 15000) {
+      setErrorMessage('Ảnh chụp thẻ CCCD quá mờ hoặc dung lượng quá nhỏ (dưới 15KB). Vui lòng tải ảnh rõ nét.');
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      if (typeof reader.result === 'string') {
+        const dataUrl = reader.result;
+        const img = new Image();
+        img.onload = () => {
+          const ratio = img.width / img.height;
+          if (ratio < 1.22) {
+            setErrorMessage(`Ảnh tải lên là ảnh dọc (tỷ lệ ${ratio.toFixed(2)}:1). Thẻ CCCD phải là ảnh chụp ngang bao gồm đủ 4 góc thẻ (tỷ lệ chuẩn ~1.58:1). Không được dùng ảnh selfie dọc!`);
+            return;
+          }
+          if (ratio > 2.05) {
+            setErrorMessage(`Ảnh bị cắt xén quá dài (tỷ lệ ${ratio.toFixed(2)}:1). Vui lòng chụp trọn vẹn 4 góc thẻ CCCD.`);
+            return;
+          }
+          if (img.width < 380 || img.height < 240) {
+            setErrorMessage(`Độ phân giải ảnh quá thấp (${img.width}x${img.height}px). Yêu cầu tối thiểu 400x250px để hệ thống OCR nhận diện.`);
+            return;
+          }
+
+          setFrontImage(dataUrl);
           setOcrResult(null);
           setErrorMessage(null);
           // Suggest flipping to back side if back not uploaded yet
@@ -76,25 +104,55 @@ export default function CccdOcrScannerModal({
               setIsFlipped(true);
             }, 500);
           }
-        }
-      };
-      reader.readAsDataURL(file);
-    }
+        };
+        img.src = dataUrl;
+      }
+    };
+    reader.readAsDataURL(file);
   };
 
   const handleBackUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = () => {
-        if (typeof reader.result === 'string') {
-          setBackImage(reader.result);
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      setErrorMessage('Tệp tải lên không phải là định dạng hình ảnh hợp lệ (chấp nhận JPEG, PNG, WEBP).');
+      return;
+    }
+
+    if (file.size < 15000) {
+      setErrorMessage('Ảnh chụp thẻ CCCD quá mờ hoặc dung lượng quá nhỏ (dưới 15KB). Vui lòng tải ảnh rõ nét.');
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      if (typeof reader.result === 'string') {
+        const dataUrl = reader.result;
+        const img = new Image();
+        img.onload = () => {
+          const ratio = img.width / img.height;
+          if (ratio < 1.22) {
+            setErrorMessage(`Ảnh tải lên là ảnh dọc (tỷ lệ ${ratio.toFixed(2)}:1). Thẻ CCCD phải là ảnh chụp ngang bao gồm đủ 4 góc thẻ (tỷ lệ chuẩn ~1.58:1).`);
+            return;
+          }
+          if (ratio > 2.05) {
+            setErrorMessage(`Ảnh bị cắt xén quá dài (tỷ lệ ${ratio.toFixed(2)}:1). Vui lòng chụp trọn vẹn 4 góc thẻ CCCD.`);
+            return;
+          }
+          if (img.width < 380 || img.height < 240) {
+            setErrorMessage(`Độ phân giải ảnh quá thấp (${img.width}x${img.height}px). Yêu cầu tối thiểu 400x250px.`);
+            return;
+          }
+
+          setBackImage(dataUrl);
           setOcrResult(null);
           setErrorMessage(null);
-        }
-      };
-      reader.readAsDataURL(file);
-    }
+        };
+        img.src = dataUrl;
+      }
+    };
+    reader.readAsDataURL(file);
   };
 
   /**

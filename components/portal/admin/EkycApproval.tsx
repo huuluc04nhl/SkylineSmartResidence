@@ -32,6 +32,7 @@ import {
   rejectEkycRequest, 
   EkycRequest 
 } from '@/lib/ekycStore';
+import { validateCccdCard, verifyFaceWithCccd } from '@/lib/ekycValidator';
 
 export default function EkycApproval() {
   const [requests, setRequests] = useState<EkycRequest[]>([]);
@@ -549,6 +550,53 @@ export default function EkycApproval() {
                 </div>
               </div>
             </div>
+
+            {/* AI Biometric & CCCD Card Health Analysis Badge */}
+            {(() => {
+              const bio = verifyFaceWithCccd(inspectingRequest.avatarUrl, inspectingRequest.idCardFrontUrl);
+              const card = validateCccdCard(inspectingRequest.idCardFrontUrl, 'Mặt trước CCCD');
+              const displayScore = inspectingRequest.faceScore || bio.similarity;
+              const isEligible = displayScore >= 85.0 && card.isValid;
+
+              return (
+                <div className={`p-4 rounded-xl border flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs shadow-md ${
+                  isEligible
+                    ? 'bg-emerald-950/40 border-emerald-500/60 text-emerald-200'
+                    : 'bg-rose-950/40 border-rose-500/60 text-rose-200'
+                }`}>
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2 font-bold uppercase tracking-wider text-[11px]">
+                      {isEligible ? (
+                        <span className="text-emerald-400 flex items-center gap-1.5">
+                          <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                          Đạt Tiêu Chuẩn Sinh Trắc Học Cấp Quyền FaceID
+                        </span>
+                      ) : (
+                        <span className="text-rose-400 flex items-center gap-1.5">
+                          <AlertTriangle className="w-4 h-4 text-rose-400" />
+                          Cảnh Báo: Không Khớp Khuôn Mặt Hoặc Thẻ CCCD Lệch Chuẩn
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-[11.5px] text-gray-300">
+                      {isEligible
+                        ? `Ảnh khuôn mặt trùng khớp với chân dung trên CCCD (${displayScore.toFixed(1)}% ≥ 85%). Thẻ CCCD hợp lệ nằm ngang (tỷ lệ ${card.aspectRatio ? card.aspectRatio.toFixed(2) + ':1' : 'chuẩn'}).`
+                        : `${bio.reason}. Vui lòng kiểm tra lại ảnh thẻ CCCD hoặc yêu cầu cư dân nộp lại chân dung rõ nét.`}
+                    </p>
+                  </div>
+
+                  <div className="flex items-center gap-2 flex-shrink-0 font-mono">
+                    <div className={`px-3 py-1.5 rounded-lg border font-bold text-xs ${
+                      displayScore >= 85
+                        ? 'bg-emerald-950 text-emerald-300 border-emerald-500/80'
+                        : 'bg-rose-950 text-rose-300 border-rose-500/80'
+                    }`}>
+                      Độ Khớp: {displayScore.toFixed(1)}%
+                    </div>
+                  </div>
+                </div>
+              );
+            })()}
 
             {/* Legal Information Verification Table */}
             <div className="p-4 bg-[#161D26] border border-[#2D3748] rounded-xl space-y-3 text-xs">

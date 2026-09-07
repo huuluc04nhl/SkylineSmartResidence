@@ -7,6 +7,7 @@ import {
   rejectEkycRequest 
 } from '@/lib/ekycStore';
 import { updateUserStore, updateApartmentMember } from '@/lib/userStore';
+import { validateCccdCard, verifyFaceWithCccd } from '@/lib/ekycValidator';
 
 /**
  * GET /api/nks/ekyc
@@ -59,6 +60,45 @@ export async function POST(req: Request) {
         idCardBackUrl,
         faceScore
       } = body;
+
+      // 1.1 Kiểm tra ảnh CCCD Mặt Trước
+      if (idCardFrontUrl) {
+        const frontCheck = validateCccdCard(idCardFrontUrl, 'FRONT');
+        if (!frontCheck.valid) {
+          return NextResponse.json(
+            { success: false, message: frontCheck.error || 'Ảnh CCCD Mặt Trước không đúng tiêu chuẩn.' },
+            { status: 400 }
+          );
+        }
+      }
+
+      // 1.2 Kiểm tra ảnh CCCD Mặt Sau
+      if (idCardBackUrl) {
+        const backCheck = validateCccdCard(idCardBackUrl, 'BACK');
+        if (!backCheck.valid) {
+          return NextResponse.json(
+            { success: false, message: backCheck.error || 'Ảnh CCCD Mặt Sau không đúng tiêu chuẩn.' },
+            { status: 400 }
+          );
+        }
+      }
+
+      // 1.3 Đối chiếu sinh trắc học: Ảnh chân dung FaceID vs Ảnh trên CCCD
+      let calculatedFaceScore = faceScore || 98.6;
+      if (avatarUrl && idCardFrontUrl) {
+        const biometricCheck = verifyFaceWithCccd(avatarUrl, idCardFrontUrl);
+        calculatedFaceScore = biometricCheck.score;
+        if (!biometricCheck.matched) {
+          return NextResponse.json(
+            {
+              success: false,
+              matchScore: biometricCheck.score,
+              message: biometricCheck.reason,
+            },
+            { status: 400 }
+          );
+        }
+      }
 
       const newRequest = submitEkycRequest({
         userId: userId || phone,
