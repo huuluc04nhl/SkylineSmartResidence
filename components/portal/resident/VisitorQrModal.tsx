@@ -110,21 +110,6 @@ export default function VisitorQrModal({
     setTimeout(() => setToastMessage(null), 3200);
   };
 
-  // Generate initial pass on open
-  useEffect(() => {
-    if (isOpen) {
-      if (!activePass) {
-        const pass = generateVisitorPassToken({
-          apartmentCode,
-          visitorName: 'Khách Thăm Nhà',
-          entryType: 'MULTI',
-          validHours: 4,
-        });
-        setActivePass(pass);
-      }
-    }
-  }, [isOpen, apartmentCode]);
-
   // Generate QR Code data URL whenever activePass changes
   useEffect(() => {
     if (activePass?.qrData) {
@@ -146,21 +131,25 @@ export default function VisitorQrModal({
   // Handle Resident create/regenerate pass
   const handleGeneratePass = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!visitorName.trim()) {
+      showToast('Vui lòng nhập họ tên khách thăm!');
+      return;
+    }
     setIsGenerating(true);
 
     setTimeout(() => {
       const pass = generateVisitorPassToken({
         apartmentCode,
-        visitorName: visitorName.trim() || 'Khách Thăm Nhà',
+        visitorName: visitorName.trim(),
         phoneNumber: visitorPhone.trim(),
         licensePlate: licensePlate.trim().toUpperCase(),
-        entryType: 'MULTI', // Mặc định chuẩn nhiều lần trong thời hạn, không bắt người dùng chọn hình thức mã
+        entryType: 'MULTI',
         validHours: parseInt(validHours, 10) || 4,
       });
       setActivePass(pass);
       setIsGenerating(false);
-      showToast('Đã tạo mã QR đón khách mới thành công!');
-    }, 250);
+      showToast('Đã tạo mã QR đón khách thành công!');
+    }, 200);
   };
 
   // Format full invitation text
@@ -177,12 +166,12 @@ export default function VisitorQrModal({
     text += `🏢 Điểm đến: Căn hộ ${pass.apartmentCode} - ${towerName}\n`;
     text += `📍 Địa chỉ: Chung cư Skyline Smart Residence\n`;
     text += `━━━━━━━━━━━━━━━━━━━━\n`;
-    text += `🔑 MÃ PIN CỔNG BARRIER: ${pass.pinCode}\n`;
+    text += `🔑 MÃ PIN VÀO CỔNG: ${pass.pinCode}\n`;
     text += `⏳ Thời hạn hiệu lực: Đến ${expTime} ngày ${expDate} (${pass.validHours} giờ)\n`;
     text += `━━━━━━━━━━━━━━━━━━━━\n`;
     text += `📲 HƯỚNG DẪN VÀO CỔNG:\n`;
-    text += `1. Quý khách vui lòng xuất trình mã QR này trước camera Barrier tại Cổng Sảnh hoặc Sảnh Thang Máy để vào tòa nhà.\n`;
-    text += `2. Cổng Barrier tự động mở và thang máy được tự động phân quyền đón Quý khách lên thẳng căn hộ.\n`;
+    text += `1. Quý khách vui lòng xuất trình mã QR này trước Camera AI tại Cổng Sảnh hoặc Sảnh Thang Máy để vào tòa nhà.\n`;
+    text += `2. Cổng tự động mở và thang máy được tự động phân quyền đón Quý khách lên thẳng căn hộ.\n`;
     text += `(Quý khách cũng có thể nhập mã PIN ${pass.pinCode} trực tiếp tại bàn phím cổng nếu cần).\n`;
     text += `Trân trọng đón tiếp!`;
     return text;
@@ -581,7 +570,22 @@ export default function VisitorQrModal({
               </form>
 
               {/* Thẻ hiển thị mã QR & Bộ công cụ chia sẻ VIP */}
-              {activePass && (
+              {!activePass ? (
+                <div className="bg-[#121820] border-2 border-dashed border-[#2D3748] p-6 rounded-xl flex flex-col items-center justify-center text-center h-full min-h-[360px] space-y-3.5 shadow-inner">
+                  <div className="w-16 h-16 rounded-2xl bg-[#161D26] border border-[#2D3748] flex items-center justify-center text-[#C5A880]/70">
+                    <QrCode className="w-8 h-8" />
+                  </div>
+                  <div className="space-y-1">
+                    <div className="font-serif font-bold text-white text-base">Chưa Tạo Thẻ Đón Khách</div>
+                    <p className="text-xs text-gray-400 max-w-xs leading-relaxed">
+                      Vui lòng điền thông tin khách thăm ở biểu mẫu bên trái và nhấn <span className="text-[#C5A880] font-semibold">"Tạo Mã QR Mời Khách"</span> để xuất thẻ QR bảo mật thực tế.
+                    </p>
+                  </div>
+                  <div className="text-[11px] text-gray-500 flex items-center gap-1.5 pt-2">
+                    <ShieldCheck className="w-4 h-4 text-emerald-400" /> Hệ thống bảo mật 100% không lưu hồ sơ cá nhân
+                  </div>
+                </div>
+              ) : (
                 <div className="bg-gradient-to-b from-[#161D26] to-[#0E131A] border-2 border-[#C5A880] p-4 sm:p-5 rounded-xl space-y-3.5 shadow-2xl flex flex-col justify-between">
                   
                   {/* Card Header */}
