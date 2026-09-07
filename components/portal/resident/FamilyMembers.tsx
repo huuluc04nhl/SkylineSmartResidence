@@ -1168,15 +1168,23 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
                       </p>
                     </div>
 
-                    <div className="relative w-full h-44 bg-[#0D1117] rounded-lg border border-gray-700 overflow-hidden flex items-center justify-center">
+                    <div className="relative w-full h-44 bg-[#0D1117] rounded-lg border border-gray-700 overflow-hidden flex items-center justify-center group shadow-inner">
                       <img
                         src={
                           ekycFrontImage ||
                           'https://images.unsplash.com/photo-1578852612716-854e527abf2e?w=600'
                         }
                         alt="CCCD Mặt Trước"
-                        className="w-full h-full object-cover"
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform"
                       />
+                      <div className="absolute top-2 left-2 px-2 py-0.5 bg-black/75 backdrop-blur rounded text-[9.5px] font-mono text-cyan-300 border border-cyan-500/30">
+                        VỊ TRÍ 1 • MẶT TRƯỚC
+                      </div>
+                      {ekycFrontImage && (
+                        <div className="absolute bottom-2 right-2 px-2 py-0.5 bg-emerald-950/90 text-emerald-300 border border-emerald-500 text-[9px] font-mono font-bold rounded">
+                          ✓ Đã Tự Động Điền
+                        </div>
+                      )}
                     </div>
 
                     <div>
@@ -1209,15 +1217,23 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
                       </p>
                     </div>
 
-                    <div className="relative w-full h-44 bg-[#0D1117] rounded-lg border border-gray-700 overflow-hidden flex items-center justify-center">
+                    <div className="relative w-full h-44 bg-[#0D1117] rounded-lg border border-gray-700 overflow-hidden flex items-center justify-center group shadow-inner">
                       <img
                         src={
                           ekycBackImage ||
                           'https://images.unsplash.com/photo-1578852612716-854e527abf2e?w=600'
                         }
                         alt="CCCD Mặt Sau"
-                        className="w-full h-full object-cover"
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform"
                       />
+                      <div className="absolute top-2 left-2 px-2 py-0.5 bg-black/75 backdrop-blur rounded text-[9.5px] font-mono text-purple-300 border border-purple-500/30">
+                        VỊ TRÍ 2 • MẶT SAU
+                      </div>
+                      {ekycBackImage && (
+                        <div className="absolute bottom-2 right-2 px-2 py-0.5 bg-emerald-950/90 text-emerald-300 border border-emerald-500 text-[9px] font-mono font-bold rounded">
+                          ✓ Đã Tự Động Điền
+                        </div>
+                      )}
                     </div>
 
                     <div>
@@ -1607,6 +1623,8 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
         isOpen={isMemberOcrModalOpen}
         onClose={() => setIsMemberOcrModalOpen(false)}
         onApplyOcrData={handleApplyMemberOcrData}
+        initialFrontImage={ekycFrontImage}
+        initialBackImage={ekycBackImage}
       />
 
     </div>

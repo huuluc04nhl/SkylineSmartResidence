@@ -831,6 +831,110 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
               </div>
             </div>
 
+            {/* 2 VỊ TRÍ ẢNH THẺ CCCD (MẶT TRƯỚC & MẶT SAU) - TỰ ĐỘNG ĐIỀN KHI QUÉT OCR */}
+            <div className="space-y-3 pt-4 border-t border-[#222B35]">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                <span className="text-gray-300 font-semibold flex items-center gap-1.5 text-xs">
+                  <CreditCard className="w-4 h-4 text-[#C5A880]" /> 2 Vị Trí Ảnh Thẻ Căn Cước Công Dân (Tự Động Điền Sau Khi Quét):
+                </span>
+                <span className="text-[11px] font-mono">
+                  {cccdImage ? (
+                    <span className="text-emerald-400 font-semibold flex items-center gap-1">
+                      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> Đã Tự Động Điền 2 Mặt Thẻ CCCD ✓
+                    </span>
+                  ) : (
+                    <span className="text-gray-400 flex items-center gap-1">
+                      <Sparkles className="w-3 h-3 text-[#C5A880]" /> Tự động điền sau khi quét thẻ
+                    </span>
+                  )}
+                </span>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {/* Vị trí 1: CCCD Mặt Trước */}
+                <div className="p-3 bg-[#121820] border border-[#2D3748] rounded-xl space-y-2 flex flex-col justify-between">
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="font-bold text-white flex items-center gap-1.5">
+                      <span className="w-2 h-2 rounded-full bg-cyan-400"></span> Mặt Trước (Có Ảnh & 12 Số CCCD)
+                    </span>
+                    <span className="text-[10px] text-cyan-300 font-mono px-2 py-0.5 bg-cyan-950/80 border border-cyan-500/30 rounded">
+                      Vị Trí 1
+                    </span>
+                  </div>
+
+                  <div className="relative w-full h-44 sm:h-48 rounded-lg overflow-hidden border border-gray-700 bg-[#0A0E14] flex items-center justify-center group shadow-inner">
+                    <img
+                      src={cccdImage || 'https://images.unsplash.com/photo-1578852612716-854e527abf2e?w=600'}
+                      alt="CCCD Mặt Trước"
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                    />
+                    <div className="absolute top-2 left-2 px-2 py-0.5 bg-black/75 backdrop-blur rounded text-[9.5px] font-mono text-cyan-300 border border-cyan-500/30">
+                      MẶT TRƯỚC (FRONT)
+                    </div>
+                    {cccdImage && (
+                      <div className="absolute bottom-2 right-2 px-2 py-0.5 bg-emerald-950/90 text-emerald-300 border border-emerald-500 text-[9px] font-mono font-bold rounded">
+                        ✓ Tự Động Điền Từ OCR
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="text-[10.5px] text-gray-400 flex items-center justify-between">
+                    <span>Trạng thái: <strong className="text-gray-200">{cccdImage ? 'Đã tải ảnh' : 'Chờ quét'}</strong></span>
+                    {isOwner && (
+                      <button
+                        type="button"
+                        onClick={() => setIsOcrModalOpen(true)}
+                        className="text-[#C5A880] hover:underline font-semibold text-[10.5px]"
+                      >
+                        Quét lại ảnh này
+                      </button>
+                    )}
+                  </div>
+                </div>
+
+                {/* Vị trí 2: CCCD Mặt Sau */}
+                <div className="p-3 bg-[#121820] border border-[#2D3748] rounded-xl space-y-2 flex flex-col justify-between">
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="font-bold text-white flex items-center gap-1.5">
+                      <span className="w-2 h-2 rounded-full bg-purple-400"></span> Mặt Sau (Chip Điện Tử & Ngày Cấp)
+                    </span>
+                    <span className="text-[10px] text-purple-300 font-mono px-2 py-0.5 bg-purple-950/80 border border-purple-500/30 rounded">
+                      Vị Trí 2
+                    </span>
+                  </div>
+
+                  <div className="relative w-full h-44 sm:h-48 rounded-lg overflow-hidden border border-gray-700 bg-[#0A0E14] flex items-center justify-center group shadow-inner">
+                    <img
+                      src={cccdBackImage || cccdImage || 'https://images.unsplash.com/photo-1578852612716-854e527abf2e?w=600'}
+                      alt="CCCD Mặt Sau"
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                    />
+                    <div className="absolute top-2 left-2 px-2 py-0.5 bg-black/75 backdrop-blur rounded text-[9.5px] font-mono text-purple-300 border border-purple-500/30">
+                      MẶT SAU (BACK)
+                    </div>
+                    {cccdBackImage && (
+                      <div className="absolute bottom-2 right-2 px-2 py-0.5 bg-emerald-950/90 text-emerald-300 border border-emerald-500 text-[9px] font-mono font-bold rounded">
+                        ✓ Tự Động Điền Từ OCR
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="text-[10.5px] text-gray-400 flex items-center justify-between">
+                    <span>Trạng thái: <strong className="text-gray-200">{cccdBackImage ? 'Đã tải ảnh' : 'Chờ quét'}</strong></span>
+                    {isOwner && (
+                      <button
+                        type="button"
+                        onClick={() => setIsOcrModalOpen(true)}
+                        className="text-[#C5A880] hover:underline font-semibold text-[10.5px]"
+                      >
+                        Quét lại ảnh này
+                      </button>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+
             {/* Action Buttons for Legal Block */}
             <div className="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-[#222B35]">
               <div className="text-[11px] text-gray-400">
@@ -1190,6 +1294,8 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
         isOpen={isOcrModalOpen}
         onClose={() => setIsOcrModalOpen(false)}
         onApplyOcrData={handleApplyOcrData}
+        initialFrontImage={cccdImage}
+        initialBackImage={cccdBackImage}
       />
 
       {/* Avatar Studio Editor Modal */}

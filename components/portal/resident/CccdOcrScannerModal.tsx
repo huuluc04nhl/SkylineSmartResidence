@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { 
   X, 
   Camera, 
@@ -27,16 +27,27 @@ interface CccdOcrScannerModalProps {
   isOpen: boolean;
   onClose: () => void;
   onApplyOcrData: (data: OcrCccdResult, frontImage: string, backImage: string) => void;
+  initialFrontImage?: string;
+  initialBackImage?: string;
 }
 
 export default function CccdOcrScannerModal({
   isOpen,
   onClose,
   onApplyOcrData,
+  initialFrontImage,
+  initialBackImage,
 }: CccdOcrScannerModalProps) {
-  const [frontImage, setFrontImage] = useState<string>('');
-  const [backImage, setBackImage] = useState<string>('');
+  const [frontImage, setFrontImage] = useState<string>(initialFrontImage || '');
+  const [backImage, setBackImage] = useState<string>(initialBackImage || '');
   const [isFlipped, setIsFlipped] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (isOpen) {
+      if (initialFrontImage) setFrontImage(initialFrontImage);
+      if (initialBackImage) setBackImage(initialBackImage);
+    }
+  }, [isOpen, initialFrontImage, initialBackImage]);
   
   // Scanning state
   const [isScanning, setIsScanning] = useState(false);
