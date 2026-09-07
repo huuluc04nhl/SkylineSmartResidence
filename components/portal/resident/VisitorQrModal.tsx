@@ -110,7 +110,7 @@ export default function VisitorQrModal({
   const [isGenerating, setIsGenerating] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
-  const [copiedCode, setCopiedCode] = useState(false);
+  const [copiedLink, setCopiedLink] = useState(false);
 
   // Scanner Simulator State (BQL / Kỹ thuật)
   const [customQrInput, setCustomQrInput] = useState('');
@@ -207,9 +207,6 @@ export default function VisitorQrModal({
     if (!activePass) return;
     const shareText = getShareText(activePass);
     navigator.clipboard.writeText(shareText);
-    setCopiedCode(true);
-    setTimeout(() => setCopiedCode(false), 2500);
-    showToast('Đã sao chép nội dung thư mời vào bộ nhớ tạm!');
   };
 
   // Copy PIN only
@@ -226,6 +223,8 @@ export default function VisitorQrModal({
       ? `${window.location.origin}/portal?pass=${encodeURIComponent(activePass.qrData)}&pin=${activePass.pinCode}`
       : `https://skyline.residence/portal?pin=${activePass.pinCode}`;
     navigator.clipboard.writeText(shareUrl);
+    setCopiedLink(true);
+    setTimeout(() => setCopiedLink(false), 2500);
     showToast('Đã sao chép liên kết đón khách!');
   };
 
@@ -764,44 +763,34 @@ export default function VisitorQrModal({
                       </button>
                     </div>
 
-                    {/* HÀNG 2: TIỆN ÍCH SAO CHÉP LỜI MỜI & LIÊN KẾT */}
-                    <div className="grid grid-cols-3 gap-2">
-                      {/* Sao chép lời mời */}
-                      <button
-                        type="button"
-                        onClick={handleCopyPass}
-                        className="py-1.5 px-2 bg-[#161B22] hover:bg-[#1E2530] text-gray-300 hover:text-white border border-[#2D3748] rounded-lg text-[11px] font-medium flex items-center justify-center gap-1 transition-colors cursor-pointer"
-                      >
-                        {copiedCode ? (
-                          <>
-                            <Check className="w-3 h-3 text-emerald-400" />
-                            <span className="text-emerald-400 font-bold truncate">Đã Chép</span>
-                          </>
-                        ) : (
-                          <>
-                            <Copy className="w-3 h-3 text-gray-400" />
-                            <span className="truncate">Chép Lời Mời</span>
-                          </>
-                        )}
-                      </button>
-
+                    {/* HÀNG 2: TIỆN ÍCH LIÊN KẾT & CHIA SẺ HỆ THỐNG */}
+                    <div className="grid grid-cols-2 gap-2">
                       {/* Sao chép link */}
                       <button
                         type="button"
                         onClick={handleCopyLink}
-                        className="py-1.5 px-2 bg-[#161B22] hover:bg-[#1E2530] text-gray-300 hover:text-white border border-[#2D3748] rounded-lg text-[11px] font-medium flex items-center justify-center gap-1 transition-colors cursor-pointer"
+                        className="py-2 px-3 bg-[#161B22] hover:bg-[#1E2530] text-gray-300 hover:text-white border border-[#2D3748] rounded-lg text-xs font-medium flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
                       >
-                        <Link className="w-3 h-3 text-gray-400" />
-                        <span className="truncate">Chép Link</span>
+                        {copiedLink ? (
+                          <>
+                            <Check className="w-3.5 h-3.5 text-emerald-400" />
+                            <span className="text-emerald-400 font-bold truncate">Đã Chép Link</span>
+                          </>
+                        ) : (
+                          <>
+                            <Link className="w-3.5 h-3.5 text-[#C5A880]" />
+                            <span className="truncate">Sao Chép Link Đón Khách</span>
+                          </>
+                        )}
                       </button>
 
                       {/* Chia sẻ hệ thống / Khác */}
                       <button
                         type="button"
                         onClick={handleNativeShare}
-                        className="py-1.5 px-2 bg-[#161B22] hover:bg-[#1E2530] text-gray-300 hover:text-white border border-[#2D3748] rounded-lg text-[11px] font-medium flex items-center justify-center gap-1 transition-colors cursor-pointer"
+                        className="py-2 px-3 bg-[#161B22] hover:bg-[#1E2530] text-gray-300 hover:text-white border border-[#2D3748] rounded-lg text-xs font-medium flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
                       >
-                        <Share2 className="w-3 h-3 text-gray-400" />
+                        <Share2 className="w-3.5 h-3.5 text-[#C5A880]" />
                         <span className="truncate">Chia Sẻ Khác</span>
                       </button>
                     </div>
