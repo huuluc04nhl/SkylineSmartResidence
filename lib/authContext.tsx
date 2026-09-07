@@ -9,7 +9,16 @@ interface AuthContextType {
   isAuthenticated: boolean;
   isLoading: boolean;
   login: (roleOrUsername: UserRole | string, password?: string) => Promise<User | null>;
-  faceLogin: (payload?: { faceImage?: string; faceVector?: string; targetUserId?: string; account?: string; isTestMode?: boolean }) => Promise<{ success: boolean; user?: User; matchScore?: number; message?: string }>;
+  faceLogin: (payload?: { 
+    faceImage?: string; 
+    faceVector?: string; 
+    targetUserId?: string; 
+    account?: string; 
+    isTestMode?: boolean;
+    isCameraCapture?: boolean;
+    uploadedFileName?: string;
+    deviceType?: string;
+  }) => Promise<{ success: boolean; user?: User; matchScore?: number; message?: string }>;
   logout: () => Promise<void>;
   canAccess: (feature: 'FINANCE' | 'VOTING' | 'MANAGE_MEMBERS' | 'ADMIN_CORE' | 'SMART_HOME_WRITE' | 'CREATE_TICKET' | 'BOOK_FACILITY') => boolean;
   refreshUser: () => Promise<void>;
@@ -79,7 +88,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   // 2.1 Biometric FaceID Login via Server API (Sets HTTP-Only Cookie)
-  const faceLogin = async (payload?: { faceImage?: string; faceVector?: string; targetUserId?: string; account?: string; isTestMode?: boolean }) => {
+  const faceLogin = async (payload?: { 
+    faceImage?: string; 
+    faceVector?: string; 
+    targetUserId?: string; 
+    account?: string; 
+    isTestMode?: boolean;
+    isCameraCapture?: boolean;
+    uploadedFileName?: string;
+    deviceType?: string;
+  }) => {
     setIsLoading(true);
     try {
       const res = await nksFaceLogin(payload || {});

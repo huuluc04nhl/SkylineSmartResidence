@@ -21,7 +21,9 @@ import {
   ShieldCheck,
   UserCheck,
   Video,
-  VideoOff
+  VideoOff,
+  Laptop,
+  Image as ImageIcon
 } from 'lucide-react';
 import SkylineLogo from '@/components/shared/SkylineLogo';
 import { useAuth } from '@/lib/authContext';
@@ -65,6 +67,21 @@ export default function LoginModal({ isOpen, onClose, defaultAccount = '' }: Log
   const [showAdvancedTesting, setShowAdvancedTesting] = useState(false);
 
   const [faceScanStatus, setFaceScanStatus] = useState<'IDLE' | 'SCANNING' | 'LIVENESS' | 'MATCHING' | 'SUCCESS' | 'FAILED'>('IDLE');
+
+  // 3.1 Device & Input Mode State (Laptop vs Mobile & Camera vs Upload)
+  const [deviceType, setDeviceType] = useState<'LAPTOP' | 'MOBILE'>('LAPTOP');
+  const [faceInputMode, setFaceInputMode] = useState<'CAMERA' | 'UPLOAD'>('CAMERA');
+  const [uploadedFileName, setUploadedFileName] = useState<string>('');
+  const mobileCameraInputRef = useRef<HTMLInputElement | null>(null);
+  const fileUploadInputRef = useRef<HTMLInputElement | null>(null);
+
+  // Auto-detect device type (Laptop/Desktop vs Mobile)
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const isMob = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth < 768;
+      setDeviceType(isMob ? 'MOBILE' : 'LAPTOP');
+    }
+  }, []);
 
   // Status & Error
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -194,15 +211,20 @@ export default function LoginModal({ isOpen, onClose, defaultAccount = '' }: Log
     }
   };
 
-  // Camera Lifecycle for FaceID Biometrics
+  // Camera Lifecycle for FaceID Biometrics (Laptop Webcam & Mobile Front Camera)
   const startCamera = async () => {
     setCameraError(null);
     try {
       if (typeof window === 'undefined' || !navigator?.mediaDevices?.getUserMedia) {
-        throw new Error('Trình duyệt không hỗ trợ truy cập Webcam trực tiếp.');
+        throw new Error('Trình duyệt không hỗ trợ truy cập Camera trực tiếp.');
       }
+      const isMob = deviceType === 'MOBILE';
       const stream = await navigator.mediaDevices.getUserMedia({
-        video: { width: { ideal: 640 }, height: { ideal: 480 }, facingMode: 'user' },
+        video: { 
+          width: { ideal: isMob ? 480 : 640 }, 
+          height: { ideal: isMob ? 640 : 480 }, 
+          facingMode: isMob ? { ideal: 'user' } : 'user' 
+        },
         audio: false,
       });
       setCameraStream(stream);
@@ -212,12 +234,12 @@ export default function LoginModal({ isOpen, onClose, defaultAccount = '' }: Log
         videoRef.current.play().catch(() => {});
       }
     } catch (err: any) {
-      console.warn('Webcam start failed:', err);
+      console.warn('Camera start failed:', err);
       setIsCameraActive(false);
       setCameraError(
         err?.name === 'NotAllowedError'
-          ? 'Quyền truy cập Camera bị từ chối trên trình duyệt. Bạn có thể tải ảnh chân dung hoặc dùng chế độ mô phỏng sinh trắc học bên dưới.'
-          : 'Không thể kết nối Camera phần cứng hoặc đang chạy trong môi trường hạn chế. Bạn có thể tải ảnh hoặc chọn hồ sơ mẫu.'
+          ? 'Quyền truy cập Camera bị từ chối trên trình duyệt. Bạn có thể chọn "Tải File Ảnh Chân Dung" để đối chiếu với BQL.'
+          : 'Không thể kết nối Camera phần cứng trên thiết bị. Bạn có thể chuyển sang "Tải File Ảnh Chân Dung" để xác thực.'
       );
     }
   };
@@ -230,9 +252,9 @@ export default function LoginModal({ isOpen, onClose, defaultAccount = '' }: Log
     setIsCameraActive(false);
   };
 
-  // Tự động khởi động camera khi chọn tab FaceID và giải phóng khi đóng modal
+  // Tự động quản lý vòng đời camera theo tab, trạng thái mở modal và input mode
   useEffect(() => {
-    if (authMethod === 'FACE_ID' && isOpen) {
+    if (authMethod === 'FACE_ID' && isOpen && faceInputMode === 'CAMERA') {
       startCamera();
     } else {
       stopCamera();
@@ -240,64 +262,118 @@ export default function LoginModal({ isOpen, onClose, defaultAccount = '' }: Log
     return () => {
       stopCamera();
     };
-  }, [authMethod, isOpen]);
+  }, [authMethod, isOpen, faceInputMode]);
 
-  // Handle Photo File Upload for FaceID verification fallback
+  // Xử lý chọn file ảnh chân dung (Kiểm tra định dạng, dung lượng và độ phân giải)
   const handleFacePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      setErrorMessage('Tệp được chọn không phải là hình ảnh hợp lệ (JPG, PNG, WebP).');
+      return;
+    }
+
+    if (file.size < 2500) {
+      setErrorMessage('Kích thước ảnh quá nhỏ (< 2.5KB). Vui lòng chọn ảnh chụp chân dung rõ nét.');
+      return;
+    }
+
+    setUploadedFileName(file.name);
     const reader = new FileReader();
     reader.onload = (event) => {
       const base64 = event.target?.result as string;
-      setUploadedFaceImage(base64);
-      setErrorMessage(null);
-      setSuccessMessage('Đã tải ảnh chân dung. Bấm "Bắt Đầu Quét FaceID" để đối chiếu.');
+      const testImg = new Image();
+      testImg.onload = () => {
+        if (testImg.width < 100 || testImg.height < 100) {
+          setErrorMessage(`Ảnh có độ phân giải quá thấp (${testImg.width}x${testImg.height}px). Yêu cầu tối thiểu 150x150px.`);
+          return;
+        }
+        setUploadedFaceImage(base64);
+        setFaceInputMode('UPLOAD');
+        stopCamera();
+        setErrorMessage(null);
+        setSuccessMessage(`Đã nạp ảnh "${file.name}" (${testImg.width}x${testImg.height}px). Sẵn sàng đối chiếu với dữ liệu BQL!`);
+      };
+      testImg.src = base64;
     };
     reader.readAsDataURL(file);
   };
 
-  // 3. Handle FaceID Biometric 1:N Scan (Quy trình sinh trắc học tự động chuẩn)
-  const handleStartFaceScan = async (forcedTargetId?: string) => {
+  // Nạp ảnh mẫu của Chủ Hộ Nguyễn Hữu Lực (Đã được BQL duyệt e-KYC)
+  const handleUseVerifiedOwnerSample = () => {
+    stopCamera();
+    setFaceInputMode('UPLOAD');
+    setUploadedFaceImage('https://data.nks.vn/storage/users/202609021654232258.jpg');
+    setUploadedFileName('nguyen_huu_luc_owner_verified.jpg');
+    setErrorMessage(null);
+    setSuccessMessage('Đã nạp ảnh chân dung chính chủ của Chủ Hộ Nguyễn Hữu Lực (Đã được BQL duyệt e-KYC).');
+  };
+
+  // Nạp ảnh mẫu của Người Nhà Nguyễn Hữu Nhựt (Hồ sơ e-KYC đang Chờ BQL Duyệt)
+  const handleUsePendingTenantSample = () => {
+    stopCamera();
+    setFaceInputMode('UPLOAD');
+    setUploadedFaceImage('https://data.nks.vn/storage/users/202607191405195335.jpg');
+    setUploadedFileName('nguyen_huu_nhut_tenant_pending.jpg');
+    setErrorMessage(null);
+    setSuccessMessage('Đã nạp ảnh của Người Nhà Nguyễn Hữu Nhựt (Hồ sơ đang [CHỜ BQL DUYỆT]).');
+  };
+
+  // 3. Handle FaceID Biometric Scan (Quy trình sinh trắc học chuẩn thực tiễn)
+  const handleStartFaceScan = async (forcedTargetId?: string, forcedImage?: string) => {
     setErrorMessage(null);
     setSuccessMessage(null);
     setFaceScanStatus('SCANNING');
 
-    // Chụp khung hình từ camera nếu webcam đang hoạt động
-    let capturedImage = uploadedFaceImage || null;
-    if (isCameraActive && videoRef.current && canvasRef.current) {
+    const isUsingCamera = faceInputMode === 'CAMERA' && isCameraActive;
+    let capturedImage = forcedImage || uploadedFaceImage || null;
+
+    if (isUsingCamera && videoRef.current && canvasRef.current) {
       try {
         const video = videoRef.current;
         const canvas = canvasRef.current;
-        canvas.width = video.videoWidth || 320;
-        canvas.height = video.videoHeight || 240;
+        canvas.width = video.videoWidth || 480;
+        canvas.height = video.videoHeight || 480;
         const ctx = canvas.getContext('2d');
         if (ctx) {
           ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-          capturedImage = canvas.toDataURL('image/jpeg', 0.85);
+          capturedImage = canvas.toDataURL('image/jpeg', 0.88);
         }
       } catch (e) {
         console.warn('Canvas frame capture error:', e);
       }
     }
 
+    if (!capturedImage && !forcedTargetId) {
+      setFaceScanStatus('FAILED');
+      setErrorMessage(
+        faceInputMode === 'CAMERA'
+          ? 'Camera chưa sẵn sàng hoặc không thu được khung hình! Vui lòng cho phép quyền Camera hoặc chuyển sang "Tải File Ảnh Chân Dung".'
+          : 'Chưa có file ảnh chân dung! Vui lòng bấm chọn tệp ảnh rõ nét để đối chiếu.'
+      );
+      return;
+    }
+
     // Bước 1: 500ms - Căn chỉnh khung hình & Định vị khuôn mặt
     setTimeout(() => {
       setFaceScanStatus('LIVENESS');
-    }, 600);
+    }, 500);
 
-    // Bước 2: 1300ms - Kiểm tra thực thể sống (Liveness Anti-Spoofing Check)
+    // Bước 2: 1200ms - Kiểm tra thực thể sống & Trích xuất đặc trưng sinh trắc học
     setTimeout(() => {
       setFaceScanStatus('MATCHING');
-    }, 1400);
+    }, 1200);
 
-    // Bước 3: 2200ms - Trích xuất 512D Vector & Đối chiếu 1:N trong cơ sở dữ liệu
+    // Bước 3: 2000ms - Đối chiếu với dữ liệu Admin đã duyệt trong hệ thống BQL
     setTimeout(async () => {
       try {
-        const targetId = forcedTargetId || (cameraError ? selectedDemoProfile : undefined);
         const result = await faceLogin({
           faceImage: capturedImage || undefined,
-          targetUserId: targetId,
-          isTestMode: Boolean(cameraError || !isCameraActive),
+          targetUserId: forcedTargetId,
+          isCameraCapture: isUsingCamera,
+          uploadedFileName: uploadedFileName || undefined,
+          deviceType: deviceType,
         });
 
         if (result.success && result.user) {
@@ -311,7 +387,7 @@ export default function LoginModal({ isOpen, onClose, defaultAccount = '' }: Log
           setTimeout(() => {
             stopCamera();
             handleRoleRedirect(result.user);
-          }, 1000);
+          }, 1200);
         } else {
           setFaceScanStatus('FAILED');
           setErrorMessage(result.message || 'Không tìm thấy hồ sơ cư dân khớp với khuôn mặt này.');
@@ -320,7 +396,7 @@ export default function LoginModal({ isOpen, onClose, defaultAccount = '' }: Log
         setFaceScanStatus('FAILED');
         setErrorMessage(err?.message || 'Lỗi kết nối máy chủ AI Vision.');
       }
-    }, 2200);
+    }, 2000);
   };
 
   if (!isOpen) return null;
@@ -580,20 +656,76 @@ export default function LoginModal({ isOpen, onClose, defaultAccount = '' }: Log
         {/* TAB 3: BIOMETRIC FACEID SCAN (QUY TRÌNH SINH TRẮC HỌC CHUẨN)  */}
         {/* ------------------------------------------------------------- */}
         {authMethod === 'FACE_ID' && (
-          <div className="space-y-3.5">
+          <div className="space-y-3.5 animate-fadeIn">
             {/* Hidden canvas for capturing video frames */}
             <canvas ref={canvasRef} className="hidden" />
 
-            {/* High-Tech Camera HUD Viewport */}
-            <div className={`relative w-full h-52 sm:h-56 bg-[#070A0F] border rounded-2xl overflow-hidden transition-all duration-300 ${
+            {/* Hidden inputs for Mobile Native Camera & File Upload */}
+            <input
+              ref={mobileCameraInputRef}
+              type="file"
+              accept="image/*"
+              capture="user"
+              onChange={handleFacePhotoUpload}
+              className="hidden"
+            />
+            <input
+              ref={fileUploadInputRef}
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
+              onChange={handleFacePhotoUpload}
+              className="hidden"
+            />
+
+            {/* Sub-Mode Switcher: Camera Device vs Upload File */}
+            <div className="grid grid-cols-2 gap-1.5 p-1 bg-[#121820] border border-[#222B35] rounded-xl text-xs select-none">
+              <button
+                type="button"
+                onClick={() => {
+                  setFaceInputMode('CAMERA');
+                  if (!isCameraActive) startCamera();
+                }}
+                className={`py-2 px-3 rounded-lg font-bold transition-all flex items-center justify-center gap-1.5 ${
+                  faceInputMode === 'CAMERA'
+                    ? 'bg-[#C5A880] text-[#0D1117] shadow-lg'
+                    : 'text-gray-400 hover:text-white hover:bg-[#1A2330]'
+                }`}
+              >
+                {deviceType === 'MOBILE' ? (
+                  <Smartphone className="w-3.5 h-3.5" />
+                ) : (
+                  <Laptop className="w-3.5 h-3.5" />
+                )}
+                <span>{deviceType === 'MOBILE' ? 'Camera Điện Thoại' : 'Camera Laptop (Webcam)'}</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setFaceInputMode('UPLOAD');
+                  stopCamera();
+                }}
+                className={`py-2 px-3 rounded-lg font-bold transition-all flex items-center justify-center gap-1.5 ${
+                  faceInputMode === 'UPLOAD'
+                    ? 'bg-[#C5A880] text-[#0D1117] shadow-lg'
+                    : 'text-gray-400 hover:text-white hover:bg-[#1A2330]'
+                }`}
+              >
+                <Upload className="w-3.5 h-3.5" />
+                <span>Tải File Ảnh Chân Dung</span>
+              </button>
+            </div>
+
+            {/* High-Tech Biometric Viewport */}
+            <div className={`relative w-full h-56 sm:h-60 bg-[#070A0F] border rounded-2xl overflow-hidden transition-all duration-300 ${
               faceScanStatus === 'SUCCESS'
                 ? 'border-emerald-500 shadow-[0_0_25px_rgba(16,185,129,0.35)]'
                 : faceScanStatus === 'FAILED'
                 ? 'border-rose-500 shadow-[0_0_20px_rgba(244,63,94,0.3)]'
                 : 'border-[#C5A880]/60 shadow-[0_0_20px_rgba(197,168,128,0.15)]'
             }`}>
-              {/* 1. Live Video Stream */}
-              {isCameraActive ? (
+              {/* 1. Live Video Stream / Uploaded Preview */}
+              {faceInputMode === 'CAMERA' && isCameraActive ? (
                 <video
                   ref={videoRef}
                   autoPlay
@@ -602,29 +734,65 @@ export default function LoginModal({ isOpen, onClose, defaultAccount = '' }: Log
                   className="w-full h-full object-cover transform scale-x-[-1]"
                 />
               ) : uploadedFaceImage ? (
-                <img
-                  src={uploadedFaceImage}
-                  alt="Face Snapshot"
-                  className="w-full h-full object-cover"
-                />
-              ) : (
+                <div className="relative w-full h-full">
+                  <img
+                    src={uploadedFaceImage}
+                    alt="Face Preview"
+                    className="w-full h-full object-cover"
+                  />
+                  <div className="absolute bottom-2 left-2 right-2 bg-black/70 backdrop-blur border border-white/10 px-2 py-1 rounded text-[10.5px] font-mono text-gray-300 truncate">
+                    📄 File: {uploadedFileName || 'Ảnh chân dung đã chọn'}
+                  </div>
+                </div>
+              ) : faceInputMode === 'CAMERA' ? (
                 <div className="w-full h-full flex flex-col items-center justify-center p-4 text-center space-y-2 bg-[#0A0E14]/90">
                   <div className="w-14 h-14 rounded-full bg-[#161B22] border border-[#2D3748] flex items-center justify-center text-[#C5A880]">
-                    <Camera className="w-6 h-6 animate-pulse" />
+                    {deviceType === 'MOBILE' ? (
+                      <Smartphone className="w-6 h-6 animate-pulse" />
+                    ) : (
+                      <Camera className="w-6 h-6 animate-pulse" />
+                    )}
                   </div>
                   <div className="text-xs font-semibold text-gray-300">
-                    {cameraError ? 'Không thể mở Camera thiết bị' : 'Đang kết nối Camera sinh trắc học...'}
+                    {cameraError ? 'Không thể mở Camera thiết bị' : deviceType === 'MOBILE' ? 'Đang kích hoạt Camera trước điện thoại...' : 'Đang kết nối Webcam Laptop...'}
                   </div>
                   <p className="text-[10.5px] text-gray-400 max-w-xs leading-relaxed">
                     {cameraError
-                      ? 'Vui lòng cho phép quyền Camera trên trình duyệt, hoặc tải ảnh chân dung bên dưới để xác thực.'
-                      : 'Hệ thống đang yêu cầu quyền truy cập Webcam để nhận diện khuôn mặt tự động.'}
+                      ? 'Quyền truy cập Camera bị từ chối hoặc thiết bị không có webcam. Vui lòng chuyển sang tab "Tải File Ảnh Chân Dung" để xác thực.'
+                      : 'Vui lòng cho phép quyền Camera trên trình duyệt để nhận diện khuôn mặt tức thì.'}
                   </p>
+                  {cameraError && (
+                    <button
+                      type="button"
+                      onClick={() => setFaceInputMode('UPLOAD')}
+                      className="px-3 py-1 bg-[#C5A880]/20 border border-[#C5A880] text-[#C5A880] text-[11px] font-bold rounded-lg hover:bg-[#C5A880] hover:text-[#0D1117] transition-all"
+                    >
+                      Chuyển Sang Tải File Ảnh
+                    </button>
+                  )}
+                </div>
+              ) : (
+                <div className="w-full h-full flex flex-col items-center justify-center p-4 text-center space-y-2.5 bg-[#0A0E14]/90">
+                  <div className="w-14 h-14 rounded-full bg-[#161B22] border border-[#C5A880]/40 flex items-center justify-center text-[#C5A880]">
+                    <Upload className="w-6 h-6 animate-bounce" />
+                  </div>
+                  <div className="text-xs font-bold text-white">
+                    Chưa Chọn File Ảnh Chân Dung
+                  </div>
+                  <p className="text-[10.5px] text-gray-400 max-w-xs leading-relaxed">
+                    Ảnh chân dung phải rõ nét, chụp thẳng mặt và khớp với hồ sơ đã được Ban Quản Lý phê duyệt e-KYC.
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => fileUploadInputRef.current?.click()}
+                    className="px-3.5 py-1.5 bg-[#C5A880] hover:bg-white text-[#0D1117] text-xs font-bold rounded-lg transition-all shadow-md flex items-center gap-1.5"
+                  >
+                    <Upload className="w-3.5 h-3.5" /> Chọn Ảnh Từ Thiết Bị
+                  </button>
                 </div>
               )}
 
               {/* 2. Biometric HUD Overlays */}
-              {/* Corner Targets */}
               <div className="absolute top-3 left-3 w-4 h-4 border-t-2 border-l-2 border-[#C5A880]"></div>
               <div className="absolute top-3 right-3 w-4 h-4 border-t-2 border-r-2 border-[#C5A880]"></div>
               <div className="absolute bottom-3 left-3 w-4 h-4 border-b-2 border-l-2 border-[#C5A880]"></div>
@@ -636,12 +804,11 @@ export default function LoginModal({ isOpen, onClose, defaultAccount = '' }: Log
                   faceScanStatus === 'SUCCESS'
                     ? 'border-emerald-400 shadow-[0_0_20px_rgba(52,211,153,0.6)]'
                     : faceScanStatus === 'FAILED'
-                    ? 'border-rose-400'
+                    ? 'border-rose-400 shadow-[0_0_15px_rgba(244,63,94,0.4)]'
                     : faceScanStatus !== 'IDLE'
                     ? 'border-[#C5A880] shadow-[0_0_15px_rgba(197,168,128,0.4)]'
-                    : 'border-white/30'
+                    : 'border-white/35'
                 }`}>
-                  {/* Crosshair Center */}
                   <div className="absolute inset-0 flex items-center justify-center opacity-40">
                     <div className="w-4 h-0.5 bg-[#C5A880]"></div>
                     <div className="h-4 w-0.5 bg-[#C5A880] absolute"></div>
@@ -649,43 +816,48 @@ export default function LoginModal({ isOpen, onClose, defaultAccount = '' }: Log
                 </div>
               </div>
 
-              {/* Laser Scanning Bar */}
+              {/* Laser Scanning Animation */}
               {(faceScanStatus === 'SCANNING' || faceScanStatus === 'LIVENESS' || faceScanStatus === 'MATCHING') && (
                 <div className="absolute inset-x-0 h-1 bg-gradient-to-r from-transparent via-[#C5A880] to-transparent shadow-[0_0_14px_#C5A880] animate-bounce"></div>
               )}
 
               {/* Telemetry Header */}
               <div className="absolute top-2.5 inset-x-3 flex items-center justify-between pointer-events-none">
-                <div className="flex items-center gap-1.5 px-2 py-0.5 bg-black/60 backdrop-blur border border-white/10 rounded-full text-[9.5px] font-mono text-emerald-400">
+                <div className="flex items-center gap-1.5 px-2 py-0.5 bg-black/70 backdrop-blur border border-white/10 rounded-full text-[9.5px] font-mono text-emerald-400">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
-                  LIVE AI VISION
+                  {faceInputMode === 'CAMERA' 
+                    ? deviceType === 'MOBILE' ? 'MOBILE CAMERA LIVE' : 'LAPTOP WEBCAM LIVE' 
+                    : 'PORTRAIT PHOTO e-KYC'}
                 </div>
-                <div className="px-2 py-0.5 bg-black/60 backdrop-blur border border-white/10 rounded-full text-[9.5px] font-mono text-[#C5A880]">
-                  VEC-512D • 1:N
+                <div className="px-2 py-0.5 bg-black/70 backdrop-blur border border-white/10 rounded-full text-[9.5px] font-mono text-[#C5A880]">
+                  VEC-512D • BQL MATCH
                 </div>
               </div>
 
-              {/* Camera Status Footer */}
+              {/* Real-time Status Footer */}
               <div className="absolute bottom-2.5 inset-x-3 text-center pointer-events-none">
-                <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-black/75 backdrop-blur border border-white/10 rounded-lg text-[10.5px] font-mono">
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-black/80 backdrop-blur border border-white/10 rounded-lg text-[10.5px] font-mono">
                   {faceScanStatus === 'IDLE' && (
                     <span className="text-gray-300 flex items-center gap-1.5">
-                      <Camera className="w-3 h-3 text-[#C5A880]" /> Căn khuôn mặt vào khung elip & bấm Quét
+                      <Camera className="w-3 h-3 text-[#C5A880]" />
+                      {faceInputMode === 'CAMERA'
+                        ? 'Căn khuôn mặt vào khung elip & bấm nút Quét bên dưới'
+                        : 'Bấm nút Đối Chiếu e-KYC bên dưới để so khớp'}
                     </span>
                   )}
                   {faceScanStatus === 'SCANNING' && (
                     <span className="text-amber-400 flex items-center gap-1.5 animate-pulse">
-                      <RefreshCw className="w-3 h-3 animate-spin" /> Đang định vị khuôn mặt...
+                      <RefreshCw className="w-3 h-3 animate-spin" /> Kiểm tra độ nét & định vị ngũ quan...
                     </span>
                   )}
                   {faceScanStatus === 'LIVENESS' && (
                     <span className="text-blue-400 flex items-center gap-1.5 animate-pulse">
-                      <ShieldCheck className="w-3.5 h-3.5 text-blue-400" /> Kiểm tra thực thể sống (Liveness AI)...
+                      <ShieldCheck className="w-3.5 h-3.5 text-blue-400" /> Trích xuất 512D Vector sinh trắc học...
                     </span>
                   )}
                   {faceScanStatus === 'MATCHING' && (
                     <span className="text-[#C5A880] flex items-center gap-1.5 animate-pulse">
-                      <RefreshCw className="w-3 h-3 animate-spin" /> Đối chiếu 1:N với kho dữ liệu cư dân...
+                      <RefreshCw className="w-3 h-3 animate-spin" /> Đối chiếu với dữ liệu Admin BQL đã duyệt...
                     </span>
                   )}
                   {faceScanStatus === 'SUCCESS' && (
@@ -695,14 +867,14 @@ export default function LoginModal({ isOpen, onClose, defaultAccount = '' }: Log
                   )}
                   {faceScanStatus === 'FAILED' && (
                     <span className="text-rose-400 font-bold flex items-center gap-1.5">
-                      <AlertCircle className="w-3.5 h-3.5 text-rose-400" /> Chưa nhận diện được khuôn mặt
+                      <AlertCircle className="w-3.5 h-3.5 text-rose-400" /> Không khớp hồ sơ BQL duyệt
                     </span>
                   )}
                 </div>
               </div>
             </div>
 
-            {/* 3. Success Identity Card Overlay */}
+            {/* Success Identity Card Overlay */}
             {faceScanStatus === 'SUCCESS' && matchedFaceResult && (
               <div className="p-3 bg-emerald-950/60 border border-emerald-500/60 rounded-xl flex items-center justify-between text-xs animate-fadeIn shadow-lg">
                 <div className="flex items-center gap-2.5">
@@ -730,7 +902,18 @@ export default function LoginModal({ isOpen, onClose, defaultAccount = '' }: Log
               </div>
             )}
 
-            {/* 4. Primary Scan Action Button (1:N Zero Typing) */}
+            {/* Mobile Native Camera Capture Direct Button */}
+            {faceInputMode === 'CAMERA' && deviceType === 'MOBILE' && (
+              <button
+                type="button"
+                onClick={() => mobileCameraInputRef.current?.click()}
+                className="w-full py-2 bg-[#1A2330] hover:bg-[#253245] border border-[#C5A880]/60 text-[#C5A880] text-xs font-semibold rounded-xl flex items-center justify-center gap-2 transition-all shadow-md"
+              >
+                <Camera className="w-4 h-4" /> Chụp Trực Tiếp Bằng Camera Điện Thoại
+              </button>
+            )}
+
+            {/* Primary Action Button */}
             <button
               type="button"
               onClick={() => handleStartFaceScan()}
@@ -743,72 +926,87 @@ export default function LoginModal({ isOpen, onClose, defaultAccount = '' }: Log
             >
               <ScanFace className="w-4 h-4" />
               {faceScanStatus === 'IDLE' || faceScanStatus === 'FAILED'
-                ? 'Bắt Đầu Quét FaceID (Tự Động 1:N)'
+                ? faceInputMode === 'CAMERA'
+                  ? deviceType === 'MOBILE' 
+                    ? 'Quét FaceID (Camera Điện Thoại)' 
+                    : 'Quét FaceID (Camera Laptop)'
+                  : 'Bắt Đầu Đối Chiếu e-KYC Với Dữ Liệu BQL'
                 : 'Đang Đối Chiếu Sinh Trắc Học...'}
             </button>
 
-            {/* 5. Fallback & Testing Options */}
+            {/* Admin-Verified Database Sample Selector */}
             <div className="pt-2 border-t border-[#222B35] space-y-2">
               <div className="flex items-center justify-between text-[11px] text-gray-400">
                 <span className="flex items-center gap-1">
-                  <Sparkles className="w-3 h-3 text-[#C5A880]" /> Không tiện dùng Camera?
+                  <UserCheck className="w-3.5 h-3.5 text-[#C5A880]" /> Hồ Sơ Cư Dân Mẫu Trong Hệ Thống:
                 </span>
+                {faceInputMode === 'UPLOAD' && (
+                  <button
+                    type="button"
+                    onClick={() => fileUploadInputRef.current?.click()}
+                    className="text-[#C5A880] underline hover:text-white transition-colors text-[10.5px] font-semibold"
+                  >
+                    Chọn file khác...
+                  </button>
+                )}
+              </div>
+
+              <div className="grid grid-cols-2 gap-2 text-xs">
+                {/* 1. Chủ hộ (ĐÃ DUYỆT e-KYC) */}
                 <button
                   type="button"
-                  onClick={() => setShowAdvancedTesting(!showAdvancedTesting)}
-                  className="text-[#C5A880] underline hover:text-white transition-colors text-[10.5px]"
+                  onClick={handleUseVerifiedOwnerSample}
+                  className="p-2.5 text-left bg-[#161B22] hover:bg-[#1E293B] border border-emerald-500/50 hover:border-emerald-400 rounded-xl transition-all group shadow-sm"
                 >
-                  {showAdvancedTesting ? 'Ẩn tùy chọn tải ảnh' : 'Tải ảnh hoặc chọn hồ sơ mẫu'}
+                  <div className="flex items-center justify-between">
+                    <span className="font-bold text-white text-[11.5px] group-hover:text-emerald-400 transition-colors">
+                      Nguyễn Hữu Lực
+                    </span>
+                    <span className="px-1.5 py-0.5 bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 rounded text-[9px] font-mono font-bold">
+                      ĐÃ DUYỆT
+                    </span>
+                  </div>
+                  <div className="text-[10px] text-gray-400 mt-0.5">Chủ Hộ (Căn 12A05)</div>
+                  <div className="text-[9.5px] text-[#C5A880] mt-1 flex items-center gap-1">
+                    <CheckCircle2 className="w-2.5 h-2.5 text-emerald-400" /> Thử ảnh chính chủ
+                  </div>
+                </button>
+
+                {/* 2. Người nhà (CHỜ BQL DUYỆT) */}
+                <button
+                  type="button"
+                  onClick={handleUsePendingTenantSample}
+                  className="p-2.5 text-left bg-[#161B22] hover:bg-[#1E293B] border border-amber-500/50 hover:border-amber-400 rounded-xl transition-all group shadow-sm"
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="font-bold text-white text-[11.5px] group-hover:text-amber-400 transition-colors">
+                      Nguyễn Hữu Nhựt
+                    </span>
+                    <span className="px-1.5 py-0.5 bg-amber-500/20 text-amber-400 border border-amber-500/40 rounded text-[9px] font-mono font-bold">
+                      CHỜ DUYỆT
+                    </span>
+                  </div>
+                  <div className="text-[10px] text-gray-400 mt-0.5">Người Nhà (Căn 12A05)</div>
+                  <div className="text-[9.5px] text-amber-300 mt-1 flex items-center gap-1">
+                    <AlertCircle className="w-2.5 h-2.5 text-amber-400" /> Thử chặn chưa duyệt
+                  </div>
                 </button>
               </div>
 
-              {showAdvancedTesting && (
-                <div className="p-3 bg-[#121820] border border-[#2D3748] rounded-xl space-y-2.5 animate-fadeIn text-xs">
-                  <div className="flex items-center justify-between">
-                    <span className="text-[10.5px] uppercase font-mono text-gray-400 font-semibold">
-                      Tùy Chọn Nhận Diện Bổ Sung
-                    </span>
-                    <label className="cursor-pointer px-2.5 py-1 bg-[#1A2330] hover:bg-[#253245] border border-[#C5A880]/40 hover:border-[#C5A880] text-[#C5A880] rounded text-[10.5px] font-semibold transition-colors flex items-center gap-1.5">
-                      <Upload className="w-3 h-3" /> Tải Ảnh Khuôn Mặt
-                      <input
-                        type="file"
-                        accept="image/*"
-                        onChange={handleFacePhotoUpload}
-                        className="hidden"
-                      />
-                    </label>
-                  </div>
-
-                  <div className="pt-2 border-t border-[#222B35] space-y-1.5">
-                    <div className="text-[10.5px] text-gray-400">
-                      Hoặc chọn hồ sơ cư dân mẫu đã kích hoạt FaceID để kiểm thử:
-                    </div>
-                    <div className="grid grid-cols-2 gap-2">
-                      <button
-                        type="button"
-                        onClick={() => handleStartFaceScan('user-owner-1')}
-                        className="p-2 text-left bg-[#161B22] hover:bg-[#1E293B] border border-[#2D3748] hover:border-emerald-500 rounded-lg transition-colors group"
-                      >
-                        <div className="font-semibold text-white text-[11px] group-hover:text-emerald-400">
-                          Nguyễn Hữu Lực
-                        </div>
-                        <div className="text-[10px] text-gray-400">Chủ Hộ (Căn 12A05)</div>
-                      </button>
-
-                      <button
-                        type="button"
-                        onClick={() => handleStartFaceScan('user-tenant-1')}
-                        className="p-2 text-left bg-[#161B22] hover:bg-[#1E293B] border border-[#2D3748] hover:border-emerald-500 rounded-lg transition-colors group"
-                      >
-                        <div className="font-semibold text-white text-[11px] group-hover:text-emerald-400">
-                          Nguyễn Hữu Nhựt
-                        </div>
-                        <div className="text-[10px] text-gray-400">Người Nhà (Căn 12A05)</div>
-                      </button>
-                    </div>
-                  </div>
+              <div className="p-2.5 bg-[#121820] border border-[#2D3748] rounded-xl text-[10.5px] text-gray-400 leading-relaxed space-y-1">
+                <div className="text-gray-300 font-semibold flex items-center gap-1">
+                  <ShieldCheck className="w-3 h-3 text-[#C5A880]" /> Quy tắc xác thực FaceID Skyline:
                 </div>
-              )}
+                <p>
+                  • <strong>Chủ Hộ (Đã Duyệt):</strong> Đăng nhập tức thì vào hệ thống quản trị căn hộ.
+                </p>
+                <p>
+                  • <strong>Người Nhà (Chờ Duyệt):</strong> Hệ thống tự động từ chối và yêu cầu liên hệ Ban Quản Lý phê duyệt e-KYC trước.
+                </p>
+                <p>
+                  • <strong>Ảnh không rõ nét hoặc người lạ:</strong> AI tự động từ chối với cảnh báo không trùng khớp hồ sơ BQL.
+                </p>
+              </div>
             </div>
           </div>
         )}

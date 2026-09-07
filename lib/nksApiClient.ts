@@ -249,6 +249,9 @@ export async function nksFaceLogin(payload: {
   targetUserId?: string;
   account?: string;
   isTestMode?: boolean;
+  isCameraCapture?: boolean;
+  uploadedFileName?: string;
+  deviceType?: string;
 }): Promise<{ success: boolean; user?: any; matchScore?: number; message?: string }> {
   const res = await fetch('/api/nks/user/face-login', {
     method: 'POST',
