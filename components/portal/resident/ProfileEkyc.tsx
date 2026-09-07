@@ -879,16 +879,8 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
                   </div>
 
                   <div className="text-[10.5px] text-gray-400 flex items-center justify-between">
-                    <span>Trạng thái: <strong className="text-gray-200">{cccdImage ? 'Đã tải ảnh' : 'Chờ quét'}</strong></span>
-                    {isOwner && (
-                      <button
-                        type="button"
-                        onClick={() => setIsOcrModalOpen(true)}
-                        className="text-[#C5A880] hover:underline font-semibold text-[10.5px]"
-                      >
-                        Quét lại ảnh này
-                      </button>
-                    )}
+                    <span>Trạng thái: <strong className="text-gray-200">{cccdImage ? 'Đã có ảnh mặt trước' : 'Chờ quét'}</strong></span>
+                    <span className="text-gray-500 font-mono text-[10px]">Tự động điền qua OCR</span>
                   </div>
                 </div>
 
@@ -920,16 +912,8 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
                   </div>
 
                   <div className="text-[10.5px] text-gray-400 flex items-center justify-between">
-                    <span>Trạng thái: <strong className="text-gray-200">{cccdBackImage ? 'Đã tải ảnh' : 'Chờ quét'}</strong></span>
-                    {isOwner && (
-                      <button
-                        type="button"
-                        onClick={() => setIsOcrModalOpen(true)}
-                        className="text-[#C5A880] hover:underline font-semibold text-[10.5px]"
-                      >
-                        Quét lại ảnh này
-                      </button>
-                    )}
+                    <span>Trạng thái: <strong className="text-gray-200">{cccdBackImage ? 'Đã có ảnh mặt sau' : 'Chờ quét'}</strong></span>
+                    <span className="text-gray-500 font-mono text-[10px]">Tự động điền qua OCR</span>
                   </div>
                 </div>
               </div>
@@ -948,20 +932,9 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
                   <button
                     type="button"
                     onClick={() => setIsCardViewerOpen(true)}
-                    className="px-3 py-1.5 bg-[#1C2533] hover:bg-[#2A374A] border border-gray-700 text-gray-300 hover:text-white text-xs font-semibold rounded flex items-center gap-1.5 transition-all"
+                    className="px-3.5 py-1.5 bg-[#1C2533] hover:bg-[#2A374A] border border-gray-700 text-gray-300 hover:text-white text-xs font-semibold rounded flex items-center gap-1.5 transition-all"
                   >
                     <Eye className="w-3.5 h-3.5" /> Xem Ảnh Thẻ CCCD
-                  </button>
-                )}
-
-                {isOwner && (
-                  <button
-                    type="button"
-                    onClick={() => setIsOcrModalOpen(true)}
-                    className="px-3.5 py-1.5 bg-[#C5A880]/15 hover:bg-[#C5A880] text-[#C5A880] hover:text-[#0D1117] border border-[#C5A880] text-xs font-bold rounded flex items-center gap-1.5 transition-all shadow-sm"
-                  >
-                    <Scan className="w-3.5 h-3.5" />
-                    {ekycStatus === 'VERIFIED' ? 'Yêu Cầu Cập Nhật CCCD Mới Với BQL' : 'Quét Thẻ Căn Cước (OCR)'}
                   </button>
                 )}
 
@@ -1184,14 +1157,6 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
                 className="px-3.5 py-2.5 bg-[#161B22] hover:bg-[#1C2533] border border-[#C5A880] text-[#C5A880] text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-2 shadow rounded"
               >
                 <Eye className="w-4 h-4" /> Xem Ảnh Thẻ CCCD
-              </button>
-
-              <button
-                type="button"
-                onClick={() => setIsOcrModalOpen(true)}
-                className="px-3.5 py-2.5 bg-[#1C2533] hover:bg-[#C5A880] hover:text-[#0D1117] border border-[#C5A880] text-[#C5A880] text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-2 shadow rounded"
-              >
-                <Scan className="w-4 h-4" /> Quét Thẻ Căn Cước
               </button>
 
               <button

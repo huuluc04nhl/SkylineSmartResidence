@@ -932,17 +932,10 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
               
               {/* SECTION 1: THÔNG TIN PHÁP LÝ NHÂN THÂN */}
               <div className="space-y-3 p-4 bg-[#121820] border border-[#222B35] rounded-xl">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#222B35] pb-2.5">
+                <div className="flex items-center justify-between border-b border-[#222B35] pb-2.5">
                   <div className="text-[11px] font-bold uppercase tracking-wider text-[#C5A880] flex items-center gap-2">
                     <User className="w-4 h-4" /> 1. Thông Tin Pháp Lý Của Người Nhà
                   </div>
-                  <button
-                    type="button"
-                    onClick={() => setIsMemberOcrModalOpen(true)}
-                    className="px-3 py-1.5 bg-[#1C2533] hover:bg-[#C5A880] text-[#C5A880] hover:text-[#0D1117] border border-[#C5A880] text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 rounded-lg transition-all shadow self-start sm:self-auto"
-                  >
-                    <Scan className="w-3.5 h-3.5" /> Quét Thẻ Căn Cước (OCR) Điền Tự Động
-                  </button>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -1061,22 +1054,13 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
 
               {/* SECTION 2: ẢNH CHÂN DUNG FACEID & CCCD 2 MẶT */}
               <div className="space-y-4 p-4 bg-[#121820] border border-[#222B35] rounded-xl">
-                <div className="text-[11px] font-bold uppercase tracking-wider text-[#C5A880] flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#222B35] pb-2.5">
+                <div className="text-[11px] font-bold uppercase tracking-wider text-[#C5A880] flex items-center justify-between border-b border-[#222B35] pb-2.5">
                   <span className="flex items-center gap-2">
                     <ScanFace className="w-4 h-4" /> 2. Ảnh Chân Dung FaceID & CCCD 2 Mặt Gửi BQL
                   </span>
-                  <div className="flex items-center gap-2">
-                    <button
-                      type="button"
-                      onClick={() => setIsMemberOcrModalOpen(true)}
-                      className="text-[10.5px] px-2.5 py-1 bg-[#1C2533] hover:bg-[#C5A880] hover:text-[#0D1117] border border-[#C5A880]/60 text-[#C5A880] font-bold rounded flex items-center gap-1 transition-all shadow-sm"
-                    >
-                      <Scan className="w-3 h-3" /> Quét 2 Mặt Thẻ CCCD (AI OCR)
-                    </button>
-                    <span className="text-[10px] text-emerald-400 font-mono">
-                      Độ khớp AI: 98.6% (Đạt)
-                    </span>
-                  </div>
+                  <span className="text-[10px] text-emerald-400 font-mono">
+                    Độ khớp AI: 98.6% (Đạt)
+                  </span>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
