@@ -29,7 +29,8 @@ import {
   Eye,
   XCircle,
   AlertTriangle,
-  RotateCcw
+  RotateCcw,
+  Scan
 } from 'lucide-react';
 import { User as UserType } from '@/lib/dataStore';
 import { 
@@ -44,6 +45,8 @@ import {
   EkycRequest 
 } from '@/lib/ekycStore';
 import { validateCccdCard, verifyFaceWithCccd } from '@/lib/ekycValidator';
+import CccdOcrScannerModal from './CccdOcrScannerModal';
+import { OcrCccdResult, formatToDateInput } from '@/lib/ocrParser';
 
 export interface FamilyMemberItem {
   id: string;
@@ -122,6 +125,22 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
   const [ekycBackImage, setEkycBackImage] = useState<string>('');
   const [isSubmittingEkyc, setIsSubmittingEkyc] = useState<boolean>(false);
   const [ekycModalError, setEkycModalError] = useState<string | null>(null);
+  const [isMemberOcrModalOpen, setIsMemberOcrModalOpen] = useState<boolean>(false);
+
+  const handleApplyMemberOcrData = (ocrData: OcrCccdResult, frontSrc: string, backSrc: string) => {
+    if (ocrData.fullName) setEkycFullName(ocrData.fullName);
+    if (ocrData.idNumber) setEkycIdCard(ocrData.idNumber);
+    if (ocrData.dob) setEkycDob(formatToDateInput(ocrData.dob));
+    if (ocrData.pob) setEkycPob(ocrData.pob);
+    if (ocrData.idDate) setEkycIdDate(formatToDateInput(ocrData.idDate));
+    if (ocrData.idPlace) setEkycIdPlace(ocrData.idPlace);
+    if (frontSrc) setEkycFrontImage(frontSrc);
+    if (backSrc) setEkycBackImage(backSrc);
+    setIsMemberOcrModalOpen(false);
+    setEkycModalError(null);
+    setActionSuccess(`✨ Đã quét OCR thành công cho "${ocrData.fullName || 'thành viên'}"! Toàn bộ thông tin CCCD đã được tự động điền vào hồ sơ.`);
+    setTimeout(() => setActionSuccess(null), 5000);
+  };
 
   // Camera capture inside e-KYC modal
   const [isCameraActive, setIsCameraActive] = useState<boolean>(false);
@@ -854,7 +873,7 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
           <div className="bg-[#0D1117] border border-[#C5A880]/80 max-w-3xl w-full p-5 sm:p-7 text-white space-y-5 shadow-2xl rounded-2xl max-h-[92vh] overflow-y-auto">
             
             {/* Modal Header */}
-            <div className="flex items-center justify-between border-b border-[#222B35] pb-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-[#222B35] pb-4 gap-3">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-full bg-[#C5A880]/15 border border-[#C5A880] flex items-center justify-center text-[#C5A880] flex-shrink-0">
                   <ScanFace className="w-5 h-5" />
@@ -864,18 +883,28 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
                     Khai Báo & Cập Nhật Hồ Sơ e-KYC Cho Người Nhà
                   </h3>
                   <p className="text-xs text-gray-400">
-                    Căn Hộ <strong className="text-white font-mono">{aptCode}</strong> • Chủ hộ{' '}
+                    Căn Hộ <strong className="text-white font-mono">{aptCode}</strong> • Chung cư Skyline Smart Residence • Chủ hộ{' '}
                     <strong className="text-[#C5A880]">{ownerName}</strong> đại diện bảo lãnh
                   </p>
                 </div>
               </div>
-              <button
-                type="button"
-                onClick={handleCloseEkycModal}
-                className="text-gray-400 hover:text-white p-1.5 rounded-lg hover:bg-[#161D26] transition-colors cursor-pointer"
-              >
-                <X className="w-5 h-5" />
-              </button>
+
+              <div className="flex items-center gap-2 self-end sm:self-center flex-shrink-0">
+                <button
+                  type="button"
+                  onClick={() => setIsMemberOcrModalOpen(true)}
+                  className="px-3.5 py-2 bg-gradient-to-r from-[#C5A880] to-[#E2C799] hover:brightness-110 text-[#0D1117] text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 transition-all shadow-md rounded-lg active:scale-95"
+                >
+                  <Scan className="w-4 h-4 text-[#0D1117]" /> Quét Căn Cước (OCR)
+                </button>
+                <button
+                  type="button"
+                  onClick={handleCloseEkycModal}
+                  className="text-gray-400 hover:text-white p-1.5 rounded-lg hover:bg-[#161D26] transition-colors cursor-pointer"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
             </div>
 
             {/* Legal Representation Guarantee Box */}
@@ -886,7 +915,7 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
               <p className="leading-relaxed text-gray-300">
                 Chủ hộ <strong className="text-white">{ownerName}</strong> đại diện pháp lý Căn hộ{' '}
                 <strong className="text-white font-mono">{aptCode}</strong> chịu trách nhiệm kê khai đúng thông tin pháp lý, ảnh CCCD và sinh trắc học khuôn mặt của thành viên{' '}
-                <strong className="text-white">{ekycFullName || ekycTargetMember.fullName}</strong> để Ban Quản Lý (BQL) phê duyệt và kích hoạt quyền FaceID ra vào tòa nhà.
+                <strong className="text-white">{ekycFullName || ekycTargetMember.fullName}</strong> để Ban Quản Lý (BQL) phê duyệt và kích hoạt quyền FaceID ra vào chung cư.
               </p>
             </div>
 
@@ -903,8 +932,17 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
               
               {/* SECTION 1: THÔNG TIN PHÁP LÝ NHÂN THÂN */}
               <div className="space-y-3 p-4 bg-[#121820] border border-[#222B35] rounded-xl">
-                <div className="text-[11px] font-bold uppercase tracking-wider text-[#C5A880] flex items-center gap-2">
-                  <User className="w-4 h-4" /> 1. Thông Tin Pháp Lý Của Người Nhà
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#222B35] pb-2.5">
+                  <div className="text-[11px] font-bold uppercase tracking-wider text-[#C5A880] flex items-center gap-2">
+                    <User className="w-4 h-4" /> 1. Thông Tin Pháp Lý Của Người Nhà
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setIsMemberOcrModalOpen(true)}
+                    className="px-3 py-1.5 bg-[#1C2533] hover:bg-[#C5A880] text-[#C5A880] hover:text-[#0D1117] border border-[#C5A880] text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 rounded-lg transition-all shadow self-start sm:self-auto"
+                  >
+                    <Scan className="w-3.5 h-3.5" /> Quét Thẻ Căn Cước (OCR) Điền Tự Động
+                  </button>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -1023,13 +1061,22 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
 
               {/* SECTION 2: ẢNH CHÂN DUNG FACEID & CCCD 2 MẶT */}
               <div className="space-y-4 p-4 bg-[#121820] border border-[#222B35] rounded-xl">
-                <div className="text-[11px] font-bold uppercase tracking-wider text-[#C5A880] flex items-center justify-between">
+                <div className="text-[11px] font-bold uppercase tracking-wider text-[#C5A880] flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#222B35] pb-2.5">
                   <span className="flex items-center gap-2">
                     <ScanFace className="w-4 h-4" /> 2. Ảnh Chân Dung FaceID & CCCD 2 Mặt Gửi BQL
                   </span>
-                  <span className="text-[10px] text-emerald-400 font-mono">
-                    Độ khớp AI: 98.6% (Đạt tiêu chuẩn)
-                  </span>
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setIsMemberOcrModalOpen(true)}
+                      className="text-[10.5px] px-2.5 py-1 bg-[#1C2533] hover:bg-[#C5A880] hover:text-[#0D1117] border border-[#C5A880]/60 text-[#C5A880] font-bold rounded flex items-center gap-1 transition-all shadow-sm"
+                    >
+                      <Scan className="w-3 h-3" /> Quét 2 Mặt Thẻ CCCD (AI OCR)
+                    </button>
+                    <span className="text-[10px] text-emerald-400 font-mono">
+                      Độ khớp AI: 98.6% (Đạt)
+                    </span>
+                  </div>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -1554,6 +1601,13 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
           </div>
         </div>
       )}
+
+      {/* OCR Scanner Modal for Family Member CCCD */}
+      <CccdOcrScannerModal
+        isOpen={isMemberOcrModalOpen}
+        onClose={() => setIsMemberOcrModalOpen(false)}
+        onApplyOcrData={handleApplyMemberOcrData}
+      />
 
     </div>
   );

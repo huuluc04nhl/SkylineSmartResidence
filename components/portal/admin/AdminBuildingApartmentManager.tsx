@@ -92,7 +92,7 @@ export default function AdminBuildingApartmentManager() {
   const activeOwnerDob = liveOwner?.dob || initialOwner.dob || '18/08/2004';
   const activeOwnerPob = liveOwner?.pob || initialOwner.pob || 'Triệu Trạch, Triệu Phong, Quảng Trị';
 
-  // Danh mục căn hộ mở rộng đại diện cho tổ hợp chung cư 2 Tháp Skyline (Tòa A & Tòa B)
+  // Danh mục căn hộ mở rộng đại diện cho tổ hợp chung cư Skyline (Tòa A & Tòa B)
   // Chỉ những căn đã có cư dân thật từ API mới hiển thị thông tin, toàn bộ căn còn lại để TRỐNG
   const buildingUnits: {
     code: string;
@@ -321,7 +321,7 @@ export default function AdminBuildingApartmentManager() {
     }
   ];
 
-  // Lọc danh sách theo tháp, trạng thái và tìm kiếm
+  // Lọc danh sách theo tòa, trạng thái và tìm kiếm
   const filteredUnits = buildingUnits.filter(unit => {
     const matchTower = selectedTower === 'ALL' 
       ? true 
@@ -365,7 +365,7 @@ export default function AdminBuildingApartmentManager() {
             Quản Lý Toàn Bộ Mô Hình Tổ Hợp Chung Cư Skyline
           </h2>
           <p className="text-xs text-gray-400 mt-0.5">
-            Mô hình khối đa chiều thể hiện tổng thể Tháp A & Tháp B. Nhấp vào từng khối để theo dõi chi tiết trạng thái căn hộ trống hoặc đã có cư dân sinh sống.
+            Mô hình khối đa chiều thể hiện tổng thể Tòa A & Tòa B của chung cư. Nhấp vào từng khối để theo dõi chi tiết trạng thái căn hộ trống hoặc đã có cư dân sinh sống.
           </p>
         </div>
 
@@ -410,7 +410,7 @@ export default function AdminBuildingApartmentManager() {
           <div className="text-2xl font-bold font-mono text-white mt-1">
             {totalUnitsCount} <span className="text-xs text-gray-400 font-normal">căn hộ</span>
           </div>
-          <div className="text-[10px] text-gray-400 mt-1">2 Tòa: Tháp A & Tháp B</div>
+          <div className="text-[10px] text-gray-400 mt-1">2 Tòa Căn Hộ: Tòa A & Tòa B</div>
         </div>
 
         <div className="p-4 bg-[#121820] border border-emerald-500/30 rounded-xl">
@@ -452,12 +452,12 @@ export default function AdminBuildingApartmentManager() {
       {/* ============================================================= */}
       <div className="p-3.5 bg-[#121820] border border-[#222B35] rounded-xl flex flex-wrap items-center justify-between gap-3 text-xs">
         <div className="flex flex-wrap items-center gap-2">
-          {/* Lọc Tháp */}
+          {/* Lọc Tòa */}
           <span className="text-gray-400 font-mono text-[11px]">Tòa:</span>
           {[
             { id: 'ALL', label: 'Tất Cả Tòa' },
-            { id: 'TOWER_A', label: 'Tháp A (Sapphire)' },
-            { id: 'TOWER_B', label: 'Tháp B (Diamond)' }
+            { id: 'TOWER_A', label: 'Tòa A (Sapphire)' },
+            { id: 'TOWER_B', label: 'Tòa B (Diamond)' }
           ].map(t => (
             <button
               key={t.id}
@@ -519,7 +519,7 @@ export default function AdminBuildingApartmentManager() {
           <div className="p-4 bg-[#121820] border-b border-[#222B35] flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Box className="w-4 h-4 text-[#C5A880]" />
-              <span className="font-bold text-sm text-white">Mô Hình Khối Tổ Hợp 2 Tháp Skyline</span>
+              <span className="font-bold text-sm text-white">Mô Hình Khối Tổ Hợp Chung Cư Skyline (Tòa A & Tòa B)</span>
             </div>
             {/* Chú thích màu sắc */}
             <div className="flex items-center gap-3 text-[10px] font-mono">
@@ -546,7 +546,7 @@ export default function AdminBuildingApartmentManager() {
                 }}
               />
 
-              {/* BẢN VẼ PHỐI CẢNH 3D TỔ HỢP 2 THÁP CHUNG CƯ */}
+              {/* BẢN VẼ PHỐI CẢNH 3D TỔ HỢP TÒA CHUNG CƯ */}
               <svg
                 viewBox="0 0 900 560"
                 className="w-full h-full max-h-[540px] cursor-pointer drop-shadow-[0_30px_60px_rgba(0,0,0,0.9)]"
@@ -574,20 +574,20 @@ export default function AdminBuildingApartmentManager() {
                 </g>
 
                 {/* ===================================================== */}
-                {/* 1. THÁP A - SAPPHIRE TOWER (Bên trái)                */}
+                {/* 1. TÒA A - SAPPHIRE (Bên trái)                */}
                 {/* ===================================================== */}
                 <g className="transition-all duration-300">
-                  {/* Thân tòa tháp A nền */}
+                  {/* Thân tòa A nền */}
                   <polygon points="210,360 380,410 380,120 210,80" fill="#0F141C" stroke="#222B35" strokeWidth="1.5" />
                   <polygon points="380,410 440,390 440,105 380,120" fill="#141B24" stroke="#222B35" strokeWidth="1.5" />
                   <polygon points="210,80 380,120 440,105 270,68" fill="#1A2330" stroke="#334155" strokeWidth="1.5" />
 
-                  {/* Tên Tháp A */}
+                  {/* Tên Tòa A */}
                   <text x="310" y="70" fill="#C5A880" fontSize="12" fontWeight="bold" textAnchor="middle" fontFamily="serif">
-                    THÁP A (SAPPHIRE)
+                    TÒA A (SAPPHIRE)
                   </text>
 
-                  {/* Các khối căn hộ trên Tháp A */}
+                  {/* Các khối căn hộ trên Tòa A */}
                   {/* Căn 25PH-01: Tầng 25 (Penthouse - Vàng Trống) */}
                   <g 
                     onClick={() => setSelectedAptCode('25PH-01')}
@@ -665,17 +665,17 @@ export default function AdminBuildingApartmentManager() {
                 </g>
 
                 {/* ===================================================== */}
-                {/* 2. THÁP B - DIAMOND TOWER (Bên phải)                 */}
+                {/* 2. TÒA B - DIAMOND (Bên phải)                 */}
                 {/* ===================================================== */}
                 <g className="transition-all duration-300">
-                  {/* Thân tòa tháp B nền */}
+                  {/* Thân tòa B nền */}
                   <polygon points="520,410 690,360 690,80 520,120" fill="#0F141C" stroke="#222B35" strokeWidth="1.5" />
                   <polygon points="460,390 520,410 520,120 460,105" fill="#141B24" stroke="#222B35" strokeWidth="1.5" />
                   <polygon points="460,105 520,120 690,80 630,68" fill="#1A2330" stroke="#334155" strokeWidth="1.5" />
 
-                  {/* Tên Tháp B */}
+                  {/* Tên Tòa B */}
                   <text x="590" y="70" fill="#C5A880" fontSize="12" fontWeight="bold" textAnchor="middle" fontFamily="serif">
-                    THÁP B (DIAMOND)
+                    TÒA B (DIAMOND)
                   </text>
 
                   {/* Căn 25PH-02: Tầng 25 (Penthouse - Vàng Trống) */}
@@ -792,7 +792,7 @@ export default function AdminBuildingApartmentManager() {
                           </span>
                         </div>
                         <div className="text-xs text-gray-400 mt-0.5">
-                          Tháp {unit.tower} • Tầng {unit.floor} • {unit.area} m²
+                          Tòa {unit.tower} • Tầng {unit.floor} • {unit.area} m²
                         </div>
                       </div>
 
@@ -823,7 +823,7 @@ export default function AdminBuildingApartmentManager() {
           <div className="border-b border-[#222B35] pb-3.5 flex items-start justify-between">
             <div>
               <div className="text-[10.5px] uppercase tracking-wider text-[#C5A880] font-mono font-semibold">
-                Hồ Sơ Căn Hộ • Tháp {activeUnit.tower} - Tầng {activeUnit.floor}
+                Hồ Sơ Căn Hộ • Tòa {activeUnit.tower} - Tầng {activeUnit.floor}
               </div>
               <h3 className="font-serif text-2xl font-bold text-white mt-0.5">
                 Căn Hộ {activeUnit.code}
@@ -982,7 +982,7 @@ export default function AdminBuildingApartmentManager() {
                 </div>
                 <div className="grid grid-cols-2 gap-2 text-gray-300">
                   <div>• Diện tích thông thủy: <strong className="text-white">{activeUnit.area} m²</strong></div>
-                  <div>• Vị trí: <strong className="text-white">Tầng {activeUnit.floor} - Tháp {activeUnit.tower}</strong></div>
+                  <div>• Vị trí: <strong className="text-white">Tầng {activeUnit.floor} - Tòa {activeUnit.tower}</strong></div>
                   <div>• Tiêu chuẩn: <strong className="text-emerald-400">Hoàn thiện cao cấp</strong></div>
                   <div>• Pháp lý: <strong className="text-white">Sổ hồng lâu dài</strong></div>
                 </div>

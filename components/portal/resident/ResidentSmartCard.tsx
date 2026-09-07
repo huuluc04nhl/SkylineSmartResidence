@@ -48,7 +48,7 @@ export default function ResidentSmartCard({
       setIsTapping(false);
       setTapMessage('✓ BÍP! Cổng Barrier & Thang Máy Tầng 12 Đã Mở (0.28s)');
       if (onTapSuccess) {
-        onTapSuccess('Cổng Sảnh Tháp Sapphire');
+        onTapSuccess('Cổng Sảnh Chung Cư Skyline');
       }
       setTimeout(() => setTapMessage(null), 3500);
     }, 900);

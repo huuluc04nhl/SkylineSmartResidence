@@ -46,7 +46,7 @@ export default function AiConcierge() {
       } else if (text.includes('Hồ bơi') || text.includes('giờ')) {
         replyText = 'Hồ bơi vô cực Skyline Horizon Pool mở cửa hàng ngày từ 06:00 - 21:00. Mỗi căn hộ được miễn phí 20 lượt/tháng.';
       } else if (text.includes('Lễ tân')) {
-        replyText = 'Đang kết nối đoạn chat này tới màn hình làm việc của Lễ tân trực ca tại Sảnh Tháp A. Lễ tân sẽ phản hồi bạn trong 30 giây!';
+        replyText = 'Đang kết nối đoạn chat này tới màn hình làm việc của Lễ tân trực ca tại Sảnh Chung Cư A. Lễ tân sẽ phản hồi bạn trong 30 giây!';
       }
 
       setMessages(prev => [

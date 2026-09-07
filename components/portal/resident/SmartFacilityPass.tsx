@@ -36,7 +36,7 @@ export default function SmartFacilityPass({ currentUser }: SmartFacilityPassProp
     {
       id: 'fac-pool',
       name: 'Hồ Bơi Vô Cực Panoramic Sky Pool',
-      location: 'Tầng 25 (Sân Thượng Tháp Sapphire)',
+      location: 'Tầng 25 (Sân Thượng Tòa Chung Cư)',
       hours: '06:00 - 22:00',
       density: '20% (Rất vắng)',
       temp: '28°C',

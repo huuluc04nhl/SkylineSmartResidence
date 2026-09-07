@@ -94,7 +94,7 @@ const FLOOR_THREAT_DATABASE: Record<string, FloorThreatData> = {
         id: 'T-L1-01',
         type: 'INTRUSION',
         title: 'Cửa Thoát Hiểm Cầu Thang Bộ Mở Quá 5 Phút',
-        location: 'Sảnh Đón Tháp B (Cửa Stair-02)',
+        location: 'Sảnh Đón Căn Hộ Tòa B (Cửa Stair-02)',
         severity: 'LOW',
         confidence: 0.92,
         snapshot: 'https://images.unsplash.com/photo-1541888946425-d0fbb18086f6?w=600',
@@ -308,7 +308,7 @@ export default function AdminDashboard() {
             <div className="relative z-10 w-[90%] h-[85%] border-2 border-dashed border-gray-700 bg-[#0D1117]/80 rounded p-4 flex flex-col justify-between shadow-2xl">
               {/* Floor Header Label */}
               <div className="flex justify-between items-center text-[10px] font-mono text-gray-400 border-b border-gray-800 pb-1.5">
-                <span className="text-[#C5A880] font-bold">Khu Vực: Trục Tháp Sapphire (Tầng {selectedFloor})</span>
+                <span className="text-[#C5A880] font-bold">Khu Vực: Trục Chung Cư Sapphire (Tầng {selectedFloor})</span>
                 <span>Cảm Biến IoT: {currentFloorData.activeNodes} Nodes Active</span>
               </div>
 

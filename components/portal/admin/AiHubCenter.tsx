@@ -83,7 +83,7 @@ export default function AiHubCenter() {
       icon: Activity,
       color: 'text-emerald-400',
       action: 'Chạy Dự Báo Rung Lắc Thang Máy',
-      simResult: 'Thang máy Tháp Diamond: Health Score 94/100 • Khuyến nghị tra mỡ vòng bi sau 14 ngày',
+      simResult: 'Thang máy Tòa Diamond: Health Score 94/100 • Khuyến nghị tra mỡ vòng bi sau 14 ngày',
     },
     {
       id: '3.1.10',

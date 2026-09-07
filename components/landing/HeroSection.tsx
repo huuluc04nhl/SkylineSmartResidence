@@ -75,7 +75,7 @@ export default function HeroSection({ onOpenLogin }: HeroSectionProps) {
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 pt-8 border-t border-[#222B35]">
             <div>
               <div className="text-2xl font-serif text-[#C5A880]">25 Tầng</div>
-              <div className="text-[11px] uppercase tracking-wider text-gray-400 mt-1">2 Tháp Sapphire & Diamond</div>
+              <div className="text-[11px] uppercase tracking-wider text-gray-400 mt-1">2 Tòa Sapphire & Diamond</div>
             </div>
             <div>
               <div className="text-2xl font-serif text-[#C5A880]">&lt; 0.5s</div>

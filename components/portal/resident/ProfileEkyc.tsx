@@ -683,7 +683,7 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
                 <div className="relative">
                   <input
                     type="text"
-                    value={`Căn ${aptCode} • Tháp Skyline Luxury`}
+                    value={`Căn hộ ${aptCode} • Chung cư Skyline Smart Residence`}
                     readOnly
                     className="w-full bg-[#0D1117] border border-[#263140] p-3 text-white font-semibold rounded cursor-not-allowed select-all"
                   />
