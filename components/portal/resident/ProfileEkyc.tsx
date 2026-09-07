@@ -528,38 +528,6 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
             </button>
           </div>
 
-          {/* Quick OCR Banner */}
-          <div className="p-4 bg-gradient-to-r from-[#1A232E] via-[#161D26] to-[#121820] border border-[#C5A880]/60 flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded">
-            <div className="space-y-1">
-              <div className="text-[#C5A880] font-bold text-xs flex items-center gap-1.5">
-                <Zap className="w-4 h-4 text-amber-300" /> Quét Thông Tin Tự Động Từ Căn Cước Công Dân
-              </div>
-              <p className="text-xs text-gray-300">
-                Tự động trích xuất thông tin Số CCCD, Họ tên, Ngày sinh từ ảnh chụp để điền nhanh vào biểu mẫu.
-              </p>
-            </div>
-
-            <button
-              type="button"
-              onClick={() => setIsOcrModalOpen(true)}
-              className="px-4 py-2 bg-[#C5A880] hover:bg-white text-[#0D1117] text-xs font-bold uppercase tracking-wider transition-colors flex items-center gap-1.5 flex-shrink-0 shadow rounded"
-            >
-              <Scan className="w-3.5 h-3.5" /> Quét Thẻ Căn Cước
-            </button>
-          </div>
-
-          <div className="border-b border-[#222B35] pb-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-            <div>
-              <h3 className="font-serif text-xl font-bold text-white">
-                Chi Tiết Thông Tin Cư Dân
-              </h3>
-              <p className="text-xs text-gray-400 mt-0.5">
-                Hồ sơ thông tin cư dân được bảo mật theo tiêu chuẩn Skyline Smart Residence
-              </p>
-            </div>
-            <span className="text-[11px] text-gray-400 font-mono">Căn Hộ: <strong className="text-white">{aptCode}</strong></span>
-          </div>
-
           {/* Feedback Alerts */}
           {ocrFilledNotice && (
             <div className="p-4 bg-amber-950/90 border-2 border-amber-500 text-amber-200 text-xs flex items-center justify-between gap-3 animate-fadeIn shadow-2xl rounded-lg">
@@ -567,7 +535,7 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
                 <Sparkles className="w-5 h-5 text-amber-300 flex-shrink-0 animate-pulse" />
                 <div>
                   <strong className="text-white block text-sm font-semibold">✨ Đã trích xuất thông tin từ CCCD vào biểu mẫu!</strong>
-                  <span className="text-gray-300 text-[11px]">Vui lòng kiểm tra lại thông tin và nhấn nút <strong>[Lưu Thay Đổi]</strong> ở cuối biểu mẫu để lưu dữ liệu.</span>
+                  <span className="text-gray-300 text-[11px]">Vui lòng kiểm tra lại thông tin và nhấn nút <strong>[Lưu Thay Đổi Thông Tin Liên Hệ]</strong> ở cuối biểu mẫu để lưu dữ liệu.</span>
                 </div>
               </div>
               <button
@@ -594,175 +562,413 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
             </div>
           )}
 
-          {/* Form Fields Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5 text-xs">
-            {/* Field 1: Họ và Tên */}
-            <div className="space-y-1.5">
-              <label className="text-gray-300 flex items-center gap-1.5 font-semibold">
-                <UserIcon className="w-3.5 h-3.5 text-[#C5A880]" /> Họ và Tên Cư Dân:
-              </label>
-              <input
-                type="text"
-                value={fullName}
-                onChange={(e) => setFullName(e.target.value)}
-                placeholder="Nhập họ và tên..."
-                className="w-full bg-[#161B22] border border-[#2D3748] p-3 text-white focus:outline-none focus:border-[#C5A880] transition-colors rounded"
-                required
-              />
+          {/* ========================================================= */}
+          {/* KHỐI 1: THÔNG TIN CĂN HỘ & PHÁP LÝ ĐỊNH DANH (BQL QUẢN LÝ) */}
+          {/* ========================================================= */}
+          <div className="p-6 bg-[#161D26] border border-[#2D3748] rounded-xl space-y-5 shadow-lg">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#222B35] pb-4">
+              <div>
+                <div className="text-[10px] uppercase tracking-wider text-[#C5A880] font-bold flex items-center gap-1.5">
+                  <Building className="w-3.5 h-3.5" /> Khối Thông Tin Bắt Buộc • Ban Quản Lý Quản Lý
+                </div>
+                <h3 className="font-serif text-lg font-bold text-white mt-0.5">
+                  1. Thông Tin Căn Hộ & Pháp Lý Định Danh Cư Trú
+                </h3>
+              </div>
+
+              {/* Status Badge */}
+              <div className="flex items-center gap-2">
+                {ekycStatus === 'VERIFIED' ? (
+                  <span className="px-3 py-1 bg-emerald-950/80 border border-emerald-500 text-emerald-300 text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 rounded-lg shadow-sm">
+                    <ShieldCheck className="w-4 h-4 text-emerald-400" /> Đã Xác Thực e-KYC Bởi BQL
+                  </span>
+                ) : ekycStatus === 'PENDING' ? (
+                  <span className="px-3 py-1 bg-amber-950/80 border border-amber-500 text-amber-300 text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 rounded-lg animate-pulse">
+                    <Clock className="w-4 h-4 text-amber-400" /> Đang Chờ BQL Phê Duyệt
+                  </span>
+                ) : (
+                  <span className="px-3 py-1 bg-rose-950/80 border border-rose-500 text-rose-300 text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 rounded-lg">
+                    <AlertCircle className="w-4 h-4 text-rose-400" /> Chưa Hoàn Tất e-KYC
+                  </span>
+                )}
+              </div>
             </div>
 
-            {/* Field 2: Số Điện Thoại */}
-            <div className="space-y-1.5">
-              <label className="text-gray-300 flex items-center gap-1.5 font-semibold">
-                <Smartphone className="w-3.5 h-3.5 text-[#C5A880]" /> Số Điện Thoại (Định Danh):
-              </label>
-              <input
-                type="tel"
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                placeholder="Nhập số điện thoại..."
-                className="w-full bg-[#161B22] border border-[#2D3748] p-3 text-white font-mono focus:outline-none focus:border-[#C5A880] transition-colors rounded"
-                required
-              />
+            {/* Business Logic Notice Banner */}
+            <div className={`p-4 rounded-lg text-xs leading-relaxed flex items-start gap-3 border ${
+              ekycStatus === 'VERIFIED'
+                ? 'bg-[#0E1B15] border-emerald-500/40 text-emerald-200'
+                : 'bg-[#1C1A14] border-amber-500/40 text-amber-200'
+            }`}>
+              <Lock className="w-4 h-4 text-[#C5A880] mt-0.5 flex-shrink-0" />
+              <div>
+                <strong className="text-white block font-semibold mb-0.5">
+                  Quy định an ninh & pháp lý cư trú tòa nhà Skyline:
+                </strong>
+                {ekycStatus === 'VERIFIED' ? (
+                  <span>
+                    Thông tin định danh gắn liền với Hợp đồng sở hữu căn hộ và quyền sinh trắc học FaceID ra vào cửa/thang máy. Cư dân không thể tự ý chỉnh sửa để chống giả mạo hồ sơ căn hộ. Nếu cần đính chính hoặc cấp đổi thẻ CCCD mới, vui lòng bấm nút <strong>[Yêu Cầu Cập Nhật CCCD Mới]</strong> bên dưới để gửi BQL duyệt lại.
+                  </span>
+                ) : (
+                  <span>
+                    Hồ sơ định danh chưa được phê duyệt. Vui lòng quét thẻ CCCD thật và gửi hồ sơ để BQL đối chiếu, kích hoạt thẻ cư dân và quyền mở cửa FaceID.
+                  </span>
+                )}
+              </div>
             </div>
 
-            {/* Field 3: Email */}
-            <div className="space-y-1.5">
-              <label className="text-gray-300 flex items-center gap-1.5 font-semibold">
-                <Mail className="w-3.5 h-3.5 text-[#C5A880]" /> Email Liên Hệ:
-              </label>
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="Nhập địa chỉ email..."
-                className="w-full bg-[#161B22] border border-[#2D3748] p-3 text-white font-mono focus:outline-none focus:border-[#C5A880] transition-colors rounded"
-                required
-              />
+            {/* Legal Identity Fields Grid (Locked / Read-Only when Verified) */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+              {/* Field: Mã Căn Hộ */}
+              <div className="space-y-1.5">
+                <label className="text-gray-400 flex items-center justify-between font-medium">
+                  <span className="flex items-center gap-1.5 text-gray-300">
+                    <Building className="w-3.5 h-3.5 text-[#C5A880]" /> Căn Hộ Cư Trú:
+                  </span>
+                  <span className="text-[10px] text-gray-500 font-mono flex items-center gap-1">
+                    <Lock className="w-2.5 h-2.5" /> Khóa cố định
+                  </span>
+                </label>
+                <div className="relative">
+                  <input
+                    type="text"
+                    value={`Căn ${aptCode} • Tháp Skyline Luxury`}
+                    readOnly
+                    className="w-full bg-[#0D1117] border border-[#263140] p-3 text-white font-semibold rounded cursor-not-allowed select-all"
+                  />
+                  <Lock className="w-3.5 h-3.5 text-gray-500 absolute right-3 top-3.5" />
+                </div>
+                <div className="text-[10.5px] text-gray-500">Cố định theo hợp đồng mua bán / sở hữu căn hộ.</div>
+              </div>
+
+              {/* Field: Vai Trò Cư Trú */}
+              <div className="space-y-1.5">
+                <label className="text-gray-400 flex items-center justify-between font-medium">
+                  <span className="flex items-center gap-1.5 text-gray-300">
+                    <Users className="w-3.5 h-3.5 text-[#C5A880]" /> Vai Trò Cư Dân:
+                  </span>
+                  <span className="text-[10px] text-gray-500 font-mono flex items-center gap-1">
+                    <Lock className="w-2.5 h-2.5" /> BQL phân quyền
+                  </span>
+                </label>
+                <div className="relative">
+                  <input
+                    type="text"
+                    value={isOwner ? 'Chủ Hộ (Chính Chủ Sở Hữu)' : 'Thành Viên Gia Đình (Được Chủ Hộ Bảo Lãnh)'}
+                    readOnly
+                    className="w-full bg-[#0D1117] border border-[#263140] p-3 text-[#C5A880] font-semibold rounded cursor-not-allowed"
+                  />
+                  <ShieldCheck className="w-3.5 h-3.5 text-[#C5A880] absolute right-3 top-3.5" />
+                </div>
+                <div className="text-[10.5px] text-gray-500">Quyền quản trị căn hộ và bảo lãnh người thân.</div>
+              </div>
+
+              {/* Field: Họ và Tên Pháp Lý */}
+              <div className="space-y-1.5">
+                <label className="text-gray-400 flex items-center justify-between font-medium">
+                  <span className="flex items-center gap-1.5 text-gray-300">
+                    <UserIcon className="w-3.5 h-3.5 text-[#C5A880]" /> Họ và Tên Pháp Lý:
+                  </span>
+                  {ekycStatus === 'VERIFIED' && (
+                    <span className="text-[10px] text-emerald-400 font-mono flex items-center gap-1">
+                      <Lock className="w-2.5 h-2.5" /> Khớp CCCD đã duyệt
+                    </span>
+                  )}
+                </label>
+                <div className="relative">
+                  <input
+                    type="text"
+                    value={fullName}
+                    onChange={(e) => {
+                      if (ekycStatus !== 'VERIFIED') setFullName(e.target.value);
+                    }}
+                    readOnly={ekycStatus === 'VERIFIED'}
+                    className={`w-full p-3 font-semibold rounded transition-colors ${
+                      ekycStatus === 'VERIFIED'
+                        ? 'bg-[#0D1117] border border-[#263140] text-white cursor-not-allowed'
+                        : 'bg-[#161B22] border border-[#2D3748] text-white focus:outline-none focus:border-[#C5A880]'
+                    }`}
+                  />
+                  {ekycStatus === 'VERIFIED' && (
+                    <Lock className="w-3.5 h-3.5 text-gray-500 absolute right-3 top-3.5" />
+                  )}
+                </div>
+                <div className="text-[10.5px] text-gray-500">Tên định danh in trên Căn cước công dân.</div>
+              </div>
+
+              {/* Field: Số Căn Cước Công Dân (12 số) */}
+              <div className="space-y-1.5">
+                <label className="text-gray-400 flex items-center justify-between font-medium">
+                  <span className="flex items-center gap-1.5 text-gray-300">
+                    <CreditCard className="w-3.5 h-3.5 text-[#C5A880]" /> Số CCCD (12 Chữ Số):
+                  </span>
+                  {ekycStatus === 'VERIFIED' && (
+                    <span className="text-[10px] text-emerald-400 font-mono flex items-center gap-1">
+                      <ShieldCheck className="w-2.5 h-2.5" /> Đã xác thực
+                    </span>
+                  )}
+                </label>
+                <div className="relative">
+                  <input
+                    type="text"
+                    value={idCardNumber}
+                    onChange={(e) => {
+                      if (ekycStatus !== 'VERIFIED') setIdCardNumber(e.target.value);
+                    }}
+                    readOnly={ekycStatus === 'VERIFIED'}
+                    className={`w-full p-3 font-mono font-bold rounded transition-colors ${
+                      ekycStatus === 'VERIFIED'
+                        ? 'bg-[#0D1117] border border-[#263140] text-emerald-300 cursor-not-allowed tracking-wider'
+                        : 'bg-[#161B22] border border-[#2D3748] text-white focus:outline-none focus:border-[#C5A880]'
+                    }`}
+                  />
+                  {ekycStatus === 'VERIFIED' && (
+                    <Lock className="w-3.5 h-3.5 text-gray-500 absolute right-3 top-3.5" />
+                  )}
+                </div>
+                <div className="text-[10.5px] text-gray-500">Số định danh cá nhân đã khai báo với Công an khu vực.</div>
+              </div>
+
+              {/* Field: Ngày Sinh */}
+              <div className="space-y-1.5">
+                <label className="text-gray-400 flex items-center justify-between font-medium">
+                  <span className="flex items-center gap-1.5 text-gray-300">
+                    <Calendar className="w-3.5 h-3.5 text-[#C5A880]" /> Ngày Sinh:
+                  </span>
+                  {ekycStatus === 'VERIFIED' && (
+                    <span className="text-[10px] text-gray-500 font-mono">Đã khóa</span>
+                  )}
+                </label>
+                <input
+                  type="date"
+                  value={formatToApiDate(birthday)}
+                  onChange={(e) => {
+                    if (ekycStatus !== 'VERIFIED') setBirthday(e.target.value);
+                  }}
+                  readOnly={ekycStatus === 'VERIFIED'}
+                  className={`w-full p-3 font-mono rounded transition-colors ${
+                    ekycStatus === 'VERIFIED'
+                      ? 'bg-[#0D1117] border border-[#263140] text-gray-300 cursor-not-allowed'
+                      : 'bg-[#161B22] border border-[#2D3748] text-white focus:outline-none focus:border-[#C5A880]'
+                  }`}
+                />
+              </div>
+
+              {/* Field: Ngày Cấp & Nơi Cấp */}
+              <div className="space-y-1.5">
+                <label className="text-gray-400 flex items-center justify-between font-medium">
+                  <span className="flex items-center gap-1.5 text-gray-300">
+                    <MapPin className="w-3.5 h-3.5 text-[#C5A880]" /> Nơi Cấp & Ngày Cấp:
+                  </span>
+                  {ekycStatus === 'VERIFIED' && (
+                    <span className="text-[10px] text-gray-500 font-mono">Đã khóa</span>
+                  )}
+                </label>
+                <input
+                  type="text"
+                  value={`${idPlace || 'Cục CS QLHC về TTXH'} ${idDate ? `• ${formatToApiDate(idDate)}` : ''}`}
+                  onChange={(e) => {
+                    if (ekycStatus !== 'VERIFIED') setIdPlace(e.target.value);
+                  }}
+                  readOnly={ekycStatus === 'VERIFIED'}
+                  className={`w-full p-3 rounded transition-colors ${
+                    ekycStatus === 'VERIFIED'
+                      ? 'bg-[#0D1117] border border-[#263140] text-gray-300 cursor-not-allowed'
+                      : 'bg-[#161B22] border border-[#2D3748] text-white focus:outline-none focus:border-[#C5A880]'
+                  }`}
+                />
+              </div>
             </div>
 
-            {/* Field 4: Giới Tính */}
-            <div className="space-y-1.5">
-              <label className="text-gray-300 flex items-center gap-1.5 font-semibold">
-                <UserIcon className="w-3.5 h-3.5 text-[#C5A880]" /> Giới Tính:
-              </label>
-              <select
-                value={gender}
-                onChange={(e) => setGender(e.target.value as '1' | '0')}
-                className="w-full bg-[#161B22] border border-[#2D3748] p-3 text-white focus:outline-none focus:border-[#C5A880] transition-colors rounded"
-              >
-                <option value="1">Nam</option>
-                <option value="0">Nữ</option>
-              </select>
-            </div>
+            {/* Action Buttons for Legal Block */}
+            <div className="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-[#222B35]">
+              <div className="text-[11px] text-gray-400">
+                {ekycStatus === 'VERIFIED'
+                  ? 'Muốn đổi CCCD gắn chip mới hoặc sửa thông tin định danh?'
+                  : 'Chưa có thông tin định danh hoặc cần quét lại thẻ?'}
+              </div>
 
-            {/* Field 5: Số CCCD */}
-            <div className="space-y-1.5">
-              <label className="text-gray-300 flex items-center gap-1.5 font-semibold">
-                <CreditCard className="w-3.5 h-3.5 text-[#C5A880]" /> Số Căn Cước Công Dân (CCCD 12 Số):
-              </label>
-              <input
-                type="text"
-                value={idCardNumber}
-                onChange={(e) => setIdCardNumber(e.target.value)}
-                placeholder="12 chữ số định danh..."
-                className="w-full bg-[#161B22] border border-[#2D3748] p-3 text-white font-mono focus:outline-none focus:border-[#C5A880] transition-colors rounded"
-                required
-              />
-            </div>
+              <div className="flex items-center gap-2.5">
+                {isOwner && (
+                  <button
+                    type="button"
+                    onClick={() => setIsCardViewerOpen(true)}
+                    className="px-3 py-1.5 bg-[#1C2533] hover:bg-[#2A374A] border border-gray-700 text-gray-300 hover:text-white text-xs font-semibold rounded flex items-center gap-1.5 transition-all"
+                  >
+                    <Eye className="w-3.5 h-3.5" /> Xem Ảnh Thẻ CCCD
+                  </button>
+                )}
 
-            {/* Field 6: Ngày Cấp CCCD */}
-            <div className="space-y-1.5">
-              <label className="text-gray-300 flex items-center gap-1.5 font-semibold">
-                <Calendar className="w-3.5 h-3.5 text-[#C5A880]" /> Ngày Cấp CCCD:
-              </label>
-              <input
-                type="date"
-                value={formatToApiDate(idDate)}
-                onChange={(e) => setIdDate(e.target.value)}
-                className="w-full bg-[#161B22] border border-[#2D3748] p-3 text-white font-mono focus:outline-none focus:border-[#C5A880] transition-colors rounded"
-              />
-            </div>
+                {isOwner && (
+                  <button
+                    type="button"
+                    onClick={() => setIsOcrModalOpen(true)}
+                    className="px-3.5 py-1.5 bg-[#C5A880]/15 hover:bg-[#C5A880] text-[#C5A880] hover:text-[#0D1117] border border-[#C5A880] text-xs font-bold rounded flex items-center gap-1.5 transition-all shadow-sm"
+                  >
+                    <Scan className="w-3.5 h-3.5" />
+                    {ekycStatus === 'VERIFIED' ? 'Yêu Cầu Cập Nhật CCCD Mới Với BQL' : 'Quét Thẻ Căn Cước (OCR)'}
+                  </button>
+                )}
 
-            {/* Field 7: Nơi Cấp CCCD */}
-            <div className="space-y-1.5">
-              <label className="text-gray-300 flex items-center gap-1.5 font-semibold">
-                <MapPin className="w-3.5 h-3.5 text-[#C5A880]" /> Nơi Cấp CCCD:
-              </label>
-              <input
-                type="text"
-                value={idPlace}
-                onChange={(e) => setIdPlace(e.target.value)}
-                placeholder="Nhập nơi cấp CCCD..."
-                className="w-full bg-[#161B22] border border-[#2D3748] p-3 text-white focus:outline-none focus:border-[#C5A880] transition-colors rounded"
-              />
-            </div>
-
-            {/* Field 8: Ngày Sinh */}
-            <div className="space-y-1.5">
-              <label className="text-gray-300 flex items-center gap-1.5 font-semibold">
-                <Calendar className="w-3.5 h-3.5 text-[#C5A880]" /> Ngày Sinh:
-              </label>
-              <input
-                type="date"
-                value={formatToApiDate(birthday)}
-                onChange={(e) => setBirthday(e.target.value)}
-                className="w-full bg-[#161B22] border border-[#2D3748] p-3 text-white font-mono focus:outline-none focus:border-[#C5A880] transition-colors rounded"
-              />
-            </div>
-
-            {/* Field 9: Nơi Sinh / Nguyên Quán */}
-            <div className="space-y-1.5">
-              <label className="text-gray-300 flex items-center gap-1.5 font-semibold">
-                <MapPin className="w-3.5 h-3.5 text-[#C5A880]" /> Nơi Sinh / Nguyên Quán:
-              </label>
-              <input
-                type="text"
-                value={pob}
-                onChange={(e) => setPob(e.target.value)}
-                placeholder="Nhập nơi sinh..."
-                className="w-full bg-[#161B22] border border-[#2D3748] p-3 text-white focus:outline-none focus:border-[#C5A880] transition-colors rounded"
-              />
-            </div>
-
-            {/* Field 10: Tỉnh / Thành Phố */}
-            <div className="space-y-1.5">
-              <label className="text-gray-300 flex items-center gap-1.5 font-semibold">
-                <Building className="w-3.5 h-3.5 text-[#C5A880]" /> Tỉnh / Thành Phố:
-              </label>
-              <input
-                type="text"
-                value={province}
-                onChange={(e) => setProvince(e.target.value)}
-                placeholder="Nhập tỉnh thành..."
-                className="w-full bg-[#161B22] border border-[#2D3748] p-3 text-white focus:outline-none focus:border-[#C5A880] transition-colors rounded"
-              />
-            </div>
-
-            {/* Field 11: Biển Số Xe */}
-            <div className="space-y-1.5 md:col-span-2">
-              <label className="text-gray-300 flex items-center gap-1.5 font-semibold">
-                <Car className="w-3.5 h-3.5 text-[#C5A880]" /> Biển Số Xe Đăng Ký (Nhận diện ALPR Hầm B1):
-              </label>
-              <input
-                type="text"
-                value={licensePlate}
-                onChange={(e) => setLicensePlate(e.target.value)}
-                className="w-full bg-[#161B22] border border-[#2D3748] p-3 text-[#C5A880] font-mono font-bold focus:outline-none focus:border-[#C5A880] transition-colors rounded"
-                placeholder="VD: 51K-889.99"
-              />
+                {isOwner && ekycStatus !== 'VERIFIED' && (
+                  <button
+                    type="button"
+                    onClick={handleSubmitEkycToBql}
+                    disabled={isScanningOcr}
+                    className="px-4 py-1.5 bg-[#C5A880] hover:bg-white text-[#0D1117] text-xs font-bold rounded flex items-center gap-1.5 transition-all shadow"
+                  >
+                    {isScanningOcr ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <ShieldCheck className="w-3.5 h-3.5" />}
+                    Gửi BQL Duyệt e-KYC
+                  </button>
+                )}
+              </div>
             </div>
           </div>
 
-          <div className="flex justify-end pt-4 border-t border-[#222B35]">
-            <button
-              type="submit"
-              disabled={isSaving}
-              className="px-8 py-3 bg-[#C5A880] hover:bg-white text-[#0D1117] text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-2 shadow-xl rounded"
-            >
-              {isSaving ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-              {isSaving ? 'Đang Lưu...' : 'Lưu Thay Đổi'}
-            </button>
+          {/* ========================================================= */}
+          {/* KHỐI 2: THÔNG TIN LIÊN HỆ & ĐĂNG KÝ TIỆN ÍCH (CƯ DÂN TỰ CHỦ) */}
+          {/* ========================================================= */}
+          <div className="p-6 bg-[#161D26] border border-[#2D3748] rounded-xl space-y-5 shadow-lg">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#222B35] pb-4">
+              <div>
+                <div className="text-[10px] uppercase tracking-wider text-[#C5A880] font-bold flex items-center gap-1.5">
+                  <Smartphone className="w-3.5 h-3.5" /> Tiện Ích Sinh Hoạt • Cư Dân Tự Do Cập Nhật
+                </div>
+                <h3 className="font-serif text-lg font-bold text-white mt-0.5">
+                  2. Thông Tin Liên Hệ & Đăng Ký Tiện Ích Căn Hộ
+                </h3>
+                <p className="text-xs text-gray-400 mt-0.5">
+                  Thông tin dùng để nhận thông báo phí quản lý, bưu phẩm sảnh đón và đồng bộ hệ thống bãi xe hầm B1
+                </p>
+              </div>
+
+              <span className="px-2.5 py-1 bg-[#121820] text-gray-300 border border-[#263140] text-xs rounded font-mono">
+                Cập nhật tức thì
+              </span>
+            </div>
+
+            {/* Editable Fields Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5 text-xs">
+              {/* Field: Số Điện Thoại */}
+              <div className="space-y-1.5">
+                <label className="text-gray-300 flex items-center gap-1.5 font-semibold">
+                  <Smartphone className="w-3.5 h-3.5 text-[#C5A880]" /> Số Điện Thoại Liên Hệ (Nhận OTP):
+                </label>
+                <input
+                  type="tel"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  placeholder="Nhập số điện thoại..."
+                  className="w-full bg-[#161B22] border border-[#2D3748] p-3 text-white font-mono focus:outline-none focus:border-[#C5A880] transition-colors rounded"
+                  required
+                />
+                <div className="text-[10.5px] text-gray-500">
+                  Dùng để đăng nhập, nhận mã OTP và cuộc gọi khẩn cấp từ Ban Quản Lý.
+                </div>
+              </div>
+
+              {/* Field: Email */}
+              <div className="space-y-1.5">
+                <label className="text-gray-300 flex items-center gap-1.5 font-semibold">
+                  <Mail className="w-3.5 h-3.5 text-[#C5A880]" /> Email Nhận Hóa Đơn & Thông Báo:
+                </label>
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="Nhập địa chỉ email..."
+                  className="w-full bg-[#161B22] border border-[#2D3748] p-3 text-white font-mono focus:outline-none focus:border-[#C5A880] transition-colors rounded"
+                  required
+                />
+                <div className="text-[10.5px] text-gray-500">
+                  Nhận hóa đơn điện, nước, phí quản lý định kỳ và văn bản từ Ban Quản Lý.
+                </div>
+              </div>
+
+              {/* Field: Giới Tính */}
+              <div className="space-y-1.5">
+                <label className="text-gray-300 flex items-center gap-1.5 font-semibold">
+                  <UserIcon className="w-3.5 h-3.5 text-[#C5A880]" /> Giới Tính:
+                </label>
+                <select
+                  value={gender}
+                  onChange={(e) => setGender(e.target.value as '1' | '0')}
+                  className="w-full bg-[#161B22] border border-[#2D3748] p-3 text-white focus:outline-none focus:border-[#C5A880] transition-colors rounded"
+                >
+                  <option value="1">Nam</option>
+                  <option value="0">Nữ</option>
+                </select>
+                <div className="text-[10.5px] text-gray-500">Thông tin danh xưng khi gửi thông báo.</div>
+              </div>
+
+              {/* Field: Tỉnh / Thành Phố */}
+              <div className="space-y-1.5">
+                <label className="text-gray-300 flex items-center gap-1.5 font-semibold">
+                  <Globe className="w-3.5 h-3.5 text-[#C5A880]" /> Tỉnh / Thành Phố Thường Trú:
+                </label>
+                <input
+                  type="text"
+                  value={province}
+                  onChange={(e) => setProvince(e.target.value)}
+                  placeholder="Nhập tỉnh thành..."
+                  className="w-full bg-[#161B22] border border-[#2D3748] p-3 text-white focus:outline-none focus:border-[#C5A880] transition-colors rounded"
+                />
+                <div className="text-[10.5px] text-gray-500">Địa bàn thường trú của cư dân.</div>
+              </div>
+
+              {/* Field: Biển Số Xe */}
+              <div className="space-y-1.5 md:col-span-2">
+                <label className="text-gray-300 flex items-center justify-between font-semibold">
+                  <span className="flex items-center gap-1.5">
+                    <Car className="w-3.5 h-3.5 text-[#C5A880]" /> Biển Số Xe Đăng Ký (Nhận Diện ALPR Hầm B1):
+                  </span>
+                  <span className="text-[10px] text-[#C5A880] font-mono">Tự động nhận diện biển số</span>
+                </label>
+                <input
+                  type="text"
+                  value={licensePlate}
+                  onChange={(e) => setLicensePlate(e.target.value)}
+                  className="w-full bg-[#161B22] border border-[#2D3748] p-3 text-[#C5A880] font-mono font-bold focus:outline-none focus:border-[#C5A880] transition-colors rounded"
+                  placeholder="VD: 51K-889.99"
+                />
+                <div className="text-[10.5px] text-gray-400">
+                  Hệ thống camera AI tại cổng barie hầm B1/B2 sẽ tự động nhận diện biển số này để mở barie không cần quẹt thẻ vật lý.
+                </div>
+              </div>
+
+              {/* Field: Tiểu Sử / Ghi Chú Căn Hộ */}
+              <div className="space-y-1.5 md:col-span-2">
+                <label className="text-gray-300 flex items-center gap-1.5 font-semibold">
+                  <FileText className="w-3.5 h-3.5 text-[#C5A880]" /> Ghi Chú Căn Hộ & Lưu Ý Cho BQL:
+                </label>
+                <textarea
+                  rows={2}
+                  value={intro}
+                  onChange={(e) => setIntro(e.target.value)}
+                  placeholder="Ví dụ: Căn hộ có trẻ nhỏ, vui lòng gọi điện trước khi bấm chuông hoặc giao bưu phẩm..."
+                  className="w-full bg-[#161B22] border border-[#2D3748] p-3 text-white focus:outline-none focus:border-[#C5A880] transition-colors rounded resize-none"
+                />
+                <div className="text-[10.5px] text-gray-500">
+                  Ghi chú nội bộ hiển thị trên phần mềm tiếp đón lễ tân và trực ban kỹ thuật.
+                </div>
+              </div>
+            </div>
+
+            {/* Submit Button */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-4 border-t border-[#222B35]">
+              <div className="text-[11px] text-gray-400">
+                Nhấn lưu để đồng bộ thông tin liên hệ và biển số xe ngay lập tức.
+              </div>
+
+              <button
+                type="submit"
+                disabled={isSaving}
+                className="px-8 py-3 bg-[#C5A880] hover:bg-white text-[#0D1117] text-xs font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-2 shadow-xl rounded active:scale-[0.99]"
+              >
+                {isSaving ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+                {isSaving ? 'Đang Lưu Thông Tin...' : 'Lưu Thay Đổi Thông Tin Liên Hệ'}
+              </button>
+            </div>
           </div>
         </form>
       )}
