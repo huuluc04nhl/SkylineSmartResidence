@@ -29,7 +29,9 @@ import {
   Eye,
   XCircle,
   AlertTriangle,
-  RotateCcw
+  Scan,
+  Sliders,
+  Sparkle
 } from 'lucide-react';
 import { User as UserType } from '@/lib/dataStore';
 import { 
@@ -41,8 +43,13 @@ import {
 import { 
   getEkycForUser, 
   submitEkycRequest, 
+  updateEkycCardImages,
   EkycRequest 
 } from '@/lib/ekycStore';
+import CccdOcrScannerModal from './CccdOcrScannerModal';
+import AvatarEditorModal from './AvatarEditorModal';
+import CccdCardViewer from '@/components/portal/shared/CccdCardViewer';
+import { OcrCccdResult, formatToDateInput, formatToApiDate } from '@/lib/ocrParser';
 
 export interface FamilyMemberItem {
   id: string;
@@ -121,6 +128,13 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
   const [ekycBackImage, setEkycBackImage] = useState<string>('');
   const [isSubmittingEkyc, setIsSubmittingEkyc] = useState<boolean>(false);
   const [ekycModalError, setEkycModalError] = useState<string | null>(null);
+  const [ocrFilledNotice, setOcrFilledNotice] = useState<boolean>(false);
+
+  // External Shared Modals: OCR Scanner, Avatar Studio, CCCD Viewer
+  const [isOcrModalOpen, setIsOcrModalOpen] = useState<boolean>(false);
+  const [isAvatarModalOpen, setIsAvatarModalOpen] = useState<boolean>(false);
+  const [isCardViewerOpen, setIsCardViewerOpen] = useState<boolean>(false);
+  const [viewingCardMember, setViewingCardMember] = useState<FamilyMemberItem | null>(null);
 
   // Camera capture inside e-KYC modal
   const [isCameraActive, setIsCameraActive] = useState<boolean>(false);
@@ -128,7 +142,6 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
   const streamRef = useRef<MediaStream | null>(null);
   const fileInputFrontRef = useRef<HTMLInputElement | null>(null);
   const fileInputBackRef = useRef<HTMLInputElement | null>(null);
-  const fileInputAvatarRef = useRef<HTMLInputElement | null>(null);
 
   // Helper to query e-KYC request of any member
   const getMemberEkyc = (m: FamilyMemberItem): EkycRequest | undefined => {
@@ -212,7 +225,7 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
     } catch (err) {
       console.warn('Không thể mở camera:', err);
       setIsCameraActive(false);
-      alert('Không thể kích hoạt Camera trên thiết bị này. Bạn có thể chọn tải ảnh chân dung trực tiếp từ tệp tin.');
+      alert('Không thể kích hoạt Camera trên thiết bị này. Bạn có thể chọn tải ảnh chân dung trực tiếp từ tệp tin hoặc mở Avatar Studio.');
     }
   };
 
@@ -264,9 +277,9 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
     setEkycRelationship(member.relationship || 'Vợ / Chồng');
     setEkycPhone(existing?.phone || member.phone || '');
     setEkycIdCard(existing?.idCardNo || member.idCard || '');
-    setEkycDob(existing?.dob || '2004-09-02');
+    setEkycDob(existing?.dob ? formatToDateInput(existing.dob) : '2004-09-02');
     setEkycPob(existing?.pob || 'TP. Hồ Chí Minh');
-    setEkycIdDate(existing?.idDate || '2022-08-15');
+    setEkycIdDate(existing?.idDate ? formatToDateInput(existing.idDate) : '2022-08-15');
     setEkycIdPlace(existing?.idPlace || 'Cục Cảnh sát QLHC về TTXH');
     setEkycLicensePlate(member.licensePlate || '');
     setEkycAvatarUrl(
@@ -283,6 +296,7 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
         'https://images.unsplash.com/photo-1578852612716-854e527abf2e?w=600'
     );
     setEkycModalError(null);
+    setOcrFilledNotice(false);
     setIsCameraActive(false);
     setShowEkycModal(true);
   };
@@ -291,6 +305,35 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
     stopCamera();
     setShowEkycModal(false);
     setEkycTargetMember(null);
+  };
+
+  // Open OCR Scanner directly for a family member
+  const handleOpenOcrForMember = (member: FamilyMemberItem) => {
+    handleOpenEkycModal(member);
+    setIsOcrModalOpen(true);
+  };
+
+  // Open Smart Card Viewer for a family member
+  const handleOpenCardViewer = (member: FamilyMemberItem) => {
+    setViewingCardMember(member);
+    setIsCardViewerOpen(true);
+  };
+
+  // Apply OCR scanned data to family member form
+  const handleApplyMemberOcrData = (ocrData: OcrCccdResult, frontSrc: string, backSrc: string) => {
+    if (ocrData.fullName) setEkycFullName(ocrData.fullName);
+    if (ocrData.idNumber) setEkycIdCard(ocrData.idNumber);
+    if (ocrData.dob) setEkycDob(formatToDateInput(ocrData.dob));
+    if (ocrData.pob) setEkycPob(ocrData.pob);
+    if (ocrData.idDate) setEkycIdDate(formatToDateInput(ocrData.idDate));
+    if (ocrData.idPlace) setEkycIdPlace(ocrData.idPlace);
+    if (frontSrc) setEkycFrontImage(frontSrc);
+    if (backSrc) setEkycBackImage(backSrc);
+
+    setShowEkycModal(true);
+    setIsOcrModalOpen(false);
+    setOcrFilledNotice(true);
+    setTimeout(() => setOcrFilledNotice(false), 8000);
   };
 
   // =========================================================================
@@ -512,7 +555,7 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
           </h2>
           <p className="text-xs text-gray-400 mt-0.5">
             Căn hộ: <strong className="text-white font-mono">{aptCode}</strong> • Chủ hộ{' '}
-            <strong className="text-[#C5A880]">{ownerName}</strong> trực tiếp kê khai, nộp e-KYC và bảo lãnh FaceID cho người nhà
+            <strong className="text-[#C5A880]">{ownerName}</strong> trực tiếp chọn, quét CCCD AI OCR và bảo lãnh FaceID cho người nhà
           </p>
         </div>
 
@@ -628,7 +671,7 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
               return (
                 <div
                   key={m.id}
-                  className="p-4 sm:p-5 flex flex-col md:flex-row md:items-center justify-between gap-4 hover:bg-[#161B22] transition-colors"
+                  className="p-4 sm:p-5 flex flex-col lg:flex-row lg:items-center justify-between gap-4 hover:bg-[#161B22] transition-colors"
                 >
                   <div className="flex items-start sm:items-center gap-4 min-w-0">
                     {/* Member Avatar: Strictly constrained width & height */}
@@ -711,15 +754,39 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
                     </div>
                   </div>
 
-                  {/* Actions for Owner */}
-                  <div className="flex items-center gap-2.5 w-full md:w-auto justify-start md:justify-end pt-2 md:pt-0 border-t md:border-t-0 border-[#222B35]/60 flex-shrink-0">
+                  {/* Actions for Owner: Comprehensive OCR, Card Viewer, e-KYC Form */}
+                  <div className="flex flex-wrap items-center gap-2 w-full lg:w-auto justify-start lg:justify-end pt-2 lg:pt-0 border-t lg:border-t-0 border-[#222B35]/60 flex-shrink-0">
+                    {isOwner && (
+                      <button
+                        type="button"
+                        onClick={() => handleOpenOcrForMember(m)}
+                        className="px-3 py-2 text-xs font-bold rounded-lg flex items-center gap-1.5 bg-[#1C2533] hover:bg-[#253245] border border-[#C5A880]/80 text-[#C5A880] transition-all shadow cursor-pointer active:scale-95"
+                        title="Quét thẻ CCCD người nhà tự động qua AI OCR 2 mặt"
+                      >
+                        <Scan className="w-3.5 h-3.5" />
+                        <span>Quét CCCD AI</span>
+                      </button>
+                    )}
+
+                    {isOwner && (
+                      <button
+                        type="button"
+                        onClick={() => handleOpenCardViewer(m)}
+                        className="px-3 py-2 text-xs font-semibold rounded-lg flex items-center gap-1.5 bg-[#161D26] hover:bg-[#1F2937] border border-gray-700 text-gray-300 hover:text-white transition-all shadow cursor-pointer active:scale-95"
+                        title="Xem ảnh thẻ CCCD 2 mặt của người nhà"
+                      >
+                        <Eye className="w-3.5 h-3.5 text-[#C5A880]" />
+                        <span>Xem Thẻ</span>
+                      </button>
+                    )}
+
                     {isOwner && (
                       <button
                         type="button"
                         onClick={() => handleOpenEkycModal(m)}
                         className={`px-3.5 py-2 text-xs font-bold rounded-lg flex items-center gap-1.5 transition-all shadow cursor-pointer active:scale-95 ${
                           ekycStatus === 'APPROVED'
-                            ? 'bg-[#161D26] hover:bg-[#1F2937] border border-[#C5A880]/80 text-[#C5A880]'
+                            ? 'bg-[#161D26] hover:bg-[#1F2937] border border-emerald-500/70 text-emerald-300'
                             : ekycStatus === 'PENDING'
                             ? 'bg-amber-950/80 hover:bg-amber-900 border border-amber-500/80 text-amber-300'
                             : ekycStatus === 'REJECTED'
@@ -735,7 +802,7 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
                             ? 'Xem / Sửa e-KYC'
                             : ekycStatus === 'REJECTED'
                             ? 'Chụp Lại e-KYC'
-                            : 'Khai Báo e-KYC Gửi BQL'}
+                            : 'Khai Báo e-KYC'}
                         </span>
                       </button>
                     )}
@@ -747,7 +814,7 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
                         className="px-3 py-2 text-xs text-rose-400 hover:text-white hover:bg-rose-950/60 border border-rose-900/60 rounded-lg transition-colors flex items-center gap-1.5 cursor-pointer"
                         title="Hủy quyền thành viên"
                       >
-                        <Trash2 className="w-3.5 h-3.5" /> Hủy Quyền
+                        <Trash2 className="w-3.5 h-3.5" />
                       </button>
                     )}
                   </div>
@@ -795,6 +862,51 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
               </button>
             </div>
 
+            {/* Smart OCR Scanning Callout Banner */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 bg-gradient-to-r from-[#1C2533] via-[#161D26] to-[#121820] border-2 border-[#C5A880]/70 rounded-xl shadow-lg">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-[#C5A880]/20 flex items-center justify-center text-[#C5A880] flex-shrink-0">
+                  <Sparkles className="w-5 h-5 animate-pulse" />
+                </div>
+                <div>
+                  <div className="text-white font-bold text-xs flex items-center gap-1.5">
+                    <span>Quét Tự Động Thẻ Căn Cước AI (OCR 2 Mặt)</span>
+                    <span className="px-2 py-0.5 bg-emerald-950 text-emerald-400 text-[10px] font-mono rounded border border-emerald-500/50">
+                      Auto-Extract
+                    </span>
+                  </div>
+                  <div className="text-[11px] text-gray-300 mt-0.5">
+                    Tự động nhận diện & trích xuất 12 số CCCD, Họ tên, Ngày sinh, Quê quán từ ảnh chụp 2 mặt CCCD của người nhà
+                  </div>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setIsOcrModalOpen(true)}
+                className="px-4 py-2.5 bg-[#C5A880] hover:bg-white text-[#0D1117] font-bold text-xs rounded-lg transition-all shadow-md flex items-center justify-center gap-2 flex-shrink-0 cursor-pointer active:scale-95"
+              >
+                <Scan className="w-4 h-4" /> Quét Thẻ CCCD AI Ngay
+              </button>
+            </div>
+
+            {/* Notice banner when OCR is applied */}
+            {ocrFilledNotice && (
+              <div className="p-3.5 bg-emerald-950/90 border border-emerald-500 text-emerald-300 text-xs flex items-center justify-between gap-3 rounded-xl animate-fadeIn shadow-lg">
+                <div className="flex items-center gap-2.5">
+                  <CheckCircle2 className="w-5 h-5 text-emerald-400 flex-shrink-0" />
+                  <span>✨ <strong>Đã tự động trích xuất thông tin người nhà từ thẻ CCCD!</strong> Bạn có thể kiểm tra lại thông tin và bấm gửi BQL.</span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setOcrFilledNotice(false)}
+                  className="px-2.5 py-1 bg-black/40 hover:bg-black/80 text-emerald-300 text-xs font-bold rounded cursor-pointer"
+                >
+                  Đã Hiểu
+                </button>
+              </div>
+            )}
+
             {/* Legal Representation Guarantee Box */}
             <div className="p-3.5 bg-gradient-to-r from-[#1A1810] to-[#121820] border border-[#C5A880]/60 rounded-xl text-xs text-gray-300 space-y-1">
               <div className="font-bold text-[#C5A880] flex items-center gap-1.5 uppercase tracking-wider text-[11px]">
@@ -820,8 +932,17 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
               
               {/* SECTION 1: THÔNG TIN PHÁP LÝ NHÂN THÂN */}
               <div className="space-y-3 p-4 bg-[#121820] border border-[#222B35] rounded-xl">
-                <div className="text-[11px] font-bold uppercase tracking-wider text-[#C5A880] flex items-center gap-2">
-                  <User className="w-4 h-4" /> 1. Thông Tin Pháp Lý Của Người Nhà
+                <div className="text-[11px] font-bold uppercase tracking-wider text-[#C5A880] flex items-center justify-between">
+                  <span className="flex items-center gap-2">
+                    <User className="w-4 h-4" /> 1. Thông Tin Pháp Lý Của Người Nhà
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => setIsOcrModalOpen(true)}
+                    className="text-[#C5A880] hover:text-white font-semibold flex items-center gap-1 underline cursor-pointer"
+                  >
+                    <Scan className="w-3 h-3" /> Quét Lại Thẻ CCCD
+                  </button>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -892,7 +1013,7 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
                     </label>
                     <input
                       type="date"
-                      value={ekycDob}
+                      value={formatToApiDate(ekycDob)}
                       onChange={(e) => setEkycDob(e.target.value)}
                       className="w-full bg-[#161B22] border border-[#2D3748] p-2.5 text-white rounded-lg focus:border-[#C5A880] outline-none font-mono"
                     />
@@ -917,7 +1038,7 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
                     </label>
                     <input
                       type="date"
-                      value={ekycIdDate}
+                      value={formatToApiDate(ekycIdDate)}
                       onChange={(e) => setEkycIdDate(e.target.value)}
                       className="w-full bg-[#161B22] border border-[#2D3748] p-2.5 text-white rounded-lg focus:border-[#C5A880] outline-none font-mono"
                     />
@@ -963,7 +1084,7 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
                     </div>
 
                     {/* Camera or Image Preview */}
-                    <div className="relative w-full h-44 bg-[#0D1117] rounded-lg border border-gray-700 overflow-hidden flex items-center justify-center">
+                    <div className="relative w-full h-44 bg-[#0D1117] rounded-lg border border-gray-700 overflow-hidden flex items-center justify-center group">
                       {isCameraActive ? (
                         <video
                           ref={videoRef}
@@ -1004,23 +1125,18 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
                             type="button"
                             onClick={startCamera}
                             className="flex-1 py-2 bg-[#1C2533] hover:bg-[#253245] border border-[#C5A880]/70 text-[#C5A880] font-bold rounded-lg flex items-center justify-center gap-1 cursor-pointer"
+                            title="Mở Camera chụp trực tiếp"
                           >
                             <Camera className="w-3.5 h-3.5" /> Camera
                           </button>
                           <button
                             type="button"
-                            onClick={() => fileInputAvatarRef.current?.click()}
+                            onClick={() => setIsAvatarModalOpen(true)}
                             className="flex-1 py-2 bg-gray-800 hover:bg-gray-700 text-gray-200 font-bold rounded-lg flex items-center justify-center gap-1 cursor-pointer"
+                            title="Tùy chỉnh ảnh, cắt xén, chọn tệp có sẵn qua Avatar Studio"
                           >
-                            <Upload className="w-3.5 h-3.5" /> Chọn Tệp
+                            <Sliders className="w-3.5 h-3.5" /> Studio
                           </button>
-                          <input
-                            ref={fileInputAvatarRef}
-                            type="file"
-                            accept="image/*"
-                            className="hidden"
-                            onChange={(e) => handleFileUpload(e, setEkycAvatarUrl)}
-                          />
                         </div>
                       )}
                     </div>
@@ -1049,13 +1165,21 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
                       />
                     </div>
 
-                    <div>
+                    <div className="flex gap-1.5">
                       <button
                         type="button"
                         onClick={() => fileInputFrontRef.current?.click()}
-                        className="w-full py-2 bg-gray-800 hover:bg-gray-700 text-gray-200 font-bold rounded-lg flex items-center justify-center gap-1 cursor-pointer"
+                        className="flex-1 py-2 bg-gray-800 hover:bg-gray-700 text-gray-200 font-bold rounded-lg flex items-center justify-center gap-1 cursor-pointer"
                       >
-                        <Upload className="w-3.5 h-3.5" /> Tải Lên Mặt Trước
+                        <Upload className="w-3.5 h-3.5" /> Tải Lên
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setIsOcrModalOpen(true)}
+                        className="px-3 py-2 bg-[#1C2533] hover:bg-[#2A374A] border border-[#C5A880]/70 text-[#C5A880] font-bold rounded-lg flex items-center justify-center gap-1 cursor-pointer"
+                        title="Quét tự động qua AI"
+                      >
+                        <Scan className="w-3.5 h-3.5" />
                       </button>
                       <input
                         ref={fileInputFrontRef}
@@ -1090,13 +1214,21 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
                       />
                     </div>
 
-                    <div>
+                    <div className="flex gap-1.5">
                       <button
                         type="button"
                         onClick={() => fileInputBackRef.current?.click()}
-                        className="w-full py-2 bg-gray-800 hover:bg-gray-700 text-gray-200 font-bold rounded-lg flex items-center justify-center gap-1 cursor-pointer"
+                        className="flex-1 py-2 bg-gray-800 hover:bg-gray-700 text-gray-200 font-bold rounded-lg flex items-center justify-center gap-1 cursor-pointer"
                       >
-                        <Upload className="w-3.5 h-3.5" /> Tải Lên Mặt Sau
+                        <Upload className="w-3.5 h-3.5" /> Tải Lên
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setIsOcrModalOpen(true)}
+                        className="px-3 py-2 bg-[#1C2533] hover:bg-[#2A374A] border border-[#C5A880]/70 text-[#C5A880] font-bold rounded-lg flex items-center justify-center gap-1 cursor-pointer"
+                        title="Quét tự động qua AI"
+                      >
+                        <Scan className="w-3.5 h-3.5" />
                       </button>
                       <input
                         ref={fileInputBackRef}
@@ -1470,6 +1602,57 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
 
           </div>
         </div>
+      )}
+
+      {/* =================================================================== */}
+      {/* 3D-FLIP CCCD AI OCR SCANNER MODAL CHO NGƯỜI NHÀ                    */}
+      {/* =================================================================== */}
+      <CccdOcrScannerModal
+        isOpen={isOcrModalOpen}
+        onClose={() => setIsOcrModalOpen(false)}
+        onApplyOcrData={handleApplyMemberOcrData}
+      />
+
+      {/* =================================================================== */}
+      {/* AVATAR STUDIO / CẮT ẢNH / CAMERA MODAL CHO NGƯỜI NHÀ                 */}
+      {/* =================================================================== */}
+      <AvatarEditorModal
+        isOpen={isAvatarModalOpen}
+        onClose={() => setIsAvatarModalOpen(false)}
+        currentAvatarUrl={ekycAvatarUrl}
+        onAvatarUpdated={(newAvatarUrl) => {
+          setEkycAvatarUrl(newAvatarUrl);
+          setIsAvatarModalOpen(false);
+        }}
+      />
+
+      {/* =================================================================== */}
+      {/* XEM THẺ CƯ DÂN CCCD 2 MẶT CỦA NGƯỜI NHÀ (CCCD CARD VIEWER)          */}
+      {/* =================================================================== */}
+      {viewingCardMember && (
+        <CccdCardViewer
+          isOpen={isCardViewerOpen}
+          onClose={() => {
+            setIsCardViewerOpen(false);
+            setViewingCardMember(null);
+          }}
+          fullName={viewingCardMember.fullName}
+          idCardNo={viewingCardMember.idCard || '079198005678'}
+          apartmentCode={aptCode}
+          frontImage={getMemberEkyc(viewingCardMember)?.idCardFrontUrl || 'https://images.unsplash.com/photo-1578852612716-854e527abf2e?w=600'}
+          backImage={getMemberEkyc(viewingCardMember)?.idCardBackUrl || 'https://images.unsplash.com/photo-1578852612716-854e527abf2e?w=600'}
+          idDate={getMemberEkyc(viewingCardMember)?.idDate || '18/08/2022'}
+          idPlace={getMemberEkyc(viewingCardMember)?.idPlace || 'Cục Cảnh sát QLHC về TTXH'}
+          dob={getMemberEkyc(viewingCardMember)?.dob || '02/09/2004'}
+          pob={getMemberEkyc(viewingCardMember)?.pob || 'TP. Hồ Chí Minh'}
+          avatarUrl={viewingCardMember.avatarUrl || 'https://data.nks.vn/storage/users/default.png'}
+          allowUpload={true}
+          onUpdateImages={(front, back) => {
+            const memId = viewingCardMember.id || viewingCardMember.phone;
+            updateEkycCardImages(memId, front, back);
+            fetchMembers();
+          }}
+        />
       )}
 
     </div>
