@@ -29,6 +29,16 @@ export interface GeneratedVisitorPass {
   note?: string;
 }
 
+export interface ResidentArrivalAlert {
+  apartmentCode: string;
+  visitorName: string;
+  time: string;
+  checkpoint: string;
+  elevatorCabin: string;
+  floor: string;
+  message: string;
+}
+
 export interface VerificationScanResult {
   scanResult: 'VALID' | 'INVALID' | 'EXPIRED';
   title: string;
@@ -41,10 +51,10 @@ export interface VerificationScanResult {
   scannedAt: string;
   checkpoint?: string;
   gateAction?: string;
-  tower?: string;
-  floor?: number;
+  visitorName?: string;
   elevatorCabin?: string;
-  voicePrompt?: string;
+  targetFloor?: string;
+  residentPushAlert?: ResidentArrivalAlert;
 }
 
 export interface GateAuditLog {
@@ -173,37 +183,6 @@ export function generateVisitorPassToken(params: {
   };
 }
 
-// Helper to calculate floor, tower, and elevator cabin from apartment code
-export function parseApartmentDestination(aptCode: string) {
-  const code = (aptCode || '12A05').toUpperCase();
-  const tower = code.includes('B') ? 'Tòa B (Diamond)' : 'Tòa A (Sapphire)';
-  const match = code.match(/^(\d+)/);
-  const floor = match ? parseInt(match[1], 10) : 12;
-  const elevatorCabin = code.includes('B') ? 'Cabin Thang 04 (Sảnh Tòa B)' : 'Cabin Thang 02 (Sảnh Tòa A)';
-  return { tower, floor, elevatorCabin };
-}
-
-// Helper to broadcast arrival alert to resident
-function notifyResidentArrival(aptCode: string, checkpoint: string, floor: number, tower: string) {
-  if (typeof window !== 'undefined') {
-    try {
-      const arrivalAlert = {
-        id: 'arrival_' + Date.now(),
-        apartmentCode: aptCode,
-        timestamp: new Date().toISOString(),
-        title: `Khách Thăm Vừa Check-in Cổng ${checkpoint}`,
-        message: `Khách thăm Căn hộ ${aptCode} (${tower}) vừa quét mã thành công qua ${checkpoint}. Barrier đã mở và thang máy đang đón lên Tầng ${floor}.`,
-      };
-      const existing = JSON.parse(localStorage.getItem('skyline_arrival_alerts') || '[]');
-      existing.unshift(arrivalAlert);
-      localStorage.setItem('skyline_arrival_alerts', JSON.stringify(existing.slice(0, 20)));
-      window.dispatchEvent(new CustomEvent('skyline_visitor_arrived', { detail: arrivalAlert }));
-    } catch (e) {
-      // Ignore
-    }
-  }
-}
-
 /**
  * Gate Barrier Security Scanner
  * Validates any presented QR code or PIN without needing manual BQL approval.
@@ -268,24 +247,37 @@ export function verifyVisitorQr(qrInput: string, checkpoint: string = 'Barrier C
 
   // Pre-configured valid demo token
   if (raw === 'SIM_QR_VALID' || raw === 'SKYLINE_PASS_VALID_12A05_101') {
-    const dest = parseApartmentDestination('12A05');
-    notifyResidentArrival('12A05', checkpoint, dest.floor, dest.tower);
+    const targetFloor = 'Tầng 12';
+    const elevatorCabin = 'Cabin Thang Máy 02 (Sảnh A)';
+    const visitorName = 'Anh Minh (Khách Thăm)';
+
+    const residentPushAlert: ResidentArrivalAlert = {
+      apartmentCode: '12A05',
+      visitorName,
+      time: nowStr,
+      checkpoint,
+      elevatorCabin,
+      floor: targetFloor,
+      message: `🔔 CĂN HỘ 12A05: Khách thăm [${visitorName}] đã quét mã AI vào sảnh lúc ${nowStr}. ${elevatorCabin} tự động kích hoạt đưa lên ${targetFloor}.`
+    };
+
+    globalScope.__LAST_RESIDENT_VISITOR_ALERT = residentPushAlert;
 
     const result: VerificationScanResult = {
       scanResult: 'VALID',
-      title: 'XÁC THỰC THÀNH CÔNG (QR HỢP LỆ)',
-      message: `Mã hợp lệ của Căn hộ 12A05 • ${dest.tower}. Barrier tự động mở & thang máy đã được cấp quyền lên Tầng ${dest.floor}.`,
+      title: 'XÁC THỰC AI THÀNH CÔNG • CỔNG MỞ TỰ ĐỘNG',
+      message: 'Mã QR hợp lệ Căn hộ 12A05. Camera AI tự động mở cổng sảnh, điều phối thang máy đón khách lên Tầng 12 và gửi thông báo cho cư dân.',
       canEnter: true,
       apartmentCode: '12A05',
       entryType: 'MULTI',
       purposeLabel: 'Khách Thăm Nhà',
       scannedAt: nowStr,
       checkpoint,
-      gateAction: `Mở Barrier & Phân Quyền Thang Máy Tầng ${dest.floor}`,
-      tower: dest.tower,
-      floor: dest.floor,
-      elevatorCabin: dest.elevatorCabin,
-      voicePrompt: `Cổng ${checkpoint} đã mở. Thang máy ${dest.elevatorCabin} đã sẵn sàng đón lên Tầng ${dest.floor}.`
+      gateAction: 'Mở Cổng Tự Động & Phân Quyền Thang Máy Tầng 12',
+      visitorName,
+      elevatorCabin,
+      targetFloor,
+      residentPushAlert
     };
 
     addGateAuditLog({
@@ -295,7 +287,7 @@ export function verifyVisitorQr(qrInput: string, checkpoint: string = 'Barrier C
       purposeLabel: 'Khách Thăm Nhà',
       checkpoint,
       result: 'VALID',
-      gateAction: `Mở Barrier & Phân Quyền Thang Máy Tầng ${dest.floor}`,
+      gateAction: 'Mở Cổng Sảnh & Cấp Thang Máy Tầng 12',
       qrSnippet: raw.substring(0, 25)
     });
 
@@ -390,13 +382,29 @@ export function verifyVisitorQr(qrInput: string, checkpoint: string = 'Barrier C
       }
 
       // Valid token!
-      const dest = parseApartmentDestination(aptCode);
-      notifyResidentArrival(aptCode, checkpoint, dest.floor, dest.tower);
+      const floorMatch = aptCode.match(/\d+/);
+      const floorNum = floorMatch ? (floorMatch[0].length >= 3 ? floorMatch[0].substring(0, floorMatch[0].length - 2) : floorMatch[0]) : '12';
+      const targetFloor = `Tầng ${floorNum || '12'}`;
+      const isA = aptCode.toUpperCase().includes('A');
+      const elevatorCabin = isA ? 'Cabin Thang Máy 02 (Sảnh A)' : 'Cabin Thang Máy 01 (Sảnh B)';
+      const visitorName = 'Khách Thăm Căn Hộ';
+
+      const residentPushAlert: ResidentArrivalAlert = {
+        apartmentCode: aptCode,
+        visitorName,
+        time: nowStr,
+        checkpoint,
+        elevatorCabin,
+        floor: targetFloor,
+        message: `🔔 CĂN HỘ ${aptCode}: Khách thăm vừa quét mã AI qua ${checkpoint} lúc ${nowStr}. ${elevatorCabin} đang đón lên ${targetFloor}.`
+      };
+
+      globalScope.__LAST_RESIDENT_VISITOR_ALERT = residentPushAlert;
 
       const result: VerificationScanResult = {
         scanResult: 'VALID',
-        title: 'XÁC THỰC THÀNH CÔNG (QR HỢP LỆ)',
-        message: `Mã QR hợp lệ Căn hộ ${aptCode} • ${dest.tower}. Cổng Barrier tự động mở & Thang máy đã được phân quyền đón lên Tầng ${dest.floor}.`,
+        title: 'XÁC THỰC AI THÀNH CÔNG • CỔNG MỞ TỰ ĐỘNG',
+        message: `Mã QR hợp lệ Căn hộ ${aptCode}. Camera AI tự động mở cổng sảnh, kích hoạt ${elevatorCabin} đưa khách lên ${targetFloor} và gửi thông báo cho cư dân.`,
         canEnter: true,
         apartmentCode: aptCode,
         entryType,
@@ -404,11 +412,11 @@ export function verifyVisitorQr(qrInput: string, checkpoint: string = 'Barrier C
         validUntil: new Date(expiryTimestamp).toISOString(),
         scannedAt: nowStr,
         checkpoint,
-        gateAction: `Mở Barrier & Phân Quyền Thang Máy Tầng ${dest.floor}`,
-        tower: dest.tower,
-        floor: dest.floor,
-        elevatorCabin: dest.elevatorCabin,
-        voicePrompt: `Cổng ${checkpoint} đã mở. Thang máy ${dest.elevatorCabin} đã sẵn sàng đón lên Tầng ${dest.floor}.`
+        gateAction: `Mở Cổng Tự Động & Phân Quyền ${targetFloor}`,
+        visitorName,
+        elevatorCabin,
+        targetFloor,
+        residentPushAlert
       };
 
       addGateAuditLog({
@@ -418,7 +426,7 @@ export function verifyVisitorQr(qrInput: string, checkpoint: string = 'Barrier C
         purposeLabel: 'Khách Thăm Căn Hộ',
         checkpoint,
         result: 'VALID',
-        gateAction: `Mở Barrier & Phân Quyền Thang Máy Tầng ${dest.floor}`,
+        gateAction: `Mở Cổng & Cấp ${elevatorCabin} lên ${targetFloor}`,
         qrSnippet: raw.substring(0, 25)
       });
 
