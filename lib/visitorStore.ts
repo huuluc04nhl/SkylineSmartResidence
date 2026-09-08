@@ -1,20 +1,28 @@
 /**
- * Visitor QR Access Control System
+ * Visitor QR Management System - Skyline Smart Residence
  * 
- * Architecture:
- * - Ephemeral & Privacy-First: No persistent personal guest dossiers stored in DB to guarantee resident privacy.
- * - Single-Use vs Multi-Use Entry Modes:
- *   + SINGLE (1 lần): Automatically revokes upon first barrier entry.
- *   + MULTI (Nhiều lần): For Guests/Relatives, valid for multiple entries within the time window.
- * - Realtime Security Audit Log:
- *   + Records timestamp, apartment code, entry type, checkpoint, and access result (Without exposing personal guest identity).
+ * Flow:
+ * - Resident creates visitor pass with Host details (Apartment, Host Name, Host Phone)
+ *   and Visitor details (Visitor Name, Phone, Vehicle/License Plate, Validity window).
+ * - BQL/Receptionist scans the QR code or looks up by PIN/Pass ID.
+ * - System displays:
+ *   1. Basic information of Apartment Owner (Chủ hộ): Name, Phone, Apartment, Tower.
+ *   2. Basic information of Visitor (Khách thăm): Name, Phone, License Plate, Valid Period, Status.
+ * - Receptionist can confirm Check-in and Check-out.
+ * - Cleaned: No AI voice synthesis, no elevator destination locking.
  */
 
 export type PassEntryType = 'SINGLE' | 'MULTI';
+export type VisitorPassStatus = 'ACTIVE' | 'CHECKED_IN' | 'COMPLETED' | 'EXPIRED';
 
 export interface GeneratedVisitorPass {
   id: string;
   apartmentCode: string;
+  // Host Info
+  hostName: string;
+  hostPhone: string;
+  towerName?: string;
+  // Guest Info
   visitorName: string;
   phoneNumber?: string;
   licensePlate?: string;
@@ -27,16 +35,9 @@ export interface GeneratedVisitorPass {
   qrData: string;
   pinCode: string;
   note?: string;
-}
-
-export interface ResidentArrivalAlert {
-  apartmentCode: string;
-  visitorName: string;
-  time: string;
-  checkpoint: string;
-  elevatorCabin: string;
-  floor: string;
-  message: string;
+  status: VisitorPassStatus;
+  checkedInAt?: string;
+  checkedOutAt?: string;
 }
 
 export interface VerificationScanResult {
@@ -44,46 +45,54 @@ export interface VerificationScanResult {
   title: string;
   message: string;
   canEnter: boolean;
-  apartmentCode?: string;
-  entryType?: PassEntryType;
-  purposeLabel?: string;
-  validUntil?: string;
   scannedAt: string;
   checkpoint?: string;
-  gateAction?: string;
-  visitorName?: string;
-  elevatorCabin?: string;
-  targetFloor?: string;
-  residentPushAlert?: ResidentArrivalAlert;
+  // Chủ Hộ Info
+  host?: {
+    apartmentCode: string;
+    hostName: string;
+    hostPhone: string;
+    towerName: string;
+  };
+  // Khách Thăm Info
+  visitor?: {
+    passId: string;
+    visitorName: string;
+    phoneNumber?: string;
+    licensePlate?: string;
+    validHours: number;
+    createdAt: string;
+    validUntil: string;
+    status: VisitorPassStatus;
+    checkedInAt?: string;
+    checkedOutAt?: string;
+    pinCode: string;
+  };
 }
 
 export interface GateAuditLog {
   id: string;
   timestamp: string;
   apartmentCode: string;
-  entryType: PassEntryType;
-  purposeLabel: string;
-  checkpoint: string;
+  hostName?: string;
+  visitorName?: string;
+  licensePlate?: string;
+  action: 'SCAN' | 'CHECK_IN' | 'CHECK_OUT';
   result: 'VALID' | 'INVALID' | 'EXPIRED';
-  gateAction: string;
-  qrSnippet: string;
+  note: string;
 }
 
-// In-memory set for single-use passes that have been used
-const USED_SINGLE_TOKENS = new Set<string>();
-
-// Global pass registry and audit log storage
+// In-memory global store
 declare global {
-  var __SKYLINE_GATE_LOGS: GateAuditLog[] | undefined;
-  var __SKYLINE_VISITOR_PASSES: Map<string, GeneratedVisitorPass> | undefined;
-  var __LAST_RESIDENT_VISITOR_ALERT: ResidentArrivalAlert | null | undefined;
+  var __SKYLINE_VISITOR_PASSES_MAP: Map<string, GeneratedVisitorPass> | undefined;
+  var __SKYLINE_VISITOR_LOGS: GateAuditLog[] | undefined;
 }
 
 const globalScope = (typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : {}) as any;
 
 export function getPassRegistry(): Map<string, GeneratedVisitorPass> {
-  if (!globalScope.__SKYLINE_VISITOR_PASSES) {
-    globalScope.__SKYLINE_VISITOR_PASSES = new Map<string, GeneratedVisitorPass>();
+  if (!globalScope.__SKYLINE_VISITOR_PASSES_MAP) {
+    globalScope.__SKYLINE_VISITOR_PASSES_MAP = new Map<string, GeneratedVisitorPass>();
     // Hydrate from localStorage if in browser
     if (typeof window !== 'undefined' && window.localStorage) {
       try {
@@ -91,17 +100,17 @@ export function getPassRegistry(): Map<string, GeneratedVisitorPass> {
         if (stored) {
           const list: GeneratedVisitorPass[] = JSON.parse(stored);
           list.forEach((p) => {
-            globalScope.__SKYLINE_VISITOR_PASSES.set(p.id, p);
-            globalScope.__SKYLINE_VISITOR_PASSES.set(p.qrData, p);
-            if (p.pinCode) globalScope.__SKYLINE_VISITOR_PASSES.set(p.pinCode, p);
+            globalScope.__SKYLINE_VISITOR_PASSES_MAP!.set(p.id, p);
+            globalScope.__SKYLINE_VISITOR_PASSES_MAP!.set(p.qrData, p);
+            if (p.pinCode) globalScope.__SKYLINE_VISITOR_PASSES_MAP!.set(p.pinCode, p);
           });
         }
       } catch (e) {
-        // Ignore JSON error
+        // Ignore storage error
       }
     }
   }
-  return globalScope.__SKYLINE_VISITOR_PASSES;
+  return globalScope.__SKYLINE_VISITOR_PASSES_MAP!;
 }
 
 export function savePassToRegistry(pass: GeneratedVisitorPass) {
@@ -116,28 +125,49 @@ export function savePassToRegistry(pass: GeneratedVisitorPass) {
       const list: GeneratedVisitorPass[] = stored ? JSON.parse(stored) : [];
       const filtered = list.filter((p) => p.id !== pass.id);
       filtered.unshift(pass);
-      localStorage.setItem('__skyline_visitor_passes', JSON.stringify(filtered.slice(0, 50)));
+      localStorage.setItem('__skyline_visitor_passes', JSON.stringify(filtered.slice(0, 100)));
     } catch (e) {
       // Ignore storage error
     }
   }
 }
 
+export function getAllVisitorPasses(): GeneratedVisitorPass[] {
+  const reg = getPassRegistry();
+  const seenIds = new Set<string>();
+  const passes: GeneratedVisitorPass[] = [];
+
+  reg.forEach((pass) => {
+    if (!seenIds.has(pass.id)) {
+      seenIds.add(pass.id);
+      // Auto update status if expired
+      const now = Date.now();
+      const isExpired = now > new Date(pass.validUntil).getTime();
+      if (isExpired && pass.status === 'ACTIVE') {
+        pass.status = 'EXPIRED';
+      }
+      passes.push(pass);
+    }
+  });
+
+  return passes.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+}
+
 export function getGateAuditLogs(): GateAuditLog[] {
-  if (!globalScope.__SKYLINE_GATE_LOGS) {
-    globalScope.__SKYLINE_GATE_LOGS = [];
+  if (!globalScope.__SKYLINE_VISITOR_LOGS) {
+    globalScope.__SKYLINE_VISITOR_LOGS = [];
     if (typeof window !== 'undefined' && window.localStorage) {
       try {
-        const stored = localStorage.getItem('__skyline_gate_logs');
+        const stored = localStorage.getItem('__skyline_visitor_logs');
         if (stored) {
-          globalScope.__SKYLINE_GATE_LOGS = JSON.parse(stored);
+          globalScope.__SKYLINE_VISITOR_LOGS = JSON.parse(stored);
         }
       } catch (e) {
         // Ignore storage error
       }
     }
   }
-  return globalScope.__SKYLINE_GATE_LOGS;
+  return globalScope.__SKYLINE_VISITOR_LOGS!;
 }
 
 export function addGateAuditLog(log: Omit<GateAuditLog, 'id'>): GateAuditLog {
@@ -146,12 +176,12 @@ export function addGateAuditLog(log: Omit<GateAuditLog, 'id'>): GateAuditLog {
     ...log
   };
   const current = getGateAuditLogs();
-  const updated = [newLog, ...current.slice(0, 49)]; // Keep latest 50 real logs
-  globalScope.__SKYLINE_GATE_LOGS = updated;
+  const updated = [newLog, ...current.slice(0, 99)];
+  globalScope.__SKYLINE_VISITOR_LOGS = updated;
 
   if (typeof window !== 'undefined' && window.localStorage) {
     try {
-      localStorage.setItem('__skyline_gate_logs', JSON.stringify(updated));
+      localStorage.setItem('__skyline_visitor_logs', JSON.stringify(updated));
     } catch (e) {
       // Ignore storage error
     }
@@ -160,21 +190,25 @@ export function addGateAuditLog(log: Omit<GateAuditLog, 'id'>): GateAuditLog {
 }
 
 /**
- * Generate an ephemeral, time-bounded secure QR token for apartment guest
- * Only stores guest name, phone, license plate, apartment code and validity window.
+ * Generate an ephemeral, time-bounded secure QR pass for apartment guest
  */
 export function generateVisitorPassToken(params: {
   apartmentCode: string;
+  hostName?: string;
+  hostPhone?: string;
   visitorName?: string;
   phoneNumber?: string;
   licensePlate?: string;
   entryType?: PassEntryType;
   validHours?: number;
   note?: string;
-  purpose?: string; // backwards compatibility
 }): GeneratedVisitorPass {
   const aptCode = params.apartmentCode || '12A05';
-  const name = params.visitorName?.trim() || 'Khách Thăm Nhà';
+  const hostName = params.hostName?.trim() || `Chủ hộ Căn ${aptCode}`;
+  const hostPhone = params.hostPhone?.trim() || '';
+  const towerName = aptCode.includes('A') ? 'Tòa A (Sapphire)' : 'Tòa B (Diamond)';
+
+  const visitorName = params.visitorName?.trim() || 'Khách Thăm Nhà';
   const phone = params.phoneNumber?.trim() || '';
   const plate = params.licensePlate?.trim().toUpperCase() || '';
   const hours = params.validHours || 4;
@@ -183,19 +217,34 @@ export function generateVisitorPassToken(params: {
   
   const randomPin = Math.floor(100000 + Math.random() * 900000).toString();
   const passId = `SKY-PASS-${Math.floor(1000 + Math.random() * 9000)}`;
-
-  // Default entry type: MULTI (Ra vào tự do trong thời hạn hiệu lực)
   const resolvedEntryType: PassEntryType = params.entryType || 'MULTI';
 
-  // Secure stateless QR token payload format:
-  // SKY_TOKEN_{aptCode}_{passId}_{expiresAt}_{entryType}_{signature}
   const signature = Math.abs(hashCode(`${aptCode}_${passId}_${expiresAt}_${resolvedEntryType}`)).toString(36).toUpperCase();
-  const qrData = `SKY_TOKEN_${aptCode}_${passId}_${expiresAt}_${resolvedEntryType}_${signature}`;
+  
+  // Compact JSON Payload in QR Code
+  const qrPayload = {
+    skyline_pass: true,
+    passId,
+    aptCode,
+    tower: towerName,
+    hostName,
+    hostPhone,
+    visitorName,
+    phone,
+    plate,
+    expiresAt,
+    pin: randomPin,
+    sig: signature
+  };
+  const qrData = JSON.stringify(qrPayload);
 
   const pass: GeneratedVisitorPass = {
     id: passId,
     apartmentCode: aptCode,
-    visitorName: name,
+    hostName,
+    hostPhone,
+    towerName,
+    visitorName,
     phoneNumber: phone,
     licensePlate: plate,
     entryType: resolvedEntryType,
@@ -207,19 +256,29 @@ export function generateVisitorPassToken(params: {
     qrData,
     pinCode: randomPin,
     note: params.note || '',
+    status: 'ACTIVE',
   };
 
-  // Register in active store & browser storage for cross-module recognition
   savePassToRegistry(pass);
+
+  addGateAuditLog({
+    timestamp: `${new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })} ${new Date().toLocaleDateString('vi-VN')}`,
+    apartmentCode: aptCode,
+    hostName,
+    visitorName,
+    licensePlate: plate,
+    action: 'SCAN',
+    result: 'VALID',
+    note: `Chủ hộ tạo mã đón khách [${visitorName}] hiệu lực ${hours} giờ.`
+  });
 
   return pass;
 }
 
 /**
- * Gate Security Scanner & AI Interlock Engine
- * Strictly validates real QR passes and PIN tokens against cryptographic signatures and registry.
+ * Verify a presented QR code string, JSON string, PIN or passId
  */
-export function verifyVisitorQr(qrInput: string, checkpoint: string = 'Sảnh A (Sapphire) - Camera AI 01'): VerificationScanResult {
+export function verifyVisitorQr(qrInput: string, checkpoint: string = 'Sảnh Lễ Tân / Chốt An Ninh'): VerificationScanResult {
   const now = Date.now();
   const nowStr = new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
   const fullTimestamp = `${nowStr} ${new Date().toLocaleDateString('vi-VN')}`;
@@ -228,309 +287,269 @@ export function verifyVisitorQr(qrInput: string, checkpoint: string = 'Sảnh A 
   if (!raw) {
     return {
       scanResult: 'INVALID',
-      title: 'CHƯA NHẬN DIỆN MÃ QR',
-      message: 'Vui lòng đưa mã QR vào vùng quét của Camera AI hoặc tải ảnh mã lên.',
+      title: 'CHƯA NHẬN DIỆN ĐƯỢC MÃ QR',
+      message: 'Vui lòng đưa mã QR vào vùng quét của camera hoặc tải ảnh mã lên.',
       canEnter: false,
       scannedAt: nowStr,
       checkpoint,
-      gateAction: 'Chờ Quét Mã'
     };
   }
 
-  // 1. Check if token/PIN exists in genuine pass registry
-  const registry = getPassRegistry();
-  let matchedPass: GeneratedVisitorPass | undefined = registry.get(raw);
+  // 1. Try parsing if raw is JSON string
+  let parsedFromJson: any = null;
+  if (raw.startsWith('{') && raw.endsWith('}')) {
+    try {
+      const parsed = JSON.parse(raw);
+      if (parsed.skyline_pass || parsed.passId) {
+        parsedFromJson = parsed;
+      }
+    } catch (e) {
+      // Not JSON
+    }
+  }
 
-  // If not direct hit, try searching by id, qrData, or pinCode in registry values
+  const registry = getPassRegistry();
+  let matchedPass: GeneratedVisitorPass | undefined = undefined;
+
+  // Search by JSON passId, or exact match in registry
+  if (parsedFromJson?.passId) {
+    matchedPass = registry.get(parsedFromJson.passId);
+  }
+
+  if (!matchedPass) {
+    matchedPass = registry.get(raw);
+  }
+
+  // Search by loop
   if (!matchedPass) {
     registry.forEach((pass) => {
-      if (!matchedPass && (pass.qrData === raw || pass.id === raw || pass.pinCode === raw || raw.includes(pass.id))) {
-        matchedPass = pass;
+      if (!matchedPass) {
+        if (pass.qrData === raw || pass.id === raw || pass.pinCode === raw || raw.includes(pass.id) || (pass.pinCode && raw.includes(pass.pinCode))) {
+          matchedPass = pass;
+        }
       }
     });
   }
 
+  // If found in active registry
   if (matchedPass) {
     const isExpired = now > new Date(matchedPass.validUntil).getTime();
-    const aptCode = matchedPass.apartmentCode || '12A05';
-    const guestName = matchedPass.visitorName || 'Khách Thăm Căn Hộ';
-    const plateInfo = matchedPass.licensePlate ? ` (Xe: ${matchedPass.licensePlate})` : '';
-
-    if (matchedPass.entryType === 'SINGLE' && USED_SINGLE_TOKENS.has(matchedPass.id)) {
-      const result: VerificationScanResult = {
-        scanResult: 'INVALID',
-        title: 'MÃ 1 LẦN ĐÃ ĐƯỢC SỬ DỤNG',
-        message: `Mã đón khách của ${guestName} (Căn ${aptCode}) là vé 1 lần và đã được sử dụng qua cổng trước đó.`,
-        canEnter: false,
-        apartmentCode: aptCode,
-        visitorName: guestName,
-        entryType: 'SINGLE',
-        scannedAt: nowStr,
-        checkpoint,
-        gateAction: 'Từ Chối Vào (Mã Đã Dùng 1 Lần)'
-      };
-
-      addGateAuditLog({
-        timestamp: fullTimestamp,
-        apartmentCode: aptCode,
-        entryType: 'SINGLE',
-        purposeLabel: 'Khách Thăm Căn Hộ',
-        checkpoint,
-        result: 'INVALID',
-        gateAction: 'Từ Chối (Đã Dùng 1 Lần)',
-        qrSnippet: raw.substring(0, 25)
-      });
-
-      return result;
+    if (isExpired && matchedPass.status === 'ACTIVE') {
+      matchedPass.status = 'EXPIRED';
+      savePassToRegistry(matchedPass);
     }
 
-    if (isExpired) {
+    const towerName = matchedPass.towerName || (matchedPass.apartmentCode.includes('A') ? 'Tòa A (Sapphire)' : 'Tòa B (Diamond)');
+
+    if (matchedPass.status === 'EXPIRED' || isExpired) {
       const expDate = new Date(matchedPass.validUntil);
       const result: VerificationScanResult = {
         scanResult: 'EXPIRED',
-        title: 'MÃ QR ĐÃ HẾT HẠN HIỆU LỰC',
-        message: `Mã đón khách của ${guestName} (Căn ${aptCode}) đã hết hạn lúc ${expDate.toLocaleTimeString('vi-VN')} ngày ${expDate.toLocaleDateString('vi-VN')}. Cổng tự động khóa.`,
+        title: 'MÃ ĐÓN KHÁCH ĐÃ HẾT HẠN',
+        message: `Mã QR đón khách [${matchedPass.visitorName}] của Căn hộ ${matchedPass.apartmentCode} đã hết hạn lúc ${expDate.toLocaleTimeString('vi-VN')} ngày ${expDate.toLocaleDateString('vi-VN')}.`,
         canEnter: false,
-        apartmentCode: aptCode,
-        visitorName: guestName,
-        entryType: matchedPass.entryType,
-        validUntil: matchedPass.validUntil,
         scannedAt: nowStr,
         checkpoint,
-        gateAction: 'Từ Chối Vào (Mã Hết Hạn)'
+        host: {
+          apartmentCode: matchedPass.apartmentCode,
+          hostName: matchedPass.hostName || 'Chủ hộ Căn ' + matchedPass.apartmentCode,
+          hostPhone: matchedPass.hostPhone || 'Chưa cập nhật',
+          towerName,
+        },
+        visitor: {
+          passId: matchedPass.id,
+          visitorName: matchedPass.visitorName,
+          phoneNumber: matchedPass.phoneNumber,
+          licensePlate: matchedPass.licensePlate,
+          validHours: matchedPass.validHours,
+          createdAt: matchedPass.createdAt,
+          validUntil: matchedPass.validUntil,
+          status: 'EXPIRED',
+          checkedInAt: matchedPass.checkedInAt,
+          checkedOutAt: matchedPass.checkedOutAt,
+          pinCode: matchedPass.pinCode,
+        }
       };
 
       addGateAuditLog({
         timestamp: fullTimestamp,
-        apartmentCode: aptCode,
-        entryType: matchedPass.entryType,
-        purposeLabel: 'Khách Thăm Căn Hộ',
-        checkpoint,
+        apartmentCode: matchedPass.apartmentCode,
+        hostName: matchedPass.hostName,
+        visitorName: matchedPass.visitorName,
+        licensePlate: matchedPass.licensePlate,
+        action: 'SCAN',
         result: 'EXPIRED',
-        gateAction: 'Từ Chối Vào (Quá Hạn)',
-        qrSnippet: raw.substring(0, 25)
+        note: `Quét mã quá hạn của khách [${matchedPass.visitorName}].`
       });
 
       return result;
     }
 
-    // Mark single-use pass as used
-    if (matchedPass.entryType === 'SINGLE') {
-      USED_SINGLE_TOKENS.add(matchedPass.id);
-    }
-
-    // Determine target floor and elevator
-    const floorMatch = aptCode.match(/\d+/);
-    const floorNum = floorMatch ? (floorMatch[0].length >= 3 ? floorMatch[0].substring(0, floorMatch[0].length - 2) : floorMatch[0]) : '12';
-    const targetFloor = `Tầng ${floorNum || '12'}`;
-    const isA = aptCode.toUpperCase().includes('A');
-    const elevatorCabin = isA ? 'Cabin Thang Máy 02 (Sảnh A)' : 'Cabin Thang Máy 01 (Sảnh B)';
-
-    const residentPushAlert: ResidentArrivalAlert = {
-      apartmentCode: aptCode,
-      visitorName: guestName,
-      time: nowStr,
-      checkpoint,
-      elevatorCabin,
-      floor: targetFloor,
-      message: `🔔 CĂN HỘ ${aptCode}: Khách [${guestName}${plateInfo}] đã check-in qua ${checkpoint} lúc ${nowStr}. ${elevatorCabin} tự động kích hoạt đưa lên ${targetFloor}.`
-    };
-
-    globalScope.__LAST_RESIDENT_VISITOR_ALERT = residentPushAlert;
-
+    // Valid pass!
     const result: VerificationScanResult = {
       scanResult: 'VALID',
-      title: 'XÁC THỰC AI THÀNH CÔNG • CỔNG MỞ TỰ ĐỘNG',
-      message: `Mã QR hợp lệ của ${guestName}${plateInfo}. Camera AI tự động mở cổng sảnh, kích hoạt ${elevatorCabin} đưa khách lên ${targetFloor} và gửi thông báo cho cư dân Căn ${aptCode}.`,
+      title: matchedPass.status === 'CHECKED_IN' ? 'KHÁCH ĐÃ CHECK-IN (ĐANG Ở TRONG TÒA NHÀ)' : 'XÁC THỰC MÃ HỢP LỆ • ĐỦ ĐIỀU KIỆN VÀO',
+      message: `Mã QR hợp lệ do Chủ hộ [${matchedPass.hostName}] (Căn ${matchedPass.apartmentCode}) cấp cho Khách [${matchedPass.visitorName}].`,
       canEnter: true,
-      apartmentCode: aptCode,
-      entryType: matchedPass.entryType,
-      purposeLabel: 'Khách Thăm Căn Hộ',
-      validUntil: matchedPass.validUntil,
       scannedAt: nowStr,
       checkpoint,
-      gateAction: `Mở Cổng Tự Động & Phân Quyền ${targetFloor}`,
-      visitorName: guestName,
-      elevatorCabin,
-      targetFloor,
-      residentPushAlert
+      host: {
+        apartmentCode: matchedPass.apartmentCode,
+        hostName: matchedPass.hostName || 'Chủ hộ Căn ' + matchedPass.apartmentCode,
+        hostPhone: matchedPass.hostPhone || 'Chưa cập nhật',
+        towerName,
+      },
+      visitor: {
+        passId: matchedPass.id,
+        visitorName: matchedPass.visitorName,
+        phoneNumber: matchedPass.phoneNumber,
+        licensePlate: matchedPass.licensePlate,
+        validHours: matchedPass.validHours,
+        createdAt: matchedPass.createdAt,
+        validUntil: matchedPass.validUntil,
+        status: matchedPass.status,
+        checkedInAt: matchedPass.checkedInAt,
+        checkedOutAt: matchedPass.checkedOutAt,
+        pinCode: matchedPass.pinCode,
+      }
     };
 
     addGateAuditLog({
       timestamp: fullTimestamp,
-      apartmentCode: aptCode,
-      entryType: matchedPass.entryType,
-      purposeLabel: 'Khách Thăm Căn Hộ',
-      checkpoint,
+      apartmentCode: matchedPass.apartmentCode,
+      hostName: matchedPass.hostName,
+      visitorName: matchedPass.visitorName,
+      licensePlate: matchedPass.licensePlate,
+      action: 'SCAN',
       result: 'VALID',
-      gateAction: `Mở Cổng & Cấp ${elevatorCabin} lên ${targetFloor}`,
-      qrSnippet: raw.substring(0, 25)
+      note: `Xác thực thông tin khách [${matchedPass.visitorName}] đến Căn ${matchedPass.apartmentCode}.`
     });
 
     return result;
   }
 
-  // 2. Parse cryptographic format: SKY_TOKEN_{aptCode}_{passId}_{expiresAt}_{entryType}_{signature}
-  if (raw.startsWith('SKY_TOKEN_')) {
-    const parts = raw.split('_');
-    if (parts.length >= 7) {
-      const aptCode = parts[2];
-      const passId = parts[3];
-      const expiryTimestamp = parseInt(parts[4], 10);
-      const entryType = parts[5] as PassEntryType;
-      const signature = parts[6];
+  // 2. If pass came from parsed JSON but was created on another client/session
+  if (parsedFromJson && parsedFromJson.skyline_pass) {
+    const isExpired = now > parsedFromJson.expiresAt;
+    const aptCode = parsedFromJson.aptCode || '12A05';
+    const towerName = parsedFromJson.tower || (aptCode.includes('A') ? 'Tòa A (Sapphire)' : 'Tòa B (Diamond)');
 
-      // Validate cryptographic signature
-      const expectedSig = Math.abs(hashCode(`${aptCode}_${passId}_${expiryTimestamp}_${entryType}`)).toString(36).toUpperCase();
-      if (signature !== expectedSig) {
-        const result: VerificationScanResult = {
-          scanResult: 'INVALID',
-          title: 'MÃ QR GIẢ MẠO (CHỮ KÝ SAI)',
-          message: 'Chữ ký an ninh mã QR không hợp lệ hoặc đã bị can thiệp. Cổng an ninh tự động khóa chặt.',
-          canEnter: false,
-          scannedAt: nowStr,
-          checkpoint,
-          gateAction: 'Khóa Cổng Cảnh Báo An Ninh'
-        };
+    // Reconstruct pass and add to registry
+    const reconstructedPass: GeneratedVisitorPass = {
+      id: parsedFromJson.passId || `SKY-PASS-${Math.floor(1000 + Math.random() * 9000)}`,
+      apartmentCode: aptCode,
+      hostName: parsedFromJson.hostName || `Chủ hộ Căn ${aptCode}`,
+      hostPhone: parsedFromJson.hostPhone || '',
+      towerName,
+      visitorName: parsedFromJson.visitorName || 'Khách Thăm Nhà',
+      phoneNumber: parsedFromJson.phone || '',
+      licensePlate: parsedFromJson.plate || '',
+      entryType: 'MULTI',
+      purpose: 'VISITOR',
+      purposeLabel: 'Khách Thăm Căn Hộ',
+      validHours: 4,
+      createdAt: new Date(now).toISOString(),
+      validUntil: new Date(parsedFromJson.expiresAt).toISOString(),
+      qrData: raw,
+      pinCode: parsedFromJson.pin || '123456',
+      status: isExpired ? 'EXPIRED' : 'ACTIVE',
+    };
+    savePassToRegistry(reconstructedPass);
 
-        addGateAuditLog({
-          timestamp: fullTimestamp,
-          apartmentCode: aptCode || 'Không xác định',
-          entryType: entryType || 'SINGLE',
-          purposeLabel: 'Mã không hợp lệ',
-          checkpoint,
-          result: 'INVALID',
-          gateAction: 'Khóa Cổng Cảnh Báo',
-          qrSnippet: raw.substring(0, 25)
-        });
-
-        return result;
-      }
-
-      // Check expiry
-      if (now > expiryTimestamp) {
-        const expDate = new Date(expiryTimestamp);
-        const result: VerificationScanResult = {
-          scanResult: 'EXPIRED',
-          title: 'MÃ QR ĐÃ HẾT HẠN HIỆU LỰC',
-          message: `Mã đón khách Căn ${aptCode} đã hết hạn vào lúc ${expDate.toLocaleTimeString('vi-VN')} ngày ${expDate.toLocaleDateString('vi-VN')}.`,
-          canEnter: false,
-          apartmentCode: aptCode,
-          entryType,
-          validUntil: expDate.toISOString(),
-          scannedAt: nowStr,
-          checkpoint,
-          gateAction: 'Từ Chối Vào (Quá Hạn)'
-        };
-
-        addGateAuditLog({
-          timestamp: fullTimestamp,
-          apartmentCode: aptCode,
-          entryType,
-          purposeLabel: 'Khách Thăm Căn Hộ',
-          checkpoint,
-          result: 'EXPIRED',
-          gateAction: 'Từ Chối Vào (Quá Hạn)',
-          qrSnippet: raw.substring(0, 25)
-        });
-
-        return result;
-      }
-
-      // Check single use
-      if (entryType === 'SINGLE' && USED_SINGLE_TOKENS.has(passId)) {
-        return {
-          scanResult: 'INVALID',
-          title: 'MÃ 1 LẦN ĐÃ ĐƯỢC SỬ DỤNG',
-          message: `Mã đón khách của Căn ${aptCode} đã được quét sử dụng trước đó.`,
-          canEnter: false,
-          apartmentCode: aptCode,
-          entryType: 'SINGLE',
-          scannedAt: nowStr,
-          checkpoint,
-          gateAction: 'Từ Chối Vào (Mã Đã Dùng 1 Lần)'
-        };
-      }
-
-      if (entryType === 'SINGLE') {
-        USED_SINGLE_TOKENS.add(passId);
-      }
-
-      const floorMatch = aptCode.match(/\d+/);
-      const floorNum = floorMatch ? (floorMatch[0].length >= 3 ? floorMatch[0].substring(0, floorMatch[0].length - 2) : floorMatch[0]) : '12';
-      const targetFloor = `Tầng ${floorNum || '12'}`;
-      const isA = aptCode.toUpperCase().includes('A');
-      const elevatorCabin = isA ? 'Cabin Thang Máy 02 (Sảnh A)' : 'Cabin Thang Máy 01 (Sảnh B)';
-      const visitorName = 'Khách Thăm Căn Hộ';
-
-      const residentPushAlert: ResidentArrivalAlert = {
-        apartmentCode: aptCode,
-        visitorName,
-        time: nowStr,
-        checkpoint,
-        elevatorCabin,
-        floor: targetFloor,
-        message: `🔔 CĂN HỘ ${aptCode}: Khách thăm vừa quét mã AI qua ${checkpoint} lúc ${nowStr}. ${elevatorCabin} đang đón lên ${targetFloor}.`
-      };
-
-      globalScope.__LAST_RESIDENT_VISITOR_ALERT = residentPushAlert;
-
-      const result: VerificationScanResult = {
-        scanResult: 'VALID',
-        title: 'XÁC THỰC AI THÀNH CÔNG • CỔNG MỞ TỰ ĐỘNG',
-        message: `Mã QR hợp lệ Căn hộ ${aptCode}. Camera AI tự động mở cổng sảnh, kích hoạt ${elevatorCabin} đưa khách lên ${targetFloor} và gửi thông báo cho cư dân.`,
-        canEnter: true,
-        apartmentCode: aptCode,
-        entryType,
-        purposeLabel: 'Khách Thăm Căn Hộ',
-        validUntil: new Date(expiryTimestamp).toISOString(),
-        scannedAt: nowStr,
-        checkpoint,
-        gateAction: `Mở Cổng Tự Động & Phân Quyền ${targetFloor}`,
-        visitorName,
-        elevatorCabin,
-        targetFloor,
-        residentPushAlert
-      };
-
-      addGateAuditLog({
-        timestamp: fullTimestamp,
-        apartmentCode: aptCode,
-        entryType,
-        purposeLabel: 'Khách Thăm Căn Hộ',
-        checkpoint,
-        result: 'VALID',
-        gateAction: `Mở Cổng & Cấp ${elevatorCabin} lên ${targetFloor}`,
-        qrSnippet: raw.substring(0, 25)
-      });
-
-      return result;
-    }
+    return verifyVisitorQr(reconstructedPass.id, checkpoint);
   }
 
-  // 3. Fallback for any non-system or unrecognized QR code
+  // 3. Fallback: Not recognized
   const result: VerificationScanResult = {
     scanResult: 'INVALID',
-    title: 'MÃ QR KHÔNG HỢP LỆ',
-    message: 'Mã quét không thuộc hệ thống tòa nhà Skyline hoặc không đúng quy chuẩn an ninh.',
+    title: 'MÃ QR KHÔNG TỒN TẠI HOẶC KHÔNG HỢP LỆ',
+    message: 'Mã quét không thuộc hệ thống Skyline Smart Residence hoặc đã bị chỉnh sửa sai lệch.',
     canEnter: false,
     scannedAt: nowStr,
     checkpoint,
-    gateAction: 'Khóa Cổng Cảnh Báo An Ninh'
   };
 
   addGateAuditLog({
     timestamp: fullTimestamp,
     apartmentCode: 'Chưa xác định',
-    entryType: 'SINGLE',
-    purposeLabel: 'Mã không hợp lệ',
-    checkpoint,
+    action: 'SCAN',
     result: 'INVALID',
-    gateAction: 'Khóa Cổng Cảnh Báo',
-    qrSnippet: raw.substring(0, 25) || 'UNKNOWN'
+    note: `Quét mã không hợp lệ: ${raw.substring(0, 30)}...`
   });
 
   return result;
+}
+
+/**
+ * Receptionist / Security confirms visitor check-in
+ */
+export function checkInVisitorPass(passId: string): GeneratedVisitorPass | null {
+  const reg = getPassRegistry();
+  let target: GeneratedVisitorPass | undefined = reg.get(passId);
+
+  if (!target) {
+    reg.forEach((p) => {
+      if (p.id === passId) target = p;
+    });
+  }
+
+  if (!target) return null;
+
+  const nowStr = new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
+  const fullTimestamp = `${nowStr} ${new Date().toLocaleDateString('vi-VN')}`;
+
+  target.status = 'CHECKED_IN';
+  target.checkedInAt = fullTimestamp;
+  savePassToRegistry(target);
+
+  addGateAuditLog({
+    timestamp: fullTimestamp,
+    apartmentCode: target.apartmentCode,
+    hostName: target.hostName,
+    visitorName: target.visitorName,
+    licensePlate: target.licensePlate,
+    action: 'CHECK_IN',
+    result: 'VALID',
+    note: `Lễ tân xác nhận khách [${target.visitorName}] đã vào chung cư lên Căn ${target.apartmentCode}.`
+  });
+
+  return target;
+}
+
+/**
+ * Receptionist / Security confirms visitor check-out
+ */
+export function checkOutVisitorPass(passId: string): GeneratedVisitorPass | null {
+  const reg = getPassRegistry();
+  let target: GeneratedVisitorPass | undefined = reg.get(passId);
+
+  if (!target) {
+    reg.forEach((p) => {
+      if (p.id === passId) target = p;
+    });
+  }
+
+  if (!target) return null;
+
+  const nowStr = new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
+  const fullTimestamp = `${nowStr} ${new Date().toLocaleDateString('vi-VN')}`;
+
+  target.status = 'COMPLETED';
+  target.checkedOutAt = fullTimestamp;
+  savePassToRegistry(target);
+
+  addGateAuditLog({
+    timestamp: fullTimestamp,
+    apartmentCode: target.apartmentCode,
+    hostName: target.hostName,
+    visitorName: target.visitorName,
+    licensePlate: target.licensePlate,
+    action: 'CHECK_OUT',
+    result: 'VALID',
+    note: `Lễ tân ghi nhận khách [${target.visitorName}] rời chung cư.`
+  });
+
+  return target;
 }
 
 // Simple hash helper

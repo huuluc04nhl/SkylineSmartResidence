@@ -5,59 +5,64 @@ import jsQR from 'jsqr';
 import { 
   Camera, 
   CameraOff, 
-  ShieldCheck, 
-  ShieldAlert, 
-  Sparkles, 
-  Activity, 
-  RefreshCw, 
   CheckCircle2, 
   XCircle, 
   AlertTriangle, 
   Upload, 
   Zap, 
-  Lock, 
-  Unlock, 
   Building2, 
-  Bell, 
-  Volume2, 
-  VolumeX, 
-  Smartphone, 
+  User, 
+  Phone, 
+  Car, 
+  Clock, 
+  KeyRound, 
+  Search, 
+  RefreshCw, 
   Check, 
-  Eye, 
-  ArrowUpRight, 
-  Radio, 
-  Cpu, 
-  Layers
+  UserCheck, 
+  LogIn, 
+  LogOut, 
+  ShieldCheck, 
+  ShieldAlert, 
+  Sparkles,
+  FileText,
+  Home,
+  Users,
+  Info
 } from 'lucide-react';
 import { 
   verifyVisitorQr, 
   VerificationScanResult, 
-  getGateAuditLogs, 
-  GateAuditLog,
-  ResidentArrivalAlert
+  getAllVisitorPasses,
+  GeneratedVisitorPass,
+  checkInVisitorPass,
+  checkOutVisitorPass,
+  VisitorPassStatus
 } from '@/lib/visitorStore';
 
 export default function AdminVisitorControl() {
   // Checkpoint selector
-  const [selectedCheckpoint, setSelectedCheckpoint] = useState('Sảnh A (Sapphire) - Camera AI 01');
+  const [selectedCheckpoint, setSelectedCheckpoint] = useState('Sảnh Lễ Tân Tòa A (Sapphire)');
+
+  // Input & Scanner modes: CAMERA | UPLOAD | PIN_SEARCH
+  const [scanMode, setScanMode] = useState<'CAMERA' | 'UPLOAD' | 'PIN_SEARCH'>('CAMERA');
 
   // Camera State
   const [isCameraActive, setIsCameraActive] = useState(false);
   const [cameraError, setCameraError] = useState<string | null>(null);
-  const [isProcessingAi, setIsProcessingAi] = useState(false);
-  const [aiVoiceEnabled, setAiVoiceEnabled] = useState(true);
+  const [isScanning, setIsScanning] = useState(false);
 
-  // Scan & Workflow Results
+  // Manual PIN / PassID search
+  const [searchQuery, setSearchQuery] = useState('');
+
+  // Current Scan / Verification Result
   const [scanResult, setScanResult] = useState<VerificationScanResult | null>(null);
-  const [activeResidentAlert, setActiveResidentAlert] = useState<ResidentArrivalAlert | null>(null);
-  const [activeElevatorCabin, setActiveElevatorCabin] = useState<string | null>(null);
-  const [activeTargetFloor, setActiveTargetFloor] = useState<string | null>(null);
-  const [gateStatus, setGateStatus] = useState<'IDLE' | 'UNLOCKED' | 'ALARM'>('IDLE');
+  const [actionFeedback, setActionFeedback] = useState<string | null>(null);
 
-  // Manual / Demo Input
-  const [customQrInput, setCustomQrInput] = useState('');
-  const [filterResult, setFilterResult] = useState<'ALL' | 'VALID' | 'INVALID' | 'EXPIRED'>('ALL');
-  const [scanHistory, setScanHistory] = useState<GateAuditLog[]>([]);
+  // Visitor Passes List & Filtering
+  const [passesList, setPassesList] = useState<GeneratedVisitorPass[]>([]);
+  const [filterStatus, setFilterStatus] = useState<string>('ALL');
+  const [tableSearch, setTableSearch] = useState('');
 
   // Refs
   const videoRef = useRef<HTMLVideoElement | null>(null);
@@ -65,75 +70,80 @@ export default function AdminVisitorControl() {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const animationFrameId = useRef<number | null>(null);
 
-  // Load audit logs
-  const refreshLogs = () => {
-    setScanHistory([...getGateAuditLogs()]);
+  // Load passes from store
+  const refreshPasses = () => {
+    const list = getAllVisitorPasses();
+    setPassesList([...list]);
   };
 
   useEffect(() => {
-    refreshLogs();
+    refreshPasses();
   }, []);
 
-  // Speak AI Announcement
-  const speakAiGreeting = (message: string) => {
-    if (!aiVoiceEnabled || typeof window === 'undefined' || !('speechSynthesis' in window)) return;
-    try {
-      window.speechSynthesis.cancel();
-      const utterance = new SpeechSynthesisUtterance(message);
-      utterance.lang = 'vi-VN';
-      utterance.rate = 1.0;
-      utterance.pitch = 1.05;
-      window.speechSynthesis.speak(utterance);
-    } catch (e) {
-      // Speech synthesis fallback
+  const showFeedback = (msg: string) => {
+    setActionFeedback(msg);
+    setTimeout(() => setActionFeedback(null), 3500);
+  };
+
+  // Perform QR / PIN Verification
+  const handleVerify = (rawInput: string) => {
+    if (!rawInput.trim() || isScanning) return;
+    setIsScanning(true);
+
+    setTimeout(() => {
+      const result = verifyVisitorQr(rawInput.trim(), selectedCheckpoint);
+      setScanResult(result);
+      setIsScanning(false);
+      refreshPasses();
+
+      if (result.canEnter && result.scanResult === 'VALID') {
+        showFeedback(`Xác thực thành công! Khách: ${result.visitor?.visitorName} • Chủ hộ: ${result.host?.hostName}`);
+      }
+    }, 200);
+  };
+
+  // Check-in Action
+  const handleCheckIn = (passId: string) => {
+    const updated = checkInVisitorPass(passId);
+    if (updated) {
+      showFeedback(`Đã xác nhận cho khách [${updated.visitorName}] vào chung cư!`);
+      // Update current scan result
+      if (scanResult && scanResult.visitor?.passId === passId) {
+        setScanResult({
+          ...scanResult,
+          title: 'KHÁCH ĐÃ CHECK-IN (ĐANG Ở TRONG TÒA NHÀ)',
+          visitor: {
+            ...scanResult.visitor,
+            status: 'CHECKED_IN',
+            checkedInAt: updated.checkedInAt
+          }
+        });
+      }
+      refreshPasses();
     }
   };
 
-  // Automated AI Verification Pipeline
-  const runAiVerification = (qrRawData: string) => {
-    if (!qrRawData || isProcessingAi) return;
-    setIsProcessingAi(true);
-
-    setTimeout(() => {
-      const result = verifyVisitorQr(qrRawData, selectedCheckpoint);
-      setScanResult(result);
-      setIsProcessingAi(false);
-
-      if (result.canEnter && result.scanResult === 'VALID') {
-        setGateStatus('UNLOCKED');
-        setActiveElevatorCabin(result.elevatorCabin || 'Cabin 02 (Sảnh A)');
-        setActiveTargetFloor(result.targetFloor || 'Tầng 12');
-        if (result.residentPushAlert) {
-          setActiveResidentAlert(result.residentPushAlert);
-        }
-
-        speakAiGreeting(`Skyline Smart Residence kính chào Quý khách lên ${result.targetFloor || 'Căn hộ'}`);
-
-        // Reset gate to idle after 6 seconds
-        setTimeout(() => {
-          setGateStatus('IDLE');
-        }, 6000);
-      } else if (result.scanResult === 'EXPIRED') {
-        setGateStatus('IDLE');
-        setActiveElevatorCabin(null);
-        setActiveTargetFloor(null);
-        speakAiGreeting('Mã ra vào đã quá thời gian hiệu lực');
-      } else {
-        setGateStatus('ALARM');
-        setActiveElevatorCabin(null);
-        setActiveTargetFloor(null);
-        speakAiGreeting('Cảnh báo. Mã ra vào không hợp lệ');
-
-        setTimeout(() => {
-          setGateStatus('IDLE');
-        }, 5000);
+  // Check-out Action
+  const handleCheckOut = (passId: string) => {
+    const updated = checkOutVisitorPass(passId);
+    if (updated) {
+      showFeedback(`Đã ghi nhận khách [${updated.visitorName}] rời chung cư!`);
+      if (scanResult && scanResult.visitor?.passId === passId) {
+        setScanResult({
+          ...scanResult,
+          title: 'KHÁCH ĐÃ RỜI ĐI (HOÀN TẤT THĂM CĂN HỘ)',
+          visitor: {
+            ...scanResult.visitor,
+            status: 'COMPLETED',
+            checkedOutAt: updated.checkedOutAt
+          }
+        });
       }
-
-      refreshLogs();
-    }, 350);
+      refreshPasses();
+    }
   };
 
-  // Continuous Camera QR Frame Scanning Loop
+  // Camera video frame scanner loop
   const scanVideoFrame = () => {
     if (!videoRef.current || !canvasRef.current || !isCameraActive) return;
     const video = videoRef.current;
@@ -150,9 +160,9 @@ export default function AdminVisitorControl() {
         inversionAttempts: 'dontInvert',
       });
 
-      if (code && code.data && !isProcessingAi) {
-        // Detected a QR code in the camera frame!
-        runAiVerification(code.data);
+      if (code && code.data && !isScanning) {
+        // Detected a QR code!
+        handleVerify(code.data);
       }
     }
 
@@ -179,7 +189,7 @@ export default function AdminVisitorControl() {
       }
     } catch (err: any) {
       console.error('Camera access error:', err);
-      setCameraError('Không thể mở camera. Vui lòng cấp quyền truy cập camera trên trình duyệt hoặc sử dụng chế độ tải ảnh mã QR / nhập mã trực tiếp.');
+      setCameraError('Không thể mở camera. Vui lòng kiểm tra quyền truy cập camera trên trình duyệt hoặc sử dụng chế độ tải ảnh QR / tra cứu mã PIN.');
       setIsCameraActive(false);
     }
   };
@@ -197,7 +207,6 @@ export default function AdminVisitorControl() {
     setIsCameraActive(false);
   };
 
-  // Toggle Camera
   const toggleCamera = () => {
     if (isCameraActive) {
       stopCamera();
@@ -212,7 +221,7 @@ export default function AdminVisitorControl() {
     };
   }, []);
 
-  // Upload QR Image to scan
+  // Handle Upload Image
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -231,9 +240,9 @@ export default function AdminVisitorControl() {
         const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
         const code = jsQR(imageData.data, imageData.width, imageData.height);
         if (code && code.data) {
-          runAiVerification(code.data);
+          handleVerify(code.data);
         } else {
-          runAiVerification('INVALID_UNKNOWN_QR_SKYLINE_999999');
+          handleVerify('INVALID_UNRECOGNIZED_IMAGE');
         }
       };
       img.src = reader.result as string;
@@ -242,211 +251,239 @@ export default function AdminVisitorControl() {
     e.target.value = '';
   };
 
-  const filteredLogs = scanHistory.filter((l) => {
-    if (filterResult === 'ALL') return true;
-    return l.result === filterResult;
+  // Quick stats
+  const totalPasses = passesList.length;
+  const inBuildingCount = passesList.filter((p) => p.status === 'CHECKED_IN').length;
+  const pendingCount = passesList.filter((p) => p.status === 'ACTIVE').length;
+  const completedCount = passesList.filter((p) => p.status === 'COMPLETED').length;
+
+  // Filtered passes for bottom table
+  const filteredPasses = passesList.filter((p) => {
+    if (filterStatus !== 'ALL' && p.status !== filterStatus) return false;
+    if (tableSearch.trim()) {
+      const q = tableSearch.toLowerCase().trim();
+      const matchName = p.visitorName.toLowerCase().includes(q);
+      const matchApt = p.apartmentCode.toLowerCase().includes(q);
+      const matchHost = p.hostName.toLowerCase().includes(q);
+      const matchPlate = (p.licensePlate || '').toLowerCase().includes(q);
+      const matchPhone = (p.phoneNumber || '').toLowerCase().includes(q);
+      const matchPin = p.pinCode.includes(q);
+      return matchName || matchApt || matchHost || matchPlate || matchPhone || matchPin;
+    }
+    return true;
   });
 
   return (
     <div className="space-y-6 animate-fadeIn select-none">
       
+      {/* Toast Feedback */}
+      {actionFeedback && (
+        <div className="fixed top-6 left-1/2 -translate-x-1/2 z-50 px-4 py-2.5 bg-[#161D26] border border-[#C5A880] text-[#C5A880] text-xs font-bold rounded-xl shadow-2xl flex items-center gap-2 animate-fadeIn">
+          <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+          <span>{actionFeedback}</span>
+        </div>
+      )}
+
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#222B35] pb-4">
         <div>
           <div className="text-[10px] uppercase tracking-[0.25em] text-[#C5A880] font-semibold flex items-center gap-1.5">
-            <Cpu className="w-3.5 h-3.5 text-[#C5A880]" /> Hệ Thống Quản Lý Ra Vào Thông Minh • Skyline AI Vision
+            <ShieldCheck className="w-3.5 h-3.5 text-[#C5A880]" /> Ban Quản Lý Chung Cư • Bộ Phận Lễ Tân & An Ninh
           </div>
           <h2 className="font-serif text-2xl text-white font-bold mt-1">
-            Trạm Giám Sát Camera AI & Quét Mã Khách Tự Động
+            Quản Lý & Tiếp Đón Khách Thăm (Mã QR Do Chủ Hộ Cung Cấp)
           </h2>
           <p className="text-xs text-gray-400 mt-0.5">
-            Quy trình tự động hóa 100%: Camera AI quét mã QR, tự động mở cổng sảnh, điều phối cabin thang máy và gửi thông báo tức thì cho cư dân.
+            Quét mã QR hoặc tra cứu thông tin khách vào chung cư. Đối chiếu trực tiếp thông tin chủ hộ bảo lãnh và thông tin khách thăm đã điền.
           </p>
         </div>
 
-        {/* Action controls */}
-        <div className="flex items-center gap-2.5 flex-wrap">
-          {/* Audio Voice Synthesizer Toggle */}
-          <button
-            type="button"
-            onClick={() => setAiVoiceEnabled(!aiVoiceEnabled)}
-            className={`px-3 py-2 rounded-lg text-xs font-semibold flex items-center gap-1.5 border transition-all cursor-pointer ${
-              aiVoiceEnabled 
-                ? 'bg-[#1C2533] border-[#C5A880] text-[#C5A880]' 
-                : 'bg-[#161B22] border-gray-700 text-gray-400'
-            }`}
-            title="Bật/Tắt âm thanh AI hướng dẫn khách"
+        {/* Checkpoint selector */}
+        <div className="flex items-center gap-2">
+          <span className="text-xs text-gray-400 font-medium">Vị trí:</span>
+          <select
+            value={selectedCheckpoint}
+            onChange={(e) => setSelectedCheckpoint(e.target.value)}
+            className="bg-[#161B22] border border-[#2D3748] text-xs text-[#C5A880] font-semibold py-1.5 px-3 rounded-lg outline-none cursor-pointer"
           >
-            {aiVoiceEnabled ? <Volume2 className="w-4 h-4 text-emerald-400" /> : <VolumeX className="w-4 h-4" />}
-            <span>Giọng Nói AI</span>
-          </button>
-
-          {/* Gate status indicator */}
-          <div className={`px-3.5 py-2 rounded-xl text-xs font-mono font-bold flex items-center gap-2 border shadow-lg ${
-            gateStatus === 'UNLOCKED'
-              ? 'bg-emerald-950 text-emerald-300 border-emerald-500 shadow-[0_0_15px_rgba(16,185,129,0.3)]'
-              : gateStatus === 'ALARM'
-              ? 'bg-rose-950 text-rose-300 border-rose-500 shadow-[0_0_15px_rgba(244,63,94,0.3)] animate-pulse'
-              : 'bg-[#121820] text-gray-400 border-gray-700'
-          }`}>
-            {gateStatus === 'UNLOCKED' ? (
-              <>
-                <Unlock className="w-4 h-4 text-emerald-400" />
-                <span>CỔNG: ĐÃ MỞ TỰ ĐỘNG</span>
-              </>
-            ) : gateStatus === 'ALARM' ? (
-              <>
-                <Lock className="w-4 h-4 text-rose-400" />
-                <span>CỔNG: KHÓA BÁO ĐỘNG</span>
-              </>
-            ) : (
-              <>
-                <Radio className="w-4 h-4 text-cyan-400 animate-pulse" />
-                <span>AI GATEWAY: SẴN SÀNG</span>
-              </>
-            )}
-          </div>
+            <option value="Sảnh Lễ Tân Tòa A (Sapphire)">Sảnh Lễ Tân Tòa A (Sapphire)</option>
+            <option value="Sảnh Lễ Tân Tòa B (Diamond)">Sảnh Lễ Tân Tòa B (Diamond)</option>
+            <option value="Chốt An Ninh Cổng Chính">Chốt An Ninh Cổng Chính</option>
+            <option value="Chốt Bảo Vệ Hầm B1">Chốt Bảo Vệ Hầm B1</option>
+          </select>
         </div>
       </div>
 
-      {/* Main Grid Terminal */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        
-        {/* Left 2 Cols: Live Camera AI Vision & Verification Pipeline */}
-        <div className="lg:col-span-2 space-y-5">
-          
-          {/* 1. Camera AI Live Scanner Card */}
-          <div className="p-5 bg-gradient-to-r from-[#121820] to-[#161D26] border border-[#C5A880]/70 rounded-xl space-y-4 shadow-xl">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#222B35] pb-3">
-              <div className="flex items-center gap-2.5">
-                <div className="p-2 bg-[#1C2533] border border-[#C5A880]/40 rounded-lg">
-                  <Camera className="w-5 h-5 text-[#C5A880]" />
-                </div>
-                <div>
-                  <h3 className="font-serif text-base font-bold text-white flex items-center gap-2">
-                    Camera AI Vision Quét Tự Động
-                    <span className="px-2 py-0.5 text-[9px] bg-emerald-950 text-emerald-400 border border-emerald-600 rounded font-mono font-normal">
-                      Auto-Detect
-                    </span>
-                  </h3>
-                  <div className="text-[11px] text-gray-400">
-                    Tự động nhận diện mã QR trong luồng video thời gian thực (&lt;0.3s)
-                  </div>
-                </div>
-              </div>
+      {/* 4 Stat Overview Cards */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3.5">
+        <div className="p-3.5 bg-[#121820] border border-[#222B35] rounded-xl space-y-1">
+          <div className="text-[11px] text-gray-400 flex items-center gap-1.5">
+            <Users className="w-3.5 h-3.5 text-[#C5A880]" /> Tổng Khách Được Cấp
+          </div>
+          <div className="text-xl font-bold font-mono text-white">{totalPasses}</div>
+        </div>
 
-              {/* Checkpoint selector */}
-              <div className="flex items-center gap-2">
-                <span className="text-[11px] text-gray-400">Trạm:</span>
-                <select
-                  value={selectedCheckpoint}
-                  onChange={(e) => setSelectedCheckpoint(e.target.value)}
-                  className="bg-[#161B22] border border-[#2D3748] text-xs text-[#C5A880] font-semibold py-1.5 px-3 rounded-lg outline-none cursor-pointer"
+        <div className="p-3.5 bg-[#121820] border border-[#222B35] rounded-xl space-y-1">
+          <div className="text-[11px] text-emerald-400 flex items-center gap-1.5">
+            <LogIn className="w-3.5 h-3.5 text-emerald-400" /> Đang Trong Chung Cư
+          </div>
+          <div className="text-xl font-bold font-mono text-emerald-400">{inBuildingCount}</div>
+        </div>
+
+        <div className="p-3.5 bg-[#121820] border border-[#222B35] rounded-xl space-y-1">
+          <div className="text-[11px] text-amber-400 flex items-center gap-1.5">
+            <Clock className="w-3.5 h-3.5 text-amber-400" /> Chờ Vào (Chưa Check-in)
+          </div>
+          <div className="text-xl font-bold font-mono text-amber-400">{pendingCount}</div>
+        </div>
+
+        <div className="p-3.5 bg-[#121820] border border-[#222B35] rounded-xl space-y-1">
+          <div className="text-[11px] text-gray-400 flex items-center gap-1.5">
+            <LogOut className="w-3.5 h-3.5 text-gray-400" /> Đã Rời Đi (Check-out)
+          </div>
+          <div className="text-xl font-bold font-mono text-gray-300">{completedCount}</div>
+        </div>
+      </div>
+
+      {/* Main Terminal: Left (Scanner/Lookup) & Right (Host & Visitor Verification Details) */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+        
+        {/* Left Col (5 / 12): Quét & Tra Cứu Mã QR */}
+        <div className="lg:col-span-5 space-y-4">
+          
+          <div className="p-4 bg-[#121820] border border-[#2D3748] rounded-xl space-y-3.5 shadow-xl">
+            
+            {/* Mode Switcher */}
+            <div className="flex items-center justify-between border-b border-[#222B35] pb-2.5">
+              <span className="text-xs font-bold uppercase tracking-wider text-[#C5A880] flex items-center gap-1.5">
+                <Sparkles className="w-3.5 h-3.5 text-[#C5A880]" /> Phương Thức Tra Cứu
+              </span>
+
+              <div className="flex gap-1 bg-[#161B22] p-0.5 rounded-lg border border-[#222B35] text-[11px]">
+                <button
+                  type="button"
+                  onClick={() => setScanMode('CAMERA')}
+                  className={`px-2.5 py-1 rounded transition-all cursor-pointer ${
+                    scanMode === 'CAMERA' ? 'bg-[#C5A880] text-[#0D1117] font-bold shadow' : 'text-gray-400 hover:text-white'
+                  }`}
                 >
-                  <option value="Sảnh A (Sapphire) - Camera AI 01">Sảnh A (Sapphire) • Camera AI 01</option>
-                  <option value="Sảnh B (Diamond) - Camera AI 02">Sảnh B (Diamond) • Camera AI 02</option>
-                  <option value="Cổng Hầm B1 - Camera ALPR Xe">Cổng Hầm B1 • Camera ALPR Xe</option>
-                </select>
+                  Camera
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setScanMode('UPLOAD')}
+                  className={`px-2.5 py-1 rounded transition-all cursor-pointer ${
+                    scanMode === 'UPLOAD' ? 'bg-[#C5A880] text-[#0D1117] font-bold shadow' : 'text-gray-400 hover:text-white'
+                  }`}
+                >
+                  Tải Ảnh
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setScanMode('PIN_SEARCH')}
+                  className={`px-2.5 py-1 rounded transition-all cursor-pointer ${
+                    scanMode === 'PIN_SEARCH' ? 'bg-[#C5A880] text-[#0D1117] font-bold shadow' : 'text-gray-400 hover:text-white'
+                  }`}
+                >
+                  Nhập PIN
+                </button>
               </div>
             </div>
 
-            {/* Video Viewfinder Container */}
-            <div className="relative w-full h-72 sm:h-80 bg-[#090D12] border-2 border-dashed border-[#2D3748] rounded-xl overflow-hidden flex items-center justify-center group shadow-inner">
-              
-              {/* Hidden Canvas for QR frame processing */}
-              <canvas ref={canvasRef} className="hidden" />
+            {/* Hidden Canvas for QR frame processing */}
+            <canvas ref={canvasRef} className="hidden" />
 
-              {isCameraActive ? (
-                <>
-                  <video
-                    ref={videoRef}
-                    playsInline
-                    muted
-                    className="w-full h-full object-cover"
-                  />
+            {/* MODE 1: LIVE CAMERA SCANNER */}
+            {scanMode === 'CAMERA' && (
+              <div className="space-y-3">
+                <div className="relative w-full h-64 bg-[#090D12] border-2 border-dashed border-[#2D3748] rounded-xl overflow-hidden flex items-center justify-center shadow-inner">
+                  {isCameraActive ? (
+                    <>
+                      <video
+                        ref={videoRef}
+                        playsInline
+                        muted
+                        className="w-full h-full object-cover"
+                      />
+                      {/* Targeting box */}
+                      <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
+                        <div className="relative w-48 h-48 border-2 border-emerald-400/80 rounded-xl shadow-[0_0_20px_rgba(16,185,129,0.3)]">
+                          <div className="absolute -top-1 -left-1 w-4 h-4 border-t-4 border-l-4 border-emerald-400"></div>
+                          <div className="absolute -top-1 -right-1 w-4 h-4 border-t-4 border-r-4 border-emerald-400"></div>
+                          <div className="absolute -bottom-1 -left-1 w-4 h-4 border-b-4 border-l-4 border-emerald-400"></div>
+                          <div className="absolute -bottom-1 -right-1 w-4 h-4 border-b-4 border-r-4 border-emerald-400"></div>
+                          <div className="w-full h-0.5 bg-gradient-to-r from-transparent via-emerald-400 to-transparent absolute top-0 animate-[bounce_2.2s_infinite]"></div>
+                          <div className="absolute bottom-2 left-1/2 -translate-x-1/2 px-2 py-0.5 bg-black/80 rounded text-[9.5px] text-emerald-300 font-mono whitespace-nowrap">
+                            Đang quét mã QR khách...
+                          </div>
+                        </div>
+                      </div>
+                    </>
+                  ) : (
+                    <div className="text-center space-y-2.5 p-4">
+                      <div className="w-12 h-12 mx-auto rounded-full bg-[#161D26] border border-[#2D3748] flex items-center justify-center text-[#C5A880]">
+                        <CameraOff className="w-6 h-6" />
+                      </div>
+                      <div className="space-y-0.5">
+                        <div className="font-bold text-white text-xs">Camera Đang Tắt</div>
+                        <p className="text-[11px] text-gray-400 max-w-xs">
+                          Bật camera để quét trực tiếp mã QR trên điện thoại của khách thăm khi đến sảnh.
+                        </p>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={startCamera}
+                        className="px-4 py-2 bg-[#C5A880] hover:bg-white text-[#0D1117] text-xs font-bold rounded-lg shadow transition-all flex items-center justify-center gap-1.5 mx-auto cursor-pointer"
+                      >
+                        <Camera className="w-3.5 h-3.5" /> Bật Camera Quét Mã
+                      </button>
+                    </div>
+                  )}
 
-                  {/* AI Vision Reticle & Targeting Box */}
-                  <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
-                    <div className="relative w-56 h-56 border-2 border-emerald-400/80 rounded-2xl shadow-[0_0_25px_rgba(16,185,129,0.3)]">
-                      {/* Corner Targeting Accents */}
-                      <div className="absolute -top-1 -left-1 w-5 h-5 border-t-4 border-l-4 border-emerald-400"></div>
-                      <div className="absolute -top-1 -right-1 w-5 h-5 border-t-4 border-r-4 border-emerald-400"></div>
-                      <div className="absolute -bottom-1 -left-1 w-5 h-5 border-b-4 border-l-4 border-emerald-400"></div>
-                      <div className="absolute -bottom-1 -right-1 w-5 h-5 border-b-4 border-r-4 border-emerald-400"></div>
-
-                      {/* Animated Scan Line */}
-                      <div className="w-full h-0.5 bg-gradient-to-r from-transparent via-emerald-400 to-transparent absolute top-0 animate-[bounce_2.5s_infinite]"></div>
-
-                      <div className="absolute bottom-2 left-1/2 -translate-x-1/2 px-2.5 py-0.5 bg-black/80 backdrop-blur rounded text-[10px] text-emerald-300 font-mono flex items-center gap-1 border border-emerald-500/30 whitespace-nowrap">
-                        <Sparkles className="w-3 h-3 text-emerald-400" /> AI Đang Quét Khung Hình...
+                  {isScanning && (
+                    <div className="absolute inset-0 bg-black/75 backdrop-blur-xs flex items-center justify-center text-white z-20 animate-fadeIn">
+                      <div className="text-center space-y-1.5">
+                        <RefreshCw className="w-6 h-6 text-[#C5A880] animate-spin mx-auto" />
+                        <div className="text-xs font-bold text-[#C5A880]">Đang Đối Chiếu Thông Tin...</div>
                       </div>
                     </div>
+                  )}
+                </div>
+
+                {cameraError && (
+                  <div className="p-2.5 bg-rose-950/80 border border-rose-500 rounded-lg text-xs text-rose-200 flex items-center gap-2">
+                    <AlertTriangle className="w-4 h-4 shrink-0" />
+                    <span>{cameraError}</span>
                   </div>
-                </>
-              ) : (
-                <div className="text-center space-y-3 p-6">
-                  <div className="w-14 h-14 mx-auto rounded-full bg-[#161D26] border border-[#2D3748] flex items-center justify-center text-[#C5A880]">
-                    <CameraOff className="w-7 h-7" />
-                  </div>
-                  <div className="space-y-1">
-                    <div className="font-serif font-bold text-white text-base">Camera AI Đang Tắt</div>
-                    <p className="text-xs text-gray-400 max-w-sm mx-auto">
-                      Bật Camera để trải nghiệm quét mã QR tự động qua video stream thực tế, hoặc tải ảnh mã lên bên dưới.
-                    </p>
-                  </div>
+                )}
+
+                {isCameraActive && (
                   <button
                     type="button"
-                    onClick={startCamera}
-                    className="px-5 py-2.5 bg-[#C5A880] hover:bg-white text-[#0D1117] text-xs font-bold uppercase tracking-wider rounded-lg shadow-lg transition-all flex items-center justify-center gap-2 mx-auto cursor-pointer"
+                    onClick={stopCamera}
+                    className="w-full py-2 bg-rose-950/80 hover:bg-rose-900 border border-rose-600 text-rose-300 text-xs font-bold rounded-lg flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
                   >
-                    <Camera className="w-4 h-4" /> Bật Camera AI Quét Trực Tiếp
+                    <CameraOff className="w-3.5 h-3.5" /> Dừng Camera
                   </button>
-                </div>
-              )}
-
-              {/* Processing Overlay */}
-              {isProcessingAi && (
-                <div className="absolute inset-0 bg-black/75 backdrop-blur-sm flex items-center justify-center text-white z-20 animate-fadeIn">
-                  <div className="text-center space-y-2">
-                    <RefreshCw className="w-8 h-8 text-[#C5A880] animate-spin mx-auto" />
-                    <div className="font-serif text-sm font-bold text-[#C5A880]">AI Đang Phân Tích Chữ Ký Số...</div>
-                    <div className="text-[11px] text-gray-300 font-mono">Giải mã token & kiểm tra hạn giờ</div>
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {cameraError && (
-              <div className="p-3 bg-rose-950/80 border border-rose-500 rounded-lg text-xs text-rose-200 flex items-center gap-2">
-                <AlertTriangle className="w-4 h-4 shrink-0" />
-                <span>{cameraError}</span>
+                )}
               </div>
             )}
 
-            {/* Camera Actions & Alternative Upload */}
-            <div className="flex flex-wrap items-center justify-between gap-3 pt-1">
-              <div className="flex items-center gap-2">
-                <button
-                  type="button"
-                  onClick={toggleCamera}
-                  className={`px-3.5 py-2 rounded-lg text-xs font-bold flex items-center gap-1.5 transition-colors cursor-pointer border ${
-                    isCameraActive 
-                      ? 'bg-rose-950/80 border-rose-600 text-rose-300 hover:bg-rose-900' 
-                      : 'bg-[#1C2533] border-gray-700 text-gray-300 hover:text-white'
-                  }`}
-                >
-                  {isCameraActive ? <CameraOff className="w-3.5 h-3.5" /> : <Camera className="w-3.5 h-3.5" />}
-                  <span>{isCameraActive ? 'Dừng Camera' : 'Mở Camera AI'}</span>
-                </button>
-
-                <button
-                  type="button"
+            {/* MODE 2: UPLOAD QR IMAGE */}
+            {scanMode === 'UPLOAD' && (
+              <div className="space-y-3">
+                <div 
                   onClick={() => fileInputRef.current?.click()}
-                  className="px-3.5 py-2 bg-[#161B22] hover:bg-[#1E2530] border border-gray-700 text-gray-300 hover:text-white rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
+                  className="w-full h-56 bg-[#090D12] border-2 border-dashed border-[#2D3748] hover:border-[#C5A880] rounded-xl flex flex-col items-center justify-center p-6 text-center cursor-pointer transition-colors group"
                 >
-                  <Upload className="w-3.5 h-3.5 text-[#C5A880]" />
-                  <span>Tải Ảnh Mã QR</span>
-                </button>
+                  <div className="w-12 h-12 rounded-full bg-[#161D26] border border-[#2D3748] group-hover:border-[#C5A880] flex items-center justify-center text-[#C5A880] mb-2">
+                    <Upload className="w-6 h-6" />
+                  </div>
+                  <div className="font-bold text-white text-xs">Nhấn Để Tải Ảnh Mã QR Lên</div>
+                  <p className="text-[11px] text-gray-400 mt-1 max-w-xs">
+                    Hỗ trợ ảnh chụp màn hình thư mời Zalo, Messenger hoặc file ảnh thẻ mời do chủ hộ gửi.
+                  </p>
+                </div>
                 <input
                   ref={fileInputRef}
                   type="file"
@@ -455,307 +492,463 @@ export default function AdminVisitorControl() {
                   onChange={handleImageUpload}
                 />
               </div>
+            )}
 
-              {/* Manual QR / PIN Verification Input */}
-              <form 
+            {/* MODE 3: MANUAL PIN / PASS ID SEARCH */}
+            <div className="pt-1 border-t border-[#222B35]">
+              <label className="text-[11px] text-gray-400 font-medium block mb-1">
+                Hoặc Nhập Nhanh Mã PIN (6 số) / Mã Vé Đón Khách:
+              </label>
+              <form
                 onSubmit={(e) => {
                   e.preventDefault();
-                  if (customQrInput.trim()) {
-                    runAiVerification(customQrInput.trim());
-                    setCustomQrInput('');
+                  if (searchQuery.trim()) {
+                    handleVerify(searchQuery.trim());
                   }
                 }}
-                className="flex items-center gap-2"
+                className="flex gap-2"
               >
-                <input
-                  type="text"
-                  value={customQrInput}
-                  onChange={(e) => setCustomQrInput(e.target.value)}
-                  placeholder="Nhập mã QR hoặc PIN khách..."
-                  className="bg-[#0E131A] border border-[#2D3748] rounded-lg px-3 py-1.5 text-xs text-white placeholder-gray-500 font-mono w-44 sm:w-56 focus:border-[#C5A880] outline-none"
-                />
+                <div className="relative flex-1">
+                  <input
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    placeholder="VD: 849201 hoặc SKY-PASS-..."
+                    className="w-full bg-[#161B22] border border-[#2D3748] rounded-lg px-3 py-2 text-xs text-white placeholder-gray-500 font-mono focus:border-[#C5A880] outline-none pl-8"
+                  />
+                  <KeyRound className="w-3.5 h-3.5 text-gray-500 absolute left-2.5 top-2.5" />
+                </div>
                 <button
                   type="submit"
-                  disabled={!customQrInput.trim() || isProcessingAi}
-                  className="px-3 py-1.5 bg-[#C5A880] hover:bg-white text-[#0D1117] text-xs font-bold rounded-lg flex items-center gap-1 transition-all disabled:opacity-50 cursor-pointer shadow-md"
-                  title="Xác thực mã QR hoặc PIN của khách"
+                  disabled={!searchQuery.trim() || isScanning}
+                  className="px-4 py-2 bg-[#C5A880] hover:bg-white text-[#0D1117] text-xs font-bold rounded-lg flex items-center gap-1 transition-all disabled:opacity-50 cursor-pointer shrink-0"
                 >
-                  <Zap className="w-3.5 h-3.5" /> Xác Thực
+                  <Search className="w-3.5 h-3.5" /> Tra Cứu
                 </button>
               </form>
             </div>
+
           </div>
 
-          {/* 2. Automated AI Interlock Workflow Output */}
-          {scanResult && (
-            <div className="p-5 bg-[#121820] border border-[#222B35] rounded-xl space-y-4 shadow-xl animate-fadeIn">
-              <div className="flex items-center justify-between border-b border-[#222B35] pb-2.5">
-                <div className="text-xs font-bold uppercase tracking-wider text-[#C5A880] flex items-center gap-2">
-                  <Layers className="w-4 h-4 text-[#C5A880]" /> Kết Quả Điều Phối Tự Động Của AI
-                </div>
-                <span className="text-[11px] text-gray-400 font-mono">
-                  Quét lúc: {scanResult.scannedAt}
-                </span>
-              </div>
-
-              {/* Status Banner */}
-              <div className={`p-4 rounded-xl border flex items-start gap-3.5 ${
-                scanResult.canEnter && scanResult.scanResult === 'VALID'
-                  ? 'bg-emerald-950/70 border-emerald-500 text-emerald-200'
-                  : scanResult.scanResult === 'EXPIRED'
-                  ? 'bg-amber-950/70 border-amber-500 text-amber-200'
-                  : 'bg-rose-950/70 border-rose-500 text-rose-200'
-              }`}>
-                {scanResult.canEnter && scanResult.scanResult === 'VALID' ? (
-                  <CheckCircle2 className="w-7 h-7 text-emerald-400 shrink-0" />
-                ) : scanResult.scanResult === 'EXPIRED' ? (
-                  <AlertTriangle className="w-7 h-7 text-amber-400 shrink-0" />
-                ) : (
-                  <XCircle className="w-7 h-7 text-rose-400 shrink-0" />
-                )}
-
-                <div className="space-y-1 text-xs flex-1">
-                  <div className="flex items-center justify-between">
-                    <span className="font-bold text-sm sm:text-base text-white">{scanResult.title}</span>
-                    <span className={`px-2 py-0.5 text-[10px] font-bold uppercase rounded border ${
-                      scanResult.canEnter && scanResult.scanResult === 'VALID'
-                        ? 'bg-emerald-900 text-emerald-300 border-emerald-500'
-                        : 'bg-rose-900 text-rose-300 border-rose-500'
-                    }`}>
-                      {scanResult.scanResult === 'VALID' ? 'Tự Động Mở Cổng' : 'Từ Chối Vào'}
-                    </span>
-                  </div>
-                  <div className="text-gray-300 text-xs leading-relaxed">{scanResult.message}</div>
-                  {scanResult.apartmentCode && (
-                    <div className="text-[11px] text-[#C5A880] font-semibold pt-0.5">
-                      • Căn hộ bảo lãnh: <strong>Căn {scanResult.apartmentCode}</strong> • Lệnh điều khiển: <strong>{scanResult.gateAction}</strong>
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              {/* 3 Interlock Actions (When VALID) */}
-              {scanResult.canEnter && scanResult.scanResult === 'VALID' && (
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
-                  
-                  {/* Step 1: Cổng Sảnh */}
-                  <div className="p-3.5 bg-[#161D26] border border-emerald-500/50 rounded-xl space-y-1.5 shadow-sm">
-                    <div className="text-[10.5px] uppercase font-bold text-emerald-400 flex items-center gap-1.5">
-                      <Unlock className="w-3.5 h-3.5" /> 1. Cổng Flap Barrier
-                    </div>
-                    <div className="font-bold text-white text-xs">Mở Tự Động (0.28s)</div>
-                    <p className="text-[10px] text-gray-400">
-                      Giao thức IoT gửi lệnh mở cánh cổng sảnh, đèn LED chuyển xanh đón khách.
-                    </p>
-                  </div>
-
-                  {/* Step 2: Thang Máy */}
-                  <div className="p-3.5 bg-[#161D26] border border-[#C5A880]/60 rounded-xl space-y-1.5 shadow-sm">
-                    <div className="text-[10.5px] uppercase font-bold text-[#C5A880] flex items-center gap-1.5">
-                      <Building2 className="w-3.5 h-3.5" /> 2. Phân Quyền Thang Máy
-                    </div>
-                    <div className="font-bold text-white text-xs">
-                      {activeElevatorCabin || 'Cabin 02'} ➔ {activeTargetFloor || 'Tầng 12'}
-                    </div>
-                    <p className="text-[10px] text-gray-400">
-                      Thang máy tự động gọi xuống sảnh và chỉ sáng nút đúng tầng của căn hộ.
-                    </p>
-                  </div>
-
-                  {/* Step 3: Thông Báo Cư Dân */}
-                  <div className="p-3.5 bg-[#161D26] border border-cyan-500/50 rounded-xl space-y-1.5 shadow-sm">
-                    <div className="text-[10.5px] uppercase font-bold text-cyan-400 flex items-center gap-1.5">
-                      <Bell className="w-3.5 h-3.5" /> 3. Push Notification
-                    </div>
-                    <div className="font-bold text-white text-xs">Báo Về Căn {scanResult.apartmentCode}</div>
-                    <p className="text-[10px] text-gray-400">
-                      Điện thoại cư dân rung chuông báo khách đã tới sảnh và đang lên tầng.
-                    </p>
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* 3. Realtime Resident Mobile Push Notification Alert */}
-          {activeResidentAlert && (
-            <div className="p-4 bg-gradient-to-r from-[#142333] to-[#121820] border border-cyan-500/70 rounded-xl space-y-2 shadow-xl animate-fadeIn">
-              <div className="flex items-center justify-between text-xs">
-                <span className="font-bold text-cyan-300 flex items-center gap-1.5 uppercase tracking-wider text-[11px]">
-                  <Smartphone className="w-4 h-4 text-cyan-400 animate-bounce" /> Thông Báo Tức Thời Đến Cư Dân (Push Notification)
-                </span>
-                <span className="px-2 py-0.5 bg-cyan-950 text-cyan-300 text-[10px] font-mono rounded border border-cyan-700">
-                  Realtime Alert
-                </span>
-              </div>
-
-              <div className="p-3 bg-[#0E1722] border border-cyan-500/30 rounded-lg space-y-1">
-                <div className="flex items-center justify-between">
-                  <div className="font-bold text-white text-xs flex items-center gap-1.5">
-                    <Bell className="w-3.5 h-3.5 text-[#C5A880]" /> Skyline Smart Residence • Thông Báo Khách Đến
-                  </div>
-                  <span className="text-[10px] text-gray-400 font-mono">{activeResidentAlert.time}</span>
-                </div>
-                <p className="text-xs text-gray-200 leading-relaxed">
-                  {activeResidentAlert.message}
-                </p>
-              </div>
-            </div>
-          )}
         </div>
 
-        {/* Right 1 Col: Smart Elevator Status & AI Audit Stream */}
-        <div className="space-y-5">
+        {/* Right Col (7 / 12): Hiển Thị Thông Tin Chủ Hộ & Khách Thăm */}
+        <div className="lg:col-span-7 space-y-4">
           
-          {/* Smart Elevator Destination Control Status */}
-          <div className="bg-[#121820] border border-[#222B35] rounded-xl p-4 space-y-3 shadow-xl">
-            <div className="flex items-center justify-between border-b border-[#222B35] pb-2.5">
-              <div className="text-xs font-bold uppercase tracking-wider text-[#C5A880] flex items-center gap-2">
-                <Building2 className="w-4 h-4 text-[#C5A880]" /> Trạng Thái Thang Máy Liên Động
-              </div>
-              <span className="text-[10px] text-emerald-400 font-mono font-bold">Trực Tuyến</span>
-            </div>
-
-            {/* 3 Elevator Shafts */}
-            <div className="space-y-2.5 text-xs">
-              {/* Cabin 1 */}
-              <div className="p-3 bg-[#161D26] border border-[#2D3748] rounded-lg flex items-center justify-between">
-                <div>
-                  <div className="font-bold text-white text-xs">Thang Khách 01 (Sảnh A)</div>
-                  <div className="text-[10.5px] text-gray-400">Vị trí: Tầng G (Sảnh Đón)</div>
-                </div>
-                <span className="px-2 py-0.5 text-[9.5px] bg-gray-800 text-gray-300 rounded font-mono">Sẵn Sàng</span>
-              </div>
-
-              {/* Cabin 2 - Linked with Active Guest Pass */}
-              <div className={`p-3 rounded-lg border flex items-center justify-between transition-all ${
-                activeElevatorCabin 
-                  ? 'bg-gradient-to-r from-[#1C2533] to-[#121E2A] border-[#C5A880] shadow-md ring-1 ring-[#C5A880]' 
-                  : 'bg-[#161D26] border-[#2D3748]'
+          {scanResult ? (
+            <div className="p-5 bg-[#121820] border border-[#2D3748] rounded-xl space-y-4 shadow-xl animate-fadeIn">
+              
+              {/* Status Header Banner */}
+              <div className={`p-4 rounded-xl border flex items-start justify-between gap-3 ${
+                scanResult.canEnter && scanResult.scanResult === 'VALID'
+                  ? scanResult.visitor?.status === 'CHECKED_IN'
+                    ? 'bg-amber-950/50 border-amber-500/80 text-amber-200'
+                    : 'bg-emerald-950/60 border-emerald-500/80 text-emerald-200'
+                  : scanResult.scanResult === 'EXPIRED'
+                  ? 'bg-rose-950/60 border-rose-500/80 text-rose-200'
+                  : 'bg-rose-950/70 border-rose-600 text-rose-200'
               }`}>
-                <div>
-                  <div className="font-bold text-white text-xs flex items-center gap-1.5">
-                    Thang Khách 02 (Sảnh A)
-                    {activeElevatorCabin && <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>}
+                <div className="flex items-start gap-3">
+                  {scanResult.canEnter && scanResult.scanResult === 'VALID' ? (
+                    scanResult.visitor?.status === 'CHECKED_IN' ? (
+                      <Clock className="w-6 h-6 text-amber-400 shrink-0 mt-0.5" />
+                    ) : (
+                      <CheckCircle2 className="w-6 h-6 text-emerald-400 shrink-0 mt-0.5" />
+                    )
+                  ) : (
+                    <XCircle className="w-6 h-6 text-rose-400 shrink-0 mt-0.5" />
+                  )}
+
+                  <div className="space-y-0.5">
+                    <div className="font-bold text-sm text-white">{scanResult.title}</div>
+                    <div className="text-xs text-gray-300 leading-relaxed">{scanResult.message}</div>
+                    <div className="text-[10.5px] text-gray-400 pt-1 font-mono">
+                      Quét lúc: {scanResult.scannedAt} • {scanResult.checkpoint}
+                    </div>
                   </div>
-                  <div className="text-[10.5px] text-[#C5A880]">
-                    {activeElevatorCabin ? `Kích hoạt đón lên: ${activeTargetFloor || 'Tầng 12'}` : 'Vị trí: Tầng G (Sảnh Đón)'}
+                </div>
+
+                <div className="shrink-0">
+                  <span className={`px-2.5 py-1 text-[10px] font-bold uppercase rounded-lg border font-mono ${
+                    scanResult.canEnter && scanResult.scanResult === 'VALID'
+                      ? scanResult.visitor?.status === 'CHECKED_IN'
+                        ? 'bg-amber-900 text-amber-300 border-amber-500'
+                        : 'bg-emerald-900 text-emerald-300 border-emerald-500'
+                      : 'bg-rose-900 text-rose-300 border-rose-500'
+                  }`}>
+                    {scanResult.visitor?.status === 'CHECKED_IN'
+                      ? 'Đang Ở Trong'
+                      : scanResult.scanResult === 'VALID'
+                      ? 'Hợp Lệ'
+                      : 'Không Hợp Lệ'}
+                  </span>
+                </div>
+              </div>
+
+              {/* 2 Detailed Panels: Host Info vs Visitor Info */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                
+                {/* 1. THÔNG TIN CHỦ HỘ BẢO LÃNH */}
+                <div className="p-4 bg-[#161D26] border border-[#2D3748] rounded-xl space-y-3">
+                  <div className="text-xs font-bold uppercase tracking-wider text-[#C5A880] flex items-center justify-between border-b border-[#222B35] pb-2">
+                    <span className="flex items-center gap-1.5">
+                      <Home className="w-3.5 h-3.5 text-[#C5A880]" /> Thông Tin Chủ Hộ
+                    </span>
+                    <span className="text-[9.5px] bg-[#1C2533] px-1.5 py-0.5 rounded text-emerald-400 font-mono">
+                      Bảo Lãnh
+                    </span>
+                  </div>
+
+                  <div className="space-y-2 text-xs">
+                    <div>
+                      <div className="text-gray-400 text-[10.5px]">Họ Tên Chủ Hộ / Người Cấp:</div>
+                      <div className="font-bold text-white text-sm">
+                        {scanResult.host?.hostName || 'Chưa xác định'}
+                      </div>
+                    </div>
+
+                    <div>
+                      <div className="text-gray-400 text-[10.5px]">Căn Hộ Điểm Đến:</div>
+                      <div className="font-bold text-[#C5A880] text-sm flex items-center gap-1">
+                        <Building2 className="w-3.5 h-3.5" />
+                        <span>Căn {scanResult.host?.apartmentCode}</span>
+                        <span className="text-xs text-gray-300 font-normal">
+                          ({scanResult.host?.towerName})
+                        </span>
+                      </div>
+                    </div>
+
+                    <div>
+                      <div className="text-gray-400 text-[10.5px]">Số Điện Thoại Chủ Hộ:</div>
+                      <div className="font-mono text-gray-200 flex items-center gap-1">
+                        <Phone className="w-3 h-3 text-gray-400" />
+                        <span>{scanResult.host?.hostPhone || 'Đã liên kết hệ thống'}</span>
+                      </div>
+                    </div>
+
+                    <div className="pt-1 text-[10.5px] text-emerald-400 flex items-center gap-1">
+                      <ShieldCheck className="w-3.5 h-3.5" />
+                      <span>Tư cách cư trú: Hợp pháp • Đã duyệt e-KYC</span>
+                    </div>
                   </div>
                 </div>
-                <span className={`px-2 py-0.5 text-[9.5px] rounded font-mono font-bold ${
-                  activeElevatorCabin 
-                    ? 'bg-emerald-950 text-emerald-300 border border-emerald-500' 
-                    : 'bg-gray-800 text-gray-300'
-                }`}>
-                  {activeElevatorCabin ? 'Đang Đón Khách' : 'Sẵn Sàng'}
-                </span>
-              </div>
 
-              {/* Cabin 3 */}
-              <div className="p-3 bg-[#161D26] border border-[#2D3748] rounded-lg flex items-center justify-between">
-                <div>
-                  <div className="font-bold text-white text-xs">Thang Hàng / Kỹ Thuật</div>
-                  <div className="text-[10.5px] text-gray-400">Vị trí: Tầng Hầm B1</div>
+                {/* 2. THÔNG TIN KHÁCH THĂM */}
+                <div className="p-4 bg-[#161D26] border border-[#2D3748] rounded-xl space-y-3">
+                  <div className="text-xs font-bold uppercase tracking-wider text-[#C5A880] flex items-center justify-between border-b border-[#222B35] pb-2">
+                    <span className="flex items-center gap-1.5">
+                      <UserCheck className="w-3.5 h-3.5 text-[#C5A880]" /> Thông Tin Khách Thăm
+                    </span>
+                    <span className="text-[9.5px] bg-[#1C2533] px-1.5 py-0.5 rounded text-cyan-400 font-mono">
+                      Khách Vào
+                    </span>
+                  </div>
+
+                  <div className="space-y-2 text-xs">
+                    <div>
+                      <div className="text-gray-400 text-[10.5px]">Họ Tên Khách Thăm:</div>
+                      <div className="font-bold text-white text-sm">
+                        {scanResult.visitor?.visitorName || 'Khách Thăm'}
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-2">
+                      <div>
+                        <div className="text-gray-400 text-[10.5px]">Số Điện Thoại:</div>
+                        <div className="font-mono text-gray-200">
+                          {scanResult.visitor?.phoneNumber || 'Không có'}
+                        </div>
+                      </div>
+                      <div>
+                        <div className="text-gray-400 text-[10.5px]">Biển Số Xe:</div>
+                        <div className="font-mono font-bold text-[#C5A880]">
+                          {scanResult.visitor?.licensePlate || 'Đi bộ / Taxi'}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div>
+                      <div className="text-gray-400 text-[10.5px]">Thời Hạn Hiệu Lực Thẻ:</div>
+                      <div className="text-emerald-400 font-medium text-[11px] flex items-center gap-1">
+                        <Clock className="w-3 h-3 shrink-0" />
+                        <span>
+                          Đến {scanResult.visitor?.validUntil ? new Date(scanResult.visitor.validUntil).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }) : 'Hôm nay'}{' '}
+                          ({scanResult.visitor?.validHours || 4} giờ)
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="pt-1 flex items-center justify-between text-[10.5px] text-gray-400 font-mono">
+                      <span>Mã PIN: <strong className="text-[#C5A880]">{scanResult.visitor?.pinCode}</strong></span>
+                      <span>Mã vé: {scanResult.visitor?.passId}</span>
+                    </div>
+                  </div>
                 </div>
-                <span className="px-2 py-0.5 text-[9.5px] bg-gray-800 text-gray-400 rounded font-mono">Chuyên Dụng</span>
+
               </div>
-            </div>
-          </div>
 
-          {/* AI Security Access Audit Stream */}
-          <div className="bg-[#121820] border border-[#222B35] rounded-xl p-4 space-y-3 shadow-xl">
-            <div className="flex items-center justify-between border-b border-[#222B35] pb-2.5">
-              <div className="text-xs font-bold uppercase tracking-wider text-white flex items-center gap-2">
-                <Activity className="w-4 h-4 text-[#C5A880]" /> Nhật Ký An Ninh AI
-              </div>
-              <button 
-                onClick={refreshLogs}
-                className="text-[10px] text-gray-400 hover:text-[#C5A880] flex items-center gap-1 font-mono transition-colors cursor-pointer"
-              >
-                <RefreshCw className="w-3 h-3" /> Làm mới
-              </button>
-            </div>
-
-            {/* Filter Tabs */}
-            <div className="flex gap-1 bg-[#161B22] p-1 rounded-lg border border-[#222B35] text-[10px]">
-              <button
-                type="button"
-                onClick={() => setFilterResult('ALL')}
-                className={`flex-1 py-1 rounded transition-colors cursor-pointer ${filterResult === 'ALL' ? 'bg-[#C5A880] text-[#0D1117] font-bold' : 'text-gray-400'}`}
-              >
-                Tất Cả
-              </button>
-              <button
-                type="button"
-                onClick={() => setFilterResult('VALID')}
-                className={`flex-1 py-1 rounded transition-colors cursor-pointer ${filterResult === 'VALID' ? 'bg-emerald-500 text-black font-bold' : 'text-gray-400'}`}
-              >
-                Hợp Lệ
-              </button>
-              <button
-                type="button"
-                onClick={() => setFilterResult('INVALID')}
-                className={`flex-1 py-1 rounded transition-colors cursor-pointer ${filterResult === 'INVALID' ? 'bg-rose-500 text-white font-bold' : 'text-gray-400'}`}
-              >
-                Giả Mạo
-              </button>
-              <button
-                type="button"
-                onClick={() => setFilterResult('EXPIRED')}
-                className={`flex-1 py-1 rounded transition-colors cursor-pointer ${filterResult === 'EXPIRED' ? 'bg-amber-500 text-black font-bold' : 'text-gray-400'}`}
-              >
-                Quá Hạn
-              </button>
-            </div>
-
-            {/* Logs List */}
-            <div className="space-y-2 max-h-80 overflow-y-auto pr-1">
-              {filteredLogs.length === 0 ? (
-                <div className="text-center py-6 text-xs text-gray-500">
-                  Chưa có nhật ký nào. Hệ thống sẵn sàng ghi nhận khi có khách quét mã qua Camera AI.
+              {/* Action Operations: Check-in / Check-out */}
+              <div className="flex flex-wrap items-center justify-between gap-3 pt-2 border-t border-[#222B35]">
+                <div className="text-xs text-gray-400">
+                  Thao tác nhân viên lễ tân / an ninh:
                 </div>
-              ) : (
-                filteredLogs.map((log) => (
-                  <div
-                    key={log.id}
-                    className="p-2.5 bg-[#161B22] border border-[#2D3748] rounded-lg text-xs space-y-1 hover:border-[#C5A880]/50 transition-colors"
+
+                <div className="flex items-center gap-2">
+                  {/* If valid and not checked in yet */}
+                  {scanResult.canEnter && scanResult.visitor && scanResult.visitor.status === 'ACTIVE' && (
+                    <button
+                      type="button"
+                      onClick={() => handleCheckIn(scanResult.visitor!.passId)}
+                      className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-lg shadow-lg flex items-center gap-1.5 transition-all cursor-pointer"
+                    >
+                      <LogIn className="w-4 h-4" /> Xác Nhận Cho Khách Vào (Check-in)
+                    </button>
+                  )}
+
+                  {/* If already in building */}
+                  {scanResult.visitor && scanResult.visitor.status === 'CHECKED_IN' && (
+                    <button
+                      type="button"
+                      onClick={() => handleCheckOut(scanResult.visitor!.passId)}
+                      className="px-4 py-2 bg-amber-600 hover:bg-amber-500 text-white text-xs font-bold rounded-lg shadow-lg flex items-center gap-1.5 transition-all cursor-pointer"
+                    >
+                      <LogOut className="w-4 h-4" /> Xác Nhận Khách Rời Đi (Check-out)
+                    </button>
+                  )}
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setScanResult(null);
+                      setSearchQuery('');
+                    }}
+                    className="px-3.5 py-2 bg-[#161B22] hover:bg-[#1E2530] text-gray-300 text-xs font-medium rounded-lg border border-[#2D3748] transition-colors cursor-pointer"
                   >
-                    <div className="flex items-center justify-between">
-                      <span className="font-bold text-white flex items-center gap-1.5 text-[11px]">
-                        {log.result === 'VALID' ? (
-                          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-                        ) : log.result === 'EXPIRED' ? (
-                          <AlertTriangle className="w-3.5 h-3.5 text-amber-400 shrink-0" />
-                        ) : (
-                          <XCircle className="w-3.5 h-3.5 text-rose-400 shrink-0" />
-                        )}
-                        Căn {log.apartmentCode}
-                      </span>
+                    Tiếp Đón Lượt Mới
+                  </button>
+                </div>
+              </div>
 
-                      <span className={`px-1.5 py-0.2 text-[9px] font-bold rounded ${
-                        log.result === 'VALID'
-                          ? 'bg-emerald-950 text-emerald-300 border border-emerald-700'
-                          : log.result === 'EXPIRED'
-                          ? 'bg-amber-950 text-amber-300 border border-amber-700'
-                          : 'bg-rose-950 text-rose-300 border border-rose-700'
-                      }`}>
-                        {log.result === 'VALID' ? 'HỢP LỆ' : log.result === 'EXPIRED' ? 'QUÁ HẠN' : 'KHÔNG HỢP LỆ'}
-                      </span>
-                    </div>
-
-                    <div className="text-[10px] text-gray-300">{log.gateAction}</div>
-                    <div className="text-[9.5px] text-gray-500 flex items-center justify-between font-mono pt-0.5">
-                      <span>{log.timestamp}</span>
-                      <span className="truncate max-w-[120px]">{log.checkpoint}</span>
-                    </div>
-                  </div>
-                ))
-              )}
             </div>
-          </div>
+          ) : (
+            /* Placeholder when no pass scanned */
+            <div className="p-8 bg-[#121820] border border-dashed border-[#2D3748] rounded-xl flex flex-col items-center justify-center text-center min-h-[340px] space-y-3 shadow-inner">
+              <div className="w-16 h-16 rounded-2xl bg-[#161D26] border border-[#2D3748] flex items-center justify-center text-[#C5A880]/70">
+                <FileText className="w-8 h-8" />
+              </div>
+              <div className="space-y-1">
+                <div className="font-serif font-bold text-white text-base">Chưa Có Dữ Liệu Khách Được Quét</div>
+                <p className="text-xs text-gray-400 max-w-sm leading-relaxed">
+                  Vui lòng đưa mã QR thẻ mời của khách vào vùng quét camera hoặc nhập mã PIN 6 số bên trái. Hệ thống sẽ lập tức hiển thị thông tin đối chiếu của chủ hộ và khách thăm.
+                </p>
+              </div>
+              <div className="text-[11px] text-gray-500 flex items-center gap-1.5 pt-2">
+                <ShieldCheck className="w-4 h-4 text-emerald-400" /> Hệ thống bảo mật thông tin cư dân theo quy chuẩn tòa nhà
+              </div>
+            </div>
+          )}
+
         </div>
 
       </div>
+
+      {/* Bottom Section: Danh Sách & Lịch Sử Quản Lý Khách Thăm */}
+      <div className="p-5 bg-[#121820] border border-[#222B35] rounded-xl space-y-4 shadow-xl">
+        
+        {/* Table Header & Controls */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#222B35] pb-3">
+          <div>
+            <h3 className="font-serif text-base font-bold text-white flex items-center gap-2">
+              <Users className="w-4 h-4 text-[#C5A880]" />
+              Danh Sách Khách Thăm Do Chủ Hộ Phát Hành Mã
+            </h3>
+            <div className="text-[11px] text-gray-400">
+              Quản lý toàn bộ khách ra vào chung cư theo mã QR được chủ hộ căn hộ bảo lãnh.
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2 flex-wrap">
+            {/* Search */}
+            <div className="relative">
+              <input
+                type="text"
+                value={tableSearch}
+                onChange={(e) => setTableSearch(e.target.value)}
+                placeholder="Tìm khách, căn hộ, biển số..."
+                className="bg-[#161B22] border border-[#2D3748] text-xs text-white placeholder-gray-500 rounded-lg pl-8 pr-3 py-1.5 w-52 focus:border-[#C5A880] outline-none"
+              />
+              <Search className="w-3.5 h-3.5 text-gray-400 absolute left-2.5 top-2" />
+            </div>
+
+            {/* Refresh */}
+            <button
+              type="button"
+              onClick={refreshPasses}
+              className="p-1.5 bg-[#161B22] hover:bg-[#1E2530] text-gray-300 hover:text-[#C5A880] border border-[#2D3748] rounded-lg transition-colors cursor-pointer"
+              title="Làm mới danh sách"
+            >
+              <RefreshCw className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+
+        {/* Filter Tabs */}
+        <div className="flex gap-1.5 overflow-x-auto pb-1 text-xs">
+          {[
+            { id: 'ALL', label: 'Tất Cả Khách' },
+            { id: 'CHECKED_IN', label: 'Đang Ở Trong Tòa Nhà' },
+            { id: 'ACTIVE', label: 'Chờ Check-in' },
+            { id: 'COMPLETED', label: 'Đã Rời Đi' },
+            { id: 'EXPIRED', label: 'Quá Hạn' }
+          ].map((tab) => (
+            <button
+              key={tab.id}
+              type="button"
+              onClick={() => setFilterStatus(tab.id)}
+              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer shrink-0 border ${
+                filterStatus === tab.id
+                  ? 'bg-[#C5A880] text-[#0D1117] font-bold border-[#C5A880]'
+                  : 'bg-[#161B22] text-gray-400 hover:text-white border-[#2D3748]'
+              }`}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
+
+        {/* Passes Table */}
+        <div className="overflow-x-auto">
+          <table className="w-full text-left text-xs text-gray-300">
+            <thead className="bg-[#161D26] text-gray-400 uppercase text-[10px] tracking-wider border-y border-[#222B35]">
+              <tr>
+                <th className="py-3 px-3">Mã Vé / Giờ Cấp</th>
+                <th className="py-3 px-3">Khách Thăm</th>
+                <th className="py-3 px-3">Chủ Hộ Bảo Lãnh</th>
+                <th className="py-3 px-3">Căn Hộ / Điểm Đến</th>
+                <th className="py-3 px-3">Thời Hạn Hiệu Lực</th>
+                <th className="py-3 px-3">Trạng Thái</th>
+                <th className="py-3 px-3 text-right">Thao Tác Lễ Tân</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-[#222B35]">
+              {filteredPasses.length === 0 ? (
+                <tr>
+                  <td colSpan={7} className="py-8 text-center text-gray-500 text-xs">
+                    Chưa có dữ liệu khách trong bộ lọc này. Khi cư dân tạo mã đón khách, thông tin sẽ được ghi nhận tự động tại đây.
+                  </td>
+                </tr>
+              ) : (
+                filteredPasses.map((pass) => (
+                  <tr key={pass.id} className="hover:bg-[#161B22]/70 transition-colors">
+                    
+                    {/* Mã vé & giờ cấp */}
+                    <td className="py-3 px-3">
+                      <div className="font-mono font-bold text-white">{pass.id}</div>
+                      <div className="text-[10px] text-gray-400 font-mono">
+                        PIN: <span className="text-[#C5A880]">{pass.pinCode}</span>
+                      </div>
+                    </td>
+
+                    {/* Khách thăm */}
+                    <td className="py-3 px-3">
+                      <div className="font-bold text-white text-xs">{pass.visitorName}</div>
+                      <div className="text-[10.5px] text-gray-400">
+                        {pass.phoneNumber ? `SĐT: ${pass.phoneNumber}` : 'Không có SĐT'}
+                        {pass.licensePlate && ` • Xe: ${pass.licensePlate}`}
+                      </div>
+                    </td>
+
+                    {/* Chủ hộ bảo lãnh */}
+                    <td className="py-3 px-3">
+                      <div className="font-medium text-white">{pass.hostName}</div>
+                      <div className="text-[10px] text-gray-400 font-mono">
+                        {pass.hostPhone || 'Chủ hộ'}
+                      </div>
+                    </td>
+
+                    {/* Căn hộ */}
+                    <td className="py-3 px-3">
+                      <span className="px-2 py-0.5 bg-[#1C2533] border border-[#2D3748] rounded text-[#C5A880] font-bold font-mono">
+                        Căn {pass.apartmentCode}
+                      </span>
+                      <div className="text-[10px] text-gray-400 mt-0.5">
+                        {pass.towerName || (pass.apartmentCode.includes('A') ? 'Tòa A' : 'Tòa B')}
+                      </div>
+                    </td>
+
+                    {/* Thời hạn hiệu lực */}
+                    <td className="py-3 px-3 text-[11px]">
+                      <div className="text-gray-200">
+                        Đến {new Date(pass.validUntil).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })}
+                      </div>
+                      <div className="text-[10px] text-gray-400">
+                        {new Date(pass.validUntil).toLocaleDateString('vi-VN')} ({pass.validHours}h)
+                      </div>
+                    </td>
+
+                    {/* Trạng thái */}
+                    <td className="py-3 px-3">
+                      {pass.status === 'CHECKED_IN' ? (
+                        <span className="px-2 py-0.5 bg-emerald-950 text-emerald-300 border border-emerald-500 rounded text-[10px] font-bold">
+                          Đang Trong Chung Cư
+                        </span>
+                      ) : pass.status === 'ACTIVE' ? (
+                        <span className="px-2 py-0.5 bg-amber-950 text-amber-300 border border-amber-500 rounded text-[10px] font-bold">
+                          Chờ Check-in
+                        </span>
+                      ) : pass.status === 'COMPLETED' ? (
+                        <span className="px-2 py-0.5 bg-gray-800 text-gray-300 border border-gray-600 rounded text-[10px] font-medium">
+                          Đã Rời Đi
+                        </span>
+                      ) : (
+                        <span className="px-2 py-0.5 bg-rose-950 text-rose-300 border border-rose-600 rounded text-[10px] font-bold">
+                          Quá Hạn
+                        </span>
+                      )}
+                    </td>
+
+                    {/* Thao tác */}
+                    <td className="py-3 px-3 text-right">
+                      <div className="flex items-center justify-end gap-1.5">
+                        <button
+                          type="button"
+                          onClick={() => handleVerify(pass.id)}
+                          className="px-2.5 py-1 bg-[#161B22] hover:bg-[#1E2530] text-gray-300 hover:text-white border border-[#2D3748] rounded text-[10.5px] transition-colors cursor-pointer"
+                        >
+                          Chi Tiết
+                        </button>
+
+                        {pass.status === 'ACTIVE' && (
+                          <button
+                            type="button"
+                            onClick={() => handleCheckIn(pass.id)}
+                            className="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-500 text-white rounded text-[10.5px] font-bold transition-colors cursor-pointer flex items-center gap-1"
+                          >
+                            <LogIn className="w-3 h-3" /> Vào
+                          </button>
+                        )}
+
+                        {pass.status === 'CHECKED_IN' && (
+                          <button
+                            type="button"
+                            onClick={() => handleCheckOut(pass.id)}
+                            className="px-2.5 py-1 bg-amber-600 hover:bg-amber-500 text-white rounded text-[10.5px] font-bold transition-colors cursor-pointer flex items-center gap-1"
+                          >
+                            <LogOut className="w-3 h-3" /> Ra
+                          </button>
+                        )}
+                      </div>
+                    </td>
+
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+
     </div>
   );
 }

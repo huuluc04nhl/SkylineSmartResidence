@@ -140,6 +140,8 @@ export default function VisitorQrModal({
     setTimeout(() => {
       const pass = generateVisitorPassToken({
         apartmentCode,
+        hostName: currentUser?.full_name || `Chủ hộ Căn ${apartmentCode}`,
+        hostPhone: currentUser?.phone || currentUser?.username || '',
         visitorName: visitorName.trim(),
         phoneNumber: visitorPhone.trim(),
         licensePlate: licensePlate.trim().toUpperCase(),
@@ -163,16 +165,17 @@ export default function VisitorQrModal({
     text += `👤 Kính gửi: ${pass.visitorName}\n`;
     if (pass.phoneNumber) text += `📞 Số điện thoại: ${pass.phoneNumber}\n`;
     if (pass.licensePlate) text += `🚗 Biển số xe: ${pass.licensePlate}\n`;
+    text += `🏠 Chủ hộ bảo lãnh: ${pass.hostName || 'Chủ hộ'} (${pass.hostPhone || ''})\n`;
     text += `🏢 Điểm đến: Căn hộ ${pass.apartmentCode} - ${towerName}\n`;
     text += `📍 Địa chỉ: Chung cư Skyline Smart Residence\n`;
     text += `━━━━━━━━━━━━━━━━━━━━\n`;
-    text += `🔑 MÃ PIN VÀO CỔNG: ${pass.pinCode}\n`;
+    text += `🔑 MÃ PIN TRA CỨU: ${pass.pinCode}\n`;
     text += `⏳ Thời hạn hiệu lực: Đến ${expTime} ngày ${expDate} (${pass.validHours} giờ)\n`;
     text += `━━━━━━━━━━━━━━━━━━━━\n`;
-    text += `📲 HƯỚNG DẪN VÀO CỔNG:\n`;
-    text += `1. Quý khách vui lòng xuất trình mã QR này trước Camera AI tại Cổng Sảnh hoặc Sảnh Thang Máy để vào tòa nhà.\n`;
-    text += `2. Cổng tự động mở và thang máy được tự động phân quyền đón Quý khách lên thẳng căn hộ.\n`;
-    text += `(Quý khách cũng có thể nhập mã PIN ${pass.pinCode} trực tiếp tại bàn phím cổng nếu cần).\n`;
+    text += `📲 HƯỚNG DẪN TIẾP ĐÓN:\n`;
+    text += `1. Quý khách vui lòng xuất trình mã QR này tại Bàn Lễ Tân / Chốt An Ninh Tòa Nhà để làm thủ tục vào chung cư.\n`;
+    text += `2. Nhân viên lễ tân sẽ xác thực thông tin bảo lãnh của chủ hộ và hướng dẫn Quý khách lên căn hộ ${pass.apartmentCode}.\n`;
+    text += `(Quý khách cũng có thể đọc mã PIN ${pass.pinCode} cho lễ tân nếu cần).\n`;
     text += `Trân trọng đón tiếp!`;
     return text;
   };
@@ -362,7 +365,10 @@ export default function VisitorQrModal({
       ctx.fillStyle = '#9FB1C7';
       ctx.font = '14px sans-serif';
       const towerText = activePass.apartmentCode.includes('A') ? 'Tòa A (Sapphire)' : 'Tòa B (Diamond)';
-      ctx.fillText(`Điểm đến: Căn hộ ${activePass.apartmentCode} • ${towerText} • Chung cư Skyline`, 110, 308);
+      ctx.fillText(`Điểm đến: Căn hộ ${activePass.apartmentCode} • ${towerText} • Chung cư Skyline`, 110, 304);
+      ctx.fillStyle = '#C5A880';
+      ctx.font = '13px sans-serif';
+      ctx.fillText(`Chủ hộ bảo lãnh: ${activePass.hostName || 'Chủ hộ Căn ' + activePass.apartmentCode}${activePass.hostPhone ? ` • SĐT: ${activePass.hostPhone}` : ''}`, 110, 326);
 
       // 7. QR Code Card Container
       const qrBoxW = 340;
@@ -395,7 +401,7 @@ export default function VisitorQrModal({
       ctx.textAlign = 'center';
       ctx.fillStyle = '#94A3B8';
       ctx.font = '12px sans-serif';
-      ctx.fillText('MÃ PIN DỰ PHÒNG NHẬP CỔNG BARRIER / THANG MÁY', W / 2, pinBoxY + 35);
+      ctx.fillText('MÃ PIN TRA CỨU TẠI BÀN LỄ TÂN / CHỐT AN NINH', W / 2, pinBoxY + 35);
 
       ctx.fillStyle = '#F0D4A3';
       ctx.font = 'bold 38px monospace';
@@ -411,8 +417,8 @@ export default function VisitorQrModal({
 
       ctx.fillStyle = '#94A3B8';
       ctx.font = '13px sans-serif';
-      ctx.fillText('Quý khách vui lòng xuất trình mã QR trước camera Barrier hoặc Sảnh Thang Máy.', W / 2, 920);
-      ctx.fillText('Cổng Barrier tự động mở và thang máy được cấp quyền đón lên căn hộ.', W / 2, 946);
+      ctx.fillText('Quý khách vui lòng xuất trình mã QR tại Bàn Lễ Tân hoặc Chốt An Ninh.', W / 2, 920);
+      ctx.fillText('Nhân viên an ninh sẽ xác thực thông tin và hướng dẫn lên căn hộ.', W / 2, 946);
 
       // 10. Watermark Footer
       ctx.fillStyle = 'rgba(197, 168, 128, 0.45)';
@@ -471,7 +477,7 @@ export default function VisitorQrModal({
             <div className="p-3 bg-[#121E2A] border border-[#1E3A5F] rounded-xl flex items-start gap-2.5 text-xs text-cyan-200/95 leading-relaxed">
               <Info className="w-4 h-4 text-cyan-400 flex-shrink-0 mt-0.5" />
               <div>
-                <strong>Chung cư Skyline Smart Residence:</strong> Đã bố trí <strong>Điểm Nhận Hàng & Bưu Phẩm Tập Trung tại Sảnh Lễ Tân</strong> dành riêng cho Shipper. Mã QR dưới đây dành để cư dân đón <strong>Khách Thăm</strong> trực tiếp lên căn hộ qua Barrier và thang máy.
+                <strong>Chung cư Skyline Smart Residence:</strong> Đã bố trí <strong>Điểm Nhận Hàng & Bưu Phẩm Tập Trung tại Sảnh Lễ Tân</strong> dành riêng cho Shipper. Mã QR dưới đây dành để cư dân đón <strong>Khách Thăm</strong> trực tiếp lên căn hộ qua bàn lễ tân / chốt an ninh tòa nhà.
               </div>
             </div>
 
@@ -595,8 +601,11 @@ export default function VisitorQrModal({
                         {activePass.visitorName || 'Khách Thăm Nhà'}
                       </div>
                       <div className="text-[11px] text-[#C5A880]">
-                        Điểm đến: Căn hộ {activePass.apartmentCode} • Chung cư Skyline
+                        Điểm đến: Căn hộ {activePass.apartmentCode} • {activePass.towerName || 'Chung cư Skyline'}
                         {activePass.licensePlate && ` • Xe: ${activePass.licensePlate}`}
+                      </div>
+                      <div className="text-[10px] text-gray-400">
+                        Chủ hộ: {activePass.hostName || 'Chủ hộ'} {activePass.hostPhone ? `(${activePass.hostPhone})` : ''}
                       </div>
                     </div>
                     <div className="flex flex-col items-end shrink-0 ml-2">
