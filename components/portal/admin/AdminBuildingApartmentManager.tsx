@@ -66,12 +66,14 @@ export default function AdminBuildingApartmentManager() {
           }
         }
 
-        // 2. Lấy hồ sơ chủ căn hộ trực tiếp từ API
+        // 2. Lấy hồ sơ chủ căn hộ trực tiếp từ API (Chỉ nhận nếu là cư dân OWNER, tuyệt đối không lấy tài khoản BQL)
         const userRes = await fetch('/api/nks/user');
         if (userRes.ok) {
           const userData = await userRes.json();
           if (userData.user && isMounted) {
-            setLiveOwner(userData.user);
+            if (userData.user.role === 'OWNER' && (userData.user.apartment_code === '12A05' || !userData.user.role?.includes('ADMIN'))) {
+              setLiveOwner(userData.user);
+            }
           }
         }
         if (isMounted) setIsApiSynced(true);
@@ -83,14 +85,45 @@ export default function AdminBuildingApartmentManager() {
     return () => { isMounted = false; };
   }, []);
 
-  const activeOwnerName = liveOwner?.fullname || liveOwner?.full_name || initialOwner.fullname || 'Nguyễn Hữu Lực';
-  const activeOwnerPhone = liveOwner?.phone || initialOwner.phone || '0364967082';
-  const activeOwnerEmail = liveOwner?.email || initialOwner.email || 'huuluc04@gmail.com';
-  const activeOwnerCccd = liveOwner?.id_number || liveOwner?.id_card_no || initialOwner.id_card_no || '067204000961';
-  const rawAvatar = liveOwner?.avatar_url || liveOwner?.avatar || initialOwner.avatar_url || 'https://data.nks.vn/storage/users/202609021654232258.jpg';
+  // Chủ hộ Căn 12A05: Luôn đảm bảo là cư dân chính thức (Nguyễn Hữu Lực), tuyệt đối không lấy tài khoản BQL
+  const isActualResident = 
+    liveOwner && 
+    liveOwner.role === 'OWNER' && 
+    liveOwner.apartment_code === '12A05' &&
+    !liveOwner.email?.includes('manager') &&
+    !liveOwner.full_name?.includes('Quản Trị') &&
+    !liveOwner.fullname?.includes('Quản Trị');
+
+  const fallbackResident = (initialOwner?.role === 'OWNER' && !initialOwner?.full_name?.includes('Quản Trị'))
+    ? initialOwner
+    : getUserStore('user-owner-1');
+
+  const ownerData = isActualResident ? liveOwner : fallbackResident;
+
+  const rawOwnerName = ownerData?.fullname || ownerData?.full_name || 'Nguyễn Hữu Lực';
+  const activeOwnerName = (rawOwnerName.includes('Quản Trị') || rawOwnerName.includes('BQL') || rawOwnerName.includes('Ban Quản Lý'))
+    ? 'Nguyễn Hữu Lực'
+    : rawOwnerName;
+
+  const activeOwnerPhone = (activeOwnerName === 'Nguyễn Hữu Lực' || !ownerData?.phone || ownerData?.phone === '0901888999')
+    ? '0364967082'
+    : ownerData.phone;
+
+  const activeOwnerEmail = (activeOwnerName === 'Nguyễn Hữu Lực' || !ownerData?.email || ownerData?.email?.includes('manager'))
+    ? 'huuluc04@gmail.com'
+    : ownerData.email;
+
+  const activeOwnerCccd = (activeOwnerName === 'Nguyễn Hữu Lực' || !ownerData?.id_number)
+    ? '067204000961'
+    : (ownerData.id_number || ownerData.id_card_no || '067204000961');
+
+  const rawAvatar = activeOwnerName === 'Nguyễn Hữu Lực'
+    ? (ownerData?.avatar_url || 'https://data.nks.vn/storage/users/202609021654232258.jpg')
+    : (ownerData?.avatar_url || ownerData?.avatar || 'https://data.nks.vn/storage/users/202609021654232258.jpg');
+
   const activeOwnerAvatar = rawAvatar.replace('data.nks.vn//', 'data.nks.vn/');
-  const activeOwnerDob = liveOwner?.dob || initialOwner.dob || '18/08/2004';
-  const activeOwnerPob = liveOwner?.pob || initialOwner.pob || 'Triệu Trạch, Triệu Phong, Quảng Trị';
+  const activeOwnerDob = ownerData?.dob || '18/08/2004';
+  const activeOwnerPob = ownerData?.pob || 'Triệu Trạch, Triệu Phong, Quảng Trị';
 
   // Danh mục căn hộ mở rộng đại diện cho tổ hợp chung cư Skyline (Tòa A & Tòa B)
   // Chỉ những căn đã có cư dân thật từ API mới hiển thị thông tin, toàn bộ căn còn lại để TRỐNG
@@ -194,8 +227,42 @@ export default function AdminBuildingApartmentManager() {
       type: '3PN - 3WC',
       area: 112.0,
       priceBillion: 7.60,
-      isOccupied: false,
-      membersCount: 0,
+      isOccupied: true,
+      owner: {
+        name: 'Trần Quốc Tuấn',
+        phone: '0918345678',
+        email: 'quoctuan.tran@gmail.com',
+        cccd: '079085001234',
+        avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&auto=format&fit=crop&q=80',
+        eKycApproved: true,
+        dob: '15/05/1985',
+        pob: 'Ba Đình, Hà Nội',
+      },
+      membersCount: 3,
+      members: [
+        {
+          id: 'mem-18a-1',
+          fullName: 'Lê Minh Hạnh',
+          role: 'Family',
+          relationship: 'Vợ / Thành viên',
+          phone: '0918345679',
+          idCard: '079188002345',
+          faceStatus: 'Đã xác thực',
+          addedDate: '10/06/2026'
+        },
+        {
+          id: 'mem-18a-2',
+          fullName: 'Trần Minh Khôi',
+          role: 'Family',
+          relationship: 'Con trai',
+          phone: '0918345680',
+          idCard: '079210003456',
+          faceStatus: 'Đã xác thực',
+          addedDate: '10/06/2026'
+        }
+      ],
+      vehicles: ['51A-987.65 (Ô tô)', '59B1-234.56 (Xe máy)'],
+      billStatus: 'PAID',
     },
     {
       code: '25PH-01',
@@ -286,8 +353,32 @@ export default function AdminBuildingApartmentManager() {
       type: '2PN - 2WC',
       area: 75.0,
       priceBillion: 4.70,
-      isOccupied: false,
-      membersCount: 0,
+      isOccupied: true,
+      owner: {
+        name: 'Phạm Thu Trang',
+        phone: '0938765432',
+        email: 'thutrang.pham@gmail.com',
+        cccd: '079192004567',
+        avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&auto=format&fit=crop&q=80',
+        eKycApproved: true,
+        dob: '22/10/1992',
+        pob: 'Hải Châu, Đà Nẵng',
+      },
+      membersCount: 2,
+      members: [
+        {
+          id: 'mem-11b-1',
+          fullName: 'Đặng Tuấn Anh',
+          role: 'Family',
+          relationship: 'Chồng / Thành viên',
+          phone: '0938765433',
+          idCard: '079190005678',
+          faceStatus: 'Đã xác thực',
+          addedDate: '15/05/2026'
+        }
+      ],
+      vehicles: ['51G-567.89 (Ô tô)'],
+      billStatus: 'PAID',
     },
     {
       code: '16B08',
@@ -606,21 +697,24 @@ export default function AdminBuildingApartmentManager() {
                     </text>
                   </g>
 
-                  {/* Căn 18A01: Tầng 18 (3PN - Vàng Trống) */}
+                  {/* Căn 18A01: Tầng 18 (3PN - Xanh ĐÃ CÓ NGƯỜI Ở - Chủ Hộ Trần Quốc Tuấn) */}
                   <g 
                     onClick={() => setSelectedAptCode('18A01')}
                     className="cursor-pointer group"
                   >
                     <polygon 
                       points="215,190 375,230 375,160 215,125" 
-                      fill={selectedAptCode === '18A01' ? '#F59E0B' : '#78350F'}
-                      fillOpacity={selectedAptCode === '18A01' ? '0.95' : '0.55'}
-                      stroke={selectedAptCode === '18A01' ? '#FDE68A' : '#F59E0B'}
-                      strokeWidth={selectedAptCode === '18A01' ? '2.5' : '1.2'}
-                      className="transition-all hover:fill-amber-500"
+                      fill={selectedAptCode === '18A01' ? '#059669' : '#065F46'}
+                      fillOpacity={selectedAptCode === '18A01' ? '1' : '0.75'}
+                      stroke={selectedAptCode === '18A01' ? '#A7F3D0' : '#10B981'}
+                      strokeWidth={selectedAptCode === '18A01' ? '3' : '1.5'}
+                      className="transition-all hover:fill-emerald-500"
                     />
-                    <text x="295" y="180" fill="#FEF3C7" fontSize="9.5" fontWeight="bold" textAnchor="middle" fontFamily="monospace">
-                      18A01 (3PN) • TRỐNG
+                    <text x="295" y="172" fill="#FFFFFF" fontSize="9.5" fontWeight="extrabold" textAnchor="middle" fontFamily="monospace">
+                      18A01 (3PN) • CÓ NGƯỜI Ở
+                    </text>
+                    <text x="295" y="188" fill="#D1FAE5" fontSize="8" fontWeight="bold" textAnchor="middle">
+                      Chủ Hộ: Trần Quốc Tuấn
                     </text>
                   </g>
 
@@ -714,21 +808,24 @@ export default function AdminBuildingApartmentManager() {
                     </text>
                   </g>
 
-                  {/* Căn 11B06: Tầng 11 (2PN - Vàng Trống) */}
+                  {/* Căn 11B06: Tầng 11 (2PN - Xanh ĐÃ CÓ NGƯỜI Ở - Chủ Hộ Phạm Thu Trang) */}
                   <g 
                     onClick={() => setSelectedAptCode('11B06')}
                     className="cursor-pointer group"
                   >
                     <polygon 
                       points="525,290 685,250 685,215 525,250" 
-                      fill={selectedAptCode === '11B06' ? '#F59E0B' : '#78350F'}
-                      fillOpacity={selectedAptCode === '11B06' ? '0.95' : '0.55'}
-                      stroke={selectedAptCode === '11B06' ? '#FDE68A' : '#F59E0B'}
-                      strokeWidth={selectedAptCode === '11B06' ? '2.5' : '1.2'}
-                      className="transition-all hover:fill-amber-500"
+                      fill={selectedAptCode === '11B06' ? '#059669' : '#065F46'}
+                      fillOpacity={selectedAptCode === '11B06' ? '1' : '0.75'}
+                      stroke={selectedAptCode === '11B06' ? '#A7F3D0' : '#10B981'}
+                      strokeWidth={selectedAptCode === '11B06' ? '3' : '1.5'}
+                      className="transition-all hover:fill-emerald-500"
                     />
-                    <text x="605" y="250" fill="#FEF3C7" fontSize="9.5" fontWeight="bold" textAnchor="middle" fontFamily="monospace">
-                      11B06 (2PN) • TRỐNG
+                    <text x="605" y="242" fill="#FFFFFF" fontSize="9.5" fontWeight="extrabold" textAnchor="middle" fontFamily="monospace">
+                      11B06 (2PN) • CÓ NGƯỜI Ở
+                    </text>
+                    <text x="605" y="258" fill="#D1FAE5" fontSize="8" fontWeight="bold" textAnchor="middle">
+                      Chủ Hộ: Phạm Thu Trang
                     </text>
                   </g>
 
