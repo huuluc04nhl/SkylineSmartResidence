@@ -110,18 +110,33 @@ export async function nksUpdateInfo(info: Partial<NksUserInfo>): Promise<{ succe
 /**
  * 4. Update Password API (POST /api/nks/user/updatePass)
  */
-export async function nksUpdatePassword(oldPass: string, newPass: string): Promise<{ success: boolean; message: string }> {
+export async function nksUpdatePassword(
+  oldPass: string, 
+  newPass: string,
+  options?: {
+    confirmPass?: string;
+    targetUserId?: string;
+    targetUsername?: string;
+  }
+): Promise<{ success: boolean; message: string }> {
   const res = await fetch('/api/nks/user/updatePass', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ old_password: oldPass, password: newPass }),
+    body: JSON.stringify({ 
+      old_password: oldPass, 
+      password: newPass,
+      confirm_password: options?.confirmPass || newPass,
+      target_user_id: options?.targetUserId,
+      target_username: options?.targetUsername,
+    }),
   });
 
-  if (!res.ok) {
-    throw new Error('NKS UpdatePass API failed');
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok || !data.success) {
+    throw new Error(data.message || 'Cập nhật mật khẩu không thành công');
   }
 
-  return await res.json();
+  return data;
 }
 
 /**
@@ -167,8 +182,9 @@ export async function nksUpdateCccd(payload: {
 /**
  * 7. Get Family Members API (GET /api/nks/user/family)
  */
-export async function nksGetFamilyMembers(): Promise<{ success: boolean; members: any[]; bqlAccounts?: any[] }> {
-  const res = await fetch('/api/nks/user/family', {
+export async function nksGetFamilyMembers(aptCode?: string): Promise<{ success: boolean; members: any[]; bqlAccounts?: any[] }> {
+  const url = aptCode ? `/api/nks/user/family?aptCode=${encodeURIComponent(aptCode)}` : '/api/nks/user/family';
+  const res = await fetch(url, {
     method: 'GET',
     headers: { 'Content-Type': 'application/json' },
   });

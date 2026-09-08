@@ -273,10 +273,10 @@ export default function Topbar({
               </div>
 
               {/* Account Quick Details */}
-              <div className="space-y-1.5 text-[11px] text-gray-300 bg-[#161D26] p-2.5 rounded border border-[#222B35]">
+              <div className="space-y-1.5 text-[11px] text-gray-300 bg-[#161D26] p-2.5 rounded-none border border-[#222B35]">
                 <div className="flex justify-between">
-                  <span className="text-gray-400">Vị trí căn:</span>
-                  <span className="font-mono font-bold text-white">{currentUser.apartment_code || '12A05'}</span>
+                  <span className="text-gray-400">Vị trí:</span>
+                  <span className="font-mono font-bold text-white">{currentUser.apartment_code || (isAdmin ? 'BQL_OFFICE' : '12A05')}</span>
                 </div>
                 {currentUser.phone && (
                   <div className="flex justify-between">
@@ -292,18 +292,18 @@ export default function Topbar({
                 )}
               </div>
 
-              {/* Quick Navigation to Profile (if Resident) */}
-              {!isAdmin && onSemanticSearchSelect && (
+              {/* Quick Navigation to Profile & Password Change */}
+              {onSemanticSearchSelect && (
                 <button
                   type="button"
                   onClick={() => {
-                    onSemanticSearchSelect('resident-profile');
+                    onSemanticSearchSelect(isAdmin ? 'admin-profile' : 'resident-profile');
                     setShowRoleDropdown(false);
                   }}
-                  className="w-full py-2 px-2.5 bg-[#1C2533] hover:bg-[#253245] text-white text-xs font-semibold rounded flex items-center justify-between border border-[#2D3748] transition-colors"
+                  className="w-full py-2 px-2.5 bg-[#1C2533] hover:bg-[#253245] text-white text-xs font-semibold rounded-none flex items-center justify-between border border-[#2D3748] transition-colors"
                 >
                   <span className="flex items-center gap-1.5">
-                    <User className="w-3.5 h-3.5 text-[#C5A880]" /> {currentUser.role === 'OWNER' ? 'Hồ Sơ & Thẻ e-KYC' : 'Hồ Sơ Cá Nhân'}
+                    <User className="w-3.5 h-3.5 text-[#C5A880]" /> Hồ Sơ & Đổi Mật Khẩu
                   </span>
                   <ArrowRight className="w-3.5 h-3.5 text-gray-400" />
                 </button>
@@ -314,7 +314,7 @@ export default function Topbar({
                 <button
                   type="button"
                   onClick={handleLogout}
-                  className="w-full p-2 text-left text-xs text-rose-400 hover:bg-rose-950/50 flex items-center gap-2 transition-colors font-semibold rounded"
+                  className="w-full p-2 text-left text-xs text-rose-400 hover:bg-rose-950/50 flex items-center gap-2 transition-colors font-semibold rounded-none"
                 >
                   <LogOut className="w-3.5 h-3.5" />
                   Đăng Xuất Tài Khoản

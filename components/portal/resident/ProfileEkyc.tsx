@@ -68,10 +68,11 @@ interface ProfileEkycProps {
 export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
   const { updateUserInfo, refreshUser } = useAuth();
   const isOwner = currentUser.role === 'OWNER';
-  const aptCode = currentUser.apartment_code || '12A05';
+  const isAdmin = currentUser.role === 'ADMIN' || currentUser.role === 'TECHNICIAN';
+  const aptCode = currentUser.apartment_code || (isAdmin ? 'BQL_OFFICE' : '12A05');
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const [activeTab, setActiveTab] = useState<'INFO' | 'EKYC'>('INFO');
+  const [activeTab, setActiveTab] = useState<'INFO' | 'EKYC' | 'PASSWORD'>('INFO');
   const [isOcrModalOpen, setIsOcrModalOpen] = useState(false);
   const [isAvatarModalOpen, setIsAvatarModalOpen] = useState(false);
   const [isCardViewerOpen, setIsCardViewerOpen] = useState(false);
@@ -99,6 +100,37 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
   const [saveError, setSaveError] = useState<string | null>(null);
   const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
 
+  // Password Management State
+  const [passwordTarget, setPasswordTarget] = useState<string>('ME');
+  const [oldPassword, setOldPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [showOldPassword, setShowOldPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [isChangingPassword, setIsChangingPassword] = useState(false);
+  const [passChangeSuccess, setPassChangeSuccess] = useState<string | null>(null);
+  const [passChangeError, setPassChangeError] = useState<string | null>(null);
+  const [familyAccounts, setFamilyAccounts] = useState<Array<{ id: string; fullName: string; phone?: string; username?: string; role?: string }>>([]);
+
+  // Password strength calculator
+  const getPasswordStrength = (pass: string) => {
+    if (!pass) return { score: 0, label: 'Chưa nhập', color: 'bg-gray-600 text-gray-400' };
+    let score = 0;
+    if (pass.length >= 6) score += 1;
+    if (pass.length >= 8) score += 1;
+    if (/[A-Z]/.test(pass) && /[a-z]/.test(pass)) score += 1;
+    if (/\d/.test(pass)) score += 1;
+    if (/[^A-Za-z0-9]/.test(pass)) score += 1;
+
+    if (score <= 2) return { score: 25, label: 'Yếu', color: 'bg-rose-500 text-rose-400' };
+    if (score <= 3) return { score: 50, label: 'Trung bình', color: 'bg-amber-500 text-amber-400' };
+    if (score <= 4) return { score: 75, label: 'Khá mạnh', color: 'bg-blue-500 text-blue-400' };
+    return { score: 100, label: 'Rất an toàn', color: 'bg-emerald-500 text-emerald-400' };
+  };
+
+  const passwordStrength = getPasswordStrength(newPassword);
+
   // e-KYC State
   const [ekycStatus, setEkycStatus] = useState<'VERIFIED' | 'PENDING' | 'REJECTED'>('VERIFIED');
   const [currentEkyc, setCurrentEkyc] = useState<EkycRequest | null>(null);
@@ -106,6 +138,28 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
   const [cccdImage, setCccdImage] = useState('');
   const [cccdBackImage, setCccdBackImage] = useState('');
   const [matchScore, setMatchScore] = useState(99.8);
+
+  // Fetch family accounts if Owner
+  useEffect(() => {
+    if (isOwner) {
+      nksGetFamilyMembers(aptCode)
+        .then((res) => {
+          const list = res?.members || [];
+          if (Array.isArray(list)) {
+            setFamilyAccounts(
+              list.map((m: any) => ({
+                id: m.id || m.username || m.phone,
+                fullName: m.fullName || m.name || 'Thành viên',
+                phone: m.phone || '',
+                username: m.username || m.phone || '',
+                role: m.role || 'Family'
+              }))
+            );
+          }
+        })
+        .catch((e) => console.warn('Load family accounts error:', e));
+    }
+  }, [isOwner, aptCode]);
 
   // Load live user info directly from API endpoint on mount & sync e-KYC status
   useEffect(() => {
@@ -173,12 +227,68 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
     return () => window.removeEventListener('skyline_ekyc_updated', syncEkycStatus);
   }, [currentUser]);
 
-  // Đảm bảo thành viên gia đình (không phải chủ hộ) chỉ xem thông tin cá nhân, không truy cập thẻ e-KYC
+  // Đảm bảo thành viên gia đình (không phải chủ hộ) không truy cập thẻ e-KYC
   useEffect(() => {
     if (!isOwner && activeTab === 'EKYC') {
       setActiveTab('INFO');
     }
   }, [isOwner, activeTab]);
+
+  // Handle Password Change for Self or Family Members
+  const handleChangePassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setPassChangeSuccess(null);
+    setPassChangeError(null);
+
+    const isSelf = passwordTarget === 'ME';
+
+    if (isSelf && !oldPassword.trim()) {
+      setPassChangeError('Vui lòng nhập mật khẩu hiện tại của bạn để xác thực.');
+      return;
+    }
+
+    if (!newPassword || newPassword.length < 6) {
+      setPassChangeError('Mật khẩu mới phải có độ dài tối thiểu 6 ký tự.');
+      return;
+    }
+
+    if (newPassword !== confirmPassword) {
+      setPassChangeError('Mật khẩu xác nhận không khớp với mật khẩu mới đã nhập.');
+      return;
+    }
+
+    if (isSelf && oldPassword === newPassword) {
+      setPassChangeError('Mật khẩu mới không được trùng với mật khẩu hiện tại.');
+      return;
+    }
+
+    setIsChangingPassword(true);
+    try {
+      const selectedMember = !isSelf ? familyAccounts.find(m => m.id === passwordTarget) : null;
+      const res = await nksUpdatePassword(
+        isSelf ? oldPassword : 'BQL_OWNER_AUTH',
+        newPassword,
+        {
+          confirmPass: confirmPassword,
+          targetUserId: selectedMember ? selectedMember.id : currentUser.id,
+          targetUsername: selectedMember ? (selectedMember.username || selectedMember.phone) : (currentUser.username || currentUser.phone || currentUser.email)
+        }
+      );
+
+      setPassChangeSuccess(
+        res.message || (isSelf 
+          ? 'Đổi mật khẩu tài khoản thành công!' 
+          : `Đã cấp lại mật khẩu thành công cho ${selectedMember?.fullName || 'thành viên'}!`)
+      );
+      setOldPassword('');
+      setNewPassword('');
+      setConfirmPassword('');
+    } catch (err: any) {
+      setPassChangeError(err.message || 'Lỗi khi cập nhật mật khẩu.');
+    } finally {
+      setIsChangingPassword(false);
+    }
+  };
 
   // 1. Submit Update Profile Info to NKS API (POST /api/nks/user/updateInfo + updateCccd)
   const handleSaveInfo = async (e: React.FormEvent) => {
@@ -446,71 +556,83 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#222B35] pb-4">
         <div>
           <div className="text-[10px] uppercase tracking-[0.25em] text-[#C5A880] font-semibold flex items-center gap-1.5">
-            <ScanFace className="w-3.5 h-3.5" /> Skyline Smart Residence • {isOwner ? 'Chủ Hộ Căn Hộ' : 'Thành Viên Cư Dân'}
+            <ScanFace className="w-3.5 h-3.5" /> Skyline Smart Residence • {isAdmin ? 'Ban Quản Lý Tòa Nhà' : isOwner ? 'Chủ Hộ Căn Hộ' : 'Thành Viên Cư Dân'}
           </div>
           <h2 className="font-serif text-2xl text-white font-bold mt-1">
-            {isOwner ? 'Hồ Sơ Cá Nhân & Thẻ Định Danh e-KYC' : 'Hồ Sơ Cá Nhân Thành Viên'}
+            {isAdmin 
+              ? 'Hồ Sơ Quản Trị Viên & Đổi Mật Khẩu' 
+              : isOwner 
+              ? 'Hồ Sơ Cá Nhân, Thẻ e-KYC & Đổi Mật Khẩu' 
+              : 'Hồ Sơ Cá Nhân Thành Viên & Đổi Mật Khẩu'}
           </h2>
           <p className="text-xs text-gray-400 mt-0.5">
-            {isOwner
-              ? `Căn hộ: ${aptCode} • Quản lý hồ sơ chủ hộ, thẻ e-KYC và phân quyền cư trú`
-              : `Căn hộ: ${aptCode} • Thông tin cá nhân của thành viên gia đình (được Chủ Hộ bảo lãnh)`}
+            {isAdmin
+              ? 'Tài khoản điều hành hệ thống Ban Quản Lý Skyline Smart Residence • Quản lý mật khẩu và thông tin liên hệ'
+              : isOwner
+              ? `Căn hộ: ${aptCode} • Quản lý hồ sơ chủ hộ, thẻ e-KYC, cấp quyền và đổi mật khẩu các tài khoản`
+              : `Căn hộ: ${aptCode} • Thông tin cá nhân và thay đổi mật khẩu đăng nhập của thành viên`}
           </p>
         </div>
 
-        {/* Cụm Nút e-KYC & Trạng Thái: CHỈ HIỂN THỊ CHO CHỦ HỘ (Người nhà được ẩn đi) */}
+        {/* Cụm Nút e-KYC & Trạng Thái */}
         {isOwner ? (
           <div className="flex items-center gap-2.5 flex-shrink-0">
             <button
               type="button"
               onClick={() => setIsOcrModalOpen(true)}
-              className="px-4 py-2 bg-gradient-to-r from-[#1E2631] to-[#121820] border border-[#C5A880] text-[#C5A880] hover:text-white hover:border-white text-xs font-bold uppercase tracking-wider flex items-center gap-2 transition-all shadow rounded"
+              className="px-4 py-2 bg-gradient-to-r from-[#1E2631] to-[#121820] border border-[#C5A880] text-[#C5A880] hover:text-white hover:border-white text-xs font-bold uppercase tracking-wider flex items-center gap-2 transition-all shadow rounded-none"
             >
               <Scan className="w-4 h-4 text-[#C5A880]" /> Quét Căn Cước (OCR)
             </button>
 
             {ekycStatus === 'VERIFIED' && (
-              <span className="px-3 py-1 bg-emerald-950/80 border border-emerald-500 text-emerald-300 text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 rounded">
+              <span className="px-3 py-1 bg-emerald-950/80 border border-emerald-500 text-emerald-300 text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 rounded-none">
                 <ShieldCheck className="w-4 h-4 text-emerald-400" /> Thẻ e-KYC Đã Xác Thực
               </span>
             )}
 
             {ekycStatus === 'PENDING' && (
-              <span className="px-3 py-1 bg-amber-950/80 border border-amber-500 text-amber-300 text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 rounded animate-pulse">
+              <span className="px-3 py-1 bg-amber-950/80 border border-amber-500 text-amber-300 text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 rounded-none animate-pulse">
                 <Clock className="w-4 h-4 text-amber-400" /> Đang Chờ BQL Duyệt
               </span>
             )}
 
             {ekycStatus === 'REJECTED' && (
-              <span className="px-3 py-1 bg-rose-950/80 border border-rose-500 text-rose-300 text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 rounded">
+              <span className="px-3 py-1 bg-rose-950/80 border border-rose-500 text-rose-300 text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 rounded-none">
                 <XCircle className="w-4 h-4 text-rose-400" /> BQL Yêu Cầu Chụp Lại
               </span>
             )}
           </div>
+        ) : isAdmin ? (
+          <div className="flex items-center gap-2 flex-shrink-0">
+            <span className="px-3 py-1.5 bg-[#161D26] border border-[#C5A880]/60 text-[#C5A880] text-xs font-semibold rounded-none flex items-center gap-2">
+              <ShieldCheck className="w-4 h-4 text-[#C5A880]" /> Ban Quản Lý (Admin Master)
+            </span>
+          </div>
         ) : (
-          <div className="flex items-center gap-2">
-            <span className="px-3 py-1.5 bg-[#161D26] border border-purple-500/50 text-purple-300 text-xs font-semibold rounded flex items-center gap-2">
-              <Users className="w-4 h-4 text-purple-400" /> Thành Viên Gia Đình (Được Chủ Hộ Cấp Quyền)
+          <div className="flex items-center gap-2 flex-shrink-0">
+            <span className="px-3 py-1.5 bg-[#161D26] border border-purple-500/50 text-purple-300 text-xs font-semibold rounded-none flex items-center gap-2">
+              <Users className="w-4 h-4 text-purple-400" /> Thành Viên Căn Hộ (Chủ Hộ Cấp Quyền)
             </span>
           </div>
         )}
       </div>
 
-      {/* Tab Navigation: CHỈ HIỂN THỊ TAB 2 (ĐỊNH DANH E-KYC & THẺ CƯ DÂN) CHO CHỦ HỘ */}
-      {isOwner && (
-        <div className="flex flex-wrap border-b border-[#222B35] text-xs font-semibold uppercase tracking-wider gap-2">
-          <button
-            type="button"
-            onClick={() => setActiveTab('INFO')}
-            className={`pb-3 px-4 flex items-center gap-2 border-b-2 transition-colors ${
-              activeTab === 'INFO'
-                ? 'border-[#C5A880] text-[#C5A880] font-bold'
-                : 'border-transparent text-gray-400 hover:text-gray-200'
-            }`}
-          >
-            <UserIcon className="w-4 h-4" /> 1. Thông Tin Cá Nhân
-          </button>
+      {/* Tab Navigation: HIỂN THỊ CHO TẤT CẢ CÁC TÀI KHOẢN */}
+      <div className="flex flex-wrap border-b border-[#222B35] text-xs font-semibold uppercase tracking-wider gap-2">
+        <button
+          type="button"
+          onClick={() => setActiveTab('INFO')}
+          className={`pb-3 px-4 flex items-center gap-2 border-b-2 transition-colors ${
+            activeTab === 'INFO'
+              ? 'border-[#C5A880] text-[#C5A880] font-bold'
+              : 'border-transparent text-gray-400 hover:text-gray-200'
+          }`}
+        >
+          <UserIcon className="w-4 h-4" /> 1. Thông Tin Cá Nhân
+        </button>
 
+        {isOwner && (
           <button
             type="button"
             onClick={() => setActiveTab('EKYC')}
@@ -522,12 +644,24 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
           >
             <ScanFace className="w-4 h-4" /> 2. Thẻ Định Danh e-KYC & Thẻ Cư Dân
           </button>
-        </div>
-      )}
+        )}
+
+        <button
+          type="button"
+          onClick={() => setActiveTab('PASSWORD')}
+          className={`pb-3 px-4 flex items-center gap-2 border-b-2 transition-colors ${
+            activeTab === 'PASSWORD'
+              ? 'border-[#C5A880] text-[#C5A880] font-bold'
+              : 'border-transparent text-gray-400 hover:text-gray-200'
+          }`}
+        >
+          <KeyRound className="w-4 h-4" /> {isOwner ? '3. Đổi Mật Khẩu Các Tài Khoản' : '2. Đổi Mật Khẩu Tài Khoản'}
+        </button>
+      </div>
 
       {/* Loading Indicator while fetching from API */}
       {isLoadingApi && (
-        <div className="p-8 bg-[#121820] border border-[#222B35] flex items-center justify-center gap-3 text-xs text-[#C5A880] font-mono rounded-lg">
+        <div className="p-8 bg-[#121820] border border-[#222B35] flex items-center justify-center gap-3 text-xs text-[#C5A880] font-mono rounded-none">
           <RefreshCw className="w-5 h-5 animate-spin text-[#C5A880]" />
           <span>Đang tải thông tin hồ sơ...</span>
         </div>
@@ -537,9 +671,9 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
       {/* TAB 1: PERSONAL INFORMATION & VEHICLE REGISTRATION             */}
       {/* ------------------------------------------------------------- */}
       {!isLoadingApi && activeTab === 'INFO' && (
-        <form onSubmit={handleSaveInfo} className="p-6 sm:p-8 bg-[#121820] border border-[#222B35] space-y-6 shadow-2xl rounded-lg">
+        <form onSubmit={handleSaveInfo} className="p-6 sm:p-8 bg-[#121820] border border-[#222B35] space-y-6 shadow-2xl rounded-none">
           {/* Avatar & Fast Profile Header */}
-          <div className="flex flex-col sm:flex-row items-center gap-6 p-4 bg-[#161D26] border border-[#222B35] rounded">
+          <div className="flex flex-col sm:flex-row items-center gap-6 p-4 bg-[#161D26] border border-[#222B35] rounded-none">
             {/* Avatar with Upload Trigger */}
             <div className="relative group">
               <img
@@ -561,7 +695,7 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
             <div className="space-y-1 text-center sm:text-left flex-1">
               <div className="text-white font-bold text-lg flex items-center justify-center sm:justify-start gap-2">
                 <span>{fullName || 'Chưa cập nhật họ tên'}</span>
-                <span className="px-2 py-0.5 text-[10px] bg-[#C5A880] text-[#0D1117] font-bold uppercase rounded">
+                <span className="px-2 py-0.5 text-[10px] bg-[#C5A880] text-[#0D1117] font-bold uppercase rounded-none">
                   {currentUser.role}
                 </span>
               </div>
@@ -573,7 +707,7 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
             <button
               type="button"
               onClick={() => setIsAvatarModalOpen(true)}
-              className="px-4 py-2.5 bg-[#1C2533] hover:bg-[#C5A880] hover:text-[#0D1117] border border-gray-700 hover:border-[#C5A880] text-xs font-bold uppercase tracking-wider text-white transition-all rounded flex items-center gap-2 shadow"
+              className="px-4 py-2.5 bg-[#1C2533] hover:bg-[#C5A880] hover:text-[#0D1117] border border-gray-700 hover:border-[#C5A880] text-xs font-bold uppercase tracking-wider text-white transition-all rounded-none flex items-center gap-2 shadow"
             >
               <Upload className="w-3.5 h-3.5 text-[#C5A880]" /> Tùy Chỉnh & Đổi Avatar
             </button>
@@ -581,7 +715,7 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
 
           {/* Feedback Alerts */}
           {ocrFilledNotice && (
-            <div className="p-4 bg-amber-950/90 border-2 border-amber-500 text-amber-200 text-xs flex items-center justify-between gap-3 animate-fadeIn shadow-2xl rounded-lg">
+            <div className="p-4 bg-amber-950/90 border-2 border-amber-500 text-amber-200 text-xs flex items-center justify-between gap-3 animate-fadeIn shadow-2xl rounded-none">
               <div className="flex items-center gap-3">
                 <Sparkles className="w-5 h-5 text-amber-300 flex-shrink-0 animate-pulse" />
                 <div>
@@ -592,7 +726,7 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
               <button
                 type="button"
                 onClick={() => setOcrFilledNotice(false)}
-                className="px-2 py-1 bg-black/40 hover:bg-black/80 text-amber-300 hover:text-white text-[11px] font-bold rounded transition-colors"
+                className="px-2 py-1 bg-black/40 hover:bg-black/80 text-amber-300 hover:text-white text-[11px] font-bold rounded-none transition-colors"
               >
                 Đã Hiểu
               </button>
@@ -600,14 +734,14 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
           )}
 
           {savedSuccess && (
-            <div className="p-3.5 bg-emerald-950/90 border border-emerald-500 text-emerald-300 text-xs flex items-center gap-2 animate-fadeIn shadow-lg rounded">
+            <div className="p-3.5 bg-emerald-950/90 border border-emerald-500 text-emerald-300 text-xs flex items-center gap-2 animate-fadeIn shadow-lg rounded-none">
               <CheckCircle2 className="w-4 h-4 flex-shrink-0" />
               <span>✓ Đã cập nhật thành công thông tin hồ sơ cá nhân!</span>
             </div>
           )}
 
           {saveError && (
-            <div className="p-3.5 bg-rose-950/90 border border-rose-500 text-rose-300 text-xs flex items-center gap-2 animate-fadeIn rounded">
+            <div className="p-3.5 bg-rose-950/90 border border-rose-500 text-rose-300 text-xs flex items-center gap-2 animate-fadeIn rounded-none">
               <AlertCircle className="w-4 h-4 flex-shrink-0" />
               <span>{saveError}</span>
             </div>
@@ -616,7 +750,7 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
           {/* ========================================================= */}
           {/* KHỐI 1: THÔNG TIN CĂN HỘ & PHÁP LÝ ĐỊNH DANH (BQL QUẢN LÝ) */}
           {/* ========================================================= */}
-          <div className="p-6 bg-[#161D26] border border-[#2D3748] rounded-xl space-y-5 shadow-lg">
+          <div className="p-6 bg-[#161D26] border border-[#2D3748] rounded-none space-y-5 shadow-lg">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#222B35] pb-4">
               <div>
                 <div className="text-[10px] uppercase tracking-wider text-[#C5A880] font-bold flex items-center gap-1.5">
@@ -630,15 +764,15 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
               {/* Status Badge */}
               <div className="flex items-center gap-2">
                 {ekycStatus === 'VERIFIED' ? (
-                  <span className="px-3 py-1 bg-emerald-950/80 border border-emerald-500 text-emerald-300 text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 rounded-lg shadow-sm">
+                  <span className="px-3 py-1 bg-emerald-950/80 border border-emerald-500 text-emerald-300 text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 rounded-none shadow-sm">
                     <ShieldCheck className="w-4 h-4 text-emerald-400" /> Đã Xác Thực e-KYC Bởi BQL
                   </span>
                 ) : ekycStatus === 'PENDING' ? (
-                  <span className="px-3 py-1 bg-amber-950/80 border border-amber-500 text-amber-300 text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 rounded-lg animate-pulse">
+                  <span className="px-3 py-1 bg-amber-950/80 border border-amber-500 text-amber-300 text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 rounded-none animate-pulse">
                     <Clock className="w-4 h-4 text-amber-400" /> Đang Chờ BQL Phê Duyệt
                   </span>
                 ) : (
-                  <span className="px-3 py-1 bg-rose-950/80 border border-rose-500 text-rose-300 text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 rounded-lg">
+                  <span className="px-3 py-1 bg-rose-950/80 border border-rose-500 text-rose-300 text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 rounded-none">
                     <AlertCircle className="w-4 h-4 text-rose-400" /> Chưa Hoàn Tất e-KYC
                   </span>
                 )}
@@ -646,7 +780,7 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
             </div>
 
             {/* Business Logic Notice Banner */}
-            <div className={`p-4 rounded-lg text-xs leading-relaxed flex items-start gap-3 border ${
+            <div className={`p-4 rounded-none text-xs leading-relaxed flex items-start gap-3 border ${
               ekycStatus === 'VERIFIED'
                 ? 'bg-[#0E1B15] border-emerald-500/40 text-emerald-200'
                 : 'bg-[#1C1A14] border-amber-500/40 text-amber-200'
@@ -685,7 +819,7 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
                     type="text"
                     value={`Căn hộ ${aptCode} • Chung cư Skyline Smart Residence`}
                     readOnly
-                    className="w-full bg-[#0D1117] border border-[#263140] p-3 text-white font-semibold rounded cursor-not-allowed select-all"
+                    className="w-full bg-[#0D1117] border border-[#263140] p-3 text-white font-semibold rounded-none cursor-not-allowed select-all"
                   />
                   <Lock className="w-3.5 h-3.5 text-gray-500 absolute right-3 top-3.5" />
                 </div>
@@ -707,7 +841,7 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
                     type="text"
                     value={isOwner ? 'Chủ Hộ (Chính Chủ Sở Hữu)' : 'Thành Viên Gia Đình (Được Chủ Hộ Bảo Lãnh)'}
                     readOnly
-                    className="w-full bg-[#0D1117] border border-[#263140] p-3 text-[#C5A880] font-semibold rounded cursor-not-allowed"
+                    className="w-full bg-[#0D1117] border border-[#263140] p-3 text-[#C5A880] font-semibold rounded-none cursor-not-allowed"
                   />
                   <ShieldCheck className="w-3.5 h-3.5 text-[#C5A880] absolute right-3 top-3.5" />
                 </div>
@@ -734,7 +868,7 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
                       if (ekycStatus !== 'VERIFIED') setFullName(e.target.value);
                     }}
                     readOnly={ekycStatus === 'VERIFIED'}
-                    className={`w-full p-3 font-semibold rounded transition-colors ${
+                    className={`w-full p-3 font-semibold rounded-none transition-colors ${
                       ekycStatus === 'VERIFIED'
                         ? 'bg-[#0D1117] border border-[#263140] text-white cursor-not-allowed'
                         : 'bg-[#161B22] border border-[#2D3748] text-white focus:outline-none focus:border-[#C5A880]'
@@ -767,7 +901,7 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
                       if (ekycStatus !== 'VERIFIED') setIdCardNumber(e.target.value);
                     }}
                     readOnly={ekycStatus === 'VERIFIED'}
-                    className={`w-full p-3 font-mono font-bold rounded transition-colors ${
+                    className={`w-full p-3 font-mono font-bold rounded-none transition-colors ${
                       ekycStatus === 'VERIFIED'
                         ? 'bg-[#0D1117] border border-[#263140] text-emerald-300 cursor-not-allowed tracking-wider'
                         : 'bg-[#161B22] border border-[#2D3748] text-white focus:outline-none focus:border-[#C5A880]'
@@ -797,7 +931,7 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
                     if (ekycStatus !== 'VERIFIED') setBirthday(e.target.value);
                   }}
                   readOnly={ekycStatus === 'VERIFIED'}
-                  className={`w-full p-3 font-mono rounded transition-colors ${
+                  className={`w-full p-3 font-mono rounded-none transition-colors ${
                     ekycStatus === 'VERIFIED'
                       ? 'bg-[#0D1117] border border-[#263140] text-gray-300 cursor-not-allowed'
                       : 'bg-[#161B22] border border-[#2D3748] text-white focus:outline-none focus:border-[#C5A880]'
@@ -822,7 +956,7 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
                     if (ekycStatus !== 'VERIFIED') setIdPlace(e.target.value);
                   }}
                   readOnly={ekycStatus === 'VERIFIED'}
-                  className={`w-full p-3 rounded transition-colors ${
+                  className={`w-full p-3 rounded-none transition-colors ${
                     ekycStatus === 'VERIFIED'
                       ? 'bg-[#0D1117] border border-[#263140] text-gray-300 cursor-not-allowed'
                       : 'bg-[#161B22] border border-[#2D3748] text-white focus:outline-none focus:border-[#C5A880]'
@@ -852,27 +986,27 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {/* Vị trí 1: CCCD Mặt Trước */}
-                <div className="p-3 bg-[#121820] border border-[#2D3748] rounded-xl space-y-2 flex flex-col justify-between">
+                <div className="p-3 bg-[#121820] border border-[#2D3748] rounded-none space-y-2 flex flex-col justify-between">
                   <div className="flex items-center justify-between text-xs">
                     <span className="font-bold text-white flex items-center gap-1.5">
                       <span className="w-2 h-2 rounded-full bg-cyan-400"></span> Mặt Trước (Có Ảnh & 12 Số CCCD)
                     </span>
-                    <span className="text-[10px] text-cyan-300 font-mono px-2 py-0.5 bg-cyan-950/80 border border-cyan-500/30 rounded">
+                    <span className="text-[10px] text-cyan-300 font-mono px-2 py-0.5 bg-cyan-950/80 border border-cyan-500/30 rounded-none">
                       Vị Trí 1
                     </span>
                   </div>
 
-                  <div className="relative w-full h-44 sm:h-48 rounded-lg overflow-hidden border border-gray-700 bg-[#0A0E14] flex items-center justify-center group shadow-inner">
+                  <div className="relative w-full h-44 sm:h-48 rounded-none overflow-hidden border border-gray-700 bg-[#0A0E14] flex items-center justify-center group shadow-inner">
                     <img
                       src={cccdImage || 'https://images.unsplash.com/photo-1578852612716-854e527abf2e?w=600'}
                       alt="CCCD Mặt Trước"
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform"
                     />
-                    <div className="absolute top-2 left-2 px-2 py-0.5 bg-black/75 backdrop-blur rounded text-[9.5px] font-mono text-cyan-300 border border-cyan-500/30">
+                    <div className="absolute top-2 left-2 px-2 py-0.5 bg-black/75 backdrop-blur rounded-none text-[9.5px] font-mono text-cyan-300 border border-cyan-500/30">
                       MẶT TRƯỚC (FRONT)
                     </div>
                     {cccdImage && (
-                      <div className="absolute bottom-2 right-2 px-2 py-0.5 bg-emerald-950/90 text-emerald-300 border border-emerald-500 text-[9px] font-mono font-bold rounded">
+                      <div className="absolute bottom-2 right-2 px-2 py-0.5 bg-emerald-950/90 text-emerald-300 border border-emerald-500 text-[9px] font-mono font-bold rounded-none">
                         ✓ Tự Động Điền Từ OCR
                       </div>
                     )}
@@ -885,27 +1019,27 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
                 </div>
 
                 {/* Vị trí 2: CCCD Mặt Sau */}
-                <div className="p-3 bg-[#121820] border border-[#2D3748] rounded-xl space-y-2 flex flex-col justify-between">
+                <div className="p-3 bg-[#121820] border border-[#2D3748] rounded-none space-y-2 flex flex-col justify-between">
                   <div className="flex items-center justify-between text-xs">
                     <span className="font-bold text-white flex items-center gap-1.5">
                       <span className="w-2 h-2 rounded-full bg-purple-400"></span> Mặt Sau (Chip Điện Tử & Ngày Cấp)
                     </span>
-                    <span className="text-[10px] text-purple-300 font-mono px-2 py-0.5 bg-purple-950/80 border border-purple-500/30 rounded">
+                    <span className="text-[10px] text-purple-300 font-mono px-2 py-0.5 bg-purple-950/80 border border-purple-500/30 rounded-none">
                       Vị Trí 2
                     </span>
                   </div>
 
-                  <div className="relative w-full h-44 sm:h-48 rounded-lg overflow-hidden border border-gray-700 bg-[#0A0E14] flex items-center justify-center group shadow-inner">
+                  <div className="relative w-full h-44 sm:h-48 rounded-none overflow-hidden border border-gray-700 bg-[#0A0E14] flex items-center justify-center group shadow-inner">
                     <img
                       src={cccdBackImage || cccdImage || 'https://images.unsplash.com/photo-1578852612716-854e527abf2e?w=600'}
                       alt="CCCD Mặt Sau"
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform"
                     />
-                    <div className="absolute top-2 left-2 px-2 py-0.5 bg-black/75 backdrop-blur rounded text-[9.5px] font-mono text-purple-300 border border-purple-500/30">
+                    <div className="absolute top-2 left-2 px-2 py-0.5 bg-black/75 backdrop-blur rounded-none text-[9.5px] font-mono text-purple-300 border border-purple-500/30">
                       MẶT SAU (BACK)
                     </div>
                     {cccdBackImage && (
-                      <div className="absolute bottom-2 right-2 px-2 py-0.5 bg-emerald-950/90 text-emerald-300 border border-emerald-500 text-[9px] font-mono font-bold rounded">
+                      <div className="absolute bottom-2 right-2 px-2 py-0.5 bg-emerald-950/90 text-emerald-300 border border-emerald-500 text-[9px] font-mono font-bold rounded-none">
                         ✓ Tự Động Điền Từ OCR
                       </div>
                     )}
@@ -932,7 +1066,7 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
                   <button
                     type="button"
                     onClick={() => setIsCardViewerOpen(true)}
-                    className="px-3.5 py-1.5 bg-[#1C2533] hover:bg-[#2A374A] border border-gray-700 text-gray-300 hover:text-white text-xs font-semibold rounded flex items-center gap-1.5 transition-all"
+                    className="px-3.5 py-1.5 bg-[#1C2533] hover:bg-[#2A374A] border border-gray-700 text-gray-300 hover:text-white text-xs font-semibold rounded-none flex items-center gap-1.5 transition-all"
                   >
                     <Eye className="w-3.5 h-3.5" /> Xem Ảnh Thẻ CCCD
                   </button>
@@ -943,7 +1077,7 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
                     type="button"
                     onClick={handleSubmitEkycToBql}
                     disabled={isScanningOcr}
-                    className="px-4 py-1.5 bg-[#C5A880] hover:bg-white text-[#0D1117] text-xs font-bold rounded flex items-center gap-1.5 transition-all shadow"
+                    className="px-4 py-1.5 bg-[#C5A880] hover:bg-white text-[#0D1117] text-xs font-bold rounded-none flex items-center gap-1.5 transition-all shadow"
                   >
                     {isScanningOcr ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <ShieldCheck className="w-3.5 h-3.5" />}
                     Gửi BQL Duyệt e-KYC
@@ -956,7 +1090,7 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
           {/* ========================================================= */}
           {/* KHỐI 2: THÔNG TIN LIÊN HỆ & ĐĂNG KÝ TIỆN ÍCH (CƯ DÂN TỰ CHỦ) */}
           {/* ========================================================= */}
-          <div className="p-6 bg-[#161D26] border border-[#2D3748] rounded-xl space-y-5 shadow-lg">
+          <div className="p-6 bg-[#161D26] border border-[#2D3748] rounded-none space-y-5 shadow-lg">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#222B35] pb-4">
               <div>
                 <div className="text-[10px] uppercase tracking-wider text-[#C5A880] font-bold flex items-center gap-1.5">
@@ -970,7 +1104,7 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
                 </p>
               </div>
 
-              <span className="px-2.5 py-1 bg-[#121820] text-gray-300 border border-[#263140] text-xs rounded font-mono">
+              <span className="px-2.5 py-1 bg-[#121820] text-gray-300 border border-[#263140] text-xs rounded-none font-mono">
                 Cập nhật tức thì
               </span>
             </div>
@@ -987,7 +1121,7 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
                   placeholder="Nhập số điện thoại..."
-                  className="w-full bg-[#161B22] border border-[#2D3748] p-3 text-white font-mono focus:outline-none focus:border-[#C5A880] transition-colors rounded"
+                  className="w-full bg-[#161B22] border border-[#2D3748] p-3 text-white font-mono focus:outline-none focus:border-[#C5A880] transition-colors rounded-none"
                   required
                 />
                 <div className="text-[10.5px] text-gray-500">
@@ -1005,7 +1139,7 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="Nhập địa chỉ email..."
-                  className="w-full bg-[#161B22] border border-[#2D3748] p-3 text-white font-mono focus:outline-none focus:border-[#C5A880] transition-colors rounded"
+                  className="w-full bg-[#161B22] border border-[#2D3748] p-3 text-white font-mono focus:outline-none focus:border-[#C5A880] transition-colors rounded-none"
                   required
                 />
                 <div className="text-[10.5px] text-gray-500">
@@ -1021,7 +1155,7 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
                 <select
                   value={gender}
                   onChange={(e) => setGender(e.target.value as '1' | '0')}
-                  className="w-full bg-[#161B22] border border-[#2D3748] p-3 text-white focus:outline-none focus:border-[#C5A880] transition-colors rounded"
+                  className="w-full bg-[#161B22] border border-[#2D3748] p-3 text-white focus:outline-none focus:border-[#C5A880] transition-colors rounded-none"
                 >
                   <option value="1">Nam</option>
                   <option value="0">Nữ</option>
@@ -1039,7 +1173,7 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
                   value={province}
                   onChange={(e) => setProvince(e.target.value)}
                   placeholder="Nhập tỉnh thành..."
-                  className="w-full bg-[#161B22] border border-[#2D3748] p-3 text-white focus:outline-none focus:border-[#C5A880] transition-colors rounded"
+                  className="w-full bg-[#161B22] border border-[#2D3748] p-3 text-white focus:outline-none focus:border-[#C5A880] transition-colors rounded-none"
                 />
                 <div className="text-[10.5px] text-gray-500">Địa bàn thường trú của cư dân.</div>
               </div>
@@ -1056,7 +1190,7 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
                   type="text"
                   value={licensePlate}
                   onChange={(e) => setLicensePlate(e.target.value)}
-                  className="w-full bg-[#161B22] border border-[#2D3748] p-3 text-[#C5A880] font-mono font-bold focus:outline-none focus:border-[#C5A880] transition-colors rounded"
+                  className="w-full bg-[#161B22] border border-[#2D3748] p-3 text-[#C5A880] font-mono font-bold focus:outline-none focus:border-[#C5A880] transition-colors rounded-none"
                   placeholder="VD: 51K-889.99"
                 />
                 <div className="text-[10.5px] text-gray-400">
@@ -1074,11 +1208,30 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
                   value={intro}
                   onChange={(e) => setIntro(e.target.value)}
                   placeholder="Ví dụ: Căn hộ có trẻ nhỏ, vui lòng gọi điện trước khi bấm chuông hoặc giao bưu phẩm..."
-                  className="w-full bg-[#161B22] border border-[#2D3748] p-3 text-white focus:outline-none focus:border-[#C5A880] transition-colors rounded resize-none"
+                  className="w-full bg-[#161B22] border border-[#2D3748] p-3 text-white focus:outline-none focus:border-[#C5A880] transition-colors rounded-none resize-none"
                 />
                 <div className="text-[10.5px] text-gray-500">
                   Ghi chú nội bộ hiển thị trên phần mềm tiếp đón lễ tân và trực ban kỹ thuật.
                 </div>
+              </div>
+
+              {/* Quick Security & Password Change Card */}
+              <div className="md:col-span-2 p-4 bg-[#161D26] border border-[#222B35] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-none">
+                <div className="space-y-0.5">
+                  <div className="flex items-center gap-2 text-white font-semibold text-xs">
+                    <KeyRound className="w-3.5 h-3.5 text-[#C5A880]" /> Mật Khẩu Đăng Nhập & Bảo Mật Tài Khoản
+                  </div>
+                  <div className="text-[11px] text-gray-400">
+                    Bạn có thể cập nhật mật khẩu mới cho tài khoản cá nhân hoặc các tài khoản thành viên trực thuộc.
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setActiveTab('PASSWORD')}
+                  className="px-4 py-2 bg-[#1C2533] hover:bg-[#2B394E] border border-[#C5A880]/60 text-[#C5A880] hover:text-white text-xs font-bold uppercase tracking-wider rounded-none flex items-center gap-1.5 transition-colors flex-shrink-0"
+                >
+                  <Lock className="w-3.5 h-3.5" /> Đổi Mật Khẩu →
+                </button>
               </div>
             </div>
 
@@ -1091,7 +1244,7 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
               <button
                 type="submit"
                 disabled={isSaving}
-                className="px-8 py-3 bg-[#C5A880] hover:bg-white text-[#0D1117] text-xs font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-2 shadow-xl rounded active:scale-[0.99]"
+                className="px-8 py-3 bg-[#C5A880] hover:bg-white text-[#0D1117] text-xs font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-2 shadow-xl rounded-none active:scale-[0.99]"
               >
                 {isSaving ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
                 {isSaving ? 'Đang Lưu Thông Tin...' : 'Lưu Thay Đổi Thông Tin Liên Hệ'}
@@ -1107,7 +1260,7 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
       {isOwner && activeTab === 'EKYC' && (
         <div className="space-y-6">
           {/* Status Box & BQL Sync Banner */}
-          <div className={`p-5 border flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-xl rounded-lg ${
+          <div className={`p-5 border flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-xl rounded-none ${
             ekycStatus === 'PENDING'
               ? 'bg-gradient-to-r from-[#1A1810] to-[#121820] border-amber-500/80'
               : ekycStatus === 'REJECTED'
@@ -1154,7 +1307,7 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
               <button
                 type="button"
                 onClick={() => setIsCardViewerOpen(true)}
-                className="px-3.5 py-2.5 bg-[#161B22] hover:bg-[#1C2533] border border-[#C5A880] text-[#C5A880] text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-2 shadow rounded"
+                className="px-3.5 py-2.5 bg-[#161B22] hover:bg-[#1C2533] border border-[#C5A880] text-[#C5A880] text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-2 shadow rounded-none"
               >
                 <Eye className="w-4 h-4" /> Xem Ảnh Thẻ CCCD
               </button>
@@ -1163,7 +1316,7 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
                 type="button"
                 onClick={handleSubmitEkycToBql}
                 disabled={isScanningOcr}
-                className="px-4 py-2.5 bg-[#C5A880] hover:bg-white text-[#0D1117] text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-2 shadow-lg rounded"
+                className="px-4 py-2.5 bg-[#C5A880] hover:bg-white text-[#0D1117] text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-2 shadow-lg rounded-none"
               >
                 {isScanningOcr ? <RefreshCw className="w-4 h-4 animate-spin" /> : <ShieldCheck className="w-4 h-4" />}
                 {isScanningOcr ? 'Đang Gửi Hồ Sơ...' : 'Gửi Hồ Sơ Cho BQL Duyệt'}
@@ -1174,7 +1327,7 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
           {/* e-KYC Visual Matcher & Smart Pass Cards */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Biometric FaceID & 512D Vector Card */}
-            <div className="p-5 bg-[#121820] border border-[#222B35] space-y-4 rounded-lg flex flex-col justify-between">
+            <div className="p-5 bg-[#121820] border border-[#222B35] space-y-4 rounded-none flex flex-col justify-between">
               <div>
                 <div className="flex items-center justify-between border-b border-[#222B35] pb-2 mb-4">
                   <span className="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-2">
@@ -1183,13 +1336,13 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
                   <button
                     type="button"
                     onClick={() => setIsAvatarModalOpen(true)}
-                    className="px-2.5 py-1 bg-[#1C2533] hover:bg-[#C5A880] hover:text-[#0D1117] border border-[#C5A880]/50 text-[#C5A880] text-[10px] font-bold rounded flex items-center gap-1 transition-all"
+                    className="px-2.5 py-1 bg-[#1C2533] hover:bg-[#C5A880] hover:text-[#0D1117] border border-[#C5A880]/50 text-[#C5A880] text-[10px] font-bold rounded-none flex items-center gap-1 transition-all"
                   >
                     <Camera className="w-3 h-3" /> Chụp & Căn Chỉnh FaceID
                   </button>
                 </div>
 
-                <div className="h-64 bg-black border border-emerald-500/60 overflow-hidden relative flex items-center justify-center rounded-xl shadow-inner group">
+                <div className="h-64 bg-black border border-emerald-500/60 overflow-hidden relative flex items-center justify-center rounded-none shadow-inner group">
                   <img
                     src={avatarUrl || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400'}
                     alt="Portrait"
@@ -1202,17 +1355,17 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
                   <div className="absolute bottom-4 left-4 w-8 h-8 border-b-2 border-l-2 border-emerald-400 pointer-events-none" />
                   <div className="absolute bottom-4 right-4 w-8 h-8 border-b-2 border-r-2 border-emerald-400 pointer-events-none" />
 
-                  <div className="absolute top-3 right-3 bg-emerald-950/90 border border-emerald-500 text-emerald-300 px-2.5 py-1 text-[10px] font-bold font-mono rounded shadow">
+                  <div className="absolute top-3 right-3 bg-emerald-950/90 border border-emerald-500 text-emerald-300 px-2.5 py-1 text-[10px] font-bold font-mono rounded-none shadow">
                     Trạng Thái: Đã Kích Hoạt ✓
                   </div>
 
-                  <div className="absolute bottom-3 left-3 bg-black/80 px-2.5 py-1 text-[10px] font-mono text-[#C5A880] rounded border border-[#C5A880]/40">
+                  <div className="absolute bottom-3 left-3 bg-black/80 px-2.5 py-1 text-[10px] font-mono text-[#C5A880] rounded-none border border-[#C5A880]/40">
                     Nhận Diện Tự Động: Đang Hoạt Động
                   </div>
                 </div>
               </div>
 
-              <div className="space-y-2 text-xs text-gray-300 bg-[#161B22] p-3.5 border border-[#222B35] rounded-lg mt-4">
+              <div className="space-y-2 text-xs text-gray-300 bg-[#161B22] p-3.5 border border-[#222B35] rounded-none mt-4">
                 <div className="flex justify-between">
                   <span className="text-gray-400">Tốc độ mở cửa:</span>
                   <strong className="text-emerald-400 font-mono">&lt; 0.35 giây (Không cần chạm)</strong>
@@ -1233,7 +1386,7 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
             </div>
 
             {/* Render 3D Resident Smart Pass Card */}
-            <div className="p-5 bg-[#121820] border border-[#222B35] space-y-4 rounded-lg flex flex-col justify-between">
+            <div className="p-5 bg-[#121820] border border-[#222B35] space-y-4 rounded-none flex flex-col justify-between">
               <div>
                 <div className="border-b border-[#222B35] pb-2 mb-4">
                   <span className="text-xs font-bold text-[#C5A880] uppercase tracking-wider flex items-center gap-2">
@@ -1243,12 +1396,329 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
                 <ResidentSmartCard currentUser={currentUser} />
               </div>
 
-              <div className="p-3 bg-[#161B22] border border-[#222B35] rounded-lg text-[11px] text-gray-400 flex items-center justify-between">
+              <div className="p-3 bg-[#161B22] border border-[#222B35] rounded-none text-[11px] text-gray-400 flex items-center justify-between">
                 <span className="flex items-center gap-1.5 text-emerald-400 font-semibold">
                   <CheckCircle2 className="w-3.5 h-3.5" /> Thẻ Điện Tử Đã Kích Hoạt NFC / RFID
                 </span>
                 <span className="font-mono text-gray-400">Mã thẻ: SKY-12A05-PASS</span>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ------------------------------------------------------------- */}
+      {/* TAB 3: ACCOUNT PASSWORD MANAGEMENT (ĐỔI MẬT KHẨU CÁC TÀI KHOẢN) */}
+      {/* ------------------------------------------------------------- */}
+      {!isLoadingApi && activeTab === 'PASSWORD' && (
+        <div className="space-y-6 animate-fadeIn">
+          {/* Top Banner */}
+          <div className="p-6 bg-[#121820] border border-[#222B35] flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-2xl rounded-none">
+            <div className="space-y-1">
+              <div className="flex items-center gap-2 text-[#C5A880] text-xs font-mono uppercase tracking-wider">
+                <KeyRound className="w-4 h-4" /> Bảo Mật & Xác Thực Tài Khoản
+              </div>
+              <h2 className="font-serif text-xl sm:text-2xl font-bold text-white tracking-wide">
+                Thay Đổi Mật Khẩu Các Tài Khoản
+              </h2>
+              <p className="text-xs text-gray-400 max-w-2xl leading-relaxed">
+                Cập nhật mật khẩu đăng nhập cổng dịch vụ Skyline và ứng dụng cư dân. Hỗ trợ thay đổi mật khẩu tài khoản của bạn hoặc trực tiếp đặt lại mật khẩu cho các tài khoản thành viên trong căn hộ.
+              </p>
+            </div>
+            <div className="flex items-center gap-2 flex-shrink-0">
+              <span className="px-3 py-1.5 bg-[#161D26] border border-emerald-500/50 text-emerald-300 text-xs font-semibold rounded-none flex items-center gap-2">
+                <ShieldCheck className="w-4 h-4 text-emerald-400" /> Chuẩn Mã Hóa NKS 256-bit
+              </span>
+            </div>
+          </div>
+
+          {/* Feedback Banners */}
+          {passChangeSuccess && (
+            <div className="p-4 bg-emerald-950/90 border border-emerald-500 text-emerald-200 text-xs flex items-center justify-between gap-3 animate-fadeIn shadow-xl rounded-none">
+              <div className="flex items-center gap-2.5">
+                <CheckCircle2 className="w-5 h-5 text-emerald-400 flex-shrink-0" />
+                <span className="font-semibold">{passChangeSuccess}</span>
+              </div>
+              <button
+                type="button"
+                onClick={() => setPassChangeSuccess(null)}
+                className="text-emerald-400 hover:text-white text-sm"
+              >
+                ✕
+              </button>
+            </div>
+          )}
+
+          {passChangeError && (
+            <div className="p-4 bg-rose-950/90 border border-rose-500 text-rose-200 text-xs flex items-center justify-between gap-3 animate-fadeIn shadow-xl rounded-none">
+              <div className="flex items-center gap-2.5">
+                <AlertCircle className="w-5 h-5 text-rose-400 flex-shrink-0" />
+                <span className="font-semibold">{passChangeError}</span>
+              </div>
+              <button
+                type="button"
+                onClick={() => setPassChangeError(null)}
+                className="text-rose-400 hover:text-white text-sm"
+              >
+                ✕
+              </button>
+            </div>
+          )}
+
+          {/* Main Password Form & Instructions Grid */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            {/* Left: Form */}
+            <form onSubmit={handleChangePassword} className="lg:col-span-7 p-6 sm:p-8 bg-[#121820] border border-[#222B35] space-y-6 shadow-2xl rounded-none">
+              
+              {/* Account Selector */}
+              <div className="space-y-2">
+                <label className="text-xs font-semibold text-gray-300 uppercase tracking-wider flex items-center gap-2">
+                  <UserIcon className="w-4 h-4 text-[#C5A880]" /> Tài Khoản Cần Đổi Mật Khẩu
+                </label>
+
+                {isOwner && familyAccounts.length > 0 ? (
+                  <div className="space-y-2">
+                    <select
+                      value={passwordTarget}
+                      onChange={(e) => {
+                        setPasswordTarget(e.target.value);
+                        setPassChangeSuccess(null);
+                        setPassChangeError(null);
+                        setOldPassword('');
+                        setNewPassword('');
+                        setConfirmPassword('');
+                      }}
+                      className="w-full bg-[#161B22] border border-[#2D3748] p-3 text-white text-xs focus:outline-none focus:border-[#C5A880] transition-colors rounded-none font-semibold cursor-pointer"
+                    >
+                      <option value="ME">
+                        Tài khoản chính: {currentUser.full_name || 'Nguyễn Hữu Lực'} (Chủ Hộ - {aptCode})
+                      </option>
+                      {familyAccounts.map((member) => (
+                        <option key={member.id} value={member.id}>
+                          Thành viên: {member.fullName} ({member.role === 'Tenant' ? 'Người thuê' : 'Người thân'} - {member.phone || member.username})
+                        </option>
+                      ))}
+                    </select>
+                    <div className="text-[11px] text-gray-400 italic">
+                      {passwordTarget === 'ME'
+                        ? 'Đang chọn tài khoản của chính bạn. Cần nhập mật khẩu hiện tại để xác thực an toàn.'
+                        : 'Là Chủ hộ, bạn có đặc quyền cấp lại mật khẩu đăng nhập cho thành viên gia đình trực thuộc căn hộ.'}
+                    </div>
+                  </div>
+                ) : (
+                  <div className="p-3 bg-[#161B22] border border-[#263140] text-xs text-white flex items-center justify-between rounded-none">
+                    <div className="flex items-center gap-2">
+                      <span className="w-2 h-2 rounded-full bg-emerald-400"></span>
+                      <span className="font-semibold">{currentUser.full_name || currentUser.username}</span>
+                      <span className="text-gray-400 font-mono text-[11px]">
+                        ({isAdmin ? 'Ban Quản Lý' : `Căn ${aptCode}`})
+                      </span>
+                    </div>
+                    <span className="text-[10px] text-[#C5A880] font-mono uppercase bg-[#0D1117] px-2 py-0.5 border border-[#C5A880]/40">
+                      Tài Khoản Đang Đăng Nhập
+                    </span>
+                  </div>
+                )}
+              </div>
+
+              {/* Old Password (Only required if self) */}
+              {passwordTarget === 'ME' && (
+                <div className="space-y-2">
+                  <label className="text-xs font-semibold text-gray-300 uppercase tracking-wider flex items-center justify-between">
+                    <span className="flex items-center gap-1.5">
+                      <Lock className="w-3.5 h-3.5 text-gray-400" /> Mật Khẩu Hiện Tại <span className="text-rose-400">*</span>
+                    </span>
+                  </label>
+                  <div className="relative">
+                    <input
+                      type={showOldPassword ? 'text' : 'password'}
+                      value={oldPassword}
+                      onChange={(e) => setOldPassword(e.target.value)}
+                      placeholder="Nhập mật khẩu hiện tại..."
+                      required
+                      className="w-full bg-[#161B22] border border-[#2D3748] p-3 pr-10 text-white text-xs focus:outline-none focus:border-[#C5A880] transition-colors rounded-none font-mono"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowOldPassword(!showOldPassword)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white"
+                      tabIndex={-1}
+                    >
+                      {showOldPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* New Password */}
+              <div className="space-y-2">
+                <label className="text-xs font-semibold text-gray-300 uppercase tracking-wider flex items-center justify-between">
+                  <span className="flex items-center gap-1.5">
+                    <KeyRound className="w-3.5 h-3.5 text-[#C5A880]" /> Mật Khẩu Mới <span className="text-rose-400">*</span>
+                  </span>
+                  {newPassword && (
+                    <span className={`text-[10px] font-mono font-bold ${passwordStrength.color.split(' ')[1]}`}>
+                      Độ mạnh: {passwordStrength.label}
+                    </span>
+                  )}
+                </label>
+                <div className="relative">
+                  <input
+                    type={showNewPassword ? 'text' : 'password'}
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    placeholder="Nhập mật khẩu mới (tối thiểu 6 ký tự)..."
+                    required
+                    minLength={6}
+                    className="w-full bg-[#161B22] border border-[#2D3748] p-3 pr-10 text-white text-xs focus:outline-none focus:border-[#C5A880] transition-colors rounded-none font-mono"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowNewPassword(!showNewPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white"
+                    tabIndex={-1}
+                  >
+                    {showNewPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
+                </div>
+
+                {/* Password Strength Indicator Bar */}
+                {newPassword && (
+                  <div className="space-y-1 pt-1">
+                    <div className="w-full h-1.5 bg-[#161B22] border border-[#222B35] overflow-hidden">
+                      <div
+                        className={`h-full transition-all duration-300 ${passwordStrength.color.split(' ')[0]}`}
+                        style={{ width: `${passwordStrength.score}%` }}
+                      ></div>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Confirm New Password */}
+              <div className="space-y-2">
+                <label className="text-xs font-semibold text-gray-300 uppercase tracking-wider flex items-center justify-between">
+                  <span className="flex items-center gap-1.5">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-gray-400" /> Nhập Lại Mật Khẩu Mới <span className="text-rose-400">*</span>
+                  </span>
+                  {confirmPassword && (
+                    <span className={`text-[10px] font-mono font-bold ${newPassword === confirmPassword ? 'text-emerald-400' : 'text-rose-400'}`}>
+                      {newPassword === confirmPassword ? '✓ Khớp mật khẩu' : '✕ Chưa khớp'}
+                    </span>
+                  )}
+                </label>
+                <div className="relative">
+                  <input
+                    type={showConfirmPassword ? 'text' : 'password'}
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    placeholder="Xác nhận lại mật khẩu mới..."
+                    required
+                    minLength={6}
+                    className={`w-full bg-[#161B22] border p-3 pr-10 text-white text-xs focus:outline-none transition-colors rounded-none font-mono ${
+                      confirmPassword && newPassword !== confirmPassword
+                        ? 'border-rose-500 focus:border-rose-400'
+                        : 'border-[#2D3748] focus:border-[#C5A880]'
+                    }`}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white"
+                    tabIndex={-1}
+                  >
+                    {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-4 border-t border-[#222B35]">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setOldPassword('');
+                    setNewPassword('');
+                    setConfirmPassword('');
+                    setPassChangeError(null);
+                    setPassChangeSuccess(null);
+                  }}
+                  className="w-full sm:w-auto px-5 py-2.5 bg-[#161B22] hover:bg-[#1E2631] text-gray-300 hover:text-white text-xs font-semibold rounded-none border border-[#2D3748] transition-colors"
+                >
+                  Xóa Nhập Lại
+                </button>
+
+                <button
+                  type="submit"
+                  disabled={isChangingPassword}
+                  className="w-full sm:w-auto px-8 py-3 bg-[#C5A880] hover:bg-white text-[#0D1117] text-xs font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-2 shadow-xl rounded-none active:scale-[0.99] disabled:opacity-50"
+                >
+                  {isChangingPassword ? (
+                    <>
+                      <RefreshCw className="w-4 h-4 animate-spin" /> Đang Cập Nhật Mật Khẩu...
+                    </>
+                  ) : (
+                    <>
+                      <Lock className="w-4 h-4" /> Lưu Mật Khẩu Mới
+                    </>
+                  )}
+                </button>
+              </div>
+            </form>
+
+            {/* Right: Security Requirements & Advice */}
+            <div className="lg:col-span-5 space-y-6">
+              {/* Password Policy Card */}
+              <div className="p-6 bg-[#121820] border border-[#222B35] space-y-4 shadow-xl rounded-none">
+                <div className="flex items-center gap-2 text-white font-bold text-xs uppercase tracking-wider border-b border-[#222B35] pb-3">
+                  <ShieldCheck className="w-4 h-4 text-[#C5A880]" /> Tiêu Chuẩn Mật Khẩu Tòa Nhà
+                </div>
+                <div className="space-y-3 text-xs">
+                  <div className={`flex items-center gap-2.5 ${newPassword.length >= 6 ? 'text-emerald-400' : 'text-gray-400'}`}>
+                    <Check className={`w-3.5 h-3.5 ${newPassword.length >= 6 ? 'text-emerald-400' : 'text-gray-500'}`} />
+                    <span>Độ dài tối thiểu từ 6 ký tự trở lên (khuyến nghị 8+)</span>
+                  </div>
+                  <div className={`flex items-center gap-2.5 ${/[A-Z]/.test(newPassword) && /[a-z]/.test(newPassword) ? 'text-emerald-400' : 'text-gray-400'}`}>
+                    <Check className={`w-3.5 h-3.5 ${/[A-Z]/.test(newPassword) && /[a-z]/.test(newPassword) ? 'text-emerald-400' : 'text-gray-500'}`} />
+                    <span>Kết hợp cả chữ in hoa (A-Z) và in thường (a-z)</span>
+                  </div>
+                  <div className={`flex items-center gap-2.5 ${/\d/.test(newPassword) ? 'text-emerald-400' : 'text-gray-400'}`}>
+                    <Check className={`w-3.5 h-3.5 ${/\d/.test(newPassword) ? 'text-emerald-400' : 'text-gray-500'}`} />
+                    <span>Chứa ít nhất một chữ số (0-9)</span>
+                  </div>
+                  <div className={`flex items-center gap-2.5 ${/[^A-Za-z0-9]/.test(newPassword) ? 'text-emerald-400' : 'text-gray-400'}`}>
+                    <Check className={`w-3.5 h-3.5 ${/[^A-Za-z0-9]/.test(newPassword) ? 'text-emerald-400' : 'text-gray-500'}`} />
+                    <span>Ký tự đặc biệt (!, @, #, $, %, ^, &amp;, *)</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Sync & Multi-Platform Notice */}
+              <div className="p-5 bg-[#161D26] border border-[#222B35] space-y-3 text-xs rounded-none">
+                <div className="flex items-center gap-2 text-[#C5A880] font-semibold text-[11px] uppercase tracking-wider">
+                  <Sparkles className="w-3.5 h-3.5 text-[#C5A880]" /> Tự Động Đồng Bộ Tức Thì
+                </div>
+                <p className="text-gray-300 leading-relaxed text-[11.5px]">
+                  Khi bạn đổi mật khẩu thành công, hệ thống sẽ tự động đồng bộ tài khoản trên toàn bộ các điểm chạm:
+                </p>
+                <ul className="space-y-1.5 text-gray-400 text-[11px] pl-4 list-disc">
+                  <li>Cổng dịch vụ số Skyline Web Portal</li>
+                  <li>Ứng dụng di động Skyline Smart Resident Mobile App</li>
+                  <li>Cổng xác thực danh tính FaceID &amp; Thẻ căn hộ thông minh</li>
+                </ul>
+              </div>
+
+              {/* Quick Jump to Info */}
+              <button
+                type="button"
+                onClick={() => setActiveTab('INFO')}
+                className="w-full py-3 px-4 bg-[#161B22] hover:bg-[#202936] text-gray-300 hover:text-white border border-[#2D3748] text-xs font-semibold rounded-none transition-colors flex items-center justify-between"
+              >
+                <span className="flex items-center gap-2">
+                  <UserIcon className="w-4 h-4 text-[#C5A880]" /> Quay lại Thông Tin Cá Nhân
+                </span>
+                <ArrowRight className="w-4 h-4 text-gray-400" />
+              </button>
             </div>
           </div>
         </div>

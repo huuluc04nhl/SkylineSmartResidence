@@ -197,6 +197,7 @@ function PortalContent() {
                 {activeModule === 'admin-parking' && <SmartParking />}
                 {activeModule === 'admin-facilities' && <SmartFacilityPass currentUser={currentUser} />}
                 {activeModule === 'admin-community' && <SurveysVoting />}
+                {(activeModule === 'admin-profile' || activeModule === 'resident-profile') && <ProfileEkyc currentUser={currentUser} />}
               </>
             )}
 

@@ -117,12 +117,13 @@ export default function Sidebar({
           { id: 'admin-parking', label: '8. Bãi Đỗ Xe Thông Minh (ALPR)', shortLabel: 'Bãi Xe ALPR', icon: Car },
           { id: 'admin-facilities', label: '9. Quản Lý Tiện Ích 5 Sao', shortLabel: 'Tiện Ích', icon: CalendarCheck },
           { id: 'admin-community', label: '10. Cảm Xúc Cộng Đồng AI', shortLabel: 'Cộng Đồng', icon: MessageSquareQuote },
+          { id: 'admin-profile', label: '11. Thông Tin & Đổi Mật Khẩu', shortLabel: 'Hồ Sơ & Mật Khẩu', icon: User },
         ];
 
       case 'OWNER':
         return [
           { id: 'resident-home', label: 'Trang Chủ & Mã QR Động', shortLabel: 'Trang Chủ QR', icon: QrCode },
-          { id: 'resident-profile', label: 'Hồ Sơ & Thẻ e-KYC', shortLabel: 'e-KYC & Thẻ', icon: UserCheck },
+          { id: 'resident-profile', label: 'Hồ Sơ, e-KYC & Đổi Mật Khẩu', shortLabel: 'Hồ Sơ & Mật Khẩu', icon: UserCheck },
           { id: 'resident-family', label: 'Quản Lý Thành Viên Căn Hộ', shortLabel: 'Thành Viên', icon: Users },
           { id: 'resident-smarthome', label: 'Smart Home Master (12A05)', shortLabel: 'Smart Home', icon: Cpu },
           { id: 'resident-facilities', label: 'Quẹt Thẻ Tiện Ích (Sky Pool)', shortLabel: 'Sky Pool/Gym', icon: Waves },
@@ -135,7 +136,7 @@ export default function Sidebar({
       case 'TENANT':
         return [
           { id: 'resident-home', label: 'Trang Chủ & Mã QR Động', shortLabel: 'Trang Chủ QR', icon: QrCode },
-          { id: 'resident-profile', label: 'Hồ Sơ Cá Nhân', shortLabel: 'Hồ Sơ', icon: UserCheck },
+          { id: 'resident-profile', label: 'Hồ Sơ & Đổi Mật Khẩu', shortLabel: 'Hồ Sơ & Mật Khẩu', icon: UserCheck },
           { id: 'resident-smarthome', label: 'Smart Home Phòng (12A05)', shortLabel: 'Smart Home', icon: Cpu },
           { id: 'resident-facilities', label: 'Quẹt Thẻ Tiện Ích (Sky Pool)', shortLabel: 'Sky Pool/Gym', icon: Waves },
           { id: 'resident-tickets', label: 'Báo Hỏng Hóc (Ticketing)', shortLabel: 'Báo Hỏng', icon: Wrench },
@@ -188,7 +189,7 @@ export default function Sidebar({
                 <img
                   src={currentUser.avatar_url || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150'}
                   alt="Avatar"
-                  className="w-10 h-10 object-cover border border-[#C5A880]/70 rounded shadow-md"
+                  className="w-10 h-10 object-cover border border-[#C5A880]/70 rounded-none shadow-md"
                 />
                 <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-emerald-500 rounded-full border-2 border-[#0D1117]"></span>
               </div>
@@ -208,13 +209,13 @@ export default function Sidebar({
                 <img
                   src={currentUser.avatar_url || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150'}
                   alt="Avatar"
-                  className="w-9 h-9 object-cover border border-[#C5A880] rounded shadow-md"
+                  className="w-9 h-9 object-cover border border-[#C5A880] rounded-none shadow-md"
                 />
                 <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-emerald-500 rounded-full border-2 border-[#0D1117]"></span>
               </div>
 
               {/* Flyout Tooltip when collapsed on Avatar */}
-              <div className="fixed left-20 top-20 ml-2 px-3 py-2 bg-[#0D1117] text-white text-xs whitespace-nowrap border border-[#C5A880] shadow-2xl z-50 pointer-events-none hidden group-hover:block animate-fadeIn rounded">
+              <div className="fixed left-20 top-20 ml-2 px-3 py-2 bg-[#0D1117] text-white text-xs whitespace-nowrap border border-[#C5A880] shadow-2xl z-50 pointer-events-none hidden group-hover:block animate-fadeIn rounded-none">
                 <div className="font-bold text-white">{currentUser.full_name || 'Cư Dân'}</div>
                 <div className="text-[10px] text-[#C5A880] font-mono">{role === 'ADMIN' ? 'BQL Tòa Nhà' : `Căn ${currentUser.apartment_code || '12A05'}`}</div>
               </div>
@@ -253,7 +254,7 @@ export default function Sidebar({
                   <button
                     type="button"
                     onClick={() => handleItemClick(item.id)}
-                    className={`w-11 h-11 mx-auto flex items-center justify-center rounded-lg transition-all relative ${
+                    className={`w-11 h-11 mx-auto flex items-center justify-center rounded-none transition-all relative ${
                       isActive
                         ? 'bg-[#C5A880]/15 text-[#C5A880] border border-[#C5A880]/70 shadow-[0_0_15px_rgba(197,168,128,0.25)]'
                         : 'text-gray-400 hover:text-white hover:bg-[#161B22]'
@@ -262,7 +263,7 @@ export default function Sidebar({
                     <Icon className={`w-5 h-5 flex-shrink-0 ${isActive ? 'text-[#C5A880]' : 'text-gray-400 group-hover:text-white'}`} />
 
                     {/* Fixed-Position Floating Flyout Tooltip */}
-                    <div className="fixed left-20 ml-2 px-3 py-1.5 bg-[#0D1117] text-white text-xs font-semibold whitespace-nowrap border border-[#C5A880] shadow-[0_10px_25px_rgba(0,0,0,0.9)] z-50 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-150 rounded flex items-center gap-2">
+                    <div className="fixed left-20 ml-2 px-3 py-1.5 bg-[#0D1117] text-white text-xs font-semibold whitespace-nowrap border border-[#C5A880] shadow-[0_10px_25px_rgba(0,0,0,0.9)] z-50 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-150 rounded-none flex items-center gap-2">
                       <span className={`w-1.5 h-1.5 rounded-full ${isActive ? 'bg-[#C5A880]' : 'bg-gray-500'}`}></span>
                       <span>{item.label}</span>
                     </div>
@@ -272,7 +273,7 @@ export default function Sidebar({
                   <button
                     type="button"
                     onClick={() => handleItemClick(item.id)}
-                    className={`w-full flex items-center gap-3 px-3 py-2.5 text-xs text-left transition-all border-l-2 font-medium rounded-r ${
+                    className={`w-full flex items-center gap-3 px-3 py-2.5 text-xs text-left transition-all border-l-2 font-medium rounded-none ${
                       isActive
                         ? 'bg-[#1C2533] border-[#C5A880] text-[#C5A880] font-bold shadow-sm'
                         : 'border-transparent text-gray-300 hover:bg-[#161B22] hover:text-white'
@@ -309,7 +310,7 @@ export default function Sidebar({
             <button
               type="button"
               onClick={onLogout}
-              className="w-full py-2 bg-[#161B22] hover:bg-red-950/80 border border-gray-700 hover:border-red-500 text-gray-300 hover:text-red-300 text-xs font-semibold uppercase tracking-wider transition-colors flex items-center justify-center gap-2 rounded"
+              className="w-full py-2 bg-[#161B22] hover:bg-red-950/80 border border-gray-700 hover:border-red-500 text-gray-300 hover:text-red-300 text-xs font-semibold uppercase tracking-wider transition-colors flex items-center justify-center gap-2 rounded-none"
             >
               <LogOut className="w-3.5 h-3.5 text-rose-400" />
               <span>Đăng Xuất</span>
@@ -320,14 +321,14 @@ export default function Sidebar({
             <button
               type="button"
               onClick={onLogout}
-              className="w-10 h-10 flex items-center justify-center rounded-lg bg-[#161B22] hover:bg-red-950/80 border border-gray-800 hover:border-red-500 text-gray-400 hover:text-red-300 transition-colors"
+              className="w-10 h-10 flex items-center justify-center rounded-none bg-[#161B22] hover:bg-red-950/80 border border-gray-800 hover:border-red-500 text-gray-400 hover:text-red-300 transition-colors"
               title="Đăng Xuất"
             >
               <LogOut className="w-4 h-4 text-rose-400" />
             </button>
 
             {/* Logout Tooltip */}
-            <div className="fixed left-20 bottom-5 ml-2 px-2.5 py-1 bg-red-950 text-red-200 text-xs font-semibold whitespace-nowrap border border-red-600 shadow-xl z-50 pointer-events-none hidden group-hover:block animate-fadeIn rounded">
+            <div className="fixed left-20 bottom-5 ml-2 px-2.5 py-1 bg-red-950 text-red-200 text-xs font-semibold whitespace-nowrap border border-red-600 shadow-xl z-50 pointer-events-none hidden group-hover:block animate-fadeIn rounded-none">
               Đăng Xuất
             </div>
           </div>
