@@ -58,7 +58,7 @@ export default function AdminBuildingApartmentManager() {
     async function syncFromApi() {
       try {
         // 1. Lấy danh sách thành viên cư dân căn hộ 12A05 qua API NKS
-        const famRes = await fetch('/api/nks/user/family');
+        const famRes = await fetch('/api/nks/user/family?aptCode=12A05');
         if (famRes.ok) {
           const famData = await famRes.json();
           if (famData.success && Array.isArray(famData.members) && famData.members.length > 0) {
@@ -227,42 +227,8 @@ export default function AdminBuildingApartmentManager() {
       type: '3PN - 3WC',
       area: 112.0,
       priceBillion: 7.60,
-      isOccupied: true,
-      owner: {
-        name: 'Trần Quốc Tuấn',
-        phone: '0918345678',
-        email: 'quoctuan.tran@gmail.com',
-        cccd: '079085001234',
-        avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&auto=format&fit=crop&q=80',
-        eKycApproved: true,
-        dob: '15/05/1985',
-        pob: 'Ba Đình, Hà Nội',
-      },
-      membersCount: 3,
-      members: [
-        {
-          id: 'mem-18a-1',
-          fullName: 'Lê Minh Hạnh',
-          role: 'Family',
-          relationship: 'Vợ / Thành viên',
-          phone: '0918345679',
-          idCard: '079188002345',
-          faceStatus: 'Đã xác thực',
-          addedDate: '10/06/2026'
-        },
-        {
-          id: 'mem-18a-2',
-          fullName: 'Trần Minh Khôi',
-          role: 'Family',
-          relationship: 'Con trai',
-          phone: '0918345680',
-          idCard: '079210003456',
-          faceStatus: 'Đã xác thực',
-          addedDate: '10/06/2026'
-        }
-      ],
-      vehicles: ['51A-987.65 (Ô tô)', '59B1-234.56 (Xe máy)'],
-      billStatus: 'PAID',
+      isOccupied: false,
+      membersCount: 0,
     },
     {
       code: '25PH-01',
@@ -353,32 +319,8 @@ export default function AdminBuildingApartmentManager() {
       type: '2PN - 2WC',
       area: 75.0,
       priceBillion: 4.70,
-      isOccupied: true,
-      owner: {
-        name: 'Phạm Thu Trang',
-        phone: '0938765432',
-        email: 'thutrang.pham@gmail.com',
-        cccd: '079192004567',
-        avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&auto=format&fit=crop&q=80',
-        eKycApproved: true,
-        dob: '22/10/1992',
-        pob: 'Hải Châu, Đà Nẵng',
-      },
-      membersCount: 2,
-      members: [
-        {
-          id: 'mem-11b-1',
-          fullName: 'Đặng Tuấn Anh',
-          role: 'Family',
-          relationship: 'Chồng / Thành viên',
-          phone: '0938765433',
-          idCard: '079190005678',
-          faceStatus: 'Đã xác thực',
-          addedDate: '15/05/2026'
-        }
-      ],
-      vehicles: ['51G-567.89 (Ô tô)'],
-      billStatus: 'PAID',
+      isOccupied: false,
+      membersCount: 0,
     },
     {
       code: '16B08',
@@ -697,24 +639,21 @@ export default function AdminBuildingApartmentManager() {
                     </text>
                   </g>
 
-                  {/* Căn 18A01: Tầng 18 (3PN - Xanh ĐÃ CÓ NGƯỜI Ở - Chủ Hộ Trần Quốc Tuấn) */}
+                  {/* Căn 18A01: Tầng 18 (3PN - Vàng Trống) */}
                   <g 
                     onClick={() => setSelectedAptCode('18A01')}
                     className="cursor-pointer group"
                   >
                     <polygon 
                       points="215,190 375,230 375,160 215,125" 
-                      fill={selectedAptCode === '18A01' ? '#059669' : '#065F46'}
-                      fillOpacity={selectedAptCode === '18A01' ? '1' : '0.75'}
-                      stroke={selectedAptCode === '18A01' ? '#A7F3D0' : '#10B981'}
-                      strokeWidth={selectedAptCode === '18A01' ? '3' : '1.5'}
-                      className="transition-all hover:fill-emerald-500"
+                      fill={selectedAptCode === '18A01' ? '#F59E0B' : '#78350F'}
+                      fillOpacity={selectedAptCode === '18A01' ? '0.95' : '0.55'}
+                      stroke={selectedAptCode === '18A01' ? '#FDE68A' : '#F59E0B'}
+                      strokeWidth={selectedAptCode === '18A01' ? '2.5' : '1.2'}
+                      className="transition-all hover:fill-amber-500"
                     />
-                    <text x="295" y="172" fill="#FFFFFF" fontSize="9.5" fontWeight="extrabold" textAnchor="middle" fontFamily="monospace">
-                      18A01 (3PN) • CÓ NGƯỜI Ở
-                    </text>
-                    <text x="295" y="188" fill="#D1FAE5" fontSize="8" fontWeight="bold" textAnchor="middle">
-                      Chủ Hộ: Trần Quốc Tuấn
+                    <text x="295" y="180" fill="#FEF3C7" fontSize="9.5" fontWeight="bold" textAnchor="middle" fontFamily="monospace">
+                      18A01 (3PN) • TRỐNG
                     </text>
                   </g>
 
@@ -808,24 +747,21 @@ export default function AdminBuildingApartmentManager() {
                     </text>
                   </g>
 
-                  {/* Căn 11B06: Tầng 11 (2PN - Xanh ĐÃ CÓ NGƯỜI Ở - Chủ Hộ Phạm Thu Trang) */}
+                  {/* Căn 11B06: Tầng 11 (2PN - Vàng Trống) */}
                   <g 
                     onClick={() => setSelectedAptCode('11B06')}
                     className="cursor-pointer group"
                   >
                     <polygon 
                       points="525,290 685,250 685,215 525,250" 
-                      fill={selectedAptCode === '11B06' ? '#059669' : '#065F46'}
-                      fillOpacity={selectedAptCode === '11B06' ? '1' : '0.75'}
-                      stroke={selectedAptCode === '11B06' ? '#A7F3D0' : '#10B981'}
-                      strokeWidth={selectedAptCode === '11B06' ? '3' : '1.5'}
-                      className="transition-all hover:fill-emerald-500"
+                      fill={selectedAptCode === '11B06' ? '#F59E0B' : '#78350F'}
+                      fillOpacity={selectedAptCode === '11B06' ? '0.95' : '0.55'}
+                      stroke={selectedAptCode === '11B06' ? '#FDE68A' : '#F59E0B'}
+                      strokeWidth={selectedAptCode === '11B06' ? '2.5' : '1.2'}
+                      className="transition-all hover:fill-amber-500"
                     />
-                    <text x="605" y="242" fill="#FFFFFF" fontSize="9.5" fontWeight="extrabold" textAnchor="middle" fontFamily="monospace">
-                      11B06 (2PN) • CÓ NGƯỜI Ở
-                    </text>
-                    <text x="605" y="258" fill="#D1FAE5" fontSize="8" fontWeight="bold" textAnchor="middle">
-                      Chủ Hộ: Phạm Thu Trang
+                    <text x="605" y="250" fill="#FEF3C7" fontSize="9.5" fontWeight="bold" textAnchor="middle" fontFamily="monospace">
+                      11B06 (2PN) • TRỐNG
                     </text>
                   </g>
 

@@ -23,9 +23,9 @@ export async function GET(req: Request) {
     const token = cookieStore.get('nks_token')?.value || '';
     const userId = extractUserIdFromToken(token);
     const currentUser = userId ? getUserStore(userId) : getUserStore('user-owner-1');
-    const aptCode = currentUser?.apartment_code || '12A05';
-
     const url = new URL(req.url);
+    const paramApt = url.searchParams.get('apartment') || url.searchParams.get('aptCode');
+    const aptCode = paramApt || (currentUser?.role === 'ADMIN' ? '12A05' : (currentUser?.apartment_code || '12A05'));
     const searchQuery = url.searchParams.get('search')?.trim().toLowerCase();
 
     // 1. If searching for an account by Phone / CCCD / Email
