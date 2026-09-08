@@ -292,12 +292,12 @@ export default function Topbar({
                 )}
               </div>
 
-              {/* Quick Navigation to Profile & Password Change */}
-              {onSemanticSearchSelect && (
+              {/* Quick Navigation to Profile & Password Change (Resident only) */}
+              {!isAdmin && onSemanticSearchSelect && (
                 <button
                   type="button"
                   onClick={() => {
-                    onSemanticSearchSelect(isAdmin ? 'admin-profile' : 'resident-profile');
+                    onSemanticSearchSelect('resident-profile');
                     setShowRoleDropdown(false);
                   }}
                   className="w-full py-2 px-2.5 bg-[#1C2533] hover:bg-[#253245] text-white text-xs font-semibold rounded-none flex items-center justify-between border border-[#2D3748] transition-colors"

@@ -117,7 +117,6 @@ export default function Sidebar({
           { id: 'admin-parking', label: '8. Bãi Đỗ Xe Thông Minh (ALPR)', shortLabel: 'Bãi Xe ALPR', icon: Car },
           { id: 'admin-facilities', label: '9. Quản Lý Tiện Ích 5 Sao', shortLabel: 'Tiện Ích', icon: CalendarCheck },
           { id: 'admin-community', label: '10. Cảm Xúc Cộng Đồng AI', shortLabel: 'Cộng Đồng', icon: MessageSquareQuote },
-          { id: 'admin-profile', label: '11. Thông Tin & Đổi Mật Khẩu', shortLabel: 'Hồ Sơ & Mật Khẩu', icon: User },
         ];
 
       case 'OWNER':

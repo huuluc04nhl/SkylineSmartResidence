@@ -68,8 +68,7 @@ interface ProfileEkycProps {
 export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
   const { updateUserInfo, refreshUser } = useAuth();
   const isOwner = currentUser.role === 'OWNER';
-  const isAdmin = currentUser.role === 'ADMIN' || currentUser.role === 'TECHNICIAN';
-  const aptCode = currentUser.apartment_code || (isAdmin ? 'BQL_OFFICE' : '12A05');
+  const aptCode = currentUser.apartment_code || '12A05';
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [activeTab, setActiveTab] = useState<'INFO' | 'EKYC' | 'PASSWORD'>('INFO');
@@ -556,19 +555,15 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#222B35] pb-4">
         <div>
           <div className="text-[10px] uppercase tracking-[0.25em] text-[#C5A880] font-semibold flex items-center gap-1.5">
-            <ScanFace className="w-3.5 h-3.5" /> Skyline Smart Residence • {isAdmin ? 'Ban Quản Lý Tòa Nhà' : isOwner ? 'Chủ Hộ Căn Hộ' : 'Thành Viên Cư Dân'}
+            <ScanFace className="w-3.5 h-3.5" /> Skyline Smart Residence • {isOwner ? 'Chủ Hộ Căn Hộ' : 'Thành Viên Cư Dân'}
           </div>
           <h2 className="font-serif text-2xl text-white font-bold mt-1">
-            {isAdmin 
-              ? 'Hồ Sơ Quản Trị Viên & Đổi Mật Khẩu' 
-              : isOwner 
+            {isOwner 
               ? 'Hồ Sơ Cá Nhân, Thẻ e-KYC & Đổi Mật Khẩu' 
               : 'Hồ Sơ Cá Nhân Thành Viên & Đổi Mật Khẩu'}
           </h2>
           <p className="text-xs text-gray-400 mt-0.5">
-            {isAdmin
-              ? 'Tài khoản điều hành hệ thống Ban Quản Lý Skyline Smart Residence • Quản lý mật khẩu và thông tin liên hệ'
-              : isOwner
+            {isOwner
               ? `Căn hộ: ${aptCode} • Quản lý hồ sơ chủ hộ, thẻ e-KYC, cấp quyền và đổi mật khẩu các tài khoản`
               : `Căn hộ: ${aptCode} • Thông tin cá nhân và thay đổi mật khẩu đăng nhập của thành viên`}
           </p>
@@ -602,12 +597,6 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
                 <XCircle className="w-4 h-4 text-rose-400" /> BQL Yêu Cầu Chụp Lại
               </span>
             )}
-          </div>
-        ) : isAdmin ? (
-          <div className="flex items-center gap-2 flex-shrink-0">
-            <span className="px-3 py-1.5 bg-[#161D26] border border-[#C5A880]/60 text-[#C5A880] text-xs font-semibold rounded-none flex items-center gap-2">
-              <ShieldCheck className="w-4 h-4 text-[#C5A880]" /> Ban Quản Lý (Admin Master)
-            </span>
           </div>
         ) : (
           <div className="flex items-center gap-2 flex-shrink-0">
@@ -1511,7 +1500,7 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
                       <span className="w-2 h-2 rounded-full bg-emerald-400"></span>
                       <span className="font-semibold">{currentUser.full_name || currentUser.username}</span>
                       <span className="text-gray-400 font-mono text-[11px]">
-                        ({isAdmin ? 'Ban Quản Lý' : `Căn ${aptCode}`})
+                        (Căn {aptCode})
                       </span>
                     </div>
                     <span className="text-[10px] text-[#C5A880] font-mono uppercase bg-[#0D1117] px-2 py-0.5 border border-[#C5A880]/40">
