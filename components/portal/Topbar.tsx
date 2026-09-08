@@ -218,9 +218,9 @@ export default function Topbar({
         <div className="relative">
           <button
             onClick={() => setShowRoleDropdown(!showRoleDropdown)}
-            className="px-2.5 sm:px-3 py-1.5 bg-[#161B22] border border-[#2D3748] hover:border-[#C5A880] text-xs flex items-center gap-2 text-gray-200 transition-colors shadow rounded"
+            className="px-2.5 sm:px-3 py-1.5 bg-[#161B22] border border-[#2D3748] hover:border-[#C5A880] text-xs flex items-center gap-2 text-gray-200 transition-colors shadow rounded-none"
           >
-            <div className="w-6 h-6 rounded-full overflow-hidden border border-[#C5A880]/60 flex-shrink-0 bg-[#0E131A]">
+            <div className="w-6 h-6 rounded-none overflow-hidden border border-[#C5A880]/60 flex-shrink-0 bg-[#0E131A]">
               <img
                 src={currentUser.avatar_url ? currentUser.avatar_url.replace('data.nks.vn//', 'data.nks.vn/') : 'https://data.nks.vn/storage/users/default.png'}
                 alt={userName}
@@ -242,10 +242,10 @@ export default function Topbar({
           </button>
 
           {showRoleDropdown && (
-            <div className="absolute right-0 top-full mt-2 w-72 bg-[#121820] border border-[#C5A880] p-3 shadow-2xl z-50 space-y-3 rounded-lg animate-fadeIn">
+            <div className="absolute right-0 top-full mt-2 w-72 bg-[#121820] border border-[#C5A880] p-3 shadow-2xl z-50 space-y-3 rounded-none animate-fadeIn">
               {/* Profile Summary Header */}
               <div className="flex items-center gap-3 pb-3 border-b border-[#222B35]">
-                <div className="w-10 h-10 rounded-full overflow-hidden border border-[#C5A880] flex-shrink-0 bg-[#0E131A]">
+                <div className="w-10 h-10 rounded-none overflow-hidden border border-[#C5A880] flex-shrink-0 bg-[#0E131A]">
                   <img
                     src={currentUser.avatar_url ? currentUser.avatar_url.replace('data.nks.vn//', 'data.nks.vn/') : 'https://data.nks.vn/storage/users/default.png'}
                     alt={userName}

@@ -98,7 +98,7 @@ export default function ResidentSmartCard({
             {/* Middle Bar: Gold EMV Chip & Biometric FaceID badge */}
             <div className="flex items-center justify-between relative z-10 my-1">
               {/* Metallic Gold EMV Chip */}
-              <div className="w-11 h-8 bg-gradient-to-tr from-amber-600 via-yellow-400 to-amber-300 rounded-[3px] border border-amber-300 p-1 flex flex-col justify-between shadow-md">
+              <div className="w-11 h-8 bg-gradient-to-tr from-amber-600 via-yellow-400 to-amber-300 rounded-none border border-amber-300 p-1 flex flex-col justify-between shadow-md">
                 <div className="h-[1px] bg-amber-800/60 w-full"></div>
                 <div className="h-[1px] bg-amber-800/60 w-full"></div>
                 <div className="h-[1px] bg-amber-800/60 w-full"></div>

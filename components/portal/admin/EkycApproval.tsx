@@ -176,7 +176,7 @@ export default function EkycApproval() {
           <button
             type="button"
             onClick={refreshList}
-            className="px-3 py-1.5 text-gray-300 hover:text-white bg-[#161B22] border border-[#2D3748] rounded-lg transition-colors flex items-center gap-1.5 shadow"
+            className="px-3 py-1.5 text-gray-300 hover:text-white bg-[#161B22] border border-[#2D3748] rounded-none transition-colors flex items-center gap-1.5 shadow"
           >
             <RefreshCw className="w-3.5 h-3.5" /> Làm Mới
           </button>
@@ -185,7 +185,7 @@ export default function EkycApproval() {
 
       {/* Action Notification */}
       {actionNotice && (
-        <div className={`p-3.5 border text-xs font-semibold flex items-center gap-2.5 rounded-lg animate-fadeIn shadow-lg ${
+        <div className={`p-3.5 border text-xs font-semibold flex items-center gap-2.5 rounded-none animate-fadeIn shadow-lg ${
           actionNotice.type === 'success' 
             ? 'bg-emerald-950/90 border-emerald-500 text-emerald-300' 
             : 'bg-rose-950/90 border-rose-500 text-rose-300'
@@ -197,14 +197,14 @@ export default function EkycApproval() {
 
       {/* Metric Stat Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
-        <div className="p-4 bg-[#121820] border border-[#222B35] rounded-xl space-y-1">
+        <div className="p-4 bg-[#121820] border border-[#222B35] rounded-none space-y-1">
           <div className="text-gray-400 text-[11px]">Tổng Hồ Sơ Tiếp Nhận</div>
           <div className="text-xl font-bold font-mono text-white">{requests.length}</div>
         </div>
 
         <div 
           onClick={() => setFilterStatus('PENDING')}
-          className={`p-4 bg-[#121820] border rounded-xl space-y-1 cursor-pointer transition-all ${
+          className={`p-4 bg-[#121820] border rounded-none space-y-1 cursor-pointer transition-all ${
             filterStatus === 'PENDING' ? 'border-amber-500 bg-amber-950/20' : 'border-[#222B35] hover:border-amber-500/50'
           }`}
         >
@@ -216,7 +216,7 @@ export default function EkycApproval() {
 
         <div 
           onClick={() => setFilterStatus('APPROVED')}
-          className={`p-4 bg-[#121820] border rounded-xl space-y-1 cursor-pointer transition-all ${
+          className={`p-4 bg-[#121820] border rounded-none space-y-1 cursor-pointer transition-all ${
             filterStatus === 'APPROVED' ? 'border-emerald-500 bg-emerald-950/20' : 'border-[#222B35] hover:border-emerald-500/50'
           }`}
         >
@@ -228,7 +228,7 @@ export default function EkycApproval() {
 
         <div 
           onClick={() => setFilterStatus('REJECTED')}
-          className={`p-4 bg-[#121820] border rounded-xl space-y-1 cursor-pointer transition-all ${
+          className={`p-4 bg-[#121820] border rounded-none space-y-1 cursor-pointer transition-all ${
             filterStatus === 'REJECTED' ? 'border-rose-500 bg-rose-950/20' : 'border-[#222B35] hover:border-rose-500/50'
           }`}
         >
@@ -252,7 +252,7 @@ export default function EkycApproval() {
               key={tab.id}
               type="button"
               onClick={() => setFilterStatus(tab.id)}
-              className={`px-3 py-1.5 rounded-lg transition-all font-semibold ${
+              className={`px-3 py-1.5 rounded-none transition-all font-semibold ${
                 filterStatus === tab.id
                   ? 'bg-[#C5A880] text-[#0D1117] shadow'
                   : 'text-gray-400 hover:text-white bg-[#161B22] border border-[#222B35]'
@@ -270,7 +270,7 @@ export default function EkycApproval() {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Tìm theo Căn hộ (12A05), Tên, CCCD..."
-            className="w-full bg-[#161B22] border border-[#2D3748] pl-8 pr-3 py-1.5 text-xs text-white rounded-lg focus:outline-none focus:border-[#C5A880]"
+            className="w-full bg-[#161B22] border border-[#2D3748] pl-8 pr-3 py-1.5 text-xs text-white rounded-none focus:outline-none focus:border-[#C5A880]"
           />
           <Search className="w-3.5 h-3.5 text-gray-500 absolute left-2.5 top-2.5" />
           {searchQuery && (
@@ -288,7 +288,7 @@ export default function EkycApproval() {
       {/* List of e-KYC Dossiers */}
       <div className="space-y-4">
         {filteredRequests.length === 0 ? (
-          <div className="p-12 text-center text-gray-400 bg-[#121820] border border-[#222B35] rounded-xl space-y-2">
+          <div className="p-12 text-center text-gray-400 bg-[#121820] border border-[#222B35] rounded-none space-y-2">
             <UserCheck className="w-10 h-10 text-gray-600 mx-auto" />
             <div className="font-semibold text-white text-sm">Không tìm thấy hồ sơ e-KYC nào</div>
             <div className="text-xs text-gray-500">Hồ sơ gửi từ cư dân sẽ tự động xuất hiện tại đây theo thời gian thực.</div>
@@ -302,7 +302,7 @@ export default function EkycApproval() {
             return (
               <div
                 key={req.id}
-                className={`p-5 bg-[#121820] border rounded-xl transition-all shadow-lg ${
+                className={`p-5 bg-[#121820] border rounded-none transition-all shadow-lg ${
                   isPending
                     ? 'border-amber-500/70 bg-gradient-to-r from-[#121820] to-[#1A1810]'
                     : isApproved
@@ -323,7 +323,7 @@ export default function EkycApproval() {
                         }}
                         className="w-16 h-16 rounded-full object-cover border-2 border-[#C5A880] shadow"
                       />
-                      <span className="absolute -bottom-1 -right-1 px-1.5 py-0.5 bg-emerald-950 border border-emerald-500 text-emerald-400 text-[9px] font-mono font-bold rounded">
+                      <span className="absolute -bottom-1 -right-1 px-1.5 py-0.5 bg-emerald-950 border border-emerald-500 text-emerald-400 text-[9px] font-mono font-bold rounded-none">
                         {req.faceScore}%
                       </span>
                     </div>
@@ -333,7 +333,7 @@ export default function EkycApproval() {
                         <h3 className="font-serif text-base font-bold text-white truncate">
                           {req.fullName}
                         </h3>
-                        <span className={`px-2 py-0.5 text-[9px] font-bold uppercase rounded border ${
+                        <span className={`px-2 py-0.5 text-[9px] font-bold uppercase rounded-none border ${
                           req.roleLabel.includes('Chủ Hộ')
                             ? 'bg-[#C5A880]/20 text-[#C5A880] border-[#C5A880]/50'
                             : 'bg-purple-950/80 text-purple-300 border-purple-500/60'
@@ -351,7 +351,7 @@ export default function EkycApproval() {
                   </div>
 
                   {/* Middle: CCCD OCR Details */}
-                  <div className="lg:col-span-5 grid grid-cols-2 gap-2 text-xs bg-[#161D26] p-3 rounded-lg border border-[#222B35]">
+                  <div className="lg:col-span-5 grid grid-cols-2 gap-2 text-xs bg-[#161D26] p-3 rounded-none border border-[#222B35]">
                     <div>
                       <span className="text-gray-400 text-[10px] block">Số CCCD (OCR):</span>
                       <strong className="font-mono text-[#C5A880] text-sm tracking-wider">{req.idCardNo}</strong>
@@ -384,7 +384,7 @@ export default function EkycApproval() {
                           setInspectingRequest(req);
                           setInspectingSide('FRONT');
                         }}
-                        className="px-3 py-1.5 bg-[#1C2533] hover:bg-[#2B394E] border border-gray-700 text-gray-200 text-xs font-semibold rounded-lg transition-all flex items-center justify-center gap-1"
+                        className="px-3 py-1.5 bg-[#1C2533] hover:bg-[#2B394E] border border-gray-700 text-gray-200 text-xs font-semibold rounded-none transition-all flex items-center justify-center gap-1"
                       >
                         <Eye className="w-3.5 h-3.5 text-[#C5A880]" /> Thẩm Định
                       </button>
@@ -395,7 +395,7 @@ export default function EkycApproval() {
                             type="button"
                             disabled={isProcessing}
                             onClick={() => handleApprove(req.id, req.fullName)}
-                            className="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-lg shadow transition-all flex items-center justify-center gap-1"
+                            className="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-none shadow transition-all flex items-center justify-center gap-1"
                           >
                             <Check className="w-3.5 h-3.5" /> Duyệt
                           </button>
@@ -406,7 +406,7 @@ export default function EkycApproval() {
                               setRejectingId(req.id);
                               setRejectionReason('Ảnh chụp CCCD bị mờ/lóa sáng, vui lòng chụp lại rõ nét');
                             }}
-                            className="px-2.5 py-1.5 bg-rose-950 hover:bg-rose-900 border border-rose-500 text-rose-300 text-xs font-semibold rounded-lg transition-all flex items-center justify-center gap-1"
+                            className="px-2.5 py-1.5 bg-rose-950 hover:bg-rose-900 border border-rose-500 text-rose-300 text-xs font-semibold rounded-none transition-all flex items-center justify-center gap-1"
                           >
                             <X className="w-3.5 h-3.5" /> Từ Chối
                           </button>
@@ -416,7 +416,7 @@ export default function EkycApproval() {
 
                     {isApproved && (
                       <div className="text-right space-y-0.5">
-                        <span className="px-3 py-1 bg-emerald-950 text-emerald-300 border border-emerald-500 text-xs font-bold rounded-lg inline-flex items-center gap-1.5">
+                        <span className="px-3 py-1 bg-emerald-950 text-emerald-300 border border-emerald-500 text-xs font-bold rounded-none inline-flex items-center gap-1.5">
                           <CheckCircle2 className="w-3.5 h-3.5" /> Đã Kích Hoạt FaceID
                         </span>
                         <div className="text-[10px] text-gray-400">Duyệt bởi: {req.reviewedBy}</div>
@@ -425,7 +425,7 @@ export default function EkycApproval() {
 
                     {isRejected && (
                       <div className="text-right space-y-0.5">
-                        <span className="px-3 py-1 bg-rose-950 text-rose-300 border border-rose-500 text-xs font-bold rounded-lg inline-flex items-center gap-1.5">
+                        <span className="px-3 py-1 bg-rose-950 text-rose-300 border border-rose-500 text-xs font-bold rounded-none inline-flex items-center gap-1.5">
                           <XCircle className="w-3.5 h-3.5" /> Bị Từ Chối
                         </span>
                         <div className="text-[10px] text-rose-400 max-w-[180px] truncate" title={req.rejectionReason}>
@@ -447,7 +447,7 @@ export default function EkycApproval() {
       {/* ============================================================= */}
       {inspectingRequest && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-sm animate-fadeIn">
-          <div className="bg-[#0D1117] border border-[#C5A880]/70 max-w-3xl w-full p-6 rounded-2xl space-y-5 shadow-2xl overflow-y-auto max-h-[92vh]">
+          <div className="bg-[#0D1117] border border-[#C5A880]/70 max-w-3xl w-full p-6 rounded-none space-y-5 shadow-2xl overflow-y-auto max-h-[92vh]">
             
             {/* Modal Header */}
             <div className="flex items-center justify-between border-b border-[#222B35] pb-3">
@@ -455,7 +455,7 @@ export default function EkycApproval() {
                 <div className="text-[10px] uppercase font-mono text-[#C5A880] font-bold flex items-center gap-1.5 flex-wrap">
                   <Shield className="w-3.5 h-3.5" /> Thẩm Định Hồ Sơ e-KYC • Căn Hộ {inspectingRequest.apartmentCode}
                   {inspectingRequest.roleLabel.includes('Bảo lãnh') && (
-                    <span className="px-2 py-0.5 bg-purple-950/90 border border-purple-500/80 text-purple-300 font-sans text-[10px] rounded normal-case font-semibold flex items-center gap-1">
+                    <span className="px-2 py-0.5 bg-purple-950/90 border border-purple-500/80 text-purple-300 font-sans text-[10px] rounded-none normal-case font-semibold flex items-center gap-1">
                       <Users className="w-3 h-3 text-purple-400" /> Được Chủ Hộ Bảo Lãnh Kê Khai
                     </span>
                   )}
@@ -467,7 +467,7 @@ export default function EkycApproval() {
               <button
                 type="button"
                 onClick={() => setInspectingRequest(null)}
-                className="text-gray-400 hover:text-white p-1 rounded-lg hover:bg-[#161B22]"
+                className="text-gray-400 hover:text-white p-1 rounded-none hover:bg-[#161B22]"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -476,23 +476,23 @@ export default function EkycApproval() {
             {/* Visual Comparison: Portrait Face vs CCCD Photo */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {/* 1. FaceID Live Portrait */}
-              <div className="p-4 bg-[#161D26] border border-[#2D3748] rounded-xl space-y-2 text-center">
+              <div className="p-4 bg-[#161D26] border border-[#2D3748] rounded-none space-y-2 text-center">
                 <div className="flex items-center justify-between text-xs text-gray-300 font-semibold border-b border-[#222B35] pb-2">
                   <span className="flex items-center gap-1.5">
                     <Camera className="w-3.5 h-3.5 text-[#C5A880]" /> Ảnh Chân Dung FaceID:
                   </span>
-                  <span className="px-2 py-0.5 bg-emerald-950 text-emerald-400 border border-emerald-500/50 rounded font-mono text-[10px]">
+                  <span className="px-2 py-0.5 bg-emerald-950 text-emerald-400 border border-emerald-500/50 rounded-none font-mono text-[10px]">
                     Khớp {inspectingRequest.faceScore}%
                   </span>
                 </div>
                 
-                <div className="w-36 h-48 sm:w-40 sm:h-52 mx-auto rounded-xl overflow-hidden border-2 border-[#C5A880] shadow-lg bg-[#0A0E14] relative">
+                <div className="w-36 h-48 sm:w-40 sm:h-52 mx-auto rounded-none overflow-hidden border-2 border-[#C5A880] shadow-lg bg-[#0A0E14] relative">
                   <img
                     src={inspectingRequest.avatarUrl || 'https://data.nks.vn/storage/users/default.png'}
                     alt="FaceID Portrait"
                     className="w-full h-full object-cover"
                   />
-                  <div className="absolute bottom-2 inset-x-2 bg-black/70 backdrop-blur text-[9.5px] font-mono text-[#C5A880] py-0.5 rounded">
+                  <div className="absolute bottom-2 inset-x-2 bg-black/70 backdrop-blur text-[9.5px] font-mono text-[#C5A880] py-0.5 rounded-none">
                     512D VECTOR MATCH
                   </div>
                 </div>
@@ -502,18 +502,18 @@ export default function EkycApproval() {
               </div>
 
               {/* 2. CCCD Card (Front / Back Toggle) */}
-              <div className="p-4 bg-[#161D26] border border-[#2D3748] rounded-xl space-y-2 text-center">
+              <div className="p-4 bg-[#161D26] border border-[#2D3748] rounded-none space-y-2 text-center">
                 <div className="flex items-center justify-between text-xs text-gray-300 font-semibold border-b border-[#222B35] pb-2">
                   <span className="flex items-center gap-1.5">
                     <CreditCard className="w-3.5 h-3.5 text-[#C5A880]" /> Thẻ Căn Cước Công Dân:
                   </span>
                   
                   {/* Side Switcher */}
-                  <div className="flex gap-1 bg-[#0D1117] p-0.5 rounded border border-gray-700 text-[10px]">
+                  <div className="flex gap-1 bg-[#0D1117] p-0.5 rounded-none border border-gray-700 text-[10px]">
                     <button
                       type="button"
                       onClick={() => setInspectingSide('FRONT')}
-                      className={`px-2 py-0.5 rounded font-bold transition-all ${
+                      className={`px-2 py-0.5 rounded-none font-bold transition-all ${
                         inspectingSide === 'FRONT' ? 'bg-[#C5A880] text-[#0D1117]' : 'text-gray-400'
                       }`}
                     >
@@ -522,7 +522,7 @@ export default function EkycApproval() {
                     <button
                       type="button"
                       onClick={() => setInspectingSide('BACK')}
-                      className={`px-2 py-0.5 rounded font-bold transition-all ${
+                      className={`px-2 py-0.5 rounded-none font-bold transition-all ${
                         inspectingSide === 'BACK' ? 'bg-[#C5A880] text-[#0D1117]' : 'text-gray-400'
                       }`}
                     >
@@ -531,7 +531,7 @@ export default function EkycApproval() {
                   </div>
                 </div>
 
-                <div className="w-full h-48 sm:h-52 rounded-xl overflow-hidden border border-white/20 shadow-lg bg-[#0A0E14] relative flex items-center justify-center">
+                <div className="w-full h-48 sm:h-52 rounded-none overflow-hidden border border-white/20 shadow-lg bg-[#0A0E14] relative flex items-center justify-center">
                   <img
                     src={
                       inspectingSide === 'FRONT'
@@ -541,7 +541,7 @@ export default function EkycApproval() {
                     alt="CCCD"
                     className="w-full h-full object-cover"
                   />
-                  <div className="absolute top-2 left-2 px-2 py-0.5 bg-black/70 backdrop-blur rounded text-[9.5px] font-mono text-gray-300">
+                  <div className="absolute top-2 left-2 px-2 py-0.5 bg-black/70 backdrop-blur rounded-none text-[9.5px] font-mono text-gray-300">
                     {inspectingSide === 'FRONT' ? 'MẶT TRƯỚC (CÓ ẢNH & SỐ)' : 'MẶT SAU (CHIP & VÂN TAY)'}
                   </div>
                 </div>
@@ -559,7 +559,7 @@ export default function EkycApproval() {
               const isEligible = displayScore >= 85.0 && card.isValid;
 
               return (
-                <div className={`p-4 rounded-xl border flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs shadow-md ${
+                <div className={`p-4 rounded-none border flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs shadow-md ${
                   isEligible
                     ? 'bg-emerald-950/40 border-emerald-500/60 text-emerald-200'
                     : 'bg-rose-950/40 border-rose-500/60 text-rose-200'
@@ -586,7 +586,7 @@ export default function EkycApproval() {
                   </div>
 
                   <div className="flex items-center gap-2 flex-shrink-0 font-mono">
-                    <div className={`px-3 py-1.5 rounded-lg border font-bold text-xs ${
+                    <div className={`px-3 py-1.5 rounded-none border font-bold text-xs ${
                       displayScore >= 85
                         ? 'bg-emerald-950 text-emerald-300 border-emerald-500/80'
                         : 'bg-rose-950 text-rose-300 border-rose-500/80'
@@ -599,7 +599,7 @@ export default function EkycApproval() {
             })()}
 
             {/* Legal Information Verification Table */}
-            <div className="p-4 bg-[#161D26] border border-[#2D3748] rounded-xl space-y-3 text-xs">
+            <div className="p-4 bg-[#161D26] border border-[#2D3748] rounded-none space-y-3 text-xs">
               <div className="text-gray-300 font-bold flex items-center gap-1.5 border-b border-[#222B35] pb-2">
                 <FileText className="w-3.5 h-3.5 text-[#C5A880]" /> Bảng Đối Chiếu Thông Tin Khai Báo & OCR:
               </div>
@@ -647,7 +647,7 @@ export default function EkycApproval() {
                 <button
                   type="button"
                   onClick={() => setInspectingRequest(null)}
-                  className="px-4 py-2 bg-[#161B22] hover:bg-[#202936] text-gray-300 text-xs font-semibold rounded-lg transition-all"
+                  className="px-4 py-2 bg-[#161B22] hover:bg-[#202936] text-gray-300 text-xs font-semibold rounded-none transition-all"
                 >
                   Đóng
                 </button>
@@ -659,7 +659,7 @@ export default function EkycApproval() {
                     setRejectingId(inspectingRequest.id);
                     setRejectionReason('Ảnh chụp CCCD bị mờ/lóa sáng, vui lòng chụp lại rõ nét');
                   }}
-                  className="px-4 py-2 bg-rose-950 hover:bg-rose-900 border border-rose-500 text-rose-300 text-xs font-bold rounded-lg transition-all flex items-center gap-1.5 shadow"
+                  className="px-4 py-2 bg-rose-950 hover:bg-rose-900 border border-rose-500 text-rose-300 text-xs font-bold rounded-none transition-all flex items-center gap-1.5 shadow"
                 >
                   <X className="w-3.5 h-3.5" /> Từ Chối Hồ Sơ
                 </button>
@@ -668,7 +668,7 @@ export default function EkycApproval() {
                   type="button"
                   disabled={isProcessing}
                   onClick={() => handleApprove(inspectingRequest.id, inspectingRequest.fullName)}
-                  className="px-5 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-lg shadow-lg transition-all flex items-center gap-1.5 active:scale-[0.99]"
+                  className="px-5 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-none shadow-lg transition-all flex items-center gap-1.5 active:scale-[0.99]"
                 >
                   <Check className="w-4 h-4" /> Phê Duyệt & Kích Hoạt Quyền FaceID
                 </button>
@@ -682,7 +682,7 @@ export default function EkycApproval() {
       {/* Modal: Rejection Reason Dialog */}
       {rejectingId && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-sm animate-fadeIn">
-          <div className="bg-[#0D1117] border border-rose-500/80 max-w-md w-full p-5 rounded-xl space-y-4 shadow-2xl">
+          <div className="bg-[#0D1117] border border-rose-500/80 max-w-md w-full p-5 rounded-none space-y-4 shadow-2xl">
             <div className="flex items-center justify-between border-b border-[#222B35] pb-3">
               <h3 className="font-serif text-base font-bold text-white flex items-center gap-2 text-rose-400">
                 <AlertTriangle className="w-4 h-4" /> Từ Chối Hồ Sơ e-KYC
@@ -701,7 +701,7 @@ export default function EkycApproval() {
               <select
                 value={rejectionReason}
                 onChange={(e) => setRejectionReason(e.target.value)}
-                className="w-full bg-[#161B22] border border-[#2D3748] p-2.5 text-white rounded-lg outline-none focus:border-rose-500"
+                className="w-full bg-[#161B22] border border-[#2D3748] p-2.5 text-white rounded-none outline-none focus:border-rose-500"
               >
                 <option value="Ảnh chụp CCCD bị mờ/lóa sáng/mất góc, vui lòng chụp lại rõ nét">Ảnh chụp CCCD bị mờ/lóa sáng/mất góc</option>
                 <option value="Số CCCD hoặc thông tin không trùng khớp với hồ sơ đăng ký căn hộ">Số CCCD không trùng khớp hồ sơ</option>
@@ -715,7 +715,7 @@ export default function EkycApproval() {
                 onChange={(e) => setRejectionReason(e.target.value)}
                 rows={3}
                 placeholder="Ghi chú chi tiết lý do gửi cư dân..."
-                className="w-full bg-[#161B22] border border-[#2D3748] p-2.5 text-white rounded-lg outline-none focus:border-rose-500 resize-none"
+                className="w-full bg-[#161B22] border border-[#2D3748] p-2.5 text-white rounded-none outline-none focus:border-rose-500 resize-none"
               />
             </div>
 
@@ -723,7 +723,7 @@ export default function EkycApproval() {
               <button
                 type="button"
                 onClick={() => setRejectingId(null)}
-                className="px-4 py-2 bg-[#161B22] text-gray-300 hover:text-white text-xs rounded-lg"
+                className="px-4 py-2 bg-[#161B22] text-gray-300 hover:text-white text-xs rounded-none"
               >
                 Hủy
               </button>
@@ -731,7 +731,7 @@ export default function EkycApproval() {
                 type="button"
                 disabled={isProcessing}
                 onClick={handleConfirmReject}
-                className="px-4 py-2 bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold rounded-lg shadow"
+                className="px-4 py-2 bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold rounded-none shadow"
               >
                 Xác Nhận Từ Chối
               </button>
