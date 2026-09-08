@@ -21,17 +21,14 @@ import {
   Phone, 
   Mail, 
   CreditCard, 
-  Maximize2, 
   Box, 
   Info,
   Calendar,
   MapPin,
-  ChevronRight,
-  X
+  ChevronRight
 } from 'lucide-react';
 import { getUserStore, getApartmentMembers, ApartmentMember, StoredUser } from '@/lib/userStore';
 import { getEkycRequests } from '@/lib/ekycStore';
-import ApartmentModel3DViewer from '@/components/portal/shared/ApartmentModel3DViewer';
 
 export type TowerFilter = 'ALL' | 'TOWER_A' | 'TOWER_B';
 export type OccupancyFilter = 'ALL' | 'OCCUPIED' | 'VACANT';
@@ -41,7 +38,6 @@ export default function AdminBuildingApartmentManager() {
   const [selectedOccupancy, setSelectedOccupancy] = useState<OccupancyFilter>('ALL');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedAptCode, setSelectedAptCode] = useState<string>('12A05');
-  const [viewing3DModel, setViewing3DModel] = useState(false);
   const [buildingPerspective, setBuildingPerspective] = useState<'3D' | 'FLOOR_GRID'>('3D');
 
   // Lấy dữ liệu người dùng thực tế từ hệ thống / API
@@ -404,11 +400,11 @@ export default function AdminBuildingApartmentManager() {
 
         {/* Chuyển đổi góc nhìn 3D / Mặt Cắt Tầng */}
         <div className="flex items-center gap-2">
-          <div className="flex bg-[#121820] p-1 border border-[#222B35] rounded-xl text-xs">
+          <div className="flex bg-[#121820] p-1 border border-[#222B35] rounded-none text-xs">
             <button
               type="button"
               onClick={() => setBuildingPerspective('3D')}
-              className={`px-3 py-1.5 rounded-lg font-semibold flex items-center gap-1.5 transition-all ${
+              className={`px-3 py-1.5 rounded-none font-semibold flex items-center gap-1.5 transition-all ${
                 buildingPerspective === '3D'
                   ? 'bg-[#C5A880] text-[#0D1117] font-bold shadow'
                   : 'text-gray-400 hover:text-white'
@@ -419,7 +415,7 @@ export default function AdminBuildingApartmentManager() {
             <button
               type="button"
               onClick={() => setBuildingPerspective('FLOOR_GRID')}
-              className={`px-3 py-1.5 rounded-lg font-semibold flex items-center gap-1.5 transition-all ${
+              className={`px-3 py-1.5 rounded-none font-semibold flex items-center gap-1.5 transition-all ${
                 buildingPerspective === 'FLOOR_GRID'
                   ? 'bg-[#C5A880] text-[#0D1117] font-bold shadow'
                   : 'text-gray-400 hover:text-white'
@@ -435,7 +431,7 @@ export default function AdminBuildingApartmentManager() {
       {/* 2. THANH THỐNG KÊ KPI LẤP ĐẦY CHUNG CƯ                       */}
       {/* ============================================================= */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        <div className="p-4 bg-[#121820] border border-[#222B35] rounded-xl">
+        <div className="p-4 bg-[#121820] border border-[#222B35] rounded-none">
           <div className="text-[10.5px] uppercase tracking-wider text-gray-400 font-mono flex items-center justify-between">
             <span>Tổng Căn Hộ Giám Sát</span>
             <Building className="w-3.5 h-3.5 text-cyan-400" />
@@ -446,7 +442,7 @@ export default function AdminBuildingApartmentManager() {
           <div className="text-[10px] text-gray-400 mt-1">2 Tòa Căn Hộ: Tòa A & Tòa B</div>
         </div>
 
-        <div className="p-4 bg-[#121820] border border-emerald-500/30 rounded-xl">
+        <div className="p-4 bg-[#121820] border border-emerald-500/30 rounded-none">
           <div className="text-[10.5px] uppercase tracking-wider text-emerald-400 font-mono flex items-center justify-between">
             <span>Đã Có Người Ở</span>
             <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
@@ -457,7 +453,7 @@ export default function AdminBuildingApartmentManager() {
           <div className="text-[10px] text-emerald-500/80 mt-1">Dữ liệu cư dân thực tế từ API</div>
         </div>
 
-        <div className="p-4 bg-[#121820] border border-amber-500/30 rounded-xl">
+        <div className="p-4 bg-[#121820] border border-amber-500/30 rounded-none">
           <div className="text-[10.5px] uppercase tracking-wider text-amber-400 font-mono flex items-center justify-between">
             <span>Căn Hộ Đang Trống</span>
             <Key className="w-3.5 h-3.5 text-amber-400" />
@@ -468,7 +464,7 @@ export default function AdminBuildingApartmentManager() {
           <div className="text-[10px] text-amber-500/80 mt-1">Sẵn sàng bàn giao / Chào bán</div>
         </div>
 
-        <div className="p-4 bg-[#121820] border border-[#C5A880]/30 rounded-xl">
+        <div className="p-4 bg-[#121820] border border-[#C5A880]/30 rounded-none">
           <div className="text-[10.5px] uppercase tracking-wider text-[#C5A880] font-mono flex items-center justify-between">
             <span>Tỉ Lệ Lấp Đầy</span>
             <Sparkles className="w-3.5 h-3.5 text-[#C5A880]" />
@@ -483,7 +479,7 @@ export default function AdminBuildingApartmentManager() {
       {/* ============================================================= */}
       {/* 3. BỘ LỌC TÒA & TRẠNG THÁI CƯ TRÚ                            */}
       {/* ============================================================= */}
-      <div className="p-3.5 bg-[#121820] border border-[#222B35] rounded-xl flex flex-wrap items-center justify-between gap-3 text-xs">
+      <div className="p-3.5 bg-[#121820] border border-[#222B35] rounded-none flex flex-wrap items-center justify-between gap-3 text-xs">
         <div className="flex flex-wrap items-center gap-2">
           {/* Lọc Tòa */}
           <span className="text-gray-400 font-mono text-[11px]">Tòa:</span>
@@ -495,7 +491,7 @@ export default function AdminBuildingApartmentManager() {
             <button
               key={t.id}
               onClick={() => setSelectedTower(t.id as any)}
-              className={`px-3 py-1.5 rounded-lg font-semibold transition-all ${
+              className={`px-3 py-1.5 rounded-none font-semibold transition-all ${
                 selectedTower === t.id
                   ? 'bg-[#C5A880] text-[#0D1117] font-bold shadow'
                   : 'bg-[#161B22] text-gray-300 hover:text-white border border-[#2D3748]'
@@ -517,7 +513,7 @@ export default function AdminBuildingApartmentManager() {
             <button
               key={o.id}
               onClick={() => setSelectedOccupancy(o.id as any)}
-              className={`px-3 py-1.5 rounded-lg font-semibold transition-all ${
+              className={`px-3 py-1.5 rounded-none font-semibold transition-all ${
                 selectedOccupancy === o.id
                   ? 'bg-[#1C2533] text-[#C5A880] border border-[#C5A880] font-bold shadow'
                   : 'bg-[#161B22] text-gray-400 hover:text-white border border-[#2D3748]'
@@ -536,7 +532,7 @@ export default function AdminBuildingApartmentManager() {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Tìm theo mã căn hoặc tên..."
-            className="w-full bg-[#161B22] border border-[#2D3748] pl-8 pr-3 py-1.5 rounded-lg text-white text-xs outline-none focus:border-[#C5A880]"
+            className="w-full bg-[#161B22] border border-[#2D3748] pl-8 pr-3 py-1.5 rounded-none text-white text-xs outline-none focus:border-[#C5A880]"
           />
         </div>
       </div>
@@ -547,7 +543,7 @@ export default function AdminBuildingApartmentManager() {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
         
         {/* CỘT TRÁI (7 COLS): MÔ HÌNH KHỐI CHUNG CƯ LỚN TRỰC QUAN       */}
-        <div className="lg:col-span-7 bg-[#0D1117] border border-[#222B35] rounded-2xl overflow-hidden shadow-2xl flex flex-col">
+        <div className="lg:col-span-7 bg-[#0D1117] border border-[#222B35] rounded-none overflow-hidden shadow-2xl flex flex-col">
           {/* Header mô hình */}
           <div className="p-4 bg-[#121820] border-b border-[#222B35] flex items-center justify-between">
             <div className="flex items-center gap-2">
@@ -557,11 +553,11 @@ export default function AdminBuildingApartmentManager() {
             {/* Chú thích màu sắc */}
             <div className="flex items-center gap-3 text-[10px] font-mono">
               <div className="flex items-center gap-1.5">
-                <span className="w-2.5 h-2.5 rounded-sm bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.8)]"></span>
+                <span className="w-2.5 h-2.5 rounded-none bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.8)]"></span>
                 <span className="text-gray-300">Đã Có Người Ở</span>
               </div>
               <div className="flex items-center gap-1.5">
-                <span className="w-2.5 h-2.5 rounded-sm bg-amber-400 shadow-[0_0_8px_rgba(245,158,11,0.8)]"></span>
+                <span className="w-2.5 h-2.5 rounded-none bg-amber-400 shadow-[0_0_8px_rgba(245,158,11,0.8)]"></span>
                 <span className="text-gray-300">Căn Hộ Đang Trống</span>
               </div>
             </div>
@@ -794,7 +790,7 @@ export default function AdminBuildingApartmentManager() {
               </svg>
 
               {/* HUD Hướng Dẫn Tương Tác */}
-              <div className="absolute bottom-3 left-3 bg-[#0D1117]/90 border border-[#222B35] px-3 py-1.5 rounded text-[10.5px] text-[#C5A880] font-mono backdrop-blur-md">
+              <div className="absolute bottom-3 left-3 bg-[#0D1117]/90 border border-[#222B35] px-3 py-1.5 rounded-none text-[10.5px] text-[#C5A880] font-mono backdrop-blur-md">
                 * Nhấp trực tiếp vào từng khối căn hộ trên mô hình để xem hồ sơ
               </div>
             </div>
@@ -811,7 +807,7 @@ export default function AdminBuildingApartmentManager() {
                     <div
                       key={unit.code}
                       onClick={() => setSelectedAptCode(unit.code)}
-                      className={`p-3 rounded-xl border transition-all cursor-pointer flex items-center justify-between ${
+                      className={`p-3 rounded-none border transition-all cursor-pointer flex items-center justify-between ${
                         isSelected
                           ? 'bg-[#1C2533] border-[#C5A880] ring-1 ring-[#C5A880] shadow-xl'
                           : 'bg-[#121820] border-[#222B35] hover:border-gray-600'
@@ -820,7 +816,7 @@ export default function AdminBuildingApartmentManager() {
                       <div>
                         <div className="font-serif text-base font-bold text-white flex items-center gap-2">
                           <span>Căn {unit.code}</span>
-                          <span className="text-[10px] px-1.5 py-0.5 rounded bg-[#161B22] border border-gray-700 text-[#C5A880] font-sans">
+                          <span className="text-[10px] px-1.5 py-0.5 rounded-none bg-[#161B22] border border-gray-700 text-[#C5A880] font-sans">
                             {unit.type}
                           </span>
                         </div>
@@ -830,7 +826,7 @@ export default function AdminBuildingApartmentManager() {
                       </div>
 
                       <div className="text-right">
-                        <span className={`px-2 py-0.5 text-[10px] font-bold uppercase rounded border ${
+                        <span className={`px-2 py-0.5 text-[10px] font-bold uppercase rounded-none border ${
                           unit.isOccupied
                             ? 'bg-emerald-950 text-emerald-300 border-emerald-500'
                             : 'bg-amber-950 text-amber-300 border-amber-500'
@@ -850,7 +846,7 @@ export default function AdminBuildingApartmentManager() {
         </div>
 
         {/* CỘT PHẢI (5 COLS): HỒ SƠ CHI TIẾT CĂN HỘ ĐANG CHỌN (DOSSIER)  */}
-        <div className="lg:col-span-5 bg-[#0D1117] border border-[#222B35] rounded-2xl p-5 space-y-4 shadow-2xl">
+        <div className="lg:col-span-5 bg-[#0D1117] border border-[#222B35] rounded-none p-5 space-y-4 shadow-2xl">
           
           {/* Tiêu đề thẻ hồ sơ */}
           <div className="border-b border-[#222B35] pb-3.5 flex items-start justify-between">
@@ -868,7 +864,7 @@ export default function AdminBuildingApartmentManager() {
 
             {/* Trạng thái to rõ ràng: ĐÃ CÓ NGƯỜI Ở vs ĐANG TRỐNG */}
             <div className="text-right">
-              <span className={`px-3 py-1 text-xs font-extrabold uppercase rounded-lg border shadow-lg inline-flex items-center gap-1.5 ${
+              <span className={`px-3 py-1 text-xs font-extrabold uppercase rounded-none border shadow-lg inline-flex items-center gap-1.5 ${
                 activeUnit.isOccupied
                   ? 'bg-emerald-950 text-emerald-300 border-emerald-500 shadow-[0_0_12px_rgba(16,185,129,0.3)]'
                   : 'bg-amber-950 text-amber-300 border-amber-500 shadow-[0_0_12px_rgba(245,158,11,0.3)]'
@@ -896,10 +892,10 @@ export default function AdminBuildingApartmentManager() {
             <div className="space-y-4">
               
               {/* Thông tin chủ hộ thực tế */}
-              <div className="p-3.5 bg-[#121820] border border-[#222B35] rounded-xl space-y-3">
+              <div className="p-3.5 bg-[#121820] border border-[#222B35] rounded-none space-y-3">
                 <div className="text-[11px] uppercase tracking-wider text-emerald-400 font-bold font-mono flex items-center justify-between">
                   <span>Chủ Hộ Đang Sinh Sống</span>
-                  <span className="px-2 py-0.5 text-[9.5px] bg-emerald-950 border border-emerald-600 rounded text-emerald-300">
+                  <span className="px-2 py-0.5 text-[9.5px] bg-emerald-950 border border-emerald-600 rounded-none text-emerald-300">
                     Đã Xác Thực e-KYC ✓
                   </span>
                 </div>
@@ -908,7 +904,7 @@ export default function AdminBuildingApartmentManager() {
                   <img
                     src={activeUnit.owner.avatar}
                     alt={activeUnit.owner.name}
-                    className="w-12 h-12 rounded-full object-cover border-2 border-emerald-500/80 shadow"
+                    className="w-12 h-12 rounded-none object-cover border-2 border-emerald-500/80 shadow"
                   />
                   <div className="space-y-0.5 min-w-0">
                     <div className="font-bold text-white text-base truncate">
@@ -936,7 +932,7 @@ export default function AdminBuildingApartmentManager() {
               </div>
 
               {/* Danh sách thành viên gia đình thực tế */}
-              <div className="p-3.5 bg-[#121820] border border-[#222B35] rounded-xl space-y-2.5">
+              <div className="p-3.5 bg-[#121820] border border-[#222B35] rounded-none space-y-2.5">
                 <div className="text-[11px] uppercase tracking-wider text-gray-300 font-bold font-mono flex items-center justify-between">
                   <span>Nhân Khẩu Thực Tế ({activeUnit.membersCount} người thân)</span>
                   <Users className="w-3.5 h-3.5 text-cyan-400" />
@@ -944,19 +940,19 @@ export default function AdminBuildingApartmentManager() {
 
                 <div className="space-y-2 max-h-[160px] overflow-y-auto pr-1">
                   {activeUnit.members?.map(mem => (
-                    <div key={mem.id} className="p-2 bg-[#161B22] border border-[#222B35] rounded-lg flex items-center justify-between text-xs">
+                    <div key={mem.id} className="p-2 bg-[#161B22] border border-[#222B35] rounded-none flex items-center justify-between text-xs">
                       <div className="flex items-center gap-2">
                         <img
                           src={mem.avatarUrl ? mem.avatarUrl.replace('data.nks.vn//', 'data.nks.vn/') : 'https://data.nks.vn/storage/users/default.png'}
                           alt={mem.fullName}
-                          className="w-7 h-7 rounded-full object-cover border border-gray-700"
+                          className="w-7 h-7 rounded-none object-cover border border-gray-700"
                         />
                         <div>
                           <div className="font-semibold text-white">{mem.fullName}</div>
                           <div className="text-[10px] text-gray-400">{mem.relationship} • SĐT: {mem.phone}</div>
                         </div>
                       </div>
-                      <span className={`text-[9.5px] px-1.5 py-0.5 rounded ${
+                      <span className={`text-[9.5px] px-1.5 py-0.5 rounded-none ${
                         mem.faceStatus.includes('Đã') ? 'bg-emerald-950 text-emerald-300' : 'bg-amber-950 text-amber-300'
                       }`}>
                         {mem.faceStatus}
@@ -968,7 +964,7 @@ export default function AdminBuildingApartmentManager() {
 
               {/* Xe cộ & Tình trạng phí quản lý */}
               <div className="grid grid-cols-2 gap-2 text-xs">
-                <div className="p-2.5 bg-[#121820] border border-[#222B35] rounded-xl">
+                <div className="p-2.5 bg-[#121820] border border-[#222B35] rounded-none">
                   <div className="text-[10px] text-gray-400 uppercase font-mono flex items-center gap-1">
                     <Car className="w-3 h-3 text-[#C5A880]" /> Xe Đăng Ký Hầm
                   </div>
@@ -979,12 +975,12 @@ export default function AdminBuildingApartmentManager() {
                   </div>
                 </div>
 
-                <div className="p-2.5 bg-[#121820] border border-[#222B35] rounded-xl">
+                <div className="p-2.5 bg-[#121820] border border-[#222B35] rounded-none">
                   <div className="text-[10px] text-gray-400 uppercase font-mono flex items-center gap-1">
                     <Receipt className="w-3 h-3 text-[#C5A880]" /> Phí Tháng 08/2026
                   </div>
                   <div className="mt-1 font-bold">
-                    <span className="px-2 py-0.5 text-[10.5px] rounded bg-amber-950 text-amber-300 border border-amber-500/50">
+                    <span className="px-2 py-0.5 text-[10.5px] rounded-none bg-amber-950 text-amber-300 border border-amber-500/50">
                       Chưa Thanh Toán (2.465.000 đ)
                     </span>
                   </div>
@@ -996,7 +992,7 @@ export default function AdminBuildingApartmentManager() {
             /* TRƯỜNG HỢP 2: CĂN HỘ ĐANG TRỐNG (CHƯA CÓ NGƯỜI Ở)        */
             /* ========================================================= */
             <div className="space-y-4">
-              <div className="p-4 bg-[#1A1610] border border-amber-500/40 rounded-xl space-y-2">
+              <div className="p-4 bg-[#1A1610] border border-amber-500/40 rounded-none space-y-2">
                 <div className="flex items-center gap-2 text-amber-400 font-bold text-sm">
                   <Key className="w-4 h-4" /> Căn Hộ Hiện Đang Trống
                 </div>
@@ -1009,7 +1005,7 @@ export default function AdminBuildingApartmentManager() {
               </div>
 
               {/* Thông số kỹ thuật căn trống */}
-              <div className="p-3.5 bg-[#121820] border border-[#222B35] rounded-xl space-y-2.5 text-xs">
+              <div className="p-3.5 bg-[#121820] border border-[#222B35] rounded-none space-y-2.5 text-xs">
                 <div className="text-[11px] uppercase tracking-wider text-gray-400 font-mono font-bold">
                   Thông Số Bàn Giao Kỹ Thuật
                 </div>
@@ -1026,14 +1022,14 @@ export default function AdminBuildingApartmentManager() {
                 <button
                   type="button"
                   onClick={() => alert(`BQL mở phiếu bàn giao cho Căn Hộ ${activeUnit.code}`)}
-                  className="w-full py-2.5 bg-[#C5A880] hover:bg-white text-[#0D1117] font-bold text-xs uppercase tracking-wider rounded-lg transition-colors flex items-center justify-center gap-2 shadow"
+                  className="w-full py-2.5 bg-[#C5A880] hover:bg-white text-[#0D1117] font-bold text-xs uppercase tracking-wider rounded-none transition-colors flex items-center justify-center gap-2 shadow"
                 >
                   <Key className="w-4 h-4" /> Bàn Giao Chìa Khóa & Đón Cư Dân Mới
                 </button>
                 <button
                   type="button"
                   onClick={() => alert(`BQL lập phiếu kiểm tra kỹ thuật định kỳ cho Căn Hộ ${activeUnit.code}`)}
-                  className="w-full py-2 bg-[#161B22] hover:bg-[#202936] text-gray-300 hover:text-white border border-[#2D3748] text-xs font-semibold rounded-lg transition-colors flex items-center justify-center gap-2"
+                  className="w-full py-2 bg-[#161B22] hover:bg-[#202936] text-gray-300 hover:text-white border border-[#2D3748] text-xs font-semibold rounded-none transition-colors flex items-center justify-center gap-2"
                 >
                   <ShieldCheck className="w-3.5 h-3.5" /> Kiểm Tra Kỹ Thuật & Niêm Phong Căn Hộ
                 </button>
@@ -1041,40 +1037,6 @@ export default function AdminBuildingApartmentManager() {
             </div>
           )}
 
-          {/* NÚT XEM SƠ ĐỒ MẶT BẰNG 3D CHI TIẾT CỦA CĂN NÀY */}
-          <div className="pt-2 border-t border-[#222B35]">
-            <button
-              type="button"
-              onClick={() => setViewing3DModel(!viewing3DModel)}
-              className="w-full py-2.5 bg-[#161D26] hover:bg-[#1E293B] text-[#C5A880] hover:text-white border border-[#C5A880]/50 hover:border-[#C5A880] rounded-xl text-xs font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-2 shadow"
-            >
-              <Maximize2 className="w-4 h-4 text-[#C5A880]" />
-              {viewing3DModel ? 'Đóng Sơ Đồ Bố Trí Căn Hộ' : `Xem Sơ Đồ Bố Trí 3D Căn Hộ ${activeUnit.code}`}
-            </button>
-          </div>
-
-          {/* KHUNG POPUP XEM SƠ ĐỒ 3D BÊN DƯỚI NẾU BẬT */}
-          {viewing3DModel && (
-            <div className="mt-3 p-3 bg-[#0A0E14] border border-[#C5A880] rounded-xl space-y-2 animate-fadeIn">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-white flex items-center gap-1.5">
-                  <Box className="w-3.5 h-3.5 text-[#C5A880]" /> Sơ Đồ Khối Căn Hộ {activeUnit.code}
-                </span>
-                <button 
-                  onClick={() => setViewing3DModel(false)}
-                  className="text-gray-400 hover:text-white"
-                >
-                  <X className="w-4 h-4" />
-                </button>
-              </div>
-              <ApartmentModel3DViewer
-                apartmentCode={activeUnit.code}
-                apartmentType={activeUnit.type}
-                clearArea={activeUnit.area}
-                interactive={false}
-              />
-            </div>
-          )}
         </div>
       </div>
     </div>

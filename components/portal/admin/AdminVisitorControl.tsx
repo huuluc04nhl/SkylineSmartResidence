@@ -278,7 +278,7 @@ export default function AdminVisitorControl() {
       
       {/* Toast Feedback */}
       {actionFeedback && (
-        <div className="fixed top-6 left-1/2 -translate-x-1/2 z-50 px-4 py-2.5 bg-[#161D26] border border-[#C5A880] text-[#C5A880] text-xs font-bold rounded-xl shadow-2xl flex items-center gap-2 animate-fadeIn">
+        <div className="fixed top-6 left-1/2 -translate-x-1/2 z-50 px-4 py-2.5 bg-[#161D26] border border-[#C5A880] text-[#C5A880] text-xs font-bold rounded-none shadow-2xl flex items-center gap-2 animate-fadeIn">
           <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
           <span>{actionFeedback}</span>
         </div>
@@ -304,7 +304,7 @@ export default function AdminVisitorControl() {
           <select
             value={selectedCheckpoint}
             onChange={(e) => setSelectedCheckpoint(e.target.value)}
-            className="bg-[#161B22] border border-[#2D3748] text-xs text-[#C5A880] font-semibold py-1.5 px-3 rounded-lg outline-none cursor-pointer"
+            className="bg-[#161B22] border border-[#2D3748] text-xs text-[#C5A880] font-semibold py-1.5 px-3 rounded-none outline-none cursor-pointer"
           >
             <option value="Sảnh Lễ Tân Tòa A (Sapphire)">Sảnh Lễ Tân Tòa A (Sapphire)</option>
             <option value="Sảnh Lễ Tân Tòa B (Diamond)">Sảnh Lễ Tân Tòa B (Diamond)</option>
@@ -316,28 +316,28 @@ export default function AdminVisitorControl() {
 
       {/* 4 Stat Overview Cards */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3.5">
-        <div className="p-3.5 bg-[#121820] border border-[#222B35] rounded-xl space-y-1">
+        <div className="p-3.5 bg-[#121820] border border-[#222B35] rounded-none space-y-1">
           <div className="text-[11px] text-gray-400 flex items-center gap-1.5">
             <Users className="w-3.5 h-3.5 text-[#C5A880]" /> Tổng Khách Được Cấp
           </div>
           <div className="text-xl font-bold font-mono text-white">{totalPasses}</div>
         </div>
 
-        <div className="p-3.5 bg-[#121820] border border-[#222B35] rounded-xl space-y-1">
+        <div className="p-3.5 bg-[#121820] border border-[#222B35] rounded-none space-y-1">
           <div className="text-[11px] text-emerald-400 flex items-center gap-1.5">
             <LogIn className="w-3.5 h-3.5 text-emerald-400" /> Đang Trong Chung Cư
           </div>
           <div className="text-xl font-bold font-mono text-emerald-400">{inBuildingCount}</div>
         </div>
 
-        <div className="p-3.5 bg-[#121820] border border-[#222B35] rounded-xl space-y-1">
+        <div className="p-3.5 bg-[#121820] border border-[#222B35] rounded-none space-y-1">
           <div className="text-[11px] text-amber-400 flex items-center gap-1.5">
             <Clock className="w-3.5 h-3.5 text-amber-400" /> Chờ Vào (Chưa Check-in)
           </div>
           <div className="text-xl font-bold font-mono text-amber-400">{pendingCount}</div>
         </div>
 
-        <div className="p-3.5 bg-[#121820] border border-[#222B35] rounded-xl space-y-1">
+        <div className="p-3.5 bg-[#121820] border border-[#222B35] rounded-none space-y-1">
           <div className="text-[11px] text-gray-400 flex items-center gap-1.5">
             <LogOut className="w-3.5 h-3.5 text-gray-400" /> Đã Rời Đi (Check-out)
           </div>
@@ -351,7 +351,7 @@ export default function AdminVisitorControl() {
         {/* Left Col (5 / 12): Quét & Tra Cứu Mã QR */}
         <div className="lg:col-span-5 space-y-4">
           
-          <div className="p-4 bg-[#121820] border border-[#2D3748] rounded-xl space-y-3.5 shadow-xl">
+          <div className="p-4 bg-[#121820] border border-[#2D3748] rounded-none space-y-3.5 shadow-xl">
             
             {/* Mode Switcher */}
             <div className="flex items-center justify-between border-b border-[#222B35] pb-2.5">
@@ -359,11 +359,11 @@ export default function AdminVisitorControl() {
                 <Sparkles className="w-3.5 h-3.5 text-[#C5A880]" /> Phương Thức Tra Cứu
               </span>
 
-              <div className="flex gap-1 bg-[#161B22] p-0.5 rounded-lg border border-[#222B35] text-[11px]">
+              <div className="flex gap-1 bg-[#161B22] p-0.5 rounded-none border border-[#222B35] text-[11px]">
                 <button
                   type="button"
                   onClick={() => setScanMode('CAMERA')}
-                  className={`px-2.5 py-1 rounded transition-all cursor-pointer ${
+                  className={`px-2.5 py-1 rounded-none transition-all cursor-pointer ${
                     scanMode === 'CAMERA' ? 'bg-[#C5A880] text-[#0D1117] font-bold shadow' : 'text-gray-400 hover:text-white'
                   }`}
                 >
@@ -372,7 +372,7 @@ export default function AdminVisitorControl() {
                 <button
                   type="button"
                   onClick={() => setScanMode('UPLOAD')}
-                  className={`px-2.5 py-1 rounded transition-all cursor-pointer ${
+                  className={`px-2.5 py-1 rounded-none transition-all cursor-pointer ${
                     scanMode === 'UPLOAD' ? 'bg-[#C5A880] text-[#0D1117] font-bold shadow' : 'text-gray-400 hover:text-white'
                   }`}
                 >
@@ -381,7 +381,7 @@ export default function AdminVisitorControl() {
                 <button
                   type="button"
                   onClick={() => setScanMode('PIN_SEARCH')}
-                  className={`px-2.5 py-1 rounded transition-all cursor-pointer ${
+                  className={`px-2.5 py-1 rounded-none transition-all cursor-pointer ${
                     scanMode === 'PIN_SEARCH' ? 'bg-[#C5A880] text-[#0D1117] font-bold shadow' : 'text-gray-400 hover:text-white'
                   }`}
                 >
@@ -396,7 +396,7 @@ export default function AdminVisitorControl() {
             {/* MODE 1: LIVE CAMERA SCANNER */}
             {scanMode === 'CAMERA' && (
               <div className="space-y-3">
-                <div className="relative w-full h-64 bg-[#090D12] border-2 border-dashed border-[#2D3748] rounded-xl overflow-hidden flex items-center justify-center shadow-inner">
+                <div className="relative w-full h-64 bg-[#090D12] border-2 border-dashed border-[#2D3748] rounded-none overflow-hidden flex items-center justify-center shadow-inner">
                   {isCameraActive ? (
                     <>
                       <video
@@ -407,13 +407,13 @@ export default function AdminVisitorControl() {
                       />
                       {/* Targeting box */}
                       <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
-                        <div className="relative w-48 h-48 border-2 border-emerald-400/80 rounded-xl shadow-[0_0_20px_rgba(16,185,129,0.3)]">
+                        <div className="relative w-48 h-48 border-2 border-emerald-400/80 rounded-none shadow-[0_0_20px_rgba(16,185,129,0.3)]">
                           <div className="absolute -top-1 -left-1 w-4 h-4 border-t-4 border-l-4 border-emerald-400"></div>
                           <div className="absolute -top-1 -right-1 w-4 h-4 border-t-4 border-r-4 border-emerald-400"></div>
                           <div className="absolute -bottom-1 -left-1 w-4 h-4 border-b-4 border-l-4 border-emerald-400"></div>
                           <div className="absolute -bottom-1 -right-1 w-4 h-4 border-b-4 border-r-4 border-emerald-400"></div>
                           <div className="w-full h-0.5 bg-gradient-to-r from-transparent via-emerald-400 to-transparent absolute top-0 animate-[bounce_2.2s_infinite]"></div>
-                          <div className="absolute bottom-2 left-1/2 -translate-x-1/2 px-2 py-0.5 bg-black/80 rounded text-[9.5px] text-emerald-300 font-mono whitespace-nowrap">
+                          <div className="absolute bottom-2 left-1/2 -translate-x-1/2 px-2 py-0.5 bg-black/80 rounded-none text-[9.5px] text-emerald-300 font-mono whitespace-nowrap">
                             Đang quét mã QR khách...
                           </div>
                         </div>
@@ -421,7 +421,7 @@ export default function AdminVisitorControl() {
                     </>
                   ) : (
                     <div className="text-center space-y-2.5 p-4">
-                      <div className="w-12 h-12 mx-auto rounded-full bg-[#161D26] border border-[#2D3748] flex items-center justify-center text-[#C5A880]">
+                      <div className="w-12 h-12 mx-auto rounded-none bg-[#161D26] border border-[#2D3748] flex items-center justify-center text-[#C5A880]">
                         <CameraOff className="w-6 h-6" />
                       </div>
                       <div className="space-y-0.5">
@@ -433,7 +433,7 @@ export default function AdminVisitorControl() {
                       <button
                         type="button"
                         onClick={startCamera}
-                        className="px-4 py-2 bg-[#C5A880] hover:bg-white text-[#0D1117] text-xs font-bold rounded-lg shadow transition-all flex items-center justify-center gap-1.5 mx-auto cursor-pointer"
+                        className="px-4 py-2 bg-[#C5A880] hover:bg-white text-[#0D1117] text-xs font-bold rounded-none shadow transition-all flex items-center justify-center gap-1.5 mx-auto cursor-pointer"
                       >
                         <Camera className="w-3.5 h-3.5" /> Bật Camera Quét Mã
                       </button>
@@ -451,7 +451,7 @@ export default function AdminVisitorControl() {
                 </div>
 
                 {cameraError && (
-                  <div className="p-2.5 bg-rose-950/80 border border-rose-500 rounded-lg text-xs text-rose-200 flex items-center gap-2">
+                  <div className="p-2.5 bg-rose-950/80 border border-rose-500 rounded-none text-xs text-rose-200 flex items-center gap-2">
                     <AlertTriangle className="w-4 h-4 shrink-0" />
                     <span>{cameraError}</span>
                   </div>
@@ -461,7 +461,7 @@ export default function AdminVisitorControl() {
                   <button
                     type="button"
                     onClick={stopCamera}
-                    className="w-full py-2 bg-rose-950/80 hover:bg-rose-900 border border-rose-600 text-rose-300 text-xs font-bold rounded-lg flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                    className="w-full py-2 bg-rose-950/80 hover:bg-rose-900 border border-rose-600 text-rose-300 text-xs font-bold rounded-none flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
                   >
                     <CameraOff className="w-3.5 h-3.5" /> Dừng Camera
                   </button>
@@ -474,9 +474,9 @@ export default function AdminVisitorControl() {
               <div className="space-y-3">
                 <div 
                   onClick={() => fileInputRef.current?.click()}
-                  className="w-full h-56 bg-[#090D12] border-2 border-dashed border-[#2D3748] hover:border-[#C5A880] rounded-xl flex flex-col items-center justify-center p-6 text-center cursor-pointer transition-colors group"
+                  className="w-full h-56 bg-[#090D12] border-2 border-dashed border-[#2D3748] hover:border-[#C5A880] rounded-none flex flex-col items-center justify-center p-6 text-center cursor-pointer transition-colors group"
                 >
-                  <div className="w-12 h-12 rounded-full bg-[#161D26] border border-[#2D3748] group-hover:border-[#C5A880] flex items-center justify-center text-[#C5A880] mb-2">
+                  <div className="w-12 h-12 rounded-none bg-[#161D26] border border-[#2D3748] group-hover:border-[#C5A880] flex items-center justify-center text-[#C5A880] mb-2">
                     <Upload className="w-6 h-6" />
                   </div>
                   <div className="font-bold text-white text-xs">Nhấn Để Tải Ảnh Mã QR Lên</div>
@@ -514,14 +514,14 @@ export default function AdminVisitorControl() {
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     placeholder="VD: 849201 hoặc SKY-PASS-..."
-                    className="w-full bg-[#161B22] border border-[#2D3748] rounded-lg px-3 py-2 text-xs text-white placeholder-gray-500 font-mono focus:border-[#C5A880] outline-none pl-8"
+                    className="w-full bg-[#161B22] border border-[#2D3748] rounded-none px-3 py-2 text-xs text-white placeholder-gray-500 font-mono focus:border-[#C5A880] outline-none pl-8"
                   />
                   <KeyRound className="w-3.5 h-3.5 text-gray-500 absolute left-2.5 top-2.5" />
                 </div>
                 <button
                   type="submit"
                   disabled={!searchQuery.trim() || isScanning}
-                  className="px-4 py-2 bg-[#C5A880] hover:bg-white text-[#0D1117] text-xs font-bold rounded-lg flex items-center gap-1 transition-all disabled:opacity-50 cursor-pointer shrink-0"
+                  className="px-4 py-2 bg-[#C5A880] hover:bg-white text-[#0D1117] text-xs font-bold rounded-none flex items-center gap-1 transition-all disabled:opacity-50 cursor-pointer shrink-0"
                 >
                   <Search className="w-3.5 h-3.5" /> Tra Cứu
                 </button>
@@ -536,10 +536,10 @@ export default function AdminVisitorControl() {
         <div className="lg:col-span-7 space-y-4">
           
           {scanResult ? (
-            <div className="p-5 bg-[#121820] border border-[#2D3748] rounded-xl space-y-4 shadow-xl animate-fadeIn">
+            <div className="p-5 bg-[#121820] border border-[#2D3748] rounded-none space-y-4 shadow-xl animate-fadeIn">
               
               {/* Status Header Banner */}
-              <div className={`p-4 rounded-xl border flex items-start justify-between gap-3 ${
+              <div className={`p-4 rounded-none border flex items-start justify-between gap-3 ${
                 scanResult.canEnter && scanResult.scanResult === 'VALID'
                   ? scanResult.visitor?.status === 'CHECKED_IN'
                     ? 'bg-amber-950/50 border-amber-500/80 text-amber-200'
@@ -569,7 +569,7 @@ export default function AdminVisitorControl() {
                 </div>
 
                 <div className="shrink-0">
-                  <span className={`px-2.5 py-1 text-[10px] font-bold uppercase rounded-lg border font-mono ${
+                  <span className={`px-2.5 py-1 text-[10px] font-bold uppercase rounded-none border font-mono ${
                     scanResult.canEnter && scanResult.scanResult === 'VALID'
                       ? scanResult.visitor?.status === 'CHECKED_IN'
                         ? 'bg-amber-900 text-amber-300 border-amber-500'
@@ -589,12 +589,12 @@ export default function AdminVisitorControl() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 
                 {/* 1. THÔNG TIN CHỦ HỘ BẢO LÃNH */}
-                <div className="p-4 bg-[#161D26] border border-[#2D3748] rounded-xl space-y-3">
+                <div className="p-4 bg-[#161D26] border border-[#2D3748] rounded-none space-y-3">
                   <div className="text-xs font-bold uppercase tracking-wider text-[#C5A880] flex items-center justify-between border-b border-[#222B35] pb-2">
                     <span className="flex items-center gap-1.5">
                       <Home className="w-3.5 h-3.5 text-[#C5A880]" /> Thông Tin Chủ Hộ
                     </span>
-                    <span className="text-[9.5px] bg-[#1C2533] px-1.5 py-0.5 rounded text-emerald-400 font-mono">
+                    <span className="text-[9.5px] bg-[#1C2533] px-1.5 py-0.5 rounded-none text-emerald-400 font-mono">
                       Bảo Lãnh
                     </span>
                   </div>
@@ -634,12 +634,12 @@ export default function AdminVisitorControl() {
                 </div>
 
                 {/* 2. THÔNG TIN KHÁCH THĂM */}
-                <div className="p-4 bg-[#161D26] border border-[#2D3748] rounded-xl space-y-3">
+                <div className="p-4 bg-[#161D26] border border-[#2D3748] rounded-none space-y-3">
                   <div className="text-xs font-bold uppercase tracking-wider text-[#C5A880] flex items-center justify-between border-b border-[#222B35] pb-2">
                     <span className="flex items-center gap-1.5">
                       <UserCheck className="w-3.5 h-3.5 text-[#C5A880]" /> Thông Tin Khách Thăm
                     </span>
-                    <span className="text-[9.5px] bg-[#1C2533] px-1.5 py-0.5 rounded text-cyan-400 font-mono">
+                    <span className="text-[9.5px] bg-[#1C2533] px-1.5 py-0.5 rounded-none text-cyan-400 font-mono">
                       Khách Vào
                     </span>
                   </div>
@@ -699,7 +699,7 @@ export default function AdminVisitorControl() {
                     <button
                       type="button"
                       onClick={() => handleCheckIn(scanResult.visitor!.passId)}
-                      className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-lg shadow-lg flex items-center gap-1.5 transition-all cursor-pointer"
+                      className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-none shadow-lg flex items-center gap-1.5 transition-all cursor-pointer"
                     >
                       <LogIn className="w-4 h-4" /> Xác Nhận Cho Khách Vào (Check-in)
                     </button>
@@ -710,7 +710,7 @@ export default function AdminVisitorControl() {
                     <button
                       type="button"
                       onClick={() => handleCheckOut(scanResult.visitor!.passId)}
-                      className="px-4 py-2 bg-amber-600 hover:bg-amber-500 text-white text-xs font-bold rounded-lg shadow-lg flex items-center gap-1.5 transition-all cursor-pointer"
+                      className="px-4 py-2 bg-amber-600 hover:bg-amber-500 text-white text-xs font-bold rounded-none shadow-lg flex items-center gap-1.5 transition-all cursor-pointer"
                     >
                       <LogOut className="w-4 h-4" /> Xác Nhận Khách Rời Đi (Check-out)
                     </button>
@@ -722,7 +722,7 @@ export default function AdminVisitorControl() {
                       setScanResult(null);
                       setSearchQuery('');
                     }}
-                    className="px-3.5 py-2 bg-[#161B22] hover:bg-[#1E2530] text-gray-300 text-xs font-medium rounded-lg border border-[#2D3748] transition-colors cursor-pointer"
+                    className="px-3.5 py-2 bg-[#161B22] hover:bg-[#1E2530] text-gray-300 text-xs font-medium rounded-none border border-[#2D3748] transition-colors cursor-pointer"
                   >
                     Tiếp Đón Lượt Mới
                   </button>
@@ -732,8 +732,8 @@ export default function AdminVisitorControl() {
             </div>
           ) : (
             /* Placeholder when no pass scanned */
-            <div className="p-8 bg-[#121820] border border-dashed border-[#2D3748] rounded-xl flex flex-col items-center justify-center text-center min-h-[340px] space-y-3 shadow-inner">
-              <div className="w-16 h-16 rounded-2xl bg-[#161D26] border border-[#2D3748] flex items-center justify-center text-[#C5A880]/70">
+            <div className="p-8 bg-[#121820] border border-dashed border-[#2D3748] rounded-none flex flex-col items-center justify-center text-center min-h-[340px] space-y-3 shadow-inner">
+              <div className="w-16 h-16 rounded-none bg-[#161D26] border border-[#2D3748] flex items-center justify-center text-[#C5A880]/70">
                 <FileText className="w-8 h-8" />
               </div>
               <div className="space-y-1">
@@ -753,7 +753,7 @@ export default function AdminVisitorControl() {
       </div>
 
       {/* Bottom Section: Danh Sách & Lịch Sử Quản Lý Khách Thăm */}
-      <div className="p-5 bg-[#121820] border border-[#222B35] rounded-xl space-y-4 shadow-xl">
+      <div className="p-5 bg-[#121820] border border-[#222B35] rounded-none space-y-4 shadow-xl">
         
         {/* Table Header & Controls */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#222B35] pb-3">
@@ -775,7 +775,7 @@ export default function AdminVisitorControl() {
                 value={tableSearch}
                 onChange={(e) => setTableSearch(e.target.value)}
                 placeholder="Tìm khách, căn hộ, biển số..."
-                className="bg-[#161B22] border border-[#2D3748] text-xs text-white placeholder-gray-500 rounded-lg pl-8 pr-3 py-1.5 w-52 focus:border-[#C5A880] outline-none"
+                className="bg-[#161B22] border border-[#2D3748] text-xs text-white placeholder-gray-500 rounded-none pl-8 pr-3 py-1.5 w-52 focus:border-[#C5A880] outline-none"
               />
               <Search className="w-3.5 h-3.5 text-gray-400 absolute left-2.5 top-2" />
             </div>
@@ -784,7 +784,7 @@ export default function AdminVisitorControl() {
             <button
               type="button"
               onClick={refreshPasses}
-              className="p-1.5 bg-[#161B22] hover:bg-[#1E2530] text-gray-300 hover:text-[#C5A880] border border-[#2D3748] rounded-lg transition-colors cursor-pointer"
+              className="p-1.5 bg-[#161B22] hover:bg-[#1E2530] text-gray-300 hover:text-[#C5A880] border border-[#2D3748] rounded-none transition-colors cursor-pointer"
               title="Làm mới danh sách"
             >
               <RefreshCw className="w-4 h-4" />
@@ -805,7 +805,7 @@ export default function AdminVisitorControl() {
               key={tab.id}
               type="button"
               onClick={() => setFilterStatus(tab.id)}
-              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer shrink-0 border ${
+              className={`px-3 py-1.5 rounded-none text-xs font-medium transition-all cursor-pointer shrink-0 border ${
                 filterStatus === tab.id
                   ? 'bg-[#C5A880] text-[#0D1117] font-bold border-[#C5A880]'
                   : 'bg-[#161B22] text-gray-400 hover:text-white border-[#2D3748]'
@@ -868,7 +868,7 @@ export default function AdminVisitorControl() {
 
                     {/* Căn hộ */}
                     <td className="py-3 px-3">
-                      <span className="px-2 py-0.5 bg-[#1C2533] border border-[#2D3748] rounded text-[#C5A880] font-bold font-mono">
+                      <span className="px-2 py-0.5 bg-[#1C2533] border border-[#2D3748] rounded-none text-[#C5A880] font-bold font-mono">
                         Căn {pass.apartmentCode}
                       </span>
                       <div className="text-[10px] text-gray-400 mt-0.5">
@@ -889,19 +889,19 @@ export default function AdminVisitorControl() {
                     {/* Trạng thái */}
                     <td className="py-3 px-3">
                       {pass.status === 'CHECKED_IN' ? (
-                        <span className="px-2 py-0.5 bg-emerald-950 text-emerald-300 border border-emerald-500 rounded text-[10px] font-bold">
+                        <span className="px-2 py-0.5 bg-emerald-950 text-emerald-300 border border-emerald-500 rounded-none text-[10px] font-bold">
                           Đang Trong Chung Cư
                         </span>
                       ) : pass.status === 'ACTIVE' ? (
-                        <span className="px-2 py-0.5 bg-amber-950 text-amber-300 border border-amber-500 rounded text-[10px] font-bold">
+                        <span className="px-2 py-0.5 bg-amber-950 text-amber-300 border border-amber-500 rounded-none text-[10px] font-bold">
                           Chờ Check-in
                         </span>
                       ) : pass.status === 'COMPLETED' ? (
-                        <span className="px-2 py-0.5 bg-gray-800 text-gray-300 border border-gray-600 rounded text-[10px] font-medium">
+                        <span className="px-2 py-0.5 bg-gray-800 text-gray-300 border border-gray-600 rounded-none text-[10px] font-medium">
                           Đã Rời Đi
                         </span>
                       ) : (
-                        <span className="px-2 py-0.5 bg-rose-950 text-rose-300 border border-rose-600 rounded text-[10px] font-bold">
+                        <span className="px-2 py-0.5 bg-rose-950 text-rose-300 border border-rose-600 rounded-none text-[10px] font-bold">
                           Quá Hạn
                         </span>
                       )}
@@ -913,7 +913,7 @@ export default function AdminVisitorControl() {
                         <button
                           type="button"
                           onClick={() => handleVerify(pass.id)}
-                          className="px-2.5 py-1 bg-[#161B22] hover:bg-[#1E2530] text-gray-300 hover:text-white border border-[#2D3748] rounded text-[10.5px] transition-colors cursor-pointer"
+                          className="px-2.5 py-1 bg-[#161B22] hover:bg-[#1E2530] text-gray-300 hover:text-white border border-[#2D3748] rounded-none text-[10.5px] transition-colors cursor-pointer"
                         >
                           Chi Tiết
                         </button>
@@ -922,7 +922,7 @@ export default function AdminVisitorControl() {
                           <button
                             type="button"
                             onClick={() => handleCheckIn(pass.id)}
-                            className="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-500 text-white rounded text-[10.5px] font-bold transition-colors cursor-pointer flex items-center gap-1"
+                            className="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-500 text-white rounded-none text-[10.5px] font-bold transition-colors cursor-pointer flex items-center gap-1"
                           >
                             <LogIn className="w-3 h-3" /> Vào
                           </button>
@@ -932,7 +932,7 @@ export default function AdminVisitorControl() {
                           <button
                             type="button"
                             onClick={() => handleCheckOut(pass.id)}
-                            className="px-2.5 py-1 bg-amber-600 hover:bg-amber-500 text-white rounded text-[10.5px] font-bold transition-colors cursor-pointer flex items-center gap-1"
+                            className="px-2.5 py-1 bg-amber-600 hover:bg-amber-500 text-white rounded-none text-[10.5px] font-bold transition-colors cursor-pointer flex items-center gap-1"
                           >
                             <LogOut className="w-3 h-3" /> Ra
                           </button>
