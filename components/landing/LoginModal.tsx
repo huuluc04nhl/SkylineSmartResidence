@@ -23,10 +23,14 @@ import {
   Video,
   VideoOff,
   Laptop,
-  Image as ImageIcon
+  Image as ImageIcon,
+  Sun,
+  Moon,
+  SunMedium
 } from 'lucide-react';
 import SkylineLogo from '@/components/shared/SkylineLogo';
 import { useAuth } from '@/lib/authContext';
+import { analyzeVideoLighting, LightingAnalysisResult } from '@/lib/biometricFaceEngine';
 
 interface LoginModalProps {
   isOpen: boolean;
@@ -64,6 +68,7 @@ export default function LoginModal({ isOpen, onClose, defaultAccount = '' }: Log
   const [uploadedFaceImage, setUploadedFaceImage] = useState<string | null>(null);
   const [matchedFaceResult, setMatchedFaceResult] = useState<{ name: string; apt: string; score: number } | null>(null);
   const [faceScanStatus, setFaceScanStatus] = useState<'IDLE' | 'SCANNING' | 'LIVENESS' | 'MATCHING' | 'SUCCESS' | 'FAILED'>('IDLE');
+  const [lighting, setLighting] = useState<LightingAnalysisResult | null>(null);
 
   // 3.1 Device & Input Mode State (Laptop vs Mobile & Camera vs Upload)
   const [deviceType, setDeviceType] = useState<'LAPTOP' | 'MOBILE'>('LAPTOP');
@@ -259,6 +264,27 @@ export default function LoginModal({ isOpen, onClose, defaultAccount = '' }: Log
     };
   }, [authMethod, isOpen, faceInputMode]);
 
+  // Phân tích độ sáng/tối của camera FaceID thời gian thực
+  useEffect(() => {
+    if (authMethod !== 'FACE_ID' || !isOpen || faceInputMode !== 'CAMERA' || !isCameraActive) {
+      setLighting(null);
+      return;
+    }
+
+    const interval = setInterval(() => {
+      if (videoRef.current && videoRef.current.readyState >= 2) {
+        try {
+          const result = analyzeVideoLighting(videoRef.current);
+          setLighting(result);
+        } catch (e) {
+          console.warn('Lighting analysis error:', e);
+        }
+      }
+    }, 350);
+
+    return () => clearInterval(interval);
+  }, [authMethod, isOpen, faceInputMode, isCameraActive]);
+
   // Xử lý chọn file ảnh chân dung
   const handleFacePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -284,9 +310,24 @@ export default function LoginModal({ isOpen, onClose, defaultAccount = '' }: Log
   const handleStartFaceScan = async () => {
     setErrorMessage(null);
     setSuccessMessage(null);
-    setFaceScanStatus('SCANNING');
 
     const isUsingCamera = faceInputMode === 'CAMERA' && isCameraActive;
+
+    // Kiểm tra độ sáng môi trường nếu dùng camera
+    if (isUsingCamera && lighting) {
+      if (lighting.status === 'TOO_DARK' && lighting.luminance < 40) {
+        setFaceScanStatus('FAILED');
+        setErrorMessage('Môi trường đang quá tối để nhận diện. Vui lòng bật đèn hoặc di chuyển đến nơi có ánh sáng tốt hơn.');
+        return;
+      }
+      if (lighting.status === 'TOO_BRIGHT' && lighting.luminance > 230) {
+        setFaceScanStatus('FAILED');
+        setErrorMessage('Camera đang bị chói sáng hoặc ngược sáng mạnh. Vui lòng tránh nguồn sáng rọi thẳng vào ống kính.');
+        return;
+      }
+    }
+
+    setFaceScanStatus('SCANNING');
     let capturedImage = uploadedFaceImage || null;
 
     if (isUsingCamera && videoRef.current && canvasRef.current) {
@@ -738,16 +779,40 @@ export default function LoginModal({ isOpen, onClose, defaultAccount = '' }: Log
               <div className="absolute bottom-3 left-3 w-4 h-4 border-b-2 border-l-2 border-[#C5A880]/70 pointer-events-none" />
               <div className="absolute bottom-3 right-3 w-4 h-4 border-b-2 border-r-2 border-[#C5A880]/70 pointer-events-none" />
 
+              {/* Real-time Environmental Lighting Indicator */}
+              {faceInputMode === 'CAMERA' && isCameraActive && lighting && (
+                <div className="absolute top-3 right-3 z-20 pointer-events-none flex items-center gap-1.5 px-2.5 py-1 bg-black/85 backdrop-blur border border-[#222B35] text-[10px] font-mono">
+                  {lighting.status === 'TOO_DARK' ? (
+                    <Moon className="w-3 h-3 text-rose-400 animate-pulse" />
+                  ) : lighting.status === 'TOO_BRIGHT' ? (
+                    <Sun className="w-3 h-3 text-amber-400 animate-pulse" />
+                  ) : (
+                    <SunMedium className="w-3 h-3 text-emerald-400" />
+                  )}
+                  <span className={
+                    lighting.status === 'TOO_DARK' ? 'text-rose-400 font-semibold' :
+                    lighting.status === 'TOO_BRIGHT' ? 'text-amber-400 font-semibold' :
+                    'text-emerald-400 font-semibold'
+                  }>
+                    {lighting.label} ({lighting.scorePercent}%)
+                  </span>
+                </div>
+              )}
+
               {/* Biometric Face Guide Oval */}
               <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                <div className={`w-36 h-48 sm:w-40 sm:h-52 border-2 border-dashed rounded-none-[50%] transition-all duration-300 ${
+                <div className={`w-36 h-48 sm:w-40 sm:h-52 border-2 border-dashed rounded-[50%] transition-all duration-300 ${
                   faceScanStatus === 'SUCCESS'
                     ? 'border-emerald-400 shadow-[0_0_20px_rgba(52,211,153,0.5)]'
                     : faceScanStatus === 'FAILED'
                     ? 'border-rose-400 shadow-[0_0_15px_rgba(244,63,94,0.3)]'
                     : faceScanStatus !== 'IDLE'
                     ? 'border-[#C5A880] shadow-[0_0_15px_rgba(197,168,128,0.4)] animate-pulse'
-                    : 'border-white/25'
+                    : lighting?.status === 'TOO_DARK'
+                    ? 'border-rose-500/80 shadow-[0_0_15px_rgba(244,63,94,0.3)]'
+                    : lighting?.status === 'TOO_BRIGHT'
+                    ? 'border-amber-500/80 shadow-[0_0_15px_rgba(245,158,11,0.3)]'
+                    : 'border-[#C5A880]/60 shadow-[0_0_12px_rgba(197,168,128,0.2)]'
                 }`}>
                   <div className="absolute inset-0 flex items-center justify-center opacity-30">
                     <div className="w-3.5 h-0.5 bg-[#C5A880]" />
@@ -763,10 +828,30 @@ export default function LoginModal({ isOpen, onClose, defaultAccount = '' }: Log
 
               {/* Minimalist Floating Status */}
               <div className="absolute bottom-3 inset-x-4 flex justify-center pointer-events-none">
-                <div className="px-3 py-1 bg-black/75 backdrop-blur border border-white/10 rounded-none text-xs font-medium flex items-center gap-1.5 shadow-lg">
+                <div className="px-3 py-1 bg-black/80 backdrop-blur border border-white/10 rounded-none text-xs font-medium flex items-center gap-1.5 shadow-lg">
                   {faceScanStatus === 'IDLE' && (
-                    <span className="text-gray-300">
-                      {faceInputMode === 'CAMERA' ? 'Căn khuôn mặt vào khung elip' : 'Chọn ảnh chân dung để quét'}
+                    <span className={
+                      lighting?.status === 'TOO_DARK' ? 'text-rose-300 flex items-center gap-1.5' :
+                      lighting?.status === 'TOO_BRIGHT' ? 'text-amber-300 flex items-center gap-1.5' :
+                      'text-gray-300'
+                    }>
+                      {faceInputMode === 'CAMERA' ? (
+                        lighting?.status === 'TOO_DARK' ? (
+                          <>
+                            <Moon className="w-3 h-3 text-rose-400" />
+                            <span>Ánh sáng yếu ({lighting.scorePercent}%) - Cần thêm ánh sáng</span>
+                          </>
+                        ) : lighting?.status === 'TOO_BRIGHT' ? (
+                          <>
+                            <Sun className="w-3 h-3 text-amber-400" />
+                            <span>Ánh sáng quá chói - Tránh ngược sáng</span>
+                          </>
+                        ) : (
+                          'Căn khuôn mặt vào khung elip'
+                        )
+                      ) : (
+                        'Chọn ảnh chân dung để quét'
+                      )}
                     </span>
                   )}
                   {(faceScanStatus === 'SCANNING' || faceScanStatus === 'LIVENESS' || faceScanStatus === 'MATCHING') && (

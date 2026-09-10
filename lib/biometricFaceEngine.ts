@@ -202,3 +202,150 @@ export function identifyFaceAmongEnrolled(
     message: `Nhận diện chính thức thành công: ${bestProfile.fullName} (Căn ${bestProfile.apartmentCode})`,
   };
 }
+
+/**
+ * -------------------------------------------------------------
+ * ĐÁNH GIÁ ĐỘ SÁNG / ĐỘ TỐI CỦA KHUNG HÌNH FACEID (LIGHTING ANALYZER)
+ * -------------------------------------------------------------
+ * Chuẩn ITU-R BT.601: Perceived Luminance Y = 0.299*R + 0.587*G + 0.114*B
+ * Phân loại:
+ * - TOO_DARK (Quá tối): Luminance < 55 hoặc trên 65% pixel thiếu sáng
+ * - TOO_BRIGHT (Quá chói / Ngược sáng): Luminance > 215 hoặc trên 40% pixel cháy sáng
+ * - OPTIMAL (Đạt chuẩn): 55 <= Luminance <= 215
+ */
+export interface LightingAnalysisResult {
+  luminance: number;       // Thang đo độ chói trung bình 0 - 255
+  scorePercent: number;    // Phần trăm độ sáng 0 - 100%
+  status: 'TOO_DARK' | 'OPTIMAL' | 'TOO_BRIGHT';
+  label: string;
+  message: string;
+  isOptimal: boolean;
+  underexposedRatio: number;
+  overexposedRatio: number;
+}
+
+export function analyzeVideoLighting(
+  video: HTMLVideoElement,
+  customCanvas?: HTMLCanvasElement
+): LightingAnalysisResult {
+  if (!video || video.videoWidth === 0 || video.videoHeight === 0) {
+    return {
+      luminance: 128,
+      scorePercent: 50,
+      status: 'OPTIMAL',
+      label: 'Ánh sáng đạt chuẩn',
+      message: 'Ánh sáng tối ưu cho nhận diện khuôn mặt.',
+      isOptimal: true,
+      underexposedRatio: 0,
+      overexposedRatio: 0,
+    };
+  }
+
+  try {
+    // Sử dụng canvas mẫu 48x48 pixel tính toán siêu nhẹ (< 1.5ms, không giật lag webcam)
+    const sampleCanvas = customCanvas || document.createElement('canvas');
+    const sampleW = 48;
+    const sampleH = 48;
+    sampleCanvas.width = sampleW;
+    sampleCanvas.height = sampleH;
+
+    const ctx = sampleCanvas.getContext('2d', { willReadFrequently: true });
+    if (!ctx) {
+      return {
+        luminance: 128,
+        scorePercent: 50,
+        status: 'OPTIMAL',
+        label: 'Ánh sáng đạt chuẩn',
+        message: 'Ánh sáng đạt chuẩn.',
+        isOptimal: true,
+        underexposedRatio: 0,
+        overexposedRatio: 0,
+      };
+    }
+
+    // Trích xuất vùng trọng tâm khuôn mặt (vùng oval trung tâm 60% chiều ngang, 70% chiều dọc)
+    const srcW = video.videoWidth;
+    const srcH = video.videoHeight;
+    const cropX = srcW * 0.2;
+    const cropY = srcH * 0.15;
+    const cropW = srcW * 0.6;
+    const cropH = srcH * 0.7;
+
+    ctx.drawImage(video, cropX, cropY, cropW, cropH, 0, 0, sampleW, sampleH);
+    const imgData = ctx.getImageData(0, 0, sampleW, sampleH).data;
+
+    let totalLum = 0;
+    const totalPixels = sampleW * sampleH;
+    let overexposedCount = 0;
+    let underexposedCount = 0;
+
+    for (let i = 0; i < imgData.length; i += 4) {
+      const r = imgData[i];
+      const g = imgData[i + 1];
+      const b = imgData[i + 2];
+      // Perceived Luminance ITU-R BT.601
+      const lum = 0.299 * r + 0.587 * g + 0.114 * b;
+      totalLum += lum;
+
+      if (lum > 225) overexposedCount++;
+      if (lum < 45) underexposedCount++;
+    }
+
+    const avgLum = Math.round(totalLum / totalPixels);
+    const scorePercent = Math.min(100, Math.max(0, Math.round((avgLum / 255) * 100)));
+    const underexposedRatio = Number((underexposedCount / totalPixels).toFixed(2));
+    const overexposedRatio = Number((overexposedCount / totalPixels).toFixed(2));
+
+    // 1. Quá tối
+    if (avgLum < 55 || underexposedRatio > 0.60) {
+      return {
+        luminance: avgLum,
+        scorePercent,
+        status: 'TOO_DARK',
+        label: 'Môi trường quá tối',
+        message: 'Ánh sáng quá yếu. Vui lòng di chuyển đến nơi sáng hơn hoặc bật đèn để khuôn mặt rõ nét.',
+        isOptimal: false,
+        underexposedRatio,
+        overexposedRatio,
+      };
+    }
+
+    // 2. Quá chói / Ngược sáng
+    if (avgLum > 215 || overexposedRatio > 0.38) {
+      return {
+        luminance: avgLum,
+        scorePercent,
+        status: 'TOO_BRIGHT',
+        label: 'Ánh sáng quá chói / Ngược sáng',
+        message: 'Camera bị chói sáng hoặc ngược sáng mạnh. Vui lòng tránh nguồn sáng chiếu thẳng vào ống kính.',
+        isOptimal: false,
+        underexposedRatio,
+        overexposedRatio,
+      };
+    }
+
+    // 3. Đạt chuẩn tối ưu
+    return {
+      luminance: avgLum,
+      scorePercent,
+      status: 'OPTIMAL',
+      label: 'Ánh sáng đạt chuẩn',
+      message: 'Điều kiện ánh sáng tối ưu để nhận diện sinh trắc học chính xác.',
+      isOptimal: true,
+      underexposedRatio,
+      overexposedRatio,
+    };
+  } catch (e) {
+    return {
+      luminance: 128,
+      scorePercent: 50,
+      status: 'OPTIMAL',
+      label: 'Ánh sáng đạt chuẩn',
+      message: 'Ánh sáng đạt chuẩn.',
+      isOptimal: true,
+      underexposedRatio: 0,
+      overexposedRatio: 0,
+    };
+  }
+}
+

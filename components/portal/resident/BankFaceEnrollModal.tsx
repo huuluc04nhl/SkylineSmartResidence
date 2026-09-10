@@ -15,11 +15,19 @@ import {
   Smile, 
   UserCheck, 
   Lock,
-  Upload
+  Upload,
+  Sun,
+  Moon,
+  SunMedium
 } from 'lucide-react';
 import { nksEnrollFaceId } from '@/lib/nksApiClient';
 import { saveEnrolledFaceProfile } from '@/lib/faceEnrollStore';
-import { extractFaceDescriptorFromBase64, EnrolledFaceProfile } from '@/lib/biometricFaceEngine';
+import { 
+  extractFaceDescriptorFromBase64, 
+  EnrolledFaceProfile, 
+  analyzeVideoLighting, 
+  LightingAnalysisResult 
+} from '@/lib/biometricFaceEngine';
 
 interface BankFaceEnrollModalProps {
   isOpen: boolean;
@@ -124,6 +132,9 @@ export default function BankFaceEnrollModal({
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [submitSuccess, setSubmitSuccess] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  // Environmental Lighting Assessment (Độ sáng / Độ tối thời gian thực)
+  const [lighting, setLighting] = useState<LightingAnalysisResult | null>(null);
 
   const currentStep = STEPS[currentStepIndex] || STEPS[0];
 
@@ -237,6 +248,27 @@ export default function BankFaceEnrollModal({
       stopCamera();
     };
   }, [isOpen, startCamera, stopCamera]);
+
+  // Đánh giá độ sáng/tối môi trường theo thời gian thực (chu kỳ 350ms)
+  useEffect(() => {
+    if (!isCameraActive || isReviewMode || !isOpen) {
+      setLighting(null);
+      return;
+    }
+
+    const interval = setInterval(() => {
+      if (videoRef.current && videoRef.current.readyState >= 2) {
+        try {
+          const result = analyzeVideoLighting(videoRef.current);
+          setLighting(result);
+        } catch (e) {
+          console.warn('Lighting analysis error:', e);
+        }
+      }
+    }, 350);
+
+    return () => clearInterval(interval);
+  }, [isCameraActive, isReviewMode, isOpen]);
 
   // Xử lý tải ảnh thay thế cho bước hiện tại
   const handleFileUploadCurrentStep = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -518,6 +550,44 @@ export default function BankFaceEnrollModal({
               <div className="text-center text-[11.5px] text-gray-300 font-medium pt-1">
                 {currentStep.guideText}
               </div>
+
+              {/* Real-time Environmental Lighting Meter */}
+              {isCameraActive && lighting && (
+                <div className="w-full px-3 py-1.5 bg-[#121820] border border-[#222B35] flex items-center justify-between text-[11px] font-mono transition-colors">
+                  <div className="flex items-center gap-2">
+                    {lighting.status === 'TOO_DARK' ? (
+                      <Moon className="w-3.5 h-3.5 text-rose-400 animate-pulse" />
+                    ) : lighting.status === 'TOO_BRIGHT' ? (
+                      <Sun className="w-3.5 h-3.5 text-amber-400 animate-pulse" />
+                    ) : (
+                      <SunMedium className="w-3.5 h-3.5 text-emerald-400" />
+                    )}
+                    <span className={
+                      lighting.status === 'TOO_DARK' ? 'text-rose-400 font-bold' :
+                      lighting.status === 'TOO_BRIGHT' ? 'text-amber-400 font-bold' :
+                      'text-emerald-400 font-bold'
+                    }>
+                      {lighting.label}
+                    </span>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <div className="w-24 h-1.5 bg-black/70 border border-gray-700 overflow-hidden flex">
+                      <div 
+                        className={`h-full transition-all duration-300 ${
+                          lighting.status === 'TOO_DARK' ? 'bg-rose-500' :
+                          lighting.status === 'TOO_BRIGHT' ? 'bg-amber-500' :
+                          'bg-emerald-500'
+                        }`}
+                        style={{ width: `${lighting.scorePercent}%` }}
+                      />
+                    </div>
+                    <span className="text-gray-400 text-[10px] min-w-[28px] text-right font-semibold">
+                      {lighting.scorePercent}%
+                    </span>
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* --------------------------------------------------------- */}
@@ -571,14 +641,36 @@ export default function BankFaceEnrollModal({
 
               {/* BANKING OVAL CUTOUT OVERLAY */}
               <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
-                {/* Oval Guide Border */}
-                <div className="w-52 h-72 sm:w-60 sm:h-80 rounded-[50%] border-2 border-[#C5A880]/80 shadow-[0_0_25px_rgba(197,168,128,0.35)] relative flex items-center justify-center animate-pulse">
+                {/* Oval Guide Border - Dynamically reacting to environmental lighting */}
+                <div className={`w-52 h-72 sm:w-60 sm:h-80 rounded-[50%] border-2 transition-all duration-300 relative flex items-center justify-center ${
+                  lighting?.status === 'TOO_DARK'
+                    ? 'border-rose-500 shadow-[0_0_30px_rgba(244,63,94,0.45)] animate-pulse'
+                    : lighting?.status === 'TOO_BRIGHT'
+                    ? 'border-amber-500 shadow-[0_0_30px_rgba(245,158,11,0.45)] animate-pulse'
+                    : 'border-[#C5A880]/80 shadow-[0_0_25px_rgba(197,168,128,0.35)] animate-pulse'
+                }`}>
                   
                   {/* Four Angle Crosshair Markers */}
-                  <div className="absolute top-2 w-4 h-[1.5px] bg-[#C5A880]" />
-                  <div className="absolute bottom-2 w-4 h-[1.5px] bg-[#C5A880]" />
-                  <div className="absolute left-2 h-4 w-[1.5px] bg-[#C5A880]" />
-                  <div className="absolute right-2 h-4 w-[1.5px] bg-[#C5A880]" />
+                  <div className={`absolute top-2 w-4 h-[1.5px] ${
+                    lighting?.status === 'TOO_DARK' ? 'bg-rose-500' :
+                    lighting?.status === 'TOO_BRIGHT' ? 'bg-amber-500' :
+                    'bg-[#C5A880]'
+                  }`} />
+                  <div className={`absolute bottom-2 w-4 h-[1.5px] ${
+                    lighting?.status === 'TOO_DARK' ? 'bg-rose-500' :
+                    lighting?.status === 'TOO_BRIGHT' ? 'bg-amber-500' :
+                    'bg-[#C5A880]'
+                  }`} />
+                  <div className={`absolute left-2 h-4 w-[1.5px] ${
+                    lighting?.status === 'TOO_DARK' ? 'bg-rose-500' :
+                    lighting?.status === 'TOO_BRIGHT' ? 'bg-amber-500' :
+                    'bg-[#C5A880]'
+                  }`} />
+                  <div className={`absolute right-2 h-4 w-[1.5px] ${
+                    lighting?.status === 'TOO_DARK' ? 'bg-rose-500' :
+                    lighting?.status === 'TOO_BRIGHT' ? 'bg-amber-500' :
+                    'bg-[#C5A880]'
+                  }`} />
 
                   {/* Pose-Specific Directional Icon Cue */}
                   {currentStep.key === 'LEFT' && (
@@ -607,6 +699,20 @@ export default function BankFaceEnrollModal({
                   )}
                 </div>
               </div>
+
+              {/* Floating Lighting Warning inside Camera when Not Optimal */}
+              {isCameraActive && lighting && !lighting.isOptimal && (
+                <div className="absolute top-11 inset-x-3 pointer-events-none flex justify-center z-20">
+                  <div className={`px-2.5 py-1 text-[10.5px] font-medium border flex items-center gap-1.5 shadow-lg backdrop-blur ${
+                    lighting.status === 'TOO_DARK' 
+                      ? 'bg-rose-950/90 border-rose-600/80 text-rose-200' 
+                      : 'bg-amber-950/90 border-amber-600/80 text-amber-200'
+                  }`}>
+                    {lighting.status === 'TOO_DARK' ? <Moon className="w-3 h-3 shrink-0 text-rose-400" /> : <Sun className="w-3 h-3 shrink-0 text-amber-400" />}
+                    <span className="truncate max-w-[230px]">{lighting.message}</span>
+                  </div>
+                </div>
+              )}
 
               {/* Top Status Pill */}
               <div className="absolute top-3 inset-x-0 flex justify-center pointer-events-none">
