@@ -352,12 +352,12 @@ export default function LoginModal({ isOpen, onClose, defaultAccount = '' }: Log
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md animate-fadeIn">
-      <div className="relative w-full max-w-md bg-[#0D1117] border border-[#C5A880]/80 p-6 sm:p-7 shadow-2xl text-white space-y-4 select-none rounded-xl">
+      <div className="relative w-full max-w-md bg-[#0D1117] border border-[#C5A880]/80 p-6 sm:p-7 shadow-2xl text-white space-y-4 select-none rounded-none">
         
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 text-gray-400 hover:text-white p-1 rounded-lg hover:bg-[#161B22] transition-colors"
+          className="absolute top-4 right-4 text-gray-400 hover:text-white p-1 rounded-none hover:bg-[#161B22] transition-colors"
         >
           <X className="w-5 h-5" />
         </button>
@@ -374,11 +374,11 @@ export default function LoginModal({ isOpen, onClose, defaultAccount = '' }: Log
         </div>
 
         {/* 3-Tab Selector: Email / Password | SĐT OTP | FaceID AI */}
-        <div className="grid grid-cols-3 gap-1 bg-[#121820] p-1 border border-[#222B35] rounded-lg text-xs">
+        <div className="grid grid-cols-3 gap-1 bg-[#121820] p-1 border border-[#222B35] rounded-none text-xs">
           <button
             type="button"
             onClick={() => { setAuthMethod('CREDENTIALS'); setErrorMessage(null); setSuccessMessage(null); }}
-            className={`py-2 px-1 text-center font-medium transition-all rounded flex flex-col items-center gap-1 ${
+            className={`py-2 px-1 text-center font-medium transition-all rounded-none flex flex-col items-center gap-1 ${
               authMethod === 'CREDENTIALS'
                 ? 'bg-[#C5A880] text-[#0D1117] font-bold shadow'
                 : 'text-gray-400 hover:text-white'
@@ -391,7 +391,7 @@ export default function LoginModal({ isOpen, onClose, defaultAccount = '' }: Log
           <button
             type="button"
             onClick={() => { setAuthMethod('PHONE_OTP'); setErrorMessage(null); setSuccessMessage(null); }}
-            className={`py-2 px-1 text-center font-medium transition-all rounded flex flex-col items-center gap-1 ${
+            className={`py-2 px-1 text-center font-medium transition-all rounded-none flex flex-col items-center gap-1 ${
               authMethod === 'PHONE_OTP'
                 ? 'bg-[#C5A880] text-[#0D1117] font-bold shadow'
                 : 'text-gray-400 hover:text-white'
@@ -404,7 +404,7 @@ export default function LoginModal({ isOpen, onClose, defaultAccount = '' }: Log
           <button
             type="button"
             onClick={() => { setAuthMethod('FACE_ID'); setErrorMessage(null); setSuccessMessage(null); }}
-            className={`py-2 px-1 text-center font-medium transition-all rounded flex flex-col items-center gap-1 ${
+            className={`py-2 px-1 text-center font-medium transition-all rounded-none flex flex-col items-center gap-1 ${
               authMethod === 'FACE_ID'
                 ? 'bg-[#C5A880] text-[#0D1117] font-bold shadow'
                 : 'text-gray-400 hover:text-white'
@@ -417,7 +417,7 @@ export default function LoginModal({ isOpen, onClose, defaultAccount = '' }: Log
 
         {/* Error Alert */}
         {errorMessage && (
-          <div className="p-3 bg-rose-950/80 border border-rose-500 text-rose-300 text-xs flex items-center gap-2 rounded-lg animate-fadeIn">
+          <div className="p-3 bg-rose-950/80 border border-rose-500 text-rose-300 text-xs flex items-center gap-2 rounded-none animate-fadeIn">
             <AlertCircle className="w-4 h-4 flex-shrink-0" />
             <span>{errorMessage}</span>
           </div>
@@ -425,7 +425,7 @@ export default function LoginModal({ isOpen, onClose, defaultAccount = '' }: Log
 
         {/* Success Alert */}
         {successMessage && (
-          <div className="p-3 bg-emerald-950/80 border border-emerald-500 text-emerald-300 text-xs flex items-center gap-2 rounded-lg animate-fadeIn">
+          <div className="p-3 bg-emerald-950/80 border border-emerald-500 text-emerald-300 text-xs flex items-center gap-2 rounded-none animate-fadeIn">
             <CheckCircle2 className="w-4 h-4 flex-shrink-0 text-emerald-400" />
             <span className="font-semibold">{successMessage}</span>
           </div>
@@ -448,7 +448,7 @@ export default function LoginModal({ isOpen, onClose, defaultAccount = '' }: Log
                 value={account}
                 onChange={(e) => setAccount(e.target.value)}
                 placeholder="Nhập email tài khoản (VD: huuluc04@gmail.com)..."
-                className="w-full bg-[#161B22] border border-[#2D3748] p-2.5 text-white text-xs font-mono rounded-lg focus:outline-none focus:border-[#C5A880] transition-colors"
+                className="w-full bg-[#161B22] border border-[#2D3748] p-2.5 text-white text-xs font-mono rounded-none focus:outline-none focus:border-[#C5A880] transition-colors"
                 required
               />
             </div>
@@ -466,7 +466,7 @@ export default function LoginModal({ isOpen, onClose, defaultAccount = '' }: Log
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Nhập mật khẩu..."
-                  className="w-full bg-[#161B22] border border-[#2D3748] p-2.5 pr-10 text-white text-xs rounded-lg focus:outline-none focus:border-[#C5A880] transition-colors"
+                  className="w-full bg-[#161B22] border border-[#2D3748] p-2.5 pr-10 text-white text-xs rounded-none focus:outline-none focus:border-[#C5A880] transition-colors"
                   required
                 />
                 <button
@@ -482,7 +482,7 @@ export default function LoginModal({ isOpen, onClose, defaultAccount = '' }: Log
             <button
               type="submit"
               disabled={isSubmitting || !account.trim() || !password}
-              className={`w-full py-2.5 text-xs uppercase tracking-widest font-bold transition-all flex items-center justify-center gap-2 rounded-lg shadow-lg ${
+              className={`w-full py-2.5 text-xs uppercase tracking-widest font-bold transition-all flex items-center justify-center gap-2 rounded-none shadow-lg ${
                 account.trim() && password && !isSubmitting
                   ? 'bg-[#C5A880] hover:bg-white text-[#0D1117]'
                   : 'bg-gray-800 text-gray-500 cursor-not-allowed border border-gray-700'
@@ -519,14 +519,14 @@ export default function LoginModal({ isOpen, onClose, defaultAccount = '' }: Log
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
                   placeholder="Nhập số điện thoại (VD: 0364967082)"
-                  className="flex-1 bg-[#161B22] border border-[#2D3748] p-2.5 text-white text-xs font-mono rounded-lg focus:outline-none focus:border-[#C5A880]"
+                  className="flex-1 bg-[#161B22] border border-[#2D3748] p-2.5 text-white text-xs font-mono rounded-none focus:outline-none focus:border-[#C5A880]"
                   required
                 />
                 <button
                   type="button"
                   onClick={handleSendOtp}
                   disabled={isCounting}
-                  className={`px-3 py-2 text-xs font-semibold uppercase tracking-wider rounded-lg transition-all flex items-center gap-1.5 whitespace-nowrap ${
+                  className={`px-3 py-2 text-xs font-semibold uppercase tracking-wider rounded-none transition-all flex items-center gap-1.5 whitespace-nowrap ${
                     isCounting
                       ? 'bg-gray-800 text-gray-500 cursor-not-allowed border border-gray-700'
                       : 'bg-[#C5A880] text-[#0D1117] hover:bg-white font-bold shadow'
@@ -546,12 +546,12 @@ export default function LoginModal({ isOpen, onClose, defaultAccount = '' }: Log
 
             {/* OTP Message Simulation */}
             {isOtpSent && (
-              <div className="p-3 bg-[#121E2A] border border-[#C5A880]/70 rounded-lg text-xs space-y-1.5 animate-fadeIn">
+              <div className="p-3 bg-[#121E2A] border border-[#C5A880]/70 rounded-none text-xs space-y-1.5 animate-fadeIn">
                 <div className="flex items-center justify-between text-[#C5A880] font-bold">
                   <span className="flex items-center gap-1.5">
                     <Sparkles className="w-3.5 h-3.5" /> Mã OTP gửi tới {phone}:
                   </span>
-                  <span className="font-mono bg-[#C5A880] text-[#0D1117] px-2 py-0.5 text-xs font-bold rounded">
+                  <span className="font-mono bg-[#C5A880] text-[#0D1117] px-2 py-0.5 text-xs font-bold rounded-none">
                     {generatedOtp}
                   </span>
                 </div>
@@ -580,7 +580,7 @@ export default function LoginModal({ isOpen, onClose, defaultAccount = '' }: Log
                   value={otpCode}
                   onChange={(e) => setOtpCode(e.target.value)}
                   placeholder="Nhập 6 chữ số OTP..."
-                  className="w-full bg-[#161B22] border border-[#2D3748] p-2.5 text-center text-lg font-mono tracking-[0.35em] text-[#C5A880] rounded-lg focus:outline-none focus:border-[#C5A880]"
+                  className="w-full bg-[#161B22] border border-[#2D3748] p-2.5 text-center text-lg font-mono tracking-[0.35em] text-[#C5A880] rounded-none focus:outline-none focus:border-[#C5A880]"
                   required
                 />
               </div>
@@ -588,7 +588,7 @@ export default function LoginModal({ isOpen, onClose, defaultAccount = '' }: Log
               <button
                 type="submit"
                 disabled={isSubmitting || !isOtpSent || otpCode.length < 6}
-                className={`w-full py-2.5 text-xs uppercase tracking-widest font-bold rounded-lg transition-all flex items-center justify-center gap-2 ${
+                className={`w-full py-2.5 text-xs uppercase tracking-widest font-bold rounded-none transition-all flex items-center justify-center gap-2 ${
                   isOtpSent && otpCode.length === 6
                     ? 'bg-[#C5A880] hover:bg-white text-[#0D1117] shadow-lg'
                     : 'bg-gray-800 text-gray-500 cursor-not-allowed border border-gray-700'
@@ -619,7 +619,7 @@ export default function LoginModal({ isOpen, onClose, defaultAccount = '' }: Log
             />
 
             {/* Modern Mode Toggle: Camera vs Tải Ảnh */}
-            <div className="grid grid-cols-2 gap-1.5 p-1 bg-[#121820] border border-[#222B35] rounded-xl text-xs select-none">
+            <div className="grid grid-cols-2 gap-1.5 p-1 bg-[#121820] border border-[#222B35] rounded-none text-xs select-none">
               <button
                 type="button"
                 onClick={() => {
@@ -627,7 +627,7 @@ export default function LoginModal({ isOpen, onClose, defaultAccount = '' }: Log
                   setUploadedFaceImage(null);
                   if (!isCameraActive) startCamera();
                 }}
-                className={`py-2 px-3 rounded-lg font-semibold transition-all flex items-center justify-center gap-2 ${
+                className={`py-2 px-3 rounded-none font-semibold transition-all flex items-center justify-center gap-2 ${
                   faceInputMode === 'CAMERA'
                     ? 'bg-[#C5A880] text-[#0D1117] shadow'
                     : 'text-gray-400 hover:text-white hover:bg-[#1A2330]'
@@ -646,7 +646,7 @@ export default function LoginModal({ isOpen, onClose, defaultAccount = '' }: Log
                     fileUploadInputRef.current?.click();
                   }
                 }}
-                className={`py-2 px-3 rounded-lg font-semibold transition-all flex items-center justify-center gap-2 ${
+                className={`py-2 px-3 rounded-none font-semibold transition-all flex items-center justify-center gap-2 ${
                   faceInputMode === 'UPLOAD'
                     ? 'bg-[#C5A880] text-[#0D1117] shadow'
                     : 'text-gray-400 hover:text-white hover:bg-[#1A2330]'
@@ -658,7 +658,7 @@ export default function LoginModal({ isOpen, onClose, defaultAccount = '' }: Log
             </div>
 
             {/* Modern Central Biometric Viewport */}
-            <div className={`relative w-full h-64 sm:h-72 bg-[#06090E] border rounded-2xl overflow-hidden transition-all duration-300 flex items-center justify-center ${
+            <div className={`relative w-full h-64 sm:h-72 bg-[#06090E] border rounded-none overflow-hidden transition-all duration-300 flex items-center justify-center ${
               faceScanStatus === 'SUCCESS'
                 ? 'border-emerald-500/80 shadow-[0_0_25px_rgba(16,185,129,0.35)]'
                 : faceScanStatus === 'FAILED'
@@ -684,14 +684,14 @@ export default function LoginModal({ isOpen, onClose, defaultAccount = '' }: Log
                   <button
                     type="button"
                     onClick={() => fileUploadInputRef.current?.click()}
-                    className="absolute top-3 right-3 px-2.5 py-1 bg-black/70 hover:bg-black text-[11px] text-[#C5A880] rounded-lg border border-white/15 backdrop-blur transition-all"
+                    className="absolute top-3 right-3 px-2.5 py-1 bg-black/70 hover:bg-black text-[11px] text-[#C5A880] rounded-none border border-white/15 backdrop-blur transition-all"
                   >
                     Đổi ảnh
                   </button>
                 </div>
               ) : faceInputMode === 'CAMERA' ? (
                 <div className="flex flex-col items-center justify-center p-6 text-center space-y-3">
-                  <div className="w-14 h-14 rounded-full bg-[#161B22] border border-[#2D3748] flex items-center justify-center text-[#C5A880]">
+                  <div className="w-14 h-14 rounded-none bg-[#161B22] border border-[#2D3748] flex items-center justify-center text-[#C5A880]">
                     <Camera className="w-6 h-6 animate-pulse" />
                   </div>
                   <div className="text-xs text-gray-400 max-w-xs">
@@ -701,7 +701,7 @@ export default function LoginModal({ isOpen, onClose, defaultAccount = '' }: Log
                     <button
                       type="button"
                       onClick={() => setFaceInputMode('UPLOAD')}
-                      className="px-3 py-1.5 bg-[#C5A880]/20 border border-[#C5A880] text-[#C5A880] text-xs font-semibold rounded-lg hover:bg-[#C5A880] hover:text-[#0D1117] transition-all"
+                      className="px-3 py-1.5 bg-[#C5A880]/20 border border-[#C5A880] text-[#C5A880] text-xs font-semibold rounded-none hover:bg-[#C5A880] hover:text-[#0D1117] transition-all"
                     >
                       Chuyển sang tải ảnh
                     </button>
@@ -709,7 +709,7 @@ export default function LoginModal({ isOpen, onClose, defaultAccount = '' }: Log
                     <button
                       type="button"
                       onClick={startCamera}
-                      className="px-3 py-1 bg-[#1A2330] hover:bg-[#253245] text-xs text-gray-300 rounded-lg border border-gray-700 transition-all"
+                      className="px-3 py-1 bg-[#1A2330] hover:bg-[#253245] text-xs text-gray-300 rounded-none border border-gray-700 transition-all"
                     >
                       Bật lại Camera
                     </button>
@@ -720,7 +720,7 @@ export default function LoginModal({ isOpen, onClose, defaultAccount = '' }: Log
                   onClick={() => fileUploadInputRef.current?.click()}
                   className="w-full h-full flex flex-col items-center justify-center p-6 text-center space-y-3 cursor-pointer hover:bg-[#0E1520] transition-colors"
                 >
-                  <div className="w-14 h-14 rounded-full bg-[#161B22] border border-[#C5A880]/40 flex items-center justify-center text-[#C5A880]">
+                  <div className="w-14 h-14 rounded-none bg-[#161B22] border border-[#C5A880]/40 flex items-center justify-center text-[#C5A880]">
                     <Upload className="w-6 h-6" />
                   </div>
                   <div className="text-xs font-medium text-gray-300">
@@ -740,7 +740,7 @@ export default function LoginModal({ isOpen, onClose, defaultAccount = '' }: Log
 
               {/* Biometric Face Guide Oval */}
               <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                <div className={`w-36 h-48 sm:w-40 sm:h-52 border-2 border-dashed rounded-[50%] transition-all duration-300 ${
+                <div className={`w-36 h-48 sm:w-40 sm:h-52 border-2 border-dashed rounded-none-[50%] transition-all duration-300 ${
                   faceScanStatus === 'SUCCESS'
                     ? 'border-emerald-400 shadow-[0_0_20px_rgba(52,211,153,0.5)]'
                     : faceScanStatus === 'FAILED'
@@ -763,7 +763,7 @@ export default function LoginModal({ isOpen, onClose, defaultAccount = '' }: Log
 
               {/* Minimalist Floating Status */}
               <div className="absolute bottom-3 inset-x-4 flex justify-center pointer-events-none">
-                <div className="px-3 py-1 bg-black/75 backdrop-blur border border-white/10 rounded-full text-xs font-medium flex items-center gap-1.5 shadow-lg">
+                <div className="px-3 py-1 bg-black/75 backdrop-blur border border-white/10 rounded-none text-xs font-medium flex items-center gap-1.5 shadow-lg">
                   {faceScanStatus === 'IDLE' && (
                     <span className="text-gray-300">
                       {faceInputMode === 'CAMERA' ? 'Căn khuôn mặt vào khung elip' : 'Chọn ảnh chân dung để quét'}
@@ -793,9 +793,9 @@ export default function LoginModal({ isOpen, onClose, defaultAccount = '' }: Log
 
             {/* Success Info Card */}
             {faceScanStatus === 'SUCCESS' && matchedFaceResult && (
-              <div className="p-3 bg-emerald-950/40 border border-emerald-500/40 rounded-xl flex items-center justify-between text-xs animate-fadeIn shadow-lg">
+              <div className="p-3 bg-emerald-950/40 border border-emerald-500/40 rounded-none flex items-center justify-between text-xs animate-fadeIn shadow-lg">
                 <div className="flex items-center gap-2.5">
-                  <div className="w-8 h-8 rounded-full bg-emerald-500/20 border border-emerald-400/50 flex items-center justify-center text-emerald-400">
+                  <div className="w-8 h-8 rounded-none bg-emerald-500/20 border border-emerald-400/50 flex items-center justify-center text-emerald-400">
                     <CheckCircle2 className="w-4 h-4" />
                   </div>
                   <div>
@@ -807,7 +807,7 @@ export default function LoginModal({ isOpen, onClose, defaultAccount = '' }: Log
                     </div>
                   </div>
                 </div>
-                <div className="px-2 py-0.5 bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 rounded text-[10px] font-mono font-bold">
+                <div className="px-2 py-0.5 bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 rounded-none text-[10px] font-mono font-bold">
                   {matchedFaceResult.score}% KHỚP
                 </div>
               </div>
@@ -824,7 +824,7 @@ export default function LoginModal({ isOpen, onClose, defaultAccount = '' }: Log
                 }
               }}
               disabled={faceScanStatus === 'SCANNING' || faceScanStatus === 'LIVENESS' || faceScanStatus === 'MATCHING'}
-              className={`w-full py-3 text-xs uppercase tracking-widest font-bold transition-all flex items-center justify-center gap-2 rounded-xl shadow-lg ${
+              className={`w-full py-3 text-xs uppercase tracking-widest font-bold transition-all flex items-center justify-center gap-2 rounded-none shadow-lg ${
                 faceScanStatus === 'IDLE' || faceScanStatus === 'FAILED'
                   ? 'bg-[#C5A880] hover:bg-white text-[#0D1117] active:scale-[0.99]'
                   : 'bg-[#1C2533] border border-[#C5A880]/60 text-[#C5A880]'

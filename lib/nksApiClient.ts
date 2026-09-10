@@ -282,3 +282,32 @@ export async function nksFaceLogin(payload: {
 
   return data;
 }
+
+/**
+ * 11. FaceID Biometric 4-Step Enrollment API (POST /api/nks/user/face-enroll)
+ */
+export async function nksEnrollFaceId(payload: {
+  userId: string;
+  fullName?: string;
+  apartmentCode?: string;
+  phone?: string;
+  samples: {
+    front: string;
+    left: string;
+    right: string;
+    smile: string;
+  };
+}): Promise<{ success: boolean; message: string; profile?: any }> {
+  const res = await fetch('/api/nks/user/face-enroll', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok || !data.success) {
+    throw new Error(data.message || 'Lỗi gửi dữ liệu sinh trắc học FaceID lên máy chủ.');
+  }
+
+  return data;
+}

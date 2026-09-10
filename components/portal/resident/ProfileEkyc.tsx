@@ -60,6 +60,8 @@ import {
   EkycRequest 
 } from '@/lib/ekycStore';
 import { validateCccdCard, verifyFaceWithCccd } from '@/lib/ekycValidator';
+import BankFaceEnrollModal from './BankFaceEnrollModal';
+import { getEnrolledFaceProfile, EnrolledFaceProfile } from '@/lib/faceEnrollStore';
 
 interface ProfileEkycProps {
   currentUser: User;
@@ -75,6 +77,8 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
   const [isOcrModalOpen, setIsOcrModalOpen] = useState(false);
   const [isAvatarModalOpen, setIsAvatarModalOpen] = useState(false);
   const [isCardViewerOpen, setIsCardViewerOpen] = useState(false);
+  const [isBankEnrollOpen, setIsBankEnrollOpen] = useState(false);
+  const [enrolledFaceProfile, setEnrolledFaceProfile] = useState<EnrolledFaceProfile | null>(null);
   const [isLoadingApi, setIsLoadingApi] = useState(true);
   const [ocrFilledNotice, setOcrFilledNotice] = useState(false);
 
@@ -223,15 +227,20 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
 
     syncEkycStatus();
     window.addEventListener('skyline_ekyc_updated', syncEkycStatus);
-    return () => window.removeEventListener('skyline_ekyc_updated', syncEkycStatus);
-  }, [currentUser]);
 
-  // Đảm bảo thành viên gia đình (không phải chủ hộ) không truy cập thẻ e-KYC
-  useEffect(() => {
-    if (!isOwner && activeTab === 'EKYC') {
-      setActiveTab('INFO');
-    }
-  }, [isOwner, activeTab]);
+    // Synchronize FaceID enrolled biometric profile
+    const syncEnrolledFace = () => {
+      const p = getEnrolledFaceProfile(userKey);
+      setEnrolledFaceProfile(p);
+    };
+    syncEnrolledFace();
+    window.addEventListener('skyline_faceid_enrolled', syncEnrolledFace);
+
+    return () => {
+      window.removeEventListener('skyline_ekyc_updated', syncEkycStatus);
+      window.removeEventListener('skyline_faceid_enrolled', syncEnrolledFace);
+    };
+  }, [currentUser]);
 
   // Handle Password Change for Self or Family Members
   const handleChangePassword = async (e: React.FormEvent) => {
@@ -621,19 +630,17 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
           <UserIcon className="w-4 h-4" /> 1. Thông Tin Cá Nhân
         </button>
 
-        {isOwner && (
-          <button
-            type="button"
-            onClick={() => setActiveTab('EKYC')}
-            className={`pb-3 px-4 flex items-center gap-2 border-b-2 transition-colors ${
-              activeTab === 'EKYC'
-                ? 'border-[#C5A880] text-[#C5A880] font-bold'
-                : 'border-transparent text-gray-400 hover:text-gray-200'
-            }`}
-          >
-            <ScanFace className="w-4 h-4" /> 2. Thẻ Định Danh e-KYC & Thẻ Cư Dân
-          </button>
-        )}
+        <button
+          type="button"
+          onClick={() => setActiveTab('EKYC')}
+          className={`pb-3 px-4 flex items-center gap-2 border-b-2 transition-colors ${
+            activeTab === 'EKYC'
+              ? 'border-[#C5A880] text-[#C5A880] font-bold'
+              : 'border-transparent text-gray-400 hover:text-gray-200'
+          }`}
+        >
+          <ScanFace className="w-4 h-4" /> 2. Định Danh e-KYC & FaceID Sinh Trắc Học
+        </button>
 
         <button
           type="button"
@@ -644,7 +651,7 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
               : 'border-transparent text-gray-400 hover:text-gray-200'
           }`}
         >
-          <KeyRound className="w-4 h-4" /> {isOwner ? '3. Đổi Mật Khẩu Các Tài Khoản' : '2. Đổi Mật Khẩu Tài Khoản'}
+          <KeyRound className="w-4 h-4" /> {isOwner ? '3. Đổi Mật Khẩu Các Tài Khoản' : '3. Đổi Mật Khẩu Tài Khoản'}
         </button>
       </div>
 
@@ -1315,57 +1322,137 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
 
           {/* e-KYC Visual Matcher & Smart Pass Cards */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Biometric FaceID & 512D Vector Card */}
+            {/* Biometric FaceID Bank-Grade 4-Step Card */}
             <div className="p-5 bg-[#121820] border border-[#222B35] space-y-4 rounded-none flex flex-col justify-between">
               <div>
                 <div className="flex items-center justify-between border-b border-[#222B35] pb-2 mb-4">
                   <span className="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-2">
-                    <ScanFace className="w-4 h-4 text-[#C5A880]" /> Định Danh Khuôn Mặt (FaceID)
+                    <ScanFace className="w-4 h-4 text-[#C5A880]" /> Sinh Trắc Học FaceID (Chuẩn Ngân Hàng 4 Bước)
                   </span>
                   <button
                     type="button"
-                    onClick={() => setIsAvatarModalOpen(true)}
-                    className="px-2.5 py-1 bg-[#1C2533] hover:bg-[#C5A880] hover:text-[#0D1117] border border-[#C5A880]/50 text-[#C5A880] text-[10px] font-bold rounded-none flex items-center gap-1 transition-all"
+                    onClick={() => setIsBankEnrollOpen(true)}
+                    className="px-3 py-1.5 bg-[#C5A880] hover:bg-white text-[#0D1117] text-xs font-bold uppercase tracking-wider rounded-none flex items-center gap-1.5 transition-all shadow"
                   >
-                    <Camera className="w-3 h-3" /> Chụp & Căn Chỉnh FaceID
+                    <Camera className="w-3.5 h-3.5" />
+                    {enrolledFaceProfile ? 'Quét Lại 4 Mẫu' : 'Quét Mẫu FaceID 4 Bước'}
                   </button>
                 </div>
 
-                <div className="h-64 bg-black border border-emerald-500/60 overflow-hidden relative flex items-center justify-center rounded-none shadow-inner group">
-                  <img
-                    src={avatarUrl || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400'}
-                    alt="Portrait"
-                    className="h-full w-full object-cover"
-                  />
-                  {/* AI Laser Scanner Overlay */}
-                  <div className="absolute inset-0 border-2 border-emerald-500/40 pointer-events-none" />
-                  <div className="absolute top-4 left-4 w-8 h-8 border-t-2 border-l-2 border-emerald-400 pointer-events-none" />
-                  <div className="absolute top-4 right-4 w-8 h-8 border-t-2 border-r-2 border-emerald-400 pointer-events-none" />
-                  <div className="absolute bottom-4 left-4 w-8 h-8 border-b-2 border-l-2 border-emerald-400 pointer-events-none" />
-                  <div className="absolute bottom-4 right-4 w-8 h-8 border-b-2 border-r-2 border-emerald-400 pointer-events-none" />
+                {enrolledFaceProfile ? (
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <div className="text-xs font-semibold text-emerald-400 flex items-center gap-1.5">
+                        <CheckCircle2 className="w-4 h-4" /> Đã Kích Hoạt 4/4 Mẫu Toàn Vẹn (128-D Vector)
+                      </div>
+                      <span className="text-[10px] font-mono text-gray-400">
+                        Thu thập: {new Date(enrolledFaceProfile.enrolledAt).toLocaleDateString('vi-VN')}
+                      </span>
+                    </div>
 
-                  <div className="absolute top-3 right-3 bg-emerald-950/90 border border-emerald-500 text-emerald-300 px-2.5 py-1 text-[10px] font-bold font-mono rounded-none shadow">
-                    Trạng Thái: Đã Kích Hoạt ✓
-                  </div>
+                    {/* 4 Angle Samples Gallery */}
+                    <div className="grid grid-cols-4 gap-2">
+                      <div className="space-y-1">
+                        <div className="relative aspect-square border border-emerald-500/60 bg-black overflow-hidden group">
+                          <img 
+                            src={enrolledFaceProfile.samples.front} 
+                            alt="Chính diện" 
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform" 
+                          />
+                          <span className="absolute bottom-0 inset-x-0 bg-black/80 text-emerald-300 text-[9px] font-mono text-center py-0.5">
+                            1. Thẳng
+                          </span>
+                        </div>
+                      </div>
 
-                  <div className="absolute bottom-3 left-3 bg-black/80 px-2.5 py-1 text-[10px] font-mono text-[#C5A880] rounded-none border border-[#C5A880]/40">
-                    Nhận Diện Tự Động: Đang Hoạt Động
+                      <div className="space-y-1">
+                        <div className="relative aspect-square border border-emerald-500/60 bg-black overflow-hidden group">
+                          <img 
+                            src={enrolledFaceProfile.samples.left} 
+                            alt="Quay trái" 
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform" 
+                          />
+                          <span className="absolute bottom-0 inset-x-0 bg-black/80 text-emerald-300 text-[9px] font-mono text-center py-0.5">
+                            2. Trái
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="space-y-1">
+                        <div className="relative aspect-square border border-emerald-500/60 bg-black overflow-hidden group">
+                          <img 
+                            src={enrolledFaceProfile.samples.right} 
+                            alt="Quay phải" 
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform" 
+                          />
+                          <span className="absolute bottom-0 inset-x-0 bg-black/80 text-emerald-300 text-[9px] font-mono text-center py-0.5">
+                            3. Phải
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="space-y-1">
+                        <div className="relative aspect-square border border-emerald-500/60 bg-black overflow-hidden group">
+                          <img 
+                            src={enrolledFaceProfile.samples.smile} 
+                            alt="Mỉm cười" 
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform" 
+                          />
+                          <span className="absolute bottom-0 inset-x-0 bg-black/80 text-emerald-300 text-[9px] font-mono text-center py-0.5">
+                            4. Cười
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="p-2.5 bg-emerald-950/40 border border-emerald-500/40 text-[11px] text-emerald-200 space-y-1">
+                      <div className="font-semibold flex items-center gap-1.5 text-emerald-300">
+                        <ShieldCheck className="w-3.5 h-3.5" /> Sẵn Sàng Đăng Nhập Khuôn Mặt & Ra Vào Căn Hộ
+                      </div>
+                      <p className="text-gray-300 text-[10.5px]">
+                        Hồ sơ sinh trắc học gồm 4 vector đặc trưng đa góc đã được lưu trữ an toàn. Bạn có thể sử dụng tính năng &quot;Quét Khuôn Mặt (FaceID)&quot; tại màn hình đăng nhập để xác thực tức thì.
+                      </p>
+                    </div>
                   </div>
-                </div>
+                ) : (
+                  <div className="p-4 bg-[#161D26] border border-amber-500/60 space-y-3">
+                    <div className="flex items-center gap-2 text-amber-400 text-xs font-bold uppercase tracking-wider">
+                      <AlertCircle className="w-4 h-4" /> Chưa Kích Hoạt FaceID • Cần Thu Thập Đủ 4 Mẫu
+                    </div>
+                    <p className="text-xs text-gray-300 leading-relaxed">
+                      Để nhận diện khuôn mặt chính thức khi đăng nhập (không còn là bản mẫu thử nghiệm), hệ thống Skyline yêu cầu thu thập toàn vẹn 4 góc chụp theo chuẩn e-KYC ngân hàng:
+                    </p>
+                    <div className="grid grid-cols-2 gap-2 text-[11px] text-gray-300">
+                      <div className="p-2 bg-[#0D1117] border border-gray-800">1. Nhìn thẳng chính diện</div>
+                      <div className="p-2 bg-[#0D1117] border border-gray-800">2. Quay mặt sang trái 30°</div>
+                      <div className="p-2 bg-[#0D1117] border border-gray-800">3. Quay mặt sang phải 30°</div>
+                      <div className="p-2 bg-[#0D1117] border border-gray-800">4. Mỉm cười xác thực cử động</div>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setIsBankEnrollOpen(true)}
+                      className="w-full py-2.5 bg-gradient-to-r from-[#C5A880] to-[#E2C799] hover:brightness-110 text-[#0D1117] text-xs font-bold uppercase tracking-wider rounded-none flex items-center justify-center gap-2 transition-all shadow"
+                    >
+                      <Camera className="w-4 h-4 text-[#0D1117]" /> Bắt Đầu Quét Mặt 4 Bước Ngay
+                    </button>
+                  </div>
+                )}
               </div>
 
               <div className="space-y-2 text-xs text-gray-300 bg-[#161B22] p-3.5 border border-[#222B35] rounded-none mt-4">
                 <div className="flex justify-between">
-                  <span className="text-gray-400">Tốc độ mở cửa:</span>
-                  <strong className="text-emerald-400 font-mono">&lt; 0.35 giây (Không cần chạm)</strong>
+                  <span className="text-gray-400">Tốc độ mở cửa / login:</span>
+                  <strong className="text-emerald-400 font-mono">&lt; 0.35 giây (Chuẩn 1:N AI)</strong>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-400">Trạng thái ra vào:</span>
-                  <span className="text-emerald-400 font-bold">Đã Cấp Quyền Tự Động</span>
+                  <span className="text-gray-400">Trạng thái xác thực FaceID:</span>
+                  <span className={enrolledFaceProfile ? 'text-emerald-400 font-bold' : 'text-amber-400 font-bold'}>
+                    {enrolledFaceProfile ? 'Đã Kích Hoạt Chính Thức ✓' : 'Chưa Thu Thập Mẫu'}
+                  </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-400">Tiện ích áp dụng:</span>
-                  <span className="text-gray-200">Sảnh A/B, Thang máy Tầng 12, Sky Pool, Gym</span>
+                  <span className="text-gray-400">Quyền áp dụng:</span>
+                  <span className="text-gray-200">Đăng nhập FaceID, Barrier Sảnh A/B, Thang máy Tầng 12</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-400">Biển số xe:</span>
@@ -1774,6 +1861,23 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
             date: idDate,
             place: idPlace,
           }).catch(e => console.warn('Sync CCCD error:', e));
+        }}
+      />
+
+      {/* Official 4-Step Banking-Grade FaceID Biometric Enrollment Modal */}
+      <BankFaceEnrollModal
+        isOpen={isBankEnrollOpen}
+        onClose={() => setIsBankEnrollOpen(false)}
+        userId={currentUser.phone || currentUser.email || currentUser.username || currentUser.id}
+        fullName={fullName || currentUser.full_name}
+        apartmentCode={aptCode}
+        phone={phone || currentUser.phone || ''}
+        onEnrollSuccess={(profile) => {
+          setEnrolledFaceProfile(profile);
+          if (profile.samples.front) {
+            setAvatarUrl(profile.samples.front);
+            updateUserInfo({ avatar_url: profile.samples.front, avatar: profile.samples.front } as any);
+          }
         }}
       />
     </div>

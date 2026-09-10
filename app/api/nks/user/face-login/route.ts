@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server';
-import { getEkycRequests } from '@/lib/ekycStore';
 import { getUserStore, StoredUser } from '@/lib/userStore';
 import { DEMO_USERS } from '@/lib/dataStore';
-import { identifyFaceResident } from '@/lib/ekycValidator';
+import { identifyFaceAmongEnrolled } from '@/lib/biometricFaceEngine';
+import { getAllEnrolledFaceProfiles } from '@/lib/faceEnrollStore';
 
 function formatToDateInput(d?: string): string {
   if (!d) return '';
@@ -98,72 +98,56 @@ export async function POST(req: Request) {
       }
     }
 
-    // 3. Cơ sở dữ liệu e-KYC từ Ban Quản Lý và User Store
-    const ekycList = getEkycRequests();
-    
-    // Xây dựng danh sách ứng viên đối chiếu sinh trắc học
-    const candidateResidents = ekycList.map(r => ({
-      userId: r.userId,
-      fullName: r.fullName,
-      avatarUrl: r.avatarUrl,
-      status: r.status,
-      apartmentCode: r.apartmentCode,
-    }));
+    // 3. Cơ sở dữ liệu FaceID ĐÃ ĐĂNG KÝ MẪU CHÍNH THỨC
+    const enrolledProfiles = getAllEnrolledFaceProfiles();
 
-    // Bổ sung các tài khoản demo nếu chưa có trong ekycList
-    DEMO_USERS.forEach(u => {
-      if (!candidateResidents.some(c => c.userId === u.id)) {
-        candidateResidents.push({
-          userId: u.id,
-          fullName: u.full_name,
-          avatarUrl: u.avatar_url || '',
-          status: u.role === 'OWNER' ? 'APPROVED' : 'APPROVED',
-          apartmentCode: u.apartment_code || '12A05',
-        });
-      }
-    });
-
-    // 4. Nhận diện sinh trắc học 1:N chuẩn xác
-    const faceResult = identifyFaceResident(imageBuffer || faceImage, candidateResidents);
-
-    // 5. Nếu không khớp bất kỳ cư dân nào
-    if (!faceResult.matched) {
-      if (faceResult.status === 'PENDING') {
-        return NextResponse.json(
-          {
-            success: false,
-            matchScore: faceResult.score,
-            message: faceResult.message,
-          },
-          { status: 403 }
-        );
-      }
-
-      if (faceResult.status === 'REJECTED') {
-        return NextResponse.json(
-          {
-            success: false,
-            matchScore: faceResult.score,
-            message: faceResult.message,
-          },
-          { status: 403 }
-        );
-      }
-
+    if (enrolledProfiles.length === 0) {
       return NextResponse.json(
         {
           success: false,
-          matchScore: faceResult.score || 42.0,
-          message: faceResult.message,
+          matchScore: 0,
+          message: 'Chưa có tài khoản nào hoàn tất thu thập đủ 4 mẫu FaceID trên hệ thống. Vui lòng đăng nhập bằng mật khẩu và vào mục Hồ Sơ Cá Nhân để đăng ký quét mặt.',
         },
         { status: 401 }
       );
     }
 
-    const matchedUserId = faceResult.resident!.userId;
-    const matchScore = faceResult.score;
+    // 4. Nhận diện sinh trắc học 1:N đối soát với các mẫu đã đăng ký
+    const matchResult = identifyFaceAmongEnrolled(faceImage, enrolledProfiles, 78.0);
 
-    const matchedUserRecord = getUserStore(matchedUserId);
+    // 5. Nếu không khớp bất kỳ khuôn mặt đã đăng ký nào
+    if (!matchResult.matched || !matchResult.profile) {
+      return NextResponse.json(
+        {
+          success: false,
+          matchScore: matchResult.score || 42.0,
+          message: matchResult.message || 'Khuôn mặt chưa được đăng ký FaceID trên hệ thống. Vui lòng đăng nhập bằng mật khẩu và hoàn tất thu thập mẫu tại Hồ Sơ Cá Nhân.',
+        },
+        { status: 401 }
+      );
+    }
+
+    const matchedUserId = matchResult.profile.userId;
+    const matchScore = matchResult.score;
+
+    let matchedUserRecord = getUserStore(matchedUserId);
+    if (!matchedUserRecord) {
+      const demoMatch = DEMO_USERS.find(u => u.id === matchedUserId || u.username === matchedUserId);
+      if (demoMatch) {
+        matchedUserRecord = {
+          id: demoMatch.id,
+          username: demoMatch.username,
+          fullname: demoMatch.full_name,
+          full_name: demoMatch.full_name,
+          email: demoMatch.email || `${demoMatch.username}@skyline.vn`,
+          phone: demoMatch.phone || demoMatch.username,
+          role: demoMatch.role as any,
+          apartment_code: demoMatch.apartment_code || '12A05',
+          avatar_url: matchResult.profile.avatarUrl || demoMatch.avatar_url,
+        };
+      }
+    }
+
     if (!matchedUserRecord) {
       return NextResponse.json(
         { success: false, message: 'Tài khoản cư dân không tồn tại.' },
