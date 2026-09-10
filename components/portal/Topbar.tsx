@@ -25,6 +25,8 @@ import {
 import { UserRole, User as UserType } from '@/lib/dataStore';
 import SkylineLogo from '@/components/shared/SkylineLogo';
 import { useAuth } from '@/lib/authContext';
+import { getUserApiAvatar, formatApiAvatarUrl } from '@/lib/avatarHelper';
+import { nksGetUserInfo } from '@/lib/nksApiClient';
 
 interface TopbarProps {
   currentUser: UserType;
@@ -45,21 +47,38 @@ export default function Topbar({
   const [showRoleDropdown, setShowRoleDropdown] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
   const [currentTime, setCurrentTime] = useState<string>('');
+  const [liveAvatar, setLiveAvatar] = useState<string>(() => getUserApiAvatar(currentUser));
 
-  // Live real-time clock
   useEffect(() => {
-    const updateTime = () => {
-      const now = new Date();
-      setCurrentTime(
-        now.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit', second: '2-digit' }) +
-        ' • ' +
-        now.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' })
-      );
+    // 1. Initial sync from currentUser
+    setLiveAvatar(getUserApiAvatar(currentUser));
+
+    // 2. Fetch live data from NKS API endpoint
+    nksGetUserInfo().then((apiUser) => {
+      if (apiUser?.avatar_url || apiUser?.avatar) {
+        setLiveAvatar(formatApiAvatarUrl(apiUser.avatar_url || apiUser.avatar));
+      }
+    }).catch(() => {});
+
+    // 3. Listen to live avatar update events across tabs / modals
+    const handleAvatarUpdate = (e: any) => {
+      if (e?.detail?.avatar) {
+        setLiveAvatar(formatApiAvatarUrl(e.detail.avatar));
+      } else {
+        setLiveAvatar(getUserApiAvatar(currentUser));
+      }
     };
-    updateTime();
-    const timer = setInterval(updateTime, 1000);
-    return () => clearInterval(timer);
-  }, []);
+
+    window.addEventListener('skyline_avatar_updated', handleAvatarUpdate);
+    window.addEventListener('skyline_user_updated', handleAvatarUpdate);
+    window.addEventListener('skyline_faceid_enrolled', handleAvatarUpdate);
+
+    return () => {
+      window.removeEventListener('skyline_avatar_updated', handleAvatarUpdate);
+      window.removeEventListener('skyline_user_updated', handleAvatarUpdate);
+      window.removeEventListener('skyline_faceid_enrolled', handleAvatarUpdate);
+    };
+  }, [currentUser]);
 
   // Semantic search examples mapped from SRS Module 3.2.8
   const semanticSuggestions = [
@@ -222,7 +241,7 @@ export default function Topbar({
           >
             <div className="w-6 h-6 rounded-none overflow-hidden border border-[#C5A880]/60 flex-shrink-0 bg-[#0E131A]">
               <img
-                src={currentUser.avatar_url ? currentUser.avatar_url.replace('data.nks.vn//', 'data.nks.vn/') : 'https://data.nks.vn/storage/users/default.png'}
+                src={liveAvatar || getUserApiAvatar(currentUser)}
                 alt={userName}
                 onError={(e) => {
                   e.currentTarget.src = 'https://data.nks.vn/storage/users/default.png';
@@ -247,7 +266,7 @@ export default function Topbar({
               <div className="flex items-center gap-3 pb-3 border-b border-[#222B35]">
                 <div className="w-10 h-10 rounded-none overflow-hidden border border-[#C5A880] flex-shrink-0 bg-[#0E131A]">
                   <img
-                    src={currentUser.avatar_url ? currentUser.avatar_url.replace('data.nks.vn//', 'data.nks.vn/') : 'https://data.nks.vn/storage/users/default.png'}
+                    src={liveAvatar || getUserApiAvatar(currentUser)}
                     alt={userName}
                     onError={(e) => {
                       e.currentTarget.src = 'https://data.nks.vn/storage/users/default.png';

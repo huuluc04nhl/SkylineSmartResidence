@@ -1817,6 +1817,11 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
         onAvatarUpdated={async (newAvatarUrl) => {
           setAvatarUrl(newAvatarUrl);
           updateUserInfo({ avatar_url: newAvatarUrl, avatar: newAvatarUrl } as any);
+          const userKey = currentUser.phone || currentUser.email || currentUser.username || currentUser.id;
+          if (typeof window !== 'undefined') {
+            localStorage.setItem('skyline_user_avatar_' + userKey, newAvatarUrl);
+            window.dispatchEvent(new CustomEvent('skyline_avatar_updated', { detail: { avatar: newAvatarUrl } }));
+          }
           await refreshUser();
           setSavedSuccess(true);
           setTimeout(() => setSavedSuccess(false), 3000);
@@ -1877,6 +1882,11 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
           if (profile.samples.front) {
             setAvatarUrl(profile.samples.front);
             updateUserInfo({ avatar_url: profile.samples.front, avatar: profile.samples.front } as any);
+            const userKey = currentUser.phone || currentUser.email || currentUser.username || currentUser.id;
+            if (typeof window !== 'undefined') {
+              localStorage.setItem('skyline_user_avatar_' + userKey, profile.samples.front);
+              window.dispatchEvent(new CustomEvent('skyline_avatar_updated', { detail: { avatar: profile.samples.front } }));
+            }
           }
         }}
       />

@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   LayoutDashboard, 
   Building, 
@@ -26,6 +26,8 @@ import {
   X
 } from 'lucide-react';
 import { UserRole, User as UserType } from '@/lib/dataStore';
+import { getUserApiAvatar, formatApiAvatarUrl } from '@/lib/avatarHelper';
+import { nksGetUserInfo } from '@/lib/nksApiClient';
 
 interface SidebarProps {
   currentUser: UserType;
@@ -101,6 +103,38 @@ export default function Sidebar({
   onCloseMobile
 }: SidebarProps) {
   const role = currentUser.role;
+  const [liveAvatar, setLiveAvatar] = useState<string>(() => getUserApiAvatar(currentUser));
+
+  useEffect(() => {
+    // 1. Initial sync from currentUser
+    setLiveAvatar(getUserApiAvatar(currentUser));
+
+    // 2. Fetch live data from NKS API endpoint
+    nksGetUserInfo().then((apiUser) => {
+      if (apiUser?.avatar_url || apiUser?.avatar) {
+        setLiveAvatar(formatApiAvatarUrl(apiUser.avatar_url || apiUser.avatar));
+      }
+    }).catch(() => {});
+
+    // 3. Listen to live avatar update events across tabs / modals
+    const handleAvatarUpdate = (e: any) => {
+      if (e?.detail?.avatar) {
+        setLiveAvatar(formatApiAvatarUrl(e.detail.avatar));
+      } else {
+        setLiveAvatar(getUserApiAvatar(currentUser));
+      }
+    };
+
+    window.addEventListener('skyline_avatar_updated', handleAvatarUpdate);
+    window.addEventListener('skyline_user_updated', handleAvatarUpdate);
+    window.addEventListener('skyline_faceid_enrolled', handleAvatarUpdate);
+
+    return () => {
+      window.removeEventListener('skyline_avatar_updated', handleAvatarUpdate);
+      window.removeEventListener('skyline_user_updated', handleAvatarUpdate);
+      window.removeEventListener('skyline_faceid_enrolled', handleAvatarUpdate);
+    };
+  }, [currentUser]);
 
   // Define Navigation Items for ADMIN & RESIDENT (Owner/Tenant)
   const getNavItems = () => {
@@ -186,8 +220,11 @@ export default function Sidebar({
             <div className="flex items-center gap-3 overflow-hidden">
               <div className="relative flex-shrink-0">
                 <img
-                  src={currentUser.avatar_url || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150'}
+                  src={liveAvatar || getUserApiAvatar(currentUser)}
                   alt="Avatar"
+                  onError={(e) => {
+                    e.currentTarget.src = 'https://data.nks.vn/storage/users/default.png';
+                  }}
                   className="w-10 h-10 object-cover border border-[#C5A880]/70 rounded-none shadow-md"
                 />
                 <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-emerald-500 rounded-full border-2 border-[#0D1117]"></span>
@@ -206,8 +243,11 @@ export default function Sidebar({
             <div className="relative group cursor-pointer flex flex-col items-center" onClick={onToggleCollapse}>
               <div className="relative">
                 <img
-                  src={currentUser.avatar_url || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150'}
+                  src={liveAvatar || getUserApiAvatar(currentUser)}
                   alt="Avatar"
+                  onError={(e) => {
+                    e.currentTarget.src = 'https://data.nks.vn/storage/users/default.png';
+                  }}
                   className="w-9 h-9 object-cover border border-[#C5A880] rounded-none shadow-md"
                 />
                 <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-emerald-500 rounded-full border-2 border-[#0D1117]"></span>
