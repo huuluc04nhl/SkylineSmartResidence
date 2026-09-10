@@ -20,13 +20,15 @@ import {
   Flame,
   Radio,
   SlidersHorizontal,
-  ArrowRight
+  ArrowRight,
+  KeyRound
 } from 'lucide-react';
 import { UserRole, User as UserType } from '@/lib/dataStore';
 import SkylineLogo from '@/components/shared/SkylineLogo';
 import { useAuth } from '@/lib/authContext';
 import { getUserApiAvatar, formatApiAvatarUrl } from '@/lib/avatarHelper';
 import { nksGetUserInfo } from '@/lib/nksApiClient';
+import AccountPasswordModal from './shared/AccountPasswordModal';
 
 interface TopbarProps {
   currentUser: UserType;
@@ -48,6 +50,7 @@ export default function Topbar({
   const [showNotifications, setShowNotifications] = useState(false);
   const [currentTime, setCurrentTime] = useState<string>('');
   const [liveAvatar, setLiveAvatar] = useState<string>(() => getUserApiAvatar(currentUser));
+  const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
 
   useEffect(() => {
     // 1. Initial sync from currentUser
@@ -311,22 +314,39 @@ export default function Topbar({
                 )}
               </div>
 
-              {/* Quick Navigation to Profile & Password Change (Resident only) */}
-              {!isAdmin && onSemanticSearchSelect && (
+              {/* Quick Navigation to Profile & Password Change */}
+              <div className="space-y-1.5">
+                {!isAdmin && onSemanticSearchSelect && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      onSemanticSearchSelect('resident-profile');
+                      setShowRoleDropdown(false);
+                    }}
+                    className="w-full py-2 px-2.5 bg-[#1C2533] hover:bg-[#253245] text-white text-xs font-semibold rounded-none flex items-center justify-between border border-[#2D3748] transition-colors"
+                  >
+                    <span className="flex items-center gap-1.5">
+                      <User className="w-3.5 h-3.5 text-[#C5A880]" /> Hồ Sơ Cá Nhân &amp; e-KYC
+                    </span>
+                    <ArrowRight className="w-3.5 h-3.5 text-gray-400" />
+                  </button>
+                )}
+
+                {/* Self-service Password Change for ANY account */}
                 <button
                   type="button"
                   onClick={() => {
-                    onSemanticSearchSelect('resident-profile');
+                    setIsPasswordModalOpen(true);
                     setShowRoleDropdown(false);
                   }}
-                  className="w-full py-2 px-2.5 bg-[#1C2533] hover:bg-[#253245] text-white text-xs font-semibold rounded-none flex items-center justify-between border border-[#2D3748] transition-colors"
+                  className="w-full py-2 px-2.5 bg-[#1C2533] hover:bg-[#253245] text-white text-xs font-semibold rounded-none flex items-center justify-between border border-[#2D3748] hover:border-[#C5A880] transition-colors"
                 >
                   <span className="flex items-center gap-1.5">
-                    <User className="w-3.5 h-3.5 text-[#C5A880]" /> Hồ Sơ & Đổi Mật Khẩu
+                    <KeyRound className="w-3.5 h-3.5 text-[#C5A880]" /> Đổi Mật Khẩu Cá Nhân
                   </span>
-                  <ArrowRight className="w-3.5 h-3.5 text-gray-400" />
+                  <span className="text-[10px] text-[#C5A880] font-mono">Tự Chủ</span>
                 </button>
-              )}
+              </div>
 
               {/* Logout Button */}
               <div className="pt-2 border-t border-[#222B35]">
@@ -343,6 +363,13 @@ export default function Topbar({
           )}
         </div>
       </div>
+
+      {/* Universal Password Change Modal for Any Account */}
+      <AccountPasswordModal
+        currentUser={currentUser}
+        isOpen={isPasswordModalOpen}
+        onClose={() => setIsPasswordModalOpen(false)}
+      />
     </header>
   );
 }
