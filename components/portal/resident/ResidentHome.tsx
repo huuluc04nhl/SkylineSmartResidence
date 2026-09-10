@@ -23,10 +23,12 @@ import {
   Home,
   Moon,
   Tv,
-  AlertTriangle,
+  Eye,
   ArrowRight,
   Flame
 } from 'lucide-react';
+import { getApartmentByCode } from '@/lib/apartmentStore';
+import ApartmentDetailModal from '@/components/portal/admin/ApartmentDetailModal';
 
 interface ResidentHomeProps {
   currentUser: UserType;
@@ -38,6 +40,7 @@ export default function ResidentHome({ currentUser, onNavigate, onOpenVisitorMod
   const isOwner = currentUser.role === 'OWNER';
   const [activeScene, setActiveScene] = useState<'HOME' | 'AWAY' | 'NIGHT' | 'CINEMA'>('HOME');
   const [sceneMessage, setSceneMessage] = useState<string | null>(null);
+  const [isAptDetailOpen, setIsAptDetailOpen] = useState(false);
 
   const handleActivateScene = (scene: 'HOME' | 'AWAY' | 'NIGHT' | 'CINEMA', name: string) => {
     setActiveScene(scene);
@@ -60,7 +63,16 @@ export default function ResidentHome({ currentUser, onNavigate, onOpenVisitorMod
             Xin Chào, {userName}
           </h2>
           <div className="text-xs text-gray-400 mt-1 flex flex-wrap items-center gap-x-4 gap-y-1">
-            <span>Căn Hộ: <strong className="text-white font-mono text-sm">Căn {aptCode}</strong></span>
+            <span className="flex items-center gap-2">
+              <span>Căn Hộ: <strong className="text-white font-mono text-sm">Căn {aptCode}</strong></span>
+              <button
+                type="button"
+                onClick={() => setIsAptDetailOpen(true)}
+                className="px-2 py-0.5 bg-[#161B22] hover:bg-[#C5A880] hover:text-[#0D1117] text-[#C5A880] border border-[#C5A880]/50 text-[10.5px] font-semibold transition-all flex items-center gap-1 shadow-sm"
+              >
+                <Eye className="w-3 h-3" /> Chi Tiết Căn Hộ & 3D
+              </button>
+            </span>
             <span>•</span>
             <span>Vai Trò: <strong className="text-[#C5A880]">{isOwner ? 'Chủ Hộ (Full Access)' : 'Người Nhà Căn 12A05 (Thành Viên Gia Đình)'}</strong></span>
             {isOwner && (
@@ -307,6 +319,16 @@ export default function ResidentHome({ currentUser, onNavigate, onOpenVisitorMod
           </div>
         </div>
       </div>
+
+      {/* Modal Xem Chi Tiết Căn Hộ Của Cư Dân */}
+      <ApartmentDetailModal
+        isOpen={isAptDetailOpen}
+        onClose={() => setIsAptDetailOpen(false)}
+        unit={getApartmentByCode(aptCode) || null}
+        onEditUnit={() => {}}
+        onAssignResident={() => {}}
+        onRefresh={() => {}}
+      />
     </div>
   );
 }
