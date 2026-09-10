@@ -478,7 +478,7 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
               onClick={() => setIsOcrModalOpen(true)}
               className="px-4 py-2 bg-gradient-to-r from-[#1E2631] to-[#121820] border border-[#C5A880] text-[#C5A880] hover:text-white hover:border-white text-xs font-bold uppercase tracking-wider flex items-center gap-2 transition-all shadow rounded-none"
             >
-              <Scan className="w-4 h-4 text-[#C5A880]" /> Quét Căn Cước (OCR)
+              <Scan className="w-4 h-4 text-[#C5A880]" /> Tự Động Quét Căn Cước
             </button>
 
             {ekycStatus === 'VERIFIED' && (
@@ -895,14 +895,14 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
                     </div>
                     {cccdImage && (
                       <div className="absolute bottom-2 right-2 px-2 py-0.5 bg-emerald-950/90 text-emerald-300 border border-emerald-500 text-[9px] font-mono font-bold rounded-none">
-                        ✓ Tự Động Điền Từ OCR
+                        ✓ Tự Động Đọc Từ Thẻ
                       </div>
                     )}
                   </div>
 
                   <div className="text-[10.5px] text-gray-400 flex items-center justify-between">
                     <span>Trạng thái: <strong className="text-gray-200">{cccdImage ? 'Đã có ảnh mặt trước' : 'Chờ quét'}</strong></span>
-                    <span className="text-gray-500 font-mono text-[10px]">Tự động điền qua OCR</span>
+                    <span className="text-gray-500 font-mono text-[10px]">Tự động trích xuất từ thẻ</span>
                   </div>
                 </div>
 
@@ -928,14 +928,14 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
                     </div>
                     {cccdBackImage && (
                       <div className="absolute bottom-2 right-2 px-2 py-0.5 bg-emerald-950/90 text-emerald-300 border border-emerald-500 text-[9px] font-mono font-bold rounded-none">
-                        ✓ Tự Động Điền Từ OCR
+                        ✓ Tự Động Đọc Từ Thẻ
                       </div>
                     )}
                   </div>
 
                   <div className="text-[10.5px] text-gray-400 flex items-center justify-between">
                     <span>Trạng thái: <strong className="text-gray-200">{cccdBackImage ? 'Đã có ảnh mặt sau' : 'Chờ quét'}</strong></span>
-                    <span className="text-gray-500 font-mono text-[10px]">Tự động điền qua OCR</span>
+                    <span className="text-gray-500 font-mono text-[10px]">Tự động trích xuất từ thẻ</span>
                   </div>
                 </div>
               </div>
@@ -1070,7 +1070,7 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
               <div className="space-y-1.5 md:col-span-2">
                 <label className="text-gray-300 flex items-center justify-between font-semibold">
                   <span className="flex items-center gap-1.5">
-                    <Car className="w-3.5 h-3.5 text-[#C5A880]" /> Biển Số Xe Đăng Ký (Nhận Diện ALPR Hầm B1):
+                    <Car className="w-3.5 h-3.5 text-[#C5A880]" /> Biển Số Xe Đăng Ký (Tự Động Mở Cổng Hầm B1):
                   </span>
                   <span className="text-[10px] text-[#C5A880] font-mono">Tự động nhận diện biển số</span>
                 </label>

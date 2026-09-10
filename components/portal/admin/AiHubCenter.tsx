@@ -28,10 +28,10 @@ export default function AiHubCenter() {
   const [activeAiTab, setActiveAiTab] = useState<'ALL' | 'VISION' | 'NLP' | 'PREDICTIVE' | 'ENERGY'>('ALL');
   const [isSimulatingModel, setIsSimulatingModel] = useState<string | null>(null);
   const [liveLog, setLiveLog] = useState<string[]>([
-    '18:14:02 [AI-Vision] Model YOLOv8-Fire: Giám sát 24 luồng CCTV Hầm B1 - Độ trễ: 18ms',
-    '18:14:15 [AI-Energy] Model Isolation-Forest: Phát hiện dòng chảy đêm 2h-4h tại Căn 12A05 (+115%)',
-    '18:14:28 [AI-ALPR] Model Plate-OCR: Nhận diện xe 51K-889.99 (Độ tin cậy: 99.4%) -> Mở Barrier B1',
-    '18:14:40 [AI-RAG] Model PhoBERT-Embedding: Cư dân 12A05 hỏi "Giờ mở hồ bơi" -> Phản hồi 0.12s',
+    '18:14:02 [AI-Vision] Giám sát 24 luồng CCTV Hầm B1 - Độ trễ: 18ms',
+    '18:14:15 [AI-Energy] Phát hiện dòng chảy đêm 2h-4h tại Căn 12A05 (+115%)',
+    '18:14:28 [Kiểm Soát Xe] Nhận diện xe 51K-889.99 (Độ tin cậy: 99.4%) -> Mở Barrier B1',
+    '18:14:40 [Trợ Lý Ảo] Cư dân 12A05 hỏi "Giờ mở hồ bơi" -> Phản hồi 0.12s',
   ]);
 
   const handleRunSimulation = (modelName: string, resultLog: string) => {
@@ -157,17 +157,17 @@ export default function AiHubCenter() {
     },
     {
       id: '3.1.15',
-      name: 'AI Smart Parking (ALPR High-Speed)',
+      name: 'Hệ Thống Nhận Diện Biển Số Xe Tự Động',
       category: 'VISION',
-      tech: 'PaddleOCR • Optical Flow Velocity Tracker',
+      tech: 'Camera Cảm Biến Tốc Độ Cao',
       accuracy: '99.4%',
       latency: '25ms',
       status: 'Đang hoạt động',
-      desc: 'Nhận diện biển số xe ô tô tốc độ cao, tự động mở Barrier hầm B1 và quản lý sức chứa đỗ xe thông minh.',
+      desc: 'Tự động đọc biển số xe ô tô tốc độ cao, đóng/mở barrier hầm B1 và quản lý sức chứa bãi đỗ thông minh.',
       icon: Car,
       color: 'text-emerald-500',
-      action: 'Nhận Diện Biển Số ALPR Mở Cổng',
-      simResult: 'ALPR Camera Hầm B1: Biển số 51K-889.99 hợp lệ -> Lệnh mở Barrier trong 0.28 giây',
+      action: 'Quét Biển Số Tự Động Mở Cổng',
+      simResult: 'Camera Hầm B1: Biển số 51K-889.99 hợp lệ -> Lệnh mở Barrier trong 0.28 giây',
     },
   ];
 

@@ -69,7 +69,7 @@ const KNOWLEDGE_CATEGORIES = [
     category: '🛡️ An Ninh, Gửi Xe & FaceID',
     prompts: [
       'Cách cấp quyền mở cửa FaceID cho người nhà',
-      'Thủ tục đăng ký vé gửi xe ô tô Hầm B1 (ALPR)',
+      'Thủ tục đăng ký vé gửi xe ô tô tự động Hầm B1',
       'Tạo mã QR đón khách lên thẳng căn hộ',
     ]
   }

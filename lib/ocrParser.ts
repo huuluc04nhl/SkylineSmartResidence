@@ -468,19 +468,19 @@ export async function runDualSideCccdOcr(
   backSource: string | File,
   onProgress?: (progress: number, status: string) => void
 ): Promise<OcrCccdResult> {
-  if (onProgress) onProgress(10, 'Đang khởi tạo bộ quét Tesseract AI Dual-Side...');
+  if (onProgress) onProgress(10, 'Đang chuẩn bị đọc thông tin thẻ 2 mặt...');
 
   try {
     const { createWorker } = await import('tesseract.js');
 
     // 1. Scan Front Side
-    if (onProgress) onProgress(25, 'Đang quét và nhận diện ký tự Mặt Trước CCCD...');
+    if (onProgress) onProgress(25, 'Đang đọc thông tin Mặt Trước thẻ...');
 
     const workerFront = await createWorker('vie+eng', 1, {
       logger: (m) => {
         if (m.status === 'recognizing text' && onProgress) {
           const pct = Math.round(25 + (m.progress || 0) * 30);
-          onProgress(pct, `Đang quét Mặt Trước (${Math.round((m.progress || 0) * 100)}%)...`);
+          onProgress(pct, `Đang đọc Mặt Trước (${Math.round((m.progress || 0) * 100)}%)...`);
         }
       },
     });
@@ -489,13 +489,13 @@ export async function runDualSideCccdOcr(
     await workerFront.terminate();
 
     // 2. Scan Back Side
-    if (onProgress) onProgress(60, 'Đang quét Chip điện tử & Ngày cấp Mặt Sau CCCD...');
+    if (onProgress) onProgress(60, 'Đang đọc thông tin Mặt Sau thẻ...');
 
     const workerBack = await createWorker('vie+eng', 1, {
       logger: (m) => {
         if (m.status === 'recognizing text' && onProgress) {
           const pct = Math.round(60 + (m.progress || 0) * 30);
-          onProgress(pct, `Đang quét Mặt Sau (${Math.round((m.progress || 0) * 100)}%)...`);
+          onProgress(pct, `Đang đọc Mặt Sau (${Math.round((m.progress || 0) * 100)}%)...`);
         }
       },
     });
@@ -503,7 +503,7 @@ export async function runDualSideCccdOcr(
     const retBack = await workerBack.recognize(backSource);
     await workerBack.terminate();
 
-    if (onProgress) onProgress(92, 'Đang loại bỏ ký tự thừa & chuẩn hóa danh xưng, địa chỉ...');
+    if (onProgress) onProgress(92, 'Đang hoàn thiện và chuẩn hóa thông tin cá nhân...');
 
     const parsedFront = parseCccdText(retFront.data.text, false);
     const parsedBack = parseCccdText(retBack.data.text, true);
@@ -524,11 +524,11 @@ export async function runDualSideCccdOcr(
       rawText: `[MẶT TRƯỚC]:\n${retFront.data.text}\n\n[MẶT SAU]:\n${retBack.data.text}`,
     };
 
-    if (onProgress) onProgress(100, 'Hoàn tất quét và chuẩn hóa OCR 2 mặt!');
+    if (onProgress) onProgress(100, 'Hoàn tất đọc thông tin thẻ 2 mặt!');
     return merged;
   } catch (error) {
     console.error('Tesseract OCR error:', error);
-    throw new Error('Không thể phân tích OCR từ ảnh đã tải lên. Vui lòng kiểm tra độ nét và góc chụp của ảnh.');
+    throw new Error('Không thể đọc được thông tin từ ảnh thẻ đã tải lên. Vui lòng kiểm tra độ nét và chụp thẳng góc thẻ.');
   }
 }
 

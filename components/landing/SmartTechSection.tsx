@@ -26,7 +26,7 @@ export default function SmartTechSection() {
     {
       icon: Car,
       code: 'Bãi Xe Tự Động',
-      title: 'Bãi Đỗ Xe Thông Minh ALPR',
+      title: 'Bãi Đỗ Xe Thông Minh Tự Động',
       desc: 'Nhận diện biển số xe tốc độ cao trong mọi điều kiện ánh sáng, kiểm soát sức chứa hầm tự động đóng/mở barrier an toàn.',
     },
     {

@@ -79,7 +79,7 @@ export default function HeroSection({ onOpenLogin }: HeroSectionProps) {
             </div>
             <div>
               <div className="text-2xl font-serif text-[#C5A880]">&lt; 0.5s</div>
-              <div className="text-[11px] uppercase tracking-wider text-gray-400 mt-1">Tốc Độ FaceID / ALPR</div>
+              <div className="text-[11px] uppercase tracking-wider text-gray-400 mt-1">Tốc Độ Mở Cửa &amp; Cổng Xe</div>
             </div>
             <div>
               <div className="text-2xl font-serif text-[#C5A880]">15 Module</div>
@@ -87,7 +87,7 @@ export default function HeroSection({ onOpenLogin }: HeroSectionProps) {
             </div>
             <div>
               <div className="text-2xl font-serif text-[#C5A880]">100%</div>
-              <div className="text-[11px] uppercase tracking-wider text-gray-400 mt-1">Sổ Hồng & SPA Minh Bạch</div>
+              <div className="text-[11px] uppercase tracking-wider text-gray-400 mt-1">Sổ Hồng &amp; SPA Minh Bạch</div>
             </div>
           </div>
         </div>
@@ -115,7 +115,7 @@ export default function HeroSection({ onOpenLogin }: HeroSectionProps) {
               </div>
               <div className="flex justify-between py-1.5">
                 <span className="text-gray-400">Quản lý bãi đỗ:</span>
-                <span className="font-medium text-white">Camera ALPR & Barrier</span>
+                <span className="font-medium text-white">Camera Quét Biển Số &amp; Barrier</span>
               </div>
             </div>
 

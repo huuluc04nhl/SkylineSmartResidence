@@ -37,7 +37,7 @@ export default function SmartParking() {
         <div className="flex items-center gap-2 text-xs">
           <span className="px-3 py-1 bg-[#161B22] border border-[#2D3748] text-emerald-400 flex items-center gap-1.5">
             <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-            Tốc độ đọc ALPR: &lt; 0.5s
+            Tốc độ quét biển số: &lt; 0.5s
           </span>
         </div>
       </div>
@@ -87,7 +87,7 @@ export default function SmartParking() {
         <div className="bg-[#121820] border border-[#222B35] p-5 space-y-4">
           <div className="flex items-center justify-between border-b border-[#222B35] pb-3 text-xs">
             <span className="text-[#C5A880] uppercase tracking-wider font-semibold flex items-center gap-1.5">
-              <Camera className="w-4 h-4" /> Camera ALPR Làn Vào Số 01 (Hầm B1)
+              <Camera className="w-4 h-4" /> Camera Quét Biển Số Làn Vào 01 (Hầm B1)
             </span>
             <span className="font-mono text-gray-400">60 FPS • HD 1080P</span>
           </div>
@@ -104,7 +104,7 @@ export default function SmartParking() {
                 [ {lastScannedPlate} ]
               </div>
               <span className="text-[10px] font-mono text-emerald-300 bg-emerald-950 px-2 py-0.5 border border-emerald-500">
-                ALPR MATCHED &lt; 0.38s
+                BIỂN SỐ HỢP LỆ &lt; 0.38s
               </span>
             </div>
           </div>

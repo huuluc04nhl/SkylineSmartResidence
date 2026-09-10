@@ -141,7 +141,7 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
     if (backSrc) setEkycBackImage(backSrc);
     setIsMemberOcrModalOpen(false);
     setEkycModalError(null);
-    setActionSuccess(`✨ Đã quét OCR thành công cho "${ocrData.fullName || 'thành viên'}"! Toàn bộ thông tin CCCD đã được tự động điền vào hồ sơ.`);
+    setActionSuccess(`✨ Đã đọc thông tin CCCD thành công cho "${ocrData.fullName || 'thành viên'}"! Toàn bộ thông tin đã được tự động điền vào hồ sơ.`);
     setTimeout(() => setActionSuccess(null), 5000);
   };
 
@@ -928,7 +928,7 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
                   onClick={() => setIsMemberOcrModalOpen(true)}
                   className="px-3.5 py-2 bg-gradient-to-r from-[#C5A880] to-[#E2C799] hover:brightness-110 text-[#0D1117] text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 transition-all shadow-md rounded-none active:scale-95"
                 >
-                  <Scan className="w-4 h-4 text-[#0D1117]" /> Quét Căn Cước (OCR)
+                  <Scan className="w-4 h-4 text-[#0D1117]" /> Tự Động Quét Căn Cước
                 </button>
                 <button
                   type="button"

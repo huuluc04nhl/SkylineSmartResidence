@@ -102,7 +102,7 @@ export default function CccdOcrScannerModal({
             return;
           }
           if (img.width < 380 || img.height < 240) {
-            setErrorMessage(`Độ phân giải ảnh quá thấp (${img.width}x${img.height}px). Yêu cầu tối thiểu 400x250px để hệ thống OCR nhận diện.`);
+            setErrorMessage(`Độ phân giải ảnh quá thấp (${img.width}x${img.height}px). Yêu cầu tối thiểu 400x250px để hệ thống tự động đọc thông tin.`);
             return;
           }
 
@@ -233,7 +233,7 @@ export default function CccdOcrScannerModal({
 
       // 4. Consolidate extracted data
       setScanProgress(100);
-      setScanStatusText('Hoàn tất quét OCR 2 mặt!');
+      setScanStatusText('Hoàn tất quét đọc thông tin 2 mặt!');
       setScanStage('COMPLETE');
 
       const parsedFront = parseCccdText(retFront.data.text, false);
@@ -294,7 +294,7 @@ export default function CccdOcrScannerModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md animate-fadeIn select-none">
-      <div className="bg-[#0D1117] border border-[#C5A880] max-w-3xl w-full p-6 sm:p-8 text-white space-y-6 shadow-2xl overflow-y-auto max-h-[92vh] rounded-xl">
+      <div className="bg-[#0D1117] border border-[#C5A880] max-w-3xl w-full p-6 sm:p-8 text-white space-y-6 shadow-2xl overflow-y-auto max-h-[92vh] rounded-none">
         {/* Modal Header */}
         <div className="flex items-center justify-between border-b border-[#222B35] pb-4">
           <div className="space-y-1">
@@ -311,7 +311,7 @@ export default function CccdOcrScannerModal({
 
           <button
             onClick={onClose}
-            className="p-2 text-gray-400 hover:text-white hover:bg-[#161B22] rounded transition-colors"
+            className="p-2 text-gray-400 hover:text-white hover:bg-[#161B22] rounded-none transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
@@ -319,7 +319,7 @@ export default function CccdOcrScannerModal({
 
         {/* Error Alert */}
         {errorMessage && (
-          <div className="p-3 bg-rose-950/90 border border-rose-500 text-rose-300 text-xs flex items-center gap-2 rounded">
+          <div className="p-3 bg-rose-950/90 border border-rose-500 text-rose-300 text-xs flex items-center gap-2 rounded-none">
             <AlertCircle className="w-4 h-4 flex-shrink-0" />
             <span>{errorMessage}</span>
           </div>
@@ -330,10 +330,10 @@ export default function CccdOcrScannerModal({
         {/* ------------------------------------------------------------- */}
         <div className="space-y-4">
           {/* Card Face Status Switcher Bar */}
-          <div className="flex items-center justify-between bg-[#121820] p-2.5 px-4 border border-[#222B35] rounded-lg">
+          <div className="flex items-center justify-between bg-[#121820] p-2.5 px-4 border border-[#222B35] rounded-none">
             <div className="flex items-center gap-2 text-xs">
               <span className="text-gray-400">Đang hiển thị:</span>
-              <span className={`font-bold uppercase tracking-wider px-2 py-0.5 rounded text-[11px] font-mono ${
+              <span className={`font-bold uppercase tracking-wider px-2 py-0.5 rounded-none text-[11px] font-mono ${
                 !isFlipped 
                   ? 'bg-amber-950/80 text-[#C5A880] border border-[#C5A880]' 
                   : 'bg-cyan-950/80 text-cyan-400 border border-cyan-500'
@@ -347,7 +347,7 @@ export default function CccdOcrScannerModal({
               type="button"
               onClick={() => setIsFlipped(!isFlipped)}
               disabled={isScanning}
-              className="px-3.5 py-1.5 bg-[#1C2533] hover:bg-[#C5A880] hover:text-[#0D1117] text-[#C5A880] border border-[#C5A880] text-xs font-bold uppercase tracking-wider rounded transition-all flex items-center gap-1.5 shadow"
+              className="px-3.5 py-1.5 bg-[#1C2533] hover:bg-[#C5A880] hover:text-[#0D1117] text-[#C5A880] border border-[#C5A880] text-xs font-bold uppercase tracking-wider rounded-none transition-all flex items-center gap-1.5 shadow"
             >
               <RotateCw className={`w-3.5 h-3.5 transition-transform duration-500 ${isFlipped ? 'rotate-180' : ''}`} />
               <span>Lật Mặt Thẻ 3D</span>
@@ -364,7 +364,7 @@ export default function CccdOcrScannerModal({
               {/* ========================================================= */}
               {/* FACE 1: FRONT SIDE (MẶT TRƯỚC)                            */}
               {/* ========================================================= */}
-              <div className="absolute inset-0 w-full h-full [backface-visibility:hidden] rounded-2xl overflow-hidden border-2 border-[#C5A880]/80 bg-gradient-to-br from-[#1A232E] via-[#121820] to-[#0A0E14] shadow-2xl p-4 flex flex-col justify-between">
+              <div className="absolute inset-0 w-full h-full [backface-visibility:hidden] rounded-none overflow-hidden border-2 border-[#C5A880]/80 bg-gradient-to-br from-[#1A232E] via-[#121820] to-[#0A0E14] shadow-2xl p-4 flex flex-col justify-between">
                 {/* Decorative chip header */}
                 <div className="flex items-center justify-between text-xs border-b border-gray-800 pb-2">
                   <div className="flex items-center gap-2">
@@ -383,7 +383,7 @@ export default function CccdOcrScannerModal({
                 {/* Front Image Content */}
                 <div 
                   onClick={() => frontInputRef.current?.click()}
-                  className="flex-1 my-2 bg-black/50 border border-dashed border-gray-700 hover:border-[#C5A880] rounded-lg overflow-hidden relative group cursor-pointer flex items-center justify-center"
+                  className="flex-1 my-2 bg-black/50 border border-dashed border-gray-700 hover:border-[#C5A880] rounded-none overflow-hidden relative group cursor-pointer flex items-center justify-center"
                 >
                   {frontImage ? (
                     <>
@@ -433,7 +433,7 @@ export default function CccdOcrScannerModal({
               {/* ========================================================= */}
               {/* FACE 2: BACK SIDE (MẶT SAU)                              */}
               {/* ========================================================= */}
-              <div className="absolute inset-0 w-full h-full [backface-visibility:hidden] [transform:rotateY(180deg)] rounded-2xl overflow-hidden border-2 border-cyan-500/80 bg-gradient-to-br from-[#121E2A] via-[#101820] to-[#091018] shadow-2xl p-4 flex flex-col justify-between">
+              <div className="absolute inset-0 w-full h-full [backface-visibility:hidden] [transform:rotateY(180deg)] rounded-none overflow-hidden border-2 border-cyan-500/80 bg-gradient-to-br from-[#121E2A] via-[#101820] to-[#091018] shadow-2xl p-4 flex flex-col justify-between">
                 {/* Decorative chip header */}
                 <div className="flex items-center justify-between text-xs border-b border-gray-800 pb-2">
                   <div className="flex items-center gap-2">
@@ -452,7 +452,7 @@ export default function CccdOcrScannerModal({
                 {/* Back Image Content */}
                 <div 
                   onClick={() => backInputRef.current?.click()}
-                  className="flex-1 my-2 bg-black/50 border border-dashed border-gray-700 hover:border-cyan-400 rounded-lg overflow-hidden relative group cursor-pointer flex items-center justify-center"
+                  className="flex-1 my-2 bg-black/50 border border-dashed border-gray-700 hover:border-cyan-400 rounded-none overflow-hidden relative group cursor-pointer flex items-center justify-center"
                 >
                   {backImage ? (
                     <>
@@ -520,12 +520,12 @@ export default function CccdOcrScannerModal({
         {/* ------------------------------------------------------------- */}
         {/* SCAN TRIGGER & PROGRESS SECTION                               */}
         {/* ------------------------------------------------------------- */}
-        <div className="p-4 bg-[#161D26] border border-[#222B35] space-y-3 rounded-lg">
+        <div className="p-4 bg-[#161D26] border border-[#222B35] space-y-3 rounded-none">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div className="text-xs text-gray-300">
               {hasBothImages ? (
                 <span className="text-emerald-400 font-bold font-mono flex items-center gap-1.5">
-                  <CheckCircle2 className="w-4 h-4" /> Đã Tải Đủ 2 Mặt — Sẵn sàng quét AI tự động lật thẻ
+                  <CheckCircle2 className="w-4 h-4" /> Đã Tải Đủ 2 Mặt — Sẵn sàng tự động đọc thông tin thẻ
                 </span>
               ) : (
                 <span className="text-amber-400 font-bold font-mono">
@@ -538,7 +538,7 @@ export default function CccdOcrScannerModal({
               type="button"
               onClick={handleStartAutoFlipOcr}
               disabled={isScanning || !hasBothImages}
-              className={`px-6 py-2.5 text-xs font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-2 rounded-lg shadow-lg ${
+              className={`px-6 py-2.5 text-xs font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-2 rounded-none shadow-lg ${
                 isScanning || !hasBothImages
                   ? 'bg-gray-800 text-gray-500 cursor-not-allowed'
                   : 'bg-gradient-to-r from-[#C5A880] to-amber-400 hover:from-white hover:to-white text-[#0D1117]'
@@ -549,7 +549,7 @@ export default function CccdOcrScannerModal({
               ) : (
                 <Zap className="w-4 h-4 text-[#0D1117]" />
               )}
-              {isScanning ? 'Đang Quét & Tự Động Lật...' : 'Bắt Đầu Quét AI Tự Động Lật 2 Mặt'}
+              {isScanning ? 'Đang Đọc Thông Tin Thẻ...' : 'Bắt Đầu Đọc Thông Tin Thẻ Tự Động'}
             </button>
           </div>
 
@@ -574,12 +574,12 @@ export default function CccdOcrScannerModal({
         {/* EXTRACTED REAL DATA TABLE (EDITABLE BEFORE APPLYING)          */}
         {/* ------------------------------------------------------------- */}
         {ocrResult && (
-          <div className="p-5 bg-gradient-to-r from-[#121820] to-[#161D26] border border-emerald-500/80 space-y-4 rounded-lg animate-fadeIn shadow-2xl">
+          <div className="p-5 bg-gradient-to-r from-[#121820] to-[#161D26] border border-emerald-500/80 space-y-4 rounded-none animate-fadeIn shadow-2xl">
             <div className="flex items-center justify-between border-b border-emerald-500/30 pb-3">
               <div className="flex items-center gap-2 text-emerald-400 font-bold text-xs uppercase tracking-wider">
                 <CheckCircle2 className="w-4 h-4" /> Kết Quả Trích Xuất AI 2 Mặt Thực Tế
               </div>
-              <span className="px-2 py-0.5 bg-emerald-950 text-emerald-300 border border-emerald-500 text-[10px] font-mono font-bold rounded">
+              <span className="px-2 py-0.5 bg-emerald-950 text-emerald-300 border border-emerald-500 text-[10px] font-mono font-bold rounded-none">
                 Độ Tin Cậy AI: {ocrResult.confidence}%
               </span>
             </div>
@@ -591,7 +591,7 @@ export default function CccdOcrScannerModal({
                   type="text"
                   value={editIdNumber}
                   onChange={(e) => setEditIdNumber(e.target.value)}
-                  className="w-full bg-[#0D1117] border border-gray-700 p-2 text-[#C5A880] font-mono font-bold rounded focus:border-[#C5A880] outline-none"
+                  className="w-full bg-[#0D1117] border border-gray-700 p-2 text-[#C5A880] font-mono font-bold rounded-none focus:border-[#C5A880] outline-none"
                   placeholder="12 số định danh..."
                 />
               </div>
@@ -602,7 +602,7 @@ export default function CccdOcrScannerModal({
                   type="text"
                   value={editFullName}
                   onChange={(e) => setEditFullName(e.target.value)}
-                  className="w-full bg-[#0D1117] border border-gray-700 p-2 text-white font-bold rounded focus:border-[#C5A880] outline-none uppercase"
+                  className="w-full bg-[#0D1117] border border-gray-700 p-2 text-white font-bold rounded-none focus:border-[#C5A880] outline-none uppercase"
                   placeholder="Họ và tên..."
                 />
               </div>
@@ -613,7 +613,7 @@ export default function CccdOcrScannerModal({
                   type="date"
                   value={formatToApiDate(editDob)}
                   onChange={(e) => setEditDob(e.target.value)}
-                  className="w-full bg-[#0D1117] border border-gray-700 p-2 text-white font-mono rounded focus:border-[#C5A880] outline-none"
+                  className="w-full bg-[#0D1117] border border-gray-700 p-2 text-white font-mono rounded-none focus:border-[#C5A880] outline-none"
                 />
               </div>
 
@@ -622,7 +622,7 @@ export default function CccdOcrScannerModal({
                 <select
                   value={editGender}
                   onChange={(e) => setEditGender(e.target.value as '1' | '0')}
-                  className="w-full bg-[#0D1117] border border-gray-700 p-2 text-white rounded focus:border-[#C5A880] outline-none"
+                  className="w-full bg-[#0D1117] border border-gray-700 p-2 text-white rounded-none focus:border-[#C5A880] outline-none"
                 >
                   <option value="1">Nam</option>
                   <option value="0">Nữ</option>
@@ -635,7 +635,7 @@ export default function CccdOcrScannerModal({
                   type="text"
                   value={editPob}
                   onChange={(e) => setEditPob(e.target.value)}
-                  className="w-full bg-[#0D1117] border border-gray-700 p-2 text-white rounded focus:border-[#C5A880] outline-none"
+                  className="w-full bg-[#0D1117] border border-gray-700 p-2 text-white rounded-none focus:border-[#C5A880] outline-none"
                   placeholder="Xã/Phường, Quận/Huyện, Tỉnh/Thành phố..."
                 />
               </div>
@@ -646,7 +646,7 @@ export default function CccdOcrScannerModal({
                   type="date"
                   value={formatToApiDate(editIdDate)}
                   onChange={(e) => setEditIdDate(e.target.value)}
-                  className="w-full bg-[#0D1117] border border-gray-700 p-2 text-cyan-400 font-mono rounded focus:border-[#C5A880] outline-none"
+                  className="w-full bg-[#0D1117] border border-gray-700 p-2 text-cyan-400 font-mono rounded-none focus:border-[#C5A880] outline-none"
                 />
               </div>
 
@@ -656,7 +656,7 @@ export default function CccdOcrScannerModal({
                   type="text"
                   value={editIdPlace}
                   onChange={(e) => setEditIdPlace(e.target.value)}
-                  className="w-full bg-[#0D1117] border border-gray-700 p-2 text-cyan-400 rounded focus:border-[#C5A880] outline-none"
+                  className="w-full bg-[#0D1117] border border-gray-700 p-2 text-cyan-400 rounded-none focus:border-[#C5A880] outline-none"
                   placeholder="Cục Cảnh sát QLHC về TTXH..."
                 />
               </div>
@@ -669,7 +669,7 @@ export default function CccdOcrScannerModal({
           <button
             type="button"
             onClick={onClose}
-            className="px-5 py-2.5 bg-gray-800 text-gray-300 hover:text-white text-xs font-semibold rounded-lg"
+            className="px-5 py-2.5 bg-gray-800 text-gray-300 hover:text-white text-xs font-semibold rounded-none"
           >
             Đóng
           </button>
@@ -678,7 +678,7 @@ export default function CccdOcrScannerModal({
             type="button"
             onClick={handleApply}
             disabled={!ocrResult}
-            className={`px-6 py-2.5 text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-2 rounded-lg shadow-xl ${
+            className={`px-6 py-2.5 text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-2 rounded-none shadow-xl ${
               !ocrResult
                 ? 'bg-gray-800 text-gray-500 cursor-not-allowed'
                 : 'bg-[#C5A880] hover:bg-white text-[#0D1117]'

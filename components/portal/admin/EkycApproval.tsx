@@ -353,7 +353,7 @@ export default function EkycApproval() {
                   {/* Middle: CCCD OCR Details */}
                   <div className="lg:col-span-5 grid grid-cols-2 gap-2 text-xs bg-[#161D26] p-3 rounded-none border border-[#222B35]">
                     <div>
-                      <span className="text-gray-400 text-[10px] block">Số CCCD (OCR):</span>
+                      <span className="text-gray-400 text-[10px] block">Số CCCD (Trích Xuất Thẻ):</span>
                       <strong className="font-mono text-[#C5A880] text-sm tracking-wider">{req.idCardNo}</strong>
                     </div>
                     <div>
@@ -601,7 +601,7 @@ export default function EkycApproval() {
             {/* Legal Information Verification Table */}
             <div className="p-4 bg-[#161D26] border border-[#2D3748] rounded-none space-y-3 text-xs">
               <div className="text-gray-300 font-bold flex items-center gap-1.5 border-b border-[#222B35] pb-2">
-                <FileText className="w-3.5 h-3.5 text-[#C5A880]" /> Bảng Đối Chiếu Thông Tin Khai Báo & OCR:
+                <FileText className="w-3.5 h-3.5 text-[#C5A880]" /> Bảng Đối Chiếu Thông Tin Khai Báo &amp; Trích Xuất Thẻ:
               </div>
 
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">

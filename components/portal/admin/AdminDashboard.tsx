@@ -216,9 +216,9 @@ export default function AdminDashboard() {
         </div>
 
         {/* KPI 4 */}
-        <div className="p-5 bg-[#121820] border border-[#222B35] space-y-2 hover:border-[#C5A880]/60 transition-colors shadow-lg rounded">
+        <div className="p-5 bg-[#121820] border border-[#222B35] space-y-2 hover:border-[#C5A880]/60 transition-colors shadow-lg rounded-none">
           <div className="flex items-center justify-between text-xs text-gray-400">
-            <span>Sức Chứa Bãi Xe Hầm B1 (ALPR)</span>
+            <span>Sức Chứa Bãi Xe Hầm B1 (Tự Động)</span>
             <Car className="w-4 h-4 text-[#C5A880]" />
           </div>
           <div className="font-serif text-2xl text-white font-bold">88% / 100%</div>

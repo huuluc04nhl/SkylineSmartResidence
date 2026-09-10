@@ -722,8 +722,8 @@ export const DEMO_COMMUNITY_POSTS: CommunityPost[] = [
 export const DEMO_SURVEYS: Survey[] = [
   {
     id: 'sur-01',
-    title: 'Biểu quyết Thông qua Phương án Nâng cấp Hệ thống Kiểm soát Xe Thông minh ALPR Hầm B2',
-    description: 'Chiến dịch lấy ý kiến hợp pháp của các Chủ sở hữu căn hộ về việc trích Quỹ Bảo trì để nâng cấp camera AI ALPR tốc độ cao.',
+    title: 'Biểu quyết Thông qua Phương án Nâng cấp Hệ thống Kiểm soát Xe Thông minh Tự Động Hầm B2',
+    description: 'Chiến dịch lấy ý kiến hợp pháp của các Chủ sở hữu căn hộ về việc trích Quỹ Bảo trì để nâng cấp camera đọc biển số tự động tốc độ cao.',
     legal_type: 'Bầu Ban Quản Trị',
     deadline: '2026-09-10T23:59:59',
     is_owner_only: true,

@@ -40,7 +40,7 @@ export default function AboutConcept() {
               </div>
               <div className="border-l-2 border-[#C5A880] pl-4 space-y-1">
                 <div className="font-serif text-lg text-[#0D1117] font-semibold">An Ninh Đa Lớp</div>
-                <div className="text-xs text-gray-500">Phân tầng thang máy và nhận diện biển số ALPR tự động.</div>
+                <div className="text-xs text-gray-500">Phân tầng thang máy và nhận diện biển số xe tự động.</div>
               </div>
             </div>
           </div>
