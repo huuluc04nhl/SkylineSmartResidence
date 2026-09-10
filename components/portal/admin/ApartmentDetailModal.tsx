@@ -27,7 +27,10 @@ import {
   Check, 
   RefreshCw,
   Eye,
-  AlertTriangle
+  AlertTriangle,
+  FileCheck2,
+  Zap,
+  Droplets
 } from 'lucide-react';
 import { 
   ApartmentUnit, 
@@ -319,18 +322,66 @@ export default function ApartmentDetailModal({
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-3 border-t border-[#222B35] text-xs">
                       <div>
                         <span className="text-gray-400">Ngày Bàn Giao:</span>{' '}
-                        <strong className="text-white font-mono">{unit.owner.handoverDate || '15/01/2026'}</strong>
+                        <strong className="text-white font-mono">{unit.owner.handoverDate || 'Chưa cập nhật'}</strong>
                       </div>
                       <div>
                         <span className="text-gray-400">Ngày Sinh:</span>{' '}
-                        <strong className="text-white">{unit.owner.dob || '18/08/2004'}</strong>
+                        <strong className="text-white">{unit.owner.dob || 'Chưa cập nhật'}</strong>
                       </div>
                       <div className="truncate">
                         <span className="text-gray-400">Nơi Cấp:</span>{' '}
-                        <strong className="text-white">{unit.owner.pob || 'Bộ Công An'}</strong>
+                        <strong className="text-white">{unit.owner.pob || 'Chưa cập nhật'}</strong>
                       </div>
                     </div>
                   </div>
+
+                  {/* Biên Bản Bàn Giao Kỹ Thuật (Smart Handover Protocol) */}
+                  {(unit.handoverProtocol || unit.owner?.handoverProtocol) && (
+                    <div className="p-4 bg-[#161B22] border border-[#C5A880]/60 space-y-2.5">
+                      <div className="font-mono text-xs text-[#C5A880] uppercase tracking-wider flex items-center justify-between font-bold">
+                        <span className="flex items-center gap-1.5">
+                          <FileCheck2 className="w-4 h-4 text-[#C5A880]" /> Hồ Sơ Biên Bản Bàn Giao Căn Hộ
+                        </span>
+                        <span className="px-2 py-0.5 bg-emerald-950 text-emerald-400 border border-emerald-500 text-[10px] font-mono">
+                          ✓ ĐÃ NGHIỆM THU
+                        </span>
+                      </div>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs font-mono">
+                        <div className="p-2 bg-[#0D1117] border border-[#222B35]">
+                          <span className="text-gray-400 block text-[10px]">Mã Biên Bản BQL:</span>
+                          <strong className="text-[#C5A880]">
+                            {unit.handoverProtocol?.protocolCode || unit.owner?.handoverProtocol?.protocolCode}
+                          </strong>
+                        </div>
+                        <div className="p-2 bg-[#0D1117] border border-[#222B35]">
+                          <span className="text-gray-400 block text-[10px]">Cán Bộ Bàn Giao:</span>
+                          <strong className="text-white">
+                            {unit.handoverProtocol?.handoverOfficer || unit.owner?.handoverProtocol?.handoverOfficer || 'BQL Tòa Nhà'}
+                          </strong>
+                        </div>
+                        <div className="p-2 bg-[#0D1117] border border-[#222B35]">
+                          <span className="text-gray-400 block text-[10px]">Chìa Khóa Cơ & Thẻ Từ:</span>
+                          <strong className="text-emerald-400">
+                            {unit.handoverProtocol?.keysCount ?? 3} Chìa cơ • {unit.handoverProtocol?.cardsCount ?? 2} Thẻ từ RFID
+                          </strong>
+                        </div>
+                        <div className="p-2 bg-[#0D1117] border border-[#222B35]">
+                          <span className="text-gray-400 block text-[10px]">Chỉ Số Bàn Giao Ban Đầu:</span>
+                          <strong className="text-amber-400">
+                            ⚡ {unit.handoverProtocol?.initialElectricMeter ?? 0} kWh • 💧 {unit.handoverProtocol?.initialWaterMeter ?? 0} m³
+                          </strong>
+                        </div>
+                      </div>
+
+                      {(unit.handoverProtocol?.notes || unit.owner?.handoverProtocol?.notes) && (
+                        <div className="text-[11px] text-gray-300 p-2 bg-[#0D1117] border border-[#222B35] leading-relaxed">
+                          <span className="text-gray-400">Ghi chú hiện trạng nghiệm thu:</span>{' '}
+                          {unit.handoverProtocol?.notes || unit.owner?.handoverProtocol?.notes}
+                        </div>
+                      )}
+                    </div>
+                  )}
 
                   {/* Hộp xác nhận thu hồi căn hộ */}
                   {isConfirmingEvict && (

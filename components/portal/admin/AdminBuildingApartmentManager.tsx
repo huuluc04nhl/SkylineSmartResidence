@@ -32,12 +32,17 @@ import {
   Check,
   RefreshCw,
   Compass,
-  FileText
+  FileText,
+  FileCheck2,
+  Zap,
+  Droplets,
+  BadgeCheck
 } from 'lucide-react';
 import { 
   getApartmentUnits, 
   getApartmentByCode, 
   ApartmentUnit, 
+  ApartmentResidentOwner,
   saveApartmentsList 
 } from '@/lib/apartmentStore';
 import { getUserStore, getApartmentMembers, ApartmentMember } from '@/lib/userStore';
@@ -166,7 +171,9 @@ export default function AdminBuildingApartmentManager() {
             handoverDate: '15/01/2026',
             dob: activeOwnerDob,
             pob: activeOwnerPob,
-          },
+            handoverProtocol: u.owner?.handoverProtocol || u.handoverProtocol,
+          } as ApartmentResidentOwner,
+          handoverProtocol: u.owner?.handoverProtocol || u.handoverProtocol,
           membersCount: liveMembers.length > 0 ? liveMembers.length : 4,
           members: liveMembers.length > 0 ? liveMembers : u.members,
         };
@@ -810,85 +817,169 @@ export default function AdminBuildingApartmentManager() {
                   <text x="215" y="185" fill="#475569" fontSize="9" textAnchor="middle" fontFamily="monospace">HÀNH LANG TÂY</text>
                   <text x="585" y="185" fill="#475569" fontSize="9" textAnchor="middle" fontFamily="monospace">HÀNH LANG ĐÔNG</text>
 
-                  {/* CÁC CĂN HỘ PHÂN BỔ TRÊN TẦNG (VÍ DỤ TẦNG 12 CÓ 8 CĂN) */}
-                  {/* Căn 01 (Góc Tây Bắc) */}
-                  <g onClick={() => setSelectedAptCode(`${selectedFloor}A01`)} className="cursor-pointer">
-                    <rect x="30" y="30" width="110" height="140" fill={selectedAptCode === `${selectedFloor}A01` ? '#78350F' : '#141D2B'} stroke={selectedAptCode === `${selectedFloor}A01` ? '#F59E0B' : '#334155'} strokeWidth="1.5" />
-                    <text x="85" y="85" fill="#FFFFFF" fontSize="10" fontWeight="bold" textAnchor="middle" fontFamily="monospace">Căn {selectedFloor}A01</text>
-                    <text x="85" y="102" fill="#94A3B8" fontSize="8" textAnchor="middle">3PN • 98m²</text>
-                    <text x="85" y="120" fill="#F59E0B" fontSize="8" fontWeight="bold" textAnchor="middle">TRỐNG</text>
-                  </g>
+                  {/* CÁC CĂN HỘ PHÂN BỔ TRÊN TẦNG (100% ĐỒNG BỘ DỮ LIỆU THỰC TẾ) */}
+                  {(() => {
+                    const getFloorUnitMeta = (numStr: string) => {
+                      const code = `${selectedFloor}A${numStr}`;
+                      const found = apartments.find(u => u.code.toLowerCase() === code.toLowerCase());
+                      const isOccupied = found?.status === 'OCCUPIED';
+                      const isSelected = selectedAptCode === code;
+                      const ownerName = found?.owner?.name || '';
+                      return { code, found, isOccupied, isSelected, ownerName };
+                    };
+                    const u01 = getFloorUnitMeta('01');
+                    const u02 = getFloorUnitMeta('02');
+                    const u03 = getFloorUnitMeta('03');
+                    const u04 = getFloorUnitMeta('04');
+                    const u05 = getFloorUnitMeta('05');
+                    const u06 = getFloorUnitMeta('06');
+                    const u07 = getFloorUnitMeta('07');
+                    const u08 = getFloorUnitMeta('08');
 
-                  {/* Căn 02 (Chính Bắc) */}
-                  <g onClick={() => setSelectedAptCode(`${selectedFloor}A02`)} className="cursor-pointer">
-                    <rect x="150" y="30" width="130" height="55" fill={selectedAptCode === `${selectedFloor}A02` ? '#78350F' : '#141D2B'} stroke={selectedAptCode === `${selectedFloor}A02` ? '#F59E0B' : '#334155'} strokeWidth="1.5" />
-                    <text x="215" y="55" fill="#FFFFFF" fontSize="9" fontWeight="bold" textAnchor="middle" fontFamily="monospace">Căn {selectedFloor}A02 (1PN • 52m²)</text>
-                    <text x="215" y="70" fill="#F59E0B" fontSize="7.5" fontWeight="bold" textAnchor="middle">TRỐNG</text>
-                  </g>
+                    return (
+                      <>
+                        {/* Căn 01 (Góc Tây Bắc) */}
+                        <g onClick={() => setSelectedAptCode(u01.code)} className="cursor-pointer">
+                          <rect 
+                            x="30" y="30" width="110" height="140" 
+                            fill={u01.isOccupied ? (u01.isSelected ? '#065F46' : '#044332') : (u01.isSelected ? '#78350F' : '#141D2B')} 
+                            stroke={u01.isOccupied ? '#10B981' : (u01.isSelected ? '#F59E0B' : '#334155')} 
+                            strokeWidth={u01.isSelected ? '2.5' : '1.5'} 
+                          />
+                          <text x="85" y="70" fill="#FFFFFF" fontSize="10" fontWeight="bold" textAnchor="middle" fontFamily="monospace">Căn {u01.code}</text>
+                          <text x="85" y="86" fill={u01.isOccupied ? '#A7F3D0' : '#94A3B8'} fontSize="8" textAnchor="middle">3PN • 98m²</text>
+                          <rect x="45" y="96" width="80" height="16" fill={u01.isOccupied ? '#10B981' : '#B45309'} />
+                          <text x="85" y="108" fill={u01.isOccupied ? '#0D1117' : '#FFFFFF'} fontSize="7.5" fontWeight="bold" textAnchor="middle">
+                            {u01.isOccupied ? 'CÓ CƯ DÂN' : 'TRỐNG'}
+                          </text>
+                          <text x="85" y="128" fill={u01.isOccupied ? '#D1FAE5' : '#94A3B8'} fontSize="7.5" fontWeight="bold" textAnchor="middle">
+                            {u01.isOccupied ? u01.ownerName : 'Bàn Giao'}
+                          </text>
+                        </g>
 
-                  {/* Căn 03 (Chính Bắc - Giữa) */}
-                  <g onClick={() => setSelectedAptCode(`${selectedFloor}A03`)} className="cursor-pointer">
-                    <rect x="290" y="30" width="220" height="55" fill={selectedAptCode === `${selectedFloor}A03` ? '#78350F' : '#141D2B'} stroke={selectedAptCode === `${selectedFloor}A03` ? '#F59E0B' : '#334155'} strokeWidth="1.5" />
-                    <text x="400" y="55" fill="#FFFFFF" fontSize="9.5" fontWeight="bold" textAnchor="middle" fontFamily="monospace">Căn {selectedFloor}A03 (2PN • 75m²)</text>
-                    <text x="400" y="70" fill="#F59E0B" fontSize="7.5" fontWeight="bold" textAnchor="middle">TRỐNG</text>
-                  </g>
+                        {/* Căn 02 (Chính Bắc) */}
+                        <g onClick={() => setSelectedAptCode(u02.code)} className="cursor-pointer">
+                          <rect 
+                            x="150" y="30" width="130" height="55" 
+                            fill={u02.isOccupied ? (u02.isSelected ? '#065F46' : '#044332') : (u02.isSelected ? '#78350F' : '#141D2B')} 
+                            stroke={u02.isOccupied ? '#10B981' : (u02.isSelected ? '#F59E0B' : '#334155')} 
+                            strokeWidth={u02.isSelected ? '2.5' : '1.5'} 
+                          />
+                          <text x="215" y="52" fill="#FFFFFF" fontSize="9" fontWeight="bold" textAnchor="middle" fontFamily="monospace">Căn {u02.code} (1PN • 52m²)</text>
+                          <text x="215" y="68" fill={u02.isOccupied ? '#10B981' : '#F59E0B'} fontSize="7.5" fontWeight="bold" textAnchor="middle">
+                            {u02.isOccupied ? `CÓ CƯ DÂN: ${u02.ownerName}` : 'TRỐNG'}
+                          </text>
+                        </g>
 
-                  {/* Căn 04 (Chính Bắc - Đông) */}
-                  <g onClick={() => setSelectedAptCode(`${selectedFloor}A04`)} className="cursor-pointer">
-                    <rect x="520" y="30" width="130" height="55" fill={selectedAptCode === `${selectedFloor}A04` ? '#78350F' : '#141D2B'} stroke={selectedAptCode === `${selectedFloor}A04` ? '#F59E0B' : '#334155'} strokeWidth="1.5" />
-                    <text x="585" y="55" fill="#FFFFFF" fontSize="9" fontWeight="bold" textAnchor="middle" fontFamily="monospace">Căn {selectedFloor}A04 (3PN • 108m²)</text>
-                    <text x="585" y="70" fill="#F59E0B" fontSize="7.5" fontWeight="bold" textAnchor="middle">TRỐNG</text>
-                  </g>
+                        {/* Căn 03 (Chính Bắc - Giữa) */}
+                        <g onClick={() => setSelectedAptCode(u03.code)} className="cursor-pointer">
+                          <rect 
+                            x="290" y="30" width="220" height="55" 
+                            fill={u03.isOccupied ? (u03.isSelected ? '#065F46' : '#044332') : (u03.isSelected ? '#78350F' : '#141D2B')} 
+                            stroke={u03.isOccupied ? '#10B981' : (u03.isSelected ? '#F59E0B' : '#334155')} 
+                            strokeWidth={u03.isSelected ? '2.5' : '1.5'} 
+                          />
+                          <text x="400" y="52" fill="#FFFFFF" fontSize="9.5" fontWeight="bold" textAnchor="middle" fontFamily="monospace">Căn {u03.code} (2PN • 75m²)</text>
+                          <text x="400" y="68" fill={u03.isOccupied ? '#10B981' : '#F59E0B'} fontSize="7.5" fontWeight="bold" textAnchor="middle">
+                            {u03.isOccupied ? `CÓ CƯ DÂN: ${u03.ownerName}` : 'TRỐNG'}
+                          </text>
+                        </g>
 
-                  {/* CĂN 05: CĂN 12A05 ★ ĐÃ CÓ CƯ DÂN NGUYỄN HỮU LỰC (GÓC ĐÔNG NAM) */}
-                  <g onClick={() => setSelectedAptCode('12A05')} className="cursor-pointer">
-                    <rect 
-                      x="660" 
-                      y="180" 
-                      width="110" 
-                      height="150" 
-                      fill={selectedAptCode === '12A05' ? '#065F46' : '#044332'} 
-                      stroke="#10B981" 
-                      strokeWidth={selectedAptCode === '12A05' ? '2.5' : '1.5'} 
-                      className="transition-all hover:fill-emerald-700 shadow-xl"
-                    />
-                    <text x="715" y="215" fill="#FFFFFF" fontSize="11" fontWeight="900" textAnchor="middle" fontFamily="monospace">
-                      ★ CĂN 12A05
-                    </text>
-                    <text x="715" y="235" fill="#A7F3D0" fontSize="8" fontWeight="bold" textAnchor="middle">
-                      2PN - 2WC • 78.5m²
-                    </text>
-                    <rect x="675" y="250" width="80" height="18" fill="#10B981" rx="0" />
-                    <text x="715" y="262" fill="#0D1117" fontSize="7.5" fontWeight="bold" textAnchor="middle">
-                      CÓ CƯ DÂN
-                    </text>
-                    <text x="715" y="285" fill="#D1FAE5" fontSize="8" fontWeight="bold" textAnchor="middle">
-                      Nguyễn Hữu Lực
-                    </text>
-                  </g>
+                        {/* Căn 04 (Chính Bắc - Đông) */}
+                        <g onClick={() => setSelectedAptCode(u04.code)} className="cursor-pointer">
+                          <rect 
+                            x="520" y="30" width="130" height="55" 
+                            fill={u04.isOccupied ? (u04.isSelected ? '#065F46' : '#044332') : (u04.isSelected ? '#78350F' : '#141D2B')} 
+                            stroke={u04.isOccupied ? '#10B981' : (u04.isSelected ? '#F59E0B' : '#334155')} 
+                            strokeWidth={u04.isSelected ? '2.5' : '1.5'} 
+                          />
+                          <text x="585" y="52" fill="#FFFFFF" fontSize="9" fontWeight="bold" textAnchor="middle" fontFamily="monospace">Căn {u04.code} (3PN • 108m²)</text>
+                          <text x="585" y="68" fill={u04.isOccupied ? '#10B981' : '#F59E0B'} fontSize="7.5" fontWeight="bold" textAnchor="middle">
+                            {u04.isOccupied ? `CÓ CƯ DÂN: ${u04.ownerName}` : 'TRỐNG'}
+                          </text>
+                        </g>
 
-                  {/* Căn 06 (Góc Đông Bắc) */}
-                  <g onClick={() => setSelectedAptCode(`${selectedFloor}A06`)} className="cursor-pointer">
-                    <rect x="660" y="30" width="110" height="140" fill={selectedAptCode === `${selectedFloor}A06` ? '#78350F' : '#141D2B'} stroke={selectedAptCode === `${selectedFloor}A06` ? '#F59E0B' : '#334155'} strokeWidth="1.5" />
-                    <text x="715" y="85" fill="#FFFFFF" fontSize="10" fontWeight="bold" textAnchor="middle" fontFamily="monospace">Căn {selectedFloor}A06</text>
-                    <text x="715" y="102" fill="#94A3B8" fontSize="8" textAnchor="middle">2PN • 75m²</text>
-                    <text x="715" y="120" fill="#F59E0B" fontSize="8" fontWeight="bold" textAnchor="middle">TRỐNG</text>
-                  </g>
+                        {/* CĂN 05: GÓC ĐÔNG NAM */}
+                        <g onClick={() => setSelectedAptCode(u05.code)} className="cursor-pointer">
+                          <rect 
+                            x="660" 
+                            y="180" 
+                            width="110" 
+                            height="150" 
+                            fill={u05.isOccupied ? (u05.isSelected ? '#065F46' : '#044332') : (u05.isSelected ? '#78350F' : '#141D2B')} 
+                            stroke={u05.isOccupied ? '#10B981' : (u05.isSelected ? '#F59E0B' : '#334155')} 
+                            strokeWidth={u05.isSelected ? '2.5' : '1.5'} 
+                            className="transition-all hover:opacity-90 shadow-xl"
+                          />
+                          <text x="715" y="212" fill="#FFFFFF" fontSize="10.5" fontWeight="900" textAnchor="middle" fontFamily="monospace">
+                            CĂN {u05.code}
+                          </text>
+                          <text x="715" y="230" fill={u05.isOccupied ? '#A7F3D0' : '#94A3B8'} fontSize="8" fontWeight="bold" textAnchor="middle">
+                            2PN - 2WC • 78.5m²
+                          </text>
+                          <rect x="675" y="244" width="80" height="17" fill={u05.isOccupied ? '#10B981' : '#B45309'} rx="0" />
+                          <text x="715" y="256" fill={u05.isOccupied ? '#0D1117' : '#FFFFFF'} fontSize="7.5" fontWeight="bold" textAnchor="middle">
+                            {u05.isOccupied ? 'CÓ CƯ DÂN' : 'TRỐNG'}
+                          </text>
+                          <text x="715" y="280" fill={u05.isOccupied ? '#D1FAE5' : '#FCD34D'} fontSize="8" fontWeight="bold" textAnchor="middle">
+                            {u05.isOccupied ? u05.ownerName : 'Bàn Giao'}
+                          </text>
+                        </g>
 
-                  {/* Căn 07 (Chính Nam - Đông) */}
-                  <g onClick={() => setSelectedAptCode(`${selectedFloor}A07`)} className="cursor-pointer">
-                    <rect x="520" y="275" width="130" height="65" fill={selectedAptCode === `${selectedFloor}A07` ? '#78350F' : '#141D2B'} stroke={selectedAptCode === `${selectedFloor}A07` ? '#F59E0B' : '#334155'} strokeWidth="1.5" />
-                    <text x="585" y="305" fill="#FFFFFF" fontSize="9" fontWeight="bold" textAnchor="middle" fontFamily="monospace">Căn {selectedFloor}A07 (3PN • 112m²)</text>
-                    <text x="585" y="322" fill="#F59E0B" fontSize="7.5" fontWeight="bold" textAnchor="middle">TRỐNG</text>
-                  </g>
+                        {/* Căn 06 (Góc Đông Bắc) */}
+                        <g onClick={() => setSelectedAptCode(u06.code)} className="cursor-pointer">
+                          <rect 
+                            x="660" y="30" width="110" height="140" 
+                            fill={u06.isOccupied ? (u06.isSelected ? '#065F46' : '#044332') : (u06.isSelected ? '#78350F' : '#141D2B')} 
+                            stroke={u06.isOccupied ? '#10B981' : (u06.isSelected ? '#F59E0B' : '#334155')} 
+                            strokeWidth={u06.isSelected ? '2.5' : '1.5'} 
+                          />
+                          <text x="715" y="75" fill="#FFFFFF" fontSize="10" fontWeight="bold" textAnchor="middle" fontFamily="monospace">Căn {u06.code}</text>
+                          <text x="715" y="92" fill={u06.isOccupied ? '#A7F3D0' : '#94A3B8'} fontSize="8" textAnchor="middle">2PN • 75m²</text>
+                          <rect x="675" y="102" width="80" height="16" fill={u06.isOccupied ? '#10B981' : '#B45309'} />
+                          <text x="715" y="114" fill={u06.isOccupied ? '#0D1117' : '#FFFFFF'} fontSize="7.5" fontWeight="bold" textAnchor="middle">
+                            {u06.isOccupied ? 'CÓ CƯ DÂN' : 'TRỐNG'}
+                          </text>
+                          <text x="715" y="132" fill={u06.isOccupied ? '#D1FAE5' : '#94A3B8'} fontSize="7.5" fontWeight="bold" textAnchor="middle">
+                            {u06.isOccupied ? u06.ownerName : 'Bàn Giao'}
+                          </text>
+                        </g>
 
-                  {/* Căn 08 (Góc Tây Nam) */}
-                  <g onClick={() => setSelectedAptCode(`${selectedFloor}A08`)} className="cursor-pointer">
-                    <rect x="30" y="180" width="110" height="150" fill={selectedAptCode === `${selectedFloor}A08` ? '#78350F' : '#141D2B'} stroke={selectedAptCode === `${selectedFloor}A08` ? '#F59E0B' : '#334155'} strokeWidth="1.5" />
-                    <text x="85" y="235" fill="#FFFFFF" fontSize="10" fontWeight="bold" textAnchor="middle" fontFamily="monospace">Căn {selectedFloor}A08</text>
-                    <text x="85" y="252" fill="#94A3B8" fontSize="8" textAnchor="middle">1PN • 52m²</text>
-                    <text x="85" y="270" fill="#F59E0B" fontSize="8" fontWeight="bold" textAnchor="middle">TRỐNG</text>
-                  </g>
+                        {/* Căn 07 (Chính Nam - Đông) */}
+                        <g onClick={() => setSelectedAptCode(u07.code)} className="cursor-pointer">
+                          <rect 
+                            x="520" y="275" width="130" height="65" 
+                            fill={u07.isOccupied ? (u07.isSelected ? '#065F46' : '#044332') : (u07.isSelected ? '#78350F' : '#141D2B')} 
+                            stroke={u07.isOccupied ? '#10B981' : (u07.isSelected ? '#F59E0B' : '#334155')} 
+                            strokeWidth={u07.isSelected ? '2.5' : '1.5'} 
+                          />
+                          <text x="585" y="300" fill="#FFFFFF" fontSize="9" fontWeight="bold" textAnchor="middle" fontFamily="monospace">Căn {u07.code} (3PN • 112m²)</text>
+                          <text x="585" y="318" fill={u07.isOccupied ? '#10B981' : '#F59E0B'} fontSize="7.5" fontWeight="bold" textAnchor="middle">
+                            {u07.isOccupied ? `CÓ CƯ DÂN: ${u07.ownerName}` : 'TRỐNG'}
+                          </text>
+                        </g>
+
+                        {/* Căn 08 (Góc Tây Nam) */}
+                        <g onClick={() => setSelectedAptCode(u08.code)} className="cursor-pointer">
+                          <rect 
+                            x="30" y="180" width="110" height="150" 
+                            fill={u08.isOccupied ? (u08.isSelected ? '#065F46' : '#044332') : (u08.isSelected ? '#78350F' : '#141D2B')} 
+                            stroke={u08.isOccupied ? '#10B981' : (u08.isSelected ? '#F59E0B' : '#334155')} 
+                            strokeWidth={u08.isSelected ? '2.5' : '1.5'} 
+                          />
+                          <text x="85" y="225" fill="#FFFFFF" fontSize="10" fontWeight="bold" textAnchor="middle" fontFamily="monospace">Căn {u08.code}</text>
+                          <text x="85" y="242" fill={u08.isOccupied ? '#A7F3D0' : '#94A3B8'} fontSize="8" textAnchor="middle">1PN • 52m²</text>
+                          <rect x="45" y="254" width="80" height="16" fill={u08.isOccupied ? '#10B981' : '#B45309'} />
+                          <text x="85" y="266" fill={u08.isOccupied ? '#0D1117' : '#FFFFFF'} fontSize="7.5" fontWeight="bold" textAnchor="middle">
+                            {u08.isOccupied ? 'CÓ CƯ DÂN' : 'TRỐNG'}
+                          </text>
+                          <text x="85" y="286" fill={u08.isOccupied ? '#D1FAE5' : '#94A3B8'} fontSize="7.5" fontWeight="bold" textAnchor="middle">
+                            {u08.isOccupied ? u08.ownerName : 'Bàn Giao'}
+                          </text>
+                        </g>
+                      </>
+                    );
+                  })()}
                 </svg>
               </div>
 
@@ -900,8 +991,11 @@ export default function AdminBuildingApartmentManager() {
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                   {['01', '02', '03', '04', '05', '06', '07', '08'].map(num => {
                     const code = `${selectedFloor}A${num}`;
-                    const isOccupied = code === '12A05';
+                    const found = apartments.find(u => u.code.toLowerCase() === code.toLowerCase());
+                    const isOccupied = found?.status === 'OCCUPIED';
                     const isSelected = selectedAptCode === code;
+                    const ownerName = found?.owner?.name || '';
+
                     return (
                       <button
                         key={code}
@@ -921,8 +1015,8 @@ export default function AdminBuildingApartmentManager() {
                             {isOccupied ? 'Cư Dân' : 'Trống'}
                           </span>
                         </div>
-                        <div className="text-[10px] text-gray-400 mt-1">
-                          {isOccupied ? 'Nguyễn Hữu Lực' : 'Sẵn sàng bàn giao'}
+                        <div className="text-[10px] text-gray-400 mt-1 truncate">
+                          {isOccupied ? ownerName || 'Cư Dân' : 'Sẵn sàng bàn giao'}
                         </div>
                       </button>
                     );
@@ -1070,14 +1164,58 @@ export default function AdminBuildingApartmentManager() {
                       </div>
                       <div>
                         <span className="text-gray-400">Ngày sinh:</span>{' '}
-                        <strong className="text-gray-200">{activeUnit.owner.dob || '18/08/2004'}</strong>
+                        <strong className="text-gray-200">{activeUnit.owner.dob || 'Chưa cập nhật'}</strong>
                       </div>
                       <div className="col-span-2">
                         <span className="text-gray-400">Nơi thường trú:</span>{' '}
-                        <strong className="text-gray-200">{activeUnit.owner.pob || 'Triệu Trạch, Triệu Phong, Quảng Trị'}</strong>
+                        <strong className="text-gray-200">{activeUnit.owner.pob || 'Chưa cập nhật'}</strong>
                       </div>
                     </div>
                   </div>
+
+                  {/* Biên Bản Bàn Giao Kỹ Thuật (Smart Handover Protocol) */}
+                  {(activeUnit.handoverProtocol || activeUnit.owner.handoverProtocol) && (
+                    <div className="p-3 bg-[#121820] border border-[#C5A880]/50 rounded-none text-xs space-y-2">
+                      <div className="font-mono text-[10.5px] text-[#C5A880] uppercase tracking-wider flex items-center justify-between font-bold">
+                        <span className="flex items-center gap-1.5">
+                          <FileCheck2 className="w-3.5 h-3.5 text-[#C5A880]" /> Biên Bản Bàn Giao Căn Hộ
+                        </span>
+                        <span className="px-1.5 py-0.2 bg-emerald-950 text-emerald-400 border border-emerald-500 text-[9.5px]">
+                          ĐÃ BÀN GIAO
+                        </span>
+                      </div>
+
+                      <div className="p-2 bg-[#161B22] border border-[#222B35] text-[11px] font-mono space-y-1">
+                        <div className="flex items-center justify-between">
+                          <span className="text-gray-400">Mã Biên Bản:</span>
+                          <span className="text-[#C5A880] font-bold">
+                            {activeUnit.handoverProtocol?.protocolCode || activeUnit.owner.handoverProtocol?.protocolCode}
+                          </span>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-gray-400">Ngày Bàn Giao:</span>
+                          <span className="text-white">
+                            {activeUnit.handoverProtocol?.handoverDate || activeUnit.owner.handoverProtocol?.handoverDate || activeUnit.owner.handoverDate}
+                          </span>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-gray-400">Chìa & Thẻ Từ:</span>
+                          <span className="text-emerald-400 font-bold">
+                            {activeUnit.handoverProtocol?.keysCount ?? 3} chìa cơ • {activeUnit.handoverProtocol?.cardsCount ?? 2} thẻ RFID
+                          </span>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-gray-400">Chỉ Số Bàn Giao:</span>
+                          <span className="text-amber-400 font-bold">
+                            ⚡ {activeUnit.handoverProtocol?.initialElectricMeter ?? 0} kWh • 💧 {activeUnit.handoverProtocol?.initialWaterMeter ?? 0} m³
+                          </span>
+                        </div>
+                        <div className="text-[10px] text-gray-400 pt-1 border-t border-[#222B35] truncate">
+                          Cán bộ BQL: {activeUnit.handoverProtocol?.handoverOfficer || activeUnit.owner.handoverProtocol?.handoverOfficer || 'BQL Tòa Nhà'}
+                        </div>
+                      </div>
+                    </div>
+                  )}
 
                   {/* Danh sách thành viên gia đình thực tế */}
                   <div className="p-3.5 bg-[#121820] border border-[#222B35] rounded-none space-y-2.5">
@@ -1089,24 +1227,30 @@ export default function AdminBuildingApartmentManager() {
                     </div>
 
                     <div className="space-y-2 max-h-48 overflow-y-auto pr-1">
-                      {(activeUnit.members || []).map((m, idx) => (
-                        <div key={m.id || idx} className="p-2 bg-[#161B22] border border-[#2D3748] rounded-none flex items-center justify-between text-xs">
-                          <div className="flex items-center gap-2.5">
-                            <img
-                              src={m.avatarUrl || 'https://data.nks.vn/storage/users/default.png'}
-                              alt={m.fullName}
-                              className="w-8 h-8 rounded-none object-cover border border-[#C5A880]/50"
-                            />
-                            <div>
-                              <div className="font-bold text-white">{m.fullName}</div>
-                              <div className="text-[10.5px] text-gray-400">{m.relationship} • SĐT: {m.phone}</div>
+                      {activeUnit.members && activeUnit.members.length > 0 ? (
+                        activeUnit.members.map((m, idx) => (
+                          <div key={m.id || idx} className="p-2 bg-[#161B22] border border-[#2D3748] rounded-none flex items-center justify-between text-xs">
+                            <div className="flex items-center gap-2.5">
+                              <img
+                                src={m.avatarUrl || 'https://data.nks.vn/storage/users/default.png'}
+                                alt={m.fullName}
+                                className="w-8 h-8 rounded-none object-cover border border-[#C5A880]/50"
+                              />
+                              <div>
+                                <div className="font-bold text-white">{m.fullName}</div>
+                                <div className="text-[10.5px] text-gray-400">{m.relationship} • SĐT: {m.phone}</div>
+                              </div>
                             </div>
+                            <span className="px-1.5 py-0.5 text-[9.5px] font-mono bg-emerald-950/80 border border-emerald-500 text-emerald-300">
+                              {m.faceStatus || 'Đã xác thực'}
+                            </span>
                           </div>
-                          <span className="px-1.5 py-0.5 text-[9.5px] font-mono bg-emerald-950/80 border border-emerald-500 text-emerald-300">
-                            {m.faceStatus || 'Đã xác thực'}
-                          </span>
+                        ))
+                      ) : (
+                        <div className="text-center py-3 text-gray-500 italic text-[11px]">
+                          Chưa đăng ký nhân khẩu người nhà
                         </div>
-                      ))}
+                      )}
                     </div>
                   </div>
 
@@ -1115,14 +1259,17 @@ export default function AdminBuildingApartmentManager() {
                     <div className="font-mono text-[10.5px] text-gray-400 uppercase tracking-wider flex items-center gap-1.5">
                       <Car className="w-3.5 h-3.5 text-[#C5A880]" /> Phương Tiện Cư Dân Định Danh Biển Số:
                     </div>
-                    <div className="flex flex-wrap gap-2 pt-0.5">
-                      <span className="px-2.5 py-1 bg-[#161B22] border border-gray-700 text-white font-mono text-[11px] font-bold">
-                        🚗 51K-889.99 (Mercedes C300 AMG)
-                      </span>
-                      <span className="px-2.5 py-1 bg-[#161B22] border border-gray-700 text-white font-mono text-[11px] font-bold">
-                        🛵 59P1-886.79 (Honda SH 160i)
-                      </span>
-                    </div>
+                    {activeUnit.vehicles && activeUnit.vehicles.length > 0 ? (
+                      <div className="flex flex-wrap gap-2 pt-0.5">
+                        {activeUnit.vehicles.map((v) => (
+                          <span key={v.id} className="px-2.5 py-1 bg-[#161B22] border border-gray-700 text-white font-mono text-[11px] font-bold">
+                            {v.type === 'CAR' ? '🚗' : '🛵'} {v.plate} ({v.brand || v.cardNo})
+                          </span>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="text-[11px] text-gray-500 italic">Chưa đăng ký phương tiện đậu hầm</div>
+                    )}
                   </div>
                 </div>
               ) : (

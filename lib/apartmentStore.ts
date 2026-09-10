@@ -3,7 +3,7 @@
  * Quản lý Danh sách Căn Hộ, Chi Tiết Căn Hộ, Trạng Thái Cư Trú và Bàn Giao
  */
 
-import { ApartmentMember } from './userStore';
+import { ApartmentMember, registerNewOwnerUser } from './userStore';
 
 export type TowerId = 'A' | 'B';
 export type ApartmentType = '1PN' | '2PN' | '3PN' | 'DUPLEX_PENTHOUSE';
@@ -39,6 +39,18 @@ export interface ApartmentMaintenanceRecord {
   note?: string;
 }
 
+export interface ApartmentHandoverProtocol {
+  protocolCode: string;
+  handoverDate: string;
+  handoverOfficer: string;
+  keysCount: number;
+  cardsCount: number;
+  initialElectricMeter: number;
+  initialWaterMeter: number;
+  notes?: string;
+  pdfUrl?: string;
+}
+
 export interface ApartmentResidentOwner {
   name: string;
   phone: string;
@@ -49,6 +61,7 @@ export interface ApartmentResidentOwner {
   handoverDate?: string;
   dob?: string;
   pob?: string;
+  handoverProtocol?: ApartmentHandoverProtocol;
 }
 
 export interface ApartmentUnit {
@@ -68,6 +81,7 @@ export interface ApartmentUnit {
   status: ApartmentStatus;
   statusLabel: string;
   owner?: ApartmentResidentOwner;
+  handoverProtocol?: ApartmentHandoverProtocol;
   membersCount: number;
   members?: ApartmentMember[];
   vehicles?: ApartmentVehicle[];
@@ -79,7 +93,7 @@ export interface ApartmentUnit {
   updatedAt: string;
 }
 
-const APARTMENTS_STORAGE_KEY = 'skyline_apartments_master_v1';
+const APARTMENTS_STORAGE_KEY = 'skyline_apartments_master_v5';
 
 export const INITIAL_APARTMENTS: ApartmentUnit[] = [
   // -------------------------------------------------------------
@@ -112,6 +126,26 @@ export const INITIAL_APARTMENTS: ApartmentUnit[] = [
       handoverDate: '15/01/2026',
       dob: '18/08/2004',
       pob: 'Triệu Trạch, Triệu Phong, Quảng Trị',
+      handoverProtocol: {
+        protocolCode: 'BBBG-SKYLINE-12A05-20260115',
+        handoverDate: '15/01/2026',
+        handoverOfficer: 'KTS. Lê Quang Minh (Trưởng Ban Quản Lý)',
+        keysCount: 3,
+        cardsCount: 2,
+        initialElectricMeter: 12.5,
+        initialWaterMeter: 1.2,
+        notes: 'Đã nghiệm thu căn hộ hoàn thiện nội thất. Khóa điện tử FaceID, điều hòa Multi Daikin và thiết bị nước hoạt động ổn định.'
+      }
+    },
+    handoverProtocol: {
+      protocolCode: 'BBBG-SKYLINE-12A05-20260115',
+      handoverDate: '15/01/2026',
+      handoverOfficer: 'KTS. Lê Quang Minh (Trưởng Ban Quản Lý)',
+      keysCount: 3,
+      cardsCount: 2,
+      initialElectricMeter: 12.5,
+      initialWaterMeter: 1.2,
+      notes: 'Đã nghiệm thu căn hộ hoàn thiện nội thất. Khóa điện tử FaceID, điều hòa Multi Daikin và thiết bị nước hoạt động ổn định.'
     },
     membersCount: 4,
     members: [
@@ -652,6 +686,7 @@ export const INITIAL_APARTMENTS: ApartmentUnit[] = [
 
 /**
  * Lấy danh sách toàn bộ căn hộ từ bộ nhớ hoặc dữ liệu mặc định
+ * Tự động quét sạch mọi dữ liệu ảo tồn đọng từ các phiên bản cũ
  */
 export function getApartmentUnits(): ApartmentUnit[] {
   if (typeof window === 'undefined') {
@@ -659,14 +694,62 @@ export function getApartmentUnits(): ApartmentUnit[] {
   }
 
   try {
+    // 1. Dọn dẹp triệt để các khóa lưu trữ mock cũ trong trình duyệt
+    const LEGACY_STORAGE_KEYS = [
+      'skyline_apartments_master_v1',
+      'skyline_apartments_master_v2',
+      'skyline_apartments_master_v3',
+      'skyline_apartments_master_v4'
+    ];
+    LEGACY_STORAGE_KEYS.forEach(key => {
+      try {
+        if (localStorage.getItem(key)) {
+          localStorage.removeItem(key);
+        }
+      } catch (e) {}
+    });
+
     const raw = localStorage.getItem(APARTMENTS_STORAGE_KEY);
     if (!raw) {
       localStorage.setItem(APARTMENTS_STORAGE_KEY, JSON.stringify(INITIAL_APARTMENTS));
       return INITIAL_APARTMENTS;
     }
+
     const parsed = JSON.parse(raw);
     if (Array.isArray(parsed) && parsed.length > 0) {
-      return parsed;
+      // 2. Tự động rà soát & khử trùng triệt để các tên cư dân mock cũ nếu còn sót lại trong cache
+      const OBSOLETE_MOCK_NAMES = [
+        'trần thị mỹ dung',
+        'phạm hoàng quân',
+        'hoàng văn nam',
+        'lê thu trang',
+        'ngô thanh tùng',
+        'trần minh tuấn'
+      ];
+
+      let hasCleaned = false;
+      const sanitized: ApartmentUnit[] = parsed.map((unit: ApartmentUnit) => {
+        if (unit.owner && OBSOLETE_MOCK_NAMES.some(name => unit.owner!.name.toLowerCase().includes(name))) {
+          hasCleaned = true;
+          return {
+            ...unit,
+            status: 'VACANT' as ApartmentStatus,
+            statusLabel: 'Căn Hộ Trống',
+            owner: undefined,
+            handoverProtocol: undefined,
+            membersCount: 0,
+            members: [],
+            vehicles: []
+          };
+        }
+        return unit;
+      });
+
+      if (hasCleaned) {
+        localStorage.setItem(APARTMENTS_STORAGE_KEY, JSON.stringify(sanitized));
+      }
+
+      return sanitized;
     }
   } catch (e) {
     console.warn('Load apartments storage error:', e);
@@ -750,15 +833,57 @@ export function deleteApartmentUnit(code: string): boolean {
 }
 
 /**
- * Bàn giao căn hộ & gán chủ hộ mới
+ * Bàn giao căn hộ & gán chủ hộ mới (Kèm Biên bản bàn giao kỹ thuật & Đồng bộ tài khoản cư dân)
  */
-export function assignApartmentResident(code: string, owner: ApartmentResidentOwner): boolean {
+export function assignApartmentResident(
+  code: string, 
+  owner: ApartmentResidentOwner,
+  protocol?: ApartmentHandoverProtocol
+): boolean {
+  // 1. Tự động cấp tài khoản đăng nhập Cư Dân trên hệ thống
+  try {
+    registerNewOwnerUser({
+      name: owner.name,
+      phone: owner.phone,
+      email: owner.email,
+      cccd: owner.cccd,
+      apartmentCode: code,
+      dob: owner.dob,
+      pob: owner.pob,
+      avatarUrl: owner.avatar
+    });
+  } catch (e) {
+    console.warn('Sync new resident to userStore error:', e);
+  }
+
+  // 2. Chuẩn hóa Biên bản bàn giao kỹ thuật (Handover Protocol)
+  const todayStr = new Date().toLocaleDateString('vi-VN');
+  const codeClean = code.toUpperCase().trim();
+  const dateCode = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+  
+  const finalProtocol: ApartmentHandoverProtocol = protocol || owner.handoverProtocol || {
+    protocolCode: `BBBG-SKYLINE-${codeClean}-${dateCode}`,
+    handoverDate: owner.handoverDate || todayStr,
+    handoverOfficer: 'Ban Quản Lý Skyline Smart Residence',
+    keysCount: 3,
+    cardsCount: 2,
+    initialElectricMeter: 0,
+    initialWaterMeter: 0,
+    notes: 'Đã hoàn tất nghiệm thu kỹ thuật bàn giao căn hộ, bàn giao chìa khóa cơ và cấp thẻ từ cư dân.'
+  };
+
+  const ownerWithProtocol: ApartmentResidentOwner = {
+    ...owner,
+    handoverProtocol: finalProtocol
+  };
+
   return updateApartmentUnit(code, {
     status: 'OCCUPIED',
     statusLabel: 'Đang Sinh Sống',
-    owner,
+    owner: ownerWithProtocol,
+    handoverProtocol: finalProtocol,
     membersCount: Math.max(1, 1),
-    handoverDate: owner.handoverDate || new Date().toLocaleDateString('vi-VN')
+    handoverDate: owner.handoverDate || finalProtocol.handoverDate
   });
 }
 

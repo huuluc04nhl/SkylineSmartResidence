@@ -287,6 +287,62 @@ export function updateUserStore(identifier: string, updates: Partial<StoredUser>
   return updated;
 }
 
+/**
+ * Register a newly assigned apartment owner into userStore
+ */
+export function registerNewOwnerUser(data: {
+  name: string;
+  phone: string;
+  email: string;
+  cccd: string;
+  apartmentCode: string;
+  dob?: string;
+  pob?: string;
+  avatarUrl?: string;
+}): StoredUser {
+  const parts = data.name.trim().split(' ');
+  const firstname = parts.slice(-1)[0] || '';
+  const lastname = parts.slice(0, -1).join(' ') || '';
+  const userId = `user-owner-${data.apartmentCode.toLowerCase()}`;
+
+  const newUser: StoredUser = {
+    id: userId,
+    username: data.phone.trim(),
+    firstname,
+    lastname,
+    fullname: data.name.trim(),
+    full_name: data.name.trim(),
+    email: data.email.trim() || `${data.phone.trim()}@skyline.residence.vn`,
+    phone: data.phone.trim(),
+    gender: 1,
+    dob: data.dob || '1990-01-01',
+    pob: data.pob || 'TP. Hồ Chí Minh',
+    id_number: data.cccd.trim(),
+    id_card_no: data.cccd.trim(),
+    id_date: '2023-01-01',
+    id_place: 'Cục Cảnh sát QLHC về TTXH',
+    province: 'TP. Hồ Chí Minh',
+    intro: `Chủ Hộ Căn Hộ ${data.apartmentCode}`,
+    avatar_url: data.avatarUrl || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=400&h=400&fit=crop&crop=face',
+    role: 'OWNER',
+    relationship: 'Owner',
+    apartment_code: data.apartmentCode,
+  };
+
+  if (!globalScope.__NKS_USER_STORE) {
+    globalScope.__NKS_USER_STORE = initUserStore();
+  }
+
+  globalScope.__NKS_USER_STORE[newUser.id] = newUser;
+  globalScope.__NKS_USER_STORE[newUser.username.toLowerCase().trim()] = newUser;
+  globalScope.__NKS_USER_STORE[newUser.phone.trim()] = newUser;
+  if (newUser.id_card_no) {
+    globalScope.__NKS_USER_STORE[newUser.id_card_no.trim()] = newUser;
+  }
+
+  return newUser;
+}
+
 export const DEFAULT_12A05_MEMBERS: ApartmentMember[] = [
   {
     id: 'user-tenant-1',
