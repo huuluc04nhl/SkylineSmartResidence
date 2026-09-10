@@ -33,6 +33,7 @@ import {
   EkycRequest 
 } from '@/lib/ekycStore';
 import { validateCccdCard, verifyFaceWithCccd } from '@/lib/ekycValidator';
+import { getEnrolledFaceProfile } from '@/lib/faceEnrollStore';
 
 export default function EkycApproval() {
   const [requests, setRequests] = useState<EkycRequest[]>([]);
@@ -42,6 +43,7 @@ export default function EkycApproval() {
   // Inspection & Dialog States
   const [inspectingRequest, setInspectingRequest] = useState<EkycRequest | null>(null);
   const [inspectingSide, setInspectingSide] = useState<'FRONT' | 'BACK'>('FRONT');
+  const [zoomImage, setZoomImage] = useState<{ url: string; title: string } | null>(null);
   const [rejectingId, setRejectingId] = useState<string | null>(null);
   const [rejectionReason, setRejectionReason] = useState<string>('Ảnh chụp CCCD bị lóa sáng/mờ nét, vui lòng chụp lại rõ nét');
   const [actionNotice, setActionNotice] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
@@ -473,83 +475,151 @@ export default function EkycApproval() {
               </button>
             </div>
 
-            {/* Visual Comparison: Portrait Face vs CCCD Photo */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {/* 1. FaceID Live Portrait */}
-              <div className="p-4 bg-[#161D26] border border-[#2D3748] rounded-none space-y-2 text-center">
-                <div className="flex items-center justify-between text-xs text-gray-300 font-semibold border-b border-[#222B35] pb-2">
-                  <span className="flex items-center gap-1.5">
-                    <Camera className="w-3.5 h-3.5 text-[#C5A880]" /> Ảnh Chân Dung FaceID:
-                  </span>
-                  <span className="px-2 py-0.5 bg-emerald-950 text-emerald-400 border border-emerald-500/50 rounded-none font-mono text-[10px]">
-                    Khớp {inspectingRequest.faceScore}%
-                  </span>
-                </div>
-                
-                <div className="w-36 h-48 sm:w-40 sm:h-52 mx-auto rounded-none overflow-hidden border-2 border-[#C5A880] shadow-lg bg-[#0A0E14] relative">
-                  <img
-                    src={inspectingRequest.avatarUrl || 'https://data.nks.vn/storage/users/default.png'}
-                    alt="FaceID Portrait"
-                    className="w-full h-full object-cover"
-                  />
-                  <div className="absolute bottom-2 inset-x-2 bg-black/70 backdrop-blur text-[9.5px] font-mono text-[#C5A880] py-0.5 rounded-none">
-                    512D VECTOR MATCH
-                  </div>
-                </div>
-                <div className="text-[11px] text-gray-400">
-                  Ảnh chụp camera trực tiếp của cư dân
-                </div>
-              </div>
+            {/* Visual Comparison: Portrait Face & 4 Angle Samples vs CCCD Photo */}
+            {(() => {
+              const enrolled = getEnrolledFaceProfile(inspectingRequest.userId) || getEnrolledFaceProfile(inspectingRequest.phone);
+              const samples = inspectingRequest.faceSamples || enrolled?.samples;
 
-              {/* 2. CCCD Card (Front / Back Toggle) */}
-              <div className="p-4 bg-[#161D26] border border-[#2D3748] rounded-none space-y-2 text-center">
-                <div className="flex items-center justify-between text-xs text-gray-300 font-semibold border-b border-[#222B35] pb-2">
-                  <span className="flex items-center gap-1.5">
-                    <CreditCard className="w-3.5 h-3.5 text-[#C5A880]" /> Thẻ Căn Cước Công Dân:
-                  </span>
-                  
-                  {/* Side Switcher */}
-                  <div className="flex gap-1 bg-[#0D1117] p-0.5 rounded-none border border-gray-700 text-[10px]">
-                    <button
-                      type="button"
-                      onClick={() => setInspectingSide('FRONT')}
-                      className={`px-2 py-0.5 rounded-none font-bold transition-all ${
-                        inspectingSide === 'FRONT' ? 'bg-[#C5A880] text-[#0D1117]' : 'text-gray-400'
-                      }`}
-                    >
-                      Mặt Trước
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setInspectingSide('BACK')}
-                      className={`px-2 py-0.5 rounded-none font-bold transition-all ${
-                        inspectingSide === 'BACK' ? 'bg-[#C5A880] text-[#0D1117]' : 'text-gray-400'
-                      }`}
-                    >
-                      Mặt Sau
-                    </button>
-                  </div>
-                </div>
+              return (
+                <div className="space-y-4">
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                    {/* 1. FaceID Live Portrait & Angle Gallery */}
+                    <div className="p-4 bg-[#161D26] border border-[#2D3748] rounded-none space-y-3 text-center">
+                      <div className="flex items-center justify-between text-xs text-gray-300 font-semibold border-b border-[#222B35] pb-2">
+                        <span className="flex items-center gap-1.5">
+                          <Camera className="w-3.5 h-3.5 text-[#C5A880]" /> Ảnh Chân Dung & Mẫu FaceID:
+                        </span>
+                        <span className="px-2 py-0.5 bg-emerald-950 text-emerald-400 border border-emerald-500/50 rounded-none font-mono text-[10px]">
+                          Khớp Sinh Trắc: {inspectingRequest.faceScore}%
+                        </span>
+                      </div>
+                      
+                      <div className="w-36 h-44 sm:w-40 sm:h-48 mx-auto rounded-none overflow-hidden border-2 border-[#C5A880] shadow-lg bg-[#0A0E14] relative group cursor-pointer"
+                           onClick={() => setZoomImage({ url: inspectingRequest.avatarUrl || samples?.front || '', title: `Chân dung FaceID - ${inspectingRequest.fullName}` })}>
+                        <img
+                          src={inspectingRequest.avatarUrl || samples?.front || 'https://data.nks.vn/storage/users/default.png'}
+                          alt="FaceID Portrait"
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                        />
+                        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                          <ZoomIn className="w-6 h-6 text-white" />
+                        </div>
+                        <div className="absolute bottom-2 inset-x-2 bg-black/70 backdrop-blur text-[9px] font-mono text-[#C5A880] py-0.5 rounded-none">
+                          CHÂN DUNG CHÍNH DIỆN
+                        </div>
+                      </div>
 
-                <div className="w-full h-48 sm:h-52 rounded-none overflow-hidden border border-white/20 shadow-lg bg-[#0A0E14] relative flex items-center justify-center">
-                  <img
-                    src={
-                      inspectingSide === 'FRONT'
-                        ? inspectingRequest.idCardFrontUrl || 'https://images.unsplash.com/photo-1578852612716-854e527abf2e?w=600'
-                        : inspectingRequest.idCardBackUrl || inspectingRequest.idCardFrontUrl || 'https://images.unsplash.com/photo-1578852612716-854e527abf2e?w=600'
-                    }
-                    alt="CCCD"
-                    className="w-full h-full object-cover"
-                  />
-                  <div className="absolute top-2 left-2 px-2 py-0.5 bg-black/70 backdrop-blur rounded-none text-[9.5px] font-mono text-gray-300">
-                    {inspectingSide === 'FRONT' ? 'MẶT TRƯỚC (CÓ ẢNH & SỐ)' : 'MẶT SAU (CHIP & VÂN TAY)'}
+                      {/* 4 Multi-angle samples if enrolled */}
+                      {samples && (
+                        <div className="space-y-1.5 pt-2 border-t border-[#222B35]">
+                          <div className="text-[10px] uppercase font-bold text-[#C5A880] tracking-wider flex items-center justify-between">
+                            <span>Bộ Mẫu Thu Thập 4 Góc Mặt:</span>
+                            <span className="text-emerald-400 font-mono text-[9px]">Liveness 100%</span>
+                          </div>
+                          <div className="grid grid-cols-4 gap-1.5">
+                            {[
+                              { label: 'Chính diện', img: samples.front },
+                              { label: 'Trái (-25°)', img: samples.left },
+                              { label: 'Phải (+25°)', img: samples.right },
+                              { label: 'Xác thực', img: samples.smile },
+                            ].map((s, idx) => (
+                              <div key={idx} 
+                                   onClick={() => s.img && setZoomImage({ url: s.img, title: `Mẫu góc ${s.label} - ${inspectingRequest.fullName}` })}
+                                   className="border border-[#263140] bg-black aspect-square overflow-hidden relative group cursor-pointer">
+                                {s.img ? (
+                                  <img src={s.img} alt={s.label} className="w-full h-full object-cover" />
+                                ) : (
+                                  <div className="w-full h-full flex items-center justify-center text-[8px] text-gray-500">Chưa có</div>
+                                )}
+                                <div className="absolute bottom-0 inset-x-0 bg-black/80 text-[8px] text-gray-300 py-0.5 truncate">
+                                  {s.label}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      <div className="text-[11px] text-gray-400">
+                        {samples ? 'Dữ liệu khuôn mặt đã mã hóa vector phục vụ nhận diện tự động' : 'Ảnh chân dung chụp trực tiếp từ thiết bị'}
+                      </div>
+                    </div>
+
+                    {/* 2. CCCD Card (Interactive Front/Back & Both views) */}
+                    <div className="p-4 bg-[#161D26] border border-[#2D3748] rounded-none space-y-3 text-center flex flex-col justify-between">
+                      <div>
+                        <div className="flex items-center justify-between text-xs text-gray-300 font-semibold border-b border-[#222B35] pb-2">
+                          <span className="flex items-center gap-1.5">
+                            <CreditCard className="w-3.5 h-3.5 text-[#C5A880]" /> Thẻ Căn Cước Công Dân:
+                          </span>
+                          
+                          {/* Side Switcher */}
+                          <div className="flex gap-1 bg-[#0D1117] p-0.5 rounded-none border border-gray-700 text-[10px]">
+                            <button
+                              type="button"
+                              onClick={() => setInspectingSide('FRONT')}
+                              className={`px-2.5 py-1 rounded-none font-bold transition-all ${
+                                inspectingSide === 'FRONT' ? 'bg-[#C5A880] text-[#0D1117]' : 'text-gray-400 hover:text-white'
+                              }`}
+                            >
+                              Mặt Trước
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => setInspectingSide('BACK')}
+                              className={`px-2.5 py-1 rounded-none font-bold transition-all ${
+                                inspectingSide === 'BACK' ? 'bg-[#C5A880] text-[#0D1117]' : 'text-gray-400 hover:text-white'
+                              }`}
+                            >
+                              Mặt Sau
+                            </button>
+                          </div>
+                        </div>
+
+                        {/* Card Image Display */}
+                        <div className="w-full h-44 sm:h-52 rounded-none overflow-hidden border border-white/20 shadow-lg bg-[#0A0E14] relative flex items-center justify-center mt-3 group cursor-pointer"
+                             onClick={() => setZoomImage({
+                               url: inspectingSide === 'FRONT' 
+                                 ? (inspectingRequest.idCardFrontUrl || 'https://images.unsplash.com/photo-1578852612716-854e527abf2e?w=800')
+                                 : (inspectingRequest.idCardBackUrl || inspectingRequest.idCardFrontUrl || 'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=800'),
+                               title: inspectingSide === 'FRONT' ? `Mặt trước CCCD - ${inspectingRequest.fullName}` : `Mặt sau CCCD - ${inspectingRequest.fullName}`
+                             })}>
+                          <img
+                            src={
+                              inspectingSide === 'FRONT'
+                                ? inspectingRequest.idCardFrontUrl || 'https://images.unsplash.com/photo-1578852612716-854e527abf2e?w=800'
+                                : inspectingRequest.idCardBackUrl || inspectingRequest.idCardFrontUrl || 'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=800'
+                            }
+                            alt="CCCD"
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                          />
+                          <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                            <ZoomIn className="w-6 h-6 text-white" />
+                          </div>
+                          <div className="absolute top-2 left-2 px-2 py-0.5 bg-black/80 backdrop-blur rounded-none text-[9.5px] font-mono text-gray-300">
+                            {inspectingSide === 'FRONT' ? 'MẶT TRƯỚC (CÓ ẢNH & SỐ ĐỊNH DANH)' : 'MẶT SAU (CHIP ĐIỆN TỬ & VÂN TAY)'}
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Dual-Side Mini Bar */}
+                      <div className="pt-2 border-t border-[#222B35] flex items-center justify-between text-[11px] text-gray-400">
+                        <span>Nhấp vào ảnh để phóng to toàn màn hình</span>
+                        <div className="flex gap-1 font-mono text-[10px]">
+                          <span className={inspectingRequest.idCardFrontUrl ? 'text-emerald-400' : 'text-amber-400'}>
+                            {inspectingRequest.idCardFrontUrl ? '✓ Mặt trước OK' : '⚠ Chưa có trước'}
+                          </span>
+                          <span>•</span>
+                          <span className={inspectingRequest.idCardBackUrl ? 'text-emerald-400' : 'text-amber-400'}>
+                            {inspectingRequest.idCardBackUrl ? '✓ Mặt sau OK' : '⚠ Chưa có sau'}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
-                <div className="text-[11px] text-gray-400">
-                  Ảnh chụp thẻ CCCD thật do cư dân tải lên
-                </div>
-              </div>
-            </div>
+              );
+            })()}
 
             {/* AI Biometric & CCCD Card Health Analysis Badge */}
             {(() => {
@@ -735,6 +805,38 @@ export default function EkycApproval() {
               >
                 Xác Nhận Từ Chối
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal: Full-Resolution Image Zoom Preview */}
+      {zoomImage && (
+        <div 
+          onClick={() => setZoomImage(null)}
+          className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/90 backdrop-blur-md animate-fadeIn cursor-zoom-out"
+        >
+          <div 
+            onClick={(e) => e.stopPropagation()}
+            className="bg-[#0D1117] border border-[#C5A880] p-4 max-w-4xl max-h-[90vh] flex flex-col space-y-3 rounded-none shadow-2xl overflow-hidden cursor-default"
+          >
+            <div className="flex items-center justify-between border-b border-[#222B35] pb-2 text-xs">
+              <span className="font-bold text-white uppercase tracking-wider font-mono flex items-center gap-1.5">
+                <Eye className="w-3.5 h-3.5 text-[#C5A880]" /> {zoomImage.title}
+              </span>
+              <button
+                type="button"
+                onClick={() => setZoomImage(null)}
+                className="text-gray-400 hover:text-white p-1 hover:bg-[#161B22]"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <div className="overflow-auto max-h-[75vh] flex items-center justify-center bg-[#070A0E] p-2">
+              <img src={zoomImage.url} alt="Zoomed" className="max-w-full max-h-[70vh] object-contain rounded-none shadow-xl" />
+            </div>
+            <div className="text-right text-[11px] text-gray-400">
+              Nhấp vào biểu tượng dấu X hoặc bên ngoài khung để đóng
             </div>
           </div>
         </div>

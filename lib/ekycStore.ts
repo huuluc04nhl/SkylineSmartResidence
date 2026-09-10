@@ -24,6 +24,12 @@ export interface EkycRequest {
   avatarUrl: string;
   idCardFrontUrl: string;
   idCardBackUrl: string;
+  faceSamples?: {
+    front: string;
+    left?: string;
+    right?: string;
+    smile?: string;
+  };
   submittedAt: string;
   status: EkycStatus;
   reviewedAt?: string;
@@ -49,8 +55,8 @@ export const INITIAL_EKYC_REQUESTS: EkycRequest[] = [
     pob: 'Triệu Trạch, Triệu Phong, Quảng Trị',
     faceScore: 99.4,
     avatarUrl: 'https://data.nks.vn/storage/users/202609021654232258.jpg',
-    idCardFrontUrl: '',
-    idCardBackUrl: '',
+    idCardFrontUrl: 'https://images.unsplash.com/photo-1578852612716-854e527abf2e?w=800',
+    idCardBackUrl: 'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=800',
     submittedAt: '02/09/2026 14:30',
     status: 'APPROVED',
     reviewedAt: '02/09/2026 15:10',
@@ -71,8 +77,8 @@ export const INITIAL_EKYC_REQUESTS: EkycRequest[] = [
     pob: 'TP. Hồ Chí Minh',
     faceScore: 98.6,
     avatarUrl: 'https://data.nks.vn/storage/users/202607191405195335.jpg',
-    idCardFrontUrl: '',
-    idCardBackUrl: '',
+    idCardFrontUrl: 'https://images.unsplash.com/photo-1578852612716-854e527abf2e?w=800',
+    idCardBackUrl: 'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=800',
     submittedAt: '03/09/2026 09:15',
     status: 'PENDING',
   },
@@ -91,8 +97,8 @@ export const INITIAL_EKYC_REQUESTS: EkycRequest[] = [
     pob: 'Tỉnh Thanh Hóa',
     faceScore: 97.8,
     avatarUrl: 'https://data.nks.vn/storage/users/202608301345022366.jpg',
-    idCardFrontUrl: '',
-    idCardBackUrl: '',
+    idCardFrontUrl: 'https://images.unsplash.com/photo-1578852612716-854e527abf2e?w=800',
+    idCardBackUrl: 'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=800',
     submittedAt: '03/09/2026 10:45',
     status: 'PENDING',
   }
@@ -185,6 +191,12 @@ export function submitEkycRequest(data: {
   avatarUrl: string;
   idCardFrontUrl?: string;
   idCardBackUrl?: string;
+  faceSamples?: {
+    front: string;
+    left?: string;
+    right?: string;
+    smile?: string;
+  };
   faceScore?: number;
 }): EkycRequest {
   const requests = getEkycRequests();
@@ -195,11 +207,13 @@ export function submitEkycRequest(data: {
     (data.idCardNo && r.idCardNo === data.idCardNo)
   );
 
+  const existing = existingIdx >= 0 ? requests[existingIdx] : null;
+
   const now = new Date();
   const submittedAt = `${now.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })} ${now.toLocaleDateString('vi-VN')}`;
 
   const newRequest: EkycRequest = {
-    id: existingIdx >= 0 ? requests[existingIdx].id : `EKYC-${Date.now().toString().slice(-4)}`,
+    id: existing ? existing.id : `EKYC-${Date.now().toString().slice(-4)}`,
     userId: data.userId,
     fullName: data.fullName,
     roleLabel: data.roleLabel || 'Cư Dân Căn Hộ',
@@ -211,10 +225,11 @@ export function submitEkycRequest(data: {
     idPlace: data.idPlace || 'Cục Cảnh sát QLHC về TTXH',
     dob: data.dob || '',
     pob: data.pob || '',
-    faceScore: data.faceScore || Math.floor(960 + Math.random() * 38) / 10,
+    faceScore: data.faceScore || Math.floor(970 + Math.random() * 25) / 10,
     avatarUrl: data.avatarUrl ? data.avatarUrl.replace('data.nks.vn//', 'data.nks.vn/') : 'https://data.nks.vn/storage/users/default.png',
-    idCardFrontUrl: data.idCardFrontUrl || 'https://images.unsplash.com/photo-1578852612716-854e527abf2e?w=600',
-    idCardBackUrl: data.idCardBackUrl || 'https://images.unsplash.com/photo-1578852612716-854e527abf2e?w=600',
+    idCardFrontUrl: data.idCardFrontUrl || existing?.idCardFrontUrl || 'https://images.unsplash.com/photo-1578852612716-854e527abf2e?w=600',
+    idCardBackUrl: data.idCardBackUrl || existing?.idCardBackUrl || 'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=600',
+    faceSamples: data.faceSamples || existing?.faceSamples,
     submittedAt,
     status: 'PENDING',
   };

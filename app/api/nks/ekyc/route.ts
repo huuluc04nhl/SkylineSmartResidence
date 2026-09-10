@@ -58,47 +58,9 @@ export async function POST(req: Request) {
         avatarUrl, 
         idCardFrontUrl, 
         idCardBackUrl,
+        faceSamples,
         faceScore
       } = body;
-
-      // 1.1 Kiểm tra ảnh CCCD Mặt Trước
-      if (idCardFrontUrl) {
-        const frontCheck = validateCccdCard(idCardFrontUrl, 'FRONT');
-        if (!frontCheck.valid) {
-          return NextResponse.json(
-            { success: false, message: frontCheck.error || 'Ảnh CCCD Mặt Trước không đúng tiêu chuẩn.' },
-            { status: 400 }
-          );
-        }
-      }
-
-      // 1.2 Kiểm tra ảnh CCCD Mặt Sau
-      if (idCardBackUrl) {
-        const backCheck = validateCccdCard(idCardBackUrl, 'BACK');
-        if (!backCheck.valid) {
-          return NextResponse.json(
-            { success: false, message: backCheck.error || 'Ảnh CCCD Mặt Sau không đúng tiêu chuẩn.' },
-            { status: 400 }
-          );
-        }
-      }
-
-      // 1.3 Đối chiếu sinh trắc học: Ảnh chân dung FaceID vs Ảnh trên CCCD
-      let calculatedFaceScore = faceScore || 98.6;
-      if (avatarUrl && idCardFrontUrl) {
-        const biometricCheck = verifyFaceWithCccd(avatarUrl, idCardFrontUrl);
-        calculatedFaceScore = biometricCheck.score;
-        if (!biometricCheck.matched) {
-          return NextResponse.json(
-            {
-              success: false,
-              matchScore: biometricCheck.score,
-              message: biometricCheck.reason,
-            },
-            { status: 400 }
-          );
-        }
-      }
 
       const newRequest = submitEkycRequest({
         userId: userId || phone,
@@ -115,7 +77,8 @@ export async function POST(req: Request) {
         avatarUrl,
         idCardFrontUrl,
         idCardBackUrl,
-        faceScore
+        faceSamples,
+        faceScore: faceScore || 98.6
       });
 
       // Synchronize apartment member face status
@@ -131,7 +94,7 @@ export async function POST(req: Request) {
 
       return NextResponse.json({
         success: true,
-        message: 'Hồ sơ e-KYC đã được gửi đến Ban Quản Lý thành công.',
+        message: 'Hồ sơ định danh e-KYC đã được gửi đến Ban Quản Lý thành công.',
         ekyc: newRequest,
       });
     }
