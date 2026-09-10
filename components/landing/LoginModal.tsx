@@ -27,6 +27,7 @@ import {
 } from 'lucide-react';
 import SkylineLogo from '@/components/shared/SkylineLogo';
 import { useAuth } from '@/lib/authContext';
+import { getResilientCameraStream } from '@/lib/cameraHelper';
 
 interface LoginModalProps {
   isOpen: boolean;
@@ -210,32 +211,25 @@ export default function LoginModal({ isOpen, onClose, defaultAccount = '' }: Log
   const startCamera = async () => {
     setCameraError(null);
     try {
-      if (typeof window === 'undefined' || !navigator?.mediaDevices?.getUserMedia) {
-        throw new Error('Trình duyệt không hỗ trợ truy cập Camera trực tiếp.');
+      if (cameraStream) {
+        cameraStream.getTracks().forEach((track) => track.stop());
+        setCameraStream(null);
       }
-      const isMob = deviceType === 'MOBILE';
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: { 
-          width: { ideal: isMob ? 480 : 640 }, 
-          height: { ideal: isMob ? 640 : 480 }, 
-          facingMode: isMob ? { ideal: 'user' } : 'user' 
-        },
-        audio: false,
-      });
+      const stream = await getResilientCameraStream();
       setCameraStream(stream);
       setIsCameraActive(true);
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
-        videoRef.current.play().catch(() => {});
+        try {
+          await videoRef.current.play();
+        } catch (playErr) {
+          console.warn('Video play error:', playErr);
+        }
       }
     } catch (err: any) {
       console.warn('Camera start failed:', err);
       setIsCameraActive(false);
-      setCameraError(
-        err?.name === 'NotAllowedError'
-          ? 'Quyền truy cập Camera bị từ chối trên trình duyệt. Bạn có thể chọn "Tải File Ảnh Chân Dung" để đối chiếu với BQL.'
-          : 'Không thể kết nối Camera phần cứng trên thiết bị. Bạn có thể chuyển sang "Tải File Ảnh Chân Dung" để xác thực.'
-      );
+      setCameraError(err?.message || 'Không thể kết nối Camera phần cứng trên thiết bị. Bạn có thể chuyển sang "Tải File Ảnh Chân Dung" để xác thực.');
     }
   };
 
