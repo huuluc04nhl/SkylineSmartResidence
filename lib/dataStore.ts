@@ -763,3 +763,22 @@ export function updateDemoUser(identifier: string, updates: Partial<User>): User
   }
   return null;
 }
+
+/**
+ * Add or update user in DEMO_USERS
+ */
+export function addOrUpdateDemoUser(user: User): User {
+  const index = DEMO_USERS.findIndex(u => 
+    u.id === user.id ||
+    (u.username && u.username.toLowerCase().trim() === user.username.toLowerCase().trim()) ||
+    (u.phone && user.phone && u.phone.trim() === user.phone.trim())
+  );
+
+  if (index !== -1) {
+    DEMO_USERS[index] = { ...DEMO_USERS[index], ...user };
+    return DEMO_USERS[index];
+  } else {
+    DEMO_USERS.push(user);
+    return user;
+  }
+}

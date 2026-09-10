@@ -1,7 +1,7 @@
 // ============================================================================
 // SERVER-SIDE USER STORE (Multi-User, Role-Isolated Storage for NKS User APIs)
 // ============================================================================
-import { DEMO_USERS, updateDemoUser, User } from '@/lib/dataStore';
+import { DEMO_USERS, updateDemoUser, addOrUpdateDemoUser, User } from '@/lib/dataStore';
 
 export interface StoredUser {
   id: string;
@@ -339,6 +339,26 @@ export function registerNewOwnerUser(data: {
   if (newUser.id_card_no) {
     globalScope.__NKS_USER_STORE[newUser.id_card_no.trim()] = newUser;
   }
+
+  // Đồng bộ sang DEMO_USERS để các route API truy vấn tức thì
+  addOrUpdateDemoUser({
+    id: newUser.id,
+    role: 'OWNER',
+    username: newUser.username,
+    full_name: newUser.fullname,
+    phone: newUser.phone,
+    email: newUser.email,
+    id_card_no: newUser.id_number,
+    id_card_number: newUser.id_number,
+    id_date: newUser.id_date,
+    id_place: newUser.id_place,
+    avatar_url: newUser.avatar_url,
+    ui_language: 'vi',
+    apartment_code: newUser.apartment_code,
+    relationship: 'Owner',
+    dob: newUser.dob,
+    pob: newUser.pob
+  });
 
   return newUser;
 }

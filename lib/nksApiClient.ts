@@ -311,3 +311,47 @@ export async function nksEnrollFaceId(payload: {
 
   return data;
 }
+
+/**
+ * 12. Apartment Handover & Account Provisioning API (POST /api/nks/user/handover)
+ */
+export async function nksHandoverProvisionAccount(payload: {
+  apartmentCode: string;
+  fullName: string;
+  phone: string;
+  email?: string;
+  idCard: string;
+  dob?: string;
+  pob?: string;
+  avatarUrl?: string;
+  handoverProtocol?: any;
+}): Promise<{
+  success: boolean;
+  message: string;
+  account?: {
+    id: string;
+    username: string;
+    fullName: string;
+    phone: string;
+    email: string;
+    idCard: string;
+    apartmentCode: string;
+    role: string;
+    initialPassword: string;
+    provisionedAt: string;
+  };
+  protocol?: any;
+}> {
+  const res = await fetch('/api/nks/user/handover', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok || !data.success) {
+    throw new Error(data.message || `Lỗi máy chủ khi cấp tài khoản cư dân (Mã lỗi: ${res.status})`);
+  }
+
+  return data;
+}

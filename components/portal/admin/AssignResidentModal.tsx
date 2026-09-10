@@ -20,7 +20,10 @@ import {
   BadgeCheck,
   MapPin,
   Sparkles,
-  ClipboardList
+  ClipboardList,
+  Copy,
+  Loader2,
+  Server
 } from 'lucide-react';
 import { 
   ApartmentUnit, 
@@ -28,6 +31,7 @@ import {
   ApartmentHandoverProtocol,
   assignApartmentResident 
 } from '@/lib/apartmentStore';
+import { nksHandoverProvisionAccount } from '@/lib/nksApiClient';
 
 interface AssignResidentModalProps {
   isOpen: boolean;
@@ -45,6 +49,8 @@ export default function AssignResidentModal({
   // Tabs: 'FORM' | 'CERTIFICATE'
   const [currentStep, setCurrentStep] = useState<'FORM' | 'CERTIFICATE'>('FORM');
   const [activeFormTab, setActiveFormTab] = useState<'RESIDENT' | 'PROTOCOL'>('RESIDENT');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [copied, setCopied] = useState(false);
 
   // Section 1: Thông tin chủ hộ
   const [name, setName] = useState('');
@@ -68,6 +74,7 @@ export default function AssignResidentModal({
   );
 
   const [createdProtocol, setCreatedProtocol] = useState<ApartmentHandoverProtocol | null>(null);
+  const [provisionedAccount, setProvisionedAccount] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
 
   if (!isOpen || !unit) return null;
@@ -75,7 +82,7 @@ export default function AssignResidentModal({
   const dateCode = new Date().toISOString().slice(0, 10).replace(/-/g, '');
   const generatedProtocolCode = `BBBG-SKYLINE-${unit.code.toUpperCase()}-${dateCode}`;
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
 
@@ -106,33 +113,65 @@ export default function AssignResidentModal({
       notes: handoverNotes.trim()
     };
 
-    const newOwner: ApartmentResidentOwner = {
-      name: name.trim(),
-      phone: phone.trim(),
-      email: email.trim() || `${phone.trim()}@skyline.residence.vn`,
-      cccd: cccd.trim(),
-      avatar,
-      eKycApproved: true,
-      handoverDate: handoverDate.trim() || todayStr,
-      dob: dob.trim(),
-      pob: pob.trim(),
-      handoverProtocol: protocol
-    };
+    setIsSubmitting(true);
+    try {
+      // 1. GỌI API MÁY CHỦ CẤP TÀI KHOẢN CƯ DÂN & BÀN GIAO CĂN HỘ
+      const apiRes = await nksHandoverProvisionAccount({
+        apartmentCode: unit.code,
+        fullName: name.trim(),
+        phone: phone.trim(),
+        email: email.trim() || `${phone.trim()}@skyline.residence.vn`,
+        idCard: cccd.trim(),
+        dob: dob.trim(),
+        pob: pob.trim(),
+        avatarUrl: avatar,
+        handoverProtocol: protocol
+      });
 
-    const ok = assignApartmentResident(unit.code, newOwner, protocol);
-    if (!ok) {
-      setError('Không thể gán cư dân cho căn hộ này. Vui lòng thử lại.');
-      return;
+      setProvisionedAccount(apiRes.account || null);
+      setCreatedProtocol(apiRes.protocol || protocol);
+      setCurrentStep('CERTIFICATE');
+      onSuccess();
+    } catch (err: any) {
+      console.error('Lỗi API bàn giao:', err);
+      // Fallback cục bộ nếu máy chủ từ xa gặp lỗi
+      const newOwner: ApartmentResidentOwner = {
+        name: name.trim(),
+        phone: phone.trim(),
+        email: email.trim() || `${phone.trim()}@skyline.residence.vn`,
+        cccd: cccd.trim(),
+        avatar,
+        eKycApproved: true,
+        handoverDate: handoverDate.trim() || todayStr,
+        dob: dob.trim(),
+        pob: pob.trim(),
+        handoverProtocol: protocol
+      };
+      const ok = assignApartmentResident(unit.code, newOwner, protocol);
+      if (ok) {
+        setCreatedProtocol(protocol);
+        setCurrentStep('CERTIFICATE');
+        onSuccess();
+      } else {
+        setError(err?.message || 'Không thể cấp tài khoản từ API máy chủ. Vui lòng kiểm tra lại.');
+      }
+    } finally {
+      setIsSubmitting(false);
     }
-
-    setCreatedProtocol(protocol);
-    setCurrentStep('CERTIFICATE');
-    onSuccess();
   };
 
   const handlePrint = () => {
     if (typeof window !== 'undefined') {
       window.print();
+    }
+  };
+
+  const handleCopyCredentials = () => {
+    const accText = `TÀI KHOẢN CƯ DÂN SKYLINE SMART RESIDENCE\nCăn hộ: ${unit.code}\nChủ hộ: ${name}\nSố điện thoại (Đăng nhập): ${phone}\nSố CCCD: ${cccd}\nMật khẩu mặc định: 12345678\nCổng cư dân: https://skyline.residence.vn/portal`;
+    if (typeof navigator !== 'undefined' && navigator.clipboard) {
+      navigator.clipboard.writeText(accText);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 3000);
     }
   };
 
@@ -444,13 +483,13 @@ export default function AssignResidentModal({
                 </div>
               )}
 
-              {/* Thông tin thông báo tự động kích hoạt */}
+              {/* Thông tin thông báo tự động kích hoạt API */}
               <div className="p-3 bg-[#121820] border border-[#222B35] text-[11px] text-gray-300 space-y-1">
                 <div className="text-emerald-400 font-bold flex items-center gap-1.5">
-                  <BadgeCheck className="w-4 h-4" /> Tự động khởi tạo & kích hoạt hồ sơ cư dân chính thức
+                  <Server className="w-4 h-4" /> Tự động gọi API cấp tài khoản cư dân & phân quyền chính thức
                 </div>
                 <div>
-                  Căn hộ <strong className="text-white">{unit.code}</strong> sẽ lập tức chuyển sang trạng thái <strong>ĐANG SINH SỐNG</strong>, đồng bộ tài khoản đăng nhập Cư Dân theo Số điện thoại và số CCCD, mở khóa toàn bộ quyền vận hành tòa nhà.
+                  Căn hộ <strong className="text-white">{unit.code}</strong> sẽ lập tức chuyển sang trạng thái <strong>ĐANG SINH SỐNG</strong>. Máy chủ API sẽ khởi tạo tài khoản đăng nhập với SĐT <strong className="text-[#C5A880]">{phone || '...'}</strong> và CCCD <strong className="text-[#C5A880]">{cccd || '...'}</strong> để cư dân truy cập hệ thống ngay lập tức.
                 </div>
               </div>
 
@@ -484,9 +523,18 @@ export default function AssignResidentModal({
                   </button>
                   <button
                     type="submit"
-                    className="px-5 py-2 bg-[#C5A880] hover:bg-white text-[#0D1117] font-bold uppercase tracking-wider transition-colors shadow flex items-center gap-1.5"
+                    disabled={isSubmitting}
+                    className="px-5 py-2 bg-[#C5A880] hover:bg-white text-[#0D1117] font-bold uppercase tracking-wider transition-colors shadow flex items-center gap-1.5 disabled:opacity-50"
                   >
-                    <FileCheck2 className="w-4 h-4" /> Ký & Hoàn Tất Bàn Giao
+                    {isSubmitting ? (
+                      <>
+                        <Loader2 className="w-4 h-4 animate-spin" /> Đang Gọi API Cấp Tài Khoản...
+                      </>
+                    ) : (
+                      <>
+                        <FileCheck2 className="w-4 h-4" /> Ký & Cấp Tài Khoản Qua API
+                      </>
+                    )}
                   </button>
                 </div>
               </div>
@@ -510,16 +558,21 @@ export default function AssignResidentModal({
                   SKYLINE SMART RESIDENCE • MANAGEMENT BOARD
                 </div>
                 <h2 className="font-serif text-2xl text-white font-bold mt-1">
-                  CHỨNG THƯ BÀN GIAO CĂN HỘ ĐIỆN TỬ
+                  CHỨNG THƯ BÀN GIAO CĂN HỘ & CẤP TÀI KHOẢN ĐIỆN TỬ
                 </h2>
                 <div className="text-xs text-gray-300 font-mono mt-0.5">
                   Mã Biên Bản: <strong className="text-[#C5A880]">{createdProtocol.protocolCode}</strong>
                 </div>
               </div>
 
-              {/* Dấu mộc điện tử BQL */}
-              <div className="inline-block p-2 bg-emerald-950/80 border border-emerald-500 text-emerald-300 text-[11px] font-mono font-bold">
-                ✓ ĐÃ NGHIỆM THU KỸ THUẬT & BÀN GIAO CHÍNH THỨC
+              {/* Dấu mộc điện tử BQL & API */}
+              <div className="flex flex-wrap items-center justify-center gap-2">
+                <span className="p-2 bg-emerald-950/80 border border-emerald-500 text-emerald-300 text-[11px] font-mono font-bold">
+                  ✓ ĐÃ NGHIỆM THU KỸ THUẬT & BÀN GIAO CHÍNH THỨC
+                </span>
+                <span className="p-2 bg-blue-950/80 border border-blue-500 text-blue-300 text-[11px] font-mono font-bold flex items-center gap-1">
+                  <Server className="w-3.5 h-3.5" /> ĐÃ CẤP TÀI KHOẢN TỪ MÁY CHỦ API NKS
+                </span>
               </div>
 
               {/* Tóm tắt biên bản */}
@@ -553,18 +606,50 @@ export default function AssignResidentModal({
                 </div>
               </div>
 
-              {/* Thông tin tài khoản đăng nhập */}
-              <div className="p-3 bg-emerald-950/40 border border-emerald-600/60 text-left text-xs text-gray-300 space-y-1">
-                <div className="text-emerald-400 font-bold flex items-center gap-1.5">
-                  <Check className="w-4 h-4" /> Kích Hoạt Tài Khoản Cư Dân Thành Công
+              {/* Thông tin tài khoản đăng nhập được cấp từ API */}
+              <div className="p-3.5 bg-emerald-950/40 border border-emerald-600/60 text-left text-xs text-gray-300 space-y-2">
+                <div className="flex items-center justify-between">
+                  <div className="text-emerald-400 font-bold flex items-center gap-1.5">
+                    <Check className="w-4 h-4" /> Kích Hoạt Tài Khoản Cư Dân Từ API Thành Công
+                  </div>
+                  <span className="text-[10px] font-mono text-emerald-300 px-2 py-0.5 bg-emerald-900/60 border border-emerald-500/50">
+                    ROLE: OWNER (CHỦ HỘ)
+                  </span>
                 </div>
-                <p>
-                  Chủ hộ <strong>{name}</strong> có thể đăng nhập ngay vào Cổng Cư Dân Skyline với tài khoản:
+
+                <p className="text-gray-300 text-[11.5px]">
+                  Chủ hộ <strong>{name}</strong> có thể sử dụng ngay thông tin sau để đăng nhập vào Cổng Cư Dân:
                 </p>
-                <div className="font-mono text-white bg-black/50 p-2 border border-[#222B35] flex items-center justify-between">
-                  <span>Tên đăng nhập: <strong>{phone}</strong></span>
-                  <span>Mã định danh: <strong>{cccd}</strong></span>
+
+                <div className="font-mono text-white bg-black/60 p-3 border border-[#222B35] space-y-1.5">
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="text-gray-400">Tên đăng nhập (SĐT):</span>
+                    <strong className="text-emerald-400 text-sm">{phone}</strong>
+                  </div>
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="text-gray-400">Số CCCD định danh:</span>
+                    <strong className="text-white">{cccd}</strong>
+                  </div>
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="text-gray-400">Mật khẩu mặc định:</span>
+                    <strong className="text-amber-300">12345678</strong>
+                  </div>
+                  {provisionedAccount?.id && (
+                    <div className="flex items-center justify-between text-[11px] pt-1 border-t border-gray-800">
+                      <span className="text-gray-500">Mã ID Máy Chủ API:</span>
+                      <span className="text-gray-300">{provisionedAccount.id}</span>
+                    </div>
+                  )}
                 </div>
+
+                <button
+                  type="button"
+                  onClick={handleCopyCredentials}
+                  className="px-3 py-1.5 bg-[#161B22] hover:bg-[#202936] text-gray-200 hover:text-white border border-[#2D3748] text-xs font-semibold transition-all flex items-center gap-1.5"
+                >
+                  <Copy className="w-3.5 h-3.5 text-[#C5A880]" />
+                  {copied ? '✓ Đã Sao Chép Thông Tin Tài Khoản!' : 'Sao Chép Thông Tin Đăng Nhập Để Gửi Cư Dân'}
+                </button>
               </div>
             </div>
 

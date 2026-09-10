@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import { DEMO_USERS } from '@/lib/dataStore';
+import { getUserStore } from '@/lib/userStore';
 
 function formatToDateInput(d?: string): string {
   if (!d) return '';
@@ -113,12 +114,29 @@ export async function POST(req: Request) {
       console.warn('Remote NKS login error:', e);
     }
 
-    // 2. Query User Database (Exact Matching)
-    const matched = DEMO_USERS.find((user) => {
+    // 2. Query User Database (Check userStore first for provisioned users, then DEMO_USERS)
+    const storeUser = getUserStore(u);
+    const matched = storeUser ? {
+      id: storeUser.id,
+      role: storeUser.role,
+      username: storeUser.username,
+      full_name: storeUser.fullname || storeUser.full_name,
+      phone: storeUser.phone,
+      email: storeUser.email,
+      id_card_no: storeUser.id_number || storeUser.id_card_no,
+      avatar_url: storeUser.avatar_url,
+      apartment_code: storeUser.apartment_code,
+      relationship: storeUser.relationship as any,
+      license_plate: storeUser.license_plate,
+      dob: storeUser.dob,
+      pob: storeUser.pob,
+      ui_language: 'vi' as const,
+    } : DEMO_USERS.find((user) => {
       const uName = (user.username || '').toLowerCase().trim();
       const uEmail = (user.email || '').toLowerCase().trim();
       const uPhone = (user.phone || '').toLowerCase().trim();
-      return uName === u || uEmail === u || uPhone === u;
+      const uId = (user.id_card_no || '').toLowerCase().trim();
+      return uName === u || uEmail === u || uPhone === u || uId === u;
     });
 
     if (!matched) {
