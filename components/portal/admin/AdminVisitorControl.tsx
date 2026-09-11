@@ -54,7 +54,8 @@ import {
   generateVisitorPassToken,
   getGateAuditLogs,
   GateAuditLog,
-  VisitorPassStatus
+  VisitorPassStatus,
+  clearAllVisitorData
 } from '@/lib/visitorStore';
 import { getApartmentUnits } from '@/lib/apartmentStore';
 
@@ -222,6 +223,17 @@ export default function AdminVisitorControl() {
       if (scanResult?.visitor?.passId === pass.id) {
         setScanResult(null);
       }
+      refreshData();
+    }
+  };
+
+  // Reset / Xóa dữ liệu khách ảo để đảm bảo hệ thống hoàn toàn sạch sẽ
+  const handleClearAllData = () => {
+    if (confirm('Xác nhận xóa sạch toàn bộ dữ liệu khách và nhật ký thử nghiệm để bắt đầu mới hoàn toàn?')) {
+      clearAllVisitorData();
+      showFeedback('Đã dọn dẹp sạch sẽ toàn bộ dữ liệu khách thăm.', 'info');
+      setSelectedPassForDetail(null);
+      setScanResult(null);
       refreshData();
     }
   };
@@ -640,34 +652,45 @@ export default function AdminVisitorControl() {
           </button>
         </div>
 
-        {/* Nút chuyển chế độ xem (Bảng / Thẻ) khi ở Tab Danh Sách */}
+        {/* Nút chuyển chế độ xem (Bảng / Thẻ) & Dọn dẹp dữ liệu */}
         {activeTab === 'LIST' && (
-          <div className="flex items-center gap-1.5 pb-2">
-            <span className="text-[11px] text-gray-400 mr-1">Hiển thị:</span>
+          <div className="flex items-center gap-2 pb-2 flex-wrap">
             <button
               type="button"
-              onClick={() => setViewLayout('TABLE')}
-              className={`p-1.5 border transition-all cursor-pointer ${
-                viewLayout === 'TABLE'
-                  ? 'bg-[#C5A880] text-[#0D1117] border-[#C5A880]'
-                  : 'bg-[#161B22] text-gray-400 hover:text-white border-[#2D3748]'
-              }`}
-              title="Dạng bảng chi tiết"
+              onClick={handleClearAllData}
+              className="px-2.5 py-1.5 bg-rose-950/40 hover:bg-rose-900/60 text-rose-300 border border-rose-800/60 text-[11px] font-mono transition-all flex items-center gap-1"
+              title="Xóa bỏ toàn bộ dữ liệu mẫu / dữ liệu rác để làm việc với dữ liệu thật"
             >
-              <ListFilter className="w-3.5 h-3.5" />
+              <span>🗑️ Làm Sạch Dữ Liệu</span>
             </button>
-            <button
-              type="button"
-              onClick={() => setViewLayout('CARDS')}
-              className={`p-1.5 border transition-all cursor-pointer ${
-                viewLayout === 'CARDS'
-                  ? 'bg-[#C5A880] text-[#0D1117] border-[#C5A880]'
-                  : 'bg-[#161B22] text-gray-400 hover:text-white border-[#2D3748]'
-              }`}
-              title="Dạng thẻ hồ sơ trực quan"
-            >
-              <LayoutGrid className="w-3.5 h-3.5" />
-            </button>
+
+            <div className="flex items-center gap-1.5 pl-1 border-l border-[#222B35]">
+              <span className="text-[11px] text-gray-400 mr-1">Hiển thị:</span>
+              <button
+                type="button"
+                onClick={() => setViewLayout('TABLE')}
+                className={`p-1.5 border transition-all cursor-pointer ${
+                  viewLayout === 'TABLE'
+                    ? 'bg-[#C5A880] text-[#0D1117] border-[#C5A880]'
+                    : 'bg-[#161B22] text-gray-400 hover:text-white border-[#2D3748]'
+                }`}
+                title="Dạng bảng chi tiết"
+              >
+                <ListFilter className="w-3.5 h-3.5" />
+              </button>
+              <button
+                type="button"
+                onClick={() => setViewLayout('CARDS')}
+                className={`p-1.5 border transition-all cursor-pointer ${
+                  viewLayout === 'CARDS'
+                    ? 'bg-[#C5A880] text-[#0D1117] border-[#C5A880]'
+                    : 'bg-[#161B22] text-gray-400 hover:text-white border-[#2D3748]'
+                }`}
+                title="Dạng thẻ hồ sơ trực quan"
+              >
+                <LayoutGrid className="w-3.5 h-3.5" />
+              </button>
+            </div>
           </div>
         )}
       </div>

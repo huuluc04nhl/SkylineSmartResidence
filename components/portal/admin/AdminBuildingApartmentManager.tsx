@@ -978,22 +978,25 @@ export default function AdminBuildingApartmentManager() {
 
                 {/* 1. KHUÔN VIÊN MẶT ĐẤT & SẢNH ĐÓN TẦNG 1 */}
                 <g className="opacity-95">
-                  {/* Nền cảnh quan sân vườn */}
-                  <polygon points="80,555 500,635 920,555 500,475" fill="#070B12" stroke="#1E293B" strokeWidth="2" />
-                  {/* Hồ nước sinh thái & đài phun nước */}
-                  <polygon points="320,590 500,622 680,590 500,558" fill="#0369A1" fillOpacity="0.35" stroke="#38BDF8" strokeWidth="1" />
-                  <text x="500" y="593" fill="#38BDF8" fontSize="8.5" fontFamily="monospace" textAnchor="middle" fontWeight="bold">
-                    HỒ NƯỚC CẢNH QUAN & ĐÀI PHUN NƯỚC NỘI KHU
-                  </text>
+                  {/* Nền cảnh quan sân vườn mở rộng */}
+                  <polygon points="60,575 500,665 940,575 500,485" fill="#070B12" stroke="#1E293B" strokeWidth="2" />
 
-                  {/* KHỐI SẢNH ĐÓN & DỊCH VỤ CƯ DÂN (TẦNG 1) - MỞ RỘNG BỀ THẾ */}
-                  <polygon points="200,500 500,545 800,500 800,440 500,485 200,440" fill="url(#podiumMallGrad)" stroke="#334155" strokeWidth="1.8" />
-                  <polygon points="220,485 500,528 780,485 780,455 500,498 220,455" fill="#0EA5E9" fillOpacity="0.2" stroke="#38BDF8" strokeWidth="1" />
-                  <text x="500" y="488" fill="#E2E8F0" fontSize="11" fontFamily="sans-serif" textAnchor="middle" fontWeight="extrabold" letterSpacing="0.1em">
+                  {/* KHỐI SẢNH ĐÓN & DỊCH VỤ CƯ DÂN (TẦNG 1) - DỊCH XUỐNG DƯỚI ĐÁY THÁP, KHÔNG BỊ CHUNG CƯ ĐÈ MẤT CHỮ */}
+                  <polygon points="180,555 500,605 820,555 820,490 500,540 180,490" fill="url(#podiumMallGrad)" stroke="#334155" strokeWidth="2" />
+                  <polygon points="210,540 500,586 790,540 790,505 500,551 210,505" fill="#0EA5E9" fillOpacity="0.2" stroke="#38BDF8" strokeWidth="1.2" />
+                  
+                  {/* Bảng hiệu chữ Sảnh Đón Tiếp Tân tầng 1 - Dịch xuống vị trí thông thoáng, rõ nét */}
+                  <text x="500" y="546" fill="#F8FAFC" fontSize="11.5" fontFamily="sans-serif" textAnchor="middle" fontWeight="900" letterSpacing="0.08em">
                     SẢNH ĐÓN TIẾP TÂN & KHU DỊCH VỤ CƯ DÂN (TẦNG 1)
                   </text>
-                  <text x="500" y="506" fill="#94A3B8" fontSize="8.5" fontFamily="monospace" textAnchor="middle">
+                  <text x="500" y="566" fill="#94A3B8" fontSize="8.5" fontFamily="monospace" textAnchor="middle">
                     Lễ Tân 24/7 • Ban Quản Lý • Sảnh Chờ Sang Trọng • Lối Xuống Hầm Xe B1-B2
+                  </text>
+
+                  {/* Hồ nước sinh thái & đài phun nước cảnh quan */}
+                  <polygon points="300,612 500,646 700,612 500,578" fill="#0369A1" fillOpacity="0.35" stroke="#38BDF8" strokeWidth="1" />
+                  <text x="500" y="616" fill="#38BDF8" fontSize="8.5" fontFamily="monospace" textAnchor="middle" fontWeight="bold">
+                    HỒ NƯỚC CẢNH QUAN & ĐÀI PHUN NƯỚC NỘI KHU
                   </text>
                 </g>
 
