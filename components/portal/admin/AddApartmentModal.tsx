@@ -89,17 +89,17 @@ export default function AddApartmentModal({
     let typeLabel = '2 Phòng Ngủ - 2WC';
     if (type === '1PN') typeLabel = '1 Phòng Ngủ - 1WC';
     if (type === '3PN') typeLabel = '3 Phòng Ngủ - 3WC';
-    if (type === 'DUPLEX_PENTHOUSE') typeLabel = 'Duplex Penthouse 5 Sao';
+    if (type === 'DUPLEX_PENTHOUSE') typeLabel = 'Căn Lớn Penthouse';
 
-    let statusLabel = 'Căn Hộ Trống';
-    if (status === 'OCCUPIED') statusLabel = 'Đang Sinh Sống';
-    if (status === 'MAINTENANCE') statusLabel = 'Đang Sửa Chữa / Bảo Trì';
+    let statusLabel = 'Nhà Trống';
+    if (status === 'OCCUPIED') statusLabel = 'Đã Có Người Ở';
+    if (status === 'MAINTENANCE') statusLabel = 'Đang Sửa Chữa / Nghiệm Thu';
     if (status === 'HANDOVER_PENDING') statusLabel = 'Chờ Bàn Giao';
 
     const newUnit: ApartmentUnit = {
       code: cleanCode,
       tower,
-      towerName: tower === 'A' ? 'Tòa A (Sapphire)' : 'Tòa B (Diamond)',
+      towerName: 'Chung Cư Skyline',
       floor: Number(floor),
       type,
       typeLabel,

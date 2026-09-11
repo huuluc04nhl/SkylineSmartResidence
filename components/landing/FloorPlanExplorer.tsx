@@ -11,20 +11,13 @@ import {
 import ApartmentModel3DViewer from '@/components/portal/shared/ApartmentModel3DViewer';
 
 export default function FloorPlanExplorer() {
-  const [selectedBlock, setSelectedBlock] = useState<string>('ALL');
   const [selectedType, setSelectedType] = useState<string>('ALL');
   const [activeUnit, setActiveUnit] = useState<Apartment>(DEMO_APARTMENTS[0]);
   const [activeTab, setActiveTab] = useState<'MODEL' | 'PHOTO'>('MODEL');
 
-  // Lọc danh sách căn hộ theo Tòa (Block) và Loại Căn
+  // Lọc danh sách căn hộ theo Loại Căn
   const filteredUnits = DEMO_APARTMENTS.filter((unit) => {
-    const matchBlock = selectedBlock === 'ALL' 
-      ? true 
-      : selectedBlock === 'BLOCK_A' 
-        ? unit.block_id === 1 
-        : unit.block_id === 2;
-    const matchType = selectedType === 'ALL' ? true : unit.apt_type === selectedType;
-    return matchBlock && matchType;
+    return selectedType === 'ALL' ? true : unit.apt_type === selectedType;
   });
 
   const handleSelectUnit = (unit: Apartment) => {
@@ -50,47 +43,22 @@ export default function FloorPlanExplorer() {
             </p>
           </div>
 
-          {/* Bộ Lọc Theo Tòa & Loại Căn */}
-          <div className="flex flex-col gap-2.5">
-            {/* Lọc Tòa (Block A / Block B) */}
-            <div className="flex flex-wrap gap-1.5 sm:gap-2 items-center">
-              <span className="text-[11px] uppercase text-gray-400 font-semibold font-mono mr-1">Tòa:</span>
-              {[
-                { id: 'ALL', label: 'Tất Cả Tòa' },
-                { id: 'BLOCK_A', label: 'Tòa A' },
-                { id: 'BLOCK_B', label: 'Tòa B' }
-              ].map((block) => (
-                <button
-                  key={block.id}
-                  onClick={() => setSelectedBlock(block.id)}
-                  className={`px-2.5 sm:px-3 py-1.5 text-[10.5px] sm:text-[11px] uppercase tracking-wider font-semibold border transition-all rounded ${
-                    selectedBlock === block.id
-                      ? 'bg-[#C5A880] text-[#0D1117] border-[#C5A880] font-bold shadow'
-                      : 'bg-[#121820] text-gray-300 border-[#222B35] hover:border-[#C5A880] hover:text-white'
-                  }`}
-                >
-                  {block.label}
-                </button>
-              ))}
-            </div>
-
-            {/* Lọc Loại Căn */}
-            <div className="flex flex-wrap gap-1.5 items-center">
-              <span className="text-[11px] uppercase text-gray-400 font-semibold font-mono mr-1">Loại:</span>
-              {['ALL', '1PN', '2PN', '3PN', 'Duplex'].map((type) => (
-                <button
-                  key={type}
-                  onClick={() => setSelectedType(type)}
-                  className={`px-2 sm:px-2.5 py-1 text-[10px] sm:text-[10.5px] uppercase tracking-wider font-semibold border transition-all rounded ${
-                    selectedType === type
-                      ? 'bg-[#1E293B] text-[#C5A880] border-[#C5A880] shadow font-bold'
-                      : 'bg-[#0D1117] text-gray-400 border-[#222B35] hover:border-gray-500 hover:text-white'
-                  }`}
-                >
-                  {type === 'ALL' ? 'Tất cả' : type}
-                </button>
-              ))}
-            </div>
+          {/* Bộ Lọc Theo Loại Căn */}
+          <div className="flex flex-wrap gap-1.5 items-center">
+            <span className="text-[11px] uppercase text-gray-400 font-semibold font-mono mr-1">Loại Căn:</span>
+            {['ALL', '1PN', '2PN', '3PN', 'Duplex'].map((type) => (
+              <button
+                key={type}
+                onClick={() => setSelectedType(type)}
+                className={`px-3 py-1.5 text-[10.5px] uppercase tracking-wider font-semibold border transition-all rounded ${
+                  selectedType === type
+                    ? 'bg-[#1E293B] text-[#C5A880] border-[#C5A880] shadow font-bold'
+                    : 'bg-[#0D1117] text-gray-400 border-[#222B35] hover:border-gray-500 hover:text-white'
+                }`}
+              >
+                {type === 'ALL' ? 'Tất cả loại căn' : type}
+              </button>
+            ))}
           </div>
         </div>
 

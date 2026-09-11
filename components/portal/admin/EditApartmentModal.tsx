@@ -142,24 +142,24 @@ export default function EditApartmentModal({
         )}
 
         <form onSubmit={handleSubmit} className="space-y-4 text-xs">
-          {/* Trạng thái cư trú */}
+          {/* Trạng thái căn hộ */}
           <div>
-            <label className="block text-gray-300 font-semibold mb-1">Trạng Thái Vận Hành / Cư Trú</label>
+            <label className="block text-gray-300 font-semibold mb-1">Trạng Thái Căn Hộ</label>
             <select
               value={status}
               onChange={(e) => setStatus(e.target.value as any)}
               className="w-full bg-[#161B22] border border-[#2D3748] px-3 py-2 text-white font-semibold rounded-none focus:outline-none focus:border-[#C5A880]"
             >
-              <option value="OCCUPIED">🟢 Đang Sinh Sống (Có cư dân)</option>
-              <option value="VACANT">🟡 Căn Hộ Trống (Sẵn sàng bàn giao)</option>
-              <option value="MAINTENANCE">🟣 Đang Sửa Chữa / Bảo Trì Định Kỳ</option>
-              <option value="HANDOVER_PENDING">🔵 Chờ Bàn Giao Cư Dân</option>
+              <option value="OCCUPIED">🟢 Đã Có Người Ở (Đang sinh sống)</option>
+              <option value="VACANT">🟡 Nhà Trống (Sẵn sàng bàn giao)</option>
+              <option value="MAINTENANCE">🔵 Đang Sửa Chữa / Nghiệm Thu</option>
+              <option value="HANDOVER_PENDING">🟣 Chờ Bàn Giao</option>
             </select>
           </div>
 
           {/* Phân loại căn hộ */}
           <div>
-            <label className="block text-gray-300 font-semibold mb-1">Loại Hình Không Gian</label>
+            <label className="block text-gray-300 font-semibold mb-1">Loại Căn Hộ</label>
             <select
               value={type}
               onChange={(e) => setType(e.target.value as any)}
@@ -168,7 +168,7 @@ export default function EditApartmentModal({
               <option value="1PN">1 Phòng Ngủ - 1WC</option>
               <option value="2PN">2 Phòng Ngủ - 2WC</option>
               <option value="3PN">3 Phòng Ngủ - 3WC</option>
-              <option value="DUPLEX_PENTHOUSE">Duplex Penthouse 5 Sao</option>
+              <option value="DUPLEX_PENTHOUSE">Căn Lớn Penthouse</option>
             </select>
           </div>
 

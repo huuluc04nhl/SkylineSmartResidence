@@ -98,7 +98,7 @@ export default function ApartmentDetailModal({
           <div>
             <div className="flex items-center gap-2 text-[10.5px] uppercase tracking-widest text-[#C5A880] font-mono font-semibold">
               <Building className="w-3.5 h-3.5" />
-              <span>Hồ Sơ Không Gian Căn Hộ • {unit.towerName}</span>
+              <span>Hồ Sơ Căn Hộ • Chung Cư Skyline</span>
               <span>•</span>
               <span>Tầng {unit.floor}</span>
             </div>
