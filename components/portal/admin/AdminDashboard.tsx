@@ -219,9 +219,22 @@ export default function AdminDashboard() {
     }
   }, []);
 
-  const occupiedCount = useMemo(() => {
-    return apartments.filter(u => u.status === 'OCCUPIED').length || 1;
+  const occupiedUnits = useMemo(() => {
+    return apartments.filter(u => u.status === 'OCCUPIED').length;
   }, [apartments]);
+
+  const maintenanceUnits = useMemo(() => {
+    return apartments.filter(u => u.status === 'MAINTENANCE' || u.status === 'HANDOVER_PENDING').length;
+  }, [apartments]);
+
+  const vacantUnits = useMemo(() => {
+    return apartments.filter(u => u.status === 'VACANT').length;
+  }, [apartments]);
+
+  const totalUnits = apartments.length;
+  const occupiedPct = totalUnits > 0 ? ((occupiedUnits / totalUnits) * 100).toFixed(1) : '0';
+  const maintPct = totalUnits > 0 ? ((maintenanceUnits / totalUnits) * 100).toFixed(1) : '0';
+  const vacantPct = totalUnits > 0 ? ((vacantUnits / totalUnits) * 100).toFixed(1) : '0';
 
   const currentFloorData = FLOOR_THREAT_DATABASE[selectedFloor] || FLOOR_THREAT_DATABASE['B1'];
   const activeThreat = currentFloorData.threats.find(t => t.id === selectedThreatId) || currentFloorData.threats[0];
@@ -293,26 +306,26 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        {/* KPI 2: Hiện trạng căn hộ (Tinh gọn tổng quan, không lộ chi tiết từng căn) */}
+        {/* KPI 2: Hiện trạng căn hộ (100% dữ liệu thực tế từ apartmentStore, hiển thị tinh gọn) */}
         <div className="p-4 bg-[#121820] border border-[#222B35] space-y-2 hover:border-[#C5A880]/60 transition-all shadow-lg">
           <div className="flex items-center justify-between text-xs text-gray-400">
             <span className="font-semibold">Tỷ Lệ Lấp Đầy Căn Hộ</span>
             <Building className="w-4 h-4 text-emerald-400" />
           </div>
           <div className="font-serif text-2xl text-white font-bold tracking-wide flex items-baseline gap-2">
-            <span>91.5%</span>
-            <span className="text-xs font-sans text-gray-400 font-normal">Lấp Đầy Tòa Nhà</span>
+            <span>{occupiedPct}%</span>
+            <span className="text-xs font-sans text-gray-400 font-normal">/ {totalUnits} Căn Quản Lý</span>
           </div>
-          {/* Thanh phân bổ trực quan tinh gọn */}
+          {/* Thanh phân bổ trực quan tính toán 100% từ dữ liệu thực */}
           <div className="w-full bg-[#1C2533] h-1.5 flex overflow-hidden">
-            <div className="bg-emerald-500 h-full" style={{ width: '91.5%' }} title="Đã có cư dân ở" />
-            <div className="bg-amber-400 h-full" style={{ width: '5.5%' }} title="Đang nghiệm thu" />
-            <div className="bg-gray-600 h-full" style={{ width: '3%' }} title="Căn trống" />
+            <div className="bg-emerald-500 h-full transition-all duration-500" style={{ width: `${occupiedPct}%` }} title={`Đã có cư dân ở: ${occupiedUnits} căn`} />
+            <div className="bg-amber-400 h-full transition-all duration-500" style={{ width: `${maintPct}%` }} title={`Nghiệm thu/Bảo dưỡng: ${maintenanceUnits} căn`} />
+            <div className="bg-gray-600 h-full transition-all duration-500" style={{ width: `${vacantPct}%` }} title={`Căn trống: ${vacantUnits} căn`} />
           </div>
           <div className="text-[10.5px] text-gray-400 flex items-center justify-between font-mono pt-0.5 border-t border-[#1C2533]">
-            <span className="text-emerald-400">● 183 Đã Ở</span>
-            <span className="text-amber-400">● 11 Nghiệm Thu</span>
-            <span className="text-gray-400">● 6 Trống</span>
+            <span className="text-emerald-400">● {occupiedUnits} Đã Ở</span>
+            <span className="text-amber-400">● {maintenanceUnits} Nghiệm Thu</span>
+            <span className="text-gray-400">● {vacantUnits} Căn Trống</span>
           </div>
         </div>
 
