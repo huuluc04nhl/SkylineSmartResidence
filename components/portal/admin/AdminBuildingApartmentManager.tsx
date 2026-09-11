@@ -797,7 +797,7 @@ export default function AdminBuildingApartmentManager() {
                   <style>{`
                     @keyframes laserDrawPath {
                       0% {
-                        stroke-dashoffset: 280;
+                        stroke-dashoffset: 340;
                         opacity: 0;
                       }
                       20% {
@@ -837,8 +837,8 @@ export default function AdminBuildingApartmentManager() {
                     }
 
                     .anim-laser-line {
-                      stroke-dasharray: 280;
-                      stroke-dashoffset: 280;
+                      stroke-dasharray: 340;
+                      stroke-dashoffset: 340;
                       animation: laserDrawPath 0.55s cubic-bezier(0.16, 1, 0.3, 1) forwards;
                     }
 
@@ -1018,33 +1018,56 @@ export default function AdminBuildingApartmentManager() {
                   {/* KHI CLICK VÀO BẤT KỲ CĂN HỘ NÀO TRÊN MÔ HÌNH CHUNG CƯ              */}
                   {/* =================================================================== */}
                   {(() => {
-                    const activeTargetBlock = BUILDING_3D_UNITS.find(b => b.code === selectedAptCode) || {
-                      code: selectedAptCode,
-                      floor: activeUnit?.floor || 12,
-                      side: ((activeUnit?.floor || 12) % 2 === 0 ? 'LEFT' : 'RIGHT') as 'LEFT' | 'RIGHT',
-                      type: (activeUnit?.type || '2PN') as ApartmentType,
-                      defaultStatus: (activeUnit?.status || 'VACANT') as ApartmentStatus,
-                      area: activeUnit?.area || 75
-                    };
+                    // 1. Tìm khối căn hộ tương ứng trên mô hình 3D
+                    let activeTargetBlock = BUILDING_3D_UNITS.find(b => b.code === selectedAptCode);
+                    if (!activeTargetBlock) {
+                      const targetFloor = activeUnit?.floor || 12;
+                      const numStr = selectedAptCode.replace(/\D/g, '').slice(-2);
+                      const num = parseInt(numStr || '1', 10);
+                      const fallbackSide: 'LEFT' | 'RIGHT' = num % 2 === 1 ? 'LEFT' : 'RIGHT';
+                      activeTargetBlock = BUILDING_3D_UNITS.find(b => b.floor === targetFloor && b.side === fallbackSide)
+                        || BUILDING_3D_UNITS.find(b => b.floor === targetFloor)
+                        || {
+                          code: selectedAptCode,
+                          floor: Math.max(4, Math.min(25, targetFloor)),
+                          side: fallbackSide,
+                          type: (activeUnit?.type || '2PN') as ApartmentType,
+                          defaultStatus: (activeUnit?.status || 'VACANT') as ApartmentStatus,
+                          area: activeUnit?.area || 75
+                        };
+                    }
 
-                    const curFloor = activeTargetBlock.floor;
+                    const curFloor = Math.max(4, Math.min(25, activeTargetBlock.floor));
                     const curSide = activeTargetBlock.side;
                     const curYBase = 472 - (curFloor - 4) * 17.52;
                     const curH = curFloor === 25 ? 24 : 14.5;
-                    const anchorY = Number((curYBase - 17 - (curH / 2) + 3.5).toFixed(1));
-                    const anchorX = curSide === 'LEFT' ? 248 : 752;
 
-                    const cardW = 196;
+                    // Mép tường ngoài tòa nhà (nơi tia laser đi ra ngoài không gian)
+                    // Tại mép ngoài x = 248 (LEFT) hoặc x = 752 (RIGHT), Y đáy khối căn hộ là curYBase - 33
+                    const wallX = curSide === 'LEFT' ? 248 : 752;
+                    const wallY = Number((curYBase - 33 - (curH / 2)).toFixed(1));
+
+                    // ĐIỂM CHẤM MỤC TIÊU (TARGET PIN DOT): NẰM NGAY TRÊN BỀ MẶT CĂN HỘ ĐƯỢC CHỌN
+                    // Điểm đặt cách mép tường 67px (nằm trong phần thân căn hộ, ngay cạnh nhãn mã căn)
+                    // Độ dốc mặt phẳng isometric chuẩn: 32px trên 246px chiều ngang
+                    const pinDist = 67;
+                    const pinX = curSide === 'LEFT' ? (wallX + pinDist) : (wallX - pinDist);
+                    const pinY = Number((wallY + (32 / 246) * pinDist).toFixed(1));
+
+                    // Điểm khuỷu tay bẻ góc ngang ngoài không gian
+                    const elbowX = curSide === 'LEFT' ? (wallX - 24) : (wallX + 24);
+                    const elbowY = wallY;
+
+                    // Bảng Holographic Callout định vị ở lề trái hoặc lề phải
+                    const cardW = 192;
                     const cardH = 74;
-                    const targetCardY = Math.max(72, Math.min(525, Math.round(anchorY - cardH / 2)));
-                    const cardX = curSide === 'LEFT' ? 14 : 790;
+                    const cardX = curSide === 'LEFT' ? 14 : 794;
                     const dockX = curSide === 'LEFT' ? (cardX + cardW) : cardX;
+                    const targetCardY = Math.max(48, Math.min(480, Math.round(wallY - cardH / 2)));
                     const dockY = targetCardY + cardH / 2;
-                    const elbowX = curSide === 'LEFT' ? (anchorX - 32) : (anchorX + 32);
 
-                    const laserPath = curSide === 'LEFT'
-                      ? `M ${anchorX} ${anchorY} L ${elbowX} ${anchorY} L ${cardX + cardW + 14} ${dockY} L ${dockX} ${dockY}`
-                      : `M ${anchorX} ${anchorY} L ${elbowX} ${anchorY} L ${cardX - 14} ${dockY} L ${dockX} ${dockY}`;
+                    // Đường vẽ tia laser: Từ tâm căn hộ (pin) -> mép tường (wall) -> khuỷu ngoài (elbow) -> bảng callout (dock)
+                    const laserPath = `M ${pinX} ${pinY} L ${wallX} ${wallY} L ${elbowX} ${elbowY} L ${dockX} ${dockY}`;
 
                     const isCurOccupied = activeUnit?.status === 'OCCUPIED' || selectedAptCode === '12A05';
                     const isCurMaint = activeUnit?.status === 'MAINTENANCE' || selectedAptCode === '10A03';
@@ -1055,11 +1078,12 @@ export default function AdminBuildingApartmentManager() {
 
                     return (
                       <g key={`dynamic-pointer-${selectedAptCode}`} className="pointer-events-none">
-                        {/* 1. Điểm neo tại căn hộ & radar ping tỏa sóng nhấp nháy */}
-                        <circle cx={anchorX} cy={anchorY} r="4" fill={themeNeon} />
-                        <circle cx={anchorX} cy={anchorY} r="10" fill="none" stroke={themeNeon} className="anim-ping-pulse" />
+                        {/* 1. ĐIỂM CHẤM NEO MỤC TIÊU NẰM CHÍNH XÁC TRÊN CĂN HỘ ĐƯỢC CHỌN */}
+                        <circle cx={pinX} cy={pinY} r="4.5" fill={themeNeon} filter="url(#unitGlow)" />
+                        <circle cx={pinX} cy={pinY} r="14" fill="none" stroke={themeNeon} strokeWidth="1.6" className="anim-ping-pulse" />
+                        <circle cx={pinX} cy={pinY} r="1.8" fill="#FFFFFF" />
 
-                        {/* 2. Đường tia laser bắn từ căn hộ sang bảng callout (vẽ dần dần ra) */}
+                        {/* 2. Đường tia laser bắn từ căn hộ sang bảng callout (vẽ từ từ dần dần) */}
                         <path
                           d={laserPath}
                           fill="none"
@@ -1070,6 +1094,8 @@ export default function AdminBuildingApartmentManager() {
                           className="anim-laser-line"
                           filter="url(#unitGlow)"
                         />
+                        {/* Hạt photon tại mép tường & hạt neo tại bảng callout */}
+                        <circle cx={wallX} cy={wallY} r="2.5" fill={themeNeon} />
                         <circle cx={dockX} cy={dockY} r="3.5" fill={themeBorder} />
 
                         {/* 3. Bảng Callout Holographic xuất hiện từ từ dần dần */}
