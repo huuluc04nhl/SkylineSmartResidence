@@ -25,6 +25,7 @@ import {
   Box
 } from 'lucide-react';
 import { User, UserRole, DEMO_APARTMENTS } from '@/lib/dataStore';
+import { getApartmentByCode } from '@/lib/apartmentStore';
 import ApartmentModel3DViewer from '@/components/portal/shared/ApartmentModel3DViewer';
 
 interface SmartHomeHubProps {
@@ -34,6 +35,9 @@ interface SmartHomeHubProps {
 export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
   const isOwner = currentUser.role === 'OWNER';
   const aptCode = currentUser.apartment_code || '12A05';
+  const aptUnit = getApartmentByCode(aptCode);
+  const aptArea = aptUnit ? aptUnit.area : 78.5;
+  const aptType = aptUnit ? aptUnit.typeLabel : '2PN - 2WC';
 
   // Smart Home State
   const [activeScene, setActiveScene] = useState<'AWAY' | 'CINEMA' | 'SLEEP' | 'WELCOME' | 'NONE'>('NONE');
@@ -186,12 +190,12 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
       </div>
 
       {/* ------------------------------------------------------------- */}
-      {/* DIGITAL TWIN 3D / 2D INTERACTIVE SIMULATION MODEL CANVAS     */}
+      {/* SƠ ĐỒ PHỐI CẢNH & MẶT BẰNG KỸ THUẬT TƯƠNG TÁC THỰC TẾ       */}
       {/* ------------------------------------------------------------- */}
       <div className="space-y-2">
         <div className="flex items-center justify-between">
           <div className="text-xs uppercase tracking-wider text-[#C5A880] font-bold flex items-center gap-1.5">
-            <Box className="w-3.5 h-3.5" /> Mô Hình Digital Twin 3D / 2D Tương Tác Trực Tuyến:
+            <Box className="w-3.5 h-3.5" /> Sơ Đồ Phối Cảnh & Mặt Bằng Kỹ Thuật Số Căn Hộ:
           </div>
           <span className="text-[10px] text-gray-400 font-mono">
             * Đồng bộ 1:1 theo thời gian thực với thiết bị IoT căn hộ
@@ -200,8 +204,8 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
 
         <ApartmentModel3DViewer
           apartmentCode={aptCode}
-          apartmentType="2PN - 2WC (Master Suite)"
-          clearArea={78.5}
+          apartmentType={aptType}
+          clearArea={aptArea}
           lights={lights}
           acPower={acPower}
           acTemp={acTemp}
@@ -211,6 +215,20 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
           onToggleLight={handleToggleLight}
           onToggleDoor={handleToggleDoor}
           onToggleCurtains={handleToggleCurtains}
+          onToggleAC={() => {
+            setAcPower(prev => {
+              const next = !prev;
+              showToast(next ? '❄️ Đã bật điều hòa Daikin Inverter.' : '❄️ Đã tắt điều hòa trung tâm.');
+              return next;
+            });
+          }}
+          onChangeTemp={(delta) => {
+            setAcTemp(prev => {
+              const next = Math.max(16, Math.min(30, prev + delta));
+              showToast(`🌡️ Đã điều chỉnh nhiệt độ: ${next}°C`);
+              return next;
+            });
+          }}
           interactive={true}
         />
       </div>

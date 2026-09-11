@@ -57,6 +57,8 @@ interface ApartmentModel3DViewerProps {
   onToggleLight?: (room: 'livingRoom' | 'bedroomMaster' | 'kitchen' | 'balcony') => void;
   onToggleDoor?: () => void;
   onToggleCurtains?: () => void;
+  onToggleAC?: () => void;
+  onChangeTemp?: (delta: number) => void;
   interactive?: boolean; // False on Landing Page & FloorPlanExplorer (view-only)
 }
 
@@ -73,6 +75,8 @@ export default function ApartmentModel3DViewer({
   onToggleLight,
   onToggleDoor,
   onToggleCurtains,
+  onToggleAC,
+  onChangeTemp,
   interactive = false
 }: ApartmentModel3DViewerProps) {
   const { currentUser } = useAuth();
@@ -114,17 +118,17 @@ export default function ApartmentModel3DViewer({
   const baseScale = Math.min(Math.max(calculatedBase, 0.38), 0.92);
   const finalScale = Number((baseScale * zoomLevel).toFixed(2));
 
-  // Danh Mục Khối Không Gian Căn Hộ Chung Cư (Chuẩn Kiến Trúc Thực Tế)
+  // Danh Mục Khối Không Gian Căn Hộ Chung Cư (Chuẩn Kiến Trúc Thực Tế Tổng 78.5 m²)
   const rooms: Record<string, RoomDetails> = {
     foyer: {
       id: 'foyer',
       code: 'SẢNH',
       name: 'Sảnh Đón & Cửa Vào',
-      area: 4.2,
-      dimensions: '2.1m x 2.0m',
+      area: 3.5,
+      dimensions: '1.9m x 1.8m',
       color: '#64748B',
       borderColor: '#94A3B8',
-      description: 'Khu vực cửa chính, tủ giày âm tường và sảnh tiếp đón lối vào căn hộ.',
+      description: 'Khu vực cửa chính, chốt khóa FaceID thông minh và tủ giày âm tường.',
       temperature: 26,
       humidity: 55,
       lightState: true
@@ -146,11 +150,11 @@ export default function ApartmentModel3DViewer({
       id: 'living',
       code: 'PK',
       name: 'Phòng Khách & Sinh Hoạt Chung',
-      area: 26.8,
-      dimensions: '5.8m x 4.6m',
+      area: 24.5,
+      dimensions: '5.6m x 4.4m',
       color: '#C5A880',
       borderColor: '#E2D4BF',
-      description: 'Không gian sinh hoạt trung tâm kết nối trực tiếp ban công, bàn ăn và hệ thống chiếu sáng âm trần.',
+      description: 'Không gian sinh hoạt trung tâm kết nối trực tiếp ban công, bàn ăn, đèn âm trần và điều hòa Daikin Inverter.',
       temperature: acTemp,
       humidity: 56,
       lightState: lights.livingRoom
@@ -159,11 +163,11 @@ export default function ApartmentModel3DViewer({
       id: 'diningKitchen',
       code: 'BẾP',
       name: 'Khu Vực Bếp & Bàn Ăn',
-      area: 12.5,
-      dimensions: '3.8m x 3.3m',
+      area: 7.5,
+      dimensions: '3.0m x 2.5m',
       color: '#F59E0B',
       borderColor: '#FDE68A',
-      description: 'Khu bếp nấu đảo bếp hoàn thiện mặt đá, vị trí lắp đặt bếp từ và bồn rửa đôi.',
+      description: 'Khu bếp nấu đảo bếp hoàn thiện đá hoa cương, vị trí bếp từ đôi và cảm biến rò rỉ gas.',
       temperature: 26,
       humidity: 52,
       lightState: lights.kitchen
@@ -172,11 +176,11 @@ export default function ApartmentModel3DViewer({
       id: 'masterBed',
       code: 'PN MASTER',
       name: 'Phòng Ngủ Master',
-      area: 18.2,
-      dimensions: '4.8m x 3.8m',
+      area: 16.5,
+      dimensions: '4.6m x 3.6m',
       color: '#818CF8',
       borderColor: '#C7D2FE',
-      description: 'Phòng ngủ chính khép kín có WC riêng, view thoáng mát và vị trí tủ quần áo âm tường.',
+      description: 'Phòng ngủ chính khép kín có WC riêng, view panorama thoáng mát và hệ thống chiếu sáng điều chỉnh độ sáng.',
       temperature: acTemp - 1,
       humidity: 58,
       lightState: lights.bedroomMaster
@@ -185,11 +189,11 @@ export default function ApartmentModel3DViewer({
       id: 'masterBath',
       code: 'WC 1',
       name: 'Phòng Tắm & WC Master',
-      area: 4.5,
-      dimensions: '2.4m x 1.9m',
+      area: 4.2,
+      dimensions: '2.2m x 1.9m',
       color: '#3B82F6',
       borderColor: '#93C5FD',
-      description: 'Phòng tắm riêng biệt của phòng ngủ Master với bồn tắm nằm, vách kính và lavabo đá.',
+      description: 'Phòng tắm riêng khép kín của phòng ngủ Master với buồng tắm kính đứng, sen vòi nóng lạnh cao cấp.',
       temperature: 25,
       humidity: 62,
       lightState: true
@@ -198,11 +202,11 @@ export default function ApartmentModel3DViewer({
       id: 'secondBed',
       code: 'PN 2',
       name: 'Phòng Ngủ 2',
-      area: 12.4,
-      dimensions: '3.6m x 3.4m',
+      area: 11.8,
+      dimensions: '3.5m x 3.4m',
       color: '#38BDF8',
       borderColor: '#BAE6FD',
-      description: 'Phòng ngủ phụ dành cho con cái hoặc người thân, có cửa sổ đón ánh sáng tự nhiên.',
+      description: 'Phòng ngủ phụ hoàn thiện sàn gỗ tự nhiên, cửa sổ đón gió và ánh sáng tự nhiên.',
       temperature: 25,
       humidity: 60,
       lightState: true
@@ -211,13 +215,13 @@ export default function ApartmentModel3DViewer({
       id: 'balcony',
       code: 'BAN CÔNG',
       name: 'Ban Công & Lô Gia',
-      area: 7.8,
-      dimensions: '4.6m x 1.7m',
+      area: 6.7,
+      dimensions: '4.5m x 1.5m',
       color: '#10B981',
       borderColor: '#A7F3D0',
-      description: 'Ban công rộng rãi đón gió, lan can kính cường lực an toàn và khu vực lắp rèm che.',
-      temperature: 29,
-      humidity: 68,
+      description: 'Ban công rộng rãi đón gió, lan can kính cường lực an toàn, hệ thống rèm che tự động thông minh.',
+      temperature: 28,
+      humidity: 66,
       lightState: lights.balcony
     }
   };
@@ -226,9 +230,9 @@ export default function ApartmentModel3DViewer({
 
   const getModeLabel = (mode: ViewMode) => {
     switch (mode) {
-      case '3D_BLOCKS': return 'Mô Hình 3D';
-      case '2D_BLUEPRINT': return 'Mặt Bằng 2D Kỹ Thuật';
-      case '3D_EXPLODED': return 'Bóc Tách Khối';
+      case '3D_BLOCKS': return 'Phối Cảnh Không Gian';
+      case '2D_BLUEPRINT': return 'Mặt Bằng Kỹ Thuật';
+      case '3D_EXPLODED': return 'Bóc Tách Khối Phòng';
     }
   };
 
@@ -250,7 +254,7 @@ export default function ApartmentModel3DViewer({
             }`}
           >
             <Box className="w-3.5 h-3.5 shrink-0" />
-            <span><span className="hidden sm:inline">Mô Hình </span>3D</span>
+            <span>Phối Cảnh</span>
           </button>
 
           <button
@@ -263,7 +267,7 @@ export default function ApartmentModel3DViewer({
             }`}
           >
             <Layers className="w-3.5 h-3.5 shrink-0" />
-            <span><span className="hidden sm:inline">Mặt Bằng </span>2D</span>
+            <span>Mặt Bằng 2D</span>
           </button>
 
           <button
@@ -276,7 +280,7 @@ export default function ApartmentModel3DViewer({
             }`}
           >
             <SplitSquareVertical className="w-3.5 h-3.5 shrink-0" />
-            <span><span className="hidden sm:inline">Bóc Tách </span>Khối</span>
+            <span>Bóc Tách Khối</span>
           </button>
         </div>
 
@@ -414,7 +418,7 @@ export default function ApartmentModel3DViewer({
                   SẢNH ĐÓN
                 </text>
                 <text x="0" y="10" fill="#94A3B8" fontSize="8.5" fontWeight="600" textAnchor="middle" fontFamily="system-ui, sans-serif">
-                  4.2 m²
+                  3.5 m²
                 </text>
               </g>
             </g>
@@ -496,7 +500,7 @@ export default function ApartmentModel3DViewer({
               {showDimensions && (
                 <g className="opacity-80">
                   <line x1="180" y1="78" x2="500" y2="78" stroke="#C5A880" strokeWidth="1" strokeDasharray="3 3" />
-                  <text x="340" y="73" fill="#C5A880" fontSize="10" fontFamily="monospace" fontWeight="bold" textAnchor="middle">5.80 m</text>
+                  <text x="340" y="73" fill="#C5A880" fontSize="10" fontFamily="monospace" fontWeight="bold" textAnchor="middle">5.60 m</text>
                 </g>
               )}
 
@@ -506,7 +510,7 @@ export default function ApartmentModel3DViewer({
                   PHÒNG KHÁCH
                 </text>
                 <text x="0" y="10" fill="#FDE68A" fontSize="9" fontWeight="600" textAnchor="middle" fontFamily="system-ui, sans-serif">
-                  26.8 m²
+                  24.5 m²
                 </text>
               </g>
             </g>
@@ -530,6 +534,10 @@ export default function ApartmentModel3DViewer({
                 className="transition-all hover:fill-[#211E18]"
               />
 
+              {lights.kitchen && viewMode !== '2D_BLUEPRINT' && (
+                <ellipse cx="340" cy="450" rx="115" ry="65" fill="url(#lightWarmGlow)" pointerEvents="none" opacity="0.65" />
+              )}
+
               <rect x="235" y="405" width="135" height="42" rx="3" fill="#1E293B" stroke="#F59E0B" strokeWidth="1.5" />
               <circle cx="260" cy="465" r="7" fill="#C5A880" />
               <circle cx="300" cy="465" r="7" fill="#C5A880" />
@@ -546,7 +554,7 @@ export default function ApartmentModel3DViewer({
                   BẾP & BÀN ĂN
                 </text>
                 <text x="0" y="10" fill="#FDE68A" fontSize="8.5" fontWeight="600" textAnchor="middle" fontFamily="system-ui, sans-serif">
-                  12.5 m²
+                  7.5 m²
                 </text>
               </g>
             </g>
@@ -587,7 +595,7 @@ export default function ApartmentModel3DViewer({
                   PN MASTER
                 </text>
                 <text x="0" y="10" fill="#C7D2FE" fontSize="8.5" fontWeight="600" textAnchor="middle" fontFamily="system-ui, sans-serif">
-                  18.2 m²
+                  16.5 m²
                 </text>
               </g>
             </g>
@@ -623,7 +631,7 @@ export default function ApartmentModel3DViewer({
                   WC MASTER
                 </text>
                 <text x="0" y="10" fill="#93C5FD" fontSize="8.5" fontWeight="600" textAnchor="middle" fontFamily="system-ui, sans-serif">
-                  4.5 m²
+                  4.2 m²
                 </text>
               </g>
             </g>
@@ -657,7 +665,7 @@ export default function ApartmentModel3DViewer({
                   PHÒNG NGỦ 2
                 </text>
                 <text x="0" y="10" fill="#BAE6FD" fontSize="8.5" fontWeight="600" textAnchor="middle" fontFamily="system-ui, sans-serif">
-                  12.4 m²
+                  11.8 m²
                 </text>
               </g>
             </g>
@@ -681,6 +689,10 @@ export default function ApartmentModel3DViewer({
                 className="transition-all hover:fill-[#142B23]"
               />
 
+              {lights.balcony && viewMode !== '2D_BLUEPRINT' && (
+                <ellipse cx="710" cy="505" rx="140" ry="35" fill="url(#lightWarmGlow)" pointerEvents="none" opacity="0.55" />
+              )}
+
               <line x1="910" y1="460" x2="910" y2="550" stroke="#38BDF8" strokeWidth="3.5" strokeDasharray="6 3" opacity="0.9" />
               <line x1="510" y1="550" x2="910" y2="550" stroke="#38BDF8" strokeWidth="3.5" strokeDasharray="6 3" opacity="0.9" />
 
@@ -688,13 +700,14 @@ export default function ApartmentModel3DViewer({
               <circle cx="580" cy="505" r="10" fill="#10B981" opacity="0.75" />
               <rect x="670" y="485" width="95" height="38" rx="5" fill="#1E293B" stroke="#10B981" strokeWidth="1.5" />
 
+              {/* Rèm Ban Công Thông Minh */}
               <line
                 x1="510"
                 y1="460"
                 x2="910"
                 y2="460"
-                stroke={curtainsOpen ? '#C5A880' : '#EF4444'}
-                strokeWidth="4"
+                stroke={curtainsOpen ? '#C5A880' : '#475569'}
+                strokeWidth={curtainsOpen ? '3' : '6'}
                 strokeDasharray={curtainsOpen ? '8 4' : '0'}
               />
 
@@ -704,25 +717,99 @@ export default function ApartmentModel3DViewer({
                   BAN CÔNG
                 </text>
                 <text x="0" y="10" fill="#A7F3D0" fontSize="8.5" fontWeight="600" textAnchor="middle" fontFamily="system-ui, sans-serif">
-                  7.8 m²
+                  6.7 m²
                 </text>
               </g>
             </g>
 
-            {/* CHỈ HIỂN THỊ ĐIỂM ĐIỀU KHIỂN KHI ĐÃ ĐĂNG NHẬP VÀO TRANG QUẢN LÝ (canControl === true) */}
+            {/* BIỂU TƯỢNG TƯƠNG TÁC THIẾT BỊ TRỰC TIẾP (CƯ DÂN CLICK THAO TÁC THẬT) */}
             {canControl && (
               <g className="pointer-events-auto">
-                <g transform="translate(480, 115)" className="cursor-pointer">
-                  <circle cx="0" cy="0" r="13" fill={acPower ? '#0284C7' : '#475569'} stroke="#FFFFFF" strokeWidth="1.5" />
-                  <text x="0" y="4" fill="#FFFFFF" fontSize="8" fontWeight="bold" textAnchor="middle" fontFamily="monospace">AC</text>
+                {/* 1. Cụm Điều Hòa Trung Tâm Daikin (Phòng Khách) */}
+                <g 
+                  transform="translate(480, 115)" 
+                  className="cursor-pointer group" 
+                  onClick={onToggleAC}
+                >
+                  <circle cx="0" cy="0" r="14" fill={acPower ? '#0284C7' : '#334155'} stroke={acPower ? '#38BDF8' : '#64748B'} strokeWidth="1.8" className="transition-colors" />
+                  <text x="0" y="4" fill="#FFFFFF" fontSize="8.5" fontWeight="bold" textAnchor="middle" fontFamily="monospace">AC</text>
+                  
+                  {/* Nhãn trạng thái nhiệt độ */}
+                  <rect x="18" y="-10" width={acPower ? 42 : 32} height="20" rx="3" fill="#0D1117" fillOpacity="0.9" stroke={acPower ? '#38BDF8' : '#64748B'} strokeWidth="1" />
+                  <text x={acPower ? 39 : 34} y="4" fill={acPower ? '#38BDF8' : '#94A3B8'} fontSize="8" fontWeight="bold" textAnchor="middle" fontFamily="monospace">
+                    {acPower ? `${acTemp}°C` : 'OFF'}
+                  </text>
+
+                  {/* Luồng gió điều hòa Cyan */}
+                  {acPower && (
+                    <g className="opacity-90">
+                      <path d="M -16, -2 C -30, -5 -45, 0 -60, -2" fill="none" stroke="#38BDF8" strokeWidth="2" strokeDasharray="5 3" />
+                      <path d="M -16, 5 C -32, 2 -48, 8 -65, 5" fill="none" stroke="#38BDF8" strokeWidth="1.5" strokeDasharray="4 4" />
+                    </g>
+                  )}
                 </g>
-                <g transform="translate(55, 330)" className="cursor-pointer" onClick={onToggleDoor}>
-                  <circle cx="0" cy="0" r="13" fill={doorLocked ? '#059669' : '#DC2626'} stroke="#FFFFFF" strokeWidth="1.5" />
-                  <text x="0" y="4" fill="#FFFFFF" fontSize="8" fontWeight="bold" textAnchor="middle">ID</text>
+
+                {/* 2. Chốt Khóa FaceID Cửa Chính (Sảnh Vào) */}
+                <g 
+                  transform="translate(55, 330)" 
+                  className="cursor-pointer group" 
+                  onClick={onToggleDoor}
+                >
+                  <circle cx="0" cy="0" r="14" fill={doorLocked ? '#059669' : '#DC2626'} stroke="#FFFFFF" strokeWidth="1.8" className="transition-colors" />
+                  <text x="0" y="4" fill="#FFFFFF" fontSize="7.5" fontWeight="bold" textAnchor="middle">
+                    {doorLocked ? 'LOCK' : 'OPEN'}
+                  </text>
                 </g>
-                <g transform="translate(715, 460)" className="cursor-pointer" onClick={onToggleCurtains}>
-                  <circle cx="0" cy="0" r="12" fill={curtainsOpen ? '#D97706' : '#475569'} stroke="#FFFFFF" strokeWidth="1.5" />
-                  <text x="0" y="4" fill="#FFFFFF" fontSize="7" fontWeight="bold" textAnchor="middle">RÈM</text>
+
+                {/* 3. Công Tắc Rèm Cửa Ban Công */}
+                <g 
+                  transform="translate(715, 460)" 
+                  className="cursor-pointer group" 
+                  onClick={onToggleCurtains}
+                >
+                  <circle cx="0" cy="0" r="13" fill={curtainsOpen ? '#D97706' : '#334155'} stroke="#FFFFFF" strokeWidth="1.8" className="transition-colors" />
+                  <text x="0" y="4" fill="#FFFFFF" fontSize="7.5" fontWeight="bold" textAnchor="middle">RÈM</text>
+                </g>
+
+                {/* 4. Bóng Đèn Chiếu Sáng Từng Phòng (Click Bật / Tắt Ngay) */}
+                {/* Đèn Phòng Khách */}
+                <g 
+                  transform="translate(340, 225)" 
+                  className="cursor-pointer" 
+                  onClick={() => onToggleLight?.('livingRoom')}
+                >
+                  <circle cx="0" cy="0" r="11" fill={lights.livingRoom ? '#C5A880' : '#1E293B'} stroke={lights.livingRoom ? '#FFE8B0' : '#475569'} strokeWidth="1.5" />
+                  <text x="0" y="3.5" fill={lights.livingRoom ? '#0D1117' : '#94A3B8'} fontSize="8" fontWeight="bold" textAnchor="middle">💡</text>
+                </g>
+
+                {/* Đèn PN Master */}
+                <g 
+                  transform="translate(645, 190)" 
+                  className="cursor-pointer" 
+                  onClick={() => onToggleLight?.('bedroomMaster')}
+                >
+                  <circle cx="0" cy="0" r="11" fill={lights.bedroomMaster ? '#818CF8' : '#1E293B'} stroke={lights.bedroomMaster ? '#C7D2FE' : '#475569'} strokeWidth="1.5" />
+                  <text x="0" y="3.5" fill={lights.bedroomMaster ? '#0D1117' : '#94A3B8'} fontSize="8" fontWeight="bold" textAnchor="middle">💡</text>
+                </g>
+
+                {/* Đèn Bếp */}
+                <g 
+                  transform="translate(300, 420)" 
+                  className="cursor-pointer" 
+                  onClick={() => onToggleLight?.('kitchen')}
+                >
+                  <circle cx="0" cy="0" r="10" fill={lights.kitchen ? '#F59E0B' : '#1E293B'} stroke={lights.kitchen ? '#FDE68A' : '#475569'} strokeWidth="1.5" />
+                  <text x="0" y="3.5" fill={lights.kitchen ? '#0D1117' : '#94A3B8'} fontSize="7.5" fontWeight="bold" textAnchor="middle">💡</text>
+                </g>
+
+                {/* Đèn Ban Công */}
+                <g 
+                  transform="translate(620, 505)" 
+                  className="cursor-pointer" 
+                  onClick={() => onToggleLight?.('balcony')}
+                >
+                  <circle cx="0" cy="0" r="10" fill={lights.balcony ? '#10B981' : '#1E293B'} stroke={lights.balcony ? '#A7F3D0' : '#475569'} strokeWidth="1.5" />
+                  <text x="0" y="3.5" fill={lights.balcony ? '#0D1117' : '#94A3B8'} fontSize="7.5" fontWeight="bold" textAnchor="middle">💡</text>
                 </g>
               </g>
             )}
@@ -733,7 +820,7 @@ export default function ApartmentModel3DViewer({
         <div className="absolute top-2.5 left-2.5 sm:top-3 sm:left-3 bg-[#0D1117]/95 border border-[#222B35] px-2.5 py-1.5 sm:px-3.5 sm:py-2 text-[9px] sm:text-[10px] space-y-0.5 sm:space-y-1 backdrop-blur-md rounded shadow-xl max-w-[calc(100%-6rem)] pointer-events-none">
           <div className="text-white font-bold flex items-center gap-1.5 truncate">
             <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-emerald-400 shrink-0"></span>
-            <span className="truncate">Căn Hộ {apartmentCode} ({clearArea} m²)</span>
+            <span className="truncate">Căn Hộ {apartmentCode} ({clearArea} m² • {apartmentType})</span>
           </div>
           <div className="text-gray-300 font-mono truncate">
             Chế độ: <strong className="text-[#C5A880]">{getModeLabel(viewMode)}</strong>
@@ -742,7 +829,7 @@ export default function ApartmentModel3DViewer({
 
         {/* Gợi ý tương tác (Hiển thị tinh tế trên mọi màn hình) */}
         <div className="absolute bottom-2.5 right-2.5 sm:bottom-3 sm:right-3 bg-[#1C2533]/90 border border-[#C5A880]/60 px-2.5 py-1 text-[9px] sm:text-[10px] text-[#C5A880] font-mono rounded backdrop-blur-md pointer-events-none">
-          * Chạm / Click vào phòng để xem
+          * Chạm vào phòng hoặc thiết bị (💡 AC 🔒) để tương tác
         </div>
       </div>
 
@@ -771,20 +858,79 @@ export default function ApartmentModel3DViewer({
           {/* Quyền Thao Tác: CHỈ XUẤT HIỆN KHI ĐĂNG NHẬP VÀO TRANG QUẢN LÝ CĂN HỘ CỦA MÌNH */}
           {canControl ? (
             <div className="flex flex-wrap items-center gap-2 flex-shrink-0">
-              <button
-                type="button"
-                onClick={() => {
-                  if (selectedRoom === 'living') onToggleLight?.('livingRoom');
-                  else if (selectedRoom === 'masterBed') onToggleLight?.('bedroomMaster');
-                  else if (selectedRoom === 'diningKitchen') onToggleLight?.('kitchen');
-                  else if (selectedRoom === 'balcony') onToggleLight?.('balcony');
-                  else onToggleLight?.('livingRoom');
-                }}
-                className="px-3 py-2 bg-[#161B22] hover:bg-[#C5A880] hover:text-[#0D1117] border border-gray-700 hover:border-[#C5A880] text-xs font-bold uppercase tracking-wider transition-colors rounded flex items-center gap-1.5 text-white shadow"
-              >
-                <Zap className="w-3.5 h-3.5" /> Bật / Tắt Đèn
-              </button>
+              {/* 1. Điều khiển Đèn theo từng phòng */}
+              {(selectedRoom === 'living' || selectedRoom === 'masterBed' || selectedRoom === 'diningKitchen' || selectedRoom === 'balcony') && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (selectedRoom === 'living') onToggleLight?.('livingRoom');
+                    else if (selectedRoom === 'masterBed') onToggleLight?.('bedroomMaster');
+                    else if (selectedRoom === 'diningKitchen') onToggleLight?.('kitchen');
+                    else if (selectedRoom === 'balcony') onToggleLight?.('balcony');
+                  }}
+                  className={`px-3 py-2 text-xs font-bold uppercase tracking-wider transition-all rounded flex items-center gap-1.5 shadow ${
+                    (selectedRoom === 'living' && lights.livingRoom) ||
+                    (selectedRoom === 'masterBed' && lights.bedroomMaster) ||
+                    (selectedRoom === 'diningKitchen' && lights.kitchen) ||
+                    (selectedRoom === 'balcony' && lights.balcony)
+                      ? 'bg-[#C5A880] text-[#0D1117] hover:bg-white'
+                      : 'bg-[#161B22] text-gray-300 border border-gray-700 hover:border-[#C5A880] hover:text-white'
+                  }`}
+                >
+                  <Zap className="w-3.5 h-3.5" />
+                  <span>
+                    {selectedRoom === 'living'
+                      ? (lights.livingRoom ? 'Tắt Đèn PK' : 'Bật Đèn PK')
+                      : selectedRoom === 'masterBed'
+                      ? (lights.bedroomMaster ? 'Tắt Đèn Master' : 'Bật Đèn Master')
+                      : selectedRoom === 'diningKitchen'
+                      ? (lights.kitchen ? 'Tắt Đèn Bếp' : 'Bật Đèn Bếp')
+                      : (lights.balcony ? 'Tắt Đèn Ban Công' : 'Bật Đèn Ban Công')}
+                  </span>
+                </button>
+              )}
 
+              {/* 2. Điều khiển Điều Hòa khi chọn Phòng Khách */}
+              {selectedRoom === 'living' && onToggleAC && (
+                <div className="flex items-center gap-1.5 bg-[#161B22] border border-[#222B35] p-1 rounded">
+                  <button
+                    type="button"
+                    onClick={onToggleAC}
+                    className={`px-2.5 py-1 text-xs font-bold uppercase tracking-wider rounded transition-colors flex items-center gap-1 ${
+                      acPower ? 'bg-sky-500 text-white shadow' : 'bg-gray-800 text-gray-400'
+                    }`}
+                  >
+                    <Wind className="w-3.5 h-3.5" />
+                    <span>{acPower ? 'AC Bật' : 'AC Tắt'}</span>
+                  </button>
+
+                  {acPower && onChangeTemp && (
+                    <div className="flex items-center gap-1 pl-1">
+                      <button
+                        type="button"
+                        onClick={() => onChangeTemp(-1)}
+                        className="w-6 h-6 bg-[#0D1117] hover:bg-[#C5A880] hover:text-[#0D1117] text-gray-200 border border-gray-700 rounded text-xs font-bold flex items-center justify-center transition-colors"
+                        title="Giảm 1°C"
+                      >
+                        -
+                      </button>
+                      <span className="font-mono text-xs font-bold text-sky-400 px-1">
+                        {acTemp}°C
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => onChangeTemp(1)}
+                        className="w-6 h-6 bg-[#0D1117] hover:bg-[#C5A880] hover:text-[#0D1117] text-gray-200 border border-gray-700 rounded text-xs font-bold flex items-center justify-center transition-colors"
+                        title="Tăng 1°C"
+                      >
+                        +
+                      </button>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* 3. Điều khiển Rèm khi chọn Ban Công */}
               {selectedRoom === 'balcony' && (
                 <button
                   type="button"
@@ -795,13 +941,16 @@ export default function ApartmentModel3DViewer({
                 </button>
               )}
 
+              {/* 4. Điều khiển Khóa FaceID khi chọn Sảnh */}
               {selectedRoom === 'foyer' && (
                 <button
                   type="button"
                   onClick={onToggleDoor}
-                  className="px-3 py-2 bg-[#C5A880] hover:bg-white text-[#0D1117] text-xs font-bold uppercase tracking-wider transition-colors rounded flex items-center gap-1.5 shadow"
+                  className={`px-3 py-2 text-xs font-bold uppercase tracking-wider transition-colors rounded flex items-center gap-1.5 shadow ${
+                    doorLocked ? 'bg-[#059669] text-white hover:bg-emerald-400' : 'bg-red-600 text-white hover:bg-red-500'
+                  }`}
                 >
-                  <Lock className="w-3.5 h-3.5" /> {doorLocked ? 'Mở Khóa' : 'Khóa Chốt'}
+                  <Lock className="w-3.5 h-3.5" /> {doorLocked ? 'Đang Khóa Chốt (Bấm Mở)' : 'Đang Mở (Bấm Khóa)'}
                 </button>
               )}
             </div>

@@ -32,6 +32,7 @@ import {
   Zap,
   Droplets
 } from 'lucide-react';
+import { useAuth } from '@/lib/authContext';
 import { 
   ApartmentUnit, 
   updateApartmentBillingStatus, 
@@ -58,6 +59,9 @@ export default function ApartmentDetailModal({
   onAssignResident,
   onRefresh
 }: ApartmentDetailModalProps) {
+  const { currentUser } = useAuth();
+  const isAdmin = currentUser?.role === 'ADMIN';
+
   const [activeTab, setActiveTab] = useState<DetailTab>('OVERVIEW_3D');
   const [isUpdatingBill, setIsUpdatingBill] = useState(false);
   const [isConfirmingEvict, setIsConfirmingEvict] = useState(false);
@@ -131,14 +135,16 @@ export default function ApartmentDetailModal({
           </div>
 
           <div className="flex items-center gap-2">
-            <button
-              type="button"
-              onClick={() => onEditUnit(unit)}
-              className="px-3 py-1.5 bg-[#161B22] hover:bg-[#202936] text-gray-200 hover:text-white border border-[#2D3748] text-xs font-semibold rounded-none transition-all flex items-center gap-1.5"
-            >
-              <Edit className="w-3.5 h-3.5 text-[#C5A880]" />
-              <span className="hidden sm:inline">Chỉnh Sửa</span>
-            </button>
+            {isAdmin && (
+              <button
+                type="button"
+                onClick={() => onEditUnit(unit)}
+                className="px-3 py-1.5 bg-[#161B22] hover:bg-[#202936] text-gray-200 hover:text-white border border-[#2D3748] text-xs font-semibold rounded-none transition-all flex items-center gap-1.5"
+              >
+                <Edit className="w-3.5 h-3.5 text-[#C5A880]" />
+                <span className="hidden sm:inline">Chỉnh Sửa</span>
+              </button>
+            )}
 
             <button
               type="button"
@@ -155,7 +161,7 @@ export default function ApartmentDetailModal({
         {/* ============================================================= */}
         <div className="flex items-center gap-1 px-4 sm:px-5 bg-[#0F141C] border-b border-[#222B35] overflow-x-auto text-xs font-mono select-none">
           {[
-            { id: 'OVERVIEW_3D', label: '1. Sơ Đồ 3D & Thông Số', icon: Maximize2 },
+            { id: 'OVERVIEW_3D', label: '1. Phối Cảnh & Thông Số', icon: Maximize2 },
             { id: 'RESIDENT_MEMBERS', label: `2. Cư Dân & Nhân Khẩu (${unit.membersCount})`, icon: Users },
             { id: 'VEHICLES', label: `3. Xe Cộ & Thẻ Hầm (${unit.vehicles?.length || 0})`, icon: Car },
             { id: 'BILLING', label: '4. Phí Quản Lý & Hóa Đơn', icon: CreditCard },
@@ -285,13 +291,15 @@ export default function ApartmentDetailModal({
                         <span className="px-2.5 py-0.5 text-[10px] font-bold uppercase bg-emerald-950 text-emerald-300 border border-emerald-500">
                           e-KYC Đã Xác Thực ✓
                         </span>
-                        <button
-                          type="button"
-                          onClick={() => setIsConfirmingEvict(true)}
-                          className="px-2.5 py-1 text-[11px] font-semibold bg-rose-950/80 hover:bg-rose-900 text-rose-200 border border-rose-600 transition-colors"
-                        >
-                          Thu Hồi / Cư Dân Chuyển Đi
-                        </button>
+                        {isAdmin && (
+                          <button
+                            type="button"
+                            onClick={() => setIsConfirmingEvict(true)}
+                            className="px-2.5 py-1 text-[11px] font-semibold bg-rose-950/80 hover:bg-rose-900 text-rose-200 border border-rose-600 transition-colors"
+                          >
+                            Thu Hồi / Cư Dân Chuyển Đi
+                          </button>
+                        )}
                       </div>
                     </div>
 
@@ -473,13 +481,15 @@ export default function ApartmentDetailModal({
                       Căn hộ chưa có cư dân nhận bàn giao hoặc đăng ký sinh sống. Bạn có thể tiến hành bàn giao và gán chủ sở hữu mới ngay bây giờ.
                     </p>
                   </div>
-                  <button
-                    type="button"
-                    onClick={() => onAssignResident(unit)}
-                    className="px-5 py-2.5 bg-[#C5A880] hover:bg-white text-[#0D1117] font-bold text-xs uppercase tracking-wider transition-colors inline-flex items-center gap-2 shadow-lg"
-                  >
-                    <UserPlus className="w-4 h-4" /> Bàn Giao Chìa Khóa Cho Chủ Hộ Mới
-                  </button>
+                  {isAdmin && (
+                    <button
+                      type="button"
+                      onClick={() => onAssignResident(unit)}
+                      className="px-5 py-2.5 bg-[#C5A880] hover:bg-white text-[#0D1117] font-bold text-xs uppercase tracking-wider transition-colors inline-flex items-center gap-2 shadow-lg"
+                    >
+                      <UserPlus className="w-4 h-4" /> Bàn Giao Chìa Khóa Cho Chủ Hộ Mới
+                    </button>
+                  )}
                 </div>
               )}
 
@@ -554,19 +564,21 @@ export default function ApartmentDetailModal({
                         {unit.billing.status === 'PAID' ? '✓ Đã Thanh Toán' : 'Chưa Thanh Toán'}
                       </span>
 
-                      <button
-                        type="button"
-                        onClick={handleToggleBilling}
-                        disabled={isUpdatingBill}
-                        className={`px-3 py-1 text-xs font-bold uppercase transition-all flex items-center gap-1.5 ${
-                          unit.billing.status === 'PAID'
-                            ? 'bg-[#161B22] hover:bg-[#202936] text-amber-400 border border-amber-500/50'
-                            : 'bg-[#C5A880] hover:bg-white text-[#0D1117]'
-                        }`}
-                      >
-                        {isUpdatingBill ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Check className="w-3.5 h-3.5" />}
-                        {unit.billing.status === 'PAID' ? 'Đổi Thành Chưa Nộp' : 'Xác Nhận Đã Thu Tiền'}
-                      </button>
+                      {isAdmin && (
+                        <button
+                          type="button"
+                          onClick={handleToggleBilling}
+                          disabled={isUpdatingBill}
+                          className={`px-3 py-1 text-xs font-bold uppercase transition-all flex items-center gap-1.5 ${
+                            unit.billing.status === 'PAID'
+                              ? 'bg-[#161B22] hover:bg-[#202936] text-amber-400 border border-amber-500/50'
+                              : 'bg-[#C5A880] hover:bg-white text-[#0D1117]'
+                          }`}
+                        >
+                          {isUpdatingBill ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Check className="w-3.5 h-3.5" />}
+                          {unit.billing.status === 'PAID' ? 'Đổi Thành Chưa Nộp' : 'Xác Nhận Đã Thu Tiền'}
+                        </button>
+                      )}
                     </div>
                   </div>
 

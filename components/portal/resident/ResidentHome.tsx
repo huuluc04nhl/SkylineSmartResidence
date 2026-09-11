@@ -70,7 +70,7 @@ export default function ResidentHome({ currentUser, onNavigate, onOpenVisitorMod
                 onClick={() => setIsAptDetailOpen(true)}
                 className="px-2 py-0.5 bg-[#161B22] hover:bg-[#C5A880] hover:text-[#0D1117] text-[#C5A880] border border-[#C5A880]/50 text-[10.5px] font-semibold transition-all flex items-center gap-1 shadow-sm"
               >
-                <Eye className="w-3 h-3" /> Chi Tiết Căn Hộ & 3D
+                <Eye className="w-3 h-3" /> Chi Tiết Căn Hộ & Phối Cảnh
               </button>
             </span>
             <span>•</span>
