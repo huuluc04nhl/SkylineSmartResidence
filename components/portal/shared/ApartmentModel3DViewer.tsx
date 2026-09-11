@@ -62,6 +62,37 @@ interface ApartmentModel3DViewerProps {
   interactive?: boolean; // False on Landing Page & FloorPlanExplorer (view-only)
 }
 
+// Thước đo CAD Dài / Rộng hiển thị khi bóc tách khối căn hộ
+function DimH({ x1, x2, y, label }: { x1: number; x2: number; y: number; label: string }) {
+  const midX = (x1 + x2) / 2;
+  return (
+    <g className="pointer-events-none opacity-95">
+      <line x1={x1} y1={y - 3} x2={x1} y2={y + 3} stroke="#F59E0B" strokeWidth="1.2" strokeLinecap="round" />
+      <line x1={x2} y1={y - 3} x2={x2} y2={y + 3} stroke="#F59E0B" strokeWidth="1.2" strokeLinecap="round" />
+      <line x1={x1} y1={y} x2={x2} y2={y} stroke="#F59E0B" strokeWidth="1" strokeDasharray="3 2" />
+      <rect x={midX - 22} y={y - 8} width="44" height="16" rx="3" fill="#0A0E17" stroke="#F59E0B" strokeWidth="0.8" fillOpacity="0.95" />
+      <text x={midX} y={y + 3.5} fill="#FDE68A" fontSize="8.5" fontFamily="monospace" fontWeight="bold" textAnchor="middle">
+        {label}
+      </text>
+    </g>
+  );
+}
+
+function DimV({ x, y1, y2, label }: { x: number; y1: number; y2: number; label: string }) {
+  const midY = (y1 + y2) / 2;
+  return (
+    <g className="pointer-events-none opacity-95">
+      <line x1={x - 3} y1={y1} x2={x + 3} y2={y1} stroke="#F59E0B" strokeWidth="1.2" strokeLinecap="round" />
+      <line x1={x - 3} y1={y2} x2={x + 3} y2={y2} stroke="#F59E0B" strokeWidth="1.2" strokeLinecap="round" />
+      <line x1={x} y1={y1} x2={x} y2={y2} stroke="#F59E0B" strokeWidth="1" strokeDasharray="3 2" />
+      <rect x={x - 22} y={midY - 8} width="44" height="16" rx="3" fill="#0A0E17" stroke="#F59E0B" strokeWidth="0.8" fillOpacity="0.95" />
+      <text x={x} y={midY + 3.5} fill="#FDE68A" fontSize="8.5" fontFamily="monospace" fontWeight="bold" textAnchor="middle">
+        {label}
+      </text>
+    </g>
+  );
+}
+
 export default function ApartmentModel3DViewer({
   apartmentCode = '12A05',
   apartmentType = '2PN - 2WC',
@@ -90,6 +121,9 @@ export default function ApartmentModel3DViewer({
   const [viewMode, setViewMode] = useState<ViewMode>('3D_BLOCKS');
   const [selectedRoom, setSelectedRoom] = useState<string>('living');
   const [showDimensions, setShowDimensions] = useState(true);
+
+  // Chỉ hiển thị thước đo kích thước Dài x Rộng khi ở chế độ Bóc Tách Khối (3D_EXPLODED)
+  const showExplodedDimensions = viewMode === '3D_EXPLODED' && showDimensions;
   const [zoomLevel, setZoomLevel] = useState<number>(1);
   const containerRef = useRef<HTMLDivElement>(null);
   const [containerWidth, setContainerWidth] = useState<number>(840);
@@ -286,18 +320,22 @@ export default function ApartmentModel3DViewer({
 
         {/* Cụm Tiện Ích: Kích Thước Đo & Nút Zoom Tương Tác */}
         <div className="flex items-center gap-1.5">
-          {/* Nút Ẩn / Hiện Kích Thước Laser */}
-          <button
-            type="button"
-            onClick={() => setShowDimensions(!showDimensions)}
-            className={`px-2 sm:px-2.5 py-1.5 border rounded transition-colors text-[10px] sm:text-[10.5px] flex items-center gap-1.5 ${
-              showDimensions ? 'bg-[#1C2533] border-[#C5A880] text-[#C5A880]' : 'bg-[#121820] border-gray-700 text-gray-400'
-            }`}
-            title="Ẩn / Hiện kích thước kỹ thuật CAD"
-          >
-            <Grid className="w-3.5 h-3.5 shrink-0" />
-            <span className="hidden xs:inline">Đo CAD</span>
-          </button>
+          {/* Nút Thước Đo Khối - Chỉ hiển thị khi đang ở chế độ Bóc Tách Khối */}
+          {viewMode === '3D_EXPLODED' && (
+            <button
+              type="button"
+              onClick={() => setShowDimensions(!showDimensions)}
+              className={`px-2 sm:px-2.5 py-1.5 border rounded transition-colors text-[10px] sm:text-[10.5px] flex items-center gap-1.5 ${
+                showDimensions 
+                  ? 'bg-amber-500/20 border-amber-400 text-amber-300' 
+                  : 'bg-[#121820] border-gray-700 text-gray-400 hover:text-gray-200'
+              }`}
+              title="Bật / Tắt kích thước Dài x Rộng từng khối phòng"
+            >
+              <Grid className="w-3.5 h-3.5 shrink-0" />
+              <span className="hidden xs:inline">Thước Đo Khối</span>
+            </button>
+          )}
 
           {/* Bộ Điều Khiển Zoom Thông Minh Cho Cả Mobile & Desktop */}
           <div className="flex items-center bg-[#121820] border border-[#222B35] rounded overflow-hidden">
@@ -411,6 +449,14 @@ export default function ApartmentModel3DViewer({
               <line x1="55" y1="330" x2="55" y2="370" stroke="#C5A880" strokeWidth="3.5" strokeLinecap="round" />
               <rect x="115" y="280" width="45" height="25" rx="3" fill="#1E293B" stroke="#475569" strokeWidth="1" />
               
+              {/* Thước đo Dài x Rộng hiển thị khi bóc tách khối */}
+              {showExplodedDimensions && (
+                <>
+                  <DimH x1={50} x2={170} y={248} label="1.90 m" />
+                  <DimV x={36} y1={260} y2={400} label="1.80 m" />
+                </>
+              )}
+
               {/* Thẻ Nhãn Phòng 2 Dòng Gọn Gàng, Không Tràn Viền */}
               <g transform="translate(110, 345)">
                 <rect x="-42" y="-16" width="84" height="32" rx="4" fill="#0A0E17" fillOpacity="0.92" stroke="#64748B" strokeWidth="1.2" />
@@ -446,6 +492,14 @@ export default function ApartmentModel3DViewer({
               <rect x="115" y="150" width="38" height="22" rx="2" fill="#1E293B" stroke="#64748B" />
               <circle cx="134" cy="161" r="6" fill="#F8FAFC" />
               <rect x="120" y="200" width="30" height="38" rx="5" fill="#1E293B" stroke="#64748B" />
+
+              {/* Thước đo Dài x Rộng hiển thị khi bóc tách khối */}
+              {showExplodedDimensions && (
+                <>
+                  <DimH x1={50} x2={170} y={126} label="2.00 m" />
+                  <DimV x={36} y1={140} y2={250} label="1.90 m" />
+                </>
+              )}
 
               <g transform="translate(110, 205)">
                 <rect x="-42" y="-16" width="84" height="32" rx="4" fill="#0A0E17" fillOpacity="0.92" stroke="#06B6D4" strokeWidth="1.2" />
@@ -497,11 +551,12 @@ export default function ApartmentModel3DViewer({
               <circle cx="275" cy="170" r="5" fill="#475569" />
               <circle cx="305" cy="170" r="5" fill="#475569" />
 
-              {showDimensions && (
-                <g className="opacity-80">
-                  <line x1="180" y1="78" x2="500" y2="78" stroke="#C5A880" strokeWidth="1" strokeDasharray="3 3" />
-                  <text x="340" y="73" fill="#C5A880" fontSize="10" fontFamily="monospace" fontWeight="bold" textAnchor="middle">5.60 m</text>
-                </g>
+              {/* Thước đo Dài x Rộng hiển thị khi bóc tách khối */}
+              {showExplodedDimensions && (
+                <>
+                  <DimH x1={180} x2={500} y={76} label="5.60 m" />
+                  <DimV x={166} y1={90} y2={360} label="4.40 m" />
+                </>
               )}
 
               <g transform="translate(340, 310)">
@@ -548,6 +603,14 @@ export default function ApartmentModel3DViewer({
               <circle cx="463" cy="445" r="6" fill="#EF4444" opacity="0.7" />
               <rect x="450" y="465" width="26" height="18" rx="2" fill="#334155" />
 
+              {/* Thước đo Dài x Rộng hiển thị khi bóc tách khối */}
+              {showExplodedDimensions && (
+                <>
+                  <DimH x1={180} x2={500} y={566} label="3.00 m" />
+                  <DimV x={166} y1={370} y2={550} label="2.50 m" />
+                </>
+              )}
+
               <g transform="translate(340, 515)">
                 <rect x="-52" y="-17" width="104" height="34" rx="4" fill="#0A0E17" fillOpacity="0.92" stroke="#F59E0B" strokeWidth="1.2" />
                 <text x="0" y="-3" fill="#F59E0B" fontSize="9.5" fontWeight="bold" textAnchor="middle" fontFamily="system-ui, sans-serif" letterSpacing="0.05em">
@@ -589,6 +652,14 @@ export default function ApartmentModel3DViewer({
               <rect x="710" y="135" width="22" height="20" rx="2" fill="#334155" stroke="#64748B" />
               <rect x="525" y="240" width="150" height="28" rx="2" fill="#1E293B" stroke="#64748B" />
 
+              {/* Thước đo Dài x Rộng hiển thị khi bóc tách khối */}
+              {showExplodedDimensions && (
+                <>
+                  <DimH x1={510} x2={780} y={76} label="4.60 m" />
+                  <DimV x={788} y1={90} y2={290} label="3.60 m" />
+                </>
+              )}
+
               <g transform="translate(645, 260)">
                 <rect x="-54" y="-17" width="108" height="34" rx="4" fill="#0A0E17" fillOpacity="0.92" stroke="#818CF8" strokeWidth="1.2" />
                 <text x="0" y="-3" fill="#818CF8" fontSize="9.5" fontWeight="bold" textAnchor="middle" fontFamily="system-ui, sans-serif" letterSpacing="0.05em">
@@ -625,6 +696,14 @@ export default function ApartmentModel3DViewer({
               <circle cx="850" cy="182" r="6" fill="#FFFFFF" />
               <rect x="830" y="220" width="40" height="45" rx="8" fill="#1E293B" stroke="#64748B" />
 
+              {/* Thước đo Dài x Rộng hiển thị khi bóc tách khối */}
+              {showExplodedDimensions && (
+                <>
+                  <DimH x1={790} x2={910} y={76} label="2.20 m" />
+                  <DimV x={922} y1={90} y2={290} label="1.90 m" />
+                </>
+              )}
+
               <g transform="translate(850, 260)">
                 <rect x="-44" y="-16" width="88" height="32" rx="4" fill="#0A0E17" fillOpacity="0.92" stroke="#3B82F6" strokeWidth="1.2" />
                 <text x="0" y="-3" fill="#60A5FA" fontSize="9" fontWeight="bold" textAnchor="middle" fontFamily="system-ui, sans-serif" letterSpacing="0.05em">
@@ -658,6 +737,14 @@ export default function ApartmentModel3DViewer({
               <rect x="655" y="325" width="105" height="85" rx="4" fill="#1E293B" stroke="#38BDF8" strokeWidth="1.5" />
               <rect x="670" y="333" width="75" height="18" rx="2" fill="#F1F5F9" opacity="0.9" />
               <rect x="530" y="325" width="80" height="35" rx="3" fill="#334155" stroke="#64748B" />
+
+              {/* Thước đo Dài x Rộng hiển thị khi bóc tách khối */}
+              {showExplodedDimensions && (
+                <>
+                  <DimH x1={510} x2={780} y={286} label="3.50 m" />
+                  <DimV x={788} y1={300} y2={450} label="3.40 m" />
+                </>
+              )}
 
               <g transform="translate(585, 415)">
                 <rect x="-50" y="-17" width="100" height="34" rx="4" fill="#0A0E17" fillOpacity="0.92" stroke="#38BDF8" strokeWidth="1.2" />
@@ -710,6 +797,14 @@ export default function ApartmentModel3DViewer({
                 strokeWidth={curtainsOpen ? '3' : '6'}
                 strokeDasharray={curtainsOpen ? '8 4' : '0'}
               />
+
+              {/* Thước đo Dài x Rộng hiển thị khi bóc tách khối */}
+              {showExplodedDimensions && (
+                <>
+                  <DimH x1={510} x2={910} y={566} label="4.50 m" />
+                  <DimV x={922} y1={460} y2={550} label="1.50 m" />
+                </>
+              )}
 
               <g transform="translate(830, 515)">
                 <rect x="-45" y="-16" width="90" height="32" rx="4" fill="#0A0E17" fillOpacity="0.92" stroke="#10B981" strokeWidth="1.2" />
