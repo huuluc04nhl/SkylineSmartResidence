@@ -62,33 +62,43 @@ interface ApartmentModel3DViewerProps {
   interactive?: boolean; // False on Landing Page & FloorPlanExplorer (view-only)
 }
 
-// Thước đo CAD Dài / Rộng hiển thị khi bóc tách khối căn hộ
-function DimH({ x1, x2, y, label }: { x1: number; x2: number; y: number; label: string }) {
+// Thước đo CAD Dài / Rộng hiển thị hiệu ứng chuyển động laser khi cư dân chạm vào từng phòng
+function AnimatedDimH({ x1, x2, y, label }: { x1: number; x2: number; y: number; label: string }) {
   const midX = (x1 + x2) / 2;
   return (
-    <g className="pointer-events-none opacity-95">
-      <line x1={x1} y1={y - 3} x2={x1} y2={y + 3} stroke="#F59E0B" strokeWidth="1.2" strokeLinecap="round" />
-      <line x1={x2} y1={y - 3} x2={x2} y2={y + 3} stroke="#F59E0B" strokeWidth="1.2" strokeLinecap="round" />
-      <line x1={x1} y1={y} x2={x2} y2={y} stroke="#F59E0B" strokeWidth="1" strokeDasharray="3 2" />
-      <rect x={midX - 22} y={y - 8} width="44" height="16" rx="3" fill="#0A0E17" stroke="#F59E0B" strokeWidth="0.8" fillOpacity="0.95" />
-      <text x={midX} y={y + 3.5} fill="#FDE68A" fontSize="8.5" fontFamily="monospace" fontWeight="bold" textAnchor="middle">
-        {label}
-      </text>
+    <g className="pointer-events-none select-none">
+      {/* 2 vạch chặn đầu mút laser */}
+      <line x1={x1} y1={y - 4} x2={x1} y2={y + 4} stroke="#F59E0B" strokeWidth="1.6" strokeLinecap="round" className="dim-line-anim" />
+      <line x1={x2} y1={y - 4} x2={x2} y2={y + 4} stroke="#F59E0B" strokeWidth="1.6" strokeLinecap="round" className="dim-line-anim" />
+      {/* Đường gióng nét đứt laser đo khoảng cách */}
+      <line x1={x1} y1={y} x2={x2} y2={y} stroke="#F59E0B" strokeWidth="1.2" className="dim-line-anim" />
+      {/* Hộp nhãn chỉ số đo kích thước nảy nhẹ lên */}
+      <g className="dim-badge-anim" style={{ transformOrigin: `${midX}px ${y}px` }}>
+        <rect x={midX - 25} y={y - 9} width="50" height="18" rx="4" fill="#0A0E17" stroke="#F59E0B" strokeWidth="1.2" fillOpacity="0.95" />
+        <text x={midX} y={y + 3.5} fill="#FDE68A" fontSize="9" fontFamily="monospace" fontWeight="bold" textAnchor="middle">
+          {label}
+        </text>
+      </g>
     </g>
   );
 }
 
-function DimV({ x, y1, y2, label }: { x: number; y1: number; y2: number; label: string }) {
+function AnimatedDimV({ x, y1, y2, label }: { x: number; y1: number; y2: number; label: string }) {
   const midY = (y1 + y2) / 2;
   return (
-    <g className="pointer-events-none opacity-95">
-      <line x1={x - 3} y1={y1} x2={x + 3} y2={y1} stroke="#F59E0B" strokeWidth="1.2" strokeLinecap="round" />
-      <line x1={x - 3} y1={y2} x2={x + 3} y2={y2} stroke="#F59E0B" strokeWidth="1.2" strokeLinecap="round" />
-      <line x1={x} y1={y1} x2={x} y2={y2} stroke="#F59E0B" strokeWidth="1" strokeDasharray="3 2" />
-      <rect x={x - 22} y={midY - 8} width="44" height="16" rx="3" fill="#0A0E17" stroke="#F59E0B" strokeWidth="0.8" fillOpacity="0.95" />
-      <text x={x} y={midY + 3.5} fill="#FDE68A" fontSize="8.5" fontFamily="monospace" fontWeight="bold" textAnchor="middle">
-        {label}
-      </text>
+    <g className="pointer-events-none select-none">
+      {/* 2 vạch chặn đầu mút laser */}
+      <line x1={x - 4} y1={y1} x2={x + 4} y2={y1} stroke="#F59E0B" strokeWidth="1.6" strokeLinecap="round" className="dim-line-anim" />
+      <line x1={x - 4} y1={y2} x2={x + 4} y2={y2} stroke="#F59E0B" strokeWidth="1.6" strokeLinecap="round" className="dim-line-anim" />
+      {/* Đường gióng nét đứt laser đo khoảng cách */}
+      <line x1={x} y1={y1} x2={x} y2={y2} stroke="#F59E0B" strokeWidth="1.2" className="dim-line-anim" />
+      {/* Hộp nhãn chỉ số đo kích thước nảy nhẹ lên */}
+      <g className="dim-badge-anim" style={{ transformOrigin: `${x}px ${midY}px` }}>
+        <rect x={x - 25} y={midY - 9} width="50" height="18" rx="4" fill="#0A0E17" stroke="#F59E0B" strokeWidth="1.2" fillOpacity="0.95" />
+        <text x={x} y={midY + 3.5} fill="#FDE68A" fontSize="9" fontFamily="monospace" fontWeight="bold" textAnchor="middle">
+          {label}
+        </text>
+      </g>
     </g>
   );
 }
@@ -122,8 +132,8 @@ export default function ApartmentModel3DViewer({
   const [selectedRoom, setSelectedRoom] = useState<string>('living');
   const [showDimensions, setShowDimensions] = useState(true);
 
-  // Chỉ hiển thị thước đo kích thước Dài x Rộng khi ở chế độ Bóc Tách Khối (3D_EXPLODED)
-  const showExplodedDimensions = viewMode === '3D_EXPLODED' && showDimensions;
+  // Chỉ hiển thị thước đo kích thước Dài x Rộng của phòng khi cư dân click chọn phòng đó ở chế độ Khám Phá Phòng (3D_EXPLODED)
+  const isRoomDimVisible = (roomId: string) => viewMode === '3D_EXPLODED' && showDimensions && selectedRoom === roomId;
   const [zoomLevel, setZoomLevel] = useState<number>(1);
   const containerRef = useRef<HTMLDivElement>(null);
   const [containerWidth, setContainerWidth] = useState<number>(840);
@@ -265,8 +275,8 @@ export default function ApartmentModel3DViewer({
   const getModeLabel = (mode: ViewMode) => {
     switch (mode) {
       case '3D_BLOCKS': return 'Phối Cảnh Không Gian';
-      case '2D_BLUEPRINT': return 'Mặt Bằng Kỹ Thuật';
-      case '3D_EXPLODED': return 'Bóc Tách Khối Phòng';
+      case '2D_BLUEPRINT': return 'Sơ Đồ Mặt Bằng';
+      case '3D_EXPLODED': return 'Khám Phá Từng Phòng';
     }
   };
 
@@ -288,7 +298,7 @@ export default function ApartmentModel3DViewer({
             }`}
           >
             <Box className="w-3.5 h-3.5 shrink-0" />
-            <span>Phối Cảnh</span>
+            <span>Phối Cảnh 3D</span>
           </button>
 
           <button
@@ -314,13 +324,13 @@ export default function ApartmentModel3DViewer({
             }`}
           >
             <SplitSquareVertical className="w-3.5 h-3.5 shrink-0" />
-            <span>Bóc Tách Khối</span>
+            <span>Tách Khối Phòng</span>
           </button>
         </div>
 
         {/* Cụm Tiện Ích: Kích Thước Đo & Nút Zoom Tương Tác */}
         <div className="flex items-center gap-1.5">
-          {/* Nút Thước Đo Khối - Chỉ hiển thị khi đang ở chế độ Bóc Tách Khối */}
+          {/* Nút Bật / Tắt Thước Đo - Chỉ hiển thị khi đang ở chế độ Tách Khối Phòng */}
           {viewMode === '3D_EXPLODED' && (
             <button
               type="button"
@@ -330,10 +340,10 @@ export default function ApartmentModel3DViewer({
                   ? 'bg-amber-500/20 border-amber-400 text-amber-300' 
                   : 'bg-[#121820] border-gray-700 text-gray-400 hover:text-gray-200'
               }`}
-              title="Bật / Tắt kích thước Dài x Rộng từng khối phòng"
+              title="Bật / Tắt thước đo kích thước khi chạm vào phòng"
             >
               <Grid className="w-3.5 h-3.5 shrink-0" />
-              <span className="hidden xs:inline">Thước Đo Khối</span>
+              <span className="hidden xs:inline">{showDimensions ? 'Thước Đo: Bật' : 'Thước Đo: Tắt'}</span>
             </button>
           )}
 
@@ -425,6 +435,31 @@ export default function ApartmentModel3DViewer({
                 <stop offset="60%" stopColor="#818CF8" stopOpacity="0.2" />
                 <stop offset="100%" stopColor="#818CF8" stopOpacity="0" />
               </radialGradient>
+
+              {/* Animation Laser Đo Kích Thước Tương Tác Cư Dân */}
+              <style>{`
+                @keyframes dimDashGrow {
+                  0% { stroke-dashoffset: 40; opacity: 0.2; }
+                  100% { stroke-dashoffset: 0; opacity: 1; }
+                }
+                @keyframes dimBadgePop {
+                  0% { transform: scale(0.65); opacity: 0; }
+                  70% { transform: scale(1.08); opacity: 1; }
+                  100% { transform: scale(1); opacity: 1; }
+                }
+                @keyframes laserPulseGlow {
+                  0%, 100% { filter: drop-shadow(0 0 1px #F59E0B); }
+                  50% { filter: drop-shadow(0 0 5px #FBBF24); }
+                }
+                .dim-line-anim {
+                  stroke-dasharray: 6 3;
+                  stroke-dashoffset: 40;
+                  animation: dimDashGrow 0.45s ease-out forwards, laserPulseGlow 2.5s ease-in-out infinite;
+                }
+                .dim-badge-anim {
+                  animation: dimBadgePop 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+                }
+              `}</style>
             </defs>
 
             {/* ======================================================= */}
@@ -449,12 +484,12 @@ export default function ApartmentModel3DViewer({
               <line x1="55" y1="330" x2="55" y2="370" stroke="#C5A880" strokeWidth="3.5" strokeLinecap="round" />
               <rect x="115" y="280" width="45" height="25" rx="3" fill="#1E293B" stroke="#475569" strokeWidth="1" />
               
-              {/* Thước đo Dài x Rộng hiển thị khi bóc tách khối */}
-              {showExplodedDimensions && (
-                <>
-                  <DimH x1={50} x2={170} y={248} label="1.90 m" />
-                  <DimV x={36} y1={260} y2={400} label="1.80 m" />
-                </>
+              {/* Thước đo Dài x Rộng hiển thị khi cư dân click chọn phòng */}
+              {isRoomDimVisible('foyer') && (
+                <g key={`dim-foyer-${selectedRoom}`}>
+                  <AnimatedDimH x1={50} x2={170} y={248} label="1.90 m" />
+                  <AnimatedDimV x={36} y1={260} y2={400} label="1.80 m" />
+                </g>
               )}
 
               {/* Thẻ Nhãn Phòng 2 Dòng Gọn Gàng, Không Tràn Viền */}
@@ -493,12 +528,12 @@ export default function ApartmentModel3DViewer({
               <circle cx="134" cy="161" r="6" fill="#F8FAFC" />
               <rect x="120" y="200" width="30" height="38" rx="5" fill="#1E293B" stroke="#64748B" />
 
-              {/* Thước đo Dài x Rộng hiển thị khi bóc tách khối */}
-              {showExplodedDimensions && (
-                <>
-                  <DimH x1={50} x2={170} y={126} label="2.00 m" />
-                  <DimV x={36} y1={140} y2={250} label="1.90 m" />
-                </>
+              {/* Thước đo Dài x Rộng hiển thị khi cư dân click chọn phòng */}
+              {isRoomDimVisible('commonBath') && (
+                <g key={`dim-commonBath-${selectedRoom}`}>
+                  <AnimatedDimH x1={50} x2={170} y={126} label="2.00 m" />
+                  <AnimatedDimV x={36} y1={140} y2={250} label="1.90 m" />
+                </g>
               )}
 
               <g transform="translate(110, 205)">
@@ -551,12 +586,12 @@ export default function ApartmentModel3DViewer({
               <circle cx="275" cy="170" r="5" fill="#475569" />
               <circle cx="305" cy="170" r="5" fill="#475569" />
 
-              {/* Thước đo Dài x Rộng hiển thị khi bóc tách khối */}
-              {showExplodedDimensions && (
-                <>
-                  <DimH x1={180} x2={500} y={76} label="5.60 m" />
-                  <DimV x={166} y1={90} y2={360} label="4.40 m" />
-                </>
+              {/* Thước đo Dài x Rộng hiển thị khi cư dân click chọn phòng */}
+              {isRoomDimVisible('living') && (
+                <g key={`dim-living-${selectedRoom}`}>
+                  <AnimatedDimH x1={180} x2={500} y={76} label="5.60 m" />
+                  <AnimatedDimV x={166} y1={90} y2={360} label="4.40 m" />
+                </g>
               )}
 
               <g transform="translate(340, 310)">
@@ -603,12 +638,12 @@ export default function ApartmentModel3DViewer({
               <circle cx="463" cy="445" r="6" fill="#EF4444" opacity="0.7" />
               <rect x="450" y="465" width="26" height="18" rx="2" fill="#334155" />
 
-              {/* Thước đo Dài x Rộng hiển thị khi bóc tách khối */}
-              {showExplodedDimensions && (
-                <>
-                  <DimH x1={180} x2={500} y={566} label="3.00 m" />
-                  <DimV x={166} y1={370} y2={550} label="2.50 m" />
-                </>
+              {/* Thước đo Dài x Rộng hiển thị khi cư dân click chọn phòng */}
+              {isRoomDimVisible('diningKitchen') && (
+                <g key={`dim-diningKitchen-${selectedRoom}`}>
+                  <AnimatedDimH x1={180} x2={500} y={566} label="3.00 m" />
+                  <AnimatedDimV x={166} y1={370} y2={550} label="2.50 m" />
+                </g>
               )}
 
               <g transform="translate(340, 515)">
@@ -652,12 +687,12 @@ export default function ApartmentModel3DViewer({
               <rect x="710" y="135" width="22" height="20" rx="2" fill="#334155" stroke="#64748B" />
               <rect x="525" y="240" width="150" height="28" rx="2" fill="#1E293B" stroke="#64748B" />
 
-              {/* Thước đo Dài x Rộng hiển thị khi bóc tách khối */}
-              {showExplodedDimensions && (
-                <>
-                  <DimH x1={510} x2={780} y={76} label="4.60 m" />
-                  <DimV x={788} y1={90} y2={290} label="3.60 m" />
-                </>
+              {/* Thước đo Dài x Rộng hiển thị khi cư dân click chọn phòng */}
+              {isRoomDimVisible('masterBed') && (
+                <g key={`dim-masterBed-${selectedRoom}`}>
+                  <AnimatedDimH x1={510} x2={780} y={76} label="4.60 m" />
+                  <AnimatedDimV x={788} y1={90} y2={290} label="3.60 m" />
+                </g>
               )}
 
               <g transform="translate(645, 260)">
@@ -696,12 +731,12 @@ export default function ApartmentModel3DViewer({
               <circle cx="850" cy="182" r="6" fill="#FFFFFF" />
               <rect x="830" y="220" width="40" height="45" rx="8" fill="#1E293B" stroke="#64748B" />
 
-              {/* Thước đo Dài x Rộng hiển thị khi bóc tách khối */}
-              {showExplodedDimensions && (
-                <>
-                  <DimH x1={790} x2={910} y={76} label="2.20 m" />
-                  <DimV x={922} y1={90} y2={290} label="1.90 m" />
-                </>
+              {/* Thước đo Dài x Rộng hiển thị khi cư dân click chọn phòng */}
+              {isRoomDimVisible('masterBath') && (
+                <g key={`dim-masterBath-${selectedRoom}`}>
+                  <AnimatedDimH x1={790} x2={910} y={76} label="2.20 m" />
+                  <AnimatedDimV x={922} y1={90} y2={290} label="1.90 m" />
+                </g>
               )}
 
               <g transform="translate(850, 260)">
@@ -738,12 +773,12 @@ export default function ApartmentModel3DViewer({
               <rect x="670" y="333" width="75" height="18" rx="2" fill="#F1F5F9" opacity="0.9" />
               <rect x="530" y="325" width="80" height="35" rx="3" fill="#334155" stroke="#64748B" />
 
-              {/* Thước đo Dài x Rộng hiển thị khi bóc tách khối */}
-              {showExplodedDimensions && (
-                <>
-                  <DimH x1={510} x2={780} y={286} label="3.50 m" />
-                  <DimV x={788} y1={300} y2={450} label="3.40 m" />
-                </>
+              {/* Thước đo Dài x Rộng hiển thị khi cư dân click chọn phòng */}
+              {isRoomDimVisible('secondBed') && (
+                <g key={`dim-secondBed-${selectedRoom}`}>
+                  <AnimatedDimH x1={510} x2={780} y={286} label="3.50 m" />
+                  <AnimatedDimV x={788} y1={300} y2={450} label="3.40 m" />
+                </g>
               )}
 
               <g transform="translate(585, 415)">
@@ -798,12 +833,12 @@ export default function ApartmentModel3DViewer({
                 strokeDasharray={curtainsOpen ? '8 4' : '0'}
               />
 
-              {/* Thước đo Dài x Rộng hiển thị khi bóc tách khối */}
-              {showExplodedDimensions && (
-                <>
-                  <DimH x1={510} x2={910} y={566} label="4.50 m" />
-                  <DimV x={922} y1={460} y2={550} label="1.50 m" />
-                </>
+              {/* Thước đo Dài x Rộng hiển thị khi cư dân click chọn phòng */}
+              {isRoomDimVisible('balcony') && (
+                <g key={`dim-balcony-${selectedRoom}`}>
+                  <AnimatedDimH x1={510} x2={910} y={566} label="4.50 m" />
+                  <AnimatedDimV x={922} y1={460} y2={550} label="1.50 m" />
+                </g>
               )}
 
               <g transform="translate(830, 515)">
@@ -922,28 +957,30 @@ export default function ApartmentModel3DViewer({
           </div>
         </div>
 
-        {/* Gợi ý tương tác (Hiển thị tinh tế trên mọi màn hình) */}
+        {/* Gợi ý tương tác cư dân */}
         <div className="absolute bottom-2.5 right-2.5 sm:bottom-3 sm:right-3 bg-[#1C2533]/90 border border-[#C5A880]/60 px-2.5 py-1 text-[9px] sm:text-[10px] text-[#C5A880] font-mono rounded backdrop-blur-md pointer-events-none">
-          * Chạm vào phòng hoặc thiết bị (💡 AC 🔒) để tương tác
+          {viewMode === '3D_EXPLODED' 
+            ? '✨ Chạm vào phòng để xem kích thước Dài × Rộng' 
+            : '💡 Chạm vào phòng hoặc thiết bị (💡 Điều Hòa 🔒) để thao tác'}
         </div>
       </div>
 
       {/* ------------------------------------------------------------- */}
-      {/* 3. BẢNG THÔNG TIN KHỐI PHÒNG (RESPONSIVE CHUẨN MỰC)           */}
+      {/* 3. BẢNG THÔNG TIN PHÒNG & THIẾT BỊ CĂN HỘ                     */}
       {/* ------------------------------------------------------------- */}
       {activeRoom && (
         <div className="p-3 sm:p-4 bg-[#0D1117] border-t border-[#222B35] flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
-          {/* Thông Tin Khối Không Gian */}
+          {/* Thông Tin Không Gian Căn Hộ */}
           <div className="space-y-1 min-w-0">
             <div className="text-[10.5px] uppercase tracking-wider text-gray-400 font-mono flex items-center gap-2 flex-wrap">
-              <span>Khối Đang Chọn:</span>
+              <span>Không Gian Đang Chọn:</span>
               <span className="text-[#C5A880] font-bold font-mono px-2 py-0.5 bg-[#1C2533] border border-[#2D3748] rounded">
                 {activeRoom.code}
               </span>
               <span className="text-white font-bold text-sm ml-1 truncate">{activeRoom.name}</span>
             </div>
             <div className="text-xs text-gray-300">
-              Diện tích: <strong className="text-[#C5A880]">{activeRoom.area} m²</strong> • Kích thước: <strong>{activeRoom.dimensions}</strong>
+              Diện tích sử dụng: <strong className="text-[#C5A880]">{activeRoom.area} m²</strong> • Kích thước thực tế: <strong>{activeRoom.dimensions}</strong>
             </div>
             <div className="text-xs text-gray-400 break-words">
               {activeRoom.description}
@@ -975,11 +1012,11 @@ export default function ApartmentModel3DViewer({
                   <Zap className="w-3.5 h-3.5" />
                   <span>
                     {selectedRoom === 'living'
-                      ? (lights.livingRoom ? 'Tắt Đèn PK' : 'Bật Đèn PK')
+                      ? (lights.livingRoom ? 'Tắt Đèn Phòng Khách' : 'Bật Đèn Phòng Khách')
                       : selectedRoom === 'masterBed'
-                      ? (lights.bedroomMaster ? 'Tắt Đèn Master' : 'Bật Đèn Master')
+                      ? (lights.bedroomMaster ? 'Tắt Đèn PN Master' : 'Bật Đèn PN Master')
                       : selectedRoom === 'diningKitchen'
-                      ? (lights.kitchen ? 'Tắt Đèn Bếp' : 'Bật Đèn Bếp')
+                      ? (lights.kitchen ? 'Tắt Đèn Bếp Ăn' : 'Bật Đèn Bếp Ăn')
                       : (lights.balcony ? 'Tắt Đèn Ban Công' : 'Bật Đèn Ban Công')}
                   </span>
                 </button>
@@ -996,7 +1033,7 @@ export default function ApartmentModel3DViewer({
                     }`}
                   >
                     <Wind className="w-3.5 h-3.5" />
-                    <span>{acPower ? 'AC Bật' : 'AC Tắt'}</span>
+                    <span>{acPower ? 'Điều Hòa: Bật' : 'Điều Hòa: Tắt'}</span>
                   </button>
 
                   {acPower && onChangeTemp && (
