@@ -28,6 +28,7 @@ import {
   Flame
 } from 'lucide-react';
 import { getApartmentByCode } from '@/lib/apartmentStore';
+import { applyScene, getSmartHomeState, SceneType } from '@/lib/smartHomeStore';
 import ApartmentDetailModal from '@/components/portal/admin/ApartmentDetailModal';
 
 interface ResidentHomeProps {
@@ -38,18 +39,30 @@ interface ResidentHomeProps {
 
 export default function ResidentHome({ currentUser, onNavigate, onOpenVisitorModal }: ResidentHomeProps) {
   const isOwner = currentUser.role === 'OWNER';
-  const [activeScene, setActiveScene] = useState<'HOME' | 'AWAY' | 'NIGHT' | 'CINEMA'>('HOME');
+  const aptCode = currentUser.apartment_code || '12A05';
+
+  const [activeScene, setActiveScene] = useState<SceneType>(() => getSmartHomeState(aptCode).activeScene);
   const [sceneMessage, setSceneMessage] = useState<string | null>(null);
   const [isAptDetailOpen, setIsAptDetailOpen] = useState(false);
 
-  const handleActivateScene = (scene: 'HOME' | 'AWAY' | 'NIGHT' | 'CINEMA', name: string) => {
-    setActiveScene(scene);
-    setSceneMessage(`✓ Đã kích hoạt ngữ cảnh thông minh: "${name}"`);
-    setTimeout(() => setSceneMessage(null), 3000);
+  useEffect(() => {
+    const handleUpdate = (e: any) => {
+      if (e.detail?.activeScene) {
+        setActiveScene(e.detail.activeScene);
+      }
+    };
+    window.addEventListener('skyline_smarthome_update', handleUpdate);
+    return () => window.removeEventListener('skyline_smarthome_update', handleUpdate);
+  }, [aptCode]);
+
+  const handleActivateScene = (scene: SceneType) => {
+    const { state, message } = applyScene(aptCode, scene);
+    setActiveScene(state.activeScene);
+    setSceneMessage(message);
+    setTimeout(() => setSceneMessage(null), 3500);
   };
 
   const userName = currentUser?.full_name || (currentUser as any)?.fullname || 'Cư Dân SKYLINE';
-  const aptCode = currentUser.apartment_code || '12A05';
 
   return (
     <div className="space-y-6 w-full animate-fadeIn">
@@ -127,12 +140,12 @@ export default function ResidentHome({ currentUser, onNavigate, onOpenVisitorMod
           )}
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+        <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-5 gap-2">
           <button
             type="button"
-            onClick={() => handleActivateScene('HOME', 'Về Nhà - All Lights & AC ON')}
+            onClick={() => handleActivateScene('WELCOME')}
             className={`p-2.5 text-left border transition-all text-xs flex items-center justify-between ${
-              activeScene === 'HOME'
+              activeScene === 'WELCOME'
                 ? 'bg-[#1C2533] border-[#C5A880] text-white ring-1 ring-[#C5A880]'
                 : 'bg-[#161B22] border-[#222B35] text-gray-400 hover:border-gray-500 hover:text-white'
             }`}
@@ -143,12 +156,12 @@ export default function ResidentHome({ currentUser, onNavigate, onOpenVisitorMod
               </div>
               <div className="text-[10px] text-gray-400">Đèn Bật • ĐH 24°C • Mở Rèm</div>
             </div>
-            {activeScene === 'HOME' && <span className="w-2 h-2 rounded-full bg-[#C5A880]"></span>}
+            {activeScene === 'WELCOME' && <span className="w-2 h-2 rounded-full bg-[#C5A880]"></span>}
           </button>
 
           <button
             type="button"
-            onClick={() => handleActivateScene('AWAY', 'Ra Ngoài - Tắt Hết Thiết Bị & Khóa Cửa')}
+            onClick={() => handleActivateScene('AWAY')}
             className={`p-2.5 text-left border transition-all text-xs flex items-center justify-between ${
               activeScene === 'AWAY'
                 ? 'bg-[#1C2533] border-[#C5A880] text-white ring-1 ring-[#C5A880]'
@@ -159,16 +172,16 @@ export default function ResidentHome({ currentUser, onNavigate, onOpenVisitorMod
               <div className="font-bold text-[11px] text-white flex items-center gap-1.5">
                 <Home className="w-3.5 h-3.5 text-blue-400" /> 🚪 Ra Ngoài
               </div>
-              <div className="text-[10px] text-gray-400">Tắt Đèn • Khóa FaceID • Bật Cam</div>
+              <div className="text-[10px] text-gray-400">Tắt Điện • Khóa FaceID • Đóng Rèm</div>
             </div>
             {activeScene === 'AWAY' && <span className="w-2 h-2 rounded-full bg-[#C5A880]"></span>}
           </button>
 
           <button
             type="button"
-            onClick={() => handleActivateScene('NIGHT', 'Đi Ngủ - Tắt Đèn Chính & Cảm Biến Đêm')}
+            onClick={() => handleActivateScene('SLEEP')}
             className={`p-2.5 text-left border transition-all text-xs flex items-center justify-between ${
-              activeScene === 'NIGHT'
+              activeScene === 'SLEEP'
                 ? 'bg-[#1C2533] border-[#C5A880] text-white ring-1 ring-[#C5A880]'
                 : 'bg-[#161B22] border-[#222B35] text-gray-400 hover:border-gray-500 hover:text-white'
             }`}
@@ -177,14 +190,14 @@ export default function ResidentHome({ currentUser, onNavigate, onOpenVisitorMod
               <div className="font-bold text-[11px] text-white flex items-center gap-1.5">
                 <Moon className="w-3.5 h-3.5 text-indigo-400" /> 🌙 Đi Ngủ
               </div>
-              <div className="text-[10px] text-gray-400">ĐH 26°C • Đóng Rèm • Đèn Ngủ</div>
+              <div className="text-[10px] text-gray-400">ĐH 26°C • Đóng Rèm • Khóa Cửa</div>
             </div>
-            {activeScene === 'NIGHT' && <span className="w-2 h-2 rounded-full bg-[#C5A880]"></span>}
+            {activeScene === 'SLEEP' && <span className="w-2 h-2 rounded-full bg-[#C5A880]"></span>}
           </button>
 
           <button
             type="button"
-            onClick={() => handleActivateScene('CINEMA', 'Thư Giãn / Xem Phim')}
+            onClick={() => handleActivateScene('CINEMA')}
             className={`p-2.5 text-left border transition-all text-xs flex items-center justify-between ${
               activeScene === 'CINEMA'
                 ? 'bg-[#1C2533] border-[#C5A880] text-white ring-1 ring-[#C5A880]'
@@ -195,9 +208,27 @@ export default function ResidentHome({ currentUser, onNavigate, onOpenVisitorMod
               <div className="font-bold text-[11px] text-white flex items-center gap-1.5">
                 <Tv className="w-3.5 h-3.5 text-rose-400" /> 🎬 Xem Phim
               </div>
-              <div className="text-[10px] text-gray-400">Ánh Sáng 15% • Đóng Rèm</div>
+              <div className="text-[10px] text-gray-400">ĐH 23°C • Đóng Rèm • Đèn 15%</div>
             </div>
             {activeScene === 'CINEMA' && <span className="w-2 h-2 rounded-full bg-[#C5A880]"></span>}
+          </button>
+
+          <button
+            type="button"
+            onClick={() => handleActivateScene('DINING')}
+            className={`p-2.5 text-left border transition-all text-xs flex items-center justify-between col-span-2 sm:col-span-4 lg:col-span-1 ${
+              activeScene === 'DINING'
+                ? 'bg-[#1C2533] border-[#C5A880] text-white ring-1 ring-[#C5A880]'
+                : 'bg-[#161B22] border-[#222B35] text-gray-400 hover:border-gray-500 hover:text-white'
+            }`}
+          >
+            <div>
+              <div className="font-bold text-[11px] text-white flex items-center gap-1.5">
+                <Sparkles className="w-3.5 h-3.5 text-emerald-400" /> 🍽️ Ăn Tối & Tiệc
+              </div>
+              <div className="text-[10px] text-gray-400">Đèn Bếp & PK • View Panorama</div>
+            </div>
+            {activeScene === 'DINING' && <span className="w-2 h-2 rounded-full bg-[#C5A880]"></span>}
           </button>
         </div>
       </div>

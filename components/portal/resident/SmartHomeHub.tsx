@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Cpu, 
   Zap, 
@@ -22,10 +22,25 @@ import {
   Sliders,
   Users,
   EyeOff,
-  Box
+  Box,
+  Calendar,
+  Clock,
+  Check,
+  ToggleLeft,
+  ToggleRight
 } from 'lucide-react';
-import { User, UserRole, DEMO_APARTMENTS } from '@/lib/dataStore';
+import { User, UserRole } from '@/lib/dataStore';
 import { getApartmentByCode } from '@/lib/apartmentStore';
+import { 
+  getSmartHomeState, 
+  saveSmartHomeState, 
+  applyScene, 
+  getAutomationRules, 
+  toggleAutomationRule, 
+  SmartHomeState, 
+  AutomationRule, 
+  SceneType 
+} from '@/lib/smartHomeStore';
 import ApartmentModel3DViewer from '@/components/portal/shared/ApartmentModel3DViewer';
 
 interface SmartHomeHubProps {
@@ -39,22 +54,38 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
   const aptArea = aptUnit ? aptUnit.area : 78.5;
   const aptType = aptUnit ? aptUnit.typeLabel : '2PN - 2WC';
 
-  // Smart Home State
-  const [activeScene, setActiveScene] = useState<'AWAY' | 'CINEMA' | 'SLEEP' | 'WELCOME' | 'NONE'>('NONE');
-  const [lights, setLights] = useState({
-    livingRoom: true,
-    bedroomMaster: true,
-    kitchen: true,
-    balcony: false,
-  });
-  const [acTemp, setAcTemp] = useState(24);
-  const [acPower, setAcPower] = useState(true);
-  const [curtainsOpen, setCurtainsOpen] = useState(true);
-  const [masterDoorLocked, setMasterDoorLocked] = useState(true);
-  const [mainPowerActive, setMainPowerActive] = useState(true);
-  const [waterLeakSensorActive, setWaterLeakSensorActive] = useState(true);
-  const [fireSensorActive, setFireSensorActive] = useState(true);
+  // Smart Home State từ Storage Store
+  const [smartState, setSmartState] = useState<SmartHomeState>(() => getSmartHomeState(aptCode));
+  const [automationRules, setAutomationRules] = useState<AutomationRule[]>(() => getAutomationRules(aptCode));
   const [toastMsg, setToastMsg] = useState<string | null>(null);
+
+  const {
+    lights,
+    acTemp,
+    acPower,
+    curtainsOpen,
+    doorLocked: masterDoorLocked,
+    mainPowerActive,
+    waterLeakSensorActive,
+    fireSensorActive,
+    activeScene
+  } = smartState;
+
+  // Lắng nghe sự kiện đồng bộ toàn hệ thống
+  useEffect(() => {
+    const onUpdateState = (e: any) => {
+      if (e.detail) setSmartState(e.detail);
+    };
+    const onUpdateRules = (e: any) => {
+      if (e.detail) setAutomationRules(e.detail);
+    };
+    window.addEventListener('skyline_smarthome_update', onUpdateState);
+    window.addEventListener('skyline_automation_rules_update', onUpdateRules);
+    return () => {
+      window.removeEventListener('skyline_smarthome_update', onUpdateState);
+      window.removeEventListener('skyline_automation_rules_update', onUpdateRules);
+    };
+  }, [aptCode]);
 
   const showToast = (msg: string) => {
     setToastMsg(msg);
@@ -62,60 +93,62 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
   };
 
   const handleToggleLight = (room: 'livingRoom' | 'bedroomMaster' | 'kitchen' | 'balcony') => {
-    setLights(prev => {
-      const next = { ...prev, [room]: !prev[room] };
-      showToast(`⚡ Đã chuyển trạng thái đèn: ${room === 'livingRoom' ? 'Phòng khách' : room === 'bedroomMaster' ? 'Phòng ngủ' : room === 'kitchen' ? 'Bếp' : 'Ban công'}`);
-      return next;
-    });
+    const nextLights = { ...smartState.lights, [room]: !smartState.lights[room] };
+    const updated = saveSmartHomeState(aptCode, { lights: nextLights, activeScene: 'NONE' });
+    setSmartState(updated);
+    const roomName = room === 'livingRoom' ? 'Phòng khách' : room === 'bedroomMaster' ? 'Phòng ngủ Master' : room === 'kitchen' ? 'Bếp' : 'Ban công';
+    showToast(`⚡ Đã chuyển trạng thái đèn: ${roomName} (${nextLights[room] ? 'Bật' : 'Tắt'})`);
   };
 
   const handleToggleDoor = () => {
     if (!isOwner) {
-      showToast('⚠️ Chỉ Chủ Hộ mới có quyền đóng/mở khóa Master Door.');
+      showToast('⚠️ Chỉ Chủ Hộ mới có quyền đóng/mở khóa Master Door FaceID.');
       return;
     }
-    setMasterDoorLocked(!masterDoorLocked);
-    showToast(masterDoorLocked ? '🔓 Đã mở chốt khóa cửa chính FaceID.' : '🔒 Đã khóa chốt an toàn FaceID.');
+    const updated = saveSmartHomeState(aptCode, { doorLocked: !smartState.doorLocked });
+    setSmartState(updated);
+    showToast(updated.doorLocked ? '🔒 Đã khóa chốt an toàn FaceID cửa chính.' : '🔓 Đã mở chốt khóa cửa chính FaceID.');
   };
 
   const handleToggleCurtains = () => {
-    setCurtainsOpen(!curtainsOpen);
-    showToast(curtainsOpen ? '🌘 Đang đóng rèm cửa ban công.' : '☀️ Đang mở rèm đón ánh sáng tự nhiên.');
+    const updated = saveSmartHomeState(aptCode, { curtainsOpen: !smartState.curtainsOpen });
+    setSmartState(updated);
+    showToast(updated.curtainsOpen ? '☀️ Đang mở rèm ban công đón ánh sáng tự nhiên.' : '🌘 Đang đóng rèm ban công cách nhiệt.');
   };
 
-  // Scene Automation Trigger
-  const handleTriggerScene = (scene: 'AWAY' | 'CINEMA' | 'SLEEP' | 'WELCOME') => {
-    setActiveScene(scene);
+  const handleToggleAC = () => {
+    const updated = saveSmartHomeState(aptCode, { acPower: !smartState.acPower });
+    setSmartState(updated);
+    showToast(updated.acPower ? `❄️ Đã bật điều hòa Daikin Inverter (${updated.acTemp}°C).` : '❄️ Đã tắt điều hòa trung tâm.');
+  };
 
-    if (scene === 'AWAY') {
-      if (!isOwner) {
-        showToast('⚠️ Chỉ Chủ Hộ mới có quyền kích hoạt chế độ "Đi Vắng" (Tắt toàn bộ hệ thống điện căn hộ).');
-        return;
-      }
-      setLights({ livingRoom: false, bedroomMaster: false, kitchen: false, balcony: false });
-      setAcPower(false);
-      setCurtainsOpen(false);
-      setMasterDoorLocked(true);
-      showToast('🛡️ Đã kích hoạt [Chế Độ Đi Vắng]: Tắt toàn bộ đèn, tắt điều hòa, đóng rèm và kích hoạt khóa FaceID.');
-    } else if (scene === 'CINEMA') {
-      setLights({ livingRoom: false, bedroomMaster: false, kitchen: false, balcony: true });
-      setAcTemp(23);
-      setAcPower(true);
-      setCurtainsOpen(false);
-      showToast('🎬 Đã kích hoạt [Chế Độ Xem Phim]: Giảm ánh sáng 80%, đóng rèm và đặt điều hòa 23°C.');
-    } else if (scene === 'SLEEP') {
-      setLights({ livingRoom: false, bedroomMaster: false, kitchen: false, balcony: false });
-      setAcTemp(26);
-      setAcPower(true);
-      setCurtainsOpen(false);
-      setMasterDoorLocked(true);
-      showToast('🌙 Đã kích hoạt [Chế Độ Đi Ngủ]: Khóa cửa an toàn, tắt toàn bộ đèn và giữ nhiệt độ 26°C.');
-    } else if (scene === 'WELCOME') {
-      setLights({ livingRoom: true, bedroomMaster: true, kitchen: true, balcony: true });
-      setAcTemp(24);
-      setAcPower(true);
-      setCurtainsOpen(true);
-      showToast('✨ Đã kích hoạt [Chế Độ Tiếp Khách]: Bật đèn đón, mở rèm ban công và lọc không khí.');
+  const handleChangeTemp = (delta: number) => {
+    const nextTemp = Math.max(16, Math.min(30, smartState.acTemp + delta));
+    const updated = saveSmartHomeState(aptCode, { acTemp: nextTemp });
+    setSmartState(updated);
+    showToast(`🌡️ Đã điều chỉnh nhiệt độ điều hòa: ${nextTemp}°C`);
+  };
+
+  // Kích hoạt Ngữ Cảnh 1-Chạm
+  const handleTriggerScene = (scene: SceneType) => {
+    if (scene === 'AWAY' && !isOwner) {
+      showToast('⚠️ Chỉ Chủ Hộ mới có quyền kích hoạt chế độ "Đi Vắng" (Tắt toàn bộ hệ thống điện căn hộ).');
+      return;
+    }
+    const { state: nextState, message } = applyScene(aptCode, scene);
+    setSmartState(nextState);
+    showToast(message);
+  };
+
+  // Kích hoạt / Tạm dừng Quy Tắc Tự Động Hóa
+  const handleToggleRule = (ruleId: string) => {
+    const nextRules = toggleAutomationRule(aptCode, ruleId);
+    setAutomationRules(nextRules);
+    const target = nextRules.find(r => r.id === ruleId);
+    if (target?.enabled) {
+      showToast(`✓ Đã kích hoạt kịch bản tự động hóa: "${target.title}"`);
+    } else {
+      showToast(`⏸️ Đã tạm dừng kịch bản tự động hóa: "${target?.title}"`);
     }
   };
 
@@ -215,44 +248,52 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
           onToggleLight={handleToggleLight}
           onToggleDoor={handleToggleDoor}
           onToggleCurtains={handleToggleCurtains}
-          onToggleAC={() => {
-            setAcPower(prev => {
-              const next = !prev;
-              showToast(next ? '❄️ Đã bật điều hòa Daikin Inverter.' : '❄️ Đã tắt điều hòa trung tâm.');
-              return next;
-            });
-          }}
-          onChangeTemp={(delta) => {
-            setAcTemp(prev => {
-              const next = Math.max(16, Math.min(30, prev + delta));
-              showToast(`🌡️ Đã điều chỉnh nhiệt độ: ${next}°C`);
-              return next;
-            });
-          }}
+          onToggleAC={handleToggleAC}
+          onChangeTemp={handleChangeTemp}
           interactive={true}
         />
       </div>
 
-      {/* 1-Click Scenes Automation Strip */}
-      <div className="p-5 bg-[#121820] border border-[#222B35] space-y-3 rounded">
+      {/* ------------------------------------------------------------- */}
+      {/* 1. THANH NGỮ CẢNH TỰ ĐỘNG HÓA 1-CHẠM (SCENE AUTOMATION)      */}
+      {/* ------------------------------------------------------------- */}
+      <div className="p-4 sm:p-5 bg-[#121820] border border-[#222B35] space-y-3 rounded shadow-xl">
         <div className="flex items-center justify-between">
           <div className="text-xs uppercase tracking-wider text-[#C5A880] font-bold flex items-center gap-1.5">
             <Sparkles className="w-3.5 h-3.5" /> Ngữ Cảnh Tự Động Hóa 1-Chạm (Scene Automation):
           </div>
-          {!isOwner && (
-            <span className="text-[10px] text-gray-400 italic">
-              * Người nhà kích hoạt ngữ cảnh sinh hoạt
-            </span>
-          )}
+          <span className="text-[10px] text-gray-400 font-mono">
+            {isOwner ? '* Áp dụng tức thì cho toàn bộ thiết bị' : '* Người nhà kích hoạt ngữ cảnh sinh hoạt'}
+          </span>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+        <div className="grid grid-cols-2 sm:grid-cols-5 gap-2.5">
+          {/* 1. VỀ NHÀ */}
           <button
+            type="button"
+            onClick={() => handleTriggerScene('WELCOME')}
+            className={`p-3 border text-left transition-all rounded ${
+              activeScene === 'WELCOME'
+                ? 'bg-[#1C2533] border-[#C5A880] text-white ring-1 ring-[#C5A880] shadow-md'
+                : 'bg-[#0D1117] border-[#222B35] text-gray-400 hover:border-gray-500 hover:text-white'
+            }`}
+          >
+            <div className="flex items-center justify-between">
+              <Sun className="w-4 h-4 text-amber-400" />
+              {activeScene === 'WELCOME' && <CheckCircle2 className="w-3.5 h-3.5 text-[#C5A880]" />}
+            </div>
+            <div className="font-semibold text-xs text-white mt-2">Về Nhà (Welcome)</div>
+            <div className="text-[10px] text-gray-400">Bật đèn, ĐH 24°C, mở rèm</div>
+          </button>
+
+          {/* 2. ĐI VẮNG */}
+          <button
+            type="button"
             onClick={() => handleTriggerScene('AWAY')}
             className={`p-3 border text-left transition-all rounded ${
               activeScene === 'AWAY'
-                ? 'bg-[#1C2533] border-[#C5A880] text-white ring-1 ring-[#C5A880]'
-                : 'bg-[#0D1117] border-[#222B35] text-gray-400 hover:border-gray-500'
+                ? 'bg-[#1C2533] border-[#C5A880] text-white ring-1 ring-[#C5A880] shadow-md'
+                : 'bg-[#0D1117] border-[#222B35] text-gray-400 hover:border-gray-500 hover:text-white'
             }`}
           >
             <div className="flex items-center justify-between">
@@ -260,31 +301,17 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
               {activeScene === 'AWAY' && <CheckCircle2 className="w-3.5 h-3.5 text-[#C5A880]" />}
             </div>
             <div className="font-semibold text-xs text-white mt-2">Đi Vắng (Away)</div>
-            <div className="text-[10px] text-gray-400">Tắt hết điện, khóa cửa</div>
+            <div className="text-[10px] text-gray-400">Tắt hết điện, khóa FaceID</div>
           </button>
 
+          {/* 3. ĐI NGỦ */}
           <button
-            onClick={() => handleTriggerScene('CINEMA')}
-            className={`p-3 border text-left transition-all rounded ${
-              activeScene === 'CINEMA'
-                ? 'bg-[#1C2533] border-[#C5A880] text-white ring-1 ring-[#C5A880]'
-                : 'bg-[#0D1117] border-[#222B35] text-gray-400 hover:border-gray-500'
-            }`}
-          >
-            <div className="flex items-center justify-between">
-              <Tv className="w-4 h-4 text-purple-400" />
-              {activeScene === 'CINEMA' && <CheckCircle2 className="w-3.5 h-3.5 text-[#C5A880]" />}
-            </div>
-            <div className="font-semibold text-xs text-white mt-2">Xem Phim (Cinema)</div>
-            <div className="text-[10px] text-gray-400">Đóng rèm, ánh sáng 20%</div>
-          </button>
-
-          <button
+            type="button"
             onClick={() => handleTriggerScene('SLEEP')}
             className={`p-3 border text-left transition-all rounded ${
               activeScene === 'SLEEP'
-                ? 'bg-[#1C2533] border-[#C5A880] text-white ring-1 ring-[#C5A880]'
-                : 'bg-[#0D1117] border-[#222B35] text-gray-400 hover:border-gray-500'
+                ? 'bg-[#1C2533] border-[#C5A880] text-white ring-1 ring-[#C5A880] shadow-md'
+                : 'bg-[#0D1117] border-[#222B35] text-gray-400 hover:border-gray-500 hover:text-white'
             }`}
           >
             <div className="flex items-center justify-between">
@@ -295,21 +322,123 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
             <div className="text-[10px] text-gray-400">AC 26°C, khóa an toàn</div>
           </button>
 
+          {/* 4. XEM PHIM */}
           <button
-            onClick={() => handleTriggerScene('WELCOME')}
+            type="button"
+            onClick={() => handleTriggerScene('CINEMA')}
             className={`p-3 border text-left transition-all rounded ${
-              activeScene === 'WELCOME'
-                ? 'bg-[#1C2533] border-[#C5A880] text-white ring-1 ring-[#C5A880]'
-                : 'bg-[#0D1117] border-[#222B35] text-gray-400 hover:border-gray-500'
+              activeScene === 'CINEMA'
+                ? 'bg-[#1C2533] border-[#C5A880] text-white ring-1 ring-[#C5A880] shadow-md'
+                : 'bg-[#0D1117] border-[#222B35] text-gray-400 hover:border-gray-500 hover:text-white'
             }`}
           >
             <div className="flex items-center justify-between">
-              <Sun className="w-4 h-4 text-amber-400" />
-              {activeScene === 'WELCOME' && <CheckCircle2 className="w-3.5 h-3.5 text-[#C5A880]" />}
+              <Tv className="w-4 h-4 text-purple-400" />
+              {activeScene === 'CINEMA' && <CheckCircle2 className="w-3.5 h-3.5 text-[#C5A880]" />}
             </div>
-            <div className="font-semibold text-xs text-white mt-2">Tiếp Khách (Welcome)</div>
-            <div className="text-[10px] text-gray-400">Mở rèm, bật đèn đón</div>
+            <div className="font-semibold text-xs text-white mt-2">Xem Phim (Cinema)</div>
+            <div className="text-[10px] text-gray-400">Đóng rèm, AC 23°C, đèn 15%</div>
           </button>
+
+          {/* 5. ĂN TỐI & TIỆC */}
+          <button
+            type="button"
+            onClick={() => handleTriggerScene('DINING')}
+            className={`p-3 border text-left transition-all rounded col-span-2 sm:col-span-1 ${
+              activeScene === 'DINING'
+                ? 'bg-[#1C2533] border-[#C5A880] text-white ring-1 ring-[#C5A880] shadow-md'
+                : 'bg-[#0D1117] border-[#222B35] text-gray-400 hover:border-gray-500 hover:text-white'
+            }`}
+          >
+            <div className="flex items-center justify-between">
+              <Sparkles className="w-4 h-4 text-emerald-400" />
+              {activeScene === 'DINING' && <CheckCircle2 className="w-3.5 h-3.5 text-[#C5A880]" />}
+            </div>
+            <div className="font-semibold text-xs text-white mt-2">Ăn Tối (Dining)</div>
+            <div className="text-[10px] text-gray-400">Sáng bếp, mở rèm view phố</div>
+          </button>
+        </div>
+      </div>
+
+      {/* ------------------------------------------------------------- */}
+      {/* 2. LẬP LỊCH & KỊCH BẢN TỰ ĐỘNG HÓA 24/7 (AUTOMATION RULES)    */}
+      {/* ------------------------------------------------------------- */}
+      <div className="p-4 sm:p-5 bg-[#121820] border border-[#222B35] space-y-4 rounded shadow-xl">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#222B35] pb-3">
+          <div>
+            <div className="text-xs uppercase tracking-wider text-[#C5A880] font-bold flex items-center gap-1.5">
+              <Clock className="w-4 h-4 text-[#C5A880]" /> Lập Lịch & Kịch Bản Tự Động Hóa 24/7 (Automation Schedules & AI Sensors)
+            </div>
+            <p className="text-[11px] text-gray-400 mt-0.5">
+              Hệ thống tự động điều phối thiết bị theo khung giờ sinh hoạt thực tế và cảm biến an toàn môi trường.
+            </p>
+          </div>
+          <span className="px-2.5 py-0.5 bg-emerald-950/80 border border-emerald-500 text-emerald-300 text-[10.5px] font-mono rounded self-start sm:self-auto">
+            {automationRules.filter(r => r.enabled).length}/{automationRules.length} Đang Kích Hoạt
+          </span>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+          {automationRules.map((rule) => {
+            const isRuleActive = rule.enabled;
+            return (
+              <div 
+                key={rule.id}
+                className={`p-3.5 border transition-all rounded flex flex-col justify-between gap-2.5 ${
+                  isRuleActive 
+                    ? 'bg-[#161D26] border-[#2D3A4B]' 
+                    : 'bg-[#0E131A] border-[#1C2533] opacity-60'
+                }`}
+              >
+                <div className="space-y-1.5">
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="flex items-center gap-2">
+                      <div className={`w-7 h-7 rounded flex items-center justify-center text-xs font-bold ${
+                        rule.icon === 'sun' ? 'bg-amber-950/80 text-amber-400 border border-amber-500/40' :
+                        rule.icon === 'moon' ? 'bg-indigo-950/80 text-indigo-400 border border-indigo-500/40' :
+                        rule.icon === 'shield' ? 'bg-emerald-950/80 text-emerald-400 border border-emerald-500/40' :
+                        rule.icon === 'droplet' ? 'bg-blue-950/80 text-blue-400 border border-blue-500/40' :
+                        'bg-teal-950/80 text-teal-400 border border-teal-500/40'
+                      }`}>
+                        {rule.icon === 'sun' && <Sun className="w-3.5 h-3.5" />}
+                        {rule.icon === 'moon' && <Moon className="w-3.5 h-3.5" />}
+                        {rule.icon === 'shield' && <ShieldCheck className="w-3.5 h-3.5" />}
+                        {rule.icon === 'droplet' && <Droplets className="w-3.5 h-3.5" />}
+                        {rule.icon === 'wind' && <Wind className="w-3.5 h-3.5" />}
+                      </div>
+                      <div>
+                        <h4 className="font-semibold text-xs text-white leading-tight">{rule.title}</h4>
+                        <div className="text-[10px] text-[#C5A880] font-mono">{rule.triggerLabel}</div>
+                      </div>
+                    </div>
+
+                    {/* Toggle Switch */}
+                    <button
+                      type="button"
+                      onClick={() => handleToggleRule(rule.id)}
+                      className={`w-11 h-6 rounded-full transition-colors relative p-0.5 shrink-0 ${
+                        isRuleActive ? 'bg-emerald-600' : 'bg-gray-700'
+                      }`}
+                      title={isRuleActive ? 'Bấm để tạm dừng' : 'Bấm để kích hoạt'}
+                    >
+                      <div className={`w-5 h-5 rounded-full bg-white transition-transform ${isRuleActive ? 'translate-x-5' : 'translate-x-0'}`} />
+                    </button>
+                  </div>
+
+                  <p className="text-[11px] text-gray-300 leading-relaxed line-clamp-2">
+                    {rule.description}
+                  </p>
+                </div>
+
+                <div className="pt-2 border-t border-[#222B35] flex items-center justify-between text-[10px] font-mono text-gray-400">
+                  <span className="truncate max-w-[180px] text-gray-300">{rule.actionSummary}</span>
+                  <span className={isRuleActive ? 'text-emerald-400 font-bold' : 'text-gray-500'}>
+                    {isRuleActive ? 'BẬT' : 'TẮT'}
+                  </span>
+                </div>
+              </div>
+            );
+          })}
         </div>
       </div>
 
@@ -392,10 +521,7 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
                 <span className="text-xs font-semibold text-white">Điều Hòa Trung Tâm Daikin Inverter</span>
               </div>
               <button
-                onClick={() => {
-                  setAcPower(!acPower);
-                  showToast(acPower ? '❄️ Đã tắt điều hòa trung tâm.' : '❄️ Đã bật điều hòa Daikin Inverter.');
-                }}
+                onClick={handleToggleAC}
                 className={`px-2.5 py-1 text-[10px] uppercase tracking-wider font-bold rounded ${
                   acPower ? 'bg-emerald-950 text-emerald-300 border border-emerald-500' : 'bg-red-950 text-red-300 border border-red-500'
                 }`}
@@ -408,13 +534,13 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
               <div className="text-2xl font-mono font-bold text-white">{acTemp}°C</div>
               <div className="flex items-center gap-2">
                 <button
-                  onClick={() => setAcTemp(t => Math.max(16, t - 1))}
+                  onClick={() => handleChangeTemp(-1)}
                   className="w-8 h-8 bg-[#161B22] border border-gray-600 text-white font-bold hover:border-[#C5A880] rounded"
                 >
                   -
                 </button>
                 <button
-                  onClick={() => setAcTemp(t => Math.min(30, t + 1))}
+                  onClick={() => handleChangeTemp(1)}
                   className="w-8 h-8 bg-[#161B22] border border-gray-600 text-white font-bold hover:border-[#C5A880] rounded"
                 >
                   +
@@ -517,8 +643,9 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
               </div>
               <button
                 onClick={() => {
-                  setMainPowerActive(!mainPowerActive);
-                  showToast(mainPowerActive ? '⚠️ Đã ngắt nguồn điện tổng căn hộ.' : '⚡ Đã cấp lại nguồn điện tổng.');
+                  const updated = saveSmartHomeState(aptCode, { mainPowerActive: !mainPowerActive });
+                  setSmartState(updated);
+                  showToast(updated.mainPowerActive ? '⚡ Đã cấp lại nguồn điện tổng căn hộ.' : '⚠️ Đã ngắt nguồn điện tổng căn hộ.');
                 }}
                 className={`px-3 py-1 text-xs font-bold uppercase rounded ${
                   mainPowerActive ? 'bg-emerald-900 text-emerald-200 border border-emerald-500' : 'bg-red-600 text-white'
