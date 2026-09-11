@@ -711,26 +711,26 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
                 <div className="text-[10.5px] text-gray-500">Cố định theo hợp đồng mua bán / sở hữu căn hộ.</div>
               </div>
 
-              {/* Field: Vai Trò Cư Trú */}
+              {/* Field: Tư Cách Cư Trú */}
               <div className="space-y-1.5">
                 <label className="text-gray-400 flex items-center justify-between font-medium">
                   <span className="flex items-center gap-1.5 text-gray-300">
-                    <Users className="w-3.5 h-3.5 text-[#C5A880]" /> Vai Trò Cư Dân:
+                    <Users className="w-3.5 h-3.5 text-[#C5A880]" /> Tư Cách Cư Trú:
                   </span>
                   <span className="text-[10px] text-gray-500 font-mono flex items-center gap-1">
-                    <Lock className="w-2.5 h-2.5" /> BQL phân quyền
+                    <Lock className="w-2.5 h-2.5" /> BQL xác nhận
                   </span>
                 </label>
                 <div className="relative">
                   <input
                     type="text"
-                    value={isOwner ? 'Chủ Hộ (Chính Chủ Sở Hữu)' : 'Thành Viên Gia Đình (Được Chủ Hộ Bảo Lãnh)'}
+                    value={isOwner ? 'Chủ Sở Hữu Căn Hộ (Chính Chủ)' : 'Thành Viên Gia Đình (Được Bảo Lãnh)'}
                     readOnly
                     className="w-full bg-[#0D1117] border border-[#263140] p-3 text-[#C5A880] font-semibold rounded-none cursor-not-allowed"
                   />
                   <ShieldCheck className="w-3.5 h-3.5 text-[#C5A880] absolute right-3 top-3.5" />
                 </div>
-                <div className="text-[10.5px] text-gray-500">Quyền quản trị căn hộ và bảo lãnh người thân.</div>
+                <div className="text-[10.5px] text-gray-500">Quyền quản trị không gian sống và bảo lãnh người thân.</div>
               </div>
 
               {/* Field: Họ và Tên Pháp Lý */}

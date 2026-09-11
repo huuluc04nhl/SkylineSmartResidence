@@ -25,7 +25,8 @@ import {
   Tv,
   Eye,
   ArrowRight,
-  Flame
+  Flame,
+  Crown
 } from 'lucide-react';
 import { getApartmentByCode } from '@/lib/apartmentStore';
 import { applyScene, getSmartHomeState, SceneType } from '@/lib/smartHomeStore';
@@ -59,7 +60,7 @@ export default function ResidentHome({ currentUser, onNavigate, onOpenVisitorMod
     const { state, message } = applyScene(aptCode, scene);
     setActiveScene(state.activeScene);
     setSceneMessage(message);
-    setTimeout(() => setSceneMessage(null), 3500);
+    setTimeout(() => setSceneMessage(null), 3000);
   };
 
   const userName = currentUser?.full_name || (currentUser as any)?.fullname || 'Cư Dân SKYLINE';
@@ -75,27 +76,33 @@ export default function ResidentHome({ currentUser, onNavigate, onOpenVisitorMod
           <h2 className="font-serif text-2xl sm:text-3xl text-white font-bold mt-1 tracking-wide">
             Xin Chào, {userName}
           </h2>
-          <div className="text-xs text-gray-400 mt-1 flex flex-wrap items-center gap-x-4 gap-y-1">
-            <span className="flex items-center gap-2">
-              <span>Căn Hộ: <strong className="text-white font-mono text-sm">Căn {aptCode}</strong></span>
+          <div className="text-xs text-gray-300 mt-2.5 flex flex-wrap items-center gap-2 sm:gap-2.5">
+            {/* Căn Hộ & Nút Sổ Tay */}
+            <div className="flex items-center gap-1.5 bg-[#161B22] border border-[#2D3748] px-2.5 py-1 shadow-sm">
+              <span className="text-gray-400 text-[11px]">Căn Hộ:</span>
+              <strong className="text-white font-mono text-xs">Căn {aptCode}</strong>
               <button
                 type="button"
                 onClick={() => setIsAptDetailOpen(true)}
-                className="px-2 py-0.5 bg-[#161B22] hover:bg-[#C5A880] hover:text-[#0D1117] text-[#C5A880] border border-[#C5A880]/50 text-[10.5px] font-semibold transition-all flex items-center gap-1 shadow-sm"
+                className="ml-1 px-2 py-0.5 bg-[#0D1117] hover:bg-[#C5A880] hover:text-[#0D1117] text-[#C5A880] border border-[#C5A880]/50 text-[10.5px] font-semibold transition-all flex items-center gap-1 shadow-sm"
                 title="Mở sổ tay căn hộ thượng lưu & phối cảnh không gian 3D"
               >
-                <Eye className="w-3 h-3" /> Sổ Tay Căn Hộ & Phối Cảnh
+                <Eye className="w-3 h-3" /> Sổ Tay & Phối Cảnh
               </button>
-            </span>
-            <span>•</span>
-            <span>Vai Trò: <strong className="text-[#C5A880]">{isOwner ? 'Chủ Hộ (Full Access)' : 'Người Nhà Căn 12A05 (Thành Viên Gia Đình)'}</strong></span>
+            </div>
+
+            {/* Huy Hiệu Chủ Sở Hữu Thượng Lưu */}
+            <div className="flex items-center gap-1.5 px-2.5 py-1 bg-[#C5A880]/15 border border-[#C5A880]/50 text-[#C5A880] text-[11px] font-semibold shadow-sm">
+              <Crown className="w-3.5 h-3.5 text-[#C5A880]" />
+              <span>{isOwner ? 'Chủ Sở Hữu Căn Hộ' : 'Thành Viên Gia Đình'}</span>
+            </div>
+
+            {/* Huy Hiệu Xác Thực An Ninh e-KYC */}
             {isOwner && (
-              <>
-                <span>•</span>
-                <span className="text-emerald-400 font-mono flex items-center gap-1">
-                  <ShieldCheck className="w-3.5 h-3.5" /> Thẻ e-KYC Đã Kích Hoạt
-                </span>
-              </>
+              <div className="flex items-center gap-1.5 px-2.5 py-1 bg-emerald-950/60 border border-emerald-500/40 text-emerald-300 text-[11px] font-mono font-medium shadow-sm">
+                <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+                <span>Thẻ e-KYC Đã Kích Hoạt</span>
+              </div>
             )}
           </div>
         </div>
