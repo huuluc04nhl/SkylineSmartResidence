@@ -46,6 +46,8 @@ import {
   getApartmentByCode, 
   ApartmentUnit, 
   ApartmentResidentOwner,
+  ApartmentType,
+  ApartmentStatus,
   saveApartmentsList 
 } from '@/lib/apartmentStore';
 import { getUserStore, getApartmentMembers, ApartmentMember } from '@/lib/userStore';
@@ -58,6 +60,81 @@ export type OccupancyFilter = 'ALL' | 'OCCUPIED' | 'VACANT' | 'MAINTENANCE';
 export type ApartmentTypeFilter = 'ALL' | '1PN' | '2PN' | '3PN' | 'DUPLEX_PENTHOUSE';
 export type FloorRangeFilter = 'ALL' | 'LOW' | 'MID' | 'HIGH';
 export type ViewPerspective = '3D' | 'BUILDING_ELEVATION' | 'FLOOR_PLAN' | 'GRID';
+
+// Danh sách các khối căn hộ kiến trúc hiển thị trên mô hình 3D (25 tầng chung cư Skyline)
+export const BUILDING_3D_UNITS: {
+  code: string;
+  floor: number;
+  side: 'LEFT' | 'RIGHT';
+  type: ApartmentType;
+  defaultStatus: ApartmentStatus;
+  area: number;
+  defaultName?: string;
+}[] = [
+  // Tầng 25 (Penthouse)
+  { code: '25PH-01', floor: 25, side: 'LEFT', type: 'DUPLEX_PENTHOUSE', defaultStatus: 'VACANT', area: 215, defaultName: 'Nhà Trống' },
+  { code: '25PH-02', floor: 25, side: 'RIGHT', type: 'DUPLEX_PENTHOUSE', defaultStatus: 'VACANT', area: 215, defaultName: 'Nhà Trống' },
+  // Tầng 24
+  { code: '24A01', floor: 24, side: 'LEFT', type: '3PN', defaultStatus: 'VACANT', area: 112, defaultName: 'Nhà Trống' },
+  { code: '24A02', floor: 24, side: 'RIGHT', type: '2PN', defaultStatus: 'VACANT', area: 78.5, defaultName: 'Nhà Trống' },
+  // Tầng 23
+  { code: '23A01', floor: 23, side: 'LEFT', type: '3PN', defaultStatus: 'VACANT', area: 112, defaultName: 'Nhà Trống' },
+  { code: '23A02', floor: 23, side: 'RIGHT', type: '2PN', defaultStatus: 'VACANT', area: 75, defaultName: 'Nhà Trống' },
+  // Tầng 22
+  { code: '22A01', floor: 22, side: 'LEFT', type: '3PN', defaultStatus: 'VACANT', area: 112, defaultName: 'Nhà Trống' },
+  { code: '22A02', floor: 22, side: 'RIGHT', type: '2PN', defaultStatus: 'VACANT', area: 75, defaultName: 'Nhà Trống' },
+  // Tầng 21
+  { code: '21A01', floor: 21, side: 'LEFT', type: '2PN', defaultStatus: 'VACANT', area: 78.5, defaultName: 'Nhà Trống' },
+  { code: '21A02', floor: 21, side: 'RIGHT', type: '1PN', defaultStatus: 'VACANT', area: 52, defaultName: 'Nhà Trống' },
+  // Tầng 20
+  { code: '20A01', floor: 20, side: 'LEFT', type: '2PN', defaultStatus: 'VACANT', area: 78.5, defaultName: 'Nhà Trống' },
+  { code: '20A02', floor: 20, side: 'RIGHT', type: '3PN', defaultStatus: 'VACANT', area: 112, defaultName: 'Nhà Trống' },
+  // Tầng 19
+  { code: '19A01', floor: 19, side: 'LEFT', type: '3PN', defaultStatus: 'VACANT', area: 108, defaultName: 'Nhà Trống' },
+  { code: '19A02', floor: 19, side: 'RIGHT', type: '2PN', defaultStatus: 'VACANT', area: 75, defaultName: 'Nhà Trống' },
+  // Tầng 18
+  { code: '18A01', floor: 18, side: 'LEFT', type: '3PN', defaultStatus: 'VACANT', area: 112, defaultName: 'Nhà Trống' },
+  { code: '18A02', floor: 18, side: 'RIGHT', type: '2PN', defaultStatus: 'VACANT', area: 75, defaultName: 'Nhà Trống' },
+  // Tầng 17
+  { code: '17A01', floor: 17, side: 'LEFT', type: '2PN', defaultStatus: 'VACANT', area: 78.5, defaultName: 'Nhà Trống' },
+  { code: '17A02', floor: 17, side: 'RIGHT', type: '1PN', defaultStatus: 'VACANT', area: 52, defaultName: 'Nhà Trống' },
+  // Tầng 16
+  { code: '16A01', floor: 16, side: 'LEFT', type: '2PN', defaultStatus: 'VACANT', area: 75, defaultName: 'Nhà Trống' },
+  { code: '16A02', floor: 16, side: 'RIGHT', type: '3PN', defaultStatus: 'VACANT', area: 108, defaultName: 'Nhà Trống' },
+  // Tầng 15
+  { code: '15A01', floor: 15, side: 'LEFT', type: '3PN', defaultStatus: 'VACANT', area: 108, defaultName: 'Nhà Trống' },
+  { code: '15A04', floor: 15, side: 'RIGHT', type: '2PN', defaultStatus: 'VACANT', area: 78.5, defaultName: 'Nhà Trống' },
+  // Tầng 14
+  { code: '14A01', floor: 14, side: 'LEFT', type: '2PN', defaultStatus: 'VACANT', area: 75, defaultName: 'Nhà Trống' },
+  { code: '14A02', floor: 14, side: 'RIGHT', type: '2PN', defaultStatus: 'VACANT', area: 78.5, defaultName: 'Nhà Trống' },
+  // Tầng 12 (Căn 12A05 là căn cư dân thật Nguyễn Hữu Lực)
+  { code: '12A05', floor: 12, side: 'LEFT', type: '2PN', defaultStatus: 'OCCUPIED', area: 78.5, defaultName: 'Nguyễn Hữu Lực' },
+  { code: '12A04', floor: 12, side: 'RIGHT', type: '3PN', defaultStatus: 'VACANT', area: 108, defaultName: 'Nhà Trống' },
+  // Tầng 11
+  { code: '11A01', floor: 11, side: 'LEFT', type: '2PN', defaultStatus: 'VACANT', area: 75, defaultName: 'Nhà Trống' },
+  { code: '11A02', floor: 11, side: 'RIGHT', type: '1PN', defaultStatus: 'VACANT', area: 52, defaultName: 'Nhà Trống' },
+  // Tầng 10 (Căn 10A03 đang nghiệm thu kỹ thuật BQL)
+  { code: '10A01', floor: 10, side: 'LEFT', type: '2PN', defaultStatus: 'VACANT', area: 75, defaultName: 'Nhà Trống' },
+  { code: '10A03', floor: 10, side: 'RIGHT', type: '2PN', defaultStatus: 'MAINTENANCE', area: 78.5, defaultName: 'Nghiệm Thu BQL' },
+  // Tầng 9
+  { code: '09A01', floor: 9, side: 'LEFT', type: '2PN', defaultStatus: 'VACANT', area: 78.5, defaultName: 'Nhà Trống' },
+  { code: '09A02', floor: 9, side: 'RIGHT', type: '1PN', defaultStatus: 'VACANT', area: 52, defaultName: 'Nhà Trống' },
+  // Tầng 8
+  { code: '08A01', floor: 8, side: 'LEFT', type: '3PN', defaultStatus: 'VACANT', area: 108, defaultName: 'Nhà Trống' },
+  { code: '08A02', floor: 8, side: 'RIGHT', type: '1PN', defaultStatus: 'VACANT', area: 52, defaultName: 'Nhà Trống' },
+  // Tầng 7
+  { code: '07A01', floor: 7, side: 'LEFT', type: '2PN', defaultStatus: 'VACANT', area: 75, defaultName: 'Nhà Trống' },
+  { code: '07A02', floor: 7, side: 'RIGHT', type: '2PN', defaultStatus: 'VACANT', area: 78.5, defaultName: 'Nhà Trống' },
+  // Tầng 6
+  { code: '06A01', floor: 6, side: 'LEFT', type: '1PN', defaultStatus: 'VACANT', area: 52, defaultName: 'Nhà Trống' },
+  { code: '06A02', floor: 6, side: 'RIGHT', type: '1PN', defaultStatus: 'VACANT', area: 52, defaultName: 'Nhà Trống' },
+  // Tầng 5
+  { code: '05A02', floor: 5, side: 'LEFT', type: '1PN', defaultStatus: 'VACANT', area: 52, defaultName: 'Nhà Trống' },
+  { code: '05A01', floor: 5, side: 'RIGHT', type: '2PN', defaultStatus: 'VACANT', area: 75, defaultName: 'Nhà Trống' },
+  // Tầng 4
+  { code: '04A01', floor: 4, side: 'LEFT', type: '2PN', defaultStatus: 'VACANT', area: 75, defaultName: 'Nhà Trống' },
+  { code: '04A02', floor: 4, side: 'RIGHT', type: '1PN', defaultStatus: 'VACANT', area: 52, defaultName: 'Nhà Trống' }
+];
 
 export default function AdminBuildingApartmentManager() {
   // 1. Quản lý danh sách căn hộ thực tế từ apartmentStore
@@ -716,6 +793,64 @@ export default function AdminBuildingApartmentManager() {
                 className="w-full h-full cursor-default drop-shadow-[0_30px_60px_rgba(0,0,0,0.95)]"
               >
                 <defs>
+                  {/* Animation Keyframes cho con trỏ laser và bảng callout hiển thị từ từ */}
+                  <style>{`
+                    @keyframes laserDrawPath {
+                      0% {
+                        stroke-dashoffset: 280;
+                        opacity: 0;
+                      }
+                      20% {
+                        opacity: 1;
+                      }
+                      100% {
+                        stroke-dashoffset: 0;
+                        opacity: 1;
+                      }
+                    }
+
+                    @keyframes calloutSlideIn {
+                      0% {
+                        opacity: 0;
+                        transform: translateY(12px) scale(0.95);
+                      }
+                      100% {
+                        opacity: 1;
+                        transform: translateY(0) scale(1);
+                      }
+                    }
+
+                    @keyframes pingRing {
+                      0% {
+                        r: 3.5;
+                        opacity: 1;
+                        stroke-width: 2.5;
+                      }
+                      70% {
+                        opacity: 0.5;
+                      }
+                      100% {
+                        r: 20;
+                        opacity: 0;
+                        stroke-width: 0.5;
+                      }
+                    }
+
+                    .anim-laser-line {
+                      stroke-dasharray: 280;
+                      stroke-dashoffset: 280;
+                      animation: laserDrawPath 0.55s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+                    }
+
+                    .anim-callout-card {
+                      animation: calloutSlideIn 0.5s 0.18s cubic-bezier(0.16, 1, 0.3, 1) both;
+                    }
+
+                    .anim-ping-pulse {
+                      animation: pingRing 1.8s cubic-bezier(0, 0, 0.2, 1) infinite;
+                    }
+                  `}</style>
+
                   {/* Filter viền phát sáng khi chọn căn hộ */}
                   <filter id="unitGlow" x="-20%" y="-20%" width="140%" height="140%">
                     <feGaussianBlur stdDeviation="3" result="blur" />
@@ -789,71 +924,7 @@ export default function AdminBuildingApartmentManager() {
                   </text>
 
                   {/* RENDER ĐẦY ĐỦ CÁC KHỐI CĂN HỘ KIẾN TRÚC (TỪ TẦNG 4 ĐẾN TẦNG 25) */}
-                  {[
-                    // Tầng 25 (Penthouse)
-                    { code: '25PH-01', floor: 25, side: 'LEFT', type: 'DUPLEX_PENTHOUSE', defaultStatus: 'VACANT', area: 215, defaultName: 'Nhà Trống' },
-                    { code: '25PH-02', floor: 25, side: 'RIGHT', type: 'DUPLEX_PENTHOUSE', defaultStatus: 'VACANT', area: 215, defaultName: 'Nhà Trống' },
-                    // Tầng 24
-                    { code: '24A01', floor: 24, side: 'LEFT', type: '3PN', defaultStatus: 'VACANT', area: 112, defaultName: 'Nhà Trống' },
-                    { code: '24A02', floor: 24, side: 'RIGHT', type: '2PN', defaultStatus: 'VACANT', area: 78.5, defaultName: 'Nhà Trống' },
-                    // Tầng 23
-                    { code: '23A01', floor: 23, side: 'LEFT', type: '3PN', defaultStatus: 'VACANT', area: 112, defaultName: 'Nhà Trống' },
-                    { code: '23A02', floor: 23, side: 'RIGHT', type: '2PN', defaultStatus: 'VACANT', area: 75, defaultName: 'Nhà Trống' },
-                    // Tầng 22
-                    { code: '22A01', floor: 22, side: 'LEFT', type: '3PN', defaultStatus: 'VACANT', area: 112, defaultName: 'Nhà Trống' },
-                    { code: '22A02', floor: 22, side: 'RIGHT', type: '2PN', defaultStatus: 'VACANT', area: 75, defaultName: 'Nhà Trống' },
-                    // Tầng 21
-                    { code: '21A01', floor: 21, side: 'LEFT', type: '2PN', defaultStatus: 'VACANT', area: 78.5, defaultName: 'Nhà Trống' },
-                    { code: '21A02', floor: 21, side: 'RIGHT', type: '1PN', defaultStatus: 'VACANT', area: 52, defaultName: 'Nhà Trống' },
-                    // Tầng 20
-                    { code: '20A01', floor: 20, side: 'LEFT', type: '2PN', defaultStatus: 'VACANT', area: 78.5, defaultName: 'Nhà Trống' },
-                    { code: '20A02', floor: 20, side: 'RIGHT', type: '3PN', defaultStatus: 'VACANT', area: 112, defaultName: 'Nhà Trống' },
-                    // Tầng 19
-                    { code: '19A01', floor: 19, side: 'LEFT', type: '3PN', defaultStatus: 'VACANT', area: 108, defaultName: 'Nhà Trống' },
-                    { code: '19A02', floor: 19, side: 'RIGHT', type: '2PN', defaultStatus: 'VACANT', area: 75, defaultName: 'Nhà Trống' },
-                    // Tầng 18
-                    { code: '18A01', floor: 18, side: 'LEFT', type: '3PN', defaultStatus: 'VACANT', area: 112, defaultName: 'Nhà Trống' },
-                    { code: '18A02', floor: 18, side: 'RIGHT', type: '2PN', defaultStatus: 'VACANT', area: 75, defaultName: 'Nhà Trống' },
-                    // Tầng 17
-                    { code: '17A01', floor: 17, side: 'LEFT', type: '2PN', defaultStatus: 'VACANT', area: 78.5, defaultName: 'Nhà Trống' },
-                    { code: '17A02', floor: 17, side: 'RIGHT', type: '1PN', defaultStatus: 'VACANT', area: 52, defaultName: 'Nhà Trống' },
-                    // Tầng 16
-                    { code: '16A01', floor: 16, side: 'LEFT', type: '2PN', defaultStatus: 'VACANT', area: 75, defaultName: 'Nhà Trống' },
-                    { code: '16A02', floor: 16, side: 'RIGHT', type: '3PN', defaultStatus: 'VACANT', area: 108, defaultName: 'Nhà Trống' },
-                    // Tầng 15
-                    { code: '15A01', floor: 15, side: 'LEFT', type: '3PN', defaultStatus: 'VACANT', area: 108, defaultName: 'Nhà Trống' },
-                    { code: '15A04', floor: 15, side: 'RIGHT', type: '2PN', defaultStatus: 'VACANT', area: 78.5, defaultName: 'Nhà Trống' },
-                    // Tầng 14
-                    { code: '14A01', floor: 14, side: 'LEFT', type: '2PN', defaultStatus: 'VACANT', area: 75, defaultName: 'Nhà Trống' },
-                    { code: '14A02', floor: 14, side: 'RIGHT', type: '2PN', defaultStatus: 'VACANT', area: 78.5, defaultName: 'Nhà Trống' },
-                    // Tầng 12 (Căn 12A05 là căn cư dân thật Nguyễn Hữu Lực)
-                    { code: '12A05', floor: 12, side: 'LEFT', type: '2PN', defaultStatus: 'OCCUPIED', area: 78.5, defaultName: activeOwnerName },
-                    { code: '12A04', floor: 12, side: 'RIGHT', type: '3PN', defaultStatus: 'VACANT', area: 108, defaultName: 'Nhà Trống' },
-                    // Tầng 11
-                    { code: '11A01', floor: 11, side: 'LEFT', type: '2PN', defaultStatus: 'VACANT', area: 75, defaultName: 'Nhà Trống' },
-                    { code: '11A02', floor: 11, side: 'RIGHT', type: '1PN', defaultStatus: 'VACANT', area: 52, defaultName: 'Nhà Trống' },
-                    // Tầng 10 (Căn 10A03 đang nghiệm thu kỹ thuật BQL)
-                    { code: '10A01', floor: 10, side: 'LEFT', type: '2PN', defaultStatus: 'VACANT', area: 75, defaultName: 'Nhà Trống' },
-                    { code: '10A03', floor: 10, side: 'RIGHT', type: '2PN', defaultStatus: 'MAINTENANCE', area: 78.5, defaultName: 'Nghiệm Thu BQL' },
-                    // Tầng 9
-                    { code: '09A01', floor: 9, side: 'LEFT', type: '2PN', defaultStatus: 'VACANT', area: 78.5, defaultName: 'Nhà Trống' },
-                    { code: '09A02', floor: 9, side: 'RIGHT', type: '1PN', defaultStatus: 'VACANT', area: 52, defaultName: 'Nhà Trống' },
-                    // Tầng 8
-                    { code: '08A01', floor: 8, side: 'LEFT', type: '3PN', defaultStatus: 'VACANT', area: 108, defaultName: 'Nhà Trống' },
-                    { code: '08A02', floor: 8, side: 'RIGHT', type: '1PN', defaultStatus: 'VACANT', area: 52, defaultName: 'Nhà Trống' },
-                    // Tầng 7
-                    { code: '07A01', floor: 7, side: 'LEFT', type: '2PN', defaultStatus: 'VACANT', area: 75, defaultName: 'Nhà Trống' },
-                    { code: '07A02', floor: 7, side: 'RIGHT', type: '2PN', defaultStatus: 'VACANT', area: 78.5, defaultName: 'Nhà Trống' },
-                    // Tầng 6
-                    { code: '06A01', floor: 6, side: 'LEFT', type: '1PN', defaultStatus: 'VACANT', area: 52, defaultName: 'Nhà Trống' },
-                    { code: '06A02', floor: 6, side: 'RIGHT', type: '1PN', defaultStatus: 'VACANT', area: 52, defaultName: 'Nhà Trống' },
-                    // Tầng 5
-                    { code: '05A02', floor: 5, side: 'LEFT', type: '1PN', defaultStatus: 'VACANT', area: 52, defaultName: 'Nhà Trống' },
-                    { code: '05A01', floor: 5, side: 'RIGHT', type: '2PN', defaultStatus: 'VACANT', area: 75, defaultName: 'Nhà Trống' },
-                    // Tầng 4
-                    { code: '04A01', floor: 4, side: 'LEFT', type: '2PN', defaultStatus: 'VACANT', area: 75, defaultName: 'Nhà Trống' },
-                    { code: '04A02', floor: 4, side: 'RIGHT', type: '1PN', defaultStatus: 'VACANT', area: 52, defaultName: 'Nhà Trống' }
-                  ].map(b => {
+                  {BUILDING_3D_UNITS.map(b => {
                     const liveUnit = displayUnits.find(u => u.code === b.code);
                     const actualStatus = liveUnit ? liveUnit.status : b.defaultStatus;
                     const actualOwnerName = b.code === '12A05' ? activeOwnerName : (liveUnit?.owner?.name || b.defaultName || 'Nhà Trống');
@@ -942,73 +1013,165 @@ export default function AdminBuildingApartmentManager() {
                     );
                   })}
 
-                  {/* LASER CHỈ ĐƯỜNG CHO CĂN 12A05 (NGUYỄN HỮU LỰC - CƯ DÂN THẬT) SANG BẢNG TÊN BÊN TRÁI */}
-                  <g className="pointer-events-none transition-opacity duration-300" style={{ opacity: checkUnitMatchesFilter('12A05', 12, '2PN', 'OCCUPIED', activeOwnerName) ? 1 : 0.2 }}>
-                    <line x1="248" y1="292" x2="190" y2="292" stroke="#10B981" strokeWidth="2" strokeDasharray="3,3" />
-                    <circle cx="186" cy="292" r="4.5" fill="#10B981" />
-                    <circle cx="248" cy="292" r="3" fill="#34D399" />
-
-                    {/* Bảng định danh cư dân thực tế 12A05 bên trái */}
-                    <rect x="18" y="268" width="168" height="48" fill="#064E3B" fillOpacity="0.95" stroke="#34D399" strokeWidth="1.8" rx="2" />
-                    <text x="102" y="283" fill="#FFFFFF" fontSize="9" fontWeight="900" textAnchor="middle" fontFamily="monospace">
-                      ★ CĂN 12A05 • ĐÃ CÓ NGƯỜI Ở
-                    </text>
-                    <text x="102" y="297" fill="#D1FAE5" fontSize="8.5" fontWeight="bold" textAnchor="middle">
-                      Chủ Hộ: {activeOwnerName}
-                    </text>
-                    <text x="102" y="309" fill="#A7F3D0" fontSize="7.5" fontFamily="monospace" textAnchor="middle">
-                      Tầng 12 • 2PN (78.5m²) • Đông Nam
-                    </text>
-                  </g>
-
-                  {/* LASER CHỈ ĐƯỜNG CHO CĂN 10A03 (NGHIỆM THU KỸ THUẬT) SANG BẢNG BÊN PHẢI */}
-                  <g className="pointer-events-none transition-opacity duration-300" style={{ opacity: checkUnitMatchesFilter('10A03', 10, '2PN', 'MAINTENANCE') ? 1 : 0.2 }}>
-                    <line x1="752" y1="334" x2="812" y2="334" stroke="#38BDF8" strokeWidth="2" strokeDasharray="3,3" />
-                    <circle cx="816" cy="334" r="4.5" fill="#38BDF8" />
-                    <circle cx="752" cy="334" r="3" fill="#7DD3FC" />
-
-                    {/* Bảng chú thích nghiệm thu kỹ thuật bên phải */}
-                    <rect x="820" y="315" width="162" height="42" fill="#082F49" fillOpacity="0.95" stroke="#38BDF8" strokeWidth="1.5" rx="2" />
-                    <text x="901" y="330" fill="#FFFFFF" fontSize="8.5" fontWeight="900" textAnchor="middle" fontFamily="monospace">
-                      ★ CĂN 10A03 • NGHIỆM THU
-                    </text>
-                    <text x="901" y="344" fill="#BAE6FD" fontSize="7.5" fontWeight="semibold" textAnchor="middle">
-                      Kiểm tra kỹ thuật PCCC & Bàn giao
-                    </text>
-                  </g>
-                </g>
-
-                {/* THẺ TOOLTIP TƯƠNG TÁC FLOATING KHI RÊ CHUỘT VÀO MÔ HÌNH 3D (GÓC PHẢI TRÊN) */}
-                <g className="pointer-events-none">
+                  {/* =================================================================== */}
+                  {/* CON TRỎ HOẠT HỌA ĐỘNG (ANIMATED POINTER & CALLOUT) HIỂN THỊ TỪ TỪ   */}
+                  {/* KHI CLICK VÀO BẤT KỲ CĂN HỘ NÀO TRÊN MÔ HÌNH CHUNG CƯ              */}
+                  {/* =================================================================== */}
                   {(() => {
-                    const focusCode = hoveredUnitCode || selectedAptCode || '12A05';
-                    const targetUnit = displayUnits.find(u => u.code === focusCode);
-                    const isFocusOccupied = targetUnit?.status === 'OCCUPIED' || focusCode === '12A05';
-                    const isFocusMaint = targetUnit?.status === 'MAINTENANCE' || focusCode === '10A03';
+                    const activeTargetBlock = BUILDING_3D_UNITS.find(b => b.code === selectedAptCode) || {
+                      code: selectedAptCode,
+                      floor: activeUnit?.floor || 12,
+                      side: ((activeUnit?.floor || 12) % 2 === 0 ? 'LEFT' : 'RIGHT') as 'LEFT' | 'RIGHT',
+                      type: (activeUnit?.type || '2PN') as ApartmentType,
+                      defaultStatus: (activeUnit?.status || 'VACANT') as ApartmentStatus,
+                      area: activeUnit?.area || 75
+                    };
+
+                    const curFloor = activeTargetBlock.floor;
+                    const curSide = activeTargetBlock.side;
+                    const curYBase = 472 - (curFloor - 4) * 17.52;
+                    const curH = curFloor === 25 ? 24 : 14.5;
+                    const anchorY = Number((curYBase - 17 - (curH / 2) + 3.5).toFixed(1));
+                    const anchorX = curSide === 'LEFT' ? 248 : 752;
+
+                    const cardW = 196;
+                    const cardH = 74;
+                    const targetCardY = Math.max(72, Math.min(525, Math.round(anchorY - cardH / 2)));
+                    const cardX = curSide === 'LEFT' ? 14 : 790;
+                    const dockX = curSide === 'LEFT' ? (cardX + cardW) : cardX;
+                    const dockY = targetCardY + cardH / 2;
+                    const elbowX = curSide === 'LEFT' ? (anchorX - 32) : (anchorX + 32);
+
+                    const laserPath = curSide === 'LEFT'
+                      ? `M ${anchorX} ${anchorY} L ${elbowX} ${anchorY} L ${cardX + cardW + 14} ${dockY} L ${dockX} ${dockY}`
+                      : `M ${anchorX} ${anchorY} L ${elbowX} ${anchorY} L ${cardX - 14} ${dockY} L ${dockX} ${dockY}`;
+
+                    const isCurOccupied = activeUnit?.status === 'OCCUPIED' || selectedAptCode === '12A05';
+                    const isCurMaint = activeUnit?.status === 'MAINTENANCE' || selectedAptCode === '10A03';
+                    const themeNeon = isCurOccupied ? '#10B981' : isCurMaint ? '#38BDF8' : '#F59E0B';
+                    const themeBg = isCurOccupied ? '#064E3B' : isCurMaint ? '#082F49' : '#1C1917';
+                    const themeBorder = isCurOccupied ? '#34D399' : isCurMaint ? '#7DD3FC' : '#FDE68A';
+                    const themeText = isCurOccupied ? '#D1FAE5' : isCurMaint ? '#BAE6FD' : '#FEF3C7';
 
                     return (
-                      <g>
-                        <rect x="730" y="25" width="250" height="96" fill="#0D1117" fillOpacity="0.95" stroke="#C5A880" strokeWidth="1.2" rx="3" />
-                        <text x="745" y="45" fill="#C5A880" fontSize="10" fontWeight="bold" fontFamily="monospace">
-                          {hoveredUnitCode ? '🔍 ĐANG XEM: ' : '📍 ĐANG CHỌN: '} CĂN {focusCode}
-                        </text>
-                        <text x="745" y="62" fill="#FFFFFF" fontSize="11" fontWeight="bold">
-                          Tầng {targetUnit?.floor || 12} • {targetUnit?.typeLabel || 'Căn Hộ'} ({targetUnit?.area || 75}m²)
-                        </text>
-                        <text x="745" y="80" fill={isFocusOccupied ? '#34D399' : isFocusMaint ? '#38BDF8' : '#FBBF24'} fontSize="9" fontWeight="bold">
-                          {isFocusOccupied
-                            ? `🟢 ĐÃ CÓ NGƯỜI Ở (${targetUnit?.owner?.name || activeOwnerName})`
-                            : isFocusMaint
-                            ? '🔵 ĐANG NGHIỆM THU KỸ THUẬT'
-                            : '🟡 NHÀ TRỐNG (Sẵn sàng bàn giao)'}
-                        </text>
-                        <text x="745" y="105" fill="#94A3B8" fontSize="8" fontFamily="sans-serif">
-                          * Nhấp chuột để mở toàn bộ hồ sơ chi tiết bên phải
-                        </text>
+                      <g key={`dynamic-pointer-${selectedAptCode}`} className="pointer-events-none">
+                        {/* 1. Điểm neo tại căn hộ & radar ping tỏa sóng nhấp nháy */}
+                        <circle cx={anchorX} cy={anchorY} r="4" fill={themeNeon} />
+                        <circle cx={anchorX} cy={anchorY} r="10" fill="none" stroke={themeNeon} className="anim-ping-pulse" />
+
+                        {/* 2. Đường tia laser bắn từ căn hộ sang bảng callout (vẽ dần dần ra) */}
+                        <path
+                          d={laserPath}
+                          fill="none"
+                          stroke={themeNeon}
+                          strokeWidth="2.2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          className="anim-laser-line"
+                          filter="url(#unitGlow)"
+                        />
+                        <circle cx={dockX} cy={dockY} r="3.5" fill={themeBorder} />
+
+                        {/* 3. Bảng Callout Holographic xuất hiện từ từ dần dần */}
+                        <g className="anim-callout-card">
+                          <rect
+                            x={cardX}
+                            y={targetCardY}
+                            width={cardW}
+                            height={cardH}
+                            fill={themeBg}
+                            fillOpacity="0.96"
+                            stroke={themeBorder}
+                            strokeWidth="1.8"
+                            rx="4"
+                            filter="url(#unitGlow)"
+                          />
+
+                          {/* Dòng 1: Header mã căn + số tầng */}
+                          <circle cx={cardX + 14} cy={targetCardY + 16} r="3.5" fill={themeNeon} />
+                          <text
+                            x={cardX + 24}
+                            y={targetCardY + 20}
+                            fill="#FFFFFF"
+                            fontSize="10"
+                            fontWeight="900"
+                            fontFamily="monospace"
+                          >
+                            CĂN {activeUnit?.code || selectedAptCode} • TẦNG {curFloor}
+                          </text>
+
+                          {/* Dòng 2: Tình trạng sinh động */}
+                          <text
+                            x={cardX + 14}
+                            y={targetCardY + 36}
+                            fill={themeText}
+                            fontSize="8.5"
+                            fontWeight="bold"
+                          >
+                            {isCurOccupied
+                              ? `★ CƯ DÂN: ${activeOwnerName}`
+                              : isCurMaint
+                              ? '★ ĐANG NGHIỆM THU KỸ THUẬT'
+                              : '★ NHÀ TRỐNG • SẴN SÀNG Ở'}
+                          </text>
+
+                          {/* Dòng 3: Diện tích & Hướng */}
+                          <text
+                            x={cardX + 14}
+                            y={targetCardY + 50}
+                            fill="#CBD5E1"
+                            fontSize="7.5"
+                            fontFamily="monospace"
+                          >
+                            {activeUnit?.typeLabel || `${activeTargetBlock.type}`} • {activeUnit?.area || activeTargetBlock.area}m² • Hướng {activeUnit?.direction || (curSide === 'LEFT' ? 'Đông Nam' : 'Tây Nam')}
+                          </text>
+
+                          {/* Dòng 4: Chỉ báo hiển thị */}
+                          <text
+                            x={cardX + 14}
+                            y={targetCardY + 65}
+                            fill={themeNeon}
+                            fontSize="7.5"
+                            fontWeight="semibold"
+                          >
+                            ✦ Đang hiển thị hồ sơ chi tiết bên phải
+                          </text>
+                        </g>
+
+                        {/* Điểm nhận diện căn 12A05 (Nguyễn Hữu Lực) nếu đang chọn căn khác */}
+                        {selectedAptCode !== '12A05' && (
+                          <g>
+                            <circle cx="248" cy="292" r="3.5" fill="#10B981" />
+                            <rect x="135" y="280" width="105" height="22" fill="#064E3B" fillOpacity="0.88" stroke="#10B981" strokeWidth="1" rx="2" />
+                            <text x="187" y="294" fill="#D1FAE5" fontSize="7.5" fontWeight="bold" textAnchor="middle">
+                              ★ 12A05: {activeOwnerName}
+                            </text>
+                          </g>
+                        )}
                       </g>
                     );
                   })()}
                 </g>
+
+                {/* THẺ QUAN SÁT TỨC THÌ (HOVER PREVIEW) KHI RÊ CHUỘT VÀO CĂN HỘ KHÁC */}
+                {hoveredUnitCode && hoveredUnitCode !== selectedAptCode && (
+                  <g className="pointer-events-none">
+                    {(() => {
+                      const hUnit = displayUnits.find(u => u.code === hoveredUnitCode);
+                      return (
+                        <g>
+                          <rect x="735" y="25" width="245" height="42" fill="#0D1117" fillOpacity="0.94" stroke="#C5A880" strokeWidth="1.2" rx="3" />
+                          <text x="748" y="42" fill="#C5A880" fontSize="9.5" fontWeight="bold" fontFamily="monospace">
+                            🔍 RÊ CHUỘT: CĂN {hoveredUnitCode} (Tầng {hUnit?.floor || 12})
+                          </text>
+                          <text x="748" y="56" fill="#94A3B8" fontSize="8" fontFamily="sans-serif">
+                            {hUnit?.status === 'OCCUPIED' ? '🟢 Đã có người ở' : hUnit?.status === 'MAINTENANCE' ? '🔵 Nghiệm thu kỹ thuật' : '🟡 Nhà trống (Sẵn sàng bàn giao)'} • Nhấp để chọn
+                          </text>
+                        </g>
+                      );
+                    })()}
+                  </g>
+                )}
 
                 {/* BẢNG CHỈ DẪN TƯƠNG TÁC GÓC TRÁI TRÊN */}
                 <rect x="20" y="25" width="220" height="42" fill="#0D1117" fillOpacity="0.9" stroke="#222B35" strokeWidth="1" rx="2" />
@@ -1016,7 +1179,7 @@ export default function AdminBuildingApartmentManager() {
                   MÔ HÌNH 3D CHUNG CƯ SKYLINE
                 </text>
                 <text x="30" y="56" fill="#94A3B8" fontSize="8" fontFamily="sans-serif">
-                  Phủ kín 25 tầng • 100% Căn hộ thực tế • Nhấp chọn căn
+                  Phủ kín 25 tầng • Click căn để kích hoạt con trỏ động
                 </text>
               </svg>
             </div>
