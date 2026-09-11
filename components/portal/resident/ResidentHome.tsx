@@ -29,7 +29,7 @@ import {
 } from 'lucide-react';
 import { getApartmentByCode } from '@/lib/apartmentStore';
 import { applyScene, getSmartHomeState, SceneType } from '@/lib/smartHomeStore';
-import ApartmentDetailModal from '@/components/portal/admin/ApartmentDetailModal';
+import ResidentApartmentModal from './ResidentApartmentModal';
 
 interface ResidentHomeProps {
   currentUser: UserType;
@@ -82,8 +82,9 @@ export default function ResidentHome({ currentUser, onNavigate, onOpenVisitorMod
                 type="button"
                 onClick={() => setIsAptDetailOpen(true)}
                 className="px-2 py-0.5 bg-[#161B22] hover:bg-[#C5A880] hover:text-[#0D1117] text-[#C5A880] border border-[#C5A880]/50 text-[10.5px] font-semibold transition-all flex items-center gap-1 shadow-sm"
+                title="Mở sổ tay căn hộ thượng lưu & phối cảnh không gian 3D"
               >
-                <Eye className="w-3 h-3" /> Chi Tiết Căn Hộ & Phối Cảnh
+                <Eye className="w-3 h-3" /> Sổ Tay Căn Hộ & Phối Cảnh
               </button>
             </span>
             <span>•</span>
@@ -351,14 +352,12 @@ export default function ResidentHome({ currentUser, onNavigate, onOpenVisitorMod
         </div>
       </div>
 
-      {/* Modal Xem Chi Tiết Căn Hộ Của Cư Dân */}
-      <ApartmentDetailModal
+      {/* Modal Sổ Tay Căn Hộ Thượng Lưu Của Cư Dân */}
+      <ResidentApartmentModal
         isOpen={isAptDetailOpen}
         onClose={() => setIsAptDetailOpen(false)}
-        unit={getApartmentByCode(aptCode) || null}
-        onEditUnit={() => {}}
-        onAssignResident={() => {}}
-        onRefresh={() => {}}
+        apartmentCode={aptCode}
+        onNavigateToSmartHome={() => onNavigate('resident-smarthome')}
       />
     </div>
   );
