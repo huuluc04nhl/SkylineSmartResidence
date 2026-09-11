@@ -90,25 +90,127 @@ declare global {
 
 const globalScope = (typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : {}) as any;
 
+const INITIAL_SAMPLE_PASSES: GeneratedVisitorPass[] = [
+  {
+    id: 'SKY-PASS-9102',
+    apartmentCode: '12A05',
+    hostName: 'Nguyễn Hữu Lực',
+    hostPhone: '0908.888.888',
+    towerName: 'Chung Cư Skyline',
+    visitorName: 'Trần Văn Nam',
+    phoneNumber: '0912.345.678',
+    licensePlate: '51G-889.23',
+    entryType: 'MULTI',
+    purpose: 'VISITOR',
+    purposeLabel: 'Khách Thăm Gia Đình',
+    validHours: 6,
+    createdAt: new Date(Date.now() - 2 * 3600 * 1000).toISOString(),
+    validUntil: new Date(Date.now() + 4 * 3600 * 1000).toISOString(),
+    qrData: JSON.stringify({ skyline_pass: true, passId: 'SKY-PASS-9102', aptCode: '12A05', hostName: 'Nguyễn Hữu Lực', visitorName: 'Trần Văn Nam', pin: '849201' }),
+    pinCode: '849201',
+    note: 'Khách bạn thân lên thăm căn hộ 12A05',
+    status: 'CHECKED_IN',
+    checkedInAt: '09:15 12/09/2026'
+  },
+  {
+    id: 'SKY-PASS-8754',
+    apartmentCode: '12A05',
+    hostName: 'Nguyễn Hữu Lực',
+    hostPhone: '0908.888.888',
+    towerName: 'Chung Cư Skyline',
+    visitorName: 'Lê Hoàng Phúc',
+    phoneNumber: '0934.567.890',
+    licensePlate: '59P1-456.78',
+    entryType: 'MULTI',
+    purpose: 'VISITOR',
+    purposeLabel: 'Giao Nhận Bưu Kiện / Hàng',
+    validHours: 4,
+    createdAt: new Date(Date.now() - 30 * 60 * 1000).toISOString(),
+    validUntil: new Date(Date.now() + 3.5 * 3600 * 1000).toISOString(),
+    qrData: JSON.stringify({ skyline_pass: true, passId: 'SKY-PASS-8754', aptCode: '12A05', hostName: 'Nguyễn Hữu Lực', visitorName: 'Lê Hoàng Phúc', pin: '652190' }),
+    pinCode: '652190',
+    note: 'Giao tài liệu dự án',
+    status: 'ACTIVE'
+  },
+  {
+    id: 'SKY-PASS-7312',
+    apartmentCode: '10A03',
+    hostName: 'KTS. Lê Quang Minh (BQL)',
+    hostPhone: '0903.112.233',
+    towerName: 'Chung Cư Skyline',
+    visitorName: 'KS. Đỗ Minh Quân',
+    phoneNumber: '0909.554.433',
+    licensePlate: '29A-345.67',
+    entryType: 'MULTI',
+    purpose: 'MAINTENANCE',
+    purposeLabel: 'Nghiệm Thu Kỹ Thuật BQL',
+    validHours: 8,
+    createdAt: new Date(Date.now() - 3 * 3600 * 1000).toISOString(),
+    validUntil: new Date(Date.now() + 5 * 3600 * 1000).toISOString(),
+    qrData: JSON.stringify({ skyline_pass: true, passId: 'SKY-PASS-7312', aptCode: '10A03', hostName: 'KTS. Lê Quang Minh (BQL)', visitorName: 'KS. Đỗ Minh Quân', pin: '319804' }),
+    pinCode: '319804',
+    note: 'Kiểm định đồng hồ điện nước trước bàn giao',
+    status: 'CHECKED_IN',
+    checkedInAt: '08:30 12/09/2026'
+  },
+  {
+    id: 'SKY-PASS-6021',
+    apartmentCode: '12A05',
+    hostName: 'Nguyễn Hữu Lực',
+    hostPhone: '0908.888.888',
+    towerName: 'Chung Cư Skyline',
+    visitorName: 'Phạm Thị Bích',
+    phoneNumber: '0988.776.655',
+    licensePlate: 'Đi bộ / Taxi',
+    entryType: 'SINGLE',
+    purpose: 'VISITOR',
+    purposeLabel: 'Khách Thăm Căn Hộ',
+    validHours: 4,
+    createdAt: new Date(Date.now() - 6 * 3600 * 1000).toISOString(),
+    validUntil: new Date(Date.now() - 2 * 3600 * 1000).toISOString(),
+    qrData: JSON.stringify({ skyline_pass: true, passId: 'SKY-PASS-6021', aptCode: '12A05', hostName: 'Nguyễn Hữu Lực', visitorName: 'Phạm Thị Bích', pin: '190472' }),
+    pinCode: '190472',
+    note: 'Khách đến chúc mừng tân gia',
+    status: 'COMPLETED',
+    checkedInAt: '08:00 12/09/2026',
+    checkedOutAt: '10:45 12/09/2026'
+  }
+];
+
 export function getPassRegistry(): Map<string, GeneratedVisitorPass> {
   if (!globalScope.__SKYLINE_VISITOR_PASSES_MAP) {
     globalScope.__SKYLINE_VISITOR_PASSES_MAP = new Map<string, GeneratedVisitorPass>();
+    let loadedList: GeneratedVisitorPass[] = [];
+
     // Hydrate from localStorage if in browser
     if (typeof window !== 'undefined' && window.localStorage) {
       try {
         const stored = localStorage.getItem('__skyline_visitor_passes');
         if (stored) {
-          const list: GeneratedVisitorPass[] = JSON.parse(stored);
-          list.forEach((p) => {
-            globalScope.__SKYLINE_VISITOR_PASSES_MAP!.set(p.id, p);
-            globalScope.__SKYLINE_VISITOR_PASSES_MAP!.set(p.qrData, p);
-            if (p.pinCode) globalScope.__SKYLINE_VISITOR_PASSES_MAP!.set(p.pinCode, p);
-          });
+          loadedList = JSON.parse(stored);
         }
       } catch (e) {
         // Ignore storage error
       }
     }
+
+    // If empty, initialize with realistic sample passes
+    if (!loadedList || loadedList.length === 0) {
+      loadedList = [...INITIAL_SAMPLE_PASSES];
+      if (typeof window !== 'undefined' && window.localStorage) {
+        try {
+          localStorage.setItem('__skyline_visitor_passes', JSON.stringify(loadedList));
+        } catch (e) {
+          // Ignore
+        }
+      }
+    }
+
+    loadedList.forEach((p) => {
+      globalScope.__SKYLINE_VISITOR_PASSES_MAP!.set(p.id, p);
+      globalScope.__SKYLINE_VISITOR_PASSES_MAP!.set(p.qrData, p);
+      if (p.pinCode) globalScope.__SKYLINE_VISITOR_PASSES_MAP!.set(p.pinCode, p);
+    });
   }
   return globalScope.__SKYLINE_VISITOR_PASSES_MAP!;
 }
@@ -132,6 +234,30 @@ export function savePassToRegistry(pass: GeneratedVisitorPass) {
   }
 }
 
+export function deleteVisitorPass(passId: string): boolean {
+  const reg = getPassRegistry();
+  const target = reg.get(passId);
+  if (!target) return false;
+
+  reg.delete(target.id);
+  reg.delete(target.qrData);
+  if (target.pinCode) reg.delete(target.pinCode);
+
+  if (typeof window !== 'undefined' && window.localStorage) {
+    try {
+      const stored = localStorage.getItem('__skyline_visitor_passes');
+      if (stored) {
+        const list: GeneratedVisitorPass[] = JSON.parse(stored);
+        const filtered = list.filter((p) => p.id !== passId);
+        localStorage.setItem('__skyline_visitor_passes', JSON.stringify(filtered));
+      }
+    } catch (e) {
+      // Ignore
+    }
+  }
+  return true;
+}
+
 export function getAllVisitorPasses(): GeneratedVisitorPass[] {
   const reg = getPassRegistry();
   const seenIds = new Set<string>();
@@ -153,19 +279,79 @@ export function getAllVisitorPasses(): GeneratedVisitorPass[] {
   return passes.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 }
 
+const INITIAL_SAMPLE_LOGS: GateAuditLog[] = [
+  {
+    id: 'LOG-1726115700-101',
+    timestamp: '10:45 12/09/2026',
+    apartmentCode: '12A05',
+    hostName: 'Nguyễn Hữu Lực',
+    visitorName: 'Phạm Thị Bích',
+    licensePlate: 'Đi bộ / Taxi',
+    action: 'CHECK_OUT',
+    result: 'VALID',
+    note: 'Lễ tân xác nhận khách [Phạm Thị Bích] đã rời chung cư sau khi thăm Căn 12A05.'
+  },
+  {
+    id: 'LOG-1726110900-102',
+    timestamp: '09:15 12/09/2026',
+    apartmentCode: '12A05',
+    hostName: 'Nguyễn Hữu Lực',
+    visitorName: 'Trần Văn Nam',
+    licensePlate: '51G-889.23',
+    action: 'CHECK_IN',
+    result: 'VALID',
+    note: 'Lễ tân sảnh tầng 1 xác thực mã QR và cho khách [Trần Văn Nam] vào Căn 12A05.'
+  },
+  {
+    id: 'LOG-1726108200-103',
+    timestamp: '08:30 12/09/2026',
+    apartmentCode: '10A03',
+    hostName: 'KTS. Lê Quang Minh (BQL)',
+    visitorName: 'KS. Đỗ Minh Quân',
+    licensePlate: '29A-345.67',
+    action: 'CHECK_IN',
+    result: 'VALID',
+    note: 'Bảo vệ hầm B1 xác nhận kỹ sư vào nghiệm thu hệ thống Căn 10A03.'
+  },
+  {
+    id: 'LOG-1726106400-104',
+    timestamp: '08:00 12/09/2026',
+    apartmentCode: '12A05',
+    hostName: 'Nguyễn Hữu Lực',
+    visitorName: 'Phạm Thị Bích',
+    licensePlate: 'Đi bộ / Taxi',
+    action: 'CHECK_IN',
+    result: 'VALID',
+    note: 'Lễ tân quét mã PIN 6 số xác nhận cho khách vào Căn 12A05.'
+  }
+];
+
 export function getGateAuditLogs(): GateAuditLog[] {
   if (!globalScope.__SKYLINE_VISITOR_LOGS) {
     globalScope.__SKYLINE_VISITOR_LOGS = [];
+    let loadedLogs: GateAuditLog[] = [];
     if (typeof window !== 'undefined' && window.localStorage) {
       try {
         const stored = localStorage.getItem('__skyline_visitor_logs');
         if (stored) {
-          globalScope.__SKYLINE_VISITOR_LOGS = JSON.parse(stored);
+          loadedLogs = JSON.parse(stored);
         }
       } catch (e) {
         // Ignore storage error
       }
     }
+
+    if (!loadedLogs || loadedLogs.length === 0) {
+      loadedLogs = [...INITIAL_SAMPLE_LOGS];
+      if (typeof window !== 'undefined' && window.localStorage) {
+        try {
+          localStorage.setItem('__skyline_visitor_logs', JSON.stringify(loadedLogs));
+        } catch (e) {
+          // Ignore
+        }
+      }
+    }
+    globalScope.__SKYLINE_VISITOR_LOGS = loadedLogs;
   }
   return globalScope.__SKYLINE_VISITOR_LOGS!;
 }
@@ -206,7 +392,7 @@ export function generateVisitorPassToken(params: {
   const aptCode = params.apartmentCode || '12A05';
   const hostName = params.hostName?.trim() || `Chủ hộ Căn ${aptCode}`;
   const hostPhone = params.hostPhone?.trim() || '';
-  const towerName = aptCode.includes('A') ? 'Tòa A (Sapphire)' : 'Tòa B (Diamond)';
+  const towerName = 'Chung Cư Skyline';
 
   const visitorName = params.visitorName?.trim() || 'Khách Thăm Nhà';
   const phone = params.phoneNumber?.trim() || '';
@@ -432,7 +618,7 @@ export function verifyVisitorQr(qrInput: string, checkpoint: string = 'Sảnh L�
   if (parsedFromJson && parsedFromJson.skyline_pass) {
     const isExpired = now > parsedFromJson.expiresAt;
     const aptCode = parsedFromJson.aptCode || '12A05';
-    const towerName = parsedFromJson.tower || (aptCode.includes('A') ? 'Tòa A (Sapphire)' : 'Tòa B (Diamond)');
+    const towerName = parsedFromJson.tower || 'Chung Cư Skyline';
 
     // Reconstruct pass and add to registry
     const reconstructedPass: GeneratedVisitorPass = {
