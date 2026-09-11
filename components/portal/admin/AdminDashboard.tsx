@@ -76,7 +76,7 @@ const FLOOR_THREAT_DATABASE: Record<string, FloorThreatData> = {
         confidence: 0.99,
         snapshot: 'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?w=600',
         time: '00:55:10',
-        coords: { x: 50, y: 50 },
+        coords: { x: 28, y: 32 },
         actionHint: 'Áp lực duy trì ổn định 6.2 bar. Bể nước đạt mức 94% dung tích an toàn.'
       }
     ]
@@ -91,12 +91,12 @@ const FLOOR_THREAT_DATABASE: Record<string, FloorThreatData> = {
         id: 'T-B1-01',
         type: 'FIRE',
         title: 'Camera AI Giám Sát Nhiệt Độ Tủ Điện Trung Thế (42°C)',
-        location: 'Trạm Biến Áp Trung Thế & Máy Phát Điện Cummins 2500kVA',
+        location: 'Trạm Biến Áp Trung Thế & Máy Phát Cummins 2500kVA',
         severity: 'MEDIUM',
         confidence: 0.94,
         snapshot: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600',
         time: '00:52:15',
-        coords: { x: 42, y: 40 },
+        coords: { x: 26, y: 72 },
         actionHint: 'Quạt hút tản nhiệt tự động kích hoạt. Nhiệt độ an toàn dưới ngưỡng 50°C.'
       },
       {
@@ -108,7 +108,7 @@ const FLOOR_THREAT_DATABASE: Record<string, FloorThreatData> = {
         confidence: 0.91,
         snapshot: 'https://images.unsplash.com/photo-1506521781263-d8422e82f27a?w=600',
         time: '00:45:00',
-        coords: { x: 76, y: 68 },
+        coords: { x: 74, y: 30 },
         actionHint: 'Bảo vệ ca trực đã tiếp cận hiện trường và yêu cầu di dời xe.'
       }
     ]
@@ -128,7 +128,7 @@ const FLOOR_THREAT_DATABASE: Record<string, FloorThreatData> = {
         confidence: 0.98,
         snapshot: 'https://images.unsplash.com/photo-1541888946425-d0fbb18086f6?w=600',
         time: '00:58:30',
-        coords: { x: 32, y: 55 },
+        coords: { x: 74, y: 72 },
         actionHint: 'Hệ thống nhận diện khuôn mặt sinh trắc học mở cửa trong 0.2 giây.'
       }
     ]
@@ -143,12 +143,12 @@ const FLOOR_THREAT_DATABASE: Record<string, FloorThreatData> = {
         id: 'T-12-01',
         type: 'WATER',
         title: 'Đồng Hồ Đo Lưu Lượng Nước IoT Căn 12A05 Hoạt Động Chuẩn',
-        location: 'Hộp Trục Kỹ Thuật Căn Hộ 12A05 (Nguyễn Hữu Lực)',
+        location: 'Hộp Trục Kỹ Thuật Căn Hộ (M&E Shaft)',
         severity: 'LOW',
         confidence: 0.96,
         snapshot: 'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?w=600',
         time: '00:50:20',
-        coords: { x: 62, y: 44 },
+        coords: { x: 74, y: 30 },
         actionHint: 'Áp lực nước 2.8 bar, cảm biến chống rò rỉ không ghi nhận dòng chảy bất thường.'
       }
     ]
@@ -168,7 +168,7 @@ const FLOOR_THREAT_DATABASE: Record<string, FloorThreatData> = {
         confidence: 0.99,
         snapshot: 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=600',
         time: '00:40:00',
-        coords: { x: 50, y: 28 },
+        coords: { x: 28, y: 32 },
         actionHint: 'Đèn chớp tín hiệu nhấp nháy chuẩn quốc tế, sàn đỗ thông thoáng.'
       }
     ]
@@ -180,9 +180,6 @@ export default function AdminDashboard() {
   const [selectedThreatId, setSelectedThreatId] = useState<string>('T-B1-01');
   const [isEmergencyActive, setIsEmergencyActive] = useState(false);
   const [dispatchStatus, setDispatchStatus] = useState<string | null>(null);
-  const [bmsFilter, setBmsFilter] = useState<'ALL' | 'CRITICAL' | 'NORMAL'>('ALL');
-  const [auditCategory, setAuditCategory] = useState<'ALL' | 'ACCESS' | 'PARKING' | 'WATER' | 'POWER' | 'PCCC'>('ALL');
-  const [isAuditExpanded, setIsAuditExpanded] = useState<boolean>(false);
   
   // Realtime clock display
   const [currentTimeStr, setCurrentTimeStr] = useState<string>('');
@@ -296,19 +293,26 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        {/* KPI 2: Không gian & Cư trú */}
+        {/* KPI 2: Hiện trạng căn hộ (Tinh gọn tổng quan, không lộ chi tiết từng căn) */}
         <div className="p-4 bg-[#121820] border border-[#222B35] space-y-2 hover:border-[#C5A880]/60 transition-all shadow-lg">
           <div className="flex items-center justify-between text-xs text-gray-400">
-            <span className="font-semibold">Hiện Trạng Không Gian Căn Hộ</span>
+            <span className="font-semibold">Tỷ Lệ Lấp Đầy Căn Hộ</span>
             <Building className="w-4 h-4 text-emerald-400" />
           </div>
           <div className="font-serif text-2xl text-white font-bold tracking-wide flex items-baseline gap-2">
-            <span>{occupiedCount} Đã Ở</span>
-            <span className="text-xs font-sans text-gray-400 font-normal">/ {apartments.length || 36} Căn BQL</span>
+            <span>91.5%</span>
+            <span className="text-xs font-sans text-gray-400 font-normal">Lấp Đầy Tòa Nhà</span>
           </div>
-          <div className="text-[11px] text-gray-300 flex items-center justify-between font-mono pt-1 border-t border-[#1C2533]">
-            <span className="text-emerald-400">Căn 12A05: Nguyễn Hữu Lực</span>
-            <span className="text-amber-300">Nghiệm thu: 10A03</span>
+          {/* Thanh phân bổ trực quan tinh gọn */}
+          <div className="w-full bg-[#1C2533] h-1.5 flex overflow-hidden">
+            <div className="bg-emerald-500 h-full" style={{ width: '91.5%' }} title="Đã có cư dân ở" />
+            <div className="bg-amber-400 h-full" style={{ width: '5.5%' }} title="Đang nghiệm thu" />
+            <div className="bg-gray-600 h-full" style={{ width: '3%' }} title="Căn trống" />
+          </div>
+          <div className="text-[10.5px] text-gray-400 flex items-center justify-between font-mono pt-0.5 border-t border-[#1C2533]">
+            <span className="text-emerald-400">● 183 Đã Ở</span>
+            <span className="text-amber-400">● 11 Nghiệm Thu</span>
+            <span className="text-gray-400">● 6 Trống</span>
           </div>
         </div>
 
@@ -413,134 +417,114 @@ export default function AdminDashboard() {
             </span>
           </div>
 
-          {/* SƠ ĐỒ BẢN ĐỒ MẶT BẰNG PHÂN VÙNG KIẾN TRÚC & CẢM BIẾN (TỐI GIẢN, KHÔNG CHE CHỮ) */}
-          <div className="relative h-[290px] bg-[#070A0F] border border-[#222B35] flex items-center justify-center overflow-hidden">
+          {/* SƠ ĐỒ BẢN ĐỒ MẶT BẰNG PHÂN VÙNG KIẾN TRÚC & CẢM BIẾN (BLUEPRINT PHẲNG, KHÔNG CHE CHỮ) */}
+          <div className="relative h-[270px] bg-[#070A0F] border border-[#222B35] flex items-center justify-center overflow-hidden">
             {/* Lưới tọa độ kiến trúc BMS */}
             <div 
               className="absolute inset-0 opacity-15 pointer-events-none"
               style={{
                 backgroundImage: 'linear-gradient(to right, #1E293B 1px, transparent 1px), linear-gradient(to bottom, #1E293B 1px, transparent 1px)',
-                backgroundSize: '20px 20px'
+                backgroundSize: '24px 24px'
               }}
             />
 
-            {/* Bản vẽ mặt bằng sàn kiến trúc */}
-            <div className="relative z-10 w-[95%] h-[92%] border border-gray-800 bg-[#0B1019]/90 p-3 flex flex-col justify-between shadow-2xl">
+            {/* Bản vẽ mặt bằng sàn kiến trúc CAD Blueprint phẳng */}
+            <div className="relative z-10 w-[96%] h-[92%] border border-gray-800/80 bg-[#0A0F17]/95 p-2.5 flex flex-col justify-between shadow-2xl">
               
               {/* Header sơ đồ sàn */}
-              <div className="flex justify-between items-center text-[9.5px] font-mono text-gray-400 border-b border-gray-800/80 pb-1">
-                <span className="text-[#C5A880] font-bold">MẶT BẰNG BMS • SKYLINE ({selectedFloor})</span>
-                <span className="text-emerald-400/90 flex items-center gap-1.5">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                  {currentFloorData.activeNodes} Nodes Active
+              <div className="flex justify-between items-center text-[9px] font-mono text-gray-400 border-b border-gray-800/60 pb-1">
+                <span className="text-[#C5A880] font-bold">MẶT BẰNG BMS • CHUNG CƯ SKYLINE ({selectedFloor})</span>
+                <span className="text-gray-400 text-[8.5px]">
+                  * Nhấp điểm radar để đối chiếu Camera AI bên phải
                 </span>
               </div>
 
-              {/* Các phân khu kiến trúc thực tế & Cảm biến */}
-              <div className="relative flex-1 my-1.5 overflow-hidden">
-                {/* Buồng Thang Thoát Hiểm 1 (Áp suất dương) */}
-                <div className="absolute top-1 left-2 px-2 py-0.5 bg-[#101722]/50 border border-emerald-600/30 text-[8px] font-mono text-emerald-400/70 select-none pointer-events-none">
-                  Thang Thoát Hiểm 01 (Áp Suất Dương)
+              {/* Các phân khu kiến trúc kỹ thuật dạng đường nét Blueprint phẳng */}
+              <div className="relative flex-1 my-1">
+                {/* Buồng Thang Thoát Hiểm 1 (Góc Tây Bắc) */}
+                <div className="absolute top-1 left-2 px-2 py-0.5 border border-dashed border-emerald-700/50 bg-[#0E1722]/40 text-[8px] font-mono text-emerald-400/80 pointer-events-none">
+                  THANG BỘ 01
                 </div>
 
-                {/* Lõi Thang Máy Trung Tâm (4 Thang Khách + 1 Thang PCCC) */}
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 px-3 py-1 bg-[#131B26]/60 border border-[#2F3D50]/50 text-[9px] font-mono text-center shadow select-none pointer-events-none">
-                  <div className="font-bold text-gray-200 flex items-center justify-center gap-1 text-[8.5px]">
-                    <Sliders className="w-2.5 h-2.5 text-[#C5A880]" /> Lõi Thang Máy (3.5 m/s)
+                {/* Lõi Thang Máy Trung Tâm (Đặt chính giữa, không có nút nào đè lên) */}
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-36 py-2 border border-[#2B3B4F] bg-[#111924]/80 text-center shadow pointer-events-none">
+                  <div className="font-bold text-gray-200 text-[9px] tracking-wide flex items-center justify-center gap-1">
+                    <Sliders className="w-2.5 h-2.5 text-[#C5A880]" /> LÕI THANG MÁY
                   </div>
-                  <div className="text-[7.5px] text-cyan-400/70">4 Thang Khách + 1 Thang PCCC</div>
+                  <div className="text-[7.5px] text-cyan-400/80 font-mono mt-0.5">Tốc độ 3.5 m/s • PCCC</div>
                 </div>
 
-                {/* Buồng Thang Thoát Hiểm 2 */}
-                <div className="absolute bottom-1 right-2 px-2 py-0.5 bg-[#101722]/50 border border-emerald-600/30 text-[8px] font-mono text-emerald-400/70 select-none pointer-events-none">
-                  Thang Thoát Hiểm 02 (Chống Khói)
+                {/* Buồng Thang Thoát Hiểm 2 (Góc Đông Nam) */}
+                <div className="absolute bottom-1 right-2 px-2 py-0.5 border border-dashed border-emerald-700/50 bg-[#0E1722]/40 text-[8px] font-mono text-emerald-400/80 pointer-events-none">
+                  THANG BỘ 02
                 </div>
 
-                {/* Họng Nước Cứu Hỏa Vách Tường */}
-                <div className="absolute top-1 right-2 px-2 py-0.5 bg-[#101722]/50 border border-gray-700/30 text-[8px] font-mono text-gray-400/70 select-none pointer-events-none">
-                  Họng Nước PCCC
+                {/* Họng Nước Cứu Hỏa (Góc Đông Bắc) */}
+                <div className="absolute top-1 right-2 px-2 py-0.5 border border-dashed border-gray-700/50 bg-[#0E1722]/40 text-[8px] font-mono text-gray-400/80 pointer-events-none">
+                  HỌNG PCCC
                 </div>
 
-                {/* CÁC ĐIỂM SỰ CỐ / CẢNH BÁO TƯƠNG TÁC (MỜ NHẸ, KHÔNG CHE CHỮ) */}
-                {currentFloorData.threats.map((threat) => {
+                {/* Trạm Kỹ Thuật (Góc Tây Nam) */}
+                <div className="absolute bottom-1 left-2 px-2 py-0.5 border border-dashed border-gray-700/50 bg-[#0E1722]/40 text-[8px] font-mono text-gray-400/80 pointer-events-none">
+                  TRỤC M&E
+                </div>
+
+                {/* CÁC ĐIỂM SỰ CỐ / CẢNH BÁO TƯƠNG TÁC (CHẤM RADAR MỜ NHỎ, TUYỆT ĐỐI KHÔNG CÓ TOOLTIP ĐÈ CHỮ) */}
+                {currentFloorData.threats.map((threat, idx) => {
                   const isSelected = activeThreat?.id === threat.id;
                   const isHigh = threat.severity === 'HIGH';
                   const isMed = threat.severity === 'MEDIUM';
 
                   return (
-                    <div
+                    <button
                       key={threat.id}
+                      type="button"
                       onClick={() => setSelectedThreatId(threat.id)}
                       style={{ left: `${threat.coords.x}%`, top: `${threat.coords.y}%` }}
-                      className="absolute -translate-x-1/2 -translate-y-1/2 cursor-pointer z-20 group"
+                      className="absolute -translate-x-1/2 -translate-y-1/2 cursor-pointer z-20 group focus:outline-none flex items-center gap-1"
                     >
-                      {/* Nút báo hiệu mờ nhẹ thanh lịch */}
-                      <div className="relative flex items-center justify-center">
-                        <span className={`w-5 h-5 rounded-full absolute transition-opacity ${
+                      {/* Chấm tròn radar nhỏ gọn, mờ mờ tinh tế */}
+                      <span className="relative flex items-center justify-center">
+                        <span className={`w-4 h-4 rounded-full absolute ${
                           isHigh 
                             ? 'bg-red-500/25 animate-ping' 
                             : isMed 
                             ? 'bg-amber-500/25 animate-pulse' 
                             : 'bg-emerald-500/20'
                         }`} />
-                        <span className={`w-4 h-4 rounded-full flex items-center justify-center text-[8.5px] font-mono font-bold transition-all duration-300 border ${
+                        <span className={`w-3.5 h-3.5 rounded-full flex items-center justify-center text-[7.5px] font-mono font-bold transition-all border ${
                           isHigh 
-                            ? 'bg-red-600/40 border-red-400/60 text-red-100 hover:bg-red-600' 
+                            ? 'bg-red-600/50 border-red-400 text-white' 
                             : isMed 
-                            ? 'bg-amber-600/40 border-amber-400/60 text-amber-100 hover:bg-amber-500' 
-                            : 'bg-emerald-600/40 border-emerald-400/60 text-emerald-100 hover:bg-emerald-500'
-                        } ${isSelected ? 'ring-2 ring-[#C5A880] ring-offset-1 ring-offset-black !opacity-100 scale-110 !border-[#C5A880]' : 'opacity-60 hover:opacity-100'}`}>
+                            ? 'bg-amber-600/50 border-amber-400 text-white' 
+                            : 'bg-emerald-600/50 border-emerald-400 text-white'
+                        } ${isSelected ? 'scale-125 ring-2 ring-[#C5A880] ring-offset-1 ring-offset-black !bg-opacity-100' : 'opacity-70 group-hover:opacity-100'}`}>
                           !
                         </span>
-                      </div>
+                      </span>
 
-                      {/* Tooltip nổi chỉ xuất hiện khi hover hoặc được chọn, nền mờ kính */}
-                      <div className={`absolute bottom-full left-1/2 -translate-x-1/2 mb-1 px-2 py-0.5 bg-[#090E16]/95 border border-[#C5A880]/70 text-white text-[8.5px] font-mono whitespace-nowrap shadow-xl pointer-events-none transition-all duration-200 z-30 ${
-                        isSelected ? 'opacity-100 translate-y-0' : 'opacity-0 group-hover:opacity-100 -translate-y-0.5'
+                      {/* Mã nhãn nhỏ gọn 1 hàng cạnh nút (không che lấp) */}
+                      <span className={`text-[8px] font-mono px-1 py-0.2 border transition-all ${
+                        isSelected 
+                          ? 'bg-[#0E1520] border-[#C5A880] text-[#C5A880] font-bold' 
+                          : 'bg-[#0A0F17]/80 border-gray-800 text-gray-400 group-hover:text-white'
                       }`}>
-                        <div className="flex items-center gap-1.5">
-                          <span className={`w-1.5 h-1.5 rounded-full ${isHigh ? 'bg-red-400' : isMed ? 'bg-amber-400' : 'bg-emerald-400'}`} />
-                          <span className="text-gray-200 font-semibold">{threat.title.substring(0, 24)}...</span>
-                        </div>
-                      </div>
-                    </div>
+                        T{idx + 1}
+                      </span>
+                    </button>
                   );
                 })}
 
-                {/* Các cảm biến xanh lá an toàn: Chấm LED tròn mờ tinh tế, hover ra tooltip */}
-                <div className="absolute top-1/4 left-1/4 group/s cursor-pointer">
-                  <span className="block w-1.5 h-1.5 rounded-full bg-emerald-500/35 hover:bg-emerald-400 hover:scale-125 transition-all"></span>
-                  <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 px-1.5 py-0.5 bg-black/90 border border-emerald-600/40 text-[7.5px] font-mono text-emerald-300 whitespace-nowrap opacity-0 group-hover/s:opacity-100 pointer-events-none transition-opacity z-30">
-                    Sensor Khói Kỹ Thuật • Bình Thường
-                  </div>
-                </div>
-
-                <div className="absolute bottom-1/4 left-1/3 group/s cursor-pointer">
-                  <span className="block w-1.5 h-1.5 rounded-full bg-emerald-500/35 hover:bg-emerald-400 hover:scale-125 transition-all"></span>
-                  <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 px-1.5 py-0.5 bg-black/90 border border-emerald-600/40 text-[7.5px] font-mono text-emerald-300 whitespace-nowrap opacity-0 group-hover/s:opacity-100 pointer-events-none transition-opacity z-30">
-                    Cảm Biến Áp Lực • Ổn Định
-                  </div>
-                </div>
-
-                <div className="absolute top-1/3 right-1/4 group/s cursor-pointer">
-                  <span className="block w-1.5 h-1.5 rounded-full bg-emerald-500/35 hover:bg-emerald-400 hover:scale-125 transition-all"></span>
-                  <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 px-1.5 py-0.5 bg-black/90 border border-emerald-600/40 text-[7.5px] font-mono text-emerald-300 whitespace-nowrap opacity-0 group-hover/s:opacity-100 pointer-events-none transition-opacity z-30">
-                    Camera Giám Sát AI • Ổn Định
-                  </div>
-                </div>
+                {/* Cảm biến an toàn: Chấm nhỏ 3px mờ chìm trong sàn */}
+                <span className="absolute top-1/3 left-1/3 w-1 h-1 rounded-full bg-emerald-500/40" title="Cảm biến an toàn" />
+                <span className="absolute bottom-1/3 right-1/3 w-1 h-1 rounded-full bg-emerald-500/40" title="Cảm biến an toàn" />
               </div>
 
-              {/* Status Footer Legend Bar */}
-              <div className="flex justify-between items-center text-[8.5px] text-gray-400 font-mono pt-1 border-t border-gray-800/80 flex-wrap gap-2">
-                <span className="flex items-center gap-1 text-emerald-400/80">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Cửa Thoát Hiểm: Kín An Toàn
-                </span>
-                <span className="flex items-center gap-1 text-cyan-400/80">
-                  <span className="w-1.5 h-1.5 rounded-full bg-cyan-500"></span> Áp Lực PCCC: 6.2 Bar
-                </span>
-                <span className="flex items-center gap-1 text-amber-400/80">
-                  <span className="w-1.5 h-1.5 rounded-full bg-amber-500"></span> UPS & Dự Phòng: 100%
-                </span>
+              {/* Status Footer Legend Bar siêu gọn */}
+              <div className="flex justify-between items-center text-[8px] text-gray-400 font-mono pt-1 border-t border-gray-800/60">
+                <span className="text-emerald-400/80">● Thang thoát hiểm: Áp suất dương an toàn</span>
+                <span className="text-cyan-400/80">● Cấp nước: 6.2 Bar</span>
+                <span className="text-amber-400/80">● Nguồn điện: 100% Sẵn sàng</span>
               </div>
             </div>
           </div>
@@ -636,176 +620,69 @@ export default function AdminDashboard() {
       </div>
 
       {/* ============================================================= */}
-      {/* 4. NHẬT KÝ SỰ KIỆN VẬN HÀNH THỜI GIAN THỰC (BMS AUDIT STREAM) */}
+      {/* 4. NHẬT KÝ SỰ KIỆN VẬN HÀNH THỜI GIAN THỰC (TINH GỌN 3 DÒNG)  */}
       {/* ============================================================= */}
-      <div className="p-4 sm:p-5 bg-[#0E141E] border border-[#222B35] space-y-3 shadow-xl">
-        
-        {/* Header nhật ký & Bộ lọc phân loại */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#222B35] pb-2.5">
-          <div className="flex items-center gap-2 text-xs font-mono font-bold text-white">
-            <Activity className="w-4 h-4 text-[#C5A880]" />
-            <span>NHẬT KÝ VẬN HÀNH & AN NINH BMS (LIVE AUDIT STREAM)</span>
-            <span className="text-[10px] text-emerald-400 font-normal px-2 py-0.5 bg-emerald-950/60 border border-emerald-500/40">
-              Live Telemetry
-            </span>
+      <div className="p-3.5 bg-[#0E141E] border border-[#222B35] space-y-2 shadow-lg font-mono">
+        <div className="flex items-center justify-between text-xs text-gray-400 border-b border-[#1E293B] pb-2">
+          <div className="flex items-center gap-2 font-bold text-white text-[11.5px]">
+            <Activity className="w-3.5 h-3.5 text-[#C5A880]" />
+            <span>NHẬT KÝ VẬN HÀNH BMS (SỰ KIỆN MỚI NHẤT)</span>
           </div>
-
-          {/* Bộ lọc loại sự kiện & Nút thu gọn / mở rộng */}
-          <div className="flex items-center gap-1.5 flex-wrap">
-            <div className="flex items-center gap-1 bg-[#141C28] border border-[#243244] p-0.5 text-[10px] font-mono">
-              {(
-                [
-                  { key: 'ALL', label: 'Tất Cả' },
-                  { key: 'ACCESS', label: 'An Ninh & FaceID' },
-                  { key: 'PARKING', label: 'Bãi Xe B1-B2' },
-                  { key: 'WATER', label: 'PCCC & Nước' },
-                  { key: 'POWER', label: 'Trạm Điện' }
-                ] as const
-              ).map((f) => (
-                <button
-                  key={f.key}
-                  type="button"
-                  onClick={() => setAuditCategory(f.key)}
-                  className={`px-2 py-1 transition-colors ${
-                    auditCategory === f.key
-                      ? 'bg-[#C5A880] text-[#0D1117] font-bold shadow'
-                      : 'text-gray-400 hover:text-white hover:bg-[#1A2534]'
-                  }`}
-                >
-                  {f.label}
-                </button>
-              ))}
-            </div>
-
-            {/* Toggle xem gọn / mở rộng cuộn */}
-            <button
-              type="button"
-              onClick={() => setIsAuditExpanded(!isAuditExpanded)}
-              className="px-2 py-1 bg-[#141C28] hover:bg-[#1E2B3D] text-[#C5A880] border border-[#2A394E] text-[10px] font-mono transition-colors flex items-center gap-1"
-              title={isAuditExpanded ? 'Thu gọn hiển thị' : 'Mở rộng chiều cao'}
-            >
-              {isAuditExpanded ? (
-                <>
-                  <Minimize2 className="w-3 h-3" /> Thu Gọn
-                </>
-              ) : (
-                <>
-                  <Maximize2 className="w-3 h-3" /> Mở Rộng
-                </>
-              )}
-            </button>
-          </div>
+          <span className="text-[10px] text-emerald-400 flex items-center gap-1">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+            Live Stream
+          </span>
         </div>
 
-        {/* Khung cuộn nhật ký có giới hạn chiều cao cố định chống tràn trang */}
-        <div 
-          className="overflow-y-auto pr-1 space-y-1.5 font-mono transition-all duration-300"
-          style={{ maxHeight: isAuditExpanded ? '380px' : '200px' }}
-        >
-          {(() => {
-            const allLogs = [
-              {
-                time: '01:00:25',
-                type: 'ACCESS',
-                icon: ShieldCheck,
-                iconColor: 'text-emerald-400',
-                text: 'Cửa xoay sảnh Tầng 1: Cư dân [Nguyễn Hữu Lực - Căn 12A05] xác thực khuôn mặt sinh trắc học FaceID thành công, thang máy tự động mở quyền lên Tầng 12.',
-                badge: 'FACEID PASS',
-                badgeStyle: 'bg-emerald-950/60 border-emerald-500/60 text-emerald-300'
-              },
-              {
-                time: '00:52:10',
-                type: 'PARKING',
-                icon: Car,
-                iconColor: 'text-cyan-400',
-                text: 'Barie hầm B1: Xe ô tô biển số 51G-889.23 đã vào bãi đỗ an toàn, cảm biến siêu âm dẫn đường tới ô đỗ B1-14.',
-                badge: 'XE VÀO HẦM',
-                badgeStyle: 'bg-cyan-950/60 border-cyan-500/60 text-cyan-300'
-              },
-              {
-                time: '00:45:00',
-                type: 'WATER',
-                icon: Droplets,
-                iconColor: 'text-blue-400',
-                text: 'Trạm bơm PCCC hầm B2: Áp suất buồng nén ổn định 6.2 bar, van cấp nước trục đứng hoạt động đạt chuẩn kiểm định.',
-                badge: '6.2 BAR',
-                badgeStyle: 'bg-blue-950/60 border-blue-500/60 text-blue-300'
-              },
-              {
-                time: '00:30:15',
-                type: 'POWER',
-                icon: Zap,
-                iconColor: 'text-amber-400',
-                text: 'Trạm biến áp trung thế & Máy phát điện Cummins 2500kVA: Tự động chạy chế độ standby, điện áp 3 pha 380V cân bằng.',
-                badge: 'STANDBY',
-                badgeStyle: 'bg-amber-950/60 border-amber-500/60 text-amber-300'
-              },
-              {
-                time: '00:22:40',
-                type: 'ACCESS',
-                icon: ShieldCheck,
-                iconColor: 'text-emerald-400',
-                text: 'Quầy tiếp tân sảnh chính: Tiếp đón khách thăm hẹn trước tới căn hộ 12A05, mã QR kỹ thuật số xác thực hợp lệ.',
-                badge: 'TIẾP ĐÓN',
-                badgeStyle: 'bg-emerald-950/60 border-emerald-500/60 text-emerald-300'
-              },
-              {
-                time: '00:15:00',
-                type: 'WATER',
-                icon: Flame,
-                iconColor: 'text-emerald-400',
-                text: 'Hệ thống quạt hút khói tăng áp buồng thang thoát hiểm: Áp suất dương duy trì 50 Pa theo tiêu chuẩn an toàn PCCC QCVN 06:2022/BXD.',
-                badge: '50 PA DUY TRÌ',
-                badgeStyle: 'bg-emerald-950/60 border-emerald-500/60 text-emerald-300'
-              },
-              {
-                time: '00:08:12',
-                type: 'PARKING',
-                icon: Car,
-                iconColor: 'text-cyan-400',
-                text: 'Cổng kiểm soát xe hầm B2: Xe máy 59P1-998.42 quẹt thẻ ra, đối chiếu khuôn mặt người lái trùng khớp.',
-                badge: 'XE RA HẦM',
-                badgeStyle: 'bg-cyan-950/60 border-cyan-500/60 text-cyan-300'
-              }
-            ];
-
-            const filteredLogs = auditCategory === 'ALL' 
-              ? allLogs 
-              : allLogs.filter(l => l.type === auditCategory);
-
-            if (filteredLogs.length === 0) {
-              return (
-                <div className="py-6 text-center text-xs text-gray-500 border border-dashed border-gray-800">
-                  Không có sự kiện nào trong danh mục đã chọn.
-                </div>
-              );
+        {/* 3 Dòng sự kiện mới nhất, thanh mảnh, cực kỳ tinh gọn */}
+        <div className="space-y-1.5">
+          {[
+            {
+              time: '01:00:25',
+              type: 'FaceID Sảnh T1',
+              icon: ShieldCheck,
+              iconColor: 'text-emerald-400',
+              text: 'Cư dân xác thực sinh trắc học FaceID thành công, thang máy mở quyền tầng căn hộ.',
+              badge: 'BÌNH THƯỜNG',
+              badgeColor: 'text-emerald-400 border-emerald-800/80 bg-emerald-950/40'
+            },
+            {
+              time: '00:52:10',
+              type: 'Barie Hầm B1',
+              icon: Car,
+              iconColor: 'text-cyan-400',
+              text: 'Xe ô tô vào bãi đỗ an toàn, cảm biến siêu âm tự động dẫn đường ô đỗ B1-14.',
+              badge: 'AN TOÀN',
+              badgeColor: 'text-cyan-400 border-cyan-800/80 bg-cyan-950/40'
+            },
+            {
+              time: '00:45:00',
+              type: 'Trạm Bơm B2',
+              icon: Droplets,
+              iconColor: 'text-blue-400',
+              text: 'Áp suất buồng nén ổn định 6.2 bar, van cấp nước trục đứng đạt chuẩn kiểm định.',
+              badge: 'ĐẠT CHUẨN',
+              badgeColor: 'text-blue-400 border-blue-800/80 bg-blue-950/40'
             }
-
-            return filteredLogs.map((event, idx) => {
-              const Icon = event.icon;
-              return (
-                <div 
-                  key={idx}
-                  className="px-3 py-2 bg-[#121822] border border-[#1E293B] hover:border-[#2D3B4E] transition-colors flex items-center justify-between gap-3 text-xs"
-                >
-                  <div className="flex items-center gap-2.5 min-w-0">
-                    <span className="text-gray-400 shrink-0 text-[10px]">{event.time}</span>
-                    <Icon className={`w-3.5 h-3.5 shrink-0 ${event.iconColor}`} />
-                    <span className="text-gray-200 truncate text-[11px]">{event.text}</span>
-                  </div>
-                  <span className={`px-2 py-0.5 text-[9px] border font-bold shrink-0 ${event.badgeStyle}`}>
-                    {event.badge}
-                  </span>
+          ].map((item, idx) => {
+            const Icon = item.icon;
+            return (
+              <div 
+                key={idx}
+                className="px-2.5 py-1.5 bg-[#121822] border border-[#1A2536] flex items-center justify-between gap-2.5 text-[11px]"
+              >
+                <div className="flex items-center gap-2 min-w-0">
+                  <span className="text-gray-500 text-[10px] shrink-0">{item.time}</span>
+                  <span className="text-[#C5A880] shrink-0 font-semibold text-[10.5px]">[{item.type}]</span>
+                  <Icon className={`w-3 h-3 shrink-0 ${item.iconColor}`} />
+                  <span className="text-gray-300 truncate text-[10.5px]">{item.text}</span>
                 </div>
-              );
-            });
-          })()}
-        </div>
-
-        {/* Footer ghi chú số lượng bản ghi */}
-        <div className="flex items-center justify-between text-[10px] text-gray-400 font-mono pt-1 border-t border-[#1C2634]">
-          <span>Hiển thị nhật ký hệ thống BMS trong 24 giờ qua. Dữ liệu cuộn gọn nội bộ.</span>
-          <span className="text-emerald-400">Tự động đồng bộ 2 giây/lần</span>
+                <span className={`px-1.5 py-0.2 text-[8.5px] border shrink-0 font-bold ${item.badgeColor}`}>
+                  {item.badge}
+                </span>
+              </div>
+            );
+          })}
         </div>
       </div>
 
