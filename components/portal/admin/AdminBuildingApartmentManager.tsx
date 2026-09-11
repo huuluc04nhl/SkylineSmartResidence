@@ -469,7 +469,7 @@ export default function AdminBuildingApartmentManager() {
                   : 'text-gray-400 hover:text-white'
               }`}
             >
-              <Box className="w-3.5 h-3.5" /> Khối 3D Tòa Nhà
+              <Box className="w-3.5 h-3.5" /> Toàn Cảnh Tòa Nhà
             </button>
             <button
               type="button"
@@ -747,7 +747,7 @@ export default function AdminBuildingApartmentManager() {
             <div className="flex items-center gap-2">
               <Building className="w-4 h-4 text-[#C5A880]" />
               <span className="font-bold text-sm text-white">
-                {buildingPerspective === '3D' && 'Mô Hình Khối 3D Tòa Nhà Chung Cư Skyline (25 Tầng)'}
+                {buildingPerspective === '3D' && 'Toàn Cảnh Kiến Trúc Chung Cư Skyline (25 Tầng)'}
                 {buildingPerspective === 'BUILDING_ELEVATION' && 'Sơ Đồ Các Tầng Chung Cư Skyline (25 Tầng)'}
                 {buildingPerspective === 'FLOOR_PLAN' && `Sơ Đồ Mặt Bằng Sàn Tầng ${selectedFloor}`}
                 {buildingPerspective === 'GRID' && `Danh Sách Căn Hộ Chung Cư (${filteredUnits.length} căn)`}
@@ -1179,7 +1179,7 @@ export default function AdminBuildingApartmentManager() {
                   })()}
                 </g>
 
-                {/* THẺ QUAN SÁT TỨC THÌ (HOVER PREVIEW) KHI RÊ CHUỘT VÀO CĂN HỘ KHÁC */}
+                {/* THẺ QUAN SÁT TỨC THÌ KHI CHỌN XEM CĂN HỘ KHÁC */}
                 {hoveredUnitCode && hoveredUnitCode !== selectedAptCode && (
                   <g className="pointer-events-none">
                     {(() => {
@@ -1188,10 +1188,10 @@ export default function AdminBuildingApartmentManager() {
                         <g>
                           <rect x="735" y="25" width="245" height="42" fill="#0D1117" fillOpacity="0.94" stroke="#C5A880" strokeWidth="1.2" rx="3" />
                           <text x="748" y="42" fill="#C5A880" fontSize="9.5" fontWeight="bold" fontFamily="monospace">
-                            🔍 RÊ CHUỘT: CĂN {hoveredUnitCode} (Tầng {hUnit?.floor || 12})
+                            ✦ XEM NHANH: CĂN {hoveredUnitCode} (Tầng {hUnit?.floor || 12})
                           </text>
                           <text x="748" y="56" fill="#94A3B8" fontSize="8" fontFamily="sans-serif">
-                            {hUnit?.status === 'OCCUPIED' ? '🟢 Đã có người ở' : hUnit?.status === 'MAINTENANCE' ? '🔵 Nghiệm thu kỹ thuật' : '🟡 Nhà trống (Sẵn sàng bàn giao)'} • Nhấp để chọn
+                            {hUnit?.status === 'OCCUPIED' ? '🟢 Đã có người ở' : hUnit?.status === 'MAINTENANCE' ? '🔵 Nghiệm thu kỹ thuật' : '🟡 Nhà trống (Sẵn sàng bàn giao)'} • Nhấp để xem hồ sơ
                           </text>
                         </g>
                       );
@@ -1202,10 +1202,10 @@ export default function AdminBuildingApartmentManager() {
                 {/* BẢNG CHỈ DẪN TƯƠNG TÁC GÓC TRÁI TRÊN */}
                 <rect x="20" y="25" width="220" height="42" fill="#0D1117" fillOpacity="0.9" stroke="#222B35" strokeWidth="1" rx="2" />
                 <text x="30" y="42" fill="#C5A880" fontSize="9.5" fontWeight="bold" fontFamily="monospace">
-                  MÔ HÌNH 3D CHUNG CƯ SKYLINE
+                  TOÀN CẢNH CHUNG CƯ SKYLINE
                 </text>
                 <text x="30" y="56" fill="#94A3B8" fontSize="8" fontFamily="sans-serif">
-                  Phủ kín 25 tầng • Click căn để kích hoạt con trỏ động
+                  Tòa nhà 25 tầng • Nhấp chọn căn để định vị thông tin
                 </text>
               </svg>
             </div>

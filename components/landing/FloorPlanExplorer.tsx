@@ -39,7 +39,7 @@ export default function FloorPlanExplorer() {
               Sơ Đồ Mặt Bằng & Không Gian Căn Hộ
             </h2>
             <p className="text-xs sm:text-sm text-gray-300 leading-relaxed">
-              Khám phá chi tiết sơ đồ bố trí không gian căn hộ chung cư Skyline với mô hình 3D trực quan và bản vẽ mặt bằng 2D kỹ thuật.
+              Khám phá chi tiết sơ đồ bố trí không gian căn hộ chung cư Skyline với phối cảnh trực quan và bản vẽ mặt bằng kỹ thuật.
             </p>
           </div>
 

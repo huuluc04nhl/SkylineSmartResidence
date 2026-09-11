@@ -1,19 +1,19 @@
 'use client';
 
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { 
-  X, 
-  Camera, 
-  Check, 
-  RefreshCw, 
-  ShieldCheck, 
-  AlertCircle, 
-  Scan, 
-  Sparkles, 
-  ArrowRight, 
+import {
+  X,
+  Camera,
+  Check,
+  RefreshCw,
+  ShieldCheck,
+  AlertCircle,
+  Scan,
+  Sparkles,
+  ArrowRight,
   ArrowLeft,
-  Smile, 
-  UserCheck, 
+  Smile,
+  UserCheck,
   Lock,
   Upload,
   Sun,
@@ -22,11 +22,11 @@ import {
 } from 'lucide-react';
 import { nksEnrollFaceId } from '@/lib/nksApiClient';
 import { saveEnrolledFaceProfile } from '@/lib/faceEnrollStore';
-import { 
-  extractFaceDescriptorFromBase64, 
-  EnrolledFaceProfile, 
-  analyzeVideoLighting, 
-  LightingAnalysisResult 
+import {
+  extractFaceDescriptorFromBase64,
+  EnrolledFaceProfile,
+  analyzeVideoLighting,
+  LightingAnalysisResult
 } from '@/lib/biometricFaceEngine';
 
 interface BankFaceEnrollModalProps {
@@ -472,7 +472,7 @@ export default function BankFaceEnrollModal({
       <canvas ref={canvasRef} className="hidden" />
 
       <div className="relative w-full max-w-2xl bg-[#0D1117] border border-[#C5A880] text-white shadow-[0_0_50px_rgba(0,0,0,0.9)] flex flex-col rounded-none overflow-hidden max-h-[96vh]">
-        
+
         {/* Shutter Flash Effect */}
         {isShutterFlash && (
           <div className="absolute inset-0 bg-white z-50 pointer-events-none transition-opacity duration-150 opacity-90 animate-fadeOut" />
@@ -527,7 +527,7 @@ export default function BankFaceEnrollModal({
         {/* ----------------------------------------------------------- */}
         {!isReviewMode ? (
           <div className="p-5 sm:p-6 flex flex-col items-center space-y-5 overflow-y-auto">
-            
+
             {/* Step Progress Indicators (1 - 4) */}
             <div className="w-full max-w-md space-y-2">
               <div className="flex items-center justify-between text-xs">
@@ -564,8 +564,8 @@ export default function BankFaceEnrollModal({
                     )}
                     <span className={
                       lighting.status === 'TOO_DARK' ? 'text-rose-400 font-bold' :
-                      lighting.status === 'TOO_BRIGHT' ? 'text-amber-400 font-bold' :
-                      'text-emerald-400 font-bold'
+                        lighting.status === 'TOO_BRIGHT' ? 'text-amber-400 font-bold' :
+                          'text-emerald-400 font-bold'
                     }>
                       {lighting.label}
                     </span>
@@ -573,12 +573,11 @@ export default function BankFaceEnrollModal({
 
                   <div className="flex items-center gap-2">
                     <div className="w-24 h-1.5 bg-black/70 border border-gray-700 overflow-hidden flex">
-                      <div 
-                        className={`h-full transition-all duration-300 ${
-                          lighting.status === 'TOO_DARK' ? 'bg-rose-500' :
-                          lighting.status === 'TOO_BRIGHT' ? 'bg-amber-500' :
-                          'bg-emerald-500'
-                        }`}
+                      <div
+                        className={`h-full transition-all duration-300 ${lighting.status === 'TOO_DARK' ? 'bg-rose-500' :
+                            lighting.status === 'TOO_BRIGHT' ? 'bg-amber-500' :
+                              'bg-emerald-500'
+                          }`}
                         style={{ width: `${lighting.scorePercent}%` }}
                       />
                     </div>
@@ -594,7 +593,7 @@ export default function BankFaceEnrollModal({
             {/* BANKING OVAL BIOMETRIC SCANNING FRAME                    */}
             {/* --------------------------------------------------------- */}
             <div className="relative w-72 h-80 sm:w-80 sm:h-96 bg-black border-2 border-[#2D3748] flex items-center justify-center overflow-hidden shadow-2xl">
-              
+
               {/* Live Webcam Video - Always rendered in DOM to prevent videoRef being null */}
               <video
                 ref={videoRef}
@@ -603,12 +602,11 @@ export default function BankFaceEnrollModal({
                 muted
                 onLoadedMetadata={() => {
                   setIsCameraActive(true);
-                  videoRef.current?.play().catch(() => {});
+                  videoRef.current?.play().catch(() => { });
                 }}
                 onPlay={() => setIsCameraActive(true)}
-                className={`w-full h-full object-cover transform -scale-x-100 transition-opacity duration-300 ${
-                  isCameraActive ? 'opacity-100' : 'opacity-0 pointer-events-none'
-                }`}
+                className={`w-full h-full object-cover transform -scale-x-100 transition-opacity duration-300 ${isCameraActive ? 'opacity-100' : 'opacity-0 pointer-events-none'
+                  }`}
               />
 
               {/* Connecting / Error Overlay */}
@@ -642,35 +640,30 @@ export default function BankFaceEnrollModal({
               {/* BANKING OVAL CUTOUT OVERLAY */}
               <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
                 {/* Oval Guide Border - Dynamically reacting to environmental lighting */}
-                <div className={`w-52 h-72 sm:w-60 sm:h-80 rounded-[50%] border-2 transition-all duration-300 relative flex items-center justify-center ${
-                  lighting?.status === 'TOO_DARK'
+                <div className={`w-52 h-72 sm:w-60 sm:h-80 rounded-[50%] border-2 transition-all duration-300 relative flex items-center justify-center ${lighting?.status === 'TOO_DARK'
                     ? 'border-rose-500 shadow-[0_0_30px_rgba(244,63,94,0.45)] animate-pulse'
                     : lighting?.status === 'TOO_BRIGHT'
-                    ? 'border-amber-500 shadow-[0_0_30px_rgba(245,158,11,0.45)] animate-pulse'
-                    : 'border-[#C5A880]/80 shadow-[0_0_25px_rgba(197,168,128,0.35)] animate-pulse'
-                }`}>
-                  
+                      ? 'border-amber-500 shadow-[0_0_30px_rgba(245,158,11,0.45)] animate-pulse'
+                      : 'border-[#C5A880]/80 shadow-[0_0_25px_rgba(197,168,128,0.35)] animate-pulse'
+                  }`}>
+
                   {/* Four Angle Crosshair Markers */}
-                  <div className={`absolute top-2 w-4 h-[1.5px] ${
-                    lighting?.status === 'TOO_DARK' ? 'bg-rose-500' :
-                    lighting?.status === 'TOO_BRIGHT' ? 'bg-amber-500' :
-                    'bg-[#C5A880]'
-                  }`} />
-                  <div className={`absolute bottom-2 w-4 h-[1.5px] ${
-                    lighting?.status === 'TOO_DARK' ? 'bg-rose-500' :
-                    lighting?.status === 'TOO_BRIGHT' ? 'bg-amber-500' :
-                    'bg-[#C5A880]'
-                  }`} />
-                  <div className={`absolute left-2 h-4 w-[1.5px] ${
-                    lighting?.status === 'TOO_DARK' ? 'bg-rose-500' :
-                    lighting?.status === 'TOO_BRIGHT' ? 'bg-amber-500' :
-                    'bg-[#C5A880]'
-                  }`} />
-                  <div className={`absolute right-2 h-4 w-[1.5px] ${
-                    lighting?.status === 'TOO_DARK' ? 'bg-rose-500' :
-                    lighting?.status === 'TOO_BRIGHT' ? 'bg-amber-500' :
-                    'bg-[#C5A880]'
-                  }`} />
+                  <div className={`absolute top-2 w-4 h-[1.5px] ${lighting?.status === 'TOO_DARK' ? 'bg-rose-500' :
+                      lighting?.status === 'TOO_BRIGHT' ? 'bg-amber-500' :
+                        'bg-[#C5A880]'
+                    }`} />
+                  <div className={`absolute bottom-2 w-4 h-[1.5px] ${lighting?.status === 'TOO_DARK' ? 'bg-rose-500' :
+                      lighting?.status === 'TOO_BRIGHT' ? 'bg-amber-500' :
+                        'bg-[#C5A880]'
+                    }`} />
+                  <div className={`absolute left-2 h-4 w-[1.5px] ${lighting?.status === 'TOO_DARK' ? 'bg-rose-500' :
+                      lighting?.status === 'TOO_BRIGHT' ? 'bg-amber-500' :
+                        'bg-[#C5A880]'
+                    }`} />
+                  <div className={`absolute right-2 h-4 w-[1.5px] ${lighting?.status === 'TOO_DARK' ? 'bg-rose-500' :
+                      lighting?.status === 'TOO_BRIGHT' ? 'bg-amber-500' :
+                        'bg-[#C5A880]'
+                    }`} />
 
                   {/* Pose-Specific Directional Icon Cue */}
                   {currentStep.key === 'LEFT' && (
@@ -703,11 +696,10 @@ export default function BankFaceEnrollModal({
               {/* Floating Lighting Warning inside Camera when Not Optimal */}
               {isCameraActive && lighting && !lighting.isOptimal && (
                 <div className="absolute top-11 inset-x-3 pointer-events-none flex justify-center z-20">
-                  <div className={`px-2.5 py-1 text-[10.5px] font-medium border flex items-center gap-1.5 shadow-lg backdrop-blur ${
-                    lighting.status === 'TOO_DARK' 
-                      ? 'bg-rose-950/90 border-rose-600/80 text-rose-200' 
+                  <div className={`px-2.5 py-1 text-[10.5px] font-medium border flex items-center gap-1.5 shadow-lg backdrop-blur ${lighting.status === 'TOO_DARK'
+                      ? 'bg-rose-950/90 border-rose-600/80 text-rose-200'
                       : 'bg-amber-950/90 border-amber-600/80 text-amber-200'
-                  }`}>
+                    }`}>
                     {lighting.status === 'TOO_DARK' ? <Moon className="w-3 h-3 shrink-0 text-rose-400" /> : <Sun className="w-3 h-3 shrink-0 text-amber-400" />}
                     <span className="truncate max-w-[230px]">{lighting.message}</span>
                   </div>
@@ -787,13 +779,12 @@ export default function BankFaceEnrollModal({
                 {/* Slot 1: Front */}
                 <div
                   onClick={() => samples.front && handleRetakeStep(0)}
-                  className={`p-1.5 border text-center cursor-pointer transition-all ${
-                    samples.front
+                  className={`p-1.5 border text-center cursor-pointer transition-all ${samples.front
                       ? 'border-emerald-500 bg-emerald-950/40 text-emerald-300'
                       : currentStepIndex === 0
-                      ? 'border-[#C5A880] bg-[#C5A880]/10 text-[#C5A880]'
-                      : 'border-[#222B35] bg-[#161B22] text-gray-500'
-                  }`}
+                        ? 'border-[#C5A880] bg-[#C5A880]/10 text-[#C5A880]'
+                        : 'border-[#222B35] bg-[#161B22] text-gray-500'
+                    }`}
                 >
                   <div className="text-[9px] font-bold uppercase">1. Thẳng</div>
                   {samples.front ? (
@@ -808,13 +799,12 @@ export default function BankFaceEnrollModal({
                 {/* Slot 2: Left */}
                 <div
                   onClick={() => samples.left && handleRetakeStep(1)}
-                  className={`p-1.5 border text-center cursor-pointer transition-all ${
-                    samples.left
+                  className={`p-1.5 border text-center cursor-pointer transition-all ${samples.left
                       ? 'border-emerald-500 bg-emerald-950/40 text-emerald-300'
                       : currentStepIndex === 1
-                      ? 'border-[#C5A880] bg-[#C5A880]/10 text-[#C5A880]'
-                      : 'border-[#222B35] bg-[#161B22] text-gray-500'
-                  }`}
+                        ? 'border-[#C5A880] bg-[#C5A880]/10 text-[#C5A880]'
+                        : 'border-[#222B35] bg-[#161B22] text-gray-500'
+                    }`}
                 >
                   <div className="text-[9px] font-bold uppercase">2. Trái</div>
                   {samples.left ? (
@@ -829,13 +819,12 @@ export default function BankFaceEnrollModal({
                 {/* Slot 3: Right */}
                 <div
                   onClick={() => samples.right && handleRetakeStep(2)}
-                  className={`p-1.5 border text-center cursor-pointer transition-all ${
-                    samples.right
+                  className={`p-1.5 border text-center cursor-pointer transition-all ${samples.right
                       ? 'border-emerald-500 bg-emerald-950/40 text-emerald-300'
                       : currentStepIndex === 2
-                      ? 'border-[#C5A880] bg-[#C5A880]/10 text-[#C5A880]'
-                      : 'border-[#222B35] bg-[#161B22] text-gray-500'
-                  }`}
+                        ? 'border-[#C5A880] bg-[#C5A880]/10 text-[#C5A880]'
+                        : 'border-[#222B35] bg-[#161B22] text-gray-500'
+                    }`}
                 >
                   <div className="text-[9px] font-bold uppercase">3. Phải</div>
                   {samples.right ? (
@@ -850,13 +839,12 @@ export default function BankFaceEnrollModal({
                 {/* Slot 4: Smile / Liveness */}
                 <div
                   onClick={() => samples.smile && handleRetakeStep(3)}
-                  className={`p-1.5 border text-center cursor-pointer transition-all ${
-                    samples.smile
+                  className={`p-1.5 border text-center cursor-pointer transition-all ${samples.smile
                       ? 'border-emerald-500 bg-emerald-950/40 text-emerald-300'
                       : currentStepIndex === 3
-                      ? 'border-[#C5A880] bg-[#C5A880]/10 text-[#C5A880]'
-                      : 'border-[#222B35] bg-[#161B22] text-gray-500'
-                  }`}
+                        ? 'border-[#C5A880] bg-[#C5A880]/10 text-[#C5A880]'
+                        : 'border-[#222B35] bg-[#161B22] text-gray-500'
+                    }`}
                 >
                   <div className="text-[9px] font-bold uppercase">4. Cười</div>
                   {samples.smile ? (
@@ -875,7 +863,7 @@ export default function BankFaceEnrollModal({
           /* VIEW 2: REVIEW 4 SAMPLES & OFFICIAL CONFIRMATION SCREEN     */
           /* ----------------------------------------------------------- */
           <div className="p-6 space-y-6 overflow-y-auto">
-            
+
             {/* Top Success Banner */}
             <div className="p-4 bg-[#121820] border border-[#C5A880] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-lg">
               <div className="space-y-1">

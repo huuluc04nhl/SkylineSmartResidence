@@ -209,7 +209,7 @@ export default function ApartmentDetailModal({
               <div className="border border-[#222B35] bg-[#05070A] overflow-hidden">
                 <div className="p-3 bg-[#121820] border-b border-[#222B35] flex items-center justify-between">
                   <span className="text-xs font-mono text-[#C5A880] font-bold flex items-center gap-1.5">
-                    <Sparkles className="w-3.5 h-3.5" /> Mô Hình 3D Mặt Bằng Nội Thất Căn Hộ {unit.code}
+                    <Sparkles className="w-3.5 h-3.5" /> Phối Cảnh Không Gian Nội Thất Căn Hộ {unit.code}
                   </span>
                   <span className="text-[11px] text-gray-400">
                     Phối cảnh phòng khách, phòng ngủ Master, bếp, ban công
