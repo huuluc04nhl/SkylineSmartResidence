@@ -18,6 +18,8 @@ import {
 import SkylineLogo from '@/components/shared/SkylineLogo';
 import { User } from '@/lib/dataStore';
 
+import { addFacilityCheckinLog } from '@/lib/facilityStore';
+
 interface ResidentSmartCardProps {
   currentUser: User;
   onTapSuccess?: (facilityName: string) => void;
@@ -35,9 +37,13 @@ export default function ResidentSmartCard({
 
   const isOwner = currentUser.role === 'OWNER';
   const aptCode = currentUser.apartment_code || '12A05';
-  const cardNumber = isOwner ? '9988 • 2405 • 8899 • 12A5' : '9988 • 2405 • 7766 • 12A5';
-  const expiryDate = isOwner ? '12/35 (Chủ Hộ Vĩnh Viễn)' : '12/35 (Người Nhà Căn 12A05)';
-  const cardHolder = (currentUser?.full_name || (currentUser as any)?.fullname || 'NGUYỄN HỮU LỰC').toUpperCase();
+  const idSuffix = currentUser.id_card_no 
+    ? currentUser.id_card_no.slice(-4) 
+    : (currentUser.phone ? currentUser.phone.slice(-4) : '8899');
+  const cardNumber = `8492 • ${aptCode} • ${idSuffix} • ${isOwner ? 'MSTR' : 'MBR'}`;
+  const currentYear = new Date().getFullYear();
+  const expiryDate = `12/${currentYear + 5} (${isOwner ? 'Chủ Hộ Vĩnh Viễn' : 'Người Nhà Căn ' + aptCode})`;
+  const cardHolder = (currentUser?.full_name || (currentUser as any)?.fullname || 'CƯ DÂN SKYLINE').toUpperCase();
   const cardType = isOwner ? 'DIAMOND OWNER PASS' : 'RESIDENT FAMILY PASS';
 
   const handleSimulateTap = () => {
@@ -46,12 +52,25 @@ export default function ResidentSmartCard({
 
     setTimeout(() => {
       setIsTapping(false);
-      setTapMessage('✓ BÍP! Cổng Barrier & Thang Máy Tầng 12 Đã Mở (0.28s)');
+      setTapMessage('✓ BÍP! Cổng Barrier Tiện Ích & Thang Máy Tầng ' + aptCode.slice(0, 2) + ' Đã Mở (0.28s)');
+      
+      // Ghi nhận nhật ký thực tế vào facilityStore
+      addFacilityCheckinLog(aptCode, {
+        facilityId: 'fac-lobby-barrier',
+        facilityName: 'Cổng Sảnh Chung Cư & Thang Máy',
+        userName: currentUser.full_name || 'Cư Dân',
+        role: isOwner ? 'Chủ Hộ (Master)' : 'Người Nhà',
+        method: 'NFC_CARD',
+        cardUid: `NFC-SKY-${aptCode}-01`,
+        status: 'SUCCESS',
+        detail: `Quẹt thẻ cư dân VIP (${cardNumber}) tại đầu đọc Barrier sảnh • Cổng đã mở tự động`
+      });
+
       if (onTapSuccess) {
         onTapSuccess('Cổng Sảnh Chung Cư Skyline');
       }
       setTimeout(() => setTapMessage(null), 3500);
-    }, 900);
+    }, 800);
   };
 
   return (

@@ -77,6 +77,12 @@ import {
 import ApartmentModel3DViewer from '@/components/portal/shared/ApartmentModel3DViewer';
 import { getEnrolledFaceProfile, EnrolledFaceProfile } from '@/lib/faceEnrollStore';
 import { nksGetFamilyMembers } from '@/lib/nksApiClient';
+import { 
+  getResidentCards, 
+  toggleCardStatus, 
+  markCardUsed, 
+  CardState 
+} from '@/lib/facilityStore';
 
 interface SmartHomeHubProps {
   currentUser: User;
@@ -142,6 +148,38 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
   const [snapshotCount, setSnapshotCount] = useState(0);
   const [isMotionAlertActive, setIsMotionAlertActive] = useState(false);
   const [smartDoorTab, setSmartDoorTab] = useState<'LIVE_CONTROL' | 'CREDENTIALS' | 'LOGS'>('LIVE_CONTROL');
+  
+  // Quản lý Thẻ Cư Dân NFC vật lý thực tế của căn hộ
+  const [residentCards, setResidentCards] = useState<CardState[]>([]);
+  const [tappingCardUid, setTappingCardUid] = useState<string | null>(null);
+
+  useEffect(() => {
+    const defaultCards: CardState[] = [
+      {
+        cardUid: `NFC-SKY-${aptCode}-01`,
+        holderName: currentUser.full_name || (isOwner ? 'Nguyễn Hữu Lực' : 'Cư Dân'),
+        role: isOwner ? 'Chủ Hộ (Master)' : 'Người Nhà',
+        isOwner: true,
+        status: 'ACTIVE'
+      },
+      ...familyMembers.map((mem, idx) => ({
+        cardUid: `NFC-SKY-${aptCode}-0${idx + 2}`,
+        holderName: mem.fullname || mem.full_name || mem.username || `Thành viên ${idx + 1}`,
+        role: mem.relationship || 'Người Nhà',
+        isOwner: false,
+        status: 'ACTIVE' as const
+      }))
+    ];
+
+    const cards = getResidentCards(aptCode, defaultCards);
+    setResidentCards(cards);
+
+    const onCardsUpdated = (e: any) => {
+      if (e.detail) setResidentCards(e.detail);
+    };
+    window.addEventListener('skyline_cards_updated', onCardsUpdated);
+    return () => window.removeEventListener('skyline_cards_updated', onCardsUpdated);
+  }, [aptCode, currentUser, isOwner, familyMembers]);
 
   const {
     lights,
@@ -349,6 +387,57 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
     );
     setSmartState(updated);
     showToast('🗑️ Đã hủy và vô hiệu hóa mã PIN khách tạm thời.');
+  };
+
+  // Quẹt thẻ NFC vật lý thực tế vào ổ khóa cửa chính
+  const handleSimulateTapCard = (card: CardState) => {
+    if (tappingCardUid) return;
+    setTappingCardUid(card.cardUid);
+
+    setTimeout(() => {
+      setTappingCardUid(null);
+
+      // Nếu thẻ đang bị tạm khóa
+      if (card.status === 'LOCKED') {
+        addDoorAccessLog(aptCode, {
+          userName: card.holderName,
+          role: card.role,
+          method: 'NFC_CARD',
+          status: 'DENIED',
+          detail: `Từ chối mở cửa: Thẻ NFC (${card.cardUid} - ${card.holderName}) đang bị TẠM KHÓA an toàn • Chốt vẫn khóa`
+        });
+        showToast(`❌ TỪ CHỐI: Thẻ NFC (${card.cardUid}) đang bị TẠM KHÓA! Không thể mở cửa.`);
+        return;
+      }
+
+      // Thẻ hợp lệ: Mở chốt khóa
+      const updated = saveSmartHomeState(aptCode, { doorLocked: false });
+      setSmartState(updated);
+      const nextCards = markCardUsed(aptCode, card.cardUid);
+      setResidentCards(nextCards);
+
+      addDoorAccessLog(aptCode, {
+        userName: card.holderName,
+        role: card.role,
+        method: 'NFC_CARD',
+        status: 'SUCCESS',
+        detail: `Quẹt thẻ NFC vật lý Mifare EV3 (Mã thẻ: ${card.cardUid}, Chủ thẻ: ${card.holderName}) tại đầu đọc khóa cửa • Đã mở chốt`
+      });
+
+      showToast(`💳 [BÍP] Thẻ NFC hợp lệ: ${card.holderName} (${card.cardUid})! Đã mở chốt khóa cửa.`);
+    }, 550);
+  };
+
+  // Khóa / Mở khóa thẻ vật lý khi làm rơi hoặc tìm lại
+  const handleToggleCardLock = (cardUid: string, holderName: string) => {
+    const updated = toggleCardStatus(aptCode, cardUid);
+    setResidentCards(updated);
+    const target = updated.find(c => c.cardUid === cardUid);
+    if (target?.status === 'LOCKED') {
+      showToast(`🔒 Đã TẠM KHÓA thẻ NFC (${cardUid} - ${holderName})! Thẻ này không thể mở cửa.`);
+    } else {
+      showToast(`🔓 Đã KÍCH HOẠT lại thẻ NFC (${cardUid} - ${holderName}) thành công.`);
+    }
   };
 
   // Bật/tắt đàm thoại 2 chiều với chuông cửa
@@ -1291,19 +1380,22 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
                       </div>
 
                       <span className="px-2 py-0.5 bg-blue-950 text-blue-300 border border-blue-500/40 text-[10px] font-mono rounded font-bold">
-                        {1 + familyMembers.length} THẺ HOẠT ĐỘNG
+                        {residentCards.filter(c => c.status === 'ACTIVE').length}/{residentCards.length} THẺ HOẠT ĐỘNG
                       </span>
                     </div>
 
                     <div className="text-[11px] text-gray-300 leading-relaxed">
                       {familyMembers.length > 0 
-                        ? `Gồm 1 thẻ Chủ Hộ (${currentUser.full_name}) và ${familyMembers.length} thẻ thành viên gia đình.`
-                        : `Gồm 1 thẻ Chủ Hộ (${currentUser.full_name}) được mã hóa chip bảo mật.`}
+                        ? `Gồm 1 thẻ Master Chủ Hộ (${currentUser.full_name}) và ${familyMembers.length} thẻ thành viên gia đình.`
+                        : `Gồm 1 thẻ Master Chủ Hộ (${currentUser.full_name}) mã hóa bảo mật chống sao chép.`}
                     </div>
                   </div>
 
-                  <div className="text-[10px] text-gray-400 font-mono">
-                    Tần số: 13.56MHz Mifare Desfire EV3
+                  <div className="text-[10px] text-gray-400 font-mono flex items-center justify-between">
+                    <span>Mifare DESFire EV3</span>
+                    <span className="text-emerald-400 flex items-center gap-1">
+                      <Wifi className="w-3 h-3 rotate-90" /> 13.56MHz
+                    </span>
                   </div>
                 </div>
               </div>
@@ -1445,6 +1537,113 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
                   </div>
                 </div>
               )}
+
+              {/* Danh Sách Thẻ Cư Dân NFC Vật Lý Thực Tế */}
+              <div className="space-y-2.5 pt-3 border-t border-[#222B35]">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
+                  <div className="text-[11px] font-bold text-blue-400 uppercase tracking-wider flex items-center gap-2">
+                    <CreditCard className="w-4 h-4" />
+                    <span>Danh Sách Thẻ Cư Dân NFC Vật Lý ({residentCards.length} Thẻ - Chạm Để Mở Cửa):</span>
+                  </div>
+                  <span className="text-[10px] text-gray-400 font-mono">
+                    * Bấm "Quẹt Thẻ Vào Khóa" để mở chốt cửa thực tế
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                  {residentCards.map((card) => {
+                    const isTapping = tappingCardUid === card.cardUid;
+                    const isActive = card.status === 'ACTIVE';
+
+                    return (
+                      <div 
+                        key={card.cardUid}
+                        className={`p-3.5 bg-[#0D1117] border rounded-lg space-y-3 transition-all ${
+                          isActive 
+                            ? 'border-[#222B35] hover:border-blue-500/50' 
+                            : 'border-red-900/60 bg-red-950/10'
+                        }`}
+                      >
+                        {/* Header của thẻ */}
+                        <div className="flex items-start justify-between gap-2">
+                          <div className="flex items-center gap-2">
+                            <div className="w-7 h-5 bg-gradient-to-tr from-amber-600 via-yellow-400 to-amber-300 rounded-none border border-amber-300 p-0.5 flex flex-col justify-between shadow-sm shrink-0">
+                              <div className="h-[1px] bg-amber-800/60 w-full" />
+                              <div className="h-[1px] bg-amber-800/60 w-full" />
+                            </div>
+                            <div>
+                              <div className="text-xs font-bold text-white flex items-center gap-1.5">
+                                <span>{card.holderName}</span>
+                                <span className="text-[9px] font-mono text-[#C5A880] font-normal">
+                                  ({card.role})
+                                </span>
+                              </div>
+                              <div className="text-[10px] font-mono text-gray-400">
+                                UID: <strong className="text-gray-200">{card.cardUid}</strong>
+                              </div>
+                            </div>
+                          </div>
+
+                          <span className={`px-2 py-0.5 text-[9px] font-mono font-bold rounded uppercase border ${
+                            isActive 
+                              ? 'bg-emerald-950 text-emerald-300 border-emerald-500/40' 
+                              : 'bg-red-950 text-red-300 border-red-500/40 animate-pulse'
+                          }`}>
+                            {isActive ? 'HOẠT ĐỘNG' : 'ĐÃ KHÓA'}
+                          </span>
+                        </div>
+
+                        {/* Thông số kỹ thuật của thẻ */}
+                        <div className="text-[10px] text-gray-400 font-mono flex items-center justify-between border-t border-[#1C2533] pt-2">
+                          <span>Chip: Mifare EV3</span>
+                          <span>{card.lastUsed ? `Dùng: ${card.lastUsed}` : 'Chưa quẹt'}</span>
+                        </div>
+
+                        {/* Thao tác: Quẹt thẻ & Khóa thẻ */}
+                        <div className="grid grid-cols-2 gap-2 pt-1">
+                          <button
+                            type="button"
+                            onClick={() => handleSimulateTapCard(card)}
+                            disabled={isTapping}
+                            className={`py-1.5 px-2 text-xs font-bold uppercase rounded transition-all flex items-center justify-center gap-1.5 shadow ${
+                              isTapping 
+                                ? 'bg-blue-600 text-white animate-pulse' 
+                                : isActive
+                                  ? 'bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-500 hover:to-blue-600 text-white shadow-blue-950/40'
+                                  : 'bg-gray-800 text-gray-400 hover:text-white'
+                            }`}
+                            title="Chạm thẻ vật lý vào đầu đọc của khóa cửa"
+                          >
+                            <Wifi className="w-3.5 h-3.5 rotate-90" />
+                            <span>{isTapping ? 'Đang Quẹt...' : 'Quẹt Thẻ Vào Khóa'}</span>
+                          </button>
+
+                          <button
+                            type="button"
+                            onClick={() => handleToggleCardLock(card.cardUid, card.holderName)}
+                            className={`py-1.5 px-2 text-xs font-mono font-semibold rounded border transition-colors flex items-center justify-center gap-1.5 ${
+                              isActive 
+                                ? 'bg-[#161D26] hover:bg-red-950/60 text-gray-300 hover:text-red-300 border-[#2A374A] hover:border-red-500/50' 
+                                : 'bg-red-950 text-red-200 border-red-500 hover:bg-emerald-950 hover:text-emerald-300 hover:border-emerald-500'
+                            }`}
+                            title={isActive ? 'Tạm khóa thẻ khi làm rơi để chống kẻ gian mở cửa' : 'Mở khóa lại thẻ sau khi tìm thấy'}
+                          >
+                            {isActive ? (
+                              <>
+                                <Lock className="w-3.5 h-3.5 text-gray-400" /> Tạm Khóa
+                              </>
+                            ) : (
+                              <>
+                                <Check className="w-3.5 h-3.5 text-emerald-400" /> Mở Khóa Thẻ
+                              </>
+                            )}
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
             </div>
           )}
 
