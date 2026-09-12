@@ -381,9 +381,9 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
       return;
     }
 
-    const currentAvatar = avatarUrl || currentUser.avatar_url || enrolledFaceProfile?.samples?.front || '';
+    const currentAvatar = avatarUrl || currentUser.avatar_url || '';
     if (!currentAvatar && !enrolledFaceProfile) {
-      alert('Vui lòng thực hiện bước "Quét Mẫu FaceID" bằng camera hoặc tải ảnh chân dung trước khi gửi hồ sơ duyệt!');
+      alert('Vui lòng hoàn tất tải ảnh chân dung hoặc đăng ký FaceID trước khi gửi hồ sơ duyệt!');
       return;
     }
 
@@ -1501,15 +1501,8 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
         phone={phone || currentUser.phone || ''}
         onEnrollSuccess={(profile) => {
           setEnrolledFaceProfile(profile);
-          if (profile.samples.front) {
-            setAvatarUrl(profile.samples.front);
-            updateUserInfo({ avatar_url: profile.samples.front, avatar: profile.samples.front } as any);
-            const userKey = currentUser.phone || currentUser.email || currentUser.username || currentUser.id;
-            if (typeof window !== 'undefined') {
-              localStorage.setItem('skyline_user_avatar_' + userKey, profile.samples.front);
-              window.dispatchEvent(new CustomEvent('skyline_avatar_updated', { detail: { avatar: profile.samples.front } }));
-            }
-          }
+          // TUYỆT ĐỐI KHÔNG cập nhật / ghi đè ảnh chân dung cá nhân (avatar) từ mẫu FaceID
+          // Ảnh chân dung cư dân được giữ nguyên vẹn từ thẻ CCCD hoặc mục Đổi Avatar riêng biệt.
         }}
       />
     </div>

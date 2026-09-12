@@ -26,17 +26,38 @@ export async function POST(req: Request) {
       );
     }
 
-    // 1. Phân tích trích xuất vector đặc trưng sinh trắc học từ mẫu chính diện
-    const descriptorVec = extractFaceDescriptorFromBase64(samples.front);
-    const descriptorArray = Array.from(descriptorVec);
+    // 1. Phân tích trích xuất vector đặc trưng sinh trắc học tổng hợp từ cả 4 mẫu quét
+    const descFront = extractFaceDescriptorFromBase64(samples.front);
+    const descLeft = extractFaceDescriptorFromBase64(samples.left);
+    const descRight = extractFaceDescriptorFromBase64(samples.right);
+    const descSmile = extractFaceDescriptorFromBase64(samples.smile);
 
-    // 2. Tạo hồ sơ đăng ký FaceID chính thức
+    // Tạo vector tổng hợp 128 chiều từ 4 mẫu góc quét
+    const compositeDesc = new Float32Array(128);
+    let sumSq = 0;
+    for (let i = 0; i < 128; i++) {
+      const val = (descFront[i] + descLeft[i] + descRight[i] + descSmile[i]) / 4;
+      compositeDesc[i] = val;
+      sumSq += val * val;
+    }
+    const norm = Math.sqrt(sumSq);
+    if (norm > 0) {
+      for (let i = 0; i < 128; i++) {
+        compositeDesc[i] /= norm;
+      }
+    }
+    const descriptorArray = Array.from(compositeDesc);
+
+    // Lấy thông tin user hiện tại (giữ nguyên avatar_url, không ghi đè)
+    const existingUser = getUserStore(userId);
+
+    // 2. Tạo hồ sơ đăng ký FaceID chính thức lưu đủ 4 mẫu quét
     const faceProfile: EnrolledFaceProfile = {
       userId,
-      fullName: fullName || 'Cư Dân Skyline',
-      apartmentCode: apartmentCode || '12A05',
-      phone: phone || '',
-      avatarUrl: samples.front,
+      fullName: fullName || existingUser?.fullname || 'Cư Dân Skyline',
+      apartmentCode: apartmentCode || existingUser?.apartment_code || '12A05',
+      phone: phone || existingUser?.phone || '',
+      avatarUrl: existingUser?.avatar_url || '',
       samples: {
         front: samples.front,
         left: samples.left,
@@ -52,14 +73,12 @@ export async function POST(req: Request) {
     // 3. Lưu vào FaceEnrollStore
     saveEnrolledFaceProfile(faceProfile);
 
-    // 4. Đồng bộ cập nhật vào User Store
-    const existingUser = getUserStore(userId);
+    // 4. Cập nhật trạng thái FaceID trong User Store - TUYỆT ĐỐI KHÔNG cập nhật / ghi đè avatar_url
     updateUserStore(userId, {
-      avatar_url: samples.front,
       updated_at: new Date().toISOString(),
     });
 
-    // 5. Cập nhật trạng thái e-KYC sang APPROVED nếu đã có
+    // 5. Cập nhật hồ sơ e-KYC nếu đã có (giữ nguyên avatar_url của cư dân)
     try {
       submitEkycRequest({
         userId,
@@ -70,7 +89,7 @@ export async function POST(req: Request) {
         idCardNo: existingUser?.id_card_no || '067204000961',
         idDate: existingUser?.id_date || '18/08/2022',
         idPlace: existingUser?.id_place || 'Cục Cảnh sát QLHC về TTXH',
-        avatarUrl: samples.front,
+        avatarUrl: existingUser?.avatar_url || '',
         idCardFrontUrl: existingUser?.cccd_front_url || '',
         idCardBackUrl: existingUser?.cccd_back_url || '',
         faceScore: 99.4,

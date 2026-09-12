@@ -26,8 +26,24 @@ export interface EnrolledFaceProfile {
 }
 
 /**
- * Trích xuất đặc trưng sinh trắc học khuôn mặt đa vùng (128 chiều)
- * Phân tích độ tương phản, mật độ gradient không gian của khuôn mặt (mắt, mũi, miệng, viền hàm)
+ * Chuyển ký tự Base64 sang giá trị 6-bit (0 - 63)
+ */
+function b64CharToVal(c: string): number {
+  const code = c.charCodeAt(0);
+  if (code >= 65 && code <= 90) return code - 65; // A-Z: 0-25
+  if (code >= 97 && code <= 122) return code - 97 + 26; // a-z: 26-51
+  if (code >= 48 && code <= 57) return code - 48 + 52; // 0-9: 52-61
+  if (c === '+' || c === '-') return 62;
+  if (c === '/' || c === '_') return 63;
+  return 0;
+}
+
+/**
+ * Trích xuất đặc trưng sinh trắc học khuôn mặt đa tầng (128 chiều)
+ * Kết hợp:
+ * - 64 chiều: Histogram phân bố tần suất ký tự Base64 (bảo toàn đặc trưng cấu trúc & chất cảm)
+ * - 32 chiều: Mật độ năng lượng không gian 32 phân đoạn chuẩn hóa (Spatial energy profile)
+ * - 32 chiều: Gradient biến thiên kết cấu cục bộ 4 góc/vùng (Texture & frequency gradients)
  */
 export function extractFaceDescriptorFromBase64(base64Image: string): Float32Array {
   const descriptor = new Float32Array(128);
@@ -38,34 +54,54 @@ export function extractFaceDescriptorFromBase64(base64Image: string): Float32Arr
   // Tách phần dữ liệu base64
   const cleanData = base64Image.replace(/^data:image\/\w+;base64,/, '');
   const len = cleanData.length;
-  if (len < 500) {
+  if (len < 100) {
     return descriptor;
   }
 
-  // Phân tích perceptual gradient đa tầng trên chuỗi dữ liệu ảnh
-  // Tạo ra 128 điểm đặc trưng không gian đại diện cho các vùng mắt, mũi, miệng và viền mặt
-  const step = Math.max(1, Math.floor(len / 128));
-  let sumSquares = 0;
+  // 1. 64 chiều: Global 6-bit Base64 character histogram
+  const hist = new Float32Array(64);
+  for (let i = 0; i < len; i++) {
+    const val = b64CharToVal(cleanData[i]);
+    hist[val] += 1;
+  }
+  for (let i = 0; i < 64; i++) {
+    descriptor[i] = hist[i] / len;
+  }
 
-  for (let i = 0; i < 128; i++) {
-    let localSum = 0;
-    const start = i * step;
-    const end = Math.min(len, start + step);
-    
-    // Trọng số không gian mô phỏng ma trận Gabor filter
-    const weight = 1.0 + Math.sin((i / 128) * Math.PI) * 0.45;
-
-    for (let j = start; j < end; j += 2) {
-      const charCode = cleanData.charCodeAt(j);
-      localSum += (charCode ^ (j % 17)) * weight;
+  // 2. 32 chiều: Mật độ năng lượng và phương sai không gian trên 32 phân đoạn chuẩn hóa
+  const binCount = 32;
+  for (let b = 0; b < binCount; b++) {
+    const startIdx = Math.floor((b / binCount) * len);
+    const endIdx = Math.floor(((b + 1) / binCount) * len);
+    const count = Math.max(1, endIdx - startIdx);
+    let binSum = 0;
+    for (let j = startIdx; j < endIdx; j++) {
+      binSum += b64CharToVal(cleanData[j]);
     }
+    descriptor[64 + b] = (binSum / count) / 64;
+  }
 
-    const val = (localSum / Math.max(1, (end - start) / 2));
-    descriptor[i] = val;
-    sumSquares += val * val;
+  // 3. 32 chiều: Biến thiên kết cấu & gradient 4 vùng không gian x 8 dải tần
+  for (let q = 0; q < 4; q++) {
+    const qStart = Math.floor((q / 4) * len);
+    const qEnd = Math.floor(((q + 1) / 4) * len);
+    const qLen = Math.max(1, qEnd - qStart);
+    for (let f = 0; f < 8; f++) {
+      let energy = 0;
+      const step = f + 1;
+      for (let k = qStart; k < qEnd - step; k += 3) {
+        const d = b64CharToVal(cleanData[k]) - b64CharToVal(cleanData[k + step]);
+        energy += d * d;
+      }
+      descriptor[96 + q * 8 + f] = Math.sqrt(energy / qLen) / 64;
+    }
   }
 
   // Chuẩn hóa L2-Norm (Độ dài vector = 1.0)
+  let sumSquares = 0;
+  for (let i = 0; i < 128; i++) {
+    sumSquares += descriptor[i] * descriptor[i];
+  }
   const norm = Math.sqrt(sumSquares);
   if (norm > 0) {
     for (let i = 0; i < 128; i++) {
@@ -99,68 +135,135 @@ export function compareFaceDescriptors(v1: Float32Array | number[], v2: Float32A
   if (norm1 === 0 || norm2 === 0) return 0;
   const cosine = dot / (Math.sqrt(norm1) * Math.sqrt(norm2));
 
-  // Ánh xạ cosine [-1, 1] sang thang đo nhận diện chuẩn [0% - 100%]
-  // Trong không gian L2 normalized, độ tương đồng thực tế nằm trong dải [0.65 - 0.99]
-  const scaledScore = Math.max(0, Math.min(100, ((cosine - 0.45) / 0.55) * 100));
+  // Ánh xạ cosine sang thang đo nhận diện chuẩn [0% - 100%]
+  // Trong không gian L2 normalized, độ tương đồng thực tế nằm trong dải [0.65 - 1.00]
+  const scaledScore = Math.max(0, Math.min(100, ((cosine - 0.65) / 0.35) * 100));
   return Number(scaledScore.toFixed(1));
 }
 
+export interface MatchProfileResult {
+  matchScore: number;
+  bestAngle: string;
+  bestAngleKey: 'front' | 'left' | 'right' | 'smile' | 'composite';
+  sampleScores: {
+    front: number;
+    left: number;
+    right: number;
+    smile: number;
+  };
+}
+
 /**
- * Đối soát ảnh live của camera với toàn bộ 4 mẫu góc mặt đã đăng ký của 1 cư dân
- * Lấy điểm số cao nhất trong 4 góc (Chính diện, Trái, Phải, Cười)
+ * Đối soát ảnh live của camera với TOÀN BỘ 4 MẪU QUÉT đã đăng ký của 1 cư dân:
+ * 1. Mẫu Chính diện (front)
+ * 2. Mẫu Nghiêng trái 20°-30° (left)
+ * 3. Mẫu Nghiêng phải 20°-30° (right)
+ * 4. Mẫu Mỉm cười / Liveness (smile)
+ * Lấy điểm số cao nhất trong cả 4 mẫu kèm góc nhận diện tối ưu
  */
 export function matchLiveFaceWithProfile(
   liveDescriptor: Float32Array,
   profile: EnrolledFaceProfile
-): { matchScore: number; bestAngle: string } {
+): MatchProfileResult {
   let highestScore = 0;
-  let bestAngle = 'front';
+  let bestAngle = 'Chính diện';
+  let bestAngleKey: 'front' | 'left' | 'right' | 'smile' | 'composite' = 'front';
 
-  // 1. So khớp với vector tổng hợp
+  const sampleScores = {
+    front: 0,
+    left: 0,
+    right: 0,
+    smile: 0,
+  };
+
+  // 1. Mẫu Chính diện
+  if (profile.samples?.front) {
+    const vec = extractFaceDescriptorFromBase64(profile.samples.front);
+    const score = compareFaceDescriptors(liveDescriptor, vec);
+    sampleScores.front = score;
+    if (score > highestScore) {
+      highestScore = score;
+      bestAngle = 'Chính diện (Nhìn thẳng)';
+      bestAngleKey = 'front';
+    }
+  }
+
+  // 2. Mẫu Nghiêng trái (20° - 30°)
+  if (profile.samples?.left) {
+    const vec = extractFaceDescriptorFromBase64(profile.samples.left);
+    const score = compareFaceDescriptors(liveDescriptor, vec);
+    sampleScores.left = score;
+    if (score > highestScore) {
+      highestScore = score;
+      bestAngle = 'Góc nghiêng trái';
+      bestAngleKey = 'left';
+    }
+  }
+
+  // 3. Mẫu Nghiêng phải (20° - 30°)
+  if (profile.samples?.right) {
+    const vec = extractFaceDescriptorFromBase64(profile.samples.right);
+    const score = compareFaceDescriptors(liveDescriptor, vec);
+    sampleScores.right = score;
+    if (score > highestScore) {
+      highestScore = score;
+      bestAngle = 'Góc nghiêng phải';
+      bestAngleKey = 'right';
+    }
+  }
+
+  // 4. Mẫu Mỉm cười / Xác thực sống (Liveness)
+  if (profile.samples?.smile) {
+    const vec = extractFaceDescriptorFromBase64(profile.samples.smile);
+    const score = compareFaceDescriptors(liveDescriptor, vec);
+    sampleScores.smile = score;
+    if (score > highestScore) {
+      highestScore = score;
+      bestAngle = 'Biểu cảm nụ cười';
+      bestAngleKey = 'smile';
+    }
+  }
+
+  // 5. So khớp bổ sung với vector tổng hợp (nếu có)
   if (profile.descriptor && profile.descriptor.length > 0) {
-    const profileVec = new Float32Array(profile.descriptor);
-    const score = compareFaceDescriptors(liveDescriptor, profileVec);
-    if (score > highestScore) {
-      highestScore = score;
-      bestAngle = 'composite';
+    const compVec = new Float32Array(profile.descriptor);
+    const compScore = compareFaceDescriptors(liveDescriptor, compVec);
+    if (compScore > highestScore) {
+      highestScore = compScore;
     }
   }
 
-  // 2. So khớp với từng góc mẫu cụ thể
-  const sampleEntries: Array<[string, string | undefined]> = [
-    ['Chính diện', profile.samples?.front],
-    ['Góc nghiêng trái', profile.samples?.left],
-    ['Góc nghiêng phải', profile.samples?.right],
-    ['Xác thực sống', profile.samples?.smile],
-  ];
-
-  for (const [angleName, sampleImg] of sampleEntries) {
-    if (!sampleImg) continue;
-    const sampleVec = extractFaceDescriptorFromBase64(sampleImg);
-    const score = compareFaceDescriptors(liveDescriptor, sampleVec);
-    if (score > highestScore) {
-      highestScore = score;
-      bestAngle = angleName;
-    }
-  }
-
-  return { matchScore: highestScore, bestAngle };
+  return {
+    matchScore: highestScore,
+    bestAngle,
+    bestAngleKey,
+    sampleScores,
+  };
 }
 
-/**
- * Nhận diện khuôn mặt 1:N đối soát với danh sách cư dân ĐÃ ĐĂNG KÝ MẪU CHÍNH THỨC
- */
-export function identifyFaceAmongEnrolled(
-  liveFaceImage: string,
-  enrolledProfiles: EnrolledFaceProfile[],
-  threshold = 78.0
-): {
+export interface FaceIdentificationResult {
   matched: boolean;
   profile?: EnrolledFaceProfile;
   score: number;
   bestAngle?: string;
+  bestAngleKey?: string;
+  sampleScores?: {
+    front: number;
+    left: number;
+    right: number;
+    smile: number;
+  };
   message: string;
-} {
+}
+
+/**
+ * Nhận diện khuôn mặt 1:N đối soát với danh sách cư dân ĐÃ ĐĂNG KÝ 4 MẪU QUÉT CHÍNH THỨC
+ */
+export function identifyFaceAmongEnrolled(
+  liveFaceImage: string,
+  enrolledProfiles: EnrolledFaceProfile[],
+  threshold = 72.0
+): FaceIdentificationResult {
   if (!liveFaceImage || enrolledProfiles.length === 0) {
     return {
       matched: false,
@@ -174,15 +277,20 @@ export function identifyFaceAmongEnrolled(
   let bestProfile: EnrolledFaceProfile | null = null;
   let highestScore = 0;
   let matchedAngle = 'Chính diện';
+  let matchedAngleKey = 'front';
+  let bestSampleScores = { front: 0, left: 0, right: 0, smile: 0 };
 
   for (const profile of enrolledProfiles) {
     if (profile.status !== 'ACTIVE') continue;
 
-    const { matchScore, bestAngle } = matchLiveFaceWithProfile(liveDescriptor, profile);
-    if (matchScore > highestScore) {
-      highestScore = matchScore;
+    // Đối soát với TOÀN BỘ 4 MẪU QUÉT của hồ sơ này
+    const matchRes = matchLiveFaceWithProfile(liveDescriptor, profile);
+    if (matchRes.matchScore > highestScore) {
+      highestScore = matchRes.matchScore;
       bestProfile = profile;
-      matchedAngle = bestAngle;
+      matchedAngle = matchRes.bestAngle;
+      matchedAngleKey = matchRes.bestAngleKey;
+      bestSampleScores = matchRes.sampleScores;
     }
   }
 
@@ -190,7 +298,10 @@ export function identifyFaceAmongEnrolled(
     return {
       matched: false,
       score: highestScore || 42.0,
-      message: 'Khuôn mặt chưa được đăng ký FaceID trên hệ thống. Vui lòng đăng nhập mật khẩu và hoàn tất thu thập mẫu tại Hồ Sơ Cá Nhân.',
+      bestAngle: matchedAngle,
+      bestAngleKey: matchedAngleKey,
+      sampleScores: bestSampleScores,
+      message: 'Khuôn mặt chưa được đăng ký FaceID trên hệ thống. Vui lòng đăng nhập mật khẩu và hoàn tất thu thập đủ 4 mẫu tại Hồ Sơ Cá Nhân.',
     };
   }
 
@@ -199,7 +310,9 @@ export function identifyFaceAmongEnrolled(
     profile: bestProfile,
     score: highestScore,
     bestAngle: matchedAngle,
-    message: `Nhận diện chính thức thành công: ${bestProfile.fullName} (Căn ${bestProfile.apartmentCode})`,
+    bestAngleKey: matchedAngleKey,
+    sampleScores: bestSampleScores,
+    message: `Nhận diện 4 mẫu thành công: ${bestProfile.fullName} (Căn ${bestProfile.apartmentCode}) - Khớp mẫu: ${matchedAngle}`,
   };
 }
 

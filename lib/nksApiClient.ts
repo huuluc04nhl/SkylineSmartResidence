@@ -268,11 +268,37 @@ export async function nksFaceLogin(payload: {
   isCameraCapture?: boolean;
   uploadedFileName?: string;
   deviceType?: string;
-}): Promise<{ success: boolean; user?: any; matchScore?: number; message?: string }> {
+  clientProfiles?: any[];
+}): Promise<{
+  success: boolean;
+  user?: any;
+  matchScore?: number;
+  bestAngle?: string;
+  sampleScores?: {
+    front: number;
+    left: number;
+    right: number;
+    smile: number;
+  };
+  message?: string;
+}> {
+  let clientProfiles = payload.clientProfiles;
+  if (!clientProfiles && typeof window !== 'undefined') {
+    try {
+      const raw = localStorage.getItem('skyline_enrolled_faces_v1');
+      if (raw) clientProfiles = JSON.parse(raw);
+    } catch (e) {
+      console.warn('Lỗi đọc client profiles:', e);
+    }
+  }
+
   const res = await fetch('/api/nks/user/face-login', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload),
+    body: JSON.stringify({
+      ...payload,
+      clientProfiles,
+    }),
   });
 
   const data = await res.json().catch(() => ({}));

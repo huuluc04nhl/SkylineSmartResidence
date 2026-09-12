@@ -426,21 +426,39 @@ export default function BankFaceEnrollModal({
         },
       });
 
-      // Trích xuất vector đặc trưng lưu cục bộ
-      const descriptorVec = extractFaceDescriptorFromBase64(samples.front);
+      // Trích xuất vector đặc trưng tổng hợp từ cả 4 mẫu sinh trắc học
+      const descFront = extractFaceDescriptorFromBase64(samples.front);
+      const descLeft = extractFaceDescriptorFromBase64(samples.left);
+      const descRight = extractFaceDescriptorFromBase64(samples.right);
+      const descSmile = extractFaceDescriptorFromBase64(samples.smile);
+
+      const compositeDesc = new Float32Array(128);
+      let sumSq = 0;
+      for (let i = 0; i < 128; i++) {
+        const val = (descFront[i] + descLeft[i] + descRight[i] + descSmile[i]) / 4;
+        compositeDesc[i] = val;
+        sumSq += val * val;
+      }
+      const norm = Math.sqrt(sumSq);
+      if (norm > 0) {
+        for (let i = 0; i < 128; i++) {
+          compositeDesc[i] /= norm;
+        }
+      }
+
       const fullProfile: EnrolledFaceProfile = {
         userId,
         fullName: fullName || 'Cư Dân Skyline',
         apartmentCode: apartmentCode || '12A05',
         phone: phone || '',
-        avatarUrl: samples.front,
+        avatarUrl: '', // Giữ nguyên chân dung riêng của cư dân, không dùng mẫu quét ghi đè
         samples: {
           front: samples.front,
           left: samples.left,
           right: samples.right,
           smile: samples.smile,
         },
-        descriptor: Array.from(descriptorVec),
+        descriptor: Array.from(compositeDesc),
         enrolledAt: new Date().toISOString(),
         status: 'ACTIVE',
         faceScore: 99.4,

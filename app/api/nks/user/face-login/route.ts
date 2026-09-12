@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { getUserStore, StoredUser } from '@/lib/userStore';
 import { DEMO_USERS } from '@/lib/dataStore';
 import { identifyFaceAmongEnrolled } from '@/lib/biometricFaceEngine';
-import { getAllEnrolledFaceProfiles } from '@/lib/faceEnrollStore';
+import { getAllEnrolledFaceProfiles, saveEnrolledFaceProfile } from '@/lib/faceEnrollStore';
 
 function formatToDateInput(d?: string): string {
   if (!d) return '';
@@ -99,7 +99,22 @@ export async function POST(req: Request) {
     }
 
     // 3. Cơ sở dữ liệu FaceID ĐÃ ĐĂNG KÝ MẪU CHÍNH THỨC
-    const enrolledProfiles = getAllEnrolledFaceProfiles();
+    const serverProfiles = getAllEnrolledFaceProfiles();
+    const enrolledProfiles = [...serverProfiles];
+
+    // Đồng bộ hồ sơ 4 mẫu quét từ client (nếu có)
+    if (Array.isArray(body.clientProfiles)) {
+      body.clientProfiles.forEach((cp: any) => {
+        if (cp && cp.userId && !enrolledProfiles.some(p => p.userId === cp.userId)) {
+          enrolledProfiles.push(cp);
+          try {
+            saveEnrolledFaceProfile(cp);
+          } catch (e) {
+            console.warn('Sync client profile error:', e);
+          }
+        }
+      });
+    }
 
     if (enrolledProfiles.length === 0) {
       return NextResponse.json(
@@ -112,16 +127,18 @@ export async function POST(req: Request) {
       );
     }
 
-    // 4. Nhận diện sinh trắc học 1:N đối soát với các mẫu đã đăng ký
-    const matchResult = identifyFaceAmongEnrolled(faceImage, enrolledProfiles, 78.0);
+    // 4. Nhận diện sinh trắc học 1:N đối soát với toàn bộ 4 mẫu góc quét của các hồ sơ đã đăng ký
+    const matchResult = identifyFaceAmongEnrolled(faceImage, enrolledProfiles, 72.0);
 
-    // 5. Nếu không khớp bất kỳ khuôn mặt đã đăng ký nào
+    // 5. Nếu không khớp bất kỳ khuôn mặt nào trong 4 mẫu
     if (!matchResult.matched || !matchResult.profile) {
       return NextResponse.json(
         {
           success: false,
           matchScore: matchResult.score || 42.0,
-          message: matchResult.message || 'Khuôn mặt chưa được đăng ký FaceID trên hệ thống. Vui lòng đăng nhập bằng mật khẩu và hoàn tất thu thập mẫu tại Hồ Sơ Cá Nhân.',
+          bestAngle: matchResult.bestAngle,
+          sampleScores: matchResult.sampleScores,
+          message: matchResult.message || 'Khuôn mặt chưa được đăng ký FaceID trên hệ thống. Vui lòng đăng nhập bằng mật khẩu và hoàn tất thu thập đủ 4 mẫu tại Hồ Sơ Cá Nhân.',
         },
         { status: 401 }
       );
@@ -180,8 +197,10 @@ export async function POST(req: Request) {
 
     const res = NextResponse.json({
       success: true,
-      message: `Nhận diện thành công: ${formattedUser.fullname} (${formattedUser.apartment_code})`,
+      message: `Nhận diện thành công: ${formattedUser.fullname} (${formattedUser.apartment_code}) - Mẫu khớp: ${matchResult.bestAngle || 'Chính diện'}`,
       matchScore: matchScore || 99.2,
+      bestAngle: matchResult.bestAngle || 'Chính diện',
+      sampleScores: matchResult.sampleScores,
       access_token: token,
       user: formattedUser,
     });

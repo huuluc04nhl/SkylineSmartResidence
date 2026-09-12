@@ -66,7 +66,7 @@ export default function LoginModal({ isOpen, onClose, defaultAccount = '' }: Log
   const [cameraError, setCameraError] = useState<string | null>(null);
   const [isCameraActive, setIsCameraActive] = useState(false);
   const [uploadedFaceImage, setUploadedFaceImage] = useState<string | null>(null);
-  const [matchedFaceResult, setMatchedFaceResult] = useState<{ name: string; apt: string; score: number } | null>(null);
+  const [matchedFaceResult, setMatchedFaceResult] = useState<{ name: string; apt: string; score: number; bestAngle?: string } | null>(null);
   const [faceScanStatus, setFaceScanStatus] = useState<'IDLE' | 'SCANNING' | 'LIVENESS' | 'MATCHING' | 'SUCCESS' | 'FAILED'>('IDLE');
   const [lighting, setLighting] = useState<LightingAnalysisResult | null>(null);
 
@@ -372,6 +372,7 @@ export default function LoginModal({ isOpen, onClose, defaultAccount = '' }: Log
             name: result.user.full_name || 'Cư Dân Skyline',
             apt: result.user.apartment_code || '12A05',
             score: result.matchScore || 99.2,
+            bestAngle: (result as any).bestAngle || 'Chính diện',
           });
 
           setTimeout(() => {
@@ -887,8 +888,13 @@ export default function LoginModal({ isOpen, onClose, defaultAccount = '' }: Log
                     <div className="font-bold text-white text-[13px]">
                       {matchedFaceResult.name}
                     </div>
-                    <div className="text-[11px] text-gray-400">
-                      Căn hộ: <span className="text-emerald-300 font-mono font-semibold">{matchedFaceResult.apt}</span>
+                    <div className="text-[11px] text-gray-400 flex items-center gap-1.5 flex-wrap">
+                      <span>Căn hộ: <span className="text-emerald-300 font-mono font-semibold">{matchedFaceResult.apt}</span></span>
+                      {matchedFaceResult.bestAngle && (
+                        <span className="text-[10px] px-1.5 py-0.5 bg-[#C5A880]/20 text-[#D8BC95] border border-[#C5A880]/30 font-medium">
+                          Mẫu: {matchedFaceResult.bestAngle}
+                        </span>
+                      )}
                     </div>
                   </div>
                 </div>

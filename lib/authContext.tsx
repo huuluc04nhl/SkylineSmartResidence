@@ -104,9 +104,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (res.success && res.user) {
         const u = res.user as any as User;
         setCurrentUser(u);
-        return { success: true, user: u, matchScore: res.matchScore, message: res.message };
+        return {
+          success: true,
+          user: u,
+          matchScore: res.matchScore,
+          bestAngle: res.bestAngle,
+          sampleScores: res.sampleScores,
+          message: res.message,
+        };
       }
-      return { success: false, message: res.message || 'Nhận diện khuôn mặt không thành công' };
+      return {
+        success: false,
+        message: res.message || 'Nhận diện khuôn mặt không thành công',
+        matchScore: res?.matchScore,
+        bestAngle: res?.bestAngle,
+      };
     } catch (err: any) {
       console.error('FaceLogin error', err);
       return { success: false, message: err?.message || 'Lỗi kết nối hệ thống FaceID AI' };
