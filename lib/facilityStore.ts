@@ -24,6 +24,8 @@ export interface FacilityBooking {
   bookingDate: string; // YYYY-MM-DD
   timeSlot: string;
   bookerName: string;
+  guestCount?: number;
+  notes?: string;
   ticketCode: string;
   pricing: string;
   status: 'CONFIRMED' | 'CHECKED_IN' | 'CANCELLED';
@@ -114,7 +116,9 @@ export function createFacilityBooking(
   bookingDate: string,
   timeSlot: string,
   bookerName: string,
-  pricing: string
+  pricing: string,
+  guestCount: number = 2,
+  notes: string = ''
 ): { bookings: FacilityBooking[]; newBooking: FacilityBooking } {
   const current = getFacilityBookings(aptCode);
   const ticketNum = Math.floor(1000 + Math.random() * 9000);
@@ -126,6 +130,8 @@ export function createFacilityBooking(
     bookingDate,
     timeSlot,
     bookerName,
+    guestCount,
+    notes,
     pricing,
     ticketCode: `SKY-PASS-${aptCode}-${ticketNum}`,
     status: 'CONFIRMED',
@@ -140,6 +146,45 @@ export function createFacilityBooking(
   }
 
   return { bookings: updated, newBooking };
+}
+
+/**
+ * Quẹt vé điện tử QR để check-in tại cổng tiện ích
+ */
+export function checkinWithTicket(aptCode: string, ticketCode: string): { success: boolean; message: string; booking?: FacilityBooking } {
+  const current = getFacilityBookings(aptCode);
+  const booking = current.find(b => b.ticketCode === ticketCode);
+
+  if (!booking) {
+    return { success: false, message: 'Mã vé không tồn tại trên hệ thống.' };
+  }
+  if (booking.status === 'CANCELLED') {
+    return { success: false, message: 'Vé này đã bị hủy trước đó.' };
+  }
+  if (booking.status === 'CHECKED_IN') {
+    return { success: true, message: 'Vé đã được check-in trước đó. Cổng barrier mở tự động.', booking };
+  }
+
+  const updated = current.map(b => b.ticketCode === ticketCode ? { ...b, status: 'CHECKED_IN' as const } : b);
+  setStorageItem(`${FACILITY_BOOKINGS_PREFIX}${aptCode}`, updated);
+
+  // Ghi log check-in
+  addFacilityCheckinLog(aptCode, {
+    facilityId: booking.facilityId,
+    facilityName: booking.facilityName,
+    userName: booking.bookerName,
+    role: 'Cư Dân',
+    method: 'NFC_CARD',
+    cardUid: ticketCode,
+    status: 'SUCCESS',
+    detail: `Check-in bằng Mã Vé Điện Tử QR (${ticketCode}) tại cổng ${booking.facilityName} • Cổng mở 0.3s`
+  });
+
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(new CustomEvent('skyline_facility_booked', { detail: { ticketCode, status: 'CHECKED_IN' } }));
+  }
+
+  return { success: true, message: `Check-in vé thành công! Xin chào ${booking.bookerName}. Chúc bạn có thời gian vui vẻ tại ${booking.facilityName}.`, booking: { ...booking, status: 'CHECKED_IN' } };
 }
 
 /**
