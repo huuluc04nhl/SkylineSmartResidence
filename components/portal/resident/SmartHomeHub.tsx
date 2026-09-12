@@ -55,7 +55,6 @@ import {
   Plus,
   Play,
   CreditCard,
-  LayoutGrid,
   ArrowRight
 } from 'lucide-react';
 import { User, UserRole } from '@/lib/dataStore';
@@ -142,7 +141,7 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
   const [snapshotFlash, setSnapshotFlash] = useState(false);
   const [snapshotCount, setSnapshotCount] = useState(0);
   const [isMotionAlertActive, setIsMotionAlertActive] = useState(false);
-  const [smartDoorTab, setSmartDoorTab] = useState<'LIVE_CONTROL' | 'CREDENTIALS' | 'LOGS' | 'ALL'>('LIVE_CONTROL');
+  const [smartDoorTab, setSmartDoorTab] = useState<'LIVE_CONTROL' | 'CREDENTIALS' | 'LOGS'>('LIVE_CONTROL');
 
   const {
     lights,
@@ -843,21 +842,6 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
               )}
             </button>
           </div>
-
-          {/* Toggle "Xem Tất Cả Luồng" */}
-          <button
-            type="button"
-            onClick={() => setSmartDoorTab(prev => prev === 'ALL' ? 'LIVE_CONTROL' : 'ALL')}
-            className={`px-3 py-1.5 text-xs font-mono rounded transition-colors flex items-center gap-1.5 shrink-0 mb-1 border ${
-              smartDoorTab === 'ALL'
-                ? 'bg-[#C5A880] text-[#0D1117] border-[#C5A880] font-bold'
-                : 'bg-[#161D26] text-gray-400 hover:text-white border-[#2A374A]'
-            }`}
-            title="Hiển thị tất cả các luồng đồng thời trong 1 Box"
-          >
-            <LayoutGrid className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">{smartDoorTab === 'ALL' ? 'Thu Gọn Theo Luồng' : 'Xem Tất Cả Luồng'}</span>
-          </button>
         </div>
 
         {/* 3. WORKFLOW BODY: Toàn bộ nội dung tích hợp bên trong 1 Box duy nhất */}
@@ -865,16 +849,8 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
           {/* ========================================================= */}
           {/* LUỒNG 1: GIÁM SÁT CAMERA & ĐIỀU KHIỂN CHỐT KHÓA TRỰC TIẾP */}
           {/* ========================================================= */}
-          {(smartDoorTab === 'LIVE_CONTROL' || smartDoorTab === 'ALL') && (
+          {smartDoorTab === 'LIVE_CONTROL' && (
             <div className="space-y-5">
-              {smartDoorTab === 'ALL' && (
-                <div className="flex items-center gap-2 pb-2 border-b border-[#222B35]">
-                  <Video className="w-4 h-4 text-[#C5A880]" />
-                  <h4 className="text-xs font-bold uppercase tracking-wider text-[#C5A880]">
-                    Luồng 1: Giám Sát Camera & Điều Khiển Chốt Khóa Trực Tiếp
-                  </h4>
-                </div>
-              )}
 
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
                 {/* 1.1. Màn Hình Chuông Hình AI Góc Rộng (7 Cột) */}
@@ -1201,8 +1177,8 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
           {/* ========================================================= */}
           {/* LUỒNG 2: QUẢN LÝ PHƯƠNG THỨC XÁC THỰC RA VÀO              */}
           {/* ========================================================= */}
-          {(smartDoorTab === 'CREDENTIALS' || smartDoorTab === 'ALL') && (
-            <div className={`space-y-4 ${smartDoorTab === 'ALL' ? 'pt-6 border-t border-[#222B35]' : ''}`}>
+          {smartDoorTab === 'CREDENTIALS' && (
+            <div className="space-y-4">
               <div className="flex items-center justify-between pb-2 border-b border-[#222B35]/60">
                 <div className="text-xs uppercase tracking-wider text-[#C5A880] font-bold flex items-center gap-2">
                   <KeyRound className="w-4 h-4 text-cyan-400" /> 
@@ -1475,8 +1451,8 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
           {/* ========================================================= */}
           {/* LUỒNG 3: NHẬT KÝ RA VÀO THỜI GIAN THỰC                     */}
           {/* ========================================================= */}
-          {(smartDoorTab === 'LOGS' || smartDoorTab === 'ALL') && (
-            <div className={`space-y-4 ${smartDoorTab === 'ALL' ? 'pt-6 border-t border-[#222B35]' : ''}`}>
+          {smartDoorTab === 'LOGS' && (
+            <div className="space-y-4">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-2 border-b border-[#222B35]/60">
                 <div className="text-xs uppercase tracking-wider text-[#C5A880] font-bold flex items-center gap-2">
                   <History className="w-4 h-4 text-indigo-400" /> 
