@@ -46,7 +46,8 @@ import {
   nksUpdatePassword,
   nksGetFamilyMembers,
   nksAddFamilyMember,
-  nksRemoveFamilyMember
+  nksRemoveFamilyMember,
+  nksGetEnrolledFaceProfile
 } from '@/lib/nksApiClient';
 import { useAuth } from '@/lib/authContext';
 import CccdOcrScannerModal from './CccdOcrScannerModal';
@@ -179,10 +180,17 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
     syncEkycStatus();
     window.addEventListener('skyline_ekyc_updated', syncEkycStatus);
 
-    // Synchronize FaceID enrolled biometric profile
+    // Synchronize FaceID enrolled biometric profile (Local + Remote Server API)
     const syncEnrolledFace = () => {
       const p = getEnrolledFaceProfile(userKey);
-      setEnrolledFaceProfile(p);
+      if (p) setEnrolledFaceProfile(p);
+
+      // Tự động kéo từ máy chủ API để đồng bộ mẫu vừa quét trên Mobile sang Desktop
+      nksGetEnrolledFaceProfile(userKey).then(remoteP => {
+        if (remoteP) {
+          setEnrolledFaceProfile(remoteP);
+        }
+      });
     };
     syncEnrolledFace();
     window.addEventListener('skyline_faceid_enrolled', syncEnrolledFace);
@@ -1272,9 +1280,15 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
                 {enrolledFaceProfile ? (
                   <div className="space-y-3">
                     <div className="flex items-center justify-between">
-                      <div className="text-xs font-semibold text-emerald-400 flex items-center gap-1.5">
-                        <CheckCircle2 className="w-4 h-4" /> Đã Kích Hoạt 4/4 Mẫu Toàn Vẹn (128-D Vector)
-                      </div>
+                      {enrolledFaceProfile.status === 'PENDING' ? (
+                        <div className="text-xs font-semibold text-amber-400 flex items-center gap-1.5">
+                          <Clock className="w-4 h-4 animate-pulse" /> Đã Gửi 4 Mẫu • Đang Chờ Ban Quản Lý Phê Duyệt
+                        </div>
+                      ) : (
+                        <div className="text-xs font-semibold text-emerald-400 flex items-center gap-1.5">
+                          <CheckCircle2 className="w-4 h-4" /> Đã Được BQL Phê Duyệt & Kích Hoạt 4/4 Mẫu
+                        </div>
+                      )}
                       <span className="text-[10px] font-mono text-gray-400">
                         Thu thập: {new Date(enrolledFaceProfile.enrolledAt).toLocaleDateString('vi-VN')}
                       </span>
@@ -1283,66 +1297,77 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
                     {/* 4 Angle Samples Gallery */}
                     <div className="grid grid-cols-4 gap-2">
                       <div className="space-y-1">
-                        <div className="relative aspect-square border border-emerald-500/60 bg-black overflow-hidden group">
+                        <div className={`relative aspect-square border ${enrolledFaceProfile.status === 'PENDING' ? 'border-amber-500/60' : 'border-emerald-500/60'} bg-black overflow-hidden group`}>
                           <img 
                             src={enrolledFaceProfile.samples.front} 
                             alt="Chính diện" 
                             className="w-full h-full object-cover group-hover:scale-105 transition-transform" 
                           />
-                          <span className="absolute bottom-0 inset-x-0 bg-black/80 text-emerald-300 text-[9px] font-mono text-center py-0.5">
+                          <span className="absolute bottom-0 inset-x-0 bg-black/80 text-white text-[9px] font-mono text-center py-0.5">
                             1. Thẳng
                           </span>
                         </div>
                       </div>
 
                       <div className="space-y-1">
-                        <div className="relative aspect-square border border-emerald-500/60 bg-black overflow-hidden group">
+                        <div className={`relative aspect-square border ${enrolledFaceProfile.status === 'PENDING' ? 'border-amber-500/60' : 'border-emerald-500/60'} bg-black overflow-hidden group`}>
                           <img 
                             src={enrolledFaceProfile.samples.left} 
                             alt="Quay trái" 
                             className="w-full h-full object-cover group-hover:scale-105 transition-transform" 
                           />
-                          <span className="absolute bottom-0 inset-x-0 bg-black/80 text-emerald-300 text-[9px] font-mono text-center py-0.5">
+                          <span className="absolute bottom-0 inset-x-0 bg-black/80 text-white text-[9px] font-mono text-center py-0.5">
                             2. Trái
                           </span>
                         </div>
                       </div>
 
                       <div className="space-y-1">
-                        <div className="relative aspect-square border border-emerald-500/60 bg-black overflow-hidden group">
+                        <div className={`relative aspect-square border ${enrolledFaceProfile.status === 'PENDING' ? 'border-amber-500/60' : 'border-emerald-500/60'} bg-black overflow-hidden group`}>
                           <img 
                             src={enrolledFaceProfile.samples.right} 
                             alt="Quay phải" 
                             className="w-full h-full object-cover group-hover:scale-105 transition-transform" 
                           />
-                          <span className="absolute bottom-0 inset-x-0 bg-black/80 text-emerald-300 text-[9px] font-mono text-center py-0.5">
+                          <span className="absolute bottom-0 inset-x-0 bg-black/80 text-white text-[9px] font-mono text-center py-0.5">
                             3. Phải
                           </span>
                         </div>
                       </div>
 
                       <div className="space-y-1">
-                        <div className="relative aspect-square border border-emerald-500/60 bg-black overflow-hidden group">
+                        <div className={`relative aspect-square border ${enrolledFaceProfile.status === 'PENDING' ? 'border-amber-500/60' : 'border-emerald-500/60'} bg-black overflow-hidden group`}>
                           <img 
                             src={enrolledFaceProfile.samples.smile} 
                             alt="Mỉm cười" 
                             className="w-full h-full object-cover group-hover:scale-105 transition-transform" 
                           />
-                          <span className="absolute bottom-0 inset-x-0 bg-black/80 text-emerald-300 text-[9px] font-mono text-center py-0.5">
+                          <span className="absolute bottom-0 inset-x-0 bg-black/80 text-white text-[9px] font-mono text-center py-0.5">
                             4. Cười
                           </span>
                         </div>
                       </div>
                     </div>
 
-                    <div className="p-2.5 bg-emerald-950/40 border border-emerald-500/40 text-[11px] text-emerald-200 space-y-1">
-                      <div className="font-semibold flex items-center gap-1.5 text-emerald-300">
-                        <ShieldCheck className="w-3.5 h-3.5" /> Sẵn Sàng Đăng Nhập Khuôn Mặt & Ra Vào Căn Hộ
+                    {enrolledFaceProfile.status === 'PENDING' ? (
+                      <div className="p-2.5 bg-amber-950/40 border border-amber-500/40 text-[11px] text-amber-200 space-y-1">
+                        <div className="font-semibold flex items-center gap-1.5 text-amber-300">
+                          <Clock className="w-3.5 h-3.5" /> Đang Chờ Ban Quản Lý Đối Soát & Phê Duyệt
+                        </div>
+                        <p className="text-gray-300 text-[10.5px]">
+                          Hồ sơ gồm 4 mẫu quét sinh trắc học đã được gửi lên hệ thống quản trị của Ban Quản Lý Skyline để đối soát tính xác thực với thẻ CCCD. Sau khi BQL phê duyệt, bạn sẽ có thể đăng nhập FaceID và tự động mở cửa ra vào.
+                        </p>
                       </div>
-                      <p className="text-gray-300 text-[10.5px]">
-                        Hồ sơ sinh trắc học gồm 4 vector đặc trưng đa góc đã được lưu trữ an toàn. Bạn có thể sử dụng tính năng &quot;Quét Khuôn Mặt (FaceID)&quot; tại màn hình đăng nhập để xác thực tức thì.
-                      </p>
-                    </div>
+                    ) : (
+                      <div className="p-2.5 bg-emerald-950/40 border border-emerald-500/40 text-[11px] text-emerald-200 space-y-1">
+                        <div className="font-semibold flex items-center gap-1.5 text-emerald-300">
+                          <ShieldCheck className="w-3.5 h-3.5" /> Đã Được Ban Quản Lý Kích Hoạt Quyền FaceID
+                        </div>
+                        <p className="text-gray-300 text-[10.5px]">
+                          Hồ sơ sinh trắc học gồm 4 vector đặc trưng đa góc đã được BQL phê duyệt hợp lệ. Bạn có thể sử dụng tính năng &quot;Quét Khuôn Mặt (FaceID)&quot; tại màn hình đăng nhập để xác thực tức thì.
+                        </p>
+                      </div>
+                    )}
                   </div>
                 ) : (
                   <div className="p-4 bg-[#161D26] border border-amber-500/60 space-y-3">
@@ -1376,8 +1401,18 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-400">Trạng thái xác thực FaceID:</span>
-                  <span className={enrolledFaceProfile ? 'text-emerald-400 font-bold' : 'text-amber-400 font-bold'}>
-                    {enrolledFaceProfile ? 'Đã Kích Hoạt Chính Thức ✓' : 'Chưa Thu Thập Mẫu'}
+                  <span className={
+                    enrolledFaceProfile?.status === 'ACTIVE' 
+                      ? 'text-emerald-400 font-bold' 
+                      : enrolledFaceProfile?.status === 'PENDING'
+                      ? 'text-amber-400 font-bold'
+                      : 'text-gray-400 font-bold'
+                  }>
+                    {enrolledFaceProfile?.status === 'ACTIVE' 
+                      ? 'Đã Kích Hoạt Chính Thức ✓' 
+                      : enrolledFaceProfile?.status === 'PENDING'
+                      ? 'Chờ BQL Thẩm Định ⏳'
+                      : 'Chưa Thu Thập Mẫu'}
                   </span>
                 </div>
                 <div className="flex justify-between">

@@ -7,6 +7,7 @@ import {
   rejectEkycRequest 
 } from '@/lib/ekycStore';
 import { updateUserStore, updateApartmentMember } from '@/lib/userStore';
+import { updateEnrolledFaceStatus } from '@/lib/faceEnrollStore';
 import { validateCccdCard, verifyFaceWithCccd } from '@/lib/ekycValidator';
 
 /**
@@ -129,6 +130,16 @@ export async function POST(req: Request) {
         console.warn('Sync userStore on ekyc approve error:', err);
       }
 
+      // Kích hoạt hồ sơ FaceID trong FaceEnrollStore sang ACTIVE
+      try {
+        updateEnrolledFaceStatus(approved.userId, 'ACTIVE');
+        if (approved.phone) {
+          updateEnrolledFaceStatus(approved.phone, 'ACTIVE');
+        }
+      } catch (faceErr) {
+        console.warn('Sync face profile status error:', faceErr);
+      }
+
       return NextResponse.json({
         success: true,
         message: 'Đã phê duyệt hồ sơ e-KYC và cấp quyền FaceID thành công.',
@@ -148,6 +159,10 @@ export async function POST(req: Request) {
         updateApartmentMember(rejected.apartmentCode || '12A05', rejected.userId, {
           faceStatus: 'BQL Yêu Cầu Chụp Lại',
         });
+        updateEnrolledFaceStatus(rejected.userId, 'REVOKED');
+        if (rejected.phone) {
+          updateEnrolledFaceStatus(rejected.phone, 'REVOKED');
+        }
       } catch (memErr) {
         console.warn('Sync member face status on reject error:', memErr);
       }

@@ -144,6 +144,31 @@ export async function POST(req: Request) {
       );
     }
 
+    // 5.1 Kiểm tra phê duyệt từ Ban Quản Lý (yêu cầu BQL duyệt trước khi kích hoạt FaceID)
+    if (matchResult.profile.status === 'PENDING') {
+      return NextResponse.json(
+        {
+          success: false,
+          matchScore: matchResult.score,
+          bestAngle: matchResult.bestAngle,
+          sampleScores: matchResult.sampleScores,
+          message: `Hồ sơ 4 mẫu FaceID của cư dân ${matchResult.profile.fullName} (Căn ${matchResult.profile.apartmentCode}) đang chờ Ban Quản Lý phê duyệt. Vui lòng liên hệ BQL hoặc đăng nhập bằng Email / Mật khẩu.`,
+        },
+        { status: 403 }
+      );
+    }
+
+    if (matchResult.profile.status === 'REVOKED') {
+      return NextResponse.json(
+        {
+          success: false,
+          matchScore: matchResult.score,
+          message: `Quyền truy cập FaceID của cư dân ${matchResult.profile.fullName} đã bị thu hồi. Vui lòng liên hệ Ban Quản Lý Skyline để kích hoạt lại.`,
+        },
+        { status: 403 }
+      );
+    }
+
     const matchedUserId = matchResult.profile.userId;
     const matchScore = matchResult.score;
 

@@ -1,8 +1,39 @@
 import { NextResponse } from 'next/server';
 import { extractFaceDescriptorFromBase64, EnrolledFaceProfile } from '@/lib/biometricFaceEngine';
-import { saveEnrolledFaceProfile } from '@/lib/faceEnrollStore';
+import { saveEnrolledFaceProfile, getEnrolledFaceProfile, getAllEnrolledFaceProfiles } from '@/lib/faceEnrollStore';
 import { updateUserStore, getUserStore } from '@/lib/userStore';
 import { submitEkycRequest } from '@/lib/ekycStore';
+
+/**
+ * GET /api/nks/user/face-enroll?userId=...
+ * Đồng bộ hồ sơ 4 mẫu FaceID giữa Mobile, Desktop và Ban Quản Lý
+ */
+export async function GET(req: Request) {
+  try {
+    const { searchParams } = new URL(req.url);
+    const userId = searchParams.get('userId');
+
+    if (userId) {
+      const profile = getEnrolledFaceProfile(userId);
+      return NextResponse.json({
+        success: true,
+        profile: profile || null,
+      });
+    }
+
+    const profiles = getAllEnrolledFaceProfiles();
+    return NextResponse.json({
+      success: true,
+      profiles,
+    });
+  } catch (error: any) {
+    console.error('Lỗi GET face-enroll:', error);
+    return NextResponse.json(
+      { success: false, message: error?.message || 'Lỗi tải thông tin FaceID.' },
+      { status: 500 }
+    );
+  }
+}
 
 export async function POST(req: Request) {
   try {
@@ -52,6 +83,7 @@ export async function POST(req: Request) {
     const existingUser = getUserStore(userId);
 
     // 2. Tạo hồ sơ đăng ký FaceID chính thức lưu đủ 4 mẫu quét
+    // QUY TẮC: Mẫu quét xong sẽ ở trạng thái PENDING chờ Ban Quản Lý thẩm định & phê duyệt
     const faceProfile: EnrolledFaceProfile = {
       userId,
       fullName: fullName || existingUser?.fullname || 'Cư Dân Skyline',
@@ -66,11 +98,11 @@ export async function POST(req: Request) {
       },
       descriptor: descriptorArray,
       enrolledAt: new Date().toISOString(),
-      status: 'ACTIVE',
+      status: 'PENDING', // Chờ Ban Quản Lý phê duyệt
       faceScore: 99.4,
     };
 
-    // 3. Lưu vào FaceEnrollStore
+    // 3. Lưu vào FaceEnrollStore (Bộ nhớ + File .skyline_faces.json trên server)
     saveEnrolledFaceProfile(faceProfile);
 
     // 4. Cập nhật trạng thái FaceID trong User Store - TUYỆT ĐỐI KHÔNG cập nhật / ghi đè avatar_url
@@ -78,7 +110,7 @@ export async function POST(req: Request) {
       updated_at: new Date().toISOString(),
     });
 
-    // 5. Cập nhật hồ sơ e-KYC nếu đã có (giữ nguyên avatar_url của cư dân)
+    // 5. Tự động gửi hồ sơ lên Ban Quản Lý (eKYC) kèm trọn vẹn 4 mẫu quét để đối soát & phê duyệt
     try {
       submitEkycRequest({
         userId,
@@ -92,6 +124,12 @@ export async function POST(req: Request) {
         avatarUrl: existingUser?.avatar_url || '',
         idCardFrontUrl: existingUser?.cccd_front_url || '',
         idCardBackUrl: existingUser?.cccd_back_url || '',
+        faceSamples: {
+          front: samples.front,
+          left: samples.left,
+          right: samples.right,
+          smile: samples.smile,
+        },
         faceScore: 99.4,
       });
     } catch (e) {
@@ -100,7 +138,7 @@ export async function POST(req: Request) {
 
     return NextResponse.json({
       success: true,
-      message: 'Đăng ký thu thập 4 mẫu FaceID chính thức thành công!',
+      message: 'Thu thập 4 mẫu FaceID thành công! Hồ sơ đã được chuyển đến Ban Quản Lý để thẩm định và phê duyệt.',
       profile: {
         userId: faceProfile.userId,
         fullName: faceProfile.fullName,
@@ -108,6 +146,7 @@ export async function POST(req: Request) {
         enrolledAt: faceProfile.enrolledAt,
         status: faceProfile.status,
         faceScore: faceProfile.faceScore,
+        samples: faceProfile.samples,
       },
     });
   } catch (error: any) {

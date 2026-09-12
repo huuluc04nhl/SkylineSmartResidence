@@ -339,6 +339,26 @@ export async function nksEnrollFaceId(payload: {
 }
 
 /**
+ * 12. Lấy hồ sơ 4 mẫu FaceID đã đăng ký từ Server (GET /api/nks/user/face-enroll)
+ * Hỗ trợ đồng bộ xuyên thiết bị (Mobile <-> Desktop <-> Admin)
+ */
+export async function nksGetEnrolledFaceProfile(userId: string): Promise<any | null> {
+  if (!userId) return null;
+  try {
+    const res = await fetch(`/api/nks/user/face-enroll?userId=${encodeURIComponent(userId)}`);
+    if (!res.ok) return null;
+    const data = await res.json().catch(() => ({}));
+    if (data.success && data.profile) {
+      return data.profile;
+    }
+    return null;
+  } catch (e) {
+    console.warn('Lỗi fetch nksGetEnrolledFaceProfile:', e);
+    return null;
+  }
+}
+
+/**
  * 12. Apartment Handover & Account Provisioning API (POST /api/nks/user/handover)
  */
 export async function nksHandoverProvisionAccount(payload: {

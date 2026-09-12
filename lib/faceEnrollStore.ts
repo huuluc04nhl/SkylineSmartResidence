@@ -10,11 +10,48 @@ declare global {
 }
 
 /**
- * Khởi tạo danh sách khuôn mặt đã đăng ký
+ * Đọc dữ liệu bền vững từ file .skyline_faces.json trên Server Node.js
+ */
+function loadProfilesFromFile(): Record<string, EnrolledFaceProfile> {
+  if (typeof window !== 'undefined') return {};
+  try {
+    // Dynamic require để không bị phân tích tĩnh trên client browser bundle
+    const req = eval('require');
+    const fs = req('fs');
+    const path = req('path');
+    const filePath = path.join(process.cwd(), '.skyline_faces.json');
+    if (fs.existsSync(filePath)) {
+      const raw = fs.readFileSync(filePath, 'utf-8');
+      return JSON.parse(raw);
+    }
+  } catch (e) {
+    // Không log lỗi nếu chạy trên môi trường edge/browser
+  }
+  return {};
+}
+
+/**
+ * Ghi dữ liệu bền vững ra file .skyline_faces.json trên Server Node.js
+ */
+function saveProfilesToFile(store: Record<string, EnrolledFaceProfile>): void {
+  if (typeof window !== 'undefined') return;
+  try {
+    const req = eval('require');
+    const fs = req('fs');
+    const path = req('path');
+    const filePath = path.join(process.cwd(), '.skyline_faces.json');
+    fs.writeFileSync(filePath, JSON.stringify(store, null, 2), 'utf-8');
+  } catch (e) {
+    // Không log lỗi nếu chạy trên môi trường edge/browser
+  }
+}
+
+/**
+ * Khởi tạo danh sách khuôn mặt đã đăng ký trên server
  */
 function getServerStore(): Record<string, EnrolledFaceProfile> {
   if (!global.__SKYLINE_ENROLLED_FACES) {
-    global.__SKYLINE_ENROLLED_FACES = {};
+    global.__SKYLINE_ENROLLED_FACES = loadProfilesFromFile();
   }
   return global.__SKYLINE_ENROLLED_FACES;
 }
@@ -34,7 +71,7 @@ export function getAllEnrolledFaceProfiles(): EnrolledFaceProfile[] {
         const clientProfiles: EnrolledFaceProfile[] = JSON.parse(raw);
         if (Array.isArray(clientProfiles)) {
           clientProfiles.forEach(cp => {
-            if (!list.some(p => p.userId === cp.userId)) {
+            if (!list.some(p => p.userId === cp.userId || (cp.phone && p.phone === cp.phone))) {
               list.push(cp);
             }
           });
@@ -49,10 +86,11 @@ export function getAllEnrolledFaceProfiles(): EnrolledFaceProfile[] {
 }
 
 /**
- * Lấy hồ sơ FaceID của một người dùng theo userId
+ * Lấy hồ sơ FaceID của một người dùng theo userId hoặc phone
  */
 export function getEnrolledFaceProfile(userId: string): EnrolledFaceProfile | null {
   if (!userId) return null;
+  const cleanId = userId.toLowerCase().trim();
 
   // 1. Kiểm tra client localStorage
   if (typeof window !== 'undefined') {
@@ -60,7 +98,10 @@ export function getEnrolledFaceProfile(userId: string): EnrolledFaceProfile | nu
       const raw = localStorage.getItem(LOCAL_STORAGE_KEY);
       if (raw) {
         const clientProfiles: EnrolledFaceProfile[] = JSON.parse(raw);
-        const found = clientProfiles.find(p => p.userId === userId || p.phone === userId);
+        const found = clientProfiles.find(p => 
+          (p.userId && p.userId.toLowerCase().trim() === cleanId) || 
+          (p.phone && p.phone.toLowerCase().trim() === cleanId)
+        );
         if (found) return found;
       }
     } catch (e) {
@@ -70,7 +111,14 @@ export function getEnrolledFaceProfile(userId: string): EnrolledFaceProfile | nu
 
   // 2. Kiểm tra server store
   const serverStore = getServerStore();
-  return serverStore[userId] || null;
+  if (serverStore[userId]) return serverStore[userId];
+
+  // Tìm kiếm theo phone hoặc userId
+  const found = Object.values(serverStore).find(p => 
+    (p.userId && p.userId.toLowerCase().trim() === cleanId) || 
+    (p.phone && p.phone.toLowerCase().trim() === cleanId)
+  );
+  return found || null;
 }
 
 /**
@@ -79,9 +127,13 @@ export function getEnrolledFaceProfile(userId: string): EnrolledFaceProfile | nu
 export function saveEnrolledFaceProfile(profile: EnrolledFaceProfile): void {
   if (!profile || !profile.userId) return;
 
-  // 1. Lưu vào server store
+  // 1. Lưu vào server store và ghi ra file bền vững
   const serverStore = getServerStore();
   serverStore[profile.userId] = profile;
+  if (profile.phone) {
+    serverStore[profile.phone] = profile;
+  }
+  saveProfilesToFile(serverStore);
 
   // 2. Lưu vào client localStorage
   if (typeof window !== 'undefined') {
@@ -91,7 +143,7 @@ export function saveEnrolledFaceProfile(profile: EnrolledFaceProfile): void {
       if (raw) {
         existing = JSON.parse(raw);
       }
-      const idx = existing.findIndex(p => p.userId === profile.userId);
+      const idx = existing.findIndex(p => p.userId === profile.userId || (profile.phone && p.phone === profile.phone));
       if (idx >= 0) {
         existing[idx] = profile;
       } else {
@@ -108,18 +160,31 @@ export function saveEnrolledFaceProfile(profile: EnrolledFaceProfile): void {
 }
 
 /**
+ * Cập nhật trạng thái phê duyệt FaceID (ACTIVE / PENDING / REVOKED)
+ */
+export function updateEnrolledFaceStatus(userId: string, status: 'ACTIVE' | 'PENDING' | 'REVOKED'): EnrolledFaceProfile | null {
+  const profile = getEnrolledFaceProfile(userId);
+  if (!profile) return null;
+
+  profile.status = status;
+  saveEnrolledFaceProfile(profile);
+  return profile;
+}
+
+/**
  * Xóa hồ sơ FaceID (thu hồi quyền FaceID)
  */
 export function removeEnrolledFaceProfile(userId: string): void {
   const serverStore = getServerStore();
   delete serverStore[userId];
+  saveProfilesToFile(serverStore);
 
   if (typeof window !== 'undefined') {
     try {
       const raw = localStorage.getItem(LOCAL_STORAGE_KEY);
       if (raw) {
         const existing: EnrolledFaceProfile[] = JSON.parse(raw);
-        const filtered = existing.filter(p => p.userId !== userId);
+        const filtered = existing.filter(p => p.userId !== userId && p.phone !== userId);
         localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(filtered));
         window.dispatchEvent(new CustomEvent('skyline_faceid_enrolled', { detail: { userId, removed: true } }));
       }

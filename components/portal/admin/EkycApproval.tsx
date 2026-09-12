@@ -33,7 +33,7 @@ import {
   EkycRequest 
 } from '@/lib/ekycStore';
 import { validateCccdCard, verifyFaceWithCccd } from '@/lib/ekycValidator';
-import { getEnrolledFaceProfile } from '@/lib/faceEnrollStore';
+import { getEnrolledFaceProfile, updateEnrolledFaceStatus, saveEnrolledFaceProfile } from '@/lib/faceEnrollStore';
 
 export default function EkycApproval() {
   const [requests, setRequests] = useState<EkycRequest[]>([]);
@@ -51,13 +51,27 @@ export default function EkycApproval() {
 
   const refreshList = () => {
     setRequests(getEkycRequests());
+
+    // Đồng bộ toàn bộ hồ sơ 4 mẫu quét từ máy chủ về để BQL trên Desktop kiểm tra được mẫu từ Mobile
+    fetch('/api/nks/user/face-enroll')
+      .then(res => res.json())
+      .then(data => {
+        if (data.success && Array.isArray(data.profiles)) {
+          data.profiles.forEach((p: any) => saveEnrolledFaceProfile(p));
+        }
+      })
+      .catch(e => console.warn('Lỗi đồng bộ face profiles:', e));
   };
 
   useEffect(() => {
     refreshList();
     const handleUpdate = () => refreshList();
     window.addEventListener('skyline_ekyc_updated', handleUpdate);
-    return () => window.removeEventListener('skyline_ekyc_updated', handleUpdate);
+    window.addEventListener('skyline_faceid_enrolled', handleUpdate);
+    return () => {
+      window.removeEventListener('skyline_ekyc_updated', handleUpdate);
+      window.removeEventListener('skyline_faceid_enrolled', handleUpdate);
+    };
   }, []);
 
   // 1. Phê Duyệt Hồ Sơ e-KYC (Kích Hoạt FaceID & Đồng Bộ Căn Hộ)
@@ -66,6 +80,12 @@ export default function EkycApproval() {
     try {
       // 1. Cập nhật local storage
       const updated = approveEkycRequest(id, 'Ban Quản Lý Skyline');
+
+      if (updated) {
+        // Kích hoạt trạng thái FaceID sang ACTIVE
+        updateEnrolledFaceStatus(updated.userId, 'ACTIVE');
+        if (updated.phone) updateEnrolledFaceStatus(updated.phone, 'ACTIVE');
+      }
 
       // 2. Gửi API đồng bộ server
       try {

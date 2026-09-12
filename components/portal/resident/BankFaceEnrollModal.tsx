@@ -460,7 +460,7 @@ export default function BankFaceEnrollModal({
         },
         descriptor: Array.from(compositeDesc),
         enrolledAt: new Date().toISOString(),
-        status: 'ACTIVE',
+        status: 'PENDING', // Đặt trạng thái PENDING - Chờ Ban Quản Lý phê duyệt
         faceScore: 99.4,
       };
 
@@ -1016,15 +1016,15 @@ export default function BankFaceEnrollModal({
               >
                 {isSubmitting ? (
                   <>
-                    <RefreshCw className="w-4 h-4 animate-spin" /> Đang Lưu Trữ & Kích Hoạt FaceID...
+                    <RefreshCw className="w-4 h-4 animate-spin" /> Đang Gửi 4 Mẫu Tới Ban Quản Lý...
                   </>
                 ) : submitSuccess ? (
                   <>
-                    <Check className="w-4 h-4 text-emerald-950" /> Đã Lưu FaceID Thành Công!
+                    <Check className="w-4 h-4 text-emerald-950" /> Đã Chuyển Tới BQL Phê Duyệt Thành Công!
                   </>
                 ) : (
                   <>
-                    <ShieldCheck className="w-4 h-4" /> Xác Nhận & Kích Hoạt FaceID Chính Thức
+                    <ShieldCheck className="w-4 h-4" /> Gửi 4 Mẫu Cho Ban Quản Lý Phê Duyệt
                   </>
                 )}
               </button>
