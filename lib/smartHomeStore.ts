@@ -5,6 +5,27 @@
 
 export type SceneType = 'WELCOME' | 'AWAY' | 'SLEEP' | 'CINEMA' | 'DINING' | 'NONE';
 
+export interface SmartDoorAccessLog {
+  id: string;
+  timestamp: string;
+  userName: string;
+  role: string;
+  method: 'FACE_ID' | 'PIN_OTP' | 'NFC_CARD' | 'REMOTE_APP' | 'PHYSICAL_KEY' | 'AUTO_LOCK';
+  status: 'SUCCESS' | 'DENIED';
+  detail: string;
+}
+
+export interface GuestPin {
+  id: string;
+  pin: string;
+  label: string;
+  createdAt: string;
+  expiresAt: string;
+  status: 'ACTIVE' | 'EXPIRED' | 'REVOKED';
+  maxUses: number;
+  usedCount: number;
+}
+
 export interface SmartHomeState {
   apartmentCode: string;
   lights: {
@@ -17,6 +38,15 @@ export interface SmartHomeState {
   acTemp: number;
   curtainsOpen: boolean;
   doorLocked: boolean;
+  // Hệ thống Cửa Thông Minh (Smart Door)
+  doorAjar: boolean; // Cửa vật lý khép kín (false) hay đang mở hé (true)
+  doorAutoLock: boolean; // Tự động khóa chốt sau 5s
+  doorBatteryLevel: number; // Mức pin khóa (94%)
+  doorNightLatch: boolean; // Chốt riêng tư cưỡng bức ban đêm
+  doorAntiTamper: boolean; // Cảnh báo chống cạy phá 24/7
+  guestPins: GuestPin[];
+  doorAccessLogs: SmartDoorAccessLog[];
+  // An ninh & Kỹ thuật
   mainPowerActive: boolean;
   waterLeakSensorActive: boolean;
   fireSensorActive: boolean;
@@ -49,6 +79,71 @@ const DEFAULT_STATE: SmartHomeState = {
   acTemp: 24,
   curtainsOpen: true,
   doorLocked: true,
+  doorAjar: false,
+  doorAutoLock: true,
+  doorBatteryLevel: 94,
+  doorNightLatch: false,
+  doorAntiTamper: true,
+  guestPins: [
+    {
+      id: 'pin_01',
+      pin: '849 201',
+      label: 'Shipper Shopee Giao Hàng',
+      createdAt: '10:00 Hôm nay',
+      expiresAt: '12:00 Hôm nay',
+      status: 'ACTIVE',
+      maxUses: 1,
+      usedCount: 0
+    },
+    {
+      id: 'pin_02',
+      pin: '392 118',
+      label: 'Bạn Bè Sang Chơi Cuối Tuần',
+      createdAt: '08:30 Hôm nay',
+      expiresAt: '23:59 Hôm nay',
+      status: 'ACTIVE',
+      maxUses: 5,
+      usedCount: 1
+    }
+  ],
+  doorAccessLogs: [
+    {
+      id: 'log_01',
+      timestamp: '11:15 Hôm nay',
+      userName: 'Lê Văn An',
+      role: 'Chủ Hộ (Master)',
+      method: 'FACE_ID',
+      status: 'SUCCESS',
+      detail: 'Xác thực sinh trắc học AI camera 3D (Độ khớp 99.4%) • Cửa đã tự khóa lại sau 5s'
+    },
+    {
+      id: 'log_02',
+      timestamp: '09:40 Hôm nay',
+      userName: 'Shipper Giao Hàng',
+      role: 'Khách Tạm Thời',
+      method: 'PIN_OTP',
+      status: 'SUCCESS',
+      detail: 'Mở cửa bằng mã OTP 6 số (#849201) • Thời hạn 1 lần'
+    },
+    {
+      id: 'log_03',
+      timestamp: '08:10 Hôm nay',
+      userName: 'Nguyễn Thu Hà',
+      role: 'Người Nhà',
+      method: 'NFC_CARD',
+      status: 'SUCCESS',
+      detail: 'Quẹt thẻ NFC Skyline Encrypted S-12A05-02 tại đầu đọc cửa chính'
+    },
+    {
+      id: 'log_04',
+      timestamp: '23:00 Hôm qua',
+      userName: 'Hệ Thống An Ninh Skyline',
+      role: 'Tự Động 24/7',
+      method: 'AUTO_LOCK',
+      status: 'SUCCESS',
+      detail: 'Kích hoạt kịch bản an ninh ban đêm: Khóa chốt an toàn 3 tầng & kích hoạt cảm biến chống cạy'
+    }
+  ],
   mainPowerActive: true,
   waterLeakSensorActive: true,
   fireSensorActive: true,
@@ -127,7 +222,19 @@ export function getSmartHomeState(aptCode: string = '12A05'): SmartHomeState {
   try {
     const raw = localStorage.getItem(`${STORAGE_STATE_KEY}${aptCode}`);
     if (raw) {
-      return JSON.parse(raw);
+      const parsed = JSON.parse(raw);
+      return {
+        ...DEFAULT_STATE,
+        ...parsed,
+        lights: { ...DEFAULT_STATE.lights, ...(parsed.lights || {}) },
+        guestPins: parsed.guestPins && parsed.guestPins.length > 0 ? parsed.guestPins : DEFAULT_STATE.guestPins,
+        doorAccessLogs: parsed.doorAccessLogs && parsed.doorAccessLogs.length > 0 ? parsed.doorAccessLogs : DEFAULT_STATE.doorAccessLogs,
+        doorBatteryLevel: typeof parsed.doorBatteryLevel === 'number' ? parsed.doorBatteryLevel : DEFAULT_STATE.doorBatteryLevel,
+        doorAutoLock: typeof parsed.doorAutoLock === 'boolean' ? parsed.doorAutoLock : DEFAULT_STATE.doorAutoLock,
+        doorNightLatch: typeof parsed.doorNightLatch === 'boolean' ? parsed.doorNightLatch : DEFAULT_STATE.doorNightLatch,
+        doorAntiTamper: typeof parsed.doorAntiTamper === 'boolean' ? parsed.doorAntiTamper : DEFAULT_STATE.doorAntiTamper,
+        apartmentCode: aptCode
+      };
     }
   } catch (e) {
     console.error('Error reading smart home state:', e);
@@ -154,6 +261,79 @@ export function saveSmartHomeState(aptCode: string, patch: Partial<SmartHomeStat
   }
 
   return updated;
+}
+
+export function createGuestPin(aptCode: string, label: string, durationMinutes: number = 60): { state: SmartHomeState; newPin: GuestPin } {
+  const current = getSmartHomeState(aptCode);
+  const randomPin = `${Math.floor(100 + Math.random() * 900)} ${Math.floor(100 + Math.random() * 900)}`;
+  const now = new Date();
+  const expireTime = new Date(now.getTime() + durationMinutes * 60 * 1000);
+  
+  const newPin: GuestPin = {
+    id: `pin_${Date.now()}`,
+    pin: randomPin,
+    label: label || 'Mã Khách Tạm Thời',
+    createdAt: `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')} Hôm nay`,
+    expiresAt: `${expireTime.getHours().toString().padStart(2, '0')}:${expireTime.getMinutes().toString().padStart(2, '0')} Hôm nay`,
+    status: 'ACTIVE',
+    maxUses: 1,
+    usedCount: 0
+  };
+
+  const newLog: SmartDoorAccessLog = {
+    id: `log_${Date.now()}`,
+    timestamp: 'Vừa xong',
+    userName: 'Chủ Hộ (Master)',
+    role: 'Quản trị viên',
+    method: 'PIN_OTP',
+    status: 'SUCCESS',
+    detail: `Đã khởi tạo mã PIN khách tạm thời (${newPin.pin}) cho: ${newPin.label} (Hiệu lực ${durationMinutes} phút)`
+  };
+
+  const updatedPins = [newPin, ...(current.guestPins || [])];
+  const updatedLogs = [newLog, ...(current.doorAccessLogs || [])].slice(0, 15);
+
+  const updated = saveSmartHomeState(aptCode, {
+    guestPins: updatedPins,
+    doorAccessLogs: updatedLogs
+  });
+
+  return { state: updated, newPin };
+}
+
+export function revokeGuestPin(aptCode: string, pinId: string): SmartHomeState {
+  const current = getSmartHomeState(aptCode);
+  const targetPin = current.guestPins.find(p => p.id === pinId);
+  const updatedPins = current.guestPins.filter(p => p.id !== pinId);
+  
+  const newLog: SmartDoorAccessLog = {
+    id: `log_${Date.now()}`,
+    timestamp: 'Vừa xong',
+    userName: 'Chủ Hộ (Master)',
+    role: 'Quản trị viên',
+    method: 'PIN_OTP',
+    status: 'DENIED',
+    detail: `Đã thu hồi / hủy mã PIN khách tạm thời (#${targetPin?.pin || pinId})`
+  };
+
+  return saveSmartHomeState(aptCode, {
+    guestPins: updatedPins,
+    doorAccessLogs: [newLog, ...current.doorAccessLogs].slice(0, 15)
+  });
+}
+
+export function addDoorAccessLog(aptCode: string, log: Omit<SmartDoorAccessLog, 'id' | 'timestamp'>): SmartHomeState {
+  const current = getSmartHomeState(aptCode);
+  const now = new Date();
+  const timeStr = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')} Hôm nay`;
+  const entry: SmartDoorAccessLog = {
+    id: `log_${Date.now()}`,
+    timestamp: timeStr,
+    ...log
+  };
+  return saveSmartHomeState(aptCode, {
+    doorAccessLogs: [entry, ...current.doorAccessLogs].slice(0, 20)
+  });
 }
 
 export function applyScene(aptCode: string, scene: SceneType): { state: SmartHomeState; message: string } {
