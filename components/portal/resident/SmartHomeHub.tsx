@@ -73,6 +73,8 @@ import {
   SmartDoorAccessLog
 } from '@/lib/smartHomeStore';
 import ApartmentModel3DViewer from '@/components/portal/shared/ApartmentModel3DViewer';
+import { getEnrolledFaceProfile, EnrolledFaceProfile } from '@/lib/faceEnrollStore';
+import { nksGetFamilyMembers } from '@/lib/nksApiClient';
 
 interface SmartHomeHubProps {
   currentUser: User;
@@ -81,6 +83,7 @@ interface SmartHomeHubProps {
 export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
   const isOwner = currentUser.role === 'OWNER';
   const aptCode = currentUser.apartment_code || '12A05';
+  const aptFloor = aptCode.replace(/[^0-9]/g, '').slice(0, 2) || '12';
   const aptUnit = getApartmentByCode(aptCode);
   const aptArea = aptUnit ? aptUnit.area : 78.5;
   const aptType = aptUnit ? aptUnit.typeLabel : '2PN - 2WC';
@@ -89,6 +92,38 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
   const [smartState, setSmartState] = useState<SmartHomeState>(() => getSmartHomeState(aptCode));
   const [automationRules, setAutomationRules] = useState<AutomationRule[]>(() => getAutomationRules(aptCode));
   const [toastMsg, setToastMsg] = useState<string | null>(null);
+
+  // Dữ liệu thực tế: Hồ sơ FaceID của cư dân hiện tại & Thẻ Cư Dân thành viên gia đình
+  const [faceProfile, setFaceProfile] = useState<EnrolledFaceProfile | null>(null);
+  const [familyMembers, setFamilyMembers] = useState<any[]>([]);
+
+  useEffect(() => {
+    const loadRealData = () => {
+      const profile = getEnrolledFaceProfile(currentUser.id) || 
+                      getEnrolledFaceProfile(currentUser.username) || 
+                      (currentUser.phone ? getEnrolledFaceProfile(currentUser.phone) : null);
+      setFaceProfile(profile);
+    };
+    loadRealData();
+
+    nksGetFamilyMembers().then(res => {
+      if (res.success && res.members) {
+        setFamilyMembers(res.members);
+      }
+    }).catch(() => {});
+
+    window.addEventListener('skyline_face_enrolled', loadRealData);
+    window.addEventListener('skyline_ekyc_updated', loadRealData);
+    return () => {
+      window.removeEventListener('skyline_face_enrolled', loadRealData);
+      window.removeEventListener('skyline_ekyc_updated', loadRealData);
+    };
+  }, [currentUser]);
+
+  const hasFaceEnrolled = !!(faceProfile && faceProfile.samples && Object.keys(faceProfile.samples).length > 0);
+  const faceSamplesCount = faceProfile?.samples ? Object.keys(faceProfile.samples).length : 0;
+  const isFaceApproved = faceProfile?.status === 'ACTIVE';
+  const isFacePending = faceProfile?.status === 'PENDING';
 
   // Trạng thái tương tác chuyên biệt cho Hệ Thống Cửa Thông Minh (Smart Door)
   const [isIntercomActive, setIsIntercomActive] = useState(false);
@@ -102,7 +137,7 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
   const [copiedPinId, setCopiedPinId] = useState<string | null>(null);
   const [cameraTime, setCameraTime] = useState('');
   const [snapshotFlash, setSnapshotFlash] = useState(false);
-  const [snapshotCount, setSnapshotCount] = useState(3);
+  const [snapshotCount, setSnapshotCount] = useState(0);
   const [isMotionAlertActive, setIsMotionAlertActive] = useState(false);
 
   const {
@@ -238,6 +273,15 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
   // Mô phỏng quét FaceID 3D
   const handleSimulateFaceScan = () => {
     if (isScanningFace) return;
+    if (!hasFaceEnrolled) {
+      showToast(`⚠️ Cư dân ${currentUser.full_name} chưa có mẫu FaceID! Vui lòng vào trang Định Danh & e-KYC để quét 4 mẫu khuôn mặt.`);
+      return;
+    }
+    if (isFacePending) {
+      showToast(`⏳ Hồ sơ FaceID (4 mẫu quét) của cư dân ${currentUser.full_name} đang chờ Ban Quản Lý phê duyệt!`);
+      return;
+    }
+
     setIsScanningFace(true);
     setFaceScanSuccess(false);
     setFaceScanProgress(20);
@@ -254,13 +298,13 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
         const updated = saveSmartHomeState(aptCode, { doorLocked: false });
         setSmartState(updated);
         addDoorAccessLog(aptCode, {
-          userName: currentUser.full_name || 'Lê Văn An',
-          role: isOwner ? 'Chủ Hộ (Master)' : 'Cư Dân',
+          userName: currentUser.full_name || 'Cư Dân',
+          role: isOwner ? 'Chủ Hộ (Master)' : 'Người Nhà',
           method: 'FACE_ID',
           status: 'SUCCESS',
           detail: `Nhận diện sinh trắc học AI camera 3D (Độ khớp 99.4%) • Cửa đã mở chốt`
         });
-        showToast(`👤 FaceID nhận diện thành công: ${currentUser.full_name || 'Lê Văn An'} (Độ khớp 99.4%). Đã mở chốt cửa!`);
+        showToast(`👤 FaceID nhận diện thành công: ${currentUser.full_name} (Độ khớp 99.4%). Đã mở chốt cửa!`);
       }, 700);
     }, 1100);
   };
@@ -269,7 +313,13 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
   const handleCreatePin = (e?: React.FormEvent) => {
     if (e) e.preventDefault();
     const label = newPinLabel.trim() || 'Mã Khách Tạm Thời';
-    const { state: updated, newPin } = createGuestPin(aptCode, label, newPinDuration);
+    const { state: updated, newPin } = createGuestPin(
+      aptCode, 
+      label, 
+      newPinDuration,
+      currentUser.full_name || (isOwner ? 'Chủ Hộ' : 'Cư Dân'),
+      isOwner ? 'Chủ Hộ (Master)' : 'Người Nhà'
+    );
     setSmartState(updated);
     setNewPinLabel('');
     setIsCreatingPin(false);
@@ -288,7 +338,12 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
 
   // Thu hồi mã PIN
   const handleRevokePin = (pinId: string) => {
-    const updated = revokeGuestPin(aptCode, pinId);
+    const updated = revokeGuestPin(
+      aptCode, 
+      pinId,
+      currentUser.full_name || (isOwner ? 'Chủ Hộ' : 'Cư Dân'),
+      isOwner ? 'Chủ Hộ (Master)' : 'Người Nhà'
+    );
     setSmartState(updated);
     showToast('🗑️ Đã hủy và vô hiệu hóa mã PIN khách tạm thời.');
   };
@@ -906,28 +961,50 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
                     </div>
                     <div>
                       <div className="text-xs font-bold text-white">Sinh Trắc Học FaceID AI 3D</div>
-                      <div className="text-[10px] text-gray-400">4 góc quét AI đã kích hoạt • Chuẩn eKYC</div>
+                      <div className="text-[10px] text-gray-400">
+                        {hasFaceEnrolled 
+                          ? `${faceSamplesCount}/4 mẫu quét 3D • ${isFaceApproved ? 'Đã được BQL duyệt' : 'Chờ BQL phê duyệt'}`
+                          : `Chưa đăng ký dữ liệu FaceID cho ${currentUser.full_name}`}
+                      </div>
                     </div>
                   </div>
 
-                  <span className="px-2 py-0.5 bg-cyan-950 text-cyan-300 border border-cyan-500/40 text-[10px] font-mono rounded font-bold">
-                    SẴN SÀNG
+                  <span className={`px-2 py-0.5 text-[10px] font-mono rounded font-bold border ${
+                    isFaceApproved 
+                      ? 'bg-emerald-950 text-emerald-300 border-emerald-500/40'
+                      : isFacePending
+                        ? 'bg-amber-950 text-amber-300 border-amber-500/40'
+                        : 'bg-gray-800 text-gray-400 border-gray-600'
+                  }`}>
+                    {isFaceApproved ? 'ĐÃ KÍCH HOẠT' : isFacePending ? 'CHỜ DUYỆT' : 'CHƯA ĐĂNG KÝ'}
                   </span>
                 </div>
 
                 <button
                   type="button"
                   onClick={handleSimulateFaceScan}
-                  disabled={isScanningFace}
-                  className="w-full py-2 px-3 bg-[#0D1117] hover:bg-[#1A2332] border border-cyan-500/40 text-cyan-300 hover:text-cyan-200 text-xs font-bold rounded transition-colors flex items-center justify-center gap-2"
+                  disabled={isScanningFace || !isFaceApproved}
+                  className={`w-full py-2 px-3 border text-xs font-bold rounded transition-colors flex items-center justify-center gap-2 ${
+                    isFaceApproved 
+                      ? 'bg-[#0D1117] hover:bg-[#1A2332] border-cyan-500/40 text-cyan-300 hover:text-cyan-200'
+                      : 'bg-[#0D1117] border-gray-700 text-gray-400 cursor-not-allowed'
+                  }`}
                 >
                   {isScanningFace ? (
                     <>
                       <RefreshCw className="w-3.5 h-3.5 animate-spin" /> Đang Quét Khuôn Mặt 3D...
                     </>
-                  ) : (
+                  ) : isFaceApproved ? (
                     <>
                       <Scan className="w-3.5 h-3.5 text-cyan-400" /> Quét FaceID Thử Nghiệm Ngay
+                    </>
+                  ) : isFacePending ? (
+                    <>
+                      <Clock className="w-3.5 h-3.5 text-amber-400" /> Hồ Sơ Đang Chờ BQL Phê Duyệt
+                    </>
+                  ) : (
+                    <>
+                      <ScanFace className="w-3.5 h-3.5 text-gray-400" /> Chưa Đăng Ký FaceID (Vào Trang eKYC)
                     </>
                   )}
                 </button>
@@ -1079,20 +1156,26 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
               </div>
 
               {/* 3. Thẻ Cư Dân NFC / RFID */}
-              <div className="p-3.5 bg-[#161D26] border border-[#2A374A] rounded-lg flex items-center justify-between">
-                <div className="flex items-center gap-2.5">
-                  <div className="w-8 h-8 rounded bg-blue-950 border border-blue-500/40 text-blue-400 flex items-center justify-center shrink-0">
-                    <CreditCardIcon className="w-4 h-4" />
+              <div className="p-3.5 bg-[#161D26] border border-[#2A374A] rounded-lg space-y-2">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-8 h-8 rounded bg-blue-950 border border-blue-500/40 text-blue-400 flex items-center justify-center shrink-0">
+                      <CreditCardIcon className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <div className="text-xs font-bold text-white">Thẻ Cư Dân NFC / RFID</div>
+                      <div className="text-[10px] text-gray-400">
+                        {familyMembers.length > 0 
+                          ? `Thẻ Chủ Hộ (${currentUser.full_name}) và ${familyMembers.length} thẻ người nhà`
+                          : `Thẻ Chủ Hộ (${currentUser.full_name}) mã hóa bảo mật`}
+                      </div>
+                    </div>
                   </div>
-                  <div>
-                    <div className="text-xs font-bold text-white">Thẻ Cư Dân NFC / RFID</div>
-                    <div className="text-[10px] text-gray-400">2 Thẻ thông minh Skyline mã hóa bảo mật</div>
-                  </div>
-                </div>
 
-                <span className="px-2 py-0.5 bg-blue-950 text-blue-300 border border-blue-500/40 text-[10px] font-mono rounded font-bold">
-                  2 THẺ HOẠT ĐỘNG
-                </span>
+                  <span className="px-2 py-0.5 bg-blue-950 text-blue-300 border border-blue-500/40 text-[10px] font-mono rounded font-bold">
+                    {1 + familyMembers.length} THẺ HOẠT ĐỘNG
+                  </span>
+                </div>
               </div>
             </div>
           </div>
@@ -1143,9 +1226,9 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
                     {/* Cửa và ánh đèn hắt cuối hành lang */}
                     <rect x="210" y="90" width="60" height="95" fill="#1B283A" stroke="#C5A880" strokeWidth="1" />
                     <rect x="215" y="95" width="50" height="85" fill="url(#doorLight)" />
-                    {/* Biển số phòng 12A05 */}
+                    {/* Biển số phòng căn hộ */}
                     <rect x="230" y="102" width="20" height="8" rx="2" fill="#C5A880" />
-                    <text x="240" y="108" fill="#0D1117" fontSize="5" fontWeight="bold" textAnchor="middle">12A05</text>
+                    <text x="240" y="108" fill="#0D1117" fontSize="5" fontWeight="bold" textAnchor="middle">{aptCode}</text>
                     {/* Lưới tọa độ Radar góc quét AI */}
                     <circle cx="240" cy="140" r="45" stroke="#00FFFF" strokeWidth="0.5" strokeDasharray="3 3" fill="none" opacity="0.4" />
                     <circle cx="240" cy="140" r="85" stroke="#00FFFF" strokeWidth="0.5" strokeDasharray="4 4" fill="none" opacity="0.2" />
@@ -1157,7 +1240,7 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
                   <div className="space-y-0.5">
                     <div className="text-white font-bold flex items-center gap-1.5">
                       <span className="w-2 h-2 rounded-full bg-red-500 animate-ping" />
-                      <span>CAM-01 • SẢNH CĂN HỘ {aptCode}</span>
+                      <span>CAM-01 • SẢNH CĂN HỘ {aptCode} (TẦNG {aptFloor})</span>
                     </div>
                     <div className="text-[10px] text-gray-400">GÓC SIÊU RỘNG 160° HDR • BAN ĐÊM HỒNG NGOẠI</div>
                   </div>
@@ -1313,9 +1396,20 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
 
               {/* Timeline Items */}
               <div className="space-y-2.5 max-h-[340px] overflow-y-auto pr-1">
-                {doorAccessLogs
-                  .filter(item => activeLogFilter === 'ALL' || item.method === activeLogFilter)
-                  .map((log) => {
+                {doorAccessLogs.filter(item => activeLogFilter === 'ALL' || item.method === activeLogFilter).length === 0 ? (
+                  <div className="p-8 text-center bg-[#0D1117] border border-[#222B35] rounded-lg space-y-2 animate-fadeIn">
+                    <div className="w-10 h-10 rounded-full bg-[#161D26] border border-[#2A374A] flex items-center justify-center mx-auto text-gray-400">
+                      <History className="w-5 h-5 text-[#C5A880]" />
+                    </div>
+                    <div className="text-xs font-bold text-white">Chưa có nhật ký ra vào nào</div>
+                    <div className="text-[11px] text-gray-400 max-w-sm mx-auto leading-relaxed">
+                      Nhật ký sẽ tự động ghi lại mỗi khi cư dân mở chốt khóa, quét FaceID, sử dụng mã OTP khách hoặc khi hệ thống tự động khóa an toàn.
+                    </div>
+                  </div>
+                ) : (
+                  doorAccessLogs
+                    .filter(item => activeLogFilter === 'ALL' || item.method === activeLogFilter)
+                    .map((log) => {
                     const isSuccess = log.status === 'SUCCESS';
                     return (
                       <div 
@@ -1364,7 +1458,8 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
                         </p>
                       </div>
                     );
-                  })}
+                  })
+                )}
               </div>
             </div>
           </div>
