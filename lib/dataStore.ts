@@ -162,7 +162,7 @@ export interface SecurityAlert {
 export interface Facility {
   id: string;
   name: string;
-  category: 'Gym' | 'BBQ' | 'Hồ bơi' | 'Sân Tennis' | 'Phòng sinh hoạt' | 'Xông hơi';
+  category: 'Gym' | 'BBQ' | 'Hồ bơi' | 'Sân Tennis' | 'Phòng sinh hoạt' | 'Xông hơi' | 'Khu trẻ em';
   max_quota_per_month: number;
   hero_image_url: string;
   rating_score: number; // 5.0
@@ -651,19 +651,31 @@ export const DEMO_SECURITY_ALERTS: SecurityAlert[] = [
 export const DEMO_FACILITIES: Facility[] = [
   {
     id: 'fac-1',
-    name: 'Hồ Bơi Vô Cực Chân Mây (Skyline Horizon Pool - Tầng 5)',
+    name: 'Hồ Bơi Vô Cực Chân Mây (Skyline Horizon Pool - Tầng 25)',
     category: 'Hồ bơi',
     max_quota_per_month: 20,
-    hero_image_url: 'https://images.unsplash.com/photo-1576013551627-0cc20b96c2a7?w=800&auto=format&fit=crop&q=80',
+    hero_image_url: 'https://images.unsplash.com/photo-1582719508461-905c673771fd?w=800&auto=format&fit=crop&q=80',
     rating_score: 4.9,
-    operating_hours: '06:00 - 21:00',
-    pricing: 'Miễn phí cho cư dân (20 lượt/tháng)',
+    operating_hours: '06:00 - 22:00',
+    pricing: 'Miễn phí theo Thẻ cư dân (20 lượt/tháng)',
     current_occupancy: 14,
     max_capacity: 40,
   },
   {
+    id: 'fac-3',
+    name: 'Trung Tâm Thể Hình Technogym (Fitness & Yoga - Tầng 3)',
+    category: 'Gym',
+    max_quota_per_month: 30,
+    hero_image_url: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=800&auto=format&fit=crop&q=80',
+    rating_score: 5.0,
+    operating_hours: 'Mở cửa 24/7',
+    pricing: 'Miễn phí theo Thẻ cư dân',
+    current_occupancy: 8,
+    max_capacity: 35,
+  },
+  {
     id: 'fac-sauna',
-    name: 'Phòng Xông Hơi Đá Muối Himalaya (VIP Tầng 3)',
+    name: 'Phòng Xông Hơi Đá Muối Himalaya (Private VIP - Tầng 3)',
     category: 'Xông hơi',
     max_quota_per_month: 10,
     hero_image_url: 'https://images.unsplash.com/photo-1540555700478-4be289fbecef?w=800&auto=format&fit=crop&q=80',
@@ -674,28 +686,28 @@ export const DEMO_FACILITIES: Facility[] = [
     max_capacity: 4,
   },
   {
+    id: 'fac-kids',
+    name: 'Khu Vui Chơi Trẻ Em Sky Kids Zone (Tầng 1 - Sảnh Tòa A)',
+    category: 'Khu trẻ em',
+    max_quota_per_month: 30,
+    hero_image_url: 'https://images.unsplash.com/photo-1566454544259-f4b94c3d758c?w=800&auto=format&fit=crop&q=80',
+    rating_score: 4.9,
+    operating_hours: '07:00 - 21:00',
+    pricing: 'Miễn phí theo Thẻ cư dân (Có người lớn đi kèm)',
+    current_occupancy: 6,
+    max_capacity: 25,
+  },
+  {
     id: 'fac-2',
     name: 'Vườn Tiệc Nướng BBQ Panoramic (Sân Thượng Tầng 25)',
     category: 'BBQ',
     max_quota_per_month: 4,
     hero_image_url: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=800&auto=format&fit=crop&q=80',
     rating_score: 4.8,
-    operating_hours: '17:00 - 22:30',
-    pricing: '600.000 đ / ca (Bao gồm bếp Weber & dọn dẹp)',
+    operating_hours: '17:00 - 23:00',
+    pricing: '600.000 đ / ca (Bao gồm set bếp Weber & dọn dẹp)',
     current_occupancy: 2,
     max_capacity: 6,
-  },
-  {
-    id: 'fac-3',
-    name: 'Phòng Tập Technogym Thượng Lưu (Fitness & Yoga - Tầng 5)',
-    category: 'Gym',
-    max_quota_per_month: 30,
-    hero_image_url: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=800&auto=format&fit=crop&q=80',
-    rating_score: 5.0,
-    operating_hours: '05:30 - 22:00',
-    pricing: 'Miễn phí cho cư dân',
-    current_occupancy: 8,
-    max_capacity: 25,
   },
 ];
 

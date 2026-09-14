@@ -39,8 +39,8 @@ export default function AiConcierge() {
   const quickPrompts = [
     'Biểu phí quản lý & gửi xe tháng này',
     'Giờ mở cửa Hồ bơi & Gym',
-    'Đặt phòng xông hơi VIP tầng 3',
-    'Cách mở cửa bằng khuôn mặt & thẻ cư dân',
+    'Phòng xông hơi đá muối VIP',
+    'Cách mở cửa Smart Door bằng FaceID & Thẻ NFC',
     'Hotline Ban Quản Lý khẩn cấp',
   ];
 
@@ -77,6 +77,9 @@ export default function AiConcierge() {
         body: JSON.stringify({
           message: text,
           history: historyPayload,
+          aptCode: '12A05',
+          userName: 'Nguyễn Hữu Lực',
+          userRole: 'OWNER',
         }),
       });
 

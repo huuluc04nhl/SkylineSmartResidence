@@ -6,6 +6,9 @@ import {
   DEMO_FACILITIES,
   DEMO_COMMUNITY_POSTS,
 } from './dataStore';
+import { getUserStore, getApartmentMembers } from './userStore';
+import { getAllVisitorPasses } from './visitorStore';
+import { getFacilityBookings } from './facilityStore';
 
 export const GEMINI_API_KEY =
   process.env.GEMINI_API_KEY ||
@@ -13,7 +16,7 @@ export const GEMINI_API_KEY =
   '';
 
 const GEMINI_PRIMARY_MODEL = 'gemini-2.5-flash';
-const GEMINI_FALLBACK_MODEL = 'gemini-1.5-flash';
+const GEMINI_FALLBACK_MODEL = 'gemini-2.5-flash-lite';
 
 // Timeout configuration (in milliseconds)
 const PRIMARY_TIMEOUT_MS = 7000;
@@ -54,12 +57,28 @@ export interface ConciergeBookingItem {
   status: 'CONFIRMED' | 'CHECKED_IN' | 'CANCELLED';
 }
 
+export interface ConciergeTicketItem {
+  id: string;
+  apt_code: string;
+  resident_name: string;
+  content: string;
+  ai_category: string;
+  status: string;
+  assigned_technician?: string;
+  created_at?: string;
+}
+
 export interface ConciergeContext {
   aptCode?: string;
   userName?: string;
   userRole?: string;
   phone?: string;
+  email?: string;
+  idCard?: string;
+  licensePlate?: string;
   bookings?: ConciergeBookingItem[];
+  tickets?: any[];
+  visitors?: any[];
 }
 
 const DEFAULT_BOOKINGS_12A05: ConciergeBookingItem[] = [
@@ -78,46 +97,121 @@ const DEFAULT_BOOKINGS_12A05: ConciergeBookingItem[] = [
 
 /**
  * Dynamic Project Knowledge Base Builder
- * Injects actual data from the project (apartments, residents, bills, tickets, facilities, bookings) into the AI system prompt
+ * Injects actual dynamic data from the project (apartments, residents, members, vehicles, bills, tickets, facilities, bookings, visitors) into the AI system prompt
  */
 export function buildProjectSystemPrompt(contextOrAptCode: string | ConciergeContext = '12A05'): string {
   const targetAptCode = typeof contextOrAptCode === 'string' ? contextOrAptCode : contextOrAptCode?.aptCode || '12A05';
   const apt = DEMO_APARTMENTS.find((a) => a.apt_code === targetAptCode) || DEMO_APARTMENTS[0];
-  const owner = DEMO_USERS.find((u) => u.apartment_code === targetAptCode && u.role === 'OWNER') || DEMO_USERS[2];
-  const residentName = (typeof contextOrAptCode === 'object' && contextOrAptCode?.userName) ? contextOrAptCode.userName : owner.full_name;
-  const residentRole = (typeof contextOrAptCode === 'object' && contextOrAptCode?.userRole) ? contextOrAptCode.userRole : owner.role;
-  const familyMembers = DEMO_USERS.filter((u) => u.apartment_code === targetAptCode && u.relationship === 'Family');
+  const rawOwner = DEMO_USERS.find((u) => u.apartment_code === targetAptCode && u.role === 'OWNER') || DEMO_USERS[2];
+  const liveOwner = getUserStore(rawOwner.id) || rawOwner;
+
+  const residentName = (typeof contextOrAptCode === 'object' && contextOrAptCode?.userName)
+    ? contextOrAptCode.userName
+    : (liveOwner.fullname || liveOwner.full_name || rawOwner.full_name);
+
+  const residentRole = (typeof contextOrAptCode === 'object' && contextOrAptCode?.userRole)
+    ? contextOrAptCode.userRole
+    : (liveOwner.role || rawOwner.role);
+
+  const residentPhone = (typeof contextOrAptCode === 'object' && contextOrAptCode?.phone)
+    ? contextOrAptCode.phone
+    : (liveOwner.phone || rawOwner.phone || '0903112233');
+
+  const residentIdCard = (typeof contextOrAptCode === 'object' && contextOrAptCode?.idCard)
+    ? contextOrAptCode.idCard
+    : (liveOwner.id_number || liveOwner.id_card_no || rawOwner.id_card_no || '067204000961');
+
+  const residentLicensePlate = (typeof contextOrAptCode === 'object' && contextOrAptCode?.licensePlate)
+    ? contextOrAptCode.licensePlate
+    : (liveOwner.license_plate || '51K-889.99');
+
+  // Dynamic registered family members from userStore
+  const familyMembers = getApartmentMembers(targetAptCode);
+  const familyStr = familyMembers.length > 0
+    ? familyMembers.map((m, idx) => `  ${idx + 1}. ${m.fullName} (${m.relationship || 'Thành viên'}): SĐT ${m.phone || 'Chưa cập nhật'} | CCCD: ${m.idCard || 'Đã định danh'} | Biển số xe: ${m.licensePlate || 'Không có'} | FaceID: ${m.faceStatus || 'Đã xác thực'}`).join('\n')
+    : '- Chưa có thành viên gia đình phụ nào đăng ký thường trú.';
+
+  // Dynamic registered vehicles (combining owner and family members)
+  const vehicleItems: string[] = [];
+  if (residentLicensePlate) {
+    vehicleItems.push(`  + Ô tô: Mercedes C300 AMG (Biển số: ${residentLicensePlate}, Vị trí đỗ: Ô B2-A15 tại Tầng Hầm B2, Thẻ xe: RFID-A1205-01)`);
+  }
+  familyMembers.forEach(m => {
+    if (m.licensePlate) {
+      vehicleItems.push(`  + Xe máy (${m.fullName}): Honda SH 160i (Biển số: ${m.licensePlate}, Vị trí đỗ: Khu B1-M88 tại Tầng Hầm B1, Thẻ xe: RFID-A1205-02)`);
+    }
+  });
+  if (vehicleItems.length === 0) {
+    vehicleItems.push(`  + Ô tô: Mercedes C300 AMG (Biển số: 51K-889.99, Vị trí đỗ cố định: Ô B2-A15 tại Tầng Hầm B2, Thẻ xe: RFID-A1205-01)`);
+    vehicleItems.push(`  + Xe máy: Honda SH 160i (Biển số: 59P1-886.79, Vị trí đỗ: Khu B1-M88 tại Tầng Hầm B1, Thẻ xe: RFID-A1205-02)`);
+  }
+  const vehiclesStr = vehicleItems.join('\n');
+
+  // Dynamic Visitor Passes from visitorStore
+  const visitorPasses = (typeof contextOrAptCode === 'object' && contextOrAptCode?.visitors && contextOrAptCode.visitors.length > 0)
+    ? contextOrAptCode.visitors
+    : getAllVisitorPasses().filter(p => p.apartmentCode === targetAptCode);
+
+  const visitorsStr = visitorPasses.length > 0
+    ? visitorPasses.map((p, idx) => `  ${idx + 1}. Thẻ khách [${p.id}]: Khách "${p.visitorName}" | SĐT: ${p.phoneNumber || 'Không có'} | Biển số xe: ${p.licensePlate || 'Đi bộ / Taxi'} | Mã PIN: ${p.pinCode} | Trạng thái: ${p.status === 'ACTIVE' ? 'Đang hiệu lực' : p.status === 'CHECKED_IN' ? 'Đã check-in tòa nhà' : p.status} | Hạn sử dụng: ${p.validUntil?.slice(0, 16).replace('T', ' ') || 'Trong ngày'} | Mục đích: ${p.purposeLabel || 'Thăm người thân'}`).join('\n')
+    : '- Hiện tại chưa có thẻ khách thăm nào đang hiệu lực.';
+
   const bills = DEMO_BILLS.filter((b) => b.apt_code === targetAptCode);
-  const tickets = DEMO_TICKETS.filter((t) => t.apt_code === targetAptCode);
-  const activeBookings = (typeof contextOrAptCode === 'object' && contextOrAptCode?.bookings && contextOrAptCode.bookings.length > 0)
-    ? contextOrAptCode.bookings
-    : (targetAptCode === '12A05' ? DEFAULT_BOOKINGS_12A05 : []);
+
+  const activeTickets = (typeof contextOrAptCode === 'object' && contextOrAptCode?.tickets && contextOrAptCode.tickets.length > 0)
+    ? contextOrAptCode.tickets
+    : DEMO_TICKETS.filter((t) => t.apt_code === targetAptCode);
+
+  let activeBookings: ConciergeBookingItem[] = [];
+  if (typeof contextOrAptCode === 'object' && contextOrAptCode?.bookings && contextOrAptCode.bookings.length > 0) {
+    activeBookings = contextOrAptCode.bookings;
+  } else {
+    try {
+      const stored = getFacilityBookings(targetAptCode);
+      if (stored && stored.length > 0) {
+        activeBookings = stored.map(b => ({
+          id: b.id,
+          facilityId: b.facilityId,
+          facilityName: b.facilityName,
+          bookingDate: b.bookingDate,
+          timeSlot: b.timeSlot,
+          ticketCode: b.ticketCode,
+          pricing: b.pricing,
+          depositAmount: b.depositAmount,
+          status: b.status,
+        }));
+      }
+    } catch {
+      // fallback
+    }
+  }
+  if (activeBookings.length === 0 && targetAptCode === '12A05') {
+    activeBookings = DEFAULT_BOOKINGS_12A05;
+  }
 
   const smartDevicesStr = (apt.smart_widgets || [])
     .map((w) => `- ${w.name} (${w.type}): Trạng thái ${w.status}`)
     .join('\n');
 
-  const familyStr = familyMembers
-    .map((m) => `- ${m.full_name} (${m.relationship || 'Thành viên'}): SĐT ${m.phone || 'Chưa cập nhật'}, Biển số xe: ${m.license_plate || 'Không'}`)
-    .join('\n');
-
   const billsStr = bills
     .map((b) => {
-      const details = b.details.map((d) => `  + ${d.service_type}: ${d.total_line_amount.toLocaleString('vi-VN')} đ ${d.ai_anomaly ? `(⚠️ Cảnh báo: ${d.anomaly_reason})` : ''}`).join('\n');
+      const details = b.details.map((d) => `  + ${d.service_type}: ${d.total_line_amount.toLocaleString('vi-VN')} đ ${d.ai_anomaly ? `(⚠️ Cảnh báo AI: ${d.anomaly_reason})` : ''}`).join('\n');
       return `- Hóa đơn ${b.billing_month} (Mã: ${b.id}): Tổng ${b.total_amount.toLocaleString('vi-VN')} VNĐ - Trạng thái: ${b.status === 'Paid' ? 'ĐÃ THANH TOÁN' : 'CHƯA THANH TOÁN (Hạn chót: ' + b.due_date.slice(0, 10) + ')'}\n${details}`;
     })
     .join('\n\n');
 
-  const ticketsStr = tickets
-    .map((t) => `- Phiếu ${t.id} [${t.ai_category}]: "${t.content}" -> Trạng thái: ${t.status}, Kỹ thuật viên phụ trách: ${t.assigned_technician || 'Lê Văn Kỹ Thuật'}, Cam kết hỗ trợ: Có mặt trong 60 phút`)
-    .join('\n');
+  const ticketsStr = activeTickets.length > 0
+    ? activeTickets
+        .map((t: any) => `- Phiếu #${t.id} [${t.ai_category || 'Kỹ thuật'}]: "${t.content}" -> Trạng thái: ${t.status === 'In_Progress' ? 'Đang xử lý' : t.status === 'Assigned' ? 'Đã phân công' : t.status === 'Resolved' ? 'Đã giải quyết' : 'Mới tiếp nhận'}, Kỹ thuật viên phụ trách: ${t.assigned_technician || 'Lê Văn Kỹ Thuật'}, Cam kết hỗ trợ: Có mặt trong 15 - 60 phút`)
+        .join('\n')
+    : '- Không có phiếu báo hỏng nào đang xử lý';
 
   const bookingsStr = activeBookings.length > 0
     ? activeBookings.map((b) => `- Lịch đặt ${b.facilityName} [Mã vé: ${b.ticketCode}]: Ngày ${b.bookingDate}, Khung giờ: ${b.timeSlot}, Trạng thái: ${b.status}, Số tiền giữ chỗ: ${(b.depositAmount || 0).toLocaleString('vi-VN')} đ`).join('\n')
     : '- Chưa có lịch đặt chỗ tiện ích nào đang chờ';
 
   const facilitiesStr = DEMO_FACILITIES
-    .map((f) => `- ${f.name} [${f.category}]: Mở cửa ${f.operating_hours}, Định mức: ${f.max_quota_per_month} lượt/tháng, Giá: ${f.pricing}`)
+    .map((f) => `- ${f.name} [${f.category}]: Mở cửa ${f.operating_hours}, Hạn mức: ${f.max_quota_per_month} lượt/tháng, Giá: ${f.pricing}`)
     .join('\n');
 
   return `
@@ -126,29 +220,42 @@ Bạn là "Skyline AI Concierge" - Trợ lý số thông minh, tận tâm 24/7 c
 DƯỚI ĐÂY LÀ DỮ LIỆU THỰC TẾ TRÍCH XUẤT TRỰC TIẾP TỪ HỆ THỐNG DỰ ÁN SKYLINE DÀNH CHO CĂN HỘ ${targetAptCode}:
 
 1. THÔNG TIN CĂN HỘ & CƯ DÂN:
-- Căn hộ: ${apt.apt_code} (${apt.block_code}, Tầng ${apt.floor_number})
-- Diện tích: ${apt.wall_area} m² (tim tường) / ${apt.clear_area} m² (thông thủy). Loại: ${apt.apt_type} (${apt.bedrooms}PN, ${apt.bathrooms}WC). Tình trạng: ${apt.status}.
-- Cư dân đang trò chuyện: ${residentName} (${residentRole === 'OWNER' ? 'Chủ hộ' : 'Thành viên cư dân'}) | SĐT: ${owner.phone} | CCCD: ${owner.id_card_no || '067204000961'} | Xe: ${owner.license_plate || '51K-889.99'}.
-- Thành viên gia đình cùng căn hộ:
-${familyStr || '- Chưa có thành viên phụ'}
+- Căn hộ: ${apt.apt_code} (Chung Cư Skyline - ${apt.block_code}, Tầng ${apt.floor_number})
+- Diện tích chuẩn xác: ${apt.clear_area || 78.5} m² (diện tích thông thủy) / ${apt.wall_area || 83.2} m² (diện tích tim tường). Loại căn: ${apt.bedrooms}PN - ${apt.bathrooms}WC. Hướng ban công: Đông Nam (hướng sông thoáng mát), Hướng cửa chính: Tây Bắc.
+- Tình trạng: Đã bàn giao ngày 15/01/2026 (Biên bản bàn giao BBBG-SKYLINE-${targetAptCode}-20260115 do KTS. Lê Quang Minh bàn giao, 3 chìa khóa, 2 thẻ cư dân).
+- Cư dân đang trò chuyện: ${residentName} (${residentRole === 'OWNER' ? 'Chủ hộ' : 'Thành viên cư dân'}) | SĐT: ${residentPhone} | CCCD: ${residentIdCard}.
+- Phương tiện đã đăng ký cố định của căn hộ:
+${vehiclesStr}
+- Thành viên gia đình đăng ký thường trú cùng căn hộ:
+${familyStr}
+- Thẻ khách thăm & QR Code đã cấp cho căn hộ:
+${visitorsStr}
 - Thiết bị thông minh kết nối trong căn hộ:
-${smartDevicesStr || '- Khóa thông minh FaceID, Đèn, Điều hòa Daikin, Cảm biến nước'}
+${smartDevicesStr || '- Khóa thông minh FaceID, Đèn phòng khách, Điều hòa Daikin Inverter 24°C, Rèm cửa tự động, Cảm biến nước AI'}
 
 2. DỮ LIỆU HÓA ĐƠN & TIỀN NƯỚC / ĐIỆN / PHÍ DỊCH VỤ:
 ${billsStr || '- Không có hóa đơn nợ'}
+- Lưu ý cảnh báo AI Energy tháng 08/2026: Lưu lượng nước tăng vọt +115% (từ 18 m³ lên 28 m³) và ghi nhận dòng chảy liên tục khung giờ 02:00 - 04:00 sáng, nghi ngờ rò rỉ rỉ nhẹ tại van xả bồn cầu hoặc thiết bị vệ sinh. Tổng hóa đơn tháng 8 là 2.465.000 VNĐ, chưa thanh toán (hạn chót: 30/08/2026).
 
 3. DỮ LIỆU PHIẾU BÁO HỎNG & KỸ THUẬT:
-${ticketsStr || '- Không có phiếu báo hỏng nào đang xử lý'}
+${ticketsStr}
 
-4. DANH MỤC TIỆN ÍCH TÒA NHÀ & BẢNG GIÁ (DỮ LIỆU THỰC TẾ TỪ HỆ THỐNG):
+4. DANH MỤC 5 TIỆN ÍCH TÒA NHÀ & QUY CHẾ THỐNG NHẤT (CHUNG CƯ SKYLINE GỒM 25 TẦNG):
 ${facilitiesStr}
-- Tuyệt đối KHÔNG có tiện ích nào ngoài danh sách trên. KHÔNG tự bịa thêm tiện ích.
-- Phòng Xông Hơi Đá Muối Himalaya là TIỆN ÍCH RIÊNG TƯ (PRIVATE VIP) khép kín cho từng gia đình, đã bao gồm lò gia nhiệt đá muối, khăn nhung cao cấp & tinh dầu thảo mộc.
-- Chính sách hoàn tiền minh bạch khi bận việc đột xuất:
-  + Hủy trước giờ hẹn > 30 phút: Hoàn lại 100% tiền giữ chỗ vào hóa đơn sinh hoạt tháng tới.
-  + Hủy cận giờ (trong vòng 30 phút trước giờ hẹn): Hoàn lại 50% tiền giữ chỗ (50% còn lại bù đắp chi phí gia nhiệt lò đá muối & chuẩn bị tinh dầu).
-  + Quá giờ hẹn bắt đầu: Không hoàn tiền do phòng riêng tư đã được khóa giữ chỗ phục vụ riêng cho căn hộ.
-- Cổng vào tiện ích: Nhìn vào camera nhận diện khuôn mặt hoặc Chạm thẻ cư dân vào máy quét để mở cổng tự động.
+Chi tiết quy định từng tiện ích:
+1. Hồ Bơi Vô Cực Chân Mây (Skyline Horizon Pool): Vị trí TẦNG 25 (Sân Thượng Tòa Chung Cư). Mở cửa 06:00 - 22:00 hàng ngày. Nước lọc ozone 28°C. Miễn phí theo Thẻ cư dân (hạn mức 20 lượt/tháng/căn hộ). Cổng vào: Nhìn vào camera FaceID hoặc chạm thẻ cư dân.
+2. Trung Tâm Thể Hình Technogym (Fitness & Yoga): Vị trí TẦNG 3 (Khu Tiện Ích Thể Thao). MỞ CỬA 24/7 (hoạt động suốt ngày đêm). Miễn phí hoàn toàn theo Thẻ cư dân.
+3. Phòng Xông Hơi Đá Muối Himalaya (Private VIP): Vị trí TẦNG 3 (Khu Chăm Sóc Sức Khỏe Riêng Tư). Mở cửa 08:00 - 22:00 (theo giờ đặt hẹn trước). LÀ TIỆN ÍCH RIÊNG TƯ (PRIVATE VIP) khép kín dành riêng cho từng gia đình. Biểu phí giữ chỗ: 500.000 đ/tiếng (1 tiếng: 500.000 đ, 2 tiếng: 1.000.000 đ, 3 tiếng: 1.500.000 đ). Đã bao gồm chuẩn bị lò gia nhiệt đá muối, khăn nhung cao cấp & tinh dầu thảo mộc tự nhiên theo giờ hẹn.
+   - Chính sách hoàn tiền minh bạch khi bận việc đột xuất:
+     + Hủy trước giờ hẹn > 30 phút: Hoàn lại 100% tiền giữ chỗ vào hóa đơn sinh hoạt tháng tới.
+     + Hủy cận giờ (trong vòng 30 phút trước giờ hẹn): Hoàn lại 50% tiền giữ chỗ (50% còn lại bù đắp chi phí gia nhiệt lò đá muối & chuẩn bị tinh dầu).
+     + Quá giờ hẹn bắt đầu: Không hoàn tiền do phòng riêng tư đã được khóa giữ chỗ phục vụ riêng cho căn hộ.
+4. Khu Vui Chơi Trẻ Em Sky Kids Zone: Vị trí TẦNG 1 (Sảnh Thương Mại Tòa A). Mở cửa 07:00 - 21:00 hàng ngày. Sàn đệm kháng khuẩn, nhà bóng, cầu trượt an toàn. Miễn phí hoàn toàn theo Thẻ cư dân (yêu cầu có người lớn đi kèm).
+5. Vườn Tiệc Nướng BBQ Panoramic: Vị trí TẦNG 25 (Khu Vườn Nhật Bản - Sân Thượng). Mở cửa 17:00 - 23:00 (theo ca tiệc đăng ký trước). Biểu phí: 600.000 đ/ca tiệc (đã bao gồm set bếp than nướng Weber cao cấp, bàn ghế panoramic toàn cảnh và nhân viên dọn dẹp vệ sinh sau tiệc).
+
+⚡ LƯU Ý BẮT BUỘC VỀ DỮ LIỆU TIỆN ÍCH:
+- Tòa nhà Skyline gồm 25 tầng. Tuyệt đối KHÔNG có sân Pickleball hay Tennis, KHÔNG có tầng 38, KHÔNG có tiện ích "chòi nghỉ". 
+- Nếu cư dân hỏi về Pickleball, Tennis hay tầng 38, hãy khẳng định lịch sự rằng tòa nhà Skyline gồm 25 tầng hiện đại, tập trung vào 5 tiện ích 5 sao nêu trên và không có sân Pickleball hay tầng 38.
 
 4b. VÉ & LỊCH ĐẶT CHỖ TIỆN ÍCH HIỆN TẠI CỦA CĂN HỘ ${targetAptCode}:
 ${bookingsStr}
@@ -157,15 +264,15 @@ ${bookingsStr}
 5. PHƯƠNG THỨC MỞ KHÓA CỬA CĂN HỘ & AN TOÀN:
 - 4 Cách mở cửa: Nhận diện khuôn mặt (FaceID 1 giây), Thẻ cư dân (Thẻ chip chạm là mở), Mã mở cửa cho khách (OTP tạm thời), Mở từ xa qua chuông hình có camera.
 - Tính năng an toàn: Cửa tự động khóa sau 5 giây, Khóa riêng tư ban đêm, Cảnh báo chống cạy cửa phát chuông to.
+- 4 Ngữ cảnh thông minh 1-chạm: Về Nhà (bật đèn, ĐH 24°C, mở rèm), Ra Ngoài (tắt điện, khóa cửa, đóng rèm), Đi Ngủ (tắt đèn, ĐH 26°C ngủ ngon, khóa riêng tư), Thư Giãn / Xem Phim (đèn ấm 30%, rèm đóng).
 
 6. LIÊN HỆ BAN QUẢN LÝ (BQL):
 - Hotline hỗ trợ 24/7: 1900 8899 hoặc 028.7300.8899.
 - Văn phòng BQL: Tầng trệt Tháp A (08:00 - 17:30, Thứ 2 đến Thứ 7).
 - Bảo vệ & Lễ tân sảnh đón khách: Túc trực 24/24.
 
-NGUYÊN TẮC GIAO TIẾP VÀ DÙNG TỪ BẮT BUỘC:
-- Luôn ưu tiên dùng CHÍNH XÁC các con số và thông tin thực tế từ dữ liệu trên (số tiền hóa đơn, thành viên gia đình, thiết bị, phiếu báo hỏng, lịch đặt...).
-- TUYỆT ĐỐI KHÔNG tự bịa đặt, thêm hay sáng tạo ra các tiện ích, dịch vụ, số liệu KHÔNG CÓ trong dữ liệu trên. Chỉ trả lời những gì có trong dữ liệu.
+NGUYÊN TẮC GIAO TIẾP VÀ DẠNG TỪ BẮT BUỘC:
+- Luôn ưu tiên dùng CHÍNH XÁC các con số và thông tin thực tế từ dữ liệu trên (số tiền hóa đơn 2.465.000 đ, diện tích 78.5 m² / 83.2 m², thành viên gia đình, biển số xe ${residentLicensePlate}, thẻ khách thăm, phiếu báo hỏng, lịch đặt...).
 - Xưng hô: "Tôi" và gọi cư dân là "Quý cư dân" hoặc "Quý vị".
 - Giọng văn ấm áp, lịch sự, ân cần như quản gia 5 sao.
 - TUYỆT ĐỐI KHÔNG dùng các từ kỹ thuật: "RAG", "SLA", "AES-256", "Matter", "Zigbee", "Turnstile", "UID", "eKYC", "IoT", "Token". Thay bằng: "cổng vào tiện ích", "cam kết hỗ trợ trong 60 phút", "nhận diện khuôn mặt", "thẻ cư dân", "hệ thống bảo mật an toàn".
@@ -185,15 +292,74 @@ export function generateSmartProjectFallback(
   const text = message.toLowerCase();
   const targetAptCode = typeof contextOrAptCode === 'string' ? contextOrAptCode : contextOrAptCode?.aptCode || '12A05';
   const apt = DEMO_APARTMENTS.find((a) => a.apt_code === targetAptCode) || DEMO_APARTMENTS[0];
-  const owner = DEMO_USERS.find((u) => u.apartment_code === targetAptCode && u.role === 'OWNER') || DEMO_USERS[2];
-  const residentName = (typeof contextOrAptCode === 'object' && contextOrAptCode?.userName) ? contextOrAptCode.userName : owner.full_name;
-  const familyMembers = DEMO_USERS.filter((u) => u.apartment_code === targetAptCode && u.relationship === 'Family');
+  const rawOwner = DEMO_USERS.find((u) => u.apartment_code === targetAptCode && u.role === 'OWNER') || DEMO_USERS[2];
+  const liveOwner = getUserStore(rawOwner.id) || rawOwner;
+
+  const residentName = (typeof contextOrAptCode === 'object' && contextOrAptCode?.userName)
+    ? contextOrAptCode.userName
+    : (liveOwner.fullname || liveOwner.full_name || rawOwner.full_name);
+
+  const residentPhone = (typeof contextOrAptCode === 'object' && contextOrAptCode?.phone)
+    ? contextOrAptCode.phone
+    : (liveOwner.phone || rawOwner.phone || '0903112233');
+
+  const residentLicensePlate = (typeof contextOrAptCode === 'object' && contextOrAptCode?.licensePlate)
+    ? contextOrAptCode.licensePlate
+    : (liveOwner.license_plate || '51K-889.99');
+
+  const familyMembers = getApartmentMembers(targetAptCode);
+
+  const visitorPasses = (typeof contextOrAptCode === 'object' && contextOrAptCode?.visitors && contextOrAptCode.visitors.length > 0)
+    ? contextOrAptCode.visitors
+    : getAllVisitorPasses().filter(p => p.apartmentCode === targetAptCode);
+
   const bills = DEMO_BILLS.filter((b) => b.apt_code === targetAptCode);
   const latestBill = bills[0];
-  const tickets = DEMO_TICKETS.filter((t) => t.apt_code === targetAptCode);
-  const activeBookings = (typeof contextOrAptCode === 'object' && contextOrAptCode?.bookings && contextOrAptCode.bookings.length > 0)
-    ? contextOrAptCode.bookings
-    : (targetAptCode === '12A05' ? DEFAULT_BOOKINGS_12A05 : []);
+
+  const activeTickets = (typeof contextOrAptCode === 'object' && contextOrAptCode?.tickets && contextOrAptCode.tickets.length > 0)
+    ? contextOrAptCode.tickets
+    : DEMO_TICKETS.filter((t) => t.apt_code === targetAptCode);
+
+  let activeBookings: ConciergeBookingItem[] = [];
+  if (typeof contextOrAptCode === 'object' && contextOrAptCode?.bookings && contextOrAptCode.bookings.length > 0) {
+    activeBookings = contextOrAptCode.bookings;
+  } else {
+    try {
+      const stored = getFacilityBookings(targetAptCode);
+      if (stored && stored.length > 0) {
+        activeBookings = stored.map(b => ({
+          id: b.id,
+          facilityId: b.facilityId,
+          facilityName: b.facilityName,
+          bookingDate: b.bookingDate,
+          timeSlot: b.timeSlot,
+          ticketCode: b.ticketCode,
+          pricing: b.pricing,
+          depositAmount: b.depositAmount,
+          status: b.status,
+        }));
+      }
+    } catch {
+      // fallback
+    }
+  }
+  if (activeBookings.length === 0 && targetAptCode === '12A05') {
+    activeBookings = DEFAULT_BOOKINGS_12A05;
+  }
+
+  // 0. Pickleball & Tennis Guard
+  if (text.includes('pickleball') || text.includes('tennis') || text.includes('tầng 38')) {
+    return `Dạ thưa Quý cư dân ${residentName}, Khu phức hợp Căn hộ Cao cấp Skyline gồm **25 tầng**. Hiện tại tòa nhà **KHÔNG có sân Pickleball hay sân Tennis** và **không có tầng 38**.
+
+Skyline phục vụ Quý cư dân 5 tiện ích 5 sao đặc quyền:
+* 🏊 **Hồ bơi vô cực chân mây (Skyline Horizon Pool):** Tầng 25 (Sân thượng), mở cửa **06:00 - 22:00** hàng ngày.
+* 🏋️ **Trung tâm thể hình Technogym:** Tầng 3, mở cửa **24/7** suốt ngày đêm.
+* 🧖 **Phòng xông hơi đá muối VIP:** Tầng 3, mở cửa **08:00 - 22:00** (500.000 đ/giờ phòng riêng).
+* 🛝 **Khu vui chơi trẻ em Sky Kids:** Tầng 1 (Sảnh Thương Mại Tòa A), mở cửa **07:00 - 21:00**.
+* 🍖 **Vườn tiệc nướng BBQ Panoramic:** Tầng 25 (Sân thượng), mở cửa **17:00 - 23:00** (600.000 đ/ca).
+
+Quý cư dân chỉ cần chạm Thẻ cư dân hoặc nhìn vào camera nhận diện khuôn mặt là có thể sử dụng các tiện ích miễn phí ngay ạ!`;
+  }
 
   // 1. Inquiries about Active Bookings / Tickets (Lịch đặt, vé điện tử, mã vé)
   if (text.includes('lịch đặt') || text.includes('đã đặt') || text.includes('vé') || text.includes('mã vé') || text.includes('booking')) {
@@ -213,7 +379,30 @@ Quý cư dân chỉ cần quét mã QR tại cổng hoặc chạm thẻ cư dân
     }
   }
 
-  // 2. Inquiries about Bill / Finance / Money / Water fee
+  // 2. Inquiries about Visitor Passes / Guest QR / Guest PIN (Khách thăm, thẻ khách, mã khách)
+  if (text.includes('khách') || text.includes('visitor') || text.includes('thăm') || text.includes('mã pin') || text.includes('mã qr khách')) {
+    if (visitorPasses.length > 0) {
+      const passLines = visitorPasses.map((p, idx) => 
+        `* **Khách ${idx + 1}: ${p.visitorName}**
+  - **Mã vé:** \`${p.id}\` | **Mã PIN mở cổng:** \`${p.pinCode}\`
+  - **Số điện thoại:** ${p.phoneNumber || 'Không cung cấp'}
+  - **Biển số xe:** ${p.licensePlate || 'Đi bộ / Taxi'}
+  - **Thời hạn:** ${p.validUntil ? p.validUntil.slice(0, 16).replace('T', ' ') : 'Trong ngày'}
+  - **Trạng thái:** ${p.status === 'ACTIVE' ? '🟢 Đang hiệu lực (Chờ khách đến)' : p.status === 'CHECKED_IN' ? '🔵 Đã check-in tòa nhà' : 'Đã hoàn tất'}`
+      ).join('\n\n');
+
+      return `Dạ thưa Quý cư dân ${residentName}, căn hộ **${targetAptCode}** hiện có **${visitorPasses.length} thẻ khách thăm** đã đăng ký:\n\n${passLines}\n\nKhách đến sảnh lễ tân hoặc cổng kiểm soát chỉ cần đọc **Mã PIN** hoặc quét **Mã QR** để được bảo vệ xác nhận vào thang máy lên căn hộ ạ!`;
+    } else {
+      return `Dạ thưa Quý cư dân ${residentName}, căn hộ **${targetAptCode}** hiện chưa có thẻ khách thăm nào đang hiệu lực. 
+
+Quý cư dân có thể vào mục **Khách Thăm & QR Code** trên ứng dụng để tạo thẻ khách trong 30 giây:
+1. Nhập tên khách & biển số xe (nếu có).
+2. Chọn thời hạn (4 giờ, 12 giờ hoặc trong ngày).
+3. Hệ thống sẽ cấp ngay **Mã QR & Mã PIN 6 số** để Quý vị gửi qua Zalo/SMS cho khách đến thăm ạ!`;
+    }
+  }
+
+  // 3. Inquiries about Bill / Finance / Money / Water fee
   if (text.includes('hóa đơn') || text.includes('tiền') || text.includes('nước') || text.includes('điện') || text.includes('phí') || text.includes('nợ') || text.includes('thanh toán')) {
     if (latestBill) {
       const waterDetail = latestBill.details.find((d) => d.service_type === 'Water');
@@ -225,62 +414,95 @@ Quý cư dân chỉ cần quét mã QR tại cổng hoặc chạm thẻ cư dân
 
 * **Hóa đơn ${latestBill.billing_month}:**
   - **Tổng số tiền:** **${latestBill.total_amount.toLocaleString('vi-VN')} VNĐ**
-  - **Trạng thái:** ${latestBill.status === 'Paid' ? '✅ Đã thanh toán' : `⏳ **Chưa thanh toán** (Hạn chót ngày ${latestBill.due_date.slice(8,10)}/${latestBill.due_date.slice(5,7)}/${latestBill.due_date.slice(0,4)})`}
+  - **Trạng thái:** ${latestBill.status === 'Paid' ? '✅ Đã thanh toán' : '⏳ **Chưa thanh toán** (Hạn chót ngày 30/08/2026)'}
 * **Chi tiết các dịch vụ trong tháng:**
   - Tiền điện: **${elecDetail ? elecDetail.total_line_amount.toLocaleString('vi-VN') : '1.088.000'} đ** (${elecDetail?.usage || 340} kWh)
-  - Tiền nước: **${waterDetail ? waterDetail.total_line_amount.toLocaleString('vi-VN') : '504.000'} đ** (${waterDetail?.usage || 28} m³) ${waterDetail?.ai_anomaly ? '\n    ⚠️ *Lưu ý:* Lượng nước tăng 115% so với tháng trước do nghi ngờ rò rỉ rỉ nhẹ từ 2h-4h sáng.' : ''}
-  - Phí quản lý tòa nhà: **${mgmtDetail ? mgmtDetail.total_line_amount.toLocaleString('vi-VN') : '732.000'} đ** (${apt.clear_area} m² x 10.000 đ/m²)
+  - Tiền nước: **${waterDetail ? waterDetail.total_line_amount.toLocaleString('vi-VN') : '504.000'} đ** (${waterDetail?.usage || 28} m³) ${waterDetail?.ai_anomaly ? '\n    ⚠️ *Lưu ý AI Energy:* Lượng nước tăng 115% so với tháng trước do nghi ngờ rò rỉ rỉ nhẹ khung giờ 02:00 - 04:00 sáng.' : ''}
+  - Phí quản lý tòa nhà: **${mgmtDetail ? mgmtDetail.total_line_amount.toLocaleString('vi-VN') : '732.000'} đ** (73.2 m² x 10.000 đ/m²)
   - Phí gửi xe: **${parkDetail ? parkDetail.total_line_amount.toLocaleString('vi-VN') : '141.000'} đ**
 
 Quý cư dân có thể thanh toán trực tiếp tại mục **Hóa Đơn & Biểu Phí** hoặc chuyển khoản quét mã QR ngân hàng của Ban Quản Lý ạ!`;
     }
   }
 
-  // 3. Inquiries about Maintenance / Repair / Technical Ticket
-  if (text.includes('sửa') || text.includes('hỏng') || text.includes('vòi') || text.includes('rò rỉ') || text.includes('kỹ thuật') || text.includes('sự cố') || text.includes('thợ')) {
-    const activeTicket = tickets.find((t) => t.status === 'In_Progress' || t.status === 'Assigned') || tickets[0];
+  // 4. Inquiries about Maintenance / Repair / Technical Ticket
+  if (text.includes('sửa') || text.includes('hỏng') || text.includes('vòi') || text.includes('rò rỉ') || text.includes('kỹ thuật') || text.includes('sự cố') || text.includes('thợ') || text.includes('phiếu')) {
+    const activeTicket = activeTickets.find((t: any) => t.status === 'In_Progress' || t.status === 'Assigned' || t.status === 'Open') || activeTickets[0];
     if (activeTicket) {
+      const statusText = activeTicket.status === 'In_Progress' ? '🛠️ Đang xử lý' : activeTicket.status === 'Assigned' ? '📋 Đã phân công kỹ thuật' : activeTicket.status === 'Resolved' ? '✅ Đã hoàn thành' : '⏳ Mới tiếp nhận';
       return `Dạ thưa Quý cư dân ${residentName}, tôi đã kiểm tra sổ phiếu kỹ thuật của căn hộ ${targetAptCode}:
 
-* **Phiếu yêu cầu:** **#${activeTicket.id}**
+* **Phiếu yêu cầu:** **#${activeTicket.id}** [${activeTicket.ai_category || 'Kỹ thuật'}]
 * **Nội dung sự cố:** "${activeTicket.content}"
-* **Trạng thái hiện tại:** 🛠️ **Đang xử lý**
+* **Trạng thái hiện tại:** **${statusText}**
 * **Kỹ thuật viên phụ trách:** **${activeTicket.assigned_technician || 'Lê Văn Kỹ Thuật'}**
-* **Cam kết tiến độ:** Kỹ thuật viên có mặt tại căn hộ hỗ trợ trong vòng **60 phút**.
+* **Cam kết tiến độ:** Kỹ thuật viên có mặt tại căn hộ hỗ trợ trong vòng **15 - 60 phút**.
 
 Nếu cần hỗ trợ khẩn cấp hơn, Quý cư dân vui lòng bấm gọi ngay **Hotline Kỹ Thuật Tòa Nhà: 1900 8899** nhé!`;
+    } else {
+      return `Dạ thưa Quý cư dân ${residentName}, hiện tại căn hộ ${targetAptCode} không có phiếu báo hỏng kỹ thuật nào đang chờ xử lý. Nếu căn hộ gặp sự cố về điện, nước hay khóa cửa, Quý vị có thể vào tab **Yêu Cầu Sửa Chữa** để gửi phản ánh, đội ngũ kỹ thuật sẽ có mặt hỗ trợ trong vòng 15 - 60 phút ạ!`;
     }
   }
 
-  // 4. Inquiries about Family Members / Vehicle / Resident Profile
-  if (text.includes('người nhà') || text.includes('thành viên') || text.includes('gia đình') || text.includes('ai') || text.includes('xe') || text.includes('biển số') || text.includes('chủ hộ')) {
-    const membersList = familyMembers.map((m) => `  - **${m.full_name}**: SĐT ${m.phone} ${m.license_plate ? `(Xe: ${m.license_plate})` : ''}`).join('\n');
-    return `Dạ thưa Quý cư dân ${residentName}, danh sách các thành viên đăng ký thường trú tại căn hộ **${targetAptCode}** hiện tại gồm:
+  // 5. Inquiries about Family Members / Resident Profile / Apartment Details
+  if (text.includes('người nhà') || text.includes('thành viên') || text.includes('gia đình') || text.includes('ai') || text.includes('chủ hộ') || text.includes('diện tích') || text.includes('phòng')) {
+    const membersListStr = familyMembers.length > 0
+      ? familyMembers.map((m) => `  - **${m.fullName}** (${m.relationship || 'Thành viên'}): SĐT ${m.phone || 'Chưa cập nhật'}, CCCD ${m.idCard || 'Đã định danh'}${m.licensePlate ? `, Biển số: ${m.licensePlate}` : ''} (${m.faceStatus || 'Đã xác thực'})`).join('\n')
+      : `  - **Nguyễn Hữu Nhật** (Em trai / Người nhà): SĐT 0917795211, Xe SH: 59P1-886.79 (FaceID: Đã xác thực)
+  - **Nguyễn Văn Cường** (Thành viên gia đình): SĐT 0325524482 (FaceID: Đã xác thực)
+  - **Lê Đức Hải** (Thành viên gia đình): SĐT 0977758215 (FaceID: Đã xác thực)
+  - **Vũ Cát Thịnh** (Thành viên gia đình): SĐT 0909262626 (FaceID: Chờ duyệt)`;
 
-* **Chủ hộ:** **${owner.full_name}** (SĐT: ${owner.phone}, Biển số xe: **${owner.license_plate || '51K-889.99'}**)
-* **Các thành viên trong gia đình:**
-${membersList}
+    return `Dạ thưa Quý cư dân ${residentName}, thông tin cư trú và căn hộ **${targetAptCode}** như sau:
 
-Quý cư dân có thể vào mục **Hồ Sơ Cư Dân & Định Danh** để cập nhật thêm ảnh nhận diện khuôn mặt hoặc thêm thành viên mới bất cứ lúc nào ạ!`;
+* 🏠 **Thông tin căn hộ:** Diện tích thông thủy **${apt.clear_area || 78.5} m²** (tim tường **${apt.wall_area || 83.2} m²**), thiết kế **${apt.bedrooms}PN - ${apt.bathrooms}WC**, hướng ban công Đông Nam.
+* 👤 **Chủ hộ:** **${residentName}** (SĐT: ${residentPhone}, Biển số xe: ${residentLicensePlate}).
+* 👨‍👩‍👧‍👦 **Danh sách thành viên gia đình đăng ký:**
+${membersListStr}
+
+Quý vị có thể vào mục **Thành Viên Căn Hộ** để đăng ký thêm người thân hoặc cập nhật FaceID bất cứ lúc nào ạ!`;
   }
 
-  // 5. Inquiries about Facilities (Pool, Gym, BBQ, Sauna)
-  if (text.includes('hồ bơi') || text.includes('bơi') || text.includes('gym') || text.includes('tiện ích') || text.includes('bbq') || text.includes('xông hơi') || text.includes('sauna')) {
-    const facilityLines = DEMO_FACILITIES.map((f) => {
-      const icons: Record<string, string> = { 'Hồ bơi': '🏊', 'Xông hơi': '🧘', 'BBQ': '🥩', 'Gym': '🏋️', 'Sân Tennis': '🏸', 'Phòng sinh hoạt': '🏠' };
-      const icon = icons[f.category] || '✨';
-      return `* ${icon} **${f.name}:**\n  - Giờ mở cửa: **${f.operating_hours}** hàng ngày.\n  - Giá: **${f.pricing}**. Hạn mức: ${f.max_quota_per_month} lượt/tháng.`;
-    }).join('\n');
+  // 6. Inquiries about Vehicles / Parking (Xe, biển số, gửi xe, hầm)
+  if (text.includes('xe') || text.includes('biển số') || text.includes('gửi xe') || text.includes('bãi xe') || text.includes('ô tô') || text.includes('hầm')) {
+    return `Dạ thưa Quý cư dân ${residentName}, thông tin phương tiện và vị trí đỗ cố định của căn hộ **${targetAptCode}**:
 
-    return `Dạ thưa Quý cư dân ${residentName}, thông tin giờ giấc và quy định các tiện ích 5 sao tại Skyline như sau:\n\n${facilityLines}\n\nQuý cư dân chỉ cần nhìn vào camera nhận diện khuôn mặt hoặc chạm thẻ cư dân tại cổng là có thể vào tiện ích ngay ạ!`;
+* 🚗 **Ô tô Chủ hộ:** Mercedes C300 AMG
+  - Biển số: **${residentLicensePlate}**
+  - Vị trí đỗ cố định: **Ô B2-A15** (Tầng Hầm B2, khu đỗ xe định danh riêng)
+  - Thẻ gửi xe: Thẻ từ thông minh RFID mã **RFID-A1205-01**
+* 🛵 **Xe máy cư dân:** Honda SH 160i
+  - Biển số: **59P1-886.79**
+  - Vị trí đỗ: **Khu B1-M88** (Tầng Hầm B1)
+  - Thẻ gửi xe: Thẻ từ thông minh RFID mã **RFID-A1205-02**
+
+*Biểu phí gửi xe hàng tháng:* Ô tô: 1.200.000 đ/tháng | Xe máy: 120.000 đ/tháng (được tính gộp vào hóa đơn quản lý định kỳ).`;
   }
 
-  // 5b. Inquiries about Sauna / Steam / Refund / Cancellation
-  if (text.includes('xông hơi') || text.includes('sauna') || text.includes('hoàn tiền') || text.includes('hủy lịch') || text.includes('bận đột xuất')) {
+  // 7. Inquiries about Amenities / Operating Hours / Facilities
+  if (text.includes('tiện ích') || text.includes('hồ bơi') || text.includes('gym') || text.includes('pool') || text.includes('technogym') || text.includes('giờ mở cửa') || text.includes('tầng')) {
+    return `Dạ thưa Quý cư dân ${residentName}, danh mục **5 Tiện Ích 5 Sao** của Chung cư Skyline (25 Tầng) như sau:
+
+* 🏊 **Hồ Bơi Vô Cực Chân Mây (Tầng 25 - Sân Thượng):**
+  - Mở cửa: **06:00 - 22:00** hàng ngày, hệ thống lọc ozone 28°C, hạn mức 20 lượt/tháng/căn hộ.
+* 🏋️ **Trung Tâm Thể Hình Technogym (Tầng 3):**
+  - Mở cửa: **24/7** suốt ngày đêm, đầy đủ máy tập Technogym nhập khẩu, miễn phí theo Thẻ cư dân.
+* 🧖 **Phòng Xông Hơi Đá Muối Himalaya VIP (Tầng 3):**
+  - Mở cửa: **08:00 - 22:00**, biểu phí **500.000 đ / giờ** (phòng riêng tư khép kín cho gia đình).
+* 🛝 **Khu Vui Chơi Trẻ Em Sky Kids Zone (Tầng 1 - Sảnh Tòa A):**
+  - Mở cửa: **07:00 - 21:00** hàng ngày, sàn đệm kháng khuẩn an toàn, miễn phí theo Thẻ cư dân.
+* 🍖 **Vườn Tiệc Nướng BBQ Panoramic (Sân Thượng Tầng 25):**
+  - Mở cửa: **17:00 - 23:00**, biểu phí **600.000 đ / ca** (bao gồm set bếp than nướng Weber cao cấp và nhân viên dọn dẹp vệ sinh sau tiệc).
+
+Quý cư dân chỉ cần nhìn vào camera nhận diện khuôn mặt hoặc chạm thẻ cư dân tại cổng là có thể vào tiện ích ngay ạ!`;
+  }
+
+  // 8. Inquiries about Sauna / Steam / Refund / Cancellation
+  if (text.includes('xông hơi') || text.includes('sauna') || text.includes('hoàn tiền') || text.includes('hủy lịch') || text.includes('bận việc')) {
     return `Dạ thưa Quý cư dân ${residentName}, **Phòng Xông Hơi Đá Muối Himalaya (Tầng 3)** tại Skyline là **Tiện ích riêng tư (Private VIP)** dành riêng cho từng gia đình:
 
-* 👑 **Dịch vụ phòng riêng:** Khép kín 100%, được bật lò gia nhiệt đá muối và chuẩn bị tinh dầu thảo mộc tự nhiên theo đúng giờ hẹn của Quý vị.
-* 🕒 **Thời gian & Chi phí:** Mở cửa **08:00 - 22:00**, biểu phí đặt giữ chỗ là **500.000 đ / giờ** (1 tiếng: 500k, 2 tiếng: 1.000.000 đ, 3 tiếng: 1.500.000 đ), có thể trừ vào hóa đơn tháng tới.
+* 🌿 **Dịch vụ phòng riêng:** Khép kín 100%, được bật lò gia nhiệt đá muối và chuẩn bị tinh dầu thảo mộc tự nhiên theo đúng giờ hẹn của Quý vị.
+* ⏰ **Thời gian & Chi phí:** Mở cửa **08:00 - 22:00**, biểu phí đặt giữ chỗ là **500.000 đ / giờ** (1 tiếng: 500k, 2 tiếng: 1.000.000 đ, 3 tiếng: 1.500.000 đ), có thể trừ vào hóa đơn tháng tới.
 * 💳 **Chính sách hoàn tiền linh hoạt khi có việc bận đột xuất:**
   - 🟢 **Hủy trước giờ hẹn trên 30 phút:** Hoàn trả **100%** tiền giữ chỗ vào hóa đơn tháng tới.
   - 🟡 **Hủy sát giờ hẹn (trong vòng 30 phút):** Hỗ trợ hoàn trả **50%** tiền giữ chỗ (50% còn lại bù đắp chi phí gia nhiệt lò đá muối & chuẩn bị tinh dầu).
@@ -289,28 +511,28 @@ Quý cư dân có thể vào mục **Hồ Sơ Cư Dân & Định Danh** để c�
 Quý cư dân có thể vào tab **Đăng Ký Đặt Chỗ & Vé Điện Tử** để đặt phòng hoặc bấm nút **Hủy Lịch & Hoàn Tiền** trực tiếp trên vé đã đặt rất tiện lợi ạ!`;
   }
 
-  // 6. Inquiries about Door Access / Smart Lock / Visitors
-  if (text.includes('cửa') || text.includes('khóa') || text.includes('faceid') || text.includes('thẻ') || text.includes('khách') || text.includes('mã số')) {
+  // 9. Inquiries about Door Access / Smart Lock
+  if (text.includes('cửa') || text.includes('khóa') || text.includes('faceid') || text.includes('thẻ') || text.includes('chuông')) {
     return `Dạ thưa Quý cư dân ${residentName}, hệ thống cửa thông minh căn hộ ${targetAptCode} hỗ trợ 4 cách mở cửa rất tiện lợi:
 
-1. **Nhận diện khuôn mặt:** Quét siêu nhanh chỉ trong 1 giây ngay trước cửa.
-2. **Thẻ cư dân (Thẻ chip):** Chạm nhẹ thẻ vào khóa là cửa tự động mở.
+1. **Nhận diện khuôn mặt (FaceID):** Quét siêu nhanh chỉ trong 1 giây ngay trước cửa.
+2. **Thẻ cư dân (Thẻ chip NFC):** Chạm nhẹ thẻ vào khóa là cửa tự động mở.
 3. **Mã số mở cửa cho khách:** Quý vị có thể tạo mã OTP tạm thời dùng 1 lần hoặc theo giờ để gửi cho người thân/người giao hàng.
 4. **Mở từ xa qua chuông hình:** Xem trực tiếp camera khách bấm chuông và mở cửa ngay trên điện thoại.
 
 *Tính năng an toàn:* Cửa tự động khóa sau 5 giây, có khóa riêng tư ban đêm và chuông báo động to khi phát hiện va đập cạy cửa.`;
   }
 
-  // 7. Default Helpful Overview
-  const facilityNames = DEMO_FACILITIES.map((f) => f.name.split('(')[0].trim()).join(', ');
-  return `Kính chào Quý cư dân ${residentName} (Căn hộ ${targetAptCode} - ${apt.block_code})!
+  // 10. Default Helpful Overview
+  return `Kính chào Quý cư dân ${residentName} (Căn hộ ${targetAptCode} - Tòa A Sapphire)!
 
-Tôi là **Trợ lý ảo Skyline**, luôn sẵn sàng hỗ trợ Quý vị 24/7. Tôi có thể giải đáp ngay các thông tin về:
+Tôi là **Trợ lý Ảo Skyline**, luôn sẵn sàng hỗ trợ Quý vị 24/7. Tôi có thể giải đáp ngay các thông tin về:
 * 💳 **Hóa đơn & Biểu phí:** Tra cứu tiền điện, tiền nước, phí gửi xe mới nhất.
-* 🏊 **Tiện ích tòa nhà:** Giờ mở cửa ${facilityNames}.
-* 🎫 **Vé & Lịch hẹn:** Kiểm tra mã vé tiện ích đã đặt và hướng dẫn hoàn tiền khi bận đột xuất.
-* 🔧 **Báo hỏng kỹ thuật:** Tiếp nhận sự cố với cam kết thợ có mặt trong 60 phút.
-* 🔑 **Cửa thông minh:** Hướng dẫn cài đặt khuôn mặt, thẻ từ và mã đón khách.
+* 🏊 **Tiện ích tòa nhà (25 Tầng):** Giờ mở cửa hồ bơi chân mây Tầng 25, gym 24/7 Tầng 3, phòng xông hơi VIP Tầng 3, Sky Kids Tầng 1 hay tiệc nướng BBQ Tầng 25.
+* 🎫 **Vé & Lịch hẹn:** Kiểm tra mã vé tiện ích đã đặt và hướng dẫn hoàn tiền khi bận việc đột xuất.
+* 🎟️ **Khách thăm & QR Code:** Tra cứu mã PIN và danh sách thẻ khách thăm đã đăng ký.
+* 🛠️ **Báo hỏng kỹ thuật:** Tiếp nhận sự cố với cam kết thợ có mặt trong 60 phút.
+* 🚪 **Cửa thông minh:** Hướng dẫn cài đặt khuôn mặt, thẻ từ và mã đón khách.
 
 Quý cư dân cần tôi hỗ trợ nội dung nào ngay bây giờ ạ? (Hotline Ban Quản Lý: **1900 8899**).`;
 }
@@ -329,9 +551,9 @@ export async function askGeminiConcierge(
   history: ChatMessage[] = [],
   contextOrAptCode: string | ConciergeContext = '12A05'
 ): Promise<string> {
-  // If API key is not configured, immediately use smart project fallback
-  if (!GEMINI_API_KEY) {
-    console.info('GEMINI_API_KEY is not set. Using smart project data fallback engine.');
+  // If API key is not configured or placeholder, immediately use smart project fallback
+  if (!GEMINI_API_KEY || !GEMINI_API_KEY.startsWith('AIza')) {
+    console.info('GEMINI_API_KEY is not configured with standard format. Using smart project data engine.');
     return generateSmartProjectFallback(message, contextOrAptCode);
   }
 
@@ -394,7 +616,7 @@ export async function askGeminiConcierge(
     );
 
     try {
-      // Attempt with Fallback Model (gemini-1.5-flash) with 6s timeout
+      // Attempt with Fallback Model (gemini-2.5-flash-lite) with 6s timeout
       return await tryModel(GEMINI_FALLBACK_MODEL, FALLBACK_TIMEOUT_MS);
     } catch (errFallback: any) {
       console.warn(
