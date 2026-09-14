@@ -291,21 +291,21 @@ Tôi là **Trợ lý ảo Skyline**, luôn sẵn sàng hỗ trợ Quý vị tra 
           </div>
         </div>
 
-        {/* Right Full Chat Screen (8 Cols) - Borderless Modern Luxury */}
-        <div className="lg:col-span-8 bg-[#0D1219] shadow-2xl overflow-hidden rounded-2xl border-0 flex flex-col h-[650px]">
+        {/* Right Full Chat Screen (8 Cols) - Borderless Sharp Luxury */}
+        <div className="lg:col-span-8 bg-[#0D1219] shadow-2xl overflow-hidden rounded-none border-0 flex flex-col h-[650px]">
           {/* Chat Topbar */}
-          <div className="p-4 bg-[#141B24] flex items-center justify-between flex-shrink-0 border-0">
+          <div className="p-4 bg-[#141B24] flex items-center justify-between flex-shrink-0 border-0 rounded-none">
             <div className="flex items-center gap-2.5">
               <div className="relative">
-                <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-[#C5A880]/20 to-[#C5A880]/35 flex items-center justify-center text-[#C5A880] border-0">
+                <div className="w-9 h-9 rounded-none bg-gradient-to-tr from-[#C5A880]/20 to-[#C5A880]/35 flex items-center justify-center text-[#C5A880] border-0">
                   <Bot className="w-4 h-4" />
                 </div>
-                <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-emerald-400 rounded-full border-2 border-[#141B24]"></span>
+                <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-emerald-400 rounded-none border-2 border-[#141B24]"></span>
               </div>
               <div>
                 <div className="text-xs font-bold text-white flex items-center gap-2">
                   <span>Skyline AI Assistant</span>
-                  <span className="px-2 py-0.5 bg-emerald-950/80 text-emerald-400 text-[9px] font-mono font-bold uppercase rounded-full border-0">
+                  <span className="px-2 py-0.5 bg-emerald-950/80 text-emerald-400 text-[9px] font-mono font-bold uppercase rounded-none border-0">
                     Live
                   </span>
                 </div>
@@ -320,7 +320,7 @@ Tôi là **Trợ lý ảo Skyline**, luôn sẵn sàng hỗ trợ Quý vị tra 
               onClick={() => {
                 setMessages([messages[0]]);
               }}
-              className="p-2 hover:bg-white/10 text-gray-400 hover:text-white rounded-full transition-colors text-xs flex items-center gap-1.5 border-0"
+              className="p-2 hover:bg-white/10 text-gray-400 hover:text-white rounded-none transition-colors text-xs flex items-center gap-1.5 border-0"
               title="Làm mới đoạn hội thoại"
             >
               <RefreshCw className="w-3.5 h-3.5" /> Làm mới
@@ -337,8 +337,8 @@ Tôi là **Trợ lý ảo Skyline**, luôn sẵn sàng hỗ trợ Quý vị tra 
                 <div
                   className={`relative ${
                     m.sender === 'user'
-                      ? 'max-w-[85%] p-3.5 text-[13px] leading-relaxed rounded-2xl rounded-tr-sm bg-gradient-to-r from-[#C5A880] to-[#B39366] text-[#0B0F15] font-medium shadow-md border-0'
-                      : 'max-w-[88%] p-4 text-[13px] leading-relaxed rounded-2xl rounded-tl-sm bg-[#141B24] text-gray-200 shadow-sm border-0 space-y-2'
+                      ? 'max-w-[85%] p-3.5 text-[13px] leading-relaxed rounded-none bg-gradient-to-r from-[#C5A880] to-[#B39366] text-[#0B0F15] font-medium shadow-md border-0'
+                      : 'max-w-[88%] p-4 text-[13px] leading-relaxed rounded-none bg-[#141B24] text-gray-200 shadow-sm border-0 space-y-2'
                   }`}
                 >
                   <AiMessageFormatter content={m.text} isUser={m.sender === 'user'} />
@@ -358,7 +358,7 @@ Tôi là **Trợ lý ảo Skyline**, luôn sẵn sàng hỗ trợ Quý vị tra 
                       <button
                         type="button"
                         onClick={() => handleCopyMessage(m.id, m.text)}
-                        className="hover:text-white flex items-center gap-1 px-2 py-0.5 hover:bg-white/5 transition-colors text-gray-400 ml-2 flex-shrink-0 rounded-md border-0"
+                        className="hover:text-white flex items-center gap-1 px-2 py-0.5 hover:bg-white/5 transition-colors text-gray-400 ml-2 flex-shrink-0 rounded-none border-0"
                         title="Sao chép nội dung câu trả lời"
                       >
                         {copiedMessageId === m.id ? (
@@ -381,7 +381,7 @@ Tôi là **Trợ lý ảo Skyline**, luôn sẵn sàng hỗ trợ Quý vị tra 
                     <button
                       type="button"
                       onClick={() => handleAction(m.actionButton!.moduleId)}
-                      className="mt-2.5 w-full py-2.5 px-4 bg-gradient-to-r from-[#C5A880] to-[#B59569] hover:from-white hover:to-white text-[#0B0F15] font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition-all rounded-xl shadow border-0"
+                      className="mt-2.5 w-full py-2.5 px-4 bg-gradient-to-r from-[#C5A880] to-[#B59569] hover:from-white hover:to-white text-[#0B0F15] font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition-all rounded-none shadow border-0"
                     >
                       <Zap className="w-3.5 h-3.5" /> {m.actionButton.label} →
                     </button>
@@ -400,7 +400,7 @@ Tôi là **Trợ lý ảo Skyline**, luôn sẵn sàng hỗ trợ Quý vị tra 
                         key={idx}
                         type="button"
                         onClick={() => handleSendMessage(sug)}
-                        className="text-xs px-3.5 py-1.5 bg-[#16202D] hover:bg-[#212E40] text-gray-300 hover:text-[#C5A880] transition-colors rounded-full text-left border-0 shadow-sm"
+                        className="text-xs px-3.5 py-1.5 bg-[#16202D] hover:bg-[#212E40] text-gray-300 hover:text-[#C5A880] transition-colors rounded-none text-left border-0 shadow-sm"
                       >
                         {sug}
                       </button>
@@ -412,11 +412,11 @@ Tôi là **Trợ lý ảo Skyline**, luôn sẵn sàng hỗ trợ Quý vị tra 
 
             {/* AI Waveform Typing Indicator */}
             {isTyping && (
-              <div className="flex items-center gap-3 p-3.5 bg-[#141B24] rounded-2xl w-fit animate-chat-bubble shadow-sm border-0">
+              <div className="flex items-center gap-3 p-3.5 bg-[#141B24] rounded-none w-fit animate-chat-bubble shadow-sm border-0">
                 <div className="flex items-center gap-1 text-[#C5A880]">
-                  <span className="w-2 h-2 rounded-full bg-[#C5A880] animate-typing-dot-1"></span>
-                  <span className="w-2 h-2 rounded-full bg-amber-400 animate-typing-dot-2"></span>
-                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-typing-dot-3"></span>
+                  <span className="w-2 h-2 rounded-none bg-[#C5A880] animate-typing-dot-1"></span>
+                  <span className="w-2 h-2 rounded-none bg-amber-400 animate-typing-dot-2"></span>
+                  <span className="w-2 h-2 rounded-none bg-emerald-400 animate-typing-dot-3"></span>
                 </div>
                 <span className="text-xs text-gray-300 font-mono">
                   Trợ lý Skyline đang tra cứu Sổ tay Cư dân...
@@ -427,26 +427,26 @@ Tôi là **Trợ lý ảo Skyline**, luôn sẵn sàng hỗ trợ Quý vị tra 
             <div ref={messagesEndRef} />
           </div>
 
-          {/* Input Box - Borderless Modern Layout */}
+          {/* Input Box - Borderless Sharp Layout */}
           <form
             onSubmit={(e) => {
               e.preventDefault();
               handleSendMessage();
             }}
-            className="p-3.5 bg-[#0E131B] flex items-center gap-2 flex-shrink-0 border-0"
+            className="p-3.5 bg-[#0E131B] flex items-center gap-2 flex-shrink-0 border-0 rounded-none"
           >
             <input
               type="text"
               value={inputText}
               onChange={(e) => setInputText(e.target.value)}
               placeholder="Nhập câu hỏi (VD: 'hồ bơi', 'tiền nước rò rỉ', 'sửa ống nước', 'faceid')..."
-              className="flex-1 bg-[#141B24] p-3 text-xs text-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-[#C5A880]/40 transition-colors rounded-xl border-0"
+              className="flex-1 bg-[#141B24] p-3 text-xs text-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-[#C5A880]/40 transition-colors rounded-none border-0"
             />
 
             <button
               type="submit"
               disabled={!inputText.trim() || isTyping}
-              className={`px-5 py-3 rounded-xl font-bold text-xs uppercase tracking-wider transition-all flex items-center gap-1.5 border-0 ${
+              className={`px-5 py-3 rounded-none font-bold text-xs uppercase tracking-wider transition-all flex items-center gap-1.5 border-0 ${
                 inputText.trim() && !isTyping
                   ? 'bg-[#C5A880] text-[#0D1117] hover:bg-white shadow'
                   : 'bg-[#1A222F] text-gray-500 cursor-not-allowed'
