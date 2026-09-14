@@ -80,7 +80,7 @@ export default function TicketService() {
 
       {createdSuccess && (
         <div className="p-3 bg-emerald-950 border border-emerald-500 text-emerald-300 text-xs flex items-center gap-2">
-          <CheckCircle2 className="w-4 h-4" /> Phiếu yêu cầu đã được tiếp nhận và phân công vào hàng đợi Kanban BQL!
+          <CheckCircle2 className="w-4 h-4" /> Yêu cầu sửa chữa đã được tiếp nhận và chuyển đến đội ngũ kỹ thuật của Ban Quản Lý!
         </div>
       )}
 
@@ -89,7 +89,7 @@ export default function TicketService() {
         <form onSubmit={handleCreateTicket} className="p-6 bg-[#121820] border border-[#C5A880] space-y-4">
           <div className="flex items-center justify-between border-b border-[#222B35] pb-2 text-xs">
             <span className="font-serif font-bold text-white uppercase tracking-wider">Tạo Phiếu Phản Ánh Kỹ Thuật</span>
-            <span className="text-gray-400">Cam kết phản hồi &lt; 15 phút</span>
+            <span className="text-gray-400">Cam kết thợ có mặt trong 15 - 60 phút</span>
           </div>
 
           <div className="space-y-1.5">
@@ -107,10 +107,10 @@ export default function TicketService() {
           {/* AI NLP Indicator */}
           <div className="p-3 bg-[#161B22] border border-[#222B35] flex items-center justify-between text-xs">
             <span className="text-gray-400 flex items-center gap-1.5">
-              <Sparkles className="w-3.5 h-3.5 text-[#C5A880]" /> AI Phân loại tự động:
+              <Sparkles className="w-3.5 h-3.5 text-[#C5A880]" /> Tự động nhận diện hạng mục:
             </span>
             <span className="px-2 py-0.5 bg-[#1C2533] border border-[#C5A880] text-[#C5A880] font-mono font-bold">
-              {aiDetectedCat} (Độ ưu tiên: {aiDetectedCat === 'Nước' ? 'Khẩn Cấp' : 'Bình Thường'})
+              {aiDetectedCat} (Mức độ: {aiDetectedCat === 'Nước' ? 'Khẩn Cấp' : 'Bình Thường'})
             </span>
           </div>
 
@@ -225,7 +225,7 @@ export default function TicketService() {
               </div>
               <p className="text-gray-200">{t.content}</p>
               <div className="flex justify-between text-[11px] text-gray-500 pt-1 border-t border-[#222B35]">
-                <span>Phân loại AI: <strong className="text-gray-300">{t.ai_category}</strong></span>
+                <span>Hạng mục: <strong className="text-gray-300">{t.ai_category}</strong></span>
                 <span>Kỹ thuật viên: <strong className="text-gray-300">{t.assigned_technician || 'Đang điều phối'}</strong></span>
               </div>
             </div>

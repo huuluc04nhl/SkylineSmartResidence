@@ -45,35 +45,35 @@ interface AiConciergePageProps {
 
 const KNOWLEDGE_CATEGORIES = [
   {
-    category: '🏊 Tiện Ích 5 Sao (Sky Pool & Gym)',
+    category: '🏊 Tiện Ích Hồ Bơi & Phòng Gym',
     prompts: [
-      'Hồ bơi vô cực Tầng 25 mở cửa đến mấy giờ?',
-      'Quy định đặt tiệc BBQ ngoài trời Tầng 25',
-      'Hạn mức lượt sử dụng phòng Gym miễn phí/tháng',
+      'Hồ bơi vô cực mở cửa từ mấy giờ đến mấy giờ?',
+      'Cách đăng ký sử dụng tiện ích trên ứng dụng',
+      'Hạn mức số lượt sử dụng hồ bơi miễn phí mỗi tháng',
     ]
   },
   {
-    category: '💳 Hóa Đơn & Tiền Điện Nước (AI Anomaly)',
+    category: '💳 Hóa Đơn & Tiền Điện Nước Sinh Hoạt',
     prompts: [
-      'Hóa đơn sinh hoạt tháng này của Căn hộ 12A05?',
-      'AI cảnh báo rò rỉ nước đêm là gì, xử lý sao?',
-      'Cách thanh toán hóa đơn online qua VNPAY / MoMo',
+      'Xem hóa đơn sinh hoạt tháng này của căn hộ',
+      'Cảnh báo lưu lượng nước ban đêm nghĩa là gì?',
+      'Hướng dẫn các hình thức thanh toán phí tiện lợi',
     ]
   },
   {
-    category: '🔧 Báo Hỏng & Kỹ Thuật (SLA 60 Phút)',
+    category: '🔧 Báo Hỏng & Hỗ Trợ Kỹ Thuật Nhanh',
     prompts: [
-      'Tạo yêu cầu sửa đường ống nước khẩn cấp',
-      'Thời gian kỹ sư BQL có mặt xử lý theo SLA?',
-      'Quy định thi công nội thất và tiếng ồn',
+      'Báo hỏng rò rỉ nước khẩn cấp cần thợ lên ngay',
+      'Bao lâu thì kỹ thuật viên có mặt tại căn hộ?',
+      'Quy định về thời gian thi công, khoan đục',
     ]
   },
   {
-    category: '🛡️ An Ninh, Gửi Xe & FaceID',
+    category: '🛡️ Cửa Thông Minh & An Toàn Căn Hộ',
     prompts: [
-      'Cách cấp quyền mở cửa FaceID cho người nhà',
-      'Thủ tục đăng ký vé gửi xe ô tô tự động Hầm B1',
-      'Tạo mã QR đón khách lên thẳng căn hộ',
+      'Cách cài đặt nhận diện khuôn mặt cho người thân',
+      'Thủ tục đăng ký vé gửi xe ô tô tại tầng hầm',
+      'Cách tạo mã đón bạn bè lên chơi căn hộ',
     ]
   }
 ];
@@ -86,14 +86,16 @@ export default function AiConciergePage({ currentUser, onNavigateModule }: AiCon
     {
       id: 'm-0',
       sender: 'ai',
-      text: `Kính chào Quý cư dân ${residentName} (Căn ${aptCode})! Tôi là Skyline AI Concierge - Trợ lý số thông minh vận hành trên mô hình RAG ngữ nghĩa chuyên sâu của Tòa nhà SKYLINE Smart Residence. Tôi có thể hỗ trợ tra cứu quy định, tiện ích 5 sao, phân tích hóa đơn điện nước hoặc tạo phiếu kỹ thuật khẩn cấp cho căn hộ của bạn ngay bây giờ!`,
+      text: `Kính chào Quý cư dân **${residentName}** (Căn **${aptCode}**)! 
+
+Tôi là **Trợ lý ảo Skyline**, luôn sẵn sàng hỗ trợ Quý vị tra cứu thông tin tòa nhà, xem lịch hoạt động của hồ bơi, phòng gym, giải đáp biểu phí sinh hoạt hoặc tiếp nhận các yêu cầu kỹ thuật khẩn cấp bất cứ lúc nào ạ!`,
       timestamp: '08:00',
-      ragSource: 'Sổ Tay Cư Dân SKYLINE 2026 • Quy Chuẩn Vận Hành Đô Thị Thông Minh',
+      ragSource: 'Sổ tay hướng dẫn cư dân Skyline Smart Residence',
       suggestions: [
-        'Hồ bơi vô cực Tầng 25 mở cửa mấy giờ?',
-        'Hóa đơn tháng này của Căn 12A05?',
-        'Cách cấp quyền FaceID cho người nhà',
-        'Báo sửa ống nước khẩn cấp'
+        'Hồ bơi vô cực mở cửa từ mấy giờ đến mấy giờ?',
+        'Xem hóa đơn sinh hoạt tháng này của căn hộ',
+        'Cách cài đặt nhận diện khuôn mặt cho người thân',
+        'Báo hỏng rò rỉ nước khẩn cấp cần thợ lên ngay'
       ]
     }
   ]);
@@ -168,17 +170,17 @@ export default function AiConciergePage({ currentUser, onNavigateModule }: AiCon
       const lower = query.toLowerCase();
 
       if (lower.includes('hồ bơi') || lower.includes('pool') || lower.includes('gym') || lower.includes('tiện ích') || lower.includes('tennis') || lower.includes('pickleball')) {
-        actionButton = { label: 'Mở Thẻ Quẹt & Đặt Tiện Ích', moduleId: 'resident-facilities' };
+        actionButton = { label: 'Mở Thẻ & Đăng Ký Tiện Ích', moduleId: 'resident-facilities' };
         suggestions = ['Giờ mở cửa Hồ bơi vô cực?', 'Đặt sân Pickleball tầng 38', 'Hạn mức lượt sử dụng tiện ích'];
       } else if (lower.includes('hóa đơn') || lower.includes('tiền') || lower.includes('nước') || lower.includes('thanh toán') || lower.includes('phí')) {
-        actionButton = { label: 'Xem Chi Tiết & Thanh Toán Hóa Đơn', moduleId: 'resident-finance' };
+        actionButton = { label: 'Xem & Thanh Toán Hóa Đơn', moduleId: 'resident-finance' };
         suggestions = ['Biểu phí gửi xe ô tô, xe máy', 'Hạn thanh toán phí dịch vụ hàng tháng', 'Cách thanh toán chuyển khoản'];
       } else if (lower.includes('sửa') || lower.includes('hỏng') || lower.includes('kỹ thuật') || lower.includes('sự cố')) {
-        actionButton = { label: 'Tạo Phiếu Kỹ Thuật Khẩn Cấp (SLA 60p)', moduleId: 'resident-tickets' };
-        suggestions = ['Thời gian kỹ sư BQL có mặt?', 'Hotline hỗ trợ kỹ thuật tòa nhà'];
+        actionButton = { label: 'Yêu Cầu Hỗ Trợ Kỹ Thuật (Hỗ Trợ Trong 60 Phút)', moduleId: 'resident-tickets' };
+        suggestions = ['Thời gian kỹ thuật viên có mặt?', 'Hotline hỗ trợ kỹ thuật tòa nhà'];
       } else if (lower.includes('faceid') || lower.includes('cửa') || lower.includes('thẻ') || lower.includes('người nhà') || lower.includes('khóa')) {
-        actionButton = { label: 'Kiểm Soát Cửa Thông Minh & Thẻ NFC', moduleId: 'resident-home' };
-        suggestions = ['Cách đăng ký nhận diện khuôn mặt FaceID', 'Thêm thành viên căn hộ', 'Tạo mã PIN khách tạm thời'];
+        actionButton = { label: 'Quản Lý Khóa Cửa & Thẻ Cư Dân', moduleId: 'resident-smarthome' };
+        suggestions = ['Cách cài đặt nhận diện khuôn mặt', 'Thêm thành viên căn hộ', 'Tạo mã số cho khách'];
       }
 
       const aiMsg: AiMessage = {
@@ -186,7 +188,7 @@ export default function AiConciergePage({ currentUser, onNavigateModule }: AiCon
         sender: 'ai',
         text: aiReply,
         timestamp: new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }),
-        ragSource: 'Google Gemini 2.5 Flash • Kho Tri Thức Skyline Smart Residence',
+        ragSource: 'Sổ tay hướng dẫn cư dân Skyline Smart Residence',
         actionButton,
         suggestions,
       };
@@ -201,7 +203,7 @@ export default function AiConciergePage({ currentUser, onNavigateModule }: AiCon
           sender: 'ai',
           text: 'Không thể kết nối đến máy chủ AI. Quý cư dân vui lòng kiểm tra kết nối hoặc liên hệ Hotline BQL 1900 8899.',
           timestamp: new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }),
-          ragSource: 'Lỗi kết nối ngoại tuyến',
+          ragSource: 'Sổ tay cư dân',
         },
       ]);
     } finally {
@@ -281,10 +283,10 @@ export default function AiConciergePage({ currentUser, onNavigateModule }: AiCon
           {/* AI Security & Accuracy Card */}
           <div className="p-4 bg-[#161B22] border border-[#222B35] text-[11px] text-gray-400 space-y-2">
             <div className="text-white font-bold flex items-center gap-1.5">
-              <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" /> Chuẩn Bảo Mật & RAG Kiểm Định
+              <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" /> Bảo Mật & Thông Tin Chính Xác
             </div>
             <p className="leading-relaxed">
-              Dữ liệu trò chuyện được mã hóa theo tiêu chuẩn AES-256. Câu trả lời được đối soát trực tiếp từ Cơ sở dữ liệu pháp lý & vận hành của Ban Quản Lý SKYLINE.
+              Mọi cuộc trò chuyện đều được bảo mật an toàn riêng tư. Nội dung giải đáp được đối soát và cập nhật liên tục theo quy chế mới nhất từ Ban Quản Lý Tòa Nhà.
             </p>
           </div>
         </div>

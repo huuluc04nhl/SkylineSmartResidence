@@ -850,7 +850,7 @@ export default function SmartFacilityPass({ currentUser }: SmartFacilityPassProp
       )}
 
       {/* ============================================================= */}
-      {/* MODAL 1: CHECK-IN CỔNG TURNSTILE THÔNG MINH (QUẸT THẺ / FACE) */}
+      {/* MODAL 1: CỔNG VÀO TIỆN ÍCH THÔNG MINH (QUẸT THẺ / KHUÔN MẶT) */}
       {/* ============================================================= */}
       {turnstileModalFac && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md animate-fadeIn p-4">
@@ -861,7 +861,7 @@ export default function SmartFacilityPass({ currentUser }: SmartFacilityPassProp
                 <DoorOpen className="w-5 h-5 text-[#C5A880]" />
                 <div>
                   <h4 className="font-serif text-sm font-bold text-white">
-                    Cổng Kiểm Soát Turnstile AI: {turnstileModalFac.name}
+                    Cổng Vào Tiện Ích: {turnstileModalFac.name}
                   </h4>
                   <div className="text-[10px] text-gray-400 font-mono">{turnstileModalFac.location}</div>
                 </div>
@@ -885,7 +885,7 @@ export default function SmartFacilityPass({ currentUser }: SmartFacilityPassProp
               ) : (
                 <>
                   <div className="text-xs text-gray-300 leading-relaxed">
-                    Chọn phương thức xác thực để mở cổng Barrier tự động:
+                    Chọn cách mở cửa để vào tiện ích:
                   </div>
 
                   {/* Method Switcher */}
@@ -900,8 +900,8 @@ export default function SmartFacilityPass({ currentUser }: SmartFacilityPassProp
                       }`}
                     >
                       <CreditCard className="w-6 h-6" />
-                      <span>Thẻ Cư Dân NFC</span>
-                      <span className="text-[9px] font-mono font-normal">Chạm đầu đọc RFID</span>
+                      <span>Quẹt Thẻ Cư Dân</span>
+                      <span className="text-[9px] font-mono font-normal">Chạm thẻ vào máy quét</span>
                     </button>
 
                     <button
@@ -914,8 +914,8 @@ export default function SmartFacilityPass({ currentUser }: SmartFacilityPassProp
                       }`}
                     >
                       <ScanFace className="w-6 h-6" />
-                      <span>FaceID AI 3D</span>
-                      <span className="text-[9px] font-mono font-normal">Quét camera AI</span>
+                      <span>Nhận Diện Khuôn Mặt</span>
+                      <span className="text-[9px] font-mono font-normal">Nhìn vào camera</span>
                     </button>
                   </div>
 
@@ -923,7 +923,7 @@ export default function SmartFacilityPass({ currentUser }: SmartFacilityPassProp
                   <div className="p-3 bg-[#0D1117] border border-[#222B35] rounded-lg text-xs font-mono text-gray-300 space-y-1">
                     <div className="text-white font-bold">{userName} (Căn {aptCode})</div>
                     <div className="text-[10px] text-gray-400">
-                      {turnstileMethod === 'NFC' ? `Mã chip NFC: NFC-SKY-${aptCode}-01` : 'Nhận diện khuôn mặt eKYC Skyline'}
+                      {turnstileMethod === 'NFC' ? 'Thẻ cư dân chính của căn hộ' : 'Khuôn mặt cư dân đã kích hoạt'}
                     </div>
                   </div>
 
@@ -937,12 +937,12 @@ export default function SmartFacilityPass({ currentUser }: SmartFacilityPassProp
                     {isTurnstileScanning ? (
                       <>
                         <Wifi className="w-4 h-4 animate-spin rotate-90" />
-                        <span>Đang Xác Thực Qua Cổng...</span>
+                        <span>Đang Mở Cửa Vào Tiện Ích...</span>
                       </>
                     ) : (
                       <>
                         <Check className="w-4 h-4" />
-                        <span>Xác Nhận Check-in Mở Cổng</span>
+                        <span>Mở Cửa Vào Tiện Ích</span>
                       </>
                     )}
                   </button>

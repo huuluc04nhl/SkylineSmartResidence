@@ -459,12 +459,12 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
           </div>
           <h2 className="font-serif text-2xl text-white font-bold mt-1">
             {isOwner 
-              ? 'Hồ Sơ Cá Nhân, Thẻ e-KYC & Đổi Mật Khẩu' 
+              ? 'Hồ Sơ Cư Dân, Thẻ Định Danh & Đổi Mật Khẩu' 
               : 'Hồ Sơ Cá Nhân Thành Viên & Đổi Mật Khẩu'}
           </h2>
           <p className="text-xs text-gray-400 mt-0.5">
             {isOwner
-              ? `Căn hộ: ${aptCode} • Quản lý hồ sơ chủ hộ, thẻ e-KYC, cấp quyền và đổi mật khẩu các tài khoản`
+              ? `Căn hộ: ${aptCode} • Quản lý hồ sơ cư dân, thẻ định danh, cấp quyền vào cửa và đổi mật khẩu`
               : `Căn hộ: ${aptCode} • Thông tin cá nhân và thay đổi mật khẩu đăng nhập của thành viên`}
           </p>
         </div>
@@ -477,24 +477,24 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
               onClick={() => setIsOcrModalOpen(true)}
               className="px-4 py-2 bg-gradient-to-r from-[#1E2631] to-[#121820] border border-[#C5A880] text-[#C5A880] hover:text-white hover:border-white text-xs font-bold uppercase tracking-wider flex items-center gap-2 transition-all shadow rounded-none"
             >
-              <Scan className="w-4 h-4 text-[#C5A880]" /> Tự Động Quét Căn Cước
+              <Scan className="w-4 h-4 text-[#C5A880]" /> Quét Thẻ Căn Cước
             </button>
 
             {ekycStatus === 'VERIFIED' && (
               <span className="px-3 py-1 bg-emerald-950/80 border border-emerald-500 text-emerald-300 text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 rounded-none">
-                <ShieldCheck className="w-4 h-4 text-emerald-400" /> Thẻ e-KYC Đã Xác Thực
+                <ShieldCheck className="w-4 h-4 text-emerald-400" /> Đã Xác Thực Căn Cước
               </span>
             )}
 
             {ekycStatus === 'PENDING' && (
               <span className="px-3 py-1 bg-amber-950/80 border border-amber-500 text-amber-300 text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 rounded-none animate-pulse">
-                <Clock className="w-4 h-4 text-amber-400" /> Đang Chờ BQL Duyệt
+                <Clock className="w-4 h-4 text-amber-400" /> Đang Chờ Ban Quản Lý Duyệt
               </span>
             )}
 
             {ekycStatus === 'REJECTED' && (
               <span className="px-3 py-1 bg-rose-950/80 border border-rose-500 text-rose-300 text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 rounded-none">
-                <XCircle className="w-4 h-4 text-rose-400" /> BQL Yêu Cầu Chụp Lại
+                <XCircle className="w-4 h-4 text-rose-400" /> Yêu Cầu Chụp Lại Thẻ
               </span>
             )}
 
@@ -536,7 +536,7 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
               : 'border-transparent text-gray-400 hover:text-gray-200'
           }`}
         >
-          <ScanFace className="w-4 h-4" /> 2. Định Danh e-KYC & FaceID Sinh Trắc Học
+          <ScanFace className="w-4 h-4" /> 2. Xác Thực Căn Cước & Nhận Diện Khuôn Mặt
         </button>
 
         <button
@@ -658,15 +658,15 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
               <div className="flex items-center gap-2">
                 {ekycStatus === 'VERIFIED' ? (
                   <span className="px-3 py-1 bg-emerald-950/80 border border-emerald-500 text-emerald-300 text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 rounded-none shadow-sm">
-                    <ShieldCheck className="w-4 h-4 text-emerald-400" /> Đã Xác Thực e-KYC Bởi BQL
+                    <ShieldCheck className="w-4 h-4 text-emerald-400" /> Đã Xác Thực Hồ Sơ Cư Dân
                   </span>
                 ) : ekycStatus === 'PENDING' ? (
                   <span className="px-3 py-1 bg-amber-950/80 border border-amber-500 text-amber-300 text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 rounded-none animate-pulse">
-                    <Clock className="w-4 h-4 text-amber-400" /> Đang Chờ BQL Phê Duyệt
+                    <Clock className="w-4 h-4 text-amber-400" /> Đang Chờ Ban Quản Lý Phê Duyệt
                   </span>
                 ) : (
                   <span className="px-3 py-1 bg-rose-950/80 border border-rose-500 text-rose-300 text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 rounded-none">
-                    <AlertCircle className="w-4 h-4 text-rose-400" /> Chưa Hoàn Tất e-KYC
+                    <AlertCircle className="w-4 h-4 text-rose-400" /> Chưa Xác Thực Căn Cước
                   </span>
                 )}
               </div>
@@ -681,15 +681,15 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
               <Lock className="w-4 h-4 text-[#C5A880] mt-0.5 flex-shrink-0" />
               <div>
                 <strong className="text-white block font-semibold mb-0.5">
-                  Quy định an ninh & pháp lý cư trú tòa nhà Skyline:
+                  Quy định an ninh & an toàn cư dân tòa nhà Skyline:
                 </strong>
                 {ekycStatus === 'VERIFIED' ? (
                   <span>
-                    Thông tin định danh gắn liền với Hợp đồng sở hữu căn hộ và quyền sinh trắc học FaceID ra vào cửa/thang máy. Cư dân không thể tự ý chỉnh sửa để chống giả mạo hồ sơ căn hộ. Nếu cần đính chính hoặc cấp đổi thẻ CCCD mới, vui lòng bấm nút <strong>[Yêu Cầu Cập Nhật CCCD Mới]</strong> bên dưới để gửi BQL duyệt lại.
+                    Thông tin định danh gắn liền với Hợp đồng sở hữu căn hộ và quyền nhận diện khuôn mặt mở cửa/thang máy. Cư dân không thể tự ý chỉnh sửa để chống giả mạo hồ sơ căn hộ. Nếu cần đính chính hoặc cấp đổi thẻ CCCD mới, vui lòng bấm nút <strong>[Cập Nhật CCCD Mới]</strong> bên dưới để gửi Ban Quản Lý duyệt lại.
                   </span>
                 ) : (
                   <span>
-                    Hồ sơ định danh chưa được phê duyệt. Vui lòng quét thẻ CCCD thật và gửi hồ sơ để BQL đối chiếu, kích hoạt thẻ cư dân và quyền mở cửa FaceID.
+                    Hồ sơ định danh chưa được phê duyệt. Vui lòng quét thẻ CCCD thật và gửi hồ sơ để Ban Quản Lý đối chiếu, kích hoạt thẻ cư dân và quyền mở cửa cho gia đình.
                   </span>
                 )}
               </div>
@@ -988,7 +988,7 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
                     className="px-4 py-1.5 bg-[#C5A880] hover:bg-white text-[#0D1117] text-xs font-bold rounded-none flex items-center gap-1.5 transition-all shadow active:scale-95"
                   >
                     {isScanningOcr ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <ShieldCheck className="w-3.5 h-3.5" />}
-                    {ekycStatus === 'REJECTED' ? 'Gửi Lại BQL Phê Duyệt' : 'Gửi BQL Duyệt e-KYC'}
+                    {ekycStatus === 'REJECTED' ? 'Gửi Lại Ban Quản Lý Duyệt' : 'Gửi Ban Quản Lý Duyệt'}
                   </button>
                 )}
               </div>
@@ -1252,7 +1252,7 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
                   className="px-5 py-2.5 bg-[#C5A880] hover:bg-white text-[#0D1117] text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-2 shadow-lg rounded-none active:scale-[0.99]"
                 >
                   {isScanningOcr ? <RefreshCw className="w-4 h-4 animate-spin" /> : <ShieldCheck className="w-4 h-4" />}
-                  {isScanningOcr ? 'Đang Gửi Hồ Sơ...' : ekycStatus === 'REJECTED' ? 'Gửi Lại BQL Phê Duyệt' : ekycStatus === 'PENDING' ? 'Cập Nhật / Gửi Lại Hồ Sơ' : 'Gửi Hồ Sơ Cho BQL Duyệt'}
+                  {isScanningOcr ? 'Đang Gửi Hồ Sơ...' : ekycStatus === 'REJECTED' ? 'Gửi Lại Ban Quản Lý Duyệt' : ekycStatus === 'PENDING' ? 'Cập Nhật / Gửi Lại Hồ Sơ' : 'Gửi Ban Quản Lý Duyệt'}
                 </button>
               )}
             </div>
@@ -1396,11 +1396,11 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
 
               <div className="space-y-2 text-xs text-gray-300 bg-[#161B22] p-3.5 border border-[#222B35] rounded-none mt-4">
                 <div className="flex justify-between">
-                  <span className="text-gray-400">Tốc độ mở cửa / login:</span>
-                  <strong className="text-emerald-400 font-mono">&lt; 0.35 giây (Chuẩn 1:N AI)</strong>
+                  <span className="text-gray-400">Tốc độ mở cửa:</span>
+                  <strong className="text-emerald-400 font-mono">&lt; 0.5 giây (Mở cửa tức thì)</strong>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-400">Trạng thái xác thực FaceID:</span>
+                  <span className="text-gray-400">Trạng thái nhận diện:</span>
                   <span className={
                     enrolledFaceProfile?.status === 'ACTIVE' 
                       ? 'text-emerald-400 font-bold' 
@@ -1411,13 +1411,13 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
                     {enrolledFaceProfile?.status === 'ACTIVE' 
                       ? 'Đã Kích Hoạt Chính Thức ✓' 
                       : enrolledFaceProfile?.status === 'PENDING'
-                      ? 'Chờ BQL Thẩm Định ⏳'
+                      ? 'Chờ BQL Duyệt ⏳'
                       : 'Chưa Thu Thập Mẫu'}
                   </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-400">Quyền áp dụng:</span>
-                  <span className="text-gray-200">Đăng nhập FaceID, Barrier Sảnh A/B, Thang máy Tầng 12</span>
+                  <span className="text-gray-200">Mở Cửa Sảnh Đón, Thang Máy Tầng 12, Đăng Nhập Tài Khoản</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-400">Biển số xe:</span>
@@ -1431,7 +1431,7 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
               <div>
                 <div className="border-b border-[#222B35] pb-2 mb-4">
                   <span className="text-xs font-bold text-[#C5A880] uppercase tracking-wider flex items-center gap-2">
-                    <CreditCard className="w-4 h-4 text-[#C5A880]" /> Thẻ Định Danh Cư Dân Kim Loại (3D Smart Business Pass)
+                    <CreditCard className="w-4 h-4 text-[#C5A880]" /> Thẻ Cư Dân Điện Tử Skyline
                   </span>
                 </div>
                 <ResidentSmartCard currentUser={currentUser} />
@@ -1439,7 +1439,7 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
 
               <div className="p-3 bg-[#161B22] border border-[#222B35] rounded-none text-[11px] text-gray-400 flex items-center justify-between">
                 <span className="flex items-center gap-1.5 text-emerald-400 font-semibold">
-                  <CheckCircle2 className="w-3.5 h-3.5" /> Thẻ Điện Tử Đã Kích Hoạt NFC / RFID
+                  <CheckCircle2 className="w-3.5 h-3.5" /> Thẻ Cư Dân Đã Kích Hoạt (Chạm Là Mở)
                 </span>
                 <span className="font-mono text-gray-400">Mã thẻ: SKY-12A05-PASS</span>
               </div>

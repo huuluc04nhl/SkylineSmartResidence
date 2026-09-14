@@ -85,12 +85,12 @@ export default function Topbar({
 
   // Semantic search examples mapped from SRS Module 3.2.8
   const semanticSuggestions = [
-    { query: 'nhà bị rò rỉ nước', action: 'resident-tickets', label: 'Tạo yêu cầu sửa chữa ống nước (Ưu tiên Cao - SLA 1h)' },
-    { query: 'hóa đơn tháng 8', action: 'resident-finance', label: 'Xem chi tiết nợ & Hóa đơn điện nước tháng 08/2026' },
-    { query: 'quẹt thẻ hồ bơi', action: 'resident-facilities', label: 'Mở thẻ tiện ích 1-chạm Sky Pool & Gym' },
-    { query: 'điều khiển smart home', action: 'resident-smarthome', label: 'Mở trung tâm Smart Home Master căn 12A05' },
-    { query: 'cảnh báo camera khói lửa', action: 'admin-dashboard', label: 'Mở Bản đồ An ninh Live Alert (Hầm B1)' },
-    { query: 'báo cáo bất thường điện nước', action: 'admin-billing', label: 'Rà soát hóa đơn bôi đỏ bất thường AI (>50%)' },
+    { query: 'nhà bị rò rỉ nước', action: 'resident-tickets', label: 'Báo sửa chữa đường ống nước (Hỗ trợ khẩn trong 1 giờ)' },
+    { query: 'hóa đơn tháng 8', action: 'resident-finance', label: 'Xem chi tiết nợ & Hóa đơn điện nước tháng này' },
+    { query: 'quẹt thẻ hồ bơi', action: 'resident-facilities', label: 'Mở thẻ cư dân dùng Hồ bơi vô cực & Gym' },
+    { query: 'điều khiển smart home', action: 'resident-smarthome', label: 'Điều khiển khóa cửa & thiết bị căn hộ' },
+    { query: 'cảnh báo camera khói lửa', action: 'admin-dashboard', label: 'Bản đồ an ninh & Cảnh báo an toàn (Hầm B1)' },
+    { query: 'báo cáo bất thường điện nước', action: 'admin-billing', label: 'Kiểm tra mức tiêu thụ điện nước bất thường' },
   ];
 
   const filteredSuggestions = searchQuery.trim() === ''
@@ -139,13 +139,13 @@ export default function Topbar({
         </div>
       </div>
 
-      {/* Center: Module Smart Search (Semantic NLP) */}
+      {/* Center: Module Smart Search */}
       <div className="relative max-w-xs md:max-w-md w-full hidden sm:block mx-4">
         <div className="relative">
           <Search className="w-4 h-4 text-gray-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
           <input
             type="text"
-            placeholder="AI Smart Search (VD: 'rò nước', 'hóa đơn', 'hồ bơi')..."
+            placeholder="Tìm nhanh dịch vụ (VD: 'sửa nước', 'hóa đơn', 'hồ bơi')..."
             value={searchQuery}
             onChange={(e) => {
               setSearchQuery(e.target.value);
@@ -155,7 +155,7 @@ export default function Topbar({
             className="w-full bg-[#161B22] border border-[#2D3748] text-xs text-white pl-10 pr-16 py-2 focus:outline-none focus:border-[#C5A880] transition-colors placeholder-gray-500"
           />
           <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[9px] font-mono text-gray-400 bg-[#222B35] px-1.5 py-0.5 border border-gray-600">
-            AI NLP
+            TÌM NHANH
           </span>
         </div>
 
@@ -164,7 +164,7 @@ export default function Topbar({
           <div className="absolute top-full left-0 right-0 mt-1 bg-[#121820] border border-[#C5A880]/60 p-2 shadow-2xl z-50">
             <div className="flex items-center justify-between px-2 py-1 text-[10px] uppercase tracking-wider text-[#C5A880] font-semibold border-b border-[#222B35]">
               <span className="flex items-center gap-1">
-                <Sparkles className="w-3 h-3" /> Gợi ý hiểu ngữ nghĩa (Semantic RAG)
+                <Sparkles className="w-3 h-3" /> Gợi ý tìm kiếm nhanh cho cư dân
               </span>
               <button
                 onClick={() => setShowSearchSuggestions(false)}

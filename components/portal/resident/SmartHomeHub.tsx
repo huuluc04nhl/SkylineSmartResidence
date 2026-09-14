@@ -1013,7 +1013,7 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
                     {/* Bottom Screen HUD Overlay */}
                     <div className="relative z-10 flex items-center justify-between text-[10px] font-mono text-gray-400 bg-[#0D1117]/80 px-2 py-1 rounded border border-[#1F2937]/50 backdrop-blur-sm">
                       <span className="text-emerald-400 flex items-center gap-1">
-                        <ShieldCheck className="w-3 h-3" /> MÃ HÓA AN TOÀN TẦNG CAO (AES-256)
+                        <ShieldCheck className="w-3 h-3" /> HÌNH ẢNH BẢO MẬT RIÊNG TƯ
                       </span>
                       <span>ẢNH ĐÃ CHỤP: {snapshotCount}</span>
                     </div>
@@ -1180,9 +1180,9 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
                     <div className="p-2 bg-[#0D1117] border border-[#222B35] rounded flex items-center justify-between">
                       <div className="space-y-0.5">
                         <div className="text-[11px] font-medium text-white flex items-center gap-1.5">
-                          <Moon className="w-3 h-3 text-blue-400" /> Chốt Riêng Tư Ban Đêm (Night Latch)
+                          <Moon className="w-3 h-3 text-blue-400" /> Khóa Riêng Tư Ban Đêm
                         </div>
-                        <div className="text-[9.5px] text-gray-400">Chặn mở từ bên ngoài qua PIN / Thẻ</div>
+                        <div className="text-[9.5px] text-gray-400">Chỉ mở được từ bên trong, bảo vệ gia đình</div>
                       </div>
                       <button
                         type="button"
@@ -1199,9 +1199,9 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
                     <div className="p-2 bg-[#0D1117] border border-[#222B35] rounded flex items-center justify-between">
                       <div className="space-y-0.5">
                         <div className="text-[11px] font-medium text-white flex items-center gap-1.5">
-                          <ShieldAlert className="w-3 h-3 text-red-400" /> Cảm Biến AI Chống Cạy Phá (Anti-Tamper)
+                          <ShieldAlert className="w-3 h-3 text-red-400" /> Cảnh Báo Chống Cạy Cửa
                         </div>
-                        <div className="text-[9.5px] text-gray-400">Hú còi & báo động khẩn khi có rung lắc</div>
+                        <div className="text-[9.5px] text-gray-400">Báo động to khi phát hiện va đập bất thường</div>
                       </div>
                       <button
                         type="button"
@@ -1271,15 +1271,15 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
               <div className="flex items-center justify-between pb-2 border-b border-[#222B35]/60">
                 <div className="text-xs uppercase tracking-wider text-[#C5A880] font-bold flex items-center gap-2">
                   <KeyRound className="w-4 h-4 text-cyan-400" /> 
-                  <span>Luồng 2: Quản Lý Phương Thức Xác Thực Ra Vào Cửa Chính</span>
+                  <span>Các Cách Mở Cửa Căn Hộ</span>
                 </div>
                 <div className="text-[11px] text-gray-400 font-mono">
-                  Bảo mật cấp độ cao Matter 1.2
+                  Bảo mật đa lớp an toàn
                 </div>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {/* 2.1. Sinh Trắc Học FaceID AI 3D */}
+                {/* 2.1. Nhận Diện Khuôn Mặt */}
                 <div className="p-4 bg-[#161D26] border border-[#2A374A] rounded-lg space-y-3 flex flex-col justify-between">
                   <div className="space-y-2.5">
                     <div className="flex items-center justify-between">
@@ -1287,7 +1287,7 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
                         <div className="w-8 h-8 rounded bg-cyan-950 border border-cyan-500/40 text-cyan-400 flex items-center justify-center shrink-0">
                           <ScanFace className="w-4 h-4" />
                         </div>
-                        <div className="text-xs font-bold text-white">FaceID AI 3D</div>
+                        <div className="text-xs font-bold text-white">Nhận Diện Khuôn Mặt</div>
                       </div>
 
                       <span className={`px-2 py-0.5 text-[10px] font-mono rounded font-bold border ${
@@ -1303,8 +1303,8 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
 
                     <div className="text-[11px] text-gray-300 leading-relaxed">
                       {hasFaceEnrolled 
-                        ? `${faceSamplesCount}/4 mẫu khuôn mặt 3D của ${currentUser.full_name} đã sẵn sàng.`
-                        : `Chưa có mẫu FaceID của cư dân ${currentUser.full_name}. Vui lòng hoàn tất eKYC.`}
+                        ? `${faceSamplesCount}/4 góc chụp khuôn mặt của ${currentUser.full_name} đã sẵn sàng.`
+                        : `Chưa đăng ký nhận diện khuôn mặt cho ${currentUser.full_name}. Quý cư dân vui lòng cập nhật tại mục Hồ Sơ.`}
                     </div>
                   </div>
 
@@ -1320,25 +1320,25 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
                   >
                     {isScanningFace ? (
                       <>
-                        <RefreshCw className="w-3.5 h-3.5 animate-spin" /> Đang Quét Khuôn Mặt 3D...
+                        <RefreshCw className="w-3.5 h-3.5 animate-spin" /> Đang Quét Khuôn Mặt...
                       </>
                     ) : isFaceApproved ? (
                       <>
-                        <Scan className="w-3.5 h-3.5 text-cyan-400" /> Quét FaceID Mở Cửa Ngay
+                        <Scan className="w-3.5 h-3.5 text-cyan-400" /> Mở Cửa Bằng Khuôn Mặt Ngay
                       </>
                     ) : isFacePending ? (
                       <>
-                        <Clock className="w-3.5 h-3.5 text-amber-400" /> Hồ Sơ Đang Chờ BQL Phê Duyệt
+                        <Clock className="w-3.5 h-3.5 text-amber-400" /> Hồ Sơ Đang Chờ Ban Quản Lý Duyệt
                       </>
                     ) : (
                       <>
-                        <ScanFace className="w-3.5 h-3.5 text-gray-500" /> Chưa Đăng Ký FaceID (eKYC)
+                        <ScanFace className="w-3.5 h-3.5 text-gray-500" /> Chưa Đăng Ký Khuôn Mặt
                       </>
                     )}
                   </button>
                 </div>
 
-                {/* 2.2. Mã Số Khách Tạm Thời (Guest PIN OTP) */}
+                {/* 2.2. Mã Mở Cửa Cho Khách */}
                 <div className="p-4 bg-[#161D26] border border-[#2A374A] rounded-lg space-y-3 flex flex-col justify-between">
                   <div className="space-y-2.5">
                     <div className="flex items-center justify-between">
@@ -1346,7 +1346,7 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
                         <div className="w-8 h-8 rounded bg-amber-950 border border-amber-500/40 text-amber-400 flex items-center justify-center shrink-0">
                           <Clock className="w-4 h-4" />
                         </div>
-                        <div className="text-xs font-bold text-white">Mã PIN Khách Tạm Thời</div>
+                        <div className="text-xs font-bold text-white">Mã Mở Cửa Cho Khách</div>
                       </div>
 
                       <button
@@ -1359,16 +1359,16 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
                     </div>
 
                     <div className="text-[11px] text-gray-300">
-                      Mã số OTP dùng 1 lần hoặc có thời hạn dành cho Shipper, Khách tới thăm.
+                      Mã số tạm thời dùng 1 lần hoặc theo giờ dành cho người giao hàng, bạn bè tới thăm.
                     </div>
                   </div>
 
                   <div className="text-[11px] font-mono text-amber-300/90">
-                    {guestPins.length > 0 ? `${guestPins.length} mã đang hoạt động` : 'Chưa có mã nào'}
+                    {guestPins.length > 0 ? `${guestPins.length} mã đang hiệu lực` : 'Chưa có mã nào'}
                   </div>
                 </div>
 
-                {/* 2.3. Thẻ Cư Dân NFC / RFID */}
+                {/* 2.3. Thẻ Cư Dân (Thẻ Từ) */}
                 <div className="p-4 bg-[#161D26] border border-[#2A374A] rounded-lg space-y-3 flex flex-col justify-between">
                   <div className="space-y-2.5">
                     <div className="flex items-center justify-between">
@@ -1376,7 +1376,7 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
                         <div className="w-8 h-8 rounded bg-blue-950 border border-blue-500/40 text-blue-400 flex items-center justify-center shrink-0">
                           <CreditCard className="w-4 h-4" />
                         </div>
-                        <div className="text-xs font-bold text-white">Thẻ Cư Dân NFC / RFID</div>
+                        <div className="text-xs font-bold text-white">Thẻ Cư Dân (Thẻ Từ)</div>
                       </div>
 
                       <span className="px-2 py-0.5 bg-blue-950 text-blue-300 border border-blue-500/40 text-[10px] font-mono rounded font-bold">
@@ -1386,15 +1386,15 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
 
                     <div className="text-[11px] text-gray-300 leading-relaxed">
                       {familyMembers.length > 0 
-                        ? `Gồm 1 thẻ Master Chủ Hộ (${currentUser.full_name}) và ${familyMembers.length} thẻ thành viên gia đình.`
-                        : `Gồm 1 thẻ Master Chủ Hộ (${currentUser.full_name}) mã hóa bảo mật chống sao chép.`}
+                        ? `Gồm 1 thẻ chính của Chủ hộ (${currentUser.full_name}) và ${familyMembers.length} thẻ cho người thân.`
+                        : `Gồm 1 thẻ chính của Chủ hộ (${currentUser.full_name}) chống sao chép an toàn.`}
                     </div>
                   </div>
 
                   <div className="text-[10px] text-gray-400 font-mono flex items-center justify-between">
-                    <span>Mifare DESFire EV3</span>
+                    <span>Thẻ chip bảo mật cao</span>
                     <span className="text-emerald-400 flex items-center gap-1">
-                      <Wifi className="w-3 h-3 rotate-90" /> 13.56MHz
+                      <Wifi className="w-3 h-3 rotate-90" /> Chạm là mở
                     </span>
                   </div>
                 </div>

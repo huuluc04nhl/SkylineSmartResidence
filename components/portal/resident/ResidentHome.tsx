@@ -180,7 +180,7 @@ export default function ResidentHome({ currentUser, onNavigate, onOpenVisitorMod
               <div className="font-bold text-[11px] text-white flex items-center gap-1.5">
                 <Home className="w-3.5 h-3.5 text-blue-400" /> 🚪 Ra Ngoài
               </div>
-              <div className="text-[10px] text-gray-400">Tắt Điện • Khóa FaceID • Đóng Rèm</div>
+              <div className="text-[10px] text-gray-400">Tắt Điện • Khóa Cửa Tự Động • Đóng Rèm</div>
             </div>
             {activeScene === 'AWAY' && <span className="w-2 h-2 rounded-full bg-[#C5A880]"></span>}
           </button>
@@ -248,10 +248,10 @@ export default function ResidentHome({ currentUser, onNavigate, onOpenVisitorMod
           <div className="lg:col-span-5 bg-[#121820] border border-[#222B35] p-5 space-y-4 shadow-2xl">
             <div className="border-b border-[#222B35] pb-2 text-left">
               <div className="text-[10px] uppercase tracking-[0.2em] text-[#C5A880] font-bold">
-                Thẻ e-KYC Kim Loại Mạ Vàng (VIP NFC Pass)
+                Thẻ Cư Dân Điện Tử Thông Minh
               </div>
               <p className="text-xs text-gray-400">
-                Nhấp vào thẻ để lật xem 2 mặt hoặc quẹt mở Barrier 0.28s
+                Nhấp vào thẻ để lật xem 2 mặt hoặc chạm thẻ mở cổng tức thì
               </p>
             </div>
 
@@ -289,11 +289,11 @@ export default function ResidentHome({ currentUser, onNavigate, onOpenVisitorMod
                 <Wrench className="w-4 h-4" />
               </div>
               <div className="font-serif text-sm font-bold text-white group-hover:text-amber-400 flex items-center justify-between">
-                <span>Báo Hỏng Hóc (Ticketing)</span>
+                <span>Yêu Cầu Sửa Chữa & Kỹ Thuật</span>
                 <ArrowRight className="w-3.5 h-3.5 text-gray-500 group-hover:text-amber-400" />
               </div>
               <p className="text-[11px] text-gray-400">
-                AI NLP tự phân loại sự cố, gán mức ưu tiên P1 và đếm ngược hạn SLA 60 phút.
+                Tiếp nhận yêu cầu tự động, ưu tiên hỗ trợ khẩn và cử kỹ thuật viên có mặt trong 60 phút.
               </p>
             </div>
 

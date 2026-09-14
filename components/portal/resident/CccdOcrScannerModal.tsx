@@ -352,16 +352,16 @@ export default function CccdOcrScannerModal({
           <div className="space-y-1">
             <div className="text-[10px] uppercase tracking-[0.2em] text-[#C5A880] font-bold flex items-center gap-2">
               <Sparkles className="w-3.5 h-3.5" /> 
-              <span>Định Danh Căn Cước Công Dân (e-KYC)</span>
+              <span>Xác Thực Căn Cước Công Dân</span>
               <span className="px-2 py-0.5 bg-emerald-950/80 border border-emerald-500/50 text-emerald-400 text-[9px] font-mono tracking-normal font-semibold rounded inline-flex items-center gap-1">
-                <Sparkles className="w-2.5 h-2.5 text-emerald-400" /> Google Gemini Vision AI
+                <Sparkles className="w-2.5 h-2.5 text-emerald-400" /> Tự Động Nhận Diện Thông Minh
               </span>
             </div>
             <h3 className="font-serif text-xl sm:text-2xl font-bold text-white flex items-center gap-2">
               <Scan className="w-5 h-5 text-[#C5A880]" /> Quét Căn Cước Công Dân (2 Mặt)
             </h3>
             <p className="text-xs text-gray-400">
-              Nhận diện thông minh bởi Google Gemini Vision kết hợp bộ lọc Tesseract, tự động trích xuất thông tin chuẩn xác 99.9%.
+              Hệ thống tự động đọc và điền nhanh thông tin từ 2 mặt thẻ Căn cước công dân của Quý cư dân một cách chuẩn xác và an toàn.
             </p>
           </div>
 
@@ -633,16 +633,16 @@ export default function CccdOcrScannerModal({
           <div className="p-5 bg-gradient-to-r from-[#121820] to-[#161D26] border border-emerald-500/80 space-y-4 rounded-none animate-fadeIn shadow-2xl">
             <div className="flex items-center justify-between border-b border-emerald-500/30 pb-3">
               <div className="flex items-center gap-2 text-emerald-400 font-bold text-xs uppercase tracking-wider">
-                <CheckCircle2 className="w-4 h-4" /> Kết Quả Trích Xuất AI 2 Mặt Thực Tế
+                <CheckCircle2 className="w-4 h-4" /> Thông Tin Đọc Được Từ Thẻ Căn Cước
               </div>
               <span className="px-2 py-0.5 bg-emerald-950 text-emerald-300 border border-emerald-500 text-[10px] font-mono font-bold rounded-none">
-                Độ Tin Cậy AI: {ocrResult.confidence}%
+                Độ Rõ Nét: {ocrResult.confidence}%
               </span>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 text-xs">
               <div className="space-y-1">
-                <label className="text-[10px] text-gray-400 font-mono font-semibold">1. Số CCCD (12 Số):</label>
+                <label className="text-[10px] text-gray-400 font-mono font-semibold">1. Số Căn cước công dân:</label>
                 <input
                   type="text"
                   value={editIdNumber}
@@ -664,7 +664,7 @@ export default function CccdOcrScannerModal({
               </div>
 
               <div className="space-y-1">
-                <label className="text-[10px] text-gray-400 font-mono font-semibold">3. Ngày Sinh (DOB):</label>
+                <label className="text-[10px] text-gray-400 font-mono font-semibold">3. Ngày sinh:</label>
                 <input
                   type="date"
                   value={formatToApiDate(editDob)}
@@ -686,7 +686,7 @@ export default function CccdOcrScannerModal({
               </div>
 
               <div className="space-y-1 sm:col-span-2">
-                <label className="text-[10px] text-gray-400 font-mono font-semibold">5. Quê Quán / Nơi Sinh (Place of Origin):</label>
+                <label className="text-[10px] text-gray-400 font-mono font-semibold">5. Quê quán / Nơi sinh:</label>
                 <input
                   type="text"
                   value={editPob}
@@ -741,7 +741,7 @@ export default function CccdOcrScannerModal({
             }`}
           >
             <CheckCircle2 className="w-4 h-4" />
-            <span>Áp Dụng Điền Tự Động Vào Form</span>
+            <span>Lưu & Điền Vào Hồ Sơ</span>
           </button>
         </div>
       </div>

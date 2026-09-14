@@ -62,17 +62,17 @@ const TOPIC_SUGGESTIONS = [
   {
     category: '🔧 Kỹ thuật & Báo hỏng',
     prompts: [
-      'Báo hỏng rò rỉ nước khẩn cấp (SLA 60 phút)',
-      'Thời gian kỹ sư BQL có mặt hỗ trợ',
+      'Báo hỏng rò rỉ nước khẩn cấp (Hỗ trợ trong 60 phút)',
+      'Bao lâu thì kỹ thuật viên có mặt hỗ trợ?',
       'Quy định thi công và khoan đục tiếng ồn',
     ],
   },
   {
-    category: '🛡️ Cửa Smart Door & FaceID',
+    category: '🛡️ Khóa Cửa & An Toàn',
     prompts: [
-      'Cách đăng ký nhận diện khuôn mặt FaceID',
-      'Tạo mã PIN OTP dùng 1 lần cho khách',
-      'Làm thế nào khi mất thẻ từ NFC?',
+      'Cách cài đặt nhận diện khuôn mặt mở cửa',
+      'Tạo mã mở cửa tạm thời cho khách đến chơi',
+      'Làm thế nào khi đánh rơi thẻ cư dân?',
     ],
   },
 ];
@@ -98,21 +98,21 @@ export default function AiConciergeFloating({
       sender: 'ai',
       text: `Kính chào Quý cư dân **${residentName}** (Căn **${aptCode}**)! 
 
-Tôi là **Skyline AI Concierge 24/7**, vận hành bởi mô hình thế hệ mới **Google Gemini 2.5 Flash**. 
+Tôi là **Trợ lý ảo Skyline**, luôn đồng hành và hỗ trợ Quý vị 24/7. 
 
-Tôi có thể hỗ trợ Quý cư dân:
-* Tra cứu biểu phí quản lý, hóa đơn điện nước & gửi xe.
-* Lịch mở cửa & hạn mức tiện ích Hồ bơi vô cực, Gym, Sân Pickleball.
-* Tiếp nhận báo hỏng kỹ thuật cam kết xử lý trong 60 phút (SLA).
-* Hướng dẫn sử dụng khóa cửa thông minh FaceID, thẻ NFC & mã PIN khách.
+Tôi có thể giúp Quý cư dân:
+* Tra cứu biểu phí quản lý tòa nhà, hóa đơn điện nước & phí gửi xe.
+* Xem giờ mở cửa & hạn mức hồ bơi vô cực, phòng gym, sân pickleball.
+* Tiếp nhận báo hỏng kỹ thuật với cam kết thợ có mặt hỗ trợ trong vòng 60 phút.
+* Hướng dẫn mở cửa thông minh bằng khuôn mặt, thẻ cư dân hoặc mã số cho khách.
 
-Quý cư dân có thể chọn các câu hỏi nhanh bên dưới hoặc nhập trực tiếp câu hỏi nhé!`,
+Quý cư dân có thể bấm vào các câu hỏi gợi ý bên dưới hoặc nhập câu hỏi trực tiếp nhé!`,
       timestamp: '08:00',
       suggestions: [
         'Giờ mở cửa Hồ bơi vô cực & Gym?',
         'Biểu phí quản lý & gửi xe tháng này',
-        'Cách mở cửa Smart Door bằng FaceID & Thẻ NFC',
-        'Báo hỏng rò rỉ nước khẩn cấp (SLA 60 phút)'
+        'Cách mở cửa bằng khuôn mặt & Thẻ cư dân',
+        'Báo hỏng rò rỉ nước khẩn cấp (Hỗ trợ trong 60 phút)'
       ]
     },
   ]);
@@ -218,17 +218,17 @@ Quý cư dân có thể chọn các câu hỏi nhanh bên dưới hoặc nhập 
       const lower = text.toLowerCase();
 
       if (lower.includes('hồ bơi') || lower.includes('pool') || lower.includes('gym') || lower.includes('tiện ích') || lower.includes('tennis') || lower.includes('pickleball')) {
-        actionLink = { label: 'Mở Thẻ Quẹt & Đặt Tiện Ích', moduleId: 'resident-facilities' };
+        actionLink = { label: 'Mở Thẻ & Đặt Tiện Ích', moduleId: 'resident-facilities' };
         suggestions = ['Hạn mức lượt sử dụng hồ bơi', 'Cách đặt chỗ sân Pickleball tầng 38', 'Giờ mở cửa phòng Gym'];
       } else if (lower.includes('hóa đơn') || lower.includes('tiền') || lower.includes('nợ') || lower.includes('thanh toán') || lower.includes('phí')) {
         actionLink = { label: 'Xem & Thanh Toán Hóa Đơn', moduleId: 'resident-finance' };
         suggestions = ['Biểu phí gửi xe ô tô, xe máy', 'Hạn chót thanh toán phí dịch vụ', 'Cách chuyển khoản'];
       } else if (lower.includes('sửa') || lower.includes('rò rỉ') || lower.includes('hỏng') || lower.includes('ống nước') || lower.includes('sự cố') || lower.includes('kỹ thuật')) {
-        actionLink = { label: 'Tạo Phiếu Kỹ Thuật (SLA 60p)', moduleId: 'resident-tickets' };
+        actionLink = { label: 'Yêu Cầu Sửa Chữa (Hỗ Trợ Trong 60 Phút)', moduleId: 'resident-tickets' };
         suggestions = ['Tra cứu tiến độ sửa chữa', 'Hotline kỹ thuật khẩn cấp 1900 8899'];
       } else if (lower.includes('faceid') || lower.includes('người nhà') || lower.includes('cửa') || lower.includes('khóa') || lower.includes('thẻ')) {
-        actionLink = { label: 'Kiểm Soát Cửa Thông Minh & Thẻ', moduleId: 'resident-smarthome' };
-        suggestions = ['Đăng ký FaceID cho người nhà', 'Tạo mã PIN khách tạm thời', 'Khóa thẻ từ NFC'];
+        actionLink = { label: 'Quản Lý Khóa Cửa & Thẻ Cư Dân', moduleId: 'resident-smarthome' };
+        suggestions = ['Cài đặt nhận diện khuôn mặt', 'Tạo mã mở cửa cho khách', 'Khóa thẻ cư dân khi làm rơi'];
       }
 
       const aiMsg: Message = {
@@ -577,7 +577,7 @@ Quý cư dân có thể chọn các câu hỏi nhanh bên dưới hoặc nhập 
             <div className="flex items-center justify-between text-[9px] text-gray-500 px-1 font-mono">
               <span className="flex items-center gap-1">
                 <ShieldCheck className="w-3 h-3 text-emerald-500" />
-                Dữ liệu mã hóa AES-256 • Sổ tay cư dân Skyline 2026
+                Bảo mật riêng tư an toàn • Sổ tay hướng dẫn cư dân Skyline
               </span>
               <span className="hidden sm:inline">Phím tắt: Enter ↵</span>
             </div>
