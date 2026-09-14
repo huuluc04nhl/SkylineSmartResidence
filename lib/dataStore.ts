@@ -162,7 +162,7 @@ export interface SecurityAlert {
 export interface Facility {
   id: string;
   name: string;
-  category: 'Gym' | 'BBQ' | 'Hồ bơi' | 'Sân Tennis' | 'Phòng sinh hoạt';
+  category: 'Gym' | 'BBQ' | 'Hồ bơi' | 'Sân Tennis' | 'Phòng sinh hoạt' | 'Xông hơi';
   max_quota_per_month: number;
   hero_image_url: string;
   rating_score: number; // 5.0
@@ -651,31 +651,43 @@ export const DEMO_SECURITY_ALERTS: SecurityAlert[] = [
 export const DEMO_FACILITIES: Facility[] = [
   {
     id: 'fac-1',
-    name: 'Hồ Bơi Vô Cực Chân Mây (Skyline Horizon Pool)',
+    name: 'Hồ Bơi Vô Cực Chân Mây (Skyline Horizon Pool - Tầng 5)',
     category: 'Hồ bơi',
     max_quota_per_month: 20,
     hero_image_url: 'https://images.unsplash.com/photo-1576013551627-0cc20b96c2a7?w=800&auto=format&fit=crop&q=80',
     rating_score: 4.9,
     operating_hours: '06:00 - 21:00',
-    pricing: 'Miễn phí cho cư dân',
+    pricing: 'Miễn phí cho cư dân (20 lượt/tháng)',
     current_occupancy: 14,
     max_capacity: 40,
   },
   {
+    id: 'fac-sauna',
+    name: 'Phòng Xông Hơi Đá Muối Himalaya (VIP Tầng 3)',
+    category: 'Xông hơi',
+    max_quota_per_month: 10,
+    hero_image_url: 'https://images.unsplash.com/photo-1540555700478-4be289fbecef?w=800&auto=format&fit=crop&q=80',
+    rating_score: 5.0,
+    operating_hours: '08:00 - 22:00',
+    pricing: '500.000 đ / giờ (Phòng gia đình VIP)',
+    current_occupancy: 1,
+    max_capacity: 4,
+  },
+  {
     id: 'fac-2',
-    name: 'Vườn BBQ Sân Thượng Panoramic Sky Garden',
+    name: 'Vườn Tiệc Nướng BBQ Panoramic (Sân Thượng Tầng 25)',
     category: 'BBQ',
     max_quota_per_month: 4,
     hero_image_url: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=800&auto=format&fit=crop&q=80',
     rating_score: 4.8,
     operating_hours: '17:00 - 22:30',
-    pricing: '200.000 đ / lượt (Phí vệ sinh)',
+    pricing: '600.000 đ / ca (Bao gồm bếp Weber & dọn dẹp)',
     current_occupancy: 2,
-    max_capacity: 5,
+    max_capacity: 6,
   },
   {
     id: 'fac-3',
-    name: 'Phòng Tập Technogym Thượng Lưu (Fitness & Yoga)',
+    name: 'Phòng Tập Technogym Thượng Lưu (Fitness & Yoga - Tầng 5)',
     category: 'Gym',
     max_quota_per_month: 30,
     hero_image_url: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=800&auto=format&fit=crop&q=80',

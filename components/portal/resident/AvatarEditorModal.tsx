@@ -686,7 +686,7 @@ export default function AvatarEditorModal({
         <div className="px-6 py-4 bg-[#161D26] border-t border-[#222B35] flex items-center justify-between">
           <div className="flex items-center gap-2 text-[11px] text-gray-400">
             <ShieldCheck className="w-4 h-4 text-emerald-400" />
-            <span>Đồng bộ tức thì với Barrier tự động, Cổng bảo vệ & Smart Home</span>
+            <span>Đồng bộ tức thì với Cổng ra vào tự động, Cổng bảo vệ & Căn hộ thông minh</span>
           </div>
 
           <div className="flex items-center gap-3">

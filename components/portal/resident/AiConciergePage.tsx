@@ -26,6 +26,7 @@ import {
   Check
 } from 'lucide-react';
 import { User as UserType } from '@/lib/dataStore';
+import { getFacilityBookings } from '@/lib/facilityStore';
 import AiMessageFormatter from '@/components/portal/shared/AiMessageFormatter';
 
 interface AiMessage {
@@ -48,8 +49,8 @@ const KNOWLEDGE_CATEGORIES = [
     category: '🏊 Tiện Ích Hồ Bơi & Phòng Gym',
     prompts: [
       'Hồ bơi vô cực mở cửa từ mấy giờ đến mấy giờ?',
-      'Cách đăng ký sử dụng tiện ích trên ứng dụng',
-      'Hạn mức số lượt sử dụng hồ bơi miễn phí mỗi tháng',
+      'Biểu phí phòng xông hơi đá muối VIP tầng 3',
+      'Tôi đã đặt vé tiện ích nào chưa?',
     ]
   },
   {
@@ -81,12 +82,12 @@ const KNOWLEDGE_CATEGORIES = [
 function getDynamicSuggestions(userQuestion: string, aiResponse: string): string[] {
   const combined = (userQuestion + ' ' + aiResponse).toLowerCase();
 
-  if (combined.includes('hồ bơi') || combined.includes('pool') || combined.includes('gym') || combined.includes('tiện ích') || combined.includes('pickleball') || combined.includes('tennis')) {
+  if (combined.includes('hồ bơi') || combined.includes('pool') || combined.includes('gym') || combined.includes('tiện ích') || combined.includes('pickleball') || combined.includes('tennis') || combined.includes('xông hơi') || combined.includes('sauna') || combined.includes('bbq') || combined.includes('vé')) {
     return [
       '⏰ Giờ mở cửa Hồ bơi & Gym',
-      '🏊 Quy định trang phục hồ bơi',
-      '🏸 Cách đặt sân Pickleball tầng 38',
-      '🎫 Hạn mức lượt dùng tiện ích'
+      '🧘 Phòng xông hơi VIP & Bảng giá',
+      '🥩 Vườn nướng BBQ Panoramic tầng 25',
+      '🎫 Kiểm tra vé tiện ích đã đặt'
     ];
   }
 
@@ -139,32 +140,32 @@ Tôi là **Trợ lý ảo Skyline**, luôn sẵn sàng hỗ trợ Quý vị tra 
       timestamp: '08:00',
       ragSource: 'Sổ tay hướng dẫn cư dân Skyline Smart Residence',
       suggestions: [
-        'Hồ bơi vô cực mở cửa từ mấy giờ đến mấy giờ?',
-        'Xem hóa đơn sinh hoạt tháng này của căn hộ',
-        'Cách cài đặt nhận diện khuôn mặt cho người thân',
-        'Báo hỏng rò rỉ nước khẩn cấp cần thợ lên ngay'
-      ]
+        '🏊 Giờ mở cửa Hồ bơi & Gym',
+        '💳 Hóa đơn sinh hoạt tháng này',
+        '🧘 Phòng xông hơi VIP & Bảng giá',
+        '🎫 Tôi đã đặt vé tiện ích nào chưa?',
+      ],
+      actionButton: {
+        label: 'Xem Tiện Ích',
+        moduleId: 'resident-facilities'
+      }
     }
   ]);
 
   const [inputText, setInputText] = useState('');
   const [isTyping, setIsTyping] = useState(false);
-  const [activeCategoryIndex, setActiveCategoryIndex] = useState(0);
-  const [copiedMessageId, setCopiedMessageId] = useState<string | null>(null);
+  const [copiedId, setCopiedId] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   // Messenger-style contextual suggestions from the latest AI message
   const latestAiMessage = [...messages].reverse().find((m) => m.sender === 'ai');
   const latestAiSuggestions = latestAiMessage?.suggestions || [];
 
-  const handleCopyMessage = async (msgId: string, text: string) => {
-    try {
-      await navigator.clipboard.writeText(text);
-      setCopiedMessageId(msgId);
-      setTimeout(() => setCopiedMessageId(null), 2000);
-    } catch (err) {
-      console.error('Failed to copy text: ', err);
-    }
+  const handleCopy = (id: string, text: string) => {
+    navigator.clipboard.writeText(text);
+    setCopiedId(id);
+    setTimeout(() => setCopiedId(null), 2000);
   };
 
   const scrollToBottom = () => {
@@ -198,6 +199,7 @@ Tôi là **Trợ lý ảo Skyline**, luôn sẵn sàng hỗ trợ Quý vị tra 
     }));
 
     try {
+      const bookings = typeof window !== 'undefined' ? getFacilityBookings(aptCode) : [];
       const response = await fetch('/api/ai/concierge', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -205,6 +207,9 @@ Tôi là **Trợ lý ảo Skyline**, luôn sẵn sàng hỗ trợ Quý vị tra 
           message: query,
           history: historyPayload,
           aptCode,
+          userName: residentName,
+          userRole: currentUser?.role,
+          bookings,
         }),
       });
 
@@ -405,11 +410,11 @@ Tôi là **Trợ lý ảo Skyline**, luôn sẵn sàng hỗ trợ Quý vị tra 
 
                       <button
                         type="button"
-                        onClick={() => handleCopyMessage(m.id, m.text)}
+                        onClick={() => handleCopy(m.id, m.text)}
                         className="hover:text-white flex items-center gap-1 px-2 py-0.5 hover:bg-white/5 transition-colors text-gray-400 ml-2 flex-shrink-0 rounded-none border-0"
                         title="Sao chép nội dung câu trả lời"
                       >
-                        {copiedMessageId === m.id ? (
+                        {copiedId === m.id ? (
                           <>
                             <Check className="w-3 h-3 text-emerald-400" />
                             <span className="text-emerald-400 text-[9px]">Đã chép</span>

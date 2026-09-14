@@ -23,6 +23,7 @@ import {
   Info
 } from 'lucide-react';
 import { User as UserType } from '@/lib/dataStore';
+import { getFacilityBookings } from '@/lib/facilityStore';
 import AiMessageFormatter from './AiMessageFormatter';
 
 interface Message {
@@ -45,12 +46,12 @@ interface AiConciergeFloatingProps {
 function getDynamicSuggestions(userQuestion: string, aiResponse: string): string[] {
   const combined = (userQuestion + ' ' + aiResponse).toLowerCase();
 
-  if (combined.includes('hồ bơi') || combined.includes('pool') || combined.includes('gym') || combined.includes('tiện ích') || combined.includes('pickleball') || combined.includes('tennis')) {
+  if (combined.includes('hồ bơi') || combined.includes('pool') || combined.includes('gym') || combined.includes('tiện ích') || combined.includes('pickleball') || combined.includes('tennis') || combined.includes('xông hơi') || combined.includes('sauna') || combined.includes('bbq') || combined.includes('vé')) {
     return [
       '⏰ Giờ mở cửa Hồ bơi & Gym',
-      '🏊 Quy định trang phục hồ bơi',
-      '🏸 Cách đặt sân Pickleball tầng 38',
-      '🎫 Hạn mức lượt dùng tiện ích'
+      '🧘 Phòng xông hơi VIP & Bảng giá',
+      '🥩 Vườn nướng BBQ Panoramic tầng 25',
+      '🎫 Kiểm tra vé tiện ích đã đặt'
     ];
   }
 
@@ -211,6 +212,7 @@ Quý cư dân có thể bấm vào các câu hỏi gợi ý bên dưới hoặc 
     }));
 
     try {
+      const bookings = typeof window !== 'undefined' ? getFacilityBookings(aptCode) : [];
       const response = await fetch('/api/ai/concierge', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -218,6 +220,9 @@ Quý cư dân có thể bấm vào các câu hỏi gợi ý bên dưới hoặc 
           message: text,
           history: historyPayload,
           aptCode,
+          userName: residentName,
+          userRole: currentUser?.role,
+          bookings,
         }),
       });
 
@@ -234,7 +239,7 @@ Quý cư dân có thể bấm vào các câu hỏi gợi ý bên dưới hoặc 
       let actionLink: { label: string; moduleId: string } | undefined = undefined;
       const lower = (text + ' ' + aiReply).toLowerCase();
 
-      if (lower.includes('hồ bơi') || lower.includes('pool') || lower.includes('gym') || lower.includes('tiện ích') || lower.includes('tennis') || lower.includes('pickleball')) {
+      if (lower.includes('hồ bơi') || lower.includes('pool') || lower.includes('gym') || lower.includes('tiện ích') || lower.includes('tennis') || lower.includes('pickleball') || lower.includes('xông hơi') || lower.includes('sauna') || lower.includes('bbq') || lower.includes('vé')) {
         actionLink = { label: 'Mở Thẻ & Đặt Tiện Ích', moduleId: 'resident-facilities' };
       } else if (lower.includes('hóa đơn') || lower.includes('tiền') || lower.includes('nợ') || lower.includes('thanh toán') || lower.includes('phí')) {
         actionLink = { label: 'Xem & Thanh Toán Hóa Đơn', moduleId: 'resident-finance' };

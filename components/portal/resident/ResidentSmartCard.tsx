@@ -48,11 +48,11 @@ export default function ResidentSmartCard({
 
   const handleSimulateTap = () => {
     setIsTapping(true);
-    setTapMessage('📡 Đang chạm thẻ NFC vào đầu đọc Barrier...');
+    setTapMessage('📡 Đang chạm thẻ vào đầu đọc mở cổng...');
 
     setTimeout(() => {
       setIsTapping(false);
-      setTapMessage('✓ BÍP! Cổng Barrier Tiện Ích & Thang Máy Tầng ' + aptCode.slice(0, 2) + ' Đã Mở (0.28s)');
+      setTapMessage('✓ BÍP! Cổng Cư Dân & Thang Máy Tầng ' + aptCode.slice(0, 2) + ' Đã Mở (0.28s)');
       
       // Ghi nhận nhật ký thực tế vào facilityStore
       addFacilityCheckinLog(aptCode, {
@@ -63,7 +63,7 @@ export default function ResidentSmartCard({
         method: 'NFC_CARD',
         cardUid: `NFC-SKY-${aptCode}-01`,
         status: 'SUCCESS',
-        detail: `Quẹt thẻ cư dân VIP (${cardNumber}) tại đầu đọc Barrier sảnh • Cổng đã mở tự động`
+        detail: `Quẹt thẻ cư dân VIP (${cardNumber}) tại đầu đọc sảnh • Cổng đã mở tự động`
       });
 
       if (onTapSuccess) {
@@ -173,10 +173,10 @@ export default function ResidentSmartCard({
 
                 <div className="space-y-1 text-[10px] text-gray-300 font-mono flex-1">
                   <div className="text-[#C5A880] font-bold uppercase text-[11px]">
-                    Xác Thực Sinh Trắc Học FaceID
+                    Nhận Diện Khuôn Mặt Cư Dân
                   </div>
                   <div>Phân Tầng: <strong>Tầng 12 & Sky Pool T25</strong></div>
-                  <div>Bảo Mật: <strong>Mã Hóa AES-256 + RFID</strong></div>
+                  <div>Bảo Mật: <strong>Thẻ Chip Điện Tử Bảo Mật Cao</strong></div>
                   <div>Hotline BQL 24/7: <strong>1900 8899 66</strong></div>
                 </div>
               </div>

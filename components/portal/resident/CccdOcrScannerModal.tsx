@@ -238,7 +238,7 @@ export default function CccdOcrScannerModal({
 
       if (!geminiSuccess) {
         // Fallback to local Tesseract.js
-        setScanStatusText('Đang quét bằng bộ lọc quang học Tesseract Engine...');
+        setScanStatusText('Đang tự động đọc thông tin trên thẻ...');
         setScanProgress(30);
 
         const { createWorker } = await import('tesseract.js');

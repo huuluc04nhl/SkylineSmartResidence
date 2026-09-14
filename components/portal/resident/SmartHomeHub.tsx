@@ -830,11 +830,11 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
               <span>Kiểm Soát Ra Vào & Chốt An Toàn Cửa Chính Căn Hộ {aptCode}</span>
             </h3>
             <p className="text-xs text-gray-400 flex flex-wrap items-center gap-2 font-mono">
-              <span>Model: Skyline Vision S900 Pro AI</span>
+              <span>Khóa cửa thông minh Skyline Luxury</span>
               <span className="text-gray-600">•</span>
-              <span className="text-emerald-400">Matter & Zigbee 3.0 AES-256</span>
+              <span className="text-emerald-400">Kết nối bảo mật cao cấp</span>
               <span className="text-gray-600">•</span>
-              <span>Cảm biến sinh trắc học 3D</span>
+              <span>Cảm biến khuôn mặt 3D</span>
             </p>
           </div>
 

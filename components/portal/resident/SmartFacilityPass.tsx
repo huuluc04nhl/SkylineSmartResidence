@@ -192,7 +192,7 @@ export default function SmartFacilityPass({ currentUser }: SmartFacilityPassProp
 
     setTimeout(() => {
       setIsTurnstileScanning(false);
-      const methodText = turnstileMethod === 'NFC' ? 'Thẻ Cư Dân NFC' : 'FaceID AI 3D';
+      const methodText = turnstileMethod === 'NFC' ? 'Thẻ Cư Dân' : 'Nhận Diện Khuôn Mặt';
       
       // Ghi log thực tế vào Store
       const updated = addFacilityCheckinLog(aptCode, {
