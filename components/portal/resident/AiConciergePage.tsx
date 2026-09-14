@@ -78,6 +78,53 @@ const KNOWLEDGE_CATEGORIES = [
   }
 ];
 
+function getDynamicSuggestions(userQuestion: string, aiResponse: string): string[] {
+  const combined = (userQuestion + ' ' + aiResponse).toLowerCase();
+
+  if (combined.includes('hồ bơi') || combined.includes('pool') || combined.includes('gym') || combined.includes('tiện ích') || combined.includes('pickleball') || combined.includes('tennis')) {
+    return [
+      '⏰ Giờ mở cửa Hồ bơi & Gym',
+      '🏊 Quy định trang phục hồ bơi',
+      '🏸 Cách đặt sân Pickleball tầng 38',
+      '🎫 Hạn mức lượt dùng tiện ích'
+    ];
+  }
+
+  if (combined.includes('hóa đơn') || combined.includes('tiền') || combined.includes('phí') || combined.includes('thanh toán') || combined.includes('nợ') || combined.includes('chuyển khoản')) {
+    return [
+      '🚗 Biểu phí gửi xe ô tô & xe máy',
+      '💳 Hướng dẫn chuyển khoản BQL',
+      '📅 Hạn đóng tiền dịch vụ hàng tháng',
+      '📄 Tra cứu chi tiết tiền nước'
+    ];
+  }
+
+  if (combined.includes('sửa') || combined.includes('hỏng') || combined.includes('rò rỉ') || combined.includes('kỹ thuật') || combined.includes('ống nước') || combined.includes('điện') || combined.includes('sự cố')) {
+    return [
+      '⏱️ Cam kết thợ hỗ trợ trong 60 phút',
+      '📞 Hotline kỹ thuật khẩn cấp 1900 8899',
+      '🔧 Đặt lịch thợ lên căn hộ',
+      '🔊 Giờ thi công khoan đục cho phép'
+    ];
+  }
+
+  if (combined.includes('cửa') || combined.includes('khóa') || combined.includes('faceid') || combined.includes('thẻ') || combined.includes('mã') || combined.includes('khuôn mặt') || combined.includes('chuông')) {
+    return [
+      '📷 Hướng dẫn cài FaceID mở cửa',
+      '🔑 Tạo mã số tạm thời cho khách',
+      '💳 Đăng ký hoặc báo mất thẻ cư dân',
+      '🛡️ Cảnh báo chống cạy cửa'
+    ];
+  }
+
+  return [
+    '🏊 Tiện ích hồ bơi & phòng gym',
+    '💳 Hóa đơn & Biểu phí tháng này',
+    '🔧 Báo hỏng kỹ thuật khẩn cấp',
+    '🔑 Hướng dẫn mở khóa cửa thông minh'
+  ];
+}
+
 export default function AiConciergePage({ currentUser, onNavigateModule }: AiConciergePageProps) {
   const aptCode = currentUser.apartment_code || '12A05';
   const residentName = currentUser.full_name || (currentUser as any)?.fullname || 'Nguyễn Hữu Lực';
@@ -105,6 +152,10 @@ Tôi là **Trợ lý ảo Skyline**, luôn sẵn sàng hỗ trợ Quý vị tra 
   const [activeCategoryIndex, setActiveCategoryIndex] = useState(0);
   const [copiedMessageId, setCopiedMessageId] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // Messenger-style contextual suggestions from the latest AI message
+  const latestAiMessage = [...messages].reverse().find((m) => m.sender === 'ai');
+  const latestAiSuggestions = latestAiMessage?.suggestions || [];
 
   const handleCopyMessage = async (msgId: string, text: string) => {
     try {
@@ -164,23 +215,19 @@ Tôi là **Trợ lý ảo Skyline**, luôn sẵn sàng hỗ trợ Quý vị tra 
         aiReply = data.fallbackReply || data.error || 'Dạ, hệ thống đang bận. Quý cư dân vui lòng thử lại sau giây lát.';
       }
 
-      // Contextual action button & suggestions based on query
+      // Contextual action button & smart dynamic suggestions (Messenger style)
+      const suggestions = getDynamicSuggestions(query, aiReply);
       let actionButton: { label: string; moduleId: string } | undefined = undefined;
-      let suggestions: string[] = [];
-      const lower = query.toLowerCase();
+      const lower = (query + ' ' + aiReply).toLowerCase();
 
       if (lower.includes('hồ bơi') || lower.includes('pool') || lower.includes('gym') || lower.includes('tiện ích') || lower.includes('tennis') || lower.includes('pickleball')) {
         actionButton = { label: 'Mở Thẻ & Đăng Ký Tiện Ích', moduleId: 'resident-facilities' };
-        suggestions = ['Giờ mở cửa Hồ bơi vô cực?', 'Đặt sân Pickleball tầng 38', 'Hạn mức lượt sử dụng tiện ích'];
       } else if (lower.includes('hóa đơn') || lower.includes('tiền') || lower.includes('nước') || lower.includes('thanh toán') || lower.includes('phí')) {
         actionButton = { label: 'Xem & Thanh Toán Hóa Đơn', moduleId: 'resident-finance' };
-        suggestions = ['Biểu phí gửi xe ô tô, xe máy', 'Hạn thanh toán phí dịch vụ hàng tháng', 'Cách thanh toán chuyển khoản'];
       } else if (lower.includes('sửa') || lower.includes('hỏng') || lower.includes('kỹ thuật') || lower.includes('sự cố')) {
         actionButton = { label: 'Yêu Cầu Hỗ Trợ Kỹ Thuật (Hỗ Trợ Trong 60 Phút)', moduleId: 'resident-tickets' };
-        suggestions = ['Thời gian kỹ thuật viên có mặt?', 'Hotline hỗ trợ kỹ thuật tòa nhà'];
       } else if (lower.includes('faceid') || lower.includes('cửa') || lower.includes('thẻ') || lower.includes('người nhà') || lower.includes('khóa')) {
         actionButton = { label: 'Quản Lý Khóa Cửa & Thẻ Cư Dân', moduleId: 'resident-smarthome' };
-        suggestions = ['Cách cài đặt nhận diện khuôn mặt', 'Thêm thành viên căn hộ', 'Tạo mã số cho khách'];
       }
 
       const aiMsg: AiMessage = {
@@ -426,6 +473,25 @@ Tôi là **Trợ lý ảo Skyline**, luôn sẵn sàng hỗ trợ Quý vị tra 
 
             <div ref={messagesEndRef} />
           </div>
+
+          {/* Messenger-style Contextual Quick Replies Drawer (Above Input) */}
+          {latestAiSuggestions.length > 0 && !isTyping && (
+            <div className="px-3.5 py-2 bg-[#101721] flex items-center gap-1.5 overflow-x-auto no-scrollbar border-0 rounded-none flex-shrink-0 animate-in fade-in slide-in-from-bottom-2 duration-200">
+              <span className="text-[10px] text-[#C5A880] uppercase font-bold flex items-center gap-1 flex-shrink-0 pr-1">
+                <Sparkles className="w-3 h-3 text-[#C5A880]" /> Gợi ý:
+              </span>
+              {latestAiSuggestions.map((sug, idx) => (
+                <button
+                  key={idx}
+                  type="button"
+                  onClick={() => handleSendMessage(sug)}
+                  className="whitespace-nowrap px-3 py-1 bg-[#18212D] hover:bg-[#C5A880] hover:text-[#0D1117] text-gray-200 text-xs font-medium transition-all rounded-none border-0 shadow-sm flex items-center gap-1 flex-shrink-0"
+                >
+                  <span>{sug}</span>
+                </button>
+              ))}
+            </div>
+          )}
 
           {/* Input Box - Borderless Sharp Layout */}
           <form
