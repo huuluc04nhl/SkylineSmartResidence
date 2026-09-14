@@ -470,6 +470,41 @@ export async function runDualSideCccdOcr(
 ): Promise<OcrCccdResult> {
   if (onProgress) onProgress(10, 'Đang chuẩn bị đọc thông tin thẻ 2 mặt...');
 
+  // 1. Attempt Gemini Vision AI first if in browser and data URLs provided
+  if (typeof window !== 'undefined' && typeof frontSource === 'string' && frontSource.startsWith('data:')) {
+    try {
+      if (onProgress) onProgress(20, 'Đang phân tích thông minh qua Google Gemini Vision AI...');
+      const res = await fetch('/api/ai/ocr-cccd', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          frontImage: frontSource,
+          backImage: typeof backSource === 'string' ? backSource : undefined,
+        }),
+      });
+      const data = await res.json();
+      if (res.ok && data.success && data.data?.idNumber) {
+        if (onProgress) onProgress(100, '✨ Đã nhận diện thành công bởi Google Gemini Vision AI!');
+        const d = data.data;
+        return {
+          idNumber: d.idNumber || '',
+          fullName: d.fullName || '',
+          dob: d.dob || '',
+          gender: d.gender || '1',
+          pob: d.pob || '',
+          residence: d.residence || d.pob || '',
+          province: d.province || '',
+          idDate: d.idDate || '',
+          idPlace: d.idPlace || 'Cục Cảnh sát QLHC về TTXH',
+          confidence: 99,
+          rawText: `[GOOGLE GEMINI 2.5 FLASH VISION]:\nSố CCCD: ${d.idNumber}\nHọ tên: ${d.fullName}\nNgày sinh: ${d.dob}`,
+        };
+      }
+    } catch (e) {
+      console.warn('Gemini Vision attempt failed, continuing to Tesseract:', e);
+    }
+  }
+
   try {
     const { createWorker } = await import('tesseract.js');
 

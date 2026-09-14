@@ -72,10 +72,10 @@ export default function AiConciergeFloating({
     }
   }, [messages, isOpen]);
 
-  // AI Knowledge Retrieval Logic (Simulated RAG)
-  const handleSendMessage = (textToSend?: string) => {
+  // AI Knowledge Retrieval Logic (Google Gemini 2.5 Flash)
+  const handleSendMessage = async (textToSend?: string) => {
     const text = (textToSend || inputText).trim();
-    if (!text) return;
+    if (!text || isTyping) return;
 
     const userMsg: Message = {
       id: `usr-${Date.now()}`,
@@ -84,37 +84,50 @@ export default function AiConciergeFloating({
       timestamp: new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })
     };
 
-    setMessages((prev) => [...prev, userMsg]);
+    const newMessages = [...messages, userMsg];
+    setMessages(newMessages);
     if (!textToSend) setInputText('');
     setIsTyping(true);
 
-    // AI Context-Aware Response Generator
-    setTimeout(() => {
+    const historyPayload = newMessages.slice(-6).map((m) => ({
+      role: (m.sender === 'user' ? 'user' : 'model') as 'user' | 'model',
+      text: m.text,
+    }));
+
+    try {
+      const response = await fetch('/api/ai/concierge', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message: text,
+          history: historyPayload,
+        }),
+      });
+
+      const data = await response.json();
       let aiReply = '';
+      if (response.ok && data.success && data.reply) {
+        aiReply = data.reply;
+      } else {
+        aiReply = data.fallbackReply || data.error || 'Dạ, hệ thống đang bận. Quý cư dân vui lòng thử lại sau giây lát.';
+      }
+
       let suggestions: string[] = [];
       let actionLink: { label: string; moduleId: string } | undefined = undefined;
-
       const lower = text.toLowerCase();
 
       if (lower.includes('hồ bơi') || lower.includes('pool') || lower.includes('gym') || lower.includes('tiện ích')) {
-        aiReply = 'Dạ, Tiện ích Sky Pool & Panorama Gym tại Tầng 25 mở cửa từ 06:00 đến 22:00 hàng ngày. Căn hộ 12A05 của bạn có quota 4 lượt/ngày hoàn toàn miễn phí. Bạn có thể mở mã quét thẻ 1-chạm ngay bên dưới ạ!';
         actionLink = { label: 'Mở Thẻ Tiện Ích Sky Pool', moduleId: 'resident-facilities' };
-        suggestions = ['Cách đặt chỗ tiệc BBQ Tầng 25', 'Quy định trang phục hồ bơi'];
-      } else if (lower.includes('hóa đơn') || lower.includes('tiền điện') || lower.includes('nợ') || lower.includes('thanh toán')) {
-        aiReply = 'Hóa đơn Tháng 08/2026 của Căn 12A05 là 2.465.000 đ (Hạn chót: 30/08/2026). Lưu ý: Hệ thống AI đang cảnh báo lưu lượng nước sinh hoạt tăng đột biến +115% vào ban đêm, bạn nên kiểm tra van xả nhé!';
-        actionLink = { label: 'Xem Chi Tiết & Thanh Toán', moduleId: 'resident-finance' };
-        suggestions = ['Thanh toán qua VNPAY / MoMo', 'Báo cáo sai lệch chỉ số điện nước'];
+        suggestions = ['Cách đặt chỗ sân Pickleball tầng 38', 'Hạn mức lượt sử dụng hồ bơi'];
+      } else if (lower.includes('hóa đơn') || lower.includes('tiền') || lower.includes('nợ') || lower.includes('thanh toán')) {
+        actionLink = { label: 'Xem Chi Tiết & Thanh Toán Hóa Đơn', moduleId: 'resident-finance' };
+        suggestions = ['Biểu phí gửi xe ô tô, xe máy', 'Thanh toán trực tuyến'];
       } else if (lower.includes('sửa') || lower.includes('rò rỉ') || lower.includes('hỏng') || lower.includes('ống nước') || lower.includes('sự cố')) {
-        aiReply = 'Tôi đã ghi nhận thông tin sự cố kỹ thuật của Căn 12A05. Tôi có thể giúp bạn tạo phiếu báo hỏng khẩn cấp mức độ Ưu tiên Cao (Cam kết kỹ sư BQL có mặt trong 60 phút - Chuẩn SLA) ngay bây giờ ạ.';
         actionLink = { label: 'Tạo Phiếu Kỹ Thuật (SLA 60p)', moduleId: 'resident-tickets' };
-        suggestions = ['Tra cứu tiến độ sửa chữa', 'Gọi hotline kỹ thuật 1900 1088'];
-      } else if (lower.includes('faceid') || lower.includes('người nhà') || lower.includes('thành viên') || lower.includes('cư dân')) {
-        aiReply = 'Để cấp quyền FaceID hoặc thẻ mở cửa cho người nhà Căn 12A05, Quý chủ hộ chỉ cần vào mục "Quản Lý Thành Viên Căn Hộ", bấm [Thêm Thành Viên] và chọn tài khoản người nhà. AI sẽ tự động kích hoạt nhận diện trong 30 giây!';
-        actionLink = { label: 'Quản Lý Thành Viên Căn Hộ', moduleId: 'resident-family' };
-        suggestions = ['Số lượng người nhà tối đa?', 'Đăng ký thêm người nhà'];
-      } else {
-        aiReply = `Dạ, tôi đã nắm được yêu cầu "${text}" từ Căn 12A05. Tôi đang đồng bộ thông tin đến Ban Quản Lý SKYLINE. Bạn có thể chọn nhanh các chủ đề phổ biến bên dưới hoặc tôi sẽ kết nối nhân viên trực ban hỗ trợ bạn nhé!`;
-        suggestions = ['Tra cứu nội quy tòa nhà', 'Đăng ký gửi xe ô tô Hầm B1', 'Đặt lịch bảo trì máy lạnh'];
+        suggestions = ['Tra cứu tiến độ sửa chữa', 'Gọi hotline kỹ thuật 1900 8899'];
+      } else if (lower.includes('faceid') || lower.includes('người nhà') || lower.includes('cửa') || lower.includes('khóa')) {
+        actionLink = { label: 'Quản Lý Cửa Thông Minh & Thẻ', moduleId: 'resident-home' };
+        suggestions = ['Đăng ký FaceID cho người nhà', 'Tạo mã PIN khách tạm thời'];
       }
 
       const aiMsg: Message = {
@@ -127,8 +140,20 @@ export default function AiConciergeFloating({
       };
 
       setMessages((prev) => [...prev, aiMsg]);
+    } catch (err: any) {
+      console.error('Concierge floating error:', err);
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: `ai-${Date.now()}`,
+          sender: 'ai',
+          text: 'Không thể kết nối đến máy chủ AI. Quý cư dân vui lòng thử lại hoặc liên hệ Hotline BQL 1900 8899.',
+          timestamp: new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }),
+        },
+      ]);
+    } finally {
       setIsTyping(false);
-    }, 700);
+    }
   };
 
   const handleActionClick = (modId: string) => {

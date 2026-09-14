@@ -1,65 +1,122 @@
 'use client';
 
-import React, { useState } from 'react';
-import { Bot, X, Send, Sparkles, UserCheck, PhoneCall, ChevronDown } from 'lucide-react';
+import React, { useState, useRef, useEffect } from 'react';
+import { Bot, X, Send, Sparkles, UserCheck, PhoneCall, ChevronDown, Zap, ShieldCheck } from 'lucide-react';
+
+interface ChatMessageItem {
+  id: string;
+  sender: 'user' | 'ai';
+  text: string;
+  time: string;
+  isError?: boolean;
+}
 
 export default function AiConcierge() {
   const [isOpen, setIsOpen] = useState(false);
   const [inputMsg, setInputMsg] = useState('');
   const [isTyping, setIsTyping] = useState(false);
-  const [messages, setMessages] = useState([
+  const [messages, setMessages] = useState<ChatMessageItem[]>([
     {
       id: '1',
       sender: 'ai',
-      text: 'Kính chào Quý cư dân! Tôi là Trợ lý ảo Skyline AI Concierge 24/7. Tôi có thể giúp gì cho Quý vị về nội quy, biểu phí, đăng ký xe hoặc đặt tiện ích?',
-      time: '18:10',
+      text: 'Kính chào Quý cư dân! Tôi là Trợ lý ảo Skyline AI Concierge 24/7 (vận hành bởi Google Gemini). Tôi sẵn sàng giải đáp mọi thắc mắc về nội quy, biểu phí, đăng ký xe, tiện ích hồ bơi/gym hoặc hệ thống khóa thông minh!',
+      time: new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }),
     },
   ]);
 
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  useEffect(() => {
+    if (isOpen) {
+      scrollToBottom();
+    }
+  }, [messages, isTyping, isOpen]);
+
   const quickPrompts = [
-    'Biểu phí quản lý tháng 08/2026',
-    'Quy định giờ mở cửa Hồ bơi vô cực',
-    'Thủ tục đăng ký vé gửi xe ô tô',
-    'Gặp trực tiếp Lễ tân tòa nhà',
+    'Biểu phí quản lý & gửi xe tháng này',
+    'Giờ mở cửa Hồ bơi & Gym',
+    'Đặt sân Pickleball tầng 38',
+    'Cách mở cửa Smart Door bằng FaceID & Thẻ NFC',
+    'Hotline Ban Quản Lý khẩn cấp',
   ];
 
-  const handleSend = (textToSend?: string) => {
-    const text = textToSend || inputMsg;
-    if (!text.trim()) return;
+  const handleSend = async (textToSend?: string) => {
+    const text = (textToSend || inputMsg).trim();
+    if (!text || isTyping) return;
 
-    const userMsg = {
+    const userMsgTime = new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
+    const userMsg: ChatMessageItem = {
       id: String(Date.now()),
       sender: 'user',
-      text: text,
-      time: new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }),
+      text,
+      time: userMsgTime,
     };
 
-    setMessages(prev => [...prev, userMsg]);
+    const newMessages = [...messages, userMsg];
+    setMessages(newMessages);
     setInputMsg('');
     setIsTyping(true);
 
-    // AI RAG Response simulation
-    setTimeout(() => {
-      let replyText = 'Tôi đã tra cứu trong Sổ tay cư dân SKYLINE. Yêu cầu của bạn đã được ghi nhận.';
-      if (text.includes('phí') || text.includes('hóa đơn')) {
-        replyText = 'Theo biểu phí chuẩn: Phí quản lý là 10.000 đ/m² thông thủy, Nước sinh hoạt 18.000 đ/m³, Xe ô tô 1.400.000 đ/tháng. Hóa đơn tháng 08 của bạn có hạn thanh toán đến 30/08.';
-      } else if (text.includes('Hồ bơi') || text.includes('giờ')) {
-        replyText = 'Hồ bơi vô cực Skyline Horizon Pool mở cửa hàng ngày từ 06:00 - 21:00. Mỗi căn hộ được miễn phí 20 lượt/tháng.';
-      } else if (text.includes('Lễ tân')) {
-        replyText = 'Đang kết nối đoạn chat này tới màn hình làm việc của Lễ tân trực ca tại Sảnh Chung Cư A. Lễ tân sẽ phản hồi bạn trong 30 giây!';
+    // Prepare history for Gemini API
+    const historyPayload = newMessages
+      .filter((m) => !m.isError)
+      .slice(-6)
+      .map((m) => ({
+        role: (m.sender === 'user' ? 'user' : 'model') as 'user' | 'model',
+        text: m.text,
+      }));
+
+    try {
+      const response = await fetch('/api/ai/concierge', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message: text,
+          history: historyPayload,
+        }),
+      });
+
+      const data = await response.json();
+
+      let replyText = '';
+      let isError = false;
+
+      if (response.ok && data.success && data.reply) {
+        replyText = data.reply;
+      } else {
+        replyText = data.fallbackReply || data.error || 'Hệ thống đang bận, Quý cư dân vui lòng thử lại sau giây lát.';
+        isError = !data.success;
       }
 
-      setMessages(prev => [
+      setMessages((prev) => [
         ...prev,
         {
           id: String(Date.now() + 1),
           sender: 'ai',
           text: replyText,
           time: new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }),
+          isError,
         },
       ]);
+    } catch (err: any) {
+      console.error('Concierge API error:', err);
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: String(Date.now() + 1),
+          sender: 'ai',
+          text: 'Không thể kết nối đến máy chủ AI. Quý cư dân vui lòng kiểm tra kết nối mạng hoặc liên hệ Hotline BQL 1900 8899.',
+          time: new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }),
+          isError: true,
+        },
+      ]);
+    } finally {
       setIsTyping(false);
-    }, 1200);
+    }
   };
 
   return (
@@ -68,56 +125,78 @@ export default function AiConcierge() {
       {!isOpen && (
         <button
           onClick={() => setIsOpen(true)}
-          className="fixed bottom-6 right-6 z-50 p-3.5 bg-[#0D1117] border-2 border-[#C5A880] text-[#C5A880] shadow-2xl hover:bg-[#C5A880] hover:text-[#0D1117] transition-all flex items-center gap-2 font-semibold text-xs uppercase tracking-wider"
-          title="Trợ lý ảo Skyline AI"
+          className="fixed bottom-6 right-6 z-50 p-3.5 bg-[#0D1117] border-2 border-[#C5A880] text-[#C5A880] shadow-2xl hover:bg-[#C5A880] hover:text-[#0D1117] transition-all flex items-center gap-2 font-semibold text-xs uppercase tracking-wider group rounded-sm"
+          title="Trợ lý ảo Skyline AI (Google Gemini)"
         >
-          <Bot className="w-5 h-5" />
-          <span className="hidden sm:inline">Skyline AI Concierge</span>
-          <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+          <div className="relative">
+            <Bot className="w-5 h-5 group-hover:rotate-12 transition-transform" />
+            <span className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
+            <span className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-emerald-500"></span>
+          </div>
+          <span className="hidden sm:inline font-bold">Skyline AI</span>
+          <span className="px-1.5 py-0.5 text-[9px] bg-emerald-950/80 border border-emerald-500/40 text-emerald-400 font-mono tracking-normal rounded">
+            Gemini
+          </span>
         </button>
       )}
 
       {/* Bottom Sheet Drawer Modal */}
       {isOpen && (
-        <div className="fixed inset-x-3 bottom-3 sm:inset-x-auto sm:right-6 sm:bottom-6 z-50 w-auto sm:w-full sm:max-w-md bg-[#0D1117] border border-[#C5A880] text-white shadow-2xl flex flex-col h-[480px] sm:h-[520px]">
+        <div className="fixed inset-x-3 bottom-3 sm:inset-x-auto sm:right-6 sm:bottom-6 z-50 w-auto sm:w-full sm:max-w-md bg-[#0D1117] border border-[#C5A880] text-white shadow-2xl flex flex-col h-[520px] sm:h-[560px] animate-in fade-in slide-in-from-bottom-5 duration-200">
           {/* Header */}
-          <div className="p-4 bg-[#121820] border-b border-[#222B35] flex items-center justify-between">
+          <div className="p-3.5 bg-[#121820] border-b border-[#222B35] flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 bg-[#1C2533] border border-[#C5A880] flex items-center justify-center text-[#C5A880]">
-                <Bot className="w-4 h-4" />
+              <div className="w-9 h-9 bg-gradient-to-br from-[#1C2533] to-[#0D1117] border border-[#C5A880] flex items-center justify-center text-[#C5A880] shadow-inner">
+                <Bot className="w-5 h-5" />
               </div>
               <div>
                 <div className="font-serif text-sm font-bold text-white flex items-center gap-1.5">
-                  Skyline AI Concierge <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                  Skyline AI Concierge
+                  <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-amber-950/80 border border-amber-500/40 text-[9px] text-[#C5A880] font-sans font-medium">
+                    <Sparkles className="w-2.5 h-2.5 text-[#C5A880]" />
+                    Gemini 2.5
+                  </span>
                 </div>
-                <div className="text-[10px] text-gray-400 font-light">Tự động trả lời qua RAG Sổ tay cư dân</div>
+                <div className="text-[10px] text-gray-400 flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                  Trợ lý thông minh căn hộ 24/7
+                </div>
               </div>
             </div>
 
-            <button
-              onClick={() => setIsOpen(false)}
-              className="text-gray-400 hover:text-white p-1"
-            >
-              <X className="w-5 h-5" />
-            </button>
+            <div className="flex items-center gap-1">
+              <button
+                onClick={() => setIsOpen(false)}
+                className="text-gray-400 hover:text-white p-1.5 hover:bg-[#161B22] rounded transition-colors"
+                title="Đóng cửa sổ chat"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
           </div>
 
           {/* Chat Messages Body */}
-          <div className="flex-1 p-4 overflow-y-auto space-y-3 text-xs bg-[#0A0E14]">
+          <div className="flex-1 p-4 overflow-y-auto space-y-3.5 text-xs bg-[#0A0E14] scroll-smooth">
             {messages.map((m) => (
               <div
                 key={m.id}
                 className={`flex ${m.sender === 'user' ? 'justify-end' : 'justify-start'}`}
               >
                 <div
-                  className={`max-w-[85%] p-3 text-xs space-y-1 ${
+                  className={`max-w-[88%] p-3 text-xs space-y-1 rounded-sm shadow-md ${
                     m.sender === 'user'
-                      ? 'bg-[#C5A880] text-[#0D1117] font-medium'
-                      : 'bg-[#161B22] border border-[#222B35] text-gray-200'
+                      ? 'bg-[#C5A880] text-[#0D1117] font-medium rounded-tr-none'
+                      : m.isError
+                      ? 'bg-rose-950/40 border border-rose-800/60 text-rose-200 rounded-tl-none'
+                      : 'bg-[#161B22] border border-[#222B35] text-gray-200 rounded-tl-none'
                   }`}
                 >
-                  <p className="leading-relaxed">{m.text}</p>
-                  <div className={`text-[9px] text-right ${m.sender === 'user' ? 'text-[#0D1117]/70' : 'text-gray-500'}`}>
+                  <p className="leading-relaxed whitespace-pre-wrap">{m.text}</p>
+                  <div
+                    className={`text-[9px] text-right pt-1 ${
+                      m.sender === 'user' ? 'text-[#0D1117]/70 font-semibold' : 'text-gray-500'
+                    }`}
+                  >
                     {m.time}
                   </div>
                 </div>
@@ -126,21 +205,23 @@ export default function AiConcierge() {
 
             {isTyping && (
               <div className="flex justify-start">
-                <div className="p-2.5 bg-[#161B22] border border-[#222B35] text-gray-400 text-[11px] flex items-center gap-2">
-                  <Sparkles className="w-3.5 h-3.5 text-[#C5A880] animate-spin" />
-                  <span>AI đang tra cứu Sổ tay tòa nhà...</span>
+                <div className="p-3 bg-[#161B22] border border-[#222B35] text-gray-300 text-[11px] flex items-center gap-2.5 rounded-sm">
+                  <Sparkles className="w-4 h-4 text-[#C5A880] animate-spin" />
+                  <span>Google Gemini đang tra cứu dữ liệu cư dân...</span>
                 </div>
               </div>
             )}
+            <div ref={messagesEndRef} />
           </div>
 
           {/* Quick Prompts */}
-          <div className="p-2.5 bg-[#121820] border-t border-[#222B35] flex items-center gap-2 overflow-x-auto">
+          <div className="p-2 bg-[#121820] border-t border-[#222B35] flex items-center gap-2 overflow-x-auto no-scrollbar">
             {quickPrompts.map((prompt, idx) => (
               <button
                 key={idx}
                 onClick={() => handleSend(prompt)}
-                className="whitespace-nowrap px-2.5 py-1 bg-[#161B22] hover:bg-[#1C2533] border border-gray-700 hover:border-[#C5A880] text-[10px] text-gray-300 transition-colors"
+                disabled={isTyping}
+                className="whitespace-nowrap px-2.5 py-1.5 bg-[#161B22] hover:bg-[#1C2533] border border-gray-700 hover:border-[#C5A880] text-[10px] text-gray-300 hover:text-white transition-colors disabled:opacity-50"
               >
                 {prompt}
               </button>
@@ -157,14 +238,17 @@ export default function AiConcierge() {
           >
             <input
               type="text"
-              placeholder="Nhập câu hỏi của bạn..."
+              placeholder="Nhập câu hỏi của Quý cư dân..."
               value={inputMsg}
               onChange={(e) => setInputMsg(e.target.value)}
-              className="flex-1 bg-[#161B22] border border-[#2D3748] text-xs text-white px-3 py-2 focus:outline-none focus:border-[#C5A880]"
+              disabled={isTyping}
+              className="flex-1 bg-[#161B22] border border-[#2D3748] text-xs text-white px-3 py-2.5 focus:outline-none focus:border-[#C5A880] disabled:opacity-50 placeholder-gray-500"
             />
             <button
               type="submit"
-              className="p-2 bg-[#C5A880] text-[#0D1117] hover:bg-white transition-colors"
+              disabled={!inputMsg.trim() || isTyping}
+              className="p-2.5 bg-[#C5A880] text-[#0D1117] hover:bg-white transition-colors disabled:opacity-40 font-bold"
+              title="Gửi câu hỏi"
             >
               <Send className="w-4 h-4" />
             </button>

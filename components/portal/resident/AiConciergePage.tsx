@@ -108,9 +108,9 @@ export default function AiConciergePage({ currentUser, onNavigateModule }: AiCon
     scrollToBottom();
   }, [messages, isTyping]);
 
-  const handleSendMessage = (textToSend?: string) => {
+  const handleSendMessage = async (textToSend?: string) => {
     const query = (textToSend || inputText).trim();
-    if (!query) return;
+    if (!query || isTyping) return;
 
     const userMsg: AiMessage = {
       id: `usr-${Date.now()}`,
@@ -119,43 +119,52 @@ export default function AiConciergePage({ currentUser, onNavigateModule }: AiCon
       timestamp: new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }),
     };
 
-    setMessages((prev) => [...prev, userMsg]);
+    const newMessages = [...messages, userMsg];
+    setMessages(newMessages);
     if (!textToSend) setInputText('');
     setIsTyping(true);
 
-    // AI Semantic Retrieval
-    setTimeout(() => {
+    // Prepare history for Gemini API
+    const historyPayload = newMessages.slice(-6).map((m) => ({
+      role: (m.sender === 'user' ? 'user' : 'model') as 'user' | 'model',
+      text: m.text,
+    }));
+
+    try {
+      const response = await fetch('/api/ai/concierge', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message: query,
+          history: historyPayload,
+        }),
+      });
+
+      const data = await response.json();
       let aiReply = '';
-      let ragSource = '';
+      if (response.ok && data.success && data.reply) {
+        aiReply = data.reply;
+      } else {
+        aiReply = data.fallbackReply || data.error || 'Dạ, hệ thống đang bận. Quý cư dân vui lòng thử lại sau giây lát.';
+      }
+
+      // Contextual action button & suggestions based on query
       let actionButton: { label: string; moduleId: string } | undefined = undefined;
       let suggestions: string[] = [];
-
       const lower = query.toLowerCase();
 
-      if (lower.includes('hồ bơi') || lower.includes('pool') || lower.includes('gym') || lower.includes('tiện ích')) {
-        aiReply = `Dạ, Tiện ích Sky Pool & Panorama Gym tại Tầng 25 mở cửa từ 06:00 đến 22:00 hàng ngày. Căn hộ ${aptCode} của Quý cư dân được phân bổ 4 lượt/ngày hoàn toàn miễn phí (đã tích hợp vào FaceID và mã QR tiện ích 1-chạm).`;
-        ragSource = 'Quy Chế Quản Lý Tiện Ích Tòa Nhà - Điều 4.1 & 4.3 (Phiên bản 2026)';
-        actionButton = { label: 'Mở Thẻ Quẹt Tiện Ích Sky Pool', moduleId: 'resident-facilities' };
-        suggestions = ['Cách đặt chỗ tiệc nướng BBQ Tầng 25', 'Quy định trang phục khi bơi'];
-      } else if (lower.includes('hóa đơn') || lower.includes('tiền điện') || lower.includes('nước') || lower.includes('thanh toán') || lower.includes('rò rỉ')) {
-        aiReply = `Hóa đơn dịch vụ Tháng 08/2026 của Căn ${aptCode} là 2.465.000 đ (Hạn chót: 30/08/2026). Lưu ý đặc biệt: Thuật toán AI Water Anomaly phát hiện lưu lượng nước sinh hoạt tăng bất thường +115% từ 02:00 - 04:00 sáng, Quý cư dân nên kiểm tra ngay van xả bồn cầu hoặc đường ống ngầm!`;
-        ragSource = 'Dữ Liệu Đồng Hồ Đo Thông Minh IoT & Thuật Toán AI Phân Tích Dòng Chảy';
-        actionButton = { label: 'Xem Chi Tiết & Thanh Toán VNPAY', moduleId: 'resident-finance' };
-        suggestions = ['Báo cáo sai lệch chỉ số nước', 'Đăng ký trích nợ tự động Auto-Pay'];
-      } else if (lower.includes('sửa') || lower.includes('hỏng') || lower.includes('ống nước') || lower.includes('sự cố') || lower.includes('kỹ thuật')) {
-        aiReply = `Tôi đã tiếp nhận thông tin sự cố từ Căn ${aptCode}. Theo tiêu chuẩn Cam Kết Chất Lượng Dịch Vụ (SLA), đội ngũ kỹ sư BQL trực ban 24/7 cam kết có mặt tại căn hộ trong vòng 60 phút để xử lý và kiểm toán nghiệm thu qua Slider số hóa.`;
-        ragSource = 'Quy Trình Xử Lý Sự Cố Kỹ Thuật Khẩn Cấp Chuẩn SLA 60 Phút';
+      if (lower.includes('hồ bơi') || lower.includes('pool') || lower.includes('gym') || lower.includes('tiện ích') || lower.includes('tennis') || lower.includes('pickleball')) {
+        actionButton = { label: 'Mở Thẻ Quẹt & Đặt Tiện Ích', moduleId: 'resident-facilities' };
+        suggestions = ['Giờ mở cửa Hồ bơi vô cực?', 'Đặt sân Pickleball tầng 38', 'Hạn mức lượt sử dụng tiện ích'];
+      } else if (lower.includes('hóa đơn') || lower.includes('tiền') || lower.includes('nước') || lower.includes('thanh toán') || lower.includes('phí')) {
+        actionButton = { label: 'Xem Chi Tiết & Thanh Toán Hóa Đơn', moduleId: 'resident-finance' };
+        suggestions = ['Biểu phí gửi xe ô tô, xe máy', 'Hạn thanh toán phí dịch vụ hàng tháng', 'Cách thanh toán chuyển khoản'];
+      } else if (lower.includes('sửa') || lower.includes('hỏng') || lower.includes('kỹ thuật') || lower.includes('sự cố')) {
         actionButton = { label: 'Tạo Phiếu Kỹ Thuật Khẩn Cấp (SLA 60p)', moduleId: 'resident-tickets' };
-        suggestions = ['Tra cứu tiến độ kỹ thuật viên', 'Gọi hotline ban quản lý 1900 1088'];
-      } else if (lower.includes('faceid') || lower.includes('người nhà') || lower.includes('thành viên') || lower.includes('cccd')) {
-        aiReply = `Để cấp quyền FaceID hoặc thẻ ra vào cho thành viên/người nhà Căn ${aptCode}, Quý chủ hộ chỉ cần vào mục "Quản Lý Cư Dân & e-KYC", bấm [Thêm Thành Viên Cư Dân] và quét CCCD (tự động nhận diện thông tin trong 3 giây). Hệ thống sẽ tự động kích hoạt mở cửa và phân quyền nhận diện khuôn mặt tức thì!`;
-        ragSource = 'Hệ Thống Kiểm Soát Ra Vào & FaceID Tòa Nhà';
-        actionButton = { label: 'Quản Lý Cư Dân & e-KYC', moduleId: 'resident-family' };
-        suggestions = ['Tra cứu nội quy tòa nhà', 'Đăng ký gửi xe ô tô Hầm B1', 'Cập nhật định danh e-KYC'];
-      } else {
-        aiReply = `Dạ, tôi đã tra cứu kho tri thức RAG của SKYLINE Smart Residence về nội dung "${query}". Tôi đang đồng bộ dữ liệu tới Ban Quản Lý. Bạn có thể bấm vào các chủ đề gợi ý bên dưới hoặc kết nối trực tiếp với nhân viên trực ban nhé!`;
-        ragSource = 'Cơ Sở Dữ Liệu Quản Trị Tòa Nhà Thông Minh SKYLINE RAG v2.4';
-        suggestions = ['Tra cứu nội quy tòa nhà', 'Đăng ký gửi xe ô tô Hầm B1', 'Đổi mật khẩu tài khoản NKS'];
+        suggestions = ['Thời gian kỹ sư BQL có mặt?', 'Hotline hỗ trợ kỹ thuật tòa nhà'];
+      } else if (lower.includes('faceid') || lower.includes('cửa') || lower.includes('thẻ') || lower.includes('người nhà') || lower.includes('khóa')) {
+        actionButton = { label: 'Kiểm Soát Cửa Thông Minh & Thẻ NFC', moduleId: 'resident-home' };
+        suggestions = ['Cách đăng ký nhận diện khuôn mặt FaceID', 'Thêm thành viên căn hộ', 'Tạo mã PIN khách tạm thời'];
       }
 
       const aiMsg: AiMessage = {
@@ -163,14 +172,27 @@ export default function AiConciergePage({ currentUser, onNavigateModule }: AiCon
         sender: 'ai',
         text: aiReply,
         timestamp: new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }),
-        ragSource,
+        ragSource: 'Google Gemini 2.5 Flash • Kho Tri Thức Skyline Smart Residence',
         actionButton,
         suggestions,
       };
 
       setMessages((prev) => [...prev, aiMsg]);
+    } catch (err: any) {
+      console.error('Error sending query to Gemini:', err);
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: `ai-${Date.now()}`,
+          sender: 'ai',
+          text: 'Không thể kết nối đến máy chủ AI. Quý cư dân vui lòng kiểm tra kết nối hoặc liên hệ Hotline BQL 1900 8899.',
+          timestamp: new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }),
+          ragSource: 'Lỗi kết nối ngoại tuyến',
+        },
+      ]);
+    } finally {
       setIsTyping(false);
-    }, 1200);
+    }
   };
 
   const handleAction = (modId: string) => {
