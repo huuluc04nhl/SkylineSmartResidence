@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { askGeminiConcierge } from '@/lib/geminiClient';
+import { askGeminiConcierge, generateSmartProjectFallback } from '@/lib/geminiClient';
 
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { message, history } = body;
+    const { message, history, aptCode } = body;
 
     if (!message || typeof message !== 'string' || !message.trim()) {
       return NextResponse.json(
@@ -13,22 +13,23 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const reply = await askGeminiConcierge(message, history || []);
+    const targetAptCode = aptCode || '12A05';
+    const reply = await askGeminiConcierge(message, history || [], targetAptCode);
+
     return NextResponse.json({
       success: true,
       reply,
       timestamp: new Date().toISOString(),
     });
   } catch (error: any) {
-    console.error('Error in /api/ai/concierge:', error);
-    return NextResponse.json(
-      {
-        success: false,
-        error: error.message || 'Lỗi xử lý yêu cầu với Google Gemini AI.',
-        fallbackReply:
-          'Xin lỗi Quý cư dân, hệ thống AI Concierge đang kết nối lại tới máy chủ bảo mật. Quý vị vui lòng thử lại sau giây lát hoặc liên hệ trực tiếp Hotline BQL 1900 8899.',
-      },
-      { status: 500 }
-    );
+    console.error('Handled error in /api/ai/concierge:', error);
+    // Never fail the user: return instant smart project data answer
+    const fallbackAnswer = generateSmartProjectFallback(error?.message || '', '12A05');
+    return NextResponse.json({
+      success: true,
+      reply: fallbackAnswer,
+      timestamp: new Date().toISOString(),
+      isFallback: true,
+    });
   }
 }

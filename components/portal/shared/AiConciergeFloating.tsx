@@ -217,6 +217,7 @@ Quý cư dân có thể bấm vào các câu hỏi gợi ý bên dưới hoặc 
         body: JSON.stringify({
           message: text,
           history: historyPayload,
+          aptCode,
         }),
       });
 

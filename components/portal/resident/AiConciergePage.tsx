@@ -204,6 +204,7 @@ Tôi là **Trợ lý ảo Skyline**, luôn sẵn sàng hỗ trợ Quý vị tra 
         body: JSON.stringify({
           message: query,
           history: historyPayload,
+          aptCode,
         }),
       });
 
