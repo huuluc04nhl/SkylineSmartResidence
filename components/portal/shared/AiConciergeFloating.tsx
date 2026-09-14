@@ -46,7 +46,7 @@ interface AiConciergeFloatingProps {
 function getDynamicSuggestions(userQuestion: string, aiResponse: string): string[] {
   const combined = (userQuestion + ' ' + aiResponse).toLowerCase();
 
-  if (combined.includes('hồ bơi') || combined.includes('pool') || combined.includes('gym') || combined.includes('tiện ích') || combined.includes('pickleball') || combined.includes('tennis') || combined.includes('xông hơi') || combined.includes('sauna') || combined.includes('bbq') || combined.includes('vé')) {
+  if (combined.includes('hồ bơi') || combined.includes('pool') || combined.includes('gym') || combined.includes('tiện ích') || combined.includes('xông hơi') || combined.includes('sauna') || combined.includes('bbq') || combined.includes('vé')) {
     return [
       '⏰ Giờ mở cửa Hồ bơi & Gym',
       '🧘 Phòng xông hơi VIP & Bảng giá',
@@ -114,7 +114,7 @@ Tôi là **Trợ lý ảo Skyline**, luôn đồng hành và hỗ trợ Quý v�
 
 Tôi có thể giúp Quý cư dân:
 * Tra cứu biểu phí quản lý tòa nhà, hóa đơn điện nước & phí gửi xe.
-* Xem giờ mở cửa & hạn mức hồ bơi vô cực, phòng gym, sân pickleball.
+* Xem giờ mở cửa & hạn mức hồ bơi vô cực, phòng gym, phòng xông hơi VIP.
 * Tiếp nhận báo hỏng kỹ thuật với cam kết thợ có mặt hỗ trợ trong vòng 60 phút.
 * Hướng dẫn mở cửa thông minh bằng khuôn mặt, thẻ cư dân hoặc mã số cho khách.
 
@@ -182,7 +182,7 @@ Quý cư dân có thể bấm vào các câu hỏi gợi ý bên dưới hoặc 
         suggestions: [
           'Biểu phí quản lý & gửi xe tháng này',
           'Giờ mở cửa Hồ bơi & Gym',
-          'Sân Pickleball tầng 38',
+          'Phòng xông hơi VIP tầng 3',
           'Hotline Ban Quản Lý khẩn cấp'
         ]
       }
@@ -239,7 +239,7 @@ Quý cư dân có thể bấm vào các câu hỏi gợi ý bên dưới hoặc 
       let actionLink: { label: string; moduleId: string } | undefined = undefined;
       const lower = (text + ' ' + aiReply).toLowerCase();
 
-      if (lower.includes('hồ bơi') || lower.includes('pool') || lower.includes('gym') || lower.includes('tiện ích') || lower.includes('tennis') || lower.includes('pickleball') || lower.includes('xông hơi') || lower.includes('sauna') || lower.includes('bbq') || lower.includes('vé')) {
+      if (lower.includes('hồ bơi') || lower.includes('pool') || lower.includes('gym') || lower.includes('tiện ích') || lower.includes('xông hơi') || lower.includes('sauna') || lower.includes('bbq') || lower.includes('vé')) {
         actionLink = { label: 'Mở Thẻ & Đặt Tiện Ích', moduleId: 'resident-facilities' };
       } else if (lower.includes('hóa đơn') || lower.includes('tiền') || lower.includes('nợ') || lower.includes('thanh toán') || lower.includes('phí')) {
         actionLink = { label: 'Xem & Thanh Toán Hóa Đơn', moduleId: 'resident-finance' };

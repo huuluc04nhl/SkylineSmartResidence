@@ -82,7 +82,7 @@ const KNOWLEDGE_CATEGORIES = [
 function getDynamicSuggestions(userQuestion: string, aiResponse: string): string[] {
   const combined = (userQuestion + ' ' + aiResponse).toLowerCase();
 
-  if (combined.includes('hồ bơi') || combined.includes('pool') || combined.includes('gym') || combined.includes('tiện ích') || combined.includes('pickleball') || combined.includes('tennis') || combined.includes('xông hơi') || combined.includes('sauna') || combined.includes('bbq') || combined.includes('vé')) {
+  if (combined.includes('hồ bơi') || combined.includes('pool') || combined.includes('gym') || combined.includes('tiện ích') || combined.includes('xông hơi') || combined.includes('sauna') || combined.includes('bbq') || combined.includes('vé')) {
     return [
       '⏰ Giờ mở cửa Hồ bơi & Gym',
       '🧘 Phòng xông hơi VIP & Bảng giá',
@@ -226,7 +226,7 @@ Tôi là **Trợ lý ảo Skyline**, luôn sẵn sàng hỗ trợ Quý vị tra 
       let actionButton: { label: string; moduleId: string } | undefined = undefined;
       const lower = (query + ' ' + aiReply).toLowerCase();
 
-      if (lower.includes('hồ bơi') || lower.includes('pool') || lower.includes('gym') || lower.includes('tiện ích') || lower.includes('tennis') || lower.includes('pickleball')) {
+      if (lower.includes('hồ bơi') || lower.includes('pool') || lower.includes('gym') || lower.includes('tiện ích') || lower.includes('xông hơi') || lower.includes('sauna') || lower.includes('bbq')) {
         actionButton = { label: 'Mở Thẻ & Đăng Ký Tiện Ích', moduleId: 'resident-facilities' };
       } else if (lower.includes('hóa đơn') || lower.includes('tiền') || lower.includes('nước') || lower.includes('thanh toán') || lower.includes('phí')) {
         actionButton = { label: 'Xem & Thanh Toán Hóa Đơn', moduleId: 'resident-finance' };

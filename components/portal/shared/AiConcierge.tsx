@@ -39,8 +39,8 @@ export default function AiConcierge() {
   const quickPrompts = [
     'Biểu phí quản lý & gửi xe tháng này',
     'Giờ mở cửa Hồ bơi & Gym',
-    'Đặt sân Pickleball tầng 38',
-    'Cách mở cửa Smart Door bằng FaceID & Thẻ NFC',
+    'Đặt phòng xông hơi VIP tầng 3',
+    'Cách mở cửa bằng khuôn mặt & thẻ cư dân',
     'Hotline Ban Quản Lý khẩn cấp',
   ];
 

@@ -140,14 +140,10 @@ ${billsStr || '- Không có hóa đơn nợ'}
 3. DỮ LIỆU PHIẾU BÁO HỎNG & KỸ THUẬT:
 ${ticketsStr || '- Không có phiếu báo hỏng nào đang xử lý'}
 
-4. DANH MỤC TIỆN ÍCH TÒA NHÀ & BẢNG GIÁ VIP THỐNG NHẤT:
+4. DANH MỤC TIỆN ÍCH TÒA NHÀ & BẢNG GIÁ (DỮ LIỆU THỰC TẾ TỪ HỆ THỐNG):
 ${facilitiesStr}
-- Phòng Xông Hơi Đá Muối Himalaya (VIP Tầng 3): Là TIỆN ÍCH RIÊNG TƯ (PRIVATE VIP) khép kín dành riêng cho từng căn hộ/gia đình, mở cửa 08:00 - 22:00. Biểu phí giữ chỗ: 500.000 đ/tiếng (1 tiếng: 500.000 đ, 2 tiếng: 1.000.000 đ, 3 tiếng: 1.500.000 đ). Đã bao gồm chuẩn bị lò gia nhiệt đá muối, khăn nhung cao cấp & tinh dầu thảo mộc tự nhiên theo giờ hẹn.
-- Vườn Tiệc Nướng BBQ Panoramic (Sân Thượng Tầng 25): Mở cửa 17:00 - 22:30. Biểu phí: 600.000 đ/ca tiệc (đã bao gồm set bếp nướng than Weber cao cấp, bàn ghế panoramic toàn cảnh và nhân viên dọn dẹp vệ sinh sau tiệc).
-- Hồ bơi vô cực Horizon (Tầng 5): Mở cửa 06:00 - 21:00, miễn phí 20 lượt/tháng/căn hộ.
-- Phòng tập Technogym & Yoga (Tầng 5): Mở cửa 05:30 - 22:00, miễn phí hoàn toàn cho cư dân.
-- Sân Pickleball & Tennis (Tầng 38): Mở cửa 06:00 - 22:00, đặt sân trước qua ứng dụng.
-- Tuyệt đối KHÔNG có tiện ích "chòi nghỉ" (đã loại bỏ).
+- Tuyệt đối KHÔNG có tiện ích nào ngoài danh sách trên. KHÔNG tự bịa thêm tiện ích.
+- Phòng Xông Hơi Đá Muối Himalaya là TIỆN ÍCH RIÊNG TƯ (PRIVATE VIP) khép kín cho từng gia đình, đã bao gồm lò gia nhiệt đá muối, khăn nhung cao cấp & tinh dầu thảo mộc.
 - Chính sách hoàn tiền minh bạch khi bận việc đột xuất:
   + Hủy trước giờ hẹn > 30 phút: Hoàn lại 100% tiền giữ chỗ vào hóa đơn sinh hoạt tháng tới.
   + Hủy cận giờ (trong vòng 30 phút trước giờ hẹn): Hoàn lại 50% tiền giữ chỗ (50% còn lại bù đắp chi phí gia nhiệt lò đá muối & chuẩn bị tinh dầu).
@@ -169,6 +165,7 @@ ${bookingsStr}
 
 NGUYÊN TẮC GIAO TIẾP VÀ DÙNG TỪ BẮT BUỘC:
 - Luôn ưu tiên dùng CHÍNH XÁC các con số và thông tin thực tế từ dữ liệu trên (số tiền hóa đơn, thành viên gia đình, thiết bị, phiếu báo hỏng, lịch đặt...).
+- TUYỆT ĐỐI KHÔNG tự bịa đặt, thêm hay sáng tạo ra các tiện ích, dịch vụ, số liệu KHÔNG CÓ trong dữ liệu trên. Chỉ trả lời những gì có trong dữ liệu.
 - Xưng hô: "Tôi" và gọi cư dân là "Quý cư dân" hoặc "Quý vị".
 - Giọng văn ấm áp, lịch sự, ân cần như quản gia 5 sao.
 - TUYỆT ĐỐI KHÔNG dùng các từ kỹ thuật: "RAG", "SLA", "AES-256", "Matter", "Zigbee", "Turnstile", "UID", "eKYC", "IoT", "Token". Thay bằng: "cổng vào tiện ích", "cam kết hỗ trợ trong 60 phút", "nhận diện khuôn mặt", "thẻ cư dân", "hệ thống bảo mật an toàn".
@@ -228,7 +225,7 @@ Quý cư dân chỉ cần quét mã QR tại cổng hoặc chạm thẻ cư dân
 
 * **Hóa đơn ${latestBill.billing_month}:**
   - **Tổng số tiền:** **${latestBill.total_amount.toLocaleString('vi-VN')} VNĐ**
-  - **Trạng thái:** ${latestBill.status === 'Paid' ? '✅ Đã thanh toán' : '⏳ **Chưa thanh toán** (Hạn chót ngày 30/08/2026)'}
+  - **Trạng thái:** ${latestBill.status === 'Paid' ? '✅ Đã thanh toán' : `⏳ **Chưa thanh toán** (Hạn chót ngày ${latestBill.due_date.slice(8,10)}/${latestBill.due_date.slice(5,7)}/${latestBill.due_date.slice(0,4)})`}
 * **Chi tiết các dịch vụ trong tháng:**
   - Tiền điện: **${elecDetail ? elecDetail.total_line_amount.toLocaleString('vi-VN') : '1.088.000'} đ** (${elecDetail?.usage || 340} kWh)
   - Tiền nước: **${waterDetail ? waterDetail.total_line_amount.toLocaleString('vi-VN') : '504.000'} đ** (${waterDetail?.usage || 28} m³) ${waterDetail?.ai_anomaly ? '\n    ⚠️ *Lưu ý:* Lượng nước tăng 115% so với tháng trước do nghi ngờ rò rỉ rỉ nhẹ từ 2h-4h sáng.' : ''}
@@ -267,26 +264,15 @@ ${membersList}
 Quý cư dân có thể vào mục **Hồ Sơ Cư Dân & Định Danh** để cập nhật thêm ảnh nhận diện khuôn mặt hoặc thêm thành viên mới bất cứ lúc nào ạ!`;
   }
 
-  // 5. Inquiries about Facilities (Pool, Gym, Pickleball, BBQ)
-  if (text.includes('hồ bơi') || text.includes('bơi') || text.includes('gym') || text.includes('pickleball') || text.includes('tiện ích') || text.includes('bbq') || text.includes('tennis')) {
-    return `Dạ thưa Quý cư dân ${residentName}, thông tin giờ giấc và quy định các tiện ích 5 sao tại Skyline như sau:
+  // 5. Inquiries about Facilities (Pool, Gym, BBQ, Sauna)
+  if (text.includes('hồ bơi') || text.includes('bơi') || text.includes('gym') || text.includes('tiện ích') || text.includes('bbq') || text.includes('xông hơi') || text.includes('sauna')) {
+    const facilityLines = DEMO_FACILITIES.map((f) => {
+      const icons: Record<string, string> = { 'Hồ bơi': '🏊', 'Xông hơi': '🧘', 'BBQ': '🥩', 'Gym': '🏋️', 'Sân Tennis': '🏸', 'Phòng sinh hoạt': '🏠' };
+      const icon = icons[f.category] || '✨';
+      return `* ${icon} **${f.name}:**\n  - Giờ mở cửa: **${f.operating_hours}** hàng ngày.\n  - Giá: **${f.pricing}**. Hạn mức: ${f.max_quota_per_month} lượt/tháng.`;
+    }).join('\n');
 
-* 🏊 **Hồ bơi vô cực Horizon (Tầng 5):**
-  - Giờ mở cửa: **06:00 - 21:00** hàng ngày.
-  - Hạn mức: Mỗi căn hộ được miễn phí **20 lượt/tháng**.
-  - Quy định: Mặc đồ bơi chuyên dụng, tắm tráng trước khi xuống hồ.
-* 🧘 **Phòng Xông Hơi Đá Muối Himalaya (Private VIP - Tầng 3):**
-  - Mở cửa: **08:00 - 22:00**, phòng riêng tư cho gia đình (khăn nhung cao cấp & tinh dầu thảo mộc).
-  - Biểu phí: **500.000 đ / giờ** (1 tiếng: 500k, 2 tiếng: 1tr, 3 tiếng: 1.5tr).
-  - Chính sách hoàn tiền: Hoàn **100%** nếu hủy trước giờ hẹn > 30 phút; hoàn **50%** nếu hủy sát giờ (< 30 phút); không hoàn tiền nếu quá giờ.
-* 🏋️ **Phòng tập Gym & Yoga (Tầng 5):**
-  - Giờ mở cửa: **05:30 - 22:00** hàng ngày, miễn phí hoàn toàn cho cư dân.
-* 🏸 **Sân Pickleball & Tennis (Tầng 38):**
-  - Giờ mở cửa: **06:00 - 22:00** hàng ngày. Quý cư dân vui lòng đặt trước trên ứng dụng để giữ sân.
-* 🥩 **Vườn BBQ Panoramic (Sân Thượng Tầng 25):**
-  - Mở cửa: **17:00 - 22:30**, biểu phí **600.000 đ / ca** (bao gồm set bếp than nướng Weber và nhân viên dọn dẹp).
-
-Quý cư dân chỉ cần nhìn vào camera nhận diện khuôn mặt hoặc chạm thẻ cư dân tại cổng là có thể vào tiện ích ngay ạ!`;
+    return `Dạ thưa Quý cư dân ${residentName}, thông tin giờ giấc và quy định các tiện ích 5 sao tại Skyline như sau:\n\n${facilityLines}\n\nQuý cư dân chỉ cần nhìn vào camera nhận diện khuôn mặt hoặc chạm thẻ cư dân tại cổng là có thể vào tiện ích ngay ạ!`;
   }
 
   // 5b. Inquiries about Sauna / Steam / Refund / Cancellation
@@ -316,11 +302,12 @@ Quý cư dân có thể vào tab **Đăng Ký Đặt Chỗ & Vé Điện Tử** 
   }
 
   // 7. Default Helpful Overview
-  return `Kính chào Quý cư dân ${residentName} (Căn hộ ${targetAptCode} - Tòa A Sapphire)!
+  const facilityNames = DEMO_FACILITIES.map((f) => f.name.split('(')[0].trim()).join(', ');
+  return `Kính chào Quý cư dân ${residentName} (Căn hộ ${targetAptCode} - ${apt.block_code})!
 
 Tôi là **Trợ lý ảo Skyline**, luôn sẵn sàng hỗ trợ Quý vị 24/7. Tôi có thể giải đáp ngay các thông tin về:
 * 💳 **Hóa đơn & Biểu phí:** Tra cứu tiền điện, tiền nước, phí gửi xe mới nhất.
-* 🏊 **Tiện ích tòa nhà:** Giờ mở cửa hồ bơi chân mây, phòng gym, đặt phòng xông hơi VIP tầng 3 hay tiệc nướng BBQ tầng 25.
+* 🏊 **Tiện ích tòa nhà:** Giờ mở cửa ${facilityNames}.
 * 🎫 **Vé & Lịch hẹn:** Kiểm tra mã vé tiện ích đã đặt và hướng dẫn hoàn tiền khi bận đột xuất.
 * 🔧 **Báo hỏng kỹ thuật:** Tiếp nhận sự cố với cam kết thợ có mặt trong 60 phút.
 * 🔑 **Cửa thông minh:** Hướng dẫn cài đặt khuôn mặt, thẻ từ và mã đón khách.
