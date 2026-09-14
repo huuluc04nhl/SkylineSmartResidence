@@ -98,6 +98,11 @@ ${ticketsStr || '- Không có phiếu báo hỏng nào đang xử lý'}
 
 4. DANH MỤC TIỆN ÍCH TÒA NHÀ & QUY ĐỊNH:
 ${facilitiesStr}
+- Phòng Xông Hơi Đá Muối Himalaya (Tầng 3): Là TIỆN ÍCH RIÊNG TƯ (PRIVATE VIP) khép kín dành riêng cho từng căn hộ/gia đình, mở cửa 08:00 - 22:00. Biểu phí giữ chỗ: 150.000 đ/tiếng (bao gồm khăn bông, gia nhiệt lò đá muối & tinh dầu thảo mộc).
+- Chính sách hoàn tiền minh bạch khi bận việc đột xuất:
+  + Hủy trước giờ hẹn > 30 phút: Hoàn lại 100% tiền giữ chỗ vào hóa đơn sinh hoạt tháng tới.
+  + Hủy cận giờ (trong vòng 30 phút trước giờ hẹn): Hoàn lại 50% tiền giữ chỗ (50% còn lại bù đắp chi phí gia nhiệt lò đá muối & chuẩn bị tinh dầu).
+  + Quá giờ hẹn bắt đầu: Không hoàn tiền do phòng riêng tư đã được khóa giữ chỗ phục vụ riêng cho căn hộ.
 - Tiện ích khác: Sân Pickleball & Tennis tầng 38 (06:00 - 22:00, đặt chỗ trước qua ứng dụng), Sky Lounge tầng 38, Khu vui chơi trẻ em Kid Zone tầng trệt & tầng 2.
 - Cổng vào tiện ích: Nhìn vào camera nhận diện khuôn mặt hoặc Chạm thẻ cư dân vào máy quét để mở cổng tự động.
 
@@ -192,6 +197,10 @@ Quý cư dân có thể vào mục **Hồ Sơ Cư Dân & Định Danh** để c�
   - Giờ mở cửa: **06:00 - 21:00** hàng ngày.
   - Hạn mức: Mỗi căn hộ được miễn phí **20 lượt/tháng**.
   - Quy định: Mặc đồ bơi chuyên dụng, tắm tráng trước khi xuống hồ.
+* 🧘 **Phòng Xông Hơi Đá Muối Himalaya (Private VIP - Tầng 3):**
+  - Mở cửa: **08:00 - 22:00**, phòng riêng tư cho gia đình (khăn bông & tinh dầu thảo mộc).
+  - Biểu phí: **150.000 đ / tiếng**, đặt giữ chỗ linh hoạt.
+  - Chính sách hoàn tiền: Hoàn **100%** nếu hủy trước giờ hẹn > 30 phút; hoàn **50%** nếu hủy sát giờ (< 30 phút); không hoàn tiền nếu quá giờ.
 * 🏋️ **Phòng tập Gym & Yoga (Tầng 5):**
   - Giờ mở cửa: **05:30 - 22:00** hàng ngày, miễn phí hoàn toàn cho cư dân.
 * 🏸 **Sân Pickleball & Tennis (Tầng 38):**
@@ -200,6 +209,20 @@ Quý cư dân có thể vào mục **Hồ Sơ Cư Dân & Định Danh** để c�
   - Mở cửa: **17:00 - 22:30**, phụ phí vệ sinh 200.000 đ/lượt.
 
 Quý cư dân chỉ cần nhìn vào camera nhận diện khuôn mặt hoặc chạm thẻ cư dân tại cổng là có thể vào tiện ích ngay ạ!`;
+  }
+
+  // 4b. Inquiries about Sauna / Steam / Refund / Cancellation
+  if (text.includes('xông hơi') || text.includes('sauna') || text.includes('hoàn tiền') || text.includes('hủy lịch') || text.includes('bận đột xuất')) {
+    return `Dạ thưa Quý cư dân, **Phòng Xông Hơi Đá Muối Himalaya (Tầng 3)** tại Skyline là **Tiện ích riêng tư (Private VIP)** dành riêng cho từng gia đình:
+
+* 👑 **Dịch vụ phòng riêng:** Khép kín 100%, được bật lò gia nhiệt đá muối và chuẩn bị tinh dầu thảo mộc tự nhiên theo đúng giờ hẹn của Quý vị.
+* 🕒 **Thời gian & Chi phí:** Mở cửa **08:00 - 22:00**, biểu phí đặt giữ chỗ là **150.000 đ / tiếng** (lựa chọn 1 tiếng, 2 tiếng hoặc 3 tiếng), có thể trừ vào hóa đơn tháng tới.
+* 💳 **Chính sách hoàn tiền linh hoạt khi có việc bận đột xuất:**
+  - 🟢 **Hủy trước giờ hẹn trên 30 phút:** Hoàn trả **100%** tiền giữ chỗ.
+  - 🟡 **Hủy sát giờ hẹn (trong vòng 30 phút):** Hỗ trợ hoàn trả **50%** tiền giữ chỗ (50% còn lại bù đắp chi phí gia nhiệt lò đá muối & chuẩn bị tinh dầu).
+  - 🔴 **Quá giờ hẹn bắt đầu:** Không áp dụng hoàn tiền do phòng riêng tư đã được giữ suốt khung giờ đó.
+
+Quý cư dân có thể vào tab **Đăng Ký Đặt Chỗ & Vé Điện Tử** để đặt phòng hoặc bấm nút **Hủy Lịch & Hoàn Tiền** trực tiếp trên vé đã đặt rất tiện lợi ạ!`;
   }
 
   // 5. Inquiries about Door Access / Smart Lock / Visitors

@@ -29,7 +29,11 @@ import {
   X,
   Radio,
   SlidersHorizontal,
-  Info
+  Info,
+  AlertTriangle,
+  RotateCcw,
+  Receipt,
+  Coins
 } from 'lucide-react';
 import { User } from '@/lib/dataStore';
 import SkylineLogo from '@/components/shared/SkylineLogo';
@@ -40,6 +44,8 @@ import {
   getFacilityBookings, 
   createFacilityBooking, 
   cancelFacilityBooking,
+  cancelFacilityBookingWithRefund,
+  calculateRefundEstimate,
   checkinWithTicket,
   getFacilityMonthlyQuota,
   FacilityCheckinLog,
@@ -99,17 +105,17 @@ export default function SmartFacilityPass({ currentUser }: SmartFacilityPassProp
     },
     {
       id: 'fac-sauna',
-      name: 'Phòng Xông Hơi Đá Muối Himalaya & Jacuzzi',
+      name: 'Phòng Xông Hơi Đá Muối Himalaya (Private VIP)',
       category: 'WELLNESS',
-      location: 'Tầng 3 (Khu Chăm Sóc Sức Khỏe VIP)',
-      hours: '08:00 - 21:30',
-      density: '15% (Rất vắng)',
-      temp: '45°C • Tinh dầu thảo mộc',
+      location: 'Tầng 3 (Khu Chăm Sóc Sức Khỏe Riêng Tư)',
+      hours: '08:00 - 22:00 (Theo giờ đặt)',
+      density: 'Phòng riêng gia đình',
+      temp: '48°C • Tinh dầu thảo mộc',
       image: 'https://images.unsplash.com/photo-1540555700478-4be289fbecef?w=600&auto=format&fit=crop&q=80',
       icon: Flame,
-      accessType: 'FREE_ENTRY',
-      accessBadge: 'VÀO TỰ DO (THẺ NFC)',
-      price: 'Miễn phí theo Thẻ cư dân'
+      accessType: 'BOOKING_REQUIRED',
+      accessBadge: 'PHÒNG RIÊNG TƯ (ĐẶT GIỮ CHỖ)',
+      price: '150.000 đ / giờ (Phòng gia đình riêng tư)'
     },
     {
       id: 'fac-kids',
@@ -148,12 +154,20 @@ export default function SmartFacilityPass({ currentUser }: SmartFacilityPassProp
 
   // State Form đặt chỗ
   const todayStr = new Date().toISOString().split('T')[0];
-  const [bookingFacilityId, setBookingFacilityId] = useState('fac-bbq');
+  const [bookingFacilityId, setBookingFacilityId] = useState('fac-sauna');
   const [bookingDate, setBookingDate] = useState(todayStr);
-  const [bookingTimeSlot, setBookingTimeSlot] = useState('18:00 - 20:00 (Buổi tối)');
-  const [bookingGuestCount, setBookingGuestCount] = useState(4);
+  const [bookingTimeSlot, setBookingTimeSlot] = useState('18:00 - 20:00 (Buổi tối - Giờ đẹp)');
+  const [bookingGuestCount, setBookingGuestCount] = useState(2);
+  const [bookingDurationHours, setBookingDurationHours] = useState(2);
+  const [bookingPaymentMethod, setBookingPaymentMethod] = useState('Trừ vào hóa đơn sinh hoạt tháng tới');
   const [bookingNotes, setBookingNotes] = useState('');
   const [bookingSuccessMsg, setBookingSuccessMsg] = useState<string | null>(null);
+
+  // State Modal Hoàn Tiền Khi Bận Đột Xuất
+  const [refundModalBooking, setRefundModalBooking] = useState<FacilityBooking | null>(null);
+  const [refundReason, setRefundReason] = useState('Bận đột xuất không thể sắp xếp tham gia');
+  const [isProcessingRefund, setIsProcessingRefund] = useState(false);
+  const [refundResultAlert, setRefundResultAlert] = useState<{ type: 'success' | 'warning' | 'error'; message: string } | null>(null);
 
   useEffect(() => {
     const handleLogAdded = () => setAccessLogs(getFacilityCheckinLogs(aptCode));
@@ -213,10 +227,16 @@ export default function SmartFacilityPass({ currentUser }: SmartFacilityPassProp
     }
   };
 
-  // Tạo đặt chỗ mới
+  // Tạo đặt chỗ mới (hỗ trợ phòng xông hơi riêng tư và thanh toán giữ chỗ)
   const handleCreateBooking = (e: React.FormEvent) => {
     e.preventDefault();
-    const fac = amenitiesList.find(f => f.id === bookingFacilityId) || amenitiesList[4];
+    const fac = amenitiesList.find(f => f.id === bookingFacilityId) || amenitiesList[2];
+    const isPrivate = fac.id === 'fac-sauna';
+    const depositAmount = isPrivate ? bookingDurationHours * 150000 : (fac.id === 'fac-bbq' ? 200000 : 0);
+    const pricingText = isPrivate 
+      ? `${(bookingDurationHours * 150000).toLocaleString('vi-VN')} đ (${bookingDurationHours} tiếng phòng riêng)` 
+      : fac.price;
+
     const { bookings: updated, newBooking } = createFacilityBooking(
       aptCode,
       fac.id,
@@ -224,23 +244,50 @@ export default function SmartFacilityPass({ currentUser }: SmartFacilityPassProp
       bookingDate,
       bookingTimeSlot,
       userName,
-      fac.price,
+      pricingText,
       bookingGuestCount,
-      bookingNotes
+      bookingNotes,
+      bookingDurationHours,
+      depositAmount,
+      isPrivate,
+      bookingPaymentMethod
     );
     setBookings(updated);
     setQuota(getFacilityMonthlyQuota(aptCode));
     setBookingNotes('');
-    setBookingSuccessMsg(`🎉 Đặt chỗ thành công! Mã vé điện tử: [${newBooking.ticketCode}]. Bạn có thể quẹt vé tại cổng khi đến giờ sử dụng.`);
-    setTimeout(() => setBookingSuccessMsg(null), 6000);
+    setBookingSuccessMsg(
+      `🎉 Đặt chỗ thành công! Mã vé điện tử: [${newBooking.ticketCode}]. ` +
+      (depositAmount > 0 
+        ? `Đã xác nhận thanh toán giữ chỗ ${depositAmount.toLocaleString('vi-VN')} đ (${bookingPaymentMethod}). ` 
+        : '') +
+      `Quý cư dân có thể quẹt vé QR tại cổng hoặc hủy hoàn tiền nếu có việc bận đột xuất.`
+    );
+    setTimeout(() => setBookingSuccessMsg(null), 8000);
   };
 
-  // Hủy đặt chỗ
-  const handleCancelBooking = (id: string) => {
-    if (!confirm('Bạn có chắc chắn muốn hủy lịch đặt tiện ích này không? Lượt quota sẽ được hoàn lại.')) return;
-    const updated = cancelFacilityBooking(aptCode, id);
-    setBookings(updated);
-    setQuota(getFacilityMonthlyQuota(aptCode));
+  // Mở modal hoàn tiền khi bận đột xuất
+  const handleOpenRefundModal = (booking: FacilityBooking) => {
+    setRefundModalBooking(booking);
+    setRefundReason('Bận việc gia đình đột xuất không thể tham gia');
+  };
+
+  // Xác nhận xử lý hoàn tiền
+  const handleConfirmRefund = () => {
+    if (!refundModalBooking) return;
+    setIsProcessingRefund(true);
+
+    setTimeout(() => {
+      const res = cancelFacilityBookingWithRefund(aptCode, refundModalBooking.id, refundReason);
+      setBookings(res.bookings);
+      setQuota(getFacilityMonthlyQuota(aptCode));
+      setIsProcessingRefund(false);
+      setRefundModalBooking(null);
+      setRefundResultAlert({
+        type: res.refundRate > 0 ? 'success' : 'warning',
+        message: res.message
+      });
+      setTimeout(() => setRefundResultAlert(null), 8000);
+    }, 600);
   };
 
   const filteredAmenities = amenitiesList.filter(item => {
@@ -535,11 +582,50 @@ export default function SmartFacilityPass({ currentUser }: SmartFacilityPassProp
                   onChange={(e) => setBookingFacilityId(e.target.value)}
                   className="w-full bg-[#161D26] border border-[#2A374A] p-2.5 text-white text-xs rounded focus:outline-none focus:border-[#C5A880]"
                 >
+                  <option value="fac-sauna">👑 Phòng Xông Hơi Đá Muối Himalaya (Private VIP - Tầng 3)</option>
                   <option value="fac-bbq">Vườn Nướng Sky BBQ Panoramic (Tầng 25)</option>
                   <option value="fac-pool">Chòi Nghỉ Hồ Bơi Vô Cực (Tầng 25)</option>
-                  <option value="fac-sauna">Phòng Xông Hơi VIP Riêng Tư (Tầng 3)</option>
                 </select>
               </div>
+
+              {/* Thông báo phòng riêng tư VIP nếu chọn Xông hơi */}
+              {bookingFacilityId === 'fac-sauna' && (
+                <div className="p-3 bg-gradient-to-r from-[#C5A880]/15 to-transparent border-l-2 border-[#C5A880] rounded space-y-1 text-xs text-gray-200 animate-fadeIn">
+                  <div className="font-bold text-[#C5A880] flex items-center gap-1.5">
+                    <Sparkles className="w-3.5 h-3.5" />
+                    <span>Tiện Ích Riêng Tư Cao Cấp (Private VIP)</span>
+                  </div>
+                  <div className="text-[11px] text-gray-300 leading-relaxed">
+                    Phòng xông hơi riêng cho gia đình, được gia nhiệt lò đá muối Himalaya và chuẩn bị sẵn tinh dầu thảo mộc tự nhiên theo đúng giờ hẹn.
+                  </div>
+                </div>
+              )}
+
+              {/* Chọn số tiếng sử dụng nếu là phòng xông hơi riêng tư */}
+              {bookingFacilityId === 'fac-sauna' && (
+                <div className="space-y-1.5">
+                  <label className="text-[10.5px] text-gray-300 font-semibold uppercase block">
+                    Số tiếng đặt phòng riêng tư:
+                  </label>
+                  <div className="grid grid-cols-3 gap-2">
+                    {[1, 2, 3].map((h) => (
+                      <button
+                        key={h}
+                        type="button"
+                        onClick={() => setBookingDurationHours(h)}
+                        className={`py-2 px-2 text-xs font-bold rounded transition-all flex flex-col items-center justify-center gap-0.5 border ${
+                          bookingDurationHours === h
+                            ? 'bg-[#C5A880] text-[#0D1117] border-[#C5A880] shadow'
+                            : 'bg-[#161D26] text-gray-300 border-[#2A374A] hover:border-[#C5A880]/60'
+                        }`}
+                      >
+                        <span>{h} Tiếng</span>
+                        <span className="text-[10px] font-mono font-normal">{(h * 150000).toLocaleString('vi-VN')} đ</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
 
               {/* Bước 2: Ngày & Giờ */}
               <div className="grid grid-cols-2 gap-3">
@@ -566,13 +652,33 @@ export default function SmartFacilityPass({ currentUser }: SmartFacilityPassProp
                     onChange={(e) => setBookingTimeSlot(e.target.value)}
                     className="w-full bg-[#161D26] border border-[#2A374A] p-2 text-white text-xs rounded focus:outline-none focus:border-[#C5A880]"
                   >
-                    <option>06:00 - 08:00 (Sáng sớm)</option>
-                    <option>16:00 - 18:00 (Buổi chiều)</option>
+                    <option>08:00 - 10:00 (Buổi sáng thư giãn)</option>
+                    <option>10:00 - 12:00 (Trưa thanh tịnh)</option>
+                    <option>14:00 - 16:00 (Đầu giờ chiều)</option>
+                    <option>16:00 - 18:00 (Hoàng hôn)</option>
                     <option>18:00 - 20:00 (Buổi tối - Giờ đẹp)</option>
-                    <option>20:00 - 22:00 (Đêm muộn)</option>
+                    <option>20:00 - 22:00 (Phục hồi thể lực đêm)</option>
                   </select>
                 </div>
               </div>
+
+              {/* Chọn phương thức thanh toán giữ chỗ nếu là phòng xông hơi */}
+              {bookingFacilityId === 'fac-sauna' && (
+                <div className="space-y-1.5">
+                  <label className="text-[10.5px] text-gray-300 font-semibold uppercase block">
+                    Phương thức thanh toán đặt giữ chỗ:
+                  </label>
+                  <select
+                    value={bookingPaymentMethod}
+                    onChange={(e) => setBookingPaymentMethod(e.target.value)}
+                    className="w-full bg-[#161D26] border border-[#2A374A] p-2 text-white text-xs rounded focus:outline-none focus:border-[#C5A880]"
+                  >
+                    <option value="Trừ vào hóa đơn sinh hoạt tháng tới">Trừ vào hóa đơn sinh hoạt tháng tới của căn hộ</option>
+                    <option value="Quét mã QR chuyển khoản ngân hàng">Quét mã QR chuyển khoản ngân hàng BQL</option>
+                    <option value="Trừ vào số dư ví cư dân">Trừ vào số dư ví cư dân</option>
+                  </select>
+                </div>
+              )}
 
               {/* Bước 3: Số người & Ghi chú */}
               <div className="grid grid-cols-2 gap-3">
@@ -583,7 +689,7 @@ export default function SmartFacilityPass({ currentUser }: SmartFacilityPassProp
                   <input
                     type="number"
                     min={1}
-                    max={20}
+                    max={bookingFacilityId === 'fac-sauna' ? 6 : 20}
                     value={bookingGuestCount}
                     onChange={(e) => setBookingGuestCount(Number(e.target.value))}
                     className="w-full bg-[#161D26] border border-[#2A374A] p-2 text-white text-xs rounded focus:outline-none focus:border-[#C5A880]"
@@ -612,16 +718,44 @@ export default function SmartFacilityPass({ currentUser }: SmartFacilityPassProp
                   type="text"
                   value={bookingNotes}
                   onChange={(e) => setBookingNotes(e.target.value)}
-                  placeholder="VD: Cần 2 bếp nướng, chuẩn bị thêm bàn ghế..."
+                  placeholder={bookingFacilityId === 'fac-sauna' ? 'VD: Cần thêm khăn bông, tinh dầu sả chanh...' : 'VD: Cần 2 bếp nướng, bàn ghế...'}
                   className="w-full bg-[#161D26] border border-[#2A374A] p-2 text-white text-xs rounded focus:outline-none focus:border-[#C5A880]"
                 />
               </div>
 
-              <div className="p-3 bg-[#0D1117] border border-[#222B35] rounded flex items-center justify-between text-xs">
-                <span className="text-gray-400">Biểu phí vệ sinh:</span>
-                <span className="text-[#C5A880] font-bold">
-                  {bookingFacilityId === 'fac-bbq' ? '200.000 đ / lượt' : 'Miễn phí cho cư dân'}
-                </span>
+              {/* Chi phí & Chính sách hoàn tiền minh bạch khi bận đột xuất */}
+              <div className="p-3.5 bg-[#0D1117] border border-[#222B35] rounded-lg space-y-2.5 text-xs">
+                <div className="flex items-center justify-between">
+                  <span className="text-gray-400 font-medium">Chi phí đặt giữ chỗ:</span>
+                  <span className="text-[#C5A880] font-bold text-sm font-mono">
+                    {bookingFacilityId === 'fac-sauna'
+                      ? `${(bookingDurationHours * 150000).toLocaleString('vi-VN')} đ (${bookingDurationHours} tiếng)`
+                      : bookingFacilityId === 'fac-bbq' ? '200.000 đ / lượt' : 'Miễn phí theo Thẻ cư dân'}
+                  </span>
+                </div>
+
+                {bookingFacilityId === 'fac-sauna' && (
+                  <div className="pt-2 border-t border-[#1F2937] space-y-1.5 text-[11px] leading-relaxed">
+                    <div className="text-[#C5A880] font-bold flex items-center gap-1.5">
+                      <RotateCcw className="w-3.5 h-3.5" />
+                      <span>Chính sách hoàn tiền khi có việc bận đột xuất:</span>
+                    </div>
+                    <div className="space-y-1 text-gray-300">
+                      <div className="flex items-start gap-1.5 text-emerald-400">
+                        <span className="font-bold">✓</span>
+                        <span><strong>Trước giờ hẹn &gt; 30 phút:</strong> Hoàn trả <strong>100%</strong> tiền giữ chỗ.</span>
+                      </div>
+                      <div className="flex items-start gap-1.5 text-amber-300">
+                        <span className="font-bold">⚡</span>
+                        <span><strong>Cận giờ (trong vòng 30 phút):</strong> Hoàn trả <strong>50%</strong> (50% bù đắp chi phí gia nhiệt lò đá muối & tinh dầu).</span>
+                      </div>
+                      <div className="flex items-start gap-1.5 text-gray-400">
+                        <span className="font-bold">✕</span>
+                        <span><strong>Quá giờ hẹn bắt đầu:</strong> Không hoàn tiền do phòng đã được khóa giữ chỗ.</span>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
 
               <button
@@ -629,13 +763,34 @@ export default function SmartFacilityPass({ currentUser }: SmartFacilityPassProp
                 className="w-full py-3 bg-[#C5A880] hover:bg-[#d5b991] text-[#0D1117] text-xs font-bold uppercase rounded-lg transition-colors flex items-center justify-center gap-2 shadow-lg"
               >
                 <Check className="w-4 h-4" />
-                <span>Xác Nhận Đặt Chỗ & Tạo Vé QR</span>
+                <span>Xác Nhận Đặt Giữ Chỗ & Tạo Vé QR</span>
               </button>
             </form>
           </div>
 
           {/* Bên Phải: Quản Lý Vé Điện Tử Của Căn Hộ (7 Cột) */}
           <div className="lg:col-span-7 space-y-4">
+            {/* Thông báo kết quả hoàn tiền nếu có */}
+            {refundResultAlert && (
+              <div className={`p-3.5 rounded-lg border text-xs leading-relaxed animate-fadeIn flex items-center justify-between gap-3 ${
+                refundResultAlert.type === 'success'
+                  ? 'bg-emerald-950/80 border-emerald-500 text-emerald-200'
+                  : 'bg-amber-950/80 border-amber-500 text-amber-200'
+              }`}>
+                <div className="flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-400" />
+                  <span>{refundResultAlert.message}</span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setRefundResultAlert(null)}
+                  className="text-gray-400 hover:text-white"
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            )}
+
             <div className="p-5 bg-[#121820] border border-[#2A374A] rounded-xl space-y-4 shadow-xl">
               <div className="flex items-center justify-between border-b border-[#222B35] pb-3">
                 <div className="text-xs uppercase tracking-wider text-[#C5A880] font-bold flex items-center gap-2">
@@ -654,20 +809,21 @@ export default function SmartFacilityPass({ currentUser }: SmartFacilityPassProp
                   </div>
                   <div className="text-xs font-bold text-white">Chưa có vé đặt chỗ nào</div>
                   <div className="text-[11px] text-gray-400 max-w-sm mx-auto leading-relaxed">
-                    Hãy điền form bên trái để đăng ký Vườn nướng Sky BBQ hoặc Chòi nghỉ Hồ bơi cho gia đình.
+                    Hãy điền form bên trái để đăng ký Phòng xông hơi riêng tư hoặc Vườn nướng Sky BBQ cho gia đình.
                   </div>
                 </div>
               ) : (
-                <div className="space-y-3 max-h-[480px] overflow-y-auto pr-1">
+                <div className="space-y-3 max-h-[500px] overflow-y-auto pr-1">
                   {bookings.map((b) => {
                     const isConfirmed = b.status === 'CONFIRMED';
                     const isCheckedIn = b.status === 'CHECKED_IN';
+                    const isCancelled = b.status === 'CANCELLED';
 
                     return (
                       <div 
                         key={b.id}
                         className={`p-4 bg-[#0D1117] border rounded-lg space-y-3 transition-all ${
-                          isConfirmed ? 'border-[#2A374A]' : isCheckedIn ? 'border-emerald-500/40 bg-emerald-950/10' : 'border-gray-800 opacity-60'
+                          isConfirmed ? 'border-[#2A374A]' : isCheckedIn ? 'border-emerald-500/40 bg-emerald-950/10' : 'border-gray-800 opacity-70'
                         }`}
                       >
                         <div className="flex items-start justify-between gap-3">
@@ -686,16 +842,28 @@ export default function SmartFacilityPass({ currentUser }: SmartFacilityPassProp
                             <div className="text-[10px] text-gray-400">
                               Người đặt: {b.bookerName} • Số lượng: {b.guestCount || 2} người {b.notes ? `• Ghi chú: ${b.notes}` : ''}
                             </div>
+
+                            {/* Thông tin phòng riêng tư & số tiền đặt giữ chỗ */}
+                            {(b.isPrivate || b.facilityId === 'fac-sauna' || b.depositAmount) && (
+                              <div className="flex flex-wrap items-center gap-2 mt-1">
+                                <span className="px-2 py-0.5 bg-[#C5A880]/15 text-[#C5A880] text-[9.5px] font-bold rounded">
+                                  👑 PHÒNG RIÊNG TƯ • {b.durationHours || 2} TIẾNG
+                                </span>
+                                <span className="text-[10px] text-gray-300 font-mono">
+                                  Đã giữ chỗ: <strong className="text-[#C5A880]">{(b.depositAmount || 300000).toLocaleString('vi-VN')} đ</strong>
+                                </span>
+                              </div>
+                            )}
                           </div>
 
-                          <span className={`px-2 py-0.5 text-[9px] font-mono font-bold rounded uppercase border ${
+                          <span className={`px-2 py-0.5 text-[9px] font-mono font-bold rounded uppercase border shrink-0 ${
                             isConfirmed 
                               ? 'bg-amber-950 text-amber-300 border-amber-500/40' 
                               : isCheckedIn
                                 ? 'bg-emerald-950 text-emerald-300 border-emerald-500/40'
                                 : 'bg-gray-800 text-gray-400 border-gray-600'
                           }`}>
-                            {isConfirmed ? 'ĐÃ XÁC NHẬN' : isCheckedIn ? '✓ ĐÃ CHECK-IN' : '✕ ĐÃ HỦY'}
+                            {isConfirmed ? 'ĐÃ XÁC NHẬN' : isCheckedIn ? '✓ ĐÃ CHECK-IN' : '✕ ĐÃ HỦY LỊCH'}
                           </span>
                         </div>
 
@@ -704,10 +872,12 @@ export default function SmartFacilityPass({ currentUser }: SmartFacilityPassProp
                           <div className="space-y-0.5">
                             <div className="text-[9px] text-gray-400 uppercase font-mono">Mã Vé Điện Tử Check-in:</div>
                             <div className="text-sm font-mono font-bold text-[#C5A880]">{b.ticketCode}</div>
-                            <div className="text-[10px] text-gray-400">Xuất trình tại đầu đọc mã QR cổng Barrier</div>
+                            <div className="text-[10px] text-gray-400">
+                              {isCancelled ? 'Vé này đã được hủy và thanh lý' : 'Xuất trình tại đầu đọc mã QR cổng vào tiện ích'}
+                            </div>
                           </div>
 
-                          <div className="p-1 bg-white rounded shrink-0 shadow">
+                          <div className={`p-1 bg-white rounded shrink-0 shadow ${isCancelled ? 'opacity-30' : ''}`}>
                             <img
                               src={`https://api.qrserver.com/v1/create-qr-code/?size=70x70&data=${b.ticketCode}`}
                               alt="Ticket QR"
@@ -716,16 +886,41 @@ export default function SmartFacilityPass({ currentUser }: SmartFacilityPassProp
                           </div>
                         </div>
 
+                        {/* Chi tiết hoàn tiền nếu vé đã hủy */}
+                        {isCancelled && (
+                          <div className="p-2.5 bg-[#141B24] border border-[#222B35] rounded text-xs space-y-1">
+                            <div className="flex items-center gap-1.5 font-semibold">
+                              {b.refundRate && b.refundRate > 0 ? (
+                                <span className="text-emerald-400 flex items-center gap-1">
+                                  <CheckCircle2 className="w-3.5 h-3.5" />
+                                  <span>Đã hoàn tiền {b.refundRate}% (+{(b.refundAmount || 0).toLocaleString('vi-VN')} đ)</span>
+                                </span>
+                              ) : (
+                                <span className="text-gray-400 flex items-center gap-1">
+                                  <XCircle className="w-3.5 h-3.5 text-gray-500" />
+                                  <span>Không áp dụng hoàn tiền</span>
+                                </span>
+                              )}
+                            </div>
+                            {b.refundNote && (
+                              <div className="text-[10.5px] text-gray-400 leading-relaxed">
+                                {b.refundNote}
+                              </div>
+                            )}
+                          </div>
+                        )}
+
                         {/* Action buttons */}
                         <div className="flex items-center justify-between pt-1">
                           {isConfirmed ? (
                             <>
                               <button
                                 type="button"
-                                onClick={() => handleCancelBooking(b.id)}
-                                className="text-xs text-red-400 hover:text-red-300 font-semibold transition-colors flex items-center gap-1"
+                                onClick={() => handleOpenRefundModal(b)}
+                                className="px-2.5 py-1.5 bg-red-950/40 hover:bg-red-900/60 border border-red-500/40 text-red-300 text-xs font-semibold rounded transition-colors flex items-center gap-1.5 shadow-sm"
                               >
-                                <XCircle className="w-3.5 h-3.5" /> Hủy Đặt Chỗ
+                                <RotateCcw className="w-3.5 h-3.5 text-red-400" />
+                                <span>Hủy Lịch & Hoàn Tiền (Bận Đột Xuất)</span>
                               </button>
 
                               <button
@@ -738,7 +933,7 @@ export default function SmartFacilityPass({ currentUser }: SmartFacilityPassProp
                             </>
                           ) : (
                             <span className="text-[10px] text-gray-500 italic">
-                              {isCheckedIn ? 'Vé đã được sử dụng thành công.' : 'Lịch đặt đã bị hủy.'}
+                              {isCheckedIn ? 'Vé đã được sử dụng thành công.' : 'Lịch đặt đã được thanh lý theo quy chế.'}
                             </span>
                           )}
                         </div>
@@ -985,6 +1180,142 @@ export default function SmartFacilityPass({ currentUser }: SmartFacilityPassProp
           </div>
         </div>
       )}
+      {/* ============================================================= */}
+      {/* MODAL 3: HỦY LỊCH TIỆN ÍCH & HOÀN TIỀN KHI BẬN ĐỘT XUẤT       */}
+      {/* ============================================================= */}
+      {refundModalBooking && (() => {
+        const refundEstimate = calculateRefundEstimate(refundModalBooking);
+        const isFull = refundEstimate.policyTier === 'FULL_100';
+        const isPartial = refundEstimate.policyTier === 'PARTIAL_50';
+        const isNone = refundEstimate.policyTier === 'NO_REFUND_0';
+
+        return (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-md animate-fadeIn p-4">
+            <div className="bg-[#121820] border border-[#C5A880] rounded-xl shadow-2xl max-w-md w-full overflow-hidden space-y-4">
+              {/* Header */}
+              <div className="p-4 bg-[#161F2C] border-b border-[#2A374A] flex items-center justify-between">
+                <div className="text-xs uppercase tracking-[0.15em] text-[#C5A880] font-bold flex items-center gap-2">
+                  <RotateCcw className="w-4 h-4 text-[#C5A880]" />
+                  <span>Yêu Cầu Hoàn Tiền Khi Bận Đột Xuất</span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setRefundModalBooking(null)}
+                  disabled={isProcessingRefund}
+                  className="p-1 text-gray-400 hover:text-white rounded"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+
+              {/* Body */}
+              <div className="p-5 space-y-4 text-xs">
+                {/* Thông tin vé đặt */}
+                <div className="p-3 bg-[#0D1117] border border-[#222B35] rounded-lg space-y-1.5">
+                  <div className="text-white font-bold text-sm flex items-center justify-between">
+                    <span>{refundModalBooking.facilityName}</span>
+                    <span className="text-[10px] text-[#C5A880] font-mono">{refundModalBooking.ticketCode}</span>
+                  </div>
+                  <div className="text-gray-300">
+                    Thời gian hẹn: <strong className="text-white">{refundModalBooking.bookingDate} ({refundModalBooking.timeSlot})</strong>
+                  </div>
+                  <div className="text-gray-400">
+                    Số tiền đã đặt giữ chỗ: <strong className="text-[#C5A880]">{(refundModalBooking.depositAmount || 150000).toLocaleString('vi-VN')} VNĐ</strong> ({refundModalBooking.paymentMethod || 'Hóa đơn tháng tới'})
+                  </div>
+                </div>
+
+                {/* Phân tích tỷ lệ hoàn tiền thời gian thực */}
+                <div className={`p-4 rounded-xl border space-y-2 ${
+                  isFull 
+                    ? 'bg-emerald-950/40 border-emerald-500/60 text-emerald-200' 
+                    : isPartial 
+                      ? 'bg-amber-950/40 border-amber-500/60 text-amber-200' 
+                      : 'bg-gray-900 border-gray-700 text-gray-300'
+                }`}>
+                  <div className="flex items-center justify-between">
+                    <span className="font-bold text-xs uppercase tracking-wider flex items-center gap-1.5">
+                      {isFull && <CheckCircle2 className="w-4 h-4 text-emerald-400" />}
+                      {isPartial && <AlertTriangle className="w-4 h-4 text-amber-400" />}
+                      {isNone && <XCircle className="w-4 h-4 text-gray-400" />}
+                      <span>{refundEstimate.title}</span>
+                    </span>
+                    <span className={`px-2 py-0.5 rounded font-mono font-bold text-xs ${
+                      isFull ? 'bg-emerald-600 text-white' : isPartial ? 'bg-amber-600 text-white' : 'bg-gray-700 text-gray-300'
+                    }`}>
+                      HOÀN {refundEstimate.refundRate}%
+                    </span>
+                  </div>
+
+                  <div className="text-[11px] leading-relaxed opacity-90">
+                    {refundEstimate.reason}
+                  </div>
+
+                  <div className="pt-2 border-t border-white/10 flex items-center justify-between font-mono">
+                    <span className="text-gray-400">Số tiền hoàn trả về căn hộ:</span>
+                    <span className={`text-base font-bold ${
+                      isFull ? 'text-emerald-400' : isPartial ? 'text-amber-400' : 'text-gray-400'
+                    }`}>
+                      +{refundEstimate.refundAmount.toLocaleString('vi-VN')} VNĐ
+                    </span>
+                  </div>
+                </div>
+
+                {/* Chọn hoặc nhập lý do bận */}
+                <div className="space-y-1.5">
+                  <label className="text-[10.5px] text-gray-300 font-semibold uppercase block">
+                    Lý do hủy lịch (tùy chọn):
+                  </label>
+                  <select
+                    value={refundReason}
+                    onChange={(e) => setRefundReason(e.target.value)}
+                    className="w-full bg-[#161D26] border border-[#2A374A] p-2 text-white text-xs rounded focus:outline-none focus:border-[#C5A880]"
+                  >
+                    <option value="Bận việc gia đình đột xuất không thể tham gia">Bận việc gia đình đột xuất</option>
+                    <option value="Lịch công tác / đi xa phát sinh ngoài dự kiến">Lịch công tác / đi xa đột xuất</option>
+                    <option value="Sức khỏe không đảm bảo, cần nghỉ ngơi">Sức khỏe không đảm bảo, cần nghỉ ngơi</option>
+                    <option value="Thay đổi kế hoạch khác cùng bạn bè/người thân">Thay đổi kế hoạch khác</option>
+                  </select>
+                </div>
+
+                <div className="text-[10.5px] text-gray-400 italic">
+                  * Số tiền hoàn trả sẽ được Ban Quản Lý tự động kết chuyển và giảm trừ trực tiếp vào hóa đơn sinh hoạt kỳ kế tiếp của căn hộ {aptCode}.
+                </div>
+
+                {/* Buttons */}
+                <div className="grid grid-cols-2 gap-3 pt-2">
+                  <button
+                    type="button"
+                    onClick={() => setRefundModalBooking(null)}
+                    disabled={isProcessingRefund}
+                    className="py-2.5 px-3 bg-[#161D26] hover:bg-[#1E2633] text-gray-300 text-xs font-bold rounded-lg border border-[#2A374A] transition-colors"
+                  >
+                    Giữ Lại Lịch Đặt
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={handleConfirmRefund}
+                    disabled={isProcessingRefund}
+                    className="py-2.5 px-3 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white text-xs font-bold rounded-lg transition-all flex items-center justify-center gap-1.5 shadow-lg"
+                  >
+                    {isProcessingRefund ? (
+                      <>
+                        <Wifi className="w-3.5 h-3.5 animate-spin rotate-90" />
+                        <span>Đang Xử Lý Hoàn Tiền...</span>
+                      </>
+                    ) : (
+                      <>
+                        <RotateCcw className="w-3.5 h-3.5" />
+                        <span>Xác Nhận Hủy & Hoàn Tiền</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+      })()}
     </div>
   );
 }
