@@ -278,29 +278,29 @@ Quý cư dân có thể bấm vào các câu hỏi gợi ý bên dưới hoặc 
       {/* ------------------------------------------------------------- */}
       {!isOpen && (
         <div className="pointer-events-auto absolute bottom-6 right-6 flex items-center gap-3 transition-all duration-300">
-          {/* Ambient Tooltip Pill (Sharp Luxury with Gold Accent) */}
+          {/* Ambient Tooltip Pill (Borderless Modern Glass) */}
           <button
             type="button"
             onClick={onToggle}
-            className="hidden sm:flex items-center gap-2.5 px-3.5 py-2 bg-[#0D1117]/95 border border-[#C5A880] text-[#C5A880] text-xs font-semibold shadow-2xl backdrop-blur-md rounded-none transition-all hover:bg-[#161B22] group"
+            className="hidden sm:flex items-center gap-2.5 px-4 py-2 bg-[#0E131B]/95 text-[#C5A880] text-xs font-medium shadow-[0_8px_30px_rgba(0,0,0,0.7)] backdrop-blur-xl rounded-full transition-all hover:bg-[#161F2C] hover:text-white group border-0"
           >
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
             <span className="group-hover:text-white transition-colors">Hỏi Skyline AI 24/7</span>
-            <span className="px-1.5 py-0.5 bg-emerald-950/90 border border-emerald-500/50 text-emerald-400 text-[9px] font-mono font-bold rounded-none">
+            <span className="px-2 py-0.5 bg-emerald-950/80 text-emerald-400 text-[9px] font-mono font-bold rounded-full border-0">
               24/7
             </span>
           </button>
 
-          {/* Luxury Sharp AI Trigger Button with Gold Accent Border */}
+          {/* Luxury Circular AI Trigger Button (Borderless with Ambient Glow) */}
           <button
             type="button"
             onClick={onToggle}
             aria-label="Mở Trợ Lý Ảo Skyline AI"
-            className="group relative w-14 h-14 bg-gradient-to-br from-[#1E2631] via-[#121820] to-[#0D1117] border-2 border-[#C5A880] text-[#C5A880] hover:text-white hover:border-white rounded-none flex items-center justify-center transition-all duration-300 transform hover:scale-105 shadow-[0_10px_35px_rgba(0,0,0,0.9),0_0_20px_rgba(197,168,128,0.35)]"
+            className="group relative w-14 h-14 bg-gradient-to-br from-[#222C3A] via-[#141B24] to-[#0A0E14] text-[#C5A880] hover:text-white rounded-full flex items-center justify-center transition-all duration-300 transform hover:scale-105 shadow-[0_12px_40px_rgba(0,0,0,0.85),0_0_24px_rgba(197,168,128,0.25)] border-0"
           >
             <Bot className="w-7 h-7 relative z-10 transition-transform group-hover:rotate-12 duration-200" />
-            <Sparkles className="w-3.5 h-3.5 text-amber-300 absolute top-1.5 right-1.5 animate-bounce" />
-            <span className="absolute -bottom-1 -right-1 w-3.5 h-3.5 bg-emerald-500 border border-[#0D1117] flex items-center justify-center">
+            <Sparkles className="w-3.5 h-3.5 text-amber-300 absolute top-2 right-2 animate-bounce" />
+            <span className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-emerald-500 rounded-full border-2 border-[#0A0E14] flex items-center justify-center">
               <span className="w-1.5 h-1.5 rounded-full bg-white animate-ping"></span>
             </span>
           </button>
@@ -308,45 +308,46 @@ Quý cư dân có thể bấm vào các câu hỏi gợi ý bên dưới hoặc 
       )}
 
       {/* ------------------------------------------------------------- */}
-      {/* 2. EXPANDED FLOATING CHAT WINDOW (Sharp Corners & Gold Accent)*/}
+      {/* 2. EXPANDED FLOATING CHAT WINDOW (Borderless Modern Luxury)   */}
       {/* ------------------------------------------------------------- */}
       {isOpen && (
         <div
-          className={`pointer-events-auto absolute bottom-4 right-4 sm:bottom-6 sm:right-6 bg-[#0D1117] border border-[#C5A880] border-t-4 border-t-[#C5A880] shadow-[0_25px_70px_rgba(0,0,0,0.95),0_0_35px_rgba(197,168,128,0.25)] flex flex-col overflow-hidden backdrop-blur-2xl origin-bottom-right transition-all duration-300 ease-out animate-in fade-in-0 zoom-in-95 rounded-none ${
+          className={`pointer-events-auto absolute bottom-4 right-4 sm:bottom-6 sm:right-6 bg-[#0E131B]/98 shadow-[0_25px_70px_rgba(0,0,0,0.95),0_0_50px_rgba(0,0,0,0.8)] flex flex-col overflow-hidden backdrop-blur-2xl origin-bottom-right transition-all duration-300 ease-out animate-in fade-in-0 zoom-in-95 rounded-2xl border-0 ${
             isExpanded
               ? 'w-[560px] max-w-[calc(100vw-32px)] h-[720px] max-h-[88vh]'
               : 'w-[420px] max-w-[calc(100vw-32px)] h-[580px] max-h-[82vh]'
           }`}
         >
-          {/* Top Window Header with Gold Accent Divider */}
-          <div className="p-3.5 bg-gradient-to-r from-[#161D26] via-[#121820] to-[#0D1117] border-b border-[#C5A880]/50 flex items-center justify-between text-white flex-shrink-0 rounded-none">
+          {/* Top Window Header - Seamless Luxury Surface */}
+          <div className="p-4 bg-[#141B24] flex items-center justify-between text-white flex-shrink-0 border-0">
             <div className="flex items-center gap-3">
               <div className="relative">
-                <div className="w-9 h-9 bg-gradient-to-br from-[#1C2533] to-[#0D1117] border border-[#C5A880] flex items-center justify-center text-[#C5A880] shadow-inner rounded-none">
+                <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-[#C5A880]/20 to-[#C5A880]/35 flex items-center justify-center text-[#C5A880] shadow-sm border-0">
                   <Bot className="w-5 h-5" />
                 </div>
-                <span className="absolute -bottom-1 -right-1 w-2.5 h-2.5 bg-emerald-400 border border-[#0D1117]"></span>
+                <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-emerald-400 rounded-full border-2 border-[#141B24]"></span>
               </div>
 
               <div>
-                <div className="text-xs font-bold text-white flex items-center gap-2 leading-tight">
-                  <span className="font-serif tracking-wide">Skyline AI Concierge</span>
-                  <span className="px-2 py-0.5 bg-emerald-950/80 border border-emerald-500/60 text-emerald-400 text-[9px] font-mono font-bold uppercase rounded-none flex items-center gap-1">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> Trực Tuyến
+                <div className="text-sm font-serif font-bold text-white flex items-center gap-2 leading-tight">
+                  <span>Skyline AI Concierge</span>
+                  <span className="px-2 py-0.5 bg-emerald-950/80 text-emerald-400 text-[9px] font-mono font-bold uppercase rounded-full border-0">
+                    Trực Tuyến
                   </span>
                 </div>
-                <div className="text-[10px] text-gray-400 font-light flex items-center gap-1.5 mt-0.5">
-                  Trợ lý 24/7 • Căn <strong className="text-white font-mono">{aptCode}</strong>
+                <div className="text-[11px] text-gray-400 font-light flex items-center gap-1.5 mt-0.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                  Hỗ trợ 24/7 • Căn <strong className="text-white font-mono">{aptCode}</strong>
                 </div>
               </div>
             </div>
 
-            {/* Header Control Buttons */}
-            <div className="flex items-center gap-1.5 text-gray-400">
+            {/* Header Control Buttons (Minimalist Ghost) */}
+            <div className="flex items-center gap-1 text-gray-400">
               <button
                 type="button"
                 onClick={handleResetChat}
-                className="p-1.5 hover:text-white hover:bg-[#1C2533] border border-gray-800 hover:border-[#C5A880] transition-colors rounded-none"
+                className="p-2 hover:bg-white/10 text-gray-400 hover:text-white rounded-full transition-colors border-0"
                 title="Làm mới cuộc trò chuyện"
               >
                 <RefreshCw className="w-3.5 h-3.5" />
@@ -355,7 +356,7 @@ Quý cư dân có thể bấm vào các câu hỏi gợi ý bên dưới hoặc 
               <button
                 type="button"
                 onClick={() => setIsExpanded(!isExpanded)}
-                className="hidden sm:block p-1.5 hover:text-white hover:bg-[#1C2533] border border-gray-800 hover:border-[#C5A880] transition-colors rounded-none"
+                className="hidden sm:block p-2 hover:bg-white/10 text-gray-400 hover:text-white rounded-full transition-colors border-0"
                 title={isExpanded ? 'Thu nhỏ cửa sổ' : 'Mở rộng toàn màn hình'}
               >
                 {isExpanded ? <Minimize2 className="w-3.5 h-3.5" /> : <Maximize2 className="w-3.5 h-3.5" />}
@@ -364,7 +365,7 @@ Quý cư dân có thể bấm vào các câu hỏi gợi ý bên dưới hoặc 
               <button
                 type="button"
                 onClick={onToggle}
-                className="p-1.5 hover:text-rose-400 hover:bg-rose-950/40 border border-gray-800 hover:border-rose-500 transition-colors rounded-none"
+                className="p-2 hover:bg-rose-500/20 text-gray-400 hover:text-rose-400 rounded-full transition-colors border-0"
                 title="Đóng cửa sổ chat"
               >
                 <X className="w-4 h-4" />
@@ -372,17 +373,17 @@ Quý cư dân có thể bấm vào các câu hỏi gợi ý bên dưới hoặc 
             </div>
           </div>
 
-          {/* Quick Category Chips Bar with Gold Accent */}
-          <div className="px-3 py-2 bg-[#121820] border-b border-[#222B35] flex items-center gap-1.5 overflow-x-auto no-scrollbar flex-shrink-0 rounded-none">
+          {/* Quick Category Chips Bar - Clean Pill Carousel */}
+          <div className="px-3.5 py-2.5 bg-[#101721] flex items-center gap-1.5 overflow-x-auto no-scrollbar flex-shrink-0 border-0">
             {TOPIC_SUGGESTIONS.map((topic, idx) => (
               <button
                 key={idx}
                 type="button"
                 onClick={() => setActiveCategory(topic.category)}
-                className={`whitespace-nowrap px-3 py-1 text-[10px] rounded-none transition-all flex items-center gap-1 ${
+                className={`whitespace-nowrap px-3.5 py-1.5 text-xs rounded-full transition-all flex items-center gap-1 font-medium border-0 ${
                   activeCategory === topic.category
-                    ? 'bg-[#C5A880] text-[#0D1117] border border-[#C5A880] font-bold shadow-md'
-                    : 'bg-[#161D26] hover:bg-[#1C2533] text-gray-300 border border-[#2D3748] hover:border-[#C5A880]'
+                    ? 'bg-[#C5A880] text-[#0B0F15] font-bold shadow'
+                    : 'bg-[#18212D] hover:bg-[#202C3C] text-gray-300'
                 }`}
               >
                 <span>{topic.category}</span>
@@ -390,44 +391,42 @@ Quý cư dân có thể bấm vào các câu hỏi gợi ý bên dưới hoặc 
             ))}
           </div>
 
-          {/* Conversation Stream */}
+          {/* Quick Prompts under Active Category - Slim Horizontal Strip */}
+          <div className="px-3.5 py-2 bg-[#121924] flex items-center gap-1.5 overflow-x-auto no-scrollbar border-0 text-xs flex-shrink-0">
+            <span className="text-[10px] uppercase font-bold text-[#C5A880] whitespace-nowrap flex items-center gap-1 pr-1">
+              <Sparkles className="w-3 h-3 text-[#C5A880]" /> Gợi ý:
+            </span>
+            {TOPIC_SUGGESTIONS.find((t) => t.category === activeCategory)?.prompts.map((p, pIdx) => (
+              <button
+                key={pIdx}
+                type="button"
+                onClick={() => handleSendMessage(p)}
+                disabled={isTyping}
+                className="whitespace-nowrap text-[11px] px-3 py-1 bg-[#192230] hover:bg-[#243144] text-gray-300 hover:text-[#C5A880] transition-colors rounded-full text-left flex items-center gap-1 border-0 flex-shrink-0"
+              >
+                <span>{p}</span>
+                <ChevronRight className="w-2.5 h-2.5 text-gray-500" />
+              </button>
+            ))}
+          </div>
+
+          {/* Conversation Stream - Spacious & Clean */}
           <div
             ref={scrollContainerRef}
             onScroll={handleScroll}
-            className="flex-1 p-4 overflow-y-auto space-y-4 bg-[#0A0D12] text-xs relative"
+            className="flex-1 p-4 overflow-y-auto space-y-4 bg-[#0A0E14] text-xs relative"
           >
-            {/* Quick Prompts under Active Category with Gold Accent Bar */}
-            <div className="p-3 bg-[#121820]/95 border-l-2 border-l-[#C5A880] border-y border-r border-[#222B35] rounded-none space-y-1.5 mb-2 shadow-sm">
-              <div className="text-[10px] uppercase font-bold text-[#C5A880] flex items-center gap-1.5">
-                <Sparkles className="w-3 h-3 text-[#C5A880]" /> Câu hỏi nhanh về {activeCategory}:
-              </div>
-              <div className="flex flex-wrap gap-1.5">
-                {TOPIC_SUGGESTIONS.find((t) => t.category === activeCategory)?.prompts.map((p, pIdx) => (
-                  <button
-                    key={pIdx}
-                    type="button"
-                    onClick={() => handleSendMessage(p)}
-                    disabled={isTyping}
-                    className="text-[10px] px-2.5 py-1 bg-[#161B22] hover:bg-[#1C2533] border border-[#2D3748] hover:border-[#C5A880] text-gray-300 hover:text-white transition-colors rounded-none text-left flex items-center gap-1"
-                  >
-                    <span>{p}</span>
-                    <ChevronRight className="w-2.5 h-2.5 text-gray-500" />
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Message Bubbles with Sharp Geometry & Accent Borders */}
+            {/* Message Bubbles */}
             {messages.map((m) => (
               <div
                 key={m.id}
-                className={`flex flex-col ${m.sender === 'user' ? 'items-end' : 'items-start'} space-y-1 animate-chat-bubble`}
+                className={`flex flex-col ${m.sender === 'user' ? 'items-end' : 'items-start'} space-y-1.5 animate-chat-bubble`}
               >
                 <div
-                  className={`relative max-w-[88%] p-3.5 text-xs rounded-none shadow-md group ${
+                  className={`relative ${
                     m.sender === 'user'
-                      ? 'bg-[#C5A880] text-[#0D1117] font-medium border border-[#E2C799]'
-                      : 'bg-[#161D26] border-l-2 border-l-[#C5A880] border-y border-r border-[#222B35] text-gray-200 space-y-2'
+                      ? 'max-w-[85%] p-3.5 text-[13px] leading-relaxed rounded-2xl rounded-tr-sm bg-gradient-to-r from-[#C5A880] to-[#B39366] text-[#0B0F15] font-medium shadow-md border-0'
+                      : 'max-w-[88%] p-4 text-[13px] leading-relaxed rounded-2xl rounded-tl-sm bg-[#141B24] text-gray-200 shadow-sm border-0 space-y-2'
                   }`}
                 >
                   {/* Message Content */}
@@ -438,7 +437,7 @@ Quý cư dân có thể bấm vào các câu hỏi gợi ý bên dưới hoặc 
                     <button
                       type="button"
                       onClick={() => handleActionClick(m.actionLink!.moduleId)}
-                      className="mt-2.5 w-full py-2 px-3.5 bg-[#1C2533] hover:bg-[#C5A880] hover:text-[#0D1117] text-[#C5A880] border border-[#C5A880] font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-1.5 transition-colors rounded-none shadow"
+                      className="mt-2.5 w-full py-2.5 px-4 bg-gradient-to-r from-[#C5A880] to-[#B59569] hover:from-white hover:to-white text-[#0B0F15] font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-1.5 transition-all rounded-xl shadow border-0"
                     >
                       <Zap className="w-3.5 h-3.5" /> {m.actionLink.label} →
                     </button>
@@ -446,14 +445,14 @@ Quý cư dân có thể bấm vào các câu hỏi gợi ý bên dưới hoặc 
 
                   {/* Copy Button (Only for AI messages) */}
                   {m.sender === 'ai' && (
-                    <div className="pt-2 border-t border-gray-800/80 flex items-center justify-between text-[10px] text-gray-400">
+                    <div className="pt-2 border-t border-white/5 flex items-center justify-between text-[10px] text-gray-400">
                       <span className="font-mono text-[9px] text-gray-500">
                         {m.timestamp} • Trợ lý Skyline
                       </span>
                       <button
                         type="button"
                         onClick={() => handleCopyMessage(m.id, m.text)}
-                        className="hover:text-white flex items-center gap-1 px-1.5 py-0.5 hover:bg-[#1C2533] border border-transparent hover:border-gray-700 rounded-none transition-colors text-gray-400"
+                        className="hover:text-white flex items-center gap-1 px-2 py-0.5 hover:bg-white/5 rounded-md transition-colors text-gray-400 border-0"
                         title="Sao chép nội dung câu trả lời"
                       >
                         {copiedMessageId === m.id ? (
@@ -487,7 +486,7 @@ Quý cư dân có thể bấm vào các câu hỏi gợi ý bên dưới hoặc 
                         type="button"
                         onClick={() => handleSendMessage(sug)}
                         disabled={isTyping}
-                        className="text-[10px] px-2.5 py-1 bg-[#141B24] hover:bg-[#1E2734] text-gray-300 hover:text-[#C5A880] border border-[#2D3748] hover:border-[#C5A880] transition-colors rounded-none text-left flex items-center gap-1"
+                        className="text-xs px-3.5 py-1.5 bg-[#16202D] hover:bg-[#212E40] text-gray-300 hover:text-[#C5A880] transition-colors rounded-full text-left flex items-center gap-1 border-0 shadow-sm"
                       >
                         <span>{sug}</span>
                         <ChevronRight className="w-2.5 h-2.5 text-[#C5A880]/60" />
@@ -498,9 +497,9 @@ Quý cư dân có thể bấm vào các câu hỏi gợi ý bên dưới hoặc 
               </div>
             ))}
 
-            {/* AI Waveform Typing Indicator with Gold Accent */}
+            {/* AI Waveform Typing Indicator */}
             {isTyping && (
-              <div className="flex items-center gap-3 p-3 bg-[#161D26] border-l-2 border-l-[#C5A880] border-y border-r border-[#222B35] rounded-none w-fit animate-chat-bubble shadow-md">
+              <div className="flex items-center gap-3 p-3.5 bg-[#141B24] rounded-2xl w-fit animate-chat-bubble shadow-sm border-0">
                 <div className="flex items-center gap-1 text-[#C5A880]">
                   <span className="w-2 h-2 rounded-full bg-[#C5A880] animate-typing-dot-1"></span>
                   <span className="w-2 h-2 rounded-full bg-amber-400 animate-typing-dot-2"></span>
@@ -515,27 +514,27 @@ Quý cư dân có thể bấm vào các câu hỏi gợi ý bên dưới hoặc 
             <div ref={messagesEndRef} />
           </div>
 
-          {/* Floating Jump to Bottom Button with Gold Accent */}
+          {/* Floating Jump to Bottom Button */}
           {showScrollBottom && (
             <button
               type="button"
               onClick={() => scrollToBottom()}
-              className="absolute bottom-20 right-6 z-10 px-3 py-1.5 bg-[#1C2533] hover:bg-[#C5A880] hover:text-[#0D1117] border border-[#C5A880] text-[#C5A880] text-[11px] font-semibold rounded-none shadow-2xl flex items-center gap-1.5 transition-all transform hover:scale-105"
+              className="absolute bottom-20 right-6 z-10 px-3.5 py-1.5 bg-[#1C2533] hover:bg-[#C5A880] hover:text-[#0D1117] text-white text-xs font-semibold rounded-full shadow-2xl flex items-center gap-1.5 transition-all transform hover:scale-105 border-0"
             >
               <ArrowDown className="w-3 h-3" />
               <span>Tin nhắn mới</span>
             </button>
           )}
 
-          {/* Input Footer with Gold Accent Border */}
+          {/* Input Footer - Modern Floating Capsule */}
           <form
             onSubmit={(e) => {
               e.preventDefault();
               handleSendMessage();
             }}
-            className="p-3 bg-[#0D1117] border-t border-[#C5A880]/50 flex flex-col gap-2 flex-shrink-0 rounded-none"
+            className="p-3.5 bg-[#0E131B] flex flex-col gap-2 flex-shrink-0 border-0"
           >
-            <div className="flex items-end gap-2 bg-[#161D26] border border-[#C5A880]/60 focus-within:border-[#C5A880] focus-within:ring-1 focus-within:ring-[#C5A880] transition-colors p-2 rounded-none">
+            <div className="flex items-end gap-2 bg-[#141B24] shadow-inner transition-colors p-2 pl-3 rounded-2xl border-0 focus-within:ring-1 focus-within:ring-[#C5A880]/40">
               <textarea
                 ref={textareaRef}
                 rows={1}
@@ -544,14 +543,14 @@ Quý cư dân có thể bấm vào các câu hỏi gợi ý bên dưới hoặc 
                 onKeyDown={handleKeyDown}
                 placeholder="Nhập câu hỏi (Enter để gửi, Shift+Enter xuống dòng)..."
                 disabled={isTyping}
-                className="flex-1 bg-transparent text-xs text-white placeholder-gray-500 focus:outline-none resize-none max-h-24 leading-relaxed scrollbar-none"
+                className="flex-1 bg-transparent text-xs text-white placeholder-gray-500 focus:outline-none resize-none max-h-24 leading-relaxed scrollbar-none py-1.5"
               />
 
               {inputText.trim() && (
                 <button
                   type="button"
                   onClick={() => setInputText('')}
-                  className="text-gray-500 hover:text-white p-1"
+                  className="text-gray-500 hover:text-white p-1 mb-1 border-0"
                   title="Xóa chữ"
                 >
                   <X className="w-3.5 h-3.5" />
@@ -561,10 +560,10 @@ Quý cư dân có thể bấm vào các câu hỏi gợi ý bên dưới hoặc 
               <button
                 type="submit"
                 disabled={!inputText.trim() || isTyping}
-                className={`p-2 transition-all flex items-center justify-center rounded-none font-bold ${
+                className={`w-9 h-9 rounded-full transition-all flex items-center justify-center font-bold flex-shrink-0 border-0 ${
                   inputText.trim() && !isTyping
-                    ? 'bg-[#C5A880] text-[#0D1117] hover:bg-white shadow border border-[#C5A880]'
-                    : 'bg-[#1C2533] text-gray-500 border border-gray-800 cursor-not-allowed'
+                    ? 'bg-[#C5A880] text-[#0D1117] hover:bg-white shadow transform hover:scale-105 active:scale-95'
+                    : 'bg-[#1A222F] text-gray-500 cursor-not-allowed'
                 }`}
                 title="Gửi tin nhắn"
               >
@@ -573,12 +572,12 @@ Quý cư dân có thể bấm vào các câu hỏi gợi ý bên dưới hoặc 
             </div>
 
             {/* Disclaimer & Shortcuts */}
-            <div className="flex items-center justify-between text-[9px] text-gray-500 px-1 font-mono">
-              <span className="flex items-center gap-1">
+            <div className="flex items-center justify-between text-[10px] text-gray-500 px-2">
+              <span className="flex items-center gap-1.5">
                 <ShieldCheck className="w-3 h-3 text-emerald-500" />
-                Bảo mật riêng tư an toàn • Sổ tay hướng dẫn cư dân Skyline
+                Bảo mật riêng tư 100% • Quy chế vận hành Skyline
               </span>
-              <span className="hidden sm:inline">Phím tắt: Enter ↵</span>
+              <span className="hidden sm:inline text-[9px] font-mono text-gray-600">Enter ↵ để gửi</span>
             </div>
           </form>
         </div>

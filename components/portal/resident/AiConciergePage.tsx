@@ -291,25 +291,25 @@ Tôi là **Trợ lý ảo Skyline**, luôn sẵn sàng hỗ trợ Quý vị tra 
           </div>
         </div>
 
-        {/* Right Full Chat Screen (8 Cols) - Sharp Geometry with Gold Accent Border */}
-        <div className="lg:col-span-8 bg-[#0D1117] border border-[#C5A880] border-t-4 border-t-[#C5A880] flex flex-col h-[650px] shadow-2xl overflow-hidden rounded-none">
+        {/* Right Full Chat Screen (8 Cols) - Borderless Modern Luxury */}
+        <div className="lg:col-span-8 bg-[#0D1219] shadow-2xl overflow-hidden rounded-2xl border-0 flex flex-col h-[650px]">
           {/* Chat Topbar */}
-          <div className="p-3.5 bg-gradient-to-r from-[#161D26] via-[#121820] to-[#0D1117] border-b border-[#C5A880]/50 flex items-center justify-between flex-shrink-0 rounded-none">
+          <div className="p-4 bg-[#141B24] flex items-center justify-between flex-shrink-0 border-0">
             <div className="flex items-center gap-2.5">
               <div className="relative">
-                <div className="w-8 h-8 bg-[#1C2533] border border-[#C5A880] flex items-center justify-center text-[#C5A880] rounded-none">
+                <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-[#C5A880]/20 to-[#C5A880]/35 flex items-center justify-center text-[#C5A880] border-0">
                   <Bot className="w-4 h-4" />
                 </div>
-                <span className="absolute -bottom-1 -right-1 w-2.5 h-2.5 bg-emerald-500 border border-[#0D1117]"></span>
+                <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-emerald-400 rounded-full border-2 border-[#141B24]"></span>
               </div>
               <div>
                 <div className="text-xs font-bold text-white flex items-center gap-2">
                   <span>Skyline AI Assistant</span>
-                  <span className="px-1.5 py-0.2 bg-emerald-950 border border-emerald-500 text-emerald-300 text-[9px] font-mono font-bold uppercase rounded-none">
+                  <span className="px-2 py-0.5 bg-emerald-950/80 text-emerald-400 text-[9px] font-mono font-bold uppercase rounded-full border-0">
                     Live
                   </span>
                 </div>
-                <div className="text-[10px] text-gray-400">
+                <div className="text-[11px] text-gray-400">
                   Căn hộ {aptCode} • Chủ hộ: {residentName}
                 </div>
               </div>
@@ -320,32 +320,32 @@ Tôi là **Trợ lý ảo Skyline**, luôn sẵn sàng hỗ trợ Quý vị tra 
               onClick={() => {
                 setMessages([messages[0]]);
               }}
-              className="p-1.5 text-gray-400 hover:text-white hover:bg-[#1C2533] border border-gray-700 hover:border-[#C5A880] transition-colors text-[10px] flex items-center gap-1 rounded-none"
+              className="p-2 hover:bg-white/10 text-gray-400 hover:text-white rounded-full transition-colors text-xs flex items-center gap-1.5 border-0"
               title="Làm mới đoạn hội thoại"
             >
-              <RefreshCw className="w-3 h-3" /> Làm mới
+              <RefreshCw className="w-3.5 h-3.5" /> Làm mới
             </button>
           </div>
 
           {/* Messages Stream */}
-          <div className="flex-1 p-5 overflow-y-auto space-y-4 bg-[#0A0D12]">
+          <div className="flex-1 p-5 overflow-y-auto space-y-4 bg-[#0A0E14]">
             {messages.map((m) => (
               <div
                 key={m.id}
                 className={`flex flex-col ${m.sender === 'user' ? 'items-end' : 'items-start'} space-y-1.5`}
               >
                 <div
-                  className={`max-w-[85%] p-4 text-xs leading-relaxed rounded-none ${
+                  className={`relative ${
                     m.sender === 'user'
-                      ? 'bg-[#C5A880] text-[#0D1117] font-medium border border-[#E2C799] shadow-md'
-                      : 'bg-[#121820] border-l-2 border-l-[#C5A880] border-y border-r border-[#222B35] text-gray-200 shadow-inner space-y-2.5'
+                      ? 'max-w-[85%] p-3.5 text-[13px] leading-relaxed rounded-2xl rounded-tr-sm bg-gradient-to-r from-[#C5A880] to-[#B39366] text-[#0B0F15] font-medium shadow-md border-0'
+                      : 'max-w-[88%] p-4 text-[13px] leading-relaxed rounded-2xl rounded-tl-sm bg-[#141B24] text-gray-200 shadow-sm border-0 space-y-2'
                   }`}
                 >
                   <AiMessageFormatter content={m.text} isUser={m.sender === 'user'} />
 
                   {/* Copy Button & Timestamp (Only for AI messages) */}
                   {m.sender === 'ai' && (
-                    <div className="pt-2 border-t border-[#222B35] flex items-center justify-between text-[10px] text-gray-400">
+                    <div className="pt-2 border-t border-white/5 flex items-center justify-between text-[10px] text-gray-400">
                       {m.ragSource ? (
                         <div className="flex items-center gap-1.5 font-mono text-[9px] text-gray-400">
                           <Bookmark className="w-3 h-3 text-[#C5A880] flex-shrink-0" />
@@ -358,7 +358,7 @@ Tôi là **Trợ lý ảo Skyline**, luôn sẵn sàng hỗ trợ Quý vị tra 
                       <button
                         type="button"
                         onClick={() => handleCopyMessage(m.id, m.text)}
-                        className="hover:text-white flex items-center gap-1 px-1.5 py-0.5 hover:bg-[#1C2533] border border-transparent hover:border-gray-700 transition-colors text-gray-400 ml-2 flex-shrink-0 rounded-none"
+                        className="hover:text-white flex items-center gap-1 px-2 py-0.5 hover:bg-white/5 transition-colors text-gray-400 ml-2 flex-shrink-0 rounded-md border-0"
                         title="Sao chép nội dung câu trả lời"
                       >
                         {copiedMessageId === m.id ? (
@@ -381,7 +381,7 @@ Tôi là **Trợ lý ảo Skyline**, luôn sẵn sàng hỗ trợ Quý vị tra 
                     <button
                       type="button"
                       onClick={() => handleAction(m.actionButton!.moduleId)}
-                      className="w-full py-2 px-3.5 bg-[#1C2533] hover:bg-[#C5A880] hover:text-[#0D1117] border border-[#C5A880] text-[#C5A880] font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition-colors rounded-none shadow"
+                      className="mt-2.5 w-full py-2.5 px-4 bg-gradient-to-r from-[#C5A880] to-[#B59569] hover:from-white hover:to-white text-[#0B0F15] font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition-all rounded-xl shadow border-0"
                     >
                       <Zap className="w-3.5 h-3.5" /> {m.actionButton.label} →
                     </button>
@@ -400,7 +400,7 @@ Tôi là **Trợ lý ảo Skyline**, luôn sẵn sàng hỗ trợ Quý vị tra 
                         key={idx}
                         type="button"
                         onClick={() => handleSendMessage(sug)}
-                        className="text-[10px] px-2.5 py-1 bg-[#161B22] hover:bg-[#1C2533] border border-[#2D3748] hover:border-[#C5A880] text-gray-300 hover:text-[#C5A880] transition-colors rounded-none text-left"
+                        className="text-xs px-3.5 py-1.5 bg-[#16202D] hover:bg-[#212E40] text-gray-300 hover:text-[#C5A880] transition-colors rounded-full text-left border-0 shadow-sm"
                       >
                         {sug}
                       </button>
@@ -412,7 +412,7 @@ Tôi là **Trợ lý ảo Skyline**, luôn sẵn sàng hỗ trợ Quý vị tra 
 
             {/* AI Waveform Typing Indicator */}
             {isTyping && (
-              <div className="flex items-center gap-3 p-3 bg-[#161B22] border-l-2 border-l-[#C5A880] border-y border-r border-[#222B35] rounded-none w-fit animate-chat-bubble shadow-md">
+              <div className="flex items-center gap-3 p-3.5 bg-[#141B24] rounded-2xl w-fit animate-chat-bubble shadow-sm border-0">
                 <div className="flex items-center gap-1 text-[#C5A880]">
                   <span className="w-2 h-2 rounded-full bg-[#C5A880] animate-typing-dot-1"></span>
                   <span className="w-2 h-2 rounded-full bg-amber-400 animate-typing-dot-2"></span>
@@ -427,29 +427,29 @@ Tôi là **Trợ lý ảo Skyline**, luôn sẵn sàng hỗ trợ Quý vị tra 
             <div ref={messagesEndRef} />
           </div>
 
-          {/* Input Box with Gold Accent Border */}
+          {/* Input Box - Borderless Modern Layout */}
           <form
             onSubmit={(e) => {
               e.preventDefault();
               handleSendMessage();
             }}
-            className="p-3 bg-[#0D1117] border-t border-[#C5A880]/50 flex items-center gap-2 flex-shrink-0 rounded-none"
+            className="p-3.5 bg-[#0E131B] flex items-center gap-2 flex-shrink-0 border-0"
           >
             <input
               type="text"
               value={inputText}
               onChange={(e) => setInputText(e.target.value)}
               placeholder="Nhập câu hỏi (VD: 'hồ bơi', 'tiền nước rò rỉ', 'sửa ống nước', 'faceid')..."
-              className="flex-1 bg-[#161B22] border border-[#C5A880]/60 p-3 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-[#C5A880] focus:ring-1 focus:ring-[#C5A880] transition-colors rounded-none"
+              className="flex-1 bg-[#141B24] p-3 text-xs text-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-[#C5A880]/40 transition-colors rounded-xl border-0"
             />
 
             <button
               type="submit"
               disabled={!inputText.trim() || isTyping}
-              className={`px-5 py-3 border transition-all flex items-center gap-1.5 rounded-none font-bold text-xs uppercase tracking-wider ${
+              className={`px-5 py-3 rounded-xl font-bold text-xs uppercase tracking-wider transition-all flex items-center gap-1.5 border-0 ${
                 inputText.trim() && !isTyping
-                  ? 'bg-[#C5A880] text-[#0D1117] border-[#C5A880] hover:bg-white shadow'
-                  : 'bg-gray-800 text-gray-500 border-gray-700 cursor-not-allowed'
+                  ? 'bg-[#C5A880] text-[#0D1117] hover:bg-white shadow'
+                  : 'bg-[#1A222F] text-gray-500 cursor-not-allowed'
               }`}
             >
               <span>Gửi</span>
