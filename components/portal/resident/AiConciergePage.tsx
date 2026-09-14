@@ -419,7 +419,7 @@ Tôi là **Trợ lý ảo Skyline**, luôn sẵn sàng hỗ trợ Quý vị tra 
                   <span className="w-2 h-2 rounded-full bg-emerald-400 animate-typing-dot-3"></span>
                 </div>
                 <span className="text-xs text-gray-300 font-mono">
-                  Google Gemini 2.5 Flash đang tra cứu Sổ tay Cư dân...
+                  Trợ lý Skyline đang tra cứu Sổ tay Cư dân...
                 </span>
               </div>
             )}

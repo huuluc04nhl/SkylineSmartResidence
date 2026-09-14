@@ -125,8 +125,8 @@ export default function AiConcierge() {
       {!isOpen && (
         <button
           onClick={() => setIsOpen(true)}
-          className="fixed bottom-6 right-6 z-50 p-3.5 bg-[#0D1117] border-2 border-[#C5A880] text-[#C5A880] shadow-2xl hover:bg-[#C5A880] hover:text-[#0D1117] transition-all flex items-center gap-2 font-semibold text-xs uppercase tracking-wider group rounded-sm"
-          title="Trợ lý ảo Skyline AI (Google Gemini)"
+          className="fixed bottom-6 right-6 z-50 p-3.5 bg-gradient-to-br from-[#242F3E] via-[#161F2C] to-[#0D1117] text-[#C5A880] shadow-[0_10px_35px_rgba(0,0,0,0.9),0_0_20px_rgba(197,168,128,0.2)] hover:text-white transition-all flex items-center gap-2 font-semibold text-xs uppercase tracking-wider group rounded-full border-0"
+          title="Trợ lý ảo Skyline AI"
         >
           <div className="relative">
             <Bot className="w-5 h-5 group-hover:rotate-12 transition-transform" />
@@ -134,27 +134,27 @@ export default function AiConcierge() {
             <span className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-emerald-500"></span>
           </div>
           <span className="hidden sm:inline font-bold">Skyline AI</span>
-          <span className="px-1.5 py-0.5 text-[9px] bg-emerald-950/80 border border-emerald-500/40 text-emerald-400 font-mono tracking-normal rounded">
-            Gemini
+          <span className="px-2 py-0.5 text-[9px] bg-emerald-950/80 text-emerald-400 font-mono font-bold tracking-normal rounded-full border-0">
+            24/7
           </span>
         </button>
       )}
 
       {/* Bottom Sheet Drawer Modal */}
       {isOpen && (
-        <div className="fixed inset-x-3 bottom-3 sm:inset-x-auto sm:right-6 sm:bottom-6 z-50 w-auto sm:w-full sm:max-w-md bg-[#0D1117] border border-[#C5A880] text-white shadow-2xl flex flex-col h-[520px] sm:h-[560px] animate-in fade-in slide-in-from-bottom-5 duration-200">
+        <div className="fixed inset-x-3 bottom-3 sm:inset-x-auto sm:right-6 sm:bottom-6 z-50 w-auto sm:w-full sm:max-w-md bg-[#0D1117]/98 text-white shadow-[0_25px_70px_rgba(0,0,0,0.95)] flex flex-col h-[520px] sm:h-[560px] animate-in fade-in slide-in-from-bottom-5 duration-200 rounded-2xl overflow-hidden border-0">
           {/* Header */}
-          <div className="p-3.5 bg-[#121820] border-b border-[#222B35] flex items-center justify-between">
+          <div className="p-3.5 bg-gradient-to-r from-[#18212C] via-[#121820] to-[#0D1117] flex items-center justify-between border-0">
             <div className="flex items-center gap-3">
-              <div className="w-9 h-9 bg-gradient-to-br from-[#1C2533] to-[#0D1117] border border-[#C5A880] flex items-center justify-center text-[#C5A880] shadow-inner">
+              <div className="w-9 h-9 bg-gradient-to-br from-[#242F3E] to-[#0D1117] flex items-center justify-center text-[#C5A880] shadow-inner rounded-full border-0">
                 <Bot className="w-5 h-5" />
               </div>
               <div>
                 <div className="font-serif text-sm font-bold text-white flex items-center gap-1.5">
                   Skyline AI Concierge
-                  <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-amber-950/80 border border-amber-500/40 text-[9px] text-[#C5A880] font-sans font-medium">
-                    <Sparkles className="w-2.5 h-2.5 text-[#C5A880]" />
-                    Gemini 2.5
+                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-950/80 text-[9px] text-emerald-400 font-sans font-medium border-0">
+                    <Sparkles className="w-2.5 h-2.5 text-emerald-400" />
+                    Trực Tuyến
                   </span>
                 </div>
                 <div className="text-[10px] text-gray-400 flex items-center gap-1.5">
@@ -205,9 +205,9 @@ export default function AiConcierge() {
 
             {isTyping && (
               <div className="flex justify-start">
-                <div className="p-3 bg-[#161B22] border border-[#222B35] text-gray-300 text-[11px] flex items-center gap-2.5 rounded-sm">
+                <div className="p-3 bg-[#161E28] text-gray-300 text-[11px] flex items-center gap-2.5 rounded-xl border-0 shadow">
                   <Sparkles className="w-4 h-4 text-[#C5A880] animate-spin" />
-                  <span>Google Gemini đang tra cứu dữ liệu cư dân...</span>
+                  <span>Trợ lý Skyline đang tra cứu dữ liệu cư dân...</span>
                 </div>
               </div>
             )}

@@ -186,7 +186,7 @@ export default function CccdOcrScannerModal({
       // 1. Force flip to FRONT SIDE
       setIsFlipped(false);
       setScanStage('SCANNING_FRONT');
-      setScanStatusText('Đang phân tích thông minh qua Google Gemini 2.5 Flash Vision...');
+      setScanStatusText('Đang tự động nhận diện thông tin thẻ Căn cước...');
       setScanProgress(25);
 
       let geminiSuccess = false;
@@ -199,12 +199,12 @@ export default function CccdOcrScannerModal({
         const aiData = await aiRes.json();
         if (aiRes.ok && aiData.success && aiData.data?.idNumber) {
           setScanProgress(60);
-          setScanStatusText('✨ Google Gemini Vision đã đọc thông tin mặt trước! Đang đối soát mặt sau...');
+          setScanStatusText('✨ Đã đọc thông tin mặt trước! Đang đối soát mặt sau...');
           setIsFlipped(true);
           await new Promise((r) => setTimeout(r, 800));
 
           setScanProgress(100);
-          setScanStatusText('✨ Hoàn tất quét CCCD với Google Gemini AI Vision (Độ tin cậy 99.9%)!');
+          setScanStatusText('✨ Hoàn tất đọc thông tin 2 mặt thẻ Căn cước công dân!');
           setScanStage('COMPLETE');
 
           const d = aiData.data;
@@ -219,7 +219,7 @@ export default function CccdOcrScannerModal({
             idDate: d.idDate || '',
             idPlace: d.idPlace || 'Cục Cảnh sát QLHC về TTXH',
             confidence: 99,
-            rawText: `[GOOGLE GEMINI 2.5 FLASH VISION EXTRACTED]:\nSố CCCD: ${d.idNumber}\nHọ tên: ${d.fullName}\nNgày sinh: ${d.dob}\nGiới tính: ${d.gender === '1' ? 'Nam' : 'Nữ'}\nQuê quán: ${d.pob}\nNơi thường trú: ${d.residence}\nNgày cấp: ${d.idDate}\nNơi cấp: ${d.idPlace}`,
+            rawText: `[THÔNG TIN THẺ CĂN CƯỚC EXTRACTED]:\nSố CCCD: ${d.idNumber}\nHọ tên: ${d.fullName}\nNgày sinh: ${d.dob}\nGiới tính: ${d.gender === '1' ? 'Nam' : 'Nữ'}\nQuê quán: ${d.pob}\nNơi thường trú: ${d.residence}\nNgày cấp: ${d.idDate}\nNơi cấp: ${d.idPlace}`,
           };
 
           setOcrResult(merged);

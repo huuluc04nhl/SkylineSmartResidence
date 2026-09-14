@@ -497,7 +497,7 @@ export async function runDualSideCccdOcr(
           idDate: d.idDate || '',
           idPlace: d.idPlace || 'Cục Cảnh sát QLHC về TTXH',
           confidence: 99,
-          rawText: `[GOOGLE GEMINI 2.5 FLASH VISION]:\nSố CCCD: ${d.idNumber}\nHọ tên: ${d.fullName}\nNgày sinh: ${d.dob}`,
+          rawText: `[THÔNG TIN THẺ CĂN CƯỚC]:\nSố CCCD: ${d.idNumber}\nHọ tên: ${d.fullName}\nNgày sinh: ${d.dob}`,
         };
       }
     } catch (e) {
