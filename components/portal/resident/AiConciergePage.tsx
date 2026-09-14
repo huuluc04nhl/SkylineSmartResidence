@@ -21,9 +21,12 @@ import {
   HelpCircle,
   ThumbsUp,
   Share2,
-  Bookmark
+  Bookmark,
+  Copy,
+  Check
 } from 'lucide-react';
 import { User as UserType } from '@/lib/dataStore';
+import AiMessageFormatter from '@/components/portal/shared/AiMessageFormatter';
 
 interface AiMessage {
   id: string;
@@ -98,7 +101,18 @@ export default function AiConciergePage({ currentUser, onNavigateModule }: AiCon
   const [inputText, setInputText] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const [activeCategoryIndex, setActiveCategoryIndex] = useState(0);
+  const [copiedMessageId, setCopiedMessageId] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  const handleCopyMessage = async (msgId: string, text: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopiedMessageId(msgId);
+      setTimeout(() => setCopiedMessageId(null), 2000);
+    } catch (err) {
+      console.error('Failed to copy text: ', err);
+    }
+  };
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -325,13 +339,38 @@ export default function AiConciergePage({ currentUser, onNavigateModule }: AiCon
                       : 'bg-[#121820] border border-[#222B35] text-gray-200 shadow-inner space-y-2.5'
                   }`}
                 >
-                  <p className="whitespace-pre-line">{m.text}</p>
+                  <AiMessageFormatter content={m.text} isUser={m.sender === 'user'} />
 
-                  {/* RAG Source Badge */}
-                  {m.ragSource && (
-                    <div className="pt-2 border-t border-[#222B35] flex items-center gap-1.5 text-[10px] text-gray-400 font-mono">
-                      <Bookmark className="w-3 h-3 text-[#C5A880] flex-shrink-0" />
-                      <span className="truncate">Nguồn trích xuất: {m.ragSource}</span>
+                  {/* Copy Button & Timestamp (Only for AI messages) */}
+                  {m.sender === 'ai' && (
+                    <div className="pt-2 border-t border-[#222B35] flex items-center justify-between text-[10px] text-gray-400">
+                      {m.ragSource ? (
+                        <div className="flex items-center gap-1.5 font-mono text-[9px] text-gray-400">
+                          <Bookmark className="w-3 h-3 text-[#C5A880] flex-shrink-0" />
+                          <span className="truncate">{m.ragSource}</span>
+                        </div>
+                      ) : (
+                        <span className="text-[9px] text-gray-500 font-mono">{m.timestamp}</span>
+                      )}
+
+                      <button
+                        type="button"
+                        onClick={() => handleCopyMessage(m.id, m.text)}
+                        className="hover:text-white flex items-center gap-1 px-1.5 py-0.5 hover:bg-[#1C2533] rounded transition-colors text-gray-400 ml-2 flex-shrink-0"
+                        title="Sao chép nội dung câu trả lời"
+                      >
+                        {copiedMessageId === m.id ? (
+                          <>
+                            <Check className="w-3 h-3 text-emerald-400" />
+                            <span className="text-emerald-400 text-[9px]">Đã chép</span>
+                          </>
+                        ) : (
+                          <>
+                            <Copy className="w-3 h-3" />
+                            <span className="text-[9px]">Sao chép</span>
+                          </>
+                        )}
+                      </button>
                     </div>
                   )}
 
@@ -369,11 +408,17 @@ export default function AiConciergePage({ currentUser, onNavigateModule }: AiCon
               </div>
             ))}
 
-            {/* AI Processing Indicator */}
+            {/* AI Waveform Typing Indicator */}
             {isTyping && (
-              <div className="flex items-center gap-2.5 text-gray-400 text-xs p-3 bg-[#121820] border border-[#222B35] w-fit rounded">
-                <RefreshCw className="w-3.5 h-3.5 animate-spin text-[#C5A880]" />
-                <span className="font-mono">Skyline AI đang truy vấn cơ sở dữ liệu tòa nhà...</span>
+              <div className="flex items-center gap-3 p-3 bg-[#161B22] border border-[#222B35] rounded w-fit animate-chat-bubble shadow-md">
+                <div className="flex items-center gap-1 text-[#C5A880]">
+                  <span className="w-2 h-2 rounded-full bg-[#C5A880] animate-typing-dot-1"></span>
+                  <span className="w-2 h-2 rounded-full bg-amber-400 animate-typing-dot-2"></span>
+                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-typing-dot-3"></span>
+                </div>
+                <span className="text-xs text-gray-300 font-mono">
+                  Google Gemini 2.5 Flash đang tra cứu Sổ tay Cư dân...
+                </span>
               </div>
             )}
 
