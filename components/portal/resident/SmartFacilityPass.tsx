@@ -115,7 +115,7 @@ export default function SmartFacilityPass({ currentUser }: SmartFacilityPassProp
       icon: Flame,
       accessType: 'BOOKING_REQUIRED',
       accessBadge: 'PHÒNG RIÊNG TƯ (ĐẶT GIỮ CHỖ)',
-      price: '150.000 đ / giờ (Phòng gia đình riêng tư)'
+      price: '500.000 đ / giờ (Phòng gia đình VIP)'
     },
     {
       id: 'fac-kids',
@@ -129,21 +129,21 @@ export default function SmartFacilityPass({ currentUser }: SmartFacilityPassProp
       icon: Smile,
       accessType: 'FREE_ENTRY',
       accessBadge: 'VÀO TỰ DO (CÓ NGƯỜI LỚN)',
-      price: 'Miễn phí cho cư dân'
+      price: 'Miễn phí theo Thẻ cư dân'
     },
     {
       id: 'fac-bbq',
-      name: 'Vườn Nướng Sky BBQ Panoramic Sân Thượng',
+      name: 'Vườn Tiệc Nướng BBQ Panoramic Sân Thượng',
       category: 'PARTY',
       location: 'Tầng 25 (Khu Vườn Nhật Bản)',
-      hours: '17:00 - 23:00 (Theo ca)',
-      density: 'Sẵn sàng 4/6 chòi nướng',
+      hours: '17:00 - 23:00 (Theo ca tiệc)',
+      density: 'Sẵn sàng 4/6 khu bếp tiệc BBQ',
       temp: 'Gió trời tự nhiên',
       image: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=600&auto=format&fit=crop&q=80',
       icon: UtensilsCrossed,
       accessType: 'BOOKING_REQUIRED',
       accessBadge: 'ĐĂNG KÝ TRƯỚC THEO CA',
-      price: '200.000 đ / lượt (Phí dọn dẹp vệ sinh)'
+      price: '600.000 đ / ca tiệc (Set bếp Weber & nhân viên dọn dẹp)'
     },
   ];
 
@@ -232,9 +232,9 @@ export default function SmartFacilityPass({ currentUser }: SmartFacilityPassProp
     e.preventDefault();
     const fac = amenitiesList.find(f => f.id === bookingFacilityId) || amenitiesList[2];
     const isPrivate = fac.id === 'fac-sauna';
-    const depositAmount = isPrivate ? bookingDurationHours * 150000 : (fac.id === 'fac-bbq' ? 200000 : 0);
+    const depositAmount = isPrivate ? bookingDurationHours * 500000 : (fac.id === 'fac-bbq' ? 600000 : 0);
     const pricingText = isPrivate 
-      ? `${(bookingDurationHours * 150000).toLocaleString('vi-VN')} đ (${bookingDurationHours} tiếng phòng riêng)` 
+      ? `${(bookingDurationHours * 500000).toLocaleString('vi-VN')} đ (${bookingDurationHours} tiếng phòng VIP)` 
       : fac.price;
 
     const { bookings: updated, newBooking } = createFacilityBooking(
@@ -305,30 +305,30 @@ export default function SmartFacilityPass({ currentUser }: SmartFacilityPassProp
       {/* ============================================================= */}
       {/* 1. HEADER CHÍNH: ĐỊNH DANH & THỐNG KÊ QUYỀN LỢI THỰC TẾ       */}
       {/* ============================================================= */}
-      <div className="p-5 bg-gradient-to-r from-[#121820] via-[#161F2C] to-[#121820] border border-[#2A374A] rounded-xl shadow-xl flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="p-5 bg-gradient-to-r from-[#121820] via-[#161F2C] to-[#121820] border border-[#2A374A] rounded-none shadow-xl flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="space-y-1">
           <div className="text-[11px] uppercase tracking-[0.2em] text-[#C5A880] font-bold flex items-center gap-2">
             <Sparkles className="w-4 h-4 text-[#C5A880]" />
             <span>Trung Tâm Dịch Vụ & Tiện Ích 5 Sao Căn Hộ {aptCode}</span>
           </div>
           <h2 className="text-xl sm:text-2xl font-serif font-bold text-white flex items-center gap-2">
-            <span>Hệ Thống Tiện Ích Cư Dân & Cổng Kiểm Soát Turnstile AI</span>
+            <span>Hệ Thống Tiện Ích Cư Dân & Cổng Tự Động</span>
           </h2>
           <p className="text-xs text-gray-400 font-mono flex flex-wrap items-center gap-2">
             <span>Chủ Hộ: <strong className="text-white">{userName}</strong></span>
             <span className="text-gray-600">•</span>
-            <span className="text-emerald-400">Gym & Hồ bơi: Miễn phí không giới hạn</span>
+            <span className="text-emerald-400">Gym & Hồ bơi: Miễn phí theo thẻ</span>
             <span className="text-gray-600">•</span>
-            <span>Cổng Barrier 0.28s</span>
+            <span>Mở cổng 0.28s</span>
           </p>
         </div>
 
         {/* Quick Actions & Metrics */}
         <div className="flex flex-wrap items-center gap-2.5">
-          <div className="px-3.5 py-2 bg-[#0D1117] border border-[#2A374A] rounded-lg text-xs flex items-center gap-2">
+          <div className="px-3.5 py-2 bg-[#0D1117] border border-[#2A374A] rounded-none text-xs flex items-center gap-2">
             <ShieldCheck className="w-4 h-4 text-emerald-400" />
             <div>
-              <div className="text-[9px] uppercase tracking-wider text-gray-400 font-mono">Quota BBQ Tháng</div>
+              <div className="text-[9px] uppercase tracking-wider text-gray-400 font-mono">Hạn Mức BBQ Tháng</div>
               <div className="font-mono font-bold text-[#C5A880]">{quota.remaining} / {quota.max} lượt</div>
             </div>
           </div>
@@ -336,7 +336,7 @@ export default function SmartFacilityPass({ currentUser }: SmartFacilityPassProp
           <button
             type="button"
             onClick={() => setShowSmartCardModal(true)}
-            className="px-3.5 py-2 bg-[#1A2332] hover:bg-[#253247] border border-[#C5A880]/50 hover:border-[#C5A880] text-white text-xs font-bold uppercase rounded-lg transition-all flex items-center gap-2 shadow-md"
+            className="px-3.5 py-2 bg-[#1A2332] hover:bg-[#253247] border border-[#C5A880]/50 hover:border-[#C5A880] text-white text-xs font-bold uppercase rounded-none transition-all flex items-center gap-2 shadow-md"
           >
             <CreditCard className="w-4 h-4 text-[#C5A880]" />
             <span>Thẻ Cư Dân VIP 3D</span>
@@ -352,7 +352,7 @@ export default function SmartFacilityPass({ currentUser }: SmartFacilityPassProp
         <button
           type="button"
           onClick={() => setActiveTab('DISCOVER')}
-          className={`px-4 py-2.5 text-xs font-bold uppercase tracking-wider rounded-lg transition-all flex items-center gap-2 shrink-0 ${
+          className={`px-4 py-2.5 text-xs font-bold uppercase tracking-wider rounded-none transition-all flex items-center gap-2 shrink-0 ${
             activeTab === 'DISCOVER'
               ? 'bg-[#C5A880] text-[#0D1117] shadow-lg'
               : 'bg-[#121820] text-gray-400 hover:text-white border border-[#222B35]'
@@ -366,7 +366,7 @@ export default function SmartFacilityPass({ currentUser }: SmartFacilityPassProp
         <button
           type="button"
           onClick={() => setActiveTab('BOOKING')}
-          className={`px-4 py-2.5 text-xs font-bold uppercase tracking-wider rounded-lg transition-all flex items-center gap-2 shrink-0 ${
+          className={`px-4 py-2.5 text-xs font-bold uppercase tracking-wider rounded-none transition-all flex items-center gap-2 shrink-0 ${
             activeTab === 'BOOKING'
               ? 'bg-[#C5A880] text-[#0D1117] shadow-lg'
               : 'bg-[#121820] text-gray-400 hover:text-white border border-[#222B35]'
@@ -380,7 +380,7 @@ export default function SmartFacilityPass({ currentUser }: SmartFacilityPassProp
         <button
           type="button"
           onClick={() => setActiveTab('LOGS')}
-          className={`px-4 py-2.5 text-xs font-bold uppercase tracking-wider rounded-lg transition-all flex items-center gap-2 shrink-0 ${
+          className={`px-4 py-2.5 text-xs font-bold uppercase tracking-wider rounded-none transition-all flex items-center gap-2 shrink-0 ${
             activeTab === 'LOGS'
               ? 'bg-[#C5A880] text-[#0D1117] shadow-lg'
               : 'bg-[#121820] text-gray-400 hover:text-white border border-[#222B35]'
@@ -395,14 +395,14 @@ export default function SmartFacilityPass({ currentUser }: SmartFacilityPassProp
       {/* CHỨC NĂNG 1: KHÁM PHÁ TIỆN ÍCH & CHECK-IN CỔNG TURNSTILE      */}
       {/* ============================================================= */}
       {activeTab === 'DISCOVER' && (
-        <div className="space-y-5">
+        <div className="space-y-4">
           {/* Bộ lọc loại tiện ích */}
-          <div className="flex flex-wrap items-center justify-between gap-3 bg-[#121820] p-3 border border-[#222B35] rounded-lg">
+          <div className="flex flex-wrap items-center justify-between gap-3 bg-[#121820] p-3 border border-[#222B35] rounded-none">
             <div className="flex items-center gap-1.5 overflow-x-auto">
               <button
                 type="button"
                 onClick={() => setFilterCategory('ALL')}
-                className={`px-3 py-1.5 text-xs font-bold rounded transition-colors ${
+                className={`px-3 py-1.5 text-xs font-bold rounded-none transition-colors ${
                   filterCategory === 'ALL' ? 'bg-[#C5A880] text-[#0D1117]' : 'bg-[#161D26] text-gray-400 hover:text-white'
                 }`}
               >
@@ -411,7 +411,7 @@ export default function SmartFacilityPass({ currentUser }: SmartFacilityPassProp
               <button
                 type="button"
                 onClick={() => setFilterCategory('SPORTS')}
-                className={`px-3 py-1.5 text-xs font-bold rounded transition-colors ${
+                className={`px-3 py-1.5 text-xs font-bold rounded-none transition-colors ${
                   filterCategory === 'SPORTS' ? 'bg-[#C5A880] text-[#0D1117]' : 'bg-[#161D26] text-gray-400 hover:text-white'
                 }`}
               >
@@ -420,7 +420,7 @@ export default function SmartFacilityPass({ currentUser }: SmartFacilityPassProp
               <button
                 type="button"
                 onClick={() => setFilterCategory('WELLNESS')}
-                className={`px-3 py-1.5 text-xs font-bold rounded transition-colors ${
+                className={`px-3 py-1.5 text-xs font-bold rounded-none transition-colors ${
                   filterCategory === 'WELLNESS' ? 'bg-[#C5A880] text-[#0D1117]' : 'bg-[#161D26] text-gray-400 hover:text-white'
                 }`}
               >
@@ -429,7 +429,7 @@ export default function SmartFacilityPass({ currentUser }: SmartFacilityPassProp
               <button
                 type="button"
                 onClick={() => setFilterCategory('PARTY')}
-                className={`px-3 py-1.5 text-xs font-bold rounded transition-colors ${
+                className={`px-3 py-1.5 text-xs font-bold rounded-none transition-colors ${
                   filterCategory === 'PARTY' ? 'bg-[#C5A880] text-[#0D1117]' : 'bg-[#161D26] text-gray-400 hover:text-white'
                 }`}
               >
@@ -438,7 +438,7 @@ export default function SmartFacilityPass({ currentUser }: SmartFacilityPassProp
             </div>
 
             <div className="text-[11px] text-gray-400 font-mono hidden sm:block">
-              * Quẹt thẻ NFC hoặc quét FaceID tại cổng barrier để vào cửa
+              * Quẹt thẻ hoặc nhìn vào camera nhận diện để mở cửa
             </div>
           </div>
 
@@ -451,7 +451,7 @@ export default function SmartFacilityPass({ currentUser }: SmartFacilityPassProp
               return (
                 <div
                   key={fac.id}
-                  className="bg-[#121820] border border-[#222B35] hover:border-[#C5A880]/60 transition-all rounded-xl overflow-hidden flex flex-col justify-between group shadow-lg"
+                  className="bg-[#121820] border border-[#222B35] hover:border-[#C5A880]/60 transition-all rounded-none overflow-hidden flex flex-col justify-between group shadow-lg"
                 >
                   {/* Image & Badges */}
                   <div className="relative h-44 overflow-hidden">
@@ -463,14 +463,14 @@ export default function SmartFacilityPass({ currentUser }: SmartFacilityPassProp
                     <div className="absolute inset-0 bg-gradient-to-t from-[#121820] via-[#121820]/30 to-transparent" />
 
                     {/* Badge Giờ Hoạt Động */}
-                    <div className="absolute top-3 left-3 bg-black/80 backdrop-blur-sm border border-[#222B35] px-2.5 py-1 text-[10px] text-white flex items-center gap-1.5 font-mono rounded">
+                    <div className="absolute top-3 left-3 bg-black/80 backdrop-blur-sm border border-[#222B35] px-2.5 py-1 text-[10px] text-white flex items-center gap-1.5 font-mono rounded-none">
                       <Clock className="w-3 h-3 text-[#C5A880]" />
                       <span>{fac.hours}</span>
                     </div>
 
                     {/* Badge Quyền Truy Cập */}
                     <div className="absolute top-3 right-3">
-                      <span className={`px-2 py-0.5 text-[9px] font-mono font-bold uppercase rounded border ${
+                      <span className={`px-2 py-0.5 text-[9px] font-mono font-bold uppercase rounded-none border ${
                         isFreeEntry 
                           ? 'bg-emerald-950/90 text-emerald-300 border-emerald-500/50' 
                           : 'bg-amber-950/90 text-amber-300 border-amber-500/50'
@@ -494,7 +494,7 @@ export default function SmartFacilityPass({ currentUser }: SmartFacilityPassProp
                   {/* Body Thông số chi tiết */}
                   <div className="p-4 space-y-3.5 flex-1 flex flex-col justify-between">
                     <div className="space-y-2">
-                      <div className="grid grid-cols-2 gap-2 text-[11px] bg-[#0D1117] p-2.5 rounded border border-[#1F2937]">
+                      <div className="grid grid-cols-2 gap-2 text-[11px] bg-[#0D1117] p-2.5 rounded-none border border-[#1F2937]">
                         <div>
                           <div className="text-[9.5px] text-gray-400 uppercase">Mật độ hiện tại:</div>
                           <div className="font-semibold text-emerald-400 mt-0.5 flex items-center gap-1">
@@ -522,7 +522,7 @@ export default function SmartFacilityPass({ currentUser }: SmartFacilityPassProp
                             setTurnstileModalFac(fac);
                             setTurnstileSuccessMsg(null);
                           }}
-                          className="w-full py-2.5 px-3 bg-gradient-to-r from-[#C5A880] to-[#E2D4BF] hover:from-[#d5b991] hover:to-white text-[#0D1117] text-xs font-bold uppercase rounded-lg transition-all flex items-center justify-center gap-2 shadow-md"
+                          className="w-full py-2.5 px-3 bg-gradient-to-r from-[#C5A880] to-[#E2D4BF] hover:from-[#d5b991] hover:to-white text-[#0D1117] text-xs font-bold uppercase rounded-none transition-all flex items-center justify-center gap-2 shadow-md"
                         >
                           <DoorOpen className="w-4 h-4" />
                           <span>Vào Cửa Tiện Ích (Check-in)</span>
@@ -534,7 +534,7 @@ export default function SmartFacilityPass({ currentUser }: SmartFacilityPassProp
                             setBookingFacilityId(fac.id);
                             setActiveTab('BOOKING');
                           }}
-                          className="w-full py-2.5 px-3 bg-[#1A2332] hover:bg-[#253247] border border-amber-500/50 hover:border-amber-400 text-amber-300 text-xs font-bold uppercase rounded-lg transition-all flex items-center justify-center gap-2 shadow-md"
+                          className="w-full py-2.5 px-3 bg-[#1A2332] hover:bg-[#253247] border border-amber-500/50 hover:border-amber-400 text-amber-300 text-xs font-bold uppercase rounded-none transition-all flex items-center justify-center gap-2 shadow-md"
                         >
                           <CalendarCheck className="w-4 h-4 text-amber-400" />
                           <span>Đăng Ký Đặt Lịch Giữ Chỗ</span>
@@ -553,59 +553,58 @@ export default function SmartFacilityPass({ currentUser }: SmartFacilityPassProp
       {/* CHỨC NĂNG 2: ĐẶT CHỖ TIỆN ÍCH & VÉ ĐIỆN TỬ QR                   */}
       {/* ============================================================= */}
       {activeTab === 'BOOKING' && (
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-          {/* Bên Trái: Form Đăng Ký Đặt Chỗ (5 Cột) */}
-          <div className="lg:col-span-5">
-            <form onSubmit={handleCreateBooking} className="p-5 bg-[#121820] border border-[#2A374A] rounded-xl space-y-4 shadow-xl">
-              <div className="border-b border-[#222B35] pb-3">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
+          {/* Bên Trái: Form Đăng Ký Đặt Chỗ (6 Cột - Cân Xứng) */}
+          <div className="lg:col-span-6">
+            <form onSubmit={handleCreateBooking} className="p-4 sm:p-5 bg-[#121820] border border-[#2A374A] rounded-none space-y-3.5 shadow-xl">
+              <div className="border-b border-[#222B35] pb-2.5">
                 <div className="text-[10px] uppercase tracking-[0.2em] text-[#C5A880] font-bold">
-                  Quy Trình 3 Bước Đơn Giản
+                  Dịch Vụ Tiện Ích Đặt Trước • Căn Hộ {aptCode}
                 </div>
                 <h3 className="font-serif text-lg text-white font-bold">
-                  Đăng Ký Đặt Chỗ Tiện Ích Riêng Tư
+                  Đăng Ký Đặt Chỗ Tiện Ích VIP
                 </h3>
               </div>
 
               {bookingSuccessMsg && (
-                <div className="p-3 bg-emerald-950 border border-emerald-500 text-emerald-200 text-xs rounded leading-relaxed animate-fadeIn">
+                <div className="p-3 bg-emerald-950 border border-emerald-500 text-emerald-200 text-xs rounded-none leading-relaxed animate-fadeIn">
                   {bookingSuccessMsg}
                 </div>
               )}
 
               {/* Bước 1: Tiện ích */}
-              <div className="space-y-1.5">
+              <div className="space-y-1">
                 <label className="text-[10.5px] text-gray-300 font-semibold uppercase block">
-                  1. Chọn tiện ích muốn sử dụng:
+                  1. Chọn tiện ích muốn đặt:
                 </label>
                 <select
                   value={bookingFacilityId}
                   onChange={(e) => setBookingFacilityId(e.target.value)}
-                  className="w-full bg-[#161D26] border border-[#2A374A] p-2.5 text-white text-xs rounded focus:outline-none focus:border-[#C5A880]"
+                  className="w-full bg-[#161D26] border border-[#2A374A] p-2.5 text-white text-xs rounded-none focus:outline-none focus:border-[#C5A880]"
                 >
-                  <option value="fac-sauna">👑 Phòng Xông Hơi Đá Muối Himalaya (Private VIP - Tầng 3)</option>
-                  <option value="fac-bbq">Vườn Nướng Sky BBQ Panoramic (Tầng 25)</option>
-                  <option value="fac-pool">Chòi Nghỉ Hồ Bơi Vô Cực (Tầng 25)</option>
+                  <option value="fac-sauna">Phòng Xông Hơi Đá Muối Himalaya (VIP Tầng 3) • 500.000 đ/giờ</option>
+                  <option value="fac-bbq">Vườn Tiệc Nướng BBQ Panoramic (Sân Thượng Tầng 25) • 600.000 đ/ca</option>
                 </select>
               </div>
 
               {/* Thông báo phòng riêng tư VIP nếu chọn Xông hơi */}
               {bookingFacilityId === 'fac-sauna' && (
-                <div className="p-3 bg-gradient-to-r from-[#C5A880]/15 to-transparent border-l-2 border-[#C5A880] rounded space-y-1 text-xs text-gray-200 animate-fadeIn">
+                <div className="p-2.5 bg-gradient-to-r from-[#C5A880]/15 to-transparent border-l-2 border-[#C5A880] rounded-none space-y-1 text-xs text-gray-200 animate-fadeIn">
                   <div className="font-bold text-[#C5A880] flex items-center gap-1.5">
                     <Sparkles className="w-3.5 h-3.5" />
-                    <span>Tiện Ích Riêng Tư Cao Cấp (Private VIP)</span>
+                    <span>Dịch Vụ Phòng Riêng Tư Gia Đình VIP</span>
                   </div>
                   <div className="text-[11px] text-gray-300 leading-relaxed">
-                    Phòng xông hơi riêng cho gia đình, được gia nhiệt lò đá muối Himalaya và chuẩn bị sẵn tinh dầu thảo mộc tự nhiên theo đúng giờ hẹn.
+                    Khép kín 100%, được bật lò gia nhiệt đá muối Himalaya, chuẩn bị khăn bông cao cấp và tinh dầu thảo mộc tự nhiên theo đúng giờ hẹn.
                   </div>
                 </div>
               )}
 
               {/* Chọn số tiếng sử dụng nếu là phòng xông hơi riêng tư */}
               {bookingFacilityId === 'fac-sauna' && (
-                <div className="space-y-1.5">
+                <div className="space-y-1">
                   <label className="text-[10.5px] text-gray-300 font-semibold uppercase block">
-                    Số tiếng đặt phòng riêng tư:
+                    Số tiếng đặt phòng VIP:
                   </label>
                   <div className="grid grid-cols-3 gap-2">
                     {[1, 2, 3].map((h) => (
@@ -613,14 +612,14 @@ export default function SmartFacilityPass({ currentUser }: SmartFacilityPassProp
                         key={h}
                         type="button"
                         onClick={() => setBookingDurationHours(h)}
-                        className={`py-2 px-2 text-xs font-bold rounded transition-all flex flex-col items-center justify-center gap-0.5 border ${
+                        className={`py-2 px-2 text-xs font-bold rounded-none transition-all flex flex-col items-center justify-center gap-0.5 border ${
                           bookingDurationHours === h
                             ? 'bg-[#C5A880] text-[#0D1117] border-[#C5A880] shadow'
                             : 'bg-[#161D26] text-gray-300 border-[#2A374A] hover:border-[#C5A880]/60'
                         }`}
                       >
                         <span>{h} Tiếng</span>
-                        <span className="text-[10px] font-mono font-normal">{(h * 150000).toLocaleString('vi-VN')} đ</span>
+                        <span className="text-[10px] font-mono font-normal">{(h * 500000).toLocaleString('vi-VN')} đ</span>
                       </button>
                     ))}
                   </div>
@@ -628,8 +627,8 @@ export default function SmartFacilityPass({ currentUser }: SmartFacilityPassProp
               )}
 
               {/* Bước 2: Ngày & Giờ */}
-              <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-1.5">
+              <div className="grid grid-cols-2 gap-2.5">
+                <div className="space-y-1">
                   <label className="text-[10.5px] text-gray-300 font-semibold uppercase block">
                     2. Ngày đặt:
                   </label>
@@ -638,19 +637,19 @@ export default function SmartFacilityPass({ currentUser }: SmartFacilityPassProp
                     min={todayStr}
                     value={bookingDate}
                     onChange={(e) => setBookingDate(e.target.value)}
-                    className="w-full bg-[#161D26] border border-[#2A374A] p-2 text-white text-xs rounded focus:outline-none focus:border-[#C5A880]"
+                    className="w-full bg-[#161D26] border border-[#2A374A] p-2 text-white text-xs rounded-none focus:outline-none focus:border-[#C5A880]"
                     required
                   />
                 </div>
 
-                <div className="space-y-1.5">
+                <div className="space-y-1">
                   <label className="text-[10.5px] text-gray-300 font-semibold uppercase block">
                     Khung giờ:
                   </label>
                   <select
                     value={bookingTimeSlot}
                     onChange={(e) => setBookingTimeSlot(e.target.value)}
-                    className="w-full bg-[#161D26] border border-[#2A374A] p-2 text-white text-xs rounded focus:outline-none focus:border-[#C5A880]"
+                    className="w-full bg-[#161D26] border border-[#2A374A] p-2 text-white text-xs rounded-none focus:outline-none focus:border-[#C5A880]"
                   >
                     <option>08:00 - 10:00 (Buổi sáng thư giãn)</option>
                     <option>10:00 - 12:00 (Trưa thanh tịnh)</option>
@@ -664,14 +663,14 @@ export default function SmartFacilityPass({ currentUser }: SmartFacilityPassProp
 
               {/* Chọn phương thức thanh toán giữ chỗ nếu là phòng xông hơi */}
               {bookingFacilityId === 'fac-sauna' && (
-                <div className="space-y-1.5">
+                <div className="space-y-1">
                   <label className="text-[10.5px] text-gray-300 font-semibold uppercase block">
-                    Phương thức thanh toán đặt giữ chỗ:
+                    Phương thức thanh toán giữ chỗ:
                   </label>
                   <select
                     value={bookingPaymentMethod}
                     onChange={(e) => setBookingPaymentMethod(e.target.value)}
-                    className="w-full bg-[#161D26] border border-[#2A374A] p-2 text-white text-xs rounded focus:outline-none focus:border-[#C5A880]"
+                    className="w-full bg-[#161D26] border border-[#2A374A] p-2 text-white text-xs rounded-none focus:outline-none focus:border-[#C5A880]"
                   >
                     <option value="Trừ vào hóa đơn sinh hoạt tháng tới">Trừ vào hóa đơn sinh hoạt tháng tới của căn hộ</option>
                     <option value="Quét mã QR chuyển khoản ngân hàng">Quét mã QR chuyển khoản ngân hàng BQL</option>
@@ -681,8 +680,8 @@ export default function SmartFacilityPass({ currentUser }: SmartFacilityPassProp
               )}
 
               {/* Bước 3: Số người & Ghi chú */}
-              <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-1.5">
+              <div className="grid grid-cols-2 gap-2.5">
+                <div className="space-y-1">
                   <label className="text-[10.5px] text-gray-300 font-semibold uppercase block">
                     3. Số người tham gia:
                   </label>
@@ -692,12 +691,12 @@ export default function SmartFacilityPass({ currentUser }: SmartFacilityPassProp
                     max={bookingFacilityId === 'fac-sauna' ? 6 : 20}
                     value={bookingGuestCount}
                     onChange={(e) => setBookingGuestCount(Number(e.target.value))}
-                    className="w-full bg-[#161D26] border border-[#2A374A] p-2 text-white text-xs rounded focus:outline-none focus:border-[#C5A880]"
+                    className="w-full bg-[#161D26] border border-[#2A374A] p-2 text-white text-xs rounded-none focus:outline-none focus:border-[#C5A880]"
                     required
                   />
                 </div>
 
-                <div className="space-y-1.5">
+                <div className="space-y-1">
                   <label className="text-[10.5px] text-gray-300 font-semibold uppercase block">
                     Người đại diện đặt:
                   </label>
@@ -705,62 +704,60 @@ export default function SmartFacilityPass({ currentUser }: SmartFacilityPassProp
                     type="text"
                     value={userName}
                     disabled
-                    className="w-full bg-[#0D1117] border border-[#2A374A] p-2 text-gray-400 text-xs rounded cursor-not-allowed"
+                    className="w-full bg-[#0D1117] border border-[#2A374A] p-2 text-gray-400 text-xs rounded-none cursor-not-allowed"
                   />
                 </div>
               </div>
 
-              <div className="space-y-1.5">
+              <div className="space-y-1">
                 <label className="text-[10.5px] text-gray-300 font-semibold uppercase block">
-                  Ghi chú yêu cầu đặc biệt (tùy chọn):
+                  Ghi chú yêu cầu phục vụ (tùy chọn):
                 </label>
                 <input
                   type="text"
                   value={bookingNotes}
                   onChange={(e) => setBookingNotes(e.target.value)}
-                  placeholder={bookingFacilityId === 'fac-sauna' ? 'VD: Cần thêm khăn bông, tinh dầu sả chanh...' : 'VD: Cần 2 bếp nướng, bàn ghế...'}
-                  className="w-full bg-[#161D26] border border-[#2A374A] p-2 text-white text-xs rounded focus:outline-none focus:border-[#C5A880]"
+                  placeholder={bookingFacilityId === 'fac-sauna' ? 'VD: Cần thêm khăn nhung, tinh dầu sả chanh...' : 'VD: Cần 2 bếp nướng Weber, dụng cụ BBQ...'}
+                  className="w-full bg-[#161D26] border border-[#2A374A] p-2 text-white text-xs rounded-none focus:outline-none focus:border-[#C5A880]"
                 />
               </div>
 
               {/* Chi phí & Chính sách hoàn tiền minh bạch khi bận đột xuất */}
-              <div className="p-3.5 bg-[#0D1117] border border-[#222B35] rounded-lg space-y-2.5 text-xs">
+              <div className="p-3 bg-[#0D1117] border border-[#222B35] rounded-none space-y-2 text-xs">
                 <div className="flex items-center justify-between">
                   <span className="text-gray-400 font-medium">Chi phí đặt giữ chỗ:</span>
                   <span className="text-[#C5A880] font-bold text-sm font-mono">
                     {bookingFacilityId === 'fac-sauna'
-                      ? `${(bookingDurationHours * 150000).toLocaleString('vi-VN')} đ (${bookingDurationHours} tiếng)`
-                      : bookingFacilityId === 'fac-bbq' ? '200.000 đ / lượt' : 'Miễn phí theo Thẻ cư dân'}
+                      ? `${(bookingDurationHours * 500000).toLocaleString('vi-VN')} đ (${bookingDurationHours} tiếng phòng VIP)`
+                      : '600.000 đ / ca tiệc (Set bếp Weber & nhân viên)'}
                   </span>
                 </div>
 
-                {bookingFacilityId === 'fac-sauna' && (
-                  <div className="pt-2 border-t border-[#1F2937] space-y-1.5 text-[11px] leading-relaxed">
-                    <div className="text-[#C5A880] font-bold flex items-center gap-1.5">
-                      <RotateCcw className="w-3.5 h-3.5" />
-                      <span>Chính sách hoàn tiền khi có việc bận đột xuất:</span>
+                <div className="pt-2 border-t border-[#1F2937] space-y-1 text-[11px] leading-relaxed">
+                  <div className="text-[#C5A880] font-bold flex items-center gap-1.5">
+                    <RotateCcw className="w-3.5 h-3.5" />
+                    <span>Chính sách hoàn tiền khi có việc bận đột xuất:</span>
+                  </div>
+                  <div className="space-y-0.5 text-gray-300">
+                    <div className="flex items-start gap-1.5 text-emerald-400">
+                      <span className="font-bold">✓</span>
+                      <span><strong>Trước giờ hẹn &gt; 30 phút:</strong> Hoàn trả <strong>100%</strong> tiền giữ chỗ.</span>
                     </div>
-                    <div className="space-y-1 text-gray-300">
-                      <div className="flex items-start gap-1.5 text-emerald-400">
-                        <span className="font-bold">✓</span>
-                        <span><strong>Trước giờ hẹn &gt; 30 phút:</strong> Hoàn trả <strong>100%</strong> tiền giữ chỗ.</span>
-                      </div>
-                      <div className="flex items-start gap-1.5 text-amber-300">
-                        <span className="font-bold">⚡</span>
-                        <span><strong>Cận giờ (trong vòng 30 phút):</strong> Hoàn trả <strong>50%</strong> (50% bù đắp chi phí gia nhiệt lò đá muối & tinh dầu).</span>
-                      </div>
-                      <div className="flex items-start gap-1.5 text-gray-400">
-                        <span className="font-bold">✕</span>
-                        <span><strong>Quá giờ hẹn bắt đầu:</strong> Không hoàn tiền do phòng đã được khóa giữ chỗ.</span>
-                      </div>
+                    <div className="flex items-start gap-1.5 text-amber-300">
+                      <span className="font-bold">⚡</span>
+                      <span><strong>Cận giờ (trong 30 phút):</strong> Hoàn trả <strong>50%</strong> (50% bù đắp chi phí chuẩn bị).</span>
+                    </div>
+                    <div className="flex items-start gap-1.5 text-gray-400">
+                      <span className="font-bold">✕</span>
+                      <span><strong>Quá giờ hẹn bắt đầu:</strong> Không hoàn tiền do tiện ích đã khóa giữ chỗ.</span>
                     </div>
                   </div>
-                )}
+                </div>
               </div>
 
               <button
                 type="submit"
-                className="w-full py-3 bg-[#C5A880] hover:bg-[#d5b991] text-[#0D1117] text-xs font-bold uppercase rounded-lg transition-colors flex items-center justify-center gap-2 shadow-lg"
+                className="w-full py-2.5 bg-[#C5A880] hover:bg-[#d5b991] text-[#0D1117] text-xs font-bold uppercase rounded-none transition-colors flex items-center justify-center gap-2 shadow-lg"
               >
                 <Check className="w-4 h-4" />
                 <span>Xác Nhận Đặt Giữ Chỗ & Tạo Vé QR</span>
@@ -768,11 +765,11 @@ export default function SmartFacilityPass({ currentUser }: SmartFacilityPassProp
             </form>
           </div>
 
-          {/* Bên Phải: Quản Lý Vé Điện Tử Của Căn Hộ (7 Cột) */}
-          <div className="lg:col-span-7 space-y-4">
+          {/* Bên Phải: Quản Lý Vé Điện Tử Của Căn Hộ (6 Cột - Cân Xứng) */}
+          <div className="lg:col-span-6 space-y-3.5">
             {/* Thông báo kết quả hoàn tiền nếu có */}
             {refundResultAlert && (
-              <div className={`p-3.5 rounded-lg border text-xs leading-relaxed animate-fadeIn flex items-center justify-between gap-3 ${
+              <div className={`p-3 rounded-none border text-xs leading-relaxed animate-fadeIn flex items-center justify-between gap-3 ${
                 refundResultAlert.type === 'success'
                   ? 'bg-emerald-950/80 border-emerald-500 text-emerald-200'
                   : 'bg-amber-950/80 border-amber-500 text-amber-200'
@@ -791,29 +788,29 @@ export default function SmartFacilityPass({ currentUser }: SmartFacilityPassProp
               </div>
             )}
 
-            <div className="p-5 bg-[#121820] border border-[#2A374A] rounded-xl space-y-4 shadow-xl">
-              <div className="flex items-center justify-between border-b border-[#222B35] pb-3">
+            <div className="p-4 sm:p-5 bg-[#121820] border border-[#2A374A] rounded-none space-y-3.5 shadow-xl">
+              <div className="flex items-center justify-between border-b border-[#222B35] pb-2.5">
                 <div className="text-xs uppercase tracking-wider text-[#C5A880] font-bold flex items-center gap-2">
                   <QrCode className="w-4 h-4" /> 
                   <span>Ví Vé Điện Tử Tiện Ích Căn Hộ {aptCode} ({bookings.length} Vé)</span>
                 </div>
                 <div className="text-[11px] text-gray-400 font-mono">
-                  Quẹt vé QR trực tiếp tại cổng
+                  Quét vé tại cổng tiện ích
                 </div>
               </div>
 
               {bookings.length === 0 ? (
-                <div className="p-8 text-center bg-[#0D1117] border border-[#222B35] rounded-lg space-y-2">
-                  <div className="w-10 h-10 rounded-full bg-[#161D26] border border-[#2A374A] flex items-center justify-center mx-auto text-gray-400">
+                <div className="p-8 text-center bg-[#0D1117] border border-[#222B35] rounded-none space-y-2">
+                  <div className="w-10 h-10 rounded-none bg-[#161D26] border border-[#2A374A] flex items-center justify-center mx-auto text-gray-400">
                     <Calendar className="w-5 h-5 text-[#C5A880]" />
                   </div>
                   <div className="text-xs font-bold text-white">Chưa có vé đặt chỗ nào</div>
                   <div className="text-[11px] text-gray-400 max-w-sm mx-auto leading-relaxed">
-                    Hãy điền form bên trái để đăng ký Phòng xông hơi riêng tư hoặc Vườn nướng Sky BBQ cho gia đình.
+                    Hãy điền thông tin bên trái để đăng ký Phòng xông hơi VIP hoặc Vườn tiệc nướng BBQ Panoramic cho gia đình.
                   </div>
                 </div>
               ) : (
-                <div className="space-y-3 max-h-[500px] overflow-y-auto pr-1">
+                <div className="space-y-3 max-h-[540px] overflow-y-auto pr-1">
                   {bookings.map((b) => {
                     const isConfirmed = b.status === 'CONFIRMED';
                     const isCheckedIn = b.status === 'CHECKED_IN';
@@ -822,7 +819,7 @@ export default function SmartFacilityPass({ currentUser }: SmartFacilityPassProp
                     return (
                       <div 
                         key={b.id}
-                        className={`p-4 bg-[#0D1117] border rounded-lg space-y-3 transition-all ${
+                        className={`p-3.5 bg-[#0D1117] border rounded-none space-y-2.5 transition-all ${
                           isConfirmed ? 'border-[#2A374A]' : isCheckedIn ? 'border-emerald-500/40 bg-emerald-950/10' : 'border-gray-800 opacity-70'
                         }`}
                       >
@@ -846,17 +843,17 @@ export default function SmartFacilityPass({ currentUser }: SmartFacilityPassProp
                             {/* Thông tin phòng riêng tư & số tiền đặt giữ chỗ */}
                             {(b.isPrivate || b.facilityId === 'fac-sauna' || b.depositAmount) && (
                               <div className="flex flex-wrap items-center gap-2 mt-1">
-                                <span className="px-2 py-0.5 bg-[#C5A880]/15 text-[#C5A880] text-[9.5px] font-bold rounded">
-                                  👑 PHÒNG RIÊNG TƯ • {b.durationHours || 2} TIẾNG
+                                <span className="px-2 py-0.5 bg-[#C5A880]/15 text-[#C5A880] text-[9.5px] font-bold rounded-none">
+                                  👑 TIỆN ÍCH VIP • {b.durationHours ? `${b.durationHours} TIẾNG` : 'THEO CA'}
                                 </span>
                                 <span className="text-[10px] text-gray-300 font-mono">
-                                  Đã giữ chỗ: <strong className="text-[#C5A880]">{(b.depositAmount || 300000).toLocaleString('vi-VN')} đ</strong>
+                                  Đã giữ chỗ: <strong className="text-[#C5A880]">{(b.depositAmount || 1000000).toLocaleString('vi-VN')} đ</strong>
                                 </span>
                               </div>
                             )}
                           </div>
 
-                          <span className={`px-2 py-0.5 text-[9px] font-mono font-bold rounded uppercase border shrink-0 ${
+                          <span className={`px-2 py-0.5 text-[9px] font-mono font-bold rounded-none uppercase border shrink-0 ${
                             isConfirmed 
                               ? 'bg-amber-950 text-amber-300 border-amber-500/40' 
                               : isCheckedIn
@@ -868,7 +865,7 @@ export default function SmartFacilityPass({ currentUser }: SmartFacilityPassProp
                         </div>
 
                         {/* Mã QR & Code Strip */}
-                        <div className="p-3 bg-[#161D26] border border-[#222B35] rounded flex items-center justify-between gap-3">
+                        <div className="p-2.5 bg-[#161D26] border border-[#222B35] rounded-none flex items-center justify-between gap-3">
                           <div className="space-y-0.5">
                             <div className="text-[9px] text-gray-400 uppercase font-mono">Mã Vé Điện Tử Check-in:</div>
                             <div className="text-sm font-mono font-bold text-[#C5A880]">{b.ticketCode}</div>
@@ -877,7 +874,7 @@ export default function SmartFacilityPass({ currentUser }: SmartFacilityPassProp
                             </div>
                           </div>
 
-                          <div className={`p-1 bg-white rounded shrink-0 shadow ${isCancelled ? 'opacity-30' : ''}`}>
+                          <div className={`p-1 bg-white rounded-none shrink-0 shadow ${isCancelled ? 'opacity-30' : ''}`}>
                             <img
                               src={`https://api.qrserver.com/v1/create-qr-code/?size=70x70&data=${b.ticketCode}`}
                               alt="Ticket QR"
@@ -888,7 +885,7 @@ export default function SmartFacilityPass({ currentUser }: SmartFacilityPassProp
 
                         {/* Chi tiết hoàn tiền nếu vé đã hủy */}
                         {isCancelled && (
-                          <div className="p-2.5 bg-[#141B24] border border-[#222B35] rounded text-xs space-y-1">
+                          <div className="p-2.5 bg-[#141B24] border border-[#222B35] rounded-none text-xs space-y-1">
                             <div className="flex items-center gap-1.5 font-semibold">
                               {b.refundRate && b.refundRate > 0 ? (
                                 <span className="text-emerald-400 flex items-center gap-1">
@@ -917,7 +914,7 @@ export default function SmartFacilityPass({ currentUser }: SmartFacilityPassProp
                               <button
                                 type="button"
                                 onClick={() => handleOpenRefundModal(b)}
-                                className="px-2.5 py-1.5 bg-red-950/40 hover:bg-red-900/60 border border-red-500/40 text-red-300 text-xs font-semibold rounded transition-colors flex items-center gap-1.5 shadow-sm"
+                                className="px-2.5 py-1.5 bg-red-950/40 hover:bg-red-900/60 border border-red-500/40 text-red-300 text-xs font-semibold rounded-none transition-colors flex items-center gap-1.5 shadow-sm"
                               >
                                 <RotateCcw className="w-3.5 h-3.5 text-red-400" />
                                 <span>Hủy Lịch & Hoàn Tiền (Bận Đột Xuất)</span>
@@ -926,7 +923,7 @@ export default function SmartFacilityPass({ currentUser }: SmartFacilityPassProp
                               <button
                                 type="button"
                                 onClick={() => handleCheckinTicket(b.ticketCode)}
-                                className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded transition-colors flex items-center gap-1.5 shadow"
+                                className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-none transition-colors flex items-center gap-1.5 shadow"
                               >
                                 <DoorOpen className="w-3.5 h-3.5" /> Quẹt Vé Vào Cổng Ngay
                               </button>
@@ -951,7 +948,7 @@ export default function SmartFacilityPass({ currentUser }: SmartFacilityPassProp
       {/* CHỨC NĂNG 3: NHẬT KÝ SỬ DỤNG TIỆN ÍCH THỜI GIAN THỰC          */}
       {/* ============================================================= */}
       {activeTab === 'LOGS' && (
-        <div className="p-5 bg-[#121820] border border-[#2A374A] rounded-xl space-y-4 shadow-xl">
+        <div className="p-4 sm:p-5 bg-[#121820] border border-[#2A374A] rounded-none space-y-4 shadow-xl">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#222B35] pb-3">
             <div>
               <div className="text-xs uppercase tracking-wider text-[#C5A880] font-bold flex items-center gap-2">
@@ -959,7 +956,7 @@ export default function SmartFacilityPass({ currentUser }: SmartFacilityPassProp
                 <span>Nhật Ký Ra Vào Tiện Ích Thời Gian Thực Căn Hộ {aptCode}</span>
               </div>
               <div className="text-[11px] text-gray-400 mt-0.5">
-                Dữ liệu kiểm soát tự động từ hệ thống Turnstile & Barrier thông minh (Không có dữ liệu ảo)
+                Dữ liệu ghi nhận tự động theo thời gian thực khi cư dân qua cổng tiện ích
               </div>
             </div>
 
@@ -968,7 +965,7 @@ export default function SmartFacilityPass({ currentUser }: SmartFacilityPassProp
               <button
                 type="button"
                 onClick={() => setLogFilter('ALL')}
-                className={`px-2.5 py-1 text-[11px] font-mono rounded font-bold transition-colors ${
+                className={`px-2.5 py-1 text-[11px] font-mono rounded-none font-bold transition-colors ${
                   logFilter === 'ALL' ? 'bg-[#C5A880] text-[#0D1117]' : 'bg-[#161D26] text-gray-400 hover:text-white'
                 }`}
               >
@@ -977,7 +974,7 @@ export default function SmartFacilityPass({ currentUser }: SmartFacilityPassProp
               <button
                 type="button"
                 onClick={() => setLogFilter('fac-pool')}
-                className={`px-2.5 py-1 text-[11px] font-mono rounded font-bold transition-colors ${
+                className={`px-2.5 py-1 text-[11px] font-mono rounded-none font-bold transition-colors ${
                   logFilter === 'fac-pool' ? 'bg-cyan-600 text-white' : 'bg-[#161D26] text-gray-400 hover:text-white'
                 }`}
               >
@@ -986,7 +983,7 @@ export default function SmartFacilityPass({ currentUser }: SmartFacilityPassProp
               <button
                 type="button"
                 onClick={() => setLogFilter('fac-gym')}
-                className={`px-2.5 py-1 text-[11px] font-mono rounded font-bold transition-colors ${
+                className={`px-2.5 py-1 text-[11px] font-mono rounded-none font-bold transition-colors ${
                   logFilter === 'fac-gym' ? 'bg-blue-600 text-white' : 'bg-[#161D26] text-gray-400 hover:text-white'
                 }`}
               >
@@ -995,7 +992,7 @@ export default function SmartFacilityPass({ currentUser }: SmartFacilityPassProp
               <button
                 type="button"
                 onClick={() => setLogFilter('fac-bbq')}
-                className={`px-2.5 py-1 text-[11px] font-mono rounded font-bold transition-colors ${
+                className={`px-2.5 py-1 text-[11px] font-mono rounded-none font-bold transition-colors ${
                   logFilter === 'fac-bbq' ? 'bg-amber-600 text-white' : 'bg-[#161D26] text-gray-400 hover:text-white'
                 }`}
               >
@@ -1005,13 +1002,13 @@ export default function SmartFacilityPass({ currentUser }: SmartFacilityPassProp
           </div>
 
           {filteredLogs.length === 0 ? (
-            <div className="p-12 text-center bg-[#0D1117] border border-[#222B35] rounded-lg space-y-2">
-              <div className="w-10 h-10 rounded-full bg-[#161D26] border border-[#2A374A] flex items-center justify-center mx-auto text-gray-400">
+            <div className="p-12 text-center bg-[#0D1117] border border-[#222B35] rounded-none space-y-2">
+              <div className="w-10 h-10 rounded-none bg-[#161D26] border border-[#2A374A] flex items-center justify-center mx-auto text-gray-400">
                 <History className="w-5 h-5 text-[#C5A880]" />
               </div>
               <div className="text-xs font-bold text-white">Chưa có lượt ra vào tiện ích nào</div>
               <div className="text-[11px] text-gray-400 max-w-sm mx-auto leading-relaxed">
-                Khi cư dân sử dụng Thẻ NFC hoặc FaceID qua cổng kiểm soát tại Hồ bơi, Gym, BBQ, hệ thống sẽ tự động ghi lại lịch sử ở đây.
+                Khi cư dân quẹt thẻ hoặc dùng nhận diện khuôn mặt qua cổng tại Hồ bơi, Gym, BBQ, hệ thống sẽ tự động hiển thị nhật ký tại đây.
               </div>
             </div>
           ) : (
@@ -1019,13 +1016,13 @@ export default function SmartFacilityPass({ currentUser }: SmartFacilityPassProp
               {filteredLogs.map((log) => (
                 <div key={log.id} className="py-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
                   <div className="flex items-start gap-3">
-                    <div className="w-8 h-8 rounded bg-emerald-950 border border-emerald-500/40 text-emerald-400 flex items-center justify-center shrink-0 mt-0.5">
+                    <div className="w-8 h-8 rounded-none bg-emerald-950 border border-emerald-500/40 text-emerald-400 flex items-center justify-center shrink-0 mt-0.5">
                       <CheckCircle2 className="w-4 h-4" />
                     </div>
                     <div>
                       <div className="font-bold text-white text-sm">{log.facilityName}</div>
                       <div className="text-[11px] text-gray-400">
-                        Cư dân: <strong className="text-gray-200">{log.userName}</strong> ({log.role}) • Xác thực: <span className="text-[#C5A880]">{log.method === 'NFC_CARD' ? 'Thẻ Cư Dân NFC' : 'FaceID AI 3D'}</span>
+                        Cư dân: <strong className="text-gray-200">{log.userName}</strong> ({log.role}) • Xác thực: <span className="text-[#C5A880]">{log.method === 'NFC_CARD' ? 'Thẻ Cư Dân' : 'Nhận Diện Khuôn Mặt'}</span>
                       </div>
                       <div className="text-[10px] text-gray-500 font-mono mt-0.5">
                         {log.detail}
@@ -1049,7 +1046,7 @@ export default function SmartFacilityPass({ currentUser }: SmartFacilityPassProp
       {/* ============================================================= */}
       {turnstileModalFac && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md animate-fadeIn p-4">
-          <div className="bg-[#121820] border-2 border-[#C5A880] rounded-xl shadow-2xl max-w-md w-full overflow-hidden space-y-4">
+          <div className="bg-[#121820] border-2 border-[#C5A880] rounded-none shadow-2xl max-w-md w-full overflow-hidden space-y-4">
             {/* Modal Header */}
             <div className="p-4 bg-[#161F2C] border-b border-[#2A374A] flex items-center justify-between">
               <div className="flex items-center gap-2">
@@ -1064,7 +1061,7 @@ export default function SmartFacilityPass({ currentUser }: SmartFacilityPassProp
               <button
                 type="button"
                 onClick={() => setTurnstileModalFac(null)}
-                className="p-1 text-gray-400 hover:text-white rounded"
+                className="p-1 text-gray-400 hover:text-white rounded-none"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -1073,7 +1070,7 @@ export default function SmartFacilityPass({ currentUser }: SmartFacilityPassProp
             {/* Modal Body */}
             <div className="p-5 space-y-4 text-center">
               {turnstileSuccessMsg ? (
-                <div className="p-4 bg-emerald-950/90 border border-emerald-500 text-emerald-300 rounded-lg text-xs font-mono space-y-2 animate-fadeIn">
+                <div className="p-4 bg-emerald-950/90 border border-emerald-500 text-emerald-300 rounded-none text-xs font-mono space-y-2 animate-fadeIn">
                   <DoorOpen className="w-8 h-8 text-emerald-400 mx-auto animate-bounce" />
                   <div className="font-bold">{turnstileSuccessMsg}</div>
                 </div>
@@ -1088,7 +1085,7 @@ export default function SmartFacilityPass({ currentUser }: SmartFacilityPassProp
                     <button
                       type="button"
                       onClick={() => setTurnstileMethod('NFC')}
-                      className={`p-3 rounded-lg border text-xs font-bold transition-all flex flex-col items-center gap-2 ${
+                      className={`p-3 rounded-none border text-xs font-bold transition-all flex flex-col items-center gap-2 ${
                         turnstileMethod === 'NFC'
                           ? 'bg-blue-950/80 border-blue-500 text-blue-300 ring-1 ring-blue-400'
                           : 'bg-[#161D26] border-[#2A374A] text-gray-400 hover:text-white'
@@ -1102,7 +1099,7 @@ export default function SmartFacilityPass({ currentUser }: SmartFacilityPassProp
                     <button
                       type="button"
                       onClick={() => setTurnstileMethod('FACE_ID')}
-                      className={`p-3 rounded-lg border text-xs font-bold transition-all flex flex-col items-center gap-2 ${
+                      className={`p-3 rounded-none border text-xs font-bold transition-all flex flex-col items-center gap-2 ${
                         turnstileMethod === 'FACE_ID'
                           ? 'bg-cyan-950/80 border-cyan-500 text-cyan-300 ring-1 ring-cyan-400'
                           : 'bg-[#161D26] border-[#2A374A] text-gray-400 hover:text-white'
@@ -1115,7 +1112,7 @@ export default function SmartFacilityPass({ currentUser }: SmartFacilityPassProp
                   </div>
 
                   {/* Visual Card / Biometric Preview */}
-                  <div className="p-3 bg-[#0D1117] border border-[#222B35] rounded-lg text-xs font-mono text-gray-300 space-y-1">
+                  <div className="p-3 bg-[#0D1117] border border-[#222B35] rounded-none text-xs font-mono text-gray-300 space-y-1">
                     <div className="text-white font-bold">{userName} (Căn {aptCode})</div>
                     <div className="text-[10px] text-gray-400">
                       {turnstileMethod === 'NFC' ? 'Thẻ cư dân chính của căn hộ' : 'Khuôn mặt cư dân đã kích hoạt'}
@@ -1127,7 +1124,7 @@ export default function SmartFacilityPass({ currentUser }: SmartFacilityPassProp
                     type="button"
                     onClick={handleExecuteTurnstileCheckin}
                     disabled={isTurnstileScanning}
-                    className="w-full py-3 bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-500 hover:to-emerald-600 text-white text-xs font-bold uppercase tracking-wider rounded-lg transition-all flex items-center justify-center gap-2 shadow-lg"
+                    className="w-full py-3 bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-500 hover:to-emerald-600 text-white text-xs font-bold uppercase tracking-wider rounded-none transition-all flex items-center justify-center gap-2 shadow-lg"
                   >
                     {isTurnstileScanning ? (
                       <>
@@ -1153,7 +1150,7 @@ export default function SmartFacilityPass({ currentUser }: SmartFacilityPassProp
       {/* ============================================================= */}
       {showSmartCardModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-md animate-fadeIn p-4">
-          <div className="bg-[#121820] border-2 border-[#C5A880] rounded-xl shadow-2xl max-w-lg w-full overflow-hidden space-y-4">
+          <div className="bg-[#121820] border-2 border-[#C5A880] rounded-none shadow-2xl max-w-lg w-full overflow-hidden space-y-4">
             <div className="p-4 bg-[#161F2C] border-b border-[#2A374A] flex items-center justify-between">
               <div className="text-xs uppercase tracking-[0.2em] text-[#C5A880] font-bold flex items-center gap-2">
                 <CreditCard className="w-4 h-4 text-[#C5A880]" />
@@ -1162,7 +1159,7 @@ export default function SmartFacilityPass({ currentUser }: SmartFacilityPassProp
               <button
                 type="button"
                 onClick={() => setShowSmartCardModal(false)}
-                className="p-1 text-gray-400 hover:text-white rounded"
+                className="p-1 text-gray-400 hover:text-white rounded-none"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -1191,7 +1188,7 @@ export default function SmartFacilityPass({ currentUser }: SmartFacilityPassProp
 
         return (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-md animate-fadeIn p-4">
-            <div className="bg-[#121820] border border-[#C5A880] rounded-xl shadow-2xl max-w-md w-full overflow-hidden space-y-4">
+            <div className="bg-[#121820] border border-[#C5A880] rounded-none shadow-2xl max-w-md w-full overflow-hidden space-y-4">
               {/* Header */}
               <div className="p-4 bg-[#161F2C] border-b border-[#2A374A] flex items-center justify-between">
                 <div className="text-xs uppercase tracking-[0.15em] text-[#C5A880] font-bold flex items-center gap-2">
@@ -1202,7 +1199,7 @@ export default function SmartFacilityPass({ currentUser }: SmartFacilityPassProp
                   type="button"
                   onClick={() => setRefundModalBooking(null)}
                   disabled={isProcessingRefund}
-                  className="p-1 text-gray-400 hover:text-white rounded"
+                  className="p-1 text-gray-400 hover:text-white rounded-none"
                 >
                   <X className="w-4 h-4" />
                 </button>
@@ -1211,7 +1208,7 @@ export default function SmartFacilityPass({ currentUser }: SmartFacilityPassProp
               {/* Body */}
               <div className="p-5 space-y-4 text-xs">
                 {/* Thông tin vé đặt */}
-                <div className="p-3 bg-[#0D1117] border border-[#222B35] rounded-lg space-y-1.5">
+                <div className="p-3 bg-[#0D1117] border border-[#222B35] rounded-none space-y-1.5">
                   <div className="text-white font-bold text-sm flex items-center justify-between">
                     <span>{refundModalBooking.facilityName}</span>
                     <span className="text-[10px] text-[#C5A880] font-mono">{refundModalBooking.ticketCode}</span>
@@ -1220,12 +1217,12 @@ export default function SmartFacilityPass({ currentUser }: SmartFacilityPassProp
                     Thời gian hẹn: <strong className="text-white">{refundModalBooking.bookingDate} ({refundModalBooking.timeSlot})</strong>
                   </div>
                   <div className="text-gray-400">
-                    Số tiền đã đặt giữ chỗ: <strong className="text-[#C5A880]">{(refundModalBooking.depositAmount || 150000).toLocaleString('vi-VN')} VNĐ</strong> ({refundModalBooking.paymentMethod || 'Hóa đơn tháng tới'})
+                    Số tiền đã đặt giữ chỗ: <strong className="text-[#C5A880]">{(refundModalBooking.depositAmount || 500000).toLocaleString('vi-VN')} VNĐ</strong> ({refundModalBooking.paymentMethod || 'Hóa đơn tháng tới'})
                   </div>
                 </div>
 
                 {/* Phân tích tỷ lệ hoàn tiền thời gian thực */}
-                <div className={`p-4 rounded-xl border space-y-2 ${
+                <div className={`p-4 rounded-none border space-y-2 ${
                   isFull 
                     ? 'bg-emerald-950/40 border-emerald-500/60 text-emerald-200' 
                     : isPartial 
@@ -1239,7 +1236,7 @@ export default function SmartFacilityPass({ currentUser }: SmartFacilityPassProp
                       {isNone && <XCircle className="w-4 h-4 text-gray-400" />}
                       <span>{refundEstimate.title}</span>
                     </span>
-                    <span className={`px-2 py-0.5 rounded font-mono font-bold text-xs ${
+                    <span className={`px-2 py-0.5 rounded-none font-mono font-bold text-xs ${
                       isFull ? 'bg-emerald-600 text-white' : isPartial ? 'bg-amber-600 text-white' : 'bg-gray-700 text-gray-300'
                     }`}>
                       HOÀN {refundEstimate.refundRate}%
@@ -1268,7 +1265,7 @@ export default function SmartFacilityPass({ currentUser }: SmartFacilityPassProp
                   <select
                     value={refundReason}
                     onChange={(e) => setRefundReason(e.target.value)}
-                    className="w-full bg-[#161D26] border border-[#2A374A] p-2 text-white text-xs rounded focus:outline-none focus:border-[#C5A880]"
+                    className="w-full bg-[#161D26] border border-[#2A374A] p-2 text-white text-xs rounded-none focus:outline-none focus:border-[#C5A880]"
                   >
                     <option value="Bận việc gia đình đột xuất không thể tham gia">Bận việc gia đình đột xuất</option>
                     <option value="Lịch công tác / đi xa phát sinh ngoài dự kiến">Lịch công tác / đi xa đột xuất</option>
@@ -1287,7 +1284,7 @@ export default function SmartFacilityPass({ currentUser }: SmartFacilityPassProp
                     type="button"
                     onClick={() => setRefundModalBooking(null)}
                     disabled={isProcessingRefund}
-                    className="py-2.5 px-3 bg-[#161D26] hover:bg-[#1E2633] text-gray-300 text-xs font-bold rounded-lg border border-[#2A374A] transition-colors"
+                    className="py-2.5 px-3 bg-[#161D26] hover:bg-[#1E2633] text-gray-300 text-xs font-bold rounded-none border border-[#2A374A] transition-colors"
                   >
                     Giữ Lại Lịch Đặt
                   </button>
@@ -1296,7 +1293,7 @@ export default function SmartFacilityPass({ currentUser }: SmartFacilityPassProp
                     type="button"
                     onClick={handleConfirmRefund}
                     disabled={isProcessingRefund}
-                    className="py-2.5 px-3 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white text-xs font-bold rounded-lg transition-all flex items-center justify-center gap-1.5 shadow-lg"
+                    className="py-2.5 px-3 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white text-xs font-bold rounded-none transition-all flex items-center justify-center gap-1.5 shadow-lg"
                   >
                     {isProcessingRefund ? (
                       <>

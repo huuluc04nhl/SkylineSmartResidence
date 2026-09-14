@@ -65,8 +65,8 @@ const DEFAULT_DEMO_BOOKINGS: Record<string, FacilityBooking[]> = {
       bookerName: 'Nguyễn Hữu Lực',
       guestCount: 2,
       durationHours: 2,
-      depositAmount: 300000,
-      pricing: '150.000 đ / giờ',
+      depositAmount: 1000000,
+      pricing: '500.000 đ / giờ (Phòng gia đình VIP)',
       isPrivate: true,
       paymentMethod: 'Trừ vào hóa đơn sinh hoạt tháng tới',
       notes: 'Gia đình 2 người, chuẩn bị trước tinh dầu sả chanh',
@@ -156,7 +156,7 @@ export function calculateRefundEstimate(booking: FacilityBooking): {
   title: string;
   reason: string;
 } {
-  const deposit = booking.depositAmount || (booking.pricing.includes('200.000') ? 200000 : booking.pricing.includes('150.000') ? 150000 : 0);
+  const deposit = booking.depositAmount || (booking.pricing.includes('600.000') ? 600000 : booking.pricing.includes('1.000.000') ? 1000000 : booking.pricing.includes('500.000') ? 500000 : 500000);
 
   // Phân tích thời gian bắt đầu
   let startTime = new Date();
