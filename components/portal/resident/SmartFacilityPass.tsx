@@ -325,20 +325,20 @@ export default function SmartFacilityPass({ currentUser }: SmartFacilityPassProp
 
         {/* Quick Actions & Metrics */}
         <div className="flex flex-wrap items-center gap-2.5">
-          <div className="px-3.5 py-2 bg-[#0D1117] border border-[#2A374A] rounded-none text-xs flex items-center gap-2">
-            <ShieldCheck className="w-4 h-4 text-emerald-400" />
-            <div>
+          <div className="h-11 px-3.5 bg-[#0D1117] border border-[#2A374A] rounded-none text-xs flex items-center gap-2.5">
+            <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />
+            <div className="leading-tight">
               <div className="text-[9px] uppercase tracking-wider text-gray-400 font-mono">Hạn Mức BBQ Tháng</div>
-              <div className="font-mono font-bold text-[#C5A880]">{quota.remaining} / {quota.max} lượt</div>
+              <div className="font-mono font-bold text-[#C5A880] text-xs">{quota.remaining} / {quota.max} lượt</div>
             </div>
           </div>
 
           <button
             type="button"
             onClick={() => setShowSmartCardModal(true)}
-            className="px-3.5 py-2 bg-[#1A2332] hover:bg-[#253247] border border-[#C5A880]/50 hover:border-[#C5A880] text-white text-xs font-bold uppercase rounded-none transition-all flex items-center gap-2 shadow-md"
+            className="h-11 px-4 bg-[#1A2332] hover:bg-[#253247] border border-[#C5A880]/50 hover:border-[#C5A880] text-white text-xs font-bold uppercase rounded-none transition-all flex items-center gap-2 shadow-md"
           >
-            <CreditCard className="w-4 h-4 text-[#C5A880]" />
+            <CreditCard className="w-4 h-4 text-[#C5A880] shrink-0" />
             <span>Thẻ Cư Dân VIP 3D</span>
           </button>
         </div>

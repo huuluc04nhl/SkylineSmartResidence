@@ -841,7 +841,7 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
           {/* Quick Hardware Status Indicators */}
           <div className="flex flex-wrap items-center gap-2">
             {/* Chốt Khóa */}
-            <div className={`px-3 py-1.5 rounded text-xs font-mono font-bold flex items-center gap-2 border ${
+            <div className={`h-8 px-3 rounded text-xs font-mono font-bold flex items-center gap-2 border ${
               masterDoorLocked 
                 ? 'bg-emerald-950/80 text-emerald-300 border-emerald-500/40' 
                 : 'bg-amber-950/80 text-amber-300 border-amber-500/40 animate-pulse'
@@ -851,7 +851,7 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
             </div>
 
             {/* Cảm biến cánh cửa */}
-            <div className={`px-3 py-1.5 rounded text-xs font-mono font-bold flex items-center gap-2 border ${
+            <div className={`h-8 px-3 rounded text-xs font-mono font-bold flex items-center gap-2 border ${
               doorAjar 
                 ? 'bg-red-950/80 text-red-300 border-red-500/40 animate-bounce' 
                 : 'bg-[#0D1117] text-gray-300 border-[#2A374A]'
@@ -861,14 +861,14 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
             </div>
 
             {/* Pin Khóa */}
-            <div className="px-3 py-1.5 bg-[#0D1117] border border-[#2A374A] rounded text-xs flex items-center gap-1.5">
+            <div className="h-8 px-3 bg-[#0D1117] border border-[#2A374A] rounded text-xs flex items-center gap-1.5">
               <BatteryCharging className="w-3.5 h-3.5 text-emerald-400" />
               <span className="text-gray-400 text-[10px]">Pin:</span>
               <span className="font-mono font-bold text-emerald-300 text-xs">{doorBatteryLevel}%</span>
             </div>
 
             {/* An ninh AI */}
-            <div className="px-3 py-1.5 bg-[#0D1117] border border-[#2A374A] rounded text-xs flex items-center gap-1.5">
+            <div className="h-8 px-3 bg-[#0D1117] border border-[#2A374A] rounded text-xs flex items-center gap-1.5">
               <ShieldCheck className="w-3.5 h-3.5 text-[#C5A880]" />
               <span className="font-mono font-bold text-[#C5A880] text-xs">24/7 BẢO VỆ</span>
             </div>

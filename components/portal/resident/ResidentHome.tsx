@@ -78,13 +78,13 @@ export default function ResidentHome({ currentUser, onNavigate, onOpenVisitorMod
           </h2>
           <div className="text-xs text-gray-300 mt-2.5 flex flex-wrap items-center gap-2 sm:gap-2.5">
             {/* Căn Hộ & Nút Sổ Tay */}
-            <div className="flex items-center gap-1.5 bg-[#161B22] border border-[#2D3748] px-2.5 py-1 shadow-sm">
+            <div className="h-8 flex items-center gap-1.5 bg-[#161B22] border border-[#2D3748] px-2.5 shadow-sm">
               <span className="text-gray-400 text-[11px]">Căn Hộ:</span>
               <strong className="text-white font-mono text-xs">Căn {aptCode}</strong>
               <button
                 type="button"
                 onClick={() => setIsAptDetailOpen(true)}
-                className="ml-1 px-2 py-0.5 bg-[#0D1117] hover:bg-[#C5A880] hover:text-[#0D1117] text-[#C5A880] border border-[#C5A880]/50 text-[10.5px] font-semibold transition-all flex items-center gap-1 shadow-sm"
+                className="ml-1 h-5 px-2 bg-[#0D1117] hover:bg-[#C5A880] hover:text-[#0D1117] text-[#C5A880] border border-[#C5A880]/50 text-[10.5px] font-semibold transition-all flex items-center gap-1 shadow-sm"
                 title="Mở sổ tay căn hộ thượng lưu & phối cảnh không gian 3D"
               >
                 <Eye className="w-3 h-3" /> Sổ Tay & Phối Cảnh
@@ -92,14 +92,14 @@ export default function ResidentHome({ currentUser, onNavigate, onOpenVisitorMod
             </div>
 
             {/* Huy Hiệu Chủ Sở Hữu Thượng Lưu */}
-            <div className="flex items-center gap-1.5 px-2.5 py-1 bg-[#C5A880]/15 border border-[#C5A880]/50 text-[#C5A880] text-[11px] font-semibold shadow-sm">
+            <div className="h-8 flex items-center gap-1.5 px-2.5 bg-[#C5A880]/15 border border-[#C5A880]/50 text-[#C5A880] text-[11px] font-semibold shadow-sm">
               <Crown className="w-3.5 h-3.5 text-[#C5A880]" />
               <span>{isOwner ? 'Chủ Sở Hữu Căn Hộ' : 'Thành Viên Gia Đình'}</span>
             </div>
 
             {/* Huy Hiệu Xác Thực An Ninh e-KYC */}
             {isOwner && (
-              <div className="flex items-center gap-1.5 px-2.5 py-1 bg-emerald-950/60 border border-emerald-500/40 text-emerald-300 text-[11px] font-mono font-medium shadow-sm">
+              <div className="h-8 flex items-center gap-1.5 px-2.5 bg-emerald-950/60 border border-emerald-500/40 text-emerald-300 text-[11px] font-mono font-medium shadow-sm">
                 <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
                 <span>Thẻ e-KYC Đã Kích Hoạt</span>
               </div>

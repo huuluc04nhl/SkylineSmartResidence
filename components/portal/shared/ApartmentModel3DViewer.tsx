@@ -989,7 +989,7 @@ export default function ApartmentModel3DViewer({
 
           {/* Quyền Thao Tác: CHỈ XUẤT HIỆN KHI ĐĂNG NHẬP VÀO TRANG QUẢN LÝ CĂN HỘ CỦA MÌNH */}
           {canControl ? (
-            <div className="flex flex-wrap items-center gap-2 flex-shrink-0">
+            <div className="flex flex-wrap items-center gap-2.5 flex-shrink-0">
               {/* 1. Điều khiển Đèn theo từng phòng */}
               {(selectedRoom === 'living' || selectedRoom === 'masterBed' || selectedRoom === 'diningKitchen' || selectedRoom === 'balcony') && (
                 <button
@@ -1000,16 +1000,16 @@ export default function ApartmentModel3DViewer({
                     else if (selectedRoom === 'diningKitchen') onToggleLight?.('kitchen');
                     else if (selectedRoom === 'balcony') onToggleLight?.('balcony');
                   }}
-                  className={`px-3 py-2 text-xs font-bold uppercase tracking-wider transition-all rounded flex items-center gap-1.5 shadow ${
+                  className={`h-9 px-3.5 text-xs font-bold uppercase tracking-wider transition-all rounded flex items-center gap-2 shadow-sm ${
                     (selectedRoom === 'living' && lights.livingRoom) ||
                     (selectedRoom === 'masterBed' && lights.bedroomMaster) ||
                     (selectedRoom === 'diningKitchen' && lights.kitchen) ||
                     (selectedRoom === 'balcony' && lights.balcony)
-                      ? 'bg-[#C5A880] text-[#0D1117] hover:bg-white'
-                      : 'bg-[#161B22] text-gray-300 border border-gray-700 hover:border-[#C5A880] hover:text-white'
+                      ? 'bg-[#C5A880] text-[#0D1117] hover:bg-[#D6BC96]'
+                      : 'bg-[#161B22] text-gray-300 border border-[#2B3544] hover:border-[#C5A880] hover:text-white'
                   }`}
                 >
-                  <Zap className="w-3.5 h-3.5" />
+                  <Zap className="w-3.5 h-3.5 fill-current" />
                   <span>
                     {selectedRoom === 'living'
                       ? (lights.livingRoom ? 'Tắt Đèn Phòng Khách' : 'Bật Đèn Phòng Khách')
@@ -1022,37 +1022,44 @@ export default function ApartmentModel3DViewer({
                 </button>
               )}
 
-              {/* 2. Điều khiển Điều Hòa khi chọn Phòng Khách */}
+              {/* 2. Điều khiển Điều Hòa khi chọn Phòng Khách (Thiết kế liền khối, cân đối tuyệt đối) */}
               {selectedRoom === 'living' && onToggleAC && (
-                <div className="flex items-center gap-1.5 bg-[#161B22] border border-[#222B35] p-1 rounded">
+                <div className={`h-9 inline-flex items-stretch rounded border transition-all shadow-sm overflow-hidden ${
+                  acPower
+                    ? 'bg-[#0E1724] border-sky-500/40'
+                    : 'bg-[#161B22] border-[#2B3544]'
+                }`}>
                   <button
                     type="button"
                     onClick={onToggleAC}
-                    className={`px-2.5 py-1 text-xs font-bold uppercase tracking-wider rounded transition-colors flex items-center gap-1 ${
-                      acPower ? 'bg-sky-500 text-white shadow' : 'bg-gray-800 text-gray-400'
+                    className={`h-full px-3 text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 transition-colors ${
+                      acPower
+                        ? 'bg-sky-500 hover:bg-sky-400 text-white'
+                        : 'text-gray-300 hover:text-white hover:bg-white/5'
                     }`}
+                    title={acPower ? 'Bấm để tắt điều hòa' : 'Bấm để bật điều hòa'}
                   >
-                    <Wind className="w-3.5 h-3.5" />
-                    <span>{acPower ? 'Điều Hòa: Bật' : 'Điều Hòa: Tắt'}</span>
+                    <Wind className={`w-3.5 h-3.5 ${acPower ? 'animate-pulse' : 'text-gray-400'}`} />
+                    <span>{acPower ? 'Điều Hòa: Bật' : 'Bật Điều Hòa'}</span>
                   </button>
 
                   {acPower && onChangeTemp && (
-                    <div className="flex items-center gap-1 pl-1">
+                    <div className="h-full flex items-center px-2 gap-1.5 border-l border-sky-500/40 bg-[#0A131F]">
                       <button
                         type="button"
                         onClick={() => onChangeTemp(-1)}
-                        className="w-6 h-6 bg-[#0D1117] hover:bg-[#C5A880] hover:text-[#0D1117] text-gray-200 border border-gray-700 rounded text-xs font-bold flex items-center justify-center transition-colors"
+                        className="w-5 h-5 rounded bg-[#162334] hover:bg-sky-500 hover:text-white text-sky-300 border border-sky-500/30 flex items-center justify-center text-xs font-bold transition-all active:scale-95"
                         title="Giảm 1°C"
                       >
                         -
                       </button>
-                      <span className="font-mono text-xs font-bold text-sky-400 px-1">
+                      <span className="font-mono text-xs font-extrabold text-sky-400 px-1 min-w-[34px] text-center tracking-tight">
                         {acTemp}°C
                       </span>
                       <button
                         type="button"
                         onClick={() => onChangeTemp(1)}
-                        className="w-6 h-6 bg-[#0D1117] hover:bg-[#C5A880] hover:text-[#0D1117] text-gray-200 border border-gray-700 rounded text-xs font-bold flex items-center justify-center transition-colors"
+                        className="w-5 h-5 rounded bg-[#162334] hover:bg-sky-500 hover:text-white text-sky-300 border border-sky-500/30 flex items-center justify-center text-xs font-bold transition-all active:scale-95"
                         title="Tăng 1°C"
                       >
                         +
@@ -1067,9 +1074,14 @@ export default function ApartmentModel3DViewer({
                 <button
                   type="button"
                   onClick={onToggleCurtains}
-                  className="px-3 py-2 bg-[#C5A880] hover:bg-white text-[#0D1117] text-xs font-bold uppercase tracking-wider transition-colors rounded flex items-center gap-1.5 shadow"
+                  className={`h-9 px-3.5 text-xs font-bold uppercase tracking-wider transition-all rounded flex items-center gap-2 shadow-sm ${
+                    curtainsOpen
+                      ? 'bg-[#C5A880] text-[#0D1117] hover:bg-[#D6BC96]'
+                      : 'bg-[#161B22] text-gray-300 border border-[#2B3544] hover:border-[#C5A880] hover:text-white'
+                  }`}
                 >
-                  <Sun className="w-3.5 h-3.5" /> {curtainsOpen ? 'Đóng Rèm' : 'Mở Rèm'}
+                  <Sun className="w-3.5 h-3.5" />
+                  <span>{curtainsOpen ? 'Đóng Rèm Ban Công' : 'Mở Rèm Ban Công'}</span>
                 </button>
               )}
 
@@ -1078,11 +1090,14 @@ export default function ApartmentModel3DViewer({
                 <button
                   type="button"
                   onClick={onToggleDoor}
-                  className={`px-3 py-2 text-xs font-bold uppercase tracking-wider transition-colors rounded flex items-center gap-1.5 shadow ${
-                    doorLocked ? 'bg-[#059669] text-white hover:bg-emerald-400' : 'bg-red-600 text-white hover:bg-red-500'
+                  className={`h-9 px-3.5 text-xs font-bold uppercase tracking-wider transition-all rounded flex items-center gap-2 shadow-sm ${
+                    doorLocked 
+                      ? 'bg-emerald-600 text-white hover:bg-emerald-500 border border-emerald-500/40' 
+                      : 'bg-rose-600 text-white hover:bg-rose-500 border border-rose-500/40'
                   }`}
                 >
-                  <Lock className="w-3.5 h-3.5" /> {doorLocked ? 'Đang Khóa Chốt (Bấm Mở)' : 'Đang Mở (Bấm Khóa)'}
+                  <Lock className="w-3.5 h-3.5" />
+                  <span>{doorLocked ? 'Đang Khóa Chốt (Bấm Mở)' : 'Đang Mở (Bấm Khóa)'}</span>
                 </button>
               )}
             </div>
