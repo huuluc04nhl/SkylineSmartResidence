@@ -1163,96 +1163,77 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
       {/* ------------------------------------------------------------- */}
       {isOwner && activeTab === 'EKYC' && (
         <div className="space-y-6">
-          {/* Status Box & BQL Sync Banner */}
-          <div className={`p-5 border flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-xl rounded-none ${
-            ekycStatus === 'PENDING'
-              ? 'bg-gradient-to-r from-[#1A1810] to-[#121820] border-amber-500/80'
-              : ekycStatus === 'REJECTED'
-              ? 'bg-gradient-to-r from-[#201014] to-[#121820] border-rose-500/80'
-              : ekycStatus === 'VERIFIED'
-              ? 'bg-gradient-to-r from-[#0E1A16] to-[#121820] border-emerald-500/70'
-              : 'bg-gradient-to-r from-[#121820] to-[#161D26] border-[#C5A880]/70'
-          }`}>
-            <div className="space-y-1">
-              <div className="flex items-center gap-2 font-bold text-xs uppercase tracking-wider">
-                {ekycStatus === 'DRAFT' && (
-                  <span className="text-gray-300 flex items-center gap-1.5 font-mono">
-                    <AlertCircle className="w-4 h-4 text-[#C5A880]" /> Chưa Gửi Hồ Sơ Định Danh Cho BQL
-                  </span>
-                )}
-                {ekycStatus === 'PENDING' && (
-                  <span className="text-amber-400 flex items-center gap-1.5 font-mono">
-                    <Clock className="w-4 h-4 animate-pulse" /> Đang Chờ Ban Quản Lý Phê Duyệt
-                  </span>
-                )}
-                {ekycStatus === 'REJECTED' && (
-                  <span className="text-rose-400 flex items-center gap-1.5 font-mono">
-                    <XCircle className="w-4 h-4" /> BQL Yêu Cầu Chụp Lại / Bổ Sung Hồ Sơ
-                  </span>
-                )}
-                {ekycStatus === 'VERIFIED' && (
-                  <span className="text-emerald-400 flex items-center gap-1.5 font-mono">
-                    <CheckCircle2 className="w-4 h-4" /> Đã Phê Duyệt & Kích Hoạt Quyền FaceID
-                  </span>
-                )}
+          {/* Status Box & BQL Sync Banner (Chỉ hiển thị khi đang chờ duyệt, bị từ chối hoặc chưa gửi) */}
+          {ekycStatus !== 'VERIFIED' && (
+            <div className={`p-5 border flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-xl rounded-none ${
+              ekycStatus === 'PENDING'
+                ? 'bg-gradient-to-r from-[#1A1810] to-[#121820] border-amber-500/80'
+                : ekycStatus === 'REJECTED'
+                ? 'bg-gradient-to-r from-[#201014] to-[#121820] border-rose-500/80'
+                : 'bg-gradient-to-r from-[#121820] to-[#161D26] border-[#C5A880]/70'
+            }`}>
+              <div className="space-y-1">
+                <div className="flex items-center gap-2 font-bold text-xs uppercase tracking-wider">
+                  {ekycStatus === 'DRAFT' && (
+                    <span className="text-gray-300 flex items-center gap-1.5 font-mono">
+                      <AlertCircle className="w-4 h-4 text-[#C5A880]" /> Chưa Gửi Hồ Sơ Định Danh Cho BQL
+                    </span>
+                  )}
+                  {ekycStatus === 'PENDING' && (
+                    <span className="text-amber-400 flex items-center gap-1.5 font-mono">
+                      <Clock className="w-4 h-4 animate-pulse" /> Đang Chờ Ban Quản Lý Phê Duyệt
+                    </span>
+                  )}
+                  {ekycStatus === 'REJECTED' && (
+                    <span className="text-rose-400 flex items-center gap-1.5 font-mono">
+                      <XCircle className="w-4 h-4" /> BQL Yêu Cầu Chụp Lại / Bổ Sung Hồ Sơ
+                    </span>
+                  )}
+                </div>
+
+                <h3 className="font-serif text-lg font-bold text-white">
+                  Định Danh Khuôn Mặt & Thẻ Cư Dân Thông Minh
+                </h3>
+
+                <div className="text-xs text-gray-300 max-w-2xl font-light space-y-1">
+                  {ekycStatus === 'DRAFT' && (
+                    <p>Quý cư dân vui lòng tải lên đầy đủ ảnh 2 mặt thẻ CCCD và thu thập mẫu FaceID 4 bước, sau đó bấm nút &quot;Gửi Hồ Sơ Cho BQL Duyệt&quot; để được cấp quyền mở cửa, thang máy và sảnh đón.</p>
+                  )}
+                  {ekycStatus === 'PENDING' && (
+                    <p>Hồ sơ định danh kèm ảnh CCCD 2 mặt và mẫu FaceID đã gửi đến Ban Quản Lý lúc <strong className="text-white font-mono">{currentEkyc?.submittedAt || 'hôm nay'}</strong>. Nhân sự BQL đang thẩm định đối chiếu trước khi kích hoạt phân quyền tòa nhà.</p>
+                  )}
+                  {ekycStatus === 'REJECTED' && (
+                    <div className="p-2.5 bg-rose-950/70 border border-rose-500/60 text-rose-200 text-xs rounded-none space-y-0.5">
+                      <strong className="block text-rose-300">Lý do từ chối từ Ban Quản Lý:</strong>
+                      <span>&quot;{currentEkyc?.rejectionReason || 'Ảnh chụp không đạt tiêu chuẩn độ nét hoặc thiếu ảnh thẻ CCCD.'}&quot;</span>
+                    </div>
+                  )}
+                </div>
               </div>
 
-              <h3 className="font-serif text-lg font-bold text-white">
-                Định Danh Khuôn Mặt & Thẻ Cư Dân Thông Minh
-              </h3>
+              <div className="flex flex-wrap items-center gap-2.5 flex-shrink-0">
+                {cccdImage && (
+                  <button
+                    type="button"
+                    onClick={() => setIsCardViewerOpen(true)}
+                    className="h-9 px-3.5 bg-[#161B22] hover:bg-[#1C2533] border border-gray-700 hover:border-[#C5A880] text-gray-300 hover:text-white text-xs font-semibold uppercase tracking-wider transition-all flex items-center gap-2 shadow rounded-none"
+                  >
+                    <Eye className="w-4 h-4 text-[#C5A880]" /> Xem Ảnh Thẻ CCCD
+                  </button>
+                )}
 
-              <div className="text-xs text-gray-300 max-w-2xl font-light space-y-1">
-                {ekycStatus === 'DRAFT' && (
-                  <p>Quý cư dân vui lòng tải lên đầy đủ ảnh 2 mặt thẻ CCCD và thu thập mẫu FaceID 4 bước, sau đó bấm nút &quot;Gửi Hồ Sơ Cho BQL Duyệt&quot; để được cấp quyền mở cửa, thang máy và sảnh đón.</p>
-                )}
-                {ekycStatus === 'PENDING' && (
-                  <p>Hồ sơ định danh kèm ảnh CCCD 2 mặt và mẫu FaceID đã gửi đến Ban Quản Lý lúc <strong className="text-white font-mono">{currentEkyc?.submittedAt || 'hôm nay'}</strong>. Nhân sự BQL đang thẩm định đối chiếu trước khi kích hoạt phân quyền tòa nhà.</p>
-                )}
-                {ekycStatus === 'REJECTED' && (
-                  <div className="p-2.5 bg-rose-950/70 border border-rose-500/60 text-rose-200 text-xs rounded-none space-y-0.5">
-                    <strong className="block text-rose-300">Lý do từ chối từ Ban Quản Lý:</strong>
-                    <span>&quot;{currentEkyc?.rejectionReason || 'Ảnh chụp không đạt tiêu chuẩn độ nét hoặc thiếu ảnh thẻ CCCD.'}&quot;</span>
-                  </div>
-                )}
-                {ekycStatus === 'VERIFIED' && (
-                  <p>Hồ sơ định danh đã được Ban Quản Lý phê duyệt {currentEkyc?.reviewedAt ? `lúc ${currentEkyc.reviewedAt}` : ''} ({currentEkyc?.reviewedBy || 'Ban Quản Lý Skyline'}). Quyền mở cửa sảnh đón, thang máy và các tiện ích đặc quyền tòa nhà đã được kích hoạt thành công.</p>
-                )}
-              </div>
-            </div>
-
-            <div className="flex flex-wrap items-center gap-2.5 flex-shrink-0">
-              <button
-                type="button"
-                onClick={() => setIsCardViewerOpen(true)}
-                className="px-3.5 py-2.5 bg-[#161B22] hover:bg-[#1C2533] border border-[#C5A880] text-[#C5A880] text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-2 shadow rounded-none"
-              >
-                <Eye className="w-4 h-4" /> Xem Ảnh Thẻ CCCD
-              </button>
-
-              {ekycStatus === 'VERIFIED' ? (
-                <button
-                  type="button"
-                  onClick={() => {
-                    setIsEditingLegal(true);
-                    setActiveTab('INFO');
-                  }}
-                  className="px-4 py-2.5 bg-[#1C2533] hover:bg-[#2A374A] border border-[#C5A880] text-[#C5A880] hover:text-white text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-2 shadow rounded-none"
-                >
-                  <RefreshCw className="w-4 h-4" /> Cập Nhật Lại CCCD / FaceID
-                </button>
-              ) : (
                 <button
                   type="button"
                   onClick={handleSubmitEkycToBql}
                   disabled={isScanningOcr}
-                  className="px-5 py-2.5 bg-[#C5A880] hover:bg-white text-[#0D1117] text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-2 shadow-lg rounded-none active:scale-[0.99]"
+                  className="h-9 px-5 bg-[#C5A880] hover:bg-white text-[#0D1117] text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-2 shadow-lg rounded-none active:scale-[0.99]"
                 >
                   {isScanningOcr ? <RefreshCw className="w-4 h-4 animate-spin" /> : <ShieldCheck className="w-4 h-4" />}
                   {isScanningOcr ? 'Đang Gửi Hồ Sơ...' : ekycStatus === 'REJECTED' ? 'Gửi Lại Ban Quản Lý Duyệt' : ekycStatus === 'PENDING' ? 'Cập Nhật / Gửi Lại Hồ Sơ' : 'Gửi Ban Quản Lý Duyệt'}
                 </button>
-              )}
+              </div>
             </div>
-          </div>
+          )}
 
           {/* e-KYC Visual Matcher & Smart Pass Cards */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -1261,15 +1242,15 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
               <div>
                 <div className="flex items-center justify-between border-b border-[#222B35] pb-2 mb-4">
                   <span className="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-2">
-                    <ScanFace className="w-4 h-4 text-[#C5A880]" /> Sinh Trắc Học FaceID (Chuẩn Ngân Hàng 4 Bước)
+                    <ScanFace className="w-4 h-4 text-[#C5A880]" /> Sinh Trắc Học FaceID (4 Bước)
                   </span>
                   <button
                     type="button"
                     onClick={() => setIsBankEnrollOpen(true)}
-                    className="px-3 py-1.5 bg-[#C5A880] hover:bg-white text-[#0D1117] text-xs font-bold uppercase tracking-wider rounded-none flex items-center gap-1.5 transition-all shadow"
+                    className="h-7 px-3 bg-[#C5A880] hover:bg-white text-[#0D1117] text-xs font-bold uppercase tracking-wider rounded-none flex items-center gap-1.5 transition-all shadow"
                   >
                     <Camera className="w-3.5 h-3.5" />
-                    {enrolledFaceProfile ? 'Quét Lại 4 Mẫu' : 'Quét Mẫu FaceID 4 Bước'}
+                    {enrolledFaceProfile ? 'Quét Lại 4 Mẫu' : 'Quét Mẫu FaceID'}
                   </button>
                 </div>
 
@@ -1425,10 +1406,19 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
             {/* Render 3D Resident Smart Pass Card */}
             <div className="p-5 bg-[#121820] border border-[#222B35] space-y-4 rounded-none flex flex-col justify-between">
               <div>
-                <div className="border-b border-[#222B35] pb-2 mb-4">
+                <div className="border-b border-[#222B35] pb-2 mb-4 flex items-center justify-between">
                   <span className="text-xs font-bold text-[#C5A880] uppercase tracking-wider flex items-center gap-2">
                     <CreditCard className="w-4 h-4 text-[#C5A880]" /> Thẻ Cư Dân Điện Tử Skyline
                   </span>
+                  {cccdImage && (
+                    <button
+                      type="button"
+                      onClick={() => setIsCardViewerOpen(true)}
+                      className="h-7 px-2.5 bg-[#161B22] hover:bg-[#1C2533] border border-gray-700 hover:border-[#C5A880] text-gray-300 hover:text-white text-[11px] font-medium transition-colors flex items-center gap-1.5 rounded-none"
+                    >
+                      <Eye className="w-3.5 h-3.5 text-[#C5A880]" /> Xem Thẻ CCCD
+                    </button>
+                  )}
                 </div>
                 <ResidentSmartCard currentUser={currentUser} />
               </div>
