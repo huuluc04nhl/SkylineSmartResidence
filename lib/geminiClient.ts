@@ -326,6 +326,29 @@ NGUYÊN TẮC GIAO TIẾP VÀ DẠNG TỪ BẮT BUỘC:
 - TUYỆT ĐỐI KHÔNG dùng các từ kỹ thuật: "RAG", "SLA", "AES-256", "Matter", "Zigbee", "Turnstile", "UID", "eKYC", "IoT", "Token". Thay bằng: "cổng vào tiện ích", "cam kết hỗ trợ trong 60 phút", "nhận diện khuôn mặt", "thẻ cư dân", "hệ thống bảo mật an toàn".
 - Trình bày ngắn gọn, rõ ràng, gạch đầu dòng các ý chính để cư dân dễ đọc.
 
+🔒 QUY TẮC BẢO VỆ CHỐNG DỮ LIỆU ẢO & TRẢ LỜI KHÔNG LIÊN QUAN (BẮT BUỘC TUÂN THỦ 100%):
+
+1. CHỐNG BỊA ĐẶT DỮ LIỆU ẢO (STRICT ANTI-HALLUCINATION):
+- Bạn CHỈ ĐƯỢC PHÉP trả lời dựa trên các dữ liệu thực tế có trong văn bản hệ thống này (về Chung Cư Cao Cấp Skyline 25 tầng, căn hộ ${targetAptCode}, cư dân ${residentName}, hóa đơn, vé, phiếu sửa chữa, xe cộ, tiện ích...).
+- TUYỆT ĐỐI KHÔNG BỊA ĐẶT hoặc tự suy diễn bất kỳ thông tin nào không có trong dữ liệu (không được bịa thêm tiện ích khác, không bịa số tầng khác 25 tầng, không bịa tên kỹ thuật viên khác, không bịa số tiền, không bịa số phòng, không nói chung cư có sân tennis/pickleball/sân golf/karaoke).
+- Nếu cư dân hỏi thông tin KHÔNG CÓ trong cơ sở dữ liệu trên (ví dụ: hỏi thông tin căn hộ người khác, hỏi số điện thoại cá nhân không công khai, hỏi chính sách chưa ban hành):
+  -> BẮT BUỘC trả lời rõ: "Dạ thưa Quý cư dân, hiện tại hệ thống dữ liệu tòa nhà chưa có thông tin chính thức về nội dung này. Quý cư dân vui lòng liên hệ trực tiếp Hotline Ban Quản Lý (1900 8899) hoặc Quầy lễ tân Grand Lobby Tầng 1 để được hỗ trợ kiểm tra trực tiếp ạ."
+  -> TUYỆT ĐỐI KHÔNG ĐOÁN MÒ HOẶC ĐƯA RA DỮ LIỆU ẢO!
+
+2. TỪ CHỐI CÂU HỎI NGOÀI PHẠM VI & KHÔNG LIÊN QUAN (STRICT SCOPE CONTROL):
+- Phạm vi phục vụ DUY NHẤT của bạn: Trợ lý số chuyên biệt hỗ trợ cư dân Chung Cư Cao Cấp Skyline Smart Residence (Quận 7, TP. Hồ Chí Minh).
+- Bạn CHỈ trả lời các vấn đề thuộc phạm vi quản lý vận hành tòa nhà, căn hộ của cư dân, tiện ích, hóa đơn, kỹ thuật, gửi xe, khách thăm và an ninh tòa nhà.
+- KHI CƯ DÂN HỎI CÁC CHỦ ĐỀ KHÔNG LIÊN QUAN ĐẾN CHUNG CƯ (ví dụ: lập trình, viết code, giải toán, dịch tiếng Anh, dự báo thời tiết, nấu ăn, chứng khoán, tiền điện tử, chính trị, triết học, chuyện phiếm, bất động sản dự án khác...):
+  -> BẮT BUỘC LỊCH SỰ TỪ CHỐI VÀ ĐIỀU HƯỚNG VỀ ĐÚNG VAI TRÒ:
+  "Dạ thưa Quý cư dân ${residentName}, tôi là Trợ lý Ảo chuyên biệt hỗ trợ cư dân Chung Cư Skyline Smart Residence. Nội dung Quý vị vừa hỏi nằm ngoài phạm vi quản lý vận hành tòa nhà. Tôi chỉ có thể hỗ trợ các thông tin liên quan đến căn hộ, hóa đơn, tiện ích và dịch vụ tòa nhà. Quý cư dân có cần tôi hỗ trợ tra cứu thông tin nào về căn hộ của mình không ạ?"
+  -> TUYỆT ĐỐI KHÔNG trả lời lan man, không viết code, không giải toán, không phân tích những chủ đề ngoài lề chung cư!
+
+3. TRẢ LỜI ĐÚNG TRỌNG TÂM (ZERO FLUFF):
+- Hỏi gì trả lời đúng nội dung đó, không tuôn ra các dữ liệu cư dân không hỏi.
+- Nếu hỏi tiện ích cần đặt trước -> chỉ nêu 2 tiện ích: Phòng Xông Hơi VIP Tầng 3 và Vườn Nướng BBQ Tầng 25.
+- Nếu hỏi tiền nước -> chỉ giải thích chi tiết tiền nước và lưu ý AI rò rỉ nếu có.
+- Nếu hỏi giờ mở cửa hồ bơi -> chỉ nêu giờ mở cửa hồ bơi (06:00 - 22:00 tại Tầng 25, miễn phí, vào bằng FaceID/Thẻ).
+
 🎯 GỢI Ý CÂU HỎI TIẾP THEO (BẮT BUỘC Ở CUỐI MỖI CÂU TRẢ LỜI):
 - Ở cuối cùng của MỌI câu trả lời, hãy tự động phân tích câu hỏi vừa rồi của cư dân và đưa ra 2 đến 4 gợi ý câu hỏi kế tiếp thông minh, liên quan mật thiết và hữu ích nhất cho cư dân.
 - Định dạng bắt buộc ở dòng cuối cùng:
@@ -404,7 +427,64 @@ export function generateSmartProjectFallback(
     activeBookings = DEFAULT_BOOKINGS_12A05;
   }
 
-  // 0. Pickleball & Tennis Guard
+  // 0a. Strict Out-of-Scope / Irrelevant Queries Handler (Chống phản hồi không liên quan)
+  const isOffTopic = 
+    text.includes('code') || 
+    text.includes('lập trình') || 
+    text.includes('python') || 
+    text.includes('javascript') || 
+    text.includes('html') || 
+    text.includes('react') || 
+    text.includes('giải toán') || 
+    text.includes('thời tiết') || 
+    text.includes('nấu ăn') || 
+    text.includes('công thức') || 
+    text.includes('chứng khoán') || 
+    text.includes('bitcoin') || 
+    text.includes('crypto') || 
+    text.includes('chiến tranh') || 
+    text.includes('tổng thống') || 
+    text.includes('ca sĩ') || 
+    text.includes('bài hát') || 
+    text.includes('vinhomes') || 
+    text.includes('novaland') || 
+    text.includes('masteri');
+
+  if (isOffTopic) {
+    return `Dạ thưa Quý cư dân ${residentName}, tôi là Trợ lý Ảo chuyên biệt hỗ trợ cư dân **Chung Cư Skyline Smart Residence**.
+
+Nội dung Quý vị vừa hỏi nằm ngoài phạm vi quản lý vận hành tòa nhà. Tôi chỉ có thể hỗ trợ các thông tin chuẩn xác liên quan đến căn hộ, hóa đơn sinh hoạt, tiện ích 5 sao, lịch đặt chỗ, báo hỏng kỹ thuật và dịch vụ cư dân của Skyline.
+
+Quý cư dân có cần tôi hỗ trợ kiểm tra thông tin nào về căn hộ **${targetAptCode}** không ạ?
+
+[SUGGESTIONS: Tiện ích nào cần đăng ký trước? | Xem hóa đơn căn hộ tháng này | Tra cứu lịch đặt chỗ của tôi | Tòa nhà có bao nhiêu tầng?]`;
+  }
+
+  // 0b. Greeting / Introduction Queries
+  if (
+    text === 'xin chào' || 
+    text === 'chào' || 
+    text === 'chào bạn' || 
+    text === 'hello' || 
+    text === 'hi' || 
+    text === 'bạn là ai' || 
+    text.includes('chào trợ lý') || 
+    text === 'alo'
+  ) {
+    return `Kính chào Quý cư dân ${residentName} (Căn hộ ${targetAptCode})!
+
+Tôi là **Trợ lý Ảo Skyline**, luôn sẵn sàng hỗ trợ Quý vị 24/7 về mọi dịch vụ tại Chung Cư Cao Cấp Skyline Smart Residence:
+* 🏊 **5 Đại tiện ích 5 sao:** Tra cứu giờ mở cửa và hướng dẫn đặt chỗ.
+* 💳 **Hóa đơn & Biểu phí:** Tra cứu tiền điện, tiền nước, phí quản lý, phí gửi xe.
+* 🎫 **Lịch đặt vé & Thẻ khách:** Kiểm tra mã vé tiện ích và tạo mã PIN/QR cho khách thăm.
+* 🛠️ **Hỗ trợ kỹ thuật:** Tiếp nhận sự cố với cam kết thợ có mặt trong vòng 60 phút.
+
+Quý cư dân cần tôi hỗ trợ thông tin nào về căn hộ hôm nay ạ?
+
+[SUGGESTIONS: Tiện ích nào cần đăng ký trước? | Xem hóa đơn sinh hoạt tháng này | Giờ mở cửa Hồ bơi & Gym | Tra cứu vé đã đặt]`;
+  }
+
+  // 0c. Pickleball & Tennis Guard
   if (text.includes('pickleball') || text.includes('tennis') || text.includes('tầng 38')) {
     return `Dạ thưa Quý cư dân ${residentName}, Khu phức hợp Căn hộ Cao cấp Skyline gồm **25 tầng**. Hiện tại tòa nhà **KHÔNG có sân Pickleball hay sân Tennis** và **không có tầng 38**.
 
@@ -695,21 +775,17 @@ Quý cư dân có thể vào tab **Đăng Ký Đặt Chỗ & Vé Điện Tử** 
 [SUGGESTIONS: Hướng dẫn cài FaceID mở cửa | Cách tạo mã OTP cho khách thăm | Hotline kỹ thuật khi khóa hết pin]`;
   }
 
-  // 10. Default Helpful Overview
-  return `Kính chào Quý cư dân ${residentName} (Căn hộ ${targetAptCode} - Chung Cư Skyline Smart Residence)!
+  // 10. Fallback for Unrecognized / Non-Specific Queries (Chống bịa đặt dữ liệu ảo)
+  return `Dạ thưa Quý cư dân ${residentName}, hiện tại hệ thống dữ liệu quản trị tòa nhà chưa ghi nhận thông tin chính xác về yêu cầu này của Quý vị đối với căn hộ **${targetAptCode}**.
 
-Tôi là **Trợ lý Ảo Skyline**, luôn sẵn sàng hỗ trợ Quý vị 24/7. Tôi có thể giải đáp ngay các thông tin về:
-* 🏢 **Quy mô chung cư (25 Tầng):** Tra cứu số tầng, số căn hộ mỗi tầng, công năng tiện ích từng tầng.
-* 💳 **Hóa đơn & Biểu phí:** Tra cứu tiền điện, tiền nước, phí gửi xe mới nhất.
-* 🏊 **Tiện ích tòa nhà (5 Đại tiện ích):** Giờ mở cửa hồ bơi chân mây Tầng 25, gym 24/7 Tầng 3, phòng xông hơi VIP Tầng 3, Sky Kids Tầng 1 hay tiệc nướng BBQ Tầng 25.
-* 🎫 **Vé & Lịch hẹn:** Kiểm tra mã vé tiện ích đã đặt và hướng dẫn hoàn tiền khi bận việc đột xuất.
-* 🎟️ **Khách thăm & QR Code:** Tra cứu mã PIN và danh sách thẻ khách thăm đã đăng ký.
-* 🛠️ **Báo hỏng kỹ thuật:** Tiếp nhận sự cố với cam kết thợ có mặt trong 60 phút.
-* 🚪 **Cửa thông minh:** Hướng dẫn cài đặt khuôn mặt, thẻ từ và mã đón khách.
+Để đảm bảo thông tin chuẩn xác nhất và tránh sai lệch, Quý cư dân vui lòng liên hệ trực tiếp với Ban Quản Lý:
+* 📞 **Hotline Ban Quản Lý (24/7):** **1900 8899** hoặc **028.7300.8899**
+* 🏢 **Văn phòng BQL:** Tầng 2 (08:00 - 17:30, Thứ 2 đến Thứ 7)
+* 🏛️ **Quầy lễ tân tiếp dân:** Sảnh Grand Lobby Tầng 1 (Túc trực 24/24)
 
-Quý cư dân cần tôi hỗ trợ nội dung nào ngay bây giờ ạ? (Hotline Ban Quản Lý: **1900 8899**).
+Tôi luôn sẵn sàng giải đáp ngay các thông tin chuẩn mực về: quy mô tòa nhà 25 tầng, 5 đại tiện ích 5 sao, hóa đơn sinh hoạt, lịch đặt chỗ tiện ích và báo hỏng kỹ thuật căn hộ ạ!
 
-[SUGGESTIONS: Tiện ích nào cần đăng ký trước? | Xem hóa đơn điện nước tháng này | Tra cứu lịch đặt chỗ của tôi | Tòa nhà có bao nhiêu tầng?]`;
+[SUGGESTIONS: Tiện ích nào cần đăng ký trước? | Xem hóa đơn căn hộ tháng này | Tra cứu lịch đặt chỗ của tôi | Tòa nhà có bao nhiêu tầng?]`;
 }
 
 export interface ChatMessage {
@@ -751,7 +827,8 @@ export async function askGeminiConcierge(
     },
     contents,
     generationConfig: {
-      temperature: 0.65,
+      temperature: 0.1, // Strict factual grounding - eliminates fake data & hallucinations
+      topP: 0.8,
       maxOutputTokens: 1000,
     },
   };
