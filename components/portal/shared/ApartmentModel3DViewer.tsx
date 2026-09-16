@@ -19,7 +19,8 @@ import {
   Info,
   Plus,
   Minus,
-  Maximize2
+  Maximize2,
+  DoorOpen
 } from 'lucide-react';
 import { useAuth } from '@/lib/authContext';
 
@@ -53,9 +54,11 @@ interface ApartmentModel3DViewerProps {
   acTemp?: number;
   curtainsOpen?: boolean;
   doorLocked?: boolean;
+  doorAjar?: boolean;
   waterLeakActive?: boolean;
   onToggleLight?: (room: 'livingRoom' | 'bedroomMaster' | 'kitchen' | 'balcony') => void;
   onToggleDoor?: () => void;
+  onToggleDoorAjar?: () => void;
   onToggleCurtains?: () => void;
   onToggleAC?: () => void;
   onChangeTemp?: (delta: number) => void;
@@ -112,9 +115,11 @@ export default function ApartmentModel3DViewer({
   acTemp = 24,
   curtainsOpen = true,
   doorLocked = true,
+  doorAjar = false,
   waterLeakActive = true,
   onToggleLight,
   onToggleDoor,
+  onToggleDoorAjar,
   onToggleCurtains,
   onToggleAC,
   onChangeTemp,
@@ -480,8 +485,34 @@ export default function ApartmentModel3DViewer({
                 strokeWidth={selectedRoom === 'foyer' ? '3' : '1.5'}
                 className="transition-all hover:fill-[#161F2C]"
               />
-              <path d="M 55,330 A 40,40 0 0,1 95,370" fill="none" stroke="#C5A880" strokeWidth="1.5" strokeDasharray="3 3" />
-              <line x1="55" y1="330" x2="55" y2="370" stroke="#C5A880" strokeWidth="3.5" strokeLinecap="round" />
+              {/* CÁNH CỬA CHÍNH CĂN HỘ VÀ CUNG XOAY TƯƠNG TÁC */}
+              <path 
+                d="M 55,330 A 40,40 0 0,1 95,370" 
+                fill="none" 
+                stroke={doorAjar ? '#F59E0B' : doorLocked ? '#10B981' : '#38BDF8'} 
+                strokeWidth="1.5" 
+                strokeDasharray={doorLocked && !doorAjar ? '3 3' : 'none'} 
+                className="transition-colors duration-300"
+              />
+              <line 
+                x1="55" 
+                y1="330" 
+                x2={doorAjar ? 72 : doorLocked ? 55 : 91} 
+                y2={doorAjar ? 366 : doorLocked ? 370 : 347} 
+                stroke={doorAjar ? '#F59E0B' : doorLocked ? '#10B981' : '#38BDF8'} 
+                strokeWidth="3.5" 
+                strokeLinecap="round" 
+                className="transition-all duration-300"
+              />
+              <circle cx="55" cy="330" r="3" fill="#C5A880" />
+
+              {/* Huy hiệu cảnh báo khi cửa mở hé */}
+              {doorAjar && (
+                <g transform="translate(100, 316)" className="animate-pulse">
+                  <rect x="-26" y="-8" width="52" height="16" rx="3" fill="#DC2626" stroke="#FEF08A" strokeWidth="1" />
+                  <text x="0" y="3.5" fill="#FFFFFF" fontSize="7" fontWeight="bold" textAnchor="middle">⚠️ HÉ MỞ</text>
+                </g>
+              )}
               <rect x="115" y="280" width="45" height="25" rx="3" fill="#1E293B" stroke="#475569" strokeWidth="1" />
               
               {/* Thước đo Dài x Rộng hiển thị khi cư dân click chọn phòng */}
@@ -885,9 +916,17 @@ export default function ApartmentModel3DViewer({
                   className="cursor-pointer group" 
                   onClick={onToggleDoor}
                 >
-                  <circle cx="0" cy="0" r="14" fill={doorLocked ? '#059669' : '#DC2626'} stroke="#FFFFFF" strokeWidth="1.8" className="transition-colors" />
-                  <text x="0" y="4" fill="#FFFFFF" fontSize="7.5" fontWeight="bold" textAnchor="middle">
-                    {doorLocked ? 'LOCK' : 'OPEN'}
+                  <circle 
+                    cx="0" 
+                    cy="0" 
+                    r="14" 
+                    fill={doorAjar ? '#D97706' : doorLocked ? '#059669' : '#DC2626'} 
+                    stroke="#FFFFFF" 
+                    strokeWidth="1.8" 
+                    className="transition-colors" 
+                  />
+                  <text x="0" y="4" fill="#FFFFFF" fontSize="7" fontWeight="bold" textAnchor="middle">
+                    {doorAjar ? 'AJAR' : doorLocked ? 'LOCK' : 'OPEN'}
                   </text>
                 </g>
 
@@ -1085,20 +1124,38 @@ export default function ApartmentModel3DViewer({
                 </button>
               )}
 
-              {/* 4. Điều khiển Khóa FaceID khi chọn Sảnh */}
+              {/* 4. Điều khiển Khóa & Cảm Biến Cửa khi chọn Sảnh */}
               {selectedRoom === 'foyer' && (
-                <button
-                  type="button"
-                  onClick={onToggleDoor}
-                  className={`h-9 px-3.5 text-xs font-bold uppercase tracking-wider transition-all rounded flex items-center gap-2 shadow-sm ${
-                    doorLocked 
-                      ? 'bg-emerald-600 text-white hover:bg-emerald-500 border border-emerald-500/40' 
-                      : 'bg-rose-600 text-white hover:bg-rose-500 border border-rose-500/40'
-                  }`}
-                >
-                  <Lock className="w-3.5 h-3.5" />
-                  <span>{doorLocked ? 'Đang Khóa Chốt (Bấm Mở)' : 'Đang Mở (Bấm Khóa)'}</span>
-                </button>
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={onToggleDoor}
+                    className={`h-9 px-3.5 text-xs font-bold uppercase tracking-wider transition-all rounded flex items-center gap-2 shadow-sm ${
+                      doorLocked 
+                        ? 'bg-emerald-600 text-white hover:bg-emerald-500 border border-emerald-500/40' 
+                        : 'bg-rose-600 text-white hover:bg-rose-500 border border-rose-500/40'
+                    }`}
+                  >
+                    <Lock className="w-3.5 h-3.5" />
+                    <span>{doorLocked ? 'Đang Khóa Chốt (Bấm Mở)' : 'Đang Mở (Bấm Khóa)'}</span>
+                  </button>
+
+                  {onToggleDoorAjar && (
+                    <button
+                      type="button"
+                      onClick={onToggleDoorAjar}
+                      className={`h-9 px-3 text-xs font-bold uppercase tracking-wider transition-all rounded flex items-center gap-1.5 border shadow-sm ${
+                        doorAjar
+                          ? 'bg-amber-500/20 text-amber-300 border-amber-500/50 hover:bg-amber-500/30'
+                          : 'bg-[#161B22] text-gray-300 border-[#2B3544] hover:border-gray-500 hover:text-white'
+                      }`}
+                      title="Mô phỏng đóng hoặc hé mở cánh cửa vật lý"
+                    >
+                      <DoorOpen className="w-3.5 h-3.5" />
+                      <span>{doorAjar ? 'Cánh: Đang Hé Mở' : 'Cánh: Đóng Khít'}</span>
+                    </button>
+                  )}
+                </div>
               )}
             </div>
           ) : (

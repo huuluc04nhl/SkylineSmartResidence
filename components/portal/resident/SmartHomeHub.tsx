@@ -616,9 +616,11 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
           acTemp={acTemp}
           curtainsOpen={curtainsOpen}
           doorLocked={masterDoorLocked}
+          doorAjar={doorAjar}
           waterLeakActive={waterLeakSensorActive}
           onToggleLight={handleToggleLight}
           onToggleDoor={handleToggleDoor}
+          onToggleDoorAjar={handleToggleDoorAjar}
           onToggleCurtains={handleToggleCurtains}
           onToggleAC={handleToggleAC}
           onChangeTemp={handleChangeTemp}

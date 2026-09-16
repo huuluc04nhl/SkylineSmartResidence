@@ -283,6 +283,94 @@ export function revokeGuestPin(
   });
 }
 
+export function verifyAndUseGuestPin(
+  aptCode: string,
+  inputPin: string
+): { success: boolean; message: string; pin?: GuestPin; state?: SmartHomeState } {
+  const current = getSmartHomeState(aptCode);
+  const cleanInput = inputPin.replace(/\s+/g, '');
+
+  // 1. Kiểm tra chốt ban đêm
+  if (current.doorNightLatch) {
+    const deniedLog: SmartDoorAccessLog = {
+      id: `log_${Date.now()}`,
+      timestamp: 'Vừa xong',
+      userName: 'Khách / Shipper',
+      role: 'Khách Tạm Thời',
+      method: 'PIN_OTP',
+      status: 'DENIED',
+      detail: `Từ chối mở cửa bằng PIN [${inputPin}]: Chốt riêng tư ban đêm (Night Latch) đang gài cưỡng bức từ bên trong`
+    };
+    const nextState = saveSmartHomeState(aptCode, {
+      doorAccessLogs: [deniedLog, ...current.doorAccessLogs].slice(0, 20)
+    });
+    return {
+      success: false,
+      message: 'Chốt riêng tư ban đêm đang bật! Cửa không thể mở từ bên ngoài.',
+      state: nextState
+    };
+  }
+
+  // 2. Tìm mã PIN hợp lệ
+  const matchedIndex = current.guestPins.findIndex(
+    p => p.pin.replace(/\s+/g, '') === cleanInput && p.status === 'ACTIVE'
+  );
+
+  if (matchedIndex === -1) {
+    const deniedLog: SmartDoorAccessLog = {
+      id: `log_${Date.now()}`,
+      timestamp: 'Vừa xong',
+      userName: 'Bàn Phím Số Khóa Cửa',
+      role: 'Khách Thử Mã',
+      method: 'PIN_OTP',
+      status: 'DENIED',
+      detail: `Mã PIN không đúng hoặc đã hết hạn [${inputPin}] • Chốt cửa vẫn khóa`
+    };
+    const nextState = saveSmartHomeState(aptCode, {
+      doorAccessLogs: [deniedLog, ...current.doorAccessLogs].slice(0, 20)
+    });
+    return {
+      success: false,
+      message: 'Mã PIN không chính xác hoặc đã hết hiệu lực!',
+      state: nextState
+    };
+  }
+
+  const matchedPin = current.guestPins[matchedIndex];
+  const nextUsedCount = (matchedPin.usedCount || 0) + 1;
+  const isNowExpired = nextUsedCount >= (matchedPin.maxUses || 1);
+
+  const updatedPinList = [...current.guestPins];
+  updatedPinList[matchedIndex] = {
+    ...matchedPin,
+    usedCount: nextUsedCount,
+    status: isNowExpired ? 'EXPIRED' : 'ACTIVE'
+  };
+
+  const successLog: SmartDoorAccessLog = {
+    id: `log_${Date.now()}`,
+    timestamp: 'Vừa xong',
+    userName: matchedPin.label || 'Khách Có Mã OTP',
+    role: 'Khách Mở Cửa Bằng PIN',
+    method: 'PIN_OTP',
+    status: 'SUCCESS',
+    detail: `Nhập đúng mã PIN OTP [${matchedPin.pin}] (${matchedPin.label}) tại bàn phím số cảm ứng • Đã mở chốt cửa an toàn`
+  };
+
+  const nextState = saveSmartHomeState(aptCode, {
+    doorLocked: false,
+    guestPins: updatedPinList,
+    doorAccessLogs: [successLog, ...current.doorAccessLogs].slice(0, 20)
+  });
+
+  return {
+    success: true,
+    message: `Mã PIN hợp lệ: ${matchedPin.label}! Cửa đã mở chốt.`,
+    pin: updatedPinList[matchedIndex],
+    state: nextState
+  };
+}
+
 export function addDoorAccessLog(aptCode: string, log: Omit<SmartDoorAccessLog, 'id' | 'timestamp'>): SmartHomeState {
   const current = getSmartHomeState(aptCode);
   const now = new Date();
