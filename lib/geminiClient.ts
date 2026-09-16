@@ -215,12 +215,31 @@ export function buildProjectSystemPrompt(contextOrAptCode: string | ConciergeCon
     .join('\n');
 
   return `
-Bạn là "Skyline AI Concierge" - Trợ lý số thông minh, tận tâm 24/7 của Quý cư dân tại Khu phức hợp Căn hộ Cao cấp Skyline Smart Residence (Quận 7, TP. Hồ Chí Minh).
+Bạn là "Skyline AI Concierge" - Trợ lý số thông minh, tận tâm 24/7 của Quý cư dân tại Chung Cư Cao Cấp Skyline Smart Residence (Quận 7, TP. Hồ Chí Minh).
 
-DƯỚI ĐÂY LÀ DỮ LIỆU THỰC TẾ TRÍCH XUẤT TRỰC TIẾP TỪ HỆ THỐNG DỰ ÁN SKYLINE DÀNH CHO CĂN HỘ ${targetAptCode}:
+DƯỚI ĐÂY LÀ DỮ LIỆU THỰC TẾ CHUẨN MỰC TỪ HỆ THỐNG CƠ SỞ DỮ LIỆU DỰ ÁN SKYLINE:
 
-1. THÔNG TIN CĂN HỘ & CƯ DÂN:
-- Căn hộ: ${apt.apt_code} (Chung Cư Skyline - ${apt.block_code}, Tầng ${apt.floor_number})
+0. QUY MÔ TỔNG THỂ DỰ ÁN & PHÂN BỔ CĂN HỘ TRÊN 1 TẦNG (25 TẦNG NỔI + 2 TẦNG HẦM):
+- Tên dự án: Chung Cư Cao Cấp Skyline Smart Residence.
+- Địa chỉ: Số 12A Nguyễn Thị Thập, Phường Tân Phú, Quận 7, TP. Hồ Chí Minh.
+- Chủ đầu tư: Skyline Group Corporation | Đơn vị quản lý vận hành: Skyline Property Management Services (Hotline: 1900 8899).
+- Quy mô: 25 tầng nổi và 2 tầng hầm (Hầm B2 và B1). Tổng cộng toàn chung cư có 240 căn hộ.
+- Chi tiết công năng và số lượng căn hộ mỗi tầng:
+  + Tầng Hầm B2 & B1 (0 căn hộ ở):
+    * Hầm B2: Bãi đỗ xe ô tô cư dân định danh RFID, trạm biến áp trung thế, phòng máy bơm PCCC & bể kỹ thuật.
+    * Hầm B1: Bãi đỗ xe máy cư dân RFID, trạm sạc xe điện thông minh, chốt bảo vệ an ninh và khu phân loại rác.
+  + Tầng 1 đến Tầng 4 (0 căn hộ ở - Khối tiện ích & dịch vụ):
+    * Tầng 1: Sảnh đón khách Grand Lobby 5 sao, quầy BQL tiếp dân, Khu Vui Chơi Trẻ Em Sky Kids Zone (07:00 - 21:00) và Shophouse thương mại.
+    * Tầng 2: Văn phòng điều hành Ban Quản Lý tòa nhà, phòng giám sát an ninh camera AI tập trung.
+    * Tầng 3: Trung Tâm Thể Hình Technogym mở cửa 24/7 & Phòng Xông Hơi Đá Muối Himalaya VIP khép kín gia đình (08:00 - 22:00).
+    * Tầng 4: Hội trường sinh hoạt cộng đồng, thư viện số cư dân, không gian Co-working và vườn treo thảo mộc.
+  + Tầng 5 đến Tầng 21 (17 tầng căn hộ tiêu chuẩn): 10 CĂN HỘ / TẦNG (Thiết kế 1PN 52m², 2PN 75-78.5m², 3PN 108-112m² đón gió sông).
+  + Tầng 22 đến Tầng 24 (3 tầng căn hộ Sky Suite tầng cao): 8 CĂN HỘ / TẦNG (Mật độ thoáng, ban công tràn viền ngắm toàn cảnh sông Sài Gòn).
+  + Tầng 25 (Tầng thượng Penthouse & Đại tiện ích): CHỈ CÓ 2 CĂN HỘ (2 căn Duplex Penthouse đặc quyền 25PH-01 & 25PH-02 diện tích ~215m²), cùng Hồ Bơi Vô Cực Chân Mây (06:00 - 22:00) và Vườn Tiệc Nướng BBQ Panoramic (17:00 - 23:00).
+  + Mô hình kiến trúc 3D quản trị: Mỗi tầng mô phỏng 2 căn đại diện đối xứng (Trục TRÁI - LEFT và Trục PHẢI - RIGHT).
+
+1. THÔNG TIN CĂN HỘ & CƯ DÂN ĐANG TRÒ CHUYỆN:
+- Căn hộ: ${apt.apt_code} (Chung Cư Skyline Smart Residence, Tầng ${apt.floor_number === 13 ? '12A' : apt.floor_number})
 - Diện tích chuẩn xác: ${apt.clear_area || 78.5} m² (diện tích thông thủy) / ${apt.wall_area || 83.2} m² (diện tích tim tường). Loại căn: ${apt.bedrooms}PN - ${apt.bathrooms}WC. Hướng ban công: Đông Nam (hướng sông thoáng mát), Hướng cửa chính: Tây Bắc.
 - Tình trạng: Đã bàn giao ngày 15/01/2026 (Biên bản bàn giao BBBG-SKYLINE-${targetAptCode}-20260115 do KTS. Lê Quang Minh bàn giao, 3 chìa khóa, 2 thẻ cư dân).
 - Cư dân đang trò chuyện: ${residentName} (${residentRole === 'OWNER' ? 'Chủ hộ' : 'Thành viên cư dân'}) | SĐT: ${residentPhone} | CCCD: ${residentIdCard}.
@@ -250,7 +269,7 @@ Chi tiết quy định từng tiện ích:
      + Hủy trước giờ hẹn > 30 phút: Hoàn lại 100% tiền giữ chỗ vào hóa đơn sinh hoạt tháng tới.
      + Hủy cận giờ (trong vòng 30 phút trước giờ hẹn): Hoàn lại 50% tiền giữ chỗ (50% còn lại bù đắp chi phí gia nhiệt lò đá muối & chuẩn bị tinh dầu).
      + Quá giờ hẹn bắt đầu: Không hoàn tiền do phòng riêng tư đã được khóa giữ chỗ phục vụ riêng cho căn hộ.
-4. Khu Vui Chơi Trẻ Em Sky Kids Zone: Vị trí TẦNG 1 (Sảnh Thương Mại Tòa A). Mở cửa 07:00 - 21:00 hàng ngày. Sàn đệm kháng khuẩn, nhà bóng, cầu trượt an toàn. Miễn phí hoàn toàn theo Thẻ cư dân (yêu cầu có người lớn đi kèm).
+4. Khu Vui Chơi Trẻ Em Sky Kids Zone: Vị trí TẦNG 1 (Sảnh Thương Mại Chung Cư). Mở cửa 07:00 - 21:00 hàng ngày. Sàn đệm kháng khuẩn, nhà bóng, cầu trượt an toàn. Miễn phí hoàn toàn theo Thẻ cư dân (yêu cầu có người lớn đi kèm).
 5. Vườn Tiệc Nướng BBQ Panoramic: Vị trí TẦNG 25 (Khu Vườn Nhật Bản - Sân Thượng). Mở cửa 17:00 - 23:00 (theo ca tiệc đăng ký trước). Biểu phí: 600.000 đ/ca tiệc (đã bao gồm set bếp than nướng Weber cao cấp, bàn ghế panoramic toàn cảnh và nhân viên dọn dẹp vệ sinh sau tiệc).
 
 ⚡ LƯU Ý BẮT BUỘC VỀ DỮ LIỆU TIỆN ÍCH:
@@ -268,8 +287,8 @@ ${bookingsStr}
 
 6. LIÊN HỆ BAN QUẢN LÝ (BQL):
 - Hotline hỗ trợ 24/7: 1900 8899 hoặc 028.7300.8899.
-- Văn phòng BQL: Tầng trệt Tháp A (08:00 - 17:30, Thứ 2 đến Thứ 7).
-- Bảo vệ & Lễ tân sảnh đón khách: Túc trực 24/24.
+- Văn phòng BQL: Tầng 2 (Khu Văn Phòng Điều Hành BQL - 08:00 - 17:30, Thứ 2 đến Thứ 7).
+- Quầy lễ tân tiếp dân: Tầng 1 (Grand Lobby - Túc trực 24/24).
 
 NGUYÊN TẮC GIAO TIẾP VÀ DẠNG TỪ BẮT BUỘC:
 - Luôn ưu tiên dùng CHÍNH XÁC các con số và thông tin thực tế từ dữ liệu trên (số tiền hóa đơn 2.465.000 đ, diện tích 78.5 m² / 83.2 m², thành viên gia đình, biển số xe ${residentLicensePlate}, thẻ khách thăm, phiếu báo hỏng, lịch đặt...).
@@ -355,10 +374,60 @@ Skyline phục vụ Quý cư dân 5 tiện ích 5 sao đặc quyền:
 * 🏊 **Hồ bơi vô cực chân mây (Skyline Horizon Pool):** Tầng 25 (Sân thượng), mở cửa **06:00 - 22:00** hàng ngày.
 * 🏋️ **Trung tâm thể hình Technogym:** Tầng 3, mở cửa **24/7** suốt ngày đêm.
 * 🧖 **Phòng xông hơi đá muối VIP:** Tầng 3, mở cửa **08:00 - 22:00** (500.000 đ/giờ phòng riêng).
-* 🛝 **Khu vui chơi trẻ em Sky Kids:** Tầng 1 (Sảnh Thương Mại Tòa A), mở cửa **07:00 - 21:00**.
+* 🛝 **Khu vui chơi trẻ em Sky Kids:** Tầng 1 (Sảnh Thương Mại), mở cửa **07:00 - 21:00**.
 * 🍖 **Vườn tiệc nướng BBQ Panoramic:** Tầng 25 (Sân thượng), mở cửa **17:00 - 23:00** (600.000 đ/ca).
 
 Quý cư dân chỉ cần chạm Thẻ cư dân hoặc nhìn vào camera nhận diện khuôn mặt là có thể sử dụng các tiện ích miễn phí ngay ạ!`;
+  }
+
+  // 0b. Building Architecture, Scale, Floors, Apartments count per floor
+  if (
+    text.includes('bao nhiêu căn') || 
+    text.includes('mấy căn') || 
+    text.includes('1 tầng') || 
+    text.includes('mỗi tầng') || 
+    text.includes('bao nhiêu tầng') || 
+    text.includes('mấy tầng') || 
+    text.includes('quy mô') || 
+    text.includes('cấu trúc') || 
+    text.includes('mặt bằng') || 
+    text.includes('tổng số căn') ||
+    text.includes('tổng số tầng') ||
+    text.includes('tầng hầm') ||
+    text.includes('hầm b1') ||
+    text.includes('hầm b2') ||
+    text.includes('tầng 1') ||
+    text.includes('tầng 2') ||
+    text.includes('tầng 3') ||
+    text.includes('tầng 4') ||
+    text.includes('tầng 5') ||
+    text.includes('tầng 12a') ||
+    text.includes('tầng 25') ||
+    text.includes('địa chỉ') ||
+    text.includes('chủ đầu tư')
+  ) {
+    return `Dạ thưa Quý cư dân ${residentName}, theo dữ liệu kiến trúc chuẩn xác của **Chung Cư Cao Cấp Skyline Smart Residence**:
+
+🏢 **1. Quy mô tổng thể chung cư:**
+* **Số tầng:** **25 tầng nổi** và **2 tầng hầm** (Hầm B2 và Hầm B1).
+* **Tổng số căn hộ:** **240 căn hộ**.
+* **Chủ đầu tư:** Skyline Group Corporation | **Quản lý vận hành:** Skyline Property Management Services.
+* **Địa chỉ:** Số 12A Nguyễn Thị Thập, Phường Tân Phú, Quận 7, TP. Hồ Chí Minh.
+
+📐 **2. Phân bổ số lượng căn hộ trên 1 tầng:**
+* 🚗 **Tầng Hầm B2 & B1 (0 căn hộ ở):**
+  - **Hầm B2:** Bãi đỗ xe ô tô định danh RFID, trạm biến áp trung thế, phòng máy bơm PCCC & bể xử lý kỹ thuật ngầm.
+  - **Hầm B1:** Bãi đỗ xe máy cư dân RFID, trạm sạc xe điện thông minh, chốt an ninh.
+* 🛍️ **Tầng 1 đến Tầng 4 (0 căn hộ ở - Khối tiện ích 5 sao & dịch vụ):**
+  - **Tầng 1:** Sảnh Grand Lobby 5 sao, quầy BQL tiếp dân, Khu Vui Chơi Sky Kids Zone (07:00 - 21:00) & Shophouse thương mại.
+  - **Tầng 2:** Văn phòng điều hành Ban Quản Lý, phòng camera an ninh AI giám sát tập trung.
+  - **Tầng 3:** Trung tâm thể hình Technogym (mở cửa 24/7) & Phòng xông hơi đá muối Himalaya VIP (08:00 - 22:00).
+  - **Tầng 4:** Hội trường sinh hoạt cộng đồng, thư viện số cư dân, không gian Co-working và vườn treo thảo mộc.
+* 🏠 **Tầng 5 đến Tầng 21 (17 tầng căn hộ tiêu chuẩn):** **10 CĂN HỘ / TẦNG** (Thiết kế 1PN 52m², 2PN 75-78.5m², 3PN 108-112m²).
+* 🌆 **Tầng 22 đến Tầng 24 (3 tầng căn hộ Sky Suite tầng cao):** **8 CĂN HỘ / TẦNG** (Mật độ thoáng, ban công tràn viền ngắm toàn cảnh sông Sài Gòn).
+* 👑 **Tầng 25 (Sân thượng Penthouse & Đại tiện ích):** **CHỈ CÓ 2 CĂN HỘ** (2 căn Duplex Penthouse đặc quyền 25PH-01 & 25PH-02 diện tích ~215m²), cùng Hồ Bơi Vô Cực Chân Mây (06:00 - 22:00) và Vườn Tiệc Nướng BBQ Panoramic (17:00 - 23:00).
+
+*(Trên sơ đồ trực quan 3D của phần mềm quản trị Admin, mỗi tầng được mô phỏng đối xứng 2 căn trục Trái và Phải để thuận tiện theo dõi kỹ thuật).*`;
   }
 
   // 1. Inquiries about Active Bookings / Tickets (Lịch đặt, vé điện tử, mã vé)
@@ -480,7 +549,7 @@ Quý vị có thể vào mục **Thành Viên Căn Hộ** để đăng ký thêm
   }
 
   // 7. Inquiries about Amenities / Operating Hours / Facilities
-  if (text.includes('tiện ích') || text.includes('hồ bơi') || text.includes('gym') || text.includes('pool') || text.includes('technogym') || text.includes('giờ mở cửa') || text.includes('tầng')) {
+  if (text.includes('tiện ích') || text.includes('hồ bơi') || text.includes('gym') || text.includes('pool') || text.includes('technogym') || text.includes('giờ mở cửa') || text.includes('dịch vụ tiện ích')) {
     return `Dạ thưa Quý cư dân ${residentName}, danh mục **5 Tiện Ích 5 Sao** của Chung cư Skyline (25 Tầng) như sau:
 
 * 🏊 **Hồ Bơi Vô Cực Chân Mây (Tầng 25 - Sân Thượng):**
@@ -489,7 +558,7 @@ Quý vị có thể vào mục **Thành Viên Căn Hộ** để đăng ký thêm
   - Mở cửa: **24/7** suốt ngày đêm, đầy đủ máy tập Technogym nhập khẩu, miễn phí theo Thẻ cư dân.
 * 🧖 **Phòng Xông Hơi Đá Muối Himalaya VIP (Tầng 3):**
   - Mở cửa: **08:00 - 22:00**, biểu phí **500.000 đ / giờ** (phòng riêng tư khép kín cho gia đình).
-* 🛝 **Khu Vui Chơi Trẻ Em Sky Kids Zone (Tầng 1 - Sảnh Tòa A):**
+* 🛝 **Khu Vui Chơi Trẻ Em Sky Kids Zone (Tầng 1 - Sảnh Thương Mại):**
   - Mở cửa: **07:00 - 21:00** hàng ngày, sàn đệm kháng khuẩn an toàn, miễn phí theo Thẻ cư dân.
 * 🍖 **Vườn Tiệc Nướng BBQ Panoramic (Sân Thượng Tầng 25):**
   - Mở cửa: **17:00 - 23:00**, biểu phí **600.000 đ / ca** (bao gồm set bếp than nướng Weber cao cấp và nhân viên dọn dẹp vệ sinh sau tiệc).
@@ -524,15 +593,17 @@ Quý cư dân có thể vào tab **Đăng Ký Đặt Chỗ & Vé Điện Tử** 
   }
 
   // 10. Default Helpful Overview
-  return `Kính chào Quý cư dân ${residentName} (Căn hộ ${targetAptCode} - Tòa A Sapphire)!
+  return `Kính chào Quý cư dân ${residentName} (Căn hộ ${targetAptCode} - Chung Cư Skyline Smart Residence)!
 
 Tôi là **Trợ lý Ảo Skyline**, luôn sẵn sàng hỗ trợ Quý vị 24/7. Tôi có thể giải đáp ngay các thông tin về:
+* 🏢 **Quy mô chung cư (25 Tầng):** Tra cứu số tầng, số căn hộ mỗi tầng, công năng tiện ích từng tầng.
 * 💳 **Hóa đơn & Biểu phí:** Tra cứu tiền điện, tiền nước, phí gửi xe mới nhất.
-* 🏊 **Tiện ích tòa nhà (25 Tầng):** Giờ mở cửa hồ bơi chân mây Tầng 25, gym 24/7 Tầng 3, phòng xông hơi VIP Tầng 3, Sky Kids Tầng 1 hay tiệc nướng BBQ Tầng 25.
+* 🏊 **Tiện ích tòa nhà (5 Đại tiện ích):** Giờ mở cửa hồ bơi chân mây Tầng 25, gym 24/7 Tầng 3, phòng xông hơi VIP Tầng 3, Sky Kids Tầng 1 hay tiệc nướng BBQ Tầng 25.
 * 🎫 **Vé & Lịch hẹn:** Kiểm tra mã vé tiện ích đã đặt và hướng dẫn hoàn tiền khi bận việc đột xuất.
 * 🎟️ **Khách thăm & QR Code:** Tra cứu mã PIN và danh sách thẻ khách thăm đã đăng ký.
 * 🛠️ **Báo hỏng kỹ thuật:** Tiếp nhận sự cố với cam kết thợ có mặt trong 60 phút.
 * 🚪 **Cửa thông minh:** Hướng dẫn cài đặt khuôn mặt, thẻ từ và mã đón khách.
+
 
 Quý cư dân cần tôi hỗ trợ nội dung nào ngay bây giờ ạ? (Hotline Ban Quản Lý: **1900 8899**).`;
 }
