@@ -293,160 +293,6 @@ export default function AccountPasswordSection({
         </div>
       )}
 
-      {/* ============================================================== */}
-      {/* TOOL: SMART PASSWORD GENERATOR (TRÌNH TẠO MẬT KHẨU AN TOÀN)   */}
-      {/* ============================================================== */}
-      <div className="p-5 sm:p-6 bg-gradient-to-br from-[#161D26] via-[#121820] to-[#0D1117] border border-[#C5A880]/40 shadow-2xl rounded-none space-y-4">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#222B35] pb-3">
-          <div className="space-y-0.5">
-            <div className="flex items-center gap-2 text-[#C5A880] text-xs font-mono uppercase tracking-wider font-bold">
-              <Wand2 className="w-4 h-4 text-[#C5A880]" /> Trình Tạo Mật Khẩu Ngẫu Nhiên An Toàn (Password Generator)
-            </div>
-            <p className="text-xs text-gray-400">
-              Sinh mật khẩu ngẫu nhiên đạt chuẩn an ninh cao nhất, tự động điền vào ô mật khẩu mới theo ý bạn.
-            </p>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              onClick={() => setShowGenOptions(!showGenOptions)}
-              className="px-3 py-1.5 bg-[#161B22] hover:bg-[#1E2631] border border-[#2D3748] text-gray-300 hover:text-white text-xs font-semibold rounded-none flex items-center gap-1.5 transition-colors"
-            >
-              <SlidersHorizontal className="w-3.5 h-3.5 text-[#C5A880]" />
-              <span>{showGenOptions ? 'Thu Gọn Tùy Chỉnh' : 'Tùy Chỉnh Nâng Cao'}</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => handleGenerate()}
-              className="px-4 py-2 bg-[#C5A880] hover:bg-white text-[#0D1117] text-xs font-bold uppercase tracking-wider rounded-none flex items-center gap-2 transition-all shadow active:scale-[0.99]"
-            >
-              <Sparkles className="w-4 h-4" /> Tạo Mật Khẩu Ngẫu Nhiên
-            </button>
-          </div>
-        </div>
-
-        {/* Generated Password Showcase Bar */}
-        {lastGeneratedPassword && (
-          <div className="p-4 bg-[#0A0E14] border border-[#C5A880] flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-none animate-fadeIn">
-            <div className="space-y-1">
-              <div className="text-[10px] text-gray-400 uppercase font-mono tracking-wider flex items-center gap-2">
-                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
-                <span>Mật khẩu ngẫu nhiên vừa được tạo (Độ an toàn: 100% Rất An Toàn):</span>
-              </div>
-              <div className="text-base sm:text-lg font-mono font-bold text-white tracking-widest break-all select-all">
-                {lastGeneratedPassword}
-              </div>
-            </div>
-
-            <div className="flex items-center gap-2 flex-shrink-0">
-              <button
-                type="button"
-                onClick={() => handleCopy(lastGeneratedPassword)}
-                className="px-4 py-2 bg-[#161D26] hover:bg-[#202936] text-white border border-[#2D3748] hover:border-[#C5A880] text-xs font-semibold rounded-none flex items-center gap-2 transition-colors"
-              >
-                {copiedNotice ? (
-                  <>
-                    <CheckCheck className="w-4 h-4 text-emerald-400" />
-                    <span className="text-emerald-300">Đã Sao Chép!</span>
-                  </>
-                ) : (
-                  <>
-                    <Copy className="w-4 h-4 text-[#C5A880]" />
-                    <span>Sao Chép Mật Khẩu</span>
-                  </>
-                )}
-              </button>
-
-              <button
-                type="button"
-                onClick={() => handleGenerate()}
-                title="Sinh lại chuỗi ngẫu nhiên khác"
-                className="p-2 bg-[#161D26] hover:bg-[#202936] text-gray-300 hover:text-white border border-[#2D3748] rounded-none transition-colors"
-              >
-                <RefreshCw className="w-4 h-4" />
-              </button>
-            </div>
-          </div>
-        )}
-
-        {/* Collapsible Advanced Generator Settings */}
-        {showGenOptions && (
-          <div className="p-4 bg-[#121820] border border-[#222B35] space-y-4 rounded-none animate-fadeIn">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-              <div className="space-y-1">
-                <label className="text-xs font-semibold text-gray-300 flex items-center gap-2">
-                  Độ Dài Mật Khẩu: <span className="text-[#C5A880] font-mono font-bold text-sm">{genLength} ký tự</span>
-                </label>
-                <div className="text-[11px] text-gray-500">
-                  Khuyến nghị độ dài từ 12 đến 16 ký tự để đảm bảo an toàn tối đa.
-                </div>
-              </div>
-
-              <div className="w-full sm:w-64 flex items-center gap-3">
-                <span className="text-[10px] text-gray-400 font-mono">8</span>
-                <input
-                  type="range"
-                  min={8}
-                  max={24}
-                  value={genLength}
-                  onChange={(e) => {
-                    const len = Number(e.target.value);
-                    setGenLength(len);
-                    if (lastGeneratedPassword) handleGenerate(len);
-                  }}
-                  className="w-full h-1.5 bg-[#1E2631] rounded-none cursor-pointer accent-[#C5A880]"
-                />
-                <span className="text-[10px] text-gray-400 font-mono">24</span>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-3 border-t border-[#222B35] text-xs">
-              <label className="flex items-center gap-2 text-gray-300 cursor-pointer select-none">
-                <input
-                  type="checkbox"
-                  checked={genUppercase}
-                  onChange={(e) => setGenUppercase(e.target.checked)}
-                  className="rounded-none accent-[#C5A880] cursor-pointer"
-                />
-                <span>Chữ Hoa (A - Z)</span>
-              </label>
-
-              <label className="flex items-center gap-2 text-gray-300 cursor-pointer select-none">
-                <input
-                  type="checkbox"
-                  checked={genLowercase}
-                  onChange={(e) => setGenLowercase(e.target.checked)}
-                  className="rounded-none accent-[#C5A880] cursor-pointer"
-                />
-                <span>Chữ Thường (a - z)</span>
-              </label>
-
-              <label className="flex items-center gap-2 text-gray-300 cursor-pointer select-none">
-                <input
-                  type="checkbox"
-                  checked={genNumbers}
-                  onChange={(e) => setGenNumbers(e.target.checked)}
-                  className="rounded-none accent-[#C5A880] cursor-pointer"
-                />
-                <span>Chữ Số (0 - 9)</span>
-              </label>
-
-              <label className="flex items-center gap-2 text-gray-300 cursor-pointer select-none">
-                <input
-                  type="checkbox"
-                  checked={genSymbols}
-                  onChange={(e) => setGenSymbols(e.target.checked)}
-                  className="rounded-none accent-[#C5A880] cursor-pointer"
-                />
-                <span>Ký Tự Đặc Biệt (!@#$)</span>
-              </label>
-            </div>
-          </div>
-        )}
-      </div>
-
       {/* Main Form & Policy Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Left: Input Form */}
@@ -457,7 +303,7 @@ export default function AccountPasswordSection({
               <Lock className="w-4 h-4 text-[#C5A880]" /> Biểu Mẫu Thay Đổi Mật Khẩu
             </h3>
             <p className="text-xs text-gray-400 mt-1">
-              Bạn có toàn quyền đặt mật khẩu bất kỳ theo ý muốn hoặc sử dụng mật khẩu được tạo tự động ở trên.
+              Bạn có thể tự đặt mật khẩu mới hoặc sử dụng tính năng tạo mật khẩu ngẫu nhiên an toàn ngay bên dưới.
             </p>
           </div>
 
@@ -491,27 +337,42 @@ export default function AccountPasswordSection({
             </div>
           </div>
 
-          {/* 2. New Password */}
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
+          {/* 2. New Password with Integrated Secure Generator */}
+          <div className="space-y-2.5">
+            <div className="flex flex-wrap items-center justify-between gap-2">
               <label className="text-xs font-semibold text-gray-300 uppercase tracking-wider flex items-center gap-1.5">
                 <KeyRound className="w-3.5 h-3.5 text-[#C5A880]" /> Mật Khẩu Mới <span className="text-rose-400">*</span>
               </label>
 
+              {/* Generator Actions Integrated in Field Header */}
               <div className="flex items-center gap-2">
-                <button
-                  type="button"
-                  onClick={() => handleGenerate()}
-                  className="text-[11px] text-[#C5A880] hover:text-white flex items-center gap-1 font-semibold transition-colors"
-                >
-                  <Sparkles className="w-3 h-3" /> Tạo Tự Động
-                </button>
-
                 {newPassword && (
                   <span className={`text-[10px] font-mono font-bold ${passwordStrength.color.split(' ')[1]}`}>
                     • {passwordStrength.label}
                   </span>
                 )}
+
+                <button
+                  type="button"
+                  onClick={() => handleGenerate()}
+                  className="h-7 px-2.5 bg-[#1C2533] hover:bg-[#C5A880] text-[#C5A880] hover:text-[#0D1117] border border-[#C5A880]/60 hover:border-[#C5A880] text-[11px] font-bold uppercase tracking-wider rounded-none flex items-center gap-1.5 transition-all shadow active:scale-95"
+                >
+                  <Sparkles className="w-3.5 h-3.5" /> Tạo Mật Khẩu Tự Động
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setShowGenOptions(!showGenOptions)}
+                  title="Tùy chỉnh độ dài và các bộ ký tự sinh ngẫu nhiên"
+                  className={`h-7 px-2 border text-[11px] font-semibold rounded-none flex items-center gap-1 transition-colors ${
+                    showGenOptions
+                      ? 'bg-[#C5A880] text-[#0D1117] border-[#C5A880]'
+                      : 'bg-[#161B22] text-gray-400 hover:text-white border-[#2D3748]'
+                  }`}
+                >
+                  <SlidersHorizontal className="w-3.5 h-3.5" />
+                  <span className="hidden sm:inline">Tùy Chọn</span>
+                </button>
               </div>
             </div>
 
@@ -520,7 +381,7 @@ export default function AccountPasswordSection({
                 type={showNewPassword ? 'text' : 'password'}
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
-                placeholder="Nhập mật khẩu mới hoặc bấm Tạo Tự Động..."
+                placeholder="Nhập mật khẩu mới hoặc bấm [Tạo Mật Khẩu Tự Động]..."
                 required
                 minLength={6}
                 className="w-full bg-[#161B22] border border-[#2D3748] p-3 pr-10 text-white text-xs focus:outline-none focus:border-[#C5A880] transition-colors rounded-none font-mono"
@@ -537,12 +398,127 @@ export default function AccountPasswordSection({
 
             {/* Password Strength Indicator Bar */}
             {newPassword && (
-              <div className="space-y-1 pt-1">
+              <div className="space-y-1">
                 <div className="w-full h-1.5 bg-[#161B22] border border-[#222B35] overflow-hidden">
                   <div
                     className={`h-full transition-all duration-300 ${passwordStrength.color.split(' ')[0]}`}
                     style={{ width: `${passwordStrength.score}%` }}
                   ></div>
+                </div>
+              </div>
+            )}
+
+            {/* Integrated Showcase for Last Generated Password */}
+            {lastGeneratedPassword && (
+              <div className="p-3 bg-[#0E151D] border border-[#C5A880]/70 flex items-center justify-between gap-3 rounded-none animate-fadeIn shadow-inner">
+                <div className="min-w-0">
+                  <div className="text-[10px] text-gray-400 font-mono flex items-center gap-1.5">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 flex-shrink-0" />
+                    <span className="truncate">Đã sinh chuỗi an toàn 100% &amp; tự động điền vào cả 2 ô:</span>
+                  </div>
+                  <div className="text-xs sm:text-sm font-mono font-bold text-[#C5A880] tracking-wider truncate select-all mt-0.5">
+                    {lastGeneratedPassword}
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-1.5 flex-shrink-0">
+                  <button
+                    type="button"
+                    onClick={() => handleCopy(lastGeneratedPassword)}
+                    className="h-7 px-2.5 bg-[#161B22] hover:bg-[#202936] text-white border border-[#2D3748] hover:border-[#C5A880] text-[11px] font-medium rounded-none flex items-center gap-1 transition-colors"
+                  >
+                    {copiedNotice ? (
+                      <>
+                        <CheckCheck className="w-3.5 h-3.5 text-emerald-400" />
+                        <span className="text-emerald-300">Đã chép</span>
+                      </>
+                    ) : (
+                      <>
+                        <Copy className="w-3.5 h-3.5 text-[#C5A880]" />
+                        <span>Sao chép</span>
+                      </>
+                    )}
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => handleGenerate()}
+                    title="Sinh lại chuỗi ngẫu nhiên khác"
+                    className="h-7 w-7 bg-[#161B22] hover:bg-[#202936] text-gray-300 hover:text-white border border-[#2D3748] flex items-center justify-center rounded-none transition-colors"
+                  >
+                    <RefreshCw className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Collapsible Advanced Generator Settings Inside Form */}
+            {showGenOptions && (
+              <div className="p-3.5 bg-[#0E151D] border border-[#222B35] space-y-3 rounded-none animate-fadeIn text-xs shadow-inner">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+                  <div className="space-y-0.5">
+                    <span className="text-gray-300 text-[11px] font-semibold flex items-center gap-1.5">
+                      <SlidersHorizontal className="w-3 h-3 text-[#C5A880]" /> Độ Dài Mật Khẩu:
+                      <strong className="text-[#C5A880] font-mono text-xs">{genLength} ký tự</strong>
+                    </span>
+                    <span className="text-[10.5px] text-gray-500 block">Khuyến nghị từ 12 - 16 ký tự để bảo mật tối ưu.</span>
+                  </div>
+
+                  <div className="w-full sm:w-48 flex items-center gap-2">
+                    <span className="text-[10px] text-gray-500 font-mono">8</span>
+                    <input
+                      type="range"
+                      min={8}
+                      max={24}
+                      value={genLength}
+                      onChange={(e) => {
+                        const len = Number(e.target.value);
+                        setGenLength(len);
+                        if (lastGeneratedPassword) handleGenerate(len);
+                      }}
+                      className="w-full h-1 bg-[#1E2631] rounded-none cursor-pointer accent-[#C5A880]"
+                    />
+                    <span className="text-[10px] text-gray-500 font-mono">24</span>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-2 border-t border-[#1C2533] text-[11px]">
+                  <label className="flex items-center gap-1.5 text-gray-300 cursor-pointer select-none">
+                    <input
+                      type="checkbox"
+                      checked={genUppercase}
+                      onChange={(e) => setGenUppercase(e.target.checked)}
+                      className="rounded-none accent-[#C5A880] cursor-pointer"
+                    />
+                    <span>Hoa (A-Z)</span>
+                  </label>
+                  <label className="flex items-center gap-1.5 text-gray-300 cursor-pointer select-none">
+                    <input
+                      type="checkbox"
+                      checked={genLowercase}
+                      onChange={(e) => setGenLowercase(e.target.checked)}
+                      className="rounded-none accent-[#C5A880] cursor-pointer"
+                    />
+                    <span>Thường (a-z)</span>
+                  </label>
+                  <label className="flex items-center gap-1.5 text-gray-300 cursor-pointer select-none">
+                    <input
+                      type="checkbox"
+                      checked={genNumbers}
+                      onChange={(e) => setGenNumbers(e.target.checked)}
+                      className="rounded-none accent-[#C5A880] cursor-pointer"
+                    />
+                    <span>Số (0-9)</span>
+                  </label>
+                  <label className="flex items-center gap-1.5 text-gray-300 cursor-pointer select-none">
+                    <input
+                      type="checkbox"
+                      checked={genSymbols}
+                      onChange={(e) => setGenSymbols(e.target.checked)}
+                      className="rounded-none accent-[#C5A880] cursor-pointer"
+                    />
+                    <span>Ký tự (!@#$)</span>
+                  </label>
                 </div>
               </div>
             )}
