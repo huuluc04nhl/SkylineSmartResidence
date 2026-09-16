@@ -632,10 +632,10 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
       <div className="p-4 sm:p-5 bg-[#121820] border border-[#222B35] space-y-3 rounded shadow-xl">
         <div className="flex items-center justify-between">
           <div className="text-xs uppercase tracking-wider text-[#C5A880] font-bold flex items-center gap-1.5">
-            <Sparkles className="w-3.5 h-3.5" /> Ngữ Cảnh Tự Động Hóa 1-Chạm (Scene Automation):
+            <Sparkles className="w-3.5 h-3.5" /> Ngữ Cảnh Thông Minh
           </div>
           <span className="text-[10px] text-gray-400 font-mono">
-            {isOwner ? '* Áp dụng tức thì cho toàn bộ thiết bị' : '* Người nhà kích hoạt ngữ cảnh sinh hoạt'}
+            {isOwner ? '* Áp dụng tức thì cho căn hộ' : '* Áp dụng cho căn hộ'}
           </span>
         </div>
 
@@ -654,7 +654,7 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
               <Sun className="w-4 h-4 text-amber-400" />
               {activeScene === 'WELCOME' && <CheckCircle2 className="w-3.5 h-3.5 text-[#C5A880]" />}
             </div>
-            <div className="font-semibold text-xs text-white mt-2">Về Nhà (Welcome)</div>
+            <div className="font-semibold text-xs text-white mt-2">Về Nhà</div>
             <div className="text-[10px] text-gray-400">Bật đèn, ĐH 24°C, mở rèm</div>
           </button>
 
@@ -672,7 +672,7 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
               <Power className="w-4 h-4 text-red-400" />
               {activeScene === 'AWAY' && <CheckCircle2 className="w-3.5 h-3.5 text-[#C5A880]" />}
             </div>
-            <div className="font-semibold text-xs text-white mt-2">Đi Vắng (Away)</div>
+            <div className="font-semibold text-xs text-white mt-2">Đi Vắng</div>
             <div className="text-[10px] text-gray-400">Tắt hết điện, khóa FaceID</div>
           </button>
 
@@ -690,7 +690,7 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
               <Moon className="w-4 h-4 text-blue-400" />
               {activeScene === 'SLEEP' && <CheckCircle2 className="w-3.5 h-3.5 text-[#C5A880]" />}
             </div>
-            <div className="font-semibold text-xs text-white mt-2">Đi Ngủ (Sleep)</div>
+            <div className="font-semibold text-xs text-white mt-2">Đi Ngủ</div>
             <div className="text-[10px] text-gray-400">AC 26°C, khóa an toàn</div>
           </button>
 
@@ -708,7 +708,7 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
               <Tv className="w-4 h-4 text-purple-400" />
               {activeScene === 'CINEMA' && <CheckCircle2 className="w-3.5 h-3.5 text-[#C5A880]" />}
             </div>
-            <div className="font-semibold text-xs text-white mt-2">Xem Phim (Cinema)</div>
+            <div className="font-semibold text-xs text-white mt-2">Xem Phim</div>
             <div className="text-[10px] text-gray-400">Đóng rèm, AC 23°C, đèn 15%</div>
           </button>
 
@@ -726,7 +726,7 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
               <Sparkles className="w-4 h-4 text-emerald-400" />
               {activeScene === 'DINING' && <CheckCircle2 className="w-3.5 h-3.5 text-[#C5A880]" />}
             </div>
-            <div className="font-semibold text-xs text-white mt-2">Ăn Tối (Dining)</div>
+            <div className="font-semibold text-xs text-white mt-2">Ăn Tối</div>
             <div className="text-[10px] text-gray-400">Sáng bếp, mở rèm view phố</div>
           </button>
         </div>
@@ -739,14 +739,14 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#222B35] pb-3">
           <div>
             <div className="text-xs uppercase tracking-wider text-[#C5A880] font-bold flex items-center gap-1.5">
-              <Clock className="w-4 h-4 text-[#C5A880]" /> Lập Lịch & Kịch Bản Tự Động Hóa 24/7 (Automation Schedules & AI Sensors)
+              <Clock className="w-4 h-4 text-[#C5A880]" /> Lập Lịch & Tự Động Hóa
             </div>
             <p className="text-[11px] text-gray-400 mt-0.5">
-              Hệ thống tự động điều phối thiết bị theo khung giờ sinh hoạt thực tế và cảm biến an toàn môi trường.
+              Tự động điều phối thiết bị theo khung giờ và cảm biến an toàn.
             </p>
           </div>
           <span className="px-2.5 py-0.5 bg-emerald-950/80 border border-emerald-500 text-emerald-300 text-[10.5px] font-mono rounded self-start sm:self-auto">
-            {automationRules.filter(r => r.enabled).length}/{automationRules.length} Đang Kích Hoạt
+            {automationRules.filter(r => r.enabled).length}/{automationRules.length} Đang Bật
           </span>
         </div>
 
@@ -824,17 +824,17 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
             <div className="text-[11px] uppercase tracking-[0.2em] text-[#C5A880] font-bold flex items-center gap-2">
               <span className={`w-2.5 h-2.5 rounded-full ${masterDoorLocked ? 'bg-emerald-400 animate-pulse' : 'bg-amber-400 animate-ping'}`} />
               <DoorClosed className="w-4 h-4 text-[#C5A880]" />
-              <span>Skyline Smart Door Command Center</span>
+              <span>Khóa Thông Minh</span>
             </div>
             <h3 className="text-lg sm:text-xl font-serif font-bold text-white flex items-center gap-2">
-              <span>Kiểm Soát Ra Vào & Chốt An Toàn Cửa Chính Căn Hộ {aptCode}</span>
+              <span>Cửa Chính Căn Hộ {aptCode}</span>
             </h3>
             <p className="text-xs text-gray-400 flex flex-wrap items-center gap-2 font-mono">
-              <span>Khóa cửa thông minh Skyline Luxury</span>
+              <span>Khóa Skyline Smart Door</span>
               <span className="text-gray-600">•</span>
-              <span className="text-emerald-400">Kết nối bảo mật cao cấp</span>
+              <span className="text-emerald-400">Bảo mật đa tầng</span>
               <span className="text-gray-600">•</span>
-              <span>Cảm biến khuôn mặt 3D</span>
+              <span>FaceID 3D</span>
             </p>
           </div>
 
@@ -878,7 +878,7 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
         {/* 2. WORKFLOW SEGMENTED TABS: Phân định rõ từng luồng tương tác */}
         <div className="px-4 sm:px-5 pt-3 bg-[#0D1219] border-b border-[#222B35] flex items-center justify-between gap-3 overflow-x-auto">
           <div className="flex items-center gap-1 sm:gap-2">
-            {/* Luồng 1: Giám Sát & Điều Khiển Trực Tiếp */}
+            {/* Luồng 1: Giám Sát Camera & Điều Khiển */}
             <button
               type="button"
               onClick={() => setSmartDoorTab('LIVE_CONTROL')}
@@ -889,7 +889,7 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
               }`}
             >
               <Video className="w-4 h-4 text-[#C5A880]" />
-              <span>1. Giám Sát Camera & Điều Khiển Khóa</span>
+              <span>Camera & Khóa</span>
               <span className="w-2 h-2 rounded-full bg-red-500 animate-ping ml-0.5" />
             </button>
 
@@ -904,7 +904,7 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
               }`}
             >
               <KeyRound className="w-4 h-4 text-cyan-400" />
-              <span>2. Quản Lý Phương Thức Ra Vào</span>
+              <span>Phương Thức Ra Vào</span>
               <span className={`px-1.5 py-0.2 text-[9px] font-mono rounded font-normal ${
                 isFaceApproved ? 'bg-emerald-950 text-emerald-300' : 'bg-gray-800 text-gray-400'
               }`}>
@@ -912,7 +912,7 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
               </span>
             </button>
 
-            {/* Luồng 3: Nhật Ký Ra Vào Thời Gian Thực */}
+            {/* Luồng 3: Nhật Ký Ra Vào */}
             <button
               type="button"
               onClick={() => setSmartDoorTab('LOGS')}
@@ -923,7 +923,7 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
               }`}
             >
               <History className="w-4 h-4 text-indigo-400" />
-              <span>3. Nhật Ký Ra Vào Thời Gian Thực</span>
+              <span>Nhật Ký Ra Vào</span>
               {doorAccessLogs.length > 0 && (
                 <span className="px-1.5 py-0.2 text-[9px] font-mono rounded bg-indigo-950 text-indigo-300 font-bold">
                   {doorAccessLogs.length}
@@ -1036,7 +1036,7 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
                         </>
                       ) : (
                         <>
-                          <Mic className="w-4 h-4 text-cyan-400" /> Đàm Thoại 2 Chiều
+                          <Mic className="w-4 h-4 text-cyan-400" /> Đàm Thoại
                         </>
                       )}
                     </button>
@@ -1046,7 +1046,7 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
                       onClick={handleDoorbellUnlockForGuest}
                       className="py-2.5 px-3 bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-500 hover:to-emerald-600 text-white font-bold text-xs rounded-lg transition-all flex items-center justify-center gap-2 shadow-md shadow-emerald-900/30"
                     >
-                      <DoorOpen className="w-4 h-4" /> Mở Cho Khách
+                      <DoorOpen className="w-4 h-4" /> Mở Cửa
                     </button>
 
                     <button
@@ -1054,7 +1054,7 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
                       onClick={handleTakeSnapshot}
                       className="py-2.5 px-3 bg-[#161D26] hover:bg-[#1F2937] border border-[#2A374A] text-gray-300 hover:text-white font-bold text-xs rounded-lg transition-colors flex items-center justify-center gap-2"
                     >
-                      <Camera className="w-4 h-4 text-[#C5A880]" /> Chụp Ảnh Sự Kiện
+                      <Camera className="w-4 h-4 text-[#C5A880]" /> Chụp Ảnh
                     </button>
                   </div>
                 </div>
@@ -1063,7 +1063,7 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
                 <div className="lg:col-span-5 space-y-4">
                   <div className="flex items-center justify-between pb-2 border-b border-[#222B35]/60">
                     <div className="text-xs uppercase tracking-wider text-gray-300 font-bold flex items-center gap-2">
-                      <Lock className="w-4 h-4 text-[#C5A880]" /> Điều Khiển Chốt Khóa & Cảm Biến Cánh
+                      <Lock className="w-4 h-4 text-[#C5A880]" /> Điều Khiển Khóa & Cảm Biến
                     </div>
                     <span className={`px-2 py-0.5 text-[10px] font-mono font-bold uppercase rounded border ${
                       masterDoorLocked 
@@ -1090,14 +1090,14 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
 
                     <div className="space-y-0.5 flex-1">
                       <div className="text-xs font-bold text-white">
-                        {masterDoorLocked ? 'Cửa Chính Đã Khóa Chốt An Toàn' : 'Chốt Cửa Chính Đang Mở'}
+                        {masterDoorLocked ? 'Cửa Đã Khóa An Toàn' : 'Chốt Cửa Đang Mở'}
                       </div>
                       <div className="text-[10.5px] text-gray-400 leading-snug">
                         {masterDoorLocked 
-                          ? 'Chốt thép tôi cứng 3 tầng gài khít khuôn cửa.'
+                          ? 'Đã chốt an toàn đa tầng.'
                           : doorAutoLock 
-                            ? 'Chốt mở. Tự động gài an toàn sau 5s.'
-                            : 'Chốt đang mở tự do (Chế độ mở thủ công).'}
+                            ? 'Đang mở. Tự động khóa sau 5s.'
+                            : 'Đang mở (Chế độ thủ công).'}
                       </div>
                     </div>
                   </div>
@@ -1116,10 +1116,10 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
                       </div>
                       <div>
                         <div className="text-xs font-semibold text-white">
-                          {doorAjar ? 'CẢNH BÁO: Cánh Cửa Đang Mở Hé!' : 'Cánh Cửa Đang Đóng Kín 100%'}
+                          {doorAjar ? 'Cảnh Báo: Cửa Đang Mở Hé' : 'Cửa Đang Đóng Kín'}
                         </div>
                         <div className="text-[9.5px] text-gray-400">
-                          {doorAjar ? 'Cửa chưa khép khít vào khuôn' : 'Cảm biến từ tính xác nhận khép kín'}
+                          {doorAjar ? 'Cửa chưa khép khít vào khuôn' : 'Cảm biến xác nhận khép kín'}
                         </div>
                       </div>
                     </div>
@@ -1161,9 +1161,9 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
                     <div className="p-2 bg-[#0D1117] border border-[#222B35] rounded flex items-center justify-between">
                       <div className="space-y-0.5">
                         <div className="text-[11px] font-medium text-white flex items-center gap-1.5">
-                          <Clock className="w-3 h-3 text-[#C5A880]" /> Tự Động Khóa Chốt Sau 5 Giây
+                          <Clock className="w-3 h-3 text-[#C5A880]" /> Tự Động Khóa (5s)
                         </div>
-                        <div className="text-[9.5px] text-gray-400">Tự gài chốt tránh quên khóa</div>
+                        <div className="text-[9.5px] text-gray-400">Tự gài chốt sau khi đóng cửa</div>
                       </div>
                       <button
                         type="button"
@@ -1180,9 +1180,9 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
                     <div className="p-2 bg-[#0D1117] border border-[#222B35] rounded flex items-center justify-between">
                       <div className="space-y-0.5">
                         <div className="text-[11px] font-medium text-white flex items-center gap-1.5">
-                          <Moon className="w-3 h-3 text-blue-400" /> Khóa Riêng Tư Ban Đêm
+                          <Moon className="w-3 h-3 text-blue-400" /> Khóa Ban Đêm
                         </div>
-                        <div className="text-[9.5px] text-gray-400">Chỉ mở được từ bên trong, bảo vệ gia đình</div>
+                        <div className="text-[9.5px] text-gray-400">Chỉ mở được từ bên trong</div>
                       </div>
                       <button
                         type="button"
@@ -1199,9 +1199,9 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
                     <div className="p-2 bg-[#0D1117] border border-[#222B35] rounded flex items-center justify-between">
                       <div className="space-y-0.5">
                         <div className="text-[11px] font-medium text-white flex items-center gap-1.5">
-                          <ShieldAlert className="w-3 h-3 text-red-400" /> Cảnh Báo Chống Cạy Cửa
+                          <ShieldAlert className="w-3 h-3 text-red-400" /> Chống Cạy Cửa
                         </div>
-                        <div className="text-[9.5px] text-gray-400">Báo động to khi phát hiện va đập bất thường</div>
+                        <div className="text-[9.5px] text-gray-400">Báo động khi có va đập bất thường</div>
                       </div>
                       <button
                         type="button"

@@ -427,7 +427,7 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
 
       // Synchronize to server API endpoint for real-time BQL processing
       try {
-        const res = await fetch('/api/nks/ekyc', {
+        const res = await fetch('/api/ekyc', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({

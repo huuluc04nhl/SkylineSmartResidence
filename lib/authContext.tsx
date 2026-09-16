@@ -2,7 +2,7 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { User, UserRole } from './dataStore';
-import { nksLogin, nksFaceLogin } from './nksApiClient';
+import { skylineLogin as nksLogin, skylineFaceLogin as nksFaceLogin } from './skylineApiClient';
 
 interface AuthContextType {
   currentUser: User | null;
@@ -39,7 +39,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   // 1. Check Active Session via Server API on Mount (No localStorage used)
   const refreshUser = async () => {
     try {
-      const res = await fetch('/api/nks/user', {
+      const res = await fetch('/api/user', {
         method: 'GET',
         headers: { 'Content-Type': 'application/json' },
       });
@@ -131,7 +131,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const logout = async () => {
     setIsLoading(true);
     try {
-      await fetch('/api/nks/user/logout', { method: 'POST' });
+      await fetch('/api/user/logout', { method: 'POST' });
     } catch (err) {
       console.warn('Logout API error', err);
     } finally {

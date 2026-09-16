@@ -53,7 +53,7 @@ export default function EkycApproval() {
     setRequests(getEkycRequests());
 
     // Đồng bộ toàn bộ hồ sơ 4 mẫu quét từ máy chủ về để BQL trên Desktop kiểm tra được mẫu từ Mobile
-    fetch('/api/nks/user/face-enroll')
+    fetch('/api/user/face-enroll')
       .then(res => res.json())
       .then(data => {
         if (data.success && Array.isArray(data.profiles)) {
@@ -89,7 +89,7 @@ export default function EkycApproval() {
 
       // 2. Gửi API đồng bộ server
       try {
-        await fetch('/api/nks/ekyc', {
+        await fetch('/api/ekyc', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -128,7 +128,7 @@ export default function EkycApproval() {
 
       // 2. Gửi API đồng bộ server
       try {
-        await fetch('/api/nks/ekyc', {
+        await fetch('/api/ekyc', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({

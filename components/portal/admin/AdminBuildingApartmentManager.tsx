@@ -286,7 +286,7 @@ export default function AdminBuildingApartmentManager() {
     let isMounted = true;
     async function syncRealResident() {
       try {
-        const famRes = await fetch('/api/nks/user/family?aptCode=12A05');
+        const famRes = await fetch('/api/user/family?aptCode=12A05');
         if (famRes.ok) {
           const famData = await famRes.json();
           if (famData.success && Array.isArray(famData.members) && famData.members.length > 0) {
@@ -294,7 +294,7 @@ export default function AdminBuildingApartmentManager() {
           }
         }
 
-        const userRes = await fetch('/api/nks/user');
+        const userRes = await fetch('/api/user');
         if (userRes.ok) {
           const userData = await userRes.json();
           if (userData.user && isMounted) {
