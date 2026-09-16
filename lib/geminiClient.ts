@@ -259,22 +259,25 @@ ${billsStr || '- Không có hóa đơn nợ'}
 3. DỮ LIỆU PHIẾU BÁO HỎNG & KỸ THUẬT:
 ${ticketsStr}
 
-4. DANH MỤC 5 TIỆN ÍCH TÒA NHÀ & QUY CHẾ THỐNG NHẤT (CHUNG CƯ SKYLINE GỒM 25 TẦNG):
+4. DANH MỤC 5 TIỆN ÍCH TÒA NHÀ & QUY ĐỊNH SỬ DỤNG:
 ${facilitiesStr}
-Chi tiết quy định từng tiện ích:
-1. Hồ Bơi Vô Cực Chân Mây (Skyline Horizon Pool): Vị trí TẦNG 25 (Sân Thượng Tòa Chung Cư). Mở cửa 06:00 - 22:00 hàng ngày. Nước lọc ozone 28°C. Miễn phí theo Thẻ cư dân (hạn mức 20 lượt/tháng/căn hộ). Cổng vào: Nhìn vào camera FaceID hoặc chạm thẻ cư dân.
-2. Trung Tâm Thể Hình Technogym (Fitness & Yoga): Vị trí TẦNG 3 (Khu Tiện Ích Thể Thao). MỞ CỬA 24/7 (hoạt động suốt ngày đêm). Miễn phí hoàn toàn theo Thẻ cư dân.
-3. Phòng Xông Hơi Đá Muối Himalaya (Private VIP): Vị trí TẦNG 3 (Khu Chăm Sóc Sức Khỏe Riêng Tư). Mở cửa 08:00 - 22:00 (theo giờ đặt hẹn trước). LÀ TIỆN ÍCH RIÊNG TƯ (PRIVATE VIP) khép kín dành riêng cho từng gia đình. Biểu phí giữ chỗ: 500.000 đ/tiếng (1 tiếng: 500.000 đ, 2 tiếng: 1.000.000 đ, 3 tiếng: 1.500.000 đ). Đã bao gồm chuẩn bị lò gia nhiệt đá muối, khăn nhung cao cấp & tinh dầu thảo mộc tự nhiên theo giờ hẹn.
-   - Chính sách hoàn tiền minh bạch khi bận việc đột xuất:
-     + Hủy trước giờ hẹn > 30 phút: Hoàn lại 100% tiền giữ chỗ vào hóa đơn sinh hoạt tháng tới.
-     + Hủy cận giờ (trong vòng 30 phút trước giờ hẹn): Hoàn lại 50% tiền giữ chỗ (50% còn lại bù đắp chi phí gia nhiệt lò đá muối & chuẩn bị tinh dầu).
-     + Quá giờ hẹn bắt đầu: Không hoàn tiền do phòng riêng tư đã được khóa giữ chỗ phục vụ riêng cho căn hộ.
-4. Khu Vui Chơi Trẻ Em Sky Kids Zone: Vị trí TẦNG 1 (Sảnh Thương Mại Chung Cư). Mở cửa 07:00 - 21:00 hàng ngày. Sàn đệm kháng khuẩn, nhà bóng, cầu trượt an toàn. Miễn phí hoàn toàn theo Thẻ cư dân (yêu cầu có người lớn đi kèm).
-5. Vườn Tiệc Nướng BBQ Panoramic: Vị trí TẦNG 25 (Khu Vườn Nhật Bản - Sân Thượng). Mở cửa 17:00 - 23:00 (theo ca tiệc đăng ký trước). Biểu phí: 600.000 đ/ca tiệc (đã bao gồm set bếp than nướng Weber cao cấp, bàn ghế panoramic toàn cảnh và nhân viên dọn dẹp vệ sinh sau tiệc).
 
-⚡ LƯU Ý BẮT BUỘC VỀ DỮ LIỆU TIỆN ÍCH:
-- Tòa nhà Skyline gồm 25 tầng. Tuyệt đối KHÔNG có sân Pickleball hay Tennis, KHÔNG có tầng 38, KHÔNG có tiện ích "chòi nghỉ". 
-- Nếu cư dân hỏi về Pickleball, Tennis hay tầng 38, hãy khẳng định lịch sự rằng tòa nhà Skyline gồm 25 tầng hiện đại, tập trung vào 5 tiện ích 5 sao nêu trên và không có sân Pickleball hay tầng 38.
+PHÂN LOẠI QUY CHẾ VÀO CỔNG TIỆN ÍCH:
+A. TIỆN ÍCH CẦN ĐĂNG KÝ LỊCH HẸN TRƯỚC (BẮT BUỘC ĐẶT CHỖ):
+   1. Phòng Xông Hơi Đá Muối Himalaya VIP (Tầng 3): Mở cửa 08:00 - 22:00. LÀ TIỆN ÍCH RIÊNG TƯ (Private VIP) khép kín gia đình. Biểu phí giữ chỗ: 500.000 đ/giờ (1 tiếng: 500k, 2 tiếng: 1.000.000 đ). Đã bao gồm bật lò sưởi đá muối trước 15 phút, khăn nhung và tinh dầu thảo mộc tự nhiên.
+      - Chính sách hoàn tiền: Hủy trước > 30 phút hoàn 100% vào hóa đơn tháng; hủy trong vòng 30 phút hoàn 50%; quá giờ không hoàn tiền.
+   2. Vườn Tiệc Nướng BBQ Panoramic (Tầng 25 - Sân Thượng): Mở cửa 17:00 - 23:00 (theo ca tiệc). Biểu phí: 600.000 đ/ca (đã gồm set bếp than Weber, bàn ghế panoramic view sông và nhân viên vệ sinh sau tiệc).
+
+B. TIỆN ÍCH SỬ DỤNG TỰ DO (MIỄN PHÍ - KHÔNG CẦN ĐẶT HẸN TRƯỚC):
+   1. Hồ Bơi Vô Cực Chân Mây (Tầng 25): Mở cửa 06:00 - 22:00. Miễn phí theo thẻ cư dân (20 lượt/tháng). Quét FaceID hoặc chạm thẻ cư dân tại cổng là vào bơi ngay.
+   2. Trung Tâm Thể Hình Technogym (Tầng 3): Mở cửa 24/7 (suốt ngày đêm). Miễn phí toàn bộ theo thẻ cư dân, vào tự do bằng FaceID/Thẻ.
+   3. Khu Vui Chơi Trẻ Em Sky Kids Zone (Tầng 1): Mở cửa 07:00 - 21:00. Miễn phí toàn bộ theo thẻ cư dân (yêu cầu người lớn đi cùng bé).
+
+⚡ QUY TẮC PHẢN HỒI VỀ TIỆN ÍCH (BẮT BUỘC TUÂN THỦ):
+- Khi cư dân hỏi "tiện ích nào cần đăng ký lịch hẹn trước" hoặc "cần đặt trước tiện ích nào": CHỈ NÊU VÀ TẬP TRUNG GIẢI THÍCH 2 TIỆN ÍCH CẦN ĐẶT TRƯỚC LÀ: (1) Phòng Xông Hơi Đá Muối Himalaya VIP (Tầng 3) và (2) Vườn Tiệc Nướng BBQ Panoramic (Tầng 25). Có thể nhắc nhẹ 1 câu rằng các tiện ích còn lại (Hồ bơi, Gym, Kids Zone) được vào tự do miễn phí không cần đặt trước. TUYỆT ĐỐI KHÔNG tuôn ra toàn bộ chi tiết dài dòng của cả 5 tiện ích khi cư dân chỉ hỏi về tiện ích cần đặt trước!
+- Khi cư dân hỏi "tiện ích nào miễn phí" hoặc "vào tự do": Chỉ nêu Hồ bơi, Gym 24/7 và Kids Zone.
+- Khi cư dân hỏi chung "chung cư có những tiện ích gì" hoặc "danh sách tiện ích": Mới tóm tắt cả 5 tiện ích.
+- Tòa nhà Skyline gồm 25 tầng. Tuyệt đối KHÔNG có sân Pickleball, Tennis, rạp chiếu phim, karaoke hay sân golf 3D, KHÔNG có tầng 38.
 
 4b. VÉ & LỊCH ĐẶT CHỖ TIỆN ÍCH HIỆN TẠI CỦA CĂN HỘ ${targetAptCode}:
 ${bookingsStr}
@@ -291,6 +294,7 @@ ${bookingsStr}
 - Quầy lễ tân tiếp dân: Tầng 1 (Grand Lobby - Túc trực 24/24).
 
 NGUYÊN TẮC GIAO TIẾP VÀ DẠNG TỪ BẮT BUỘC:
+- Luôn TRẢ LỜI ĐÚNG TRỌNG TÂM câu hỏi. Không tuôn ra các dữ liệu cư dân không yêu cầu.
 - Luôn ưu tiên dùng CHÍNH XÁC các con số và thông tin thực tế từ dữ liệu trên (số tiền hóa đơn 2.465.000 đ, diện tích 78.5 m² / 83.2 m², thành viên gia đình, biển số xe ${residentLicensePlate}, thẻ khách thăm, phiếu báo hỏng, lịch đặt...).
 - Xưng hô: "Tôi" và gọi cư dân là "Quý cư dân" hoặc "Quý vị".
 - Giọng văn ấm áp, lịch sự, ân cần như quản gia 5 sao.
@@ -548,20 +552,53 @@ Quý vị có thể vào mục **Thành Viên Căn Hộ** để đăng ký thêm
 *Biểu phí gửi xe hàng tháng:* Ô tô: 1.200.000 đ/tháng | Xe máy: 120.000 đ/tháng (được tính gộp vào hóa đơn quản lý định kỳ).`;
   }
 
-  // 7. Inquiries about Amenities / Operating Hours / Facilities
+  // 6b. Inquiries about Facilities requiring Booking / Reservation (Tiện ích cần đặt trước / đăng ký trước)
+  if (
+    (text.includes('tiện ích') || text.includes('dịch vụ')) && 
+    (text.includes('đặt trước') || text.includes('đăng ký') || text.includes('hẹn trước') || text.includes('lịch hẹn') || text.includes('giữ chỗ') || text.includes('cần đặt') || text.includes('thu phí') || text.includes('tính phí'))
+  ) {
+    return `Dạ thưa Quý cư dân ${residentName}, tại Chung Cư Skyline (25 Tầng), chỉ có **2 tiện ích đặc quyền riêng tư** bắt buộc cần đăng ký lịch hẹn trước:
+
+1. 🧖 **Phòng Xông Hơi Đá Muối Himalaya VIP (Tầng 3):**
+   - **Tính chất:** Phòng riêng tư khép kín cho gia đình (Private VIP).
+   - **Khung giờ:** 08:00 - 22:00.
+   - **Chi phí giữ chỗ:** **500.000 đ / giờ** (đã bao gồm chuẩn bị gia nhiệt lò đá muối trước 15 phút, khăn nhung cao cấp & tinh dầu tự nhiên).
+   - **Chính sách hủy vé:** Hủy trước 30 phút hoàn 100% tiền giữ chỗ vào hóa đơn sinh hoạt.
+
+2. 🍖 **Vườn Tiệc Nướng BBQ Panoramic (Tầng 25 - Sân Thượng):**
+   - **Tính chất:** Không gian tiệc nướng ngoài trời view toàn cảnh sông Sài Gòn.
+   - **Khung giờ:** 17:00 - 23:00 (theo ca tiệc).
+   - **Chi phí giữ chỗ:** **600.000 đ / ca** (bao gồm set bếp nướng than Weber cao cấp, bàn ghế tiệc và nhân viên dọn dẹp vệ sinh sau tiệc).
+
+💡 **Các tiện ích còn lại:**
+* 🏊 **Hồ bơi vô cực chân mây (Tầng 25)**, 🏋️ **Gym Technogym 24/7 (Tầng 3)** và 🛝 **Sky Kids Zone (Tầng 1)** đều **hoàn toàn miễn phí** và **vào tự do** bằng FaceID hoặc Thẻ cư dân, không cần đặt hẹn trước ạ!
+
+Quý cư dân có thể vào tab **Đăng Ký Đặt Chỗ & Vé Điện Tử** để chọn khung giờ và nhận mã vé QR ngay tức thì!`;
+  }
+
+  // 6c. Inquiries about Free / Open Access Facilities (Tiện ích miễn phí / vào tự do)
+  if (
+    (text.includes('tiện ích') || text.includes('dịch vụ')) && 
+    (text.includes('miễn phí') || text.includes('tự do') || text.includes('không cần đặt') || text.includes('không tốn tiền'))
+  ) {
+    return `Dạ thưa Quý cư dân ${residentName}, tại Chung Cư Skyline có **3 đại tiện ích hoàn toàn miễn phí** và Quý vị có thể **vào tự do** bất cứ lúc nào:
+
+1. 🏋️ **Trung Tâm Thể Hình Technogym (Tầng 3):** Mở cửa **24/7** suốt ngày đêm, miễn phí theo Thẻ cư dân, vào tự do bằng FaceID.
+2. 🏊 **Hồ Bơi Vô Cực Chân Mây (Tầng 25 - Sân Thượng):** Mở cửa **06:00 - 22:00** hàng ngày, hệ thống lọc ozone 28°C (hạn mức 20 lượt/tháng/căn hộ).
+3. 🛝 **Khu Vui Chơi Trẻ Em Sky Kids Zone (Tầng 1):** Mở cửa **07:00 - 21:00** hàng ngày, sàn đệm an toàn kháng khuẩn (yêu cầu có người lớn đi kèm).
+
+*(Riêng Phòng Xông Hơi VIP Tầng 3 và Vườn Nướng BBQ Tầng 25 là tiện ích riêng tư nên cần đặt trước trên ứng dụng).*`;
+  }
+
+  // 7. Inquiries about Amenities / Operating Hours / Facilities (Tổng quan tiện ích)
   if (text.includes('tiện ích') || text.includes('hồ bơi') || text.includes('gym') || text.includes('pool') || text.includes('technogym') || text.includes('giờ mở cửa') || text.includes('dịch vụ tiện ích')) {
     return `Dạ thưa Quý cư dân ${residentName}, danh mục **5 Tiện Ích 5 Sao** của Chung cư Skyline (25 Tầng) như sau:
 
-* 🏊 **Hồ Bơi Vô Cực Chân Mây (Tầng 25 - Sân Thượng):**
-  - Mở cửa: **06:00 - 22:00** hàng ngày, hệ thống lọc ozone 28°C, hạn mức 20 lượt/tháng/căn hộ.
-* 🏋️ **Trung Tâm Thể Hình Technogym (Tầng 3):**
-  - Mở cửa: **24/7** suốt ngày đêm, đầy đủ máy tập Technogym nhập khẩu, miễn phí theo Thẻ cư dân.
-* 🧖 **Phòng Xông Hơi Đá Muối Himalaya VIP (Tầng 3):**
-  - Mở cửa: **08:00 - 22:00**, biểu phí **500.000 đ / giờ** (phòng riêng tư khép kín cho gia đình).
-* 🛝 **Khu Vui Chơi Trẻ Em Sky Kids Zone (Tầng 1 - Sảnh Thương Mại):**
-  - Mở cửa: **07:00 - 21:00** hàng ngày, sàn đệm kháng khuẩn an toàn, miễn phí theo Thẻ cư dân.
-* 🍖 **Vườn Tiệc Nướng BBQ Panoramic (Sân Thượng Tầng 25):**
-  - Mở cửa: **17:00 - 23:00**, biểu phí **600.000 đ / ca** (bao gồm set bếp than nướng Weber cao cấp và nhân viên dọn dẹp vệ sinh sau tiệc).
+* 🏊 **Hồ Bơi Vô Cực Chân Mây (Tầng 25 - Sân Thượng):** Mở cửa **06:00 - 22:00** hàng ngày, lọc ozone 28°C, miễn phí theo thẻ cư dân (vào tự do bằng FaceID/Thẻ).
+* 🏋️ **Trung Tâm Thể Hình Technogym (Tầng 3):** Mở cửa **24/7**, đầy đủ máy tập Technogym nhập khẩu, miễn phí (vào tự do bằng FaceID/Thẻ).
+* 🧖 **Phòng Xông Hơi Đá Muối Himalaya VIP (Tầng 3):** Mở cửa **08:00 - 22:00**, biểu phí **500.000 đ / giờ** (phòng riêng tư khép kín gia đình, **cần đặt trước**).
+* 🛝 **Khu Vui Chơi Trẻ Em Sky Kids Zone (Tầng 1):** Mở cửa **07:00 - 21:00** hàng ngày, miễn phí theo thẻ cư dân (vào tự do).
+* 🍖 **Vườn Tiệc Nướng BBQ Panoramic (Sân Thượng Tầng 25):** Mở cửa **17:00 - 23:00**, biểu phí **600.000 đ / ca** (**cần đặt trước theo ca**).
 
 Quý cư dân chỉ cần nhìn vào camera nhận diện khuôn mặt hoặc chạm thẻ cư dân tại cổng là có thể vào tiện ích ngay ạ!`;
   }
@@ -622,9 +659,9 @@ export async function askGeminiConcierge(
   history: ChatMessage[] = [],
   contextOrAptCode: string | ConciergeContext = '12A05'
 ): Promise<string> {
-  // If API key is not configured or placeholder, immediately use smart project fallback
-  if (!GEMINI_API_KEY || !GEMINI_API_KEY.startsWith('AIza')) {
-    console.info('GEMINI_API_KEY is not configured with standard format. Using smart project data engine.');
+  // If API key is not configured or too short/placeholder, use smart project fallback
+  if (!GEMINI_API_KEY || GEMINI_API_KEY.length < 20) {
+    console.info('GEMINI_API_KEY is not configured. Using smart project data engine.');
     return generateSmartProjectFallback(message, contextOrAptCode);
   }
 
