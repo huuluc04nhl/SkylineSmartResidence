@@ -77,73 +77,73 @@ export default function SmartFacilityPass({ currentUser }: SmartFacilityPassProp
   const amenitiesList = [
     {
       id: 'fac-pool',
-      name: 'Hồ Bơi Vô Cực Chân Mây (Panoramic Sky Pool)',
+      name: 'Hồ Bơi Vô Cực Chân Mây',
       category: 'SPORTS',
-      location: 'Tầng 25 (Sân Thượng Tòa Chung Cư)',
+      location: 'Tầng 25 (Sân Thượng)',
       hours: '06:00 - 22:00',
-      density: '18% (Thoáng đãng)',
+      density: '18% (Thoáng)',
       temp: '28°C • Nước lọc ozone',
       image: 'https://images.unsplash.com/photo-1582719508461-905c673771fd?w=600&auto=format&fit=crop&q=80',
       icon: Waves,
       accessType: 'FREE_ENTRY',
-      accessBadge: 'VÀO TỰ DO (THẺ NFC / FACEID)',
+      accessBadge: 'Vào Tự Do (NFC / FaceID)',
       price: 'Miễn phí theo Thẻ cư dân'
     },
     {
       id: 'fac-gym',
-      name: 'Trung Tâm Thể Hình Đẳng Cấp Technogym',
+      name: 'Phòng Gym Technogym',
       category: 'SPORTS',
-      location: 'Tầng 3 (Khu Tiện Ích Thể Thao)',
+      location: 'Tầng 3 (Khu Thể Thao)',
       hours: 'Mở cửa 24/7',
       density: '38% (Bình thường)',
-      temp: '22°C • Điều hòa ion âm',
+      temp: '22°C • Điều hòa ion',
       image: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=600&auto=format&fit=crop&q=80',
       icon: Dumbbell,
       accessType: 'FREE_ENTRY',
-      accessBadge: 'VÀO TỰ DO (24/7)',
+      accessBadge: 'Vào Tự Do 24/7',
       price: 'Miễn phí theo Thẻ cư dân'
     },
     {
       id: 'fac-sauna',
-      name: 'Phòng Xông Hơi Đá Muối Himalaya (Private VIP)',
+      name: 'Phòng Xông Hơi Đá Muối',
       category: 'WELLNESS',
-      location: 'Tầng 3 (Khu Chăm Sóc Sức Khỏe Riêng Tư)',
+      location: 'Tầng 3 (Khu Chăm Sóc Sức Khỏe)',
       hours: '08:00 - 22:00 (Theo giờ đặt)',
       density: 'Phòng riêng gia đình',
       temp: '48°C • Tinh dầu thảo mộc',
       image: 'https://images.unsplash.com/photo-1540555700478-4be289fbecef?w=600&auto=format&fit=crop&q=80',
       icon: Flame,
       accessType: 'BOOKING_REQUIRED',
-      accessBadge: 'PHÒNG RIÊNG TƯ (ĐẶT GIỮ CHỖ)',
+      accessBadge: 'Đặt Giữ Chỗ (Phòng VIP)',
       price: '500.000 đ / giờ (Phòng gia đình VIP)'
     },
     {
       id: 'fac-kids',
-      name: 'Khu Vui Chơi Trẻ Em Sky Kids Zone',
+      name: 'Khu Vui Chơi Trẻ Em',
       category: 'WELLNESS',
-      location: 'Tầng 1 (Sảnh Thương Mại Tòa A)',
+      location: 'Tầng 1 (Sảnh Tòa A)',
       hours: '07:00 - 21:00',
       density: '30% (Vừa)',
-      temp: '24°C • Sàn đệm kháng khuẩn',
+      temp: '24°C • Sàn kháng khuẩn',
       image: 'https://images.unsplash.com/photo-1566454544259-f4b94c3d758c?w=600&auto=format&fit=crop&q=80',
       icon: Smile,
       accessType: 'FREE_ENTRY',
-      accessBadge: 'VÀO TỰ DO (CÓ NGƯỜI LỚN)',
+      accessBadge: 'Vào Tự Do (Trẻ Em)',
       price: 'Miễn phí theo Thẻ cư dân'
     },
     {
       id: 'fac-bbq',
-      name: 'Vườn Tiệc Nướng BBQ Panoramic Sân Thượng',
+      name: 'Vườn Tiệc Nướng BBQ Sân Thượng',
       category: 'PARTY',
-      location: 'Tầng 25 (Khu Vườn Nhật Bản)',
-      hours: '17:00 - 23:00 (Theo ca tiệc)',
-      density: 'Sẵn sàng 4/6 khu bếp tiệc BBQ',
+      location: 'Tầng 25 (Khu Vườn Nhật)',
+      hours: '17:00 - 23:00 (Theo ca)',
+      density: 'Sẵn sàng 4/6 khu bếp',
       temp: 'Gió trời tự nhiên',
       image: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=600&auto=format&fit=crop&q=80',
       icon: UtensilsCrossed,
       accessType: 'BOOKING_REQUIRED',
-      accessBadge: 'ĐĂNG KÝ TRƯỚC THEO CA',
-      price: '600.000 đ / ca tiệc (Set bếp Weber & nhân viên dọn dẹp)'
+      accessBadge: 'Đăng Ký Theo Ca',
+      price: '600.000 đ / ca tiệc (Set bếp Weber & dọn dẹp)'
     },
   ];
 
@@ -309,15 +309,15 @@ export default function SmartFacilityPass({ currentUser }: SmartFacilityPassProp
         <div className="space-y-1">
           <div className="text-[11px] uppercase tracking-[0.2em] text-[#C5A880] font-bold flex items-center gap-2">
             <Sparkles className="w-4 h-4 text-[#C5A880]" />
-            <span>Trung Tâm Dịch Vụ & Tiện Ích 5 Sao Căn Hộ {aptCode}</span>
+            <span>Tiện Ích 5 Sao • Căn Hộ {aptCode}</span>
           </div>
           <h2 className="text-xl sm:text-2xl font-serif font-bold text-white flex items-center gap-2">
-            <span>Hệ Thống Tiện Ích Cư Dân & Cổng Tự Động</span>
+            <span>Tiện Ích Cư Dân & Cổng Tự Động</span>
           </h2>
           <p className="text-xs text-gray-400 font-mono flex flex-wrap items-center gap-2">
             <span>Chủ Hộ: <strong className="text-white">{userName}</strong></span>
             <span className="text-gray-600">•</span>
-            <span className="text-emerald-400">Gym & Hồ bơi: Miễn phí theo thẻ</span>
+            <span className="text-emerald-400">Gym & Hồ bơi: Miễn phí</span>
             <span className="text-gray-600">•</span>
             <span>Mở cổng 0.28s</span>
           </p>
@@ -339,13 +339,13 @@ export default function SmartFacilityPass({ currentUser }: SmartFacilityPassProp
             className="h-11 px-4 bg-[#1A2332] hover:bg-[#253247] border border-[#C5A880]/50 hover:border-[#C5A880] text-white text-xs font-bold uppercase rounded-none transition-all flex items-center gap-2 shadow-md"
           >
             <CreditCard className="w-4 h-4 text-[#C5A880] shrink-0" />
-            <span>Thẻ Cư Dân VIP 3D</span>
+            <span>Thẻ Cư Dân 3D</span>
           </button>
         </div>
       </div>
 
       {/* ============================================================= */}
-      {/* 2. THANH ĐIỀU HƯỚNG 3 CHỨC NĂNG RÕ RÀNG (WORKFLOW TABS)       */}
+      {/* 2. THANH ĐIỀU HƯỚNG 3 CHỨC NĂNG (WORKFLOW TABS)               */}
       {/* ============================================================= */}
       <div className="flex items-center gap-2 border-b border-[#222B35] pb-2 overflow-x-auto">
         {/* Chức năng 1 */}
@@ -359,7 +359,7 @@ export default function SmartFacilityPass({ currentUser }: SmartFacilityPassProp
           }`}
         >
           <DoorOpen className="w-4 h-4" />
-          <span>1. Danh Mục Tiện Ích & Cổng Vào Tự Động (5)</span>
+          <span>1. Danh Mục Tiện Ích (5)</span>
         </button>
 
         {/* Chức năng 2 */}
@@ -373,7 +373,7 @@ export default function SmartFacilityPass({ currentUser }: SmartFacilityPassProp
           }`}
         >
           <CalendarCheck className="w-4 h-4" />
-          <span>2. Đăng Ký Đặt Chỗ & Vé Điện Tử ({bookings.filter(b => b.status === 'CONFIRMED').length})</span>
+          <span>2. Đặt Chỗ & Vé Vào ({bookings.filter(b => b.status === 'CONFIRMED').length})</span>
         </button>
 
         {/* Chức năng 3 */}
@@ -387,7 +387,7 @@ export default function SmartFacilityPass({ currentUser }: SmartFacilityPassProp
           }`}
         >
           <History className="w-4 h-4" />
-          <span>3. Nhật Ký Ra Vào Tiện Ích ({accessLogs.length})</span>
+          <span>3. Nhật Ký Ra Vào ({accessLogs.length})</span>
         </button>
       </div>
 

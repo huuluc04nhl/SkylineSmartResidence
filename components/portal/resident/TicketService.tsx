@@ -63,10 +63,10 @@ export default function TicketService() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#222B35] pb-4">
         <div>
           <div className="text-[10px] uppercase tracking-[0.25em] text-[#C5A880] font-semibold">
-            Hỗ Trợ Kỹ Thuật & Dịch Vụ Cư Dân
+            Hỗ Trợ Kỹ Thuật
           </div>
           <h2 className="font-serif text-2xl text-white font-bold mt-1">
-            Yêu Cầu Hỗ Trợ & Nghiệm Thu Kỹ Thuật
+            Báo Hỏng & Sửa Chữa
           </h2>
         </div>
 
@@ -80,7 +80,7 @@ export default function TicketService() {
 
       {createdSuccess && (
         <div className="p-3 bg-emerald-950 border border-emerald-500 text-emerald-300 text-xs flex items-center gap-2">
-          <CheckCircle2 className="w-4 h-4" /> Yêu cầu sửa chữa đã được tiếp nhận và chuyển đến đội ngũ kỹ thuật của Ban Quản Lý!
+          <CheckCircle2 className="w-4 h-4" /> Yêu cầu sửa chữa đã được tiếp nhận và chuyển đến đội ngũ kỹ thuật!
         </div>
       )}
 
@@ -88,8 +88,8 @@ export default function TicketService() {
       {showCreateForm && (
         <form onSubmit={handleCreateTicket} className="p-6 bg-[#121820] border border-[#C5A880] space-y-4">
           <div className="flex items-center justify-between border-b border-[#222B35] pb-2 text-xs">
-            <span className="font-serif font-bold text-white uppercase tracking-wider">Tạo Phiếu Phản Ánh Kỹ Thuật</span>
-            <span className="text-gray-400">Cam kết thợ có mặt trong 15 - 60 phút</span>
+            <span className="font-serif font-bold text-white uppercase tracking-wider">Tạo Phiếu Báo Sự Cố</span>
+            <span className="text-gray-400">Kỹ thuật viên có mặt trong 15 - 60 phút</span>
           </div>
 
           <div className="space-y-1.5">
@@ -137,10 +137,10 @@ export default function TicketService() {
         <div className="flex items-center justify-between border-b border-[#222B35] pb-3">
           <div>
             <div className="text-[10px] uppercase tracking-wider text-[#C5A880] font-semibold flex items-center gap-1.5">
-              <Sliders className="w-3.5 h-3.5" /> Nghiệm Thu Hình Ảnh Trực Quan
+              <Sliders className="w-3.5 h-3.5" /> Nghiệm Thu Hình Ảnh
             </div>
             <h3 className="font-serif text-lg text-white font-bold mt-0.5">
-              Thanh Trượt So Sánh Hiện Trạng Trước & Sau Sửa Chữa
+              Hình Ảnh Trước & Sau Sửa Chữa
             </h3>
           </div>
           <span className="text-xs font-mono text-gray-400">Phiếu: {activeComparisonTicket.id}</span>

@@ -455,17 +455,13 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#222B35] pb-4">
         <div>
           <div className="text-[10px] uppercase tracking-[0.25em] text-[#C5A880] font-semibold flex items-center gap-1.5">
-            <ScanFace className="w-3.5 h-3.5" /> Skyline Smart Residence • {isOwner ? 'Chủ Hộ Căn Hộ' : 'Thành Viên Cư Dân'}
+            <ScanFace className="w-3.5 h-3.5" /> Skyline Smart Residence • {isOwner ? 'Chủ Hộ' : 'Thành Viên'}
           </div>
           <h2 className="font-serif text-2xl text-white font-bold mt-1">
-            {isOwner 
-              ? 'Hồ Sơ Cư Dân, Thẻ Định Danh & Đổi Mật Khẩu' 
-              : 'Hồ Sơ Cá Nhân Thành Viên & Đổi Mật Khẩu'}
+            Hồ Sơ & Định Danh Cư Dân
           </h2>
           <p className="text-xs text-gray-400 mt-0.5">
-            {isOwner
-              ? `Căn hộ: ${aptCode} • Quản lý hồ sơ cư dân, thẻ định danh, cấp quyền vào cửa và đổi mật khẩu`
-              : `Căn hộ: ${aptCode} • Thông tin cá nhân và thay đổi mật khẩu đăng nhập của thành viên`}
+            Căn hộ: <strong className="text-white font-mono">{aptCode}</strong> • Thông tin cá nhân, định danh e-KYC và bảo mật tài khoản
           </p>
         </div>
 
@@ -482,19 +478,19 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
 
             {ekycStatus === 'VERIFIED' && (
               <span className="px-3 py-1 bg-emerald-950/80 border border-emerald-500 text-emerald-300 text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 rounded-none">
-                <ShieldCheck className="w-4 h-4 text-emerald-400" /> Đã Xác Thực Căn Cước
+                <ShieldCheck className="w-4 h-4 text-emerald-400" /> Đã Xác Thực e-KYC
               </span>
             )}
 
             {ekycStatus === 'PENDING' && (
               <span className="px-3 py-1 bg-amber-950/80 border border-amber-500 text-amber-300 text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 rounded-none animate-pulse">
-                <Clock className="w-4 h-4 text-amber-400" /> Đang Chờ Ban Quản Lý Duyệt
+                <Clock className="w-4 h-4 text-amber-400" /> Chờ BQL Phê Duyệt
               </span>
             )}
 
             {ekycStatus === 'REJECTED' && (
               <span className="px-3 py-1 bg-rose-950/80 border border-rose-500 text-rose-300 text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 rounded-none">
-                <XCircle className="w-4 h-4 text-rose-400" /> Yêu Cầu Chụp Lại Thẻ
+                <XCircle className="w-4 h-4 text-rose-400" /> Yêu Cầu Chụp Lại
               </span>
             )}
 
@@ -507,13 +503,13 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
         ) : (
           <div className="flex items-center gap-2 flex-shrink-0">
             <span className="px-3 py-1.5 bg-[#161D26] border border-purple-500/50 text-purple-300 text-xs font-semibold rounded-none flex items-center gap-2">
-              <Users className="w-4 h-4 text-purple-400" /> Thành Viên Căn Hộ (Chủ Hộ Cấp Quyền)
+              <Users className="w-4 h-4 text-purple-400" /> Thành Viên Căn Hộ
             </span>
           </div>
         )}
       </div>
 
-      {/* Tab Navigation: HIỂN THỊ CHO TẤT CẢ CÁC TÀI KHOẢN */}
+      {/* Tab Navigation */}
       <div className="flex flex-wrap border-b border-[#222B35] text-xs font-semibold uppercase tracking-wider gap-2">
         <button
           type="button"
@@ -536,7 +532,7 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
               : 'border-transparent text-gray-400 hover:text-gray-200'
           }`}
         >
-          <ScanFace className="w-4 h-4" /> 2. Xác Thực Căn Cước & Nhận Diện Khuôn Mặt
+          <ScanFace className="w-4 h-4" /> 2. Định Danh e-KYC & FaceID
         </button>
 
         <button
@@ -548,7 +544,7 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
               : 'border-transparent text-gray-400 hover:text-gray-200'
           }`}
         >
-          <KeyRound className="w-4 h-4" /> {isOwner ? '3. Đổi Mật Khẩu Các Tài Khoản' : '3. Đổi Mật Khẩu Tài Khoản'}
+          <KeyRound className="w-4 h-4" /> 3. Đổi Mật Khẩu
         </button>
       </div>
 
@@ -647,10 +643,10 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#222B35] pb-4">
               <div>
                 <div className="text-[10px] uppercase tracking-wider text-[#C5A880] font-bold flex items-center gap-1.5">
-                  <Building className="w-3.5 h-3.5" /> Khối Thông Tin Bắt Buộc • Ban Quản Lý Quản Lý
+                  <Building className="w-3.5 h-3.5" /> Pháp Lý & Định Danh
                 </div>
                 <h3 className="font-serif text-lg font-bold text-white mt-0.5">
-                  1. Thông Tin Căn Hộ & Pháp Lý Định Danh Cư Trú
+                  1. Thông Tin Căn Hộ & Căn Cước Công Dân
                 </h3>
               </div>
 
@@ -1002,13 +998,13 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#222B35] pb-4">
               <div>
                 <div className="text-[10px] uppercase tracking-wider text-[#C5A880] font-bold flex items-center gap-1.5">
-                  <Smartphone className="w-3.5 h-3.5" /> Tiện Ích Sinh Hoạt • Cư Dân Tự Do Cập Nhật
+                  <Smartphone className="w-3.5 h-3.5" /> Liên Hệ & Phương Tiện
                 </div>
                 <h3 className="font-serif text-lg font-bold text-white mt-0.5">
-                  2. Thông Tin Liên Hệ & Đăng Ký Tiện Ích Căn Hộ
+                  2. Thông Tin Liên Hệ & Phương Tiện
                 </h3>
                 <p className="text-xs text-gray-400 mt-0.5">
-                  Thông tin dùng để nhận thông báo phí quản lý, bưu phẩm sảnh đón và đồng bộ hệ thống bãi xe hầm B1
+                  Nhận thông báo hóa đơn, bưu phẩm sảnh đón và quản lý biển số xe.
                 </p>
               </div>
 

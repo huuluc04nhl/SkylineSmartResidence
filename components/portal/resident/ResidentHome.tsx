@@ -68,40 +68,40 @@ export default function ResidentHome({ currentUser, onNavigate, onOpenVisitorMod
   return (
     <div className="space-y-6 w-full animate-fadeIn">
       {/* Top Welcome & Environmental Widget Header */}
-      <div className="p-6 bg-gradient-to-r from-[#161D26] via-[#121820] to-[#0D1117] border border-[#C5A880]/70 flex flex-col md:flex-row md:items-center justify-between gap-6 shadow-2xl">
+      <div className="p-5 sm:p-6 bg-gradient-to-r from-[#161D26] via-[#121820] to-[#0D1117] border border-[#C5A880]/70 flex flex-col md:flex-row md:items-center justify-between gap-5 shadow-2xl">
         <div>
           <div className="text-[10px] uppercase tracking-[0.25em] text-[#C5A880] font-bold flex items-center gap-1.5">
-            <Sparkles className="w-3.5 h-3.5" /> Không Gian Cư Dân Thượng Lưu • SKYLINE RESIDENCE
+            <Sparkles className="w-3.5 h-3.5" /> Không Gian Cư Dân • SKYLINE RESIDENCE
           </div>
           <h2 className="font-serif text-2xl sm:text-3xl text-white font-bold mt-1 tracking-wide">
             Xin Chào, {userName}
           </h2>
-          <div className="text-xs text-gray-300 mt-2.5 flex flex-wrap items-center gap-2 sm:gap-2.5">
+          <div className="text-xs text-gray-300 mt-2.5 flex flex-wrap items-center gap-2">
             {/* Căn Hộ & Nút Sổ Tay */}
             <div className="h-8 flex items-center gap-1.5 bg-[#161B22] border border-[#2D3748] px-2.5 shadow-sm">
-              <span className="text-gray-400 text-[11px]">Căn Hộ:</span>
-              <strong className="text-white font-mono text-xs">Căn {aptCode}</strong>
+              <span className="text-gray-400 text-[11px]">Căn:</span>
+              <strong className="text-white font-mono text-xs">{aptCode}</strong>
               <button
                 type="button"
                 onClick={() => setIsAptDetailOpen(true)}
                 className="ml-1 h-5 px-2 bg-[#0D1117] hover:bg-[#C5A880] hover:text-[#0D1117] text-[#C5A880] border border-[#C5A880]/50 text-[10.5px] font-semibold transition-all flex items-center gap-1 shadow-sm"
-                title="Mở sổ tay căn hộ thượng lưu & phối cảnh không gian 3D"
+                title="Mở sổ tay căn hộ & phối cảnh 3D"
               >
-                <Eye className="w-3 h-3" /> Sổ Tay & Phối Cảnh
+                <Eye className="w-3 h-3" /> Sổ Tay 3D
               </button>
             </div>
 
-            {/* Huy Hiệu Chủ Sở Hữu Thượng Lưu */}
+            {/* Vai Trò */}
             <div className="h-8 flex items-center gap-1.5 px-2.5 bg-[#C5A880]/15 border border-[#C5A880]/50 text-[#C5A880] text-[11px] font-semibold shadow-sm">
               <Crown className="w-3.5 h-3.5 text-[#C5A880]" />
-              <span>{isOwner ? 'Chủ Sở Hữu Căn Hộ' : 'Thành Viên Gia Đình'}</span>
+              <span>{isOwner ? 'Chủ Hộ' : 'Thành Viên'}</span>
             </div>
 
-            {/* Huy Hiệu Xác Thực An Ninh e-KYC */}
+            {/* Trạng Thái e-KYC */}
             {isOwner && (
               <div className="h-8 flex items-center gap-1.5 px-2.5 bg-emerald-950/60 border border-emerald-500/40 text-emerald-300 text-[11px] font-mono font-medium shadow-sm">
                 <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
-                <span>Thẻ e-KYC Đã Kích Hoạt</span>
+                <span>e-KYC Đã Xác Thực</span>
               </div>
             )}
           </div>
@@ -139,7 +139,7 @@ export default function ResidentHome({ currentUser, onNavigate, onOpenVisitorMod
       <div className="p-4 bg-[#121820] border border-[#222B35] space-y-2.5 shadow-lg">
         <div className="flex items-center justify-between">
           <span className="text-[11px] uppercase tracking-wider text-[#C5A880] font-bold flex items-center gap-1.5">
-            <Home className="w-3.5 h-3.5" /> Ngữ Cảnh Tự Động Hóa 1-Chạm (Smart Automation Scenes):
+            <Home className="w-3.5 h-3.5" /> Ngữ Cảnh Thông Minh:
           </span>
           {sceneMessage && (
             <span className="text-xs font-mono text-emerald-400 animate-fadeIn">
@@ -160,9 +160,9 @@ export default function ResidentHome({ currentUser, onNavigate, onOpenVisitorMod
           >
             <div>
               <div className="font-bold text-[11px] text-white flex items-center gap-1.5">
-                <SunMedium className="w-3.5 h-3.5 text-amber-400" /> 🏡 Về Nhà
+                <SunMedium className="w-3.5 h-3.5 text-amber-400" /> Về Nhà
               </div>
-              <div className="text-[10px] text-gray-400">Đèn Bật • ĐH 24°C • Mở Rèm</div>
+              <div className="text-[10px] text-gray-400">Bật đèn • ĐH 24°C • Mở rèm</div>
             </div>
             {activeScene === 'WELCOME' && <span className="w-2 h-2 rounded-full bg-[#C5A880]"></span>}
           </button>
@@ -178,9 +178,9 @@ export default function ResidentHome({ currentUser, onNavigate, onOpenVisitorMod
           >
             <div>
               <div className="font-bold text-[11px] text-white flex items-center gap-1.5">
-                <Home className="w-3.5 h-3.5 text-blue-400" /> 🚪 Ra Ngoài
+                <Home className="w-3.5 h-3.5 text-blue-400" /> Ra Ngoài
               </div>
-              <div className="text-[10px] text-gray-400">Tắt Điện • Khóa Cửa Tự Động • Đóng Rèm</div>
+              <div className="text-[10px] text-gray-400">Tắt điện • Khóa cửa • Đóng rèm</div>
             </div>
             {activeScene === 'AWAY' && <span className="w-2 h-2 rounded-full bg-[#C5A880]"></span>}
           </button>
@@ -196,9 +196,9 @@ export default function ResidentHome({ currentUser, onNavigate, onOpenVisitorMod
           >
             <div>
               <div className="font-bold text-[11px] text-white flex items-center gap-1.5">
-                <Moon className="w-3.5 h-3.5 text-indigo-400" /> 🌙 Đi Ngủ
+                <Moon className="w-3.5 h-3.5 text-indigo-400" /> Đi Ngủ
               </div>
-              <div className="text-[10px] text-gray-400">ĐH 26°C • Đóng Rèm • Khóa Cửa</div>
+              <div className="text-[10px] text-gray-400">ĐH 26°C • Khóa cửa • Đóng rèm</div>
             </div>
             {activeScene === 'SLEEP' && <span className="w-2 h-2 rounded-full bg-[#C5A880]"></span>}
           </button>
@@ -214,9 +214,9 @@ export default function ResidentHome({ currentUser, onNavigate, onOpenVisitorMod
           >
             <div>
               <div className="font-bold text-[11px] text-white flex items-center gap-1.5">
-                <Tv className="w-3.5 h-3.5 text-rose-400" /> 🎬 Xem Phim
+                <Tv className="w-3.5 h-3.5 text-rose-400" /> Xem Phim
               </div>
-              <div className="text-[10px] text-gray-400">ĐH 23°C • Đóng Rèm • Đèn 15%</div>
+              <div className="text-[10px] text-gray-400">ĐH 23°C • Đèn 15% • Đóng rèm</div>
             </div>
             {activeScene === 'CINEMA' && <span className="w-2 h-2 rounded-full bg-[#C5A880]"></span>}
           </button>
@@ -232,9 +232,9 @@ export default function ResidentHome({ currentUser, onNavigate, onOpenVisitorMod
           >
             <div>
               <div className="font-bold text-[11px] text-white flex items-center gap-1.5">
-                <Sparkles className="w-3.5 h-3.5 text-emerald-400" /> 🍽️ Ăn Tối & Tiệc
+                <Sparkles className="w-3.5 h-3.5 text-emerald-400" /> Ăn Tối
               </div>
-              <div className="text-[10px] text-gray-400">Đèn Bếp & PK • View Panorama</div>
+              <div className="text-[10px] text-gray-400">Bật đèn bếp • View phố</div>
             </div>
             {activeScene === 'DINING' && <span className="w-2 h-2 rounded-full bg-[#C5A880]"></span>}
           </button>
@@ -248,10 +248,10 @@ export default function ResidentHome({ currentUser, onNavigate, onOpenVisitorMod
           <div className="lg:col-span-5 bg-[#121820] border border-[#222B35] p-5 space-y-4 shadow-2xl">
             <div className="border-b border-[#222B35] pb-2 text-left">
               <div className="text-[10px] uppercase tracking-[0.2em] text-[#C5A880] font-bold">
-                Thẻ Cư Dân Điện Tử Thông Minh
+                Thẻ Cư Dân Điện Tử
               </div>
               <p className="text-xs text-gray-400">
-                Nhấp vào thẻ để lật xem 2 mặt hoặc chạm thẻ mở cổng tức thì
+                Nhấp để lật thẻ xem 2 mặt • Quẹt thẻ mở cổng sảnh & thang máy
               </p>
             </div>
 
@@ -276,7 +276,7 @@ export default function ResidentHome({ currentUser, onNavigate, onOpenVisitorMod
                 <ArrowRight className="w-3.5 h-3.5 text-gray-500 group-hover:text-[#C5A880]" />
               </div>
               <p className="text-[11px] text-gray-400">
-                Gửi mã QR có hạn giờ qua Zalo để khách tự quét mở cổng sảnh & thang máy.
+                Tạo mã QR gửi khách qua Zalo để tự quét mở sảnh đón và thang máy.
               </p>
             </div>
 
@@ -289,11 +289,11 @@ export default function ResidentHome({ currentUser, onNavigate, onOpenVisitorMod
                 <Wrench className="w-4 h-4" />
               </div>
               <div className="font-serif text-sm font-bold text-white group-hover:text-amber-400 flex items-center justify-between">
-                <span>Yêu Cầu Sửa Chữa & Kỹ Thuật</span>
+                <span>Báo Hỏng & Sửa Chữa</span>
                 <ArrowRight className="w-3.5 h-3.5 text-gray-500 group-hover:text-amber-400" />
               </div>
               <p className="text-[11px] text-gray-400">
-                Tiếp nhận yêu cầu tự động, ưu tiên hỗ trợ khẩn và cử kỹ thuật viên có mặt trong 60 phút.
+                Tiếp nhận sự cố kỹ thuật, cử kỹ thuật viên xử lý trong 60 phút.
               </p>
             </div>
 
@@ -307,11 +307,11 @@ export default function ResidentHome({ currentUser, onNavigate, onOpenVisitorMod
                   <CreditCard className="w-4 h-4" />
                 </div>
                 <div className="font-serif text-sm font-bold text-white group-hover:text-emerald-400 flex items-center justify-between">
-                  <span>Hóa Đơn Tháng 08/2026</span>
+                  <span>Hóa Đơn Dịch Vụ</span>
                   <span className="text-[10px] font-mono bg-emerald-950 text-emerald-300 px-1.5 py-0.5 border border-emerald-500">2.465.000 đ</span>
                 </div>
                 <p className="text-[11px] text-gray-400">
-                  Thanh toán đa kênh VNPay, MoMo, VietQR 24/7 đối soát tự động.
+                  Thanh toán trực tuyến VietQR, MoMo, VNPay 24/7 đối soát tức thì.
                 </p>
               </div>
             )}
@@ -325,11 +325,11 @@ export default function ResidentHome({ currentUser, onNavigate, onOpenVisitorMod
                 <CalendarCheck className="w-4 h-4" />
               </div>
               <div className="font-serif text-sm font-bold text-white group-hover:text-blue-400 flex items-center justify-between">
-                <span>Quẹt Thẻ Tiện Ích 5 Sao</span>
+                <span>Tiện Ích Cư Dân</span>
                 <ArrowRight className="w-3.5 h-3.5 text-gray-500 group-hover:text-blue-400" />
               </div>
               <p className="text-[11px] text-gray-400">
-                Chạm mở cổng Hồ bơi Sky Pool Tầng 25, Gym Technogym, Sauna muối Himalaya.
+                Mở cổng Hồ bơi chân mây Tầng 25, Gym Technogym, Sauna, BBQ.
               </p>
             </div>
           </div>
@@ -338,9 +338,9 @@ export default function ResidentHome({ currentUser, onNavigate, onOpenVisitorMod
           <div className="bg-[#121820] border border-[#222B35] p-5 space-y-4">
             <div className="flex items-center justify-between border-b border-[#222B35] pb-3">
               <span className="text-xs uppercase tracking-wider text-[#C5A880] font-semibold flex items-center gap-2">
-                <Building className="w-4 h-4" /> Bảng Tin Tòa Nhà (Newsfeed Nội Bộ)
+                <Building className="w-4 h-4" /> Bảng Tin Tòa Nhà
               </span>
-              <span className="text-[10px] text-emerald-400 font-mono">Đã kiểm duyệt AI ✓</span>
+              <span className="text-[10px] text-emerald-400 font-mono">Chính Thức BQL ✓</span>
             </div>
 
             <div className="space-y-3">

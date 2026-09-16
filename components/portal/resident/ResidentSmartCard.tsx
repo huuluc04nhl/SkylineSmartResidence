@@ -225,7 +225,7 @@ export default function ResidentSmartCard({
         )}
 
         <div className="text-center text-[10px] text-gray-400 font-light">
-          * Thẻ cư dân điện tử chuẩn kim loại tích hợp RFID/NFC & FaceID mở cổng tự động trong <strong>0.28 giây</strong>.
+          * Thẻ điện tử tích hợp NFC & FaceID mở cổng sảnh và thang máy trong <strong>0.28s</strong>.
         </div>
       </div>
     </div>

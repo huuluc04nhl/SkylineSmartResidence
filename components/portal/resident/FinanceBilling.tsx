@@ -59,10 +59,10 @@ export default function FinanceBilling() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#222B35] pb-4">
         <div>
           <div className="text-[10px] uppercase tracking-[0.25em] text-[#C5A880] font-semibold flex items-center gap-1.5">
-            <Shield className="w-3.5 h-3.5" /> Quản Lý Tài Chính & Hóa Đơn Căn Hộ
+            <Shield className="w-3.5 h-3.5" /> Tài Chính Căn Hộ
           </div>
           <h2 className="font-serif text-2xl text-white font-bold mt-1">
-            Hóa Đơn Dịch Vụ & Cổng Thanh Toán Trực Tuyến
+            Hóa Đơn & Thanh Toán
           </h2>
         </div>
 
@@ -71,7 +71,7 @@ export default function FinanceBilling() {
             onClick={() => setShowPaymentModal(true)}
             className="px-5 py-2.5 bg-[#C5A880] hover:bg-white text-[#0D1117] text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-2 shadow-lg"
           >
-            <CreditCard className="w-4 h-4" /> Thanh Toán VNPay / MoMo
+            <CreditCard className="w-4 h-4" /> Thanh Toán Trực Tuyến
           </button>
         </div>
       </div>
@@ -81,11 +81,11 @@ export default function FinanceBilling() {
         <AlertTriangle className="w-5 h-5 text-amber-400 flex-shrink-0 mt-0.5" />
         <div className="space-y-1 text-xs text-gray-200">
           <div className="text-amber-300 font-bold uppercase tracking-wider flex items-center gap-1.5">
-            <Sparkles className="w-4 h-4 text-amber-400" /> Cảnh Báo AI Energy: Nghi Vấn Rò Rỉ Nước Sinh Hoạt
+            <Sparkles className="w-4 h-4 text-amber-400" /> Cảnh Báo Tiêu Thụ Nước Bất Thường
           </div>
           <p className="text-gray-300">
-            Hệ thống AI phát hiện lượng nước tiêu thụ tăng vọt <strong>+115%</strong> và có dòng chảy liên tục vào khung giờ <strong>02:00 - 04:00 sáng</strong>. 
-            Kính đề nghị Quý chủ hộ kiểm tra lại các van xả bồn cầu hoặc thiết bị vệ sinh trong căn 12A05 để tránh thất thoát nước.
+            Hệ thống phát hiện dòng chảy liên tục khung giờ <strong>02:00 - 04:00 sáng</strong> (+115%). 
+            Vui lòng kiểm tra van xả bồn cầu hoặc thiết bị vệ sinh trong căn hộ để tránh lãng phí nước.
           </p>
         </div>
       </div>
@@ -95,8 +95,8 @@ export default function FinanceBilling() {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#222B35] pb-4">
           <div>
             <div className="text-xs text-gray-400">Kỳ thanh toán: <strong className="text-white">{currentBill.billing_month}</strong></div>
-            <div className="text-xs text-gray-400 mt-0.5">Hạn chót thanh toán: <strong className="text-amber-400 font-mono">30/08/2026</strong></div>
-            <div className="text-[11px] text-gray-400 mt-0.5">Đơn vị thụ hưởng: <strong className="text-gray-200">BQL Chung cư SKYLINE Smart Residence</strong></div>
+            <div className="text-xs text-gray-400 mt-0.5">Hạn chót: <strong className="text-amber-400 font-mono">30/08/2026</strong></div>
+            <div className="text-[11px] text-gray-400 mt-0.5">Đơn vị: <strong className="text-gray-200">BQL Skyline Smart Residence</strong></div>
           </div>
           <div className="text-right">
             <div className="text-xs uppercase tracking-wider text-gray-400">Tổng Tiền Cần Thanh Toán</div>
@@ -112,7 +112,7 @@ export default function FinanceBilling() {
         {/* Breakdown Table */}
         <div className="space-y-3">
           <div className="text-xs uppercase tracking-wider text-gray-400 font-semibold">
-            Chi Tiết Từng Hạng Mục Phí Tháng 08/2026:
+            Chi Tiết Hạng Mục Phí Tháng 08/2026:
           </div>
 
           <div className="divide-y divide-[#222B35] border border-[#222B35] text-xs">
@@ -120,10 +120,10 @@ export default function FinanceBilling() {
               <div key={item.id} className="p-3.5 flex items-center justify-between hover:bg-[#161B22] transition-colors">
                 <div>
                   <div className="font-semibold text-white">
-                    {item.service_type === 'Electricity' && '1. Tiền Điện Sinh Hoạt (Đo lường thông minh)'}
-                    {item.service_type === 'Water' && '2. Tiền Nước Sinh Hoạt (AI Anomaly Alert +115%)'}
-                    {item.service_type === 'Management_Fee' && '3. Phí Quản Lý Vận Hành Tòa Nhà (73.2 m² thông thủy)'}
-                    {item.service_type === 'Parking' && '4. Phí Trông Giữ Xe Ô Tô Biển Số 51K-889.99 (Hầm B1)'}
+                    {item.service_type === 'Electricity' && '1. Tiền Điện Sinh Hoạt'}
+                    {item.service_type === 'Water' && '2. Tiền Nước Sinh Hoạt (+115% cảnh báo rò rỉ)'}
+                    {item.service_type === 'Management_Fee' && '3. Phí Quản Lý Vận Hành (73.2 m²)'}
+                    {item.service_type === 'Parking' && '4. Phí Trông Giữ Xe (Ô tô 51K-889.99)'}
                   </div>
                   {item.usage && (
                     <div className="text-[11px] text-gray-400 font-mono mt-0.5">
