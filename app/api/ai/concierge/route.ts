@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { askGeminiConcierge, generateSmartProjectFallback } from '@/lib/geminiClient';
+import { askGeminiConcierge, generateSmartProjectFallback, extractAiSuggestions } from '@/lib/geminiClient';
 import { getUserStore } from '@/lib/userStore';
 
 export async function POST(req: NextRequest) {
@@ -54,20 +54,24 @@ export async function POST(req: NextRequest) {
 
     fallbackContext = context;
 
-    const reply = await askGeminiConcierge(message, history || [], context);
+    const rawReply = await askGeminiConcierge(message, history || [], context);
+    const { cleanText, suggestions } = extractAiSuggestions(rawReply);
 
     return NextResponse.json({
       success: true,
-      reply,
+      reply: cleanText,
+      suggestions,
       timestamp: new Date().toISOString(),
     });
   } catch (error: any) {
     console.error('Handled error in /api/ai/concierge:', error);
     // Never fail the user: return instant smart project data answer using resident's prompt!
     const fallbackAnswer = generateSmartProjectFallback(userMessage || '', fallbackContext);
+    const { cleanText, suggestions } = extractAiSuggestions(fallbackAnswer);
     return NextResponse.json({
       success: true,
-      reply: fallbackAnswer,
+      reply: cleanText,
+      suggestions,
       timestamp: new Date().toISOString(),
       isFallback: true,
     });

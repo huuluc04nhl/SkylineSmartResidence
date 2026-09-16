@@ -79,50 +79,195 @@ const KNOWLEDGE_CATEGORIES = [
   }
 ];
 
+function parseSuggestionsFromReply(rawReply: string): { cleanText: string; suggestions: string[] } {
+  if (!rawReply) return { cleanText: '', suggestions: [] };
+  const regex = /\[SUGGESTIONS:\s*([^\]]+)\]/i;
+  const match = rawReply.match(regex);
+  if (match) {
+    const rawSuggestions = match[1];
+    const suggestions = rawSuggestions
+      .split('|')
+      .map((s) => s.trim())
+      .filter((s) => s.length > 0);
+    const cleanText = rawReply.replace(regex, '').trim();
+    return { cleanText, suggestions };
+  }
+  return { cleanText: rawReply.trim(), suggestions: [] };
+}
+
 function getDynamicSuggestions(userQuestion: string, aiResponse: string): string[] {
   const combined = (userQuestion + ' ' + aiResponse).toLowerCase();
 
-  if (combined.includes('hồ bơi') || combined.includes('pool') || combined.includes('gym') || combined.includes('tiện ích') || combined.includes('pickleball') || combined.includes('tennis') || combined.includes('xông hơi') || combined.includes('sauna') || combined.includes('bbq') || combined.includes('vé')) {
+  // 1. Facilities requiring reservation / booking
+  if (
+    (combined.includes('tiện ích') || combined.includes('dịch vụ')) &&
+    (combined.includes('đặt trước') || combined.includes('hẹn trước') || combined.includes('đăng ký') || combined.includes('giữ chỗ') || combined.includes('tính phí'))
+  ) {
     return [
-      '⏰ Giờ mở cửa Hồ bơi & Gym',
-      '🧘 Phòng xông hơi VIP & Bảng giá',
-      '🥩 Vườn nướng BBQ Panoramic tầng 25',
-      '🎫 Kiểm tra vé tiện ích đã đặt'
+      '🧖 Bảng giá phòng xông hơi VIP Tầng 3',
+      '🍖 Đặt tiệc nướng BBQ panoramic Tầng 25',
+      '💳 Chính sách hủy vé & hoàn tiền 100%',
+      '🏊 Các tiện ích nào hoàn toàn miễn phí?'
     ];
   }
 
-  if (combined.includes('hóa đơn') || combined.includes('tiền') || combined.includes('phí') || combined.includes('thanh toán') || combined.includes('nợ') || combined.includes('chuyển khoản')) {
+  // 2. Free / Open Access Facilities
+  if (
+    combined.includes('miễn phí') || 
+    combined.includes('tự do') || 
+    combined.includes('không cần đặt')
+  ) {
     return [
+      '⏰ Giờ mở cửa Hồ bơi vô cực Tầng 25',
+      '🏋️ Phòng Gym Technogym có mở 24/7 không?',
+      '🧖 Tiện ích nào cần đăng ký lịch hẹn trước?',
+      '🛝 Quy định khu vui chơi trẻ em Sky Kids'
+    ];
+  }
+
+  // 3. Scale, building floors, apartments per floor
+  if (
+    combined.includes('bao nhiêu tầng') || 
+    combined.includes('bao nhiêu căn') || 
+    combined.includes('quy mô') || 
+    combined.includes('mỗi tầng') || 
+    combined.includes('1 tầng') ||
+    combined.includes('tầng hầm') ||
+    combined.includes('tầng 25')
+  ) {
+    return [
+      '🏊 Hồ bơi vô cực nằm ở tầng mấy?',
+      '🛍️ Tầng 1 đến Tầng 4 có những tiện ích gì?',
+      '🏠 Căn hộ 12A05 diện tích bao nhiêu m²?',
+      '🧖 Tiện ích nào cần đăng ký trước?'
+    ];
+  }
+
+  // 4. General Facilities (hồ bơi, gym, xông hơi, bbq)
+  if (
+    combined.includes('hồ bơi') || 
+    combined.includes('pool') || 
+    combined.includes('gym') || 
+    combined.includes('technogym') || 
+    combined.includes('tiện ích') || 
+    combined.includes('xông hơi') || 
+    combined.includes('sauna') || 
+    combined.includes('bbq')
+  ) {
+    return [
+      '🧖 Tiện ích nào cần đăng ký lịch hẹn trước?',
+      '⏰ Giờ mở cửa Hồ bơi & Phòng gym',
+      '🍖 Bảng giá đặt vườn BBQ Tầng 25',
+      '🎫 Kiểm tra vé tiện ích đã đặt của tôi'
+    ];
+  }
+
+  // 5. Bookings / Tickets
+  if (
+    combined.includes('lịch đặt') || 
+    combined.includes('đã đặt') || 
+    combined.includes('vé') || 
+    combined.includes('mã vé') || 
+    combined.includes('booking')
+  ) {
+    return [
+      '🔄 Hướng dẫn hủy vé & hoàn 100% tiền giữ chỗ',
+      '🍖 Đặt thêm ca nướng BBQ tầng 25',
+      '🎟️ Kiểm tra thẻ khách thăm hôm nay',
+      '🏊 Giờ mở cửa hồ bơi chân mây'
+    ];
+  }
+
+  // 6. Visitors / Guest passes
+  if (
+    combined.includes('khách') || 
+    combined.includes('visitor') || 
+    combined.includes('thăm') || 
+    combined.includes('mã pin') || 
+    combined.includes('thẻ khách')
+  ) {
+    return [
+      '📱 Cách tạo mã QR & PIN gửi cho khách',
+      '🚗 Khách thăm đỗ xe ở đâu?',
+      '🚪 Mở cửa căn hộ từ xa qua chuông hình',
+      '🔑 Tạo mã OTP mở khóa cửa cho khách'
+    ];
+  }
+
+  // 7. Bills, Finance, Electricity, Water
+  if (
+    combined.includes('hóa đơn') || 
+    combined.includes('tiền') || 
+    combined.includes('phí') || 
+    combined.includes('thanh toán') || 
+    combined.includes('nước') || 
+    combined.includes('điện') || 
+    combined.includes('nợ')
+  ) {
+    return [
+      '💧 Tại sao tiền nước tháng này tăng cao?',
+      '🔧 Báo thợ kiểm tra van nước rò rỉ',
       '🚗 Biểu phí gửi xe ô tô & xe máy',
-      '💳 Hướng dẫn chuyển khoản BQL',
-      '📅 Hạn đóng tiền dịch vụ hàng tháng',
-      '📄 Tra cứu chi tiết tiền nước'
+      '💳 Hướng dẫn thanh toán quét mã QR BQL'
     ];
   }
 
-  if (combined.includes('sửa') || combined.includes('hỏng') || combined.includes('rò rỉ') || combined.includes('kỹ thuật') || combined.includes('ống nước') || combined.includes('điện') || combined.includes('sự cố')) {
+  // 8. Maintenance / Repair
+  if (
+    combined.includes('sửa') || 
+    combined.includes('hỏng') || 
+    combined.includes('rò rỉ') || 
+    combined.includes('kỹ thuật') || 
+    combined.includes('sự cố') || 
+    combined.includes('thợ') || 
+    combined.includes('phiếu')
+  ) {
     return [
-      '⏱️ Cam kết thợ hỗ trợ trong 60 phút',
+      '⏱️ Kỹ thuật viên khi nào có mặt tại căn hộ?',
       '📞 Hotline kỹ thuật khẩn cấp 1900 8899',
-      '🔧 Đặt lịch thợ lên căn hộ',
-      '🔊 Giờ thi công khoan đục cho phép'
+      '💧 Tra cứu cảnh báo rò rỉ nước AI',
+      '🔊 Giờ thi công khoan đục được phép'
     ];
   }
 
-  if (combined.includes('cửa') || combined.includes('khóa') || combined.includes('faceid') || combined.includes('thẻ') || combined.includes('mã') || combined.includes('khuôn mặt') || combined.includes('chuông')) {
+  // 9. Smart Door Lock / FaceID
+  if (
+    combined.includes('cửa') || 
+    combined.includes('khóa') || 
+    combined.includes('faceid') || 
+    combined.includes('thẻ') || 
+    combined.includes('chuông')
+  ) {
     return [
-      '📷 Hướng dẫn cài FaceID mở cửa',
-      '🔑 Tạo mã số tạm thời cho khách',
+      '📷 Hướng dẫn cài FaceID cho người nhà',
+      '🔑 Tạo mã số tạm thời cho khách đến chơi',
       '💳 Đăng ký hoặc báo mất thẻ cư dân',
-      '🛡️ Cảnh báo chống cạy cửa'
+      '🛡️ Cảnh báo chống cạy cửa thông minh'
     ];
   }
 
+  // 10. Family members / Profile / Parking
+  if (
+    combined.includes('người nhà') || 
+    combined.includes('thành viên') || 
+    combined.includes('chủ hộ') || 
+    combined.includes('xe') || 
+    combined.includes('biển số')
+  ) {
+    return [
+      '➕ Cách đăng ký thêm thành viên căn hộ',
+      '🚗 Vị trí đỗ xe ô tô cố định ở hầm nào?',
+      '📷 Cài đặt nhận diện khuôn mặt FaceID',
+      '💳 Biểu phí gửi xe hàng tháng'
+    ];
+  }
+
+  // Default fallback suggestions
   return [
-    '🏊 Tiện ích hồ bơi & phòng gym',
-    '💳 Hóa đơn & Biểu phí tháng này',
-    '🔧 Báo hỏng kỹ thuật khẩn cấp',
-    '🔑 Hướng dẫn mở khóa cửa thông minh'
+    '🧖 Tiện ích nào cần đăng ký trước?',
+    '🏊 Giờ mở cửa Hồ bơi & Phòng gym',
+    '💳 Hóa đơn điện nước & Phí quản lý tháng này',
+    '🏢 Tòa nhà có tất cả bao nhiêu tầng?'
   ];
 }
 
@@ -140,10 +285,10 @@ Tôi là **Trợ lý ảo Skyline**, luôn sẵn sàng hỗ trợ Quý vị tra 
       timestamp: '08:00',
       ragSource: 'Sổ tay hướng dẫn cư dân Skyline Smart Residence',
       suggestions: [
+        '🧖 Tiện ích nào cần đăng ký trước?',
         '🏊 Giờ mở cửa Hồ bơi & Gym',
         '💳 Hóa đơn sinh hoạt tháng này',
-        '🧘 Phòng xông hơi VIP & Bảng giá',
-        '🎫 Tôi đã đặt vé tiện ích nào chưa?',
+        '🏢 Tòa nhà có bao nhiêu tầng?',
       ],
       actionButton: {
         label: 'Xem Tiện Ích',
@@ -157,10 +302,6 @@ Tôi là **Trợ lý ảo Skyline**, luôn sẵn sàng hỗ trợ Quý vị tra 
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
-
-  // Messenger-style contextual suggestions from the latest AI message
-  const latestAiMessage = [...messages].reverse().find((m) => m.sender === 'ai');
-  const latestAiSuggestions = latestAiMessage?.suggestions || [];
 
   const handleCopy = (id: string, text: string) => {
     navigator.clipboard.writeText(text);
@@ -218,14 +359,25 @@ Tôi là **Trợ lý ảo Skyline**, luôn sẵn sàng hỗ trợ Quý vị tra 
 
       const data = await response.json();
       let aiReply = '';
+      let suggestions: string[] = [];
+
       if (response.ok && data.success && data.reply) {
         aiReply = data.reply;
+        if (data.suggestions && Array.isArray(data.suggestions) && data.suggestions.length > 0) {
+          suggestions = data.suggestions;
+        }
       } else {
         aiReply = data.fallbackReply || data.error || 'Dạ, hệ thống đang bận. Quý cư dân vui lòng thử lại sau giây lát.';
       }
 
-      // Contextual action button & smart dynamic suggestions (Messenger style)
-      const suggestions = getDynamicSuggestions(query, aiReply);
+      // If suggestions weren't supplied directly in data.suggestions, parse from text
+      if (suggestions.length === 0) {
+        const parsed = parseSuggestionsFromReply(aiReply);
+        aiReply = parsed.cleanText;
+        suggestions = parsed.suggestions.length > 0 ? parsed.suggestions : getDynamicSuggestions(query, aiReply);
+      }
+
+      // Contextual action button
       let actionButton: { label: string; moduleId: string } | undefined = undefined;
       const lower = (query + ' ' + aiReply).toLowerCase();
 
@@ -448,19 +600,27 @@ Tôi là **Trợ lý ảo Skyline**, luôn sẵn sàng hỗ trợ Quý vị tra 
                   {m.timestamp}
                 </span>
 
-                {/* Quick Prompts Suggestions */}
+                {/* Contextual Follow-up Question Suggestions */}
                 {m.suggestions && m.suggestions.length > 0 && (
-                  <div className="flex flex-wrap gap-1.5 pt-1 max-w-[90%]">
-                    {m.suggestions.map((sug, idx) => (
-                      <button
-                        key={idx}
-                        type="button"
-                        onClick={() => handleSendMessage(sug)}
-                        className="text-xs px-3.5 py-1.5 bg-[#16202D] hover:bg-[#212E40] text-gray-300 hover:text-[#C5A880] transition-colors rounded-none text-left border-0 shadow-sm"
-                      >
-                        {sug}
-                      </button>
-                    ))}
+                  <div className="flex flex-col gap-1.5 pt-1.5 max-w-[95%] animate-in fade-in duration-200">
+                    <div className="flex items-center gap-1.5 text-[11px] text-[#C5A880] font-medium px-0.5">
+                      <Sparkles className="w-3 h-3 text-[#C5A880]" />
+                      <span>Gợi ý câu hỏi tiếp theo:</span>
+                    </div>
+                    <div className="flex flex-wrap gap-1.5">
+                      {m.suggestions.map((sug, idx) => (
+                        <button
+                          key={idx}
+                          type="button"
+                          onClick={() => handleSendMessage(sug)}
+                          disabled={isTyping}
+                          className="text-xs px-3 py-1.5 bg-[#16202D] hover:bg-[#212E40] text-gray-300 hover:text-[#C5A880] transition-all rounded-none text-left flex items-center gap-1.5 border border-[#C5A880]/15 hover:border-[#C5A880]/40 shadow-sm group"
+                        >
+                          <span className="group-hover:translate-x-0.5 transition-transform">{sug}</span>
+                          <ChevronRight className="w-2.5 h-2.5 text-[#C5A880]/60 group-hover:text-[#C5A880] transition-colors flex-shrink-0" />
+                        </button>
+                      ))}
+                    </div>
                   </div>
                 )}
               </div>
@@ -482,25 +642,6 @@ Tôi là **Trợ lý ảo Skyline**, luôn sẵn sàng hỗ trợ Quý vị tra 
 
             <div ref={messagesEndRef} />
           </div>
-
-          {/* Messenger-style Contextual Quick Replies Drawer (Above Input) */}
-          {latestAiSuggestions.length > 0 && !isTyping && (
-            <div className="px-3.5 py-2 bg-[#101721] flex items-center gap-1.5 overflow-x-auto no-scrollbar border-0 rounded-none flex-shrink-0 animate-in fade-in slide-in-from-bottom-2 duration-200">
-              <span className="text-[10px] text-[#C5A880] uppercase font-bold flex items-center gap-1 flex-shrink-0 pr-1">
-                <Sparkles className="w-3 h-3 text-[#C5A880]" /> Gợi ý:
-              </span>
-              {latestAiSuggestions.map((sug, idx) => (
-                <button
-                  key={idx}
-                  type="button"
-                  onClick={() => handleSendMessage(sug)}
-                  className="whitespace-nowrap px-3 py-1 bg-[#18212D] hover:bg-[#C5A880] hover:text-[#0D1117] text-gray-200 text-xs font-medium transition-all rounded-none border-0 shadow-sm flex items-center gap-1 flex-shrink-0"
-                >
-                  <span>{sug}</span>
-                </button>
-              ))}
-            </div>
-          )}
 
           {/* Input Box - Borderless Sharp Layout */}
           <form

@@ -68,6 +68,31 @@ export interface ConciergeTicketItem {
   created_at?: string;
 }
 
+/**
+ * Extracts follow-up suggestions from AI reply formatted as:
+ * [SUGGESTIONS: question 1 | question 2 | question 3]
+ * Returns cleaned text and array of suggestions.
+ */
+export function extractAiSuggestions(rawReply: string): { cleanText: string; suggestions: string[] } {
+  if (!rawReply) return { cleanText: '', suggestions: [] };
+
+  const regex = /\[SUGGESTIONS:\s*([^\]]+)\]/i;
+  const match = rawReply.match(regex);
+
+  if (match) {
+    const rawSuggestions = match[1];
+    const suggestions = rawSuggestions
+      .split('|')
+      .map((s) => s.trim())
+      .filter((s) => s.length > 0);
+
+    const cleanText = rawReply.replace(regex, '').trim();
+    return { cleanText, suggestions };
+  }
+
+  return { cleanText: rawReply.trim(), suggestions: [] };
+}
+
 export interface ConciergeContext {
   aptCode?: string;
   userName?: string;
@@ -300,6 +325,15 @@ NGUYÊN TẮC GIAO TIẾP VÀ DẠNG TỪ BẮT BUỘC:
 - Giọng văn ấm áp, lịch sự, ân cần như quản gia 5 sao.
 - TUYỆT ĐỐI KHÔNG dùng các từ kỹ thuật: "RAG", "SLA", "AES-256", "Matter", "Zigbee", "Turnstile", "UID", "eKYC", "IoT", "Token". Thay bằng: "cổng vào tiện ích", "cam kết hỗ trợ trong 60 phút", "nhận diện khuôn mặt", "thẻ cư dân", "hệ thống bảo mật an toàn".
 - Trình bày ngắn gọn, rõ ràng, gạch đầu dòng các ý chính để cư dân dễ đọc.
+
+🎯 GỢI Ý CÂU HỎI TIẾP THEO (BẮT BUỘC Ở CUỐI MỖI CÂU TRẢ LỜI):
+- Ở cuối cùng của MỌI câu trả lời, hãy tự động phân tích câu hỏi vừa rồi của cư dân và đưa ra 2 đến 4 gợi ý câu hỏi kế tiếp thông minh, liên quan mật thiết và hữu ích nhất cho cư dân.
+- Định dạng bắt buộc ở dòng cuối cùng:
+[SUGGESTIONS: Gợi ý câu hỏi tiếp 1 | Gợi ý câu hỏi tiếp 2 | Gợi ý câu hỏi tiếp 3]
+Ví dụ:
++ Nếu vừa trả lời về tiện ích cần đặt trước -> [SUGGESTIONS: Bảng giá phòng xông hơi VIP Tầng 3 | Cách đặt chỗ vườn tiệc BBQ Tầng 25 | Chính sách hoàn tiền khi hủy lịch hẹn]
++ Nếu vừa trả lời về hóa đơn tiền nước -> [SUGGESTIONS: Chi tiết lượng nước dùng các tháng qua | Hướng dẫn quét mã QR thanh toán tiền nước | Đặt thợ kỹ thuật kiểm tra van nước rò rỉ]
++ Nếu vừa trả lời về quy mô 25 tầng -> [SUGGESTIONS: Tầng 1 đến 4 có những tiện ích gì? | Diện tích căn hộ 12A05 là bao nhiêu? | Hồ bơi vô cực nằm ở tầng mấy?]
 `;
 }
 
@@ -381,7 +415,9 @@ Skyline phục vụ Quý cư dân 5 tiện ích 5 sao đặc quyền:
 * 🛝 **Khu vui chơi trẻ em Sky Kids:** Tầng 1 (Sảnh Thương Mại), mở cửa **07:00 - 21:00**.
 * 🍖 **Vườn tiệc nướng BBQ Panoramic:** Tầng 25 (Sân thượng), mở cửa **17:00 - 23:00** (600.000 đ/ca).
 
-Quý cư dân chỉ cần chạm Thẻ cư dân hoặc nhìn vào camera nhận diện khuôn mặt là có thể sử dụng các tiện ích miễn phí ngay ạ!`;
+Quý cư dân chỉ cần chạm Thẻ cư dân hoặc nhìn vào camera nhận diện khuôn mặt là có thể sử dụng các tiện ích miễn phí ngay ạ!
+
+[SUGGESTIONS: Tiện ích nào cần đăng ký trước? | Giờ mở cửa hồ bơi vô cực | Đặt phòng xông hơi đá muối VIP]`;
   }
 
   // 0b. Building Architecture, Scale, Floors, Apartments count per floor
@@ -431,7 +467,9 @@ Quý cư dân chỉ cần chạm Thẻ cư dân hoặc nhìn vào camera nhận 
 * 🌆 **Tầng 22 đến Tầng 24 (3 tầng căn hộ Sky Suite tầng cao):** **8 CĂN HỘ / TẦNG** (Mật độ thoáng, ban công tràn viền ngắm toàn cảnh sông Sài Gòn).
 * 👑 **Tầng 25 (Sân thượng Penthouse & Đại tiện ích):** **CHỈ CÓ 2 CĂN HỘ** (2 căn Duplex Penthouse đặc quyền 25PH-01 & 25PH-02 diện tích ~215m²), cùng Hồ Bơi Vô Cực Chân Mây (06:00 - 22:00) và Vườn Tiệc Nướng BBQ Panoramic (17:00 - 23:00).
 
-*(Trên sơ đồ trực quan 3D của phần mềm quản trị Admin, mỗi tầng được mô phỏng đối xứng 2 căn trục Trái và Phải để thuận tiện theo dõi kỹ thuật).*`;
+*(Trên sơ đồ trực quan 3D của phần mềm quản trị Admin, mỗi tầng được mô phỏng đối xứng 2 căn trục Trái và Phải để thuận tiện theo dõi kỹ thuật).*
+
+[SUGGESTIONS: Tiện ích nào cần đăng ký trước? | Diện tích căn hộ 12A05 là bao nhiêu? | Hồ bơi vô cực nằm ở tầng mấy?]`;
   }
 
   // 1. Inquiries about Active Bookings / Tickets (Lịch đặt, vé điện tử, mã vé)
@@ -446,9 +484,13 @@ Quý cư dân chỉ cần chạm Thẻ cư dân hoặc nhìn vào camera nhận 
 * **Số tiền đã giữ chỗ:** **${(b.depositAmount || 1000000).toLocaleString('vi-VN')} VNĐ**
 * **Trạng thái:** ✅ **${b.status === 'CONFIRMED' ? 'Đã xác nhận' : b.status === 'CHECKED_IN' ? 'Đã vào cổng' : 'Đã hủy'}**
 
-Quý cư dân chỉ cần quét mã QR tại cổng hoặc chạm thẻ cư dân là vào được ngay. Nếu có việc bận đột xuất, Quý vị có thể bấm nút **Hủy Lịch & Hoàn Tiền** trước 30 phút để nhận lại **100%** tiền giữ chỗ vào hóa đơn sinh hoạt tháng tới ạ!`;
+Quý cư dân chỉ cần quét mã QR tại cổng hoặc chạm thẻ cư dân là vào được ngay. Nếu có việc bận đột xuất, Quý vị có thể bấm nút **Hủy Lịch & Hoàn Tiền** trước 30 phút để nhận lại **100%** tiền giữ chỗ vào hóa đơn sinh hoạt tháng tới ạ!
+
+[SUGGESTIONS: Hướng dẫn hủy vé & hoàn tiền | Đặt thêm tiệc nướng BBQ tầng 25 | Tiện ích nào miễn phí vào tự do?]`;
     } else {
-      return `Dạ thưa Quý cư dân ${residentName}, hiện tại căn hộ **${targetAptCode}** chưa có lịch đặt chỗ tiện ích nào đang chờ. Quý vị có thể vào tab **Đăng Ký Đặt Chỗ & Vé Điện Tử** để đặt Phòng Xông Hơi VIP hoặc Vườn Nướng BBQ bất cứ lúc nào ạ!`;
+      return `Dạ thưa Quý cư dân ${residentName}, hiện tại căn hộ **${targetAptCode}** chưa có lịch đặt chỗ tiện ích nào đang chờ. Quý vị có thể vào tab **Đăng Ký Đặt Chỗ & Vé Điện Tử** để đặt Phòng Xông Hơi VIP hoặc Vườn Nướng BBQ bất cứ lúc nào ạ!
+
+[SUGGESTIONS: Tiện ích nào cần đăng ký trước? | Bảng giá phòng xông hơi VIP | Giờ mở cửa hồ bơi chân mây]`;
     }
   }
 
@@ -464,14 +506,18 @@ Quý cư dân chỉ cần quét mã QR tại cổng hoặc chạm thẻ cư dân
   - **Trạng thái:** ${p.status === 'ACTIVE' ? '🟢 Đang hiệu lực (Chờ khách đến)' : p.status === 'CHECKED_IN' ? '🔵 Đã check-in tòa nhà' : 'Đã hoàn tất'}`
       ).join('\n\n');
 
-      return `Dạ thưa Quý cư dân ${residentName}, căn hộ **${targetAptCode}** hiện có **${visitorPasses.length} thẻ khách thăm** đã đăng ký:\n\n${passLines}\n\nKhách đến sảnh lễ tân hoặc cổng kiểm soát chỉ cần đọc **Mã PIN** hoặc quét **Mã QR** để được bảo vệ xác nhận vào thang máy lên căn hộ ạ!`;
+      return `Dạ thưa Quý cư dân ${residentName}, căn hộ **${targetAptCode}** hiện có **${visitorPasses.length} thẻ khách thăm** đã đăng ký:\n\n${passLines}\n\nKhách đến sảnh lễ tân hoặc cổng kiểm soát chỉ cần đọc **Mã PIN** hoặc quét **Mã QR** để được bảo vệ xác nhận vào thang máy lên căn hộ ạ!
+
+[SUGGESTIONS: Cách tạo thêm thẻ khách thăm mới | Vị trí đỗ xe của căn hộ | Mở cửa bằng FaceID như thế nào?]`;
     } else {
       return `Dạ thưa Quý cư dân ${residentName}, căn hộ **${targetAptCode}** hiện chưa có thẻ khách thăm nào đang hiệu lực. 
 
 Quý cư dân có thể vào mục **Khách Thăm & QR Code** trên ứng dụng để tạo thẻ khách trong 30 giây:
 1. Nhập tên khách & biển số xe (nếu có).
 2. Chọn thời hạn (4 giờ, 12 giờ hoặc trong ngày).
-3. Hệ thống sẽ cấp ngay **Mã QR & Mã PIN 6 số** để Quý vị gửi qua Zalo/SMS cho khách đến thăm ạ!`;
+3. Hệ thống sẽ cấp ngay **Mã QR & Mã PIN 6 số** để Quý vị gửi qua Zalo/SMS cho khách đến thăm ạ!
+
+[SUGGESTIONS: Khách thăm gửi xe ở đâu? | Cách tạo mã OTP mở cửa cho khách | Hướng dẫn sử dụng chuông hình camera]`;
     }
   }
 
@@ -494,7 +540,9 @@ Quý cư dân có thể vào mục **Khách Thăm & QR Code** trên ứng dụng
   - Phí quản lý tòa nhà: **${mgmtDetail ? mgmtDetail.total_line_amount.toLocaleString('vi-VN') : '732.000'} đ** (73.2 m² x 10.000 đ/m²)
   - Phí gửi xe: **${parkDetail ? parkDetail.total_line_amount.toLocaleString('vi-VN') : '141.000'} đ**
 
-Quý cư dân có thể thanh toán trực tiếp tại mục **Hóa Đơn & Biểu Phí** hoặc chuyển khoản quét mã QR ngân hàng của Ban Quản Lý ạ!`;
+Quý cư dân có thể thanh toán trực tiếp tại mục **Hóa Đơn & Biểu Phí** hoặc chuyển khoản quét mã QR ngân hàng của Ban Quản Lý ạ!
+
+[SUGGESTIONS: Tại sao tiền nước tháng này tăng cao? | Báo thợ kiểm tra van xả nước rò rỉ | Biểu phí gửi xe hàng tháng]`;
     }
   }
 
@@ -511,9 +559,13 @@ Quý cư dân có thể thanh toán trực tiếp tại mục **Hóa Đơn & Bi�
 * **Kỹ thuật viên phụ trách:** **${activeTicket.assigned_technician || 'Lê Văn Kỹ Thuật'}**
 * **Cam kết tiến độ:** Kỹ thuật viên có mặt tại căn hộ hỗ trợ trong vòng **15 - 60 phút**.
 
-Nếu cần hỗ trợ khẩn cấp hơn, Quý cư dân vui lòng bấm gọi ngay **Hotline Kỹ Thuật Tòa Nhà: 1900 8899** nhé!`;
+Nếu cần hỗ trợ khẩn cấp hơn, Quý cư dân vui lòng bấm gọi ngay **Hotline Kỹ Thuật Tòa Nhà: 1900 8899** nhé!
+
+[SUGGESTIONS: Kỹ thuật viên khi nào có mặt? | Hotline Ban Quản Lý khẩn cấp | Tra cứu hóa đơn tháng này]`;
     } else {
-      return `Dạ thưa Quý cư dân ${residentName}, hiện tại căn hộ ${targetAptCode} không có phiếu báo hỏng kỹ thuật nào đang chờ xử lý. Nếu căn hộ gặp sự cố về điện, nước hay khóa cửa, Quý vị có thể vào tab **Yêu Cầu Sửa Chữa** để gửi phản ánh, đội ngũ kỹ thuật sẽ có mặt hỗ trợ trong vòng 15 - 60 phút ạ!`;
+      return `Dạ thưa Quý cư dân ${residentName}, hiện tại căn hộ ${targetAptCode} không có phiếu báo hỏng kỹ thuật nào đang chờ xử lý. Nếu căn hộ gặp sự cố về điện, nước hay khóa cửa, Quý vị có thể vào tab **Yêu Cầu Sửa Chữa** để gửi phản ánh, đội ngũ kỹ thuật sẽ có mặt hỗ trợ trong vòng 15 - 60 phút ạ!
+
+[SUGGESTIONS: Báo thợ kiểm tra van nước rò rỉ | Giờ thi công sửa chữa được phép | Hotline kỹ thuật 1900 8899]`;
     }
   }
 
@@ -533,7 +585,9 @@ Nếu cần hỗ trợ khẩn cấp hơn, Quý cư dân vui lòng bấm gọi ng
 * 👨‍👩‍👧‍👦 **Danh sách thành viên gia đình đăng ký:**
 ${membersListStr}
 
-Quý vị có thể vào mục **Thành Viên Căn Hộ** để đăng ký thêm người thân hoặc cập nhật FaceID bất cứ lúc nào ạ!`;
+Quý vị có thể vào mục **Thành Viên Căn Hộ** để đăng ký thêm người thân hoặc cập nhật FaceID bất cứ lúc nào ạ!
+
+[SUGGESTIONS: Hướng dẫn cài FaceID cho người nhà | Đăng ký thêm xe máy cho gia đình | Vị trí đỗ xe ô tô ở đâu?]`;
   }
 
   // 6. Inquiries about Vehicles / Parking (Xe, biển số, gửi xe, hầm)
@@ -549,7 +603,9 @@ Quý vị có thể vào mục **Thành Viên Căn Hộ** để đăng ký thêm
   - Vị trí đỗ: **Khu B1-M88** (Tầng Hầm B1)
   - Thẻ gửi xe: Thẻ từ thông minh RFID mã **RFID-A1205-02**
 
-*Biểu phí gửi xe hàng tháng:* Ô tô: 1.200.000 đ/tháng | Xe máy: 120.000 đ/tháng (được tính gộp vào hóa đơn quản lý định kỳ).`;
+*Biểu phí gửi xe hàng tháng:* Ô tô: 1.200.000 đ/tháng | Xe máy: 120.000 đ/tháng (được tính gộp vào hóa đơn quản lý định kỳ).
+
+[SUGGESTIONS: Phí gửi xe đóng chung hóa đơn không? | Vị trí đỗ xe máy ở hầm nào? | Thêm phương tiện mới cho người nhà]`;
   }
 
   // 6b. Inquiries about Facilities requiring Booking / Reservation (Tiện ích cần đặt trước / đăng ký trước)
@@ -573,7 +629,9 @@ Quý vị có thể vào mục **Thành Viên Căn Hộ** để đăng ký thêm
 💡 **Các tiện ích còn lại:**
 * 🏊 **Hồ bơi vô cực chân mây (Tầng 25)**, 🏋️ **Gym Technogym 24/7 (Tầng 3)** và 🛝 **Sky Kids Zone (Tầng 1)** đều **hoàn toàn miễn phí** và **vào tự do** bằng FaceID hoặc Thẻ cư dân, không cần đặt hẹn trước ạ!
 
-Quý cư dân có thể vào tab **Đăng Ký Đặt Chỗ & Vé Điện Tử** để chọn khung giờ và nhận mã vé QR ngay tức thì!`;
+Quý cư dân có thể vào tab **Đăng Ký Đặt Chỗ & Vé Điện Tử** để chọn khung giờ và nhận mã vé QR ngay tức thì!
+
+[SUGGESTIONS: Bảng giá phòng xông hơi VIP Tầng 3 | Chính sách hủy vé & hoàn tiền | Tiện ích nào hoàn toàn miễn phí?]`;
   }
 
   // 6c. Inquiries about Free / Open Access Facilities (Tiện ích miễn phí / vào tự do)
@@ -587,7 +645,9 @@ Quý cư dân có thể vào tab **Đăng Ký Đặt Chỗ & Vé Điện Tử** 
 2. 🏊 **Hồ Bơi Vô Cực Chân Mây (Tầng 25 - Sân Thượng):** Mở cửa **06:00 - 22:00** hàng ngày, hệ thống lọc ozone 28°C (hạn mức 20 lượt/tháng/căn hộ).
 3. 🛝 **Khu Vui Chơi Trẻ Em Sky Kids Zone (Tầng 1):** Mở cửa **07:00 - 21:00** hàng ngày, sàn đệm an toàn kháng khuẩn (yêu cầu có người lớn đi kèm).
 
-*(Riêng Phòng Xông Hơi VIP Tầng 3 và Vườn Nướng BBQ Tầng 25 là tiện ích riêng tư nên cần đặt trước trên ứng dụng).*`;
+*(Riêng Phòng Xông Hơi VIP Tầng 3 và Vườn Nướng BBQ Tầng 25 là tiện ích riêng tư nên cần đặt trước trên ứng dụng).*
+
+[SUGGESTIONS: Hồ bơi mở cửa đến mấy giờ? | Tiện ích nào cần đăng ký trước? | Phòng Gym Technogym có mở 24/7 không?]`;
   }
 
   // 7. Inquiries about Amenities / Operating Hours / Facilities (Tổng quan tiện ích)
@@ -600,7 +660,9 @@ Quý cư dân có thể vào tab **Đăng Ký Đặt Chỗ & Vé Điện Tử** 
 * 🛝 **Khu Vui Chơi Trẻ Em Sky Kids Zone (Tầng 1):** Mở cửa **07:00 - 21:00** hàng ngày, miễn phí theo thẻ cư dân (vào tự do).
 * 🍖 **Vườn Tiệc Nướng BBQ Panoramic (Sân Thượng Tầng 25):** Mở cửa **17:00 - 23:00**, biểu phí **600.000 đ / ca** (**cần đặt trước theo ca**).
 
-Quý cư dân chỉ cần nhìn vào camera nhận diện khuôn mặt hoặc chạm thẻ cư dân tại cổng là có thể vào tiện ích ngay ạ!`;
+Quý cư dân chỉ cần nhìn vào camera nhận diện khuôn mặt hoặc chạm thẻ cư dân tại cổng là có thể vào tiện ích ngay ạ!
+
+[SUGGESTIONS: Tiện ích nào cần đăng ký trước? | Bảng giá phòng xông hơi đá muối VIP | Hồ bơi có mở cửa buổi tối không?]`;
   }
 
   // 8. Inquiries about Sauna / Steam / Refund / Cancellation
@@ -614,7 +676,9 @@ Quý cư dân chỉ cần nhìn vào camera nhận diện khuôn mặt hoặc ch
   - 🟡 **Hủy sát giờ hẹn (trong vòng 30 phút):** Hỗ trợ hoàn trả **50%** tiền giữ chỗ (50% còn lại bù đắp chi phí gia nhiệt lò đá muối & chuẩn bị tinh dầu).
   - 🔴 **Quá giờ hẹn bắt đầu:** Không áp dụng hoàn tiền do phòng riêng tư đã được giữ suốt khung giờ đó.
 
-Quý cư dân có thể vào tab **Đăng Ký Đặt Chỗ & Vé Điện Tử** để đặt phòng hoặc bấm nút **Hủy Lịch & Hoàn Tiền** trực tiếp trên vé đã đặt rất tiện lợi ạ!`;
+Quý cư dân có thể vào tab **Đăng Ký Đặt Chỗ & Vé Điện Tử** để đặt phòng hoặc bấm nút **Hủy Lịch & Hoàn Tiền** trực tiếp trên vé đã đặt rất tiện lợi ạ!
+
+[SUGGESTIONS: Kiểm tra vé xông hơi của tôi | Hướng dẫn hủy vé nhận lại 100% tiền | Đặt tiệc nướng BBQ sân thượng]`;
   }
 
   // 9. Inquiries about Door Access / Smart Lock
@@ -626,7 +690,9 @@ Quý cư dân có thể vào tab **Đăng Ký Đặt Chỗ & Vé Điện Tử** 
 3. **Mã số mở cửa cho khách:** Quý vị có thể tạo mã OTP tạm thời dùng 1 lần hoặc theo giờ để gửi cho người thân/người giao hàng.
 4. **Mở từ xa qua chuông hình:** Xem trực tiếp camera khách bấm chuông và mở cửa ngay trên điện thoại.
 
-*Tính năng an toàn:* Cửa tự động khóa sau 5 giây, có khóa riêng tư ban đêm và chuông báo động to khi phát hiện va đập cạy cửa.`;
+*Tính năng an toàn:* Cửa tự động khóa sau 5 giây, có khóa riêng tư ban đêm và chuông báo động to khi phát hiện va đập cạy cửa.
+
+[SUGGESTIONS: Hướng dẫn cài FaceID mở cửa | Cách tạo mã OTP cho khách thăm | Hotline kỹ thuật khi khóa hết pin]`;
   }
 
   // 10. Default Helpful Overview
@@ -641,8 +707,9 @@ Tôi là **Trợ lý Ảo Skyline**, luôn sẵn sàng hỗ trợ Quý vị 24/7
 * 🛠️ **Báo hỏng kỹ thuật:** Tiếp nhận sự cố với cam kết thợ có mặt trong 60 phút.
 * 🚪 **Cửa thông minh:** Hướng dẫn cài đặt khuôn mặt, thẻ từ và mã đón khách.
 
+Quý cư dân cần tôi hỗ trợ nội dung nào ngay bây giờ ạ? (Hotline Ban Quản Lý: **1900 8899**).
 
-Quý cư dân cần tôi hỗ trợ nội dung nào ngay bây giờ ạ? (Hotline Ban Quản Lý: **1900 8899**).`;
+[SUGGESTIONS: Tiện ích nào cần đăng ký trước? | Xem hóa đơn điện nước tháng này | Tra cứu lịch đặt chỗ của tôi | Tòa nhà có bao nhiêu tầng?]`;
 }
 
 export interface ChatMessage {
