@@ -18,7 +18,11 @@ import {
   BedDouble,
   Bath,
   ArrowRight,
-  Info
+  Info,
+  Calendar,
+  Clock,
+  MapPin,
+  Users
 } from 'lucide-react';
 
 interface FloorPlanExplorerProps {
@@ -386,12 +390,60 @@ const APARTMENT_MODELS: Record<ApartmentCategory, ApartmentData> = {
   }
 };
 
+export interface TourTimeSlot {
+  id: string;
+  time: string;
+  period: 'Sáng' | 'Trưa' | 'Chiều' | 'Hoàng Hôn' | 'Tối';
+  tag: string;
+  popular?: boolean;
+}
+
+export const TOUR_TIME_SLOTS: TourTimeSlot[] = [
+  { id: 'morning_1', time: '09:00 - 10:00', period: 'Sáng', tag: 'Đón nắng mai & gió sông' },
+  { id: 'morning_2', time: '10:30 - 11:30', period: 'Trưa', tag: 'Tham quan tiện ích tầng 5' },
+  { id: 'afternoon_1', time: '14:30 - 15:30', period: 'Chiều', tag: 'Trải nghiệm Smart Home' },
+  { id: 'afternoon_2', time: '16:00 - 17:00', period: 'Chiều', tag: 'Căn hộ thực tế cư dân' },
+  { id: 'sunset', time: '17:30 - 18:30', period: 'Hoàng Hôn', tag: 'Ngắm hoàng hôn sông Sài Gòn', popular: true },
+  { id: 'evening', time: '19:00 - 20:00', period: 'Tối', tag: 'Skyline về đêm lung linh', popular: true },
+];
+
+export function getTourDateOptions() {
+  const now = new Date();
+  const tomorrow = new Date(now);
+  tomorrow.setDate(now.getDate() + 1);
+
+  const fmt = (d: Date) => `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}`;
+
+  return [
+    { id: 'today', label: `Hôm nay (${fmt(now)})`, fullText: `Hôm nay - ${fmt(now)}` },
+    { id: 'tomorrow', label: `Ngày mai (${fmt(tomorrow)})`, fullText: `Ngày mai - ${fmt(tomorrow)}` },
+    { id: 'weekend', label: 'Cuối tuần này', fullText: 'Cuối tuần này (Thứ 7 / CN)' },
+    { id: 'custom', label: 'Chọn ngày khác...', fullText: 'Ngày tùy chọn' },
+  ];
+}
+
 export default function FloorPlanExplorer({ onOpenLogin }: FloorPlanExplorerProps) {
   const [selectedCategory, setSelectedCategory] = useState<ApartmentCategory>('2PN');
   const [activeHotspotId, setActiveHotspotId] = useState<string>('living');
   const [isRegisterOpen, setIsRegisterOpen] = useState(false);
   const [registerSuccess, setRegisterSuccess] = useState(false);
-  const [leadForm, setLeadForm] = useState({ name: '', phone: '', timeSlot: '' });
+  const [leadForm, setLeadForm] = useState({
+    name: '',
+    phone: '',
+    dateOption: 'tomorrow',
+    customDate: '',
+    timeSlot: '17:30 - 18:30',
+    guests: '1-2 người'
+  });
+  const [confirmedBooking, setConfirmedBooking] = useState<{
+    name: string;
+    phone: string;
+    apartmentCode: string;
+    apartmentName: string;
+    dateText: string;
+    timeSlot: string;
+    guests: string;
+  } | null>(null);
 
   const currentApartment = APARTMENT_MODELS[selectedCategory];
 
@@ -409,12 +461,38 @@ export default function FloorPlanExplorer({ onOpenLogin }: FloorPlanExplorerProp
 
   const handleRegisterSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    const dateOptions = getTourDateOptions();
+    let dateText = 'Ngày mai';
+    if (leadForm.dateOption === 'today') {
+      dateText = dateOptions[0]?.fullText || 'Hôm nay';
+    } else if (leadForm.dateOption === 'tomorrow') {
+      dateText = dateOptions[1]?.fullText || 'Ngày mai';
+    } else if (leadForm.dateOption === 'weekend') {
+      dateText = dateOptions[2]?.fullText || 'Cuối tuần này';
+    } else if (leadForm.dateOption === 'custom' && leadForm.customDate) {
+      dateText = leadForm.customDate;
+    }
+
+    const booking = {
+      name: leadForm.name,
+      phone: leadForm.phone,
+      apartmentCode: currentApartment.code,
+      apartmentName: currentApartment.name,
+      dateText,
+      timeSlot: leadForm.timeSlot,
+      guests: leadForm.guests
+    };
+
+    try {
+      const existing = JSON.parse(localStorage.getItem('skyline_tour_bookings') || '[]');
+      existing.unshift({ ...booking, createdAt: new Date().toISOString() });
+      localStorage.setItem('skyline_tour_bookings', JSON.stringify(existing.slice(0, 20)));
+    } catch {
+      // ignore
+    }
+
+    setConfirmedBooking(booking);
     setRegisterSuccess(true);
-    setTimeout(() => {
-      setRegisterSuccess(false);
-      setIsRegisterOpen(false);
-      setLeadForm({ name: '', phone: '', timeSlot: '' });
-    }, 2000);
   };
 
   return (
@@ -726,82 +804,250 @@ export default function FloorPlanExplorer({ onOpenLogin }: FloorPlanExplorerProp
       </div>
 
       {/* ============================================================= */}
-      {/* MODAL ĐĂNG KÝ XEM NHÀ GỌN GÀNG, RESPONSIVE                     */}
+      {/* MODAL ĐĂNG KÝ XEM NHÀ - CHỌN MỐC GIỜ THAM QUAN CHUYÊN NGHIỆP  */}
       {/* ============================================================= */}
       {isRegisterOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-          <div className="bg-[#0E131C] border border-[#C5A880]/60 rounded-xl p-5 sm:p-6 max-w-sm w-full shadow-2xl relative">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/85 backdrop-blur-sm overflow-y-auto">
+          <div className="bg-[#0E131C] border border-[#C5A880]/60 rounded-2xl p-5 sm:p-7 max-w-lg w-full shadow-2xl relative my-auto">
             <button
-              onClick={() => setIsRegisterOpen(false)}
-              className="absolute top-3.5 right-3.5 text-gray-400 hover:text-white p-1"
+              type="button"
+              onClick={() => {
+                setIsRegisterOpen(false);
+                setRegisterSuccess(false);
+              }}
+              className="absolute top-4 right-4 text-gray-400 hover:text-white p-1 rounded-lg hover:bg-white/10 transition-colors"
             >
               <X className="w-5 h-5" />
             </button>
 
-            <div className="space-y-1.5 mb-4">
-              <span className="text-[10px] font-mono uppercase tracking-widest text-[#C5A880] font-semibold">
-                Tham Quan Trực Tiếp Skyline
-              </span>
-              <h3 className="font-serif text-lg sm:text-xl font-bold text-white">
-                Căn Hộ {currentApartment.code} ({currentApartment.category})
+            {/* Tiêu đề Modal */}
+            <div className="space-y-1 mb-5 pr-8">
+              <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 bg-[#161F2E] border border-[#C5A880]/40 rounded text-[10px] font-mono uppercase tracking-wider text-[#C5A880]">
+                <Clock className="w-3 h-3 text-[#C5A880]" />
+                <span>Đặt Lịch Tiếp Đón Trực Tiếp</span>
+              </div>
+              <h3 className="font-serif text-xl sm:text-2xl font-bold text-white">
+                Tham Quan Căn Hộ {currentApartment.code}
               </h3>
-              <p className="text-xs text-gray-400 font-light">
-                Ban Quản Lý sẽ liên hệ sắp xếp đón tiếp quý khách tham quan trực tiếp trong 15 phút.
+              <p className="text-xs text-gray-400 font-light leading-relaxed">
+                {currentApartment.name} • {currentApartment.area} m² • {currentApartment.floorText}
               </p>
             </div>
 
-            {registerSuccess ? (
-              <div className="p-4 bg-emerald-950/80 border border-emerald-500 rounded-lg text-center space-y-1.5">
-                <CheckCircle2 className="w-8 h-8 text-emerald-400 mx-auto" />
-                <div className="font-serif text-sm font-bold text-white">Ghi Nhận Thành Công!</div>
-                <div className="text-xs text-gray-300">
-                  Lễ tân Skyline sẽ liên hệ với quý khách để xác nhận khung giờ đón tiếp.
-                </div>
-              </div>
-            ) : (
-              <form onSubmit={handleRegisterSubmit} className="space-y-3 text-xs">
-                <div>
-                  <label className="block text-gray-300 font-mono mb-1">Họ và Tên (*):</label>
-                  <input
-                    type="text"
-                    required
-                    placeholder="Ví dụ: Nguyễn Văn A"
-                    value={leadForm.name}
-                    onChange={(e) => setLeadForm({ ...leadForm, name: e.target.value })}
-                    className="w-full bg-[#121824] border border-[#1E293B] rounded p-2.5 text-white focus:outline-none focus:border-[#C5A880]"
-                  />
+            {registerSuccess && confirmedBooking ? (
+              /* MÀN HÌNH XÁC NHẬN THÀNH CÔNG */
+              <div className="space-y-4">
+                <div className="p-4 bg-emerald-950/40 border border-emerald-500/60 rounded-xl text-center space-y-2">
+                  <div className="w-12 h-12 rounded-full bg-emerald-500/20 border border-emerald-400 text-emerald-400 flex items-center justify-center mx-auto">
+                    <CheckCircle2 className="w-7 h-7" />
+                  </div>
+                  <h4 className="font-serif text-base font-bold text-white">
+                    Đăng Ký Tham Quan Thành Công!
+                  </h4>
+                  <p className="text-xs text-gray-300 font-light leading-relaxed">
+                    Lễ tân và chuyên viên Ban Quản Lý Skyline đã tiếp nhận yêu cầu và sẽ sẵn sàng đón tiếp quý khách đúng khung giờ đã chọn.
+                  </p>
                 </div>
 
-                <div>
-                  <label className="block text-gray-300 font-mono mb-1">Số Điện Thoại (*):</label>
-                  <input
-                    type="tel"
-                    required
-                    placeholder="Ví dụ: 0901 888 999"
-                    value={leadForm.phone}
-                    onChange={(e) => setLeadForm({ ...leadForm, phone: e.target.value })}
-                    className="w-full bg-[#121824] border border-[#1E293B] rounded p-2.5 text-white focus:outline-none focus:border-[#C5A880]"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-gray-300 font-mono mb-1">Khung Giờ Muốn Xem:</label>
-                  <input
-                    type="text"
-                    placeholder="Ví dụ: Sáng mai lúc 9h30"
-                    value={leadForm.timeSlot}
-                    onChange={(e) => setLeadForm({ ...leadForm, timeSlot: e.target.value })}
-                    className="w-full bg-[#121824] border border-[#1E293B] rounded p-2.5 text-white focus:outline-none focus:border-[#C5A880]"
-                  />
+                {/* Thẻ tóm tắt thông tin lịch hẹn */}
+                <div className="bg-[#121824] border border-[#1E293B] rounded-xl p-4 space-y-2.5 text-xs font-mono">
+                  <div className="flex justify-between items-center pb-2 border-b border-[#1E293B]">
+                    <span className="text-gray-400">Căn hộ mục tiêu:</span>
+                    <span className="font-bold text-white">{confirmedBooking.apartmentCode} ({confirmedBooking.apartmentName})</span>
+                  </div>
+                  <div className="flex justify-between items-center pb-2 border-b border-[#1E293B]">
+                    <span className="text-gray-400">Mốc giờ tham quan:</span>
+                    <span className="font-bold text-[#C5A880] bg-[#C5A880]/15 px-2 py-0.5 rounded border border-[#C5A880]/40">
+                      {confirmedBooking.timeSlot}
+                    </span>
+                  </div>
+                  <div className="flex justify-between items-center pb-2 border-b border-[#1E293B]">
+                    <span className="text-gray-400">Ngày tham quan:</span>
+                    <span className="font-bold text-white">{confirmedBooking.dateText}</span>
+                  </div>
+                  <div className="flex justify-between items-center pb-2 border-b border-[#1E293B]">
+                    <span className="text-gray-400">Khách hẹn:</span>
+                    <span className="text-gray-200">{confirmedBooking.name} • {confirmedBooking.phone} ({confirmedBooking.guests})</span>
+                  </div>
+                  <div className="flex items-start gap-2 pt-1 text-[11px] text-gray-400 font-sans leading-relaxed">
+                    <MapPin className="w-4 h-4 text-[#C5A880] shrink-0 mt-0.5" />
+                    <span><strong>Địa điểm đón tiếp:</strong> Sảnh Lễ Tân Tháp A, 128 Bến Vân Đồn, P.6, Q.4, TP.HCM (Hotline đón khách: 0901 888 999).</span>
+                  </div>
                 </div>
 
                 <div className="pt-2">
                   <button
-                    type="submit"
-                    className="w-full py-3 bg-[#C5A880] hover:bg-[#D4AF37] text-[#0A0E17] font-bold text-xs tracking-wider uppercase rounded-lg transition-all shadow-lg"
+                    type="button"
+                    onClick={() => {
+                      setIsRegisterOpen(false);
+                      setRegisterSuccess(false);
+                    }}
+                    className="w-full py-3 bg-[#C5A880] hover:bg-[#D4AF37] text-[#0A0E17] font-bold text-xs tracking-wider uppercase rounded-xl transition-all shadow-lg"
                   >
-                    Xác Nhận Đăng Ký
+                    Hoàn Tất & Đóng
                   </button>
+                </div>
+              </div>
+            ) : (
+              /* FORM ĐĂNG KÝ VỚI BỘ CHỌN MỐC GIỜ THÔNG MINH */
+              <form onSubmit={handleRegisterSubmit} className="space-y-4 text-xs">
+                {/* 1. Họ tên và Số điện thoại */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-gray-300 font-mono text-[11px] mb-1">
+                      Họ và Tên (*):
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      placeholder="Ví dụ: Nguyễn Hữu Lực"
+                      value={leadForm.name}
+                      onChange={(e) => setLeadForm({ ...leadForm, name: e.target.value })}
+                      className="w-full bg-[#121824] border border-[#1E293B] rounded-lg p-2.5 text-white focus:outline-none focus:border-[#C5A880] transition-colors"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-gray-300 font-mono text-[11px] mb-1">
+                      Số Điện Thoại (*):
+                    </label>
+                    <input
+                      type="tel"
+                      required
+                      pattern="[0-9]{9,11}"
+                      placeholder="Ví dụ: 0901 888 999"
+                      value={leadForm.phone}
+                      onChange={(e) => setLeadForm({ ...leadForm, phone: e.target.value })}
+                      className="w-full bg-[#121824] border border-[#1E293B] rounded-lg p-2.5 text-white focus:outline-none focus:border-[#C5A880] transition-colors"
+                    />
+                  </div>
+                </div>
+
+                {/* 2. Chọn Ngày Tham Quan */}
+                <div className="space-y-1.5">
+                  <label className="flex items-center gap-1.5 text-gray-300 font-mono text-[11px]">
+                    <Calendar className="w-3.5 h-3.5 text-[#C5A880]" />
+                    <span>Ngày Quý Khách Muốn Tham Quan:</span>
+                  </label>
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5">
+                    {getTourDateOptions().map((opt) => (
+                      <button
+                        key={opt.id}
+                        type="button"
+                        onClick={() => setLeadForm({ ...leadForm, dateOption: opt.id })}
+                        className={`py-2 px-2 text-center rounded-lg text-xs transition-all font-medium ${
+                          leadForm.dateOption === opt.id
+                            ? 'bg-[#C5A880] text-[#0A0E17] font-bold shadow-md'
+                            : 'bg-[#121824] border border-[#1E293B] text-gray-300 hover:text-white hover:border-[#C5A880]/50'
+                        }`}
+                      >
+                        {opt.label}
+                      </button>
+                    ))}
+                  </div>
+
+                  {leadForm.dateOption === 'custom' && (
+                    <input
+                      type="date"
+                      required
+                      min={new Date().toISOString().split('T')[0]}
+                      value={leadForm.customDate}
+                      onChange={(e) => setLeadForm({ ...leadForm, customDate: e.target.value })}
+                      className="w-full bg-[#121824] border border-[#1E293B] rounded-lg p-2 text-xs text-white focus:outline-none focus:border-[#C5A880] mt-1.5 transition-colors"
+                    />
+                  )}
+                </div>
+
+                {/* 3. CHỌN MỐC GIỜ THAM QUAN (THEO CÁC MỐC CHUẨN) */}
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <label className="flex items-center gap-1.5 text-gray-300 font-mono text-[11px]">
+                      <Clock className="w-3.5 h-3.5 text-[#C5A880]" />
+                      <span>Chọn Mốc Giờ Đón Tiếp (*):</span>
+                    </label>
+                    <span className="text-[10px] font-mono text-[#C5A880]">60 phút / ca đón</span>
+                  </div>
+
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                    {TOUR_TIME_SLOTS.map((slot) => {
+                      const isSelected = leadForm.timeSlot === slot.time;
+                      return (
+                        <button
+                          key={slot.id}
+                          type="button"
+                          onClick={() => setLeadForm({ ...leadForm, timeSlot: slot.time })}
+                          className={`p-2.5 rounded-xl border text-left transition-all relative flex flex-col justify-between cursor-pointer ${
+                            isSelected
+                              ? 'bg-[#C5A880]/15 border-[#C5A880] ring-1 ring-[#C5A880] shadow-[0_0_15px_rgba(197,168,128,0.3)]'
+                              : 'bg-[#121824] border-[#1E293B] hover:border-[#C5A880]/50 hover:bg-[#161F2E]'
+                          }`}
+                        >
+                          <div className="flex items-center justify-between gap-1">
+                            <span className={`text-[9.5px] font-mono uppercase px-1.5 py-0.5 rounded ${
+                              isSelected
+                                ? 'bg-[#C5A880] text-[#0A0E17] font-bold'
+                                : 'bg-[#1E293B] text-gray-400'
+                            }`}>
+                              {slot.period}
+                            </span>
+                            {slot.popular && (
+                              <span className="text-[9px] text-amber-400 font-mono">
+                                ★ Hot
+                              </span>
+                            )}
+                          </div>
+
+                          <div className={`font-mono text-xs font-bold mt-1.5 ${
+                            isSelected ? 'text-white' : 'text-gray-200'
+                          }`}>
+                            {slot.time}
+                          </div>
+
+                          <div className="text-[10px] text-gray-400 truncate mt-0.5">
+                            {slot.tag}
+                          </div>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* 4. Số lượng người tham quan */}
+                <div className="space-y-1.5">
+                  <label className="flex items-center gap-1.5 text-gray-300 font-mono text-[11px]">
+                    <Users className="w-3.5 h-3.5 text-[#C5A880]" />
+                    <span>Số Lượng Người Đi Cùng:</span>
+                  </label>
+                  <div className="grid grid-cols-3 gap-2">
+                    {['1 - 2 người', '3 - 4 người', 'Đoàn > 4 người'].map((g) => (
+                      <button
+                        key={g}
+                        type="button"
+                        onClick={() => setLeadForm({ ...leadForm, guests: g })}
+                        className={`py-2 px-1 text-center rounded-lg text-[11px] font-mono transition-all ${
+                          leadForm.guests === g
+                            ? 'bg-[#1E293B] border border-[#C5A880] text-[#C5A880] font-bold'
+                            : 'bg-[#121824] border border-[#1E293B] text-gray-400 hover:text-white'
+                        }`}
+                      >
+                        {g}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* 5. Nút Xác Nhận Đặt Lịch */}
+                <div className="pt-2">
+                  <button
+                    type="submit"
+                    className="w-full py-3.5 bg-[#C5A880] hover:bg-[#D4AF37] text-[#0A0E17] font-bold text-xs tracking-wider uppercase rounded-xl transition-all shadow-xl flex items-center justify-center gap-2 cursor-pointer"
+                  >
+                    <PhoneCall className="w-4 h-4" />
+                    <span>Xác Nhận Đặt Lịch Tham Quan ({leadForm.timeSlot})</span>
+                  </button>
+                  <div className="text-center text-[10px] text-gray-400 font-mono mt-2">
+                    ✓ Miễn phí tham quan • Có xe đưa đón nội khu & đồ uống welcome
+                  </div>
                 </div>
               </form>
             )}
