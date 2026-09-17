@@ -116,15 +116,6 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
   const [searchResult, setSearchResult] = useState<BqlEligibleAccount | null>(null);
   const [searchNotFound, setSearchNotFound] = useState<string | null>(null);
 
-  // Quick Edit Member State
-  const [editTargetMember, setEditTargetMember] = useState<FamilyMemberItem | null>(null);
-  const [editRelationship, setEditRelationship] = useState<string>('Vợ / Chồng');
-  const [editLicensePlate, setEditLicensePlate] = useState<string>('');
-  const [editFullName, setEditFullName] = useState<string>('');
-  const [editPhone, setEditPhone] = useState<string>('');
-  const [editIdCard, setEditIdCard] = useState<string>('');
-  const [isSubmittingEdit, setIsSubmittingEdit] = useState<boolean>(false);
-
   // Custom Remove Member Confirmation State
   const [removeTargetMember, setRemoveTargetMember] = useState<FamilyMemberItem | null>(null);
   const [isRemoving, setIsRemoving] = useState<boolean>(false);
@@ -366,6 +357,7 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
   // =========================================================================
   const handleOpenEkycModal = (member: FamilyMemberItem) => {
     const existing = getMemberEkyc(member);
+    const profile = getEnrolledFaceProfile(member.phone || member.id || member.username || '');
     setEkycTargetMember(member);
     setEkycFullName(existing?.fullName || member.fullName || '');
     setEkycRelationship(member.relationship || 'Vợ / Chồng');
@@ -376,18 +368,29 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
     setEkycIdDate(existing?.idDate || '2022-08-15');
     setEkycIdPlace(existing?.idPlace || 'Cục Cảnh sát QLHC về TTXH');
     setEkycLicensePlate(member.licensePlate || '');
-    setEkycAvatarUrl(
-      existing?.avatarUrl ||
-        member.avatarUrl ||
-        'https://data.nks.vn/storage/users/default.png'
-    );
+
+    // Ưu tiên hiển thị chân dung chuẩn xác nhất của người nhà
+    let resolvedAvatar = '';
+    if (existing?.avatarUrl && !existing.avatarUrl.includes('default.png')) {
+      resolvedAvatar = existing.avatarUrl;
+    } else if (profile?.samples?.front) {
+      resolvedAvatar = profile.samples.front;
+    } else if (member.avatarUrl && !member.avatarUrl.includes('default.png')) {
+      resolvedAvatar = member.avatarUrl.replace('data.nks.vn//', 'data.nks.vn/');
+    } else if (profile?.avatarUrl && !profile.avatarUrl.includes('default.png')) {
+      resolvedAvatar = profile.avatarUrl;
+    } else {
+      resolvedAvatar = 'https://data.nks.vn/storage/users/default.png';
+    }
+    setEkycAvatarUrl(resolvedAvatar);
+
     setEkycFrontImage(
       existing?.idCardFrontUrl ||
         'https://images.unsplash.com/photo-1578852612716-854e527abf2e?w=600'
     );
     setEkycBackImage(
       existing?.idCardBackUrl ||
-        'https://images.unsplash.com/photo-1578852612716-854e527abf2e?w=600'
+        'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=600'
     );
     setEkycModalError(null);
     setIsCameraActive(false);
@@ -603,60 +606,6 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
       setActionError(err.message || 'Lỗi kết nối API khi thêm thành viên.');
     } finally {
       setIsSubmitting(false);
-    }
-  };
-
-  // Open Quick Edit Modal
-  const handleOpenEditModal = (member: FamilyMemberItem) => {
-    setEditTargetMember(member);
-    setEditFullName(member.fullName || '');
-    setEditRelationship(member.relationship || 'Vợ / Chồng');
-    setEditLicensePlate(member.licensePlate || '');
-    setEditPhone(member.phone || '');
-    setEditIdCard(member.idCard || '');
-    setActionError(null);
-  };
-
-  // Submit Quick Edit
-  const handleSaveMemberEdit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!editTargetMember) return;
-
-    if (!editFullName.trim()) {
-      setActionError('Họ và tên không được để trống.');
-      return;
-    }
-    if (!editPhone.trim()) {
-      setActionError('Số điện thoại không được để trống.');
-      return;
-    }
-
-    setIsSubmittingEdit(true);
-    setActionError(null);
-
-    try {
-      const res = await nksUpdateFamilyMember({
-        memberId: editTargetMember.id,
-        fullName: editFullName.trim(),
-        relationship: editRelationship,
-        licensePlate: editLicensePlate.trim(),
-        phone: editPhone.trim(),
-        idCard: editIdCard.trim(),
-      });
-
-      if (res.success && res.members) {
-        setMembers(res.members);
-        setActionSuccess(`✓ Đã cập nhật thông tin thành viên "${editFullName}" thành công!`);
-        setTimeout(() => setActionSuccess(null), 4000);
-        setEditTargetMember(null);
-        fetchMembers();
-      } else {
-        setActionError(res.message || 'Không thể cập nhật thông tin thành viên.');
-      }
-    } catch (err: any) {
-      setActionError(err?.message || 'Lỗi khi cập nhật thông tin thành viên.');
-    } finally {
-      setIsSubmittingEdit(false);
     }
   };
 
@@ -1061,17 +1010,6 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
                       </button>
                     )}
 
-                    {isOwner && (
-                      <button
-                        type="button"
-                        onClick={() => handleOpenEditModal(m)}
-                        className="px-3.5 py-2 text-xs font-bold rounded-none flex items-center gap-1.5 transition-all shadow cursor-pointer active:scale-95 bg-[#161D26] hover:bg-[#1F2937] border border-[#2D3748] hover:border-[#C5A880]/70 text-gray-200 hover:text-white"
-                        title="Sửa mối quan hệ, biển số xe & số điện thoại"
-                      >
-                        <Edit2 className="w-3.5 h-3.5 text-[#C5A880]" />
-                        <span>Sửa Thông Tin & Xe</span>
-                      </button>
-                    )}
 
                     {isOwner && (
                       <button
@@ -1308,7 +1246,7 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
                     </div>
 
                     {/* Camera or Image Preview */}
-                    <div className="relative w-full h-44 bg-[#0D1117] rounded-none border border-gray-700 overflow-hidden flex items-center justify-center">
+                    <div className="relative w-full h-44 bg-[#0D1117] rounded-none border border-gray-700 overflow-hidden flex items-center justify-center group shadow-inner">
                       {isCameraActive ? (
                         <video
                           ref={videoRef}
@@ -1317,11 +1255,24 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
                           className="w-full h-full object-cover"
                         />
                       ) : (
-                        <img
-                          src={ekycAvatarUrl || 'https://data.nks.vn/storage/users/default.png'}
-                          alt="FaceID Avatar"
-                          className="w-full h-full object-cover"
-                        />
+                        <>
+                          <img
+                            src={ekycAvatarUrl || 'https://data.nks.vn/storage/users/default.png'}
+                            alt="FaceID Avatar"
+                            onError={(e) => {
+                              e.currentTarget.src = 'https://data.nks.vn/storage/users/default.png';
+                            }}
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                          />
+                          <div className="absolute top-2 left-2 px-2 py-0.5 bg-black/75 backdrop-blur rounded-none text-[9.5px] font-mono text-[#C5A880] border border-[#C5A880]/30">
+                            ẢNH CHÂN DUNG • FACEID
+                          </div>
+                          {ekycAvatarUrl && !ekycAvatarUrl.includes('default.png') && (
+                            <div className="absolute bottom-2 right-2 px-2 py-0.5 bg-emerald-950/90 text-emerald-300 border border-emerald-500 text-[9px] font-mono font-bold rounded-none">
+                              ✓ Đã Có Chân Dung
+                            </div>
+                          )}
+                        </>
                       )}
                     </div>
 
@@ -1344,28 +1295,47 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
                           </button>
                         </div>
                       ) : (
-                        <div className="flex gap-1.5">
-                          <button
-                            type="button"
-                            onClick={startCamera}
-                            className="flex-1 py-2 bg-[#1C2533] hover:bg-[#253245] border border-[#C5A880]/70 text-[#C5A880] font-bold rounded-none flex items-center justify-center gap-1 cursor-pointer"
-                          >
-                            <Camera className="w-3.5 h-3.5" /> Camera
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => fileInputAvatarRef.current?.click()}
-                            className="flex-1 py-2 bg-gray-800 hover:bg-gray-700 text-gray-200 font-bold rounded-none flex items-center justify-center gap-1 cursor-pointer"
-                          >
-                            <Upload className="w-3.5 h-3.5" /> Chọn Tệp
-                          </button>
-                          <input
-                            ref={fileInputAvatarRef}
-                            type="file"
-                            accept="image/*"
-                            className="hidden"
-                            onChange={(e) => handleFileUpload(e, setEkycAvatarUrl)}
-                          />
+                        <div className="space-y-1.5">
+                          <div className="flex gap-1.5">
+                            <button
+                              type="button"
+                              onClick={startCamera}
+                              className="flex-1 py-2 bg-[#1C2533] hover:bg-[#253245] border border-[#C5A880]/70 text-[#C5A880] font-bold rounded-none flex items-center justify-center gap-1 cursor-pointer"
+                            >
+                              <Camera className="w-3.5 h-3.5" /> Camera
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => fileInputAvatarRef.current?.click()}
+                              className="flex-1 py-2 bg-gray-800 hover:bg-gray-700 text-gray-200 font-bold rounded-none flex items-center justify-center gap-1 cursor-pointer"
+                            >
+                              <Upload className="w-3.5 h-3.5" /> Chọn Tệp
+                            </button>
+                            <input
+                              ref={fileInputAvatarRef}
+                              type="file"
+                              accept="image/*"
+                              className="hidden"
+                              onChange={(e) => handleFileUpload(e, setEkycAvatarUrl)}
+                            />
+                          </div>
+
+                          {/* Quick use FaceID sample button if available */}
+                          {(() => {
+                            const p = getEnrolledFaceProfile(ekycTargetMember?.phone || ekycTargetMember?.id || ekycTargetMember?.username || '');
+                            if (p?.samples?.front && ekycAvatarUrl !== p.samples.front) {
+                              return (
+                                <button
+                                  type="button"
+                                  onClick={() => setEkycAvatarUrl(p.samples.front)}
+                                  className="w-full py-1.5 bg-[#121820] hover:bg-[#1E2631] border border-cyan-500/70 text-cyan-300 text-[10.5px] font-semibold flex items-center justify-center gap-1 cursor-pointer transition-colors"
+                                >
+                                  <Sparkles className="w-3 h-3 text-cyan-400" /> Dùng Mẫu Ảnh FaceID Đã Quét
+                                </button>
+                              );
+                            }
+                            return null;
+                          })()}
                         </div>
                       )}
                     </div>
@@ -2074,150 +2044,7 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
         );
       })()}
 
-      {/* =================================================================== */}
-      {/* MODAL: SỬA THÔNG TIN NGƯỜI NHÀ & BIỂN SỐ XE                          */}
-      {/* =================================================================== */}
-      {editTargetMember && (
-        <div 
-          onClick={(e) => {
-            if (e.target === e.currentTarget) setEditTargetMember(null);
-          }}
-          className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/85 backdrop-blur-sm animate-fadeIn select-none"
-        >
-          <div className="bg-[#0D1117] border border-[#C5A880]/70 max-w-lg w-full p-5 sm:p-6 text-white space-y-4 shadow-2xl rounded-none">
-            {/* Modal Header */}
-            <div className="flex items-center justify-between border-b border-[#222B35] pb-3">
-              <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-none bg-[#C5A880]/20 flex items-center justify-center text-[#C5A880]">
-                  <Edit2 className="w-4 h-4" />
-                </div>
-                <div>
-                  <h3 className="text-base font-serif font-bold text-white">
-                    Sửa Thông Tin & Phương Tiện
-                  </h3>
-                  <p className="text-[11px] text-gray-400">
-                    Căn hộ {aptCode} • Thành viên: <strong className="text-white">{editTargetMember.fullName}</strong>
-                  </p>
-                </div>
-              </div>
-              <button
-                type="button"
-                onClick={() => setEditTargetMember(null)}
-                className="text-gray-400 hover:text-white p-1 rounded-none hover:bg-[#161D26] transition-colors cursor-pointer"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
 
-            {/* Edit Form */}
-            <form onSubmit={handleSaveMemberEdit} className="space-y-4 text-xs">
-              <div>
-                <label className="text-gray-300 font-semibold block mb-1">
-                  Họ và Tên: *
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={editFullName}
-                  onChange={(e) => setEditFullName(e.target.value)}
-                  className="w-full bg-[#161B22] border border-[#2D3748] p-2.5 text-white rounded-none focus:border-[#C5A880] outline-none font-medium"
-                />
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div>
-                  <label className="text-gray-300 font-semibold block mb-1">
-                    Mối Quan Hệ Với Chủ Hộ: *
-                  </label>
-                  <select
-                    value={editRelationship}
-                    onChange={(e) => setEditRelationship(e.target.value)}
-                    className="w-full bg-[#161B22] border border-[#2D3748] p-2.5 text-white rounded-none focus:border-[#C5A880] outline-none"
-                  >
-                    <option value="Vợ / Chồng">Vợ / Chồng</option>
-                    <option value="Con Cái">Con Cái</option>
-                    <option value="Bố / Mẹ">Bố / Mẹ</option>
-                    <option value="Anh / Chị / Em">Anh / Chị / Em</option>
-                    <option value="Người Thân Cùng Căn Hộ">Người Thân Cùng Căn Hộ</option>
-                    <option value="Khách Thuê Căn Hộ">Khách Thuê Căn Hộ</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="text-gray-300 font-semibold block mb-1">
-                    Số Điện Thoại: *
-                  </label>
-                  <input
-                    type="tel"
-                    required
-                    value={editPhone}
-                    onChange={(e) => setEditPhone(e.target.value)}
-                    className="w-full bg-[#161B22] border border-[#2D3748] p-2.5 text-white font-mono rounded-none focus:border-[#C5A880] outline-none"
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div>
-                  <label className="text-gray-300 font-semibold block mb-1">
-                    Số CCCD / Định Danh:
-                  </label>
-                  <input
-                    type="text"
-                    maxLength={12}
-                    value={editIdCard}
-                    onChange={(e) => setEditIdCard(e.target.value)}
-                    placeholder="VD: 079198005678"
-                    className="w-full bg-[#161B22] border border-[#2D3748] p-2.5 text-[#C5A880] font-mono font-bold rounded-none focus:border-[#C5A880] outline-none"
-                  />
-                </div>
-
-                <div>
-                  <label className="text-gray-300 font-semibold block mb-1 flex items-center gap-1">
-                    <Car className="w-3.5 h-3.5 text-cyan-400" /> Biển Số Xe Đăng Ký:
-                  </label>
-                  <input
-                    type="text"
-                    value={editLicensePlate}
-                    onChange={(e) => setEditLicensePlate(e.target.value)}
-                    placeholder="VD: 59P1-886.79"
-                    className="w-full bg-[#161B22] border border-[#2D3748] p-2.5 text-cyan-300 font-mono rounded-none focus:border-[#C5A880] outline-none"
-                  />
-                </div>
-              </div>
-
-              <div className="p-3 bg-[#161B22] border border-[#222B35] rounded-none text-[11px] text-gray-400">
-                Lưu ý: Thay đổi thông tin nhân thân và biển số xe sẽ tự động đồng bộ sang hệ thống nhận diện biển số xe tại barrier hầm B1/B2.
-              </div>
-
-              <div className="pt-2 flex justify-end gap-2.5 border-t border-[#222B35]">
-                <button
-                  type="button"
-                  onClick={() => setEditTargetMember(null)}
-                  className="px-4 py-2 bg-transparent hover:bg-[#161D26] text-gray-400 hover:text-white rounded-none transition-colors cursor-pointer"
-                >
-                  Hủy
-                </button>
-                <button
-                  type="submit"
-                  disabled={isSubmittingEdit}
-                  className="px-5 py-2.5 bg-[#C5A880] hover:bg-white text-[#0D1117] font-bold text-xs uppercase tracking-wider rounded-none shadow-lg transition-colors flex items-center gap-2 cursor-pointer active:scale-95"
-                >
-                  {isSubmittingEdit ? (
-                    <>
-                      <RefreshCw className="w-3.5 h-3.5 animate-spin" /> Đang Lưu...
-                    </>
-                  ) : (
-                    <>
-                      <Check className="w-3.5 h-3.5" /> Lưu Thay Đổi
-                    </>
-                  )}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
 
       {/* =================================================================== */}
       {/* MODAL: XÁC NHẬN HỦY PHÂN QUYỀN CƯ DÂN CAO CẤP                       */}
