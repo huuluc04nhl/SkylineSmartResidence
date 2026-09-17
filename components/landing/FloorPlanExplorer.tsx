@@ -24,6 +24,7 @@ import {
   MapPin,
   Users
 } from 'lucide-react';
+import { useTheme } from '@/lib/themeContext';
 
 interface FloorPlanExplorerProps {
   onOpenLogin?: () => void;
@@ -69,7 +70,7 @@ const APARTMENT_MODELS: Record<ApartmentCategory, ApartmentData> = {
     code: '12A05',
     name: 'Căn Hộ 2PN Tiêu Chuẩn',
     subtitle: 'Căn mẫu thực tế cư dân • Bố cục bóc mái 3D view trực diện Sông Sài Gòn',
-    floorText: 'Tầng 12A • Tháp A (Chung Cư Skyline)',
+    floorText: 'Tầng 12A • Chung Cư Skyline',
     area: 78.5,
     wallArea: 83.2,
     bedrooms: 2,
@@ -154,7 +155,7 @@ const APARTMENT_MODELS: Record<ApartmentCategory, ApartmentData> = {
     code: '24A01',
     name: 'Căn Hộ 3PN Sky Suite',
     subtitle: 'Phân khu áp mái cao cấp • Căn góc 2 mặt thoáng view triệu đô',
-    floorText: 'Tầng 24 (Áp Mái) • Tháp A (Chung Cư Skyline)',
+    floorText: 'Tầng 24 (Áp Mái) • Chung Cư Skyline',
     area: 112.0,
     wallArea: 119.5,
     bedrooms: 3,
@@ -237,7 +238,7 @@ const APARTMENT_MODELS: Record<ApartmentCategory, ApartmentData> = {
     code: '12A02',
     name: 'Căn Hộ 1PN Thông Minh',
     subtitle: 'Tối ưu hóa không gian sống cho chuyên gia trẻ & người độc thân',
-    floorText: 'Tầng 12A • Tháp A (Chung Cư Skyline)',
+    floorText: 'Tầng 12A • Chung Cư Skyline',
     area: 52.0,
     wallArea: 56.5,
     bedrooms: 1,
@@ -310,7 +311,7 @@ const APARTMENT_MODELS: Record<ApartmentCategory, ApartmentData> = {
     code: '25PH-01',
     name: 'Duplex Penthouse Hoàng Gia',
     subtitle: 'Tuyệt tác thông 2 tầng đỉnh tháp Tầng 25 • Trần cao 6.5m & Hồ Jacuzzi',
-    floorText: 'Tầng 25 (Đỉnh Tháp) • Tháp A (Chung Cư Skyline)',
+    floorText: 'Tầng 25 (Đỉnh Tháp) • Chung Cư Skyline',
     area: 215.0,
     wallArea: 232.0,
     bedrooms: 4,
@@ -445,6 +446,9 @@ export function getTourDateOptions() {
 }
 
 export default function FloorPlanExplorer({ onOpenLogin }: FloorPlanExplorerProps) {
+  const { theme } = useTheme();
+  const isDark = theme === 'dark';
+
   const [selectedCategory, setSelectedCategory] = useState<ApartmentCategory>('2PN');
   const [activeHotspotId, setActiveHotspotId] = useState<string>('living');
   const [isRegisterOpen, setIsRegisterOpen] = useState(false);
@@ -518,7 +522,11 @@ export default function FloorPlanExplorer({ onOpenLogin }: FloorPlanExplorerProp
   };
 
   return (
-    <section id="floorplans" className="py-12 sm:py-20 bg-[#0A0E17] text-white border-b border-[#1E293B] scroll-mt-20 relative overflow-hidden select-none">
+    <section id="floorplans" className={`py-12 sm:py-20 border-b scroll-mt-20 relative overflow-hidden select-none transition-colors duration-300 ${
+      isDark 
+        ? 'bg-[#0A0E17] text-white border-[#1E293B]' 
+        : 'bg-[#F8FAFC] text-gray-900 border-gray-200'
+    }`}>
       {/* Background glow tinh tế */}
       <div className="absolute top-10 left-1/4 w-96 h-96 bg-[#C5A880]/5 rounded-full blur-3xl pointer-events-none" />
       <div className="absolute bottom-10 right-1/4 w-96 h-96 bg-blue-900/10 rounded-full blur-3xl pointer-events-none" />
@@ -527,23 +535,33 @@ export default function FloorPlanExplorer({ onOpenLogin }: FloorPlanExplorerProp
         {/* ============================================================= */}
         {/* 1. TIÊU ĐỀ RÕ RÀNG, TINH TẾ, DỄ HIỂU                          */}
         {/* ============================================================= */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-6 border-b border-[#1E293B]">
+        <div className={`flex flex-col md:flex-row md:items-end justify-between gap-4 pb-6 border-b ${
+          isDark ? 'border-[#1E293B]' : 'border-gray-200'
+        }`}>
           <div className="space-y-2 max-w-2xl">
-            <div className="inline-flex items-center gap-2 px-3 py-1 bg-[#161F2E] border border-[#C5A880]/40 rounded text-[11px] font-mono uppercase tracking-[0.2em] text-[#C5A880]">
+            <div className={`inline-flex items-center gap-2 px-3 py-1 rounded text-[11px] font-mono uppercase tracking-[0.2em] ${
+              isDark 
+                ? 'bg-[#161F2E] border border-[#C5A880]/40 text-[#C5A880]' 
+                : 'bg-white border border-[#C5A880]/60 text-amber-800 shadow-sm'
+            }`}>
               <Box className="w-3.5 h-3.5 text-[#C5A880]" />
               <span>Phối Cảnh Bóc Mái 3D Căn Hộ Skyline</span>
             </div>
-            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-serif text-white font-bold tracking-tight">
+            <h2 className={`text-2xl sm:text-3xl lg:text-4xl font-serif font-bold tracking-tight ${
+              isDark ? 'text-white' : 'text-[#0D1117]'
+            }`}>
               Sơ Đồ Không Gian 3D Căn Hộ
             </h2>
-            <p className="text-xs sm:text-sm text-gray-300 font-light leading-relaxed">
+            <p className={`text-xs sm:text-sm font-light leading-relaxed ${
+              isDark ? 'text-gray-300' : 'text-gray-600'
+            }`}>
               Mỗi dòng căn hộ sở hữu thiết kế hình khối bóc mái chân thực. Click vào nhãn các phòng trên ảnh 3D để xem chi tiết công năng.
             </p>
           </div>
 
           <button
             onClick={() => setIsRegisterOpen(true)}
-            className="px-4 py-2.5 bg-[#C5A880] hover:bg-[#D4AF37] text-[#0A0E17] font-bold text-xs tracking-wider uppercase rounded transition-all shadow-lg flex items-center gap-2 shrink-0 self-start md:self-auto"
+            className="px-4 py-2.5 bg-[#C5A880] hover:bg-[#D4AF37] text-[#0A0E17] font-bold text-xs tracking-wider uppercase rounded-lg transition-all shadow-lg flex items-center gap-2 shrink-0 self-start md:self-auto cursor-pointer"
           >
             <PhoneCall className="w-3.5 h-3.5" />
             <span>Đăng Ký Xem Thực Tế</span>
@@ -562,32 +580,42 @@ export default function FloorPlanExplorer({ onOpenLogin }: FloorPlanExplorerProp
                 key={cat}
                 type="button"
                 onClick={() => handleSelectCategory(cat)}
-                className={`p-3 sm:p-4 rounded-lg border text-left transition-all relative flex flex-col justify-between ${
+                className={`p-3 sm:p-4 rounded-xl border text-left transition-all relative flex flex-col justify-between cursor-pointer ${
                   isSelected
-                    ? 'bg-[#151D29] border-[#C5A880] shadow-xl ring-1 ring-[#C5A880]/70'
-                    : 'bg-[#0E131C] border-[#1E293B] hover:border-[#2D3F58] hover:bg-[#121824]'
+                    ? isDark
+                      ? 'bg-[#151D29] border-[#C5A880] shadow-xl ring-1 ring-[#C5A880]/70'
+                      : 'bg-white border-[#C5A880] shadow-lg ring-1 ring-[#C5A880]'
+                    : isDark
+                      ? 'bg-[#0E131C] border-[#1E293B] hover:border-[#2D3F58] hover:bg-[#121824]'
+                      : 'bg-white border-gray-200 hover:border-gray-400 hover:bg-slate-50 shadow-sm'
                 }`}
               >
                 <div>
                   <div className="flex items-center justify-between gap-1 mb-1">
-                    <span className="font-mono text-xs font-bold text-white">Căn {apt.code}</span>
+                    <span className={`font-mono text-xs font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                      Căn {apt.code}
+                    </span>
                     <span className={`text-[9.5px] px-1.5 py-0.5 rounded font-mono font-semibold border ${
-                      cat === 'DUPLEX' ? 'bg-rose-500/20 text-rose-300 border-rose-500/40' :
-                      cat === '3PN' ? 'bg-purple-500/20 text-purple-300 border-purple-500/40' :
-                      cat === '2PN' ? 'bg-amber-500/20 text-amber-300 border-amber-500/40' :
-                      'bg-sky-500/20 text-sky-300 border-sky-500/40'
+                      cat === 'DUPLEX' ? 'bg-rose-500/20 text-rose-400 border-rose-500/40' :
+                      cat === '3PN' ? 'bg-purple-500/20 text-purple-400 border-purple-500/40' :
+                      cat === '2PN' ? 'bg-amber-500/20 text-amber-500 border-amber-500/40' :
+                      'bg-sky-500/20 text-sky-400 border-sky-500/40'
                     }`}>
                       {cat === 'DUPLEX' ? '2 Tầng Thông Suốt' : `${apt.bedrooms} PN • ${apt.bathrooms} WC`}
                     </span>
                   </div>
-                  <div className="font-serif text-sm font-bold text-[#C5A880] mt-0.5">
+                  <div className={`font-serif text-sm font-bold mt-0.5 ${
+                    isSelected ? 'text-[#C5A880]' : isDark ? 'text-gray-200' : 'text-gray-800'
+                  }`}>
                     {apt.name} ({apt.area} m²)
                   </div>
                 </div>
 
-                <div className="mt-2 pt-2 border-t border-[#1E293B] flex items-center justify-between text-[11px] text-gray-400 font-mono">
+                <div className={`mt-2 pt-2 border-t flex items-center justify-between text-[11px] font-mono ${
+                  isDark ? 'border-[#1E293B] text-gray-400' : 'border-gray-100 text-gray-500'
+                }`}>
                   <span>{cat === 'DUPLEX' ? 'Trần cao 6.5m' : `${apt.wallArea} m² tim tường`}</span>
-                  <span className="text-white font-semibold">{apt.priceBillion.toFixed(2)} Tỷ</span>
+                  <span className={`font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`}>{apt.priceBillion.toFixed(2)} Tỷ</span>
                 </div>
               </button>
             );
@@ -599,19 +627,31 @@ export default function FloorPlanExplorer({ onOpenLogin }: FloorPlanExplorerProp
         {/* ============================================================= */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-stretch">
           {/* CỘT TRÁI (7 CỘT): KHUNG PHỐI CẢNH 3D UNIFIED CARD - CÂN BẰNG HOÀN TOÀN */}
-          <div className="lg:col-span-7 flex flex-col justify-between h-full border border-[#C5A880]/40 bg-[#0E131C] rounded-xl overflow-hidden shadow-2xl">
+          <div className={`lg:col-span-7 flex flex-col justify-between h-full border rounded-xl overflow-hidden shadow-2xl transition-colors ${
+            isDark 
+              ? 'border-[#C5A880]/40 bg-[#0E131C]' 
+              : 'border-gray-200 bg-white shadow-xl'
+          }`}>
             {/* Header thanh chỉ báo */}
-            <div className="p-3 sm:p-3.5 bg-[#121824] border-b border-[#1E293B] flex items-center justify-between gap-2 shrink-0">
-              <div className="flex items-center gap-2 text-xs font-mono font-semibold text-gray-300 truncate">
+            <div className={`p-3 sm:p-3.5 border-b flex items-center justify-between gap-2 shrink-0 ${
+              isDark ? 'bg-[#121824] border-[#1E293B]' : 'bg-slate-50 border-gray-200'
+            }`}>
+              <div className={`flex items-center gap-2 text-xs font-mono font-semibold truncate ${
+                isDark ? 'text-gray-300' : 'text-gray-700'
+              }`}>
                 <span className="w-2 h-2 rounded-full bg-[#C5A880] animate-pulse" />
                 <span className="truncate">{currentApartment.subtitle}</span>
               </div>
-              <div className="text-[10px] font-mono text-[#C5A880] bg-[#070A10] border border-[#1E293B] px-2.5 py-0.5 rounded shrink-0">
+              <div className={`text-[10px] font-mono px-2.5 py-0.5 rounded shrink-0 border ${
+                isDark 
+                  ? 'text-[#C5A880] bg-[#070A10] border-[#1E293B]' 
+                  : 'text-amber-800 bg-white border-gray-200 shadow-sm'
+              }`}>
                 Click nhãn phòng để xem
               </div>
             </div>
 
-            {/* KHUNG ẢNH 3D ISOMETRIC CUTAWAY (flex-1 để tự co giãn vừa khít độ cao cột phải) */}
+            {/* KHUNG ẢNH 3D ISOMETRIC CUTAWAY */}
             <div className="relative flex-1 min-h-[360px] sm:min-h-[420px] md:min-h-[460px] bg-[#05070A] overflow-hidden group">
               <img
                 src={currentApartment.render3DUrl}
@@ -634,7 +674,7 @@ export default function FloorPlanExplorer({ onOpenLogin }: FloorPlanExplorerProp
                 <span>{currentApartment.statusLabel}</span>
               </div>
 
-              {/* NHÃN PHÒNG VIẾT RÕ RÀNG TRÊN PHỐI CẢNH: MẶC ĐỊNH LÀM MỜ, CLICK VÀO THÌ SÁNG RÕ RA */}
+              {/* NHÃN PHÒNG VIẾT RÕ RÀNG TRÊN PHỐI CẢNH */}
               {currentApartment.hotspots.map((spot) => {
                 const isActive = activeHotspotId === spot.id;
                 return (
@@ -676,18 +716,24 @@ export default function FloorPlanExplorer({ onOpenLogin }: FloorPlanExplorerProp
               </div>
             </div>
 
-            {/* THANH THÔNG TIN PHÒNG ĐANG CHỌN (GẮN LIỀN VÀO ĐÁY KHUNG 3D, CÂN BẰNG HOÀN TOÀN) */}
-            <div className="p-3.5 sm:p-4 bg-[#121824] border-t border-[#1E293B] flex items-center justify-between gap-3 text-xs shrink-0">
+            {/* THANH THÔNG TIN PHÒNG ĐANG CHỌN */}
+            <div className={`p-3.5 sm:p-4 border-t flex items-center justify-between gap-3 text-xs shrink-0 ${
+              isDark ? 'bg-[#121824] border-[#1E293B]' : 'bg-slate-50 border-gray-200'
+            }`}>
               <div className="flex items-center gap-3 truncate">
                 <div className="w-9 h-9 rounded-lg bg-[#C5A880]/20 border border-[#C5A880] text-[#C5A880] font-mono font-bold text-xs flex items-center justify-center shrink-0">
                   {activeRoom.code}
                 </div>
                 <div className="truncate">
-                  <div className="font-bold text-white font-serif text-sm flex items-center gap-2">
+                  <div className={`font-bold font-serif text-sm flex items-center gap-2 ${
+                    isDark ? 'text-white' : 'text-gray-900'
+                  }`}>
                     <span>{activeRoom.name}</span>
                     <span className="text-[#C5A880] font-mono text-xs font-semibold">({activeRoom.area})</span>
                   </div>
-                  <div className="text-gray-300 text-[11px] font-light truncate mt-0.5">
+                  <div className={`text-[11px] font-light truncate mt-0.5 ${
+                    isDark ? 'text-gray-300' : 'text-gray-600'
+                  }`}>
                     {activeRoom.desc}
                   </div>
                 </div>
@@ -699,19 +745,25 @@ export default function FloorPlanExplorer({ onOpenLogin }: FloorPlanExplorerProp
             </div>
           </div>
 
-          {/* CỘT PHẢI (5 CỘT): BÁO GIÁ, THÔNG SỐ VÀNG & NÚT HÀNH ĐỘNG (ĐỒNG BỘ CHIỀU CAO) */}
-          <div className="lg:col-span-5 flex flex-col justify-between h-full p-5 sm:p-6 bg-[#0E131C] border border-[#C5A880]/50 rounded-xl shadow-2xl space-y-5">
+          {/* CỘT PHẢI (5 CỘT): BÁO GIÁ, THÔNG SỐ VÀNG & NÚT HÀNH ĐỘNG */}
+          <div className={`lg:col-span-5 flex flex-col justify-between h-full p-5 sm:p-6 rounded-xl shadow-2xl space-y-5 transition-colors ${
+            isDark ? 'bg-[#0E131C] border border-[#C5A880]/50' : 'bg-white border border-gray-200 shadow-xl'
+          }`}>
             <div className="space-y-5">
               {/* Tiêu đề căn & Giá niêm yết */}
-              <div className="flex items-start justify-between pb-4 border-b border-[#1E293B] gap-2">
+              <div className={`flex items-start justify-between pb-4 border-b gap-2 ${
+                isDark ? 'border-[#1E293B]' : 'border-gray-200'
+              }`}>
                 <div>
                   <div className="text-[10px] font-mono uppercase tracking-widest text-[#C5A880] font-semibold">
                     {currentApartment.name}
                   </div>
-                  <h3 className="font-serif text-2xl sm:text-3xl font-bold text-white mt-0.5">
+                  <h3 className={`font-serif text-2xl sm:text-3xl font-bold mt-0.5 ${
+                    isDark ? 'text-white' : 'text-gray-900'
+                  }`}>
                     Căn Hộ {currentApartment.code}
                   </h3>
-                  <div className="text-xs text-gray-400 mt-0.5">
+                  <div className={`text-xs mt-0.5 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
                     {currentApartment.floorText}
                   </div>
                 </div>
@@ -729,27 +781,37 @@ export default function FloorPlanExplorer({ onOpenLogin }: FloorPlanExplorerProp
                 </div>
               </div>
 
-              {/* LƯỚI 4 THÔNG SỐ CHÍNH (TO RÕ TRÊN MỌI THIẾT BỊ) */}
+              {/* LƯỚI 4 THÔNG SỐ CHÍNH */}
               <div className="grid grid-cols-2 gap-2.5">
-                <div className="p-3 bg-[#121824] border border-[#1E293B] rounded">
+                <div className={`p-3 rounded ${
+                  isDark ? 'bg-[#121824] border border-[#1E293B]' : 'bg-slate-50 border border-gray-200'
+                }`}>
                   <div className="text-[10px] text-gray-400 font-mono uppercase">Diện Tích Thông Thủy</div>
-                  <div className="font-mono text-base sm:text-lg font-bold text-white mt-0.5">
+                  <div className={`font-mono text-base sm:text-lg font-bold mt-0.5 ${
+                    isDark ? 'text-white' : 'text-gray-900'
+                  }`}>
                     {currentApartment.area} m²
                   </div>
                   <div className="text-[10px] text-gray-400 mt-0.5">Tim tường: {currentApartment.wallArea} m²</div>
                 </div>
 
-                <div className="p-3 bg-[#121824] border border-[#1E293B] rounded">
+                <div className={`p-3 rounded ${
+                  isDark ? 'bg-[#121824] border border-[#1E293B]' : 'bg-slate-50 border border-gray-200'
+                }`}>
                   <div className="text-[10px] text-gray-400 font-mono uppercase">Hướng Ban Công</div>
-                  <div className="font-mono text-base sm:text-lg font-bold text-emerald-400 mt-0.5">
+                  <div className="font-mono text-base sm:text-lg font-bold text-emerald-500 mt-0.5">
                     {currentApartment.direction}
                   </div>
                   <div className="text-[10px] text-gray-400 mt-0.5">Đón gió sông mát lành</div>
                 </div>
 
-                <div className="p-3 bg-[#121824] border border-[#1E293B] rounded">
+                <div className={`p-3 rounded ${
+                  isDark ? 'bg-[#121824] border border-[#1E293B]' : 'bg-slate-50 border border-gray-200'
+                }`}>
                   <div className="text-[10px] text-gray-400 font-mono uppercase">Cơ Cấu Phòng</div>
-                  <div className="font-mono text-base sm:text-lg font-bold text-white mt-0.5">
+                  <div className={`font-mono text-base sm:text-lg font-bold mt-0.5 ${
+                    isDark ? 'text-white' : 'text-gray-900'
+                  }`}>
                     {currentApartment.bedrooms} PN • {currentApartment.bathrooms} WC
                   </div>
                   <div className="text-[10px] text-gray-400 mt-0.5">
@@ -757,9 +819,13 @@ export default function FloorPlanExplorer({ onOpenLogin }: FloorPlanExplorerProp
                   </div>
                 </div>
 
-                <div className="p-3 bg-[#121824] border border-[#1E293B] rounded">
-                  <div className="text-[10px] text-gray-400 font-mono uppercase">Pháp Lý & Bàn Giao</div>
-                  <div className="font-mono text-base sm:text-lg font-bold text-white mt-0.5">
+                <div className={`p-3 rounded ${
+                  isDark ? 'bg-[#121824] border border-[#1E293B]' : 'bg-slate-50 border border-gray-200'
+                }`}>
+                  <div className="text-[10px] text-gray-400 font-mono uppercase">Pháp Lý &amp; Bàn Giao</div>
+                  <div className={`font-mono text-base sm:text-lg font-bold mt-0.5 ${
+                    isDark ? 'text-white' : 'text-gray-900'
+                  }`}>
                     Sổ Hồng Lâu Dài
                   </div>
                   <div className="text-[10px] text-[#C5A880] mt-0.5 font-medium">{currentApartment.statusLabel}</div>
@@ -780,11 +846,11 @@ export default function FloorPlanExplorer({ onOpenLogin }: FloorPlanExplorerProp
               )}
 
               {/* TIÊU CHUẨN KHÔNG GIAN BÀN GIAO */}
-              <div className="space-y-2 pt-2 border-t border-[#1E293B]">
+              <div className={`space-y-2 pt-2 border-t ${isDark ? 'border-[#1E293B]' : 'border-gray-200'}`}>
                 <div className="text-[10.5px] font-mono uppercase text-gray-400 tracking-wider">
-                  Đặc Trưng Kiến Trúc & Công Nghệ
+                  Đặc Trưng Kiến Trúc &amp; Công Nghệ
                 </div>
-                <ul className="space-y-2 text-xs text-gray-300 font-light">
+                <ul className={`space-y-2 text-xs font-light ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
                   {currentApartment.features.map((feat, idx) => (
                     <li key={idx} className="flex items-start gap-2">
                       <Check className="w-3.5 h-3.5 text-[#C5A880] shrink-0 mt-0.5" />
@@ -795,12 +861,12 @@ export default function FloorPlanExplorer({ onOpenLogin }: FloorPlanExplorerProp
               </div>
             </div>
 
-            {/* 2 NÚT HÀNH ĐỘNG CHÍNH - DOCKED CÂN ĐỐI Ở ĐÁY KHUNG */}
-            <div className="pt-4 border-t border-[#1E293B] space-y-2.5 mt-auto">
+            {/* 2 NÚT HÀNH ĐỘNG CHÍNH */}
+            <div className={`pt-4 border-t space-y-2.5 mt-auto ${isDark ? 'border-[#1E293B]' : 'border-gray-200'}`}>
               <button
                 type="button"
                 onClick={() => setIsRegisterOpen(true)}
-                className="w-full py-3.5 bg-[#C5A880] hover:bg-[#D4AF37] text-[#0A0E17] font-bold text-xs tracking-wider uppercase rounded-lg transition-all shadow-lg flex items-center justify-center gap-2"
+                className="w-full py-3.5 bg-[#C5A880] hover:bg-[#D4AF37] text-[#0A0E17] font-bold text-xs tracking-wider uppercase rounded-lg transition-all shadow-lg flex items-center justify-center gap-2 cursor-pointer"
               >
                 <PhoneCall className="w-4 h-4" />
                 <span>Đăng Ký Tham Quan Căn Hộ Thực Tế</span>
@@ -815,7 +881,11 @@ export default function FloorPlanExplorer({ onOpenLogin }: FloorPlanExplorerProp
                     window.location.href = '/portal';
                   }
                 }}
-                className="w-full py-2.5 bg-[#121824] hover:bg-[#1A2232] border border-[#2A374A] hover:border-[#C5A880]/60 text-gray-300 hover:text-white text-xs font-semibold tracking-wider uppercase rounded-lg transition-all flex items-center justify-center gap-2"
+                className={`w-full py-2.5 border text-xs font-semibold tracking-wider uppercase rounded-lg transition-all flex items-center justify-center gap-2 cursor-pointer ${
+                  isDark
+                    ? 'bg-[#121824] hover:bg-[#1A2232] border-[#2A374A] hover:border-[#C5A880]/60 text-gray-300 hover:text-white'
+                    : 'bg-slate-100 hover:bg-slate-200 border-gray-300 hover:border-[#C5A880] text-gray-800'
+                }`}
               >
                 <Sparkles className="w-3.5 h-3.5 text-[#C5A880]" />
                 <span>Đăng Nhập Portal Ban Quản Lý / Cư Dân</span>
@@ -829,29 +899,41 @@ export default function FloorPlanExplorer({ onOpenLogin }: FloorPlanExplorerProp
       {/* MODAL ĐĂNG KÝ XEM NHÀ - CHỌN MỐC GIỜ THAM QUAN CHUYÊN NGHIỆP  */}
       {/* ============================================================= */}
       {isRegisterOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/85 backdrop-blur-sm overflow-y-auto">
-          <div className="bg-[#0E131C] border border-[#C5A880]/60 rounded-2xl p-5 sm:p-7 max-w-lg w-full shadow-2xl relative my-auto">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/80 backdrop-blur-sm overflow-y-auto">
+          <div className={`border border-[#C5A880]/60 rounded-2xl p-5 sm:p-7 max-w-lg w-full shadow-2xl relative my-auto transition-colors duration-300 ${
+            isDark ? 'bg-[#0E131C] text-white' : 'bg-white text-gray-900'
+          }`}>
             <button
               type="button"
               onClick={() => {
                 setIsRegisterOpen(false);
                 setRegisterSuccess(false);
               }}
-              className="absolute top-4 right-4 text-gray-400 hover:text-white p-1 rounded-lg hover:bg-white/10 transition-colors"
+              className={`absolute top-4 right-4 p-1 rounded-lg transition-colors ${
+                isDark ? 'text-gray-400 hover:text-white hover:bg-white/10' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-100'
+              }`}
             >
               <X className="w-5 h-5" />
             </button>
 
             {/* Tiêu đề Modal */}
             <div className="space-y-1 mb-5 pr-8">
-              <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 bg-[#161F2E] border border-[#C5A880]/40 rounded text-[10px] font-mono uppercase tracking-wider text-[#C5A880]">
+              <div className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded text-[10px] font-mono uppercase tracking-wider ${
+                isDark 
+                  ? 'bg-[#161F2E] border border-[#C5A880]/40 text-[#C5A880]' 
+                  : 'bg-amber-50 border border-[#C5A880]/60 text-amber-800'
+              }`}>
                 <Clock className="w-3 h-3 text-[#C5A880]" />
                 <span>Đặt Lịch Tiếp Đón Trực Tiếp</span>
               </div>
-              <h3 className="font-serif text-xl sm:text-2xl font-bold text-white">
+              <h3 className={`font-serif text-xl sm:text-2xl font-bold ${
+                isDark ? 'text-white' : 'text-gray-900'
+              }`}>
                 Tham Quan Căn Hộ {currentApartment.code}
               </h3>
-              <p className="text-xs text-gray-400 font-light leading-relaxed">
+              <p className={`text-xs font-light leading-relaxed ${
+                isDark ? 'text-gray-400' : 'text-gray-600'
+              }`}>
                 {currentApartment.name} • {currentApartment.area} m² • {currentApartment.floorText}
               </p>
             </div>
@@ -859,41 +941,67 @@ export default function FloorPlanExplorer({ onOpenLogin }: FloorPlanExplorerProp
             {registerSuccess && confirmedBooking ? (
               /* MÀN HÌNH XÁC NHẬN THÀNH CÔNG */
               <div className="space-y-4">
-                <div className="p-4 bg-emerald-950/40 border border-emerald-500/60 rounded-xl text-center space-y-2">
-                  <div className="w-12 h-12 rounded-full bg-emerald-500/20 border border-emerald-400 text-emerald-400 flex items-center justify-center mx-auto">
+                <div className={`p-4 rounded-xl text-center space-y-2 border ${
+                  isDark 
+                    ? 'bg-emerald-950/40 border-emerald-500/60' 
+                    : 'bg-emerald-50 border-emerald-300'
+                }`}>
+                  <div className={`w-12 h-12 rounded-full border flex items-center justify-center mx-auto ${
+                    isDark 
+                      ? 'bg-emerald-500/20 border-emerald-400 text-emerald-400' 
+                      : 'bg-emerald-100 border-emerald-500 text-emerald-600'
+                  }`}>
                     <CheckCircle2 className="w-7 h-7" />
                   </div>
-                  <h4 className="font-serif text-base font-bold text-white">
+                  <h4 className={`font-serif text-base font-bold ${
+                    isDark ? 'text-white' : 'text-emerald-950'
+                  }`}>
                     Đăng Ký Tham Quan Thành Công!
                   </h4>
-                  <p className="text-xs text-gray-300 font-light leading-relaxed">
+                  <p className={`text-xs font-light leading-relaxed ${
+                    isDark ? 'text-gray-300' : 'text-emerald-800'
+                  }`}>
                     Lễ tân và chuyên viên Ban Quản Lý Skyline đã tiếp nhận yêu cầu và sẽ sẵn sàng đón tiếp quý khách đúng khung giờ đã chọn.
                   </p>
                 </div>
 
                 {/* Thẻ tóm tắt thông tin lịch hẹn */}
-                <div className="bg-[#121824] border border-[#1E293B] rounded-xl p-4 space-y-2.5 text-xs font-mono">
-                  <div className="flex justify-between items-center pb-2 border-b border-[#1E293B]">
-                    <span className="text-gray-400">Căn hộ mục tiêu:</span>
-                    <span className="font-bold text-white">{confirmedBooking.apartmentCode} ({confirmedBooking.apartmentName})</span>
+                <div className={`border rounded-xl p-4 space-y-2.5 text-xs font-mono ${
+                  isDark 
+                    ? 'bg-[#121824] border-[#1E293B]' 
+                    : 'bg-slate-50 border-gray-200'
+                }`}>
+                  <div className={`flex justify-between items-center pb-2 border-b ${
+                    isDark ? 'border-[#1E293B]' : 'border-gray-200'
+                  }`}>
+                    <span className={isDark ? 'text-gray-400' : 'text-gray-500'}>Căn hộ mục tiêu:</span>
+                    <span className={`font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>{confirmedBooking.apartmentCode} ({confirmedBooking.apartmentName})</span>
                   </div>
-                  <div className="flex justify-between items-center pb-2 border-b border-[#1E293B]">
-                    <span className="text-gray-400">Mốc giờ tham quan:</span>
+                  <div className={`flex justify-between items-center pb-2 border-b ${
+                    isDark ? 'border-[#1E293B]' : 'border-gray-200'
+                  }`}>
+                    <span className={isDark ? 'text-gray-400' : 'text-gray-500'}>Mốc giờ tham quan:</span>
                     <span className="font-bold text-[#C5A880] bg-[#C5A880]/15 px-2 py-0.5 rounded border border-[#C5A880]/40">
                       {confirmedBooking.timeSlot}
                     </span>
                   </div>
-                  <div className="flex justify-between items-center pb-2 border-b border-[#1E293B]">
-                    <span className="text-gray-400">Ngày tham quan:</span>
-                    <span className="font-bold text-white">{confirmedBooking.dateText}</span>
+                  <div className={`flex justify-between items-center pb-2 border-b ${
+                    isDark ? 'border-[#1E293B]' : 'border-gray-200'
+                  }`}>
+                    <span className={isDark ? 'text-gray-400' : 'text-gray-500'}>Ngày tham quan:</span>
+                    <span className={`font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>{confirmedBooking.dateText}</span>
                   </div>
-                  <div className="flex justify-between items-center pb-2 border-b border-[#1E293B]">
-                    <span className="text-gray-400">Khách hẹn:</span>
-                    <span className="text-gray-200">{confirmedBooking.name} • {confirmedBooking.phone} ({confirmedBooking.guests})</span>
+                  <div className={`flex justify-between items-center pb-2 border-b ${
+                    isDark ? 'border-[#1E293B]' : 'border-gray-200'
+                  }`}>
+                    <span className={isDark ? 'text-gray-400' : 'text-gray-500'}>Khách hẹn:</span>
+                    <span className={isDark ? 'text-gray-200' : 'text-gray-800'}>{confirmedBooking.name} • {confirmedBooking.phone} ({confirmedBooking.guests})</span>
                   </div>
-                  <div className="flex items-start gap-2 pt-1 text-[11px] text-gray-400 font-sans leading-relaxed">
+                  <div className={`flex items-start gap-2 pt-1 text-[11px] font-sans leading-relaxed ${
+                    isDark ? 'text-gray-400' : 'text-gray-600'
+                  }`}>
                     <MapPin className="w-4 h-4 text-[#C5A880] shrink-0 mt-0.5" />
-                    <span><strong>Địa điểm đón tiếp:</strong> Sảnh Lễ Tân Tháp A, 128 Bến Vân Đồn, P.6, Q.4, TP.HCM (Hotline đón khách: 0901 888 999).</span>
+                    <span><strong>Địa điểm đón tiếp:</strong> Sảnh Lễ Tân Chung Cư Skyline, 128 Bến Vân Đồn, P.6, Q.4, TP.HCM (Hotline đón khách: 0901 888 999).</span>
                   </div>
                 </div>
 
@@ -916,7 +1024,9 @@ export default function FloorPlanExplorer({ onOpenLogin }: FloorPlanExplorerProp
                 {/* 1. Họ tên và Số điện thoại */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-gray-300 font-mono text-[11px] mb-1">
+                    <label className={`block font-mono text-[11px] mb-1 ${
+                      isDark ? 'text-gray-300' : 'text-gray-700 font-medium'
+                    }`}>
                       Họ và Tên (*):
                     </label>
                     <input
@@ -925,12 +1035,18 @@ export default function FloorPlanExplorer({ onOpenLogin }: FloorPlanExplorerProp
                       placeholder="Ví dụ: Nguyễn Hữu Lực"
                       value={leadForm.name}
                       onChange={(e) => setLeadForm({ ...leadForm, name: e.target.value })}
-                      className="w-full bg-[#121824] border border-[#1E293B] rounded-lg p-2.5 text-white focus:outline-none focus:border-[#C5A880] transition-colors"
+                      className={`w-full rounded-lg p-2.5 focus:outline-none focus:border-[#C5A880] transition-colors border ${
+                        isDark 
+                          ? 'bg-[#121824] border-[#1E293B] text-white' 
+                          : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                      }`}
                     />
                   </div>
 
                   <div>
-                    <label className="block text-gray-300 font-mono text-[11px] mb-1">
+                    <label className={`block font-mono text-[11px] mb-1 ${
+                      isDark ? 'text-gray-300' : 'text-gray-700 font-medium'
+                    }`}>
                       Số Điện Thoại (*):
                     </label>
                     <input
@@ -940,14 +1056,20 @@ export default function FloorPlanExplorer({ onOpenLogin }: FloorPlanExplorerProp
                       placeholder="Ví dụ: 0901 888 999"
                       value={leadForm.phone}
                       onChange={(e) => setLeadForm({ ...leadForm, phone: e.target.value })}
-                      className="w-full bg-[#121824] border border-[#1E293B] rounded-lg p-2.5 text-white focus:outline-none focus:border-[#C5A880] transition-colors"
+                      className={`w-full rounded-lg p-2.5 focus:outline-none focus:border-[#C5A880] transition-colors border ${
+                        isDark 
+                          ? 'bg-[#121824] border-[#1E293B] text-white' 
+                          : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                      }`}
                     />
                   </div>
                 </div>
 
                 {/* 2. Chọn Ngày Tham Quan */}
                 <div className="space-y-1.5">
-                  <label className="flex items-center gap-1.5 text-gray-300 font-mono text-[11px]">
+                  <label className={`flex items-center gap-1.5 font-mono text-[11px] ${
+                    isDark ? 'text-gray-300' : 'text-gray-700 font-medium'
+                  }`}>
                     <Calendar className="w-3.5 h-3.5 text-[#C5A880]" />
                     <span>Ngày Quý Khách Muốn Tham Quan:</span>
                   </label>
@@ -960,7 +1082,9 @@ export default function FloorPlanExplorer({ onOpenLogin }: FloorPlanExplorerProp
                         className={`py-2 px-2 text-center rounded-lg text-xs transition-all font-medium ${
                           leadForm.dateOption === opt.id
                             ? 'bg-[#C5A880] text-[#0A0E17] font-bold shadow-md'
-                            : 'bg-[#121824] border border-[#1E293B] text-gray-300 hover:text-white hover:border-[#C5A880]/50'
+                            : isDark
+                              ? 'bg-[#121824] border border-[#1E293B] text-gray-300 hover:text-white hover:border-[#C5A880]/50'
+                              : 'bg-white border border-gray-200 text-gray-700 hover:text-gray-900 hover:border-[#C5A880]'
                         }`}
                       >
                         {opt.label}
@@ -975,7 +1099,11 @@ export default function FloorPlanExplorer({ onOpenLogin }: FloorPlanExplorerProp
                       min={new Date().toISOString().split('T')[0]}
                       value={leadForm.customDate}
                       onChange={(e) => setLeadForm({ ...leadForm, customDate: e.target.value })}
-                      className="w-full bg-[#121824] border border-[#1E293B] rounded-lg p-2 text-xs text-white focus:outline-none focus:border-[#C5A880] mt-1.5 transition-colors"
+                      className={`w-full rounded-lg p-2 text-xs focus:outline-none focus:border-[#C5A880] mt-1.5 transition-colors border ${
+                        isDark 
+                          ? 'bg-[#121824] border-[#1E293B] text-white' 
+                          : 'bg-white border-gray-300 text-gray-900'
+                      }`}
                     />
                   )}
                 </div>
@@ -983,7 +1111,9 @@ export default function FloorPlanExplorer({ onOpenLogin }: FloorPlanExplorerProp
                 {/* 3. CHỌN MỐC GIỜ THAM QUAN (THEO CÁC MỐC CHUẨN) */}
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
-                    <label className="flex items-center gap-1.5 text-gray-300 font-mono text-[11px]">
+                    <label className={`flex items-center gap-1.5 font-mono text-[11px] ${
+                      isDark ? 'text-gray-300' : 'text-gray-700 font-medium'
+                    }`}>
                       <Clock className="w-3.5 h-3.5 text-[#C5A880]" />
                       <span>Chọn Mốc Giờ Đón Tiếp (*):</span>
                     </label>
@@ -1000,32 +1130,42 @@ export default function FloorPlanExplorer({ onOpenLogin }: FloorPlanExplorerProp
                           onClick={() => setLeadForm({ ...leadForm, timeSlot: slot.time })}
                           className={`p-2.5 rounded-xl border text-left transition-all relative flex flex-col justify-between cursor-pointer ${
                             isSelected
-                              ? 'bg-[#C5A880]/15 border-[#C5A880] ring-1 ring-[#C5A880] shadow-[0_0_15px_rgba(197,168,128,0.3)]'
-                              : 'bg-[#121824] border-[#1E293B] hover:border-[#C5A880]/50 hover:bg-[#161F2E]'
+                              ? isDark
+                                ? 'bg-[#C5A880]/15 border-[#C5A880] ring-1 ring-[#C5A880] shadow-[0_0_15px_rgba(197,168,128,0.3)]'
+                                : 'bg-amber-50 border-[#C5A880] ring-1 ring-[#C5A880] shadow-md'
+                              : isDark
+                                ? 'bg-[#121824] border-[#1E293B] hover:border-[#C5A880]/50 hover:bg-[#161F2E]'
+                                : 'bg-white border-gray-200 hover:border-[#C5A880] hover:bg-amber-50/40'
                           }`}
                         >
                           <div className="flex items-center justify-between gap-1">
                             <span className={`text-[9.5px] font-mono uppercase px-1.5 py-0.5 rounded ${
                               isSelected
                                 ? 'bg-[#C5A880] text-[#0A0E17] font-bold'
-                                : 'bg-[#1E293B] text-gray-400'
+                                : isDark
+                                  ? 'bg-[#1E293B] text-gray-400'
+                                  : 'bg-gray-100 text-gray-600'
                             }`}>
                               {slot.period}
                             </span>
                             {slot.popular && (
-                              <span className="text-[9px] text-amber-400 font-mono">
+                              <span className="text-[9px] text-amber-500 font-mono font-bold">
                                 ★ Hot
                               </span>
                             )}
                           </div>
 
                           <div className={`font-mono text-xs font-bold mt-1.5 ${
-                            isSelected ? 'text-white' : 'text-gray-200'
+                            isSelected 
+                              ? isDark ? 'text-white' : 'text-[#0D1117]' 
+                              : isDark ? 'text-gray-200' : 'text-gray-800'
                           }`}>
                             {slot.time}
                           </div>
 
-                          <div className="text-[10px] text-gray-400 truncate mt-0.5">
+                          <div className={`text-[10px] truncate mt-0.5 ${
+                            isDark ? 'text-gray-400' : 'text-gray-500'
+                          }`}>
                             {slot.tag}
                           </div>
                         </button>
@@ -1036,7 +1176,9 @@ export default function FloorPlanExplorer({ onOpenLogin }: FloorPlanExplorerProp
 
                 {/* 4. Số lượng người tham quan */}
                 <div className="space-y-1.5">
-                  <label className="flex items-center gap-1.5 text-gray-300 font-mono text-[11px]">
+                  <label className={`flex items-center gap-1.5 font-mono text-[11px] ${
+                    isDark ? 'text-gray-300' : 'text-gray-700 font-medium'
+                  }`}>
                     <Users className="w-3.5 h-3.5 text-[#C5A880]" />
                     <span>Số Lượng Người Đi Cùng:</span>
                   </label>
@@ -1048,8 +1190,12 @@ export default function FloorPlanExplorer({ onOpenLogin }: FloorPlanExplorerProp
                         onClick={() => setLeadForm({ ...leadForm, guests: g })}
                         className={`py-2 px-1 text-center rounded-lg text-[11px] font-mono transition-all ${
                           leadForm.guests === g
-                            ? 'bg-[#1E293B] border border-[#C5A880] text-[#C5A880] font-bold'
-                            : 'bg-[#121824] border border-[#1E293B] text-gray-400 hover:text-white'
+                            ? isDark
+                              ? 'bg-[#1E293B] border border-[#C5A880] text-[#C5A880] font-bold'
+                              : 'bg-amber-50 border border-[#C5A880] text-amber-900 font-bold'
+                            : isDark
+                              ? 'bg-[#121824] border border-[#1E293B] text-gray-400 hover:text-white'
+                              : 'bg-white border border-gray-200 text-gray-600 hover:text-gray-900'
                         }`}
                       >
                         {g}
@@ -1067,7 +1213,9 @@ export default function FloorPlanExplorer({ onOpenLogin }: FloorPlanExplorerProp
                     <PhoneCall className="w-4 h-4" />
                     <span>Xác Nhận Đặt Lịch Tham Quan ({leadForm.timeSlot})</span>
                   </button>
-                  <div className="text-center text-[10px] text-gray-400 font-mono mt-2">
+                  <div className={`text-center text-[10px] font-mono mt-2 ${
+                    isDark ? 'text-gray-400' : 'text-gray-500'
+                  }`}>
                     ✓ Miễn phí tham quan • Có xe đưa đón nội khu & đồ uống welcome
                   </div>
                 </div>

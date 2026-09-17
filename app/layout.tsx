@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import { AuthProvider } from '@/lib/authContext';
+import { ThemeProvider } from '@/lib/themeContext';
 
 export const metadata: Metadata = {
   title: 'SKYLINE Smart Residence | Luxury AI-Powered Living',
@@ -13,7 +14,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="vi" className="scroll-smooth">
+    <html lang="vi" className="scroll-smooth dark">
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
@@ -22,10 +23,12 @@ export default function RootLayout({
           rel="stylesheet"
         />
       </head>
-      <body className="min-h-screen bg-[#0A0E17] text-[#FAFAFA] antialiased">
-        <AuthProvider>
-          {children}
-        </AuthProvider>
+      <body className="min-h-screen bg-[#0A0E17] dark:bg-[#0A0E17] text-[#FAFAFA] antialiased transition-colors duration-300">
+        <ThemeProvider>
+          <AuthProvider>
+            {children}
+          </AuthProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

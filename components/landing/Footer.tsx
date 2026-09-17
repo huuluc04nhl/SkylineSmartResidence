@@ -3,20 +3,30 @@
 import React from 'react';
 import Link from 'next/link';
 import SkylineLogo from '@/components/shared/SkylineLogo';
+import { useTheme } from '@/lib/themeContext';
 
 export default function Footer() {
+  const { theme } = useTheme();
+  const isDark = theme === 'dark';
+
   return (
-    <footer className="bg-[#0A0E14] text-gray-400 py-16 border-t border-[#1C2533]">
+    <footer className={`py-16 border-t transition-colors duration-300 ${
+      isDark 
+        ? 'bg-[#0A0E14] text-gray-400 border-[#1C2533]' 
+        : 'bg-slate-900 text-slate-300 border-slate-800'
+    }`}>
       <div className="max-w-7xl mx-auto px-6">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-10 pb-12 border-b border-[#1C2533]">
+        <div className={`grid grid-cols-1 md:grid-cols-4 gap-10 pb-12 border-b ${
+          isDark ? 'border-[#1C2533]' : 'border-slate-800'
+        }`}>
           {/* Col 1 */}
           <div className="space-y-4">
             <SkylineLogo variant="full" size="sm" theme="dark" />
-            <p className="text-xs text-gray-500 font-light leading-relaxed">
-              Dự án Khu Căn hộ Cao cấp & Hệ thống Quản lý Chung cư Ứng dụng AI Tự động hóa Vận hành.
+            <p className="text-xs text-slate-400 font-light leading-relaxed">
+              Dự án Chung Cư Cao Cấp Skyline & Hệ thống Quản trị Vận hành Thông minh Tự động hóa.
             </p>
-            <div className="text-[11px] text-gray-500">
-              Phát triển bởi: <strong>Nguyễn Hữu Lực</strong>
+            <div className="text-[11px] text-slate-400">
+              Phát triển bởi: <strong className="text-white">Nguyễn Hữu Lực</strong>
             </div>
           </div>
 

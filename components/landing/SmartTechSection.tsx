@@ -1,9 +1,13 @@
 'use client';
 
 import React from 'react';
-import { Eye, Shield, Cpu, Activity, Zap, MessageSquare, Car, FileCheck } from 'lucide-react';
+import { Eye, Shield, Cpu, Activity, Zap, MessageSquare, Car, FileCheck, Sparkles } from 'lucide-react';
+import { useTheme } from '@/lib/themeContext';
 
 export default function SmartTechSection() {
+  const { theme } = useTheme();
+  const isDark = theme === 'dark';
+
   const features = [
     {
       icon: Eye,
@@ -44,17 +48,30 @@ export default function SmartTechSection() {
   ];
 
   return (
-    <section id="smart-tech" className="py-20 sm:py-24 bg-[#0D1117] text-white border-b border-[#1E293B] scroll-mt-20 relative overflow-hidden">
+    <section id="smart-tech" className={`py-20 sm:py-24 border-b scroll-mt-20 relative overflow-hidden transition-colors duration-300 ${
+      isDark 
+        ? 'bg-[#0D1117] text-white border-[#1E293B]' 
+        : 'bg-[#F8FAFC] text-gray-900 border-gray-200'
+    }`}>
       <div className="max-w-7xl mx-auto px-6">
         {/* Header */}
-        <div className="max-w-3xl mb-16 space-y-4">
-          <div className="text-[11px] uppercase tracking-[0.25em] text-[#C5A880] font-semibold">
-            Công Nghệ Tự Động Hóa
+        <div className="max-w-3xl mb-14 sm:mb-16 space-y-3">
+          <div className={`inline-flex items-center gap-2 px-3 py-1 rounded text-[11px] font-mono uppercase tracking-[0.2em] ${
+            isDark 
+              ? 'bg-[#161F2E] border border-[#C5A880]/40 text-[#C5A880]' 
+              : 'bg-white border border-[#C5A880]/60 text-amber-800 shadow-sm'
+          }`}>
+            <Sparkles className="w-3.5 h-3.5 text-[#C5A880]" />
+            <span>Công Nghệ Tự Động Hóa</span>
           </div>
-          <h2 className="text-3xl sm:text-4xl font-serif text-[#FAFAFA]">
+          <h2 className={`text-3xl sm:text-4xl font-serif font-bold tracking-tight ${
+            isDark ? 'text-[#FAFAFA]' : 'text-[#0D1117]'
+          }`}>
             Hệ Sinh Thái Công Nghệ Thông Minh Vận Hành Tòa Nhà
           </h2>
-          <p className="text-gray-400 text-sm sm:text-base font-light">
+          <p className={`text-sm sm:text-base font-light ${
+            isDark ? 'text-gray-400' : 'text-gray-600'
+          }`}>
             Số hóa toàn diện từ quản lý vận hành, bảo dưỡng dự đoán, quản lý năng lượng đến an ninh thông minh.
           </p>
         </div>
@@ -66,22 +83,38 @@ export default function SmartTechSection() {
             return (
               <div
                 key={idx}
-                className="border border-[#222B35] bg-[#121820] p-6 space-y-4 hover:border-[#C5A880] transition-colors group"
+                className={`p-6 space-y-4 rounded-2xl transition-all duration-300 group hover:-translate-y-1 ${
+                  isDark 
+                    ? 'border border-[#222B35] bg-[#121820] hover:border-[#C5A880] shadow-xl' 
+                    : 'border border-gray-200 bg-white hover:border-[#C5A880] shadow-md hover:shadow-xl'
+                }`}
               >
                 <div className="flex items-center justify-between">
-                  <div className="p-2.5 bg-[#1C2533] border border-[#2D3748] text-[#C5A880]">
+                  <div className={`p-2.5 rounded-xl border ${
+                    isDark 
+                      ? 'bg-[#1C2533] border-[#2D3748] text-[#C5A880]' 
+                      : 'bg-amber-50 border-amber-200 text-amber-800'
+                  }`}>
                     <Icon className="w-5 h-5" />
                   </div>
-                  <span className="text-[10px] font-mono uppercase tracking-wider text-gray-500">
+                  <span className={`text-[10px] font-mono uppercase tracking-wider ${
+                    isDark ? 'text-gray-500' : 'text-gray-400'
+                  }`}>
                     {feat.code}
                   </span>
                 </div>
 
-                <h3 className="font-serif text-lg text-white font-semibold group-hover:text-[#C5A880] transition-colors">
+                <h3 className={`font-serif text-lg font-bold transition-colors ${
+                  isDark 
+                    ? 'text-white group-hover:text-[#C5A880]' 
+                    : 'text-gray-900 group-hover:text-[#9E8057]'
+                }`}>
                   {feat.title}
                 </h3>
 
-                <p className="text-xs text-gray-400 font-light leading-relaxed">
+                <p className={`text-xs font-light leading-relaxed ${
+                  isDark ? 'text-gray-400' : 'text-gray-600'
+                }`}>
                   {feat.desc}
                 </p>
               </div>
