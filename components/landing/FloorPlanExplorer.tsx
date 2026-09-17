@@ -2,249 +2,664 @@
 
 import React, { useState, useMemo } from 'react';
 import { 
+  Box, 
+  Layers, 
+  SplitSquareVertical, 
+  Eye, 
+  Plus, 
+  Minus, 
+  RotateCw, 
+  PhoneCall, 
+  Sparkles, 
+  Check, 
+  X, 
+  CheckCircle2, 
   Compass, 
   Wind, 
   Sun, 
   ShieldCheck, 
-  CheckCircle2, 
-  PhoneCall, 
-  Layers, 
-  Sparkles,
-  BedDouble,
-  Bath,
-  Maximize2,
-  Check,
-  X,
-  Eye,
-  Box,
-  Building2,
-  ArrowRight
+  Maximize2
 } from 'lucide-react';
-import { ApartmentUnit, getApartmentUnits, INITIAL_APARTMENTS } from '@/lib/apartmentStore';
 
 interface FloorPlanExplorerProps {
   onOpenLogin?: () => void;
 }
 
-// 4 Căn hộ biểu tượng đại diện cho 4 dòng sản phẩm cốt lõi của Skyline (100% Dữ liệu thực tế từ store)
-interface FeaturedUnitConfig {
+export type ApartmentCategory = '1PN' | '2PN' | '3PN' | 'DUPLEX';
+export type ViewerMode = 'ASSEMBLED_3D' | 'EXPLODED_3D' | 'REAL_PHOTO';
+
+export interface Room3DBlock {
+  id: string;
+  name: string;
   code: string;
-  type: string;
-  badge: string;
-  badgeColor: string;
-  title: string;
+  area: number; // m2
+  dim: string;  // e.g. "4.8m x 4.6m"
+  x: number;
+  y: number;
+  w: number;
+  d: number;
+  h: number;
+  z?: number;   // Tầng 2 nếu là duplex (z > 0)
+  color: string;
+  desc: string;
+}
+
+export interface ApartmentData {
+  category: ApartmentCategory;
+  code: string;
+  name: string;
+  subtitle: string;
   floorText: string;
   area: number;
   wallArea: number;
   bedrooms: number;
   bathrooms: number;
   direction: string;
-  viewTitle: string;
+  viewDesc: string;
   priceBillion: number;
   statusLabel: string;
   isRealResident?: boolean;
-  residentOwner?: string;
-  features: string[];
+  residentName?: string;
   photoUrl: string;
-  rooms: { name: string; area: string }[];
-  // Vị trí trên sơ đồ tầng (Minimap highlight)
-  minimapSlot: 'A01' | 'A02' | 'A03' | 'A05' | 'PH01' | 'PH02';
+  features: string[];
+  rooms: Room3DBlock[];
 }
 
-const FEATURED_UNITS: FeaturedUnitConfig[] = [
-  {
-    code: '12A05',
-    type: '2PN',
-    badge: 'Căn Hộ Thực Tế',
-    badgeColor: 'bg-amber-500/20 text-amber-300 border-amber-500/50',
-    title: 'Căn Hộ 2PN Tiêu Chuẩn • Căn Cư Dân Điển Hình',
-    floorText: 'Tầng 12A • Tháp A (Chung Cư Skyline)',
-    area: 78.5,
-    wallArea: 83.2,
-    bedrooms: 2,
-    bathrooms: 2,
-    direction: 'Đông Nam',
-    viewTitle: 'Trực Diện Sông Sài Gòn (Đón Gió Mát)',
-    priceBillion: 4.85,
-    statusLabel: 'Đã Bàn Giao Cư Dân',
-    isRealResident: true,
-    residentOwner: 'Nguyễn Hữu Lực (Chủ hộ)',
-    features: [
-      'Căn góc 2 mặt thoáng, ban công kính Low-E đón trọn bình minh và gió sông mát lành',
-      'Khóa cửa FaceID sinh trắc học tích hợp mạng an ninh tòa nhà',
-      'Bàn giao đầy đủ thiết bị bếp Hafele, thiết bị vệ sinh Kohler, điều hòa âm trần'
-    ],
-    photoUrl: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1200&auto=format&fit=crop&q=80',
-    rooms: [
-      { name: 'Phòng khách & Phòng ăn', area: '22.0 m²' },
-      { name: 'Phòng ngủ Master Ensuite', area: '21.0 m²' },
-      { name: 'Phòng ngủ phụ (Bed 2)', area: '11.5 m²' },
-      { name: 'Bếp đảo & Logia giặt', area: '14.5 m²' },
-      { name: '2 Phòng tắm WC Kohler', area: '9.5 m²' }
-    ],
-    minimapSlot: 'A05'
-  },
-  {
-    code: '24A01',
-    type: '3PN',
-    badge: 'Sky Suite View Sông',
-    badgeColor: 'bg-purple-500/20 text-purple-300 border-purple-500/50',
-    title: 'Căn Hộ 3PN Áp Mái • Không Gian Đa Thế Hệ',
-    floorText: 'Tầng 24 (Áp Mái) • Tháp A (Chung Cư Skyline)',
-    area: 112.0,
-    wallArea: 119.5,
-    bedrooms: 3,
-    bathrooms: 3,
-    direction: 'Đông Nam',
-    viewTitle: 'View Triệu Đô Ôm Trọn Sông Sài Gòn',
-    priceBillion: 8.50,
-    statusLabel: 'Sẵn Sàng Bàn Giao',
-    features: [
-      'Tầm nhìn panorama triệu đô không giới hạn ôm trọn khúc quanh sông Sài Gòn',
-      'Hệ thống kính hộp Low-E 3 lớp dày 24mm cách âm, cản 99% tia cực tím',
-      'Phòng ngủ Master Presidential Suite tích hợp bồn tắm nằm và phòng thay đồ riêng'
-    ],
-    photoUrl: 'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=1200&auto=format&fit=crop&q=80',
-    rooms: [
-      { name: 'Đại sảnh & Phòng khách lớn', area: '32.0 m²' },
-      { name: 'Master Presidential Suite', area: '26.0 m²' },
-      { name: 'Phòng ngủ số 2', area: '14.5 m²' },
-      { name: 'Phòng ngủ số 3 / Studio', area: '11.5 m²' },
-      { name: 'Khu bếp & Đảo Bar cao cấp', area: '14.0 m²' }
-    ],
-    minimapSlot: 'A01'
-  },
-  {
+const APARTMENT_MODELS: Record<ApartmentCategory, ApartmentData> = {
+  '1PN': {
+    category: '1PN',
     code: '12A02',
-    type: '1PN',
-    badge: 'Tối Ưu Công Năng',
-    badgeColor: 'bg-sky-500/20 text-sky-300 border-sky-500/50',
-    title: 'Căn Hộ 1PN Thông Minh • Tiện Nghi Độc Thân & Chuyên Gia',
+    name: 'Căn Hộ 1PN Thông Minh',
+    subtitle: 'Tối ưu hóa không gian cho chuyên gia trẻ & người độc thân',
     floorText: 'Tầng 12A • Tháp A (Chung Cư Skyline)',
     area: 52.0,
     wallArea: 56.5,
     bedrooms: 1,
     bathrooms: 1,
     direction: 'Chính Nam',
-    viewTitle: 'View Công Viên Nội Khu & Hồ Cảnh Quan',
+    viewDesc: 'View công viên nội khu & hồ cảnh quan',
     priceBillion: 3.35,
     statusLabel: 'Sẵn Sàng Bàn Giao',
-    features: [
-      'Bố trí không gian vuông vức không góc chết, tối ưu hóa 100% diện tích sử dụng',
-      'Phòng khách thông liền ban công đón ánh sáng tự nhiên suốt cả ngày',
-      'Bàn giao hoàn thiện full thiết bị bếp điện từ âm và máy hút mùi Hafele'
-    ],
     photoUrl: 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=1200&auto=format&fit=crop&q=80',
-    rooms: [
-      { name: 'Phòng khách & Khu ẩm thực', area: '18.5 m²' },
-      { name: 'Phòng ngủ Master riêng tư', area: '15.2 m²' },
-      { name: 'Bếp mở & Logia thông gió', area: '9.6 m²' },
-      { name: 'Phòng tắm WC chuẩn 5 sao', area: '4.5 m²' },
-      { name: 'Ban công ngắm cảnh', area: '4.2 m²' }
+    features: [
+      'Bố cục vuông vức không góc chết, 4 khối không gian kết nối liên hoàn',
+      'Phòng khách và phòng ngủ đều có cửa sổ lớn đón ánh sáng tự nhiên',
+      'Bàn giao hoàn thiện tủ bếp, bếp điện từ âm và hút mùi Hafele cao cấp'
     ],
-    minimapSlot: 'A02'
+    rooms: [
+      {
+        id: 'living',
+        name: 'Phòng Khách & Ban Công',
+        code: 'PK',
+        area: 22.7,
+        dim: '5.2m x 4.4m',
+        x: 0,
+        y: 0,
+        w: 110,
+        d: 90,
+        h: 42,
+        color: '#C5A880',
+        desc: 'Không gian sinh hoạt chính, ban công kính Low-E đón ánh sáng ban mai.'
+      },
+      {
+        id: 'kitchen',
+        name: 'Bếp Đảo & Sảnh Vào',
+        code: 'BẾP',
+        area: 9.6,
+        dim: '3.2m x 3.0m',
+        x: 0,
+        y: 95,
+        w: 110,
+        d: 65,
+        h: 42,
+        color: '#F59E0B',
+        desc: 'Bếp mở hiện đại có máy hút mùi âm trần và logia giặt phơi riêng.'
+      },
+      {
+        id: 'masterBed',
+        name: 'Phòng Ngủ Master',
+        code: 'PN',
+        area: 15.2,
+        dim: '3.8m x 4.0m',
+        x: 115,
+        y: 0,
+        w: 95,
+        d: 90,
+        h: 42,
+        color: '#818CF8',
+        desc: 'Phòng ngủ rộng rãi sàn gỗ tự nhiên, view thoáng mát không bị chắn.'
+      },
+      {
+        id: 'bath',
+        name: 'Phòng Tắm & WC',
+        code: 'WC',
+        area: 4.5,
+        dim: '2.3m x 2.0m',
+        x: 115,
+        y: 95,
+        w: 95,
+        d: 65,
+        h: 42,
+        color: '#06B6D4',
+        desc: 'Buồng tắm kính đứng, lavabo và vòi sen Kohler sang trọng.'
+      }
+    ]
   },
-  {
+  '2PN': {
+    category: '2PN',
+    code: '12A05',
+    name: 'Căn Hộ 2PN Tiêu Chuẩn',
+    subtitle: 'Căn mẫu thực tế cư dân • Bố cục 7 khối phòng vuông vức view sông',
+    floorText: 'Tầng 12A • Tháp A (Chung Cư Skyline)',
+    area: 78.5,
+    wallArea: 83.2,
+    bedrooms: 2,
+    bathrooms: 2,
+    direction: 'Đông Nam',
+    viewDesc: 'Trực diện Sông Sài Gòn & Hồ bơi vô cực nội khu',
+    priceBillion: 4.85,
+    statusLabel: 'Đã Bàn Giao Cư Dân',
+    isRealResident: true,
+    residentName: 'Nguyễn Hữu Lực (Chủ hộ)',
+    photoUrl: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1200&auto=format&fit=crop&q=80',
+    features: [
+      'Căn góc 2 mặt thoáng, 7 khối không gian được bố trí tách biệt tĩnh - động',
+      'Phòng ngủ Master khép kín có WC riêng biệt và phòng thay đồ walk-in',
+      'Khóa cửa sinh trắc học FaceID tích hợp toàn diện hệ thống an ninh tòa nhà'
+    ],
+    rooms: [
+      {
+        id: 'living',
+        name: 'Phòng Khách & Sinh Hoạt Chung',
+        code: 'PK',
+        area: 22.0,
+        dim: '4.8m x 4.6m',
+        x: 0,
+        y: 0,
+        w: 115,
+        d: 85,
+        h: 44,
+        color: '#C5A880',
+        desc: 'Không gian trung tâm thông thoáng, kết nối trực tiếp ban công view sông.'
+      },
+      {
+        id: 'balcony',
+        name: 'Ban Công Panorama Kính Low-E',
+        code: 'BC',
+        area: 5.5,
+        dim: '4.2m x 1.3m',
+        x: -35,
+        y: 0,
+        w: 30,
+        d: 85,
+        h: 22,
+        color: '#10B981',
+        desc: 'Ban công kính tràn viền đón trọn bình minh và gió mát Đông Nam.'
+      },
+      {
+        id: 'kitchen',
+        name: 'Bếp Đảo & Khu Ẩm Thực',
+        code: 'BẾP',
+        area: 12.0,
+        dim: '3.8m x 3.2m',
+        x: 0,
+        y: 90,
+        w: 115,
+        d: 65,
+        h: 44,
+        color: '#F59E0B',
+        desc: 'Đảo bếp Hafele, quầy bar ăn sáng và logia giặt phơi riêng biệt.'
+      },
+      {
+        id: 'masterBed',
+        name: 'Phòng Ngủ Master Ensuite',
+        code: 'PN 1',
+        area: 21.0,
+        dim: '4.6m x 4.5m',
+        x: 120,
+        y: 0,
+        w: 95,
+        d: 85,
+        h: 44,
+        color: '#6366F1',
+        desc: 'Phòng ngủ lớn tiện nghi khép kín, tầm nhìn trực diện ra bờ sông.'
+      },
+      {
+        id: 'masterBath',
+        name: 'WC Khép Kín Master',
+        code: 'WC 1',
+        area: 4.2,
+        dim: '2.2m x 1.9m',
+        x: 220,
+        y: 0,
+        w: 55,
+        d: 50,
+        h: 44,
+        color: '#3B82F6',
+        desc: 'Trang bị vách kính tắm đứng và sen vòi âm tường thương hiệu Đức.'
+      },
+      {
+        id: 'secondBed',
+        name: 'Phòng Ngủ Số 2',
+        code: 'PN 2',
+        area: 11.5,
+        dim: '3.5m x 3.3m',
+        x: 120,
+        y: 90,
+        w: 95,
+        d: 65,
+        h: 44,
+        color: '#38BDF8',
+        desc: 'Phòng ngủ cho con hoặc phòng làm việc, cửa sổ kính cách âm 3 lớp.'
+      },
+      {
+        id: 'commonBath',
+        name: 'WC Chung & Logia Giặt',
+        code: 'WC 2',
+        area: 6.5,
+        dim: '2.5m x 2.6m',
+        x: 220,
+        y: 90,
+        w: 55,
+        d: 65,
+        h: 44,
+        color: '#64748B',
+        desc: 'Phòng tắm cho khách và khu vực giặt phơi quần áo tách biệt.'
+      }
+    ]
+  },
+  '3PN': {
+    category: '3PN',
+    code: '24A01',
+    name: 'Căn Hộ 3PN Sky Suite',
+    subtitle: 'Phân khu áp mái cao cấp • Căn góc 2 mặt thoáng 9 khối phòng view triệu đô',
+    floorText: 'Tầng 24 (Áp Mái) • Tháp A (Chung Cư Skyline)',
+    area: 112.0,
+    wallArea: 119.5,
+    bedrooms: 3,
+    bathrooms: 3,
+    direction: 'Đông Nam & Tây Nam',
+    viewDesc: 'View sông Sài Gòn & Cầu Phú Mỹ lung linh ban đêm',
+    priceBillion: 8.50,
+    statusLabel: 'Sẵn Sàng Bàn Giao',
+    photoUrl: 'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=1200&auto=format&fit=crop&q=80',
+    features: [
+      'Căn góc VIP tầng áp mái, 9 khối không gian mở rộng rãi cho gia đình 3 thế hệ',
+      'Đại sảnh phòng khách nối liền ban công góc rộng 32m²',
+      'Master Suite tích hợp bồn tắm nằm Kohler và phòng thay đồ rộng rãi'
+    ],
+    rooms: [
+      {
+        id: 'grandLiving',
+        name: 'Đại Sảnh & Living Room',
+        code: 'PK',
+        area: 32.0,
+        dim: '6.2m x 5.2m',
+        x: 0,
+        y: 0,
+        w: 130,
+        d: 95,
+        h: 46,
+        color: '#C5A880',
+        desc: 'Phòng khách thênh thang với vách kính panorama kịch trần.'
+      },
+      {
+        id: 'cornerBalcony',
+        name: 'Ban Công Góc Kép Panorama',
+        code: 'BC',
+        area: 7.2,
+        dim: '5.5m x 1.3m',
+        x: -40,
+        y: 0,
+        w: 35,
+        d: 95,
+        h: 22,
+        color: '#10B981',
+        desc: 'Tầm nhìn 2 mặt sông nước thoáng mát, không gian thưởng trà thư giãn.'
+      },
+      {
+        id: 'islandKitchen',
+        name: 'Khu Bếp Đảo Bar & Bàn Ăn',
+        code: 'BẾP',
+        area: 14.0,
+        dim: '4.0m x 3.5m',
+        x: 0,
+        y: 100,
+        w: 130,
+        d: 70,
+        h: 46,
+        color: '#F59E0B',
+        desc: 'Đảo bếp mặt đá Marble Carrara, bàn ăn phục vụ 8 - 10 người.'
+      },
+      {
+        id: 'masterSuite',
+        name: 'Master Presidential Suite',
+        code: 'PN 1',
+        area: 26.0,
+        dim: '5.2m x 5.0m',
+        x: 135,
+        y: 0,
+        w: 105,
+        d: 95,
+        h: 46,
+        color: '#8B5CF6',
+        desc: 'Phòng ngủ tổng thống rộng 26m² có góc làm việc và ngắm hoàng hôn.'
+      },
+      {
+        id: 'luxuryBath',
+        name: 'WC Master & Bồn Tắm Nằm',
+        code: 'WC 1',
+        area: 7.0,
+        dim: '3.0m x 2.3m',
+        x: 245,
+        y: 0,
+        w: 60,
+        d: 55,
+        h: 46,
+        color: '#2563EB',
+        desc: 'Bồn tắm nằm view kính, sen vòi mạ vàng chải satin cao cấp.'
+      },
+      {
+        id: 'bed2',
+        name: 'Phòng Ngủ Số 2 Ensuite',
+        code: 'PN 2',
+        area: 14.5,
+        dim: '4.1m x 3.5m',
+        x: 135,
+        y: 100,
+        w: 105,
+        d: 70,
+        h: 46,
+        color: '#38BDF8',
+        desc: 'Phòng ngủ riêng tư cho ông bà hoặc con lớn, có WC riêng bên trong.'
+      },
+      {
+        id: 'bed3',
+        name: 'Phòng Ngủ Số 3 / Studio',
+        code: 'PN 3',
+        area: 11.5,
+        dim: '3.6m x 3.2m',
+        x: 0,
+        y: 175,
+        w: 85,
+        d: 70,
+        h: 46,
+        color: '#A78BFA',
+        desc: 'Không gian linh hoạt làm phòng ngủ con nhỏ hoặc phòng đọc sách.'
+      },
+      {
+        id: 'bath2',
+        name: 'WC Chung & Khu Giặt Khép Kín',
+        code: 'WC 2',
+        area: 5.8,
+        dim: '2.5m x 2.3m',
+        x: 90,
+        y: 175,
+        w: 75,
+        d: 70,
+        h: 46,
+        color: '#64748B',
+        desc: 'Phòng vệ sinh chung cho khách và khu máy giặt sấy hiện đại.'
+      }
+    ]
+  },
+  'DUPLEX': {
+    category: 'DUPLEX',
     code: '25PH-01',
-    type: 'Duplex',
-    badge: 'Tuyệt Phẩm Đỉnh Tháp',
-    badgeColor: 'bg-rose-500/20 text-rose-300 border-rose-500/50',
-    title: 'Duplex Penthouse Hoàng Gia • 2 Tầng Thông Suốt',
+    name: 'Duplex Penthouse Hoàng Gia',
+    subtitle: 'Tuyệt tác thông tầng đỉnh tháp Tầng 25 • Trần 6.5m & Hồ Jacuzzi',
     floorText: 'Tầng 25 (Đỉnh Tháp) • Tháp A (Chung Cư Skyline)',
     area: 215.0,
     wallArea: 232.0,
     bedrooms: 4,
     bathrooms: 4,
-    direction: 'Đông Nam',
-    viewTitle: 'Panorama 270° Sông Sài Gòn & Trung Tâm Q1',
+    direction: 'Đông Nam & Tây Nam (270°)',
+    viewDesc: 'Tầm nhìn không giới hạn ôm trọn Sông Sài Gòn & Landmark 81',
     priceBillion: 18.50,
-    statusLabel: 'Sẵn Sàng Bàn Giao',
-    features: [
-      'Trần phòng khách Double Height cao 6.5m tạo chiều sâu không gian tráng lệ',
-      'Sky Terrace sân thượng 26m² có bể sục Jacuzzi ngoài trời ngắm trọn thành phố',
-      'Đặc quyền thang máy riêng và kế cận Hồ bơi vô cực chân mây tầng 25'
-    ],
+    statusLabel: 'Tuyệt Phẩm Độc Bản',
     photoUrl: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1200&auto=format&fit=crop&q=80',
-    rooms: [
-      { name: 'Grand Living Double Height (Trần 6.5m)', area: '58.0 m²' },
-      { name: 'Master Presidential Suite', area: '45.0 m²' },
-      { name: '3 Phòng ngủ Ensuite VIP', area: '48.0 m²' },
-      { name: 'Sky Terrace & Bể sục Jacuzzi', area: '26.0 m²' },
-      { name: 'Show Kitchen & Thư viện riêng', area: '38.0 m²' }
+    features: [
+      'Thiết kế 2 tầng thông suốt với trần phòng khách Double-Height cao 6.5m',
+      'Sky Terrace sân thượng 26m² trang bị bồn sục Jacuzzi ngoài trời ngắm sao',
+      'Đặc quyền thang máy riêng và hồ bơi vô cực chân mây ngay ngưỡng cửa'
     ],
-    minimapSlot: 'PH01'
+    rooms: [
+      // TẦNG 1: KHỐI SÀN DƯỚI (Z = 0)
+      {
+        id: 'doubleLiving',
+        name: 'Grand Living Thông Tầng (Cao 6.5m)',
+        code: 'TRẦN 6.5M',
+        area: 58.0,
+        dim: '8.5m x 6.8m',
+        x: 0,
+        y: 0,
+        w: 140,
+        d: 105,
+        h: 88, // Khối hộp cao gấp đôi thông suốt 2 tầng
+        z: 0,
+        color: '#EAB308',
+        desc: 'Phòng khách đại tiệc trần cao 6.5m, đèn chùm pha lê và vách kính thông tầng.'
+      },
+      {
+        id: 'skyTerrace',
+        name: 'Sky Terrace & Bể Sục Jacuzzi',
+        code: 'JACUZZI',
+        area: 26.0,
+        dim: '7.5m x 3.5m',
+        x: -55,
+        y: 0,
+        w: 50,
+        d: 105,
+        h: 22,
+        z: 0,
+        color: '#06B6D4',
+        desc: 'Sân thượng ngắm trọn thành phố từ độ cao 100m, bồn sục Jacuzzi nước ấm.'
+      },
+      {
+        id: 'showKitchen',
+        name: 'Show Kitchen & Bàn Tiệc 12 Chỗ',
+        code: 'BẾP ĐẢO',
+        area: 23.0,
+        dim: '5.5m x 4.2m',
+        x: 0,
+        y: 110,
+        w: 140,
+        d: 75,
+        h: 42,
+        z: 0,
+        color: '#EA580C',
+        desc: 'Khu bếp biểu diễn trang thiết bị Miele cao cấp và hầm rượu vang âm tường.'
+      },
+      {
+        id: 'guestBed',
+        name: 'Phòng Ngủ Khách Tầng 1 Ensuite',
+        code: 'PN KHÁCH',
+        area: 18.0,
+        dim: '4.5m x 4.0m',
+        x: 145,
+        y: 110,
+        w: 95,
+        d: 75,
+        h: 42,
+        z: 0,
+        color: '#3B82F6',
+        desc: 'Phòng ngủ tầng trệt dành cho khách quý, WC khép kín tiện lợi.'
+      },
+      // TẦNG 2: KHỐI SÀN TRÊN (Z = 55 - XẾP CHỒNG LÊN TRÊN!)
+      {
+        id: 'presidentialSuite',
+        name: 'Presidential Suite (Tầng 2)',
+        code: 'VIP TẦNG 2',
+        area: 45.0,
+        dim: '7.2m x 6.2m',
+        x: 145,
+        y: 0,
+        w: 115,
+        d: 105,
+        h: 42,
+        z: 55, // Nằm ở độ cao tầng 2!
+        color: '#F43F5E',
+        desc: 'Phòng ngủ hoàng gia tầng trên với ban công lửng nhìn ra sông Sài Gòn.'
+      },
+      {
+        id: 'vipBed2',
+        name: 'Phòng Ngủ VIP Tầng 2',
+        code: 'PN 3',
+        area: 16.0,
+        dim: '4.2m x 3.8m',
+        x: 0,
+        y: 110,
+        w: 80,
+        d: 75,
+        h: 42,
+        z: 55,
+        color: '#6366F1',
+        desc: 'Phòng ngủ cho con trên tầng 2, trần cao thoáng đãng và cách âm tuyệt đối.'
+      },
+      {
+        id: 'skyLibrary',
+        name: 'Thư Viện & Lounge Tầng Lửng',
+        code: 'GÁC LỬNG',
+        area: 15.0,
+        dim: '4.0m x 3.8m',
+        x: 85,
+        y: 110,
+        w: 55,
+        d: 75,
+        h: 42,
+        z: 55,
+        color: '#D97706',
+        desc: 'Không gian thư viện gác lửng nhìn xuống phòng khách thông tầng ngoạn mục.'
+      }
+    ]
   }
-];
+};
+
+/**
+ * Biến đổi tọa độ không gian 3D (X, Y, Z) sang tọa độ màn hình Isometric 2D
+ */
+function toIso(
+  x: number,
+  y: number,
+  z: number,
+  originX: number,
+  originY: number,
+  scale: number
+): { sx: number; sy: number } {
+  // Chuẩn phép chiếu Isometric (Cos 30° = 0.866, Sin 30° = 0.5)
+  const isoX = (x - y) * 0.866;
+  const isoY = (x + y) * 0.5 - z;
+  return {
+    sx: originX + isoX * scale,
+    sy: originY + isoY * scale
+  };
+}
+
+/**
+ * Làm tối màu hex để tạo bóng đổ mặt bên
+ */
+function shadeColor(hex: string, percent: number): string {
+  let color = hex.replace('#', '');
+  if (color.length === 3) {
+    color = color.split('').map(c => c + c).join('');
+  }
+  const num = parseInt(color, 16);
+  let r = (num >> 16) + Math.round(255 * (percent / 100));
+  let g = ((num >> 8) & 0x00ff) + Math.round(255 * (percent / 100));
+  let b = (num & 0x0000ff) + Math.round(255 * (percent / 100));
+
+  r = Math.min(255, Math.max(0, r));
+  g = Math.min(255, Math.max(0, g));
+  b = Math.min(255, Math.max(0, b));
+
+  return `#${((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1)}`;
+}
 
 export default function FloorPlanExplorer({ onOpenLogin }: FloorPlanExplorerProps) {
-  const [selectedCode, setSelectedCode] = useState<string>('12A05');
-  const [viewTab, setViewTab] = useState<'PHOTO' | 'BLUEPRINT'>('PHOTO');
-  const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState<ApartmentCategory>('2PN');
+  const [viewerMode, setViewerMode] = useState<ViewerMode>('ASSEMBLED_3D');
+  const [selectedRoomId, setSelectedRoomId] = useState<string>('living');
+  const [hoveredRoomId, setHoveredRoomId] = useState<string | null>(null);
+  const [zoomLevel, setZoomLevel] = useState<number>(1);
+  const [isRegisterOpen, setIsRegisterOpen] = useState(false);
   const [registerSuccess, setRegisterSuccess] = useState(false);
   const [leadForm, setLeadForm] = useState({ name: '', phone: '', timeSlot: '' });
 
-  // Căn hộ được chọn
-  const activeUnit = useMemo(() => {
-    return FEATURED_UNITS.find((u) => u.code === selectedCode) || FEATURED_UNITS[0];
-  }, [selectedCode]);
+  const currentApartment = APARTMENT_MODELS[selectedCategory];
+
+  // Phòng đang được chọn hoặc hover
+  const activeRoom = useMemo(() => {
+    const targetId = hoveredRoomId || selectedRoomId;
+    return currentApartment.rooms.find(r => r.id === targetId) || currentApartment.rooms[0];
+  }, [currentApartment, hoveredRoomId, selectedRoomId]);
+
+  // Đổi loại căn hộ thì tự động chọn phòng đầu tiên
+  const handleSelectCategory = (cat: ApartmentCategory) => {
+    setSelectedCategory(cat);
+    const newApt = APARTMENT_MODELS[cat];
+    setSelectedRoomId(newApt.rooms[0].id);
+  };
 
   const handleRegisterSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setRegisterSuccess(true);
     setTimeout(() => {
       setRegisterSuccess(false);
-      setIsRegisterModalOpen(false);
+      setIsRegisterOpen(false);
       setLeadForm({ name: '', phone: '', timeSlot: '' });
     }, 2000);
   };
 
+  // Tính toán scale và origin cho SVG Isometric
+  const originX = 420;
+  const originY = selectedCategory === 'DUPLEX' ? 240 : 190;
+  const baseScale = (selectedCategory === 'DUPLEX' ? 1.05 : 1.15) * zoomLevel;
+
   return (
-    <section id="floorplans" className="py-12 sm:py-20 bg-[#0A0E17] text-white border-b border-[#1E293B] relative overflow-hidden">
+    <section id="floorplans" className="py-12 sm:py-20 bg-[#0A0E17] text-white border-b border-[#1E293B] relative overflow-hidden select-none">
       {/* Background glow tinh tế */}
-      <div className="absolute top-0 right-1/4 w-96 h-96 bg-[#C5A880]/5 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute bottom-0 left-1/4 w-96 h-96 bg-blue-900/10 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute top-10 left-1/4 w-96 h-96 bg-[#C5A880]/5 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute bottom-10 right-1/4 w-96 h-96 bg-blue-900/10 rounded-full blur-3xl pointer-events-none" />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 relative z-10 space-y-8 sm:space-y-10">
         {/* ============================================================= */}
-        {/* 1. TIÊU ĐỀ RÕ RÀNG, TINH GỌN, DỄ HIỂU                          */}
+        {/* 1. TIÊU ĐỀ RÕ RÀNG, TINH TẾ                                    */}
         {/* ============================================================= */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-6 border-b border-[#1E293B]">
           <div className="space-y-2 max-w-2xl">
             <div className="inline-flex items-center gap-2 px-3 py-1 bg-[#161F2E] border border-[#C5A880]/40 rounded text-[11px] font-mono uppercase tracking-[0.2em] text-[#C5A880]">
-              <Layers className="w-3.5 h-3.5 text-[#C5A880]" />
-              <span>Sơ Đồ Mặt Bằng & Không Gian Căn Hộ</span>
+              <Box className="w-3.5 h-3.5 text-[#C5A880]" />
+              <span>Mô Hình Khối Không Gian 3D Căn Hộ Skyline</span>
             </div>
             <h2 className="text-2xl sm:text-3xl lg:text-4xl font-serif text-white font-bold tracking-tight">
-              Khám Phá Mặt Bằng Căn Hộ Skyline
+              Khám Phá Cấu Trúc Khối Xếp & Thiết Kế Căn Hộ
             </h2>
             <p className="text-xs sm:text-sm text-gray-300 font-light leading-relaxed">
-              Thiết kế tối ưu công năng, 100% căn hộ sở hữu ban công đón gió mát tự nhiên từ Sông Sài Gòn và ánh sáng ban mai.
+              Mỗi loại căn hộ sở hữu thiết kế hình khối và cơ cấu xếp phòng độc bản. Chạm hoặc rê chuột vào từng khối phòng để khám phá chi tiết công năng.
             </p>
           </div>
 
-          {/* Nút hành động nhanh */}
-          <div className="flex items-center gap-3">
-            <button
-              onClick={() => setIsRegisterModalOpen(true)}
-              className="px-4 py-2.5 bg-[#C5A880] hover:bg-[#D4AF37] text-[#0A0E17] font-bold text-xs tracking-wider uppercase rounded transition-all shadow-lg flex items-center gap-2 shrink-0"
-            >
-              <PhoneCall className="w-3.5 h-3.5" />
-              <span>Đăng Ký Xem Thực Tế</span>
-            </button>
-          </div>
+          <button
+            onClick={() => setIsRegisterOpen(true)}
+            className="px-4 py-2.5 bg-[#C5A880] hover:bg-[#D4AF37] text-[#0A0E17] font-bold text-xs tracking-wider uppercase rounded transition-all shadow-lg flex items-center gap-2 shrink-0 self-start md:self-auto"
+          >
+            <PhoneCall className="w-3.5 h-3.5" />
+            <span>Đăng Ký Tham Quan Căn Hộ</span>
+          </button>
         </div>
 
         {/* ============================================================= */}
-        {/* 2. THANH CHỌN CĂN HỘ NHANH (4 LOẠI CỐT LÕI - RESPONSIVE MOBILE)*/}
+        {/* 2. BỘ CHỌN 4 LOẠI CĂN HỘ VỚI CẤU TRÚC KHỐI XẾP KHÁC BIỆT       */}
         {/* ============================================================= */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-3">
-          {FEATURED_UNITS.map((unit) => {
-            const isSelected = selectedCode === unit.code;
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3">
+          {(['1PN', '2PN', '3PN', 'DUPLEX'] as ApartmentCategory[]).map((cat) => {
+            const apt = APARTMENT_MODELS[cat];
+            const isSelected = selectedCategory === cat;
             return (
               <button
-                key={unit.code}
+                key={cat}
                 type="button"
-                onClick={() => setSelectedCode(unit.code)}
+                onClick={() => handleSelectCategory(cat)}
                 className={`p-3 sm:p-4 rounded-lg border text-left transition-all relative flex flex-col justify-between ${
                   isSelected
                     ? 'bg-[#151D29] border-[#C5A880] shadow-xl ring-1 ring-[#C5A880]/60'
@@ -253,19 +668,24 @@ export default function FloorPlanExplorer({ onOpenLogin }: FloorPlanExplorerProp
               >
                 <div>
                   <div className="flex items-center justify-between gap-1 mb-1">
-                    <span className="font-mono text-xs font-bold text-white">Căn {unit.code}</span>
-                    <span className={`text-[9.5px] px-1.5 py-0.5 rounded border font-mono font-medium ${unit.badgeColor}`}>
-                      {unit.badge}
+                    <span className="font-mono text-xs font-bold text-white">Căn {apt.code}</span>
+                    <span className={`text-[9.5px] px-1.5 py-0.5 rounded font-mono font-semibold border ${
+                      cat === 'DUPLEX' ? 'bg-rose-500/20 text-rose-300 border-rose-500/40' :
+                      cat === '3PN' ? 'bg-purple-500/20 text-purple-300 border-purple-500/40' :
+                      cat === '2PN' ? 'bg-amber-500/20 text-amber-300 border-amber-500/40' :
+                      'bg-sky-500/20 text-sky-300 border-sky-500/40'
+                    }`}>
+                      {cat === 'DUPLEX' ? '2 Tầng Thông Suốt' : `${apt.rooms.length} Khối Phòng`}
                     </span>
                   </div>
                   <div className="font-serif text-sm font-bold text-[#C5A880] mt-0.5">
-                    {unit.type} • {unit.area} m²
+                    {apt.name} ({apt.area} m²)
                   </div>
                 </div>
 
                 <div className="mt-2 pt-2 border-t border-[#1E293B] flex items-center justify-between text-[11px] text-gray-400 font-mono">
-                  <span>{unit.bedrooms} PN • {unit.bathrooms} WC</span>
-                  <span className="text-white font-semibold">{unit.priceBillion.toFixed(2)} Tỷ</span>
+                  <span>{apt.bedrooms} PN • {apt.bathrooms} WC</span>
+                  <span className="text-white font-semibold">{apt.priceBillion.toFixed(2)} Tỷ</span>
                 </div>
               </button>
             );
@@ -273,276 +693,291 @@ export default function FloorPlanExplorer({ onOpenLogin }: FloorPlanExplorerProp
         </div>
 
         {/* ============================================================= */}
-        {/* 3. KHU VỰC HIỂN THỊ CHÍNH (2 CỘT RÕ RÀNG TRÊN DESKTOP, CO DÃN MOBILE) */}
+        {/* 3. KHU VỰC HIỂN THỊ MÔ HÌNH 3D & THÔNG SỐ CĂN HỘ               */}
         {/* ============================================================= */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start">
-          {/* CỘT TRÁI (7 CỘT): HÌNH ẢNH MẶT BẰNG & SƠ ĐỒ VỊ TRÍ TẦNG (MINIMAP) */}
-          <div className="lg:col-span-7 space-y-4">
-            {/* Khung ảnh phối cảnh / bản vẽ 2D */}
-            <div className="border border-[#1E293B] bg-[#0E131C] rounded-lg overflow-hidden shadow-xl">
-              {/* Header chuyển tab xem nhanh */}
-              <div className="p-3 bg-[#121824] border-b border-[#1E293B] flex items-center justify-between gap-2">
-                <div className="text-xs font-mono font-semibold text-gray-300 truncate">
-                  {activeUnit.title}
-                </div>
+          {/* CỘT TRÁI (7 CỘT): MÔ HÌNH KHỐI HỘP 3D ISOMETRIC CHÂN THỰC */}
+          <div className="lg:col-span-7 space-y-3">
+            <div className="border border-[#1E293B] bg-[#0E131C] rounded-lg overflow-hidden shadow-2xl relative">
+              {/* THANH ĐIỀU KHIỂN CHẾ ĐỘ 3D & ZOOM */}
+              <div className="p-3 bg-[#121824] border-b border-[#1E293B] flex flex-wrap items-center justify-between gap-2">
+                {/* 3 Chế độ: Xếp liền khối / Tách khối / Ảnh thực tế */}
                 <div className="flex bg-[#070A10] p-1 border border-[#1E293B] rounded shrink-0">
                   <button
                     type="button"
-                    onClick={() => setViewTab('PHOTO')}
+                    onClick={() => setViewerMode('ASSEMBLED_3D')}
                     className={`px-2.5 py-1 text-xs font-semibold rounded transition-colors flex items-center gap-1.5 ${
-                      viewTab === 'PHOTO' ? 'bg-[#C5A880] text-[#0A0E17] font-bold' : 'text-gray-400 hover:text-white'
-                    }`}
-                  >
-                    <Eye className="w-3.5 h-3.5" />
-                    <span>Phối Cảnh</span>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setViewTab('BLUEPRINT')}
-                    className={`px-2.5 py-1 text-xs font-semibold rounded transition-colors flex items-center gap-1.5 ${
-                      viewTab === 'BLUEPRINT' ? 'bg-[#C5A880] text-[#0A0E17] font-bold' : 'text-gray-400 hover:text-white'
+                      viewerMode === 'ASSEMBLED_3D' ? 'bg-[#C5A880] text-[#0A0E17] font-bold shadow' : 'text-gray-400 hover:text-white'
                     }`}
                   >
                     <Box className="w-3.5 h-3.5" />
-                    <span>Bản Vẽ 2D</span>
+                    <span>3D Liền Khối</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setViewerMode('EXPLODED_3D')}
+                    className={`px-2.5 py-1 text-xs font-semibold rounded transition-colors flex items-center gap-1.5 ${
+                      viewerMode === 'EXPLODED_3D' ? 'bg-[#C5A880] text-[#0A0E17] font-bold shadow' : 'text-gray-400 hover:text-white'
+                    }`}
+                  >
+                    <SplitSquareVertical className="w-3.5 h-3.5" />
+                    <span>Tách Khối Phòng</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setViewerMode('REAL_PHOTO')}
+                    className={`px-2.5 py-1 text-xs font-semibold rounded transition-colors flex items-center gap-1.5 ${
+                      viewerMode === 'REAL_PHOTO' ? 'bg-[#C5A880] text-[#0A0E17] font-bold shadow' : 'text-gray-400 hover:text-white'
+                    }`}
+                  >
+                    <Eye className="w-3.5 h-3.5" />
+                    <span>Ảnh Bàn Giao</span>
                   </button>
                 </div>
+
+                {/* Bộ điều khiển Zoom */}
+                {viewerMode !== 'REAL_PHOTO' && (
+                  <div className="flex items-center bg-[#070A10] border border-[#1E293B] rounded overflow-hidden">
+                    <button
+                      type="button"
+                      onClick={() => setZoomLevel(prev => Math.max(0.7, Number((prev - 0.15).toFixed(2))))}
+                      className="px-2 py-1 text-gray-400 hover:text-white hover:bg-[#1E293B] transition-colors"
+                      title="Thu nhỏ"
+                    >
+                      <Minus className="w-3.5 h-3.5" />
+                    </button>
+                    <span className="px-2 py-1 font-mono text-[10.5px] text-[#C5A880] border-x border-[#1E293B]">
+                      {Math.round(zoomLevel * 100)}%
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => setZoomLevel(prev => Math.min(1.5, Number((prev + 0.15).toFixed(2))))}
+                      className="px-2 py-1 text-gray-400 hover:text-white hover:bg-[#1E293B] transition-colors"
+                      title="Phóng to"
+                    >
+                      <Plus className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                )}
               </div>
 
-              {/* Nội dung hình ảnh */}
-              {viewTab === 'PHOTO' ? (
-                <div className="relative h-64 sm:h-80 md:h-96 overflow-hidden group">
+              {/* KHUNG HIỂN THỊ CHÍNH (3D ISOMETRIC / ẢNH) */}
+              {viewerMode === 'REAL_PHOTO' ? (
+                <div className="relative h-72 sm:h-96 overflow-hidden group">
                   <img
-                    src={activeUnit.photoUrl}
-                    alt={activeUnit.code}
+                    src={currentApartment.photoUrl}
+                    alt={currentApartment.name}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-[#0A0E17]/90 via-transparent to-transparent pointer-events-none" />
-                  
-                  {/* Badge hướng view góc dưới */}
                   <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between gap-2 text-xs">
-                    <div className="bg-[#0A0E17]/85 border border-[#C5A880]/60 px-3 py-1.5 rounded backdrop-blur-md">
-                      <span className="text-[10.5px] font-mono uppercase text-[#C5A880] font-semibold block">Tầm nhìn ban công:</span>
-                      <span className="text-white font-medium">{activeUnit.viewTitle}</span>
+                    <div className="bg-[#0A0E17]/90 border border-[#C5A880]/60 px-3 py-1.5 rounded backdrop-blur-md">
+                      <span className="text-[10px] font-mono uppercase text-[#C5A880] font-semibold block">Tầm nhìn thực tế:</span>
+                      <span className="text-white font-medium">{currentApartment.viewDesc}</span>
                     </div>
-                    <div className="bg-[#0A0E17]/85 border border-emerald-500/60 px-2.5 py-1.5 rounded backdrop-blur-md text-emerald-300 font-mono text-[11px] whitespace-nowrap">
-                      ✓ {activeUnit.statusLabel}
+                    <div className="bg-[#0A0E17]/90 border border-emerald-500/60 px-3 py-1.5 rounded backdrop-blur-md text-emerald-300 font-mono text-xs">
+                      ✓ {currentApartment.statusLabel}
                     </div>
                   </div>
                 </div>
               ) : (
-                /* BẢN VẼ 2D TỐI GIẢN, RÕ RÀNG, DỄ HIỂU */
-                <div className="p-4 sm:p-6 bg-[#070A10] flex items-center justify-center">
-                  <svg viewBox="0 0 540 320" className="w-full max-w-lg h-auto select-none">
-                    {/* Tường bao */}
-                    <rect x="20" y="20" width="500" height="280" rx="4" fill="#0C121E" stroke="#334155" strokeWidth="3" />
-                    
-                    {/* Phòng khách & Ban công */}
-                    <rect x="20" y="20" width="300" height="170" fill="#0F172A" stroke="#1E293B" strokeWidth="2" />
-                    <text x="170" y="90" fill="#FFFFFF" fontSize="14" fontFamily="serif" fontWeight="bold" textAnchor="middle">
-                      PHÒNG KHÁCH & ĂN
-                    </text>
-                    <text x="170" y="112" fill="#C5A880" fontSize="11" fontFamily="monospace" textAnchor="middle">
-                      Ban Công Kính Low-E (Gió Sông)
-                    </text>
+                /* CANVAS SVG 3D ISOMETRIC RENDER CHÍNH XÁC */
+                <div className="relative bg-[#070A10] h-72 sm:h-96 md:h-[420px] flex items-center justify-center overflow-hidden p-2">
+                  {/* Lưới tọa độ kiến trúc */}
+                  <div 
+                    className="absolute inset-0 opacity-15 pointer-events-none"
+                    style={{
+                      backgroundImage: 'linear-gradient(to right, #1E293B 1px, transparent 1px), linear-gradient(to bottom, #1E293B 1px, transparent 1px)',
+                      backgroundSize: '24px 24px'
+                    }}
+                  />
 
-                    {/* Phòng ngủ Master */}
-                    <rect x="320" y="20" width="200" height="150" fill="#131D2E" stroke="#1E293B" strokeWidth="2" />
-                    <text x="420" y="85" fill="#FFFFFF" fontSize="13" fontFamily="serif" fontWeight="bold" textAnchor="middle">
-                      PHÒNG NGỦ MASTER
-                    </text>
-                    <text x="420" y="105" fill="#C5A880" fontSize="10.5" fontFamily="monospace" textAnchor="middle">
-                      Ensuite Bathroom
-                    </text>
+                  {/* La bàn phong thủy chỉ hướng trên mô hình */}
+                  <div className="absolute top-3 left-3 bg-[#0E131C]/80 border border-[#1E293B] px-2.5 py-1 rounded text-[10.5px] font-mono text-gray-400 flex items-center gap-1.5 z-10 backdrop-blur-sm">
+                    <Compass className="w-3.5 h-3.5 text-[#C5A880]" />
+                    <span>Hướng Ban Công: <strong className="text-emerald-400">{currentApartment.direction}</strong></span>
+                  </div>
 
-                    {/* WC Master */}
-                    <rect x="430" y="20" width="90" height="65" fill="#1E293B" stroke="#334155" strokeWidth="1" />
-                    <text x="475" y="55" fill="#94A3B8" fontSize="9" fontFamily="monospace" textAnchor="middle">WC 1</text>
+                  {/* SVG VẼ TỪNG KHỐI HỘP 3D ISOMETRIC */}
+                  <svg
+                    viewBox="0 0 840 500"
+                    className="w-full h-full max-w-none select-none cursor-pointer"
+                  >
+                    {/* Vẽ từng khối phòng theo thứ tự từ xa lại gần (Z-sorting để đổ bóng chính xác) */}
+                    {(() => {
+                      // Sắp xếp các khối theo độ sâu isometric: (x + y + z)
+                      const isExploded = viewerMode === 'EXPLODED_3D';
+                      const sortedRooms = [...currentApartment.rooms].sort((a, b) => {
+                        const depthA = (a.x + a.y) + (a.z || 0) * 0.5;
+                        const depthB = (b.x + b.y) + (b.z || 0) * 0.5;
+                        return depthA - depthB;
+                      });
 
-                    {/* Phòng ngủ 2 / Studio */}
-                    <rect x="320" y="170" width="200" height="130" fill="#0F172A" stroke="#1E293B" strokeWidth="2" />
-                    <text x="420" y="235" fill="#FFFFFF" fontSize="12.5" fontFamily="serif" fontWeight="bold" textAnchor="middle">
-                      PHÒNG NGỦ SỐ 2
-                    </text>
-                    <text x="420" y="255" fill="#C5A880" fontSize="10" fontFamily="monospace" textAnchor="middle">
-                      Ánh Sáng Tự Nhiên
-                    </text>
+                      return sortedRooms.map((room) => {
+                        const isHovered = hoveredRoomId === room.id;
+                        const isSelected = selectedRoomId === room.id;
+                        const isElevated = isHovered || isSelected;
 
-                    {/* Bếp & WC chung */}
-                    <rect x="20" y="190" width="180" height="110" fill="#141E33" stroke="#1E293B" strokeWidth="2" />
-                    <text x="110" y="245" fill="#FFFFFF" fontSize="12" fontFamily="serif" fontWeight="bold" textAnchor="middle">
-                      BẾP ĐẢO HAFELE
-                    </text>
-                    <text x="110" y="265" fill="#94A3B8" fontSize="10" fontFamily="monospace" textAnchor="middle">
-                      Logia Giặt Phơi
-                    </text>
+                        // Độ dịch chuyển khi Tách khối (Exploded View)
+                        const explodeFactor = isExploded ? 1.25 : 1.0;
+                        const offsetX = (room.x - 50) * (explodeFactor - 1);
+                        const offsetY = (room.y - 50) * (explodeFactor - 1);
 
-                    {/* WC chung */}
-                    <rect x="200" y="190" width="120" height="110" fill="#1E293B" stroke="#334155" strokeWidth="2" />
-                    <text x="260" y="245" fill="#E2E8F0" fontSize="11" fontFamily="serif" textAnchor="middle">
-                      WC CHUNG
-                    </text>
-                    <text x="260" y="265" fill="#94A3B8" fontSize="9.5" fontFamily="monospace" textAnchor="middle">
-                      Kohler
-                    </text>
+                        // Nâng khối lên nhẹ khi hover/click
+                        const liftZ = isElevated ? 12 : 0;
+                        const finalZ = (room.z || 0) + liftZ;
 
-                    {/* Cửa chính ra vào */}
-                    <g transform="translate(240, 300)">
-                      <path d="M 0 0 A 30 30 0 0 1 30 -30" fill="none" stroke="#F59E0B" strokeWidth="1.5" strokeDasharray="2 2" />
-                      <line x1="0" y1="0" x2="0" y2="-30" stroke="#F59E0B" strokeWidth="2" />
-                      <text x="15" y="15" fill="#F59E0B" fontSize="8.5" fontFamily="monospace" fontWeight="bold" textAnchor="middle">
-                        CỬA FACEID
-                      </text>
-                    </g>
+                        const curX = room.x + offsetX;
+                        const curY = room.y + offsetY;
+                        const { w, d, h } = room;
+
+                        // Tính toán 8 đỉnh của khối hộp 3D Isometric
+                        // Đỉnh mặt sàn dưới (Z = finalZ)
+                        const p0 = toIso(curX, curY, finalZ, originX, originY, baseScale);
+                        const p1 = toIso(curX + w, curY, finalZ, originX, originY, baseScale);
+                        const p2 = toIso(curX + w, curY + d, finalZ, originX, originY, baseScale);
+                        const p3 = toIso(curX, curY + d, finalZ, originX, originY, baseScale);
+
+                        // Đỉnh mặt sàn trên (Z = finalZ + h)
+                        const t0 = toIso(curX, curY, finalZ + h, originX, originY, baseScale);
+                        const t1 = toIso(curX + w, curY, finalZ + h, originX, originY, baseScale);
+                        const t2 = toIso(curX + w, curY + d, finalZ + h, originX, originY, baseScale);
+                        const t3 = toIso(curX, curY + d, finalZ + h, originX, originY, baseScale);
+
+                        // Màu sắc bóng đổ 3D
+                        const topColor = isElevated ? '#D4AF37' : room.color;
+                        const rightColor = shadeColor(room.color, -25);
+                        const leftColor = shadeColor(room.color, -42);
+
+                        // Tâm của mặt trên để đặt nhãn text
+                        const midTopX = (t0.sx + t2.sx) / 2;
+                        const midTopY = (t0.sy + t2.sy) / 2;
+
+                        return (
+                          <g
+                            key={room.id}
+                            onClick={() => setSelectedRoomId(room.id)}
+                            onMouseEnter={() => setHoveredRoomId(room.id)}
+                            onMouseLeave={() => setHoveredRoomId(null)}
+                            className="transition-all duration-300"
+                          >
+                            {/* Bóng đổ mặt sàn */}
+                            {isElevated && (
+                              <polygon
+                                points={`${p0.sx},${p0.sy} ${p1.sx},${p1.sy} ${p2.sx},${p2.sy} ${p3.sx},${p3.sy}`}
+                                fill="#000000"
+                                opacity="0.45"
+                              />
+                            )}
+
+                            {/* Mặt Bên Trái (Front-Left Face) */}
+                            <polygon
+                              points={`${p3.sx},${p3.sy} ${p2.sx},${p2.sy} ${t2.sx},${t2.sy} ${t3.sx},${t3.sy}`}
+                              fill={leftColor}
+                              stroke="#1E293B"
+                              strokeWidth="1"
+                            />
+
+                            {/* Mặt Bên Phải (Front-Right Face) */}
+                            <polygon
+                              points={`${p1.sx},${p1.sy} ${p2.sx},${p2.sy} ${t2.sx},${t2.sy} ${t1.sx},${t1.sy}`}
+                              fill={rightColor}
+                              stroke="#1E293B"
+                              strokeWidth="1"
+                            />
+
+                            {/* Mặt Trên (Top Face) */}
+                            <polygon
+                              points={`${t0.sx},${t0.sy} ${t1.sx},${t1.sy} ${t2.sx},${t2.sy} ${t3.sx},${t3.sy}`}
+                              fill={topColor}
+                              stroke={isElevated ? '#FFFFFF' : '#334155'}
+                              strokeWidth={isElevated ? '2' : '1'}
+                            />
+
+                            {/* Viền sáng (Highlight wireframe) */}
+                            {isElevated && (
+                              <polygon
+                                points={`${t0.sx},${t0.sy} ${t1.sx},${t1.sy} ${t2.sx},${t2.sy} ${t3.sx},${t3.sy}`}
+                                fill="none"
+                                stroke="#FFFFFF"
+                                strokeWidth="2"
+                                strokeDasharray="4 2"
+                              />
+                            )}
+
+                            {/* Nhãn Tên Phòng Trên Mặt Khối */}
+                            <text
+                              x={midTopX}
+                              y={midTopY - 2}
+                              fill="#0A0E17"
+                              fontSize="11"
+                              fontFamily="sans-serif"
+                              fontWeight="bold"
+                              textAnchor="middle"
+                              className="pointer-events-none select-none drop-shadow-sm"
+                            >
+                              {room.code}
+                            </text>
+                            <text
+                              x={midTopX}
+                              y={midTopY + 12}
+                              fill="#1E293B"
+                              fontSize="9.5"
+                              fontFamily="monospace"
+                              fontWeight="bold"
+                              textAnchor="middle"
+                              className="pointer-events-none select-none"
+                            >
+                              {room.area}m²
+                            </text>
+                          </g>
+                        );
+                      });
+                    })()}
                   </svg>
                 </div>
               )}
             </div>
 
-            {/* SƠ ĐỒ VỊ TRÍ TRÊN MẶT BẰNG TẦNG (FLOOR MINIMAP - TRỰC QUAN & DỄ HIỂU NGAY) */}
-            <div className="p-3.5 sm:p-4 bg-[#0E131C] border border-[#1E293B] rounded-lg space-y-2.5">
-              <div className="flex items-center justify-between text-xs">
-                <div className="flex items-center gap-2">
-                  <Compass className="w-4 h-4 text-[#C5A880]" />
-                  <span className="font-mono font-bold text-gray-200 uppercase tracking-wider text-[11px]">
-                    Vị Trí Căn Hộ Trên Sàn Tầng
-                  </span>
+            {/* CHÚ GIẢI PHÒNG ĐANG CHỌN (INTERACTIVE ROOM TOOLTIP) */}
+            <div className="p-3.5 bg-[#0E131C] border border-[#1E293B] rounded-lg flex items-center justify-between gap-3 text-xs">
+              <div className="flex items-center gap-3">
+                <span
+                  className="w-4 h-4 rounded shrink-0 shadow"
+                  style={{ backgroundColor: activeRoom.color }}
+                />
+                <div>
+                  <div className="font-bold text-white font-serif text-sm">
+                    {activeRoom.name} ({activeRoom.area} m²)
+                  </div>
+                  <div className="text-gray-400 text-[11px] font-light mt-0.5">
+                    {activeRoom.desc} • Kích thước: <span className="font-mono text-gray-200">{activeRoom.dim}</span>
+                  </div>
                 </div>
-                <span className="text-[10.5px] font-mono text-[#C5A880]">
-                  {activeUnit.floorText}
-                </span>
               </div>
 
-              {/* Sơ đồ tầng mini (Vector Minimap) */}
-              <div className="relative bg-[#070A10] border border-[#1E293B] rounded p-2 sm:p-3 overflow-hidden">
-                <svg viewBox="0 0 600 160" className="w-full h-auto select-none">
-                  {/* Chỉ báo Hướng Bắc & Hướng Nam */}
-                  <text x="300" y="18" fill="#94A3B8" fontSize="9" fontFamily="monospace" textAnchor="middle">
-                    ▲ HƯỚNG BẮC: TRUNG TÂM THÀNH PHỐ & LANDMARK 81
-                  </text>
-                  <text x="300" y="152" fill="#34D399" fontSize="9.5" fontFamily="monospace" fontWeight="bold" textAnchor="middle">
-                    ▼ HƯỚNG NAM / ĐÔNG NAM: VIEW TRỰC DIỆN SÔNG SÀI GÒN (GIÓ MÁT)
-                  </text>
-
-                  {/* LÕI TÒA NHÀ */}
-                  <rect x="230" y="55" width="140" height="50" rx="3" fill="#161F2E" stroke="#334155" strokeWidth="1" />
-                  <text x="300" y="83" fill="#94A3B8" fontSize="9" fontFamily="monospace" textAnchor="middle">
-                    THANG MÁY & CORE
-                  </text>
-
-                  {/* DÃY PHÍA BẮC (TRÊN): Căn A04, A06, A07, A08 */}
-                  <rect x="30" y="30" width="90" height="40" rx="2" fill="#0E131C" stroke="#1E293B" />
-                  <text x="75" y="54" fill="#64748B" fontSize="9" fontFamily="monospace" textAnchor="middle">Căn 12A08</text>
-
-                  <rect x="130" y="30" width="90" height="40" rx="2" fill="#0E131C" stroke="#1E293B" />
-                  <text x="175" y="54" fill="#64748B" fontSize="9" fontFamily="monospace" textAnchor="middle">Căn 12A07</text>
-
-                  <rect x="380" y="30" width="90" height="40" rx="2" fill="#0E131C" stroke="#1E293B" />
-                  <text x="425" y="54" fill="#64748B" fontSize="9" fontFamily="monospace" textAnchor="middle">Căn 12A06</text>
-
-                  <rect x="480" y="30" width="90" height="40" rx="2" fill="#0E131C" stroke="#1E293B" />
-                  <text x="525" y="54" fill="#64748B" fontSize="9" fontFamily="monospace" textAnchor="middle">Căn 12A04</text>
-
-                  {/* DÃY PHÍA NAM (DƯỚI): Căn A01, A02, A03, A05 (View Sông) */}
-                  {/* Căn A01 (24A01) */}
-                  <rect
-                    x="30"
-                    y="90"
-                    width="90"
-                    height="45"
-                    rx="3"
-                    fill={activeUnit.minimapSlot === 'A01' ? '#C5A880' : '#121824'}
-                    stroke={activeUnit.minimapSlot === 'A01' ? '#FFFFFF' : '#334155'}
-                    strokeWidth={activeUnit.minimapSlot === 'A01' ? '2' : '1'}
-                  />
-                  <text
-                    x="75"
-                    y="117"
-                    fill={activeUnit.minimapSlot === 'A01' ? '#0A0E17' : '#E2E8F0'}
-                    fontSize="10"
-                    fontFamily="monospace"
-                    fontWeight="bold"
-                    textAnchor="middle"
-                  >
-                    Căn A01
-                  </text>
-
-                  {/* Căn A02 (12A02) */}
-                  <rect
-                    x="130"
-                    y="90"
-                    width="90"
-                    height="45"
-                    rx="3"
-                    fill={activeUnit.minimapSlot === 'A02' ? '#C5A880' : '#121824'}
-                    stroke={activeUnit.minimapSlot === 'A02' ? '#FFFFFF' : '#334155'}
-                    strokeWidth={activeUnit.minimapSlot === 'A02' ? '2' : '1'}
-                  />
-                  <text
-                    x="175"
-                    y="117"
-                    fill={activeUnit.minimapSlot === 'A02' ? '#0A0E17' : '#E2E8F0'}
-                    fontSize="10"
-                    fontFamily="monospace"
-                    fontWeight="bold"
-                    textAnchor="middle"
-                  >
-                    Căn A02
-                  </text>
-
-                  {/* Căn A03 (12A03) */}
-                  <rect x="380" y="90" width="90" height="45" rx="3" fill="#121824" stroke="#334155" />
-                  <text x="425" y="117" fill="#CBD5E1" fontSize="10" fontFamily="monospace" textAnchor="middle">
-                    Căn A03
-                  </text>
-
-                  {/* Căn A05 (12A05 - Căn thực tế) */}
-                  <rect
-                    x="480"
-                    y="90"
-                    width="90"
-                    height="45"
-                    rx="3"
-                    fill={activeUnit.minimapSlot === 'A05' ? '#C5A880' : '#121824'}
-                    stroke={activeUnit.minimapSlot === 'A05' ? '#FFFFFF' : '#F59E0B'}
-                    strokeWidth={activeUnit.minimapSlot === 'A05' ? '2.5' : '1'}
-                  />
-                  <text
-                    x="525"
-                    y="117"
-                    fill={activeUnit.minimapSlot === 'A05' ? '#0A0E17' : '#FBBF24'}
-                    fontSize="10"
-                    fontFamily="monospace"
-                    fontWeight="bold"
-                    textAnchor="middle"
-                  >
-                    ★ 12A05
-                  </text>
-                </svg>
-              </div>
-
-              <div className="text-[11px] text-gray-400 font-light flex items-center justify-between">
-                <span>Vị trí: <strong className="text-white">Căn góc đón gió sông</strong></span>
-                <span className="text-emerald-400">Không gian yên tĩnh, cách ly tiếng ồn</span>
+              <div className="text-[10.5px] font-mono text-[#C5A880] shrink-0 border border-[#C5A880]/30 px-2 py-1 rounded bg-[#151D29]">
+                Chạm để chọn khối
               </div>
             </div>
           </div>
 
-          {/* CỘT PHẢI (5 CỘT): THÔNG SỐ VÀNG, GIÁ BÁN & NÚT HÀNH ĐỘNG (ÍT MÀ CHẤT LƯỢNG) */}
+          {/* CỘT PHẢI (5 CỘT): BÁO GIÁ, THÔNG SỐ VÀNG & NÚT HÀNH ĐỘNG */}
           <div className="lg:col-span-5 space-y-4">
-            {/* THẺ BÁO GIÁ VÀ THÔNG SỐ CỐT LÕI */}
             <div className="p-5 sm:p-6 bg-[#0E131C] border border-[#C5A880]/50 rounded-lg shadow-2xl space-y-5">
               {/* Tiêu đề căn & Giá niêm yết */}
               <div className="flex items-start justify-between pb-4 border-b border-[#1E293B] gap-2">
                 <div>
                   <div className="text-[10px] font-mono uppercase tracking-widest text-[#C5A880] font-semibold">
-                    Mã Căn Hộ Skyline
+                    {currentApartment.name}
                   </div>
                   <h3 className="font-serif text-2xl sm:text-3xl font-bold text-white mt-0.5">
-                    Căn {activeUnit.code}
+                    Căn Hộ {currentApartment.code}
                   </h3>
                   <div className="text-xs text-gray-400 mt-0.5">
-                    {activeUnit.floorText}
+                    {currentApartment.floorText}
                   </div>
                 </div>
 
@@ -551,28 +986,28 @@ export default function FloorPlanExplorer({ onOpenLogin }: FloorPlanExplorerProp
                     Giá Bán Dự Kiến
                   </div>
                   <div className="font-mono text-xl sm:text-2xl font-bold text-[#C5A880] mt-0.5">
-                    {activeUnit.priceBillion.toFixed(2)} Tỷ
+                    {currentApartment.priceBillion.toFixed(2)} Tỷ
                   </div>
                   <div className="text-[10px] text-gray-400 font-mono">
-                    ~ {(activeUnit.priceBillion * 1000 / activeUnit.area).toFixed(1)} tr/m²
+                    ~ {(currentApartment.priceBillion * 1000 / currentApartment.area).toFixed(1)} tr/m²
                   </div>
                 </div>
               </div>
 
-              {/* LƯỚI 4 THÔNG SỐ CHÍNH (TO RÕ, DỄ NHÌN TRÊN ĐIỆN THOẠI) */}
+              {/* LƯỚI 4 THÔNG SỐ CHÍNH (TO RÕ TRÊN MỌI THIẾT BỊ) */}
               <div className="grid grid-cols-2 gap-2.5">
                 <div className="p-3 bg-[#121824] border border-[#1E293B] rounded">
                   <div className="text-[10px] text-gray-400 font-mono uppercase">Diện Tích Thông Thủy</div>
                   <div className="font-mono text-base sm:text-lg font-bold text-white mt-0.5">
-                    {activeUnit.area} m²
+                    {currentApartment.area} m²
                   </div>
-                  <div className="text-[10px] text-gray-400 mt-0.5">Tim tường: {activeUnit.wallArea} m²</div>
+                  <div className="text-[10px] text-gray-400 mt-0.5">Tim tường: {currentApartment.wallArea} m²</div>
                 </div>
 
                 <div className="p-3 bg-[#121824] border border-[#1E293B] rounded">
                   <div className="text-[10px] text-gray-400 font-mono uppercase">Hướng Ban Công</div>
                   <div className="font-mono text-base sm:text-lg font-bold text-emerald-400 mt-0.5">
-                    {activeUnit.direction}
+                    {currentApartment.direction}
                   </div>
                   <div className="text-[10px] text-gray-400 mt-0.5">Đón gió sông mát lành</div>
                 </div>
@@ -580,9 +1015,9 @@ export default function FloorPlanExplorer({ onOpenLogin }: FloorPlanExplorerProp
                 <div className="p-3 bg-[#121824] border border-[#1E293B] rounded">
                   <div className="text-[10px] text-gray-400 font-mono uppercase">Cơ Cấu Phòng</div>
                   <div className="font-mono text-base sm:text-lg font-bold text-white mt-0.5">
-                    {activeUnit.bedrooms} PN • {activeUnit.bathrooms} WC
+                    {currentApartment.bedrooms} PN • {currentApartment.bathrooms} WC
                   </div>
-                  <div className="text-[10px] text-gray-400 mt-0.5">Ban công + Logia riêng</div>
+                  <div className="text-[10px] text-gray-400 mt-0.5">{currentApartment.rooms.length} Khối phòng chức năng</div>
                 </div>
 
                 <div className="p-3 bg-[#121824] border border-[#1E293B] rounded">
@@ -590,30 +1025,30 @@ export default function FloorPlanExplorer({ onOpenLogin }: FloorPlanExplorerProp
                   <div className="font-mono text-base sm:text-lg font-bold text-white mt-0.5">
                     Sổ Hồng Lâu Dài
                   </div>
-                  <div className="text-[10px] text-[#C5A880] mt-0.5 font-medium">{activeUnit.statusLabel}</div>
+                  <div className="text-[10px] text-[#C5A880] mt-0.5 font-medium">{currentApartment.statusLabel}</div>
                 </div>
               </div>
 
-              {/* HUY HIỆU CĂN THỰC TẾ (NẾU LÀ 12A05) */}
-              {activeUnit.isRealResident && (
+              {/* HUY HIỆU CĂN CƯ DÂN THỰC TẾ (NẾU LÀ CĂN 12A05) */}
+              {currentApartment.isRealResident && (
                 <div className="p-3 bg-[#1A160E] border border-amber-500/50 rounded flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full bg-amber-500/20 text-amber-400 flex items-center justify-center shrink-0">
+                  <div className="w-8 h-8 rounded-full bg-amber-500/20 text-amber-400 flex items-center justify-center shrink-0 font-bold text-sm">
                     ★
                   </div>
                   <div className="text-xs">
-                    <span className="font-bold text-amber-300 block">Căn Hộ Cư Dân Thực Tế</span>
-                    <span className="text-gray-300 font-light">Chủ sở hữu: <strong>{activeUnit.residentOwner}</strong> • Đã nghiệm thu nhận nhà</span>
+                    <span className="font-bold text-amber-300 block">Căn Hộ Cư Dân Thực Tế Đã Bàn Giao</span>
+                    <span className="text-gray-300 font-light">Chủ hộ: <strong>{currentApartment.residentName}</strong> • Đang sinh sống</span>
                   </div>
                 </div>
               )}
 
-              {/* ĐIỂM NỔI BẬT ĐÁNG GIÁ (3 Ý NGẮN GỌN) */}
+              {/* TIÊU CHUẨN KHÔNG GIAN BÀN GIAO */}
               <div className="space-y-2 pt-2 border-t border-[#1E293B]">
                 <div className="text-[10.5px] font-mono uppercase text-gray-400 tracking-wider">
-                  Tiêu Chuẩn Bàn Giao & Đặc Quyền
+                  Đặc Trưng Kiến Trúc & Công Nghệ
                 </div>
                 <ul className="space-y-1.5 text-xs text-gray-300 font-light">
-                  {activeUnit.features.map((feat, idx) => (
+                  {currentApartment.features.map((feat, idx) => (
                     <li key={idx} className="flex items-start gap-2">
                       <Check className="w-3.5 h-3.5 text-[#C5A880] shrink-0 mt-0.5" />
                       <span>{feat}</span>
@@ -622,30 +1057,45 @@ export default function FloorPlanExplorer({ onOpenLogin }: FloorPlanExplorerProp
                 </ul>
               </div>
 
-              {/* PHÂN BỔ DIỆN TÍCH PHÒNG (GỌN GÀNG) */}
+              {/* DANH SÁCH KHỐI PHÒNG CHI TIẾT */}
               <div className="pt-2 border-t border-[#1E293B] space-y-1.5">
-                <div className="text-[10.5px] font-mono uppercase text-gray-400 tracking-wider">
-                  Bố Trí Công Năng
+                <div className="text-[10.5px] font-mono uppercase text-gray-400 tracking-wider flex items-center justify-between">
+                  <span>Cơ Cấu Khối Không Gian</span>
+                  <span className="text-[#C5A880]">{currentApartment.rooms.length} Khối</span>
                 </div>
                 <div className="grid grid-cols-2 gap-1.5 text-xs">
-                  {activeUnit.rooms.map((r, idx) => (
-                    <div key={idx} className="p-1.5 bg-[#121824] rounded flex items-center justify-between text-[11px]">
-                      <span className="text-gray-400 truncate pr-1">{r.name}</span>
-                      <strong className="text-white font-mono shrink-0">{r.area}</strong>
-                    </div>
-                  ))}
+                  {currentApartment.rooms.map((r) => {
+                    const isSelected = selectedRoomId === r.id;
+                    return (
+                      <div
+                        key={r.id}
+                        onClick={() => setSelectedRoomId(r.id)}
+                        className={`p-1.5 rounded flex items-center justify-between text-[11px] cursor-pointer transition-all border ${
+                          isSelected 
+                            ? 'bg-[#18212F] border-[#C5A880] text-white font-bold' 
+                            : 'bg-[#121824] border-[#1E293B] text-gray-300 hover:border-gray-500'
+                        }`}
+                      >
+                        <div className="flex items-center gap-1.5 truncate">
+                          <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: r.color }} />
+                          <span className="truncate">{r.name}</span>
+                        </div>
+                        <strong className="font-mono text-white shrink-0 ml-1">{r.area}m²</strong>
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
 
-              {/* 2 NÚT HÀNH ĐỘNG CHÍNH (DỄ CHẠM BẤM TRÊN MOBILE) */}
+              {/* NÚT HÀNH ĐỘNG DỄ BẤM TRÊN MOBILE */}
               <div className="pt-2 space-y-2">
                 <button
                   type="button"
-                  onClick={() => setIsRegisterModalOpen(true)}
+                  onClick={() => setIsRegisterOpen(true)}
                   className="w-full py-3.5 bg-[#C5A880] hover:bg-[#D4AF37] text-[#0A0E17] font-bold text-xs tracking-wider uppercase rounded-lg transition-all shadow-lg flex items-center justify-center gap-2"
                 >
                   <PhoneCall className="w-4 h-4" />
-                  <span>Đăng Ký Tham Quan Căn Hộ</span>
+                  <span>Đăng Ký Tham Quan Căn Hộ Thực Tế</span>
                 </button>
 
                 <button
@@ -660,7 +1110,7 @@ export default function FloorPlanExplorer({ onOpenLogin }: FloorPlanExplorerProp
                   className="w-full py-2.5 bg-[#121824] hover:bg-[#1A2232] border border-[#2A374A] hover:border-[#C5A880]/60 text-gray-300 hover:text-white text-xs font-semibold tracking-wider uppercase rounded-lg transition-all flex items-center justify-center gap-2"
                 >
                   <Sparkles className="w-3.5 h-3.5 text-[#C5A880]" />
-                  <span>Truy Cập Portal Ban Quản Lý / Cư Dân</span>
+                  <span>Đăng Nhập Portal Ban Quản Lý / Cư Dân</span>
                 </button>
               </div>
             </div>
@@ -669,13 +1119,13 @@ export default function FloorPlanExplorer({ onOpenLogin }: FloorPlanExplorerProp
       </div>
 
       {/* ============================================================= */}
-      {/* MODAL ĐĂNG KÝ THAM QUAN GỌN GÀNG, RESPONSIVE                 */}
+      {/* MODAL ĐĂNG KÝ XEM NHÀ GỌN GÀNG, RESPONSIVE                     */}
       {/* ============================================================= */}
-      {isRegisterModalOpen && (
+      {isRegisterOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
           <div className="bg-[#0E131C] border border-[#C5A880]/60 rounded-xl p-5 sm:p-6 max-w-sm w-full shadow-2xl relative">
             <button
-              onClick={() => setIsRegisterModalOpen(false)}
+              onClick={() => setIsRegisterOpen(false)}
               className="absolute top-3.5 right-3.5 text-gray-400 hover:text-white p-1"
             >
               <X className="w-5 h-5" />
@@ -683,10 +1133,10 @@ export default function FloorPlanExplorer({ onOpenLogin }: FloorPlanExplorerProp
 
             <div className="space-y-1.5 mb-4">
               <span className="text-[10px] font-mono uppercase tracking-widest text-[#C5A880] font-semibold">
-                Tham Quan Thực Tế Skyline
+                Tham Quan Trực Tiếp Skyline
               </span>
               <h3 className="font-serif text-lg sm:text-xl font-bold text-white">
-                Căn Hộ {activeUnit.code} ({activeUnit.type})
+                Căn Hộ {currentApartment.code} ({currentApartment.category})
               </h3>
               <p className="text-xs text-gray-400 font-light">
                 Ban Quản Lý sẽ liên hệ sắp xếp đón tiếp quý khách tham quan trực tiếp trong 15 phút.
@@ -698,7 +1148,7 @@ export default function FloorPlanExplorer({ onOpenLogin }: FloorPlanExplorerProp
                 <CheckCircle2 className="w-8 h-8 text-emerald-400 mx-auto" />
                 <div className="font-serif text-sm font-bold text-white">Ghi Nhận Thành Công!</div>
                 <div className="text-xs text-gray-300">
-                  Chuyên viên lễ tân sẽ gọi tới số của quý khách để xác nhận lịch xem nhà.
+                  Lễ tân Skyline sẽ liên hệ với quý khách để xác nhận khung giờ đón tiếp.
                 </div>
               </div>
             ) : (
@@ -728,7 +1178,7 @@ export default function FloorPlanExplorer({ onOpenLogin }: FloorPlanExplorerProp
                 </div>
 
                 <div>
-                  <label className="block text-gray-300 font-mono mb-1">Khung Giờ Dự Kiến Đến:</label>
+                  <label className="block text-gray-300 font-mono mb-1">Khung Giờ Muốn Xem:</label>
                   <input
                     type="text"
                     placeholder="Ví dụ: Sáng mai lúc 9h30"
