@@ -32,7 +32,7 @@ export default function HomePage() {
         <AboutConcept />
 
         {/* 3. Interactive Floor Plan & Units */}
-        <FloorPlanExplorer />
+        <FloorPlanExplorer onOpenLogin={handleOpenLogin} />
 
         {/* 4. Luxury Amenities */}
         <AmenitiesSection />
