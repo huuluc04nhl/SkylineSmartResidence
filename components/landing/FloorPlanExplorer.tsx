@@ -409,15 +409,37 @@ export const TOUR_TIME_SLOTS: TourTimeSlot[] = [
 
 export function getTourDateOptions() {
   const now = new Date();
+  
+  // Ngày mai: luôn là now + 1 ngày
   const tomorrow = new Date(now);
   tomorrow.setDate(now.getDate() + 1);
 
+  // Tính ngày Thứ Bảy và Chủ Nhật gần nhất
+  // getDay(): 0 = Chủ Nhật, 1 = Thứ Hai, ..., 6 = Thứ Bảy
+  const dayOfWeek = now.getDay();
+  let daysToSaturday = (6 - dayOfWeek + 7) % 7;
+  if (dayOfWeek === 0) {
+    // Nếu hôm nay là Chủ Nhật, cuối tuần kế tiếp là Thứ Bảy tuần sau (+6 ngày)
+    daysToSaturday = 6;
+  }
+  const saturday = new Date(now);
+  saturday.setDate(now.getDate() + (daysToSaturday === 0 ? 0 : daysToSaturday));
+  
+  const sunday = new Date(saturday);
+  sunday.setDate(saturday.getDate() + 1);
+
   const fmt = (d: Date) => `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}`;
 
+  const weekendLabel = dayOfWeek === 6 
+    ? `Cuối tuần (Hôm nay & CN)` 
+    : dayOfWeek === 0
+      ? `Cuối tuần (Hôm nay)`
+      : `Cuối tuần (${fmt(saturday)} - ${fmt(sunday)})`;
+
   return [
-    { id: 'today', label: `Hôm nay (${fmt(now)})`, fullText: `Hôm nay - ${fmt(now)}` },
-    { id: 'tomorrow', label: `Ngày mai (${fmt(tomorrow)})`, fullText: `Ngày mai - ${fmt(tomorrow)}` },
-    { id: 'weekend', label: 'Cuối tuần này', fullText: 'Cuối tuần này (Thứ 7 / CN)' },
+    { id: 'today', label: `Hôm nay (${fmt(now)})`, fullText: `Hôm nay (${fmt(now)})` },
+    { id: 'tomorrow', label: `Ngày mai (${fmt(tomorrow)})`, fullText: `Ngày mai (${fmt(tomorrow)})` },
+    { id: 'weekend', label: weekendLabel, fullText: `Cuối tuần (${fmt(saturday)} - ${fmt(sunday)})` },
     { id: 'custom', label: 'Chọn ngày khác...', fullText: 'Ngày tùy chọn' },
   ];
 }
