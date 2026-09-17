@@ -46,8 +46,9 @@ export default function Footer() {
           <div className="space-y-3">
             <div className="text-xs font-semibold uppercase tracking-widest text-white">Liên Hệ BQL</div>
             <div className="text-xs space-y-1.5 text-gray-400">
-              <div>Đại lộ Skyline, Trung tâm Khu Đô Thị Mới</div>
-              <div>Hotline Kỹ thuật: <strong>1900 1088</strong></div>
+              <div>128 Bến Vân Đồn, P.6, Q.4, TP.HCM</div>
+              <div>Hotline Đón Khách: <strong>0901 888 999</strong></div>
+              <div>Hotline Kỹ Thuật: <strong>1900 1088</strong></div>
               <div>Email: bql@skyline-residence.vn</div>
             </div>
           </div>

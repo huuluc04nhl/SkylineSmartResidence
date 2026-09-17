@@ -44,7 +44,7 @@ export default function SmartTechSection() {
   ];
 
   return (
-    <section id="smart-tech" className="py-24 bg-[#0D1117] text-white border-b border-[#222B35]">
+    <section id="smart-tech" className="py-20 sm:py-24 bg-[#0D1117] text-white border-b border-[#1E293B] scroll-mt-20 relative overflow-hidden">
       <div className="max-w-7xl mx-auto px-6">
         {/* Header */}
         <div className="max-w-3xl mb-16 space-y-4">

@@ -75,7 +75,7 @@ export default function HeroSection({ onOpenLogin }: HeroSectionProps) {
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 pt-8 border-t border-[#222B35]">
             <div>
               <div className="text-2xl font-serif text-[#C5A880]">25 Tầng</div>
-              <div className="text-[11px] uppercase tracking-wider text-gray-400 mt-1">2 Tòa Sapphire & Diamond</div>
+              <div className="text-[11px] uppercase tracking-wider text-gray-400 mt-1">2 Tòa Tháp A &amp; Tháp B</div>
             </div>
             <div>
               <div className="text-2xl font-serif text-[#C5A880]">&lt; 0.5s</div>
@@ -103,11 +103,11 @@ export default function HeroSection({ onOpenLogin }: HeroSectionProps) {
             <div className="space-y-3 text-sm text-gray-300">
               <div className="flex justify-between py-1.5 border-b border-[#1E2631]">
                 <span className="text-gray-400">Vị Trí:</span>
-                <span className="font-medium text-white">Đại lộ Skyline City</span>
+                <span className="font-medium text-white text-right text-xs sm:text-sm">128 Bến Vân Đồn, Q.4, TP.HCM</span>
               </div>
               <div className="flex justify-between py-1.5 border-b border-[#1E2631]">
-                <span className="text-gray-400">Loại hình căn hộ:</span>
-                <span className="font-medium text-white">Studio, 1PN, 2PN, 3PN, Duplex</span>
+                <span className="text-gray-400">Loại hình căn:</span>
+                <span className="font-medium text-white text-right text-xs">1PN, 2PN, 3PN &amp; Duplex</span>
               </div>
               <div className="flex justify-between py-1.5 border-b border-[#1E2631]">
                 <span className="text-gray-400">Kiểm soát an ninh:</span>

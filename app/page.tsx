@@ -13,13 +13,25 @@ import { UserRole } from '@/lib/dataStore';
 
 export default function HomePage() {
   const [isLoginOpen, setIsLoginOpen] = useState(false);
+  const [defaultAccount, setDefaultAccount] = useState('');
 
-  const handleOpenLogin = () => {
+  const handleOpenLogin = (role?: UserRole | string) => {
+    if (role === 'OWNER' || role === '12A05') {
+      setDefaultAccount('huuluc04@gmail.com');
+    } else if (role === 'ADMIN') {
+      setDefaultAccount('nks.manager01@gmail.com');
+    } else if (role === 'TECHNICIAN') {
+      setDefaultAccount('nks.manager02@gmail.com');
+    } else if (typeof role === 'string' && role.includes('@')) {
+      setDefaultAccount(role);
+    } else {
+      setDefaultAccount('');
+    }
     setIsLoginOpen(true);
   };
 
   return (
-    <div className="min-h-screen bg-[#FAFAFA] flex flex-col justify-between">
+    <div className="min-h-screen bg-[#0A0E17] flex flex-col justify-between">
       {/* Navigation */}
       <HeaderNav onOpenLogin={handleOpenLogin} />
 
@@ -47,6 +59,7 @@ export default function HomePage() {
       {/* Login & Role Switcher Modal */}
       <LoginModal
         isOpen={isLoginOpen}
+        defaultAccount={defaultAccount}
         onClose={() => setIsLoginOpen(false)}
       />
     </div>

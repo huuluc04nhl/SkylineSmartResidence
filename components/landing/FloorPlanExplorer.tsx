@@ -518,7 +518,7 @@ export default function FloorPlanExplorer({ onOpenLogin }: FloorPlanExplorerProp
   };
 
   return (
-    <section id="floorplans" className="py-12 sm:py-20 bg-[#0A0E17] text-white border-b border-[#1E293B] relative overflow-hidden select-none">
+    <section id="floorplans" className="py-12 sm:py-20 bg-[#0A0E17] text-white border-b border-[#1E293B] scroll-mt-20 relative overflow-hidden select-none">
       {/* Background glow tinh tế */}
       <div className="absolute top-10 left-1/4 w-96 h-96 bg-[#C5A880]/5 rounded-full blur-3xl pointer-events-none" />
       <div className="absolute bottom-10 right-1/4 w-96 h-96 bg-blue-900/10 rounded-full blur-3xl pointer-events-none" />
