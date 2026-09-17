@@ -495,115 +495,113 @@ export default function FloorPlanExplorer({ onOpenLogin }: FloorPlanExplorerProp
         </div>
 
         {/* ============================================================= */}
-        {/* 3. KHU VỰC HIỂN THỊ PHỐI CẢNH 3D & THÔNG SỐ CĂN HỘ             */}
+        {/* 3. KHU VỰC HIỂN THỊ PHỐI CẢNH 3D & THÔNG SỐ CÂN ĐỐI 100%       */}
         {/* ============================================================= */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start">
-          {/* CỘT TRÁI (7 CỘT): PHỐI CẢNH BÓC MÁI 3D VỚI NHÃN PHÒNG MỜ DẦN, CLICK THÌ SÁNG RỰC */}
-          <div className="lg:col-span-7 space-y-3">
-            <div className="border border-[#1E293B] bg-[#0E131C] rounded-lg overflow-hidden shadow-2xl relative">
-              {/* Header thanh chỉ báo */}
-              <div className="p-3 bg-[#121824] border-b border-[#1E293B] flex items-center justify-between gap-2">
-                <div className="flex items-center gap-2 text-xs font-mono font-semibold text-gray-300 truncate">
-                  <span className="w-2 h-2 rounded-full bg-[#C5A880] animate-pulse" />
-                  <span>{currentApartment.subtitle}</span>
-                </div>
-                <div className="text-[10.5px] font-mono text-[#C5A880] bg-[#070A10] border border-[#1E293B] px-2.5 py-0.5 rounded">
-                  Click vào nhãn phòng để sáng rõ
-                </div>
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-stretch">
+          {/* CỘT TRÁI (7 CỘT): KHUNG PHỐI CẢNH 3D UNIFIED CARD - CÂN BẰNG HOÀN TOÀN */}
+          <div className="lg:col-span-7 flex flex-col justify-between h-full border border-[#C5A880]/40 bg-[#0E131C] rounded-xl overflow-hidden shadow-2xl">
+            {/* Header thanh chỉ báo */}
+            <div className="p-3 sm:p-3.5 bg-[#121824] border-b border-[#1E293B] flex items-center justify-between gap-2 shrink-0">
+              <div className="flex items-center gap-2 text-xs font-mono font-semibold text-gray-300 truncate">
+                <span className="w-2 h-2 rounded-full bg-[#C5A880] animate-pulse" />
+                <span className="truncate">{currentApartment.subtitle}</span>
+              </div>
+              <div className="text-[10px] font-mono text-[#C5A880] bg-[#070A10] border border-[#1E293B] px-2.5 py-0.5 rounded shrink-0">
+                Click nhãn phòng để xem
+              </div>
+            </div>
+
+            {/* KHUNG ẢNH 3D ISOMETRIC CUTAWAY (flex-1 để tự co giãn vừa khít độ cao cột phải) */}
+            <div className="relative flex-1 min-h-[360px] sm:min-h-[420px] md:min-h-[460px] bg-[#05070A] overflow-hidden group">
+              <img
+                src={currentApartment.render3DUrl}
+                alt={currentApartment.name}
+                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+              />
+
+              {/* Gradient che phủ viền tinh tế */}
+              <div className="absolute inset-0 bg-gradient-to-t from-[#0A0E17]/80 via-transparent to-transparent pointer-events-none" />
+
+              {/* Hướng ban công góc trên bên trái */}
+              <div className="absolute top-3 left-3 bg-[#0A0E17]/90 border border-[#1E293B] px-3 py-1.5 rounded-lg text-xs font-mono text-gray-300 flex items-center gap-2 backdrop-blur-md z-10 shadow-lg">
+                <Compass className="w-4 h-4 text-[#C5A880]" />
+                <span>Ban công: <strong className="text-emerald-400">{currentApartment.direction}</strong></span>
               </div>
 
-              {/* KHUNG ẢNH 3D ISOMETRIC CUTAWAY ARCHITECTURAL MODEL */}
-              <div className="relative aspect-[4/3] bg-[#05070A] overflow-hidden group">
-                <img
-                  src={currentApartment.render3DUrl}
-                  alt={currentApartment.name}
-                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                />
+              {/* Trạng thái căn hộ góc trên bên phải */}
+              <div className="absolute top-3 right-3 bg-[#0A0E17]/90 border border-emerald-500/50 px-3 py-1.5 rounded-lg text-xs font-mono text-emerald-300 flex items-center gap-1.5 backdrop-blur-md z-10 shadow-lg">
+                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+                <span>{currentApartment.statusLabel}</span>
+              </div>
 
-                {/* Gradient che phủ viền tinh tế */}
-                <div className="absolute inset-0 bg-gradient-to-t from-[#0A0E17]/80 via-transparent to-transparent pointer-events-none" />
-
-                {/* Hướng ban công góc trên bên trái */}
-                <div className="absolute top-3 left-3 bg-[#0A0E17]/90 border border-[#1E293B] px-3 py-1.5 rounded-lg text-xs font-mono text-gray-300 flex items-center gap-2 backdrop-blur-md z-10 shadow-lg">
-                  <Compass className="w-4 h-4 text-[#C5A880]" />
-                  <span>Ban công: <strong className="text-emerald-400">{currentApartment.direction}</strong></span>
-                </div>
-
-                {/* Trạng thái căn hộ góc trên bên phải */}
-                <div className="absolute top-3 right-3 bg-[#0A0E17]/90 border border-emerald-500/50 px-3 py-1.5 rounded-lg text-xs font-mono text-emerald-300 flex items-center gap-1.5 backdrop-blur-md z-10 shadow-lg">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
-                  <span>{currentApartment.statusLabel}</span>
-                </div>
-
-                {/* NHÃN PHÒNG VIẾT RÕ RÀNG TRÊN PHỐI CẢNH: MẶC ĐỊNH LÀM MỜ, CLICK VÀO THÌ SÁNG RÕ RA */}
-                {currentApartment.hotspots.map((spot) => {
-                  const isActive = activeHotspotId === spot.id;
-                  return (
-                    <button
-                      key={spot.id}
-                      type="button"
-                      onClick={() => setActiveHotspotId(spot.id)}
-                      className={`absolute z-20 transform -translate-x-1/2 -translate-y-1/2 transition-all duration-300 group/pin focus:outline-none flex items-center gap-1.5 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full text-[11px] sm:text-xs cursor-pointer ${
-                        isActive
-                          ? 'bg-[#0E131C] text-white border-2 border-[#C5A880] shadow-[0_0_25px_rgba(197,168,128,0.8)] scale-110 opacity-100 z-30 font-bold ring-2 ring-[#C5A880]/50'
-                          : 'bg-black/60 text-gray-300 border border-white/20 backdrop-blur-md opacity-60 hover:opacity-100 hover:border-white/60 hover:scale-105'
+              {/* NHÃN PHÒNG VIẾT RÕ RÀNG TRÊN PHỐI CẢNH: MẶC ĐỊNH LÀM MỜ, CLICK VÀO THÌ SÁNG RÕ RA */}
+              {currentApartment.hotspots.map((spot) => {
+                const isActive = activeHotspotId === spot.id;
+                return (
+                  <button
+                    key={spot.id}
+                    type="button"
+                    onClick={() => setActiveHotspotId(spot.id)}
+                    className={`absolute z-20 transform -translate-x-1/2 -translate-y-1/2 transition-all duration-300 group/pin focus:outline-none flex items-center gap-1.5 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full text-[11px] sm:text-xs cursor-pointer ${
+                      isActive
+                        ? 'bg-[#0E131C] text-white border-2 border-[#C5A880] shadow-[0_0_25px_rgba(197,168,128,0.8)] scale-110 opacity-100 z-30 font-bold ring-2 ring-[#C5A880]/50'
+                        : 'bg-black/60 text-gray-300 border border-white/20 backdrop-blur-md opacity-60 hover:opacity-100 hover:border-white/60 hover:scale-105'
+                    }`}
+                    style={{ top: `${spot.top}%`, left: `${spot.left}%` }}
+                  >
+                    {/* Chấm tròn nhỏ phát sáng */}
+                    <span
+                      className={`w-2 h-2 rounded-full shrink-0 transition-colors ${
+                        isActive 
+                          ? 'bg-[#C5A880] shadow-[0_0_8px_#C5A880] animate-pulse' 
+                          : 'bg-white/60 group-hover/pin:bg-[#C5A880]'
                       }`}
-                      style={{ top: `${spot.top}%`, left: `${spot.left}%` }}
-                    >
-                      {/* Chấm tròn nhỏ phát sáng */}
-                      <span
-                        className={`w-2 h-2 rounded-full shrink-0 transition-colors ${
-                          isActive 
-                            ? 'bg-[#C5A880] shadow-[0_0_8px_#C5A880] animate-pulse' 
-                            : 'bg-white/60 group-hover/pin:bg-[#C5A880]'
-                        }`}
-                      />
-                      <span className="whitespace-nowrap drop-shadow font-medium">
-                        {spot.label}
-                      </span>
-                    </button>
-                  );
-                })}
+                    />
+                    <span className="whitespace-nowrap drop-shadow font-medium">
+                      {spot.label}
+                    </span>
+                  </button>
+                );
+              })}
 
-                {/* Thẻ chú thích hướng nhìn góc dưới */}
-                <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between gap-2 text-xs">
-                  <div className="bg-[#0A0E17]/90 border border-[#C5A880]/60 px-3 py-1.5 rounded backdrop-blur-md">
-                    <span className="text-[10px] font-mono uppercase text-[#C5A880] font-semibold block">Tầm nhìn thực tế:</span>
-                    <span className="text-white font-medium">{currentApartment.viewDesc}</span>
-                  </div>
-                  <div className="bg-[#0A0E17]/90 border border-gray-700 px-3 py-1.5 rounded backdrop-blur-md text-gray-300 font-mono text-xs hidden sm:block">
-                    Mô hình bóc mái 3D
-                  </div>
+              {/* Thẻ chú thích hướng nhìn góc dưới */}
+              <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between gap-2 text-xs">
+                <div className="bg-[#0A0E17]/90 border border-[#C5A880]/60 px-3 py-1.5 rounded backdrop-blur-md">
+                  <span className="text-[10px] font-mono uppercase text-[#C5A880] font-semibold block">Tầm nhìn thực tế:</span>
+                  <span className="text-white font-medium">{currentApartment.viewDesc}</span>
+                </div>
+                <div className="bg-[#0A0E17]/90 border border-gray-700 px-3 py-1.5 rounded backdrop-blur-md text-gray-300 font-mono text-xs hidden sm:block">
+                  Mô hình bóc mái 3D
                 </div>
               </div>
             </div>
 
-            {/* BẢNG CHÚ GIẢI PHÒNG ĐANG ĐƯỢC CHỌN (SÁNG RÕ CHI TIẾT CÔNG NĂNG) */}
-            <div className="p-4 bg-[#0E131C] border border-[#C5A880]/50 rounded-lg flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs shadow-xl">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-lg bg-[#C5A880]/20 border border-[#C5A880] text-[#C5A880] font-mono font-bold text-xs flex items-center justify-center shrink-0">
+            {/* THANH THÔNG TIN PHÒNG ĐANG CHỌN (GẮN LIỀN VÀO ĐÁY KHUNG 3D, CÂN BẰNG HOÀN TOÀN) */}
+            <div className="p-3.5 sm:p-4 bg-[#121824] border-t border-[#1E293B] flex items-center justify-between gap-3 text-xs shrink-0">
+              <div className="flex items-center gap-3 truncate">
+                <div className="w-9 h-9 rounded-lg bg-[#C5A880]/20 border border-[#C5A880] text-[#C5A880] font-mono font-bold text-xs flex items-center justify-center shrink-0">
                   {activeRoom.code}
                 </div>
-                <div>
-                  <div className="font-bold text-white font-serif text-base flex items-center gap-2">
+                <div className="truncate">
+                  <div className="font-bold text-white font-serif text-sm flex items-center gap-2">
                     <span>{activeRoom.name}</span>
-                    <span className="text-[#C5A880] font-mono text-sm font-semibold">({activeRoom.area})</span>
+                    <span className="text-[#C5A880] font-mono text-xs font-semibold">({activeRoom.area})</span>
                   </div>
-                  <div className="text-gray-300 text-xs font-light mt-0.5 leading-relaxed">
+                  <div className="text-gray-300 text-[11px] font-light truncate mt-0.5">
                     {activeRoom.desc}
                   </div>
                 </div>
               </div>
 
-              <div className="text-[10.5px] font-mono text-emerald-400 shrink-0 self-start sm:self-auto bg-emerald-950/60 border border-emerald-500/40 px-2.5 py-1 rounded">
-                ✓ Đang Xem Phòng Này
+              <div className="text-[10px] font-mono text-emerald-400 shrink-0 bg-emerald-950/60 border border-emerald-500/40 px-2 py-1 rounded">
+                ✓ Đang Xem
               </div>
             </div>
           </div>
 
-          {/* CỘT PHẢI (5 CỘT): BÁO GIÁ, THÔNG SỐ VÀNG & NÚT HÀNH ĐỘNG (ĐÃ BỎ CỤM CƠ CẤU KHÔNG GIAN) */}
-          <div className="lg:col-span-5 space-y-4">
-            <div className="p-5 sm:p-6 bg-[#0E131C] border border-[#C5A880]/50 rounded-lg shadow-2xl space-y-5">
+          {/* CỘT PHẢI (5 CỘT): BÁO GIÁ, THÔNG SỐ VÀNG & NÚT HÀNH ĐỘNG (ĐỒNG BỘ CHIỀU CAO) */}
+          <div className="lg:col-span-5 flex flex-col justify-between h-full p-5 sm:p-6 bg-[#0E131C] border border-[#C5A880]/50 rounded-xl shadow-2xl space-y-5">
+            <div className="space-y-5">
               {/* Tiêu đề căn & Giá niêm yết */}
               <div className="flex items-start justify-between pb-4 border-b border-[#1E293B] gap-2">
                 <div>
@@ -695,33 +693,33 @@ export default function FloorPlanExplorer({ onOpenLogin }: FloorPlanExplorerProp
                   ))}
                 </ul>
               </div>
+            </div>
 
-              {/* 2 NÚT HÀNH ĐỘNG CHÍNH */}
-              <div className="pt-3 space-y-2.5">
-                <button
-                  type="button"
-                  onClick={() => setIsRegisterOpen(true)}
-                  className="w-full py-3.5 bg-[#C5A880] hover:bg-[#D4AF37] text-[#0A0E17] font-bold text-xs tracking-wider uppercase rounded-lg transition-all shadow-lg flex items-center justify-center gap-2"
-                >
-                  <PhoneCall className="w-4 h-4" />
-                  <span>Đăng Ký Tham Quan Căn Hộ Thực Tế</span>
-                </button>
+            {/* 2 NÚT HÀNH ĐỘNG CHÍNH - DOCKED CÂN ĐỐI Ở ĐÁY KHUNG */}
+            <div className="pt-4 border-t border-[#1E293B] space-y-2.5 mt-auto">
+              <button
+                type="button"
+                onClick={() => setIsRegisterOpen(true)}
+                className="w-full py-3.5 bg-[#C5A880] hover:bg-[#D4AF37] text-[#0A0E17] font-bold text-xs tracking-wider uppercase rounded-lg transition-all shadow-lg flex items-center justify-center gap-2"
+              >
+                <PhoneCall className="w-4 h-4" />
+                <span>Đăng Ký Tham Quan Căn Hộ Thực Tế</span>
+              </button>
 
-                <button
-                  type="button"
-                  onClick={() => {
-                    if (onOpenLogin) {
-                      onOpenLogin();
-                    } else {
-                      window.location.href = '/portal';
-                    }
-                  }}
-                  className="w-full py-2.5 bg-[#121824] hover:bg-[#1A2232] border border-[#2A374A] hover:border-[#C5A880]/60 text-gray-300 hover:text-white text-xs font-semibold tracking-wider uppercase rounded-lg transition-all flex items-center justify-center gap-2"
-                >
-                  <Sparkles className="w-3.5 h-3.5 text-[#C5A880]" />
-                  <span>Đăng Nhập Portal Ban Quản Lý / Cư Dân</span>
-                </button>
-              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  if (onOpenLogin) {
+                    onOpenLogin();
+                  } else {
+                    window.location.href = '/portal';
+                  }
+                }}
+                className="w-full py-2.5 bg-[#121824] hover:bg-[#1A2232] border border-[#2A374A] hover:border-[#C5A880]/60 text-gray-300 hover:text-white text-xs font-semibold tracking-wider uppercase rounded-lg transition-all flex items-center justify-center gap-2"
+              >
+                <Sparkles className="w-3.5 h-3.5 text-[#C5A880]" />
+                <span>Đăng Nhập Portal Ban Quản Lý / Cư Dân</span>
+              </button>
             </div>
           </div>
         </div>
