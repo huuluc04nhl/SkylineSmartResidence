@@ -33,9 +33,11 @@ export default function HeroSection({ onOpenLogin }: HeroSectionProps) {
           : 'bg-gradient-to-r from-[#F8FAFC] via-[#F8FAFC]/90 to-transparent'
       }`}></div>
 
-      <div className="relative z-10 max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+      <div className={`relative z-10 max-w-7xl mx-auto px-6 grid grid-cols-1 ${
+        isAuthenticated && currentUser ? 'lg:grid-cols-12 gap-12' : 'gap-8'
+      } items-center`}>
         {/* Left Column: Architectural Editorial Text */}
-        <div className="lg:col-span-8 space-y-8">
+        <div className={`${isAuthenticated && currentUser ? 'lg:col-span-8' : 'lg:col-span-12 max-w-4xl'} space-y-8`}>
           <div className={`inline-flex items-center gap-2.5 px-3 py-1.5 border text-[11px] uppercase tracking-[0.25em] font-medium backdrop-blur-sm rounded-none ${
             isDark 
               ? 'border-[#C5A880]/40 text-[#C5A880] bg-[#0D1117]/80' 
@@ -127,57 +129,61 @@ export default function HeroSection({ onOpenLogin }: HeroSectionProps) {
           </div>
         </div>
 
-        {/* Right Column: Architectural Visual Card */}
-        <div className="lg:col-span-4 hidden lg:block">
-          <div className={`border p-6 space-y-4 shadow-2xl rounded-none transition-colors ${
-            isDark 
-              ? 'border-[#2D3748] bg-[#121820]' 
-              : 'border-gray-200 bg-white shadow-xl'
-          }`}>
-            <div className={`text-[11px] uppercase tracking-[0.2em] text-[#C5A880] font-semibold border-b pb-3 flex items-center justify-between ${
-              isDark ? 'border-[#222B35]' : 'border-gray-100'
+        {/* Right Column: Chỉ hiển thị Thẻ Định Danh / Phiên Cư Dân khi ĐÃ ĐĂNG NHẬP */}
+        {isAuthenticated && currentUser && (
+          <div className="lg:col-span-4 hidden lg:block">
+            <div className={`border p-6 space-y-4 shadow-2xl rounded-none transition-colors ${
+              isDark 
+                ? 'border-[#2D3748] bg-[#121820]' 
+                : 'border-gray-200 bg-white shadow-xl'
             }`}>
-              <span>Định Danh Tòa Nhà</span>
-              <span className="text-gray-400 font-mono">ID: SKY-01</span>
-            </div>
-            
-            <div className="space-y-3 text-sm">
-              <div className={`flex justify-between py-1.5 border-b ${isDark ? 'border-[#1E2631]' : 'border-gray-100'}`}>
-                <span className={isDark ? 'text-gray-400' : 'text-gray-500'}>Vị Trí:</span>
-                <span className={`font-medium text-right text-xs sm:text-sm ${isDark ? 'text-white' : 'text-gray-900'}`}>
-                  128 Bến Vân Đồn, Q.4, TP.HCM
-                </span>
+              <div className={`text-[11px] uppercase tracking-[0.2em] text-[#C5A880] font-semibold border-b pb-3 flex items-center justify-between ${
+                isDark ? 'border-[#222B35]' : 'border-gray-100'
+              }`}>
+                <span>Thông Tin Phiên Đăng Nhập</span>
+                <span className="text-gray-400 font-mono">ID: {currentUser.apartment_code || 'SKY-01'}</span>
               </div>
-              <div className={`flex justify-between py-1.5 border-b ${isDark ? 'border-[#1E2631]' : 'border-gray-100'}`}>
-                <span className={isDark ? 'text-gray-400' : 'text-gray-500'}>Loại hình căn:</span>
-                <span className={`font-medium text-right text-xs ${isDark ? 'text-white' : 'text-gray-900'}`}>
-                  1PN, 2PN, 3PN &amp; Duplex
-                </span>
+              
+              <div className="space-y-3 text-sm">
+                <div className={`flex justify-between py-1.5 border-b ${isDark ? 'border-[#1E2631]' : 'border-gray-100'}`}>
+                  <span className={isDark ? 'text-gray-400' : 'text-gray-500'}>Họ và tên:</span>
+                  <span className={`font-semibold text-right text-xs sm:text-sm ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                    {currentUser.full_name}
+                  </span>
+                </div>
+                <div className={`flex justify-between py-1.5 border-b ${isDark ? 'border-[#1E2631]' : 'border-gray-100'}`}>
+                  <span className={isDark ? 'text-gray-400' : 'text-gray-500'}>Vai trò:</span>
+                  <span className="font-semibold text-right text-xs text-[#C5A880]">
+                    {currentUser.role === 'ADMIN' ? 'Ban Quản Lý Tòa Nhà' : currentUser.role === 'TECHNICIAN' ? 'Kỹ Thuật Viên' : `Chủ Hộ Căn ${currentUser.apartment_code || '12A05'}`}
+                  </span>
+                </div>
+                <div className={`flex justify-between py-1.5 border-b ${isDark ? 'border-[#1E2631]' : 'border-gray-100'}`}>
+                  <span className={isDark ? 'text-gray-400' : 'text-gray-500'}>Vị Trí:</span>
+                  <span className={`font-medium text-right text-xs sm:text-sm ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                    128 Bến Vân Đồn, Q.4, TP.HCM
+                  </span>
+                </div>
+                <div className="flex justify-between py-1.5">
+                  <span className={isDark ? 'text-gray-400' : 'text-gray-500'}>Trạng thái:</span>
+                  <span className="font-medium text-emerald-500 flex items-center gap-1.5 text-xs">
+                    <span className="w-2 h-2 bg-emerald-500 rounded-none animate-pulse"></span>
+                    Đang Hoạt Động
+                  </span>
+                </div>
               </div>
-              <div className={`flex justify-between py-1.5 border-b ${isDark ? 'border-[#1E2631]' : 'border-gray-100'}`}>
-                <span className={isDark ? 'text-gray-400' : 'text-gray-500'}>Kiểm soát an ninh:</span>
-                <span className="font-medium text-[#C5A880]">Vision AI CCTV 24/7</span>
-              </div>
-              <div className="flex justify-between py-1.5">
-                <span className={isDark ? 'text-gray-400' : 'text-gray-500'}>Quản lý bãi đỗ:</span>
-                <span className={`font-medium ${isDark ? 'text-white' : 'text-gray-900'}`}>
-                  Camera Quét Biển Số &amp; Barrier
-                </span>
-              </div>
-            </div>
 
-            <div className="pt-2">
-              <button
-                type="button"
-                onClick={() => onOpenLogin('OWNER')}
-                className="w-full py-3 bg-[#1C2533] border border-[#C5A880]/50 text-[#C5A880] text-[11px] uppercase tracking-[0.18em] font-semibold hover:bg-[#C5A880] hover:text-[#0D1117] transition-all flex items-center justify-center gap-2 rounded-none cursor-pointer shadow-md"
-              >
-                <ShieldCheck className="w-4 h-4" />
-                Vào Không Gian Căn Hộ 12A05
-              </button>
+              <div className="pt-2">
+                <Link
+                  href="/portal"
+                  className="w-full py-3 bg-[#C5A880] hover:bg-[#D4AF37] text-[#0D1117] text-[11px] uppercase tracking-[0.18em] font-bold transition-all flex items-center justify-center gap-2 rounded-none cursor-pointer shadow-md"
+                >
+                  <LayoutDashboard className="w-4 h-4" />
+                  Vào Bảng Điều Khiển Căn Hộ
+                </Link>
+              </div>
             </div>
           </div>
-        </div>
+        )}
       </div>
     </section>
   );
