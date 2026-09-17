@@ -270,6 +270,31 @@ export async function skylineRemoveFamilyMember(memberId: string): Promise<{ suc
 export const nksRemoveFamilyMember = skylineRemoveFamilyMember;
 
 /**
+ * 10b. Update Family Member API (PUT /api/user/family)
+ */
+export async function skylineUpdateFamilyMember(payload: {
+  memberId: string;
+  relationship?: string;
+  licensePlate?: string;
+  fullName?: string;
+  phone?: string;
+  idCard?: string;
+}): Promise<{ success: boolean; message: string; members: any[] }> {
+  const res = await fetch('/api/user/family', {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+
+  if (!res.ok) {
+    throw new Error('Skyline UpdateFamily API failed');
+  }
+
+  return await res.json();
+}
+export const nksUpdateFamilyMember = skylineUpdateFamilyMember;
+
+/**
  * 11. FaceID Biometric Login API (POST /api/user/face-login)
  */
 export async function skylineFaceLogin(payload: {
@@ -358,13 +383,14 @@ export const nksEnrollFaceId = skylineEnrollFaceId;
 /**
  * 12b. Chủ hộ xác nhận hồ sơ FaceID của người nhà và gửi BQL
  */
-export async function skylineConfirmFamilyFaceIdByOwner(userId: string, apartmentCode?: string): Promise<{ success: boolean; message: string; profile?: any }> {
+export async function skylineConfirmFamilyFaceIdByOwner(userId: string, apartmentCode?: string, phone?: string): Promise<{ success: boolean; message: string; profile?: any }> {
   const res = await fetch('/api/user/face-enroll', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
       action: 'CONFIRM_BY_OWNER',
       userId,
+      phone,
       apartmentCode,
     }),
   });

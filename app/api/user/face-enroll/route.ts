@@ -60,7 +60,19 @@ export async function POST(req: Request) {
     // CASE 1: CHỦ HỘ XÁC NHẬN HỒ SƠ FACEID CỦA NGƯỜI NHÀ ĐỂ GỬI BQL
     // =========================================================================
     if (action === 'CONFIRM_BY_OWNER') {
-      const existingProfile = getEnrolledFaceProfile(userId);
+      let existingProfile = getEnrolledFaceProfile(userId);
+      if (!existingProfile && phone) {
+        existingProfile = getEnrolledFaceProfile(phone);
+      }
+      if (!existingProfile) {
+        const all = getAllEnrolledFaceProfiles();
+        existingProfile = all.find(p => 
+          (p.userId && p.userId.toLowerCase().trim() === userId.toLowerCase().trim()) ||
+          (p.phone && phone && p.phone.trim() === phone.trim()) ||
+          (p.phone && p.phone.trim() === userId.trim())
+        ) || null;
+      }
+
       if (!existingProfile) {
         return NextResponse.json(
           { success: false, message: 'Không tìm thấy hồ sơ mẫu FaceID cần xác nhận.' },
@@ -77,6 +89,11 @@ export async function POST(req: Request) {
       updateApartmentMember(targetApt, userId, {
         faceStatus: 'Đang Chờ BQL Phê Duyệt',
       });
+      if (existingProfile.phone && existingProfile.phone !== userId) {
+        updateApartmentMember(targetApt, existingProfile.phone, {
+          faceStatus: 'Đang Chờ BQL Phê Duyệt',
+        });
+      }
 
       const existingUser = getUserStore(userId);
       try {

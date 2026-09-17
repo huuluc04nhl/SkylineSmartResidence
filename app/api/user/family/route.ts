@@ -3,6 +3,7 @@ import { cookies } from 'next/headers';
 import { 
   getApartmentMembers, 
   addApartmentMember, 
+  updateApartmentMember,
   removeApartmentMember, 
   ApartmentMember,
   extractUserIdFromToken,
@@ -233,6 +234,74 @@ export async function DELETE(req: Request) {
   } catch (error) {
     return NextResponse.json(
       { success: false, message: 'Lỗi xóa thành viên gia đình.' },
+      { status: 500 }
+    );
+  }
+}
+
+/**
+ * PUT /api/user/family
+ * Update member details (relationship, licensePlate, phone, CCCD, fullName)
+ */
+export async function PUT(req: Request) {
+  try {
+    const cookieStore = cookies();
+    const token = cookieStore.get('nks_token')?.value || '';
+    const userId = extractUserIdFromToken(token);
+    const currentUser = userId ? getUserStore(userId) : getUserStore('user-owner-1');
+    const aptCode = currentUser?.apartment_code || '12A05';
+
+    const body = await req.json();
+    const { 
+      memberId, 
+      relationship, 
+      licensePlate, 
+      fullName, 
+      phone, 
+      idCard 
+    } = body;
+
+    if (!memberId) {
+      return NextResponse.json(
+        { success: false, message: 'Thiếu ID thành viên cần cập nhật.' },
+        { status: 400 }
+      );
+    }
+
+    const updates: Partial<ApartmentMember> = {};
+    if (relationship !== undefined) updates.relationship = relationship;
+    if (licensePlate !== undefined) updates.licensePlate = licensePlate.trim();
+    if (fullName !== undefined && fullName.trim()) updates.fullName = fullName.trim();
+    if (phone !== undefined && phone.trim()) updates.phone = phone.trim();
+    if (idCard !== undefined && idCard.trim()) updates.idCard = idCard.trim();
+
+    // 1. Update apartment member store
+    const updated = updateApartmentMember(aptCode, memberId, updates);
+
+    // 2. Also update in userStore if matched
+    try {
+      const liveUser = getUserStore(memberId);
+      if (liveUser && liveUser.id) {
+        updateUserStore(liveUser.id, {
+          relationship: updates.relationship || liveUser.relationship,
+          license_plate: updates.licensePlate !== undefined ? updates.licensePlate : liveUser.license_plate,
+          full_name: updates.fullName || liveUser.full_name,
+          phone: updates.phone || liveUser.phone,
+          id_card_no: updates.idCard || liveUser.id_card_no,
+        });
+      }
+    } catch (e) {
+      // ignore
+    }
+
+    return NextResponse.json({
+      success: true,
+      message: 'Cập nhật thông tin thành viên thành công.',
+      members: updated,
+    });
+  } catch (error) {
+    return NextResponse.json(
+      { success: false, message: 'Lỗi khi cập nhật thông tin thành viên.' },
       { status: 500 }
     );
   }
