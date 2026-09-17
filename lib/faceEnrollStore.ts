@@ -160,9 +160,9 @@ export function saveEnrolledFaceProfile(profile: EnrolledFaceProfile): void {
 }
 
 /**
- * Cập nhật trạng thái phê duyệt FaceID (ACTIVE / PENDING / REVOKED)
+ * Cập nhật trạng thái phê duyệt FaceID (ACTIVE / PENDING / PENDING_OWNER / REVOKED)
  */
-export function updateEnrolledFaceStatus(userId: string, status: 'ACTIVE' | 'PENDING' | 'REVOKED'): EnrolledFaceProfile | null {
+export function updateEnrolledFaceStatus(userId: string, status: 'ACTIVE' | 'PENDING' | 'PENDING_OWNER' | 'REVOKED'): EnrolledFaceProfile | null {
   const profile = getEnrolledFaceProfile(userId);
   if (!profile) return null;
 

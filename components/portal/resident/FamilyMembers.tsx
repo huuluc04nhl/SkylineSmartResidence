@@ -37,7 +37,8 @@ import {
   nksGetFamilyMembers, 
   nksAddFamilyMember, 
   nksRemoveFamilyMember, 
-  nksSearchFamilyAccount 
+  nksSearchFamilyAccount,
+  nksConfirmFamilyFaceIdByOwner 
 } from '@/lib/nksApiClient';
 import { 
   getEkycForUser, 
@@ -97,6 +98,8 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
   const [actionSuccess, setActionSuccess] = useState<string | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
   const [bankEnrollTarget, setBankEnrollTarget] = useState<FamilyMemberItem | null>(null);
+  const [confirmTargetMember, setConfirmTargetMember] = useState<FamilyMemberItem | null>(null);
+  const [isConfirmingFace, setIsConfirmingFace] = useState<boolean>(false);
 
   // Selected Account from API
   const [selectedAccount, setSelectedAccount] = useState<BqlEligibleAccount | null>(null);
@@ -164,7 +167,11 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
   };
 
   // Helper to normalize unified e-KYC status
-  const getMemberStatus = (m: FamilyMemberItem): 'APPROVED' | 'PENDING' | 'REJECTED' | 'NOT_SUBMITTED' => {
+  const getMemberStatus = (m: FamilyMemberItem): 'APPROVED' | 'PENDING' | 'REJECTED' | 'NOT_SUBMITTED' | 'PENDING_OWNER' => {
+    const profile = getEnrolledFaceProfile(m.phone || m.id || m.username || '');
+    if (m.faceStatus?.includes('Chờ Chủ Hộ') || m.faceStatus?.includes('Chờ chủ hộ') || profile?.status === 'PENDING_OWNER') {
+      return 'PENDING_OWNER';
+    }
     const ekyc = getMemberEkyc(m);
     if (ekyc?.status === 'APPROVED' || ekyc?.status === 'VERIFIED') return 'APPROVED';
     if (ekyc?.status === 'PENDING') return 'PENDING';
@@ -757,15 +764,20 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
                           {m.relationship || 'Người Nhà / Gia Đình'}
                         </span>
 
-                        {/* e-KYC Status Badges */}
+                        {/* e-KYC & FaceID Status Badges */}
+                        {ekycStatus === 'PENDING_OWNER' && (
+                          <span className="px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded-none border bg-amber-950/90 text-amber-300 border-amber-500/80 flex items-center gap-1 shadow-sm animate-pulse flex-shrink-0">
+                            <Clock className="w-3 h-3 text-amber-400" /> Chờ Chủ Hộ Xác Nhận (Đã Có 4 Mẫu)
+                          </span>
+                        )}
                         {ekycStatus === 'APPROVED' && (
                           <span className="px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded-none border bg-emerald-950/90 text-emerald-300 border-emerald-500/80 flex items-center gap-1 shadow-sm flex-shrink-0">
                             <CheckCircle2 className="w-3 h-3 text-emerald-400" /> Đã Kích Hoạt FaceID
                           </span>
                         )}
                         {ekycStatus === 'PENDING' && (
-                          <span className="px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded-none border bg-amber-950/90 text-amber-300 border-amber-500/80 flex items-center gap-1 shadow-sm animate-pulse flex-shrink-0">
-                            <Clock className="w-3 h-3 text-amber-400" /> Đang Chờ BQL Phê Duyệt
+                          <span className="px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded-none border bg-cyan-950/90 text-cyan-300 border-cyan-500/80 flex items-center gap-1 shadow-sm animate-pulse flex-shrink-0">
+                            <Clock className="w-3 h-3 text-cyan-400" /> Đang Chờ BQL Phê Duyệt
                           </span>
                         )}
                         {ekycStatus === 'REJECTED' && (
@@ -780,7 +792,7 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
                         )}
                         {/* 4-Step Banking FaceID Badge */}
                         {getEnrolledFaceProfile(m.phone || m.id || m.username || '') ? (
-                          <span className="px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded-none border bg-cyan-950/90 text-cyan-300 border-cyan-500/80 flex items-center gap-1 shadow-sm flex-shrink-0">
+                          <span className="px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded-none border bg-[#161D26] text-cyan-300 border-cyan-500/80 flex items-center gap-1 shadow-sm flex-shrink-0">
                             <ScanFace className="w-3 h-3 text-cyan-400" /> FaceID 4/4 Mẫu ✓
                           </span>
                         ) : (
@@ -823,12 +835,45 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
                           Phân quyền: Sảnh A/B • Thang máy Tầng 12 • Hầm gửi xe B1/B2
                         </span>
                       </div>
+
+                      {/* Owner Alert: Member completed 4 samples, waiting for Owner confirmation */}
+                      {isOwner && ekycStatus === 'PENDING_OWNER' && (
+                        <div className="p-2.5 bg-amber-950/60 border border-amber-500/80 text-xs text-amber-200 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 rounded-none animate-fadeIn">
+                          <div className="flex items-center gap-2">
+                            <Sparkles className="w-4 h-4 text-amber-400 flex-shrink-0" />
+                            <span>
+                              <strong>{m.fullName}</strong> đã tự quét đủ 4 mẫu FaceID • Chờ bạn kiểm tra & xác nhận bảo lãnh để gửi Ban Quản Lý phê duyệt.
+                            </span>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => setConfirmTargetMember(m)}
+                            className="px-3 py-1 bg-[#C5A880] hover:bg-white text-[#0D1117] text-xs font-bold uppercase tracking-wider rounded-none flex items-center gap-1.5 flex-shrink-0 shadow cursor-pointer transition-all active:scale-95"
+                          >
+                            <ShieldCheck className="w-3.5 h-3.5" /> Xác Nhận Ngay
+                          </button>
+                        </div>
+                      )}
                     </div>
                   </div>
 
-                  {/* Actions for Owner */}
-                  <div className="flex items-center gap-2.5 w-full md:w-auto justify-start md:justify-end pt-2 md:pt-0 border-t md:border-t-0 border-[#222B35]/60 flex-shrink-0">
-                    {isOwner && (
+                  {/* Actions for Owner & Family Member Self-update */}
+                  <div className="flex flex-wrap items-center gap-2.5 w-full md:w-auto justify-start md:justify-end pt-2 md:pt-0 border-t md:border-t-0 border-[#222B35]/60 flex-shrink-0">
+                    {/* Owner Confirm Button when Member is PENDING_OWNER */}
+                    {isOwner && ekycStatus === 'PENDING_OWNER' && (
+                      <button
+                        type="button"
+                        onClick={() => setConfirmTargetMember(m)}
+                        className="px-3.5 py-2 text-xs font-bold rounded-none flex items-center gap-1.5 transition-all shadow cursor-pointer active:scale-95 bg-gradient-to-r from-amber-600 to-[#C5A880] hover:brightness-110 text-[#0D1117]"
+                        title="Xem 4 góc mẫu và xác nhận gửi Ban Quản Lý"
+                      >
+                        <ShieldCheck className="w-4 h-4" />
+                        <span>Xem 4 Mẫu & Xác Nhận Gửi BQL</span>
+                      </button>
+                    )}
+
+                    {/* FaceID Scanning Button (Owner for all members, OR Family Member for their own card) */}
+                    {(isOwner || (m.id === currentUser.id || m.phone === currentUser.phone || m.username === currentUser.username)) && (
                       <button
                         type="button"
                         onClick={() => setBankEnrollTarget(m)}
@@ -841,9 +886,9 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
                       >
                         <Camera className="w-3.5 h-3.5" />
                         <span>
-                          {getEnrolledFaceProfile(m.phone || m.id || m.username || '')
-                            ? 'Quét Lại FaceID 4 Bước'
-                            : 'Quét Mẫu FaceID 4 Bước'}
+                          {!isOwner && (m.id === currentUser.id || m.phone === currentUser.phone || m.username === currentUser.username)
+                            ? (getEnrolledFaceProfile(m.phone || m.id || m.username || '') ? 'Quét Lại FaceID Của Tôi' : 'Tự Quét FaceID Của Tôi')
+                            : (getEnrolledFaceProfile(m.phone || m.id || m.username || '') ? 'Quét Lại FaceID 4 Bước' : 'Quét Mẫu FaceID 4 Bước')}
                         </span>
                       </button>
                     )}
@@ -1653,14 +1698,182 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
           fullName={bankEnrollTarget.fullName}
           apartmentCode={aptCode}
           phone={bankEnrollTarget.phone || ''}
+          isFamilyMemberSelfEnroll={!isOwner}
+          submittedByRole={currentUser.role}
           onEnrollSuccess={() => {
             fetchMembers();
-            setActionSuccess(`✓ Đã thu thập đủ 4 mẫu FaceID chuẩn ngân hàng cho ${bankEnrollTarget.fullName}!`);
-            setTimeout(() => setActionSuccess(null), 4000);
+            setActionSuccess(
+              !isOwner
+                ? `✓ Đã thu thập đủ 4 mẫu FaceID cho ${bankEnrollTarget.fullName}! Hồ sơ đang chờ Chủ Hộ xác nhận.`
+                : `✓ Đã thu thập đủ 4 mẫu FaceID chuẩn ngân hàng cho ${bankEnrollTarget.fullName}!`
+            );
+            setTimeout(() => setActionSuccess(null), 5000);
             setBankEnrollTarget(null);
           }}
         />
       )}
+
+      {/* MODAL: CHỦ HỘ KIỂM TRA 4 MẪU FACEID CỦA NGƯỜI NHÀ VÀ XÁC NHẬN GỬI BQL */}
+      {confirmTargetMember && (() => {
+        const enrolled = getEnrolledFaceProfile(confirmTargetMember.phone || confirmTargetMember.id || confirmTargetMember.username || '');
+        const samples = enrolled?.samples;
+
+        const handleConfirmAndSendToBql = async () => {
+          setIsConfirmingFace(true);
+          try {
+            await nksConfirmFamilyFaceIdByOwner(confirmTargetMember.id || confirmTargetMember.phone || '', aptCode);
+            setActionSuccess(`✓ Đã xác nhận bảo lãnh hồ sơ FaceID cho thành viên "${confirmTargetMember.fullName}" và gửi Ban Quản Lý phê duyệt thành công!`);
+            setTimeout(() => setActionSuccess(null), 5000);
+            setConfirmTargetMember(null);
+            fetchMembers();
+          } catch (err: any) {
+            setActionError(err?.message || 'Lỗi khi xác nhận hồ sơ FaceID.');
+            setTimeout(() => setActionError(null), 5000);
+          } finally {
+            setIsConfirmingFace(false);
+          }
+        };
+
+        return (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/80 backdrop-blur-sm animate-fadeIn">
+            <div className="relative w-full max-w-2xl bg-[#0D1117] border border-[#C5A880] text-white shadow-2xl p-5 sm:p-6 space-y-5 rounded-none max-h-[95vh] overflow-y-auto">
+              {/* Header */}
+              <div className="flex items-center justify-between border-b border-[#222B35] pb-3">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-8 h-8 bg-[#161D26] border border-[#C5A880] flex items-center justify-center text-[#C5A880]">
+                    <ShieldCheck className="w-4 h-4 text-[#C5A880]" />
+                  </div>
+                  <div>
+                    <div className="text-[10px] font-mono uppercase tracking-widest text-[#C5A880] font-bold">
+                      Quyền Phê Duyệt Chủ Hộ • Căn Hộ {aptCode}
+                    </div>
+                    <h3 className="text-base font-serif font-bold text-white">
+                      Xác Nhận 4 Mẫu FaceID Của Người Nhà: {confirmTargetMember.fullName}
+                    </h3>
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => setConfirmTargetMember(null)}
+                  className="text-gray-400 hover:text-white p-1"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              {/* Member Brief Info */}
+              <div className="p-3.5 bg-[#161B22] border border-[#222B35] text-xs grid grid-cols-2 sm:grid-cols-4 gap-3">
+                <div>
+                  <span className="text-gray-400 block text-[11px]">Thành viên:</span>
+                  <strong className="text-white">{confirmTargetMember.fullName}</strong>
+                </div>
+                <div>
+                  <span className="text-gray-400 block text-[11px]">Quan hệ:</span>
+                  <span className="text-[#C5A880] font-semibold">{confirmTargetMember.relationship}</span>
+                </div>
+                <div>
+                  <span className="text-gray-400 block text-[11px]">Số điện thoại:</span>
+                  <span className="font-mono text-gray-200">{confirmTargetMember.phone}</span>
+                </div>
+                <div>
+                  <span className="text-gray-400 block text-[11px]">Số CCCD:</span>
+                  <span className="font-mono text-gray-200">{confirmTargetMember.idCard || 'Đang cập nhật'}</span>
+                </div>
+              </div>
+
+              {/* 4 Angle Samples Display */}
+              <div className="space-y-2">
+                <div className="text-xs font-semibold text-gray-300 flex items-center justify-between">
+                  <span className="flex items-center gap-1.5">
+                    <Camera className="w-4 h-4 text-[#C5A880]" /> 4 Mẫu Khuôn Mặt Người Nhà Đã Thu Thập:
+                  </span>
+                  <span className="text-[10px] text-emerald-400 font-mono">
+                    Độ khớp sinh trắc: {enrolled?.faceScore || 99.4}%
+                  </span>
+                </div>
+
+                {samples ? (
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+                    <div className="p-2 bg-[#121820] border border-gray-700 text-center space-y-1">
+                      <div className="text-[10px] font-mono text-[#C5A880]">1. Chính Diện</div>
+                      <div className="aspect-square bg-black border border-gray-800 overflow-hidden">
+                        <img src={samples.front} alt="Front" className="w-full h-full object-cover" />
+                      </div>
+                    </div>
+
+                    <div className="p-2 bg-[#121820] border border-gray-700 text-center space-y-1">
+                      <div className="text-[10px] font-mono text-[#C5A880]">2. Quay Trái</div>
+                      <div className="aspect-square bg-black border border-gray-800 overflow-hidden">
+                        <img src={samples.left} alt="Left" className="w-full h-full object-cover" />
+                      </div>
+                    </div>
+
+                    <div className="p-2 bg-[#121820] border border-gray-700 text-center space-y-1">
+                      <div className="text-[10px] font-mono text-[#C5A880]">3. Quay Phải</div>
+                      <div className="aspect-square bg-black border border-gray-800 overflow-hidden">
+                        <img src={samples.right} alt="Right" className="w-full h-full object-cover" />
+                      </div>
+                    </div>
+
+                    <div className="p-2 bg-[#121820] border border-gray-700 text-center space-y-1">
+                      <div className="text-[10px] font-mono text-[#C5A880]">4. Mỉm Cười</div>
+                      <div className="aspect-square bg-black border border-gray-800 overflow-hidden">
+                        <img src={samples.smile} alt="Smile" className="w-full h-full object-cover" />
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="p-6 bg-[#161B22] border border-gray-800 text-center text-xs text-gray-400">
+                    Chưa tìm thấy mẫu ảnh quét của thành viên này trên máy chủ.
+                  </div>
+                )}
+              </div>
+
+              {/* Owner Legal Responsibility Notice */}
+              <div className="p-3 bg-[#161B22] border border-[#222B35] text-[11px] text-gray-300 space-y-1">
+                <div className="font-bold text-[#C5A880] flex items-center gap-1.5">
+                  <ShieldCheck className="w-3.5 h-3.5" /> Trách Nhiệm Bảo Lãnh Của Chủ Hộ:
+                </div>
+                <p className="text-gray-400">
+                  Khi bấm &quot;Xác Nhận Bảo Lãnh & Gửi BQL&quot;, bạn xác nhận thành viên trên thuộc diện cư trú hợp pháp tại căn hộ <strong>{aptCode}</strong> và cho phép cấp quyền nhận diện khuôn mặt mở cửa ra vào tòa nhà.
+                </p>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex flex-col sm:flex-row items-center justify-end gap-3 pt-3 border-t border-[#222B35]">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setConfirmTargetMember(null);
+                    setBankEnrollTarget(confirmTargetMember);
+                  }}
+                  className="w-full sm:w-auto px-4 py-2.5 bg-[#161B22] hover:bg-[#202936] text-gray-300 hover:text-white border border-[#2D3748] text-xs font-semibold rounded-none transition-colors"
+                >
+                  Yêu Cầu Quét Lại / Quét Hộ
+                </button>
+
+                <button
+                  type="button"
+                  onClick={handleConfirmAndSendToBql}
+                  disabled={isConfirmingFace || !samples}
+                  className="w-full sm:w-auto px-6 py-2.5 bg-[#C5A880] hover:bg-white text-[#0D1117] text-xs font-bold uppercase tracking-wider rounded-none flex items-center justify-center gap-2 transition-all shadow-lg active:scale-95 disabled:opacity-50"
+                >
+                  {isConfirmingFace ? (
+                    <>
+                      <RefreshCw className="w-4 h-4 animate-spin" /> Đang Chuyển Tới Ban Quản Lý...
+                    </>
+                  ) : (
+                    <>
+                      <ShieldCheck className="w-4 h-4" /> Xác Nhận Bảo Lãnh & Gửi BQL Phê Duyệt
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+          </div>
+        );
+      })()}
 
     </div>
   );

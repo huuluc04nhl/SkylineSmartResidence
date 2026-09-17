@@ -331,13 +331,15 @@ export async function skylineEnrollFaceId(payload: {
   fullName?: string;
   apartmentCode?: string;
   phone?: string;
+  isFamilyMemberSelfEnroll?: boolean;
+  submittedByRole?: string;
   samples: {
     front: string;
     left: string;
     right: string;
     smile: string;
   };
-}): Promise<{ success: boolean; message: string; profile?: any }> {
+}): Promise<{ success: boolean; message: string; profile?: any; status?: string }> {
   const res = await fetch('/api/user/face-enroll', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -352,6 +354,29 @@ export async function skylineEnrollFaceId(payload: {
   return data;
 }
 export const nksEnrollFaceId = skylineEnrollFaceId;
+
+/**
+ * 12b. Chủ hộ xác nhận hồ sơ FaceID của người nhà và gửi BQL
+ */
+export async function skylineConfirmFamilyFaceIdByOwner(userId: string, apartmentCode?: string): Promise<{ success: boolean; message: string; profile?: any }> {
+  const res = await fetch('/api/user/face-enroll', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      action: 'CONFIRM_BY_OWNER',
+      userId,
+      apartmentCode,
+    }),
+  });
+
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok || !data.success) {
+    throw new Error(data.message || 'Lỗi khi chủ hộ xác nhận FaceID.');
+  }
+
+  return data;
+}
+export const nksConfirmFamilyFaceIdByOwner = skylineConfirmFamilyFaceIdByOwner;
 
 /**
  * 13. Lấy hồ sơ 4 mẫu FaceID đã đăng ký từ Server (GET /api/user/face-enroll)

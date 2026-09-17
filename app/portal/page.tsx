@@ -217,6 +217,7 @@ function PortalContent() {
                 {activeModule === 'resident-smarthome' && <SmartHomeHub currentUser={currentUser} />}
                 {activeModule === 'resident-facilities' && <SmartFacilityPass currentUser={currentUser} />}
                 {activeModule === 'resident-tickets' && <TicketService />}
+                {activeModule === 'resident-family' && <FamilyMembers currentUser={currentUser} />}
                 {activeModule === 'resident-ai-assistant' && (
                   <AiConciergePage
                     currentUser={currentUser}
@@ -229,12 +230,11 @@ function PortalContent() {
                   <>
                     {activeModule === 'resident-finance' && <FinanceBilling />}
                     {activeModule === 'resident-surveys' && <SurveysVoting />}
-                    {activeModule === 'resident-family' && <FamilyMembers currentUser={currentUser} />}
                   </>
                 )}
 
                 {/* Resident Member Limited Warning if attempting to access Owner-only features */}
-                {currentUser.role === 'TENANT' && (activeModule === 'resident-finance' || activeModule === 'resident-surveys' || activeModule === 'resident-family') && (
+                {currentUser.role === 'TENANT' && (activeModule === 'resident-finance' || activeModule === 'resident-surveys') && (
                   <div className="p-10 bg-[#121820] border border-[#C5A880]/80 text-center space-y-4 max-w-2xl mx-auto my-12 shadow-2xl animate-fadeIn">
                     <ShieldAlert className="w-12 h-12 text-[#C5A880] mx-auto" />
                     <h3 className="font-serif text-xl font-bold text-white">

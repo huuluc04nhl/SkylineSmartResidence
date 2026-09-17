@@ -36,6 +36,8 @@ interface BankFaceEnrollModalProps {
   fullName: string;
   apartmentCode: string;
   phone?: string;
+  isFamilyMemberSelfEnroll?: boolean;
+  submittedByRole?: string;
   onEnrollSuccess?: (profile: EnrolledFaceProfile) => void;
 }
 
@@ -97,6 +99,8 @@ export default function BankFaceEnrollModal({
   fullName,
   apartmentCode,
   phone,
+  isFamilyMemberSelfEnroll,
+  submittedByRole,
   onEnrollSuccess,
 }: BankFaceEnrollModalProps) {
   const [currentStepIndex, setCurrentStepIndex] = useState<number>(0);
@@ -418,6 +422,8 @@ export default function BankFaceEnrollModal({
         fullName,
         apartmentCode,
         phone,
+        isFamilyMemberSelfEnroll,
+        submittedByRole,
         samples: {
           front: samples.front,
           left: samples.left,
@@ -446,6 +452,9 @@ export default function BankFaceEnrollModal({
         }
       }
 
+      const isPendingOwner = isFamilyMemberSelfEnroll || (submittedByRole === 'TENANT');
+      const targetStatus: 'PENDING_OWNER' | 'PENDING' = (res as any)?.status || (isPendingOwner ? 'PENDING_OWNER' : 'PENDING');
+
       const fullProfile: EnrolledFaceProfile = {
         userId,
         fullName: fullName || 'Cư Dân Skyline',
@@ -460,7 +469,9 @@ export default function BankFaceEnrollModal({
         },
         descriptor: Array.from(compositeDesc),
         enrolledAt: new Date().toISOString(),
-        status: 'PENDING', // Đặt trạng thái PENDING - Chờ Ban Quản Lý phê duyệt
+        status: targetStatus,
+        confirmedByOwner: !isPendingOwner,
+        confirmedByOwnerAt: !isPendingOwner ? new Date().toISOString() : undefined,
         faceScore: 99.4,
       };
 
@@ -473,7 +484,7 @@ export default function BankFaceEnrollModal({
 
       setTimeout(() => {
         onClose();
-      }, 1800);
+      }, 1900);
     } catch (err: any) {
       console.error('Enroll error:', err);
       setErrorMessage(err?.message || 'Lỗi khi gửi dữ liệu FaceID. Vui lòng thử lại.');
@@ -508,8 +519,14 @@ export default function BankFaceEnrollModal({
               <div className="text-[10px] font-mono uppercase tracking-widest text-[#C5A880] font-bold">
                 Skyline Biometrics Engine • e-KYC Bank Grade
               </div>
-              <h3 className="text-sm font-serif font-bold text-white tracking-wide">
-                Thu Thập Dữ Liệu Sinh Trắc Học FaceID 4 Bước
+              <h3 className="text-sm font-serif font-bold text-white tracking-wide flex items-center gap-2">
+                <span>Thu Thập Sinh Trắc Học FaceID 4 Bước:</span>
+                <span className="text-[#C5A880] underline underline-offset-2">{fullName}</span>
+                {isFamilyMemberSelfEnroll && (
+                  <span className="text-[10px] bg-purple-950/80 border border-purple-500/80 text-purple-300 font-sans px-1.5 py-0.5">
+                    Người Nhà Tự Cập Nhật
+                  </span>
+                )}
               </h3>
             </div>
           </div>
@@ -1016,15 +1033,21 @@ export default function BankFaceEnrollModal({
               >
                 {isSubmitting ? (
                   <>
-                    <RefreshCw className="w-4 h-4 animate-spin" /> Đang Gửi 4 Mẫu Tới Ban Quản Lý...
+                    <RefreshCw className="w-4 h-4 animate-spin" /> Đang Lưu & Gửi Hồ Sơ...
                   </>
                 ) : submitSuccess ? (
                   <>
-                    <Check className="w-4 h-4 text-emerald-950" /> Đã Chuyển Tới BQL Phê Duyệt Thành Công!
+                    <Check className="w-4 h-4 text-emerald-950" />
+                    {isFamilyMemberSelfEnroll
+                      ? 'Đã Gửi Mẫu Cho Chủ Hộ Xác Nhận Thành Công!'
+                      : 'Đã Chuyển Tới Ban Quản Lý Phê Duyệt!'}
                   </>
                 ) : (
                   <>
-                    <ShieldCheck className="w-4 h-4" /> Gửi 4 Mẫu Cho Ban Quản Lý Phê Duyệt
+                    <ShieldCheck className="w-4 h-4" />
+                    {isFamilyMemberSelfEnroll
+                      ? 'Lưu 4 Mẫu & Gửi Chủ Hộ Xác Nhận'
+                      : 'Gửi 4 Mẫu Cho Ban Quản Lý Phê Duyệt'}
                   </>
                 )}
               </button>

@@ -106,7 +106,7 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
   const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
 
   // e-KYC State
-  const [ekycStatus, setEkycStatus] = useState<'VERIFIED' | 'PENDING' | 'REJECTED' | 'DRAFT'>('DRAFT');
+  const [ekycStatus, setEkycStatus] = useState<'VERIFIED' | 'PENDING' | 'REJECTED' | 'DRAFT' | 'PENDING_OWNER'>('DRAFT');
   const [isEditingLegal, setIsEditingLegal] = useState(false);
   const [currentEkyc, setCurrentEkyc] = useState<EkycRequest | null>(null);
   const [isScanningOcr, setIsScanningOcr] = useState(false);
@@ -501,10 +501,41 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
             )}
           </div>
         ) : (
-          <div className="flex items-center gap-2 flex-shrink-0">
+          <div className="flex flex-wrap items-center gap-2 flex-shrink-0">
             <span className="px-3 py-1.5 bg-[#161D26] border border-purple-500/50 text-purple-300 text-xs font-semibold rounded-none flex items-center gap-2">
               <Users className="w-4 h-4 text-purple-400" /> Thành Viên Căn Hộ
             </span>
+
+            {enrolledFaceProfile?.status === 'ACTIVE' && (
+              <span className="px-3 py-1 bg-emerald-950/80 border border-emerald-500 text-emerald-300 text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 rounded-none">
+                <CheckCircle2 className="w-4 h-4 text-emerald-400" /> FaceID Đã Kích Hoạt
+              </span>
+            )}
+
+            {enrolledFaceProfile?.status === 'PENDING_OWNER' && (
+              <span className="px-3 py-1 bg-amber-950/80 border border-amber-500 text-amber-300 text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 rounded-none animate-pulse">
+                <Clock className="w-4 h-4 text-amber-400" /> Chờ Chủ Hộ Xác Nhận
+              </span>
+            )}
+
+            {enrolledFaceProfile?.status === 'PENDING' && (
+              <span className="px-3 py-1 bg-cyan-950/80 border border-cyan-500 text-cyan-300 text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 rounded-none animate-pulse">
+                <Clock className="w-4 h-4 text-cyan-400" /> Chờ BQL Phê Duyệt
+              </span>
+            )}
+
+            {!enrolledFaceProfile && (
+              <button
+                type="button"
+                onClick={() => {
+                  setActiveTab('EKYC');
+                  setIsBankEnrollOpen(true);
+                }}
+                className="px-3 py-1.5 bg-[#C5A880] hover:bg-white text-[#0D1117] text-xs font-bold uppercase tracking-wider rounded-none flex items-center gap-1.5 transition-all shadow"
+              >
+                <Camera className="w-3.5 h-3.5" /> Quét FaceID
+              </button>
+            )}
           </div>
         )}
       </div>
@@ -532,7 +563,7 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
               : 'border-transparent text-gray-400 hover:text-gray-200'
           }`}
         >
-          <ScanFace className="w-4 h-4" /> 2. Định Danh e-KYC & FaceID
+          <ScanFace className="w-4 h-4" /> {isOwner ? '2. Định Danh e-KYC & FaceID' : '2. Sinh Trắc Học FaceID'}
         </button>
 
         <button
@@ -1159,12 +1190,12 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
       )}
 
       {/* ------------------------------------------------------------- */}
-      {/* TAB 2: E-KYC BIOMETRIC IDENTIFICATION & SMART CARD (CHỦ HỘ)   */}
+      {/* TAB 2: E-KYC BIOMETRIC IDENTIFICATION & SMART CARD             */}
       {/* ------------------------------------------------------------- */}
-      {isOwner && activeTab === 'EKYC' && (
+      {activeTab === 'EKYC' && (
         <div className="space-y-6">
-          {/* Status Box & BQL Sync Banner (Chỉ hiển thị khi đang chờ duyệt, bị từ chối hoặc chưa gửi) */}
-          {ekycStatus !== 'VERIFIED' && (
+          {/* Status Box & BQL Sync Banner (Chỉ hiển thị cho Chủ Hộ khi chưa verified) */}
+          {isOwner && ekycStatus !== 'VERIFIED' && (
             <div className={`p-5 border flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-xl rounded-none ${
               ekycStatus === 'PENDING'
                 ? 'bg-gradient-to-r from-[#1A1810] to-[#121820] border-amber-500/80'
@@ -1235,6 +1266,32 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
             </div>
           )}
 
+          {/* Thông báo hướng dẫn dành riêng cho Người Nhà tự cập nhật FaceID */}
+          {!isOwner && (
+            <div className="p-5 bg-gradient-to-r from-[#161D26] via-[#121820] to-[#0D1117] border border-[#C5A880]/70 flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-xl">
+              <div className="space-y-1">
+                <div className="text-[10px] uppercase tracking-wider text-[#C5A880] font-bold flex items-center gap-1.5 font-mono">
+                  <ScanFace className="w-3.5 h-3.5" /> Thành Viên Gia Đình • Căn Hộ {aptCode}
+                </div>
+                <h3 className="font-serif text-lg font-bold text-white">
+                  Tự Cập Nhật Dữ Liệu Khuôn Mặt (FaceID)
+                </h3>
+                <p className="text-xs text-gray-300 max-w-2xl leading-relaxed">
+                  Hệ thống cho phép thành viên gia đình tự thu thập 4 góc khuôn mặt (chuẩn e-KYC ngân hàng) để mở cửa sảnh đón và thang máy. Sau khi quét xong, hồ sơ sẽ được chuyển tới <strong>Chủ Hộ (Chính chủ căn hộ)</strong> xác nhận bảo lãnh trước khi Ban Quản Lý phê duyệt kích hoạt.
+                </p>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setIsBankEnrollOpen(true)}
+                className="h-9 px-4 bg-[#C5A880] hover:bg-white text-[#0D1117] text-xs font-bold uppercase tracking-wider flex items-center gap-2 transition-all shadow flex-shrink-0 rounded-none cursor-pointer"
+              >
+                <Camera className="w-4 h-4" />
+                {enrolledFaceProfile ? 'Quét Lại 4 Mẫu' : 'Quét Mẫu FaceID Ngay'}
+              </button>
+            </div>
+          )}
+
           {/* e-KYC Visual Matcher & Smart Pass Cards */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Biometric FaceID Bank-Grade 4-Step Card */}
@@ -1257,9 +1314,13 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
                 {enrolledFaceProfile ? (
                   <div className="space-y-3">
                     <div className="flex items-center justify-between">
-                      {enrolledFaceProfile.status === 'PENDING' ? (
+                      {enrolledFaceProfile.status === 'PENDING_OWNER' ? (
                         <div className="text-xs font-semibold text-amber-400 flex items-center gap-1.5">
-                          <Clock className="w-4 h-4 animate-pulse" /> Đã Gửi 4 Mẫu • Đang Chờ Ban Quản Lý Phê Duyệt
+                          <Clock className="w-4 h-4 animate-pulse" /> Đã Quét 4 Mẫu • Chờ Chủ Hộ Xác Nhận
+                        </div>
+                      ) : enrolledFaceProfile.status === 'PENDING' ? (
+                        <div className="text-xs font-semibold text-cyan-400 flex items-center gap-1.5">
+                          <Clock className="w-4 h-4 animate-pulse" /> Đã Gửi BQL • Đang Chờ Phê Duyệt
                         </div>
                       ) : (
                         <div className="text-xs font-semibold text-emerald-400 flex items-center gap-1.5">
@@ -1326,13 +1387,22 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
                       </div>
                     </div>
 
-                    {enrolledFaceProfile.status === 'PENDING' ? (
+                    {enrolledFaceProfile.status === 'PENDING_OWNER' ? (
                       <div className="p-2.5 bg-amber-950/40 border border-amber-500/40 text-[11px] text-amber-200 space-y-1">
                         <div className="font-semibold flex items-center gap-1.5 text-amber-300">
+                          <Clock className="w-3.5 h-3.5" /> Đã Lưu 4 Mẫu • Chờ Chủ Hộ Căn Hộ Xác Nhận
+                        </div>
+                        <p className="text-gray-300 text-[10.5px]">
+                          Hồ sơ 4 góc mặt của bạn đã được ghi nhận. Chủ hộ căn hộ {aptCode} sẽ kiểm tra và bấm xác nhận bảo lãnh trên hệ thống để gửi Ban Quản Lý kích hoạt quyền FaceID.
+                        </p>
+                      </div>
+                    ) : enrolledFaceProfile.status === 'PENDING' ? (
+                      <div className="p-2.5 bg-cyan-950/40 border border-cyan-500/40 text-[11px] text-cyan-200 space-y-1">
+                        <div className="font-semibold flex items-center gap-1.5 text-cyan-300">
                           <Clock className="w-3.5 h-3.5" /> Đang Chờ Ban Quản Lý Đối Soát & Phê Duyệt
                         </div>
                         <p className="text-gray-300 text-[10.5px]">
-                          Hồ sơ gồm 4 mẫu quét sinh trắc học đã được gửi lên hệ thống quản trị của Ban Quản Lý Skyline để đối soát tính xác thực với thẻ CCCD. Sau khi BQL phê duyệt, bạn sẽ có thể đăng nhập FaceID và tự động mở cửa ra vào.
+                          Hồ sơ gồm 4 mẫu quét sinh trắc học đã được gửi lên hệ thống quản trị của Ban Quản Lý Skyline để đối soát tính xác thực. Sau khi BQL phê duyệt, bạn sẽ có thể tự động mở cửa ra vào.
                         </p>
                       </div>
                     ) : (
@@ -1341,7 +1411,7 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
                           <ShieldCheck className="w-3.5 h-3.5" /> Đã Được Ban Quản Lý Kích Hoạt Quyền FaceID
                         </div>
                         <p className="text-gray-300 text-[10.5px]">
-                          Hồ sơ sinh trắc học gồm 4 vector đặc trưng đa góc đã được BQL phê duyệt hợp lệ. Bạn có thể sử dụng tính năng &quot;Quét Khuôn Mặt (FaceID)&quot; tại màn hình đăng nhập để xác thực tức thì.
+                          Hồ sơ sinh trắc học gồm 4 vector đặc trưng đa góc đã được BQL phê duyệt hợp lệ. Bạn có thể sử dụng tính năng &quot;Quét Khuôn Mặt (FaceID)&quot; tại màn hình đăng nhập và cửa sảnh đón.
                         </p>
                       </div>
                     )}
@@ -1381,12 +1451,16 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
                   <span className={
                     enrolledFaceProfile?.status === 'ACTIVE' 
                       ? 'text-emerald-400 font-bold' 
-                      : enrolledFaceProfile?.status === 'PENDING'
+                      : enrolledFaceProfile?.status === 'PENDING_OWNER'
                       ? 'text-amber-400 font-bold'
+                      : enrolledFaceProfile?.status === 'PENDING'
+                      ? 'text-cyan-400 font-bold'
                       : 'text-gray-400 font-bold'
                   }>
                     {enrolledFaceProfile?.status === 'ACTIVE' 
                       ? 'Đã Kích Hoạt Chính Thức ✓' 
+                      : enrolledFaceProfile?.status === 'PENDING_OWNER'
+                      ? 'Chờ Chủ Hộ Xác Nhận ⏳'
                       : enrolledFaceProfile?.status === 'PENDING'
                       ? 'Chờ BQL Duyệt ⏳'
                       : 'Chưa Thu Thập Mẫu'}
@@ -1520,6 +1594,8 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
         fullName={fullName || currentUser.full_name}
         apartmentCode={aptCode}
         phone={phone || currentUser.phone || ''}
+        isFamilyMemberSelfEnroll={!isOwner}
+        submittedByRole={currentUser.role}
         onEnrollSuccess={(profile) => {
           setEnrolledFaceProfile(profile);
           // TUYỆT ĐỐI KHÔNG cập nhật / ghi đè ảnh chân dung cá nhân (avatar) từ mẫu FaceID

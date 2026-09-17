@@ -5,7 +5,7 @@
  * with Ban Quản Lý (BQL) approval desk in real-time.
  */
 
-export type EkycStatus = 'PENDING' | 'APPROVED' | 'REJECTED' | 'VERIFIED';
+export type EkycStatus = 'PENDING' | 'APPROVED' | 'REJECTED' | 'VERIFIED' | 'PENDING_OWNER';
 
 export interface EkycRequest {
   id: string;

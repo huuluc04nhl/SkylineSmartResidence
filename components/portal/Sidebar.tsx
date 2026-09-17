@@ -169,7 +169,8 @@ export default function Sidebar({
       case 'TENANT':
         return [
           { id: 'resident-home', label: 'Trang Chủ & Mã QR Vào Cổng', shortLabel: 'Trang Chủ QR', icon: QrCode },
-          { id: 'resident-profile', label: 'Hồ Sơ Căn Cước & Mật Khẩu', shortLabel: 'Hồ Sơ & Mật Khẩu', icon: UserCheck },
+          { id: 'resident-profile', label: 'Hồ Sơ Căn Cước & FaceID', shortLabel: 'Hồ Sơ & FaceID', icon: UserCheck },
+          { id: 'resident-family', label: 'Thành Viên Gia Đình & FaceID', shortLabel: 'Người Thân & FaceID', icon: Users },
           { id: 'resident-smarthome', label: 'Điều Khiển Thiết Bị Phòng (12A05)', shortLabel: 'Thiết Bị Phòng', icon: Cpu },
           { id: 'resident-facilities', label: 'Sử Dụng Tiện Ích (Hồ Bơi, Gym)', shortLabel: 'Hồ Bơi/Gym', icon: Waves },
           { id: 'resident-tickets', label: 'Báo Hỏng & Đề Nghị Sửa Chữa', shortLabel: 'Báo Sửa Chữa', icon: Wrench },

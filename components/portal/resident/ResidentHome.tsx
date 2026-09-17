@@ -25,12 +25,16 @@ import {
   Tv,
   Eye,
   ArrowRight,
-  Flame,
-  Crown
+  Flame, 
+  Crown,
+  ScanFace,
+  Camera,
+  AlertCircle
 } from 'lucide-react';
 import { getApartmentByCode } from '@/lib/apartmentStore';
 import { applyScene, getSmartHomeState, SceneType } from '@/lib/smartHomeStore';
 import ResidentApartmentModal from './ResidentApartmentModal';
+import { getEnrolledFaceProfile, getAllEnrolledFaceProfiles } from '@/lib/faceEnrollStore';
 
 interface ResidentHomeProps {
   currentUser: UserType;
@@ -45,6 +49,42 @@ export default function ResidentHome({ currentUser, onNavigate, onOpenVisitorMod
   const [activeScene, setActiveScene] = useState<SceneType>(() => getSmartHomeState(aptCode).activeScene);
   const [sceneMessage, setSceneMessage] = useState<string | null>(null);
   const [isAptDetailOpen, setIsAptDetailOpen] = useState(false);
+  const [pendingConfirmCount, setPendingConfirmCount] = useState(0);
+  const [userFaceStatus, setUserFaceStatus] = useState<'NONE' | 'PENDING_OWNER' | 'PENDING' | 'ACTIVE'>('NONE');
+
+  const checkFaceStatuses = () => {
+    const p = getEnrolledFaceProfile(currentUser.phone || currentUser.id || currentUser.username || '');
+    if (p) {
+      if (p.status === 'ACTIVE') setUserFaceStatus('ACTIVE');
+      else if (p.status === 'PENDING_OWNER') setUserFaceStatus('PENDING_OWNER');
+      else if (p.status === 'PENDING') setUserFaceStatus('PENDING');
+      else setUserFaceStatus('NONE');
+    } else {
+      setUserFaceStatus('NONE');
+    }
+
+    if (isOwner) {
+      try {
+        const allProfiles = getAllEnrolledFaceProfiles();
+        const count = allProfiles.filter(prof => 
+          prof.apartmentCode === aptCode && 
+          prof.status === 'PENDING_OWNER' && 
+          prof.userId !== currentUser.id && 
+          prof.phone !== currentUser.phone
+        ).length;
+        setPendingConfirmCount(count);
+      } catch (e) {
+        // ignore
+      }
+    }
+  };
+
+  useEffect(() => {
+    checkFaceStatuses();
+    const handleFaceUpdate = () => checkFaceStatuses();
+    window.addEventListener('skyline_faceid_enrolled', handleFaceUpdate);
+    return () => window.removeEventListener('skyline_faceid_enrolled', handleFaceUpdate);
+  }, [aptCode, isOwner, currentUser]);
 
   useEffect(() => {
     const handleUpdate = (e: any) => {
@@ -97,12 +137,46 @@ export default function ResidentHome({ currentUser, onNavigate, onOpenVisitorMod
               <span>{isOwner ? 'Chủ Hộ' : 'Thành Viên'}</span>
             </div>
 
-            {/* Trạng Thái e-KYC */}
+            {/* Trạng Thái e-KYC (Chủ Hộ) */}
             {isOwner && (
               <div className="h-8 flex items-center gap-1.5 px-2.5 bg-emerald-950/60 border border-emerald-500/40 text-emerald-300 text-[11px] font-mono font-medium shadow-sm">
                 <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
                 <span>e-KYC Đã Xác Thực</span>
               </div>
+            )}
+
+            {/* Trạng Thái FaceID Cho Thành Viên Người Nhà */}
+            {!isOwner && (
+              <>
+                {userFaceStatus === 'ACTIVE' && (
+                  <div className="h-8 flex items-center gap-1.5 px-2.5 bg-emerald-950/60 border border-emerald-500/40 text-emerald-300 text-[11px] font-mono font-medium shadow-sm">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+                    <span>FaceID Đã Kích Hoạt</span>
+                  </div>
+                )}
+                {userFaceStatus === 'PENDING_OWNER' && (
+                  <div className="h-8 flex items-center gap-1.5 px-2.5 bg-amber-950/60 border border-amber-500/40 text-amber-300 text-[11px] font-mono font-medium shadow-sm animate-pulse">
+                    <Clock className="w-3.5 h-3.5 text-amber-400" />
+                    <span>FaceID: Chờ Chủ Hộ Duyệt</span>
+                  </div>
+                )}
+                {userFaceStatus === 'PENDING' && (
+                  <div className="h-8 flex items-center gap-1.5 px-2.5 bg-cyan-950/60 border border-cyan-500/40 text-cyan-300 text-[11px] font-mono font-medium shadow-sm animate-pulse">
+                    <Clock className="w-3.5 h-3.5 text-cyan-400" />
+                    <span>FaceID: Chờ BQL Phê Duyệt</span>
+                  </div>
+                )}
+                {userFaceStatus === 'NONE' && (
+                  <button
+                    type="button"
+                    onClick={() => onNavigate('resident-profile')}
+                    className="h-8 flex items-center gap-1.5 px-2.5 bg-[#C5A880] hover:bg-white text-[#0D1117] text-[11px] font-bold shadow-sm transition-all cursor-pointer"
+                  >
+                    <Camera className="w-3.5 h-3.5" />
+                    <span>Quét FaceID Của Bạn</span>
+                  </button>
+                )}
+              </>
             )}
           </div>
         </div>
@@ -134,6 +208,33 @@ export default function ResidentHome({ currentUser, onNavigate, onOpenVisitorMod
           </div>
         </div>
       </div>
+
+      {/* Alert Banner for Owner when family members are waiting for FaceID confirmation */}
+      {isOwner && pendingConfirmCount > 0 && (
+        <div className="p-4 bg-gradient-to-r from-amber-950/80 via-[#1A1810] to-[#121820] border border-amber-500/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-xl animate-fadeIn">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 bg-amber-500/20 border border-amber-500 flex items-center justify-center text-amber-300 flex-shrink-0">
+              <ScanFace className="w-5 h-5 animate-pulse" />
+            </div>
+            <div>
+              <div className="text-xs font-bold uppercase tracking-wider text-amber-300">
+                Có {pendingConfirmCount} Hồ Sơ FaceID Người Nhà Đang Chờ Bạn Xác Nhận
+              </div>
+              <p className="text-xs text-gray-300 mt-0.5">
+                Thành viên trong căn hộ đã hoàn tất quét 4 góc FaceID. Vui lòng kiểm tra và xác nhận bảo lãnh để chuyển tới Ban Quản Lý phê duyệt.
+              </p>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            onClick={() => onNavigate('resident-family')}
+            className="px-4 py-2 bg-[#C5A880] hover:bg-white text-[#0D1117] text-xs font-bold uppercase tracking-wider transition-all shadow-lg flex-shrink-0 cursor-pointer active:scale-95 flex items-center gap-1.5"
+          >
+            <ShieldCheck className="w-4 h-4" /> Xem & Xác Nhận Ngay
+          </button>
+        </div>
+      )}
 
       {/* 1-Tap Smart Home Scene Shortcuts Bar */}
       <div className="p-4 bg-[#121820] border border-[#222B35] space-y-2.5 shadow-lg">

@@ -21,8 +21,10 @@ export interface EnrolledFaceProfile {
   samples: FaceBiometricSamples;
   descriptor: number[]; // 128-D vector đặc trưng chuẩn hóa
   enrolledAt: string;
-  status: 'ACTIVE' | 'PENDING' | 'REVOKED';
+  status: 'ACTIVE' | 'PENDING' | 'PENDING_OWNER' | 'REVOKED';
   faceScore: number;
+  confirmedByOwner?: boolean;
+  confirmedByOwnerAt?: string;
 }
 
 /**
