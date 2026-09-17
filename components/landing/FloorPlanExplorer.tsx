@@ -25,6 +25,7 @@ import {
   Users
 } from 'lucide-react';
 import { useTheme } from '@/lib/themeContext';
+import { useAuth } from '@/lib/authContext';
 
 interface FloorPlanExplorerProps {
   onOpenLogin?: () => void;
@@ -447,6 +448,7 @@ export function getTourDateOptions() {
 
 export default function FloorPlanExplorer({ onOpenLogin }: FloorPlanExplorerProps) {
   const { theme } = useTheme();
+  const { currentUser, isAuthenticated } = useAuth();
   const isDark = theme === 'dark';
 
   const [selectedCategory, setSelectedCategory] = useState<ApartmentCategory>('2PN');
@@ -832,15 +834,25 @@ export default function FloorPlanExplorer({ onOpenLogin }: FloorPlanExplorerProp
                 </div>
               </div>
 
-              {/* HUY HIỆU CĂN CƯ DÂN THỰC TẾ (NẾU LÀ CĂN 12A05) */}
+              {/* HUY HIỆU CĂN MẪU / CĂN CƯ DÂN */}
               {currentApartment.isRealResident && (
-                <div className="p-3 bg-[#1A160E] border border-amber-500/50 rounded-none flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-none bg-amber-500/20 text-amber-400 flex items-center justify-center shrink-0 font-bold text-sm">
+                <div className={`p-3 border rounded-none flex items-center gap-3 ${
+                  isDark 
+                    ? 'bg-[#1A160E] border-amber-500/50' 
+                    : 'bg-amber-50/80 border-amber-300'
+                }`}>
+                  <div className="w-8 h-8 rounded-none bg-amber-500/20 text-amber-500 flex items-center justify-center shrink-0 font-bold text-sm">
                     ★
                   </div>
                   <div className="text-xs">
-                    <span className="font-bold text-amber-300 block">Căn Hộ Cư Dân Thực Tế Đã Bàn Giao</span>
-                    <span className="text-gray-300 font-light">Chủ hộ: <strong>{currentApartment.residentName}</strong> • Đang sinh sống</span>
+                    <span className={`font-bold block ${isDark ? 'text-amber-300' : 'text-amber-900'}`}>
+                      {isAuthenticated && currentUser ? 'Căn Hộ Cư Dân Thực Tế Đã Bàn Giao' : 'Căn Hộ Mẫu Trải Nghiệm Thực Tế'}
+                    </span>
+                    <span className={`font-light ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+                      {isAuthenticated && currentUser 
+                        ? `Chủ hộ: ${currentUser.full_name} • Đang sinh sống` 
+                        : 'Đã hoàn thiện nội thất tiêu chuẩn bàn giao • Mở cửa đón khách'}
+                    </span>
                   </div>
                 </div>
               )}

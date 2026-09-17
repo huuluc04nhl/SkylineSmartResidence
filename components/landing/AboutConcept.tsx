@@ -3,9 +3,11 @@
 import React from 'react';
 import { Sparkles } from 'lucide-react';
 import { useTheme } from '@/lib/themeContext';
+import { useAuth } from '@/lib/authContext';
 
 export default function AboutConcept() {
   const { theme } = useTheme();
+  const { currentUser, isAuthenticated } = useAuth();
   const isDark = theme === 'dark';
 
   return (
@@ -20,10 +22,10 @@ export default function AboutConcept() {
       <div className="max-w-7xl mx-auto px-6 relative z-10">
         {/* Section Header */}
         <div className="max-w-3xl mb-14 sm:mb-16 space-y-3">
-          <div className={`inline-flex items-center gap-2 px-3 py-1 rounded text-[11px] font-mono uppercase tracking-[0.2em] ${
+          <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-none text-[11px] font-mono uppercase tracking-[0.2em] ${
             isDark 
               ? 'bg-[#161F2E] border border-[#C5A880]/40 text-[#C5A880]' 
-              : 'bg-slate-100 border border-[#C5A880]/60 text-amber-800'
+              : 'bg-amber-50 border border-[#C5A880]/60 text-amber-900 shadow-sm'
           }`}>
             <Sparkles className="w-3.5 h-3.5 text-[#C5A880]" />
             <span>Triết Lý Thiết Kế &amp; Không Gian</span>
@@ -92,23 +94,23 @@ export default function AboutConcept() {
                 alt="Skyline Luxury Architecture"
                 className="w-full h-[360px] sm:h-[400px] object-cover rounded-none transition-transform duration-700 group-hover:scale-105"
               />
-              <div className={`absolute inset-0 pointer-events-none rounded-none ${
-                isDark 
-                  ? 'bg-gradient-to-t from-[#0A0E17]/90 via-transparent to-transparent' 
-                  : 'bg-gradient-to-t from-white/90 via-transparent to-transparent'
-              }`} />
+              <div className="absolute inset-0 pointer-events-none rounded-none bg-gradient-to-t from-black/75 via-transparent to-transparent" />
 
               <div className={`absolute bottom-5 left-5 right-5 sm:right-auto p-4 border rounded-none max-w-sm backdrop-blur-md shadow-2xl transition-colors ${
                 isDark 
                   ? 'bg-[#0A0E17]/95 text-white border-[#C5A880]/60' 
                   : 'bg-white/95 text-gray-900 border-gray-200 shadow-xl'
               }`}>
-                <div className="text-[10px] font-mono uppercase tracking-[0.2em] text-[#C5A880] font-semibold">Căn Hộ Thực Tế 12A05</div>
+                <div className="text-[10px] font-mono uppercase tracking-[0.2em] text-[#C5A880] font-semibold">
+                  {isAuthenticated && currentUser ? 'Căn Hộ Thực Tế 12A05' : 'Căn Hộ Mẫu Thực Tế'}
+                </div>
                 <div className={`text-sm font-serif mt-1 font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>
                   2PN Tiêu Chuẩn • Ban Công Hướng Sông
                 </div>
                 <div className={`text-xs font-light mt-0.5 ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
-                  Tầng 12A • Chung Cư Skyline • Cư dân: Nguyễn Hữu Lực
+                  {isAuthenticated && currentUser 
+                    ? `Tầng 12A • Chung Cư Skyline • Cư dân: ${currentUser.full_name}`
+                    : 'Tầng 12A • Chung Cư Skyline • Tiêu Chuẩn Bàn Giao 5 Sao'}
                 </div>
               </div>
             </div>
