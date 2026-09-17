@@ -54,7 +54,7 @@ export default function AboutConcept() {
             </p>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
-              <div className={`p-4 rounded-xl border-l-4 border-l-[#C5A880] space-y-1 shadow-lg transition-colors ${
+              <div className={`p-4 rounded-none border-l-4 border-l-[#C5A880] space-y-1 shadow-lg transition-colors ${
                 isDark 
                   ? 'bg-[#121824] border border-[#1E293B]' 
                   : 'bg-slate-50 border border-gray-200'
@@ -66,7 +66,7 @@ export default function AboutConcept() {
                   Chủ hộ toàn quyền cấp phát FaceID và quản lý thành viên cư trú.
                 </div>
               </div>
-              <div className={`p-4 rounded-xl border-l-4 border-l-[#C5A880] space-y-1 shadow-lg transition-colors ${
+              <div className={`p-4 rounded-none border-l-4 border-l-[#C5A880] space-y-1 shadow-lg transition-colors ${
                 isDark 
                   ? 'bg-[#121824] border border-[#1E293B]' 
                   : 'bg-slate-50 border border-gray-200'
@@ -82,7 +82,7 @@ export default function AboutConcept() {
           </div>
 
           <div className="lg:col-span-6">
-            <div className={`relative border p-2 sm:p-3 rounded-2xl shadow-2xl overflow-hidden group transition-colors ${
+            <div className={`relative border p-2 sm:p-3 rounded-none shadow-2xl overflow-hidden group transition-colors ${
               isDark 
                 ? 'border-[#C5A880]/40 bg-[#121824]' 
                 : 'border-gray-200 bg-slate-100'
@@ -90,15 +90,15 @@ export default function AboutConcept() {
               <img
                 src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1200&auto=format&fit=crop&q=80"
                 alt="Skyline Luxury Architecture"
-                className="w-full h-[360px] sm:h-[400px] object-cover rounded-xl transition-transform duration-700 group-hover:scale-105"
+                className="w-full h-[360px] sm:h-[400px] object-cover rounded-none transition-transform duration-700 group-hover:scale-105"
               />
-              <div className={`absolute inset-0 pointer-events-none rounded-xl ${
+              <div className={`absolute inset-0 pointer-events-none rounded-none ${
                 isDark 
                   ? 'bg-gradient-to-t from-[#0A0E17]/90 via-transparent to-transparent' 
                   : 'bg-gradient-to-t from-white/90 via-transparent to-transparent'
               }`} />
 
-              <div className={`absolute bottom-5 left-5 right-5 sm:right-auto p-4 border rounded-xl max-w-sm backdrop-blur-md shadow-2xl transition-colors ${
+              <div className={`absolute bottom-5 left-5 right-5 sm:right-auto p-4 border rounded-none max-w-sm backdrop-blur-md shadow-2xl transition-colors ${
                 isDark 
                   ? 'bg-[#0A0E17]/95 text-white border-[#C5A880]/60' 
                   : 'bg-white/95 text-gray-900 border-gray-200 shadow-xl'

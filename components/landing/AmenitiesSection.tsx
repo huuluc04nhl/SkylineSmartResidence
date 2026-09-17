@@ -21,7 +21,7 @@ export default function AmenitiesSection() {
       <div className="max-w-7xl mx-auto px-6 relative z-10">
         {/* Section Header */}
         <div className="max-w-3xl mb-14 sm:mb-16 space-y-3">
-          <div className={`inline-flex items-center gap-2 px-3 py-1 rounded text-[11px] font-mono uppercase tracking-[0.2em] ${
+          <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-none text-[11px] font-mono uppercase tracking-[0.2em] ${
             isDark 
               ? 'bg-[#161F2E] border border-[#C5A880]/40 text-[#C5A880]' 
               : 'bg-slate-100 border border-[#C5A880]/60 text-amber-800'
@@ -46,7 +46,7 @@ export default function AmenitiesSection() {
           {DEMO_FACILITIES.slice(0, 6).map((facility) => (
             <div
               key={facility.id}
-              className={`rounded-2xl overflow-hidden shadow-2xl flex flex-col justify-between group transition-all duration-300 hover:-translate-y-1 ${
+              className={`rounded-none overflow-hidden shadow-2xl flex flex-col justify-between group transition-all duration-300 hover:-translate-y-1 ${
                 isDark
                   ? 'border border-[#1E293B] hover:border-[#C5A880]/60 bg-[#0E131C]'
                   : 'border border-gray-200 hover:border-[#C5A880] bg-white shadow-lg'
@@ -65,7 +65,7 @@ export default function AmenitiesSection() {
                       : 'bg-gradient-to-t from-white/90 via-transparent to-transparent'
                   }`} />
 
-                  <div className="absolute top-3 right-3 bg-[#0D1117]/90 text-[#C5A880] px-2.5 py-1 text-xs font-mono font-bold flex items-center gap-1 border border-[#C5A880]/50 rounded-lg backdrop-blur-md shadow-lg">
+                  <div className="absolute top-3 right-3 bg-[#0D1117]/90 text-[#C5A880] px-2.5 py-1 text-xs font-mono font-bold flex items-center gap-1 border border-[#C5A880]/50 rounded-none backdrop-blur-md shadow-lg">
                     <Star className="w-3.5 h-3.5 fill-[#C5A880]" />
                     <span>{facility.rating_score.toFixed(1)}</span>
                   </div>

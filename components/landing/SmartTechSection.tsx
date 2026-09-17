@@ -56,7 +56,7 @@ export default function SmartTechSection() {
       <div className="max-w-7xl mx-auto px-6">
         {/* Header */}
         <div className="max-w-3xl mb-14 sm:mb-16 space-y-3">
-          <div className={`inline-flex items-center gap-2 px-3 py-1 rounded text-[11px] font-mono uppercase tracking-[0.2em] ${
+          <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-none text-[11px] font-mono uppercase tracking-[0.2em] ${
             isDark 
               ? 'bg-[#161F2E] border border-[#C5A880]/40 text-[#C5A880]' 
               : 'bg-white border border-[#C5A880]/60 text-amber-800 shadow-sm'
@@ -83,14 +83,14 @@ export default function SmartTechSection() {
             return (
               <div
                 key={idx}
-                className={`p-6 space-y-4 rounded-2xl transition-all duration-300 group hover:-translate-y-1 ${
+                className={`p-6 space-y-4 rounded-none transition-all duration-300 group hover:-translate-y-1 ${
                   isDark 
                     ? 'border border-[#222B35] bg-[#121820] hover:border-[#C5A880] shadow-xl' 
                     : 'border border-gray-200 bg-white hover:border-[#C5A880] shadow-md hover:shadow-xl'
                 }`}
               >
                 <div className="flex items-center justify-between">
-                  <div className={`p-2.5 rounded-xl border ${
+                  <div className={`p-2.5 rounded-none border ${
                     isDark 
                       ? 'bg-[#1C2533] border-[#2D3748] text-[#C5A880]' 
                       : 'bg-amber-50 border-amber-200 text-amber-800'

@@ -36,7 +36,7 @@ export default function HeroSection({ onOpenLogin }: HeroSectionProps) {
       <div className="relative z-10 max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
         {/* Left Column: Architectural Editorial Text */}
         <div className="lg:col-span-8 space-y-8">
-          <div className={`inline-flex items-center gap-2.5 px-3 py-1.5 border text-[11px] uppercase tracking-[0.25em] font-medium backdrop-blur-sm rounded ${
+          <div className={`inline-flex items-center gap-2.5 px-3 py-1.5 border text-[11px] uppercase tracking-[0.25em] font-medium backdrop-blur-sm rounded-none ${
             isDark 
               ? 'border-[#C5A880]/40 text-[#C5A880] bg-[#0D1117]/80' 
               : 'border-[#C5A880]/60 text-amber-800 bg-white/90 shadow-sm'
@@ -64,7 +64,7 @@ export default function HeroSection({ onOpenLogin }: HeroSectionProps) {
           <div className="flex flex-wrap items-center gap-4 pt-2">
             <a
               href="#floorplans"
-              className="hendon-btn-gold text-[12px] shadow-lg rounded"
+              className="hendon-btn-gold text-[12px] shadow-lg rounded-none"
             >
               Xem Mặt Bằng Căn Hộ
             </a>
@@ -72,7 +72,7 @@ export default function HeroSection({ onOpenLogin }: HeroSectionProps) {
             {isAuthenticated ? (
               <Link
                 href="/portal"
-                className={`text-[12px] flex items-center gap-2 px-5 py-3 border font-semibold tracking-wider uppercase transition-all rounded ${
+                className={`text-[12px] flex items-center gap-2 px-5 py-3 border font-semibold tracking-wider uppercase transition-all rounded-none ${
                   isDark
                     ? 'border-[#C5A880] text-[#C5A880] hover:bg-[#C5A880] hover:text-[#0D1117]'
                     : 'border-amber-700 text-amber-800 hover:bg-[#C5A880] hover:text-white'
@@ -84,7 +84,7 @@ export default function HeroSection({ onOpenLogin }: HeroSectionProps) {
             ) : (
               <button
                 onClick={() => onOpenLogin()}
-                className={`text-[12px] flex items-center gap-2 px-5 py-3 border font-semibold tracking-wider uppercase transition-all rounded cursor-pointer ${
+                className={`text-[12px] flex items-center gap-2 px-5 py-3 border font-semibold tracking-wider uppercase transition-all rounded-none cursor-pointer ${
                   isDark
                     ? 'border-gray-600 hover:border-white text-white'
                     : 'border-gray-400 hover:border-gray-900 text-gray-800'
@@ -129,7 +129,7 @@ export default function HeroSection({ onOpenLogin }: HeroSectionProps) {
 
         {/* Right Column: Architectural Visual Card */}
         <div className="lg:col-span-4 hidden lg:block">
-          <div className={`border p-6 space-y-4 shadow-2xl rounded-2xl transition-colors ${
+          <div className={`border p-6 space-y-4 shadow-2xl rounded-none transition-colors ${
             isDark 
               ? 'border-[#2D3748] bg-[#121820]' 
               : 'border-gray-200 bg-white shadow-xl'
@@ -170,7 +170,7 @@ export default function HeroSection({ onOpenLogin }: HeroSectionProps) {
               <button
                 type="button"
                 onClick={() => onOpenLogin('OWNER')}
-                className="w-full py-3 bg-[#1C2533] border border-[#C5A880]/50 text-[#C5A880] text-[11px] uppercase tracking-[0.18em] font-semibold hover:bg-[#C5A880] hover:text-[#0D1117] transition-all flex items-center justify-center gap-2 rounded-xl cursor-pointer shadow-md"
+                className="w-full py-3 bg-[#1C2533] border border-[#C5A880]/50 text-[#C5A880] text-[11px] uppercase tracking-[0.18em] font-semibold hover:bg-[#C5A880] hover:text-[#0D1117] transition-all flex items-center justify-center gap-2 rounded-none cursor-pointer shadow-md"
               >
                 <ShieldCheck className="w-4 h-4" />
                 Vào Không Gian Căn Hộ 12A05

@@ -539,7 +539,7 @@ export default function FloorPlanExplorer({ onOpenLogin }: FloorPlanExplorerProp
           isDark ? 'border-[#1E293B]' : 'border-gray-200'
         }`}>
           <div className="space-y-2 max-w-2xl">
-            <div className={`inline-flex items-center gap-2 px-3 py-1 rounded text-[11px] font-mono uppercase tracking-[0.2em] ${
+            <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-none text-[11px] font-mono uppercase tracking-[0.2em] ${
               isDark 
                 ? 'bg-[#161F2E] border border-[#C5A880]/40 text-[#C5A880]' 
                 : 'bg-white border border-[#C5A880]/60 text-amber-800 shadow-sm'
@@ -561,7 +561,7 @@ export default function FloorPlanExplorer({ onOpenLogin }: FloorPlanExplorerProp
 
           <button
             onClick={() => setIsRegisterOpen(true)}
-            className="px-4 py-2.5 bg-[#C5A880] hover:bg-[#D4AF37] text-[#0A0E17] font-bold text-xs tracking-wider uppercase rounded-lg transition-all shadow-lg flex items-center gap-2 shrink-0 self-start md:self-auto cursor-pointer"
+            className="px-4 py-2.5 bg-[#C5A880] hover:bg-[#D4AF37] text-[#0A0E17] font-bold text-xs tracking-wider uppercase rounded-none transition-all shadow-lg flex items-center gap-2 shrink-0 self-start md:self-auto cursor-pointer"
           >
             <PhoneCall className="w-3.5 h-3.5" />
             <span>Đăng Ký Xem Thực Tế</span>
@@ -580,7 +580,7 @@ export default function FloorPlanExplorer({ onOpenLogin }: FloorPlanExplorerProp
                 key={cat}
                 type="button"
                 onClick={() => handleSelectCategory(cat)}
-                className={`p-3 sm:p-4 rounded-xl border text-left transition-all relative flex flex-col justify-between cursor-pointer ${
+                className={`p-3 sm:p-4 rounded-none border text-left transition-all relative flex flex-col justify-between cursor-pointer ${
                   isSelected
                     ? isDark
                       ? 'bg-[#151D29] border-[#C5A880] shadow-xl ring-1 ring-[#C5A880]/70'
@@ -595,7 +595,7 @@ export default function FloorPlanExplorer({ onOpenLogin }: FloorPlanExplorerProp
                     <span className={`font-mono text-xs font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>
                       Căn {apt.code}
                     </span>
-                    <span className={`text-[9.5px] px-1.5 py-0.5 rounded font-mono font-semibold border ${
+                    <span className={`text-[9.5px] px-1.5 py-0.5 rounded-none font-mono font-semibold border ${
                       cat === 'DUPLEX' ? 'bg-rose-500/20 text-rose-400 border-rose-500/40' :
                       cat === '3PN' ? 'bg-purple-500/20 text-purple-400 border-purple-500/40' :
                       cat === '2PN' ? 'bg-amber-500/20 text-amber-500 border-amber-500/40' :
@@ -627,7 +627,7 @@ export default function FloorPlanExplorer({ onOpenLogin }: FloorPlanExplorerProp
         {/* ============================================================= */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-stretch">
           {/* CỘT TRÁI (7 CỘT): KHUNG PHỐI CẢNH 3D UNIFIED CARD - CÂN BẰNG HOÀN TOÀN */}
-          <div className={`lg:col-span-7 flex flex-col justify-between h-full border rounded-xl overflow-hidden shadow-2xl transition-colors ${
+          <div className={`lg:col-span-7 flex flex-col justify-between h-full border rounded-none overflow-hidden shadow-2xl transition-colors ${
             isDark 
               ? 'border-[#C5A880]/40 bg-[#0E131C]' 
               : 'border-gray-200 bg-white shadow-xl'
@@ -642,7 +642,7 @@ export default function FloorPlanExplorer({ onOpenLogin }: FloorPlanExplorerProp
                 <span className="w-2 h-2 rounded-full bg-[#C5A880] animate-pulse" />
                 <span className="truncate">{currentApartment.subtitle}</span>
               </div>
-              <div className={`text-[10px] font-mono px-2.5 py-0.5 rounded shrink-0 border ${
+              <div className={`text-[10px] font-mono px-2.5 py-0.5 rounded-none shrink-0 border ${
                 isDark 
                   ? 'text-[#C5A880] bg-[#070A10] border-[#1E293B]' 
                   : 'text-amber-800 bg-white border-gray-200 shadow-sm'
@@ -663,13 +663,13 @@ export default function FloorPlanExplorer({ onOpenLogin }: FloorPlanExplorerProp
               <div className="absolute inset-0 bg-gradient-to-t from-[#0A0E17]/80 via-transparent to-transparent pointer-events-none" />
 
               {/* Hướng ban công góc trên bên trái */}
-              <div className="absolute top-3 left-3 bg-[#0A0E17]/90 border border-[#1E293B] px-3 py-1.5 rounded-lg text-xs font-mono text-gray-300 flex items-center gap-2 backdrop-blur-md z-10 shadow-lg">
+              <div className="absolute top-3 left-3 bg-[#0A0E17]/90 border border-[#1E293B] px-3 py-1.5 rounded-none text-xs font-mono text-gray-300 flex items-center gap-2 backdrop-blur-md z-10 shadow-lg">
                 <Compass className="w-4 h-4 text-[#C5A880]" />
                 <span>Ban công: <strong className="text-emerald-400">{currentApartment.direction}</strong></span>
               </div>
 
               {/* Trạng thái căn hộ góc trên bên phải */}
-              <div className="absolute top-3 right-3 bg-[#0A0E17]/90 border border-emerald-500/50 px-3 py-1.5 rounded-lg text-xs font-mono text-emerald-300 flex items-center gap-1.5 backdrop-blur-md z-10 shadow-lg">
+              <div className="absolute top-3 right-3 bg-[#0A0E17]/90 border border-emerald-500/50 px-3 py-1.5 rounded-none text-xs font-mono text-emerald-300 flex items-center gap-1.5 backdrop-blur-md z-10 shadow-lg">
                 <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
                 <span>{currentApartment.statusLabel}</span>
               </div>
@@ -682,16 +682,16 @@ export default function FloorPlanExplorer({ onOpenLogin }: FloorPlanExplorerProp
                     key={spot.id}
                     type="button"
                     onClick={() => setActiveHotspotId(spot.id)}
-                    className={`absolute z-20 transform -translate-x-1/2 -translate-y-1/2 transition-all duration-300 group/pin focus:outline-none flex items-center gap-1.5 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full text-[11px] sm:text-xs cursor-pointer ${
+                    className={`absolute z-20 transform -translate-x-1/2 -translate-y-1/2 transition-all duration-300 group/pin focus:outline-none flex items-center gap-1.5 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-none text-[11px] sm:text-xs cursor-pointer ${
                       isActive
                         ? 'bg-[#0E131C] text-white border-2 border-[#C5A880] shadow-[0_0_25px_rgba(197,168,128,0.8)] scale-110 opacity-100 z-30 font-bold ring-2 ring-[#C5A880]/50'
                         : 'bg-black/60 text-gray-300 border border-white/20 backdrop-blur-md opacity-60 hover:opacity-100 hover:border-white/60 hover:scale-105'
                     }`}
                     style={{ top: `${spot.top}%`, left: `${spot.left}%` }}
                   >
-                    {/* Chấm tròn nhỏ phát sáng */}
+                    {/* Chấm vuông nhỏ phát sáng - KHÔNG BORDER-RADIUS */}
                     <span
-                      className={`w-2 h-2 rounded-full shrink-0 transition-colors ${
+                      className={`w-2 h-2 rounded-none shrink-0 transition-colors ${
                         isActive 
                           ? 'bg-[#C5A880] shadow-[0_0_8px_#C5A880] animate-pulse' 
                           : 'bg-white/60 group-hover/pin:bg-[#C5A880]'
@@ -706,11 +706,11 @@ export default function FloorPlanExplorer({ onOpenLogin }: FloorPlanExplorerProp
 
               {/* Thẻ chú thích hướng nhìn góc dưới */}
               <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between gap-2 text-xs">
-                <div className="bg-[#0A0E17]/90 border border-[#C5A880]/60 px-3 py-1.5 rounded backdrop-blur-md">
+                <div className="bg-[#0A0E17]/90 border border-[#C5A880]/60 px-3 py-1.5 rounded-none backdrop-blur-md">
                   <span className="text-[10px] font-mono uppercase text-[#C5A880] font-semibold block">Tầm nhìn thực tế:</span>
                   <span className="text-white font-medium">{currentApartment.viewDesc}</span>
                 </div>
-                <div className="bg-[#0A0E17]/90 border border-gray-700 px-3 py-1.5 rounded backdrop-blur-md text-gray-300 font-mono text-xs hidden sm:block">
+                <div className="bg-[#0A0E17]/90 border border-gray-700 px-3 py-1.5 rounded-none backdrop-blur-md text-gray-300 font-mono text-xs hidden sm:block">
                   Mô hình bóc mái 3D
                 </div>
               </div>
@@ -721,7 +721,7 @@ export default function FloorPlanExplorer({ onOpenLogin }: FloorPlanExplorerProp
               isDark ? 'bg-[#121824] border-[#1E293B]' : 'bg-slate-50 border-gray-200'
             }`}>
               <div className="flex items-center gap-3 truncate">
-                <div className="w-9 h-9 rounded-lg bg-[#C5A880]/20 border border-[#C5A880] text-[#C5A880] font-mono font-bold text-xs flex items-center justify-center shrink-0">
+                <div className="w-9 h-9 rounded-none bg-[#C5A880]/20 border border-[#C5A880] text-[#C5A880] font-mono font-bold text-xs flex items-center justify-center shrink-0">
                   {activeRoom.code}
                 </div>
                 <div className="truncate">
@@ -739,14 +739,14 @@ export default function FloorPlanExplorer({ onOpenLogin }: FloorPlanExplorerProp
                 </div>
               </div>
 
-              <div className="text-[10px] font-mono text-emerald-400 shrink-0 bg-emerald-950/60 border border-emerald-500/40 px-2 py-1 rounded">
+              <div className="text-[10px] font-mono text-emerald-400 shrink-0 bg-emerald-950/60 border border-emerald-500/40 px-2 py-1 rounded-none">
                 ✓ Đang Xem
               </div>
             </div>
           </div>
 
           {/* CỘT PHẢI (5 CỘT): BÁO GIÁ, THÔNG SỐ VÀNG & NÚT HÀNH ĐỘNG */}
-          <div className={`lg:col-span-5 flex flex-col justify-between h-full p-5 sm:p-6 rounded-xl shadow-2xl space-y-5 transition-colors ${
+          <div className={`lg:col-span-5 flex flex-col justify-between h-full p-5 sm:p-6 rounded-none shadow-2xl space-y-5 transition-colors ${
             isDark ? 'bg-[#0E131C] border border-[#C5A880]/50' : 'bg-white border border-gray-200 shadow-xl'
           }`}>
             <div className="space-y-5">
@@ -783,7 +783,7 @@ export default function FloorPlanExplorer({ onOpenLogin }: FloorPlanExplorerProp
 
               {/* LƯỚI 4 THÔNG SỐ CHÍNH */}
               <div className="grid grid-cols-2 gap-2.5">
-                <div className={`p-3 rounded ${
+                <div className={`p-3 rounded-none ${
                   isDark ? 'bg-[#121824] border border-[#1E293B]' : 'bg-slate-50 border border-gray-200'
                 }`}>
                   <div className="text-[10px] text-gray-400 font-mono uppercase">Diện Tích Thông Thủy</div>
@@ -795,7 +795,7 @@ export default function FloorPlanExplorer({ onOpenLogin }: FloorPlanExplorerProp
                   <div className="text-[10px] text-gray-400 mt-0.5">Tim tường: {currentApartment.wallArea} m²</div>
                 </div>
 
-                <div className={`p-3 rounded ${
+                <div className={`p-3 rounded-none ${
                   isDark ? 'bg-[#121824] border border-[#1E293B]' : 'bg-slate-50 border border-gray-200'
                 }`}>
                   <div className="text-[10px] text-gray-400 font-mono uppercase">Hướng Ban Công</div>
@@ -805,7 +805,7 @@ export default function FloorPlanExplorer({ onOpenLogin }: FloorPlanExplorerProp
                   <div className="text-[10px] text-gray-400 mt-0.5">Đón gió sông mát lành</div>
                 </div>
 
-                <div className={`p-3 rounded ${
+                <div className={`p-3 rounded-none ${
                   isDark ? 'bg-[#121824] border border-[#1E293B]' : 'bg-slate-50 border border-gray-200'
                 }`}>
                   <div className="text-[10px] text-gray-400 font-mono uppercase">Cơ Cấu Phòng</div>
@@ -819,7 +819,7 @@ export default function FloorPlanExplorer({ onOpenLogin }: FloorPlanExplorerProp
                   </div>
                 </div>
 
-                <div className={`p-3 rounded ${
+                <div className={`p-3 rounded-none ${
                   isDark ? 'bg-[#121824] border border-[#1E293B]' : 'bg-slate-50 border border-gray-200'
                 }`}>
                   <div className="text-[10px] text-gray-400 font-mono uppercase">Pháp Lý &amp; Bàn Giao</div>
@@ -834,8 +834,8 @@ export default function FloorPlanExplorer({ onOpenLogin }: FloorPlanExplorerProp
 
               {/* HUY HIỆU CĂN CƯ DÂN THỰC TẾ (NẾU LÀ CĂN 12A05) */}
               {currentApartment.isRealResident && (
-                <div className="p-3 bg-[#1A160E] border border-amber-500/50 rounded flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full bg-amber-500/20 text-amber-400 flex items-center justify-center shrink-0 font-bold text-sm">
+                <div className="p-3 bg-[#1A160E] border border-amber-500/50 rounded-none flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-none bg-amber-500/20 text-amber-400 flex items-center justify-center shrink-0 font-bold text-sm">
                     ★
                   </div>
                   <div className="text-xs">
@@ -866,7 +866,7 @@ export default function FloorPlanExplorer({ onOpenLogin }: FloorPlanExplorerProp
               <button
                 type="button"
                 onClick={() => setIsRegisterOpen(true)}
-                className="w-full py-3.5 bg-[#C5A880] hover:bg-[#D4AF37] text-[#0A0E17] font-bold text-xs tracking-wider uppercase rounded-lg transition-all shadow-lg flex items-center justify-center gap-2 cursor-pointer"
+                className="w-full py-3.5 bg-[#C5A880] hover:bg-[#D4AF37] text-[#0A0E17] font-bold text-xs tracking-wider uppercase rounded-none transition-all shadow-lg flex items-center justify-center gap-2 cursor-pointer"
               >
                 <PhoneCall className="w-4 h-4" />
                 <span>Đăng Ký Tham Quan Căn Hộ Thực Tế</span>
@@ -881,7 +881,7 @@ export default function FloorPlanExplorer({ onOpenLogin }: FloorPlanExplorerProp
                     window.location.href = '/portal';
                   }
                 }}
-                className={`w-full py-2.5 border text-xs font-semibold tracking-wider uppercase rounded-lg transition-all flex items-center justify-center gap-2 cursor-pointer ${
+                className={`w-full py-2.5 border text-xs font-semibold tracking-wider uppercase rounded-none transition-all flex items-center justify-center gap-2 cursor-pointer ${
                   isDark
                     ? 'bg-[#121824] hover:bg-[#1A2232] border-[#2A374A] hover:border-[#C5A880]/60 text-gray-300 hover:text-white'
                     : 'bg-slate-100 hover:bg-slate-200 border-gray-300 hover:border-[#C5A880] text-gray-800'
@@ -900,7 +900,7 @@ export default function FloorPlanExplorer({ onOpenLogin }: FloorPlanExplorerProp
       {/* ============================================================= */}
       {isRegisterOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/80 backdrop-blur-sm overflow-y-auto">
-          <div className={`border border-[#C5A880]/60 rounded-2xl p-5 sm:p-7 max-w-lg w-full shadow-2xl relative my-auto transition-colors duration-300 ${
+          <div className={`border border-[#C5A880]/60 rounded-none p-5 sm:p-7 max-w-lg w-full shadow-2xl relative my-auto transition-colors duration-300 ${
             isDark ? 'bg-[#0E131C] text-white' : 'bg-white text-gray-900'
           }`}>
             <button
@@ -909,7 +909,7 @@ export default function FloorPlanExplorer({ onOpenLogin }: FloorPlanExplorerProp
                 setIsRegisterOpen(false);
                 setRegisterSuccess(false);
               }}
-              className={`absolute top-4 right-4 p-1 rounded-lg transition-colors ${
+              className={`absolute top-4 right-4 p-1 rounded-none transition-colors ${
                 isDark ? 'text-gray-400 hover:text-white hover:bg-white/10' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-100'
               }`}
             >
@@ -918,7 +918,7 @@ export default function FloorPlanExplorer({ onOpenLogin }: FloorPlanExplorerProp
 
             {/* Tiêu đề Modal */}
             <div className="space-y-1 mb-5 pr-8">
-              <div className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded text-[10px] font-mono uppercase tracking-wider ${
+              <div className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-none text-[10px] font-mono uppercase tracking-wider ${
                 isDark 
                   ? 'bg-[#161F2E] border border-[#C5A880]/40 text-[#C5A880]' 
                   : 'bg-amber-50 border border-[#C5A880]/60 text-amber-800'
@@ -941,12 +941,12 @@ export default function FloorPlanExplorer({ onOpenLogin }: FloorPlanExplorerProp
             {registerSuccess && confirmedBooking ? (
               /* MÀN HÌNH XÁC NHẬN THÀNH CÔNG */
               <div className="space-y-4">
-                <div className={`p-4 rounded-xl text-center space-y-2 border ${
+                <div className={`p-4 rounded-none text-center space-y-2 border ${
                   isDark 
                     ? 'bg-emerald-950/40 border-emerald-500/60' 
                     : 'bg-emerald-50 border-emerald-300'
                 }`}>
-                  <div className={`w-12 h-12 rounded-full border flex items-center justify-center mx-auto ${
+                  <div className={`w-12 h-12 rounded-none border flex items-center justify-center mx-auto ${
                     isDark 
                       ? 'bg-emerald-500/20 border-emerald-400 text-emerald-400' 
                       : 'bg-emerald-100 border-emerald-500 text-emerald-600'
@@ -966,7 +966,7 @@ export default function FloorPlanExplorer({ onOpenLogin }: FloorPlanExplorerProp
                 </div>
 
                 {/* Thẻ tóm tắt thông tin lịch hẹn */}
-                <div className={`border rounded-xl p-4 space-y-2.5 text-xs font-mono ${
+                <div className={`border rounded-none p-4 space-y-2.5 text-xs font-mono ${
                   isDark 
                     ? 'bg-[#121824] border-[#1E293B]' 
                     : 'bg-slate-50 border-gray-200'
@@ -981,7 +981,7 @@ export default function FloorPlanExplorer({ onOpenLogin }: FloorPlanExplorerProp
                     isDark ? 'border-[#1E293B]' : 'border-gray-200'
                   }`}>
                     <span className={isDark ? 'text-gray-400' : 'text-gray-500'}>Mốc giờ tham quan:</span>
-                    <span className="font-bold text-[#C5A880] bg-[#C5A880]/15 px-2 py-0.5 rounded border border-[#C5A880]/40">
+                    <span className="font-bold text-[#C5A880] bg-[#C5A880]/15 px-2 py-0.5 rounded-none border border-[#C5A880]/40">
                       {confirmedBooking.timeSlot}
                     </span>
                   </div>
@@ -1012,7 +1012,7 @@ export default function FloorPlanExplorer({ onOpenLogin }: FloorPlanExplorerProp
                       setIsRegisterOpen(false);
                       setRegisterSuccess(false);
                     }}
-                    className="w-full py-3 bg-[#C5A880] hover:bg-[#D4AF37] text-[#0A0E17] font-bold text-xs tracking-wider uppercase rounded-xl transition-all shadow-lg"
+                    className="w-full py-3 bg-[#C5A880] hover:bg-[#D4AF37] text-[#0A0E17] font-bold text-xs tracking-wider uppercase rounded-none transition-all shadow-lg"
                   >
                     Hoàn Tất & Đóng
                   </button>
@@ -1035,7 +1035,7 @@ export default function FloorPlanExplorer({ onOpenLogin }: FloorPlanExplorerProp
                       placeholder="Ví dụ: Nguyễn Hữu Lực"
                       value={leadForm.name}
                       onChange={(e) => setLeadForm({ ...leadForm, name: e.target.value })}
-                      className={`w-full rounded-lg p-2.5 focus:outline-none focus:border-[#C5A880] transition-colors border ${
+                      className={`w-full rounded-none p-2.5 focus:outline-none focus:border-[#C5A880] transition-colors border ${
                         isDark 
                           ? 'bg-[#121824] border-[#1E293B] text-white' 
                           : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
@@ -1056,7 +1056,7 @@ export default function FloorPlanExplorer({ onOpenLogin }: FloorPlanExplorerProp
                       placeholder="Ví dụ: 0901 888 999"
                       value={leadForm.phone}
                       onChange={(e) => setLeadForm({ ...leadForm, phone: e.target.value })}
-                      className={`w-full rounded-lg p-2.5 focus:outline-none focus:border-[#C5A880] transition-colors border ${
+                      className={`w-full rounded-none p-2.5 focus:outline-none focus:border-[#C5A880] transition-colors border ${
                         isDark 
                           ? 'bg-[#121824] border-[#1E293B] text-white' 
                           : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
@@ -1079,7 +1079,7 @@ export default function FloorPlanExplorer({ onOpenLogin }: FloorPlanExplorerProp
                         key={opt.id}
                         type="button"
                         onClick={() => setLeadForm({ ...leadForm, dateOption: opt.id })}
-                        className={`py-2 px-2 text-center rounded-lg text-xs transition-all font-medium ${
+                        className={`py-2 px-2 text-center rounded-none text-xs transition-all font-medium ${
                           leadForm.dateOption === opt.id
                             ? 'bg-[#C5A880] text-[#0A0E17] font-bold shadow-md'
                             : isDark
@@ -1099,7 +1099,7 @@ export default function FloorPlanExplorer({ onOpenLogin }: FloorPlanExplorerProp
                       min={new Date().toISOString().split('T')[0]}
                       value={leadForm.customDate}
                       onChange={(e) => setLeadForm({ ...leadForm, customDate: e.target.value })}
-                      className={`w-full rounded-lg p-2 text-xs focus:outline-none focus:border-[#C5A880] mt-1.5 transition-colors border ${
+                      className={`w-full rounded-none p-2 text-xs focus:outline-none focus:border-[#C5A880] mt-1.5 transition-colors border ${
                         isDark 
                           ? 'bg-[#121824] border-[#1E293B] text-white' 
                           : 'bg-white border-gray-300 text-gray-900'
@@ -1128,7 +1128,7 @@ export default function FloorPlanExplorer({ onOpenLogin }: FloorPlanExplorerProp
                           key={slot.id}
                           type="button"
                           onClick={() => setLeadForm({ ...leadForm, timeSlot: slot.time })}
-                          className={`p-2.5 rounded-xl border text-left transition-all relative flex flex-col justify-between cursor-pointer ${
+                          className={`p-2.5 rounded-none border text-left transition-all relative flex flex-col justify-between cursor-pointer ${
                             isSelected
                               ? isDark
                                 ? 'bg-[#C5A880]/15 border-[#C5A880] ring-1 ring-[#C5A880] shadow-[0_0_15px_rgba(197,168,128,0.3)]'
@@ -1139,7 +1139,7 @@ export default function FloorPlanExplorer({ onOpenLogin }: FloorPlanExplorerProp
                           }`}
                         >
                           <div className="flex items-center justify-between gap-1">
-                            <span className={`text-[9.5px] font-mono uppercase px-1.5 py-0.5 rounded ${
+                            <span className={`text-[9.5px] font-mono uppercase px-1.5 py-0.5 rounded-none ${
                               isSelected
                                 ? 'bg-[#C5A880] text-[#0A0E17] font-bold'
                                 : isDark
@@ -1188,7 +1188,7 @@ export default function FloorPlanExplorer({ onOpenLogin }: FloorPlanExplorerProp
                         key={g}
                         type="button"
                         onClick={() => setLeadForm({ ...leadForm, guests: g })}
-                        className={`py-2 px-1 text-center rounded-lg text-[11px] font-mono transition-all ${
+                        className={`py-2 px-1 text-center rounded-none text-[11px] font-mono transition-all ${
                           leadForm.guests === g
                             ? isDark
                               ? 'bg-[#1E293B] border border-[#C5A880] text-[#C5A880] font-bold'
@@ -1208,7 +1208,7 @@ export default function FloorPlanExplorer({ onOpenLogin }: FloorPlanExplorerProp
                 <div className="pt-2">
                   <button
                     type="submit"
-                    className="w-full py-3.5 bg-[#C5A880] hover:bg-[#D4AF37] text-[#0A0E17] font-bold text-xs tracking-wider uppercase rounded-xl transition-all shadow-xl flex items-center justify-center gap-2 cursor-pointer"
+                    className="w-full py-3.5 bg-[#C5A880] hover:bg-[#D4AF37] text-[#0A0E17] font-bold text-xs tracking-wider uppercase rounded-none transition-all shadow-xl flex items-center justify-center gap-2 cursor-pointer"
                   >
                     <PhoneCall className="w-4 h-4" />
                     <span>Xác Nhận Đặt Lịch Tham Quan ({leadForm.timeSlot})</span>
