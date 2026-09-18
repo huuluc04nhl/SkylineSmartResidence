@@ -201,10 +201,10 @@ export default function TicketService({ currentUser }: TicketServiceProps) {
           {/* AI NLP Indicator */}
           <div className="p-3 bg-[#161B22] border border-[#222B35] flex items-center justify-between text-xs">
             <span className="text-gray-400 flex items-center gap-1.5">
-              <Sparkles className="w-3.5 h-3.5 text-[#C5A880]" /> AI tự động phân loại:
+              <Sparkles className="w-3.5 h-3.5 text-[#C5A880]" /> Tự động phân loại sự cố:
             </span>
             <span className="px-2.5 py-0.5 bg-[#1C2533] border border-[#C5A880] text-[#C5A880] font-mono font-bold">
-              {aiDetectedCat} (Mức độ: {aiDetectedCat === 'Nước' ? 'Khẩn Cấp (SLA 45p)' : 'Bình Thường (SLA 120p)'})
+              {aiDetectedCat} (Mức độ: {aiDetectedCat === 'Nước' ? 'Khẩn cấp (Cam kết 45 phút)' : 'Bình thường (Cam kết 2 giờ)'})
             </span>
           </div>
 
@@ -212,7 +212,7 @@ export default function TicketService({ currentUser }: TicketServiceProps) {
           <div className="space-y-2 pt-1">
             <label className="text-xs text-gray-300 font-medium flex items-center justify-between">
               <span>Đính kèm hình ảnh hiện trường sự cố:</span>
-              <span className="text-[11px] text-gray-400 font-mono">* Tự động chuyển đổi Base64 đồng bộ BQL</span>
+              <span className="text-[11px] text-gray-400">* Ảnh được gửi trực tiếp đến Ban Quản Lý</span>
             </label>
 
             <input
@@ -273,7 +273,7 @@ export default function TicketService({ currentUser }: TicketServiceProps) {
               <Sliders className="w-3.5 h-3.5" /> Nghiệm Thu Hình Ảnh Kỹ Thuật
             </div>
             <h3 className="font-serif text-lg text-white font-bold mt-0.5">
-              Hình Ảnh Trước & Sau Sửa Chữa (Before / After)
+              Hình Ảnh Đối Chiếu Trước & Sau Khi Sửa Chữa
             </h3>
           </div>
 
@@ -369,7 +369,7 @@ export default function TicketService({ currentUser }: TicketServiceProps) {
             </div>
             <div className="text-xs text-gray-300 font-semibold">Chưa có phiếu sửa chữa nào được nghiệm thu kèm hình ảnh</div>
             <p className="text-[11px] text-gray-500 max-w-md mx-auto leading-relaxed">
-              Công cụ đối chiếu chất lượng Before/After sẽ tự động kích hoạt ngay khi Kỹ thuật viên hoàn tất sửa chữa và tải lên ảnh nghiệm thu thực tế cho phiếu sự cố của căn hộ.
+              Công cụ đối chiếu hình ảnh Trước / Sau sẽ tự động kích hoạt ngay khi Kỹ thuật viên hoàn tất sửa chữa và tải lên ảnh nghiệm thu thực tế cho phiếu sự cố của căn hộ.
             </p>
           </div>
         )}

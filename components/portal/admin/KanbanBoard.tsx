@@ -168,7 +168,7 @@ export default function KanbanBoard() {
                 : 'text-gray-300 hover:text-white'
             }`}
           >
-            <Wrench className="w-3.5 h-3.5" /> Bảng Điều Phối ({tickets.length})
+            <Wrench className="w-3.5 h-3.5" /> Bảng Theo Dõi Sự Cố ({tickets.length})
           </button>
 
           <button
@@ -179,7 +179,7 @@ export default function KanbanBoard() {
                 : 'text-gray-300 hover:text-white'
             }`}
           >
-            <Award className="w-3.5 h-3.5" /> Đội Ngũ KTV & Bảng Lương ({technicians.length})
+            <Award className="w-3.5 h-3.5" /> Danh Sách Kỹ Thuật Viên & Thù Lao ({technicians.length})
           </button>
         </div>
       </div>
@@ -307,7 +307,7 @@ export default function KanbanBoard() {
                   <span className="w-2.5 h-2.5 bg-amber-500 rounded-none animate-pulse"></span>
                   2. KTV Đang Xử Lý ({inProgressTickets.length})
                 </span>
-                <span className="text-[10px] font-mono text-amber-400">SLA Cam Kết Có Mặt</span>
+                <span className="text-[10px] font-mono text-amber-400">Cam Kết Có Mặt</span>
               </div>
 
               <div className="p-4 space-y-4 min-h-[420px] overflow-y-auto">
@@ -353,7 +353,7 @@ export default function KanbanBoard() {
 
                       <div className="pt-2 border-t border-[#222B35] flex items-center justify-between">
                         <span className="text-[10px] text-amber-400 font-mono flex items-center gap-1">
-                          <Clock className="w-3 h-3" /> SLA: {ticket.ai_category === 'Nước' || ticket.ai_category === 'Điện' ? '45 phút' : '120 phút'}
+                          <Clock className="w-3 h-3" /> Cam kết xử lý: {ticket.ai_category === 'Nước' || ticket.ai_category === 'Điện' ? 'Trong 45 phút' : 'Trong 2 giờ'}
                         </span>
 
                         <button
@@ -733,7 +733,7 @@ export default function KanbanBoard() {
             <div className="space-y-2">
               <label className="text-xs text-gray-300 font-semibold flex items-center justify-between">
                 <span>Tải Ảnh Nghiệm Thu Sau Khi Sửa Xong:</span>
-                <span className="text-[11px] text-gray-400 font-mono">* Tự động chuyển Base64 đồng bộ cư dân</span>
+                <span className="text-[11px] text-gray-400 font-mono">* Ảnh được lưu và gửi trực tiếp đến cư dân</span>
               </label>
 
               <input

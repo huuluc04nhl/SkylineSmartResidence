@@ -14,7 +14,7 @@ export interface TechnicianProfile {
   name: string;
   phone: string;
   email: string;
-  specialty: 'Cơ Điện & Nước' | 'Điện Lạnh & BMS Tòa Nhà' | 'Đa Năng';
+  specialty: 'Cơ Điện & Nước' | 'Điện Lạnh & Kỹ Thuật Tòa Nhà' | 'Đa Năng';
   baseSalary: number; // Lương cơ bản tháng (VNĐ)
   payPerTicket: number; // Tiền công định mức theo ca sửa (VNĐ)
   bonusPerFiveStar: number; // Thưởng khi cư dân chấm 5 sao (VNĐ)
@@ -70,7 +70,7 @@ export const DEFAULT_TECHNICIANS: TechnicianProfile[] = [
     name: 'Trần Văn Kỹ Thuật',
     phone: '0901.888.998',
     email: 'nks.manager02@gmail.com',
-    specialty: 'Điện Lạnh & BMS Tòa Nhà',
+    specialty: 'Điện Lạnh & Kỹ Thuật Tòa Nhà',
     baseSalary: 9000000,
     payPerTicket: 180000,
     bonusPerFiveStar: 50000,
