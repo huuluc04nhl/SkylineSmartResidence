@@ -141,11 +141,25 @@ export async function POST(req: Request) {
       );
     }
 
+    const ensureBase64DataUrl = (str: string): string => {
+      if (!str || typeof str !== 'string') return '';
+      const trimmed = str.trim();
+      if (trimmed.startsWith('data:image/')) return trimmed;
+      return `data:image/jpeg;base64,${trimmed}`;
+    };
+
+    const normalizedSamples = {
+      front: ensureBase64DataUrl(samples.front),
+      left: ensureBase64DataUrl(samples.left),
+      right: ensureBase64DataUrl(samples.right),
+      smile: ensureBase64DataUrl(samples.smile),
+    };
+
     // 1. Phân tích trích xuất vector đặc trưng sinh trắc học tổng hợp từ cả 4 mẫu quét
-    const descFront = extractFaceDescriptorFromBase64(samples.front);
-    const descLeft = extractFaceDescriptorFromBase64(samples.left);
-    const descRight = extractFaceDescriptorFromBase64(samples.right);
-    const descSmile = extractFaceDescriptorFromBase64(samples.smile);
+    const descFront = extractFaceDescriptorFromBase64(normalizedSamples.front);
+    const descLeft = extractFaceDescriptorFromBase64(normalizedSamples.left);
+    const descRight = extractFaceDescriptorFromBase64(normalizedSamples.right);
+    const descSmile = extractFaceDescriptorFromBase64(normalizedSamples.smile);
 
     // Tạo vector tổng hợp 128 chiều từ 4 mẫu góc quét
     const compositeDesc = new Float32Array(128);
@@ -177,12 +191,7 @@ export async function POST(req: Request) {
       apartmentCode: targetApt,
       phone: phone || existingUser?.phone || '',
       avatarUrl: existingUser?.avatar_url || '',
-      samples: {
-        front: samples.front,
-        left: samples.left,
-        right: samples.right,
-        smile: samples.smile,
-      },
+      samples: normalizedSamples,
       descriptor: descriptorArray,
       enrolledAt: new Date().toISOString(),
       status: isPendingOwner ? 'PENDING_OWNER' : 'PENDING',
@@ -219,12 +228,7 @@ export async function POST(req: Request) {
           avatarUrl: existingUser?.avatar_url || '',
           idCardFrontUrl: existingUser?.cccd_front_url || '',
           idCardBackUrl: existingUser?.cccd_back_url || '',
-          faceSamples: {
-            front: samples.front,
-            left: samples.left,
-            right: samples.right,
-            smile: samples.smile,
-          },
+          faceSamples: normalizedSamples,
           faceScore: 99.4,
         });
       } catch (e) {

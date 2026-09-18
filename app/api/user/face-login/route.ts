@@ -75,9 +75,13 @@ export async function POST(req: Request) {
     }
 
     let imageBuffer: Buffer | null = null;
-    if (faceImage.startsWith('data:image/')) {
-      const base64Data = faceImage.replace(/^data:image\/\w+;base64,/, '');
+    const base64Data = faceImage.startsWith('data:image/')
+      ? faceImage.replace(/^data:image\/\w+;base64,/, '')
+      : faceImage.trim();
+    try {
       imageBuffer = Buffer.from(base64Data, 'base64');
+    } catch {
+      imageBuffer = null;
     }
 
     // 2. Kiểm tra chất lượng và độ rõ nét
@@ -144,7 +148,20 @@ export async function POST(req: Request) {
       );
     }
 
-    // 5.1 Kiểm tra phê duyệt từ Ban Quản Lý (yêu cầu BQL duyệt trước khi kích hoạt FaceID)
+    // 5.1 Kiểm tra phê duyệt
+    if (matchResult.profile.status === 'PENDING_OWNER') {
+      return NextResponse.json(
+        {
+          success: false,
+          matchScore: matchResult.score,
+          bestAngle: matchResult.bestAngle,
+          sampleScores: matchResult.sampleScores,
+          message: `Hồ sơ 4 mẫu FaceID của cư dân ${matchResult.profile.fullName} (Căn ${matchResult.profile.apartmentCode}) đang chờ Chủ Hộ xác nhận trước khi gửi Ban Quản Lý phê duyệt. Vui lòng nhắc Chủ Hộ vào mục Quản lý người thân để xác nhận hoặc đăng nhập bằng Email / Mật khẩu.`,
+        },
+        { status: 403 }
+      );
+    }
+
     if (matchResult.profile.status === 'PENDING') {
       return NextResponse.json(
         {

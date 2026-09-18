@@ -28,6 +28,11 @@ import {
   analyzeVideoLighting,
   LightingAnalysisResult
 } from '@/lib/biometricFaceEngine';
+import {
+  fileToBase64,
+  canvasToBase64,
+  normalizeBiometricSamplesToBase64
+} from '@/lib/imageUtils';
 
 interface BankFaceEnrollModalProps {
   isOpen: boolean;
@@ -274,8 +279,8 @@ export default function BankFaceEnrollModal({
     return () => clearInterval(interval);
   }, [isCameraActive, isReviewMode, isOpen]);
 
-  // Xử lý tải ảnh thay thế cho bước hiện tại
-  const handleFileUploadCurrentStep = (e: React.ChangeEvent<HTMLInputElement>) => {
+  // Xử lý tải ảnh thay thế cho bước hiện tại (chuyển đổi Image -> Base64 theo đặc tả NKS)
+  const handleFileUploadCurrentStep = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
@@ -284,36 +289,34 @@ export default function BankFaceEnrollModal({
       return;
     }
 
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      const base64 = event.target?.result as string;
-      if (base64) {
-        setIsShutterFlash(true);
-        setTimeout(() => setIsShutterFlash(false), 200);
+    try {
+      const base64 = await fileToBase64(file);
+      setIsShutterFlash(true);
+      setTimeout(() => setIsShutterFlash(false), 200);
 
-        const stepKey = currentStep.key;
-        const newSamples = { ...samples };
+      const stepKey = currentStep.key;
+      const newSamples = { ...samples };
 
-        if (stepKey === 'FRONT') newSamples.front = base64;
-        if (stepKey === 'LEFT') newSamples.left = base64;
-        if (stepKey === 'RIGHT') newSamples.right = base64;
-        if (stepKey === 'SMILE') newSamples.smile = base64;
+      if (stepKey === 'FRONT') newSamples.front = base64;
+      if (stepKey === 'LEFT') newSamples.left = base64;
+      if (stepKey === 'RIGHT') newSamples.right = base64;
+      if (stepKey === 'SMILE') newSamples.smile = base64;
 
-        setSamples(newSamples);
+      setSamples(newSamples);
 
-        if (currentStepIndex < STEPS.length - 1) {
-          setCurrentStepIndex((prev) => prev + 1);
-        } else {
-          stopCamera();
-          setIsReviewMode(true);
-        }
+      if (currentStepIndex < STEPS.length - 1) {
+        setCurrentStepIndex((prev) => prev + 1);
+      } else {
+        stopCamera();
+        setIsReviewMode(true);
       }
-    };
-    reader.readAsDataURL(file);
+    } catch (err: any) {
+      setErrorMessage('Lỗi chuyển đổi hình ảnh sang Base64: ' + (err?.message || ''));
+    }
     e.target.value = '';
   };
 
-  // 2. Capture Frame from Video
+  // 2. Capture Frame from Video (Image -> Base64 Data URL)
   const captureFrame = useCallback((): string | null => {
     if (!videoRef.current || !canvasRef.current) return null;
     const video = videoRef.current;
@@ -333,7 +336,7 @@ export default function BankFaceEnrollModal({
     ctx.drawImage(video, 0, 0, width, height);
     ctx.setTransform(1, 0, 0, 1, 0, 0);
 
-    return canvas.toDataURL('image/jpeg', 0.92);
+    return canvasToBase64(canvas, 'image/jpeg', 0.92);
   }, []);
 
   // 3. Trigger Step Capture with Flash & Sound Effect
@@ -405,7 +408,7 @@ export default function BankFaceEnrollModal({
     startCamera();
   };
 
-  // 7. Submit 4 Biometric Samples Officially
+  // 7. Submit 4 Biometric Samples Officially (Đặc tả NKS API: Image -> Base64)
   const handleFinalSubmit = async () => {
     if (!samples.front || !samples.left || !samples.right || !samples.smile) {
       setErrorMessage('Vui lòng thu thập đầy đủ cả 4 mẫu góc mặt trước khi xác nhận.');
@@ -416,6 +419,9 @@ export default function BankFaceEnrollModal({
     setErrorMessage(null);
 
     try {
+      // Chuẩn hóa toàn bộ 4 ảnh sang chuỗi Base64 Data URL theo đặc tả NKS API
+      const normalizedSamples = await normalizeBiometricSamplesToBase64(samples);
+
       // Gọi API chính thức backend
       const res = await nksEnrollFaceId({
         userId,
@@ -424,19 +430,14 @@ export default function BankFaceEnrollModal({
         phone,
         isFamilyMemberSelfEnroll,
         submittedByRole,
-        samples: {
-          front: samples.front,
-          left: samples.left,
-          right: samples.right,
-          smile: samples.smile,
-        },
+        samples: normalizedSamples,
       });
 
       // Trích xuất vector đặc trưng tổng hợp từ cả 4 mẫu sinh trắc học
-      const descFront = extractFaceDescriptorFromBase64(samples.front);
-      const descLeft = extractFaceDescriptorFromBase64(samples.left);
-      const descRight = extractFaceDescriptorFromBase64(samples.right);
-      const descSmile = extractFaceDescriptorFromBase64(samples.smile);
+      const descFront = extractFaceDescriptorFromBase64(normalizedSamples.front);
+      const descLeft = extractFaceDescriptorFromBase64(normalizedSamples.left);
+      const descRight = extractFaceDescriptorFromBase64(normalizedSamples.right);
+      const descSmile = extractFaceDescriptorFromBase64(normalizedSamples.smile);
 
       const compositeDesc = new Float32Array(128);
       let sumSq = 0;
@@ -461,12 +462,7 @@ export default function BankFaceEnrollModal({
         apartmentCode: apartmentCode || '12A05',
         phone: phone || '',
         avatarUrl: '', // Giữ nguyên chân dung riêng của cư dân, không dùng mẫu quét ghi đè
-        samples: {
-          front: samples.front,
-          left: samples.left,
-          right: samples.right,
-          smile: samples.smile,
-        },
+        samples: normalizedSamples,
         descriptor: Array.from(compositeDesc),
         enrolledAt: new Date().toISOString(),
         status: targetStatus,
