@@ -167,8 +167,10 @@ function notifyBillingUpdated() {
 /**
  * Lấy toàn bộ danh sách hóa đơn
  */
+let serverMemoryBills: ExtendedBill[] = [...INITIAL_BILLS];
+
 export function getBills(aptCode?: string): ExtendedBill[] {
-  let allBills: ExtendedBill[] = INITIAL_BILLS;
+  let allBills: ExtendedBill[] = serverMemoryBills;
   if (typeof window !== 'undefined') {
     try {
       const raw = localStorage.getItem(BILLS_STORAGE_KEY);
@@ -202,6 +204,7 @@ export function getBillById(id: string): ExtendedBill | undefined {
  * Lưu danh sách hóa đơn
  */
 export function saveBills(bills: ExtendedBill[]): void {
+  serverMemoryBills = bills;
   if (typeof window !== 'undefined') {
     localStorage.setItem(BILLS_STORAGE_KEY, JSON.stringify(bills));
     notifyBillingUpdated();
