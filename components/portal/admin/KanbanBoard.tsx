@@ -56,7 +56,7 @@ export default function KanbanBoard() {
 
   const [resolvingTicket, setResolvingTicket] = useState<ExtendedServiceRequest | null>(null);
   const [afterImageBase64, setAfterImageBase64] = useState<string>('');
-  const [resolutionNotes, setResolutionNotes] = useState<string>('Đã sửa chữa và kiểm tra áp lực nước ổn định, không còn rò rỉ.');
+  const [resolutionNotes, setResolutionNotes] = useState<string>('');
   const [isReadingAfterImage, setIsReadingAfterImage] = useState(false);
   const afterFileInputRef = useRef<HTMLInputElement>(null);
 
@@ -121,17 +121,24 @@ export default function KanbanBoard() {
     e.preventDefault();
     if (!resolvingTicket) return;
 
-    // Ảnh mặc định minh họa nếu thợ chưa kịp up ảnh
-    const defaultAfter = 'https://images.unsplash.com/photo-1585771724684-38269d6639fd?w=800&auto=format&fit=crop&q=80';
-    const finalAfter = afterImageBase64 || defaultAfter;
+    if (!afterImageBase64) {
+      alert('Vui lòng chụp hoặc tải ảnh hiện trường sau khi sửa chữa để nghiệm thu!');
+      return;
+    }
 
-    const res = resolveTicket(resolvingTicket.id, finalAfter, resolutionNotes);
+    if (!resolutionNotes.trim()) {
+      alert('Vui lòng nhập ghi chú kỹ thuật khi nghiệm thu bàn giao!');
+      return;
+    }
+
+    const res = resolveTicket(resolvingTicket.id, afterImageBase64, resolutionNotes.trim());
     if (res) {
       setActionSuccessMsg(`Đã nghiệm thu và hoàn tất phiếu #${res.id}. Hệ thống tự động ghi nhận thù lao cho KTV!`);
       setTimeout(() => setActionSuccessMsg(null), 4000);
     }
     setResolvingTicket(null);
     setAfterImageBase64('');
+    setResolutionNotes('');
   };
 
   // Calculations for Payroll KPIs
@@ -333,7 +340,7 @@ export default function KanbanBoard() {
                       <div className="p-2.5 bg-[#121820] border border-[#2D3748] text-xs space-y-1">
                         <div className="flex items-center justify-between text-gray-300">
                           <span className="flex items-center gap-1.5 text-amber-400 font-semibold">
-                            <Wrench className="w-3 h-3" /> {ticket.assigned_technician || 'KTV Lê Văn Kỹ Thuật'}
+                            <Wrench className="w-3 h-3" /> {ticket.assigned_technician || 'Chưa chỉ định'}
                           </span>
                           <span className="font-mono text-[11px] text-gray-400">{ticket.scheduled_time || 'Đang di chuyển'}</span>
                         </div>
@@ -346,7 +353,7 @@ export default function KanbanBoard() {
 
                       <div className="pt-2 border-t border-[#222B35] flex items-center justify-between">
                         <span className="text-[10px] text-amber-400 font-mono flex items-center gap-1">
-                          <Clock className="w-3 h-3" /> SLA: 45 phút
+                          <Clock className="w-3 h-3" /> SLA: {ticket.ai_category === 'Nước' || ticket.ai_category === 'Điện' ? '45 phút' : '120 phút'}
                         </span>
 
                         <button
@@ -438,8 +445,10 @@ export default function KanbanBoard() {
                       )}
 
                       <div className="pt-2 border-t border-[#222B35] flex items-center justify-between text-[10px] text-gray-400">
-                        <span>KTV: <strong className="text-white">{ticket.assigned_technician || 'KTV'}</strong></span>
-                        <span className="text-emerald-400 font-mono">Đã cộng công +150k</span>
+                        <span>KTV: <strong className="text-white">{ticket.assigned_technician || 'Kỹ thuật viên'}</strong></span>
+                        <span className="text-emerald-400 font-mono">
+                          +{(technicians.find(tc => tc.id === ticket.assigned_technician_id)?.payPerTicket || 150000).toLocaleString('vi-VN')} đ
+                        </span>
                       </div>
                     </div>
                   ))
@@ -474,7 +483,9 @@ export default function KanbanBoard() {
               <div className="text-2xl font-bold font-mono text-emerald-400 mt-1">
                 {totalCompletedMonth} <span className="text-xs text-gray-400 font-normal">ca trong tháng</span>
               </div>
-              <div className="text-[11px] text-gray-400 pt-1">Đạt 98.5% cam kết SLA 45 phút</div>
+              <div className="text-[11px] text-gray-400 pt-1">
+                {totalCompletedMonth > 0 ? '100% đúng quy trình nghiệm thu thực tế' : 'Chưa có ca nào hoàn tất'}
+              </div>
             </div>
 
             <div className="p-5 bg-[#121820] border border-[#222B35] space-y-1">
@@ -751,10 +762,10 @@ export default function KanbanBoard() {
                       alt="After Preview" 
                       className="w-10 h-10 object-cover border border-emerald-500"
                     />
-                    <span className="text-xs text-emerald-400 font-medium">Đã có ảnh nghiệm thu ✓</span>
+                    <span className="text-xs text-emerald-400 font-medium">Đã tải ảnh nghiệm thu ✓</span>
                   </div>
                 ) : (
-                  <span className="text-[11px] text-gray-500 italic">(Nếu chưa có, hệ thống dùng ảnh mẫu nghiệm thu chuẩn)</span>
+                  <span className="text-[11px] text-amber-400 font-medium">* Bắt buộc đính kèm ảnh chụp hiện trường thực tế để hoàn tất nghiệm thu</span>
                 )}
               </div>
             </div>
@@ -853,6 +864,64 @@ export default function KanbanBoard() {
                 className="px-4 py-2 bg-[#C5A880] text-[#0D1117] text-xs font-bold uppercase tracking-wider hover:bg-white"
               >
                 In Phiếu Chi Lương
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ========================================================================= */}
+      {/* MODAL 4: XEM ẢNH HIỆN TRƯỜNG CỦA PHIẾU                                    */}
+      {/* ========================================================================= */}
+      {inspectingTicket && (
+        <div className="fixed inset-0 bg-black/85 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-[#121820] border border-[#C5A880] max-w-2xl w-full p-6 space-y-4 shadow-2xl animate-fadeIn">
+            <div className="flex items-center justify-between border-b border-[#222B35] pb-3">
+              <div className="flex items-center gap-2">
+                <Eye className="w-4 h-4 text-[#C5A880]" />
+                <h3 className="font-serif text-base font-bold text-white">
+                  Ảnh Hiện Trường Phiếu #{inspectingTicket.id} - Căn {inspectingTicket.apt_code}
+                </h3>
+              </div>
+              <button onClick={() => setInspectingTicket(null)} className="text-gray-400 hover:text-white">✕</button>
+            </div>
+
+            <div className="space-y-3">
+              <div className="text-xs text-gray-300">
+                <strong>Mô tả cư dân:</strong> {inspectingTicket.content}
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {inspectingTicket.before_image && (
+                  <div className="space-y-1">
+                    <span className="text-[11px] text-red-400 font-semibold">Ảnh hiện trường lúc báo:</span>
+                    <img 
+                      src={inspectingTicket.before_image} 
+                      alt="Hiện trường" 
+                      className="w-full h-56 object-cover border border-red-500/50"
+                    />
+                  </div>
+                )}
+
+                {inspectingTicket.after_image && (
+                  <div className="space-y-1">
+                    <span className="text-[11px] text-emerald-400 font-semibold">Ảnh nghiệm thu sau khi sửa:</span>
+                    <img 
+                      src={inspectingTicket.after_image} 
+                      alt="Nghiệm thu" 
+                      className="w-full h-56 object-cover border border-emerald-500/50"
+                    />
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div className="flex justify-end pt-2 border-t border-[#222B35]">
+              <button 
+                onClick={() => setInspectingTicket(null)}
+                className="px-4 py-1.5 bg-[#161B22] border border-[#2D3748] text-gray-300 hover:text-white text-xs"
+              >
+                Đóng
               </button>
             </div>
           </div>

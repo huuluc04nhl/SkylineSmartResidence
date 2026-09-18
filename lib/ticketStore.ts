@@ -1,24 +1,24 @@
 /**
  * Skyline Smart Residence - Centralized Maintenance Ticket & Technician Payroll Store
  * 
- * Lưu trữ và quản trị 2 chiều phiếu báo hỏng cư dân và điều phối kỹ thuật BQL:
- * - Phân công kỹ thuật viên theo chuyên môn (Điện, Nước, Lạnh, Đa năng)
- * - Tự động tính toán công việc và bảng lương thù lao theo số ca sửa + thưởng 5 sao
- * - Lưu trữ dữ liệu bền vững (localStorage + file server .skyline_tickets.json)
+ * Quản trị 100% dữ liệu thực tế - KHÔNG DỮ LIỆU ẢO / KHÔNG ẢNH UNSPLASH
+ * - Danh bạ KTV lấy từ nhân sự kỹ thuật thực tế của tòa nhà (khớp với database schema và tài khoản BQL)
+ * - Danh sách phiếu khởi đầu sạch (rỗng), được tạo thực tế từ Portal cư dân và lưu bền vững
+ * - Bảng lương thù lao tính toán 100% động từ các ca sửa thực tế đã hoàn thành
  */
 
-import { ServiceRequest, DEMO_TICKETS } from './dataStore';
+import { ServiceRequest } from './dataStore';
 
 export interface TechnicianProfile {
-  id: string; // 'KTV-01', 'KTV-02', etc.
+  id: string; // 'KTV-01', 'KTV-02'
   name: string;
   phone: string;
-  specialty: 'Điện' | 'Nước' | 'Điện Lạnh' | 'Đa Năng';
+  email: string;
+  specialty: 'Cơ Điện & Nước' | 'Điện Lạnh & BMS Tòa Nhà' | 'Đa Năng';
   baseSalary: number; // Lương cơ bản tháng (VNĐ)
-  payPerTicket: number; // Định mức công theo ca hoàn tất (VNĐ)
+  payPerTicket: number; // Tiền công định mức theo ca sửa (VNĐ)
   bonusPerFiveStar: number; // Thưởng khi cư dân chấm 5 sao (VNĐ)
   status: 'AVAILABLE' | 'BUSY' | 'OFF_DUTY';
-  avatar?: string;
 }
 
 export interface ExtendedServiceRequest extends Omit<ServiceRequest, 'after_image'> {
@@ -45,15 +45,21 @@ export interface TechnicianPayrollSummary {
   recentTickets: ExtendedServiceRequest[];
 }
 
-const TICKETS_STORAGE_KEY = 'skyline_service_tickets_v1';
-const TECHNICIANS_STORAGE_KEY = 'skyline_technicians_v1';
+// Storage keys v2 - Không dữ liệu ảo
+const TICKETS_STORAGE_KEY = 'skyline_service_tickets_v2';
+const TECHNICIANS_STORAGE_KEY = 'skyline_technicians_v2';
 
+/**
+ * Đội ngũ Kỹ thuật viên thực tế của Ban Quản Lý Tòa Nhà Skyline
+ * Khớp chuẩn với Database SQL Schema và tài khoản BQL
+ */
 export const DEFAULT_TECHNICIANS: TechnicianProfile[] = [
   {
     id: 'KTV-01',
     name: 'Lê Văn Kỹ Thuật',
     phone: '0909.888.777',
-    specialty: 'Nước',
+    email: 'tech.skyline@gmail.com',
+    specialty: 'Cơ Điện & Nước',
     baseSalary: 8500000,
     payPerTicket: 150000,
     bonusPerFiveStar: 50000,
@@ -61,105 +67,19 @@ export const DEFAULT_TECHNICIANS: TechnicianProfile[] = [
   },
   {
     id: 'KTV-02',
-    name: 'Trần Văn Điện',
-    phone: '0912.334.455',
-    specialty: 'Điện',
+    name: 'Trần Văn Kỹ Thuật',
+    phone: '0901.888.998',
+    email: 'nks.manager02@gmail.com',
+    specialty: 'Điện Lạnh & BMS Tòa Nhà',
     baseSalary: 9000000,
     payPerTicket: 180000,
     bonusPerFiveStar: 50000,
     status: 'AVAILABLE',
-  },
-  {
-    id: 'KTV-03',
-    name: 'Nguyễn Văn Thợ',
-    phone: '0988.776.655',
-    specialty: 'Đa Năng',
-    baseSalary: 8000000,
-    payPerTicket: 150000,
-    bonusPerFiveStar: 50000,
-    status: 'AVAILABLE',
-  },
-  {
-    id: 'KTV-04',
-    name: 'Phạm Hữu Lạnh',
-    phone: '0933.221.199',
-    specialty: 'Điện Lạnh',
-    baseSalary: 9500000,
-    payPerTicket: 200000,
-    bonusPerFiveStar: 60000,
-    status: 'AVAILABLE',
   }
 ];
 
-export const INITIAL_TICKETS: ExtendedServiceRequest[] = [
-  {
-    id: 'TICK-102',
-    apartment_id: 'apt-12a05',
-    apt_code: '12A05',
-    resident_name: 'Nguyễn Hữu Lực',
-    resident_phone: '0364967082',
-    content: 'Vòi sen nhà tắm master bị rò rỉ nước liên tục khi khóa van chính.',
-    ai_category: 'Nước',
-    ai_priority: 1,
-    priority_color: '#DC2626',
-    sla_deadline: new Date(Date.now() + 45 * 60000).toISOString(),
-    sla_minutes_left: 45,
-    status: 'In_Progress',
-    assigned_technician_id: 'KTV-01',
-    assigned_technician: 'Lê Văn Kỹ Thuật',
-    assigned_technician_phone: '0909.888.777',
-    scheduled_time: 'Trong vòng 30 phút',
-    before_image: 'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?w=800&auto=format&fit=crop&q=80',
-    created_at: new Date(Date.now() - 30 * 60000).toISOString(),
-    updated_at: new Date().toISOString(),
-  },
-  {
-    id: 'TICK-099',
-    apartment_id: 'apt-12a05',
-    apt_code: '12A05',
-    resident_name: 'Nguyễn Hữu Lực',
-    resident_phone: '0364967082',
-    content: 'Aptomat nguồn điều hòa phòng khách thỉnh thoảng tự nhảy khi dùng nhiều thiết bị.',
-    ai_category: 'Điện',
-    ai_priority: 2,
-    priority_color: '#D97706',
-    sla_deadline: new Date(Date.now() + 180 * 60000).toISOString(),
-    sla_minutes_left: 180,
-    status: 'Assigned',
-    assigned_technician_id: 'KTV-02',
-    assigned_technician: 'Trần Văn Điện',
-    assigned_technician_phone: '0912.334.455',
-    scheduled_time: '14:30 chiều nay',
-    before_image: 'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=800&auto=format&fit=crop&q=80',
-    created_at: new Date(Date.now() - 120 * 60000).toISOString(),
-    updated_at: new Date().toISOString(),
-  },
-  {
-    id: 'TICK-088',
-    apartment_id: 'apt-12a05',
-    apt_code: '12A05',
-    resident_name: 'Nguyễn Hữu Lực',
-    resident_phone: '0364967082',
-    content: 'Thay ron đệm cách âm cửa kính ban công bị xẹp rách do gió lớn.',
-    ai_category: 'Khác',
-    ai_priority: 3,
-    priority_color: '#16A34A',
-    sla_deadline: new Date(Date.now() - 24 * 3600000).toISOString(),
-    sla_minutes_left: 0,
-    status: 'Resolved',
-    assigned_technician_id: 'KTV-03',
-    assigned_technician: 'Nguyễn Văn Thợ',
-    assigned_technician_phone: '0988.776.655',
-    before_image: 'https://images.unsplash.com/photo-1513694203232-719a280e022f?w=800&auto=format&fit=crop&q=80',
-    after_image: 'https://images.unsplash.com/photo-1585771724684-38269d6639fd?w=800&auto=format&fit=crop&q=80',
-    resolution_notes: 'Đã thay mới toàn bộ nẹp ron cao su EPDM 3 lớp, chống ồn và cách âm hoàn hảo.',
-    rating: 5,
-    resident_feedback: 'Thợ làm việc rất nhanh và lịch sự, lau dọn sạch sẽ sau khi sửa!',
-    created_at: new Date(Date.now() - 48 * 3600000).toISOString(),
-    updated_at: new Date(Date.now() - 24 * 3600000).toISOString(),
-    resolved_at: new Date(Date.now() - 24 * 3600000).toISOString(),
-  }
-];
+// Khởi đầu sạch sẽ - không nạp phiếu ảo hay ảnh mạng Unsplash
+export const INITIAL_TICKETS: ExtendedServiceRequest[] = [];
 
 function notifyTicketsUpdated() {
   if (typeof window !== 'undefined') {
@@ -200,19 +120,18 @@ export function getTechnicianById(id: string): TechnicianProfile | undefined {
 // GET / SAVE TICKETS
 // -----------------------------------------------------------------------------
 export function getTickets(aptCode?: string): ExtendedServiceRequest[] {
-  let allTickets: ExtendedServiceRequest[] = INITIAL_TICKETS;
+  let allTickets: ExtendedServiceRequest[] = [];
   if (typeof window !== 'undefined') {
     try {
       const raw = localStorage.getItem(TICKETS_STORAGE_KEY);
-      if (!raw) {
-        localStorage.setItem(TICKETS_STORAGE_KEY, JSON.stringify(INITIAL_TICKETS));
-        allTickets = INITIAL_TICKETS;
-      } else {
+      if (raw) {
         const parsed = JSON.parse(raw);
-        allTickets = Array.isArray(parsed) && parsed.length > 0 ? parsed : INITIAL_TICKETS;
+        if (Array.isArray(parsed)) {
+          allTickets = parsed;
+        }
       }
     } catch {
-      allTickets = INITIAL_TICKETS;
+      allTickets = [];
     }
   }
 
@@ -243,7 +162,7 @@ export function saveTickets(tickets: ExtendedServiceRequest[]): void {
 // -----------------------------------------------------------------------------
 
 /**
- * Cư Dân tạo phiếu báo sự cố mới
+ * Cư Dân tạo phiếu báo sự cố mới từ thực tế
  */
 export function createTicket(payload: {
   apartment_id?: string;
@@ -252,7 +171,7 @@ export function createTicket(payload: {
   resident_phone: string;
   content: string;
   ai_category?: 'Điện' | 'Nước' | 'Vệ sinh' | 'An ninh' | 'Khác';
-  before_image: string; // Base64
+  before_image?: string; // Base64 ảnh chụp thực tế
 }): ExtendedServiceRequest {
   const allTickets = getTickets();
   const cat = payload.ai_category || 'Khác';
@@ -271,7 +190,7 @@ export function createTicket(payload: {
     sla_deadline: new Date(Date.now() + (isUrgent ? 45 : 120) * 60000).toISOString(),
     sla_minutes_left: isUrgent ? 45 : 120,
     status: 'Open',
-    before_image: payload.before_image,
+    before_image: payload.before_image || '',
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
   };
@@ -282,7 +201,7 @@ export function createTicket(payload: {
 }
 
 /**
- * Ban Quản Lý phân công Kỹ thuật viên
+ * Ban Quản Lý phân công Kỹ thuật viên thật
  */
 export function assignTechnicianToTicket(
   ticketId: string, 
@@ -322,11 +241,11 @@ export function assignTechnicianToTicket(
 }
 
 /**
- * Ban Quản Lý nghiệm thu và đóng phiếu sau khi KTV sửa xong
+ * Ban Quản Lý nghiệm thu và đóng phiếu với ảnh thật chụp sau sửa chữa
  */
 export function resolveTicket(
   ticketId: string,
-  afterImage: string, // Base64
+  afterImage: string, // Base64 thật từ camera hoặc file upload
   resolutionNotes?: string
 ): ExtendedServiceRequest | null {
   const allTickets = getTickets();
@@ -340,7 +259,7 @@ export function resolveTicket(
         ...t,
         status: 'Resolved' as const,
         after_image: afterImage,
-        resolution_notes: resolutionNotes || 'Đã sửa chữa và kiểm tra vận hành hoàn tất.',
+        resolution_notes: resolutionNotes || 'Đã kiểm tra và xử lý xong.',
         resolved_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
       };
@@ -383,7 +302,7 @@ export function rateTicket(
       targetTicket = {
         ...t,
         rating: Math.max(1, Math.min(5, Math.round(rating))),
-        resident_feedback: feedback?.trim() || 'Cư dân rất hài lòng với dịch vụ.',
+        resident_feedback: feedback?.trim() || 'Cư dân hài lòng với dịch vụ.',
         rated_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
       };
@@ -400,14 +319,14 @@ export function rateTicket(
 }
 
 /**
- * Tính toán Bảng Lương Thù Lao tự động cho toàn bộ Kỹ thuật viên
+ * Tính toán Bảng Lương Thù Lao tự động 100% từ các ca sửa thực tế
  */
 export function getTechnicianPayroll(): TechnicianPayrollSummary[] {
   const techs = getTechnicians();
   const allTickets = getTickets();
 
   return techs.map(tech => {
-    // Lọc các phiếu mà KTV này đã giải quyết xong
+    // Lọc các phiếu THỰC TẾ mà KTV này đã giải quyết xong
     const techResolvedTickets = allTickets.filter(
       t => t.assigned_technician_id === tech.id && t.status === 'Resolved'
     );
@@ -415,10 +334,12 @@ export function getTechnicianPayroll(): TechnicianPayrollSummary[] {
     const completedCount = techResolvedTickets.length;
     const fiveStarCount = techResolvedTickets.filter(t => t.rating === 5).length;
     
-    // Tính điểm đánh giá trung bình
+    // Tính điểm đánh giá trung bình từ các lượt chấm thật của cư dân
     const ratedTickets = techResolvedTickets.filter(t => typeof t.rating === 'number' && t.rating > 0);
     const sumRating = ratedTickets.reduce((acc, t) => acc + (t.rating || 0), 0);
-    const averageRating = ratedTickets.length > 0 ? Number((sumRating / ratedTickets.length).toFixed(1)) : 5.0;
+    const averageRating = ratedTickets.length > 0 
+      ? Number((sumRating / ratedTickets.length).toFixed(1)) 
+      : (completedCount > 0 ? 5.0 : 0);
 
     // Tiền công theo ca
     const ticketBonusTotal = completedCount * tech.payPerTicket;

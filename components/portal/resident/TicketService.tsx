@@ -70,11 +70,10 @@ export default function TicketService({ currentUser }: TicketServiceProps) {
     return () => window.removeEventListener('skyline_tickets_updated', handleUpdate);
   }, [aptCode]);
 
-  // Chọn ticket so sánh: ưu tiên ticket đã giải quyết (Resolved) có cả 2 ảnh
-  const resolvedWithImages = tickets.filter(t => t.status === 'Resolved' && t.before_image && t.after_image);
-  const activeComparisonTicket = tickets.find(t => t.id === selectedComparisonTicketId) 
-    || resolvedWithImages[0] 
-    || tickets[0];
+  // Chọn ticket so sánh: các phiếu đã giải quyết (Resolved) có cả 2 ảnh thật (trước & sau)
+  const comparisonTickets = tickets.filter(t => t.status === 'Resolved' && t.before_image && t.after_image);
+  const activeComparisonTicket = comparisonTickets.find(t => t.id === selectedComparisonTicketId) 
+    || comparisonTickets[0];
 
   const handleContentChange = (text: string) => {
     setContent(text);
@@ -113,9 +112,8 @@ export default function TicketService({ currentUser }: TicketServiceProps) {
     e.preventDefault();
     if (!content.trim()) return;
 
-    // Ảnh mặc định minh họa nếu cư dân không tải ảnh
-    const defaultSample = 'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?w=800&auto=format&fit=crop&q=80';
-    const beforeImage = attachedImageBase64 || defaultSample;
+    // Sử dụng ảnh thật cư dân đính kèm nếu có, tuyệt đối không dùng ảnh mạng giả lập
+    const beforeImage = attachedImageBase64 || '';
 
     const newTicket = createTicket({
       apt_code: aptCode,
@@ -268,102 +266,114 @@ export default function TicketService({ currentUser }: TicketServiceProps) {
       )}
 
       {/* Feature Highlight: Interactive Before - After Comparison Slider */}
-      {activeComparisonTicket && (
-        <div className="bg-[#121820] border border-[#222B35] p-6 space-y-4 shadow-xl">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#222B35] pb-3">
-            <div>
-              <div className="text-[10px] uppercase tracking-wider text-[#C5A880] font-semibold flex items-center gap-1.5">
-                <Sliders className="w-3.5 h-3.5" /> Nghiệm Thu Hình Ảnh Kỹ Thuật
-              </div>
-              <h3 className="font-serif text-lg text-white font-bold mt-0.5">
-                Hình Ảnh Trước & Sau Sửa Chữa (Before / After)
-              </h3>
+      <div className="bg-[#121820] border border-[#222B35] p-6 space-y-4 shadow-xl">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#222B35] pb-3">
+          <div>
+            <div className="text-[10px] uppercase tracking-wider text-[#C5A880] font-semibold flex items-center gap-1.5">
+              <Sliders className="w-3.5 h-3.5" /> Nghiệm Thu Hình Ảnh Kỹ Thuật
             </div>
-
-            {/* Ticket Selector if multiple resolved tickets */}
-            {tickets.length > 1 && (
-              <div className="flex items-center gap-2 text-xs">
-                <span className="text-gray-400">Xem phiếu:</span>
-                <select
-                  value={activeComparisonTicket.id}
-                  onChange={(e) => setSelectedComparisonTicketId(e.target.value)}
-                  className="bg-[#161B22] border border-[#2D3748] text-white text-xs px-2.5 py-1 focus:outline-none focus:border-[#C5A880]"
-                >
-                  {tickets.map(t => (
-                    <option key={t.id} value={t.id}>
-                      {t.id} - {t.ai_category} ({t.status === 'Resolved' ? 'Đã sửa xong' : 'Đang xử lý'})
-                    </option>
-                  ))}
-                </select>
-              </div>
-            )}
+            <h3 className="font-serif text-lg text-white font-bold mt-0.5">
+              Hình Ảnh Trước & Sau Sửa Chữa (Before / After)
+            </h3>
           </div>
 
-          {/* Draggable Interactive Slider Container */}
-          <div className="relative h-64 sm:h-80 bg-black border border-gray-700 overflow-hidden select-none">
-            {/* After Image (Full background) */}
-            <img
-              src={activeComparisonTicket.after_image || activeComparisonTicket.before_image}
-              alt="After"
-              className="absolute inset-0 w-full h-full object-cover"
-            />
-            <div className="absolute top-3 right-3 bg-emerald-950/90 border border-emerald-500 text-emerald-300 px-2.5 py-1 text-[10px] sm:text-[11px] font-bold uppercase tracking-wider z-10 shadow-lg">
-              {activeComparisonTicket.after_image ? 'Sau Khi Sửa Xong ✓' : 'KTV Đang Sửa Chữa...'}
+          {/* Ticket Selector if multiple resolved tickets with photos */}
+          {comparisonTickets.length > 1 && (
+            <div className="flex items-center gap-2 text-xs">
+              <span className="text-gray-400">Xem phiếu:</span>
+              <select
+                value={activeComparisonTicket?.id || ''}
+                onChange={(e) => setSelectedComparisonTicketId(e.target.value)}
+                className="bg-[#161B22] border border-[#2D3748] text-white text-xs px-2.5 py-1 focus:outline-none focus:border-[#C5A880]"
+              >
+                {comparisonTickets.map(t => (
+                  <option key={t.id} value={t.id}>
+                    {t.id} - {t.ai_category} (Nghiệm thu {new Date(t.resolved_at || t.updated_at).toLocaleDateString('vi-VN')})
+                  </option>
+                ))}
+              </select>
             </div>
+          )}
+        </div>
 
-            {/* Before Image (Clipped by sliderPos percentage) */}
-            <div
-              className="absolute inset-0 overflow-hidden"
-              style={{ clipPath: `inset(0 ${100 - sliderPos}% 0 0)` }}
-            >
+        {activeComparisonTicket ? (
+          <div className="space-y-4">
+            {/* Draggable Interactive Slider Container */}
+            <div className="relative h-64 sm:h-80 bg-black border border-gray-700 overflow-hidden select-none">
+              {/* After Image (Full background) */}
               <img
-                src={activeComparisonTicket.before_image}
-                alt="Before"
+                src={activeComparisonTicket.after_image}
+                alt="Sau khi sửa"
                 className="absolute inset-0 w-full h-full object-cover"
               />
-              <div className="absolute top-3 left-3 bg-red-950/90 border border-red-500 text-red-300 px-2.5 py-1 text-[10px] sm:text-[11px] font-bold uppercase tracking-wider z-10 shadow-lg">
-                Hiện Trạng Lúc Cư Dân Báo
+              <div className="absolute top-3 right-3 bg-emerald-950/90 border border-emerald-500 text-emerald-300 px-2.5 py-1 text-[10px] sm:text-[11px] font-bold uppercase tracking-wider z-10 shadow-lg">
+                Sau Khi Sửa Xong ✓
+              </div>
+
+              {/* Before Image (Clipped by sliderPos percentage) */}
+              <div
+                className="absolute inset-0 overflow-hidden"
+                style={{ clipPath: `inset(0 ${100 - sliderPos}% 0 0)` }}
+              >
+                <img
+                  src={activeComparisonTicket.before_image}
+                  alt="Hiện trạng lúc báo"
+                  className="absolute inset-0 w-full h-full object-cover"
+                />
+                <div className="absolute top-3 left-3 bg-red-950/90 border border-red-500 text-red-300 px-2.5 py-1 text-[10px] sm:text-[11px] font-bold uppercase tracking-wider z-10 shadow-lg">
+                  Hiện Trạng Lúc Cư Dân Báo
+                </div>
+              </div>
+
+              {/* Vertical Divider Line */}
+              <div
+                className="absolute top-0 bottom-0 w-0.5 bg-white shadow-2xl z-20 pointer-events-none"
+                style={{ left: `${sliderPos}%` }}
+              />
+
+              {/* Range Slider Control */}
+              <input
+                type="range"
+                min="2"
+                max="98"
+                value={sliderPos}
+                onChange={(e) => setSliderPos(Number(e.target.value))}
+                className="absolute inset-0 w-full h-full opacity-0 cursor-ew-resize z-30"
+              />
+
+              {/* Draggable Vertical Divider Handle */}
+              <div
+                className="absolute top-1/2 -translate-y-1/2 pointer-events-none z-20 flex items-center justify-center -translate-x-1/2"
+                style={{ left: `${sliderPos}%` }}
+              >
+                <div className="w-8 h-8 bg-white border-2 border-[#0D1117] text-[#0D1117] flex items-center justify-center text-xs font-bold shadow-2xl">
+                  ↔
+                </div>
               </div>
             </div>
 
-            {/* Vertical Divider Line */}
-            <div
-              className="absolute top-0 bottom-0 w-0.5 bg-white shadow-2xl z-20 pointer-events-none"
-              style={{ left: `${sliderPos}%` }}
-            />
-
-            {/* Range Slider Control */}
-            <input
-              type="range"
-              min="2"
-              max="98"
-              value={sliderPos}
-              onChange={(e) => setSliderPos(Number(e.target.value))}
-              className="absolute inset-0 w-full h-full opacity-0 cursor-ew-resize z-30"
-            />
-
-            {/* Draggable Vertical Divider Handle */}
-            <div
-              className="absolute top-1/2 -translate-y-1/2 pointer-events-none z-20 flex items-center justify-center -translate-x-1/2"
-              style={{ left: `${sliderPos}%` }}
-            >
-              <div className="w-8 h-8 bg-white border-2 border-[#0D1117] text-[#0D1117] flex items-center justify-center text-xs font-bold shadow-2xl">
-                ↔
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between text-xs text-gray-400 gap-2">
+              <span>* Kéo thanh trượt ngang để đối chiếu chất lượng thi công trước và sau của kỹ thuật viên.</span>
+              <div className="flex items-center gap-3">
+                <span className="font-mono text-[#C5A880]">Mã phiếu: {activeComparisonTicket.id}</span>
+                {activeComparisonTicket.resolution_notes && (
+                  <span className="text-gray-300 italic">"{activeComparisonTicket.resolution_notes}"</span>
+                )}
               </div>
             </div>
           </div>
-
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between text-xs text-gray-400 gap-2">
-            <span>* Kéo thanh trượt ngang để đối chiếu chất lượng thi công trước và sau của kỹ thuật viên.</span>
-            <div className="flex items-center gap-3">
-              <span className="font-mono text-[#C5A880]">Mã phiếu: {activeComparisonTicket.id}</span>
-              {activeComparisonTicket.resolution_notes && (
-                <span className="text-gray-300 italic">"{activeComparisonTicket.resolution_notes}"</span>
-              )}
+        ) : (
+          <div className="py-12 px-6 text-center border border-dashed border-[#2D3748] bg-[#161B22]/40 space-y-2.5">
+            <div className="w-10 h-10 rounded-none bg-[#1C2533] border border-[#2D3748] text-[#C5A880] flex items-center justify-center mx-auto">
+              <Sliders className="w-5 h-5" />
             </div>
+            <div className="text-xs text-gray-300 font-semibold">Chưa có phiếu sửa chữa nào được nghiệm thu kèm hình ảnh</div>
+            <p className="text-[11px] text-gray-500 max-w-md mx-auto leading-relaxed">
+              Công cụ đối chiếu chất lượng Before/After sẽ tự động kích hoạt ngay khi Kỹ thuật viên hoàn tất sửa chữa và tải lên ảnh nghiệm thu thực tế cho phiếu sự cố của căn hộ.
+            </p>
           </div>
-        </div>
-      )}
+        )}
+      </div>
 
       {/* Tickets List */}
       <div className="space-y-4">
@@ -438,6 +448,31 @@ export default function TicketService({ currentUser }: TicketServiceProps) {
 
                 <p className="text-gray-200 text-xs leading-relaxed">{t.content}</p>
 
+                {(t.before_image || t.after_image) && (
+                  <div className="flex items-center gap-4 pt-1">
+                    {t.before_image && (
+                      <div className="flex items-center gap-1.5 text-[11px] text-gray-400">
+                        <img 
+                          src={t.before_image} 
+                          alt="Ảnh lúc báo" 
+                          className="w-10 h-10 object-cover border border-red-500/40"
+                        />
+                        <span>Ảnh hiện trường</span>
+                      </div>
+                    )}
+                    {t.after_image && (
+                      <div className="flex items-center gap-1.5 text-[11px] text-gray-400">
+                        <img 
+                          src={t.after_image} 
+                          alt="Ảnh nghiệm thu" 
+                          className="w-10 h-10 object-cover border border-emerald-500/40"
+                        />
+                        <span className="text-emerald-400 font-medium">Ảnh nghiệm thu</span>
+                      </div>
+                    )}
+                  </div>
+                )}
+
                 {/* Technician & Action Status Bar */}
                 <div className="pt-2 border-t border-[#222B35] flex flex-wrap items-center justify-between gap-3 text-[11px]">
                   <div className="flex items-center gap-4 text-gray-400">
@@ -489,7 +524,7 @@ export default function TicketService({ currentUser }: TicketServiceProps) {
 
             <div className="p-3 bg-[#161B22] border border-[#222B35] text-xs space-y-1">
               <div>Phiếu xử lý: <strong className="text-[#C5A880] font-mono">{ratingModalTicket.id}</strong></div>
-              <div>Kỹ thuật viên: <strong className="text-white">{ratingModalTicket.assigned_technician || 'Lê Văn Kỹ Thuật'}</strong></div>
+              <div>Kỹ thuật viên: <strong className="text-white">{ratingModalTicket.assigned_technician || 'Kỹ thuật viên tòa nhà'}</strong></div>
             </div>
 
             {/* Interactive Stars */}
