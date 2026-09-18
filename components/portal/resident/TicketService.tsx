@@ -1,29 +1,111 @@
 'use client';
 
-import React, { useState } from 'react';
-import { DEMO_TICKETS, ServiceRequest } from '@/lib/dataStore';
-import { Wrench, Clock, Sparkles, Plus, CheckCircle2, Sliders, Eye } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { 
+  Wrench, 
+  Clock, 
+  Sparkles, 
+  Plus, 
+  CheckCircle2, 
+  Sliders, 
+  Eye, 
+  Camera, 
+  Upload, 
+  Star, 
+  Phone, 
+  AlertCircle, 
+  X, 
+  Check, 
+  MessageSquare,
+  ShieldCheck,
+  ChevronRight,
+  RefreshCw
+} from 'lucide-react';
+import { User as UserType } from '@/lib/dataStore';
+import { 
+  getTickets, 
+  createTicket, 
+  rateTicket, 
+  ExtendedServiceRequest 
+} from '@/lib/ticketStore';
+import { fileToBase64 } from '@/lib/imageUtils';
 
-export default function TicketService() {
-  const [tickets, setTickets] = useState<ServiceRequest[]>(DEMO_TICKETS);
+interface TicketServiceProps {
+  currentUser?: UserType;
+}
+
+export default function TicketService({ currentUser }: TicketServiceProps) {
+  const aptCode = currentUser?.apartment_code || '12A05';
+  const residentName = currentUser?.full_name || (currentUser as any)?.fullname || 'Nguyễn Hữu Lực';
+  const residentPhone = currentUser?.phone || '0364967082';
+
+  const [tickets, setTickets] = useState<ExtendedServiceRequest[]>([]);
   const [sliderPos, setSliderPos] = useState<number>(50); // 50% for before-after slider
+  const [selectedComparisonTicketId, setSelectedComparisonTicketId] = useState<string>('');
+  
+  // Create Form State
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [content, setContent] = useState('');
   const [aiDetectedCat, setAiDetectedCat] = useState<'Điện' | 'Nước' | 'Khác'>('Nước');
-  const [createdSuccess, setCreatedSuccess] = useState(false);
+  const [attachedImageBase64, setAttachedImageBase64] = useState<string>('');
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
+  const [createdSuccessMsg, setCreatedSuccessMsg] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Active ticket for Before/After Slider demonstration
-  const activeComparisonTicket = tickets[0];
+  // Rating Modal State
+  const [ratingModalTicket, setRatingModalTicket] = useState<ExtendedServiceRequest | null>(null);
+  const [selectedRating, setSelectedRating] = useState<number>(5);
+  const [feedbackText, setFeedbackText] = useState<string>('');
+  const [rateSuccessMsg, setRateSuccessMsg] = useState<string | null>(null);
+
+  const refreshTicketList = () => {
+    const list = getTickets(aptCode);
+    setTickets(list);
+  };
+
+  useEffect(() => {
+    refreshTicketList();
+    const handleUpdate = () => refreshTicketList();
+    window.addEventListener('skyline_tickets_updated', handleUpdate);
+    return () => window.removeEventListener('skyline_tickets_updated', handleUpdate);
+  }, [aptCode]);
+
+  // Chọn ticket so sánh: ưu tiên ticket đã giải quyết (Resolved) có cả 2 ảnh
+  const resolvedWithImages = tickets.filter(t => t.status === 'Resolved' && t.before_image && t.after_image);
+  const activeComparisonTicket = tickets.find(t => t.id === selectedComparisonTicketId) 
+    || resolvedWithImages[0] 
+    || tickets[0];
 
   const handleContentChange = (text: string) => {
     setContent(text);
-    // AI NLP Auto-categorization simulation
-    if (text.toLowerCase().includes('nước') || text.toLowerCase().includes('vòi') || text.toLowerCase().includes('rỉ')) {
+    const lower = text.toLowerCase();
+    if (lower.includes('nước') || lower.includes('vòi') || lower.includes('rỉ') || lower.includes('nghẹt') || lower.includes('bồn')) {
       setAiDetectedCat('Nước');
-    } else if (text.toLowerCase().includes('điện') || text.toLowerCase().includes('đèn') || text.toLowerCase().includes('aptomat')) {
+    } else if (lower.includes('điện') || lower.includes('đèn') || lower.includes('aptomat') || lower.includes('chập') || lower.includes('ổ cắm')) {
       setAiDetectedCat('Điện');
     } else {
       setAiDetectedCat('Khác');
+    }
+  };
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      alert('Vui lòng chọn tệp hình ảnh hợp lệ (JPG, PNG).');
+      return;
+    }
+
+    setIsUploadingImage(true);
+    try {
+      const base64 = await fileToBase64(file);
+      setAttachedImageBase64(base64);
+    } catch (err) {
+      console.warn('Lỗi đọc ảnh:', err);
+      alert('Không thể đọc file ảnh. Vui lòng thử lại.');
+    } finally {
+      setIsUploadingImage(false);
     }
   };
 
@@ -31,30 +113,34 @@ export default function TicketService() {
     e.preventDefault();
     if (!content.trim()) return;
 
-    const newTicket: ServiceRequest = {
-      id: `TICK-${Math.floor(100 + Math.random() * 900)}`,
-      apartment_id: 'apt-12a05',
-      apt_code: '12A05',
-      resident_name: 'Nguyễn Hữu Lực',
-      resident_phone: '0903112233',
-      content: content,
-      ai_category: aiDetectedCat,
-      ai_priority: aiDetectedCat === 'Nước' ? 1 : 2,
-      priority_color: aiDetectedCat === 'Nước' ? '#DC2626' : '#D97706',
-      sla_deadline: new Date(Date.now() + 3600000).toISOString(),
-      sla_minutes_left: 60,
-      status: 'Open',
-      before_image: 'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?w=800',
-      after_image: 'https://images.unsplash.com/photo-1585771724684-38269d6639fd?w=800',
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-    };
+    // Ảnh mặc định minh họa nếu cư dân không tải ảnh
+    const defaultSample = 'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?w=800&auto=format&fit=crop&q=80';
+    const beforeImage = attachedImageBase64 || defaultSample;
 
-    setTickets([newTicket, ...tickets]);
+    const newTicket = createTicket({
+      apt_code: aptCode,
+      resident_name: residentName,
+      resident_phone: residentPhone,
+      content: content.trim(),
+      ai_category: aiDetectedCat,
+      before_image: beforeImage,
+    });
+
     setContent('');
+    setAttachedImageBase64('');
     setShowCreateForm(false);
-    setCreatedSuccess(true);
-    setTimeout(() => setCreatedSuccess(false), 3000);
+    setCreatedSuccessMsg(`Yêu cầu #${newTicket.id} đã được gửi tới Ban Quản Lý và đang chờ tiếp nhận!`);
+    setTimeout(() => setCreatedSuccessMsg(null), 4000);
+  };
+
+  const handleSubmitRating = () => {
+    if (!ratingModalTicket) return;
+    rateTicket(ratingModalTicket.id, selectedRating, feedbackText);
+    setRatingModalTicket(null);
+    setSelectedRating(5);
+    setFeedbackText('');
+    setRateSuccessMsg('Cảm ơn Quý cư dân đã gửi đánh giá dịch vụ kỹ thuật!');
+    setTimeout(() => setRateSuccessMsg(null), 3000);
   };
 
   return (
@@ -62,44 +148,54 @@ export default function TicketService() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#222B35] pb-4">
         <div>
-          <div className="text-[10px] uppercase tracking-[0.25em] text-[#C5A880] font-semibold">
-            Hỗ Trợ Kỹ Thuật
+          <div className="text-[10px] uppercase tracking-[0.25em] text-[#C5A880] font-semibold flex items-center gap-1.5">
+            <Wrench className="w-3.5 h-3.5" /> Hỗ Trợ Kỹ Thuật • Căn Hộ {aptCode}
           </div>
           <h2 className="font-serif text-2xl text-white font-bold mt-1">
-            Báo Hỏng & Sửa Chữa
+            Báo Hỏng & Đề Nghị Sửa Chữa
           </h2>
         </div>
 
         <button
           onClick={() => setShowCreateForm(!showCreateForm)}
-          className="px-4 py-2 bg-[#C5A880] hover:bg-white text-[#0D1117] text-xs font-bold uppercase tracking-wider transition-colors flex items-center gap-1.5"
+          className="px-4 py-2 bg-[#C5A880] hover:bg-white text-[#0D1117] text-xs font-bold uppercase tracking-wider transition-colors flex items-center gap-1.5 shadow-lg"
         >
           <Plus className="w-4 h-4" /> Báo Sự Cố Mới
         </button>
       </div>
 
-      {createdSuccess && (
-        <div className="p-3 bg-emerald-950 border border-emerald-500 text-emerald-300 text-xs flex items-center gap-2">
-          <CheckCircle2 className="w-4 h-4" /> Yêu cầu sửa chữa đã được tiếp nhận và chuyển đến đội ngũ kỹ thuật!
+      {createdSuccessMsg && (
+        <div className="p-3.5 bg-emerald-950/80 border border-emerald-500 text-emerald-300 text-xs flex items-center gap-2 animate-fadeIn">
+          <CheckCircle2 className="w-4 h-4 text-emerald-400 flex-shrink-0" />
+          <span>{createdSuccessMsg}</span>
+        </div>
+      )}
+
+      {rateSuccessMsg && (
+        <div className="p-3.5 bg-emerald-950/80 border border-emerald-500 text-emerald-300 text-xs flex items-center gap-2 animate-fadeIn">
+          <Sparkles className="w-4 h-4 text-yellow-400 flex-shrink-0" />
+          <span>{rateSuccessMsg}</span>
         </div>
       )}
 
       {/* Create Ticket Form */}
       {showCreateForm && (
-        <form onSubmit={handleCreateTicket} className="p-6 bg-[#121820] border border-[#C5A880] space-y-4">
+        <form onSubmit={handleCreateTicket} className="p-6 bg-[#121820] border border-[#C5A880] space-y-4 shadow-2xl animate-fadeIn">
           <div className="flex items-center justify-between border-b border-[#222B35] pb-2 text-xs">
-            <span className="font-serif font-bold text-white uppercase tracking-wider">Tạo Phiếu Báo Sự Cố</span>
-            <span className="text-gray-400">Kỹ thuật viên có mặt trong 15 - 60 phút</span>
+            <span className="font-serif font-bold text-white uppercase tracking-wider flex items-center gap-1.5">
+              <Wrench className="w-4 h-4 text-[#C5A880]" /> Tạo Phiếu Báo Sự Cố Căn Hộ {aptCode}
+            </span>
+            <span className="text-gray-400">Kỹ thuật viên có mặt trong 15 - 45 phút</span>
           </div>
 
           <div className="space-y-1.5">
-            <label className="text-xs text-gray-300">Mô tả chi tiết sự cố:</label>
+            <label className="text-xs text-gray-300 font-medium">Mô tả chi tiết hiện trạng hỏng hóc:</label>
             <textarea
               rows={3}
-              placeholder="VD: Vòi sen nhà tắm master bị rò rỉ nước, cần kỹ thuật kiểm tra gấp..."
+              placeholder="VD: Vòi sen nhà tắm master bị rò rỉ nước liên tục, nước tràn ra sàn phòng vệ sinh..."
               value={content}
               onChange={(e) => handleContentChange(e.target.value)}
-              className="w-full bg-[#161B22] border border-[#2D3748] text-xs text-white p-3 focus:outline-none focus:border-[#C5A880]"
+              className="w-full bg-[#161B22] border border-[#2D3748] text-xs text-white p-3 focus:outline-none focus:border-[#C5A880] placeholder-gray-500"
               required
             />
           </div>
@@ -107,131 +203,354 @@ export default function TicketService() {
           {/* AI NLP Indicator */}
           <div className="p-3 bg-[#161B22] border border-[#222B35] flex items-center justify-between text-xs">
             <span className="text-gray-400 flex items-center gap-1.5">
-              <Sparkles className="w-3.5 h-3.5 text-[#C5A880]" /> Tự động nhận diện hạng mục:
+              <Sparkles className="w-3.5 h-3.5 text-[#C5A880]" /> AI tự động phân loại:
             </span>
-            <span className="px-2 py-0.5 bg-[#1C2533] border border-[#C5A880] text-[#C5A880] font-mono font-bold">
-              {aiDetectedCat} (Mức độ: {aiDetectedCat === 'Nước' ? 'Khẩn Cấp' : 'Bình Thường'})
+            <span className="px-2.5 py-0.5 bg-[#1C2533] border border-[#C5A880] text-[#C5A880] font-mono font-bold">
+              {aiDetectedCat} (Mức độ: {aiDetectedCat === 'Nước' ? 'Khẩn Cấp (SLA 45p)' : 'Bình Thường (SLA 120p)'})
             </span>
           </div>
 
-          <div className="flex justify-end gap-3 pt-2">
+          {/* Attach Before Photo (Image -> Base64) */}
+          <div className="space-y-2 pt-1">
+            <label className="text-xs text-gray-300 font-medium flex items-center justify-between">
+              <span>Đính kèm hình ảnh hiện trường sự cố:</span>
+              <span className="text-[11px] text-gray-400 font-mono">* Tự động chuyển đổi Base64 đồng bộ BQL</span>
+            </label>
+
+            <input
+              type="file"
+              ref={fileInputRef}
+              onChange={handleFileChange}
+              accept="image/*"
+              className="hidden"
+            />
+
+            <div className="flex items-center gap-3">
+              <button
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                disabled={isUploadingImage}
+                className="px-3.5 py-2 bg-[#161B22] border border-[#2D3748] hover:border-[#C5A880] text-gray-300 hover:text-white text-xs flex items-center gap-2 transition-colors"
+              >
+                <Camera className="w-3.5 h-3.5 text-[#C5A880]" />
+                {isUploadingImage ? 'Đang đọc ảnh...' : attachedImageBase64 ? 'Đổi Ảnh Khác' : 'Chụp / Tải Ảnh Hiện Trường'}
+              </button>
+
+              {attachedImageBase64 && (
+                <div className="flex items-center gap-2">
+                  <img
+                    src={attachedImageBase64}
+                    alt="Preview"
+                    className="w-10 h-10 object-cover border border-[#C5A880]"
+                  />
+                  <span className="text-xs text-emerald-400 font-medium">Đã đính kèm ảnh ✓</span>
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div className="flex justify-end gap-3 pt-3 border-t border-[#222B35]">
             <button
               type="button"
               onClick={() => setShowCreateForm(false)}
-              className="px-4 py-2 bg-transparent border border-gray-700 text-xs text-gray-300"
+              className="px-4 py-2 bg-transparent border border-gray-700 text-xs text-gray-300 hover:text-white"
             >
               Hủy
             </button>
             <button
               type="submit"
-              className="px-5 py-2 bg-[#C5A880] text-[#0D1117] text-xs font-bold uppercase tracking-wider"
+              className="px-5 py-2 bg-[#C5A880] hover:bg-white text-[#0D1117] text-xs font-bold uppercase tracking-wider transition-colors shadow-lg"
             >
-              Gửi Yêu Cầu
+              Gửi Tới BQL Ngay
             </button>
           </div>
         </form>
       )}
 
       {/* Feature Highlight: Interactive Before - After Comparison Slider */}
-      <div className="bg-[#121820] border border-[#222B35] p-6 space-y-4">
-        <div className="flex items-center justify-between border-b border-[#222B35] pb-3">
-          <div>
-            <div className="text-[10px] uppercase tracking-wider text-[#C5A880] font-semibold flex items-center gap-1.5">
-              <Sliders className="w-3.5 h-3.5" /> Nghiệm Thu Hình Ảnh
+      {activeComparisonTicket && (
+        <div className="bg-[#121820] border border-[#222B35] p-6 space-y-4 shadow-xl">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#222B35] pb-3">
+            <div>
+              <div className="text-[10px] uppercase tracking-wider text-[#C5A880] font-semibold flex items-center gap-1.5">
+                <Sliders className="w-3.5 h-3.5" /> Nghiệm Thu Hình Ảnh Kỹ Thuật
+              </div>
+              <h3 className="font-serif text-lg text-white font-bold mt-0.5">
+                Hình Ảnh Trước & Sau Sửa Chữa (Before / After)
+              </h3>
             </div>
-            <h3 className="font-serif text-lg text-white font-bold mt-0.5">
-              Hình Ảnh Trước & Sau Sửa Chữa
-            </h3>
-          </div>
-          <span className="text-xs font-mono text-gray-400">Phiếu: {activeComparisonTicket.id}</span>
-        </div>
 
-        {/* Draggable Interactive Slider Container */}
-        <div className="relative h-64 sm:h-80 bg-black border border-gray-700 overflow-hidden select-none">
-          {/* After Image (Full background) */}
-          <img
-            src={activeComparisonTicket.after_image}
-            alt="After"
-            className="absolute inset-0 w-full h-full object-cover"
-          />
-          <div className="absolute top-3 right-3 bg-emerald-950/90 border border-emerald-500 text-emerald-300 px-2.5 py-1 text-[10px] sm:text-[11px] font-bold uppercase tracking-wider z-10">
-            Sau Khi Sửa Xong ✓
+            {/* Ticket Selector if multiple resolved tickets */}
+            {tickets.length > 1 && (
+              <div className="flex items-center gap-2 text-xs">
+                <span className="text-gray-400">Xem phiếu:</span>
+                <select
+                  value={activeComparisonTicket.id}
+                  onChange={(e) => setSelectedComparisonTicketId(e.target.value)}
+                  className="bg-[#161B22] border border-[#2D3748] text-white text-xs px-2.5 py-1 focus:outline-none focus:border-[#C5A880]"
+                >
+                  {tickets.map(t => (
+                    <option key={t.id} value={t.id}>
+                      {t.id} - {t.ai_category} ({t.status === 'Resolved' ? 'Đã sửa xong' : 'Đang xử lý'})
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
           </div>
 
-          {/* Before Image (Clipped by sliderPos percentage) */}
-          <div
-            className="absolute inset-0 overflow-hidden"
-            style={{ clipPath: `inset(0 ${100 - sliderPos}% 0 0)` }}
-          >
+          {/* Draggable Interactive Slider Container */}
+          <div className="relative h-64 sm:h-80 bg-black border border-gray-700 overflow-hidden select-none">
+            {/* After Image (Full background) */}
             <img
-              src={activeComparisonTicket.before_image}
-              alt="Before"
+              src={activeComparisonTicket.after_image || activeComparisonTicket.before_image}
+              alt="After"
               className="absolute inset-0 w-full h-full object-cover"
             />
-            <div className="absolute top-3 left-3 bg-red-950/90 border border-red-500 text-red-300 px-2.5 py-1 text-[10px] sm:text-[11px] font-bold uppercase tracking-wider z-10">
-              Hiện Trạng Trước Khi Sửa
+            <div className="absolute top-3 right-3 bg-emerald-950/90 border border-emerald-500 text-emerald-300 px-2.5 py-1 text-[10px] sm:text-[11px] font-bold uppercase tracking-wider z-10 shadow-lg">
+              {activeComparisonTicket.after_image ? 'Sau Khi Sửa Xong ✓' : 'KTV Đang Sửa Chữa...'}
+            </div>
+
+            {/* Before Image (Clipped by sliderPos percentage) */}
+            <div
+              className="absolute inset-0 overflow-hidden"
+              style={{ clipPath: `inset(0 ${100 - sliderPos}% 0 0)` }}
+            >
+              <img
+                src={activeComparisonTicket.before_image}
+                alt="Before"
+                className="absolute inset-0 w-full h-full object-cover"
+              />
+              <div className="absolute top-3 left-3 bg-red-950/90 border border-red-500 text-red-300 px-2.5 py-1 text-[10px] sm:text-[11px] font-bold uppercase tracking-wider z-10 shadow-lg">
+                Hiện Trạng Lúc Cư Dân Báo
+              </div>
+            </div>
+
+            {/* Vertical Divider Line */}
+            <div
+              className="absolute top-0 bottom-0 w-0.5 bg-white shadow-2xl z-20 pointer-events-none"
+              style={{ left: `${sliderPos}%` }}
+            />
+
+            {/* Range Slider Control */}
+            <input
+              type="range"
+              min="2"
+              max="98"
+              value={sliderPos}
+              onChange={(e) => setSliderPos(Number(e.target.value))}
+              className="absolute inset-0 w-full h-full opacity-0 cursor-ew-resize z-30"
+            />
+
+            {/* Draggable Vertical Divider Handle */}
+            <div
+              className="absolute top-1/2 -translate-y-1/2 pointer-events-none z-20 flex items-center justify-center -translate-x-1/2"
+              style={{ left: `${sliderPos}%` }}
+            >
+              <div className="w-8 h-8 bg-white border-2 border-[#0D1117] text-[#0D1117] flex items-center justify-center text-xs font-bold shadow-2xl">
+                ↔
+              </div>
             </div>
           </div>
 
-          {/* Vertical Divider Line */}
-          <div
-            className="absolute top-0 bottom-0 w-0.5 bg-white shadow-2xl z-20 pointer-events-none"
-            style={{ left: `${sliderPos}%` }}
-          />
-
-          {/* Range Slider Control */}
-          <input
-            type="range"
-            min="2"
-            max="98"
-            value={sliderPos}
-            onChange={(e) => setSliderPos(Number(e.target.value))}
-            className="absolute inset-0 w-full h-full opacity-0 cursor-ew-resize z-30"
-          />
-
-          {/* Draggable Vertical Divider Handle */}
-          <div
-            className="absolute top-1/2 -translate-y-1/2 pointer-events-none z-20 flex items-center justify-center -translate-x-1/2"
-            style={{ left: `${sliderPos}%` }}
-          >
-            <div className="w-8 h-8 bg-white border-2 border-[#0D1117] text-[#0D1117] flex items-center justify-center text-xs font-bold shadow-2xl">
-              ↔
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between text-xs text-gray-400 gap-2">
+            <span>* Kéo thanh trượt ngang để đối chiếu chất lượng thi công trước và sau của kỹ thuật viên.</span>
+            <div className="flex items-center gap-3">
+              <span className="font-mono text-[#C5A880]">Mã phiếu: {activeComparisonTicket.id}</span>
+              {activeComparisonTicket.resolution_notes && (
+                <span className="text-gray-300 italic">"{activeComparisonTicket.resolution_notes}"</span>
+              )}
             </div>
           </div>
         </div>
-
-        <div className="flex justify-between items-center text-xs text-gray-400">
-          <span>* Kéo thanh trượt ngang để đối chiếu chất lượng thi công của đội ngũ kỹ thuật.</span>
-          <span className="font-mono text-[#C5A880]">Vị trí trượt: {sliderPos}%</span>
-        </div>
-      </div>
+      )}
 
       {/* Tickets List */}
-      <div className="space-y-3">
-        <div className="text-xs uppercase tracking-wider text-gray-400 font-semibold">
-          Lịch Sử Yêu Cầu Căn 12A05:
+      <div className="space-y-4">
+        <div className="flex items-center justify-between text-xs uppercase tracking-wider text-gray-400 font-semibold border-b border-[#222B35] pb-2">
+          <span>Danh Sách Yêu Cầu Căn Hộ {aptCode} ({tickets.length}):</span>
+          <button onClick={refreshTicketList} className="text-gray-400 hover:text-white flex items-center gap-1 text-[11px]">
+            <RefreshCw className="w-3 h-3" /> Làm mới
+          </button>
         </div>
 
-        <div className="space-y-3">
-          {tickets.map((t) => (
-            <div key={t.id} className="p-4 bg-[#121820] border border-[#222B35] space-y-2 text-xs">
-              <div className="flex items-center justify-between">
-                <span className="font-mono text-[#C5A880] font-bold">{t.id}</span>
-                <span className={`px-2 py-0.5 font-semibold text-[10px] uppercase ${
-                  t.status === 'Resolved' ? 'bg-emerald-950 text-emerald-400 border border-emerald-600' : 'bg-amber-950 text-amber-400 border border-amber-600'
-                }`}>
-                  {t.status === 'Resolved' ? 'Đã Nghiệm Thu Xong' : 'Đang Xử Lý (Kỹ Thuật)'}
-                </span>
+        {tickets.length === 0 ? (
+          <div className="p-8 bg-[#121820] border border-[#222B35] text-center text-gray-400 text-xs">
+            Hiện căn hộ {aptCode} chưa có yêu cầu sửa chữa nào.
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {tickets.map((t) => (
+              <div 
+                key={t.id} 
+                className={`p-4 bg-[#121820] border transition-all space-y-3 text-xs ${
+                  t.status === 'Resolved' 
+                    ? 'border-emerald-500/40 bg-gradient-to-r from-[#121820] to-[#0d1e15]' 
+                    : t.status === 'In_Progress'
+                      ? 'border-amber-500/40 bg-gradient-to-r from-[#121820] to-[#1e1a0f]'
+                      : 'border-[#222B35]'
+                }`}
+              >
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                  <div className="flex items-center gap-2">
+                    <span className="font-mono text-[#C5A880] font-bold text-sm">{t.id}</span>
+                    <span className="px-2 py-0.5 bg-[#1C2533] border border-gray-700 text-gray-300 text-[10px] font-mono">
+                      {t.ai_category}
+                    </span>
+                    <span className="text-[11px] text-gray-400">
+                      {new Date(t.created_at).toLocaleString('vi-VN')}
+                    </span>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <span className={`px-2.5 py-1 font-semibold text-[10px] uppercase tracking-wider flex items-center gap-1.5 ${
+                      t.status === 'Resolved' 
+                        ? 'bg-emerald-950 text-emerald-400 border border-emerald-600' 
+                        : t.status === 'In_Progress' || t.status === 'Assigned'
+                          ? 'bg-amber-950 text-amber-400 border border-amber-600 animate-pulse'
+                          : 'bg-blue-950 text-blue-400 border border-blue-600'
+                    }`}>
+                      {t.status === 'Resolved' ? (
+                        <>✓ Đã Nghiệm Thu Xong</>
+                      ) : t.status === 'In_Progress' || t.status === 'Assigned' ? (
+                        <>⏱ KTV Đang Xử Lý</>
+                      ) : (
+                        <>⏳ Chờ BQL Tiếp Nhận</>
+                      )}
+                    </span>
+
+                    {/* Nút Đánh giá 5 sao cho KTV nếu phiếu đã hoàn tất */}
+                    {t.status === 'Resolved' && (
+                      <button
+                        onClick={() => {
+                          setRatingModalTicket(t);
+                          setSelectedRating(t.rating || 5);
+                          setFeedbackText(t.resident_feedback || '');
+                        }}
+                        className="px-2.5 py-1 bg-yellow-500/20 hover:bg-yellow-500 text-yellow-300 hover:text-[#0D1117] border border-yellow-500/40 text-[10px] font-bold transition-all flex items-center gap-1"
+                      >
+                        <Star className="w-3 h-3 fill-current" />
+                        {t.rating ? `${t.rating} ⭐ (Xem Đánh Giá)` : 'Chấm Điểm KTV'}
+                      </button>
+                    )}
+                  </div>
+                </div>
+
+                <p className="text-gray-200 text-xs leading-relaxed">{t.content}</p>
+
+                {/* Technician & Action Status Bar */}
+                <div className="pt-2 border-t border-[#222B35] flex flex-wrap items-center justify-between gap-3 text-[11px]">
+                  <div className="flex items-center gap-4 text-gray-400">
+                    <span>
+                      Kỹ thuật viên phụ trách: {' '}
+                      <strong className="text-white">
+                        {t.assigned_technician || 'Ban Quản Lý đang điều phối'}
+                      </strong>
+                    </span>
+
+                    {t.assigned_technician_phone && (
+                      <a 
+                        href={`tel:${t.assigned_technician_phone}`} 
+                        className="text-[#C5A880] hover:underline flex items-center gap-1"
+                      >
+                        <Phone className="w-3 h-3" /> {t.assigned_technician_phone}
+                      </a>
+                    )}
+                  </div>
+
+                  {t.scheduled_time && (
+                    <span className="text-amber-400 font-mono">
+                      Hẹn đến: {t.scheduled_time}
+                    </span>
+                  )}
+                </div>
               </div>
-              <p className="text-gray-200">{t.content}</p>
-              <div className="flex justify-between text-[11px] text-gray-500 pt-1 border-t border-[#222B35]">
-                <span>Hạng mục: <strong className="text-gray-300">{t.ai_category}</strong></span>
-                <span>Kỹ thuật viên: <strong className="text-gray-300">{t.assigned_technician || 'Đang điều phối'}</strong></span>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* 5-Star Rating Modal */}
+      {ratingModalTicket && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-[#121820] border border-[#C5A880] max-w-md w-full p-6 space-y-4 shadow-2xl animate-fadeIn">
+            <div className="flex items-center justify-between border-b border-[#222B35] pb-3">
+              <div className="flex items-center gap-2 text-white font-serif font-bold">
+                <Star className="w-5 h-5 text-yellow-400 fill-yellow-400" />
+                <span>Đánh Giá Chất Lượng Dịch Vụ Kỹ Thuật</span>
+              </div>
+              <button 
+                onClick={() => setRatingModalTicket(null)}
+                className="text-gray-400 hover:text-white"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="p-3 bg-[#161B22] border border-[#222B35] text-xs space-y-1">
+              <div>Phiếu xử lý: <strong className="text-[#C5A880] font-mono">{ratingModalTicket.id}</strong></div>
+              <div>Kỹ thuật viên: <strong className="text-white">{ratingModalTicket.assigned_technician || 'Lê Văn Kỹ Thuật'}</strong></div>
+            </div>
+
+            {/* Interactive Stars */}
+            <div className="space-y-1 text-center py-2">
+              <div className="text-xs text-gray-300">Quý cư dân hài lòng với thái độ và kết quả sửa chữa chứ?</div>
+              <div className="flex items-center justify-center gap-2 pt-2">
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <button
+                    key={star}
+                    type="button"
+                    onClick={() => setSelectedRating(star)}
+                    className="p-1 transition-transform hover:scale-125 focus:outline-none"
+                  >
+                    <Star 
+                      className={`w-7 h-7 ${
+                        star <= selectedRating 
+                          ? 'text-yellow-400 fill-yellow-400' 
+                          : 'text-gray-600'
+                      }`} 
+                    />
+                  </button>
+                ))}
+              </div>
+              <div className="text-[11px] font-mono text-[#C5A880] font-bold pt-1">
+                {selectedRating === 5 ? '⭐⭐⭐⭐⭐ Xuất sắc (+50.000đ thưởng KTV)' :
+                 selectedRating === 4 ? '⭐⭐⭐⭐ Rất tốt' :
+                 selectedRating === 3 ? '⭐⭐⭐ Bình thường' :
+                 selectedRating === 2 ? '⭐⭐ Cần cải thiện' : '⭐ Không hài lòng'}
               </div>
             </div>
-          ))}
+
+            <div className="space-y-1">
+              <label className="text-xs text-gray-300">Ý kiến nhận xét thêm (Tùy chọn):</label>
+              <textarea
+                rows={2}
+                value={feedbackText}
+                onChange={(e) => setFeedbackText(e.target.value)}
+                placeholder="VD: Kỹ thuật viên rất chu đáo, dọn dẹp sạch sẽ sau khi sửa..."
+                className="w-full bg-[#161B22] border border-[#2D3748] text-xs text-white p-2.5 focus:outline-none focus:border-[#C5A880]"
+              />
+            </div>
+
+            <div className="flex justify-end gap-3 pt-2">
+              <button
+                type="button"
+                onClick={() => setRatingModalTicket(null)}
+                className="px-4 py-2 border border-gray-700 text-xs text-gray-300"
+              >
+                Đóng
+              </button>
+              <button
+                type="button"
+                onClick={handleSubmitRating}
+                className="px-5 py-2 bg-[#C5A880] hover:bg-white text-[#0D1117] text-xs font-bold uppercase tracking-wider transition-colors shadow-lg"
+              >
+                Gửi Đánh Giá
+              </button>
+            </div>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }

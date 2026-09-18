@@ -216,7 +216,7 @@ function PortalContent() {
                 {activeModule === 'resident-profile' && <ProfileEkyc currentUser={currentUser} />}
                 {activeModule === 'resident-smarthome' && <SmartHomeHub currentUser={currentUser} />}
                 {activeModule === 'resident-facilities' && <SmartFacilityPass currentUser={currentUser} />}
-                {activeModule === 'resident-tickets' && <TicketService />}
+                {activeModule === 'resident-tickets' && <TicketService currentUser={currentUser} />}
                 {activeModule === 'resident-family' && <FamilyMembers currentUser={currentUser} />}
                 {activeModule === 'resident-ai-assistant' && (
                   <AiConciergePage
