@@ -49,33 +49,11 @@ export interface CardState {
   lastUsed?: string;
 }
 
-const FACILITY_LOGS_PREFIX = 'skyline_facility_logs_';
-const FACILITY_BOOKINGS_PREFIX = 'skyline_facility_bookings_';
-const CARDS_PREFIX = 'skyline_resident_cards_';
+const FACILITY_LOGS_PREFIX = 'skyline_facility_logs_v2_';
+const FACILITY_BOOKINGS_PREFIX = 'skyline_facility_bookings_v2_';
+const CARDS_PREFIX = 'skyline_resident_cards_v2_';
 
-const DEFAULT_DEMO_BOOKINGS: Record<string, FacilityBooking[]> = {
-  '12A05': [
-    {
-      id: 'BK-SAUNA-9821',
-      aptCode: '12A05',
-      facilityId: 'fac-sauna',
-      facilityName: 'Phòng Xông Hơi Đá Muối Himalaya (Private VIP)',
-      bookingDate: new Date(Date.now() + 3600000 * 4).toISOString().split('T')[0],
-      timeSlot: '18:00 - 20:00 (2 Tiếng - Tối nay)',
-      bookerName: 'Nguyễn Hữu Lực',
-      guestCount: 2,
-      durationHours: 2,
-      depositAmount: 1000000,
-      pricing: '500.000 đ / giờ (Phòng gia đình VIP)',
-      isPrivate: true,
-      paymentMethod: 'Trừ vào hóa đơn sinh hoạt tháng tới',
-      notes: 'Gia đình 2 người, chuẩn bị trước tinh dầu sả chanh',
-      ticketCode: 'SKY-SAUNA-12A05-7799',
-      status: 'CONFIRMED',
-      createdAt: new Date().toISOString(),
-    },
-  ],
-};
+const DEFAULT_DEMO_BOOKINGS: Record<string, FacilityBooking[]> = {};
 
 function getStorageItem<T>(key: string, defaultVal: T): T {
   if (typeof window === 'undefined') return defaultVal;
@@ -132,14 +110,12 @@ export function addFacilityCheckinLog(
 }
 
 /**
- * Lấy danh sách đặt chỗ tiện ích của căn hộ (kèm dữ liệu mẫu riêng tư nếu chưa có)
+ * Lấy danh sách đặt chỗ tiện ích của căn hộ (Khởi đầu sạch, không nạp phiếu ảo)
  */
 export function getFacilityBookings(aptCode: string): FacilityBooking[] {
   const stored = getStorageItem<FacilityBooking[] | null>(`${FACILITY_BOOKINGS_PREFIX}${aptCode}`, null);
   if (stored && Array.isArray(stored)) return stored;
-  const initial = DEFAULT_DEMO_BOOKINGS[aptCode] || [];
-  setStorageItem(`${FACILITY_BOOKINGS_PREFIX}${aptCode}`, initial);
-  return initial;
+  return [];
 }
 
 /**
