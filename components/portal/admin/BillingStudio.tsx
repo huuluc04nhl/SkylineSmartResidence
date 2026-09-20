@@ -95,7 +95,7 @@ export default function BillingStudio() {
             <Building className="w-3.5 h-3.5" /> Quản Trị Tài Chính • Kế Toán & Dịch Vụ
           </div>
           <h2 className="font-serif text-2xl text-white font-bold mt-1">
-            Quản Lý & Rà Soát Hóa Đơn Căn Hộ
+            Sổ Cái Tài Chính & Đối Soát Thu Phí
           </h2>
         </div>
 

@@ -651,7 +651,7 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
             <Users className="w-3.5 h-3.5" /> Quyền Quản Trị Căn Hộ • Ban Quản Lý & Chủ Hộ
           </div>
           <h2 className="font-serif text-2xl text-white font-bold mt-1">
-            Quản Lý Cư Dân & Thành Viên Căn Hộ {aptCode}
+            Danh Sách Nhân Khẩu & Lưu Trú Căn Hộ {aptCode}
           </h2>
           <p className="text-xs text-gray-400 mt-0.5">
             Căn hộ: <strong className="text-white font-mono">{aptCode}</strong> • Chủ hộ{' '}

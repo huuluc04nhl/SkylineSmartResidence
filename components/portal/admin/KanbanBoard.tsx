@@ -154,7 +154,7 @@ export default function KanbanBoard() {
             <Wrench className="w-3.5 h-3.5" /> Quản Trị Kỹ Thuật • Ban Quản Lý Skyline
           </div>
           <h2 className="font-serif text-2xl text-white font-bold mt-1">
-            Điều Phối Báo Hỏng & Quản Lý Kỹ Thuật Viên
+            Điều Phối Sự Cố & Phân Công Kỹ Thuật Viên
           </h2>
         </div>
 

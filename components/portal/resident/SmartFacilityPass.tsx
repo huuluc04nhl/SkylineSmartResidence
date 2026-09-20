@@ -312,7 +312,7 @@ export default function SmartFacilityPass({ currentUser }: SmartFacilityPassProp
             <span>Tiện Ích 5 Sao • Căn Hộ {aptCode}</span>
           </div>
           <h2 className="text-xl sm:text-2xl font-serif font-bold text-white flex items-center gap-2">
-            <span>Tiện Ích Cư Dân & Cổng Tự Động</span>
+            <span>Đặc Quyền Dịch Vụ & Cổng Ra Vào Tự Động</span>
           </h2>
           <p className="text-xs text-gray-400 font-mono flex flex-wrap items-center gap-2">
             <span>Chủ Hộ: <strong className="text-white">{userName}</strong></span>

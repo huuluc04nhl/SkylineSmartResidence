@@ -434,7 +434,7 @@ Tôi là **Trợ lý ảo Skyline**, luôn sẵn sàng hỗ trợ Quý vị tra 
             <Bot className="w-4 h-4 text-[#C5A880]" /> Trợ Lý Ảo Thông Minh • Phục Vụ Cư Dân 24/7
           </div>
           <h2 className="font-serif text-2xl text-white font-bold mt-1 flex items-center gap-2.5">
-            Trợ Lý Ảo Skyline AI Concierge 24/7
+            Hỏi Đáp Trực Tuyến Cùng Skyline AI 24/7
             <span className="px-2 py-0.5 bg-[#C5A880] text-[#0D1117] text-[10px] font-mono font-bold uppercase rounded">
               AI Assistant
             </span>

@@ -458,7 +458,7 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
             <ScanFace className="w-3.5 h-3.5" /> Skyline Smart Residence • {isOwner ? 'Chủ Hộ' : 'Thành Viên'}
           </div>
           <h2 className="font-serif text-2xl text-white font-bold mt-1">
-            Hồ Sơ & Định Danh Cư Dân
+            Thông Tin Cá Nhân & Định Danh Cư Dân
           </h2>
           <p className="text-xs text-gray-400 mt-0.5">
             Căn hộ: <strong className="text-white font-mono">{aptCode}</strong> • Thông tin cá nhân, định danh e-KYC và bảo mật tài khoản

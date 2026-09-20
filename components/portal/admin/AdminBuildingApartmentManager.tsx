@@ -539,7 +539,7 @@ export default function AdminBuildingApartmentManager() {
             <Building className="w-3.5 h-3.5 text-[#C5A880]" /> BAN QUẢN LÝ CHUNG CƯ SKYLINE
           </div>
           <h2 className="font-serif text-2xl sm:text-3xl text-white font-bold mt-1">
-            Quản Lý Căn Hộ Chung Cư Skyline
+            Sơ Đồ Tầng & Danh Sách Căn Hộ
           </h2>
           <p className="text-xs text-gray-400 mt-0.5 max-w-3xl">
             Sơ đồ toàn bộ các tầng trong tòa nhà chung cư Skyline. Quản lý căn hộ, chủ nhà, người ở cùng, phương tiện và nhận bàn giao nhà thực tế.

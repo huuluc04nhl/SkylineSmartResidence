@@ -471,7 +471,7 @@ export default function AdminVisitorControl() {
             <ShieldCheck className="w-3.5 h-3.5 text-[#C5A880]" /> Ban Quản Lý Chung Cư • Bộ Phận Lễ Tân & An Ninh
           </div>
           <h2 className="font-serif text-2xl text-white font-bold mt-1">
-            Quản Lý & Tiếp Đón Khách Thăm (Mã QR & Mã PIN)
+            Kiểm Soát & Tiếp Đón Khách Ra Vào
           </h2>
           <p className="text-xs text-gray-400 mt-0.5">
             Xác thực khách thăm vào chung cư theo bảo lãnh cư dân. Kiểm soát an ninh đa phương thức: quét mã QR, tra cứu mã PIN 6 số và cấp thẻ trực tiếp tại quầy.

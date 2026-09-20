@@ -141,40 +141,40 @@ export default function Sidebar({
     switch (role) {
       case 'ADMIN':
         return [
-          { id: 'admin-dashboard', label: '1. Trung Tâm Vận Hành (KPI)', shortLabel: 'Trung Tâm KPI', icon: LayoutDashboard },
-          { id: 'admin-apartments', label: '2. Quản Lý Căn Hộ Chung Cư', shortLabel: 'Căn Hộ', icon: Building },
-          { id: 'admin-ekyc', label: '3. Xác Nhận Căn Cước & Khuôn Mặt', shortLabel: 'Xác Nhận Căn Cước', icon: UserCheck },
-          { id: 'admin-visitors', label: '4. Quản Lý Khách Thăm (Mã QR Chủ Hộ)', shortLabel: 'Khách Thăm QR', icon: QrCode },
-          { id: 'admin-kanban', label: '5. Xử Lý Báo Hỏng & Sửa Chữa', shortLabel: 'Báo Hỏng Sửa Chữa', icon: KanbanSquare },
-          { id: 'admin-billing', label: '6. Thu Phí & Hóa Đơn Hàng Tháng', shortLabel: 'Hóa Đơn & Phí', icon: Receipt },
-          { id: 'admin-devices', label: '7. Giám Sát Thiết Bị Kỹ Thuật', shortLabel: 'Thiết Bị Kỹ Thuật', icon: Activity },
-          { id: 'admin-parking', label: '8. Quản Lý Bãi Đỗ Xe Chung Cư', shortLabel: 'Bãi Đỗ Xe', icon: Car },
-          { id: 'admin-facilities', label: '9. Quản Lý Tiện Ích (Hồ Bơi, Gym)', shortLabel: 'Tiện Ích', icon: CalendarCheck },
-          { id: 'admin-community', label: '10. Ý Kiến Đóng Góp Cư Dân', shortLabel: 'Ý Kiến Cư Dân', icon: MessageSquareQuote },
+          { id: 'admin-dashboard', label: 'Tổng Quan', shortLabel: 'Tổng Quan', icon: LayoutDashboard },
+          { id: 'admin-apartments', label: 'Căn Hộ', shortLabel: 'Căn Hộ', icon: Building },
+          { id: 'admin-ekyc', label: 'Xác Thực Cư Dân', shortLabel: 'Xác Thực', icon: UserCheck },
+          { id: 'admin-visitors', label: 'Khách Thăm', shortLabel: 'Khách Thăm', icon: QrCode },
+          { id: 'admin-kanban', label: 'Sửa Chữa', shortLabel: 'Sửa Chữa', icon: KanbanSquare },
+          { id: 'admin-billing', label: 'Hóa Đơn', shortLabel: 'Hóa Đơn', icon: Receipt },
+          { id: 'admin-devices', label: 'Thiết Bị', shortLabel: 'Thiết Bị', icon: Activity },
+          { id: 'admin-parking', label: 'Bãi Đỗ Xe', shortLabel: 'Bãi Đỗ Xe', icon: Car },
+          { id: 'admin-facilities', label: 'Tiện Ích', shortLabel: 'Tiện Ích', icon: CalendarCheck },
+          { id: 'admin-community', label: 'Khảo Sát', shortLabel: 'Khảo Sát', icon: MessageSquareQuote },
         ];
 
       case 'OWNER':
         return [
-          { id: 'resident-home', label: 'Trang Chủ & Mã QR Vào Cổng', shortLabel: 'Trang Chủ QR', icon: QrCode },
-          { id: 'resident-profile', label: 'Hồ Sơ Căn Cước & Mật Khẩu', shortLabel: 'Hồ Sơ & Mật Khẩu', icon: UserCheck },
-          { id: 'resident-family', label: 'Quản Lý Người Thân Trong Nhà', shortLabel: 'Người Thân', icon: Users },
-          { id: 'resident-smarthome', label: 'Điều Khiển Thiết Bị Căn Hộ (12A05)', shortLabel: 'Thiết Bị Căn Hộ', icon: Cpu },
-          { id: 'resident-facilities', label: 'Sử Dụng Tiện Ích (Hồ Bơi, Gym)', shortLabel: 'Hồ Bơi/Gym', icon: Waves },
-          { id: 'resident-finance', label: 'Hóa Đơn & Tiền Điện Nước', shortLabel: 'Tiền Điện Nước', icon: CreditCard },
-          { id: 'resident-tickets', label: 'Báo Hỏng & Đề Nghị Sửa Chữa', shortLabel: 'Báo Sửa Chữa', icon: Wrench },
-          { id: 'resident-surveys', label: 'Biểu Quyết & Ý Kiến Cư Dân', shortLabel: 'Biểu Quyết', icon: Vote },
-          { id: 'resident-ai-assistant', label: 'Hỏi Đáp Thông Tin Chung Cư', shortLabel: 'Hỏi Đáp BQL', icon: Bot },
+          { id: 'resident-home', label: 'Trang Chủ', shortLabel: 'Trang Chủ', icon: QrCode },
+          { id: 'resident-profile', label: 'Hồ Sơ', shortLabel: 'Hồ Sơ', icon: UserCheck },
+          { id: 'resident-family', label: 'Thành Viên', shortLabel: 'Thành Viên', icon: Users },
+          { id: 'resident-smarthome', label: 'Nhà Thông Minh', shortLabel: 'Smart Home', icon: Cpu },
+          { id: 'resident-facilities', label: 'Tiện Ích', shortLabel: 'Tiện Ích', icon: Waves },
+          { id: 'resident-finance', label: 'Hóa Đơn', shortLabel: 'Hóa Đơn', icon: CreditCard },
+          { id: 'resident-tickets', label: 'Báo Hỏng', shortLabel: 'Báo Hỏng', icon: Wrench },
+          { id: 'resident-surveys', label: 'Biểu Quyết', shortLabel: 'Biểu Quyết', icon: Vote },
+          { id: 'resident-ai-assistant', label: 'Trợ Lý AI', shortLabel: 'Trợ Lý AI', icon: Bot },
         ];
 
       case 'TENANT':
         return [
-          { id: 'resident-home', label: 'Trang Chủ & Mã QR Vào Cổng', shortLabel: 'Trang Chủ QR', icon: QrCode },
-          { id: 'resident-profile', label: 'Hồ Sơ Căn Cước & FaceID', shortLabel: 'Hồ Sơ & FaceID', icon: UserCheck },
-          { id: 'resident-family', label: 'Thành Viên Gia Đình & FaceID', shortLabel: 'Người Thân & FaceID', icon: Users },
-          { id: 'resident-smarthome', label: 'Điều Khiển Thiết Bị Phòng (12A05)', shortLabel: 'Thiết Bị Phòng', icon: Cpu },
-          { id: 'resident-facilities', label: 'Sử Dụng Tiện Ích (Hồ Bơi, Gym)', shortLabel: 'Hồ Bơi/Gym', icon: Waves },
-          { id: 'resident-tickets', label: 'Báo Hỏng & Đề Nghị Sửa Chữa', shortLabel: 'Báo Sửa Chữa', icon: Wrench },
-          { id: 'resident-ai-assistant', label: 'Hỏi Đáp Thông Tin Chung Cư', shortLabel: 'Hỏi Đáp BQL', icon: Bot },
+          { id: 'resident-home', label: 'Trang Chủ', shortLabel: 'Trang Chủ', icon: QrCode },
+          { id: 'resident-profile', label: 'Hồ Sơ', shortLabel: 'Hồ Sơ', icon: UserCheck },
+          { id: 'resident-family', label: 'Thành Viên', shortLabel: 'Thành Viên', icon: Users },
+          { id: 'resident-smarthome', label: 'Nhà Thông Minh', shortLabel: 'Smart Home', icon: Cpu },
+          { id: 'resident-facilities', label: 'Tiện Ích', shortLabel: 'Tiện Ích', icon: Waves },
+          { id: 'resident-tickets', label: 'Báo Hỏng', shortLabel: 'Báo Hỏng', icon: Wrench },
+          { id: 'resident-ai-assistant', label: 'Trợ Lý AI', shortLabel: 'Trợ Lý AI', icon: Bot },
         ];
 
       default:

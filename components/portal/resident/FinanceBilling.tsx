@@ -320,7 +320,7 @@ export default function FinanceBilling({ currentUser }: FinanceBillingProps) {
             <Shield className="w-3.5 h-3.5" /> Tài Chính Căn Hộ • Căn {aptCode}
           </div>
           <h2 className="font-serif text-2xl text-white font-bold mt-1">
-            Hóa Đơn & Thanh Toán Trực Tuyến
+            Chi Tiết Phí Sinh Hoạt & Thanh Toán Trực Tuyến
           </h2>
         </div>
 

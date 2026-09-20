@@ -30,7 +30,7 @@ export default function SmartParking() {
             Hạ Tầng Tòa Nhà • Kiểm Soát Ra Vào
           </div>
           <h2 className="font-serif text-2xl text-white font-bold mt-1">
-            Bãi Đỗ Xe Thông Minh & Nhận Diện Biển Số Tự Động
+            Kiểm Soát Phương Tiện & Nhận Diện Biển Số
           </h2>
         </div>
 

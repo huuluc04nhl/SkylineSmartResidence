@@ -14,7 +14,7 @@ export default function DeviceHealth() {
             Hạ Tầng Tòa Nhà • IoT & Giám Sát Kỹ Thuật
           </div>
           <h2 className="font-serif text-2xl text-white font-bold mt-1">
-            Chấm Điểm Tình Trạng Thiết Bị & Dự Báo Bảo Trì
+            Giám Sát Hạ Tầng Kỹ Thuật & Dự Báo Bảo Trì
           </h2>
         </div>
 

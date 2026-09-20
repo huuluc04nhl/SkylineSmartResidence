@@ -533,7 +533,7 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
             <Cpu className="w-3.5 h-3.5" /> Điều Khiển Thiết Bị Thông Minh • Sơ Đồ Kỹ Thuật Số
           </div>
           <h2 className="font-serif text-2xl text-white font-bold mt-1">
-            Trung Tâm Điều Khiển & Không Gian Căn Hộ {aptCode}
+            Trung Tâm Tự Động Hóa Căn Hộ {aptCode}
           </h2>
         </div>
 

@@ -150,7 +150,7 @@ export default function TicketService({ currentUser }: TicketServiceProps) {
             <Wrench className="w-3.5 h-3.5" /> Hỗ Trợ Kỹ Thuật • Căn Hộ {aptCode}
           </div>
           <h2 className="font-serif text-2xl text-white font-bold mt-1">
-            Báo Hỏng & Đề Nghị Sửa Chữa
+            Gửi Yêu Cầu Sửa Chữa & Khắc Phục Sự Cố
           </h2>
         </div>
 

@@ -23,7 +23,7 @@ export default function SurveysVoting() {
             Quyền Biểu Quyết Cư Dân • Dành Cho Chủ Hộ
           </div>
           <h2 className="font-serif text-2xl text-white font-bold mt-1">
-            Khảo Sát Ý Kiến & Biểu Quyết Ban Quản Trị
+            Ý Kiến Đóng Góp & Biểu Quyết Tòa Nhà
           </h2>
         </div>
 
