@@ -179,7 +179,23 @@ export function getBills(aptCode?: string): ExtendedBill[] {
         allBills = INITIAL_BILLS;
       } else {
         const parsed = JSON.parse(raw);
-        allBills = Array.isArray(parsed) && parsed.length > 0 ? parsed : INITIAL_BILLS;
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          // Lọc bỏ dữ liệu mẫu cũ nếu có trong cache trình duyệt
+          allBills = parsed.map((bill: ExtendedBill) => {
+            const cleanDetails = (bill.details || []).filter((d: any) => 
+              d.id !== 'bd-5' && d.id !== 'bd-6' && 
+              d.booking_ref !== 'SRV-LAUN-1201' && d.booking_ref !== 'SRV-PTSW-1202'
+            );
+            const cleanTotal = cleanDetails.reduce((s: number, d: any) => s + (d.total_line_amount || 0), 0);
+            return {
+              ...bill,
+              total_amount: cleanTotal,
+              details: cleanDetails,
+            };
+          });
+        } else {
+          allBills = INITIAL_BILLS;
+        }
       }
     } catch {
       allBills = INITIAL_BILLS;

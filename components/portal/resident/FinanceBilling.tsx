@@ -517,8 +517,8 @@ export default function FinanceBilling({ currentUser }: FinanceBillingProps) {
                   </div>
                 </div>
 
-                {/* 2. Nhóm Dịch Vụ Cư Dân & Giá Trị Gia Tăng (Nếu có) */}
-                {serviceItems.length > 0 && (
+                {/* 2. Nhóm Dịch Vụ Cư Dân & Giá Trị Gia Tăng */}
+                {serviceItems.length > 0 ? (
                   <div className="space-y-2">
                     <div className="flex items-center justify-between text-xs text-gray-300 font-semibold border-b border-[#222B35] pb-1">
                       <span className="uppercase tracking-wider text-[#C5A880] flex items-center gap-1.5">
@@ -565,6 +565,14 @@ export default function FinanceBilling({ currentUser }: FinanceBillingProps) {
                       ))}
                     </div>
                   </div>
+                ) : (
+                  <div className="p-3 bg-[#161B22]/40 border border-[#222B35] flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs text-gray-400">
+                    <div className="flex items-center gap-2">
+                      <Sparkles className="w-3.5 h-3.5 text-gray-500" />
+                      <span>Chưa có dịch vụ đời sống phát sinh trong kỳ này (Giặt ủi, Giúp việc, PT, Chăm sóc xe).</span>
+                    </div>
+                    <span className="text-[11px] text-gray-500 italic">Chi phí dịch vụ khi đặt sẽ tự động cập nhật vào đây</span>
+                  </div>
                 )}
 
                 {/* Hàng Tổng Kết Tài Chính */}
@@ -574,7 +582,9 @@ export default function FinanceBilling({ currentUser }: FinanceBillingProps) {
                       Tổng Cộng Chi Phí Cần Thanh Toán:
                     </span>
                     <div className="text-[11px] text-gray-400">
-                      {utilityItems.length} hạng mục định kỳ + {serviceItems.length} dịch vụ đời sống (Đã bao gồm 10% VAT)
+                      {serviceItems.length > 0 
+                        ? `${utilityItems.length} hạng mục định kỳ + ${serviceItems.length} dịch vụ đời sống (Đã bao gồm 10% VAT)`
+                        : `${utilityItems.length} hạng mục định kỳ (Đã bao gồm 10% VAT)`}
                     </div>
                   </div>
                   <div className="font-serif text-xl font-bold text-[#C5A880] font-mono">

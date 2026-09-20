@@ -244,56 +244,8 @@ export const RESIDENT_SERVICES_CATALOG: ResidentServiceItem[] = [
   },
 ];
 
-const INITIAL_DEMO_BOOKINGS: ServiceBooking[] = [
-  {
-    id: 'srv-bk-1',
-    bookingCode: 'SRV-LAUN-1201',
-    aptCode: '12A05',
-    residentName: 'Nguyễn Hữu Lực',
-    residentPhone: '0901234567',
-    serviceId: 'srv-laundry',
-    serviceName: 'Giặt Ủi & Giặt Hấp Cao Cấp',
-    category: 'LAUNDRY',
-    packageName: 'Giặt Hấp Veston & Trang Phục Cao Cấp',
-    quantity: 2,
-    unit: 'bộ',
-    unitPrice: 80000,
-    totalPrice: 160000,
-    scheduledDate: '2026-08-12',
-    scheduledTimeSlot: '09:00 - 10:00',
-    notes: 'Nhận đồ tại cửa căn hộ 12A05, có veston đen Dior và áo dài lụa tơ tằm.',
-    paymentChoice: 'ADD_TO_BILL',
-    paymentStatus: 'PENDING_BILL',
-    status: 'COMPLETED',
-    assignedStaff: 'Lê Thị Thu (Trưởng nhóm giặt ủi BQL)',
-    staffPhone: '0908112233',
-    createdAt: '2026-08-12T08:15:00',
-  },
-  {
-    id: 'srv-bk-2',
-    bookingCode: 'SRV-PTSW-1202',
-    aptCode: '12A05',
-    residentName: 'Nguyễn Hữu Lực',
-    residentPhone: '0901234567',
-    serviceId: 'srv-pt-sports',
-    serviceName: 'Thuê Huấn Luyện Viên Cá Nhân (PT)',
-    category: 'PERSONAL_TRAINER',
-    packageName: 'PT Bơi Lội Kèm Riêng (1 Buổi 60 Phút)',
-    quantity: 1,
-    unit: 'buổi',
-    unitPrice: 350000,
-    totalPrice: 350000,
-    scheduledDate: '2026-08-15',
-    scheduledTimeSlot: '17:00 - 18:00',
-    notes: 'Kèm con trai tập bơi ếch tại hồ bơi Sky Pool tầng 25.',
-    paymentChoice: 'ADD_TO_BILL',
-    paymentStatus: 'PENDING_BILL',
-    status: 'COMPLETED',
-    assignedStaff: 'HLV Phan Minh Hải (Cựu VĐV Quốc Gia)',
-    staffPhone: '0933445566',
-    createdAt: '2026-08-14T10:00:00',
-  },
-];
+// Danh sách đơn đặt dịch vụ ban đầu hoàn toàn sạch, không có dữ liệu ảo/mẫu
+const INITIAL_DEMO_BOOKINGS: ServiceBooking[] = [];
 
 function notifyServicesUpdated() {
   if (typeof window !== 'undefined') {
@@ -302,22 +254,22 @@ function notifyServicesUpdated() {
 }
 
 /**
- * Lấy toàn bộ danh sách đơn đặt dịch vụ
+ * Lấy toàn bộ danh sách đơn đặt dịch vụ thực tế
  */
 export function getResidentBookings(aptCode?: string): ServiceBooking[] {
-  let list = INITIAL_DEMO_BOOKINGS;
+  let list: ServiceBooking[] = [];
   if (typeof window !== 'undefined') {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
-      if (!raw) {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(INITIAL_DEMO_BOOKINGS));
-        list = INITIAL_DEMO_BOOKINGS;
-      } else {
+      if (raw) {
         const parsed = JSON.parse(raw);
-        list = Array.isArray(parsed) && parsed.length > 0 ? parsed : INITIAL_DEMO_BOOKINGS;
+        if (Array.isArray(parsed)) {
+          // Lọc bỏ bất kỳ dữ liệu mẫu nào nếu có trong cache
+          list = parsed.filter(b => b && b.bookingCode && !b.bookingCode.includes('LAUN-1201') && !b.bookingCode.includes('PTSW-1202'));
+        }
       }
     } catch {
-      list = INITIAL_DEMO_BOOKINGS;
+      list = [];
     }
   }
 
