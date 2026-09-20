@@ -62,13 +62,28 @@ export interface Apartment {
   smart_widgets: SmartWidget[];
 }
 
+export type BillServiceType = 
+  | 'Electricity' 
+  | 'Water' 
+  | 'Management_Fee' 
+  | 'Parking' 
+  | 'Laundry' 
+  | 'Housekeeping' 
+  | 'Personal_Trainer' 
+  | 'Car_Care' 
+  | 'Other';
+
 export interface BillDetail {
   id: string;
   bill_id: string;
-  service_type: 'Electricity' | 'Water' | 'Management_Fee' | 'Parking';
-  usage?: number; // kWh or m3
+  service_type: BillServiceType;
+  service_name?: string; // Tên hiển thị dịch vụ chi tiết
+  usage?: number; // Số lượng / số giờ / số buổi / kWh / m3
+  unit?: string; // "kg", "giờ", "buổi", "lần", "bộ", "kWh", "m³", "m²", "xe"
   unit_price?: number;
   total_line_amount: number;
+  order_date?: string; // Ngày phát sinh dịch vụ
+  booking_ref?: string; // Mã phiếu đặt dịch vụ
   ai_anomaly?: boolean; // AI phát hiện bất thường > 50%
   anomaly_reason?: string;
 }
@@ -426,10 +441,10 @@ export const DEMO_BILLS: Bill[] = [
     owner_name: 'Nguyễn Hữu Lực',
     billing_month: 'Tháng 08/2026',
     due_date: '2026-08-30T23:59:59',
-    total_amount: 2465000,
+    total_amount: 2975000,
     status: 'Unpaid',
     status_color: '#D97706',
-    payment_qr_url: 'https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=VNPAY_SKYLINE_12A05_2465000',
+    payment_qr_url: 'https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=VNPAY_SKYLINE_12A05_2975000',
     invoice_pdf_url: '#',
     has_ai_anomaly: true,
     created_at: '2026-08-05T08:00:00',
@@ -438,7 +453,9 @@ export const DEMO_BILLS: Bill[] = [
         id: 'bd-1',
         bill_id: 'bill-2026-08-12a05',
         service_type: 'Electricity',
+        service_name: 'Tiền Điện Sinh Hoạt',
         usage: 340,
+        unit: 'kWh',
         unit_price: 3200,
         total_line_amount: 1088000,
       },
@@ -446,7 +463,9 @@ export const DEMO_BILLS: Bill[] = [
         id: 'bd-2',
         bill_id: 'bill-2026-08-12a05',
         service_type: 'Water',
+        service_name: 'Tiền Nước Sinh Hoạt',
         usage: 28,
+        unit: 'm³',
         unit_price: 18000,
         total_line_amount: 504000,
         ai_anomaly: true,
@@ -456,7 +475,9 @@ export const DEMO_BILLS: Bill[] = [
         id: 'bd-3',
         bill_id: 'bill-2026-08-12a05',
         service_type: 'Management_Fee',
+        service_name: 'Phí Quản Lý Vận Hành',
         usage: 73.2,
+        unit: 'm²',
         unit_price: 10000,
         total_line_amount: 732000,
       },
@@ -464,8 +485,35 @@ export const DEMO_BILLS: Bill[] = [
         id: 'bd-4',
         bill_id: 'bill-2026-08-12a05',
         service_type: 'Parking',
+        service_name: 'Phí Gửi Xe Ô Tô & Xe Máy',
         usage: 1,
+        unit: 'xe',
+        unit_price: 141000,
         total_line_amount: 141000,
+      },
+      {
+        id: 'bd-5',
+        bill_id: 'bill-2026-08-12a05',
+        service_type: 'Laundry',
+        service_name: 'Giặt Hấp Veston & Trang Phục Cao Cấp',
+        usage: 2,
+        unit: 'bộ',
+        unit_price: 80000,
+        total_line_amount: 160000,
+        order_date: '12/08/2026',
+        booking_ref: 'SRV-LAUN-1201',
+      },
+      {
+        id: 'bd-6',
+        bill_id: 'bill-2026-08-12a05',
+        service_type: 'Personal_Trainer',
+        service_name: 'Huấn Luyện Viên PT Bơi Lội (Sky Pool 1-1)',
+        usage: 1,
+        unit: 'buổi',
+        unit_price: 350000,
+        total_line_amount: 350000,
+        order_date: '15/08/2026',
+        booking_ref: 'SRV-PTSW-1202',
       },
     ],
   },

@@ -239,6 +239,7 @@ export default function BillingStudio() {
               <th className="p-3.5 text-right">Tiền Điện</th>
               <th className="p-3.5 text-right">Tiền Nước</th>
               <th className="p-3.5 text-right">Phí Quản Lý</th>
+              <th className="p-3.5 text-right">Phí Dịch Vụ</th>
               <th className="p-3.5 text-right">Tổng Tiền (VNĐ)</th>
               <th className="p-3.5 text-center">Trạng Thái</th>
               <th className="p-3.5 text-center">Ghi Chú</th>
@@ -248,7 +249,7 @@ export default function BillingStudio() {
           <tbody className="divide-y divide-[#222B35]">
             {displayedBills.length === 0 ? (
               <tr>
-                <td colSpan={10} className="p-8 text-center text-gray-500 italic">
+                <td colSpan={11} className="p-8 text-center text-gray-500 italic">
                   Không tìm thấy hóa đơn nào phù hợp.
                 </td>
               </tr>
@@ -257,6 +258,9 @@ export default function BillingStudio() {
                 const elecDetail = bill.details.find(d => d.service_type === 'Electricity');
                 const waterDetail = bill.details.find(d => d.service_type === 'Water');
                 const mgmtDetail = bill.details.find(d => d.service_type === 'Management_Fee');
+                const serviceTotal = bill.details
+                  .filter(d => !['Electricity', 'Water', 'Management_Fee', 'Parking'].includes(d.service_type))
+                  .reduce((sum, d) => sum + (d.total_line_amount || 0), 0);
                 const hasAnomaly = bill.has_ai_anomaly;
                 const isPaid = bill.status === 'Paid';
 
@@ -284,6 +288,15 @@ export default function BillingStudio() {
                     </td>
                     <td className="p-3.5 text-right font-mono text-gray-300">
                       {mgmtDetail?.total_line_amount.toLocaleString('vi-VN')} đ
+                    </td>
+                    <td className="p-3.5 text-right font-mono">
+                      {serviceTotal > 0 ? (
+                        <span className="text-purple-300 font-semibold" title="Phí dịch vụ phát sinh (Giặt ủi, Giúp việc, PT, Chăm sóc xe...)">
+                          {serviceTotal.toLocaleString('vi-VN')} đ
+                        </span>
+                      ) : (
+                        <span className="text-gray-500">-</span>
+                      )}
                     </td>
                     <td className="p-3.5 text-right font-mono font-bold text-[#C5A880] text-sm">
                       {bill.total_amount.toLocaleString('vi-VN')} đ
@@ -423,23 +436,42 @@ export default function BillingStudio() {
             <div className="space-y-2 text-xs">
               <div className="font-bold text-gray-300">Bảng Kê Chi Tiết:</div>
               <div className="divide-y divide-[#222B35] border border-[#222B35]">
-                {selectedDetailBill.details.map((d) => (
-                  <div key={d.id} className="p-2.5 flex items-center justify-between">
-                    <div>
-                      <div className="text-white font-medium">
-                        {d.service_type === 'Electricity' ? 'Tiền Điện' :
-                         d.service_type === 'Water' ? 'Tiền Nước' :
-                         d.service_type === 'Management_Fee' ? 'Phí Quản Lý' : 'Phí Gửi Xe'}
+                {selectedDetailBill.details.map((d) => {
+                  const isService = !['Electricity', 'Water', 'Management_Fee', 'Parking'].includes(d.service_type);
+                  const name = d.service_name || (
+                    d.service_type === 'Electricity' ? 'Tiền Điện Sinh Hoạt' :
+                    d.service_type === 'Water' ? 'Tiền Nước Sinh Hoạt' :
+                    d.service_type === 'Management_Fee' ? 'Phí Quản Lý Vận Hành' :
+                    d.service_type === 'Parking' ? 'Phí Gửi Xe Căn Hộ' :
+                    d.service_type === 'Laundry' ? 'Giặt Ủi & Giặt Hấp Cao Cấp' :
+                    d.service_type === 'Housekeeping' ? 'Giúp Việc & Dọn Dẹp Căn Hộ' :
+                    d.service_type === 'Personal_Trainer' ? 'Thuê Huấn Luyện Viên PT Bơi/Gym' :
+                    d.service_type === 'Car_Care' ? 'Chăm Sóc & Rửa Xe Hầm B2' : 'Phí Dịch Vụ'
+                  );
+
+                  return (
+                    <div key={d.id} className="p-2.5 flex items-center justify-between">
+                      <div>
+                        <div className="text-white font-medium flex items-center gap-1.5">
+                          <span>{name}</span>
+                          {isService && (
+                            <span className="px-1.5 py-0.5 bg-purple-950/80 border border-purple-500/60 text-purple-300 text-[9px] font-mono font-bold">
+                              Dịch Vụ Cư Dân
+                            </span>
+                          )}
+                        </div>
+                        <div className="text-[10px] text-gray-400 mt-0.5">
+                          {d.usage} {d.unit || (d.service_type === 'Electricity' ? 'kWh' : d.service_type === 'Water' ? 'm³' : d.service_type === 'Management_Fee' ? 'm²' : 'lần')} × {d.unit_price?.toLocaleString('vi-VN')} đ
+                          {d.booking_ref && <span className="ml-1 text-[#C5A880] font-mono">• #{d.booking_ref}</span>}
+                          {d.order_date && <span className="ml-1 text-gray-400 font-mono">• {d.order_date}</span>}
+                        </div>
                       </div>
-                      <div className="text-[10px] text-gray-400">
-                        {d.usage} × {d.unit_price?.toLocaleString('vi-VN')} đ
+                      <div className={`font-mono font-bold ${isService ? 'text-[#C5A880]' : 'text-white'}`}>
+                        {d.total_line_amount.toLocaleString('vi-VN')} đ
                       </div>
                     </div>
-                    <div className="font-mono font-bold text-white">
-                      {d.total_line_amount.toLocaleString('vi-VN')} đ
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
 
               <div className="flex items-center justify-between pt-2 border-t border-[#222B35] text-sm">

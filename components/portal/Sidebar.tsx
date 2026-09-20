@@ -160,6 +160,7 @@ export default function Sidebar({
           { id: 'resident-family', label: 'Thành Viên', shortLabel: 'Thành Viên', icon: Users },
           { id: 'resident-smarthome', label: 'Nhà Thông Minh', shortLabel: 'Smart Home', icon: Cpu },
           { id: 'resident-facilities', label: 'Tiện Ích', shortLabel: 'Tiện Ích', icon: Waves },
+          { id: 'resident-services', label: 'Dịch Vụ', shortLabel: 'Dịch Vụ', icon: Sparkles },
           { id: 'resident-finance', label: 'Hóa Đơn', shortLabel: 'Hóa Đơn', icon: CreditCard },
           { id: 'resident-tickets', label: 'Báo Hỏng', shortLabel: 'Báo Hỏng', icon: Wrench },
           { id: 'resident-surveys', label: 'Biểu Quyết', shortLabel: 'Biểu Quyết', icon: Vote },
@@ -173,6 +174,7 @@ export default function Sidebar({
           { id: 'resident-family', label: 'Thành Viên', shortLabel: 'Thành Viên', icon: Users },
           { id: 'resident-smarthome', label: 'Nhà Thông Minh', shortLabel: 'Smart Home', icon: Cpu },
           { id: 'resident-facilities', label: 'Tiện Ích', shortLabel: 'Tiện Ích', icon: Waves },
+          { id: 'resident-services', label: 'Dịch Vụ', shortLabel: 'Dịch Vụ', icon: Sparkles },
           { id: 'resident-tickets', label: 'Báo Hỏng', shortLabel: 'Báo Hỏng', icon: Wrench },
           { id: 'resident-ai-assistant', label: 'Trợ Lý AI', shortLabel: 'Trợ Lý AI', icon: Bot },
         ];

@@ -23,7 +23,13 @@ import {
   Receipt,
   ArrowRight,
   ShieldAlert,
-  Clock
+  Clock,
+  Zap,
+  Droplets,
+  Car,
+  Shirt,
+  Dumbbell,
+  Tag
 } from 'lucide-react';
 import { 
   getBills, 
@@ -431,45 +437,153 @@ export default function FinanceBilling({ currentUser }: FinanceBillingProps) {
             </div>
           </div>
 
-          {/* Breakdown Table */}
-          <div className="space-y-3">
-            <div className="text-xs uppercase tracking-wider text-gray-400 font-semibold">
-              Chi Tiết Các Hạng Mục Phí Dịch Vụ:
-            </div>
+          {/* Breakdown Table: Tách bạch rõ 2 nhóm Phí Định Kỳ & Dịch Vụ Cư Dân */}
+          {(() => {
+            const utilityTypes = ['Electricity', 'Water', 'Management_Fee', 'Parking'];
+            const utilityItems = currentBill.details.filter(d => utilityTypes.includes(d.service_type));
+            const serviceItems = currentBill.details.filter(d => !utilityTypes.includes(d.service_type));
+            const utilitySubtotal = utilityItems.reduce((sum, item) => sum + item.total_line_amount, 0);
+            const serviceSubtotal = serviceItems.reduce((sum, item) => sum + item.total_line_amount, 0);
 
-            <div className="divide-y divide-[#222B35] border border-[#222B35] text-xs">
-              {currentBill.details.map((item) => (
-                <div key={item.id} className="p-3.5 flex items-center justify-between hover:bg-[#161B22] transition-colors">
-                  <div>
-                    <div className="font-bold text-white flex items-center gap-2">
-                      <span>
-                        {item.service_type === 'Electricity' ? 'Tiền Điện Sinh Hoạt' :
-                         item.service_type === 'Water' ? 'Tiền Nước Sinh Hoạt' :
-                         item.service_type === 'Management_Fee' ? 'Phí Quản Lý Vận Hành' :
-                         item.service_type === 'Parking' ? 'Phí Gửi Xe Căn Hộ' : 'Phí Dịch Vụ'}
-                      </span>
-                      {item.ai_anomaly && (
-                        <span className="px-2 py-0.5 bg-red-950 border border-red-500 text-red-300 text-[10px] font-mono font-bold">
-                          Biến động bất thường
-                        </span>
-                      )}
-                    </div>
-                    <div className="text-[11px] text-gray-400 mt-0.5">
-                      Khối lượng tiêu thụ: <strong>{item.usage}</strong> {item.service_type === 'Electricity' ? 'kWh' : item.service_type === 'Water' ? 'm³' : item.service_type === 'Management_Fee' ? 'm²' : 'xe'} • Đơn giá: {item.unit_price?.toLocaleString('vi-VN')} đ
-                    </div>
-                    {item.anomaly_reason && (
-                      <div className="text-[10px] text-amber-400 italic mt-0.5">
-                        * {item.anomaly_reason}
-                      </div>
-                    )}
+            const getItemIcon = (type: string) => {
+              switch (type) {
+                case 'Electricity': return <Zap className="w-3.5 h-3.5 text-amber-400" />;
+                case 'Water': return <Droplets className="w-3.5 h-3.5 text-cyan-400" />;
+                case 'Management_Fee': return <Building className="w-3.5 h-3.5 text-emerald-400" />;
+                case 'Parking': return <Car className="w-3.5 h-3.5 text-blue-400" />;
+                case 'Laundry': return <Shirt className="w-3.5 h-3.5 text-indigo-400" />;
+                case 'Housekeeping': return <Sparkles className="w-3.5 h-3.5 text-purple-400" />;
+                case 'Personal_Trainer': return <Dumbbell className="w-3.5 h-3.5 text-orange-400" />;
+                case 'Car_Care': return <Car className="w-3.5 h-3.5 text-teal-400" />;
+                default: return <Tag className="w-3.5 h-3.5 text-[#C5A880]" />;
+              }
+            };
+
+            const getItemName = (item: BillDetail) => {
+              if (item.service_name) return item.service_name;
+              switch (item.service_type) {
+                case 'Electricity': return 'Tiền Điện Sinh Hoạt';
+                case 'Water': return 'Tiền Nước Sinh Hoạt';
+                case 'Management_Fee': return 'Phí Quản Lý Vận Hành';
+                case 'Parking': return 'Phí Gửi Xe Căn Hộ';
+                case 'Laundry': return 'Giặt Ủi & Giặt Hấp Cao Cấp';
+                case 'Housekeeping': return 'Giúp Việc & Dọn Dẹp Căn Hộ';
+                case 'Personal_Trainer': return 'Thuê Huấn Luyện Viên PT Bơi/Gym';
+                case 'Car_Care': return 'Chăm Sóc & Rửa Xe Hầm B2';
+                default: return 'Phí Dịch Vụ Cư Dân';
+              }
+            };
+
+            return (
+              <div className="space-y-4">
+                {/* 1. Nhóm Phí Sinh Hoạt Cố Định & Chỉ Số */}
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between text-xs text-gray-300 font-semibold border-b border-[#222B35] pb-1">
+                    <span className="uppercase tracking-wider text-[#C5A880] flex items-center gap-1.5">
+                      <Building className="w-3.5 h-3.5" /> 1. Chi Phí Căn Hộ Cố Định & Chỉ Số Định Kỳ ({utilityItems.length})
+                    </span>
+                    <span className="font-mono text-gray-300">
+                      Tạm tính: {utilitySubtotal.toLocaleString('vi-VN')} đ
+                    </span>
                   </div>
-                  <div className="font-mono font-bold text-sm text-white">
-                    {item.total_line_amount.toLocaleString('vi-VN')} đ
+
+                  <div className="divide-y divide-[#222B35] border border-[#222B35] text-xs bg-[#161B22]/40">
+                    {utilityItems.map((item) => (
+                      <div key={item.id} className="p-3.5 flex items-center justify-between hover:bg-[#161B22] transition-colors">
+                        <div>
+                          <div className="font-bold text-white flex items-center gap-2">
+                            {getItemIcon(item.service_type)}
+                            <span>{getItemName(item)}</span>
+                            {item.ai_anomaly && (
+                              <span className="px-2 py-0.5 bg-red-950 border border-red-500 text-red-300 text-[10px] font-mono font-bold">
+                                Biến động bất thường
+                              </span>
+                            )}
+                          </div>
+                          <div className="text-[11px] text-gray-400 mt-0.5 pl-5.5">
+                            Chỉ số tiêu thụ: <strong>{item.usage}</strong> {item.unit || (item.service_type === 'Electricity' ? 'kWh' : item.service_type === 'Water' ? 'm³' : item.service_type === 'Management_Fee' ? 'm²' : 'xe')} • Đơn giá: {item.unit_price?.toLocaleString('vi-VN')} đ
+                          </div>
+                          {item.anomaly_reason && (
+                            <div className="text-[10px] text-amber-400 italic mt-0.5 pl-5.5">
+                              * {item.anomaly_reason}
+                            </div>
+                          )}
+                        </div>
+                        <div className="font-mono font-bold text-sm text-white">
+                          {item.total_line_amount.toLocaleString('vi-VN')} đ
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 </div>
-              ))}
-            </div>
-          </div>
+
+                {/* 2. Nhóm Dịch Vụ Cư Dân & Giá Trị Gia Tăng (Nếu có) */}
+                {serviceItems.length > 0 && (
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between text-xs text-gray-300 font-semibold border-b border-[#222B35] pb-1">
+                      <span className="uppercase tracking-wider text-[#C5A880] flex items-center gap-1.5">
+                        <Sparkles className="w-3.5 h-3.5" /> 2. Dịch Vụ Đời Sống & Tiện Ích Giá Trị Gia Tăng ({serviceItems.length})
+                      </span>
+                      <span className="font-mono text-gray-300">
+                        Tạm tính: {serviceSubtotal.toLocaleString('vi-VN')} đ
+                      </span>
+                    </div>
+
+                    <div className="divide-y divide-[#222B35] border border-[#222B35] text-xs bg-[#161B22]/40">
+                      {serviceItems.map((item) => (
+                        <div key={item.id} className="p-3.5 flex items-center justify-between hover:bg-[#161B22] transition-colors">
+                          <div>
+                            <div className="font-bold text-white flex items-center gap-2">
+                              {getItemIcon(item.service_type)}
+                              <span>{getItemName(item)}</span>
+                              <span className="px-1.5 py-0.5 bg-purple-950/80 border border-purple-500/60 text-purple-300 text-[10px] font-mono">
+                                Dịch Vụ Cư Dân
+                              </span>
+                            </div>
+                            <div className="text-[11px] text-gray-400 mt-0.5 pl-5.5 flex flex-wrap items-center gap-2">
+                              <span>Số lượng: <strong>{item.usage}</strong> {item.unit || 'gói'}</span>
+                              <span>•</span>
+                              <span>Đơn giá: {item.unit_price?.toLocaleString('vi-VN')} đ</span>
+                              {item.booking_ref && (
+                                <>
+                                  <span>•</span>
+                                  <span className="text-[#C5A880] font-mono font-semibold">Mã đơn: #{item.booking_ref}</span>
+                                </>
+                              )}
+                              {item.order_date && (
+                                <>
+                                  <span>•</span>
+                                  <span className="text-gray-400 font-mono">Ngày: {item.order_date}</span>
+                                </>
+                              )}
+                            </div>
+                          </div>
+                          <div className="font-mono font-bold text-sm text-[#C5A880]">
+                            {item.total_line_amount.toLocaleString('vi-VN')} đ
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Hàng Tổng Kết Tài Chính */}
+                <div className="p-3.5 bg-[#0D1117] border border-[#2D3748] flex items-center justify-between text-xs">
+                  <div className="space-y-0.5">
+                    <span className="font-bold uppercase tracking-wider text-white">
+                      Tổng Cộng Chi Phí Cần Thanh Toán:
+                    </span>
+                    <div className="text-[11px] text-gray-400">
+                      {utilityItems.length} hạng mục định kỳ + {serviceItems.length} dịch vụ đời sống (Đã bao gồm 10% VAT)
+                    </div>
+                  </div>
+                  <div className="font-serif text-xl font-bold text-[#C5A880] font-mono">
+                    {currentBill.total_amount.toLocaleString('vi-VN')} đ
+                  </div>
+                </div>
+              </div>
+            );
+          })()}
 
           {/* Payment Gateway Action Banner */}
           <div className="p-4 bg-[#161B22] border border-[#2D3748] flex flex-col sm:flex-row sm:items-center justify-between gap-4 text-xs">

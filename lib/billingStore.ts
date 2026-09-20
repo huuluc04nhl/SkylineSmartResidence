@@ -292,3 +292,47 @@ export function publishAllBills(): void {
   });
   saveBills(nextList);
 }
+
+/**
+ * Thêm một mục chi phí dịch vụ phát sinh (Giặt ủi, Giúp việc, PT, Chăm sóc xe) vào hóa đơn chưa thanh toán của căn hộ
+ */
+export function addServiceChargeToBill(
+  aptCode: string,
+  serviceDetail: Omit<BillDetail, 'id' | 'bill_id'>
+): ExtendedBill | null {
+  const allBills = getBills();
+  const cleanApt = aptCode.trim().toUpperCase();
+
+  // Tìm hóa đơn chưa thanh toán (Unpaid) của căn hộ, nếu không có thì lấy hóa đơn gần nhất
+  let targetBill = allBills.find(b => b.apt_code.trim().toUpperCase() === cleanApt && b.status === 'Unpaid');
+  if (!targetBill) {
+    targetBill = allBills.find(b => b.apt_code.trim().toUpperCase() === cleanApt);
+  }
+  if (!targetBill) return null;
+
+  const newDetailId = `bd-srv-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
+  const newDetail: BillDetail = {
+    ...serviceDetail,
+    id: newDetailId,
+    bill_id: targetBill.id,
+  };
+
+  const updatedDetails = [...targetBill.details, newDetail];
+  const newTotal = updatedDetails.reduce((sum, d) => sum + (d.total_line_amount || 0), 0);
+
+  const updatedBill: ExtendedBill = {
+    ...targetBill,
+    total_amount: newTotal,
+    payment_qr_url: generateVietQrUrl({
+      amount: newTotal,
+      transferNote: `SKYLINE ${cleanApt} ${targetBill.billing_month.replace(/\s+/g, '')}`,
+    }),
+    details: updatedDetails,
+  };
+
+  const nextList = allBills.map(b => b.id === targetBill!.id ? updatedBill : b);
+  saveBills(nextList);
+
+  return updatedBill;
+}
+
