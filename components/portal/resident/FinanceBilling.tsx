@@ -596,12 +596,12 @@ export default function FinanceBilling({ currentUser }: FinanceBillingProps) {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#222B35] pb-4">
         <div>
           <div className="text-[10px] uppercase tracking-[0.25em] text-[#C5A880] font-semibold flex items-center gap-1.5">
-            <Shield className="w-3.5 h-3.5" /> Tài Chính Căn Hộ • Căn {aptCode}
+            <Shield className="w-3.5 h-3.5" /> Tài Chính • Căn {aptCode}
           </div>
           <h2 className="font-serif text-2xl text-white font-bold mt-1">
             {activeTab === 'BILLING' 
-              ? 'Chi Tiết Phí Sinh Hoạt & Thanh Toán Trực Tuyến' 
-              : 'Thống Kê Chi Tiêu & Phân Tích Dịch Vụ Toàn Diện'}
+              ? 'Hóa Đơn & Thanh Toán' 
+              : 'Thống Kê Chi Tiêu & Dịch Vụ'}
           </h2>
         </div>
 
@@ -614,18 +614,18 @@ export default function FinanceBilling({ currentUser }: FinanceBillingProps) {
                     setLastPaymentResult(null);
                     setShowPaymentModal(true);
                   }}
-                  className="px-5 py-2.5 bg-[#C5A880] hover:bg-white text-[#0D1117] text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-2 shadow-lg"
+                  className="px-4 py-2 bg-[#C5A880] hover:bg-white text-[#0D1117] text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 shadow"
                 >
-                  <CreditCard className="w-4 h-4" /> Thanh Toán VNPay / MoMo
+                  <CreditCard className="w-4 h-4" /> Thanh Toán
                 </button>
               )}
 
               {currentBill && currentBill.status === 'Paid' && (
                 <button
                   onClick={() => window.print()}
-                  className="px-4 py-2.5 bg-[#161B22] border border-[#2D3748] hover:border-[#C5A880] text-gray-200 text-xs font-semibold uppercase tracking-wider transition-all flex items-center gap-2"
+                  className="px-4 py-2 bg-[#161B22] border border-[#2D3748] hover:border-[#C5A880] text-gray-200 text-xs font-semibold uppercase tracking-wider transition-all flex items-center gap-1.5"
                 >
-                  <Receipt className="w-4 h-4 text-[#C5A880]" /> In Biên Nhận Thu Phí
+                  <Receipt className="w-4 h-4 text-[#C5A880]" /> In Hóa Đơn
                 </button>
               )}
             </>
@@ -633,18 +633,18 @@ export default function FinanceBilling({ currentUser }: FinanceBillingProps) {
             <>
               <button
                 onClick={handleExportExpenseCsv}
-                className="px-4 py-2 bg-[#161B22] border border-[#2D3748] hover:border-[#C5A880] text-gray-200 text-xs font-semibold uppercase tracking-wider transition-all flex items-center gap-2"
-                title="Tải tệp bảng tính CSV chi tiết từng hạng mục chi phí"
+                className="px-3.5 py-2 bg-[#161B22] border border-[#2D3748] hover:border-[#C5A880] text-gray-200 text-xs font-semibold uppercase tracking-wider transition-all flex items-center gap-1.5"
+                title="Tải bảng tính CSV chi tiết từng hạng mục chi phí"
               >
-                <FileSpreadsheet className="w-4 h-4 text-emerald-400" />
-                <span>Xuất Báo Cáo CSV</span>
+                <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-400" />
+                <span>Xuất CSV</span>
               </button>
               <button
                 onClick={() => window.print()}
-                className="px-4 py-2 bg-[#161B22] border border-[#2D3748] hover:border-[#C5A880] text-gray-200 text-xs font-semibold uppercase tracking-wider transition-all flex items-center gap-2"
+                className="px-3.5 py-2 bg-[#161B22] border border-[#2D3748] hover:border-[#C5A880] text-gray-200 text-xs font-semibold uppercase tracking-wider transition-all flex items-center gap-1.5"
               >
-                <Download className="w-4 h-4 text-[#C5A880]" />
-                <span>In Thống Kê</span>
+                <Download className="w-3.5 h-3.5 text-[#C5A880]" />
+                <span>In Báo Cáo</span>
               </button>
             </>
           )}
@@ -653,46 +653,41 @@ export default function FinanceBilling({ currentUser }: FinanceBillingProps) {
 
       {/* Sub-tab Navigation Switcher */}
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#222B35] pb-3">
-        <div className="flex items-center gap-2 bg-[#0D1117] p-1 border border-[#222B35]">
+        <div className="flex items-center gap-1.5 bg-[#0D1117] p-1 border border-[#222B35]">
           <button
             onClick={() => setActiveTab('BILLING')}
-            className={`px-3.5 py-2 text-xs font-bold uppercase tracking-wider flex items-center gap-2 transition-all ${
+            className={`px-3 py-1.5 text-xs font-bold uppercase tracking-wider flex items-center gap-2 transition-all ${
               activeTab === 'BILLING'
                 ? 'bg-[#C5A880] text-[#0D1117] shadow-sm'
                 : 'text-gray-400 hover:text-white hover:bg-[#161B22]'
             }`}
           >
-            <Receipt className="w-4 h-4" />
-            <span>Hóa Đơn & Thanh Toán</span>
+            <Receipt className="w-3.5 h-3.5" />
+            <span>Hóa Đơn</span>
             {bills.some(b => b.status === 'Unpaid') && (
-              <span className={`px-1.5 py-0.2 text-[9px] font-mono font-bold rounded-full ${
+              <span className={`px-1.5 py-0.2 text-[9px] font-mono font-bold rounded ${
                 activeTab === 'BILLING' ? 'bg-[#0D1117] text-[#C5A880]' : 'bg-amber-500 text-black'
               }`}>
-                1 chờ nộp
+                1 chưa nộp
               </span>
             )}
           </button>
 
           <button
             onClick={() => setActiveTab('ANALYTICS')}
-            className={`px-3.5 py-2 text-xs font-bold uppercase tracking-wider flex items-center gap-2 transition-all ${
+            className={`px-3 py-1.5 text-xs font-bold uppercase tracking-wider flex items-center gap-2 transition-all ${
               activeTab === 'ANALYTICS'
                 ? 'bg-[#C5A880] text-[#0D1117] shadow-sm'
                 : 'text-gray-400 hover:text-white hover:bg-[#161B22]'
             }`}
           >
-            <BarChart3 className="w-4 h-4" />
-            <span>Thống Kê Chi Tiêu & Dịch Vụ</span>
-            <span className={`px-1.5 py-0.2 text-[9px] font-mono font-bold rounded ${
-              activeTab === 'ANALYTICS' ? 'bg-[#0D1117] text-[#C5A880]' : 'bg-emerald-950 text-emerald-300 border border-emerald-500/50'
-            }`}>
-              Full 2026
-            </span>
+            <BarChart3 className="w-3.5 h-3.5" />
+            <span>Thống Kê Chi Tiêu</span>
           </button>
         </div>
 
         <div className="text-xs text-gray-400 flex items-center gap-2 font-mono">
-          <span>Dữ liệu căn hộ: <strong className="text-white">Căn {aptCode}</strong></span>
+          <span>Căn: <strong className="text-white">{aptCode}</strong></span>
           <span>•</span>
           <span>Chủ hộ: <strong className="text-[#C5A880]">{residentName}</strong></span>
         </div>
@@ -799,7 +794,7 @@ export default function FinanceBilling({ currentUser }: FinanceBillingProps) {
                 <div className="space-y-2">
                   <div className="flex items-center justify-between text-xs text-gray-300 font-semibold border-b border-[#222B35] pb-1">
                     <span className="uppercase tracking-wider text-[#C5A880] flex items-center gap-1.5">
-                      <Building className="w-3.5 h-3.5" /> 1. Chi Phí Căn Hộ Cố Định & Chỉ Số Định Kỳ ({utilityItems.length})
+                      <Building className="w-3.5 h-3.5" /> 1. Chi Phí Định Kỳ & Chỉ Số ({utilityItems.length})
                     </span>
                     <span className="font-mono text-gray-300">
                       Tạm tính: {utilitySubtotal.toLocaleString('vi-VN')} đ
@@ -820,7 +815,7 @@ export default function FinanceBilling({ currentUser }: FinanceBillingProps) {
                             )}
                           </div>
                           <div className="text-[11px] text-gray-400 mt-0.5 pl-5.5">
-                            Chỉ số tiêu thụ: <strong>{item.usage}</strong> {item.unit || (item.service_type === 'Electricity' ? 'kWh' : item.service_type === 'Water' ? 'm³' : item.service_type === 'Management_Fee' ? 'm²' : 'xe')} • Đơn giá: {item.unit_price?.toLocaleString('vi-VN')} đ
+                            Chỉ số: <strong>{item.usage}</strong> {item.unit || (item.service_type === 'Electricity' ? 'kWh' : item.service_type === 'Water' ? 'm³' : item.service_type === 'Management_Fee' ? 'm²' : 'xe')} • Đơn giá: {item.unit_price?.toLocaleString('vi-VN')} đ
                           </div>
                           {item.anomaly_reason && (
                             <div className="text-[10px] text-amber-400 italic mt-0.5 pl-5.5">
@@ -841,7 +836,7 @@ export default function FinanceBilling({ currentUser }: FinanceBillingProps) {
                   <div className="space-y-2">
                     <div className="flex items-center justify-between text-xs text-gray-300 font-semibold border-b border-[#222B35] pb-1">
                       <span className="uppercase tracking-wider text-[#C5A880] flex items-center gap-1.5">
-                        <Sparkles className="w-3.5 h-3.5" /> 2. Dịch Vụ Đời Sống & Tiện Ích Giá Trị Gia Tăng ({serviceItems.length})
+                        <Sparkles className="w-3.5 h-3.5" /> 2. Dịch Vụ Đời Sống & Tiện Ích ({serviceItems.length})
                       </span>
                       <span className="font-mono text-gray-300">
                         Tạm tính: {serviceSubtotal.toLocaleString('vi-VN')} đ
@@ -866,7 +861,7 @@ export default function FinanceBilling({ currentUser }: FinanceBillingProps) {
                               {item.booking_ref && (
                                 <>
                                   <span>•</span>
-                                  <span className="text-[#C5A880] font-mono font-semibold">Mã đơn: #{item.booking_ref}</span>
+                                  <span className="text-[#C5A880] font-mono font-semibold">#{item.booking_ref}</span>
                                 </>
                               )}
                               {item.order_date && (
@@ -888,9 +883,9 @@ export default function FinanceBilling({ currentUser }: FinanceBillingProps) {
                   <div className="p-3 bg-[#161B22]/40 border border-[#222B35] flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs text-gray-400">
                     <div className="flex items-center gap-2">
                       <Sparkles className="w-3.5 h-3.5 text-gray-500" />
-                      <span>Chưa có dịch vụ đời sống phát sinh trong kỳ này (Giặt ủi, Giúp việc, PT, Chăm sóc xe).</span>
+                      <span>Chưa có dịch vụ đời sống phát sinh trong kỳ này.</span>
                     </div>
-                    <span className="text-[11px] text-gray-500 italic">Chi phí dịch vụ khi đặt sẽ tự động cập nhật vào đây</span>
+                    <span className="text-[11px] text-gray-500 italic">Dịch vụ đặt sẽ tự động cập nhật vào đây</span>
                   </div>
                 )}
 
@@ -898,12 +893,12 @@ export default function FinanceBilling({ currentUser }: FinanceBillingProps) {
                 <div className="p-3.5 bg-[#0D1117] border border-[#2D3748] flex items-center justify-between text-xs">
                   <div className="space-y-0.5">
                     <span className="font-bold uppercase tracking-wider text-white">
-                      Tổng Cộng Chi Phí Cần Thanh Toán:
+                      Tổng Cộng Thanh Toán:
                     </span>
                     <div className="text-[11px] text-gray-400">
                       {serviceItems.length > 0 
-                        ? `${utilityItems.length} hạng mục định kỳ + ${serviceItems.length} dịch vụ đời sống (Đã bao gồm 10% VAT)`
-                        : `${utilityItems.length} hạng mục định kỳ (Đã bao gồm 10% VAT)`}
+                        ? `${utilityItems.length} mục định kỳ + ${serviceItems.length} dịch vụ (Đã gồm 10% VAT)`
+                        : `${utilityItems.length} mục định kỳ (Đã gồm 10% VAT)`}
                     </div>
                   </div>
                   <div className="font-serif text-xl font-bold text-[#C5A880] font-mono">
@@ -919,7 +914,7 @@ export default function FinanceBilling({ currentUser }: FinanceBillingProps) {
             <div className="space-y-1">
               <div className="font-bold text-white flex items-center gap-2">
                 <CreditCard className="w-4 h-4 text-[#C5A880]" /> 
-                <span>Hỗ Trợ Thanh Toán Trực Tuyến 24/7 Qua Cổng:</span>
+                <span>Cổng Thanh Toán Trực Tuyến 24/7:</span>
               </div>
               <div className="text-gray-400 flex items-center gap-3 pt-0.5">
                 <span className="px-2 py-0.5 bg-[#005BAA]/20 border border-[#005BAA]/50 text-[#005BAA] font-bold text-[10px]">
@@ -937,9 +932,9 @@ export default function FinanceBilling({ currentUser }: FinanceBillingProps) {
                   setLastPaymentResult(null);
                   setShowPaymentModal(true);
                 }}
-                className="px-5 py-2.5 bg-[#C5A880] hover:bg-white text-[#0D1117] text-xs font-bold uppercase tracking-wider transition-colors shadow flex items-center gap-1.5 flex-shrink-0"
+                className="px-4 py-2 bg-[#C5A880] hover:bg-white text-[#0D1117] text-xs font-bold uppercase tracking-wider transition-colors shadow flex items-center gap-1.5 flex-shrink-0"
               >
-                <CreditCard className="w-4 h-4" /> Mở Cổng Thanh Toán Ngay
+                <CreditCard className="w-4 h-4" /> Thanh Toán Ngay
               </button>
             ) : (
               <div className="text-emerald-400 font-mono text-xs flex items-center gap-1 font-bold">
@@ -966,7 +961,7 @@ export default function FinanceBilling({ currentUser }: FinanceBillingProps) {
             {/* KPI 1 */}
             <div className="p-4 bg-[#121820] border border-[#222B35] relative overflow-hidden shadow-lg group hover:border-[#C5A880]/50 transition-all">
               <div className="flex items-center justify-between text-xs text-gray-400 mb-2">
-                <span className="uppercase tracking-wider font-semibold">Tổng Chi Tích Lũy 2026</span>
+                <span className="uppercase tracking-wider font-semibold">Tổng Chi Năm 2026</span>
                 <div className="w-8 h-8 rounded-lg bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-[#C5A880]">
                   <Coins className="w-4 h-4" />
                 </div>
@@ -978,14 +973,14 @@ export default function FinanceBilling({ currentUser }: FinanceBillingProps) {
                 <span className="text-emerald-400 font-mono font-bold flex items-center">
                   <CheckCheck className="w-3.5 h-3.5 mr-0.5" /> {bills.length} kỳ
                 </span>
-                <span>ghi nhận từ T05 - T08/2026</span>
+                <span>(T05 - T08/2026)</span>
               </div>
             </div>
 
             {/* KPI 2 */}
             <div className="p-4 bg-[#121820] border border-[#222B35] relative overflow-hidden shadow-lg group hover:border-[#C5A880]/50 transition-all">
               <div className="flex items-center justify-between text-xs text-gray-400 mb-2">
-                <span className="uppercase tracking-wider font-semibold">Trung Bình Mỗi Tháng</span>
+                <span className="uppercase tracking-wider font-semibold">Trung Bình Tháng</span>
                 <div className="w-8 h-8 rounded-lg bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400">
                   <Activity className="w-4 h-4" />
                 </div>
@@ -995,14 +990,14 @@ export default function FinanceBilling({ currentUser }: FinanceBillingProps) {
               </div>
               <div className="mt-2 flex items-center gap-1.5 text-[11px] text-gray-400">
                 <span className="text-cyan-400 font-mono font-bold">Chuẩn 2PN</span>
-                <span>Định mức căn hộ 73.2 m²</span>
+                <span>Căn hộ 73.2 m²</span>
               </div>
             </div>
 
             {/* KPI 3 */}
             <div className="p-4 bg-[#121820] border border-[#222B35] relative overflow-hidden shadow-lg group hover:border-[#C5A880]/50 transition-all">
               <div className="flex items-center justify-between text-xs text-gray-400 mb-2">
-                <span className="uppercase tracking-wider font-semibold">Hạng Mục Lớn Nhất</span>
+                <span className="uppercase tracking-wider font-semibold">Hạng Mục Cao Nhất</span>
                 <div className="w-8 h-8 rounded-lg bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
                   <Building className="w-4 h-4" />
                 </div>
@@ -1014,14 +1009,14 @@ export default function FinanceBilling({ currentUser }: FinanceBillingProps) {
                 <span className="text-emerald-400 font-mono font-bold">
                   {highestCategory ? `${highestCategory.percent.toFixed(1)}%` : '0%'}
                 </span>
-                <span>tổng chi phí phát sinh</span>
+                <span>tổng chi phí</span>
               </div>
             </div>
 
             {/* KPI 4 */}
             <div className="p-4 bg-[#121820] border border-[#222B35] relative overflow-hidden shadow-lg group hover:border-[#C5A880]/50 transition-all">
               <div className="flex items-center justify-between text-xs text-gray-400 mb-2">
-                <span className="uppercase tracking-wider font-semibold">Điểm Uy Tín Cư Dân</span>
+                <span className="uppercase tracking-wider font-semibold">Thanh Toán Đúng Hạn</span>
                 <div className="w-8 h-8 rounded-lg bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
                   <ShieldCheck className="w-4 h-4" />
                 </div>
@@ -1030,8 +1025,8 @@ export default function FinanceBilling({ currentUser }: FinanceBillingProps) {
                 {onTimeRate}% Đúng Hạn
               </div>
               <div className="mt-2 flex items-center gap-1.5 text-[11px] text-gray-400">
-                <span className="text-amber-300 font-bold uppercase tracking-wider text-[10px]">Hạng Platinum VIP</span>
-                <span>• 0 ngày trễ hạn</span>
+                <span className="text-amber-300 font-bold uppercase tracking-wider text-[10px]">Platinum VIP</span>
+                <span>• 0 ngày trễ</span>
               </div>
             </div>
           </div>
@@ -1041,10 +1036,10 @@ export default function FinanceBilling({ currentUser }: FinanceBillingProps) {
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#222B35] pb-4">
               <div>
                 <div className="text-[10px] uppercase tracking-[0.2em] text-[#C5A880] font-semibold flex items-center gap-1.5">
-                  <PieChart className="w-3.5 h-3.5" /> Phân Bổ Tỷ Trọng Chi Tiêu
+                  <PieChart className="w-3.5 h-3.5" /> Cơ Cấu Chi Phí
                 </div>
                 <h3 className="font-serif text-lg text-white font-bold mt-0.5">
-                  Cơ Cấu Chi Phí Tiện Ích, Dịch Vụ & Điện Nước
+                  Tỷ Trọng Dịch Vụ & Tiện Ích
                 </h3>
               </div>
 
@@ -1162,14 +1157,14 @@ export default function FinanceBilling({ currentUser }: FinanceBillingProps) {
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#222B35] pb-4">
               <div>
                 <div className="text-[10px] uppercase tracking-[0.2em] text-[#C5A880] font-semibold flex items-center gap-1.5">
-                  <TrendingUp className="w-3.5 h-3.5" /> Tiến Trình Tài Chính Các Kỳ
+                  <TrendingUp className="w-3.5 h-3.5" /> Biến Động Qua Các Tháng
                 </div>
                 <h3 className="font-serif text-lg text-white font-bold mt-0.5">
-                  Biến Động Chi Phí Sinh Hoạt Qua Các Tháng (Năm 2026)
+                  Tiến Trình Chi Phí Sinh Hoạt
                 </h3>
               </div>
               <div className="text-xs text-gray-400">
-                Chu kỳ lập hóa đơn: <strong className="text-white">Ngày 05 hàng tháng</strong>
+                Chu kỳ: <strong className="text-white">Ngày 05 hàng tháng</strong>
               </div>
             </div>
 
@@ -1208,7 +1203,7 @@ export default function FinanceBilling({ currentUser }: FinanceBillingProps) {
                       </div>
 
                       <div className="mt-3 text-center">
-                        <div className="text-[11px] text-gray-400">Tổng hóa đơn kỳ:</div>
+                        <div className="text-[11px] text-gray-400">Hóa đơn kỳ:</div>
                         <div className="font-serif text-xl font-bold text-[#C5A880] mt-0.5">
                           {b.total_amount.toLocaleString('vi-VN')} đ
                         </div>
@@ -1230,14 +1225,14 @@ export default function FinanceBilling({ currentUser }: FinanceBillingProps) {
                         </div>
                         <div className="flex items-center justify-between text-gray-300">
                           <span className="flex items-center gap-1 text-emerald-400">
-                            <Building className="w-3 h-3" /> QL + Xe + Net:
+                            <Building className="w-3 h-3" /> Cố định:
                           </span>
                           <span className="font-mono">{fixedLine.toLocaleString('vi-VN')} đ</span>
                         </div>
                         {serviceLine > 0 && (
                           <div className="flex items-center justify-between text-purple-300 font-bold">
                             <span className="flex items-center gap-1">
-                              <Sparkles className="w-3 h-3" /> Dịch vụ cư dân:
+                              <Sparkles className="w-3 h-3" /> Dịch vụ:
                             </span>
                             <span className="font-mono">{serviceLine.toLocaleString('vi-VN')} đ</span>
                           </div>
@@ -1247,7 +1242,7 @@ export default function FinanceBilling({ currentUser }: FinanceBillingProps) {
 
                     {/* Bottom comparison indicator */}
                     <div className="pt-2 border-t border-[#222B35] flex items-center justify-between text-[10px] text-gray-400">
-                      <span>So với kỳ trước:</span>
+                      <span>So kỳ trước:</span>
                       {prev ? (
                         <span className={`font-mono font-bold flex items-center gap-0.5 ${
                           diffAmount > 0 ? 'text-amber-400' : diffAmount < 0 ? 'text-emerald-400' : 'text-gray-400'
@@ -1256,7 +1251,7 @@ export default function FinanceBilling({ currentUser }: FinanceBillingProps) {
                           {diffAmount > 0 ? `+${diffPercent}%` : diffAmount < 0 ? `${diffPercent}%` : '0%'}
                         </span>
                       ) : (
-                        <span className="font-mono text-gray-500">Kỳ khởi tạo</span>
+                        <span className="font-mono text-gray-500">Kỳ đầu</span>
                       )}
                     </div>
                   </div>
@@ -1270,10 +1265,10 @@ export default function FinanceBilling({ currentUser }: FinanceBillingProps) {
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#222B35] pb-4">
               <div>
                 <div className="text-[10px] uppercase tracking-[0.2em] text-[#C5A880] font-semibold flex items-center gap-1.5">
-                  <Layers className="w-3.5 h-3.5" /> Bảng Kê Toàn Diện
+                  <Layers className="w-3.5 h-3.5" /> Bảng Kê Dịch Vụ
                 </div>
                 <h3 className="font-serif text-lg text-white font-bold mt-0.5">
-                  Bảng Kê Chi Tiết Từng Hạng Mục & Dịch Vụ Căn Hộ
+                  Chi Tiết Định Mức & Tiêu Dùng
                 </h3>
               </div>
               <div className="flex items-center gap-2 text-xs">
@@ -1282,7 +1277,7 @@ export default function FinanceBilling({ currentUser }: FinanceBillingProps) {
                   className="px-3 py-1.5 bg-[#161B22] border border-[#2D3748] hover:border-[#C5A880] text-gray-200 text-xs font-semibold transition-all flex items-center gap-1.5"
                 >
                   <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-400" />
-                  <span>Xuất file Excel/CSV</span>
+                  <span>Xuất CSV</span>
                 </button>
               </div>
             </div>
@@ -1291,13 +1286,13 @@ export default function FinanceBilling({ currentUser }: FinanceBillingProps) {
               <table className="w-full text-xs text-left">
                 <thead className="bg-[#0D1117] text-gray-400 border-b border-[#222B35] uppercase font-mono text-[10px]">
                   <tr>
-                    <th className="p-3">Hạng Mục Dịch Vụ</th>
-                    <th className="p-3">Phân Loại Phí</th>
-                    <th className="p-3 text-right">Sản Lượng Tích Lũy</th>
-                    <th className="p-3 text-right">Đơn Giá Định Mức</th>
-                    <th className="p-3 text-right">Tổng Chi Phí</th>
+                    <th className="p-3">Hạng Mục</th>
+                    <th className="p-3">Loại Phí</th>
+                    <th className="p-3 text-right">Sản Lượng</th>
+                    <th className="p-3 text-right">Đơn Giá</th>
+                    <th className="p-3 text-right">Tổng Chi</th>
                     <th className="p-3 text-right">Tỷ Trọng</th>
-                    <th className="p-3">Ghi Chú Vận Hành BQL</th>
+                    <th className="p-3">Ghi Chú</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-[#222B35]">
@@ -1311,17 +1306,17 @@ export default function FinanceBilling({ currentUser }: FinanceBillingProps) {
                         </td>
                         <td className="p-3 text-gray-400">
                           {['Electricity', 'Water', 'Management_Fee', 'Parking', 'Internet'].includes(cat.id)
-                            ? <span className="px-1.5 py-0.5 bg-blue-950/70 border border-blue-500/40 text-blue-300 text-[10px] font-mono">Định Kỳ / Tiêu Thụ</span>
-                            : <span className="px-1.5 py-0.5 bg-purple-950/70 border border-purple-500/40 text-purple-300 text-[10px] font-mono">Dịch Vụ Đời Sống</span>
+                            ? <span className="px-1.5 py-0.5 bg-blue-950/70 border border-blue-500/40 text-blue-300 text-[10px] font-mono">Định Kỳ</span>
+                            : <span className="px-1.5 py-0.5 bg-purple-950/70 border border-purple-500/40 text-purple-300 text-[10px] font-mono">Dịch Vụ</span>
                           }
                         </td>
                         <td className="p-3 text-right font-mono text-gray-200">
                           {cat.id === 'Electricity' ? `${totalKwh.toLocaleString('vi-VN')} kWh` :
                            cat.id === 'Water' ? `${totalM3.toLocaleString('vi-VN')} m³` :
-                           cat.id === 'Management_Fee' ? `73.2 m² x ${bills.length} tháng` :
+                           cat.id === 'Management_Fee' ? `73.2 m² x ${bills.length} th` :
                            cat.id === 'Internet' ? `${bills.length} tháng` :
-                           cat.id === 'Parking' ? `${bills.length} kỳ giữ xe` :
-                           `${serviceDetails.length} đơn dịch vụ`}
+                           cat.id === 'Parking' ? `${bills.length} kỳ` :
+                           `${serviceDetails.length} đơn`}
                         </td>
                         <td className="p-3 text-right font-mono text-gray-300">{cat.rate}</td>
                         <td className="p-3 text-right font-mono font-bold text-white">
@@ -1338,13 +1333,13 @@ export default function FinanceBilling({ currentUser }: FinanceBillingProps) {
                 <tfoot className="bg-[#0D1117] border-t-2 border-[#2D3748] font-bold">
                   <tr>
                     <td className="p-3 text-white uppercase tracking-wider" colSpan={4}>
-                      Tổng Chi Tiêu Toàn Diện Căn Hộ (T05 - T08/2026):
+                      Tổng Chi Tiêu Tích Lũy (T05 - T08):
                     </td>
                     <td className="p-3 text-right font-serif text-sm font-bold text-[#C5A880] font-mono">
                       {totalSpendAll.toLocaleString('vi-VN')} đ
                     </td>
                     <td className="p-3 text-right font-mono text-emerald-400">100%</td>
-                    <td className="p-3 text-gray-400 text-[11px]">Đã bao gồm 10% VAT và phí quản lý vận hành</td>
+                    <td className="p-3 text-gray-400 text-[11px]">Đã bao gồm 10% VAT</td>
                   </tr>
                 </tfoot>
               </table>
@@ -1356,7 +1351,7 @@ export default function FinanceBilling({ currentUser }: FinanceBillingProps) {
             <div className="flex items-center gap-2 border-b border-[#222B35] pb-3">
               <Sparkles className="w-4 h-4 text-amber-400" />
               <h3 className="font-serif text-base text-white font-bold">
-                Phân Tích AI & Đề Xuất Tối Ưu Hóa Chi Phí Sinh Hoạt Căn Hộ
+                Gợi Ý AI Tối Ưu Năng Lượng & Chi Phí
               </h3>
             </div>
 
