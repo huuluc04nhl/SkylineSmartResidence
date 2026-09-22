@@ -193,6 +193,13 @@ export function getBills(aptCode?: string): ExtendedBill[] {
               details: cleanDetails,
             };
           });
+          // Đảm bảo các hóa đơn khởi tạo mới (ví dụ T05, T06, Internet line) luôn hiện diện
+          const existingIds = new Set(allBills.map(b => b.id));
+          for (const initBill of INITIAL_BILLS) {
+            if (!existingIds.has(initBill.id)) {
+              allBills.push(initBill);
+            }
+          }
         } else {
           allBills = INITIAL_BILLS;
         }

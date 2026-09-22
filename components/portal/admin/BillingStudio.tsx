@@ -437,12 +437,14 @@ export default function BillingStudio() {
               <div className="font-bold text-gray-300">Bảng Kê Chi Tiết:</div>
               <div className="divide-y divide-[#222B35] border border-[#222B35]">
                 {selectedDetailBill.details.map((d) => {
-                  const isService = !['Electricity', 'Water', 'Management_Fee', 'Parking'].includes(d.service_type);
+                  const isService = !['Electricity', 'Water', 'Management_Fee', 'Parking', 'Internet'].includes(d.service_type);
                   const name = d.service_name || (
                     d.service_type === 'Electricity' ? 'Tiền Điện Sinh Hoạt' :
                     d.service_type === 'Water' ? 'Tiền Nước Sinh Hoạt' :
                     d.service_type === 'Management_Fee' ? 'Phí Quản Lý Vận Hành' :
                     d.service_type === 'Parking' ? 'Phí Gửi Xe Căn Hộ' :
+                    d.service_type === 'Internet' ? 'Cáp Quang Internet Tốc Độ Cao' :
+                    d.service_type === 'Facility' ? 'Phí Sử Dụng Tiện Ích Đặt Trước' :
                     d.service_type === 'Laundry' ? 'Giặt Ủi & Giặt Hấp Cao Cấp' :
                     d.service_type === 'Housekeeping' ? 'Giúp Việc & Dọn Dẹp Căn Hộ' :
                     d.service_type === 'Personal_Trainer' ? 'Thuê Huấn Luyện Viên PT Bơi/Gym' :

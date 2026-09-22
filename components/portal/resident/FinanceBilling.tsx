@@ -29,7 +29,24 @@ import {
   Car,
   Shirt,
   Dumbbell,
-  Tag
+  Tag,
+  Wifi,
+  Globe,
+  BarChart3,
+  PieChart,
+  TrendingUp,
+  TrendingDown,
+  Coins,
+  Activity,
+  CalendarDays,
+  FileSpreadsheet,
+  CheckCheck,
+  ArrowUpRight,
+  ArrowDownRight,
+  HelpCircle,
+  Percent,
+  Layers,
+  Info
 } from 'lucide-react';
 import { 
   getBills, 
@@ -288,6 +305,262 @@ export default function FinanceBilling({ currentUser }: FinanceBillingProps) {
     }
   };
 
+  // Tab view: Hóa đơn & Thanh toán vs Thống kê chi tiêu
+  const [activeTab, setActiveTab] = useState<'BILLING' | 'ANALYTICS'>('BILLING');
+  const [analyticsCategory, setAnalyticsCategory] = useState<string>('ALL');
+
+  // Hàm lấy biểu tượng dịch vụ chuẩn
+  const getItemIcon = (type: string) => {
+    switch (type) {
+      case 'Electricity': return <Zap className="w-3.5 h-3.5 text-amber-400" />;
+      case 'Water': return <Droplets className="w-3.5 h-3.5 text-cyan-400" />;
+      case 'Management_Fee': return <Building className="w-3.5 h-3.5 text-emerald-400" />;
+      case 'Parking': return <Car className="w-3.5 h-3.5 text-blue-400" />;
+      case 'Internet': return <Wifi className="w-3.5 h-3.5 text-teal-400" />;
+      case 'Facility': return <Sparkles className="w-3.5 h-3.5 text-rose-400" />;
+      case 'Laundry': return <Shirt className="w-3.5 h-3.5 text-indigo-400" />;
+      case 'Housekeeping': return <Sparkles className="w-3.5 h-3.5 text-purple-400" />;
+      case 'Personal_Trainer': return <Dumbbell className="w-3.5 h-3.5 text-orange-400" />;
+      case 'Car_Care': return <Car className="w-3.5 h-3.5 text-teal-400" />;
+      default: return <Tag className="w-3.5 h-3.5 text-[#C5A880]" />;
+    }
+  };
+
+  // Hàm lấy tên dịch vụ chuẩn
+  const getItemName = (item: BillDetail) => {
+    if (item.service_name) return item.service_name;
+    switch (item.service_type) {
+      case 'Electricity': return 'Tiền Điện Sinh Hoạt';
+      case 'Water': return 'Tiền Nước Sinh Hoạt';
+      case 'Management_Fee': return 'Phí Quản Lý Vận Hành';
+      case 'Parking': return 'Phí Gửi Xe Căn Hộ';
+      case 'Internet': return 'Cáp Quang Internet VNPT Fiber 300Mbps';
+      case 'Facility': return 'Phí Sử Dụng Tiện Ích Đặt Trước';
+      case 'Laundry': return 'Giặt Ủi & Giặt Hấp Cao Cấp';
+      case 'Housekeeping': return 'Giúp Việc & Dọn Dẹp Căn Hộ';
+      case 'Personal_Trainer': return 'Thuê Huấn Luyện Viên PT Bơi/Gym';
+      case 'Car_Care': return 'Chăm Sóc & Rửa Xe Hầm B2';
+      default: return 'Phí Dịch Vụ Cư Dân';
+    }
+  };
+
+  // Sắp xếp các kỳ hóa đơn theo thứ tự thời gian
+  const sortedBills = [...bills].sort((a, b) => {
+    return new Date(a.created_at || a.due_date || '').getTime() - new Date(b.created_at || b.due_date || '').getTime();
+  });
+
+  // Tổng hợp dữ liệu thống kê chi tiêu
+  const totalSpendAll = bills.reduce((sum, b) => sum + (b.total_amount || 0), 0);
+  const avgMonthlySpend = bills.length > 0 ? Math.round(totalSpendAll / bills.length) : 0;
+  const paidCount = bills.filter(b => b.status === 'Paid').length;
+  const onTimeRate = bills.length > 0 ? Math.round((paidCount / bills.length) * 100) : 100;
+
+  // Thu thập toàn bộ chi tiết dòng hóa đơn
+  const allDetails = bills.flatMap(b => b.details || []);
+
+  const electricityDetails = allDetails.filter(d => d.service_type === 'Electricity');
+  const waterDetails = allDetails.filter(d => d.service_type === 'Water');
+  const mgmtDetails = allDetails.filter(d => d.service_type === 'Management_Fee');
+  const parkingDetails = allDetails.filter(d => d.service_type === 'Parking');
+  const internetDetails = allDetails.filter(d => d.service_type === 'Internet');
+  const serviceDetails = allDetails.filter(d => !['Electricity', 'Water', 'Management_Fee', 'Parking', 'Internet', 'Facility'].includes(d.service_type));
+  const facilityDetails = allDetails.filter(d => d.service_type === 'Facility');
+
+  const sumCategory = (items: BillDetail[]) => items.reduce((s, it) => s + (it.total_line_amount || 0), 0);
+  const totalElec = sumCategory(electricityDetails);
+  const totalWater = sumCategory(waterDetails);
+  const totalMgmt = sumCategory(mgmtDetails);
+  const totalParking = sumCategory(parkingDetails);
+  const totalInternet = sumCategory(internetDetails);
+  const totalLivingServices = sumCategory(serviceDetails);
+  const totalFacility = sumCategory(facilityDetails);
+
+  const totalKwh = electricityDetails.reduce((s, it) => s + (it.usage || 0), 0);
+  const totalM3 = waterDetails.reduce((s, it) => s + (it.usage || 0), 0);
+
+  // Danh mục thống kê chi tiết theo tỷ trọng
+  const categoryStats = [
+    {
+      id: 'Electricity',
+      name: 'Điện Sinh Hoạt',
+      subtext: `Tổng ${totalKwh.toLocaleString('vi-VN')} kWh (TB ${bills.length ? Math.round(totalKwh / bills.length) : 0} kWh/tháng)`,
+      amount: totalElec,
+      percent: totalSpendAll > 0 ? (totalElec / totalSpendAll) * 100 : 0,
+      icon: Zap,
+      color: '#F59E0B',
+      textColor: 'text-amber-400',
+      bgColor: 'bg-amber-400',
+      bgMuted: 'bg-amber-950/40 border-amber-500/50',
+      unitName: 'kWh',
+      rate: '3.200 đ/kWh',
+      trend: '+15.2%',
+      trendDirection: 'up' as const,
+      note: 'Định mức bậc thang giá điện sinh hoạt EVN'
+    },
+    {
+      id: 'Water',
+      name: 'Nước Sinh Hoạt',
+      subtext: `Tổng ${totalM3.toLocaleString('vi-VN')} m³ (TB ${bills.length ? (Math.round((totalM3 / bills.length) * 10) / 10) : 0} m³/tháng)`,
+      amount: totalWater,
+      percent: totalSpendAll > 0 ? (totalWater / totalSpendAll) * 100 : 0,
+      icon: Droplets,
+      color: '#06B6D4',
+      textColor: 'text-cyan-400',
+      bgColor: 'bg-cyan-400',
+      bgMuted: 'bg-cyan-950/40 border-cyan-500/50',
+      unitName: 'm³',
+      rate: '18.000 đ/m³',
+      trend: '+55.5%',
+      trendDirection: 'up' as const,
+      note: 'AI cảnh báo rò rỉ đêm kỳ T08/2026'
+    },
+    {
+      id: 'Management_Fee',
+      name: 'Phí Quản Lý Vận Hành',
+      subtext: `Diện tích thông thủy 73.2 m² x 10.000 đ/m²`,
+      amount: totalMgmt,
+      percent: totalSpendAll > 0 ? (totalMgmt / totalSpendAll) * 100 : 0,
+      icon: Building,
+      color: '#10B981',
+      textColor: 'text-emerald-400',
+      bgColor: 'bg-emerald-400',
+      bgMuted: 'bg-emerald-950/40 border-emerald-500/50',
+      unitName: 'm²',
+      rate: '10.000 đ/m²',
+      trend: '0.0%',
+      trendDirection: 'stable' as const,
+      note: 'Bao gồm an ninh 24/7, vệ sinh sảnh, hồ bơi & thang máy'
+    },
+    {
+      id: 'Parking',
+      name: 'Phí Gửi Xe Căn Hộ',
+      subtext: `Xe máy / ô tô đăng ký tầng hầm B1/B2`,
+      amount: totalParking,
+      percent: totalSpendAll > 0 ? (totalParking / totalSpendAll) * 100 : 0,
+      icon: Car,
+      color: '#3B82F6',
+      textColor: 'text-blue-400',
+      bgColor: 'bg-blue-400',
+      bgMuted: 'bg-blue-950/40 border-blue-500/50',
+      unitName: 'xe/tháng',
+      rate: '141.000 - 198.000 đ/xe',
+      trend: 'Ổn định',
+      trendDirection: 'stable' as const,
+      note: 'Thẻ từ tích hợp nhận diện biển số thông minh LPR'
+    },
+    {
+      id: 'Internet',
+      name: 'Cáp Quang Internet VNPT',
+      subtext: `Gói Fiber 300Mbps chuyên biệt Smart Home`,
+      amount: totalInternet,
+      percent: totalSpendAll > 0 ? (totalInternet / totalSpendAll) * 100 : 0,
+      icon: Wifi,
+      color: '#14B8A6',
+      textColor: 'text-teal-400',
+      bgColor: 'bg-teal-400',
+      bgMuted: 'bg-teal-950/40 border-teal-500/50',
+      unitName: 'tháng',
+      rate: '220.000 đ/tháng',
+      trend: 'Cố định',
+      trendDirection: 'stable' as const,
+      note: 'Băng thông ưu tiên cho hạ tầng nhà thông minh Skyline'
+    },
+    {
+      id: 'Living_Services',
+      name: 'Dịch Vụ Cư Dân & Đời Sống',
+      subtext: `Giặt ủi, Giúp việc theo giờ, PT Gym/Bơi, Rửa xe`,
+      amount: totalLivingServices,
+      percent: totalSpendAll > 0 ? (totalLivingServices / totalSpendAll) * 100 : 0,
+      icon: Sparkles,
+      color: '#A855F7',
+      textColor: 'text-purple-400',
+      bgColor: 'bg-purple-400',
+      bgMuted: 'bg-purple-950/40 border-purple-500/50',
+      unitName: 'dịch vụ',
+      rate: 'Biểu giá cư dân Skyline',
+      trend: serviceDetails.length > 0 ? `${serviceDetails.length} đơn` : 'Chưa đặt',
+      trendDirection: 'stable' as const,
+      note: 'Đặt trực tiếp trên Portal và cộng gộp vào kỳ hóa đơn'
+    },
+    {
+      id: 'Facility',
+      name: 'Tiện Ích & Phòng Sự Kiện',
+      subtext: `Khu nướng BBQ ngoài trời, Phòng tiệc VIP`,
+      amount: totalFacility,
+      percent: totalSpendAll > 0 ? (totalFacility / totalSpendAll) * 100 : 0,
+      icon: Tag,
+      color: '#F43F5E',
+      textColor: 'text-rose-400',
+      bgColor: 'bg-rose-400',
+      bgMuted: 'bg-rose-950/40 border-rose-500/50',
+      unitName: 'lượt',
+      rate: 'Phí vận hành & vệ sinh',
+      trend: facilityDetails.length > 0 ? `${facilityDetails.length} lượt` : '0 lượt',
+      trendDirection: 'stable' as const,
+      note: 'Miễn phí hồ bơi, gym cư dân; tính phí khi đặt riêng sự kiện'
+    },
+  ];
+
+  // Hạng mục chi phí lớn nhất
+  const highestCategory = [...categoryStats].sort((a, b) => b.amount - a.amount)[0];
+
+  // Giá trị hóa đơn cao nhất để chuẩn hóa độ cao thanh biểu đồ (tối thiểu 1 để tránh chia cho 0)
+  const maxBillAmount = Math.max(...bills.map(b => b.total_amount), 3000000);
+
+  // Xuất file CSV báo cáo tài chính
+  const handleExportExpenseCsv = () => {
+    const headers = [
+      'Mã Hóa Đơn',
+      'Kỳ Thanh Toán',
+      'Hạng Mục Dịch Vụ',
+      'Phân Loại',
+      'Chỉ Số / Số Lượng',
+      'Đơn Vị Tính',
+      'Đơn Giá (VNĐ)',
+      'Thành Tiền (VNĐ)',
+      'Trạng Thái',
+      'Ngày Lập'
+    ];
+
+    const rows: string[][] = [];
+
+    sortedBills.forEach(bill => {
+      bill.details.forEach(item => {
+        const catName = getItemName(item);
+        const isUtility = ['Electricity', 'Water', 'Management_Fee', 'Parking', 'Internet'].includes(item.service_type);
+        const typeLabel = isUtility ? 'Cố định / Định kỳ' : 'Dịch vụ đời sống phát sinh';
+        
+        rows.push([
+          bill.id,
+          bill.billing_month,
+          catName,
+          typeLabel,
+          String(item.usage || 1),
+          item.unit || '',
+          String(item.unit_price || item.total_line_amount),
+          String(item.total_line_amount),
+          bill.status === 'Paid' ? 'Đã Thanh Toán' : 'Chờ Thanh Toán',
+          bill.created_at ? new Date(bill.created_at).toLocaleDateString('vi-VN') : ''
+        ]);
+      });
+    });
+
+    const csvContent = "\uFEFF" + [
+      headers.join(','),
+      ...rows.map(row => row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(','))
+    ].join('\r\n');
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', `BaoCao_ThongKe_ChiTieu_Can_${aptCode}_Skyline.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <div className="space-y-6 w-full animate-fadeIn">
       {/* Thông báo kết quả giao dịch sau khi quay lại từ cổng VNPAY */}
@@ -326,33 +599,108 @@ export default function FinanceBilling({ currentUser }: FinanceBillingProps) {
             <Shield className="w-3.5 h-3.5" /> Tài Chính Căn Hộ • Căn {aptCode}
           </div>
           <h2 className="font-serif text-2xl text-white font-bold mt-1">
-            Chi Tiết Phí Sinh Hoạt & Thanh Toán Trực Tuyến
+            {activeTab === 'BILLING' 
+              ? 'Chi Tiết Phí Sinh Hoạt & Thanh Toán Trực Tuyến' 
+              : 'Thống Kê Chi Tiêu & Phân Tích Dịch Vụ Toàn Diện'}
           </h2>
         </div>
 
         <div className="flex items-center gap-3">
-          {currentBill && currentBill.status === 'Unpaid' && (
-            <button
-              onClick={() => {
-                setLastPaymentResult(null);
-                setShowPaymentModal(true);
-              }}
-              className="px-5 py-2.5 bg-[#C5A880] hover:bg-white text-[#0D1117] text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-2 shadow-lg"
-            >
-              <CreditCard className="w-4 h-4" /> Thanh Toán VNPay / MoMo
-            </button>
-          )}
+          {activeTab === 'BILLING' ? (
+            <>
+              {currentBill && currentBill.status === 'Unpaid' && (
+                <button
+                  onClick={() => {
+                    setLastPaymentResult(null);
+                    setShowPaymentModal(true);
+                  }}
+                  className="px-5 py-2.5 bg-[#C5A880] hover:bg-white text-[#0D1117] text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-2 shadow-lg"
+                >
+                  <CreditCard className="w-4 h-4" /> Thanh Toán VNPay / MoMo
+                </button>
+              )}
 
-          {currentBill && currentBill.status === 'Paid' && (
-            <button
-              onClick={() => window.print()}
-              className="px-4 py-2.5 bg-[#161B22] border border-[#2D3748] hover:border-[#C5A880] text-gray-200 text-xs font-semibold uppercase tracking-wider transition-all flex items-center gap-2"
-            >
-              <Receipt className="w-4 h-4 text-[#C5A880]" /> In Biên Nhận Thu Phí
-            </button>
+              {currentBill && currentBill.status === 'Paid' && (
+                <button
+                  onClick={() => window.print()}
+                  className="px-4 py-2.5 bg-[#161B22] border border-[#2D3748] hover:border-[#C5A880] text-gray-200 text-xs font-semibold uppercase tracking-wider transition-all flex items-center gap-2"
+                >
+                  <Receipt className="w-4 h-4 text-[#C5A880]" /> In Biên Nhận Thu Phí
+                </button>
+              )}
+            </>
+          ) : (
+            <>
+              <button
+                onClick={handleExportExpenseCsv}
+                className="px-4 py-2 bg-[#161B22] border border-[#2D3748] hover:border-[#C5A880] text-gray-200 text-xs font-semibold uppercase tracking-wider transition-all flex items-center gap-2"
+                title="Tải tệp bảng tính CSV chi tiết từng hạng mục chi phí"
+              >
+                <FileSpreadsheet className="w-4 h-4 text-emerald-400" />
+                <span>Xuất Báo Cáo CSV</span>
+              </button>
+              <button
+                onClick={() => window.print()}
+                className="px-4 py-2 bg-[#161B22] border border-[#2D3748] hover:border-[#C5A880] text-gray-200 text-xs font-semibold uppercase tracking-wider transition-all flex items-center gap-2"
+              >
+                <Download className="w-4 h-4 text-[#C5A880]" />
+                <span>In Thống Kê</span>
+              </button>
+            </>
           )}
         </div>
       </div>
+
+      {/* Sub-tab Navigation Switcher */}
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#222B35] pb-3">
+        <div className="flex items-center gap-2 bg-[#0D1117] p-1 border border-[#222B35]">
+          <button
+            onClick={() => setActiveTab('BILLING')}
+            className={`px-3.5 py-2 text-xs font-bold uppercase tracking-wider flex items-center gap-2 transition-all ${
+              activeTab === 'BILLING'
+                ? 'bg-[#C5A880] text-[#0D1117] shadow-sm'
+                : 'text-gray-400 hover:text-white hover:bg-[#161B22]'
+            }`}
+          >
+            <Receipt className="w-4 h-4" />
+            <span>Hóa Đơn & Thanh Toán</span>
+            {bills.some(b => b.status === 'Unpaid') && (
+              <span className={`px-1.5 py-0.2 text-[9px] font-mono font-bold rounded-full ${
+                activeTab === 'BILLING' ? 'bg-[#0D1117] text-[#C5A880]' : 'bg-amber-500 text-black'
+              }`}>
+                1 chờ nộp
+              </span>
+            )}
+          </button>
+
+          <button
+            onClick={() => setActiveTab('ANALYTICS')}
+            className={`px-3.5 py-2 text-xs font-bold uppercase tracking-wider flex items-center gap-2 transition-all ${
+              activeTab === 'ANALYTICS'
+                ? 'bg-[#C5A880] text-[#0D1117] shadow-sm'
+                : 'text-gray-400 hover:text-white hover:bg-[#161B22]'
+            }`}
+          >
+            <BarChart3 className="w-4 h-4" />
+            <span>Thống Kê Chi Tiêu & Dịch Vụ</span>
+            <span className={`px-1.5 py-0.2 text-[9px] font-mono font-bold rounded ${
+              activeTab === 'ANALYTICS' ? 'bg-[#0D1117] text-[#C5A880]' : 'bg-emerald-950 text-emerald-300 border border-emerald-500/50'
+            }`}>
+              Full 2026
+            </span>
+          </button>
+        </div>
+
+        <div className="text-xs text-gray-400 flex items-center gap-2 font-mono">
+          <span>Dữ liệu căn hộ: <strong className="text-white">Căn {aptCode}</strong></span>
+          <span>•</span>
+          <span>Chủ hộ: <strong className="text-[#C5A880]">{residentName}</strong></span>
+        </div>
+      </div>
+
+      {/* VIEW 1: BILLING & PAYMENT */}
+      {activeTab === 'BILLING' && (
+        <div className="space-y-6 animate-fadeIn">
 
       {/* Cảnh báo rò rỉ / biến động tiêu thụ */}
       {currentBill?.has_ai_anomaly && (
@@ -439,40 +787,11 @@ export default function FinanceBilling({ currentUser }: FinanceBillingProps) {
 
           {/* Breakdown Table: Tách bạch rõ 2 nhóm Phí Định Kỳ & Dịch Vụ Cư Dân */}
           {(() => {
-            const utilityTypes = ['Electricity', 'Water', 'Management_Fee', 'Parking'];
+            const utilityTypes = ['Electricity', 'Water', 'Management_Fee', 'Parking', 'Internet'];
             const utilityItems = currentBill.details.filter(d => utilityTypes.includes(d.service_type));
             const serviceItems = currentBill.details.filter(d => !utilityTypes.includes(d.service_type));
             const utilitySubtotal = utilityItems.reduce((sum, item) => sum + item.total_line_amount, 0);
             const serviceSubtotal = serviceItems.reduce((sum, item) => sum + item.total_line_amount, 0);
-
-            const getItemIcon = (type: string) => {
-              switch (type) {
-                case 'Electricity': return <Zap className="w-3.5 h-3.5 text-amber-400" />;
-                case 'Water': return <Droplets className="w-3.5 h-3.5 text-cyan-400" />;
-                case 'Management_Fee': return <Building className="w-3.5 h-3.5 text-emerald-400" />;
-                case 'Parking': return <Car className="w-3.5 h-3.5 text-blue-400" />;
-                case 'Laundry': return <Shirt className="w-3.5 h-3.5 text-indigo-400" />;
-                case 'Housekeeping': return <Sparkles className="w-3.5 h-3.5 text-purple-400" />;
-                case 'Personal_Trainer': return <Dumbbell className="w-3.5 h-3.5 text-orange-400" />;
-                case 'Car_Care': return <Car className="w-3.5 h-3.5 text-teal-400" />;
-                default: return <Tag className="w-3.5 h-3.5 text-[#C5A880]" />;
-              }
-            };
-
-            const getItemName = (item: BillDetail) => {
-              if (item.service_name) return item.service_name;
-              switch (item.service_type) {
-                case 'Electricity': return 'Tiền Điện Sinh Hoạt';
-                case 'Water': return 'Tiền Nước Sinh Hoạt';
-                case 'Management_Fee': return 'Phí Quản Lý Vận Hành';
-                case 'Parking': return 'Phí Gửi Xe Căn Hộ';
-                case 'Laundry': return 'Giặt Ủi & Giặt Hấp Cao Cấp';
-                case 'Housekeeping': return 'Giúp Việc & Dọn Dẹp Căn Hộ';
-                case 'Personal_Trainer': return 'Thuê Huấn Luyện Viên PT Bơi/Gym';
-                case 'Car_Care': return 'Chăm Sóc & Rửa Xe Hầm B2';
-                default: return 'Phí Dịch Vụ Cư Dân';
-              }
-            };
 
             return (
               <div className="space-y-4">
@@ -632,6 +951,450 @@ export default function FinanceBilling({ currentUser }: FinanceBillingProps) {
       ) : (
         <div className="p-12 bg-[#121820] border border-[#222B35] text-center text-gray-400 text-xs">
           Căn hộ hiện chưa có hóa đơn nào được phát hành.
+        </div>
+      )}
+      </div>
+      )}
+
+      {/* ========================================================================= */}
+      {/* VIEW 2: THỐNG KÊ CHI TIÊU & PHÂN TÍCH DỊCH VỤ TOÀN DIỆN                   */}
+      {/* ========================================================================= */}
+      {activeTab === 'ANALYTICS' && (
+        <div className="space-y-6 animate-fadeIn">
+          {/* 1. TOP 4 KEY METRIC CARDS */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {/* KPI 1 */}
+            <div className="p-4 bg-[#121820] border border-[#222B35] relative overflow-hidden shadow-lg group hover:border-[#C5A880]/50 transition-all">
+              <div className="flex items-center justify-between text-xs text-gray-400 mb-2">
+                <span className="uppercase tracking-wider font-semibold">Tổng Chi Tích Lũy 2026</span>
+                <div className="w-8 h-8 rounded-lg bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-[#C5A880]">
+                  <Coins className="w-4 h-4" />
+                </div>
+              </div>
+              <div className="font-serif text-2xl font-bold text-white tracking-tight">
+                {totalSpendAll.toLocaleString('vi-VN')} đ
+              </div>
+              <div className="mt-2 flex items-center gap-1.5 text-[11px] text-gray-400">
+                <span className="text-emerald-400 font-mono font-bold flex items-center">
+                  <CheckCheck className="w-3.5 h-3.5 mr-0.5" /> {bills.length} kỳ
+                </span>
+                <span>ghi nhận từ T05 - T08/2026</span>
+              </div>
+            </div>
+
+            {/* KPI 2 */}
+            <div className="p-4 bg-[#121820] border border-[#222B35] relative overflow-hidden shadow-lg group hover:border-[#C5A880]/50 transition-all">
+              <div className="flex items-center justify-between text-xs text-gray-400 mb-2">
+                <span className="uppercase tracking-wider font-semibold">Trung Bình Mỗi Tháng</span>
+                <div className="w-8 h-8 rounded-lg bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400">
+                  <Activity className="w-4 h-4" />
+                </div>
+              </div>
+              <div className="font-serif text-2xl font-bold text-[#C5A880] tracking-tight">
+                {avgMonthlySpend.toLocaleString('vi-VN')} đ
+              </div>
+              <div className="mt-2 flex items-center gap-1.5 text-[11px] text-gray-400">
+                <span className="text-cyan-400 font-mono font-bold">Chuẩn 2PN</span>
+                <span>Định mức căn hộ 73.2 m²</span>
+              </div>
+            </div>
+
+            {/* KPI 3 */}
+            <div className="p-4 bg-[#121820] border border-[#222B35] relative overflow-hidden shadow-lg group hover:border-[#C5A880]/50 transition-all">
+              <div className="flex items-center justify-between text-xs text-gray-400 mb-2">
+                <span className="uppercase tracking-wider font-semibold">Hạng Mục Lớn Nhất</span>
+                <div className="w-8 h-8 rounded-lg bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
+                  <Building className="w-4 h-4" />
+                </div>
+              </div>
+              <div className="text-base font-bold text-white truncate" title={highestCategory ? highestCategory.name : 'Phí Quản Lý'}>
+                {highestCategory ? highestCategory.name : 'Phí Quản Lý & Điện'}
+              </div>
+              <div className="mt-2 flex items-center gap-1.5 text-[11px] text-gray-400">
+                <span className="text-emerald-400 font-mono font-bold">
+                  {highestCategory ? `${highestCategory.percent.toFixed(1)}%` : '0%'}
+                </span>
+                <span>tổng chi phí phát sinh</span>
+              </div>
+            </div>
+
+            {/* KPI 4 */}
+            <div className="p-4 bg-[#121820] border border-[#222B35] relative overflow-hidden shadow-lg group hover:border-[#C5A880]/50 transition-all">
+              <div className="flex items-center justify-between text-xs text-gray-400 mb-2">
+                <span className="uppercase tracking-wider font-semibold">Điểm Uy Tín Cư Dân</span>
+                <div className="w-8 h-8 rounded-lg bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
+                  <ShieldCheck className="w-4 h-4" />
+                </div>
+              </div>
+              <div className="font-serif text-2xl font-bold text-emerald-400 tracking-tight">
+                {onTimeRate}% Đúng Hạn
+              </div>
+              <div className="mt-2 flex items-center gap-1.5 text-[11px] text-gray-400">
+                <span className="text-amber-300 font-bold uppercase tracking-wider text-[10px]">Hạng Platinum VIP</span>
+                <span>• 0 ngày trễ hạn</span>
+              </div>
+            </div>
+          </div>
+
+          {/* 2. CƠ CẤU CHI TIÊU THEO HẠNG MỤC (EXPENSE BREAKDOWN CARDS & PROGRESS BARS) */}
+          <div className="p-6 bg-[#121820] border border-[#222B35] space-y-5 shadow-xl">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#222B35] pb-4">
+              <div>
+                <div className="text-[10px] uppercase tracking-[0.2em] text-[#C5A880] font-semibold flex items-center gap-1.5">
+                  <PieChart className="w-3.5 h-3.5" /> Phân Bổ Tỷ Trọng Chi Tiêu
+                </div>
+                <h3 className="font-serif text-lg text-white font-bold mt-0.5">
+                  Cơ Cấu Chi Phí Tiện Ích, Dịch Vụ & Điện Nước
+                </h3>
+              </div>
+
+              {/* Filter categories */}
+              <div className="flex flex-wrap items-center gap-1.5 text-xs">
+                <button
+                  onClick={() => setAnalyticsCategory('ALL')}
+                  className={`px-2.5 py-1 text-xs font-mono transition-all ${
+                    analyticsCategory === 'ALL'
+                      ? 'bg-[#C5A880] text-[#0D1117] font-bold shadow'
+                      : 'bg-[#161B22] border border-[#2D3748] text-gray-300 hover:text-white'
+                  }`}
+                >
+                  Tất Cả ({categoryStats.length})
+                </button>
+                {categoryStats.map(cat => (
+                  <button
+                    key={cat.id}
+                    onClick={() => setAnalyticsCategory(cat.id)}
+                    className={`px-2.5 py-1 text-xs font-mono transition-all flex items-center gap-1 ${
+                      analyticsCategory === cat.id
+                        ? 'bg-[#C5A880] text-[#0D1117] font-bold shadow'
+                        : 'bg-[#161B22] border border-[#2D3748] text-gray-300 hover:text-white'
+                    }`}
+                  >
+                    <span>{cat.name.split(' ')[0]}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Stacked visually proportioned bar of all categories */}
+            <div className="space-y-1.5">
+              <div className="flex items-center justify-between text-xs text-gray-400">
+                <span>Thanh phân bổ tỷ trọng tổng chi phí:</span>
+                <span className="font-mono text-gray-300">100% ({totalSpendAll.toLocaleString('vi-VN')} đ)</span>
+              </div>
+              <div className="w-full h-3.5 bg-[#0D1117] rounded-full overflow-hidden flex border border-[#2D3748]">
+                {categoryStats.map(cat => {
+                  if (cat.percent <= 0) return null;
+                  return (
+                    <div
+                      key={cat.id}
+                      style={{ width: `${cat.percent}%`, backgroundColor: cat.color }}
+                      className="h-full transition-all hover:opacity-90 relative group"
+                      title={`${cat.name}: ${cat.amount.toLocaleString('vi-VN')} đ (${cat.percent.toFixed(1)}%)`}
+                    />
+                  );
+                })}
+              </div>
+              <div className="flex flex-wrap items-center gap-3 pt-1 text-[11px] text-gray-400">
+                {categoryStats.map(cat => (
+                  <div key={cat.id} className="flex items-center gap-1.5">
+                    <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: cat.color }} />
+                    <span>{cat.name}:</span>
+                    <strong className="text-gray-200 font-mono">{cat.percent.toFixed(1)}%</strong>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Grid of Category Detail Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5 pt-2">
+              {categoryStats
+                .filter(cat => analyticsCategory === 'ALL' || analyticsCategory === cat.id)
+                .map(cat => {
+                  const Icon = cat.icon;
+                  return (
+                    <div 
+                      key={cat.id}
+                      className="p-4 bg-[#161B22]/70 border border-[#222B35] hover:border-[#2D3748] transition-all space-y-3"
+                    >
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="flex items-center gap-2">
+                          <div className="p-2 rounded bg-[#0D1117] border border-[#222B35]">
+                            <Icon className={`w-4 h-4 ${cat.textColor}`} />
+                          </div>
+                          <div>
+                            <div className="font-bold text-white text-xs">{cat.name}</div>
+                            <div className="text-[10px] text-gray-400">{cat.rate}</div>
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <div className="font-serif font-bold text-sm text-white font-mono">
+                            {cat.amount.toLocaleString('vi-VN')} đ
+                          </div>
+                          <div className="text-[10px] text-gray-400 font-mono">
+                            {cat.percent.toFixed(1)}% tổng chi
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Progress bar */}
+                      <div className="w-full bg-[#0D1117] h-1.5 rounded-full overflow-hidden">
+                        <div
+                          className="h-full rounded-full transition-all duration-500"
+                          style={{ width: `${Math.min(cat.percent, 100)}%`, backgroundColor: cat.color }}
+                        />
+                      </div>
+
+                      <div className="flex items-center justify-between text-[11px] text-gray-400 pt-0.5 border-t border-[#222B35]">
+                        <span className="truncate pr-1">{cat.subtext}</span>
+                        <span className="text-gray-300 font-mono font-medium flex-shrink-0">
+                          {cat.trend}
+                        </span>
+                      </div>
+                    </div>
+                  );
+                })}
+            </div>
+          </div>
+
+          {/* 3. LỊCH SỬ & XU HƯỚNG CHI TIÊU THEO KỲ HÓA ĐƠN (MONTHLY TREND & COMPARISON) */}
+          <div className="p-6 bg-[#121820] border border-[#222B35] space-y-5 shadow-xl">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#222B35] pb-4">
+              <div>
+                <div className="text-[10px] uppercase tracking-[0.2em] text-[#C5A880] font-semibold flex items-center gap-1.5">
+                  <TrendingUp className="w-3.5 h-3.5" /> Tiến Trình Tài Chính Các Kỳ
+                </div>
+                <h3 className="font-serif text-lg text-white font-bold mt-0.5">
+                  Biến Động Chi Phí Sinh Hoạt Qua Các Tháng (Năm 2026)
+                </h3>
+              </div>
+              <div className="text-xs text-gray-400">
+                Chu kỳ lập hóa đơn: <strong className="text-white">Ngày 05 hàng tháng</strong>
+              </div>
+            </div>
+
+            {/* Monthly Cards Visual Comparison */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-2">
+              {sortedBills.map((b, index) => {
+                const prev = index > 0 ? sortedBills[index - 1] : null;
+                const diffAmount = prev ? b.total_amount - prev.total_amount : 0;
+                const diffPercent = prev ? Math.round((diffAmount / prev.total_amount) * 100) : 0;
+
+                // Sub-totals inside this bill
+                const elecLine = b.details.find(d => d.service_type === 'Electricity')?.total_line_amount || 0;
+                const waterLine = b.details.find(d => d.service_type === 'Water')?.total_line_amount || 0;
+                const fixedLine = b.details.filter(d => ['Management_Fee', 'Parking', 'Internet'].includes(d.service_type)).reduce((s, d) => s + d.total_line_amount, 0);
+                const serviceLine = b.details.filter(d => !['Electricity', 'Water', 'Management_Fee', 'Parking', 'Internet'].includes(d.service_type)).reduce((s, d) => s + d.total_line_amount, 0);
+
+                return (
+                  <div 
+                    key={b.id}
+                    className={`p-4 border transition-all flex flex-col justify-between space-y-4 ${
+                      b.id === currentBill?.id
+                        ? 'bg-[#161B22] border-[#C5A880] ring-1 ring-[#C5A880]/30 shadow-xl'
+                        : 'bg-[#161B22]/50 border-[#222B35] hover:border-gray-600'
+                    }`}
+                  >
+                    <div>
+                      <div className="flex items-center justify-between text-xs pb-2 border-b border-[#222B35]">
+                        <span className="font-bold text-white font-mono">{b.billing_month}</span>
+                        <span className={`px-2 py-0.5 text-[9px] font-mono font-bold ${
+                          b.status === 'Paid'
+                            ? 'bg-emerald-950 text-emerald-300 border border-emerald-500/50'
+                            : 'bg-amber-950 text-amber-300 border border-amber-500/50'
+                        }`}>
+                          {b.status === 'Paid' ? 'Đã Nộp ✓' : 'Chờ Nộp'}
+                        </span>
+                      </div>
+
+                      <div className="mt-3 text-center">
+                        <div className="text-[11px] text-gray-400">Tổng hóa đơn kỳ:</div>
+                        <div className="font-serif text-xl font-bold text-[#C5A880] mt-0.5">
+                          {b.total_amount.toLocaleString('vi-VN')} đ
+                        </div>
+                      </div>
+
+                      {/* Sub-breakdown badges */}
+                      <div className="mt-3 pt-3 border-t border-[#222B35] space-y-1 text-[11px]">
+                        <div className="flex items-center justify-between text-gray-300">
+                          <span className="flex items-center gap-1 text-amber-400">
+                            <Zap className="w-3 h-3" /> Điện:
+                          </span>
+                          <span className="font-mono">{elecLine.toLocaleString('vi-VN')} đ</span>
+                        </div>
+                        <div className="flex items-center justify-between text-gray-300">
+                          <span className="flex items-center gap-1 text-cyan-400">
+                            <Droplets className="w-3 h-3" /> Nước:
+                          </span>
+                          <span className="font-mono">{waterLine.toLocaleString('vi-VN')} đ</span>
+                        </div>
+                        <div className="flex items-center justify-between text-gray-300">
+                          <span className="flex items-center gap-1 text-emerald-400">
+                            <Building className="w-3 h-3" /> QL + Xe + Net:
+                          </span>
+                          <span className="font-mono">{fixedLine.toLocaleString('vi-VN')} đ</span>
+                        </div>
+                        {serviceLine > 0 && (
+                          <div className="flex items-center justify-between text-purple-300 font-bold">
+                            <span className="flex items-center gap-1">
+                              <Sparkles className="w-3 h-3" /> Dịch vụ cư dân:
+                            </span>
+                            <span className="font-mono">{serviceLine.toLocaleString('vi-VN')} đ</span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Bottom comparison indicator */}
+                    <div className="pt-2 border-t border-[#222B35] flex items-center justify-between text-[10px] text-gray-400">
+                      <span>So với kỳ trước:</span>
+                      {prev ? (
+                        <span className={`font-mono font-bold flex items-center gap-0.5 ${
+                          diffAmount > 0 ? 'text-amber-400' : diffAmount < 0 ? 'text-emerald-400' : 'text-gray-400'
+                        }`}>
+                          {diffAmount > 0 ? <ArrowUpRight className="w-3 h-3" /> : diffAmount < 0 ? <ArrowDownRight className="w-3 h-3" /> : null}
+                          {diffAmount > 0 ? `+${diffPercent}%` : diffAmount < 0 ? `${diffPercent}%` : '0%'}
+                        </span>
+                      ) : (
+                        <span className="font-mono text-gray-500">Kỳ khởi tạo</span>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* 4. BẢNG MA TRẬN CHI TIẾT TOÀN BỘ DỊCH VỤ, TIỆN ÍCH, ĐIỆN NƯỚC, INTERNET */}
+          <div className="p-6 bg-[#121820] border border-[#222B35] space-y-4 shadow-xl">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#222B35] pb-4">
+              <div>
+                <div className="text-[10px] uppercase tracking-[0.2em] text-[#C5A880] font-semibold flex items-center gap-1.5">
+                  <Layers className="w-3.5 h-3.5" /> Bảng Kê Toàn Diện
+                </div>
+                <h3 className="font-serif text-lg text-white font-bold mt-0.5">
+                  Bảng Kê Chi Tiết Từng Hạng Mục & Dịch Vụ Căn Hộ
+                </h3>
+              </div>
+              <div className="flex items-center gap-2 text-xs">
+                <button
+                  onClick={handleExportExpenseCsv}
+                  className="px-3 py-1.5 bg-[#161B22] border border-[#2D3748] hover:border-[#C5A880] text-gray-200 text-xs font-semibold transition-all flex items-center gap-1.5"
+                >
+                  <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-400" />
+                  <span>Xuất file Excel/CSV</span>
+                </button>
+              </div>
+            </div>
+
+            <div className="overflow-x-auto">
+              <table className="w-full text-xs text-left">
+                <thead className="bg-[#0D1117] text-gray-400 border-b border-[#222B35] uppercase font-mono text-[10px]">
+                  <tr>
+                    <th className="p-3">Hạng Mục Dịch Vụ</th>
+                    <th className="p-3">Phân Loại Phí</th>
+                    <th className="p-3 text-right">Sản Lượng Tích Lũy</th>
+                    <th className="p-3 text-right">Đơn Giá Định Mức</th>
+                    <th className="p-3 text-right">Tổng Chi Phí</th>
+                    <th className="p-3 text-right">Tỷ Trọng</th>
+                    <th className="p-3">Ghi Chú Vận Hành BQL</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-[#222B35]">
+                  {categoryStats.map(cat => {
+                    const Icon = cat.icon;
+                    return (
+                      <tr key={cat.id} className="hover:bg-[#161B22]/50 transition-colors">
+                        <td className="p-3 font-medium text-white flex items-center gap-2">
+                          <Icon className={`w-3.5 h-3.5 ${cat.textColor}`} />
+                          <span>{cat.name}</span>
+                        </td>
+                        <td className="p-3 text-gray-400">
+                          {['Electricity', 'Water', 'Management_Fee', 'Parking', 'Internet'].includes(cat.id)
+                            ? <span className="px-1.5 py-0.5 bg-blue-950/70 border border-blue-500/40 text-blue-300 text-[10px] font-mono">Định Kỳ / Tiêu Thụ</span>
+                            : <span className="px-1.5 py-0.5 bg-purple-950/70 border border-purple-500/40 text-purple-300 text-[10px] font-mono">Dịch Vụ Đời Sống</span>
+                          }
+                        </td>
+                        <td className="p-3 text-right font-mono text-gray-200">
+                          {cat.id === 'Electricity' ? `${totalKwh.toLocaleString('vi-VN')} kWh` :
+                           cat.id === 'Water' ? `${totalM3.toLocaleString('vi-VN')} m³` :
+                           cat.id === 'Management_Fee' ? `73.2 m² x ${bills.length} tháng` :
+                           cat.id === 'Internet' ? `${bills.length} tháng` :
+                           cat.id === 'Parking' ? `${bills.length} kỳ giữ xe` :
+                           `${serviceDetails.length} đơn dịch vụ`}
+                        </td>
+                        <td className="p-3 text-right font-mono text-gray-300">{cat.rate}</td>
+                        <td className="p-3 text-right font-mono font-bold text-white">
+                          {cat.amount.toLocaleString('vi-VN')} đ
+                        </td>
+                        <td className="p-3 text-right font-mono font-bold text-[#C5A880]">
+                          {cat.percent.toFixed(1)}%
+                        </td>
+                        <td className="p-3 text-gray-400 text-[11px]">{cat.note}</td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+                <tfoot className="bg-[#0D1117] border-t-2 border-[#2D3748] font-bold">
+                  <tr>
+                    <td className="p-3 text-white uppercase tracking-wider" colSpan={4}>
+                      Tổng Chi Tiêu Toàn Diện Căn Hộ (T05 - T08/2026):
+                    </td>
+                    <td className="p-3 text-right font-serif text-sm font-bold text-[#C5A880] font-mono">
+                      {totalSpendAll.toLocaleString('vi-VN')} đ
+                    </td>
+                    <td className="p-3 text-right font-mono text-emerald-400">100%</td>
+                    <td className="p-3 text-gray-400 text-[11px]">Đã bao gồm 10% VAT và phí quản lý vận hành</td>
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
+          </div>
+
+          {/* 5. GỢI Ý TỐI ƯU HÓA CHI PHÍ & CẢNH BÁO AI THÔNG MINH (AI SMART INSIGHTS) */}
+          <div className="p-6 bg-[#121820] border border-[#222B35] space-y-4 shadow-xl">
+            <div className="flex items-center gap-2 border-b border-[#222B35] pb-3">
+              <Sparkles className="w-4 h-4 text-amber-400" />
+              <h3 className="font-serif text-base text-white font-bold">
+                Phân Tích AI & Đề Xuất Tối Ưu Hóa Chi Phí Sinh Hoạt Căn Hộ
+              </h3>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+              {/* Insight 1: Tiết kiệm điện */}
+              <div className="p-4 bg-[#161B22] border border-amber-500/40 space-y-2">
+                <div className="flex items-center gap-2 text-amber-400 font-bold">
+                  <Zap className="w-4 h-4" />
+                  <span>Tối Ưu Hóa Tiền Điện</span>
+                </div>
+                <p className="text-gray-300 leading-relaxed text-[11px]">
+                  Mức tiêu thụ điện tháng 8 là <strong>340 kWh</strong>, cao hơn 21% so với tháng 7 do nắng nóng. Bật điều hòa ở mức <strong>26°C kết hợp quạt đối lưu</strong> có thể giúp căn hộ tiết kiệm từ <strong>120.000 - 180.000 đ/tháng</strong>.
+                </p>
+              </div>
+
+              {/* Insight 2: Cảnh báo nước */}
+              <div className="p-4 bg-[#161B22] border border-cyan-500/40 space-y-2">
+                <div className="flex items-center gap-2 text-cyan-400 font-bold">
+                  <Droplets className="w-4 h-4" />
+                  <span>Giám Sát Lưu Lượng Nước</span>
+                </div>
+                <p className="text-gray-300 leading-relaxed text-[11px]">
+                  Cảm biến đồng hồ nước thông minh IoT phát hiện lưu lượng nước đêm (02:00 - 04:00) tại phòng vệ sinh master. Cư dân có thể gửi yêu cầu hỗ trợ kỹ thuật trên Portal để được kiểm tra van miễn phí.
+                </p>
+              </div>
+
+              {/* Insight 3: Dịch vụ & Internet */}
+              <div className="p-4 bg-[#161B22] border border-teal-500/40 space-y-2">
+                <div className="flex items-center gap-2 text-teal-400 font-bold">
+                  <Wifi className="w-4 h-4" />
+                  <span>Ưu Đãi Cáp Quang & Dịch Vụ</span>
+                </div>
+                <p className="text-gray-300 leading-relaxed text-[11px]">
+                  Đường truyền Internet Fiber 300Mbps hoạt động ổn định 99.98% uptime. Khi đặt kèm các dịch vụ đời sống (Giặt ủi, PT, Dọn dẹp), điểm tích lũy Skyline Rewards sẽ được hoàn trực tiếp vào kỳ hóa đơn tiếp theo.
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
       )}
 
