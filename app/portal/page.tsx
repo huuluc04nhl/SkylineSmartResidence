@@ -197,7 +197,7 @@ function PortalContent() {
                 {activeModule === 'admin-devices' && <DeviceHealth />}
                 {activeModule === 'admin-parking' && <SmartParking />}
                 {activeModule === 'admin-facilities' && <SmartFacilityPass currentUser={currentUser} />}
-                {activeModule === 'admin-community' && <SurveysVoting />}
+                {activeModule === 'admin-community' && <SurveysVoting currentUser={currentUser} />}
               </>
             )}
 
@@ -236,7 +236,7 @@ function PortalContent() {
                 {currentUser.role === 'OWNER' && (
                   <>
                     {activeModule === 'resident-finance' && <FinanceBilling />}
-                    {activeModule === 'resident-surveys' && <SurveysVoting />}
+                    {activeModule === 'resident-surveys' && <SurveysVoting currentUser={currentUser} />}
                   </>
                 )}
 
