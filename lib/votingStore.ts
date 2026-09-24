@@ -45,7 +45,7 @@ export interface VotingTopic {
   summaryReport?: string;
 }
 
-const VOTING_STORAGE_KEY = 'skyline_voting_topics_v1';
+const VOTING_STORAGE_KEY = 'skyline_voting_topics_v3';
 
 export const INITIAL_VOTING_TOPICS: VotingTopic[] = [
   {
@@ -60,32 +60,13 @@ export const INITIAL_VOTING_TOPICS: VotingTopic[] = [
     status: 'OPEN',
     isOwnerOnly: true,
     totalEligibleApartments: 250,
-    totalVotes: 182,
+    totalVotes: 0,
     options: [
-      { id: 'opt-1-1', text: 'Đồng ý phương án nâng cấp (Dự toán 150 triệu VNĐ từ Quỹ Bảo trì)', votes: 146 },
-      { id: 'opt-1-2', text: 'Không đồng ý, giữ nguyên hiện trạng kiểm soát thủ công', votes: 24 },
-      { id: 'opt-1-3', text: 'Đồng ý nhưng yêu cầu điều chỉnh giảm dự toán xuống dưới 120 triệu VNĐ', votes: 12 },
+      { id: 'opt-1-1', text: 'Đồng ý phương án nâng cấp (Dự toán 150 triệu VNĐ từ Quỹ Bảo trì)', votes: 0 },
+      { id: 'opt-1-2', text: 'Không đồng ý, giữ nguyên hiện trạng kiểm soát thủ công', votes: 0 },
+      { id: 'opt-1-3', text: 'Đồng ý nhưng yêu cầu điều chỉnh giảm dự toán xuống dưới 120 triệu VNĐ', votes: 0 },
     ],
-    voters: [
-      {
-        aptCode: '12A05',
-        voterName: 'Nguyễn Hữu Lực',
-        optionId: 'opt-1-1',
-        votedAt: '2026-08-22T14:35:10',
-      },
-      {
-        aptCode: '08A02',
-        voterName: 'Trần Thị Bích Ngọc',
-        optionId: 'opt-1-1',
-        votedAt: '2026-08-23T09:12:44',
-      },
-      {
-        aptCode: '18A01',
-        voterName: 'Lê Hoàng Nam',
-        optionId: 'opt-1-2',
-        votedAt: '2026-08-24T18:40:02',
-      },
-    ],
+    voters: [],
     summaryReport: 'Hệ thống kiểm soát xe hiện tại vào giờ cao điểm (07:00 - 08:30) thường ùn ứ từ 3-5 phút. Việc nâng cấp cảm biến RFID tầm xa và camera AI YOLOv8 giúp giải phóng xe trong dưới 0.3s/lượt.',
   },
   {
@@ -100,20 +81,13 @@ export const INITIAL_VOTING_TOPICS: VotingTopic[] = [
     status: 'OPEN',
     isOwnerOnly: false,
     totalEligibleApartments: 250,
-    totalVotes: 215,
+    totalVotes: 0,
     options: [
-      { id: 'opt-2-1', text: 'Nhất trí kéo dài mở cửa đến 22:30 tất cả các ngày trong tuần', votes: 105 },
-      { id: 'opt-2-2', text: 'Chỉ kéo dài đến 22:30 vào các ngày cuối tuần (Thứ Sáu, Thứ Bảy, Chủ Nhật)', votes: 68 },
-      { id: 'opt-2-3', text: 'Giữ nguyên khung giờ đóng cửa lúc 21:30 để đảm bảo yên tĩnh cho tầng 24', votes: 42 },
+      { id: 'opt-2-1', text: 'Nhất trí kéo dài mở cửa đến 22:30 tất cả các ngày trong tuần', votes: 0 },
+      { id: 'opt-2-2', text: 'Chỉ kéo dài đến 22:30 vào các ngày cuối tuần (Thứ Sáu, Thứ Bảy, Chủ Nhật)', votes: 0 },
+      { id: 'opt-2-3', text: 'Giữ nguyên khung giờ đóng cửa lúc 21:30 để đảm bảo yên tĩnh cho tầng 24', votes: 0 },
     ],
-    voters: [
-      {
-        aptCode: '12A05',
-        voterName: 'Nguyễn Hữu Lực',
-        optionId: 'opt-2-1',
-        votedAt: '2026-09-03T20:15:30',
-      },
-    ],
+    voters: [],
     summaryReport: 'Đội ngũ cứu hộ cam kết bố trí 2 nhân sự trực hồ bơi liên tục trong suốt khung giờ mở rộng và đo kiểm nồng độ clo/pH định kỳ lúc 22:45.',
   },
   {
@@ -128,11 +102,11 @@ export const INITIAL_VOTING_TOPICS: VotingTopic[] = [
     status: 'OPEN',
     isOwnerOnly: true,
     totalEligibleApartments: 250,
-    totalVotes: 198,
+    totalVotes: 0,
     options: [
-      { id: 'opt-3-1', text: 'Công ty Quản Lý Bất Động Sản Skyline Living Pro (Giá thầu: 11.000 đ/m²)', votes: 98 },
-      { id: 'opt-3-2', text: 'Tập đoàn Quản lý Bất động sản Savills Việt Nam (Giá thầu: 14.500 đ/m²)', votes: 54 },
-      { id: 'opt-3-3', text: 'Công ty Cổ phần Dịch vụ Đô thị CBRE Property (Giá thầu: 13.800 đ/m²)', votes: 46 },
+      { id: 'opt-3-1', text: 'Công ty Quản Lý Bất Động Sản Skyline Living Pro (Giá thầu: 11.000 đ/m²)', votes: 0 },
+      { id: 'opt-3-2', text: 'Tập đoàn Quản lý Bất động sản Savills Việt Nam (Giá thầu: 14.500 đ/m²)', votes: 0 },
+      { id: 'opt-3-3', text: 'Công ty Cổ phần Dịch vụ Đô thị CBRE Property (Giá thầu: 13.800 đ/m²)', votes: 0 },
     ],
     voters: [],
     summaryReport: 'Toàn bộ hồ sơ đề xuất kỹ thuật, cam kết SLA bảo trì và báo cáo tài chính của 3 đơn vị đã được niêm yết công khai tại văn phòng Ban Quản Lý và trên cổng thông tin số.',
@@ -149,21 +123,14 @@ export const INITIAL_VOTING_TOPICS: VotingTopic[] = [
     status: 'CLOSED',
     isOwnerOnly: true,
     totalEligibleApartments: 250,
-    totalVotes: 250,
+    totalVotes: 0,
     options: [
-      { id: 'opt-4-1', text: 'Nhất trí thông qua phương án lắp đặt trạm sạc theo tiêu chuẩn an toàn PCCC', votes: 192 },
-      { id: 'opt-4-2', text: 'Đồng ý nhưng yêu cầu chuyển trạm sạc ra khu vực sân ngoài trời', votes: 30 },
-      { id: 'opt-4-3', text: 'Không đồng ý lắp đặt trạm sạc xe điện', votes: 28 },
+      { id: 'opt-4-1', text: 'Nhất trí thông qua phương án lắp đặt trạm sạc theo tiêu chuẩn an toàn PCCC', votes: 0 },
+      { id: 'opt-4-2', text: 'Đồng ý nhưng yêu cầu chuyển trạm sạc ra khu vực sân ngoài trời', votes: 0 },
+      { id: 'opt-4-3', text: 'Không đồng ý lắp đặt trạm sạc xe điện', votes: 0 },
     ],
-    voters: [
-      {
-        aptCode: '12A05',
-        voterName: 'Nguyễn Hữu Lực',
-        optionId: 'opt-4-1',
-        votedAt: '2026-08-01T10:00:00',
-      },
-    ],
-    summaryReport: 'Cuộc biểu quyết đã kết thúc với 76.8% căn hộ tán thành. Dự án đã được Ban Quản Lý ký hợp đồng triển khai thi công và đưa vào vận hành từ tháng 09/2026.',
+    voters: [],
+    summaryReport: 'Cuộc biểu quyết đã kết thúc với sự tham gia của các căn hộ tòa nhà. Dự án đã được Ban Quản Lý nghiệm thu và đưa vào vận hành.',
   },
 ];
 
@@ -179,13 +146,31 @@ function notifyVotingUpdated() {
 export function getVotingTopics(): VotingTopic[] {
   if (typeof window === 'undefined') return INITIAL_VOTING_TOPICS;
   try {
+    // Dọn dẹp cache dữ liệu ảo phiên bản cũ
+    localStorage.removeItem('skyline_voting_topics_v1');
+    localStorage.removeItem('skyline_voting_topics_v2');
+
     const raw = localStorage.getItem(VOTING_STORAGE_KEY);
     if (!raw) {
       localStorage.setItem(VOTING_STORAGE_KEY, JSON.stringify(INITIAL_VOTING_TOPICS));
       return INITIAL_VOTING_TOPICS;
     }
     const parsed = JSON.parse(raw);
-    return Array.isArray(parsed) && parsed.length > 0 ? parsed : INITIAL_VOTING_TOPICS;
+    if (Array.isArray(parsed) && parsed.length > 0) {
+      // Đảm bảo tính toán chính xác 100% từ danh sách cử tri thực tế (không dữ liệu ảo)
+      return parsed.map((topic: VotingTopic) => {
+        const voters = Array.isArray(topic.voters) ? topic.voters : [];
+        return {
+          ...topic,
+          totalVotes: voters.length,
+          options: (topic.options || []).map(opt => ({
+            ...opt,
+            votes: voters.filter(v => v.optionId === opt.id).length,
+          })),
+        };
+      });
+    }
+    return INITIAL_VOTING_TOPICS;
   } catch {
     return INITIAL_VOTING_TOPICS;
   }
@@ -234,8 +219,6 @@ export function castVote(params: {
 
   const existingVoterIndex = topic.voters.findIndex(v => v.aptCode.trim().toUpperCase() === cleanApt);
 
-  let updatedOptions = [...topic.options];
-  let updatedTotalVotes = topic.totalVotes;
   let updatedVoters = [...topic.voters];
 
   if (existingVoterIndex !== -1) {
@@ -245,17 +228,6 @@ export function castVote(params: {
       return { success: true, message: 'Lá phiếu của bạn đã được ghi nhận trước đó.', topic };
     }
 
-    // Giảm phiếu cũ, tăng phiếu mới
-    updatedOptions = updatedOptions.map(opt => {
-      if (opt.id === prevOptionId) {
-        return { ...opt, votes: Math.max(0, opt.votes - 1) };
-      }
-      if (opt.id === params.optionId) {
-        return { ...opt, votes: opt.votes + 1 };
-      }
-      return opt;
-    });
-
     updatedVoters[existingVoterIndex] = {
       aptCode: cleanApt,
       voterName: params.voterName,
@@ -264,14 +236,6 @@ export function castVote(params: {
     };
   } else {
     // Biểu quyết lần đầu
-    updatedOptions = updatedOptions.map(opt => {
-      if (opt.id === params.optionId) {
-        return { ...opt, votes: opt.votes + 1 };
-      }
-      return opt;
-    });
-
-    updatedTotalVotes += 1;
     updatedVoters.push({
       aptCode: cleanApt,
       voterName: params.voterName,
@@ -279,6 +243,13 @@ export function castVote(params: {
       votedAt: new Date().toISOString(),
     });
   }
+
+  // Luôn tính toán số phiếu của từng phương án và tổng số phiếu trực tiếp từ danh sách cử tri thực tế (100% không dữ liệu ảo)
+  const updatedOptions = topic.options.map(opt => ({
+    ...opt,
+    votes: updatedVoters.filter(v => v.optionId === opt.id).length,
+  }));
+  const updatedTotalVotes = updatedVoters.length;
 
   const updatedTopic: VotingTopic = {
     ...topic,

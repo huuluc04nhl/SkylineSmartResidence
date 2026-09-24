@@ -235,7 +235,7 @@ function PortalContent() {
                 {/* Strictly Owner Only Features */}
                 {currentUser.role === 'OWNER' && (
                   <>
-                    {activeModule === 'resident-finance' && <FinanceBilling />}
+                    {activeModule === 'resident-finance' && <FinanceBilling currentUser={currentUser} />}
                     {activeModule === 'resident-surveys' && <SurveysVoting currentUser={currentUser} />}
                   </>
                 )}

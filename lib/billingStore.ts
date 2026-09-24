@@ -16,7 +16,7 @@ export interface ExtendedBill extends Bill {
   bank_code?: string;
 }
 
-const BILLS_STORAGE_KEY = 'skyline_bills_v2';
+const BILLS_STORAGE_KEY = 'skyline_bills_v4';
 
 // Cấu hình tài khoản ngân hàng Ban Quản Lý Tòa Nhà Skyline (BIDV)
 export const SKYLINE_BANK_INFO = {
@@ -54,108 +54,6 @@ export function generateVietQrUrl(params: {
 
 export const INITIAL_BILLS: Bill[] = [
   ...DEMO_BILLS,
-  {
-    id: 'bill-2026-08-08a02',
-    apartment_id: 'apt-08b12',
-    apt_code: '08A02',
-    owner_name: 'Trần Thị Bích Ngọc',
-    billing_month: 'Tháng 08/2026',
-    due_date: '2026-08-30T23:59:59',
-    total_amount: 1450000,
-    status: 'Unpaid',
-    status_color: '#D97706',
-    payment_qr_url: generateVietQrUrl({
-      amount: 1450000,
-      transferNote: 'SKYLINE 08A02 T082026',
-    }),
-    invoice_pdf_url: '#',
-    has_ai_anomaly: false,
-    created_at: '2026-08-05T08:00:00',
-    details: [
-      {
-        id: 'bd-08-1',
-        bill_id: 'bill-2026-08-08a02',
-        service_type: 'Electricity',
-        usage: 180,
-        unit_price: 3200,
-        total_line_amount: 576000,
-      },
-      {
-        id: 'bd-08-2',
-        bill_id: 'bill-2026-08-08a02',
-        service_type: 'Water',
-        usage: 12,
-        unit_price: 18000,
-        total_line_amount: 216000,
-      },
-      {
-        id: 'bd-08-3',
-        bill_id: 'bill-2026-08-08a02',
-        service_type: 'Management_Fee',
-        usage: 56.4,
-        unit_price: 10000,
-        total_line_amount: 564000,
-      },
-      {
-        id: 'bd-08-4',
-        bill_id: 'bill-2026-08-08a02',
-        service_type: 'Parking',
-        usage: 1,
-        total_line_amount: 94000,
-      },
-    ],
-  },
-  {
-    id: 'bill-2026-08-18a01',
-    apartment_id: 'apt-18a01',
-    apt_code: '18A01',
-    owner_name: 'Lê Hoàng Nam',
-    billing_month: 'Tháng 08/2026',
-    due_date: '2026-08-30T23:59:59',
-    total_amount: 3280000,
-    status: 'Paid',
-    status_color: '#16A34A',
-    payment_qr_url: generateVietQrUrl({
-      amount: 3280000,
-      transferNote: 'SKYLINE 18A01 T082026',
-    }),
-    invoice_pdf_url: '#',
-    has_ai_anomaly: false,
-    created_at: '2026-08-05T08:00:00',
-    details: [
-      {
-        id: 'bd-18-1',
-        bill_id: 'bill-2026-08-18a01',
-        service_type: 'Electricity',
-        usage: 410,
-        unit_price: 3200,
-        total_line_amount: 1312000,
-      },
-      {
-        id: 'bd-18-2',
-        bill_id: 'bill-2026-08-18a01',
-        service_type: 'Water',
-        usage: 24,
-        unit_price: 18000,
-        total_line_amount: 432000,
-      },
-      {
-        id: 'bd-18-3',
-        bill_id: 'bill-2026-08-18a01',
-        service_type: 'Management_Fee',
-        usage: 119.5,
-        unit_price: 10000,
-        total_line_amount: 1195000,
-      },
-      {
-        id: 'bd-18-4',
-        bill_id: 'bill-2026-08-18a01',
-        service_type: 'Parking',
-        usage: 2,
-        total_line_amount: 341000,
-      },
-    ],
-  },
 ];
 
 function notifyBillingUpdated() {
@@ -169,10 +67,15 @@ function notifyBillingUpdated() {
  */
 let serverMemoryBills: ExtendedBill[] = [...INITIAL_BILLS];
 
-export function getBills(aptCode?: string): ExtendedBill[] {
+export function getBills(aptCode?: string, overrideOwnerName?: string): ExtendedBill[] {
   let allBills: ExtendedBill[] = serverMemoryBills;
   if (typeof window !== 'undefined') {
     try {
+      // Dọn dẹp cache cũ chứa dữ liệu ảo
+      localStorage.removeItem('skyline_bills_v1');
+      localStorage.removeItem('skyline_bills_v2');
+      localStorage.removeItem('skyline_bills_v3');
+
       const raw = localStorage.getItem(BILLS_STORAGE_KEY);
       if (!raw) {
         localStorage.setItem(BILLS_STORAGE_KEY, JSON.stringify(INITIAL_BILLS));
@@ -180,20 +83,30 @@ export function getBills(aptCode?: string): ExtendedBill[] {
       } else {
         const parsed = JSON.parse(raw);
         if (Array.isArray(parsed) && parsed.length > 0) {
-          // Lọc bỏ dữ liệu mẫu cũ nếu có trong cache trình duyệt
-          allBills = parsed.map((bill: ExtendedBill) => {
-            const cleanDetails = (bill.details || []).filter((d: any) => 
-              d.id !== 'bd-5' && d.id !== 'bd-6' && 
-              d.booking_ref !== 'SRV-LAUN-1201' && d.booking_ref !== 'SRV-PTSW-1202'
-            );
-            const cleanTotal = cleanDetails.reduce((s: number, d: any) => s + (d.total_line_amount || 0), 0);
-            return {
-              ...bill,
-              total_amount: cleanTotal,
-              details: cleanDetails,
-            };
-          });
-          // Đảm bảo các hóa đơn khởi tạo mới (ví dụ T05, T06, Internet line) luôn hiện diện
+          // Lọc bỏ triệt để các hóa đơn ảo và làm sạch chi tiết
+          allBills = parsed
+            .filter((b: ExtendedBill) => b.id !== 'bill-2026-08-08a02' && b.id !== 'bill-2026-08-18a01')
+            .map((bill: ExtendedBill) => {
+              const cleanDetails = (bill.details || [])
+                .filter((d: any) => 
+                  d.id !== 'bd-5' && d.id !== 'bd-6' && 
+                  d.booking_ref !== 'SRV-LAUN-1201' && d.booking_ref !== 'SRV-PTSW-1202'
+                )
+                .map((d: any) => ({
+                  ...d,
+                  ai_anomaly: false,
+                  anomaly_reason: undefined,
+                }));
+              const cleanTotal = cleanDetails.reduce((s: number, d: any) => s + (d.total_line_amount || 0), 0);
+              return {
+                ...bill,
+                has_ai_anomaly: false,
+                total_amount: cleanTotal > 0 ? cleanTotal : bill.total_amount,
+                details: cleanDetails,
+              };
+            });
+
+          // Đảm bảo các hóa đơn chuẩn luôn hiện diện
           const existingIds = new Set(allBills.map(b => b.id));
           for (const initBill of INITIAL_BILLS) {
             if (!existingIds.has(initBill.id)) {
@@ -207,6 +120,16 @@ export function getBills(aptCode?: string): ExtendedBill[] {
     } catch {
       allBills = INITIAL_BILLS;
     }
+  }
+
+  // Đồng bộ tên chủ hộ thực tế nếu được truyền vào
+  if (overrideOwnerName && overrideOwnerName.trim()) {
+    allBills = allBills.map(b => {
+      if (aptCode && b.apt_code.trim().toUpperCase() === aptCode.trim().toUpperCase()) {
+        return { ...b, owner_name: overrideOwnerName.trim() };
+      }
+      return b;
+    });
   }
 
   if (aptCode) {

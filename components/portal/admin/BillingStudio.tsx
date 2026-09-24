@@ -155,18 +155,20 @@ export default function BillingStudio() {
         </div>
       </div>
 
-      {/* Anomaly Alert Banner */}
-      <div className="p-4 bg-red-950/40 border border-red-500/60 flex items-start gap-3">
-        <AlertTriangle className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
-        <div className="space-y-1 text-xs">
-          <div className="text-red-300 font-bold uppercase tracking-wider">
-            Cảnh Báo Biến Động Tiêu Thụ Bất Thường (&gt; 50%)
+      {/* Anomaly Alert Banner: Chỉ hiển thị khi thực sự có căn hộ ghi nhận biến động bất thường */}
+      {bills.some(b => b.has_ai_anomaly) && (
+        <div className="p-4 bg-red-950/40 border border-red-500/60 flex items-start gap-3 animate-fadeIn">
+          <AlertTriangle className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
+          <div className="space-y-1 text-xs">
+            <div className="text-red-300 font-bold uppercase tracking-wider">
+              Cảnh Báo Biến Động Tiêu Thụ Bất Thường (&gt; 50%)
+            </div>
+            <p className="text-gray-300 leading-relaxed">
+              Hệ thống tự động phát hiện và bôi đỏ các căn hộ có chỉ số nước/điện tăng đột biến trong tháng để Kế toán đối soát với số đo thực tế trước khi phát hành hoặc nhắc phí.
+            </p>
           </div>
-          <p className="text-gray-300 leading-relaxed">
-            Hệ thống tự động phát hiện và bôi đỏ các căn hộ có chỉ số nước/điện tăng đột biến trong tháng để Kế toán đối soát với số đo thực tế trước khi phát hành hoặc nhắc phí.
-          </p>
         </div>
-      </div>
+      )}
 
       {/* Filter Toolbar */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
