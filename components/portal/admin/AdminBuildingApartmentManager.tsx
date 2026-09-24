@@ -201,6 +201,9 @@ export default function AdminBuildingApartmentManager() {
   // Điều khiển Floor Plan View (Mặt Bằng Tầng & Chế độ Mở Rộng) - Mặc định tầng 30 của chủ hộ
   const [selectedFloor, setSelectedFloor] = useState<number>(30);
   const [hoveredUnitCode, setHoveredUnitCode] = useState<string | null>(null);
+  const [hoveredFloor, setHoveredFloor] = useState<number | null>(null);
+  const [buildingTheme, setBuildingTheme] = useState<'NIGHT' | 'DAY'>('NIGHT');
+  const [elevationZoneFilter, setElevationZoneFilter] = useState<'ALL' | 'HIGH' | 'MID' | 'LOW'>('ALL');
   const [isFloorPlanExpanded, setIsFloorPlanExpanded] = useState<boolean>(false);
   const [floorFilterStatus, setFloorFilterStatus] = useState<'ALL' | 'OCCUPIED' | 'VACANT'>('ALL');
   const [billToastMessage, setBillToastMessage] = useState<string | null>(null);
@@ -911,488 +914,636 @@ export default function AdminBuildingApartmentManager() {
 
           {/* ----------------------------------------------------------- */}
           {/* GÓC NHÌN 1: MÔ HÌNH KHỐI 3D KIẾN TRÚC TÒA NHÀ BỰ HƠN THỰC TẾ*/}
-          {/* ĐA KHỐI CĂN HỘ TỪNG TẦNG - 100% CĂN TRỐNG THẬT (KHÔNG DỮ LIỆU ẢO) */}
-          {/* TƯƠNG TÁC VISUAL FILTERING ĐỒNG BỘ THEO BỘ LỌC              */}
           {/* ----------------------------------------------------------- */}
           {buildingPerspective === '3D' && (
-            <div className="relative w-full h-[640px] sm:h-[720px] bg-[#05070A] overflow-hidden flex items-center justify-center select-none">
-              {/* Lưới tọa độ không gian kiến trúc số */}
+            <div className={`relative w-full h-[660px] sm:h-[760px] ${buildingTheme === 'NIGHT' ? 'bg-[#030712]' : 'bg-[#0B1528]'} overflow-hidden flex flex-col select-none transition-colors duration-500`}>
+              {/* Lưới tọa độ kiến trúc số */}
               <div 
-                className="absolute inset-0 opacity-20 pointer-events-none"
+                className="absolute inset-0 opacity-15 pointer-events-none"
                 style={{
-                  backgroundImage: 'linear-gradient(to right, #1E293B 1px, transparent 1px), linear-gradient(to bottom, #1E293B 1px, transparent 1px)',
+                  backgroundImage: buildingTheme === 'NIGHT'
+                    ? 'linear-gradient(to right, #1E293B 1px, transparent 1px), linear-gradient(to bottom, #1E293B 1px, transparent 1px)'
+                    : 'linear-gradient(to right, #38BDF8 1px, transparent 1px), linear-gradient(to bottom, #38BDF8 1px, transparent 1px)',
                   backgroundSize: '24px 24px'
                 }}
               />
 
-              {/* BẢN VẼ PHỐI CẢNH 3D CHUNG CƯ SKYLINE BỀ THẾ (SVG ISOMETRIC) */}
-              <svg
-                viewBox="0 0 1000 680"
-                className="w-full h-full cursor-default drop-shadow-[0_30px_60px_rgba(0,0,0,0.95)]"
-              >
-                <defs>
-                  {/* Animation Keyframes cho con trỏ laser và bảng callout hiển thị từ từ */}
-                  <style>{`
-                    @keyframes laserDrawPath {
-                      0% {
+              {/* BẢNG ĐIỀU KHIỂN HUD TẦNG TRÊN (CONTROLS & ZONE NAVIGATOR) */}
+              <div className="relative z-20 flex flex-wrap items-center justify-between gap-2 p-3 bg-[#080E1A]/85 backdrop-blur-md border-b border-[#1E2E44] text-xs">
+                {/* Tiêu đề & Shortcut Nhảy Nhanh */}
+                <div className="flex flex-wrap items-center gap-2">
+                  <div className="flex items-center gap-1.5 px-2.5 py-1 bg-[#101C2E] border border-[#233854]">
+                    <Building className="w-3.5 h-3.5 text-[#C5A880]" />
+                    <span className="font-bold text-white uppercase font-mono tracking-wider">
+                      {currentBlockName} (34 Tầng)
+                    </span>
+                  </div>
+
+                  <span className="text-gray-500 hidden sm:inline">|</span>
+
+                  {/* Phím nhảy nhanh đến tầng quan trọng */}
+                  <div className="flex items-center gap-1">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setSelectedFloor(30);
+                        setSelectedAptCode('CH-06');
+                      }}
+                      className={`px-2.5 py-1 font-bold text-[11px] font-mono transition-all border ${
+                        selectedFloor === 30
+                          ? 'bg-emerald-600 text-white border-emerald-400 shadow-[0_0_10px_rgba(16,185,129,0.5)]'
+                          : 'bg-[#0E2018] text-emerald-300 border-emerald-700/60 hover:bg-[#163326]'
+                      }`}
+                    >
+                      ★ Tầng 30 (CH-06 & CH-01)
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setSelectedFloor(20);
+                        setSelectedAptCode('20-CH-06');
+                      }}
+                      className={`px-2 py-1 font-semibold text-[11px] font-mono transition-all border ${
+                        selectedFloor === 20
+                          ? 'bg-cyan-600 text-white border-cyan-400'
+                          : 'bg-[#082236] text-cyan-300 border-cyan-700/60 hover:bg-[#0C324E]'
+                      }`}
+                    >
+                      ★ Tầng 20 (CH-06)
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setSelectedFloor(34);
+                      }}
+                      className="px-2 py-1 font-semibold text-[11px] font-mono bg-[#181F2C] text-gray-300 border border-[#2D3F59] hover:text-white"
+                    >
+                      👑 Tầng 34 (Penthouse)
+                    </button>
+                  </div>
+                </div>
+
+                {/* Chuyển Phân Khu Tầng & Chế độ Ánh Sáng Ngày/Đêm */}
+                <div className="flex items-center gap-2">
+                  {/* Lọc phân tầng */}
+                  <div className="flex bg-[#0A1220] p-0.5 border border-[#1E2E44] text-[11px] font-mono">
+                    <button
+                      type="button"
+                      onClick={() => setElevationZoneFilter('ALL')}
+                      className={`px-2 py-0.5 transition-all ${
+                        elevationZoneFilter === 'ALL' ? 'bg-[#C5A880] text-black font-bold' : 'text-gray-400 hover:text-white'
+                      }`}
+                    >
+                      Toàn Tháp (34T)
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setElevationZoneFilter('HIGH')}
+                      className={`px-2 py-0.5 transition-all ${
+                        elevationZoneFilter === 'HIGH' ? 'bg-[#C5A880] text-black font-bold' : 'text-gray-400 hover:text-white'
+                      }`}
+                    >
+                      Cao Tầng (21-34)
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setElevationZoneFilter('MID')}
+                      className={`px-2 py-0.5 transition-all ${
+                        elevationZoneFilter === 'MID' ? 'bg-[#C5A880] text-black font-bold' : 'text-gray-400 hover:text-white'
+                      }`}
+                    >
+                      Trung Tầng (11-20)
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setElevationZoneFilter('LOW')}
+                      className={`px-2 py-0.5 transition-all ${
+                        elevationZoneFilter === 'LOW' ? 'bg-[#C5A880] text-black font-bold' : 'text-gray-400 hover:text-white'
+                      }`}
+                    >
+                      Hạ Tầng (1-10)
+                    </button>
+                  </div>
+
+                  {/* Nút bật/tắt Chế độ Ánh Sáng */}
+                  <button
+                    type="button"
+                    onClick={() => setBuildingTheme(buildingTheme === 'NIGHT' ? 'DAY' : 'NIGHT')}
+                    className="px-2.5 py-1 bg-[#121E30] hover:bg-[#1A2C46] border border-[#233B5B] text-white text-[11px] font-mono flex items-center gap-1.5 transition-all"
+                  >
+                    {buildingTheme === 'NIGHT' ? (
+                      <>
+                        <Sun className="w-3.5 h-3.5 text-amber-400" />
+                        <span className="hidden sm:inline">Chế Độ Ngày</span>
+                      </>
+                    ) : (
+                      <>
+                        <Wind className="w-3.5 h-3.5 text-cyan-300" />
+                        <span className="hidden sm:inline">Chế Độ Đêm</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+              </div>
+
+              {/* BẢN VẼ PHỐI CẢNH 3D CHUNG CƯ ISOMETRIC CHUẨN KIẾN TRÚC */}
+              <div className="relative flex-1 w-full h-full flex items-center justify-center">
+                <svg
+                  viewBox="0 0 1000 680"
+                  className="w-full h-full cursor-default drop-shadow-[0_30px_60px_rgba(0,0,0,0.95)]"
+                >
+                  <defs>
+                    <style>{`
+                      @keyframes laserDrawPath {
+                        0% { stroke-dashoffset: 340; opacity: 0; }
+                        20% { opacity: 1; }
+                        100% { stroke-dashoffset: 0; opacity: 1; }
+                      }
+                      @keyframes calloutSlideIn {
+                        0% { opacity: 0; transform: translateY(12px) scale(0.95); }
+                        100% { opacity: 1; transform: translateY(0) scale(1); }
+                      }
+                      @keyframes pingRing {
+                        0% { r: 3.5; opacity: 1; stroke-width: 2.5; }
+                        70% { opacity: 0.5; }
+                        100% { r: 20; opacity: 0; stroke-width: 0.5; }
+                      }
+                      .anim-laser-line {
+                        stroke-dasharray: 340;
                         stroke-dashoffset: 340;
-                        opacity: 0;
+                        animation: laserDrawPath 0.55s cubic-bezier(0.16, 1, 0.3, 1) forwards;
                       }
-                      20% {
-                        opacity: 1;
+                      .anim-callout-card {
+                        animation: calloutSlideIn 0.5s 0.18s cubic-bezier(0.16, 1, 0.3, 1) both;
                       }
-                      100% {
-                        stroke-dashoffset: 0;
-                        opacity: 1;
+                      .anim-ping-pulse {
+                        animation: pingRing 1.8s cubic-bezier(0, 0, 0.2, 1) infinite;
                       }
-                    }
+                    `}</style>
 
-                    @keyframes calloutSlideIn {
-                      0% {
-                        opacity: 0;
-                        transform: translateY(12px) scale(0.95);
-                      }
-                      100% {
-                        opacity: 1;
-                        transform: translateY(0) scale(1);
-                      }
-                    }
+                    <filter id="unitGlow" x="-20%" y="-20%" width="140%" height="140%">
+                      <feGaussianBlur stdDeviation="3.5" result="blur" />
+                      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                    </filter>
 
-                    @keyframes pingRing {
-                      0% {
-                        r: 3.5;
-                        opacity: 1;
-                        stroke-width: 2.5;
-                      }
-                      70% {
-                        opacity: 0.5;
-                      }
-                      100% {
-                        r: 20;
-                        opacity: 0;
-                        stroke-width: 0.5;
-                      }
-                    }
+                    {/* Gradient kính ban đêm vs ban ngày */}
+                    <linearGradient id="skylineGlassL" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stopColor={buildingTheme === 'NIGHT' ? '#1E293B' : '#0284C7'} />
+                      <stop offset="50%" stopColor={buildingTheme === 'NIGHT' ? '#0F172A' : '#0369A1'} />
+                      <stop offset="100%" stopColor={buildingTheme === 'NIGHT' ? '#050B14' : '#0C4A6E'} />
+                    </linearGradient>
 
-                    .anim-laser-line {
-                      stroke-dasharray: 340;
-                      stroke-dashoffset: 340;
-                      animation: laserDrawPath 0.55s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-                    }
+                    <linearGradient id="skylineGlassR" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stopColor={buildingTheme === 'NIGHT' ? '#334155' : '#38BDF8'} />
+                      <stop offset="60%" stopColor={buildingTheme === 'NIGHT' ? '#1E293B' : '#0284C7'} />
+                      <stop offset="100%" stopColor={buildingTheme === 'NIGHT' ? '#0A101D' : '#075985'} />
+                    </linearGradient>
 
-                    .anim-callout-card {
-                      animation: calloutSlideIn 0.5s 0.18s cubic-bezier(0.16, 1, 0.3, 1) both;
-                    }
+                    {/* Gradient khối đế tiếp tân */}
+                    <linearGradient id="podiumMallGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stopColor="#1E293B" />
+                      <stop offset="60%" stopColor="#0F172A" />
+                      <stop offset="100%" stopColor="#080C14" />
+                    </linearGradient>
 
-                    .anim-ping-pulse {
-                      animation: pingRing 1.8s cubic-bezier(0, 0, 0.2, 1) infinite;
-                    }
-                  `}</style>
+                    {/* Gradient phát sáng cửa sổ phòng cư dân tầng 30 */}
+                    <linearGradient id="warmWindowGlow" x1="0%" y1="0%" x2="100%" y2="0%">
+                      <stop offset="0%" stopColor="#059669" />
+                      <stop offset="50%" stopColor="#10B981" />
+                      <stop offset="100%" stopColor="#34D399" />
+                    </linearGradient>
+                  </defs>
 
-                  {/* Filter viền phát sáng khi chọn căn hộ */}
-                  <filter id="unitGlow" x="-20%" y="-20%" width="140%" height="140%">
-                    <feGaussianBlur stdDeviation="3" result="blur" />
-                    <feComposite in="SourceGraphic" in2="blur" operator="over" />
-                  </filter>
+                  {/* THƯỚC ĐO CAO ĐỘ CÁC TẦNG BÊN TRÁI & PHẢI (LEVEL RULER) */}
+                  <g className="opacity-70 font-mono text-[9px]">
+                    {[34, 30, 25, 20, 15, 10, 5, 1].map(fl => {
+                      const yPos = 472 - (fl - 1) * 11.8 - 25;
+                      const is30 = fl === 30;
+                      const is20 = fl === 20;
 
-                  {/* Gradient kính mặt tiền Đông Nam (Mặt Trái) */}
-                  <linearGradient id="skylineGlassL" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stopColor="#1E293B" />
-                    <stop offset="50%" stopColor="#0F172A" />
-                    <stop offset="100%" stopColor="#050B14" />
-                  </linearGradient>
+                      return (
+                        <g key={`level-ruler-${fl}`} className="pointer-events-none">
+                          <line x1="160" y1={yPos} x2="225" y2={yPos} stroke={is30 ? '#10B981' : is20 ? '#38BDF8' : '#334155'} strokeWidth={is30 ? 2 : 1} strokeDasharray={is30 ? 'none' : '3 3'} />
+                          <circle cx="225" cy={yPos} r={is30 ? 3.5 : 2} fill={is30 ? '#10B981' : is20 ? '#38BDF8' : '#475569'} />
+                          <rect x="95" y={yPos - 9} width="60" height="18" fill={is30 ? '#064E3B' : is20 ? '#082F49' : '#0B121D'} stroke={is30 ? '#10B981' : is20 ? '#38BDF8' : '#1E2D42'} strokeWidth="1" />
+                          <text x="125" y={yPos + 3.5} fill={is30 ? '#34D399' : is20 ? '#7DD3FC' : '#94A3B8'} fontWeight="bold" textAnchor="middle">
+                            TẦNG {fl}
+                          </text>
 
-                  {/* Gradient kính mặt tiền Tây Nam (Mặt Phải) */}
-                  <linearGradient id="skylineGlassR" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stopColor="#334155" />
-                    <stop offset="60%" stopColor="#1E293B" />
-                    <stop offset="100%" stopColor="#0A101D" />
-                  </linearGradient>
+                          {/* Nhãn bên phải */}
+                          <line x1="775" y1={yPos} x2="840" y2={yPos} stroke={is30 ? '#10B981' : is20 ? '#38BDF8' : '#334155'} strokeWidth={is30 ? 2 : 1} strokeDasharray={is30 ? 'none' : '3 3'} />
+                          <circle cx="775" cy={yPos} r={is30 ? 3.5 : 2} fill={is30 ? '#10B981' : is20 ? '#38BDF8' : '#475569'} />
+                        </g>
+                      );
+                    })}
+                  </g>
 
-                  {/* Gradient khối đế tiếp tân */}
-                  <linearGradient id="podiumMallGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stopColor="#1E293B" />
-                    <stop offset="60%" stopColor="#0F172A" />
-                    <stop offset="100%" stopColor="#080C14" />
-                  </linearGradient>
-                </defs>
+                  {/* 1. KHUÔN VIÊN MẶT ĐẤT & SẢNH ĐÓN TẦNG 1 */}
+                  <g className="opacity-95">
+                    <polygon points="60,575 500,665 940,575 500,485" fill="#070B12" stroke="#1E293B" strokeWidth="2" />
 
-                {/* 1. KHUÔN VIÊN MẶT ĐẤT & SẢNH ĐÓN TẦNG 1 */}
-                <g className="opacity-95">
-                  {/* Nền cảnh quan sân vườn mở rộng */}
-                  <polygon points="60,575 500,665 940,575 500,485" fill="#070B12" stroke="#1E293B" strokeWidth="2" />
-
-                  {/* KHỐI SẢNH ĐÓN & DỊCH VỤ CƯ DÂN (TẦNG 1) - DỊCH XUỐNG DƯỚI ĐÁY THÁP, KHÔNG BỊ CHUNG CƯ ĐÈ MẤT CHỮ */}
-                  <polygon points="180,555 500,605 820,555 820,490 500,540 180,490" fill="url(#podiumMallGrad)" stroke="#334155" strokeWidth="2" />
-                  <polygon points="210,540 500,586 790,540 790,505 500,551 210,505" fill="#0EA5E9" fillOpacity="0.2" stroke="#38BDF8" strokeWidth="1.2" />
-                  
-                  {/* Bảng hiệu chữ Sảnh Đón Tiếp Tân tầng 1 - Dịch xuống vị trí thông thoáng, rõ nét */}
-                  <text x="500" y="546" fill="#F8FAFC" fontSize="11.5" fontFamily="sans-serif" textAnchor="middle" fontWeight="900" letterSpacing="0.08em">
-                    SẢNH ĐÓN TIẾP TÂN & KHU DỊCH VỤ CƯ DÂN (TẦNG 1)
-                  </text>
-                  <text x="500" y="566" fill="#94A3B8" fontSize="8.5" fontFamily="monospace" textAnchor="middle">
-                    Lễ Tân 24/7 • Ban Quản Lý • Sảnh Chờ Sang Trọng • Lối Xuống Hầm Xe B1-B2
-                  </text>
-
-                  {/* Hồ nước sinh thái & đài phun nước cảnh quan */}
-                  <polygon points="300,612 500,646 700,612 500,578" fill="#0369A1" fillOpacity="0.35" stroke="#38BDF8" strokeWidth="1" />
-                  <text x="500" y="616" fill="#38BDF8" fontSize="8.5" fontFamily="monospace" textAnchor="middle" fontWeight="bold">
-                    HỒ NƯỚC CẢNH QUAN & ĐÀI PHUN NƯỚC NỘI KHU
-                  </text>
-                </g>
-
-                {/* 2. THÂN THÁP CHUNG CƯ SKYLINE (25 TẦNG VƯƠN CAO BỰ HƠN BỀ THẾ) */}
-                <g className="transition-all duration-300">
-                  {/* Mặt Trái (Hướng Đông Nam - rộng 270px) */}
-                  <polygon points="230,475 500,520 500,72 230,42" fill="url(#skylineGlassL)" stroke="#222B35" strokeWidth="2.5" />
-                  {/* Mặt Phải (Hướng Tây Nam - rộng 270px) */}
-                  <polygon points="500,520 770,475 770,42 500,72" fill="url(#skylineGlassR)" stroke="#334155" strokeWidth="2.5" />
-                  {/* Mái Tháp (Sân Thượng Helipad) */}
-                  <polygon points="230,42 500,72 770,42 500,18" fill="#1E293B" stroke="#475569" strokeWidth="2" />
-
-                  {/* Sân đáp trực thăng Helipad trên đỉnh tháp */}
-                  <ellipse cx="500" cy="58" rx="65" ry="18" fill="#0F172A" stroke="#C5A880" strokeWidth="1.8" />
-                  <circle cx="500" cy="58" r="11" fill="none" stroke="#FDE68A" strokeWidth="1.5" />
-                  <text x="500" y="62" fill="#FDE68A" fontSize="10" fontWeight="bold" textAnchor="middle" fontFamily="sans-serif">H</text>
-
-                  {/* Đèn báo tín hiệu hàng không nhấp nháy trên đỉnh */}
-                  <circle cx="500" cy="14" r="3.5" fill="#EF4444" className="animate-pulse" />
-                  <line x1="500" y1="14" x2="500" y2="24" stroke="#64748B" strokeWidth="1.5" />
-
-                  {/* Tiêu đề Đỉnh Tòa Nhà */}
-                  <text x="500" y="10" fill="#C5A880" fontSize="12.5" fontWeight="bold" textAnchor="middle" fontFamily="serif" letterSpacing="0.05em">
-                    {currentBlockName.toUpperCase()} (34 TẦNG) • THE TROPICAL
-                  </text>
-
-                  {/* RENDER ĐẦY ĐỦ CÁC KHỐI CĂN HỘ KIẾN TRÚC 34 TẦNG TỪ NKS API */}
-                  {BUILDING_3D_UNITS.map(b => {
-                    const liveUnit = displayUnits.find(u => u.code === b.code);
-                    const actualStatus = liveUnit ? liveUnit.status : b.defaultStatus;
-                    const actualOwnerName = (b.code === 'CH-06' || b.floor === 30) && b.side === 'LEFT' ? activeOwnerName : (liveUnit?.owner?.name || b.defaultName || 'Nhà Trống');
-                    const isSelected = selectedAptCode === b.code;
-                    const isHovered = hoveredUnitCode === b.code;
+                    {/* Khối Sảnh Đón Tiếp Tân Hoàng Gia (Tầng 1) */}
+                    <polygon points="180,555 500,605 820,555 820,490 500,540 180,490" fill="url(#podiumMallGrad)" stroke="#334155" strokeWidth="2" />
+                    <polygon points="210,540 500,586 790,540 790,505 500,551 210,505" fill="#0EA5E9" fillOpacity="0.2" stroke="#38BDF8" strokeWidth="1.2" />
                     
-                    // Kiểm tra xem căn có thỏa mãn bộ lọc hiện hành hay không
-                    const isMatched = checkUnitMatchesFilter(b.code, b.floor, b.type, actualStatus, actualOwnerName);
+                    <text x="500" y="546" fill="#F8FAFC" fontSize="11" fontFamily="sans-serif" textAnchor="middle" fontWeight="900" letterSpacing="0.08em">
+                      ĐẠI SẢNH ĐÓN TIẾP TÂN & KHU DỊCH VỤ CƯ DÂN (TẦNG 1)
+                    </text>
+                    <text x="500" y="566" fill="#94A3B8" fontSize="8.5" fontFamily="monospace" textAnchor="middle">
+                      Lễ Tân 24/7 • Ban Quản Lý • Hầm Để Xe Thông Minh B1 - B2
+                    </text>
 
-                    // Tọa độ hình học chính xác cho khối căn hộ 34 tầng
-                    const yBase = 472 - (b.floor - 1) * 11.8;
-                    const h = b.floor === 34 ? 13 : 9.5;
-                    
-                    // Tọa độ 4 góc của đa giác isometric
-                    const pts = b.side === 'LEFT'
-                      ? `${248},${(yBase - 33 - h).toFixed(1)} ${494},${(yBase - 1 - h).toFixed(1)} ${494},${(yBase - 1).toFixed(1)} ${248},${(yBase - 33).toFixed(1)}`
-                      : `${506},${(yBase - 1 - h).toFixed(1)} ${752},${(yBase - 33 - h).toFixed(1)} ${752},${(yBase - 33).toFixed(1)} ${506},${(yBase - 1).toFixed(1)}`;
-                    
-                    const textX = b.side === 'LEFT' ? 371 : 629;
-                    const textY = (yBase - 17 - h / 2 + 3.5).toFixed(1);
+                    {/* Hồ nước sinh thái */}
+                    <polygon points="300,612 500,646 700,612 500,578" fill="#0369A1" fillOpacity="0.35" stroke="#38BDF8" strokeWidth="1" />
+                    <text x="500" y="616" fill="#38BDF8" fontSize="8.5" fontFamily="monospace" textAnchor="middle" fontWeight="bold">
+                      HỒ CẢNH QUAN & QUẢNG TRƯỜNG NỘI KHU THE TROPICAL
+                    </text>
+                  </g>
 
-                    // Màu sắc theo trạng thái thực tế
-                    let fillColor = '#B45309';
-                    let strokeColor = '#F59E0B';
-                    let textColor = '#FEF3C7';
+                  {/* 2. THÂN THÁP CHUNG CƯ 34 TẦNG (CAO ĐẲNG CẤP) */}
+                  <g className="transition-all duration-300">
+                    {/* Mặt Trái (Hướng Đông Nam) */}
+                    <polygon points="230,475 500,520 500,68 230,38" fill="url(#skylineGlassL)" stroke="#222B35" strokeWidth="2.5" />
+                    {/* Mặt Phải (Hướng Tây Nam) */}
+                    <polygon points="500,520 770,475 770,38 500,68" fill="url(#skylineGlassR)" stroke="#334155" strokeWidth="2.5" />
+                    {/* Mái Tháp (Sân Thượng Helipad) */}
+                    <polygon points="230,38 500,68 770,38 500,16" fill="#1E293B" stroke="#475569" strokeWidth="2" />
 
-                    if (actualStatus === 'OCCUPIED') {
-                      fillColor = isSelected ? '#059669' : '#065F46';
-                      strokeColor = isSelected ? '#34D399' : '#10B981';
-                      textColor = '#D1FAE5';
-                    } else if (actualStatus === 'MAINTENANCE') {
-                      fillColor = isSelected ? '#0284C7' : '#0369A1';
-                      strokeColor = isSelected ? '#7DD3FC' : '#38BDF8';
-                      textColor = '#E0F2FE';
-                    } else {
-                      // Căn hộ trống (chuẩn theo yêu cầu người dùng)
-                      fillColor = isSelected ? '#D97706' : '#78350F';
-                      strokeColor = isSelected ? '#FDE68A' : '#F59E0B';
-                      textColor = '#FEF3C7';
-                    }
+                    {/* Sân đáp trực thăng Helipad trên đỉnh tháp */}
+                    <ellipse cx="500" cy="54" rx="65" ry="18" fill="#0F172A" stroke="#C5A880" strokeWidth="1.8" />
+                    <circle cx="500" cy="54" r="11" fill="none" stroke="#FDE68A" strokeWidth="1.5" />
+                    <text x="500" y="58" fill="#FDE68A" fontSize="10" fontWeight="bold" textAnchor="middle" fontFamily="sans-serif">H</text>
 
-                    // Tương tác phản hồi Bộ Lọc: Căn khớp thì sáng rõ, căn không khớp thì mờ đục
-                    let opacityVal = 0.85;
-                    if (isAnyFilterActive) {
-                      opacityVal = isMatched ? 1 : 0.12;
-                    } else if (isSelected || isHovered || b.code === 'CH-06' || b.floor === 30) {
-                      opacityVal = 1;
-                    }
+                    {/* Đèn báo tín hiệu hàng không nhấp nháy trên đỉnh */}
+                    <circle cx="500" cy="12" r="3.5" fill="#EF4444" className="animate-pulse" />
+                    <line x1="500" y1="12" x2="500" y2="22" stroke="#64748B" strokeWidth="1.5" />
 
-                    return (
-                      <g
-                        key={b.code}
-                        onClick={() => {
-                          setSelectedAptCode(b.code);
-                          setSelectedFloor(b.floor);
-                        }}
-                        onMouseEnter={() => setHoveredUnitCode(b.code)}
-                        onMouseLeave={() => setHoveredUnitCode(null)}
-                        className="cursor-pointer transition-opacity duration-300"
-                        style={{ opacity: opacityVal }}
-                      >
-                        <polygon
-                          points={pts}
-                          fill={fillColor}
-                          fillOpacity={isSelected ? 0.98 : (isHovered ? 0.9 : (actualStatus === 'OCCUPIED' ? 0.88 : 0.55))}
-                          stroke={isSelected ? '#FFFFFF' : (isHovered ? '#FDE68A' : strokeColor)}
-                          strokeWidth={isSelected ? 2.5 : (isHovered ? 2 : 1)}
-                          filter={isSelected ? 'url(#unitGlow)' : undefined}
-                          className="transition-all duration-200"
-                        />
-                        
-                        {/* Nhãn căn hộ trên mặt kính tòa nhà */}
-                        <text
-                          x={textX}
-                          y={textY}
-                          fill={isSelected ? '#FFFFFF' : textColor}
-                          fontSize={b.floor === 25 ? '8.5' : '7.5'}
-                          fontWeight={isSelected || b.code === '12A05' ? '900' : 'bold'}
-                          textAnchor="middle"
-                          fontFamily="monospace"
-                          pointerEvents="none"
+                    {/* Tiêu đề Đỉnh Tòa Nhà */}
+                    <text x="500" y="8" fill="#C5A880" fontSize="12" fontWeight="bold" textAnchor="middle" fontFamily="serif" letterSpacing="0.05em">
+                      {currentBlockName.toUpperCase()} (34 TẦNG) • THE TROPICAL
+                    </text>
+
+                    {/* RENDER TOÀN BỘ 34 TẦNG VỚI HIỆU ỨNG ÁNH SÁNG & ĐÈN PHÒNG */}
+                    {BUILDING_3D_UNITS.map(b => {
+                      const liveUnit = displayUnits.find(u => u.code === b.code);
+                      const actualStatus = liveUnit ? liveUnit.status : b.defaultStatus;
+                      const actualOwnerName = (b.code === 'CH-06' || b.floor === 30) && b.side === 'LEFT' ? activeOwnerName : (liveUnit?.owner?.name || b.defaultName || 'Nhà Trống');
+                      const isSelected = selectedAptCode === b.code || (selectedFloor === b.floor && selectedAptCode.includes(b.code));
+                      const isHovered = hoveredUnitCode === b.code || hoveredFloor === b.floor;
+                      
+                      // Lọc theo vùng tầng
+                      const isMatchedZone = elevationZoneFilter === 'ALL'
+                        ? true
+                        : elevationZoneFilter === 'HIGH'
+                        ? b.floor >= 21
+                        : elevationZoneFilter === 'MID'
+                        ? (b.floor >= 11 && b.floor <= 20)
+                        : (b.floor <= 10);
+
+                      // Tọa độ hình học chính xác cho khối căn hộ 34 tầng
+                      const yBase = 472 - (b.floor - 1) * 11.8;
+                      const h = b.floor === 34 ? 13 : 9.5;
+                      
+                      const pts = b.side === 'LEFT'
+                        ? `${248},${(yBase - 33 - h).toFixed(1)} ${494},${(yBase - 1 - h).toFixed(1)} ${494},${(yBase - 1).toFixed(1)} ${248},${(yBase - 33).toFixed(1)}`
+                        : `${506},${(yBase - 1 - h).toFixed(1)} ${752},${(yBase - 33 - h).toFixed(1)} ${752},${(yBase - 33).toFixed(1)} ${506},${(yBase - 1).toFixed(1)}`;
+                      
+                      // Màu sắc theo trạng thái thực tế
+                      let fillColor = buildingTheme === 'NIGHT' ? '#0F172A' : '#0369A1';
+                      let strokeColor = buildingTheme === 'NIGHT' ? '#1E293B' : '#0284C7';
+                      let fillOpacity = 0.55;
+
+                      if (actualStatus === 'OCCUPIED' || b.floor === 30) {
+                        fillColor = isSelected ? '#059669' : '#065F46';
+                        strokeColor = isSelected ? '#34D399' : '#10B981';
+                        fillOpacity = isSelected ? 0.98 : 0.85;
+                      } else if (actualStatus === 'MAINTENANCE' || b.floor === 20) {
+                        fillColor = isSelected ? '#0284C7' : '#075985';
+                        strokeColor = isSelected ? '#7DD3FC' : '#38BDF8';
+                        fillOpacity = isSelected ? 0.95 : 0.8;
+                      }
+
+                      let opacityVal = isMatchedZone ? 0.9 : 0.15;
+                      if (isSelected || isHovered) opacityVal = 1;
+
+                      return (
+                        <g
+                          key={b.code}
+                          onClick={() => {
+                            setSelectedAptCode(b.code);
+                            setSelectedFloor(b.floor);
+                          }}
+                          onMouseEnter={() => {
+                            setHoveredUnitCode(b.code);
+                            setHoveredFloor(b.floor);
+                          }}
+                          onMouseLeave={() => {
+                            setHoveredUnitCode(null);
+                            setHoveredFloor(null);
+                          }}
+                          className="cursor-pointer transition-all duration-200"
+                          style={{ opacity: opacityVal }}
                         >
-                          {b.code} {actualStatus === 'OCCUPIED' ? '★ ĐÃ Ở' : (actualStatus === 'MAINTENANCE' ? '• KỸ THUẬT' : '• TRỐNG')}
-                        </text>
-                      </g>
-                    );
-                  })}
-
-                  {/* =================================================================== */}
-                  {/* CON TRỎ HOẠT HỌA ĐỘNG (ANIMATED POINTER & CALLOUT) HIỂN THỊ TỪ TỪ   */}
-                  {/* KHI CLICK VÀO BẤT KỲ CĂN HỘ NÀO TRÊN MÔ HÌNH CHUNG CƯ              */}
-                  {/* =================================================================== */}
-                  {(() => {
-                    // 1. Tìm khối căn hộ tương ứng trên mô hình 3D
-                    let activeTargetBlock = BUILDING_3D_UNITS.find(b => b.code === selectedAptCode);
-                    if (!activeTargetBlock) {
-                      const targetFloor = activeUnit?.floor || 30;
-                      const numStr = selectedAptCode.replace(/\D/g, '').slice(-2);
-                      const num = parseInt(numStr || '1', 10);
-                      const fallbackSide: 'LEFT' | 'RIGHT' = num % 2 === 1 ? 'LEFT' : 'RIGHT';
-                      activeTargetBlock = BUILDING_3D_UNITS.find(b => b.floor === targetFloor && b.side === fallbackSide)
-                        || BUILDING_3D_UNITS.find(b => b.floor === targetFloor)
-                        || {
-                          code: selectedAptCode,
-                          floor: Math.max(1, Math.min(34, targetFloor)),
-                          side: fallbackSide,
-                          type: (activeUnit?.type || '2PN') as ApartmentType,
-                          defaultStatus: (activeUnit?.status || 'VACANT') as ApartmentStatus,
-                          area: activeUnit?.area || 75
-                        };
-                    }
-
-                    const curFloor = Math.max(1, Math.min(34, activeTargetBlock.floor));
-                    const curSide = activeTargetBlock.side;
-                    const curYBase = 472 - (curFloor - 1) * 11.8;
-                    const curH = curFloor === 34 ? 13 : 9.5;
-
-                    // Mép tường ngoài tòa nhà (nơi tia laser đi ra ngoài không gian)
-                    // Tại mép ngoài x = 248 (LEFT) hoặc x = 752 (RIGHT), Y đáy khối căn hộ là curYBase - 33
-                    const wallX = curSide === 'LEFT' ? 248 : 752;
-                    const wallY = Number((curYBase - 33 - (curH / 2)).toFixed(1));
-
-                    // ĐIỂM CHẤM MỤC TIÊU (TARGET PIN DOT): NẰM NGAY TRÊN BỀ MẶT CĂN HỘ ĐƯỢC CHỌN
-                    // Điểm đặt cách mép tường 67px (nằm trong phần thân căn hộ, ngay cạnh nhãn mã căn)
-                    // Độ dốc mặt phẳng isometric chuẩn: 32px trên 246px chiều ngang
-                    const pinDist = 67;
-                    const pinX = curSide === 'LEFT' ? (wallX + pinDist) : (wallX - pinDist);
-                    const pinY = Number((wallY + (32 / 246) * pinDist).toFixed(1));
-
-                    // Điểm khuỷu tay bẻ góc ngang ngoài không gian
-                    const elbowX = curSide === 'LEFT' ? (wallX - 24) : (wallX + 24);
-                    const elbowY = wallY;
-
-                    // Bảng Holographic Callout định vị ở lề trái hoặc lề phải
-                    const cardW = 192;
-                    const cardH = 74;
-                    const cardX = curSide === 'LEFT' ? 14 : 794;
-                    const dockX = curSide === 'LEFT' ? (cardX + cardW) : cardX;
-                    const targetCardY = Math.max(48, Math.min(480, Math.round(wallY - cardH / 2)));
-                    const dockY = targetCardY + cardH / 2;
-
-                    // Đường vẽ tia laser: Từ tâm căn hộ (pin) -> mép tường (wall) -> khuỷu ngoài (elbow) -> bảng callout (dock)
-                    const laserPath = `M ${pinX} ${pinY} L ${wallX} ${wallY} L ${elbowX} ${elbowY} L ${dockX} ${dockY}`;
-
-                    const isCurOccupied = activeUnit?.status === 'OCCUPIED' || selectedAptCode === '12A05';
-                    const isCurMaint = activeUnit?.status === 'MAINTENANCE' || selectedAptCode === '10A03';
-                    const themeNeon = isCurOccupied ? '#10B981' : isCurMaint ? '#38BDF8' : '#F59E0B';
-                    const themeBg = isCurOccupied ? '#064E3B' : isCurMaint ? '#082F49' : '#1C1917';
-                    const themeBorder = isCurOccupied ? '#34D399' : isCurMaint ? '#7DD3FC' : '#FDE68A';
-                    const themeText = isCurOccupied ? '#D1FAE5' : isCurMaint ? '#BAE6FD' : '#FEF3C7';
-
-                    return (
-                      <g key={`dynamic-pointer-${selectedAptCode}`} className="pointer-events-none">
-                        {/* 1. ĐIỂM CHẤM NEO MỤC TIÊU NẰM CHÍNH XÁC TRÊN CĂN HỘ ĐƯỢC CHỌN */}
-                        <circle cx={pinX} cy={pinY} r="4.5" fill={themeNeon} filter="url(#unitGlow)" />
-                        <circle cx={pinX} cy={pinY} r="14" fill="none" stroke={themeNeon} strokeWidth="1.6" className="anim-ping-pulse" />
-                        <circle cx={pinX} cy={pinY} r="1.8" fill="#FFFFFF" />
-
-                        {/* 2. Đường tia laser bắn từ căn hộ sang bảng callout (vẽ từ từ dần dần) */}
-                        <path
-                          d={laserPath}
-                          fill="none"
-                          stroke={themeNeon}
-                          strokeWidth="2.2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          className="anim-laser-line"
-                          filter="url(#unitGlow)"
-                        />
-                        {/* Hạt photon tại mép tường & hạt neo tại bảng callout */}
-                        <circle cx={wallX} cy={wallY} r="2.5" fill={themeNeon} />
-                        <circle cx={dockX} cy={dockY} r="3.5" fill={themeBorder} />
-
-                        {/* 3. Bảng Callout Holographic xuất hiện từ từ dần dần */}
-                        <g className="anim-callout-card">
-                          <rect
-                            x={cardX}
-                            y={targetCardY}
-                            width={cardW}
-                            height={cardH}
-                            fill={themeBg}
-                            fillOpacity="0.96"
-                            stroke={themeBorder}
-                            strokeWidth="1.8"
-                            rx="4"
-                            filter="url(#unitGlow)"
+                          <polygon
+                            points={pts}
+                            fill={fillColor}
+                            fillOpacity={fillOpacity}
+                            stroke={isSelected ? '#FFFFFF' : (isHovered ? '#FDE68A' : strokeColor)}
+                            strokeWidth={isSelected ? 2.2 : (isHovered ? 1.8 : 0.8)}
+                            filter={isSelected || (b.floor === 30 && actualStatus === 'OCCUPIED') ? 'url(#unitGlow)' : undefined}
                           />
 
-                          {/* Dòng 1: Header mã căn + số tầng */}
-                          <circle cx={cardX + 14} cy={targetCardY + 16} r="3.5" fill={themeNeon} />
-                          <text
-                            x={cardX + 24}
-                            y={targetCardY + 20}
-                            fill="#FFFFFF"
-                            fontSize="10"
-                            fontWeight="900"
-                            fontFamily="monospace"
-                          >
-                            CĂN {activeUnit?.code || selectedAptCode} • TẦNG {curFloor}
-                          </text>
-
-                          {/* Dòng 2: Tình trạng sinh động */}
-                          <text
-                            x={cardX + 14}
-                            y={targetCardY + 36}
-                            fill={themeText}
-                            fontSize="8.5"
-                            fontWeight="bold"
-                          >
-                            {isCurOccupied
-                              ? `★ CƯ DÂN: ${activeOwnerName}`
-                              : isCurMaint
-                              ? '★ ĐANG NGHIỆM THU KỸ THUẬT'
-                              : '★ NHÀ TRỐNG • SẴN SÀNG Ở'}
-                          </text>
-
-                          {/* Dòng 3: Diện tích & Hướng */}
-                          <text
-                            x={cardX + 14}
-                            y={targetCardY + 50}
-                            fill="#CBD5E1"
-                            fontSize="7.5"
-                            fontFamily="monospace"
-                          >
-                            {activeUnit?.typeLabel || `${activeTargetBlock.type}`} • {activeUnit?.area || activeTargetBlock.area}m² • Hướng {activeUnit?.direction || (curSide === 'LEFT' ? 'Đông Nam' : 'Tây Nam')}
-                          </text>
-
-                          {/* Dòng 4: Chỉ báo hiển thị */}
-                          <text
-                            x={cardX + 14}
-                            y={targetCardY + 65}
-                            fill={themeNeon}
-                            fontSize="7.5"
-                            fontWeight="semibold"
-                          >
-                            ✦ Đang hiển thị hồ sơ chi tiết bên phải
-                          </text>
+                          {/* Ánh đèn phòng ấm cúng cho tầng 30 có cư dân ở ban đêm */}
+                          {b.floor === 30 && buildingTheme === 'NIGHT' && (
+                            <line
+                              x1={b.side === 'LEFT' ? 290 : 540}
+                              y1={yBase - 18}
+                              x2={b.side === 'LEFT' ? 450 : 710}
+                              y2={yBase - 8}
+                              stroke="#FDE68A"
+                              strokeWidth="1.5"
+                              strokeDasharray="4 2"
+                              opacity="0.8"
+                              className="animate-pulse"
+                            />
+                          )}
                         </g>
+                      );
+                    })}
 
-                        {/* Điểm nhận diện căn 12A05 (Nguyễn Hữu Lực) nếu đang chọn căn khác */}
-                        {selectedAptCode !== '12A05' && (
-                          <g>
-                            <circle cx="248" cy="292" r="3.5" fill="#10B981" />
-                            <rect x="135" y="280" width="105" height="22" fill="#064E3B" fillOpacity="0.88" stroke="#10B981" strokeWidth="1" rx="2" />
-                            <text x="187" y="294" fill="#D1FAE5" fontSize="7.5" fontWeight="bold" textAnchor="middle">
-                              ★ 12A05: {activeOwnerName}
+                    {/* =================================================================== */}
+                    {/* CON TRỎ LASER VÀ BẢNG CALLOUT HOLOGRAPHIC ĐỊNH VỊ CHÍNH XÁC CĂN HỘ  */}
+                    {/* =================================================================== */}
+                    {(() => {
+                      let activeTargetBlock = BUILDING_3D_UNITS.find(b => b.code === selectedAptCode);
+                      if (!activeTargetBlock) {
+                        const targetFloor = activeUnit?.floor || 30;
+                        const numStr = selectedAptCode.replace(/\D/g, '').slice(-2);
+                        const num = parseInt(numStr || '1', 10);
+                        const fallbackSide: 'LEFT' | 'RIGHT' = num % 2 === 1 ? 'LEFT' : 'RIGHT';
+                        activeTargetBlock = BUILDING_3D_UNITS.find(b => b.floor === targetFloor && b.side === fallbackSide)
+                          || BUILDING_3D_UNITS.find(b => b.floor === targetFloor)
+                          || {
+                            code: selectedAptCode,
+                            floor: Math.max(1, Math.min(34, targetFloor)),
+                            side: fallbackSide,
+                            type: (activeUnit?.type || '2PN') as ApartmentType,
+                            defaultStatus: (activeUnit?.status || 'VACANT') as ApartmentStatus,
+                            area: activeUnit?.area || 75
+                          };
+                      }
+
+                      const curFloor = Math.max(1, Math.min(34, activeTargetBlock.floor));
+                      const curSide = activeTargetBlock.side;
+                      const curYBase = 472 - (curFloor - 1) * 11.8;
+                      const curH = curFloor === 34 ? 13 : 9.5;
+
+                      const wallX = curSide === 'LEFT' ? 248 : 752;
+                      const wallY = Number((curYBase - 33 - (curH / 2)).toFixed(1));
+
+                      const pinDist = 67;
+                      const pinX = curSide === 'LEFT' ? (wallX + pinDist) : (wallX - pinDist);
+                      const pinY = Number((wallY + (32 / 246) * pinDist).toFixed(1));
+
+                      const elbowX = curSide === 'LEFT' ? (wallX - 24) : (wallX + 24);
+                      const elbowY = wallY;
+
+                      const cardW = 205;
+                      const cardH = 82;
+                      const cardX = curSide === 'LEFT' ? 14 : 780;
+                      const dockX = curSide === 'LEFT' ? (cardX + cardW) : cardX;
+                      const targetCardY = Math.max(48, Math.min(480, Math.round(wallY - cardH / 2)));
+                      const dockY = targetCardY + cardH / 2;
+
+                      const laserPath = `M ${pinX} ${pinY} L ${wallX} ${wallY} L ${elbowX} ${elbowY} L ${dockX} ${dockY}`;
+
+                      const isCurOccupied = activeUnit?.status === 'OCCUPIED' || curFloor === 30;
+                      const isCurMaint = activeUnit?.status === 'MAINTENANCE' || curFloor === 20;
+                      const themeNeon = isCurOccupied ? '#10B981' : isCurMaint ? '#38BDF8' : '#F59E0B';
+                      const themeBg = isCurOccupied ? '#064E3B' : isCurMaint ? '#082F49' : '#1C1917';
+                      const themeBorder = isCurOccupied ? '#34D399' : isCurMaint ? '#7DD3FC' : '#FDE68A';
+                      const themeText = isCurOccupied ? '#D1FAE5' : isCurMaint ? '#BAE6FD' : '#FEF3C7';
+
+                      return (
+                        <g key={`dynamic-pointer-${selectedAptCode}`} className="pointer-events-none">
+                          <circle cx={pinX} cy={pinY} r="4.5" fill={themeNeon} filter="url(#unitGlow)" />
+                          <circle cx={pinX} cy={pinY} r="14" fill="none" stroke={themeNeon} strokeWidth="1.6" className="anim-ping-pulse" />
+                          <circle cx={pinX} cy={pinY} r="1.8" fill="#FFFFFF" />
+
+                          <path
+                            d={laserPath}
+                            fill="none"
+                            stroke={themeNeon}
+                            strokeWidth="2.2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            className="anim-laser-line"
+                            filter="url(#unitGlow)"
+                          />
+                          <circle cx={wallX} cy={wallY} r="2.5" fill={themeNeon} />
+                          <circle cx={dockX} cy={dockY} r="3.5" fill={themeBorder} />
+
+                          <g className="anim-callout-card">
+                            <rect
+                              x={cardX}
+                              y={targetCardY}
+                              width={cardW}
+                              height={cardH}
+                              fill={themeBg}
+                              fillOpacity="0.96"
+                              stroke={themeBorder}
+                              strokeWidth="1.8"
+                              rx="4"
+                              filter="url(#unitGlow)"
+                            />
+
+                            <circle cx={cardX + 14} cy={targetCardY + 16} r="3.5" fill={themeNeon} />
+                            <text
+                              x={cardX + 24}
+                              y={targetCardY + 20}
+                              fill="#FFFFFF"
+                              fontSize="10"
+                              fontWeight="900"
+                              fontFamily="monospace"
+                            >
+                              CĂN {activeUnit?.code || selectedAptCode} • TẦNG {curFloor}
+                            </text>
+
+                            <text
+                              x={cardX + 14}
+                              y={targetCardY + 36}
+                              fill={themeText}
+                              fontSize="8.5"
+                              fontWeight="bold"
+                            >
+                              {isCurOccupied
+                                ? `★ CƯ DÂN: ${activeOwnerName}`
+                                : isCurMaint
+                                ? '★ ĐANG NGHIỆM THU KỸ THUẬT'
+                                : '★ NHÀ TRỐNG • SẴN SÀNG Ở'}
+                            </text>
+
+                            <text
+                              x={cardX + 14}
+                              y={targetCardY + 50}
+                              fill="#CBD5E1"
+                              fontSize="7.5"
+                              fontFamily="monospace"
+                            >
+                              {activeUnit?.typeLabel || `${activeTargetBlock.type}`} • {activeUnit?.area || activeTargetBlock.area}m² • Hướng {activeUnit?.direction || (curSide === 'LEFT' ? 'Đông Nam' : 'Tây Nam')}
+                            </text>
+
+                            <text
+                              x={cardX + 14}
+                              y={targetCardY + 68}
+                              fill={themeNeon}
+                              fontSize="7.5"
+                              fontWeight="semibold"
+                            >
+                              ✦ Nhấp Mặt Bằng Tầng để xem 8 căn chi tiết ➜
                             </text>
                           </g>
-                        )}
-                      </g>
-                    );
-                  })()}
-                </g>
-
-                {/* THẺ QUAN SÁT TỨC THÌ KHI CHỌN XEM CĂN HỘ KHÁC */}
-                {hoveredUnitCode && hoveredUnitCode !== selectedAptCode && (
-                  <g className="pointer-events-none">
-                    {(() => {
-                      const hUnit = displayUnits.find(u => u.code === hoveredUnitCode);
-                      return (
-                        <g>
-                          <rect x="735" y="25" width="245" height="42" fill="#0D1117" fillOpacity="0.94" stroke="#C5A880" strokeWidth="1.2" rx="3" />
-                          <text x="748" y="42" fill="#C5A880" fontSize="9.5" fontWeight="bold" fontFamily="monospace">
-                            ✦ XEM NHANH: CĂN {hoveredUnitCode} (Tầng {hUnit?.floor || 12})
-                          </text>
-                          <text x="748" y="56" fill="#94A3B8" fontSize="8" fontFamily="sans-serif">
-                            {hUnit?.status === 'OCCUPIED' ? '🟢 Đã có người ở' : hUnit?.status === 'MAINTENANCE' ? '🔵 Nghiệm thu kỹ thuật' : '🟡 Nhà trống (Sẵn sàng bàn giao)'} • Nhấp để xem hồ sơ
-                          </text>
                         </g>
                       );
                     })()}
                   </g>
-                )}
 
-                {/* BẢNG CHỈ DẪN TƯƠNG TÁC GÓC TRÁI TRÊN */}
-                <rect x="20" y="25" width="220" height="42" fill="#0D1117" fillOpacity="0.9" stroke="#222B35" strokeWidth="1" rx="2" />
-                <text x="30" y="42" fill="#C5A880" fontSize="9.5" fontWeight="bold" fontFamily="monospace">
-                  TOÀN CẢNH CHUNG CƯ SKYLINE
-                </text>
-                <text x="30" y="56" fill="#94A3B8" fontSize="8" fontFamily="sans-serif">
-                  Tòa nhà 25 tầng • Nhấp chọn căn để định vị thông tin
-                </text>
-              </svg>
+                  {/* THẺ QUAN SÁT TỨC THÌ KHI HOVER CĂN HỘ KHÁC */}
+                  {hoveredUnitCode && hoveredUnitCode !== selectedAptCode && (
+                    <g className="pointer-events-none">
+                      {(() => {
+                        const hUnit = displayUnits.find(u => u.code === hoveredUnitCode);
+                        return (
+                          <g>
+                            <rect x="735" y="25" width="245" height="42" fill="#0D1117" fillOpacity="0.94" stroke="#C5A880" strokeWidth="1.2" rx="3" />
+                            <text x="748" y="42" fill="#C5A880" fontSize="9.5" fontWeight="bold" fontFamily="monospace">
+                              ✦ XEM NHANH: CĂN {hoveredUnitCode} (Tầng {hUnit?.floor || hoveredFloor || 30})
+                            </text>
+                            <text x="748" y="56" fill="#94A3B8" fontSize="8" fontFamily="sans-serif">
+                              {hUnit?.status === 'OCCUPIED' ? '🟢 Đã có người ở' : hUnit?.status === 'MAINTENANCE' ? '🔵 Nghiệm thu kỹ thuật' : '🟡 Nhà trống (Sẵn sàng bàn giao)'} • Nhấp để định vị
+                            </text>
+                          </g>
+                        );
+                      })()}
+                    </g>
+                  )}
+                </svg>
+              </div>
             </div>
           )}
 
           {/* ----------------------------------------------------------- */}
           {/* GÓC NHÌN 2: SƠ ĐỒ TOÀN CẢNH TÒA NHÀ THỰC TẾ THEO CÁC TẦNG   */}
           {/* ----------------------------------------------------------- */}
-          {buildingPerspective === 'BUILDING_ELEVATION' && (
-            <div className="p-4 bg-[#05070A] h-[640px] overflow-y-auto space-y-4">
-              {/* Tiêu đề & hướng dẫn */}
-              <div className="flex flex-wrap items-center justify-between gap-2 p-2.5 bg-[#121820] border border-[#222B35] text-xs">
-                <div className="flex items-center gap-2">
-                  <Building className="w-4 h-4 text-[#C5A880]" />
-                  <span className="text-white font-bold font-serif">TÒA {currentBlockName.toUpperCase()} (34 TẦNG) • THE TROPICAL</span>
-                  <span className="text-gray-400 font-mono text-[11px]">
-                    • Tổng cộng {displayUnits.length} căn hộ trong hệ thống NKS API
-                  </span>
-                </div>
+          {buildingPerspective === 'BUILDING_ELEVATION' && (() => {
+            const displayedElevationFloors = buildingFloors.filter(floor => {
+              if (elevationZoneFilter === 'HIGH') return floor >= 21;
+              if (elevationZoneFilter === 'MID') return floor >= 11 && floor <= 20;
+              if (elevationZoneFilter === 'LOW') return floor <= 10;
+              return true;
+            });
 
-                <div className="text-[11px] text-[#C5A880] font-mono">
-                  * Nhấp vào ô căn hộ để xem đầy đủ hồ sơ chi tiết bên phải
-                </div>
-              </div>
+            return (
+              <div className="p-4 bg-[#05070A] h-[640px] overflow-y-auto space-y-4">
+                {/* Tiêu đề & thanh chọn phân khu tầng */}
+                <div className="flex flex-wrap items-center justify-between gap-2.5 p-3 bg-[#121820] border border-[#222B35] text-xs">
+                  <div className="flex items-center gap-2">
+                    <Building className="w-4 h-4 text-[#C5A880]" />
+                    <span className="text-white font-bold font-serif">TÒA {currentBlockName.toUpperCase()} (34 TẦNG) • THE TROPICAL</span>
+                    <span className="text-gray-400 font-mono text-[11px] hidden md:inline">
+                      • Hiển thị {displayedElevationFloors.length}/34 tầng ({displayUnits.length} căn hộ)
+                    </span>
+                  </div>
 
-              {/* KHỐI HIỂN THỊ CÁC TẦNG CỦA TÒA NHÀ */}
-              <div className="bg-[#0B0F17] border border-[#222B35] p-3 rounded-none flex flex-col space-y-3">
-                {/* Tầng Mái Sân Thượng */}
-                <div className="p-2.5 bg-[#121822] border border-[#1E293B] text-[11px] text-gray-300 font-mono text-center flex items-center justify-center gap-2">
-                  <Sparkles className="w-3.5 h-3.5 text-[#C5A880]" />
-                  <span className="font-bold">TẦNG MÁI • SÂN THƯỢNG HELIPAD & KHU KỸ THUẬT TÒA {currentBlockName.toUpperCase()}</span>
-                </div>
-
-                {/* Danh sách các tầng từ cao xuống thấp */}
-                <div className="space-y-2.5">
-                  {buildingFloors.map(floor => {
-                    const unitsOnFloor = displayUnits.filter(u => u.floor === floor);
-                    const isFloor30 = floor === 30;
-
-                    return (
-                      <div 
-                        key={`Floor-${floor}`} 
-                        className={`p-2.5 bg-[#0E141E] border transition-colors space-y-2 ${
-                          isFloor30 ? 'border-[#10B981]/60 bg-[#064E3B]/10' : 'border-[#1F2937] hover:border-gray-600'
+                  {/* Lọc Phân Vùng Tầng */}
+                  <div className="flex items-center gap-1.5 flex-wrap">
+                    <span className="text-gray-400 font-mono text-[11px] mr-1">Vùng tầng:</span>
+                    <div className="flex bg-[#0A1017] p-0.5 border border-[#1E293B] text-[11px] font-mono">
+                      <button
+                        type="button"
+                        onClick={() => setElevationZoneFilter('ALL')}
+                        className={`px-2.5 py-1 transition-all ${
+                          elevationZoneFilter === 'ALL'
+                            ? 'bg-[#C5A880] text-black font-bold shadow'
+                            : 'text-gray-400 hover:text-white'
                         }`}
                       >
+                        Tất Cả (34T)
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setElevationZoneFilter('HIGH')}
+                        className={`px-2.5 py-1 transition-all ${
+                          elevationZoneFilter === 'HIGH'
+                            ? 'bg-[#C5A880] text-black font-bold shadow'
+                            : 'text-gray-400 hover:text-white'
+                        }`}
+                      >
+                        Cao Tầng (21-34)
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setElevationZoneFilter('MID')}
+                        className={`px-2.5 py-1 transition-all ${
+                          elevationZoneFilter === 'MID'
+                            ? 'bg-[#C5A880] text-black font-bold shadow'
+                            : 'text-gray-400 hover:text-white'
+                        }`}
+                      >
+                        Trung Tầng (11-20)
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setElevationZoneFilter('LOW')}
+                        className={`px-2.5 py-1 transition-all ${
+                          elevationZoneFilter === 'LOW'
+                            ? 'bg-[#C5A880] text-black font-bold shadow'
+                            : 'text-gray-400 hover:text-white'
+                        }`}
+                      >
+                        Hạ Tầng (1-10)
+                      </button>
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setElevationZoneFilter('HIGH');
+                        setSelectedFloor(30);
+                        setSelectedAptCode('CH-06');
+                      }}
+                      className="px-2.5 py-1 bg-[#064E3B] text-emerald-300 border border-emerald-500 hover:bg-[#065F46] font-bold text-[11px] font-mono transition-all"
+                    >
+                      ★ Tầng 30 (Trần Hữu Lực)
+                    </button>
+                  </div>
+                </div>
+
+                {/* KHỐI HIỂN THỊ CÁC TẦNG CỦA TÒA NHÀ */}
+                <div className="bg-[#0B0F17] border border-[#222B35] p-3 rounded-none flex flex-col space-y-3">
+                  {/* Tầng Mái Sân Thượng */}
+                  {(elevationZoneFilter === 'ALL' || elevationZoneFilter === 'HIGH') && (
+                    <div className="p-2.5 bg-[#121822] border border-[#1E293B] text-[11px] text-gray-300 font-mono text-center flex items-center justify-center gap-2">
+                      <Sparkles className="w-3.5 h-3.5 text-[#C5A880]" />
+                      <span className="font-bold">TẦNG MÁI • SÂN THƯỢNG HELIPAD & KHU KỸ THUẬT TÒA {currentBlockName.toUpperCase()}</span>
+                    </div>
+                  )}
+
+                  {/* Danh sách các tầng từ cao xuống thấp */}
+                  <div className="space-y-2.5">
+                    {displayedElevationFloors.map(floor => {
+                      const unitsOnFloor = displayUnits.filter(u => u.floor === floor);
+                      const isFloor30 = floor === 30;
+
+                      return (
+                        <div 
+                          key={`Floor-${floor}`} 
+                          className={`p-2.5 bg-[#0E141E] border transition-colors space-y-2 ${
+                            isFloor30 ? 'border-[#10B981]/60 bg-[#064E3B]/10' : 'border-[#1F2937] hover:border-gray-600'
+                          }`}
+                        >
                         <div className="flex items-center justify-between text-[11px] font-mono">
                           <span className="text-white font-bold flex items-center gap-1.5">
                             <Layers className="w-3.5 h-3.5 text-[#C5A880]" />
@@ -1478,7 +1629,8 @@ export default function AdminBuildingApartmentManager() {
                 </div>
               </div>
             </div>
-          )}
+          );
+        })()}
 
           {/* ----------------------------------------------------------- */}
           {/* GÓC NHÌN 3: SƠ ĐỒ MẶT BẰNG TẦNG THỰC TẾ (FLOOR PLAN)        */}
