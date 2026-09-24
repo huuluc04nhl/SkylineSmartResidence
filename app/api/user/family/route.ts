@@ -22,11 +22,34 @@ export async function GET(req: Request) {
   try {
     const cookieStore = cookies();
     const token = cookieStore.get('nks_token')?.value || '';
+    let currentApiUser: any = null;
+
+    if (token && !token.startsWith('NKS_FACEID_SESSION_')) {
+      try {
+        const formData = new URLSearchParams();
+        formData.append('access_token', token);
+        const remoteRes = await fetch('https://account.nks.vn/api/nks/user', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: formData.toString(),
+        });
+        if (remoteRes.ok) {
+          const data = await remoteRes.json();
+          if (data.success && data.data) {
+            currentApiUser = data.data;
+          }
+        }
+      } catch (e) {
+        // ignore
+      }
+    }
+
     const userId = extractUserIdFromToken(token);
-    const currentUser = userId ? getUserStore(userId) : getUserStore('user-owner-1');
+    const localUser = userId ? getUserStore(userId) : getUserStore('user-owner-1');
     const url = new URL(req.url);
     const paramApt = url.searchParams.get('apartment') || url.searchParams.get('aptCode');
-    const aptCode = paramApt || (currentUser?.role === 'ADMIN' ? '12A05' : (currentUser?.apartment_code || '12A05'));
+    const aptCode = paramApt || (currentApiUser ? '12A05' : (localUser?.apartment_code || '12A05'));
+    const ownerName = currentApiUser?.name || localUser?.fullname || 'Trần Hữu Lực';
     const searchQuery = url.searchParams.get('search')?.trim().toLowerCase();
 
     // 1. If searching for an account by Phone / CCCD / Email
@@ -90,10 +113,24 @@ export async function GET(req: Request) {
         };
       });
 
+    const owner = {
+      id: currentApiUser ? String(currentApiUser.id) : (localUser?.id || 'usr-120'),
+      fullName: ownerName,
+      phone: currentApiUser?.phone || localUser?.phone || '0364967082',
+      email: currentApiUser?.email || localUser?.email || 'huuluc04@gmail.com',
+      idCard: currentApiUser?.id_number || localUser?.id_number || localUser?.id_card_no || '067204000961',
+      licensePlate: localUser?.license_plate || '51K-988.24',
+      avatarUrl: currentApiUser?.avatar ? (currentApiUser.avatar.startsWith('http') ? currentApiUser.avatar : `https://data.nks.vn/${currentApiUser.avatar}`) : (localUser?.avatar_url || 'https://data.nks.vn/storage/users/202609021654232258.jpg'),
+      role: 'OWNER',
+      relationship: 'Chủ Hộ (Chủ Sở Hữu)',
+      faceStatus: 'Đã Kích Hoạt FaceID',
+    };
+
     return NextResponse.json({
       success: true,
       apartment_code: aptCode,
-      owner_name: currentUser?.fullname || 'Nguyễn Hữu Lực',
+      owner_name: ownerName,
+      owner,
       members,
       bqlAccounts,
     });

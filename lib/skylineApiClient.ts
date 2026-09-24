@@ -191,7 +191,7 @@ export const nksUpdateCccd = skylineUpdateCccd;
 /**
  * 7. Get Family Members API (GET /api/user/family)
  */
-export async function skylineGetFamilyMembers(aptCode?: string): Promise<{ success: boolean; members: any[]; bqlAccounts?: any[] }> {
+export async function skylineGetFamilyMembers(aptCode?: string): Promise<{ success: boolean; members: any[]; bqlAccounts?: any[]; owner?: any; owner_name?: string }> {
   const url = aptCode ? `/api/user/family?aptCode=${encodeURIComponent(aptCode)}` : '/api/user/family';
   const res = await fetch(url, {
     method: 'GET',
