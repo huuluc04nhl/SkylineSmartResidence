@@ -419,8 +419,14 @@ export function generateNksBlockUnits(
     apiMap.set(key, apt);
   });
 
-  const bTitle = blockCode.includes('10') ? 'Tropical BS-10' : 'Tropical BS-07';
-  const towerId = blockCode.includes('10') ? 'B' : 'A';
+  const bTitle = blockCode === 'BS-08'
+    ? 'Tropical BS-08'
+    : blockCode === 'BS-09'
+    ? 'Tropical BS-09'
+    : blockCode === 'BS-10'
+    ? 'Tropical BS-10'
+    : 'Tropical BS-07';
+  const towerId = (blockCode === 'BS-09' || blockCode === 'BS-10') ? 'B' : 'A';
 
   for (let fl = totalFloors; fl >= 1; fl--) {
     const floorStr = String(fl);

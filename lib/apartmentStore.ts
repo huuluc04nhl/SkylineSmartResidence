@@ -159,8 +159,9 @@ export function getApartmentUnits(): ApartmentUnit[] {
 export async function syncApartmentsFromNksApi(blockCode: string = 'BS-07'): Promise<ApartmentUnit[]> {
   try {
     const nksApts = await fetchNksApartments();
+    const floors = blockCode === 'BS-08' ? 39 : 34;
     if (Array.isArray(nksApts) && nksApts.length > 0) {
-      const liveUnits = generateNksBlockUnits(nksApts, blockCode, 34);
+      const liveUnits = generateNksBlockUnits(nksApts, blockCode, floors);
       saveApartmentsList(liveUnits);
       return liveUnits;
     }
