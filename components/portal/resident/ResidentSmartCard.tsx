@@ -42,17 +42,17 @@ export default function ResidentSmartCard({
     : (currentUser.phone ? currentUser.phone.slice(-4) : '8899');
   const cardNumber = `8492 • ${aptCode} • ${idSuffix} • ${isOwner ? 'MSTR' : 'MBR'}`;
   const currentYear = new Date().getFullYear();
-  const expiryDate = `12/${currentYear + 5} (${isOwner ? 'Chủ Hộ Vĩnh Viễn' : 'Người Nhà Căn ' + aptCode})`;
+  const expiryDate = `12/${currentYear + 5}`;
   const cardHolder = (currentUser?.full_name || (currentUser as any)?.fullname || 'CƯ DÂN SKYLINE').toUpperCase();
   const cardType = isOwner ? 'DIAMOND OWNER PASS' : 'RESIDENT FAMILY PASS';
 
   const handleSimulateTap = () => {
     setIsTapping(true);
-    setTapMessage('📡 Đang chạm thẻ vào đầu đọc mở cổng...');
+    setTapMessage('📡 Đang chạm thẻ...');
 
     setTimeout(() => {
       setIsTapping(false);
-      setTapMessage('✓ BÍP! Cổng Cư Dân & Thang Máy Tầng ' + aptCode.slice(0, 2) + ' Đã Mở (0.28s)');
+      setTapMessage('✓ Đã mở Cổng & Thang máy T' + aptCode.slice(0, 2) + ' (0.28s)');
       
       // Ghi nhận nhật ký thực tế vào facilityStore
       addFacilityCheckinLog(aptCode, {
@@ -63,7 +63,7 @@ export default function ResidentSmartCard({
         method: 'NFC_CARD',
         cardUid: `NFC-SKY-${aptCode}-01`,
         status: 'SUCCESS',
-        detail: `Quẹt thẻ cư dân VIP (${cardNumber}) tại đầu đọc sảnh • Cổng đã mở tự động`
+        detail: `Quẹt thẻ cư dân (${cardNumber}) tại đầu đọc sảnh • Cổng đã mở`
       });
 
       if (onTapSuccess) {
@@ -201,10 +201,10 @@ export default function ResidentSmartCard({
             className="flex-1 py-2 bg-[#121820] hover:bg-[#1C2533] border border-[#222B35] hover:border-[#C5A880] text-gray-300 hover:text-white text-xs font-semibold uppercase tracking-wider transition-colors flex items-center justify-center gap-1.5"
           >
             <RotateCw className="w-3.5 h-3.5 text-[#C5A880]" />
-            Lật {isFlipped ? 'Mặt Trước' : 'Mặt Sau'}
+            Lật Thẻ
           </button>
 
-          {/* Button 2: Quẹt Thẻ 1-Chạm NFC */}
+          {/* Button 2: Quẹt Thẻ NFC */}
           <button
             type="button"
             onClick={handleSimulateTap}
@@ -212,20 +212,20 @@ export default function ResidentSmartCard({
             className="flex-1 py-2 bg-[#C5A880] hover:bg-white text-[#0D1117] text-xs font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-1.5 shadow-lg"
           >
             <Wifi className="w-3.5 h-3.5 rotate-90" />
-            {isTapping ? 'Đang Quẹt Thẻ...' : 'Quẹt Thẻ NFC 1-Chạm'}
+            {isTapping ? 'Đang Quẹt...' : 'Quẹt Thẻ NFC'}
           </button>
         </div>
 
         {/* Tap Feedback Notification */}
         {tapMessage && (
-          <div className="p-2.5 bg-emerald-950/90 border border-emerald-500 text-emerald-300 text-xs font-mono text-center animate-fadeIn flex items-center justify-center gap-1.5">
-            <CheckCircle2 className="w-4 h-4 text-emerald-400 flex-shrink-0" />
+          <div className="p-2 bg-emerald-950/90 border border-emerald-500 text-emerald-300 text-xs font-mono text-center animate-fadeIn flex items-center justify-center gap-1.5">
+            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 flex-shrink-0" />
             <span>{tapMessage}</span>
           </div>
         )}
 
         <div className="text-center text-[10px] text-gray-400 font-light">
-          * Thẻ điện tử tích hợp NFC & FaceID mở cổng sảnh và thang máy trong <strong>0.28s</strong>.
+          Chạm thẻ hoặc nhận diện FaceID để mở cổng sảnh & thang máy.
         </div>
       </div>
     </div>

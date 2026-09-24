@@ -746,15 +746,14 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#222B35] pb-4">
         <div>
-          <div className="text-[10px] uppercase tracking-[0.25em] text-[#C5A880] font-semibold flex items-center gap-1.5">
-            <Users className="w-3.5 h-3.5" /> Quyền Quản Trị Căn Hộ • Ban Quản Lý & Chủ Hộ
+          <div className="text-[10px] uppercase tracking-[0.2em] text-[#C5A880] font-semibold flex items-center gap-1.5">
+            <Users className="w-3.5 h-3.5" /> Quản Trị Căn Hộ
           </div>
           <h2 className="font-serif text-2xl text-white font-bold mt-1">
-            Danh Sách Nhân Khẩu & Lưu Trú Căn Hộ {aptCode}
+            Nhân Khẩu • Căn {aptCode}
           </h2>
           <p className="text-xs text-gray-400 mt-0.5">
-            Căn hộ: <strong className="text-white font-mono">{aptCode}</strong> • Chủ hộ{' '}
-            <strong className="text-[#C5A880]">{ownerName}</strong> trực tiếp kê khai, nộp e-KYC và bảo lãnh FaceID cho người nhà
+            Chủ hộ: <strong className="text-[#C5A880]">{ownerName}</strong> • Căn <strong className="text-white font-mono">{aptCode}</strong>
           </p>
         </div>
 
@@ -767,81 +766,81 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
               setSearchResult(null);
               setActionError(null);
             }}
-            className="px-5 py-2.5 bg-[#C5A880] hover:bg-white text-[#0D1117] text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-2 rounded-none shadow-lg flex-shrink-0 cursor-pointer active:scale-95"
+            className="px-4 py-2 bg-[#C5A880] hover:bg-white text-[#0D1117] text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-2 rounded-none shadow flex-shrink-0 cursor-pointer active:scale-95"
           >
-            <UserPlus className="w-4 h-4" /> Thêm Thành Viên Mới
+            <UserPlus className="w-4 h-4" /> Thêm Thành Viên
           </button>
         )}
       </div>
 
       {/* Success Alerts */}
       {actionSuccess && (
-        <div className="p-3.5 bg-emerald-950/90 border border-emerald-500 text-emerald-300 text-xs flex items-center gap-2 rounded-none animate-fadeIn shadow-lg">
+        <div className="p-3 bg-emerald-950/90 border border-emerald-500 text-emerald-300 text-xs flex items-center gap-2 rounded-none animate-fadeIn shadow">
           <CheckCircle2 className="w-4 h-4 flex-shrink-0 text-emerald-400" />
           <span className="font-medium">{actionSuccess}</span>
         </div>
       )}
 
-      {/* Overview Stats Bar: 5-Card Responsive Luxury Hendon Layout */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3.5">
-        <div className="p-4 bg-[#121820] border border-[#222B35] rounded-none shadow-sm">
+      {/* Overview Stats Bar: 5-Card Clean Modern Layout */}
+      <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
+        <div className="p-3.5 bg-[#121820] border border-[#222B35] rounded-none">
           <div className="text-[10px] uppercase tracking-wider text-gray-400 font-semibold flex items-center justify-between">
-            <span>Tổng Nhân Khẩu Căn Hộ</span>
+            <span>Nhân Khẩu</span>
             <Users className="w-3.5 h-3.5 text-gray-500" />
           </div>
-          <div className="text-2xl font-bold font-serif text-white mt-1.5 flex items-baseline gap-1.5">
+          <div className="text-2xl font-bold font-serif text-white mt-1 flex items-baseline gap-1.5">
             <span>{totalResidents}</span>
-            <span className="text-xs text-gray-400 font-normal">(1 Chủ hộ + {members.length} người nhà)</span>
+            <span className="text-xs text-gray-400 font-normal">người</span>
           </div>
         </div>
 
-        <div className="p-4 bg-[#121820] border border-[#222B35] rounded-none shadow-sm">
+        <div className="p-3.5 bg-[#121820] border border-[#222B35] rounded-none">
           <div className="text-[10px] uppercase tracking-wider text-emerald-300 font-semibold flex items-center justify-between">
-            <span>Đã Kích Hoạt FaceID</span>
+            <span>Đã FaceID</span>
             <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
           </div>
-          <div className="text-2xl font-bold font-serif text-emerald-400 mt-1.5">
+          <div className="text-2xl font-bold font-serif text-emerald-400 mt-1">
             {1 + totalApproved} <span className="text-xs font-sans text-gray-400 font-normal">người</span>
           </div>
         </div>
 
         {/* Highlighted Pending Owner Stat Card */}
-        <div className={`p-4 rounded-none shadow-sm transition-all ${
+        <div className={`p-3.5 rounded-none transition-all ${
           totalPendingOwner > 0
-            ? 'bg-amber-950/40 border-2 border-amber-500 shadow-amber-950/50 animate-pulse'
+            ? 'bg-amber-950/40 border-2 border-amber-500 animate-pulse'
             : 'bg-[#121820] border border-[#222B35]'
         }`}>
           <div className="text-[10px] uppercase tracking-wider text-amber-300 font-bold flex items-center justify-between">
-            <span>Chờ Chủ Hộ Xác Nhận</span>
+            <span>Chờ Duyệt</span>
             <Clock className="w-3.5 h-3.5 text-amber-400" />
           </div>
-          <div className="text-2xl font-bold font-serif text-amber-400 mt-1.5 flex items-baseline gap-1.5">
+          <div className="text-2xl font-bold font-serif text-amber-400 mt-1 flex items-baseline gap-1.5">
             <span>{totalPendingOwner}</span>
             <span className="text-xs font-sans text-gray-400 font-normal">hồ sơ</span>
             {totalPendingOwner > 0 && (
-              <span className="text-[9px] px-1.5 py-0.5 bg-amber-500 text-[#0D1117] font-bold rounded-none uppercase">
+              <span className="text-[9px] px-1.5 py-0.5 bg-amber-500 text-[#0D1117] font-bold uppercase">
                 Cần duyệt
               </span>
             )}
           </div>
         </div>
 
-        <div className="p-4 bg-[#121820] border border-[#222B35] rounded-none shadow-sm">
+        <div className="p-3.5 bg-[#121820] border border-[#222B35] rounded-none">
           <div className="text-[10px] uppercase tracking-wider text-cyan-300 font-semibold flex items-center justify-between">
-            <span>Chờ BQL Thẩm Định</span>
+            <span>Chờ BQL</span>
             <ShieldCheck className="w-3.5 h-3.5 text-cyan-400" />
           </div>
-          <div className="text-2xl font-bold font-serif text-cyan-400 mt-1.5">
+          <div className="text-2xl font-bold font-serif text-cyan-400 mt-1">
             {totalPendingBql} <span className="text-xs font-sans text-gray-400 font-normal">hồ sơ</span>
           </div>
         </div>
 
-        <div className="p-4 bg-[#121820] border border-[#222B35] rounded-none shadow-sm">
+        <div className="p-3.5 bg-[#121820] border border-[#222B35] rounded-none col-span-2 sm:col-span-1">
           <div className="text-[10px] uppercase tracking-wider text-purple-300 font-semibold flex items-center justify-between">
-            <span>Phương Tiện Đăng Ký</span>
+            <span>Phương Tiện</span>
             <Car className="w-3.5 h-3.5 text-purple-400" />
           </div>
-          <div className="text-2xl font-bold font-serif text-purple-400 mt-1.5">
+          <div className="text-2xl font-bold font-serif text-purple-400 mt-1">
             {totalVehicles} <span className="text-xs font-sans text-gray-400 font-normal">xe</span>
           </div>
         </div>
@@ -849,17 +848,17 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
 
       {/* Owner Action Alert Banner when members are PENDING_OWNER */}
       {isOwner && totalPendingOwner > 0 && (
-        <div className="p-4 bg-gradient-to-r from-amber-950/90 via-[#1A1810] to-[#121820] border-2 border-amber-500 text-amber-200 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 rounded-none shadow-2xl animate-fadeIn">
-          <div className="flex items-start gap-3">
-            <div className="w-10 h-10 bg-amber-500/20 border border-amber-400 flex items-center justify-center flex-shrink-0 text-amber-300 shadow">
-              <Sparkles className="w-5 h-5 animate-pulse text-amber-400" />
+        <div className="p-3.5 bg-amber-950/80 border border-amber-500 text-amber-200 flex flex-col md:flex-row items-start md:items-center justify-between gap-3 rounded-none shadow-lg animate-fadeIn">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 bg-amber-500/20 border border-amber-400 flex items-center justify-center flex-shrink-0 text-amber-300">
+              <Sparkles className="w-4 h-4 animate-pulse text-amber-400" />
             </div>
             <div>
-              <div className="text-xs uppercase font-bold tracking-wider text-amber-300 flex items-center gap-1.5">
-                <AlertTriangle className="w-4 h-4 text-amber-400" /> Cần Chủ Hộ Xác Nhận: {totalPendingOwner} Người Nhà Đã Hoàn Thành Quét 4 Mẫu FaceID
+              <div className="text-xs font-bold uppercase tracking-wider text-amber-300 flex items-center gap-1.5">
+                <AlertTriangle className="w-3.5 h-3.5 text-amber-400" /> Cần duyệt FaceID người nhà ({totalPendingOwner})
               </div>
-              <p className="text-xs text-gray-300 mt-1 leading-relaxed">
-                Người nhà đã hoàn tất thu thập sinh trắc học 4 góc mặt chuẩn ngân hàng. Chủ hộ vui lòng kiểm tra mẫu ảnh và bấm &ldquo;Xác Nhận Bảo Lãnh&rdquo; để gửi Ban Quản Lý (BQL) kích hoạt quyền FaceID ra vào chung cư.
+              <p className="text-xs text-gray-300 mt-0.5">
+                Thành viên đã quét đủ 4 mẫu FaceID. Vui lòng kiểm tra và duyệt để BQL kích hoạt.
               </p>
             </div>
           </div>
@@ -870,9 +869,9 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
                 <button
                   type="button"
                   onClick={() => setConfirmTargetMember(pendingMember)}
-                  className="w-full md:w-auto px-5 py-2.5 bg-gradient-to-r from-amber-500 to-[#C5A880] hover:brightness-110 text-[#0D1117] font-bold text-xs uppercase tracking-wider rounded-none flex items-center justify-center gap-2 shadow-lg transition-all active:scale-95 cursor-pointer"
+                  className="w-full md:w-auto px-4 py-2 bg-gradient-to-r from-amber-500 to-[#C5A880] hover:brightness-110 text-[#0D1117] font-bold text-xs uppercase tracking-wider rounded-none flex items-center justify-center gap-1.5 shadow transition-all active:scale-95 cursor-pointer"
                 >
-                  <ShieldCheck className="w-4 h-4" /> Kiểm Tra & Duyệt Ngay ({pendingMember.fullName})
+                  <ShieldCheck className="w-4 h-4" /> Duyệt Ngay ({pendingMember.fullName})
                 </button>
               ) : null;
             })()}
@@ -881,32 +880,32 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
       )}
 
       {/* ------------------------------------------------------------- */}
-      {/* KHỐI THẺ CHỦ HỘ / ĐẠI DIỆN PHÁP LÝ CĂN HỘ                      */}
+      {/* KHỐI THẺ CHỦ HỘ                                               */}
       {/* ------------------------------------------------------------- */}
-      <div className="p-4 sm:p-5 bg-gradient-to-r from-[#1A1810] via-[#121820] to-[#0D1117] border-2 border-[#C5A880]/70 rounded-none shadow-xl space-y-4">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 border-b border-[#C5A880]/30 pb-3">
+      <div className="p-4 bg-gradient-to-r from-[#1A1810] via-[#121820] to-[#0D1117] border border-[#C5A880]/70 rounded-none shadow-lg space-y-3">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#C5A880]/30 pb-2.5">
           <div className="flex items-center gap-2">
-            <span className="w-6 h-6 rounded-none bg-[#C5A880] text-[#0D1117] flex items-center justify-center font-bold text-xs shadow">
+            <span className="w-5 h-5 rounded-none bg-[#C5A880] text-[#0D1117] flex items-center justify-center font-bold text-xs shadow">
               👑
             </span>
             <span className="text-xs font-bold uppercase tracking-wider text-[#C5A880] flex items-center gap-1.5">
-              Chủ Hộ • Đại Diện Cư Trú & Pháp Lý Căn Hộ {aptCode}
+              Chủ Hộ • Căn {aptCode}
             </span>
           </div>
 
           <div className="flex items-center gap-2 flex-wrap">
-            <span className="px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded-none border bg-emerald-950/90 text-emerald-300 border-emerald-500/80 flex items-center gap-1 shadow-sm">
-              <CheckCircle2 className="w-3 h-3 text-emerald-400" /> e-KYC Đã Thẩm Định ✓
+            <span className="px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded-none border bg-emerald-950/90 text-emerald-300 border-emerald-500/80 flex items-center gap-1">
+              <CheckCircle2 className="w-3 h-3 text-emerald-400" /> e-KYC ✓
             </span>
-            <span className="px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded-none border bg-cyan-950/90 text-cyan-300 border-cyan-500/80 flex items-center gap-1 shadow-sm">
-              <ScanFace className="w-3 h-3 text-cyan-400" /> FaceID Đã Kích Hoạt ✓
+            <span className="px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded-none border bg-cyan-950/90 text-cyan-300 border-cyan-500/80 flex items-center gap-1">
+              <ScanFace className="w-3 h-3 text-cyan-400" /> FaceID ✓
             </span>
           </div>
         </div>
 
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div className="flex items-start sm:items-center gap-4 min-w-0">
-            <div className="w-16 h-16 min-w-[64px] min-h-[64px] rounded-none overflow-hidden border-2 border-[#C5A880] shadow-lg bg-[#161D26] flex-shrink-0">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
+          <div className="flex items-start sm:items-center gap-3.5 min-w-0">
+            <div className="w-14 h-14 min-w-[56px] min-h-[56px] rounded-none overflow-hidden border border-[#C5A880] shadow bg-[#161D26] flex-shrink-0">
               <img
                 src={
                   ownerData?.avatarUrl ||
@@ -921,44 +920,44 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
               />
             </div>
 
-            <div className="space-y-1.5 min-w-0">
+            <div className="space-y-1 min-w-0">
               <div className="flex items-center gap-2 flex-wrap">
-                <span className="font-bold text-white text-lg font-serif">
+                <span className="font-bold text-white text-base font-serif">
                   {ownerData?.fullName || currentUser.full_name || 'Trần Hữu Lực'}
                 </span>
-                <span className="px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider bg-[#C5A880] text-[#0D1117] rounded-none shadow">
-                  Chủ Sở Hữu
+                <span className="px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider bg-[#C5A880] text-[#0D1117] rounded-none shadow">
+                  Chủ Hộ
                 </span>
-                <span className="px-2 py-0.5 text-[10px] font-mono text-gray-300 bg-[#161D26] border border-[#2D3748]">
+                <span className="px-1.5 py-0.5 text-[10px] font-mono text-gray-300 bg-[#161D26] border border-[#2D3748]">
                   Căn {aptCode}
                 </span>
               </div>
 
-              <div className="text-gray-300 text-xs flex flex-wrap items-center gap-x-4 gap-y-1">
+              <div className="text-gray-300 text-xs flex flex-wrap items-center gap-x-3 gap-y-0.5">
                 <span className="flex items-center gap-1">
                   <Phone className="w-3 h-3 text-[#C5A880]" />
-                  SĐT: <strong className="font-mono text-white">{ownerData?.phone || currentUser.phone || '0364967082'}</strong>
+                  <strong className="font-mono text-white">{ownerData?.phone || currentUser.phone || '0364967082'}</strong>
                 </span>
                 <span className="flex items-center gap-1">
                   <Mail className="w-3 h-3 text-[#C5A880]" />
-                  Email: <strong className="text-gray-200">{ownerData?.email || currentUser.email || 'huuluc04@gmail.com'}</strong>
+                  <strong className="text-gray-200">{ownerData?.email || currentUser.email || 'huuluc04@gmail.com'}</strong>
                 </span>
                 <span className="flex items-center gap-1">
                   <CreditCard className="w-3 h-3 text-[#C5A880]" />
-                  CCCD: <strong className="font-mono text-[#C5A880]">{ownerData?.idCard || currentUser.id_number || currentUser.id_card_no || '067204000961'}</strong>
+                  <strong className="font-mono text-[#C5A880]">{ownerData?.idCard || currentUser.id_number || currentUser.id_card_no || '067204000961'}</strong>
                 </span>
                 {(ownerData?.licensePlate || currentUser.license_plate) && (
                   <span className="flex items-center gap-1">
                     <Car className="w-3 h-3 text-cyan-400" />
-                    Biển số: <strong className="font-mono text-cyan-400">{ownerData?.licensePlate || currentUser.license_plate}</strong>
+                    <strong className="font-mono text-cyan-400">{ownerData?.licensePlate || currentUser.license_plate}</strong>
                   </span>
                 )}
               </div>
 
-              <div className="text-[11px] text-gray-400 flex items-center gap-1.5 pt-0.5">
+              <div className="text-[11px] text-gray-400 flex items-center gap-1.5">
                 <ShieldCheck className="w-3.5 h-3.5 text-[#C5A880] flex-shrink-0" />
                 <span>
-                  Đặc quyền: Toàn quyền Quản Trị Căn Hộ • Thang Máy Tầng 12 • Hầm Gửi Xe B1/B2 • Quyền Biểu Quyết & Tài Chính
+                  Quyền: Quản trị • Thang máy T12 • Hầm xe B1/B2 • Biểu quyết
                 </span>
               </div>
             </div>
@@ -979,11 +978,11 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
                     relationship: 'Chủ Hộ (Chủ Sở Hữu)',
                   });
                 }}
-                className="px-3.5 py-2 bg-[#161D26] hover:bg-[#1E2631] border border-[#C5A880] text-[#C5A880] hover:text-white text-xs font-bold rounded-none flex items-center gap-1.5 transition-all shadow cursor-pointer active:scale-95"
-                title="Quét lại mẫu sinh trắc học FaceID 4 bước của Chủ Hộ"
+                className="px-3 py-1.5 bg-[#161D26] hover:bg-[#1E2631] border border-[#C5A880] text-[#C5A880] hover:text-white text-xs font-bold rounded-none flex items-center gap-1.5 transition-all shadow cursor-pointer active:scale-95"
+                title="Quét lại FaceID Chủ Hộ"
               >
                 <Camera className="w-3.5 h-3.5 text-[#C5A880]" />
-                <span>Quét FaceID Chủ Hộ</span>
+                <span>Quét FaceID</span>
               </button>
             </div>
           )}
@@ -992,12 +991,12 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
 
       {/* Members List */}
       <div className="bg-[#121820] border border-[#222B35] rounded-none overflow-hidden shadow-2xl">
-        <div className="p-4 border-b border-[#222B35] flex flex-col md:flex-row md:items-center justify-between gap-3">
+        <div className="p-3.5 border-b border-[#222B35] flex flex-col md:flex-row md:items-center justify-between gap-3">
           <div className="text-xs font-bold uppercase tracking-wider text-white flex items-center gap-2">
-            <Users className="w-4 h-4 text-[#C5A880]" /> Danh Sách Người Thân & Cư Dân Lưu Trú ({members.length})
+            <Users className="w-4 h-4 text-[#C5A880]" /> Thành Viên Căn Hộ ({members.length})
           </div>
 
-          <div className="flex flex-wrap items-center gap-2.5">
+          <div className="flex flex-wrap items-center gap-2">
             {/* Search Box */}
             <div className="relative">
               <Search className="w-3.5 h-3.5 text-gray-400 absolute left-2.5 top-1/2 -translate-y-1/2" />
@@ -1005,8 +1004,8 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
                 type="text"
                 value={memberSearchTerm}
                 onChange={(e) => setMemberSearchTerm(e.target.value)}
-                placeholder="Tìm tên, SĐT, CCCD..."
-                className="bg-[#161B22] border border-[#2D3748] pl-8 pr-7 py-1.5 text-white text-xs rounded-none focus:border-[#C5A880] outline-none w-44 sm:w-52 font-sans"
+                placeholder="Tìm kiếm..."
+                className="bg-[#161B22] border border-[#2D3748] pl-8 pr-7 py-1.5 text-white text-xs rounded-none focus:border-[#C5A880] outline-none w-36 sm:w-44 font-sans"
               />
               {memberSearchTerm && (
                 <button
@@ -1023,18 +1022,18 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
             <select
               value={memberFilterStatus}
               onChange={(e) => setMemberFilterStatus(e.target.value as any)}
-              className="bg-[#161B22] border border-[#2D3748] px-2.5 py-1.5 text-xs text-gray-200 rounded-none focus:border-[#C5A880] outline-none cursor-pointer"
+              className="bg-[#161B22] border border-[#2D3748] px-2 py-1.5 text-xs text-gray-200 rounded-none focus:border-[#C5A880] outline-none cursor-pointer"
             >
               <option value="ALL">Tất cả ({members.length})</option>
-              <option value="APPROVED">Đã có FaceID ({totalApproved})</option>
-              <option value="PENDING">Chờ phê duyệt ({totalPendingOwner + totalPendingBql})</option>
-              <option value="NO_FACE">Chưa có FaceID</option>
+              <option value="APPROVED">Đã FaceID ({totalApproved})</option>
+              <option value="PENDING">Chờ duyệt ({totalPendingOwner + totalPendingBql})</option>
+              <option value="NO_FACE">Chưa FaceID</option>
             </select>
 
             <button
               onClick={fetchMembers}
               disabled={isLoading}
-              className="text-xs text-gray-300 hover:text-[#C5A880] flex items-center gap-1.5 transition-colors cursor-pointer px-2.5 py-1.5 bg-[#161B22] border border-[#2D3748]"
+              className="text-xs text-gray-300 hover:text-[#C5A880] flex items-center gap-1.5 transition-colors cursor-pointer px-2 py-1.5 bg-[#161B22] border border-[#2D3748]"
             >
               <RefreshCw className={`w-3.5 h-3.5 ${isLoading ? 'animate-spin' : ''}`} /> Làm mới
             </button>
@@ -1042,27 +1041,27 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
         </div>
 
         {isLoading ? (
-          <div className="p-12 text-center text-xs text-[#C5A880] font-mono flex items-center justify-center gap-2">
-            <RefreshCw className="w-4 h-4 animate-spin" /> Đang tải danh sách thành viên...
+          <div className="p-10 text-center text-xs text-[#C5A880] font-mono flex items-center justify-center gap-2">
+            <RefreshCw className="w-4 h-4 animate-spin" /> Đang tải dữ liệu...
           </div>
         ) : members.length === 0 ? (
-          <div className="p-12 text-center text-gray-400 text-xs space-y-2">
+          <div className="p-10 text-center text-gray-400 text-xs space-y-2">
             <Users className="w-8 h-8 text-gray-600 mx-auto mb-2" />
-            <p>Chưa có thành viên nào được thêm vào Căn hộ {aptCode}.</p>
+            <p>Chưa có thành viên nào trong căn hộ {aptCode}.</p>
             {isOwner && (
               <button
                 type="button"
                 onClick={() => setShowAddModal(true)}
                 className="text-[#C5A880] font-bold underline hover:text-white cursor-pointer"
               >
-                + Thêm thành viên đầu tiên
+                + Thêm thành viên
               </button>
             )}
           </div>
         ) : filteredMembers.length === 0 ? (
           <div className="p-8 text-center text-gray-400 text-xs space-y-2">
             <Filter className="w-6 h-6 text-gray-600 mx-auto mb-1" />
-            <p>Không tìm thấy thành viên nào khớp với bộ lọc &ldquo;{memberSearchTerm || memberFilterStatus}&rdquo;.</p>
+            <p>Không tìm thấy kết quả phù hợp.</p>
             <button
               type="button"
               onClick={() => {
@@ -1071,7 +1070,7 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
               }}
               className="text-[#C5A880] font-bold underline hover:text-white cursor-pointer"
             >
-              Xóa bộ lọc để xem tất cả
+              Xem tất cả
             </button>
           </div>
         ) : (
@@ -1089,11 +1088,11 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
               return (
                 <div
                   key={m.id}
-                  className="p-4 sm:p-5 flex flex-col md:flex-row md:items-center justify-between gap-4 hover:bg-[#161B22] transition-colors"
+                  className="p-3.5 sm:p-4 flex flex-col md:flex-row md:items-center justify-between gap-3 hover:bg-[#161B22] transition-colors"
                 >
-                  <div className="flex items-start sm:items-center gap-4 min-w-0">
-                    {/* Member Avatar: Strictly constrained width & height */}
-                    <div className="w-14 h-14 min-w-[56px] min-h-[56px] rounded-none overflow-hidden border-2 border-[#C5A880]/70 shadow-md bg-[#161D26] flex-shrink-0">
+                  <div className="flex items-start sm:items-center gap-3.5 min-w-0">
+                    {/* Member Avatar */}
+                    <div className="w-12 h-12 min-w-[48px] min-h-[48px] rounded-none overflow-hidden border border-[#C5A880]/70 shadow bg-[#161D26] flex-shrink-0">
                       <img
                         src={avatarSrc}
                         alt={m.fullName}
@@ -1104,54 +1103,54 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
                       />
                     </div>
 
-                    <div className="space-y-1.5 min-w-0">
+                    <div className="space-y-1 min-w-0">
                       <div className="flex items-center gap-2 flex-wrap">
-                        <span className="font-bold text-white text-base truncate">
+                        <span className="font-bold text-white text-sm sm:text-base truncate">
                           {m.fullName}
                         </span>
                         <span className="px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider rounded-none border bg-purple-950/80 text-purple-300 border-purple-600/60 flex-shrink-0">
-                          {m.relationship || 'Người Nhà / Gia Đình'}
+                          {m.relationship || 'Người Nhà'}
                         </span>
 
-                        {/* e-KYC & FaceID Status Badges */}
+                        {/* Status Badges */}
                         {ekycStatus === 'PENDING_OWNER' && (
-                          <span className="px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded-none border bg-amber-950/90 text-amber-300 border-amber-500/80 flex items-center gap-1 shadow-sm animate-pulse flex-shrink-0">
-                            <Clock className="w-3 h-3 text-amber-400" /> Chờ Chủ Hộ Xác Nhận (Đã Có 4 Mẫu)
+                          <span className="px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded-none border bg-amber-950/90 text-amber-300 border-amber-500/80 flex items-center gap-1 animate-pulse flex-shrink-0">
+                            <Clock className="w-3 h-3 text-amber-400" /> Chờ Chủ Hộ Duyệt
                           </span>
                         )}
                         {ekycStatus === 'APPROVED' && (
-                          <span className="px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded-none border bg-emerald-950/90 text-emerald-300 border-emerald-500/80 flex items-center gap-1 shadow-sm flex-shrink-0">
-                            <CheckCircle2 className="w-3 h-3 text-emerald-400" /> Đã Kích Hoạt FaceID
+                          <span className="px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded-none border bg-emerald-950/90 text-emerald-300 border-emerald-500/80 flex items-center gap-1 flex-shrink-0">
+                            <CheckCircle2 className="w-3 h-3 text-emerald-400" /> Đã FaceID
                           </span>
                         )}
                         {ekycStatus === 'PENDING' && (
-                          <span className="px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded-none border bg-cyan-950/90 text-cyan-300 border-cyan-500/80 flex items-center gap-1 shadow-sm animate-pulse flex-shrink-0">
-                            <Clock className="w-3 h-3 text-cyan-400" /> Đang Chờ BQL Phê Duyệt
+                          <span className="px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded-none border bg-cyan-950/90 text-cyan-300 border-cyan-500/80 flex items-center gap-1 animate-pulse flex-shrink-0">
+                            <Clock className="w-3 h-3 text-cyan-400" /> Chờ BQL Duyệt
                           </span>
                         )}
                         {ekycStatus === 'REJECTED' && (
-                          <span className="px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded-none border bg-rose-950/90 text-rose-300 border-rose-500/80 flex items-center gap-1 shadow-sm flex-shrink-0">
-                            <XCircle className="w-3 h-3 text-rose-400" /> BQL Yêu Cầu Chụp Lại
+                          <span className="px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded-none border bg-rose-950/90 text-rose-300 border-rose-500/80 flex items-center gap-1 flex-shrink-0">
+                            <XCircle className="w-3 h-3 text-rose-400" /> Yêu Cầu Chụp Lại
                           </span>
                         )}
                         {ekycStatus === 'NOT_SUBMITTED' && (
-                          <span className="px-2.5 py-0.5 text-[10px] font-medium uppercase tracking-wider rounded-none border bg-gray-800 text-gray-300 border-gray-600 flex items-center gap-1 flex-shrink-0">
-                            <AlertCircle className="w-3 h-3 text-gray-400" /> Chưa Khai Báo e-KYC
+                          <span className="px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider rounded-none border bg-gray-800 text-gray-300 border-gray-600 flex items-center gap-1 flex-shrink-0">
+                            <AlertCircle className="w-3 h-3 text-gray-400" /> Chưa e-KYC
                           </span>
                         )}
                         {/* 4-Step Banking FaceID Badge */}
                         {getEnrolledFaceProfile(m.phone || m.id || m.username || '') ? (
-                          <span className="px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded-none border bg-[#161D26] text-cyan-300 border-cyan-500/80 flex items-center gap-1 shadow-sm flex-shrink-0">
-                            <ScanFace className="w-3 h-3 text-cyan-400" /> FaceID 4/4 Mẫu ✓
+                          <span className="px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded-none border bg-[#161D26] text-cyan-300 border-cyan-500/80 flex items-center gap-1 flex-shrink-0">
+                            <ScanFace className="w-3 h-3 text-cyan-400" /> 4/4 Mẫu ✓
                           </span>
                         ) : (
-                          <span className="px-2.5 py-0.5 text-[10px] font-medium uppercase tracking-wider rounded-none border bg-gray-900/90 text-amber-400 border-amber-600/50 flex items-center gap-1 flex-shrink-0">
-                            <AlertCircle className="w-3 h-3 text-amber-400" /> Chưa Có 4 Mẫu FaceID
+                          <span className="px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider rounded-none border bg-gray-900/90 text-amber-400 border-amber-600/50 flex items-center gap-1 flex-shrink-0">
+                            <AlertCircle className="w-3 h-3 text-amber-400" /> Chưa Quét Mặt
                           </span>
                         )}
                       </div>
 
-                      <div className="text-gray-400 text-xs flex flex-wrap items-center gap-x-3 gap-y-1">
+                      <div className="text-gray-400 text-xs flex flex-wrap items-center gap-x-3 gap-y-0.5">
                         <span>
                           SĐT: <strong className="font-mono text-gray-200">{m.phone}</strong>
                         </span>
@@ -1162,14 +1161,14 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
                         )}
                         {m.licensePlate && (
                           <span>
-                            • Biển số xe: <strong className="font-mono text-cyan-400">{m.licensePlate}</strong>
+                            • Biển số: <strong className="font-mono text-cyan-400">{m.licensePlate}</strong>
                           </span>
                         )}
                       </div>
 
                       {/* Rejection Notice if any */}
                       {ekycStatus === 'REJECTED' && ekyc?.rejectionReason && (
-                        <div className="p-2 bg-rose-950/50 border border-rose-800/80 rounded-none text-[11px] text-rose-300 flex items-start gap-1.5">
+                        <div className="p-1.5 bg-rose-950/50 border border-rose-800/80 rounded-none text-[11px] text-rose-300 flex items-start gap-1.5">
                           <AlertTriangle className="w-3.5 h-3.5 text-rose-400 flex-shrink-0 mt-0.5" />
                           <span>
                             <strong>Lý do từ BQL:</strong> {ekyc.rejectionReason}
@@ -1178,28 +1177,28 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
                       )}
 
                       {/* Privilege description */}
-                      <div className="text-[11px] text-gray-400 flex items-center gap-1.5 pt-0.5">
+                      <div className="text-[11px] text-gray-400 flex items-center gap-1.5">
                         <ShieldCheck className="w-3.5 h-3.5 text-[#C5A880] flex-shrink-0" />
                         <span className="truncate">
-                          Phân quyền: Sảnh A/B • Thang máy Tầng 12 • Hầm gửi xe B1/B2
+                          Sảnh • Thang máy T12 • Hầm B1/B2
                         </span>
                       </div>
 
                       {/* Owner Alert: Member completed 4 samples, waiting for Owner confirmation */}
                       {isOwner && ekycStatus === 'PENDING_OWNER' && (
-                        <div className="p-2.5 bg-amber-950/60 border border-amber-500/80 text-xs text-amber-200 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 rounded-none animate-fadeIn">
-                          <div className="flex items-center gap-2">
-                            <Sparkles className="w-4 h-4 text-amber-400 flex-shrink-0" />
+                        <div className="p-2 bg-amber-950/60 border border-amber-500/80 text-xs text-amber-200 flex flex-col sm:flex-row sm:items-center justify-between gap-2 rounded-none animate-fadeIn">
+                          <div className="flex items-center gap-1.5">
+                            <Sparkles className="w-3.5 h-3.5 text-amber-400 flex-shrink-0" />
                             <span>
-                              <strong>{m.fullName}</strong> đã tự quét đủ 4 mẫu FaceID • Chờ bạn kiểm tra & xác nhận bảo lãnh để gửi Ban Quản Lý phê duyệt.
+                              <strong>{m.fullName}</strong> đã quét 4 mẫu FaceID • Chờ duyệt gửi BQL.
                             </span>
                           </div>
                           <button
                             type="button"
                             onClick={() => setConfirmTargetMember(m)}
-                            className="px-3 py-1 bg-[#C5A880] hover:bg-white text-[#0D1117] text-xs font-bold uppercase tracking-wider rounded-none flex items-center gap-1.5 flex-shrink-0 shadow cursor-pointer transition-all active:scale-95"
+                            className="px-2.5 py-1 bg-[#C5A880] hover:bg-white text-[#0D1117] text-xs font-bold uppercase tracking-wider rounded-none flex items-center gap-1 flex-shrink-0 shadow cursor-pointer transition-all active:scale-95"
                           >
-                            <ShieldCheck className="w-3.5 h-3.5" /> Xác Nhận Ngay
+                            <ShieldCheck className="w-3.5 h-3.5" /> Duyệt Ngay
                           </button>
                         </div>
                       )}
@@ -1207,38 +1206,34 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
                   </div>
 
                   {/* Actions for Owner & Family Member Self-update */}
-                  <div className="flex flex-wrap items-center gap-2.5 w-full md:w-auto justify-start md:justify-end pt-2 md:pt-0 border-t md:border-t-0 border-[#222B35]/60 flex-shrink-0">
+                  <div className="flex flex-wrap items-center gap-2 w-full md:w-auto justify-start md:justify-end pt-2 md:pt-0 border-t md:border-t-0 border-[#222B35]/60 flex-shrink-0">
                     {/* Owner Confirm Button when Member is PENDING_OWNER */}
                     {isOwner && ekycStatus === 'PENDING_OWNER' && (
                       <button
                         type="button"
                         onClick={() => setConfirmTargetMember(m)}
-                        className="px-3.5 py-2 text-xs font-bold rounded-none flex items-center gap-1.5 transition-all shadow cursor-pointer active:scale-95 bg-gradient-to-r from-amber-600 to-[#C5A880] hover:brightness-110 text-[#0D1117]"
-                        title="Xem 4 góc mẫu và xác nhận gửi Ban Quản Lý"
+                        className="px-3 py-1.5 text-xs font-bold rounded-none flex items-center gap-1.5 transition-all shadow cursor-pointer active:scale-95 bg-gradient-to-r from-amber-600 to-[#C5A880] hover:brightness-110 text-[#0D1117]"
+                        title="Duyệt 4 mẫu FaceID gửi BQL"
                       >
-                        <ShieldCheck className="w-4 h-4" />
-                        <span>Xem 4 Mẫu & Xác Nhận Gửi BQL</span>
+                        <ShieldCheck className="w-3.5 h-3.5" />
+                        <span>Duyệt FaceID</span>
                       </button>
                     )}
 
-                    {/* FaceID Scanning Button (Owner for all members, OR Family Member for their own card) */}
+                    {/* FaceID Scanning Button */}
                     {(isOwner || (m.id === currentUser.id || m.phone === currentUser.phone || m.username === currentUser.username)) && (
                       <button
                         type="button"
                         onClick={() => setBankEnrollTarget(m)}
-                        className={`px-3 py-2 text-xs font-bold rounded-none flex items-center gap-1.5 transition-all shadow cursor-pointer active:scale-95 ${
+                        className={`px-3 py-1.5 text-xs font-bold rounded-none flex items-center gap-1.5 transition-all shadow cursor-pointer active:scale-95 ${
                           getEnrolledFaceProfile(m.phone || m.id || m.username || '')
                             ? 'bg-[#121820] hover:bg-[#1E2631] border border-cyan-500/80 text-cyan-300'
                             : 'bg-[#C5A880] hover:bg-white text-[#0D1117]'
                         }`}
-                        title="Quét 4 bước khuôn mặt chuẩn ngân hàng"
+                        title="Quét mẫu khuôn mặt"
                       >
                         <Camera className="w-3.5 h-3.5" />
-                        <span>
-                          {!isOwner && (m.id === currentUser.id || m.phone === currentUser.phone || m.username === currentUser.username)
-                            ? (getEnrolledFaceProfile(m.phone || m.id || m.username || '') ? 'Quét Lại FaceID Của Tôi' : 'Tự Quét FaceID Của Tôi')
-                            : (getEnrolledFaceProfile(m.phone || m.id || m.username || '') ? 'Quét Lại FaceID 4 Bước' : 'Quét Mẫu FaceID 4 Bước')}
-                        </span>
+                        <span>Quét FaceID</span>
                       </button>
                     )}
 
@@ -1246,7 +1241,7 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
                       <button
                         type="button"
                         onClick={() => handleOpenEkycModal(m)}
-                        className={`px-3.5 py-2 text-xs font-bold rounded-none flex items-center gap-1.5 transition-all shadow cursor-pointer active:scale-95 ${
+                        className={`px-3 py-1.5 text-xs font-bold rounded-none flex items-center gap-1.5 transition-all shadow cursor-pointer active:scale-95 ${
                           ekycStatus === 'APPROVED'
                             ? 'bg-[#161D26] hover:bg-[#1F2937] border border-[#C5A880]/80 text-[#C5A880]'
                             : ekycStatus === 'PENDING'
@@ -1255,29 +1250,21 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
                             ? 'bg-rose-950 hover:bg-rose-900 border border-rose-500 text-rose-200 animate-pulse'
                             : 'bg-[#1C2533] hover:bg-[#263140] border border-gray-600 text-gray-200'
                         }`}
+                        title="Hồ sơ e-KYC CCCD"
                       >
-                        <ScanFace className="w-4 h-4" />
-                        <span>
-                          {ekycStatus === 'APPROVED'
-                            ? 'Cập Nhật e-KYC'
-                            : ekycStatus === 'PENDING'
-                            ? 'Xem / Sửa e-KYC'
-                            : ekycStatus === 'REJECTED'
-                            ? 'Chụp Lại e-KYC'
-                            : 'Khai Báo e-KYC Gửi BQL'}
-                        </span>
+                        <ScanFace className="w-3.5 h-3.5" />
+                        <span>e-KYC CCCD</span>
                       </button>
                     )}
-
 
                     {isOwner && (
                       <button
                         type="button"
                         onClick={() => handlePromptRemoveMember(m)}
-                        className="px-3 py-2 text-xs text-rose-400 hover:text-white hover:bg-rose-950/60 border border-rose-900/60 rounded-none transition-colors flex items-center gap-1.5 cursor-pointer"
-                        title="Hủy quyền thành viên"
+                        className="px-2.5 py-1.5 text-xs text-rose-400 hover:text-white hover:bg-rose-950/60 border border-rose-900/60 rounded-none transition-colors flex items-center gap-1 cursor-pointer"
+                        title="Xóa quyền thành viên"
                       >
-                        <Trash2 className="w-3.5 h-3.5" /> Hủy Quyền
+                        <Trash2 className="w-3.5 h-3.5" /> Xóa
                       </button>
                     )}
                   </div>
@@ -1301,18 +1288,17 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
           <div className="bg-[#0D1117] border border-[#C5A880]/80 max-w-3xl w-full p-5 sm:p-7 text-white space-y-5 shadow-2xl rounded-none max-h-[92vh] overflow-y-auto">
             
             {/* Modal Header */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-[#222B35] pb-4 gap-3">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-none bg-[#C5A880]/15 border border-[#C5A880] flex items-center justify-center text-[#C5A880] flex-shrink-0">
-                  <ScanFace className="w-5 h-5" />
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-[#222B35] pb-3 gap-2.5">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-none bg-[#C5A880]/15 border border-[#C5A880] flex items-center justify-center text-[#C5A880] flex-shrink-0">
+                  <ScanFace className="w-4 h-4" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-serif font-bold text-white flex items-center gap-2">
-                    Khai Báo & Cập Nhật Hồ Sơ e-KYC Cho Người Nhà
+                  <h3 className="text-base font-serif font-bold text-white flex items-center gap-2">
+                    Hồ Sơ e-KYC Người Thân
                   </h3>
                   <p className="text-xs text-gray-400">
-                    Căn Hộ <strong className="text-white font-mono">{aptCode}</strong> • Chung cư Skyline Smart Residence • Chủ hộ{' '}
-                    <strong className="text-[#C5A880]">{ownerName}</strong> đại diện bảo lãnh
+                    Căn {aptCode} • Chủ hộ {ownerName}
                   </p>
                 </div>
               </div>
@@ -1321,14 +1307,14 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
                 <button
                   type="button"
                   onClick={() => setIsMemberOcrModalOpen(true)}
-                  className="px-3.5 py-2 bg-gradient-to-r from-[#C5A880] to-[#E2C799] hover:brightness-110 text-[#0D1117] text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 transition-all shadow-md rounded-none active:scale-95"
+                  className="px-3 py-1.5 bg-gradient-to-r from-[#C5A880] to-[#E2C799] hover:brightness-110 text-[#0D1117] text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 transition-all shadow rounded-none active:scale-95"
                 >
-                  <Scan className="w-4 h-4 text-[#0D1117]" /> Tự Động Quét Căn Cước
+                  <Scan className="w-3.5 h-3.5 text-[#0D1117]" /> Quét CCCD
                 </button>
                 <button
                   type="button"
                   onClick={handleCloseEkycModal}
-                  className="text-gray-400 hover:text-white p-1.5 rounded-none hover:bg-[#161D26] transition-colors cursor-pointer"
+                  className="text-gray-400 hover:text-white p-1 rounded-none hover:bg-[#161D26] transition-colors cursor-pointer"
                 >
                   <X className="w-5 h-5" />
                 </button>
@@ -1336,33 +1322,27 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
             </div>
 
             {/* Legal Representation Guarantee Box */}
-            <div className="p-3.5 bg-gradient-to-r from-[#1A1810] to-[#121820] border border-[#C5A880]/60 rounded-none text-xs text-gray-300 space-y-1">
-              <div className="font-bold text-[#C5A880] flex items-center gap-1.5 uppercase tracking-wider text-[11px]">
-                <ShieldCheck className="w-4 h-4 text-[#C5A880]" /> Cam Kết Bảo Lãnh Của Chủ Hộ
-              </div>
-              <p className="leading-relaxed text-gray-300">
-                Chủ hộ <strong className="text-white">{ownerName}</strong> đại diện pháp lý Căn hộ{' '}
-                <strong className="text-white font-mono">{aptCode}</strong> chịu trách nhiệm kê khai đúng thông tin pháp lý, ảnh CCCD và sinh trắc học khuôn mặt của thành viên{' '}
-                <strong className="text-white">{ekycFullName || ekycTargetMember.fullName}</strong> để Ban Quản Lý (BQL) phê duyệt và kích hoạt quyền FaceID ra vào chung cư.
-              </p>
+            <div className="p-2.5 bg-[#121820] border border-[#C5A880]/50 rounded-none text-xs text-gray-300 flex items-center gap-2">
+              <ShieldCheck className="w-4 h-4 text-[#C5A880] flex-shrink-0" />
+              <span>Chủ hộ <strong className="text-white">{ownerName}</strong> bảo lãnh thông tin cho <strong className="text-white">{ekycFullName || ekycTargetMember.fullName}</strong> gửi BQL duyệt FaceID.</span>
             </div>
 
             {/* Error Message */}
             {ekycModalError && (
-              <div className="p-3 bg-rose-950/80 border border-rose-500 text-rose-200 text-xs flex items-center gap-2 rounded-none">
+              <div className="p-2.5 bg-rose-950/80 border border-rose-500 text-rose-200 text-xs flex items-center gap-2 rounded-none">
                 <AlertCircle className="w-4 h-4 flex-shrink-0" />
                 <span>{ekycModalError}</span>
               </div>
             )}
 
             {/* Form */}
-            <form onSubmit={handleSubmitMemberEkyc} className="space-y-5 text-xs">
+            <form onSubmit={handleSubmitMemberEkyc} className="space-y-4 text-xs">
               
               {/* SECTION 1: THÔNG TIN PHÁP LÝ NHÂN THÂN */}
-              <div className="space-y-3 p-4 bg-[#121820] border border-[#222B35] rounded-none">
-                <div className="flex items-center justify-between border-b border-[#222B35] pb-2.5">
+              <div className="space-y-2.5 p-3.5 bg-[#121820] border border-[#222B35] rounded-none">
+                <div className="flex items-center justify-between border-b border-[#222B35] pb-2">
                   <div className="text-[11px] font-bold uppercase tracking-wider text-[#C5A880] flex items-center gap-2">
-                    <User className="w-4 h-4" /> 1. Thông Tin Pháp Lý Của Người Nhà
+                    <User className="w-4 h-4" /> 1. Thông Tin Người Thân
                   </div>
                 </div>
 
@@ -1718,15 +1698,15 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
                   <button
                     type="submit"
                     disabled={isSubmittingEkyc}
-                    className="px-6 py-2.5 bg-[#C5A880] hover:bg-white text-[#0D1117] font-bold text-xs uppercase tracking-wider rounded-none shadow-xl transition-all flex items-center gap-2 cursor-pointer active:scale-95"
+                    className="px-5 py-2 bg-[#C5A880] hover:bg-white text-[#0D1117] font-bold text-xs uppercase tracking-wider rounded-none shadow transition-all flex items-center gap-1.5 cursor-pointer active:scale-95"
                   >
                     {isSubmittingEkyc ? (
                       <>
-                        <RefreshCw className="w-4 h-4 animate-spin" /> Đang Gửi Lên BQL...
+                        <RefreshCw className="w-4 h-4 animate-spin" /> Đang Gửi...
                       </>
                     ) : (
                       <>
-                        <Check className="w-4 h-4" /> Gửi BQL Phê Duyệt & Kích Hoạt FaceID
+                        <Check className="w-4 h-4" /> Gửi BQL Duyệt
                       </>
                     )}
                   </button>
@@ -1739,7 +1719,7 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
       )}
 
       {/* =================================================================== */}
-      {/* MODAL: THÊM THÀNH VIÊN THEO DỮ LIỆU API                              */}
+      {/* MODAL: THÊM THÀNH VIÊN                                               */}
       {/* =================================================================== */}
       {showAddModal && (
         <div 
@@ -1748,42 +1728,42 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
           }}
           className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/85 backdrop-blur-sm animate-fadeIn"
         >
-          <div className="bg-[#0D1117] border border-[#C5A880]/70 max-w-2xl w-full p-5 sm:p-6 text-white space-y-4 shadow-2xl rounded-none max-h-[90vh] overflow-y-auto">
+          <div className="bg-[#0D1117] border border-[#C5A880]/70 max-w-2xl w-full p-4 sm:p-5 text-white space-y-3.5 shadow-2xl rounded-none max-h-[90vh] overflow-y-auto">
             
             {/* Modal Header */}
-            <div className="flex items-center justify-between border-b border-[#222B35] pb-3">
-              <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-none bg-[#C5A880]/20 flex items-center justify-center text-[#C5A880]">
-                  <UserPlus className="w-4 h-4" />
+            <div className="flex items-center justify-between border-b border-[#222B35] pb-2.5">
+              <div className="flex items-center gap-2">
+                <div className="w-7 h-7 rounded-none bg-[#C5A880]/20 flex items-center justify-center text-[#C5A880]">
+                  <UserPlus className="w-3.5 h-3.5" />
                 </div>
                 <div>
-                  <h3 className="text-base font-serif font-bold text-white">
-                    Thêm Cư Dân Vào Căn Hộ {aptCode}
+                  <h3 className="text-sm sm:text-base font-serif font-bold text-white">
+                    Thêm Cư Dân • Căn {aptCode}
                   </h3>
                   <p className="text-[11px] text-gray-400">
-                    Liên kết tài khoản người nhà từ hệ thống định danh API Ban Quản Lý
+                    Thêm thành viên vào danh sách căn hộ
                   </p>
                 </div>
               </div>
               <button
                 type="button"
                 onClick={() => setShowAddModal(false)}
-                className="text-gray-400 hover:text-white p-1.5 rounded-none hover:bg-[#161D26] transition-colors cursor-pointer"
+                className="text-gray-400 hover:text-white p-1 rounded-none hover:bg-[#161D26] transition-colors cursor-pointer"
               >
-                <X className="w-5 h-5" />
+                <X className="w-4 h-4" />
               </button>
             </div>
 
             {/* Error / Alert */}
             {actionError && (
-              <div className="p-3 bg-rose-950/80 border border-rose-500 text-rose-200 text-xs flex items-center gap-2 rounded-none">
+              <div className="p-2.5 bg-rose-950/80 border border-rose-500 text-rose-200 text-xs flex items-center gap-2 rounded-none">
                 <AlertCircle className="w-4 h-4 flex-shrink-0" />
                 <span>{actionError}</span>
               </div>
             )}
 
             {/* Tab Selector Mode (3 Tabs) */}
-            <div className="grid grid-cols-3 gap-2 p-1 bg-[#161B22] border border-[#222B35] rounded-none text-xs">
+            <div className="grid grid-cols-3 gap-1.5 p-1 bg-[#161B22] border border-[#222B35] rounded-none text-xs">
               <button
                 type="button"
                 onClick={() => {
@@ -1791,14 +1771,14 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
                   setSelectedAccount(null);
                   setActionError(null);
                 }}
-                className={`py-2 px-2.5 rounded-none font-semibold transition-all flex items-center justify-center gap-1 text-[11px] sm:text-xs cursor-pointer ${
+                className={`py-1.5 px-2 rounded-none font-semibold transition-all flex items-center justify-center gap-1 text-[11px] sm:text-xs cursor-pointer ${
                   modalMode === 'PRE_APPROVED'
                     ? 'bg-[#C5A880] text-[#0D1117] shadow'
                     : 'text-gray-400 hover:text-white'
                 }`}
               >
-                <ShieldCheck className="w-3.5 h-3.5 flex-shrink-0" />
-                <span className="truncate">1. Có Sẵn ({bqlAccounts.length})</span>
+                <ShieldCheck className="w-3 h-3 flex-shrink-0" />
+                <span className="truncate">Có Sẵn ({bqlAccounts.length})</span>
               </button>
 
               <button
@@ -1808,14 +1788,14 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
                   setSelectedAccount(null);
                   setActionError(null);
                 }}
-                className={`py-2 px-2.5 rounded-none font-semibold transition-all flex items-center justify-center gap-1 text-[11px] sm:text-xs cursor-pointer ${
+                className={`py-1.5 px-2 rounded-none font-semibold transition-all flex items-center justify-center gap-1 text-[11px] sm:text-xs cursor-pointer ${
                   modalMode === 'SEARCH_API'
                     ? 'bg-[#C5A880] text-[#0D1117] shadow'
                     : 'text-gray-400 hover:text-white'
                 }`}
               >
-                <Search className="w-3.5 h-3.5 flex-shrink-0" />
-                <span className="truncate">2. Tra Cứu API</span>
+                <Search className="w-3 h-3 flex-shrink-0" />
+                <span className="truncate">Tra Cứu</span>
               </button>
 
               <button
@@ -1825,14 +1805,14 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
                   setSelectedAccount(null);
                   setActionError(null);
                 }}
-                className={`py-2 px-2.5 rounded-none font-semibold transition-all flex items-center justify-center gap-1 text-[11px] sm:text-xs cursor-pointer ${
+                className={`py-1.5 px-2 rounded-none font-semibold transition-all flex items-center justify-center gap-1 text-[11px] sm:text-xs cursor-pointer ${
                   modalMode === 'DIRECT_INPUT'
                     ? 'bg-[#C5A880] text-[#0D1117] shadow'
                     : 'text-gray-400 hover:text-white'
                 }`}
               >
-                <UserPlus className="w-3.5 h-3.5 flex-shrink-0" />
-                <span className="truncate">3. Nhập Trực Tiếp</span>
+                <UserPlus className="w-3 h-3 flex-shrink-0" />
+                <span className="truncate">Nhập Mới</span>
               </button>
             </div>
 
@@ -1840,14 +1820,14 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
             {/* MODE 1: CHỌN TỪ DANH SÁCH TÀI KHOẢN KHẢ DỤNG                   */}
             {/* ------------------------------------------------------------- */}
             {modalMode === 'PRE_APPROVED' && (
-              <div className="space-y-2.5">
+              <div className="space-y-2">
                 <div className="text-[11px] text-gray-400">
-                  Danh sách tài khoản đã được Ban Quản Lý phê duyệt trước cho Căn hộ {aptCode}:
+                  Tài khoản BQL đã duyệt trước:
                 </div>
 
                 {bqlAccounts.length === 0 ? (
-                  <div className="p-6 bg-[#161D26] border border-[#222B35] rounded-none text-center text-xs text-gray-400">
-                    Không có tài khoản người nhà nào đang chờ thêm. Bạn có thể tra cứu SĐT qua tab &quot;Tra Cứu&quot;.
+                  <div className="p-5 bg-[#161D26] border border-[#222B35] rounded-none text-center text-xs text-gray-400">
+                    Không có tài khoản chờ thêm. Bạn có thể tra cứu hoặc nhập mới.
                   </div>
                 ) : (
                   <div className="space-y-2 max-h-56 overflow-y-auto pr-1">
@@ -1861,16 +1841,16 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
                         <div
                           key={acc.id}
                           onClick={() => !isAlreadyInUnit && handleSelectPreApproved(acc)}
-                          className={`p-3 rounded-none border transition-all flex items-center justify-between gap-3 ${
+                          className={`p-2.5 rounded-none border transition-all flex items-center justify-between gap-3 ${
                             isAlreadyInUnit
                               ? 'bg-[#161D26]/40 border-gray-800 opacity-60 cursor-not-allowed'
                               : isSelected
-                              ? 'bg-[#1C2533] border-[#C5A880] shadow-md cursor-pointer'
+                              ? 'bg-[#1C2533] border-[#C5A880] shadow cursor-pointer'
                               : 'bg-[#161D26] border-[#222B35] hover:border-gray-600 cursor-pointer'
                           }`}
                         >
-                          <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 min-w-[40px] min-h-[40px] rounded-none overflow-hidden border border-[#C5A880]/60 flex-shrink-0 bg-[#0D1117]">
+                          <div className="flex items-center gap-2.5">
+                            <div className="w-9 h-9 min-w-[36px] min-h-[36px] rounded-none overflow-hidden border border-[#C5A880]/60 flex-shrink-0 bg-[#0D1117]">
                               <img
                                 src={acc.avatarUrl || 'https://data.nks.vn/storage/users/default.png'}
                                 alt={acc.fullName}
@@ -1881,31 +1861,31 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
                               />
                             </div>
                             <div className="space-y-0.5 min-w-0">
-                              <div className="font-bold text-white text-xs flex items-center gap-2">
+                              <div className="font-bold text-white text-xs flex items-center gap-1.5">
                                 <span className="truncate">{acc.fullName}</span>
                                 {isAlreadyInUnit && (
-                                  <span className="text-[9px] px-1.5 py-0.5 bg-gray-800 text-gray-400 rounded-none flex-shrink-0">
-                                    Đã có trong căn hộ
+                                  <span className="text-[9px] px-1 py-0.5 bg-gray-800 text-gray-400 rounded-none flex-shrink-0">
+                                    Đã có
                                   </span>
                                 )}
                               </div>
                               <div className="text-[11px] text-gray-400 flex items-center gap-2 font-mono">
-                                <span>SĐT: {acc.phone}</span>
-                                <span>• CCCD: {acc.idCard}</span>
+                                <span>{acc.phone}</span>
+                                <span>• {acc.idCard}</span>
                               </div>
                             </div>
                           </div>
 
                           <div className="flex-shrink-0">
                             {isAlreadyInUnit ? (
-                              <span className="text-[10px] text-gray-500 italic">Đã kích hoạt</span>
+                              <span className="text-[10px] text-gray-500 italic">Đã có</span>
                             ) : isSelected ? (
-                              <span className="px-2.5 py-1 bg-[#C5A880] text-[#0D1117] text-[10px] font-bold rounded-none flex items-center gap-1">
-                                <Check className="w-3 h-3" /> Đang chọn
+                              <span className="px-2 py-0.5 bg-[#C5A880] text-[#0D1117] text-[10px] font-bold rounded-none flex items-center gap-1">
+                                <Check className="w-3 h-3" /> Đã chọn
                               </span>
                             ) : (
-                              <span className="px-2.5 py-1 bg-gray-800 hover:bg-gray-700 text-gray-300 text-[10px] font-semibold rounded-none">
-                                Chọn tài khoản
+                              <span className="px-2 py-0.5 bg-gray-800 hover:bg-gray-700 text-gray-300 text-[10px] font-semibold rounded-none">
+                                Chọn
                               </span>
                             )}
                           </div>
@@ -1921,19 +1901,19 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
             {/* MODE 2: TRA CỨU TÀI KHOẢN QUA API BẰNG SĐT / CCCD             */}
             {/* ------------------------------------------------------------- */}
             {modalMode === 'SEARCH_API' && (
-              <div className="space-y-3">
+              <div className="space-y-2.5">
                 <form onSubmit={handleSearchApi} className="flex gap-2">
                   <input
                     type="text"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="Nhập SĐT hoặc CCCD người nhà (VD: 0908776655)..."
-                    className="flex-1 bg-[#161B22] border border-[#2D3748] p-2.5 text-white text-xs font-mono rounded-none focus:border-[#C5A880] outline-none"
+                    placeholder="Nhập SĐT hoặc CCCD..."
+                    className="flex-1 bg-[#161B22] border border-[#2D3748] p-2 text-white text-xs font-mono rounded-none focus:border-[#C5A880] outline-none"
                   />
                   <button
                     type="submit"
                     disabled={isSearchingApi || !searchQuery.trim()}
-                    className="px-4 py-2.5 bg-[#C5A880] hover:bg-white text-[#0D1117] text-xs font-bold rounded-none flex items-center gap-1.5 transition-colors whitespace-nowrap cursor-pointer"
+                    className="px-3.5 py-2 bg-[#C5A880] hover:bg-white text-[#0D1117] text-xs font-bold rounded-none flex items-center gap-1.5 transition-colors whitespace-nowrap cursor-pointer"
                   >
                     {isSearchingApi ? (
                       <RefreshCw className="w-3.5 h-3.5 animate-spin" />
@@ -1945,16 +1925,16 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
                 </form>
 
                 {searchNotFound && (
-                  <div className="p-3 bg-[#161D26] border border-gray-700 text-gray-300 text-xs rounded-none">
+                  <div className="p-2.5 bg-[#161D26] border border-gray-700 text-gray-300 text-xs rounded-none">
                     {searchNotFound}
                   </div>
                 )}
 
                 {searchResult && (
-                  <div className="p-4 bg-[#161D26] border border-emerald-500/60 rounded-none space-y-3 animate-fadeIn">
-                    <div className="flex items-center justify-between text-xs text-emerald-400 font-bold border-b border-[#222B35] pb-2">
-                      <span className="flex items-center gap-1.5">
-                        <CheckCircle className="w-4 h-4" /> Thông Tin Người Nhà Tìm Thấy:
+                  <div className="p-3 bg-[#161D26] border border-emerald-500/60 rounded-none space-y-2.5 animate-fadeIn">
+                    <div className="flex items-center justify-between text-xs text-emerald-400 font-bold border-b border-[#222B35] pb-1.5">
+                      <span className="flex items-center gap-1">
+                        <CheckCircle className="w-3.5 h-3.5" /> Kết Quả Tìm Thấy:
                       </span>
                       <button
                         type="button"
@@ -1963,14 +1943,14 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
                           setNewRelationship(searchResult.relationship || 'Vợ / Chồng');
                           setNewLicensePlate(searchResult.licensePlate || '');
                         }}
-                        className="px-3 py-1 bg-[#C5A880] text-[#0D1117] font-bold text-[11px] rounded-none hover:bg-white transition-colors cursor-pointer"
+                        className="px-2.5 py-1 bg-[#C5A880] text-[#0D1117] font-bold text-[11px] rounded-none hover:bg-white transition-colors cursor-pointer"
                       >
-                        {selectedAccount?.id === searchResult.id ? 'Đang Chọn ✓' : '+ Chọn Tài Khoản Này'}
+                        {selectedAccount?.id === searchResult.id ? 'Đã Chọn ✓' : '+ Chọn'}
                       </button>
                     </div>
 
-                    <div className="flex items-center gap-3">
-                      <div className="w-12 h-12 min-w-[48px] min-h-[48px] rounded-none overflow-hidden border border-[#C5A880]/60 flex-shrink-0 bg-[#161D26]">
+                    <div className="flex items-center gap-2.5">
+                      <div className="w-10 h-10 min-w-[40px] min-h-[40px] rounded-none overflow-hidden border border-[#C5A880]/60 flex-shrink-0 bg-[#161D26]">
                         <img
                           src={
                             searchResult.avatarUrl
@@ -1985,9 +1965,8 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
                         />
                       </div>
                       <div className="space-y-0.5 text-xs">
-                        <div className="font-bold text-white text-sm">{searchResult.fullName}</div>
-                        <div className="text-gray-300 font-mono">SĐT: {searchResult.phone}</div>
-                        <div className="text-[#C5A880] font-mono">CCCD: {searchResult.idCard}</div>
+                        <div className="font-bold text-white">{searchResult.fullName}</div>
+                        <div className="text-gray-300 font-mono text-[11px]">SĐT: {searchResult.phone} • CCCD: {searchResult.idCard}</div>
                       </div>
                     </div>
                   </div>
@@ -1999,20 +1978,11 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
             {/* MODE 3: NHẬP TRỰC TIẾP THÔNG TIN NGƯỜI THÂN                     */}
             {/* ------------------------------------------------------------- */}
             {modalMode === 'DIRECT_INPUT' && (
-              <form onSubmit={handleDirectAddMember} className="space-y-3.5 text-xs">
-                <div className="p-3 bg-[#161D26] border border-cyan-500/40 rounded-none text-gray-300 space-y-1">
-                  <div className="text-cyan-400 font-bold text-xs flex items-center gap-1.5">
-                    <Info className="w-4 h-4" /> Kê khai thành viên gia đình trực tiếp
-                  </div>
-                  <p className="text-[11px] text-gray-400 leading-relaxed">
-                    Chủ hộ có thể thêm trực tiếp người thân vào danh sách nhân khẩu căn hộ {aptCode}. Sau khi thêm, bạn có thể bảo lãnh quét FaceID 4 bước hoặc nộp CCCD để BQL kích hoạt quyền ra vào.
-                  </p>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <form onSubmit={handleDirectAddMember} className="space-y-3 text-xs">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                   <div>
                     <label className="text-gray-300 font-medium block mb-1">
-                      Họ và Tên Người Thân <span className="text-rose-400">*</span>
+                      Họ và Tên <span className="text-rose-400">*</span>
                     </label>
                     <input
                       type="text"
@@ -2020,13 +1990,13 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
                       value={directFullName}
                       onChange={(e) => setDirectFullName(e.target.value)}
                       placeholder="VD: Nguyễn Thị Mai"
-                      className="w-full bg-[#161B22] border border-[#2D3748] p-2.5 text-white rounded-none focus:border-[#C5A880] outline-none"
+                      className="w-full bg-[#161B22] border border-[#2D3748] p-2 text-white rounded-none focus:border-[#C5A880] outline-none"
                     />
                   </div>
 
                   <div>
                     <label className="text-gray-300 font-medium block mb-1">
-                      Số Điện Thoại (Định Danh) <span className="text-rose-400">*</span>
+                      Số Điện Thoại <span className="text-rose-400">*</span>
                     </label>
                     <input
                       type="tel"
@@ -2034,18 +2004,18 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
                       value={directPhone}
                       onChange={(e) => setDirectPhone(e.target.value)}
                       placeholder="VD: 0912345678"
-                      className="w-full bg-[#161B22] border border-[#2D3748] p-2.5 text-white font-mono rounded-none focus:border-[#C5A880] outline-none"
+                      className="w-full bg-[#161B22] border border-[#2D3748] p-2 text-white font-mono rounded-none focus:border-[#C5A880] outline-none"
                     />
                   </div>
 
                   <div>
                     <label className="text-gray-300 font-medium block mb-1">
-                      Mối Quan Hệ Với Chủ Hộ <span className="text-rose-400">*</span>
+                      Mối Quan Hệ <span className="text-rose-400">*</span>
                     </label>
                     <select
                       value={directRelationship}
                       onChange={(e) => setDirectRelationship(e.target.value)}
-                      className="w-full bg-[#161B22] border border-[#2D3748] p-2.5 text-white rounded-none focus:border-[#C5A880] outline-none"
+                      className="w-full bg-[#161B22] border border-[#2D3748] p-2 text-white rounded-none focus:border-[#C5A880] outline-none"
                     >
                       <option value="Vợ / Chồng">Vợ / Chồng</option>
                       <option value="Con Cái">Con Cái</option>
@@ -2059,43 +2029,43 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
 
                   <div>
                     <label className="text-gray-300 font-medium block mb-1">
-                      Số Căn Cước Công Dân (CCCD)
+                      Số CCCD
                     </label>
                     <input
                       type="text"
                       value={directIdCard}
                       onChange={(e) => setDirectIdCard(e.target.value)}
                       placeholder="VD: 079198001234"
-                      className="w-full bg-[#161B22] border border-[#2D3748] p-2.5 text-white font-mono rounded-none focus:border-[#C5A880] outline-none"
+                      className="w-full bg-[#161B22] border border-[#2D3748] p-2 text-white font-mono rounded-none focus:border-[#C5A880] outline-none"
                     />
                   </div>
 
                   <div className="sm:col-span-2">
                     <label className="text-gray-300 font-medium block mb-1">
-                      Biển Số Xe Đăng Ký (Nếu có)
+                      Biển Số Xe (tùy chọn)
                     </label>
                     <input
                       type="text"
                       value={directLicensePlate}
                       onChange={(e) => setDirectLicensePlate(e.target.value)}
-                      placeholder="VD: 59P1-123.45 (Để cấp quyền gửi xe hầm B1/B2)"
-                      className="w-full bg-[#161B22] border border-[#2D3748] p-2.5 text-white font-mono rounded-none focus:border-[#C5A880] outline-none uppercase"
+                      placeholder="VD: 59P1-123.45"
+                      className="w-full bg-[#161B22] border border-[#2D3748] p-2 text-white font-mono rounded-none focus:border-[#C5A880] outline-none uppercase"
                     />
                   </div>
                 </div>
 
-                <div className="pt-2 flex items-center justify-end gap-2.5 border-t border-[#222B35]">
+                <div className="pt-2 flex items-center justify-end gap-2 border-t border-[#222B35]">
                   <button
                     type="button"
                     onClick={() => setShowAddModal(false)}
-                    className="px-4 py-2 bg-transparent hover:bg-gray-800 text-gray-300 text-xs font-semibold rounded-none cursor-pointer"
+                    className="px-3 py-1.5 bg-transparent hover:bg-gray-800 text-gray-300 text-xs font-semibold rounded-none cursor-pointer"
                   >
-                    Hủy Bỏ
+                    Hủy
                   </button>
                   <button
                     type="submit"
                     disabled={isSubmitting || !directFullName.trim() || !directPhone.trim()}
-                    className="px-6 py-2 bg-[#C5A880] hover:bg-white text-[#0D1117] font-bold text-xs uppercase tracking-wider rounded-none shadow transition-colors flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+                    className="px-4 py-1.5 bg-[#C5A880] hover:bg-white text-[#0D1117] font-bold text-xs uppercase tracking-wider rounded-none shadow transition-colors flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
                   >
                     {isSubmitting ? (
                       <>
@@ -2103,7 +2073,7 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
                       </>
                     ) : (
                       <>
-                        <Check className="w-3.5 h-3.5" /> Xác Nhận Thêm Người Thân
+                        <Check className="w-3.5 h-3.5" /> Thêm Thành Viên
                       </>
                     )}
                   </button>
@@ -2115,27 +2085,27 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
             {/* CONFIRMATION & ROLE ASSIGNMENT SECTION (CHO TAB 1 & 2)       */}
             {/* ------------------------------------------------------------- */}
             {selectedAccount && modalMode !== 'DIRECT_INPUT' ? (
-              <form onSubmit={handleAddMember} className="pt-3 border-t border-[#222B35] space-y-3.5 text-xs">
-                <div className="p-3.5 bg-[#161D26] border border-[#C5A880]/60 rounded-none space-y-2">
+              <form onSubmit={handleAddMember} className="pt-2.5 border-t border-[#222B35] space-y-2.5 text-xs">
+                <div className="p-2.5 bg-[#161D26] border border-[#C5A880]/60 rounded-none space-y-1.5">
                   <div className="text-[11px] font-bold uppercase tracking-wider text-[#C5A880] flex items-center justify-between">
-                    <span>Thông Tin Người Nhà Xác Thực:</span>
-                    <span className="text-emerald-400 text-[10px] font-mono">Đã Xác Thực e-KYC</span>
+                    <span>Người Nhà Đã Chọn:</span>
+                    <span className="text-emerald-400 text-[10px] font-mono">Đã Xác Thực</span>
                   </div>
-                  <div className="grid grid-cols-2 gap-2 text-gray-200">
+                  <div className="grid grid-cols-2 gap-2 text-gray-200 text-[11px]">
                     <div>• Họ tên: <strong className="text-white">{selectedAccount.fullName}</strong></div>
                     <div>• SĐT: <strong className="font-mono text-white">{selectedAccount.phone}</strong></div>
-                    <div>• Số CCCD: <strong className="font-mono text-[#C5A880]">{selectedAccount.idCard}</strong></div>
-                    <div>• Vai trò cấp phát: <strong className="text-purple-300">Người Nhà / Gia Đình</strong></div>
+                    <div>• CCCD: <strong className="font-mono text-[#C5A880]">{selectedAccount.idCard}</strong></div>
+                    <div>• Vai trò: <strong className="text-purple-300">Người Nhà</strong></div>
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                   <div>
-                    <label className="text-gray-300 font-medium block mb-1">Mối Quan Hệ Với Chủ Hộ:</label>
+                    <label className="text-gray-300 font-medium block mb-1">Mối Quan Hệ:</label>
                     <select
                       value={newRelationship}
                       onChange={(e) => setNewRelationship(e.target.value)}
-                      className="w-full bg-[#161B22] border border-[#2D3748] p-2.5 text-white rounded-none focus:border-[#C5A880] outline-none"
+                      className="w-full bg-[#161B22] border border-[#2D3748] p-2 text-white rounded-none focus:border-[#C5A880] outline-none"
                     >
                       <option value="Vợ / Chồng">Vợ / Chồng</option>
                       <option value="Con Cái">Con Cái</option>
@@ -2146,52 +2116,43 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
                   </div>
 
                   <div>
-                    <label className="text-gray-300 font-medium block mb-1">Biển Số Xe (Nếu có):</label>
+                    <label className="text-gray-300 font-medium block mb-1">Biển Số Xe (tùy chọn):</label>
                     <input
                       type="text"
                       value={newLicensePlate}
                       onChange={(e) => setNewLicensePlate(e.target.value)}
                       placeholder="VD: 59P1-886.79"
-                      className="w-full bg-[#161B22] border border-[#2D3748] p-2.5 text-white font-mono rounded-none focus:border-[#C5A880] outline-none"
+                      className="w-full bg-[#161B22] border border-[#2D3748] p-2 text-white font-mono rounded-none focus:border-[#C5A880] outline-none"
                     />
                   </div>
                 </div>
 
-                <div className="p-3 bg-purple-950/40 border border-purple-500/40 rounded-none text-purple-300 text-[11px] flex items-center gap-2">
-                  <ShieldCheck className="w-4 h-4 text-purple-400 flex-shrink-0" />
-                  <span>Sau khi xác nhận, tài khoản người nhà sẽ được cấp quyền FaceID sảnh đón, thang máy và tiện ích sinh hoạt.</span>
-                </div>
-
-                <div className="pt-2 flex justify-end gap-2.5 border-t border-[#222B35]">
+                <div className="pt-2 flex justify-end gap-2 border-t border-[#222B35]">
                   <button
                     type="button"
                     onClick={() => setShowAddModal(false)}
-                    className="px-4 py-2 bg-transparent hover:bg-[#161D26] text-gray-400 hover:text-white rounded-none transition-colors cursor-pointer"
+                    className="px-3 py-1.5 bg-transparent hover:bg-[#161D26] text-gray-400 hover:text-white rounded-none transition-colors cursor-pointer"
                   >
                     Hủy
                   </button>
                   <button
                     type="submit"
                     disabled={isSubmitting}
-                    className="px-5 py-2.5 bg-[#C5A880] hover:bg-white text-[#0D1117] font-bold text-xs uppercase tracking-wider rounded-none shadow-lg transition-colors flex items-center gap-2 cursor-pointer active:scale-95"
+                    className="px-4 py-1.5 bg-[#C5A880] hover:bg-white text-[#0D1117] font-bold text-xs uppercase tracking-wider rounded-none shadow transition-colors flex items-center gap-1.5 cursor-pointer active:scale-95"
                   >
                     {isSubmitting ? (
                       <>
-                        <RefreshCw className="w-4 h-4 animate-spin" /> Đang Xử Lý...
+                        <RefreshCw className="w-3.5 h-3.5 animate-spin" /> Đang Xử Lý...
                       </>
                     ) : (
                       <>
-                        <Check className="w-4 h-4" /> Xác Nhận Thêm Thành Viên
+                        <Check className="w-3.5 h-3.5" /> Thêm Thành Viên
                       </>
                     )}
                   </button>
                 </div>
               </form>
-            ) : (
-              <div className="p-4 bg-[#121820] border border-[#222B35] rounded-none text-center text-xs text-gray-400">
-                Vui lòng chọn một tài khoản người nhà ở trên để tiếp tục thiết lập quan hệ và cấp quyền.
-              </div>
-            )}
+            ) : null}
 
           </div>
         </div>
@@ -2290,7 +2251,7 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
               </div>
 
               {/* Member Brief Info */}
-              <div className="p-3.5 bg-[#161B22] border border-[#222B35] text-xs grid grid-cols-2 sm:grid-cols-4 gap-3">
+              <div className="p-3 bg-[#161B22] border border-[#222B35] text-xs grid grid-cols-2 sm:grid-cols-4 gap-2.5">
                 <div>
                   <span className="text-gray-400 block text-[11px]">Thành viên:</span>
                   <strong className="text-white">{confirmTargetMember.fullName}</strong>
@@ -2300,11 +2261,11 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
                   <span className="text-[#C5A880] font-semibold">{confirmTargetMember.relationship}</span>
                 </div>
                 <div>
-                  <span className="text-gray-400 block text-[11px]">Số điện thoại:</span>
+                  <span className="text-gray-400 block text-[11px]">SĐT:</span>
                   <span className="font-mono text-gray-200">{confirmTargetMember.phone}</span>
                 </div>
                 <div>
-                  <span className="text-gray-400 block text-[11px]">Số CCCD:</span>
+                  <span className="text-gray-400 block text-[11px]">CCCD:</span>
                   <span className="font-mono text-gray-200">{confirmTargetMember.idCard || 'Đang cập nhật'}</span>
                 </div>
               </div>
@@ -2313,19 +2274,19 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
               <div className="space-y-2">
                 <div className="text-xs font-semibold text-gray-300 flex items-center justify-between">
                   <span className="flex items-center gap-1.5">
-                    <Camera className="w-4 h-4 text-[#C5A880]" /> 4 Mẫu Khuôn Mặt Người Nhà Đã Thu Thập:
+                    <Camera className="w-4 h-4 text-[#C5A880]" /> 4 Góc Khuôn Mặt:
                   </span>
                   <span className="text-[10px] text-emerald-400 font-mono flex items-center gap-1">
                     <CheckCircle className="w-3 h-3 text-emerald-400" />
-                    Độ khớp sinh trắc AI: {enrolled?.faceScore || 99.4}% (Đạt chuẩn)
+                    Độ khớp: {enrolled?.faceScore || 99.4}%
                   </span>
                 </div>
 
                 {samples ? (
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                     <div 
-                      onClick={() => setSelectedAnglePreview({ title: 'Góc 1: Chính Diện (Nhìn Thẳng)', src: samples.front })}
-                      className="p-2 bg-[#121820] border border-gray-700 hover:border-[#C5A880] text-center space-y-1 group cursor-pointer transition-all relative"
+                      onClick={() => setSelectedAnglePreview({ title: '1. Chính Diện', src: samples.front })}
+                      className="p-1.5 bg-[#121820] border border-gray-700 hover:border-[#C5A880] text-center space-y-1 group cursor-pointer transition-all relative"
                     >
                       <div className="text-[10px] font-mono text-[#C5A880] flex items-center justify-between">
                         <span>1. Chính Diện</span>
@@ -2333,15 +2294,12 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
                       </div>
                       <div className="aspect-square bg-black border border-gray-800 overflow-hidden relative">
                         <img src={samples.front} alt="Front" className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
-                        <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
-                          <span className="text-[9px] bg-black/80 px-1.5 py-0.5 text-white font-mono">Phóng to</span>
-                        </div>
                       </div>
                     </div>
 
                     <div 
-                      onClick={() => setSelectedAnglePreview({ title: 'Góc 2: Nghiêng Trái 30°', src: samples.left })}
-                      className="p-2 bg-[#121820] border border-gray-700 hover:border-[#C5A880] text-center space-y-1 group cursor-pointer transition-all relative"
+                      onClick={() => setSelectedAnglePreview({ title: '2. Quay Trái', src: samples.left })}
+                      className="p-1.5 bg-[#121820] border border-gray-700 hover:border-[#C5A880] text-center space-y-1 group cursor-pointer transition-all relative"
                     >
                       <div className="text-[10px] font-mono text-[#C5A880] flex items-center justify-between">
                         <span>2. Quay Trái</span>
@@ -2349,15 +2307,12 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
                       </div>
                       <div className="aspect-square bg-black border border-gray-800 overflow-hidden relative">
                         <img src={samples.left} alt="Left" className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
-                        <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
-                          <span className="text-[9px] bg-black/80 px-1.5 py-0.5 text-white font-mono">Phóng to</span>
-                        </div>
                       </div>
                     </div>
 
                     <div 
-                      onClick={() => setSelectedAnglePreview({ title: 'Góc 3: Nghiêng Phải 30°', src: samples.right })}
-                      className="p-2 bg-[#121820] border border-gray-700 hover:border-[#C5A880] text-center space-y-1 group cursor-pointer transition-all relative"
+                      onClick={() => setSelectedAnglePreview({ title: '3. Quay Phải', src: samples.right })}
+                      className="p-1.5 bg-[#121820] border border-gray-700 hover:border-[#C5A880] text-center space-y-1 group cursor-pointer transition-all relative"
                     >
                       <div className="text-[10px] font-mono text-[#C5A880] flex items-center justify-between">
                         <span>3. Quay Phải</span>
@@ -2365,15 +2320,12 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
                       </div>
                       <div className="aspect-square bg-black border border-gray-800 overflow-hidden relative">
                         <img src={samples.right} alt="Right" className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
-                        <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
-                          <span className="text-[9px] bg-black/80 px-1.5 py-0.5 text-white font-mono">Phóng to</span>
-                        </div>
                       </div>
                     </div>
 
                     <div 
-                      onClick={() => setSelectedAnglePreview({ title: 'Góc 4: Nụ Cười • Xác Thực Sống (Liveness)', src: samples.smile })}
-                      className="p-2 bg-[#121820] border border-gray-700 hover:border-[#C5A880] text-center space-y-1 group cursor-pointer transition-all relative"
+                      onClick={() => setSelectedAnglePreview({ title: '4. Mỉm Cười', src: samples.smile })}
+                      className="p-1.5 bg-[#121820] border border-gray-700 hover:border-[#C5A880] text-center space-y-1 group cursor-pointer transition-all relative"
                     >
                       <div className="text-[10px] font-mono text-[#C5A880] flex items-center justify-between">
                         <span>4. Mỉm Cười</span>
@@ -2381,55 +2333,48 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
                       </div>
                       <div className="aspect-square bg-black border border-gray-800 overflow-hidden relative">
                         <img src={samples.smile} alt="Smile" className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
-                        <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
-                          <span className="text-[9px] bg-black/80 px-1.5 py-0.5 text-white font-mono">Phóng to</span>
-                        </div>
                       </div>
                     </div>
                   </div>
                 ) : (
-                  <div className="p-6 bg-[#161B22] border border-gray-800 text-center text-xs text-gray-400">
-                    Chưa tìm thấy mẫu ảnh quét của thành viên này trên máy chủ.
+                  <div className="p-5 bg-[#161B22] border border-gray-800 text-center text-xs text-gray-400">
+                    Chưa có mẫu ảnh quét của thành viên này.
                   </div>
                 )}
               </div>
 
               {/* Owner Legal Responsibility Notice */}
-              <div className="p-3.5 bg-gradient-to-r from-[#1A1810] to-[#121820] border border-[#C5A880]/60 rounded-none text-[11px] text-gray-300 space-y-1">
-                <div className="font-bold text-[#C5A880] flex items-center gap-1.5">
-                  <ShieldCheck className="w-4 h-4 text-[#C5A880]" /> Trách Nhiệm Bảo Lãnh Của Chủ Hộ ({ownerName}):
-                </div>
-                <p className="text-gray-300 leading-relaxed">
-                  Bằng việc bấm &ldquo;Xác Nhận Bảo Lãnh & Gửi BQL&rdquo;, bạn xác nhận thành viên <strong>{confirmTargetMember.fullName}</strong> cư trú hợp pháp tại căn hộ <strong>{aptCode}</strong>, cam đoan các mẫu nhận diện khuôn mặt trên là chính xác và đồng ý cấp quyền truy cập các khu vực chung của tòa nhà (Sảnh đón A/B, Thang máy tầng 12, Hầm giữ xe B1/B2).
-                </p>
+              <div className="p-2.5 bg-[#121820] border border-[#C5A880]/50 rounded-none text-xs text-gray-300 flex items-center gap-2">
+                <ShieldCheck className="w-4 h-4 text-[#C5A880] flex-shrink-0" />
+                <span>Xác nhận thành viên <strong>{confirmTargetMember.fullName}</strong> thuộc căn <strong>{aptCode}</strong> để gửi BQL kích hoạt FaceID.</span>
               </div>
 
               {/* Action Buttons */}
-              <div className="flex flex-col sm:flex-row items-center justify-end gap-3 pt-3 border-t border-[#222B35]">
+              <div className="flex flex-col sm:flex-row items-center justify-end gap-2.5 pt-2.5 border-t border-[#222B35]">
                 <button
                   type="button"
                   onClick={() => {
                     setConfirmTargetMember(null);
                     setBankEnrollTarget(confirmTargetMember);
                   }}
-                  className="w-full sm:w-auto px-4 py-2.5 bg-[#161B22] hover:bg-[#202936] text-gray-300 hover:text-white border border-[#2D3748] text-xs font-semibold rounded-none transition-colors cursor-pointer"
+                  className="w-full sm:w-auto px-3.5 py-2 bg-[#161B22] hover:bg-[#202936] text-gray-300 hover:text-white border border-[#2D3748] text-xs font-semibold rounded-none transition-colors cursor-pointer"
                 >
-                  Yêu Cầu Quét Lại / Quét Hộ
+                  Quét Lại
                 </button>
 
                 <button
                   type="button"
                   onClick={handleConfirmAndSendToBql}
                   disabled={isConfirmingFace || !samples}
-                  className="w-full sm:w-auto px-6 py-2.5 bg-gradient-to-r from-amber-500 to-[#C5A880] hover:brightness-110 text-[#0D1117] text-xs font-bold uppercase tracking-wider rounded-none flex items-center justify-center gap-2 transition-all shadow-lg active:scale-95 disabled:opacity-50 cursor-pointer"
+                  className="w-full sm:w-auto px-5 py-2 bg-gradient-to-r from-amber-500 to-[#C5A880] hover:brightness-110 text-[#0D1117] text-xs font-bold uppercase tracking-wider rounded-none flex items-center justify-center gap-1.5 transition-all shadow active:scale-95 disabled:opacity-50 cursor-pointer"
                 >
                   {isConfirmingFace ? (
                     <>
-                      <RefreshCw className="w-4 h-4 animate-spin" /> Đang Chuyển Tới Ban Quản Lý...
+                      <RefreshCw className="w-3.5 h-3.5 animate-spin" /> Đang Gửi...
                     </>
                   ) : (
                     <>
-                      <ShieldCheck className="w-4 h-4" /> Xác Nhận Bảo Lãnh & Gửi BQL Phê Duyệt
+                      <ShieldCheck className="w-3.5 h-3.5" /> Xác Nhận & Gửi BQL
                     </>
                   )}
                 </button>
@@ -2451,37 +2396,34 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
           }}
           className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/85 backdrop-blur-sm animate-fadeIn select-none"
         >
-          <div className="bg-[#0D1117] border border-rose-600/80 max-w-md w-full p-5 sm:p-6 text-white space-y-4 shadow-2xl rounded-none">
-            <div className="flex items-center gap-3 border-b border-[#222B35] pb-3">
-              <div className="w-10 h-10 bg-rose-950 border border-rose-500 text-rose-300 flex items-center justify-center flex-shrink-0">
-                <AlertTriangle className="w-5 h-5 text-rose-400" />
+          <div className="bg-[#0D1117] border border-rose-600/80 max-w-md w-full p-4 sm:p-5 text-white space-y-3.5 shadow-2xl rounded-none">
+            <div className="flex items-center gap-2.5 border-b border-[#222B35] pb-2.5">
+              <div className="w-8 h-8 bg-rose-950 border border-rose-500 text-rose-300 flex items-center justify-center flex-shrink-0">
+                <AlertTriangle className="w-4 h-4 text-rose-400" />
               </div>
               <div>
-                <h3 className="text-base font-serif font-bold text-white">
-                  Xác Nhận Hủy Phân Quyền Cư Dân
+                <h3 className="text-sm sm:text-base font-serif font-bold text-white">
+                  Xóa Quyền Thành Viên
                 </h3>
                 <p className="text-[11px] text-gray-400">
-                  Căn hộ {aptCode} • Chủ hộ {ownerName}
+                  Căn {aptCode} • Chủ hộ {ownerName}
                 </p>
               </div>
             </div>
 
             {/* Warning Message */}
-            <div className="p-3.5 bg-rose-950/40 border border-rose-900 text-rose-200 text-xs space-y-1.5 leading-relaxed">
-              <div className="font-bold text-rose-300 flex items-center gap-1.5 uppercase text-[10.5px]">
-                <AlertCircle className="w-3.5 h-3.5 text-rose-400" /> Cảnh Báo Thu Hồi Quyền Truy Cập:
-              </div>
+            <div className="p-3 bg-rose-950/40 border border-rose-900 text-rose-200 text-xs space-y-1">
               <p>
-                Hành động này sẽ xóa thành viên <strong className="text-white">{removeTargetMember.fullName}</strong> khỏi danh sách căn hộ <strong>{aptCode}</strong>.
+                Xác nhận xóa thành viên <strong className="text-white">{removeTargetMember.fullName}</strong> khỏi căn hộ <strong>{aptCode}</strong>?
               </p>
               <p className="text-rose-300/80 text-[11px]">
-                • Toàn bộ quyền FaceID ra vào sảnh, thang máy và tiện ích sinh hoạt sẽ bị khóa ngay lập tức.
+                Quyền FaceID sảnh và thang máy sẽ bị thu hồi.
               </p>
             </div>
 
             {/* Target Member Mini Summary */}
-            <div className="p-3 bg-[#161D26] border border-[#222B35] flex items-center gap-3 text-xs">
-              <div className="w-10 h-10 rounded-none overflow-hidden border border-gray-700 bg-black flex-shrink-0">
+            <div className="p-2.5 bg-[#161D26] border border-[#222B35] flex items-center gap-2.5 text-xs">
+              <div className="w-9 h-9 rounded-none overflow-hidden border border-gray-700 bg-black flex-shrink-0">
                 <img
                   src={removeTargetMember.avatarUrl || 'https://data.nks.vn/storage/users/default.png'}
                   alt={removeTargetMember.fullName}
@@ -2490,26 +2432,25 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
               </div>
               <div className="space-y-0.5 min-w-0">
                 <div className="font-bold text-white">{removeTargetMember.fullName}</div>
-                <div className="text-gray-400 font-mono text-[11px]">SĐT: {removeTargetMember.phone}</div>
-                <div className="text-[#C5A880] text-[11px]">{removeTargetMember.relationship}</div>
+                <div className="text-gray-400 font-mono text-[11px]">SĐT: {removeTargetMember.phone} • {removeTargetMember.relationship}</div>
               </div>
             </div>
 
             {/* Actions */}
-            <div className="pt-2 flex justify-end gap-2.5 border-t border-[#222B35]">
+            <div className="pt-2 flex justify-end gap-2 border-t border-[#222B35]">
               <button
                 type="button"
                 onClick={() => setRemoveTargetMember(null)}
-                className="px-4 py-2 bg-transparent hover:bg-[#161D26] text-gray-400 hover:text-white rounded-none transition-colors cursor-pointer text-xs"
+                className="px-3 py-1.5 bg-transparent hover:bg-[#161D26] text-gray-400 hover:text-white rounded-none transition-colors cursor-pointer text-xs"
               >
-                Giữ Lại Quyền
+                Hủy
               </button>
 
               <button
                 type="button"
                 disabled={isRemoving}
                 onClick={handleConfirmRemoveMember}
-                className="px-5 py-2.5 bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs uppercase tracking-wider rounded-none shadow-lg transition-all flex items-center gap-2 cursor-pointer active:scale-95"
+                className="px-4 py-1.5 bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs uppercase tracking-wider rounded-none shadow transition-all flex items-center gap-1.5 cursor-pointer active:scale-95"
               >
                 {isRemoving ? (
                   <>
@@ -2517,7 +2458,7 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
                   </>
                 ) : (
                   <>
-                    <Trash2 className="w-3.5 h-3.5" /> Xác Nhận Hủy Quyền
+                    <Trash2 className="w-3.5 h-3.5" /> Xóa Quyền
                   </>
                 )}
               </button>
@@ -2538,7 +2479,7 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
             onClick={(e) => e.stopPropagation()}
             className="bg-[#0D1117] border border-[#C5A880] p-4 max-w-lg w-full text-white shadow-2xl rounded-none space-y-3 cursor-default"
           >
-            <div className="flex items-center justify-between border-b border-[#222B35] pb-2.5">
+            <div className="flex items-center justify-between border-b border-[#222B35] pb-2">
               <div className="text-xs font-bold font-mono text-[#C5A880] uppercase tracking-wider">
                 {selectedAnglePreview.title}
               </div>
@@ -2557,10 +2498,6 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
                 alt={selectedAnglePreview.title}
                 className="w-full h-full object-cover"
               />
-            </div>
-
-            <div className="text-center text-[11px] text-gray-400">
-              Mẫu sinh trắc học chuẩn ngân hàng • Kiểm tra tính toàn vẹn và độ sắc nét khuôn mặt
             </div>
           </div>
         </div>
