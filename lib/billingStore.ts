@@ -125,7 +125,12 @@ export function getBills(aptCode?: string, overrideOwnerName?: string): Extended
   // Đồng bộ tên chủ hộ thực tế nếu được truyền vào
   if (overrideOwnerName && overrideOwnerName.trim()) {
     allBills = allBills.map(b => {
-      if (aptCode && b.apt_code.trim().toUpperCase() === aptCode.trim().toUpperCase()) {
+      const bCode = b.apt_code.trim().toUpperCase();
+      const isTarget = aptCode && (
+        bCode === aptCode.trim().toUpperCase() || 
+        ((bCode === 'CH-06' || bCode === '12A05') && (aptCode.toUpperCase() === 'CH-06' || aptCode.toUpperCase() === '12A05'))
+      );
+      if (isTarget) {
         return { ...b, owner_name: overrideOwnerName.trim() };
       }
       return b;
@@ -134,7 +139,14 @@ export function getBills(aptCode?: string, overrideOwnerName?: string): Extended
 
   if (aptCode) {
     const clean = aptCode.trim().toUpperCase();
-    return allBills.filter(b => b.apt_code.trim().toUpperCase() === clean);
+    const isOwnerTarget = clean === 'CH-06' || clean === '12A05' || clean.endsWith('CH-06');
+    return allBills.filter(b => {
+      const bCode = b.apt_code.trim().toUpperCase();
+      if (isOwnerTarget) {
+        return bCode === 'CH-06' || bCode === '12A05' || bCode.endsWith('CH-06');
+      }
+      return bCode === clean;
+    });
   }
   return allBills;
 }

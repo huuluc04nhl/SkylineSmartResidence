@@ -55,6 +55,7 @@ import {
 import { 
   getApartmentUnits, 
   getApartmentByCode, 
+  syncApartmentsFromNksApi,
   ApartmentUnit, 
   ApartmentResidentOwner,
   ApartmentType,
@@ -72,7 +73,7 @@ export type ApartmentTypeFilter = 'ALL' | '1PN' | '2PN' | '3PN' | 'DUPLEX_PENTHO
 export type FloorRangeFilter = 'ALL' | 'LOW' | 'MID' | 'HIGH';
 export type ViewPerspective = '3D' | 'BUILDING_ELEVATION' | 'FLOOR_PLAN' | 'GRID';
 
-// Danh sách các khối căn hộ kiến trúc hiển thị trên mô hình 3D (25 tầng chung cư Skyline)
+// Danh sách các khối căn hộ kiến trúc hiển thị trên mô hình 3D (34 tầng phân khu The Tropical - Block BS-07 / BS-10 từ NKS API)
 export const BUILDING_3D_UNITS: {
   code: string;
   floor: number;
@@ -81,71 +82,22 @@ export const BUILDING_3D_UNITS: {
   defaultStatus: ApartmentStatus;
   area: number;
   defaultName?: string;
-}[] = [
-  // Tầng 25 (Penthouse)
-  { code: '25PH-01', floor: 25, side: 'LEFT', type: 'DUPLEX_PENTHOUSE', defaultStatus: 'VACANT', area: 215, defaultName: 'Nhà Trống' },
-  { code: '25PH-02', floor: 25, side: 'RIGHT', type: 'DUPLEX_PENTHOUSE', defaultStatus: 'VACANT', area: 215, defaultName: 'Nhà Trống' },
-  // Tầng 24
-  { code: '24A01', floor: 24, side: 'LEFT', type: '3PN', defaultStatus: 'VACANT', area: 112, defaultName: 'Nhà Trống' },
-  { code: '24A02', floor: 24, side: 'RIGHT', type: '2PN', defaultStatus: 'VACANT', area: 78.5, defaultName: 'Nhà Trống' },
-  // Tầng 23
-  { code: '23A01', floor: 23, side: 'LEFT', type: '3PN', defaultStatus: 'VACANT', area: 112, defaultName: 'Nhà Trống' },
-  { code: '23A02', floor: 23, side: 'RIGHT', type: '2PN', defaultStatus: 'VACANT', area: 75, defaultName: 'Nhà Trống' },
-  // Tầng 22
-  { code: '22A01', floor: 22, side: 'LEFT', type: '3PN', defaultStatus: 'VACANT', area: 112, defaultName: 'Nhà Trống' },
-  { code: '22A02', floor: 22, side: 'RIGHT', type: '2PN', defaultStatus: 'VACANT', area: 75, defaultName: 'Nhà Trống' },
-  // Tầng 21
-  { code: '21A01', floor: 21, side: 'LEFT', type: '2PN', defaultStatus: 'VACANT', area: 78.5, defaultName: 'Nhà Trống' },
-  { code: '21A02', floor: 21, side: 'RIGHT', type: '1PN', defaultStatus: 'VACANT', area: 52, defaultName: 'Nhà Trống' },
-  // Tầng 20
-  { code: '20A01', floor: 20, side: 'LEFT', type: '2PN', defaultStatus: 'VACANT', area: 78.5, defaultName: 'Nhà Trống' },
-  { code: '20A02', floor: 20, side: 'RIGHT', type: '3PN', defaultStatus: 'VACANT', area: 112, defaultName: 'Nhà Trống' },
-  // Tầng 19
-  { code: '19A01', floor: 19, side: 'LEFT', type: '3PN', defaultStatus: 'VACANT', area: 108, defaultName: 'Nhà Trống' },
-  { code: '19A02', floor: 19, side: 'RIGHT', type: '2PN', defaultStatus: 'VACANT', area: 75, defaultName: 'Nhà Trống' },
-  // Tầng 18
-  { code: '18A01', floor: 18, side: 'LEFT', type: '3PN', defaultStatus: 'VACANT', area: 112, defaultName: 'Nhà Trống' },
-  { code: '18A02', floor: 18, side: 'RIGHT', type: '2PN', defaultStatus: 'VACANT', area: 75, defaultName: 'Nhà Trống' },
-  // Tầng 17
-  { code: '17A01', floor: 17, side: 'LEFT', type: '2PN', defaultStatus: 'VACANT', area: 78.5, defaultName: 'Nhà Trống' },
-  { code: '17A02', floor: 17, side: 'RIGHT', type: '1PN', defaultStatus: 'VACANT', area: 52, defaultName: 'Nhà Trống' },
-  // Tầng 16
-  { code: '16A01', floor: 16, side: 'LEFT', type: '2PN', defaultStatus: 'VACANT', area: 75, defaultName: 'Nhà Trống' },
-  { code: '16A02', floor: 16, side: 'RIGHT', type: '3PN', defaultStatus: 'VACANT', area: 108, defaultName: 'Nhà Trống' },
-  // Tầng 15
-  { code: '15A01', floor: 15, side: 'LEFT', type: '3PN', defaultStatus: 'VACANT', area: 108, defaultName: 'Nhà Trống' },
-  { code: '15A04', floor: 15, side: 'RIGHT', type: '2PN', defaultStatus: 'VACANT', area: 78.5, defaultName: 'Nhà Trống' },
-  // Tầng 14
-  { code: '14A01', floor: 14, side: 'LEFT', type: '2PN', defaultStatus: 'VACANT', area: 75, defaultName: 'Nhà Trống' },
-  { code: '14A02', floor: 14, side: 'RIGHT', type: '2PN', defaultStatus: 'VACANT', area: 78.5, defaultName: 'Nhà Trống' },
-  // Tầng 12 (Căn 12A05 là căn cư dân thật Nguyễn Hữu Lực)
-  { code: '12A05', floor: 12, side: 'LEFT', type: '2PN', defaultStatus: 'OCCUPIED', area: 78.5, defaultName: 'Nguyễn Hữu Lực' },
-  { code: '12A04', floor: 12, side: 'RIGHT', type: '3PN', defaultStatus: 'VACANT', area: 108, defaultName: 'Nhà Trống' },
-  // Tầng 11
-  { code: '11A01', floor: 11, side: 'LEFT', type: '2PN', defaultStatus: 'VACANT', area: 75, defaultName: 'Nhà Trống' },
-  { code: '11A02', floor: 11, side: 'RIGHT', type: '1PN', defaultStatus: 'VACANT', area: 52, defaultName: 'Nhà Trống' },
-  // Tầng 10 (Căn 10A03 đang nghiệm thu kỹ thuật BQL)
-  { code: '10A01', floor: 10, side: 'LEFT', type: '2PN', defaultStatus: 'VACANT', area: 75, defaultName: 'Nhà Trống' },
-  { code: '10A03', floor: 10, side: 'RIGHT', type: '2PN', defaultStatus: 'MAINTENANCE', area: 78.5, defaultName: 'Nghiệm Thu BQL' },
-  // Tầng 9
-  { code: '09A01', floor: 9, side: 'LEFT', type: '2PN', defaultStatus: 'VACANT', area: 78.5, defaultName: 'Nhà Trống' },
-  { code: '09A02', floor: 9, side: 'RIGHT', type: '1PN', defaultStatus: 'VACANT', area: 52, defaultName: 'Nhà Trống' },
-  // Tầng 8
-  { code: '08A01', floor: 8, side: 'LEFT', type: '3PN', defaultStatus: 'VACANT', area: 108, defaultName: 'Nhà Trống' },
-  { code: '08A02', floor: 8, side: 'RIGHT', type: '1PN', defaultStatus: 'VACANT', area: 52, defaultName: 'Nhà Trống' },
-  // Tầng 7
-  { code: '07A01', floor: 7, side: 'LEFT', type: '2PN', defaultStatus: 'VACANT', area: 75, defaultName: 'Nhà Trống' },
-  { code: '07A02', floor: 7, side: 'RIGHT', type: '2PN', defaultStatus: 'VACANT', area: 78.5, defaultName: 'Nhà Trống' },
-  // Tầng 6
-  { code: '06A01', floor: 6, side: 'LEFT', type: '1PN', defaultStatus: 'VACANT', area: 52, defaultName: 'Nhà Trống' },
-  { code: '06A02', floor: 6, side: 'RIGHT', type: '1PN', defaultStatus: 'VACANT', area: 52, defaultName: 'Nhà Trống' },
-  // Tầng 5
-  { code: '05A02', floor: 5, side: 'LEFT', type: '1PN', defaultStatus: 'VACANT', area: 52, defaultName: 'Nhà Trống' },
-  { code: '05A01', floor: 5, side: 'RIGHT', type: '2PN', defaultStatus: 'VACANT', area: 75, defaultName: 'Nhà Trống' },
-  // Tầng 4
-  { code: '04A01', floor: 4, side: 'LEFT', type: '2PN', defaultStatus: 'VACANT', area: 75, defaultName: 'Nhà Trống' },
-  { code: '04A02', floor: 4, side: 'RIGHT', type: '1PN', defaultStatus: 'VACANT', area: 52, defaultName: 'Nhà Trống' }
-];
+}[] = (() => {
+  const list: any[] = [];
+  for (let fl = 34; fl >= 1; fl--) {
+    if (fl === 30) {
+      list.push({ code: 'CH-06', floor: 30, side: 'LEFT', type: '1PN', defaultStatus: 'OCCUPIED', area: 42, defaultName: 'Trần Hữu Lực' });
+      list.push({ code: 'CH-01', floor: 30, side: 'RIGHT', type: '2PN', defaultStatus: 'OCCUPIED', area: 50, defaultName: 'Trần Hữu Lực' });
+    } else if (fl === 20) {
+      list.push({ code: '20-CH-06', floor: 20, side: 'LEFT', type: '1PN', defaultStatus: 'OCCUPIED', area: 42, defaultName: 'Chủ Hộ (0364967080)' });
+      list.push({ code: '20-CH-01', floor: 20, side: 'RIGHT', type: '2PN', defaultStatus: 'VACANT', area: 60, defaultName: 'Căn Hộ Trống' });
+    } else {
+      list.push({ code: `${fl}-CH-06`, floor: fl, side: 'LEFT', type: '1PN', defaultStatus: 'VACANT', area: 42, defaultName: 'Căn Hộ Trống' });
+      list.push({ code: `${fl}-CH-01`, floor: fl, side: 'RIGHT', type: '2PN', defaultStatus: 'VACANT', area: 60, defaultName: 'Căn Hộ Trống' });
+    }
+  }
+  return list;
+})();
 
 // Helper tính toán chỉ số tiêu thụ hàng tháng & dòng tiền thu nhập căn hộ
 export function getApartmentFinancialMetrics(unit: ApartmentUnit | null) {
@@ -231,9 +183,13 @@ export function getApartmentFinancialMetrics(unit: ApartmentUnit | null) {
 }
 
 export default function AdminBuildingApartmentManager() {
-  // 1. Quản lý danh sách căn hộ thực tế từ apartmentStore
+  // 1. Quản lý danh sách căn hộ thực tế từ apartmentStore & NKS API
   const [apartments, setApartments] = useState<ApartmentUnit[]>([]);
-  const [selectedAptCode, setSelectedAptCode] = useState<string>('12A05');
+  const [selectedAptCode, setSelectedAptCode] = useState<string>('CH-06');
+  const [selectedBlock, setSelectedBlock] = useState<'BS-07' | 'BS-10'>('BS-07');
+  const [isSyncingApi, setIsSyncingApi] = useState(false);
+  const [syncMessage, setSyncMessage] = useState<string | null>(null);
+
   const [selectedOccupancy, setSelectedOccupancy] = useState<OccupancyFilter>('ALL');
   const [selectedType, setSelectedType] = useState<ApartmentTypeFilter>('ALL');
   const [selectedFloorRange, setSelectedFloorRange] = useState<FloorRangeFilter>('ALL');
@@ -242,8 +198,8 @@ export default function AdminBuildingApartmentManager() {
   const [buildingPerspective, setBuildingPerspective] = useState<ViewPerspective>('3D');
   const [detailTab, setDetailTab] = useState<'OVERVIEW' | 'FINANCIAL' | 'TECHNICAL'>('OVERVIEW');
 
-  // Điều khiển Floor Plan View (Mặt Bằng Tầng & Chế độ Mở Rộng)
-  const [selectedFloor, setSelectedFloor] = useState<number>(12);
+  // Điều khiển Floor Plan View (Mặt Bằng Tầng & Chế độ Mở Rộng) - Mặc định tầng 30 của chủ hộ
+  const [selectedFloor, setSelectedFloor] = useState<number>(30);
   const [hoveredUnitCode, setHoveredUnitCode] = useState<string | null>(null);
   const [isFloorPlanExpanded, setIsFloorPlanExpanded] = useState<boolean>(false);
   const [floorFilterStatus, setFloorFilterStatus] = useState<'ALL' | 'OCCUPIED' | 'VACANT'>('ALL');
@@ -255,9 +211,9 @@ export default function AdminBuildingApartmentManager() {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
 
-  // 2. Dữ liệu thực tế cho cư dân căn hộ 12A05 từ API & userStore
+  // 2. Dữ liệu thực tế cho cư dân căn hộ CH-06 từ API & userStore
   const initialOwner = getUserStore('user-owner-1');
-  const initialMembers = getApartmentMembers('12A05');
+  const initialMembers = getApartmentMembers('CH-06');
   const [liveOwner, setLiveOwner] = useState<any>(null);
   const [liveMembers, setLiveMembers] = useState<ApartmentMember[]>(initialMembers);
 
@@ -265,6 +221,22 @@ export default function AdminBuildingApartmentManager() {
   const reloadApartments = () => {
     const list = getApartmentUnits();
     setApartments(list);
+  };
+
+  // Chuyển đổi giữa các Block tòa nhà
+  const handleSwitchBlock = async (blockCode: 'BS-07' | 'BS-10') => {
+    setSelectedBlock(blockCode);
+    setIsSyncingApi(true);
+    try {
+      const units = await syncApartmentsFromNksApi(blockCode);
+      setApartments(units);
+      setSyncMessage(`Đã chuyển sang ${blockCode === 'BS-07' ? 'Tropical BS-07' : 'Tropical BS-10'} (34 Tầng)`);
+      setTimeout(() => setSyncMessage(null), 3500);
+    } catch (e) {
+      console.warn('Switch block error:', e);
+    } finally {
+      setIsSyncingApi(false);
+    }
   };
 
   // Lắng nghe thay đổi từ storage
@@ -281,12 +253,12 @@ export default function AdminBuildingApartmentManager() {
     };
   }, []);
 
-  // Đồng bộ thông tin thực tế của chủ hộ 12A05 từ API NKS
+  // Đồng bộ thông tin thực tế của chủ hộ CH-06 từ API NKS
   useEffect(() => {
     let isMounted = true;
     async function syncRealResident() {
       try {
-        const famRes = await fetch('/api/user/family?aptCode=12A05');
+        const famRes = await fetch('/api/user/family?aptCode=CH-06');
         if (famRes.ok) {
           const famData = await famRes.json();
           if (famData.success && Array.isArray(famData.members) && famData.members.length > 0) {
@@ -298,7 +270,7 @@ export default function AdminBuildingApartmentManager() {
         if (userRes.ok) {
           const userData = await userRes.json();
           if (userData.user && isMounted) {
-            if (userData.user.role === 'OWNER' && (userData.user.apartment_code === '12A05' || !userData.user.role?.includes('ADMIN'))) {
+            if (userData.user.role === 'OWNER' && (userData.user.apartment_code === 'CH-06' || userData.user.apartment_code === '12A05' || !userData.user.role?.includes('ADMIN'))) {
               setLiveOwner(userData.user);
             }
           }
@@ -311,19 +283,19 @@ export default function AdminBuildingApartmentManager() {
     return () => { isMounted = false; };
   }, []);
 
-  // Thông tin chủ hộ 12A05 chuẩn thực tế
+  // Thông tin chủ hộ CH-06 chuẩn thực tế
   const isActualResident = 
     liveOwner && 
     liveOwner.role === 'OWNER' && 
-    liveOwner.apartment_code === '12A05' &&
+    (liveOwner.apartment_code === 'CH-06' || liveOwner.apartment_code === '12A05') &&
     !liveOwner.email?.includes('manager') &&
     !liveOwner.full_name?.includes('Quản Trị');
 
   const ownerData = isActualResident ? liveOwner : initialOwner;
 
   const activeOwnerName = isActualResident 
-    ? (liveOwner.full_name || liveOwner.fullname || 'Nguyễn Hữu Lực')
-    : (initialOwner?.full_name || 'Nguyễn Hữu Lực');
+    ? (liveOwner.full_name || liveOwner.fullname || 'Trần Hữu Lực')
+    : (initialOwner?.full_name || 'Trần Hữu Lực');
 
   const activeOwnerPhone = isActualResident 
     ? (liveOwner.phone || '0364967082') 
@@ -349,13 +321,16 @@ export default function AdminBuildingApartmentManager() {
     ? (liveOwner.pob || liveOwner.address || 'Triệu Trạch, Triệu Phong, Quảng Trị') 
     : (initialOwner?.pob || (initialOwner as any)?.address || 'Triệu Trạch, Triệu Phong, Quảng Trị');
 
+  const currentBlockName = selectedBlock === 'BS-10' ? 'Tropical BS-10' : 'Tropical BS-07';
+
   // Danh sách căn hộ hiển thị với dữ liệu người thật được cập nhật
   const displayUnits = useMemo(() => {
     return apartments.map(u => {
-      if (u.code === '12A05') {
+      const isOwnerUnit = u.code === 'CH-06' || (u.floor === 30 && u.code.includes('CH-06')) || u.code === '12A05';
+      if (isOwnerUnit) {
         return {
           ...u,
-          towerName: 'Chung Cư Skyline',
+          towerName: currentBlockName,
           owner: {
             ...u.owner,
             name: activeOwnerName,
@@ -373,10 +348,10 @@ export default function AdminBuildingApartmentManager() {
       }
       return {
         ...u,
-        towerName: 'Chung Cư Skyline'
+        towerName: currentBlockName
       };
     });
-  }, [apartments, activeOwnerName, activeOwnerPhone, activeOwnerEmail, activeOwnerCccd, activeOwnerAvatar, activeOwnerDob, activeOwnerPob, liveMembers]);
+  }, [apartments, activeOwnerName, activeOwnerPhone, activeOwnerEmail, activeOwnerCccd, activeOwnerAvatar, activeOwnerDob, activeOwnerPob, liveMembers, currentBlockName]);
 
   // Bộ lọc căn hộ đa tiêu chí & tìm kiếm thông minh
   const filteredUnits = useMemo(() => {
@@ -536,13 +511,16 @@ export default function AdminBuildingApartmentManager() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#222B35] pb-4">
         <div>
           <div className="text-[11px] uppercase tracking-wider text-[#C5A880] font-semibold flex items-center gap-1.5 font-mono">
-            <Building className="w-3.5 h-3.5 text-[#C5A880]" /> BAN QUẢN LÝ CHUNG CƯ SKYLINE
+            <Building className="w-3.5 h-3.5 text-[#C5A880]" /> BAN QUẢN LÝ DỰ ÁN THE TROPICAL - BEVERLY SOLARI
           </div>
-          <h2 className="font-serif text-2xl sm:text-3xl text-white font-bold mt-1">
-            Sơ Đồ Tầng & Danh Sách Căn Hộ
+          <h2 className="font-serif text-2xl sm:text-3xl text-white font-bold mt-1 flex items-center gap-2">
+            Sơ Đồ Tầng & Căn Hộ
+            <span className="text-xs px-2.5 py-1 bg-emerald-950/80 text-emerald-300 border border-emerald-500/40 font-mono font-normal">
+              100% LIVE NKS API
+            </span>
           </h2>
           <p className="text-xs text-gray-400 mt-0.5 max-w-3xl">
-            Sơ đồ toàn bộ các tầng trong tòa nhà chung cư Skyline. Quản lý căn hộ, chủ nhà, người ở cùng, phương tiện và nhận bàn giao nhà thực tế.
+            Dữ liệu Bất động sản tích hợp 100% từ NKS SCRMAI API: Tòa <strong className="text-white">{currentBlockName} (34 Tầng)</strong>. Căn hộ cư dân chính thức: <strong className="text-[#C5A880]">CH-06 & CH-01 (Tầng 30) - {activeOwnerName}</strong>.
           </p>
         </div>
 
@@ -606,6 +584,69 @@ export default function AdminBuildingApartmentManager() {
       </div>
 
       {/* ============================================================= */}
+      {/* 1.1 THANH CHỌN BLOCK DỰ ÁN & ĐỒNG BỘ 100% NKS API           */}
+      {/* ============================================================= */}
+      <div className="flex flex-wrap items-center justify-between gap-3 p-3 bg-gradient-to-r from-[#0D1522] via-[#111A29] to-[#0D1522] border border-[#23354E] rounded-none shadow-md">
+        <div className="flex flex-wrap items-center gap-3">
+          <div className="flex items-center gap-2">
+            <span className="inline-block w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_8px_rgba(52,211,153,0.8)]" />
+            <span className="text-xs font-bold text-white uppercase tracking-wider font-mono">
+              Phân Khu: <span className="text-[#C5A880]">The Tropical (Beverly Solari)</span>
+            </span>
+          </div>
+
+          <div className="flex items-center gap-1.5 bg-[#090E17] p-1 border border-[#1E293B]">
+            <button
+              type="button"
+              onClick={() => handleSwitchBlock('BS-07')}
+              className={`px-3 py-1 text-xs font-bold transition-all ${
+                selectedBlock === 'BS-07'
+                  ? 'bg-[#C5A880] text-black shadow'
+                  : 'text-gray-400 hover:text-white'
+              }`}
+            >
+              Tropical BS-07 (34 Tầng)
+            </button>
+            <button
+              type="button"
+              onClick={() => handleSwitchBlock('BS-10')}
+              className={`px-3 py-1 text-xs font-bold transition-all ${
+                selectedBlock === 'BS-10'
+                  ? 'bg-[#C5A880] text-black shadow'
+                  : 'text-gray-400 hover:text-white'
+              }`}
+            >
+              Tropical BS-10 (34 Tầng)
+            </button>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-2">
+          {syncMessage && (
+            <span className="text-xs text-emerald-400 font-mono animate-fadeIn">
+              ✓ {syncMessage}
+            </span>
+          )}
+          <button
+            type="button"
+            onClick={async () => {
+              setIsSyncingApi(true);
+              const units = await syncApartmentsFromNksApi(selectedBlock);
+              setApartments(units);
+              setIsSyncingApi(false);
+              setSyncMessage('Đồng bộ 100% dữ liệu từ NKS API thành công!');
+              setTimeout(() => setSyncMessage(null), 3000);
+            }}
+            disabled={isSyncingApi}
+            className="px-3 py-1.5 bg-[#1A2638] hover:bg-[#23354E] text-[#C5A880] hover:text-white text-xs font-semibold border border-[#2D4363] transition-all flex items-center gap-1.5 active:scale-95 disabled:opacity-50"
+          >
+            <RefreshCw className={`w-3.5 h-3.5 ${isSyncingApi ? 'animate-spin' : ''}`} />
+            {isSyncingApi ? 'Đang Tải API...' : 'Đồng Bộ NKS SCRMAI API'}
+          </button>
+        </div>
+      </div>
+
+      {/* ============================================================= */}
       {/* 2. THANH THỐNG KÊ TÌNH HÌNH CĂN HỘ THỰC TẾ                    */}
       {/* ============================================================= */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
@@ -617,7 +658,7 @@ export default function AdminBuildingApartmentManager() {
           <div className="text-2xl font-bold font-mono text-white mt-1">
             {totalUnitsCount} <span className="text-xs text-gray-400 font-normal">căn</span>
           </div>
-          <div className="text-[11px] text-gray-400 mt-1">Tòa nhà 25 tầng chung cư Skyline</div>
+          <div className="text-[11px] text-gray-400 mt-1">Tòa {currentBlockName} (34 tầng) - Phân khu The Tropical</div>
         </div>
 
         <div className="p-4 bg-[#121820] border border-emerald-500/30 rounded-none">
@@ -1003,40 +1044,40 @@ export default function AdminBuildingApartmentManager() {
                 {/* 2. THÂN THÁP CHUNG CƯ SKYLINE (25 TẦNG VƯƠN CAO BỰ HƠN BỀ THẾ) */}
                 <g className="transition-all duration-300">
                   {/* Mặt Trái (Hướng Đông Nam - rộng 270px) */}
-                  <polygon points="230,440 500,485 500,104 230,68" fill="url(#skylineGlassL)" stroke="#222B35" strokeWidth="2.5" />
+                  <polygon points="230,475 500,520 500,72 230,42" fill="url(#skylineGlassL)" stroke="#222B35" strokeWidth="2.5" />
                   {/* Mặt Phải (Hướng Tây Nam - rộng 270px) */}
-                  <polygon points="500,485 770,440 770,68 500,104" fill="url(#skylineGlassR)" stroke="#334155" strokeWidth="2.5" />
+                  <polygon points="500,520 770,475 770,42 500,72" fill="url(#skylineGlassR)" stroke="#334155" strokeWidth="2.5" />
                   {/* Mái Tháp (Sân Thượng Helipad) */}
-                  <polygon points="230,68 500,104 770,68 500,32" fill="#1E293B" stroke="#475569" strokeWidth="2" />
+                  <polygon points="230,42 500,72 770,42 500,18" fill="#1E293B" stroke="#475569" strokeWidth="2" />
 
                   {/* Sân đáp trực thăng Helipad trên đỉnh tháp */}
-                  <ellipse cx="500" cy="68" rx="65" ry="20" fill="#0F172A" stroke="#C5A880" strokeWidth="1.8" />
-                  <circle cx="500" cy="68" r="12" fill="none" stroke="#FDE68A" strokeWidth="1.5" />
-                  <text x="500" y="73" fill="#FDE68A" fontSize="11" fontWeight="bold" textAnchor="middle" fontFamily="sans-serif">H</text>
+                  <ellipse cx="500" cy="58" rx="65" ry="18" fill="#0F172A" stroke="#C5A880" strokeWidth="1.8" />
+                  <circle cx="500" cy="58" r="11" fill="none" stroke="#FDE68A" strokeWidth="1.5" />
+                  <text x="500" y="62" fill="#FDE68A" fontSize="10" fontWeight="bold" textAnchor="middle" fontFamily="sans-serif">H</text>
 
                   {/* Đèn báo tín hiệu hàng không nhấp nháy trên đỉnh */}
-                  <circle cx="500" cy="22" r="3.5" fill="#EF4444" className="animate-pulse" />
-                  <line x1="500" y1="22" x2="500" y2="32" stroke="#64748B" strokeWidth="1.5" />
+                  <circle cx="500" cy="14" r="3.5" fill="#EF4444" className="animate-pulse" />
+                  <line x1="500" y1="14" x2="500" y2="24" stroke="#64748B" strokeWidth="1.5" />
 
                   {/* Tiêu đề Đỉnh Tòa Nhà */}
-                  <text x="500" y="16" fill="#C5A880" fontSize="14" fontWeight="bold" textAnchor="middle" fontFamily="serif" letterSpacing="0.05em">
-                    CHUNG CƯ SKYLINE (25 TẦNG CĂN HỘ)
+                  <text x="500" y="10" fill="#C5A880" fontSize="12.5" fontWeight="bold" textAnchor="middle" fontFamily="serif" letterSpacing="0.05em">
+                    {currentBlockName.toUpperCase()} (34 TẦNG) • THE TROPICAL
                   </text>
 
-                  {/* RENDER ĐẦY ĐỦ CÁC KHỐI CĂN HỘ KIẾN TRÚC (TỪ TẦNG 4 ĐẾN TẦNG 25) */}
+                  {/* RENDER ĐẦY ĐỦ CÁC KHỐI CĂN HỘ KIẾN TRÚC 34 TẦNG TỪ NKS API */}
                   {BUILDING_3D_UNITS.map(b => {
                     const liveUnit = displayUnits.find(u => u.code === b.code);
                     const actualStatus = liveUnit ? liveUnit.status : b.defaultStatus;
-                    const actualOwnerName = b.code === '12A05' ? activeOwnerName : (liveUnit?.owner?.name || b.defaultName || 'Nhà Trống');
+                    const actualOwnerName = (b.code === 'CH-06' || b.floor === 30) && b.side === 'LEFT' ? activeOwnerName : (liveUnit?.owner?.name || b.defaultName || 'Nhà Trống');
                     const isSelected = selectedAptCode === b.code;
                     const isHovered = hoveredUnitCode === b.code;
                     
                     // Kiểm tra xem căn có thỏa mãn bộ lọc hiện hành hay không
                     const isMatched = checkUnitMatchesFilter(b.code, b.floor, b.type, actualStatus, actualOwnerName);
 
-                    // Tọa độ hình học chính xác cho khối căn hộ
-                    const yBase = 472 - (b.floor - 4) * 17.52;
-                    const h = b.floor === 25 ? 24 : 14.5;
+                    // Tọa độ hình học chính xác cho khối căn hộ 34 tầng
+                    const yBase = 472 - (b.floor - 1) * 11.8;
+                    const h = b.floor === 34 ? 13 : 9.5;
                     
                     // Tọa độ 4 góc của đa giác isometric
                     const pts = b.side === 'LEFT'
@@ -1070,7 +1111,7 @@ export default function AdminBuildingApartmentManager() {
                     let opacityVal = 0.85;
                     if (isAnyFilterActive) {
                       opacityVal = isMatched ? 1 : 0.12;
-                    } else if (isSelected || isHovered || b.code === '12A05') {
+                    } else if (isSelected || isHovered || b.code === 'CH-06' || b.floor === 30) {
                       opacityVal = 1;
                     }
 
@@ -1121,7 +1162,7 @@ export default function AdminBuildingApartmentManager() {
                     // 1. Tìm khối căn hộ tương ứng trên mô hình 3D
                     let activeTargetBlock = BUILDING_3D_UNITS.find(b => b.code === selectedAptCode);
                     if (!activeTargetBlock) {
-                      const targetFloor = activeUnit?.floor || 12;
+                      const targetFloor = activeUnit?.floor || 30;
                       const numStr = selectedAptCode.replace(/\D/g, '').slice(-2);
                       const num = parseInt(numStr || '1', 10);
                       const fallbackSide: 'LEFT' | 'RIGHT' = num % 2 === 1 ? 'LEFT' : 'RIGHT';
@@ -1129,7 +1170,7 @@ export default function AdminBuildingApartmentManager() {
                         || BUILDING_3D_UNITS.find(b => b.floor === targetFloor)
                         || {
                           code: selectedAptCode,
-                          floor: Math.max(4, Math.min(25, targetFloor)),
+                          floor: Math.max(1, Math.min(34, targetFloor)),
                           side: fallbackSide,
                           type: (activeUnit?.type || '2PN') as ApartmentType,
                           defaultStatus: (activeUnit?.status || 'VACANT') as ApartmentStatus,
@@ -1137,10 +1178,10 @@ export default function AdminBuildingApartmentManager() {
                         };
                     }
 
-                    const curFloor = Math.max(4, Math.min(25, activeTargetBlock.floor));
+                    const curFloor = Math.max(1, Math.min(34, activeTargetBlock.floor));
                     const curSide = activeTargetBlock.side;
-                    const curYBase = 472 - (curFloor - 4) * 17.52;
-                    const curH = curFloor === 25 ? 24 : 14.5;
+                    const curYBase = 472 - (curFloor - 1) * 11.8;
+                    const curH = curFloor === 34 ? 13 : 9.5;
 
                     // Mép tường ngoài tòa nhà (nơi tia laser đi ra ngoài không gian)
                     // Tại mép ngoài x = 248 (LEFT) hoặc x = 752 (RIGHT), Y đáy khối căn hộ là curYBase - 33
@@ -1320,9 +1361,9 @@ export default function AdminBuildingApartmentManager() {
               <div className="flex flex-wrap items-center justify-between gap-2 p-2.5 bg-[#121820] border border-[#222B35] text-xs">
                 <div className="flex items-center gap-2">
                   <Building className="w-4 h-4 text-[#C5A880]" />
-                  <span className="text-white font-bold font-serif">CHUNG CƯ SKYLINE (25 TẦNG CĂN HỘ)</span>
+                  <span className="text-white font-bold font-serif">TÒA {currentBlockName.toUpperCase()} (34 TẦNG) • THE TROPICAL</span>
                   <span className="text-gray-400 font-mono text-[11px]">
-                    • Tổng cộng {displayUnits.length} căn hộ trong hệ thống
+                    • Tổng cộng {displayUnits.length} căn hộ trong hệ thống NKS API
                   </span>
                 </div>
 
@@ -1331,31 +1372,31 @@ export default function AdminBuildingApartmentManager() {
                 </div>
               </div>
 
-              {/* KHỐI HIỂN THỊ CÁC TẦNG CỦA CHUNG CƯ SKYLINE (1 TÒA DUY NHẤT) */}
+              {/* KHỐI HIỂN THỊ CÁC TẦNG CỦA TÒA NHÀ */}
               <div className="bg-[#0B0F17] border border-[#222B35] p-3 rounded-none flex flex-col space-y-3">
                 {/* Tầng Mái Sân Thượng */}
                 <div className="p-2.5 bg-[#121822] border border-[#1E293B] text-[11px] text-gray-300 font-mono text-center flex items-center justify-center gap-2">
                   <Sparkles className="w-3.5 h-3.5 text-[#C5A880]" />
-                  <span className="font-bold">TẦNG MÁI • SÂN THƯỢNG & KHU KỸ THUẬT TÒA NHÀ SKYLINE</span>
+                  <span className="font-bold">TẦNG MÁI • SÂN THƯỢNG HELIPAD & KHU KỸ THUẬT TÒA {currentBlockName.toUpperCase()}</span>
                 </div>
 
                 {/* Danh sách các tầng từ cao xuống thấp */}
                 <div className="space-y-2.5">
                   {buildingFloors.map(floor => {
                     const unitsOnFloor = displayUnits.filter(u => u.floor === floor);
-                    const isFloor12 = floor === 12;
+                    const isFloor30 = floor === 30;
 
                     return (
                       <div 
                         key={`Floor-${floor}`} 
                         className={`p-2.5 bg-[#0E141E] border transition-colors space-y-2 ${
-                          isFloor12 ? 'border-[#10B981]/60 bg-[#064E3B]/10' : 'border-[#1F2937] hover:border-gray-600'
+                          isFloor30 ? 'border-[#10B981]/60 bg-[#064E3B]/10' : 'border-[#1F2937] hover:border-gray-600'
                         }`}
                       >
                         <div className="flex items-center justify-between text-[11px] font-mono">
                           <span className="text-white font-bold flex items-center gap-1.5">
                             <Layers className="w-3.5 h-3.5 text-[#C5A880]" />
-                            TẦNG {floor} {isFloor12 ? '★ (Căn 12A05 - Nguyễn Hữu Lực)' : ''}
+                            TẦNG {floor} {isFloor30 ? '★ (Căn CH-06 & CH-01 - Trần Hữu Lực)' : ''}
                           </span>
                           <button
                             type="button"
@@ -1443,19 +1484,28 @@ export default function AdminBuildingApartmentManager() {
           {/* GÓC NHÌN 3: SƠ ĐỒ MẶT BẰNG TẦNG THỰC TẾ (FLOOR PLAN)        */}
           {/* ----------------------------------------------------------- */}
           {buildingPerspective === 'FLOOR_PLAN' && (() => {
-            // Tính toán tổng số liệu tầng hiện tại
+            // Tính toán tổng số liệu tầng hiện tại từ NKS SCRMAI API
             const floorUnits = ['01', '02', '03', '04', '05', '06', '07', '08'].map(num => {
-              const targetCode = (selectedFloor === 12 && num === '05') ? '12A05' : `${selectedFloor > 9 ? selectedFloor : '0' + selectedFloor}${num}`;
+              const chCode = `CH-${num}`;
               const found = apartments.find(u => 
-                u.code.toLowerCase() === targetCode.toLowerCase() ||
-                u.code.toLowerCase() === `${selectedFloor}A${num}`.toLowerCase() ||
-                u.code.toLowerCase() === `${selectedFloor}B${num}`.toLowerCase()
+                u.floor === selectedFloor && (
+                  u.code.toUpperCase() === chCode ||
+                  u.code.toUpperCase() === `${selectedFloor}-${chCode}` ||
+                  u.code.toUpperCase().endsWith(chCode) ||
+                  (selectedFloor === 30 && u.code === chCode)
+                )
               );
               return found || {
-                code: targetCode,
-                status: (selectedFloor === 12 && num === '05') ? 'OCCUPIED' : 'VACANT',
-                area: 75,
-                priceBillion: 4.5
+                code: selectedFloor === 30 ? chCode : `${selectedFloor}-${chCode}`,
+                tower: selectedBlock === 'BS-10' ? 'B' : 'A',
+                towerName: currentBlockName,
+                floor: selectedFloor,
+                type: (num === '01' || num === '08' || num === '04' || num === '05') ? '2PN' : '1PN',
+                typeLabel: (num === '01' || num === '08' || num === '04' || num === '05') ? '2 Phòng Ngủ - 1WC' : '1 Phòng Ngủ - 1WC',
+                status: 'VACANT',
+                statusLabel: 'Căn Hộ Trống',
+                area: (num === '01' || num === '08') ? 60 : 42,
+                priceBillion: 3.2
               } as ApartmentUnit;
             });
 
@@ -1487,23 +1537,23 @@ export default function AdminBuildingApartmentManager() {
                       onChange={(e) => setSelectedFloor(Number(e.target.value))}
                       className="bg-[#161B22] border border-[#2D3748] px-3 py-1.5 text-white font-mono text-xs outline-none focus:border-[#C5A880]"
                     >
-                      {[25, 22, 20, 19, 18, 16, 15, 12, 11, 10, 8, 5, 4].map(f => (
+                      {buildingFloors.map(f => (
                         <option key={f} value={f}>
-                          Tầng {f} {f === 12 ? '(Có căn 12A05 ★)' : f === 25 ? '(Căn lớn Penthouse)' : ''}
+                          Tầng {f} {f === 30 ? '(Có căn CH-06 & CH-01 - Trần Hữu Lực ★)' : f === 20 ? '(Có căn CH-06 ★)' : ''}
                         </option>
                       ))}
                     </select>
 
-                    {selectedFloor !== 12 && (
+                    {selectedFloor !== 30 && (
                       <button
                         type="button"
                         onClick={() => {
-                          setSelectedFloor(12);
-                          setSelectedAptCode('12A05');
+                          setSelectedFloor(30);
+                          setSelectedAptCode('CH-06');
                         }}
                         className="px-2.5 py-1 bg-[#162B22] hover:bg-[#1E3B2F] text-emerald-300 border border-emerald-600/60 font-semibold text-xs transition-colors"
                       >
-                        ★ Tầng 12 (12A05)
+                        ★ Tầng 30 (CH-06 & CH-01)
                       </button>
                     )}
                   </div>
@@ -1615,16 +1665,18 @@ export default function AdminBuildingApartmentManager() {
                   {/* CÁC CĂN HỘ PHÂN BỔ TRÊN TẦNG */}
                   {(() => {
                     const getFloorUnitMeta = (numStr: string) => {
-                      // Nếu là tầng 12 căn số 5 thì chính là 12A05
-                      const targetCode = (selectedFloor === 12 && numStr === '05') ? '12A05' : `${selectedFloor > 9 ? selectedFloor : '0' + selectedFloor}${numStr}`;
+                      const chCode = `CH-${numStr}`;
                       const found = apartments.find(u => 
-                        u.code.toLowerCase() === targetCode.toLowerCase() ||
-                        u.code.toLowerCase() === `${selectedFloor}A${numStr}`.toLowerCase() ||
-                        u.code.toLowerCase() === `${selectedFloor}B${numStr}`.toLowerCase()
+                        u.floor === selectedFloor && (
+                          u.code.toUpperCase() === chCode ||
+                          u.code.toUpperCase() === `${selectedFloor}-${chCode}` ||
+                          u.code.toUpperCase().endsWith(chCode) ||
+                          (selectedFloor === 30 && u.code === chCode)
+                        )
                       );
                       const isOccupied = found?.status === 'OCCUPIED';
-                      const codeToUse = found?.code || targetCode;
-                      const isSelected = selectedAptCode === codeToUse;
+                      const codeToUse = found?.code || (selectedFloor === 30 ? chCode : `${selectedFloor}-${chCode}`);
+                      const isSelected = selectedAptCode === codeToUse || (selectedAptCode === 'CH-06' && codeToUse.includes('CH-06') && selectedFloor === 30);
                       const ownerName = found?.owner?.name || '';
                       return { code: codeToUse, found, isOccupied, isSelected, ownerName };
                     };
