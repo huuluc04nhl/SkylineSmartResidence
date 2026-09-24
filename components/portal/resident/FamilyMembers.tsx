@@ -758,18 +758,38 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
         </div>
 
         {isOwner && (
-          <button
-            type="button"
-            onClick={() => {
-              setShowAddModal(true);
-              setSelectedAccount(null);
-              setSearchResult(null);
-              setActionError(null);
-            }}
-            className="px-4 py-2 bg-[#C5A880] hover:bg-white text-[#0D1117] text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-2 rounded-none shadow flex-shrink-0 cursor-pointer active:scale-95"
-          >
-            <UserPlus className="w-4 h-4" /> Thêm Thành Viên
-          </button>
+          <div className="flex items-center gap-2 flex-wrap">
+            <button
+              type="button"
+              onClick={() => {
+                setBankEnrollTarget({
+                  id: currentUser.id || 'usr-120',
+                  fullName: currentUser.full_name || 'Trần Hữu Lực',
+                  phone: currentUser.phone || '0364967082',
+                  email: currentUser.email || 'huuluc04@gmail.com',
+                  role: 'Family',
+                  relationship: 'Chủ Hộ (Chủ Sở Hữu)',
+                });
+              }}
+              className="px-3 py-2 bg-[#161D26] hover:bg-[#1E2631] border border-[#C5A880] text-[#C5A880] hover:text-white text-xs font-bold rounded-none flex items-center gap-1.5 transition-all shadow cursor-pointer active:scale-95"
+              title="Quét lại FaceID Chủ Hộ"
+            >
+              <Camera className="w-3.5 h-3.5 text-[#C5A880]" />
+              <span>Quét FaceID</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setShowAddModal(true);
+                setSelectedAccount(null);
+                setSearchResult(null);
+                setActionError(null);
+              }}
+              className="px-4 py-2 bg-[#C5A880] hover:bg-white text-[#0D1117] text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-2 rounded-none shadow flex-shrink-0 cursor-pointer active:scale-95"
+            >
+              <UserPlus className="w-4 h-4" /> Thêm Thành Viên
+            </button>
+          </div>
         )}
       </div>
 
@@ -878,116 +898,6 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
           </div>
         </div>
       )}
-
-      {/* ------------------------------------------------------------- */}
-      {/* KHỐI THẺ CHỦ HỘ                                               */}
-      {/* ------------------------------------------------------------- */}
-      <div className="p-4 bg-gradient-to-r from-[#1A1810] via-[#121820] to-[#0D1117] border border-[#C5A880]/70 rounded-none shadow-lg space-y-3">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#C5A880]/30 pb-2.5">
-          <div className="flex items-center gap-2">
-            <span className="w-5 h-5 rounded-none bg-[#C5A880] text-[#0D1117] flex items-center justify-center font-bold text-xs shadow">
-              👑
-            </span>
-            <span className="text-xs font-bold uppercase tracking-wider text-[#C5A880] flex items-center gap-1.5">
-              Chủ Hộ • Căn {aptCode}
-            </span>
-          </div>
-
-          <div className="flex items-center gap-2 flex-wrap">
-            <span className="px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded-none border bg-emerald-950/90 text-emerald-300 border-emerald-500/80 flex items-center gap-1">
-              <CheckCircle2 className="w-3 h-3 text-emerald-400" /> e-KYC ✓
-            </span>
-            <span className="px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded-none border bg-cyan-950/90 text-cyan-300 border-cyan-500/80 flex items-center gap-1">
-              <ScanFace className="w-3 h-3 text-cyan-400" /> FaceID ✓
-            </span>
-          </div>
-        </div>
-
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
-          <div className="flex items-start sm:items-center gap-3.5 min-w-0">
-            <div className="w-14 h-14 min-w-[56px] min-h-[56px] rounded-none overflow-hidden border border-[#C5A880] shadow bg-[#161D26] flex-shrink-0">
-              <img
-                src={
-                  ownerData?.avatarUrl ||
-                  currentUser.avatar_url?.replace('data.nks.vn//', 'data.nks.vn/') ||
-                  'https://data.nks.vn/storage/users/202609021654232258.jpg'
-                }
-                alt={ownerName}
-                onError={(e) => {
-                  e.currentTarget.src = 'https://data.nks.vn/storage/users/default.png';
-                }}
-                className="w-full h-full object-cover"
-              />
-            </div>
-
-            <div className="space-y-1 min-w-0">
-              <div className="flex items-center gap-2 flex-wrap">
-                <span className="font-bold text-white text-base font-serif">
-                  {ownerData?.fullName || currentUser.full_name || 'Trần Hữu Lực'}
-                </span>
-                <span className="px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider bg-[#C5A880] text-[#0D1117] rounded-none shadow">
-                  Chủ Hộ
-                </span>
-                <span className="px-1.5 py-0.5 text-[10px] font-mono text-gray-300 bg-[#161D26] border border-[#2D3748]">
-                  Căn {aptCode}
-                </span>
-              </div>
-
-              <div className="text-gray-300 text-xs flex flex-wrap items-center gap-x-3 gap-y-0.5">
-                <span className="flex items-center gap-1">
-                  <Phone className="w-3 h-3 text-[#C5A880]" />
-                  <strong className="font-mono text-white">{ownerData?.phone || currentUser.phone || '0364967082'}</strong>
-                </span>
-                <span className="flex items-center gap-1">
-                  <Mail className="w-3 h-3 text-[#C5A880]" />
-                  <strong className="text-gray-200">{ownerData?.email || currentUser.email || 'huuluc04@gmail.com'}</strong>
-                </span>
-                <span className="flex items-center gap-1">
-                  <CreditCard className="w-3 h-3 text-[#C5A880]" />
-                  <strong className="font-mono text-[#C5A880]">{ownerData?.idCard || currentUser.id_number || currentUser.id_card_no || '067204000961'}</strong>
-                </span>
-                {(ownerData?.licensePlate || currentUser.license_plate) && (
-                  <span className="flex items-center gap-1">
-                    <Car className="w-3 h-3 text-cyan-400" />
-                    <strong className="font-mono text-cyan-400">{ownerData?.licensePlate || currentUser.license_plate}</strong>
-                  </span>
-                )}
-              </div>
-
-              <div className="text-[11px] text-gray-400 flex items-center gap-1.5">
-                <ShieldCheck className="w-3.5 h-3.5 text-[#C5A880] flex-shrink-0" />
-                <span>
-                  Quyền: Quản trị • Thang máy T12 • Hầm xe B1/B2 • Biểu quyết
-                </span>
-              </div>
-            </div>
-          </div>
-
-          {/* Owner Actions */}
-          {isOwner && (
-            <div className="flex items-center gap-2 flex-shrink-0 w-full md:w-auto justify-start md:justify-end pt-2 md:pt-0 border-t md:border-t-0 border-[#222B35]">
-              <button
-                type="button"
-                onClick={() => {
-                  setBankEnrollTarget({
-                    id: currentUser.id || 'usr-120',
-                    fullName: currentUser.full_name || 'Trần Hữu Lực',
-                    phone: currentUser.phone || '0364967082',
-                    email: currentUser.email || 'huuluc04@gmail.com',
-                    role: 'Family',
-                    relationship: 'Chủ Hộ (Chủ Sở Hữu)',
-                  });
-                }}
-                className="px-3 py-1.5 bg-[#161D26] hover:bg-[#1E2631] border border-[#C5A880] text-[#C5A880] hover:text-white text-xs font-bold rounded-none flex items-center gap-1.5 transition-all shadow cursor-pointer active:scale-95"
-                title="Quét lại FaceID Chủ Hộ"
-              >
-                <Camera className="w-3.5 h-3.5 text-[#C5A880]" />
-                <span>Quét FaceID</span>
-              </button>
-            </div>
-          )}
-        </div>
-      </div>
 
       {/* Members List */}
       <div className="bg-[#121820] border border-[#222B35] rounded-none overflow-hidden shadow-2xl">
