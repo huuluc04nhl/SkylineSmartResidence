@@ -17,6 +17,8 @@ export interface EnrolledFaceProfile {
   fullName: string;
   apartmentCode: string;
   phone?: string;
+  email?: string;
+  account?: string;
   avatarUrl: string;
   samples: FaceBiometricSamples;
   descriptor: number[]; // 128-D vector đặc trưng chuẩn hóa

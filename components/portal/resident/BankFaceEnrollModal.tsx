@@ -41,6 +41,7 @@ interface BankFaceEnrollModalProps {
   fullName: string;
   apartmentCode: string;
   phone?: string;
+  email?: string;
   isFamilyMemberSelfEnroll?: boolean;
   submittedByRole?: string;
   onEnrollSuccess?: (profile: EnrolledFaceProfile) => void;
@@ -104,6 +105,7 @@ export default function BankFaceEnrollModal({
   fullName,
   apartmentCode,
   phone,
+  email,
   isFamilyMemberSelfEnroll,
   submittedByRole,
   onEnrollSuccess,
@@ -428,6 +430,7 @@ export default function BankFaceEnrollModal({
         fullName,
         apartmentCode,
         phone,
+        email,
         isFamilyMemberSelfEnroll,
         submittedByRole,
         samples: normalizedSamples,

@@ -44,6 +44,7 @@ export async function POST(req: Request) {
       fullName, 
       apartmentCode, 
       phone, 
+      email,
       samples,
       isFamilyMemberSelfEnroll,
       submittedByRole
@@ -190,6 +191,7 @@ export async function POST(req: Request) {
       fullName: fullName || existingUser?.fullname || 'Cư Dân Skyline',
       apartmentCode: targetApt,
       phone: phone || existingUser?.phone || '',
+      email: email || existingUser?.email || (userId.includes('@') ? userId : ''),
       avatarUrl: existingUser?.avatar_url || '',
       samples: normalizedSamples,
       descriptor: descriptorArray,

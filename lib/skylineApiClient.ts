@@ -356,6 +356,7 @@ export async function skylineEnrollFaceId(payload: {
   fullName?: string;
   apartmentCode?: string;
   phone?: string;
+  email?: string;
   isFamilyMemberSelfEnroll?: boolean;
   submittedByRole?: string;
   samples: {

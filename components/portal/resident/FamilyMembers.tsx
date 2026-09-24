@@ -59,6 +59,7 @@ export interface FamilyMemberItem {
   id: string;
   fullName: string;
   phone: string;
+  email?: string;
   role: 'Family' | 'Tenant';
   relationship: string;
   idCard?: string;
@@ -1821,6 +1822,7 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
           fullName={bankEnrollTarget.fullName}
           apartmentCode={aptCode}
           phone={bankEnrollTarget.phone || ''}
+          email={bankEnrollTarget.email || ''}
           isFamilyMemberSelfEnroll={!isOwner}
           submittedByRole={currentUser.role}
           onEnrollSuccess={() => {

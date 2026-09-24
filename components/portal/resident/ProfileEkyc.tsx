@@ -1594,6 +1594,7 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
         fullName={fullName || currentUser.full_name}
         apartmentCode={aptCode}
         phone={phone || currentUser.phone || ''}
+        email={currentUser.email || ''}
         isFamilyMemberSelfEnroll={!isOwner}
         submittedByRole={currentUser.role}
         onEnrollSuccess={(profile) => {
