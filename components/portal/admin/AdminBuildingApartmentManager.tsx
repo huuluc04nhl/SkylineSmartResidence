@@ -121,8 +121,8 @@ export function getApartmentFinancialMetrics(unit: ApartmentUnit | null) {
       else parkingFee += 50000;
     });
   } else if (isOccupied) {
-    // Cư dân căn hộ 12A05 (Nguyễn Hữu Lực) có 1 ô tô + 1 xe máy
-    parkingFee = unit.code === '12A05' ? 1320000 : 120000;
+    const isOwnerTarget = unit.code === 'CH-06' || unit.code.endsWith('CH-06') || (unit.floor === 30 && (unit.code === 'CH-01' || unit.code.endsWith('CH-01')));
+    parkingFee = isOwnerTarget ? 1320000 : 120000;
   }
 
   // 3. Tiêu thụ điện sinh hoạt
@@ -132,10 +132,11 @@ export function getApartmentFinancialMetrics(unit: ApartmentUnit | null) {
   let waterCost = 0;
 
   if (isOccupied) {
-    electricKwh = unit.code === '12A05' ? 285 : Math.round(180 + (area * 1.4));
+    const isOwnerTarget = unit.code === 'CH-06' || unit.code.endsWith('CH-06') || (unit.floor === 30 && (unit.code === 'CH-01' || unit.code.endsWith('CH-01')));
+    electricKwh = isOwnerTarget ? 285 : Math.round(180 + (area * 1.4));
     // Đơn giá điện lực bậc thang trung bình ~3.100 đ/kWh
     electricCost = Math.round(electricKwh * 3100);
-    waterM3 = unit.code === '12A05' ? 18 : Math.max(12, Math.round(area * 0.22));
+    waterM3 = isOwnerTarget ? 18 : Math.max(12, Math.round(area * 0.22));
     waterCost = Math.round(waterM3 * 18000);
   } else if (isMaintenance) {
     electricKwh = 35;
@@ -513,53 +514,27 @@ export default function AdminBuildingApartmentManager() {
     setSearchQuery('');
   };
 
-  // Hàm kiểm tra căn hộ có khớp với bộ lọc đa tiêu chí hay không (dùng để highlight/dim trên mô hình 3D)
-  const checkUnitMatchesFilter = useCallback((code: string, floor: number, type: string, status: string, ownerName?: string) => {
-    if (isOnlyOwnerUnits) {
-      const isOwner = code === 'CH-06' || (floor === 30 && (code.includes('CH-01') || code.includes('CH-06'))) || (ownerName && ownerName.toLowerCase().includes('lực'));
-      if (!isOwner) return false;
-    }
+  // Bộ tra cứu O(1) phục vụ lọc thống nhất trên toàn bộ hệ thống (3D, Mặt Đứng, Mặt Bằng, Lưới)
+  const matchingUnitCodesSet = useMemo(() => {
+    return new Set(filteredUnits.map(u => u.code.toUpperCase()));
+  }, [filteredUnits]);
 
-    const matchOccupancy = selectedOccupancy === 'ALL'
-      ? true
-      : selectedOccupancy === 'OCCUPIED'
-      ? status === 'OCCUPIED'
-      : selectedOccupancy === 'VACANT'
-      ? status === 'VACANT'
-      : status === 'MAINTENANCE';
+  const matchingFloorsSet = useMemo(() => {
+    return new Set(filteredUnits.map(u => u.floor));
+  }, [filteredUnits]);
 
-    const matchType = selectedType === 'ALL'
-      ? true
-      : selectedType === '1PN'
-      ? (type === '1PN' || type.includes('1PN'))
-      : selectedType === '2PN'
-      ? (type === '2PN' || type.includes('2PN'))
-      : selectedType === '3PN'
-      ? (type === '3PN' || type.includes('3PN'))
-      : (type === 'DUPLEX_PENTHOUSE' || type.toLowerCase().includes('duplex') || type.toLowerCase().includes('penthouse'));
-
-    const matchFloorRange = selectedFloorRange === 'ALL'
-      ? true
-      : selectedFloorRange === 'LOW'
-      ? (floor >= 1 && floor <= 10)
-      : selectedFloorRange === 'MID'
-      ? (floor >= 11 && floor <= 20)
-      : (floor >= 21);
-
-    const q = searchQuery.toLowerCase().trim();
-    if (!q) return matchOccupancy && matchType && matchFloorRange;
-
-    const matchSearch = 
-      code.toLowerCase().includes(q) ||
-      (ownerName && ownerName.toLowerCase().includes(q)) ||
-      type.toLowerCase().includes(q) ||
-      `tầng ${floor}`.toLowerCase().includes(q) ||
-      `tang ${floor}`.toLowerCase().includes(q) ||
-      (q.startsWith('tầng ') && floor === parseInt(q.replace('tầng ', ''))) ||
-      (q.startsWith('tang ') && floor === parseInt(q.replace('tang ', '')));
-
-    return matchOccupancy && matchType && matchFloorRange && matchSearch;
-  }, [selectedOccupancy, selectedType, selectedFloorRange, searchQuery, isOnlyOwnerUnits]);
+  // Hàm kiểm tra thống nhất căn hộ có khớp bộ lọc hay không trên toàn bộ giao diện
+  const isUnitMatchingFilter = useCallback((unitCode: string, floor?: number) => {
+    if (!isAnyFilterActive) return true;
+    const clean = unitCode.toUpperCase();
+    if (matchingUnitCodesSet.has(clean)) return true;
+    return filteredUnits.some(f => 
+      f.code.toUpperCase() === clean || 
+      f.code.toUpperCase().endsWith(`-${clean}`) || 
+      clean.endsWith(`-${f.code.toUpperCase()}`) ||
+      (floor !== undefined && f.floor === floor && (clean.includes(f.code.toUpperCase()) || f.code.toUpperCase().includes(clean)))
+    );
+  }, [isAnyFilterActive, matchingUnitCodesSet, filteredUnits]);
 
   // Căn hộ đang được chọn làm tiêu điểm hồ sơ (ưu tiên căn chủ hộ tầng 30)
   const activeUnit = useMemo(() => {
@@ -735,27 +710,63 @@ export default function AdminBuildingApartmentManager() {
             })}
           </div>
 
-          {/* 4 Chỉ Số KPI BQL & Đồng bộ API */}
+          {/* 4 Chỉ Số KPI BQL & Đồng bộ API (Tích hợp click lọc nhanh) */}
           <div className="flex items-center gap-2 flex-wrap text-xs font-mono">
-            <div className="px-2 py-0.5 bg-[#121820] border border-[#222B35] flex items-center gap-1.5" title="Tổng số căn hộ">
+            <button
+              type="button"
+              onClick={() => setSelectedOccupancy('ALL')}
+              className={`px-2 py-0.5 border flex items-center gap-1.5 transition-all cursor-pointer ${
+                selectedOccupancy === 'ALL'
+                  ? 'bg-[#1C2533] border-[#C5A880] text-white shadow-sm ring-1 ring-[#C5A880]/60'
+                  : 'bg-[#121820] border-[#222B35] text-gray-300 hover:border-gray-500'
+              }`}
+              title="Xem toàn bộ căn hộ"
+            >
               <span className="text-gray-400">Tổng:</span>
               <strong className="text-white font-bold">{totalUnitsCount}</strong>
-            </div>
-            <div className="px-2 py-0.5 bg-[#121820] border border-emerald-500/40 flex items-center gap-1.5" title="Căn hộ đã bàn giao">
+            </button>
+            <button
+              type="button"
+              onClick={() => setSelectedOccupancy(selectedOccupancy === 'OCCUPIED' ? 'ALL' : 'OCCUPIED')}
+              className={`px-2 py-0.5 border flex items-center gap-1.5 transition-all cursor-pointer ${
+                selectedOccupancy === 'OCCUPIED'
+                  ? 'bg-emerald-950 border-emerald-400 text-emerald-200 ring-1 ring-emerald-400 shadow-sm'
+                  : 'bg-[#121820] border-emerald-500/40 text-emerald-300 hover:border-emerald-400'
+              }`}
+              title="Lọc nhanh các căn hộ Đã Có Người Ở"
+            >
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
               <span className="text-gray-400">Đã Ở:</span>
-              <strong className="text-emerald-300 font-bold">{occupiedCount} ({occupancyRate}%)</strong>
-            </div>
-            <div className="px-2 py-0.5 bg-[#121820] border border-amber-500/40 flex items-center gap-1.5" title="Căn hộ trống">
+              <strong className="font-bold">{occupiedCount} ({occupancyRate}%)</strong>
+            </button>
+            <button
+              type="button"
+              onClick={() => setSelectedOccupancy(selectedOccupancy === 'VACANT' ? 'ALL' : 'VACANT')}
+              className={`px-2 py-0.5 border flex items-center gap-1.5 transition-all cursor-pointer ${
+                selectedOccupancy === 'VACANT'
+                  ? 'bg-amber-950 border-amber-400 text-amber-200 ring-1 ring-amber-400 shadow-sm'
+                  : 'bg-[#121820] border-amber-500/40 text-amber-300 hover:border-amber-400'
+              }`}
+              title="Lọc nhanh các Căn Hộ Trống"
+            >
               <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
               <span className="text-gray-400">Trống:</span>
-              <strong className="text-amber-300 font-bold">{vacantCount}</strong>
-            </div>
-            <div className="px-2 py-0.5 bg-[#121820] border border-blue-500/40 flex items-center gap-1.5" title="Căn hộ nghiệm thu / bảo trì">
+              <strong className="font-bold">{vacantCount}</strong>
+            </button>
+            <button
+              type="button"
+              onClick={() => setSelectedOccupancy(selectedOccupancy === 'MAINTENANCE' ? 'ALL' : 'MAINTENANCE')}
+              className={`px-2 py-0.5 border flex items-center gap-1.5 transition-all cursor-pointer ${
+                selectedOccupancy === 'MAINTENANCE'
+                  ? 'bg-blue-950 border-blue-400 text-blue-200 ring-1 ring-blue-400 shadow-sm'
+                  : 'bg-[#121820] border-blue-500/40 text-blue-300 hover:border-blue-400'
+              }`}
+              title="Lọc nhanh các căn Nghiệm Thu / Bảo Trì"
+            >
               <span className="w-1.5 h-1.5 rounded-full bg-blue-400" />
               <span className="text-gray-400">Nghiệm Thu:</span>
-              <strong className="text-blue-300 font-bold">{maintenanceCount}</strong>
-            </div>
+              <strong className="font-bold">{maintenanceCount}</strong>
+            </button>
 
             <div className="h-4 w-[1px] bg-[#1E2E44] hidden sm:block" />
 
@@ -1333,20 +1344,17 @@ export default function AdminBuildingApartmentManager() {
 
                       {/* RENDER CÁC TẦNG THỰC TẾ THEO BLOCK TỪ NKS API */}
                       {BUILDING_3D_UNITS.filter(b => b.floor <= currentTotalFloors).map(b => {
-                        const liveUnit = displayUnits.find(u => u.code === b.code);
-                        const actualStatus = liveUnit ? liveUnit.status : b.defaultStatus;
+                        const liveUnit = displayUnits.find(u => 
+                          u.code === b.code || 
+                          (u.floor === b.floor && (u.code.endsWith(b.code) || b.code.endsWith(u.code)))
+                        );
+                        const actualStatus = liveUnit ? liveUnit.status : 'VACANT';
                         const actualOwnerName = (b.code === 'CH-06' || b.floor === 30) && b.side === 'LEFT' ? activeOwnerName : (liveUnit?.owner?.name || b.defaultName || 'Nhà Trống');
-                        const isSelected = selectedAptCode === b.code || (selectedFloor === b.floor && selectedAptCode.includes(b.code));
-                        const isHovered = hoveredUnitCode === b.code || hoveredFloor === b.floor;
+                        const isSelected = selectedAptCode === b.code || (selectedFloor === b.floor && (selectedAptCode === b.code || selectedAptCode.endsWith(b.code) || b.code.endsWith(selectedAptCode)));
+                        const isHovered = hoveredUnitCode === b.code || (hoveredFloor === b.floor && (hoveredUnitCode?.endsWith(b.code) || b.code.endsWith(hoveredUnitCode || '')));
                         
-                        // Lọc theo vùng tầng đồng bộ với thanh điều hành
-                        const isMatchedZone = selectedFloorRange === 'ALL'
-                          ? true
-                          : selectedFloorRange === 'HIGH'
-                          ? b.floor >= 21
-                          : selectedFloorRange === 'MID'
-                          ? (b.floor >= 11 && b.floor <= 20)
-                          : (b.floor <= 10);
+                        // Lọc theo bộ lọc thống nhất toàn hệ thống
+                        const isMatchedFilter = isUnitMatchingFilter(b.code, b.floor);
 
                         // Tọa độ hình học chính xác cho khối căn hộ
                         const yBase = 472 - (b.floor - 1) * floorStep;
@@ -1356,23 +1364,27 @@ export default function AdminBuildingApartmentManager() {
                           ? `${248},${(yBase - 33 - h).toFixed(1)} ${494},${(yBase - 1 - h).toFixed(1)} ${494},${(yBase - 1).toFixed(1)} ${248},${(yBase - 33).toFixed(1)}`
                           : `${506},${(yBase - 1 - h).toFixed(1)} ${752},${(yBase - 33 - h).toFixed(1)} ${752},${(yBase - 33).toFixed(1)} ${506},${(yBase - 1).toFixed(1)}`;
                         
-                        // Màu sắc theo trạng thái thực tế
+                        // Màu sắc theo trạng thái thực tế 100% từ NKS API
                         let fillColor = buildingTheme === 'NIGHT' ? '#0F172A' : '#0369A1';
                         let strokeColor = buildingTheme === 'NIGHT' ? '#1E293B' : '#0284C7';
                         let fillOpacity = 0.55;
 
-                        if (actualStatus === 'OCCUPIED' || b.floor === 30) {
+                        if (actualStatus === 'OCCUPIED') {
                           fillColor = isSelected ? '#059669' : '#065F46';
                           strokeColor = isSelected ? '#34D399' : '#10B981';
                           fillOpacity = isSelected ? 0.98 : 0.85;
-                        } else if (actualStatus === 'MAINTENANCE' || b.floor === 20) {
+                        } else if (actualStatus === 'MAINTENANCE') {
                           fillColor = isSelected ? '#0284C7' : '#075985';
                           strokeColor = isSelected ? '#7DD3FC' : '#38BDF8';
                           fillOpacity = isSelected ? 0.95 : 0.8;
+                        } else {
+                          fillColor = isSelected ? '#B45309' : (buildingTheme === 'NIGHT' ? '#141E2B' : '#0A2540');
+                          strokeColor = isSelected ? '#F59E0B' : (buildingTheme === 'NIGHT' ? '#1E2D42' : '#0E3A66');
+                          fillOpacity = isSelected ? 0.9 : 0.55;
                         }
 
-                        let opacityVal = isMatchedZone ? 0.9 : 0.15;
-                        if (isSelected || isHovered) opacityVal = 1;
+                        // Độ sáng tối trực quan đồng bộ 100% với bộ lọc
+                        let opacityVal = isMatchedFilter ? (isSelected || isHovered ? 1 : 0.9) : 0.12;
 
                         return (
                           <g
@@ -1602,9 +1614,14 @@ export default function AdminBuildingApartmentManager() {
           {/* ----------------------------------------------------------- */}
           {buildingPerspective === 'BUILDING_ELEVATION' && (() => {
             const displayedElevationFloors = buildingFloors.filter(floor => {
-              if (selectedFloorRange === 'HIGH') return floor >= 21;
-              if (selectedFloorRange === 'MID') return floor >= 11 && floor <= 20;
-              if (selectedFloorRange === 'LOW') return floor <= 10;
+              if (selectedFloorRange === 'HIGH' && floor < 21) return false;
+              if (selectedFloorRange === 'MID' && (floor < 11 || floor > 20)) return false;
+              if (selectedFloorRange === 'LOW' && floor > 10) return false;
+
+              // Khi có bộ lọc khác, chỉ hiển thị tầng có căn hộ thỏa mãn
+              if (isAnyFilterActive && (selectedOccupancy !== 'ALL' || selectedType !== 'ALL' || isOnlyOwnerUnits || searchQuery.trim() !== '')) {
+                return matchingFloorsSet.has(floor);
+              }
               return true;
             });
 
@@ -1654,7 +1671,7 @@ export default function AdminBuildingApartmentManager() {
                         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                           {unitsOnFloor.map(unit => {
                             const isSelected = selectedAptCode === unit.code;
-                            const isMatchedFilter = filteredUnits.some(f => f.code === unit.code);
+                            const isMatchedFilter = isUnitMatchingFilter(unit.code, floor);
                             const isOwnerPrimary = floor === 30 && (unit.code === 'CH-06' || unit.code.endsWith('CH-06'));
                             const isOwnerSecondary = floor === 30 && (unit.code === 'CH-01' || unit.code.endsWith('CH-01'));
 
@@ -1670,7 +1687,7 @@ export default function AdminBuildingApartmentManager() {
                                     : isOwnerSecondary
                                     ? 'bg-[#101F2D] border-cyan-500/60'
                                     : 'bg-[#141B26] border-[#222E3E] hover:border-gray-500'
-                                } ${!isMatchedFilter ? 'opacity-30' : 'opacity-100'}`}
+                                } ${!isMatchedFilter ? 'opacity-25 pointer-events-none' : 'opacity-100'}`}
                               >
                                 <div className="flex items-center justify-between">
                                   <div className="flex items-center gap-1.5">
@@ -1751,19 +1768,20 @@ export default function AdminBuildingApartmentManager() {
           {/* GÓC NHÌN 3: SƠ ĐỒ MẶT BẰNG TẦNG THỰC TẾ (FLOOR PLAN)        */}
           {/* ----------------------------------------------------------- */}
           {buildingPerspective === 'FLOOR_PLAN' && (() => {
-            // Tính toán tổng số liệu tầng hiện tại từ NKS SCRMAI API
+            // Tính toán tổng số liệu tầng hiện tại từ dữ liệu thực tế displayUnits
             const floorUnits = ['01', '02', '03', '04', '05', '06', '07', '08'].map(num => {
               const chCode = `CH-${num}`;
-              const found = apartments.find(u => 
+              const targetCode = selectedFloor === 30 ? chCode : `${selectedFloor}-${chCode}`;
+              const found = displayUnits.find(u => 
                 u.floor === selectedFloor && (
                   u.code.toUpperCase() === chCode ||
-                  u.code.toUpperCase() === `${selectedFloor}-${chCode}` ||
+                  u.code.toUpperCase() === targetCode ||
                   u.code.toUpperCase().endsWith(chCode) ||
                   (selectedFloor === 30 && u.code === chCode)
                 )
               );
               return found || {
-                code: selectedFloor === 30 ? chCode : `${selectedFloor}-${chCode}`,
+                code: targetCode,
                 tower: selectedBlock === 'BS-10' ? 'B' : 'A',
                 towerName: currentBlockName,
                 floor: selectedFloor,
@@ -1890,19 +1908,22 @@ export default function AdminBuildingApartmentManager() {
                   {(() => {
                     const getFloorUnitMeta = (numStr: string) => {
                       const chCode = `CH-${numStr}`;
-                      const found = apartments.find(u => 
+                      const targetCode = selectedFloor === 30 ? chCode : `${selectedFloor}-${chCode}`;
+                      const found = displayUnits.find(u => 
                         u.floor === selectedFloor && (
                           u.code.toUpperCase() === chCode ||
-                          u.code.toUpperCase() === `${selectedFloor}-${chCode}` ||
+                          u.code.toUpperCase() === targetCode ||
                           u.code.toUpperCase().endsWith(chCode) ||
                           (selectedFloor === 30 && u.code === chCode)
                         )
                       );
-                      const isOccupied = found?.status === 'OCCUPIED';
-                      const codeToUse = found?.code || (selectedFloor === 30 ? chCode : `${selectedFloor}-${chCode}`);
+                      const isOccupied = found?.status === 'OCCUPIED' || (selectedFloor === 30 && (numStr === '06' || numStr === '01' || numStr === '08'));
+                      const codeToUse = found?.code || targetCode;
                       const isSelected = selectedAptCode === codeToUse || (selectedAptCode === 'CH-06' && codeToUse.includes('CH-06') && selectedFloor === 30);
-                      const ownerName = found?.owner?.name || '';
-                      return { code: codeToUse, found, isOccupied, isSelected, ownerName };
+                      const isOwnerLuc = selectedFloor === 30 && (numStr === '06' || numStr === '01');
+                      const ownerName = isOwnerLuc ? activeOwnerName : (found?.owner?.name || '');
+                      const isMatched = isUnitMatchingFilter(codeToUse, selectedFloor);
+                      return { code: codeToUse, found, isOccupied, isSelected, isOwnerLuc, ownerName, isMatched };
                     };
                     const u01 = getFloorUnitMeta('01');
                     const u02 = getFloorUnitMeta('02');
@@ -1916,7 +1937,7 @@ export default function AdminBuildingApartmentManager() {
                     return (
                       <>
                         {/* Căn 01 */}
-                        <g onClick={() => setSelectedAptCode(u01.code)} className="cursor-pointer">
+                        <g onClick={() => setSelectedAptCode(u01.code)} className="cursor-pointer transition-opacity" style={{ opacity: u01.isMatched ? 1 : 0.25 }}>
                           <rect 
                             x="30" y="30" width="110" height="140" 
                             fill={selectedFloor === 30 ? (u01.isSelected ? '#065F46' : '#0A2538') : (u01.isOccupied ? (u01.isSelected ? '#065F46' : '#044332') : (u01.isSelected ? '#78350F' : '#141D2B'))} 
@@ -2085,7 +2106,7 @@ export default function AdminBuildingApartmentManager() {
                   {['01', '02', '03', '04', '05', '06', '07', '08'].map(num => {
                     const chCode = `CH-${num}`;
                     const targetCode = selectedFloor === 30 ? chCode : `${selectedFloor}-${chCode}`;
-                    const found = apartments.find(u => 
+                    const found = displayUnits.find(u => 
                       u.floor === selectedFloor && (
                         u.code.toUpperCase() === chCode ||
                         u.code.toUpperCase() === targetCode ||
@@ -2093,10 +2114,11 @@ export default function AdminBuildingApartmentManager() {
                       )
                     );
                     const isOccupied = found?.status === 'OCCUPIED' || (selectedFloor === 30 && (num === '06' || num === '01' || num === '08'));
-                    const codeToUse = found?.code || chCode;
+                    const codeToUse = found?.code || targetCode;
                     const isSelected = selectedAptCode === codeToUse || (selectedFloor === 30 && selectedAptCode === 'CH-06' && codeToUse.includes('CH-06'));
                     const isOwnerLuc = selectedFloor === 30 && (num === '06' || num === '01');
                     const ownerName = isOwnerLuc ? activeOwnerName : (found?.owner?.name || '');
+                    const isMatched = isUnitMatchingFilter(codeToUse, selectedFloor);
                     const fin = getApartmentFinancialMetrics(found || {
                       code: codeToUse,
                       status: isOccupied ? 'OCCUPIED' : 'VACANT',
@@ -2115,7 +2137,7 @@ export default function AdminBuildingApartmentManager() {
                             : isOwnerLuc
                             ? 'bg-[#15231B] border-[#F59E0B]/70'
                             : 'bg-[#121820] border-[#222B35] hover:border-gray-600'
-                        }`}
+                        } ${!isMatched ? 'opacity-30' : 'opacity-100'}`}
                       >
                         <div className="flex items-center justify-between text-xs font-mono font-bold text-white">
                           <div className="flex items-center gap-1.5">
