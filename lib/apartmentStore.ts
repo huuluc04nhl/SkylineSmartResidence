@@ -109,12 +109,19 @@ export const INITIAL_APARTMENTS: ApartmentUnit[] = generateNksBlockUnits(
   34
 );
 
+export function getApartmentStorageKey(blockCode: string = 'BS-07'): string {
+  return `nks_apartments_${blockCode}_v12`;
+}
+
 /**
- * Lấy danh sách toàn bộ căn hộ từ bộ nhớ hoặc dữ liệu NKS SCRMAI API
+ * Lấy danh sách toàn bộ căn hộ từ bộ nhớ hoặc dữ liệu NKS SCRMAI API theo Block
  */
-export function getApartmentUnits(): ApartmentUnit[] {
+export function getApartmentUnits(blockCode: string = 'BS-07'): ApartmentUnit[] {
+  const floors = blockCode === 'BS-08' ? 39 : 34;
+  const initial = generateNksBlockUnits(DEFAULT_NKS_APARTMENTS_DATA, blockCode, floors);
+
   if (typeof window === 'undefined') {
-    return INITIAL_APARTMENTS;
+    return initial;
   }
 
   try {
@@ -136,10 +143,11 @@ export function getApartmentUnits(): ApartmentUnit[] {
       } catch (e) {}
     });
 
-    const raw = localStorage.getItem(APARTMENTS_STORAGE_KEY);
+    const blockKey = getApartmentStorageKey(blockCode);
+    const raw = localStorage.getItem(blockKey) || (blockCode === 'BS-07' ? localStorage.getItem(APARTMENTS_STORAGE_KEY) : null);
     if (!raw) {
-      localStorage.setItem(APARTMENTS_STORAGE_KEY, JSON.stringify(INITIAL_APARTMENTS));
-      return INITIAL_APARTMENTS;
+      localStorage.setItem(blockKey, JSON.stringify(initial));
+      return initial;
     }
 
     const parsed = JSON.parse(raw);
@@ -150,7 +158,7 @@ export function getApartmentUnits(): ApartmentUnit[] {
     console.warn('Load apartments storage error:', e);
   }
 
-  return INITIAL_APARTMENTS;
+  return initial;
 }
 
 /**
@@ -162,13 +170,13 @@ export async function syncApartmentsFromNksApi(blockCode: string = 'BS-07'): Pro
     const floors = blockCode === 'BS-08' ? 39 : 34;
     if (Array.isArray(nksApts) && nksApts.length > 0) {
       const liveUnits = generateNksBlockUnits(nksApts, blockCode, floors);
-      saveApartmentsList(liveUnits);
+      saveApartmentsList(liveUnits, blockCode);
       return liveUnits;
     }
   } catch (err) {
     console.warn('Sync NKS API apartments error:', err);
   }
-  return getApartmentUnits();
+  return getApartmentUnits(blockCode);
 }
 
 /**
@@ -207,11 +215,14 @@ export function getApartmentByCode(code: string): ApartmentUnit | undefined {
 /**
  * Lưu/Cập nhật toàn bộ danh sách căn hộ vào localStorage
  */
-export function saveApartmentsList(units: ApartmentUnit[]): boolean {
+export function saveApartmentsList(units: ApartmentUnit[], blockCode?: string): boolean {
   if (typeof window === 'undefined') return false;
   try {
+    const bCode = blockCode || (units[0]?.towerName?.includes('08') ? 'BS-08' : units[0]?.towerName?.includes('09') ? 'BS-09' : units[0]?.towerName?.includes('10') ? 'BS-10' : 'BS-07');
+    const key = getApartmentStorageKey(bCode);
+    localStorage.setItem(key, JSON.stringify(units));
     localStorage.setItem(APARTMENTS_STORAGE_KEY, JSON.stringify(units));
-    window.dispatchEvent(new CustomEvent('skyline_apartments_updated', { detail: { units } }));
+    window.dispatchEvent(new CustomEvent('skyline_apartments_updated', { detail: { units, blockCode: bCode } }));
     return true;
   } catch (e) {
     console.error('Save apartments storage error:', e);

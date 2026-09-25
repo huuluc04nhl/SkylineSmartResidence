@@ -105,6 +105,13 @@ export async function fetchNksProjects(): Promise<NksProject[]> {
 
   return [
     {
+      id: 873,
+      title: 'Beverly Solari',
+      slug: 'beverly-solari',
+      block: '4',
+      parent: undefined,
+    },
+    {
       id: 876,
       title: 'The Tropical',
       slug: 'the-tropical',
@@ -112,6 +119,37 @@ export async function fetchNksProjects(): Promise<NksProject[]> {
       parent: { ID: 873, post_title: 'Beverly Solari' },
     },
   ];
+}
+
+/**
+ * 1.1 Lấy thông tin chi tiết 1 Dự án
+ */
+export async function fetchNksProjectDetail(id: number): Promise<NksProject | null> {
+  const isBrowser = typeof window !== 'undefined';
+  try {
+    const url = isBrowser ? `/api/nks?type=project&id=${id}` : `${NKS_API_BASE_URL}/rsproject`;
+    const res = isBrowser
+      ? await fetch(url)
+      : await fetch(url, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${NKS_API_TOKEN}`,
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ id }),
+        });
+
+    if (res.ok) {
+      const json = await res.json();
+      if (json.success && json.data) {
+        return json.data;
+      }
+    }
+  } catch (err) {
+    console.warn('Lỗi kết nối NKS Project Detail API:', err);
+  }
+  return null;
 }
 
 /**
@@ -164,6 +202,22 @@ export async function fetchNksBlocks(): Promise<NksBlock[]> {
       rsproject: { ID: 876, post_title: 'The Tropical' },
     },
     {
+      id: 883,
+      title: 'Tropical BS-08',
+      slug: 'tropical-bs-08',
+      code: 'BS-08',
+      floors: '39',
+      rsproject: { ID: 876, post_title: 'The Tropical' },
+    },
+    {
+      id: 886,
+      title: 'Tropical BS-09',
+      slug: 'tropical-bs-09',
+      code: 'BS-09',
+      floors: '34',
+      rsproject: { ID: 876, post_title: 'The Tropical' },
+    },
+    {
       id: 889,
       title: 'Tropical BS-10',
       slug: 'tropical-bs-10',
@@ -172,6 +226,37 @@ export async function fetchNksBlocks(): Promise<NksBlock[]> {
       rsproject: { ID: 876, post_title: 'The Tropical' },
     },
   ];
+}
+
+/**
+ * 2.1 Lấy thông tin chi tiết 1 Tòa nhà (Block)
+ */
+export async function fetchNksBlockDetail(id: number): Promise<NksBlock | null> {
+  const isBrowser = typeof window !== 'undefined';
+  try {
+    const url = isBrowser ? `/api/nks?type=block&id=${id}` : `${NKS_API_BASE_URL}/rsblock`;
+    const res = isBrowser
+      ? await fetch(url)
+      : await fetch(url, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${NKS_API_TOKEN}`,
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ id }),
+        });
+
+    if (res.ok) {
+      const json = await res.json();
+      if (json.success && json.data) {
+        return json.data;
+      }
+    }
+  } catch (err) {
+    console.warn('Lỗi kết nối NKS Block Detail API:', err);
+  }
+  return null;
 }
 
 /**

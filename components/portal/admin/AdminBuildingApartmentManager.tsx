@@ -223,15 +223,23 @@ export default function AdminBuildingApartmentManager() {
   const [liveOwner, setLiveOwner] = useState<any>(null);
   const [liveMembers, setLiveMembers] = useState<ApartmentMember[]>(initialMembers);
 
-  // Hàm tải danh sách căn hộ từ kho
-  const reloadApartments = () => {
-    const list = getApartmentUnits();
+  // Hàm tải danh sách căn hộ từ kho theo block
+  const reloadApartments = (bCode: string = selectedBlock) => {
+    const list = getApartmentUnits(bCode);
     setApartments(list);
   };
 
   // Chuyển đổi giữa 4 Block tòa nhà từ NKS API
   const handleSwitchBlock = async (blockCode: 'BS-07' | 'BS-08' | 'BS-09' | 'BS-10') => {
     setSelectedBlock(blockCode);
+    const maxFloors = blockCode === 'BS-08' ? 39 : 34;
+    if (selectedFloor > maxFloors) {
+      setSelectedFloor(maxFloors);
+    }
+    // Load local block units immediately for instant UI responsiveness
+    const localUnits = getApartmentUnits(blockCode);
+    setApartments(localUnits);
+
     setIsSyncingApi(true);
     try {
       const units = await syncApartmentsFromNksApi(blockCode);
@@ -254,17 +262,20 @@ export default function AdminBuildingApartmentManager() {
 
   // Lắng nghe thay đổi từ storage
   useEffect(() => {
-    reloadApartments();
+    reloadApartments(selectedBlock);
 
-    const handleUpdate = () => {
-      reloadApartments();
+    const handleUpdate = (e: any) => {
+      if (e?.detail?.blockCode && e.detail.blockCode !== selectedBlock) {
+        return;
+      }
+      reloadApartments(selectedBlock);
     };
 
     window.addEventListener('skyline_apartments_updated', handleUpdate);
     return () => {
       window.removeEventListener('skyline_apartments_updated', handleUpdate);
     };
-  }, []);
+  }, [selectedBlock]);
 
   // Đồng bộ thông tin thực tế của chủ hộ CH-06 từ API NKS
   useEffect(() => {
@@ -611,87 +622,133 @@ export default function AdminBuildingApartmentManager() {
       </div>
 
       {/* ============================================================= */}
-      {/* 1.1 THANH CHỌN BLOCK DỰ ÁN & ĐỒNG BỘ 100% NKS API           */}
+      {/* 1.1 SƠ ĐỒ PHÂN CẤP KIẾN TRÚC DỰ ÁN CHUẨN NKS SCRMAI API     */}
       {/* ============================================================= */}
-      <div className="flex flex-wrap items-center justify-between gap-3 p-3 bg-gradient-to-r from-[#0D1522] via-[#111A29] to-[#0D1522] border border-[#23354E] rounded-none shadow-md">
-        <div className="flex flex-wrap items-center gap-3">
-          <div className="flex items-center gap-2">
-            <span className="inline-block w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_8px_rgba(52,211,153,0.8)]" />
-            <span className="text-xs font-bold text-white uppercase tracking-wider font-mono">
-              Phân Khu: <span className="text-[#C5A880]">The Tropical (Beverly Solari)</span>
-            </span>
+      <div className="bg-[#0B131E] border border-[#22344B] p-3 space-y-2.5 shadow-lg">
+        {/* ROW 1: BREADCRUMB 5 CẤP KIẾN TRÚC HỆ THỐNG */}
+        <div className="flex flex-wrap items-center justify-between gap-2.5 pb-2.5 border-b border-[#1A283B]">
+          <div className="flex flex-wrap items-center gap-1.5 text-xs font-mono">
+            {/* Cấp 1: Đại Dự Án */}
+            <div className="flex items-center gap-1 px-2 py-0.5 bg-[#131D2D] border border-[#23354E] text-gray-300">
+              <span className="text-[10px] text-gray-500 uppercase font-sans">Dự án:</span>
+              <span className="font-bold text-white">Beverly Solari</span>
+              <span className="text-[9px] px-1 bg-[#1E2E44] text-cyan-300 font-mono">ID: 873</span>
+            </div>
+
+            <ChevronRight className="w-3.5 h-3.5 text-gray-500 shrink-0" />
+
+            {/* Cấp 2: Phân Khu Dự Án */}
+            <div className="flex items-center gap-1 px-2 py-0.5 bg-[#131D2D] border border-[#23354E] text-[#C5A880]">
+              <span className="text-[10px] text-gray-500 uppercase font-sans">Phân khu:</span>
+              <span className="font-bold">The Tropical</span>
+              <span className="text-[9px] px-1 bg-[#2C2417] text-[#E0C8A0] font-mono">4 Khối Tháp</span>
+            </div>
+
+            <ChevronRight className="w-3.5 h-3.5 text-gray-500 shrink-0" />
+
+            {/* Cấp 3: Khối Tòa (Block) */}
+            <div className="flex items-center gap-1 px-2 py-0.5 bg-[#1E2E44] border border-[#3B82F6]/50 text-cyan-200">
+              <span className="text-[10px] text-cyan-400 uppercase font-sans">Khối tháp:</span>
+              <span className="font-bold text-white">Tropical {selectedBlock}</span>
+              <span className="text-[9px] px-1 bg-cyan-950 text-cyan-300 font-mono">{currentTotalFloors} Tầng</span>
+            </div>
+
+            <ChevronRight className="w-3.5 h-3.5 text-gray-500 shrink-0" />
+
+            {/* Cấp 4: Tầng */}
+            <div className="flex items-center gap-1 px-2 py-0.5 bg-[#102A24] border border-emerald-500/40 text-emerald-300">
+              <span className="text-[10px] text-emerald-500 uppercase font-sans">Cao độ:</span>
+              <span className="font-bold text-emerald-200">Tầng {selectedFloor}</span>
+            </div>
+
+            <ChevronRight className="w-3.5 h-3.5 text-gray-500 shrink-0" />
+
+            {/* Cấp 5: Căn Hộ */}
+            <div className="flex items-center gap-1 px-2 py-0.5 bg-[#2B1B0F] border border-amber-500/40 text-amber-300">
+              <span className="text-[10px] text-amber-500 uppercase font-sans">Căn hộ:</span>
+              <span className="font-bold text-amber-200">{selectedAptCode}</span>
+              {activeUnit && (
+                <span className="text-[9px] px-1 bg-amber-950 text-amber-300 font-mono">
+                  {activeUnit.type} • {activeUnit.area}m²
+                </span>
+              )}
+            </div>
           </div>
 
-          <div className="flex items-center gap-1 bg-[#090E17] p-1 border border-[#1E293B] flex-wrap">
+          {/* NKS API SYNC ACTION & STATUS */}
+          <div className="flex items-center gap-2">
+            {syncMessage && (
+              <span className="text-xs text-emerald-400 font-mono animate-fadeIn flex items-center gap-1 bg-emerald-950/60 px-2 py-0.5 border border-emerald-700/50">
+                ✓ {syncMessage}
+              </span>
+            )}
+            <div className="flex items-center gap-1 px-2 py-1 bg-[#0B1522] border border-[#1E2E44] text-[11px] font-mono text-emerald-400">
+              <span className="inline-block w-2 h-2 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_6px_rgba(52,211,153,0.8)]" />
+              <span>NKS API Live</span>
+            </div>
             <button
               type="button"
-              onClick={() => handleSwitchBlock('BS-07')}
-              className={`px-2.5 py-1 text-xs font-bold transition-all ${
-                selectedBlock === 'BS-07'
-                  ? 'bg-[#C5A880] text-black shadow'
-                  : 'text-gray-400 hover:text-white'
-              }`}
+              onClick={async () => {
+                setIsSyncingApi(true);
+                const units = await syncApartmentsFromNksApi(selectedBlock);
+                setApartments(units);
+                setIsSyncingApi(false);
+                setSyncMessage('Đồng bộ 100% dữ liệu từ NKS API thành công!');
+                setTimeout(() => setSyncMessage(null), 3000);
+              }}
+              disabled={isSyncingApi}
+              className="px-2.5 py-1 bg-[#1A2638] hover:bg-[#23354E] text-[#C5A880] hover:text-white text-xs font-semibold border border-[#2D4363] transition-all flex items-center gap-1.5 active:scale-95 disabled:opacity-50"
+              title="Đồng bộ danh sách căn hộ theo chuẩn API NKS SCRMAI"
             >
-              Tropical BS-07 (34T)
-            </button>
-            <button
-              type="button"
-              onClick={() => handleSwitchBlock('BS-08')}
-              className={`px-2.5 py-1 text-xs font-bold transition-all ${
-                selectedBlock === 'BS-08'
-                  ? 'bg-[#C5A880] text-black shadow'
-                  : 'text-gray-400 hover:text-white'
-              }`}
-            >
-              Tropical BS-08 (39T)
-            </button>
-            <button
-              type="button"
-              onClick={() => handleSwitchBlock('BS-09')}
-              className={`px-2.5 py-1 text-xs font-bold transition-all ${
-                selectedBlock === 'BS-09'
-                  ? 'bg-[#C5A880] text-black shadow'
-                  : 'text-gray-400 hover:text-white'
-              }`}
-            >
-              Tropical BS-09 (34T)
-            </button>
-            <button
-              type="button"
-              onClick={() => handleSwitchBlock('BS-10')}
-              className={`px-2.5 py-1 text-xs font-bold transition-all ${
-                selectedBlock === 'BS-10'
-                  ? 'bg-[#C5A880] text-black shadow'
-                  : 'text-gray-400 hover:text-white'
-              }`}
-            >
-              Tropical BS-10 (34T)
+              <RefreshCw className={`w-3.5 h-3.5 ${isSyncingApi ? 'animate-spin' : ''}`} />
+              {isSyncingApi ? 'Đang Tải API...' : 'Đồng Bộ NKS SCRMAI API'}
             </button>
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
-          {syncMessage && (
-            <span className="text-xs text-emerald-400 font-mono animate-fadeIn">
-              ✓ {syncMessage}
+        {/* ROW 2: THANH CHỌN 4 KHỐI THÁP TÒA NHÀ THE TROPICAL */}
+        <div className="flex flex-wrap items-center justify-between gap-2 pt-0.5">
+          <div className="flex items-center gap-1.5 flex-wrap">
+            <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider font-mono mr-1">
+              Khối Tháp (Blocks):
             </span>
-          )}
-          <button
-            type="button"
-            onClick={async () => {
-              setIsSyncingApi(true);
-              const units = await syncApartmentsFromNksApi(selectedBlock);
-              setApartments(units);
-              setIsSyncingApi(false);
-              setSyncMessage('Đồng bộ 100% dữ liệu từ NKS API thành công!');
-              setTimeout(() => setSyncMessage(null), 3000);
-            }}
-            disabled={isSyncingApi}
-            className="px-3 py-1.5 bg-[#1A2638] hover:bg-[#23354E] text-[#C5A880] hover:text-white text-xs font-semibold border border-[#2D4363] transition-all flex items-center gap-1.5 active:scale-95 disabled:opacity-50"
-          >
-            <RefreshCw className={`w-3.5 h-3.5 ${isSyncingApi ? 'animate-spin' : ''}`} />
-            {isSyncingApi ? 'Đang Tải API...' : 'Đồng Bộ NKS SCRMAI API'}
-          </button>
+            {[
+              { code: 'BS-07', name: 'Tropical BS-07', floors: 34, id: 880, desc: '34 Tầng Chuẩn' },
+              { code: 'BS-08', name: 'Tropical BS-08', floors: 39, id: 883, desc: '39 Tầng • Tháp Cao Nhất', highlight: true },
+              { code: 'BS-09', name: 'Tropical BS-09', floors: 34, id: 886, desc: '34 Tầng Chuẩn' },
+              { code: 'BS-10', name: 'Tropical BS-10', floors: 34, id: 889, desc: '34 Tầng Chuẩn' },
+            ].map(b => {
+              const isCurrent = selectedBlock === b.code;
+              return (
+                <button
+                  key={b.code}
+                  type="button"
+                  onClick={() => handleSwitchBlock(b.code as any)}
+                  className={`px-3 py-1.5 text-xs font-mono transition-all flex items-center gap-2 border ${
+                    isCurrent
+                      ? 'bg-[#C5A880] text-black border-[#C5A880] font-bold shadow-[0_0_12px_rgba(197,168,128,0.35)]'
+                      : 'bg-[#0E1724] text-gray-300 border-[#1E2D42] hover:border-[#385175] hover:text-white'
+                  }`}
+                >
+                  <span className="font-sans font-bold">{b.name}</span>
+                  <span className={`text-[10px] px-1 py-0.2 rounded-none ${
+                    isCurrent ? 'bg-black/20 text-black font-bold' : 'bg-[#152132] text-cyan-300'
+                  }`}>
+                    {b.floors}T
+                  </span>
+                  {b.highlight && !isCurrent && (
+                    <span className="text-[9px] px-1 bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                      Top
+                    </span>
+                  )}
+                </button>
+              );
+            })}
+          </div>
+
+          <div className="text-[11px] font-mono text-gray-400">
+            Tổng căn đang hiển thị: <span className="text-white font-bold">{totalUnitsCount}</span> căn • Khối <span className="text-[#C5A880] font-bold">{selectedBlock}</span>
+          </div>
         </div>
       </div>
 
@@ -1034,6 +1091,7 @@ export default function AdminBuildingApartmentManager() {
             };
 
             const curTone = toneConfig[buildingColorTone] || toneConfig.GOLD_LUXURY;
+            const floorStep = (472 - 90) / (currentTotalFloors - 1);
             const rulerLevels = currentTotalFloors === 39 
               ? [39, 35, 30, 25, 20, 15, 10, 5, 1] 
               : [34, 30, 25, 20, 15, 10, 5, 1];
@@ -1262,7 +1320,7 @@ export default function AdminBuildingApartmentManager() {
                     {/* THƯỚC ĐO CAO ĐỘ CÁC TẦNG BÊN TRÁI & PHẢI (LEVEL RULER) */}
                     <g className="opacity-70 font-mono text-[9px]">
                       {rulerLevels.map(fl => {
-                        const yPos = 472 - (fl - 1) * 11.8 - 25;
+                        const yPos = 472 - (fl - 1) * floorStep - 25;
                         const is30 = fl === 30;
                         const is20 = fl === 20;
 
@@ -1353,7 +1411,7 @@ export default function AdminBuildingApartmentManager() {
                           : (b.floor <= 10);
 
                         // Tọa độ hình học chính xác cho khối căn hộ
-                        const yBase = 472 - (b.floor - 1) * 11.8;
+                        const yBase = 472 - (b.floor - 1) * floorStep;
                         const h = b.floor === currentTotalFloors ? 13 : 9.5;
                         
                         const pts = b.side === 'LEFT'
@@ -1447,7 +1505,7 @@ export default function AdminBuildingApartmentManager() {
 
                         const curFloor = Math.max(1, Math.min(currentTotalFloors, activeTargetBlock.floor));
                         const curSide = activeTargetBlock.side;
-                        const curYBase = 472 - (curFloor - 1) * 11.8;
+                        const curYBase = 472 - (curFloor - 1) * floorStep;
                         const curH = curFloor === currentTotalFloors ? 13 : 9.5;
 
                         const wallX = curSide === 'LEFT' ? 248 : 752;
