@@ -2,57 +2,6 @@
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { 
-  Building, 
-  Layers, 
-  Users, 
-  UserCheck, 
-  Home, 
-  CheckCircle2, 
-  AlertCircle, 
-  Clock, 
-  Search, 
-  Filter, 
-  Eye, 
-  Key, 
-  ShieldCheck, 
-  Sparkles, 
-  Car, 
-  Receipt, 
-  Phone, 
-  Mail, 
-  CreditCard, 
-  Box, 
-  Info,
-  Calendar,
-  MapPin,
-  ChevronRight,
-  Plus,
-  Edit,
-  Maximize2,
-  Check,
-  RefreshCw,
-  Compass,
-  FileText,
-  FileCheck2,
-  Zap,
-  RotateCcw,
-  X,
-  SlidersHorizontal,
-  Wrench,
-  Building2,
-  Droplets,
-  Coins,
-  TrendingUp,
-  Gauge,
-  Minimize2,
-  Sun,
-  Wind,
-  Download,
-  Send,
-  ArrowUpRight,
-  Activity
-} from 'lucide-react';
-import { 
   getApartmentUnits, 
   getApartmentByCode, 
   syncApartmentsFromNksApi,
@@ -73,7 +22,7 @@ export type ApartmentTypeFilter = 'ALL' | '1PN' | '2PN' | '3PN' | 'DUPLEX_PENTHO
 export type FloorRangeFilter = 'ALL' | 'LOW' | 'MID' | 'HIGH';
 export type ViewPerspective = '3D' | 'BUILDING_ELEVATION' | 'FLOOR_PLAN' | 'GRID';
 
-export type BuildingColorTone = 'GOLD_LUXURY' | 'AZURE_SKY' | 'CYBER_BIM' | 'TROPICAL_SUNSET';
+export type BuildingColorTone = 'GOLD_LUXURY';
 
 // Danh sách các khối căn hộ kiến trúc hiển thị trên mô hình 3D (hỗ trợ tối đa 39 tầng phân khu The Tropical - Block BS-07, BS-08, BS-09, BS-10 từ NKS API)
 export const BUILDING_3D_UNITS: {
@@ -190,7 +139,7 @@ export default function AdminBuildingApartmentManager() {
   const [apartments, setApartments] = useState<ApartmentUnit[]>([]);
   const [selectedAptCode, setSelectedAptCode] = useState<string>('CH-06');
   const [selectedBlock, setSelectedBlock] = useState<'BS-07' | 'BS-08' | 'BS-09' | 'BS-10'>('BS-07');
-  const [buildingColorTone, setBuildingColorTone] = useState<BuildingColorTone>('GOLD_LUXURY');
+  const buildingColorTone: BuildingColorTone = 'GOLD_LUXURY';
   const [isSyncingApi, setIsSyncingApi] = useState(false);
   const [syncMessage, setSyncMessage] = useState<string | null>(null);
 
@@ -548,12 +497,11 @@ export default function AdminBuildingApartmentManager() {
     );
   }, [displayUnits, selectedAptCode, selectedFloor]);
 
-  // Cấu hình Tone màu phối cảnh BIM 3D
+  // Cấu hình Tone màu sang trọng mặc định (Hoàng Gia Gold) cho phối cảnh BIM 3D
   const toneConfig = useMemo(() => ({
     GOLD_LUXURY: {
       id: 'GOLD_LUXURY' as BuildingColorTone,
       label: 'Hoàng Gia Gold',
-      icon: '⚜️',
       containerBg: buildingTheme === 'NIGHT' ? 'bg-[#040711]' : 'bg-[#091122]',
       gridLineColor: buildingTheme === 'NIGHT' ? '#1E293B' : '#C5A880',
       glassL: buildingTheme === 'NIGHT' ? ['#172033', '#0F1626', '#060A13'] : ['#22324F', '#152136', '#0B1322'],
@@ -566,57 +514,6 @@ export default function AdminBuildingApartmentManager() {
       podiumGrad: ['#1A253A', '#0F1726', '#070C15'],
       accentTag: 'bg-[#C5A880] text-black',
       mullionColor: '#C5A880',
-    },
-    AZURE_SKY: {
-      id: 'AZURE_SKY' as BuildingColorTone,
-      label: 'Pha Lê Azure',
-      icon: '💎',
-      containerBg: buildingTheme === 'NIGHT' ? 'bg-[#020B17]' : 'bg-[#061833]',
-      gridLineColor: '#0284C7',
-      glassL: buildingTheme === 'NIGHT' ? ['#0E2A47', '#081D33', '#04101D'] : ['#0284C7', '#0369A1', '#0C4A6E'],
-      glassR: buildingTheme === 'NIGHT' ? ['#1C446D', '#0F2C4E', '#091C31'] : ['#38BDF8', '#0284C7', '#075985'],
-      borderBuilding: '#38BDF8',
-      roofColor: '#0C223B',
-      crownColor: '#7DD3FC',
-      titleColor: '#BAE6FD',
-      laserBeamColor: '#38BDF8',
-      podiumGrad: ['#0E2E52', '#081E38', '#030E1C'],
-      accentTag: 'bg-[#38BDF8] text-black',
-      mullionColor: '#38BDF8',
-    },
-    CYBER_BIM: {
-      id: 'CYBER_BIM' as BuildingColorTone,
-      label: 'Cyber BIM',
-      icon: '⚡',
-      containerBg: 'bg-[#01060A]',
-      gridLineColor: '#00F0FF',
-      glassL: ['#06232D', '#03141B', '#010A0F'],
-      glassR: ['#0B3746', '#05202A', '#021117'],
-      borderBuilding: '#00F0FF',
-      roofColor: '#04171F',
-      crownColor: '#00F0FF',
-      titleColor: '#67E8F9',
-      laserBeamColor: '#00F0FF',
-      podiumGrad: ['#082C3A', '#03161E', '#010A0F'],
-      accentTag: 'bg-[#00F0FF] text-black',
-      mullionColor: '#00F0FF',
-    },
-    TROPICAL_SUNSET: {
-      id: 'TROPICAL_SUNSET' as BuildingColorTone,
-      label: 'Hoàng Hôn Sunset',
-      icon: '🌅',
-      containerBg: buildingTheme === 'NIGHT' ? 'bg-[#120713]' : 'bg-[#200A1A]',
-      gridLineColor: '#D97706',
-      glassL: buildingTheme === 'NIGHT' ? ['#351829', '#240F1B', '#14070F'] : ['#9A3412', '#7C2D12', '#431407'],
-      glassR: buildingTheme === 'NIGHT' ? ['#4A223B', '#331728', '#1D0B16'] : ['#D97706', '#B45309', '#78350F'],
-      borderBuilding: '#F59E0B',
-      roofColor: '#28111F',
-      crownColor: '#FBBF24',
-      titleColor: '#FDE68A',
-      laserBeamColor: '#F59E0B',
-      podiumGrad: ['#3A162B', '#240D1B', '#12050D'],
-      accentTag: 'bg-[#F59E0B] text-black',
-      mullionColor: '#F59E0B',
     },
   }), [buildingTheme]);
 
@@ -645,8 +542,8 @@ export default function AdminBuildingApartmentManager() {
       {/* ============================================================= */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#222B35] pb-4">
         <div>
-          <div className="text-[11px] uppercase tracking-wider text-[#C5A880] font-semibold flex items-center gap-1.5 font-mono">
-            <Building className="w-3.5 h-3.5 text-[#C5A880]" /> THE TROPICAL • BEVERLY SOLARI
+          <div className="text-[11px] uppercase tracking-wider text-[#C5A880] font-semibold font-mono">
+            THE TROPICAL • BEVERLY SOLARI
           </div>
           <h2 className="font-serif text-2xl sm:text-3xl text-white font-bold mt-0.5 flex items-center gap-2">
             Sơ Đồ Tầng & Căn Hộ
@@ -664,9 +561,9 @@ export default function AdminBuildingApartmentManager() {
           <button
             type="button"
             onClick={() => setIsAddModalOpen(true)}
-            className="px-4 py-2 bg-[#C5A880] hover:bg-white text-[#0D1117] text-xs font-bold uppercase tracking-wider rounded-none transition-all flex items-center gap-1.5 shadow-lg active:scale-95"
+            className="px-4 py-2 bg-[#C5A880] hover:bg-white text-[#0D1117] text-xs font-bold uppercase tracking-wider rounded-none transition-all shadow-lg active:scale-95"
           >
-            <Plus className="w-4 h-4" /> Thêm Căn Hộ Mới
+            Thêm Căn Hộ Mới
           </button>
         </div>
       </div>
@@ -715,56 +612,53 @@ export default function AdminBuildingApartmentManager() {
             <button
               type="button"
               onClick={() => setSelectedOccupancy('ALL')}
-              className={`px-2 py-0.5 border flex items-center gap-1.5 transition-all cursor-pointer ${
+              className={`px-2.5 py-1 border transition-all cursor-pointer ${
                 selectedOccupancy === 'ALL'
                   ? 'bg-[#1C2533] border-[#C5A880] text-white shadow-sm ring-1 ring-[#C5A880]/60'
                   : 'bg-[#121820] border-[#222B35] text-gray-300 hover:border-gray-500'
               }`}
               title="Xem toàn bộ căn hộ"
             >
-              <span className="text-gray-400">Tổng:</span>
+              <span className="text-gray-400">Tổng: </span>
               <strong className="text-white font-bold">{totalUnitsCount}</strong>
             </button>
             <button
               type="button"
               onClick={() => setSelectedOccupancy(selectedOccupancy === 'OCCUPIED' ? 'ALL' : 'OCCUPIED')}
-              className={`px-2 py-0.5 border flex items-center gap-1.5 transition-all cursor-pointer ${
+              className={`px-2.5 py-1 border transition-all cursor-pointer ${
                 selectedOccupancy === 'OCCUPIED'
                   ? 'bg-emerald-950 border-emerald-400 text-emerald-200 ring-1 ring-emerald-400 shadow-sm'
                   : 'bg-[#121820] border-emerald-500/40 text-emerald-300 hover:border-emerald-400'
               }`}
               title="Lọc nhanh các căn hộ Đã Có Người Ở"
             >
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-              <span className="text-gray-400">Đã Ở:</span>
+              <span className="text-gray-400">Đã Ở: </span>
               <strong className="font-bold">{occupiedCount} ({occupancyRate}%)</strong>
             </button>
             <button
               type="button"
               onClick={() => setSelectedOccupancy(selectedOccupancy === 'VACANT' ? 'ALL' : 'VACANT')}
-              className={`px-2 py-0.5 border flex items-center gap-1.5 transition-all cursor-pointer ${
+              className={`px-2.5 py-1 border transition-all cursor-pointer ${
                 selectedOccupancy === 'VACANT'
                   ? 'bg-amber-950 border-amber-400 text-amber-200 ring-1 ring-amber-400 shadow-sm'
                   : 'bg-[#121820] border-amber-500/40 text-amber-300 hover:border-amber-400'
               }`}
               title="Lọc nhanh các Căn Hộ Trống"
             >
-              <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
-              <span className="text-gray-400">Trống:</span>
+              <span className="text-gray-400">Trống: </span>
               <strong className="font-bold">{vacantCount}</strong>
             </button>
             <button
               type="button"
               onClick={() => setSelectedOccupancy(selectedOccupancy === 'MAINTENANCE' ? 'ALL' : 'MAINTENANCE')}
-              className={`px-2 py-0.5 border flex items-center gap-1.5 transition-all cursor-pointer ${
+              className={`px-2.5 py-1 border transition-all cursor-pointer ${
                 selectedOccupancy === 'MAINTENANCE'
                   ? 'bg-blue-950 border-blue-400 text-blue-200 ring-1 ring-blue-400 shadow-sm'
                   : 'bg-[#121820] border-blue-500/40 text-blue-300 hover:border-blue-400'
               }`}
               title="Lọc nhanh các căn Nghiệm Thu / Bảo Trì"
             >
-              <span className="w-1.5 h-1.5 rounded-full bg-blue-400" />
-              <span className="text-gray-400">Nghiệm Thu:</span>
+              <span className="text-gray-400">Nghiệm Thu: </span>
               <strong className="font-bold">{maintenanceCount}</strong>
             </button>
 
@@ -772,8 +666,8 @@ export default function AdminBuildingApartmentManager() {
 
             {/* Trạng thái NKS API Live & Nút Đồng Bộ */}
             {syncMessage && (
-              <span className="text-xs text-emerald-400 font-mono animate-fadeIn flex items-center gap-1 bg-emerald-950/60 px-2 py-0.5 border border-emerald-700/50">
-                ✓ {syncMessage}
+              <span className="text-xs text-emerald-400 font-mono animate-fadeIn bg-emerald-950/60 px-2 py-0.5 border border-emerald-700/50">
+                {syncMessage}
               </span>
             )}
             <button
@@ -787,11 +681,10 @@ export default function AdminBuildingApartmentManager() {
                 setTimeout(() => setSyncMessage(null), 3000);
               }}
               disabled={isSyncingApi}
-              className="px-2 py-0.5 bg-[#1A2638] hover:bg-[#23354E] text-[#C5A880] hover:text-white text-xs font-semibold border border-[#2D4363] transition-all flex items-center gap-1.5 disabled:opacity-50"
+              className="px-3 py-1 bg-[#1A2638] hover:bg-[#23354E] text-[#C5A880] hover:text-white text-xs font-semibold border border-[#2D4363] transition-all disabled:opacity-50"
               title="Đồng bộ dữ liệu từ NKS SCRMAI API"
             >
-              <RefreshCw className={`w-3 h-3 ${isSyncingApi ? 'animate-spin' : ''}`} />
-              <span>{isSyncingApi ? 'Đang tải...' : 'Đồng Bộ NKS API'}</span>
+              <span>{isSyncingApi ? 'Đang đồng bộ...' : 'Đồng Bộ NKS API'}</span>
             </button>
           </div>
         </div>
@@ -801,7 +694,6 @@ export default function AdminBuildingApartmentManager() {
           {/* Nhóm trái: Ô tìm kiếm thông minh */}
           <div className="flex items-center gap-2 flex-1 min-w-[240px] max-w-sm">
             <div className="relative flex-1">
-              <Search className="w-3.5 h-3.5 text-[#C5A880] absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
               <input
                 type="text"
                 value={searchQuery}
@@ -809,16 +701,16 @@ export default function AdminBuildingApartmentManager() {
                 onBlur={() => setTimeout(() => setIsSearchFocused(false), 250)}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Tìm căn (CH-06), tầng (T30), cư dân (Lực)..."
-                className="w-full bg-[#161B22] border border-[#2D3748] pl-8 pr-7 py-1 text-white text-xs placeholder:text-gray-500 outline-none focus:border-[#C5A880] transition-colors font-mono"
+                className="w-full bg-[#161B22] border border-[#2D3748] px-2.5 py-1 text-white text-xs placeholder:text-gray-500 outline-none focus:border-[#C5A880] transition-colors font-mono"
               />
               {searchQuery && (
                 <button
                   type="button"
                   onClick={() => setSearchQuery('')}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white"
+                  className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white font-mono text-xs"
                   title="Xóa tìm kiếm"
                 >
-                  <X className="w-3 h-3" />
+                  ✕
                 </button>
               )}
 
@@ -850,7 +742,7 @@ export default function AdminBuildingApartmentManager() {
                             <div className="text-white text-xs font-semibold truncate flex items-center gap-1">
                               <span>{u.owner?.name ? u.owner.name : 'Nhà Trống'}</span>
                               {(u.code === 'CH-06' || (u.floor === 30 && u.code === 'CH-01')) && (
-                                <span className="text-[9px] px-1 bg-amber-500/20 text-amber-300">★ Chủ Hộ</span>
+                                <span className="text-[9px] px-1 bg-amber-500/20 text-amber-300">Chủ Hộ</span>
                               )}
                             </div>
                             <div className="text-[10px] text-gray-400 truncate">
@@ -886,14 +778,14 @@ export default function AdminBuildingApartmentManager() {
                   setSelectedAptCode('CH-06');
                 }
               }}
-              className={`px-2.5 py-1 text-xs font-semibold font-mono transition-all flex items-center gap-1 shrink-0 border ${
+              className={`px-2.5 py-1 text-xs font-semibold font-mono transition-all shrink-0 border ${
                 isOnlyOwnerUnits
                   ? 'bg-[#C5A880] text-black border-[#C5A880] font-bold shadow'
                   : 'text-amber-300 bg-[#292015] hover:bg-[#3D2F1E] border-amber-600/40'
               }`}
               title="Lọc nhanh 2 căn chủ hộ của Trần Hữu Lực (CH-06 & CH-01 Tầng 30)"
             >
-              <span>★ Căn Chủ Hộ (2)</span>
+              <span>Căn Chủ Hộ (2)</span>
             </button>
           </div>
 
@@ -908,7 +800,7 @@ export default function AdminBuildingApartmentManager() {
               <button
                 key={o.id}
                 onClick={() => setSelectedOccupancy(o.id as any)}
-                className={`px-2 py-1 text-xs transition-all border ${
+                className={`px-2.5 py-1 text-xs transition-all border ${
                   selectedOccupancy === o.id
                     ? 'bg-[#1C2533] text-[#C5A880] border-[#C5A880] font-bold shadow'
                     : 'text-gray-400 hover:text-white bg-[#161B22]/70 border-transparent hover:bg-[#161B22]'
@@ -958,10 +850,9 @@ export default function AdminBuildingApartmentManager() {
               <button
                 type="button"
                 onClick={resetAllFilters}
-                className="px-2 py-1 bg-[#2B1D1D] hover:bg-[#3D2525] text-rose-300 border border-rose-800/60 text-xs font-semibold transition-all flex items-center gap-1 active:scale-95"
+                className="px-2.5 py-1 bg-[#2B1D1D] hover:bg-[#3D2525] text-rose-300 border border-rose-800/60 text-xs font-semibold transition-all active:scale-95"
                 title="Đặt lại toàn bộ tiêu chí lọc"
               >
-                <RotateCcw className="w-3 h-3" />
                 <span>Đặt Lại</span>
               </button>
             )}
@@ -980,7 +871,7 @@ export default function AdminBuildingApartmentManager() {
             )}
             {isOnlyOwnerUnits && (
               <span className="inline-flex items-center gap-1 px-1.5 py-0.2 bg-amber-950 text-amber-300 border border-amber-700/60 font-bold">
-                ★ Căn Chủ Hộ (Trần Hữu Lực)
+                Căn Chủ Hộ (Trần Hữu Lực)
                 <button type="button" onClick={() => setIsOnlyOwnerUnits(false)} className="text-amber-400 hover:text-white">✕</button>
               </span>
             )}
@@ -1021,105 +912,70 @@ export default function AdminBuildingApartmentManager() {
               <button
                 type="button"
                 onClick={() => setBuildingPerspective('3D')}
-                className={`px-3 py-1 flex items-center gap-1.5 transition-all ${
+                className={`px-3 py-1 transition-all ${
                   buildingPerspective === '3D'
                     ? 'bg-[#C5A880] text-[#0D1117] font-bold shadow'
                     : 'text-gray-400 hover:text-white'
                 }`}
               >
-                <Box className="w-3.5 h-3.5" />
-                <span>3D (BIM)</span>
+                3D (BIM)
               </button>
               <button
                 type="button"
                 onClick={() => setBuildingPerspective('BUILDING_ELEVATION')}
-                className={`px-3 py-1 flex items-center gap-1.5 transition-all ${
+                className={`px-3 py-1 transition-all ${
                   buildingPerspective === 'BUILDING_ELEVATION'
                     ? 'bg-[#C5A880] text-[#0D1117] font-bold shadow'
                     : 'text-gray-400 hover:text-white'
                 }`}
               >
-                <Building className="w-3.5 h-3.5" />
-                <span>Mặt Đứng</span>
+                Mặt Đứng
               </button>
               <button
                 type="button"
                 onClick={() => setBuildingPerspective('FLOOR_PLAN')}
-                className={`px-3 py-1 flex items-center gap-1.5 transition-all ${
+                className={`px-3 py-1 transition-all ${
                   buildingPerspective === 'FLOOR_PLAN'
                     ? 'bg-[#C5A880] text-[#0D1117] font-bold shadow'
                     : 'text-gray-400 hover:text-white'
                 }`}
               >
-                <Layers className="w-3.5 h-3.5" />
-                <span>Mặt Bằng</span>
+                Mặt Bằng
               </button>
               <button
                 type="button"
                 onClick={() => setBuildingPerspective('GRID')}
-                className={`px-3 py-1 flex items-center gap-1.5 transition-all ${
+                className={`px-3 py-1 transition-all ${
                   buildingPerspective === 'GRID'
                     ? 'bg-[#C5A880] text-[#0D1117] font-bold shadow'
                     : 'text-gray-400 hover:text-white'
                 }`}
               >
-                <Home className="w-3.5 h-3.5" />
-                <span>Lưới Căn</span>
+                Lưới Căn
               </button>
             </div>
 
             {/* BÊN PHẢI: BỘ CÔNG CỤ THEO NGỮ CẢNH TƯƠNG ỨNG CỦA TỪNG VIEW */}
             <div className="flex items-center gap-2 overflow-x-auto no-scrollbar">
               {buildingPerspective === '3D' && (
-                <>
-                  <div className="hidden sm:flex items-center gap-1.5 px-2 py-1 bg-[#141E2B] border border-[#233345] text-[11px] font-mono shrink-0">
+                <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-1.5 px-2.5 py-1 bg-[#141E2B] border border-[#233345] text-[11px] font-mono shrink-0">
                     <span className="text-gray-400">Đang chiếu:</span>
                     <strong className="text-white">T{selectedFloor}</strong>
                     <span className="text-gray-600">•</span>
                     <strong className="text-[#C5A880]">{activeUnit?.code || selectedAptCode}</strong>
                   </div>
 
-                  {/* 4 Tone Màu (Compact Icon Buttons) */}
-                  <div className="flex bg-[#070B11] p-0.5 border border-[#1E2A38] text-[11px] font-mono shrink-0">
-                    {(['GOLD_LUXURY', 'AZURE_SKY', 'CYBER_BIM', 'TROPICAL_SUNSET'] as BuildingColorTone[]).map((tKey) => {
-                      const t = toneConfig[tKey];
-                      const isSelected = buildingColorTone === tKey;
-                      return (
-                        <button
-                          key={tKey}
-                          type="button"
-                          onClick={() => setBuildingColorTone(tKey)}
-                          className={`px-1.5 py-0.5 transition-all ${
-                            isSelected ? t.accentTag + ' font-bold shadow' : 'text-gray-400 hover:text-white'
-                          }`}
-                          title={`Tone ${t.label}`}
-                        >
-                          <span>{t.icon}</span>
-                        </button>
-                      );
-                    })}
-                  </div>
-
-                  {/* Chế độ Ngày / Đêm */}
+                  {/* Chế độ Ngày / Đêm dạng text thanh lịch */}
                   <button
                     type="button"
                     onClick={() => setBuildingTheme(buildingTheme === 'NIGHT' ? 'DAY' : 'NIGHT')}
-                    className="px-2 py-1 bg-[#141E2B] hover:bg-[#1E2E40] border border-[#233345] text-white text-[11px] font-mono flex items-center gap-1 transition-all shrink-0"
+                    className="px-2.5 py-1 bg-[#141E2B] hover:bg-[#1E2E40] border border-[#233345] text-white text-[11px] font-mono transition-all shrink-0"
                     title={buildingTheme === 'NIGHT' ? 'Chuyển sang chế độ Ban Ngày' : 'Chuyển sang chế độ Ban Đêm'}
                   >
-                    {buildingTheme === 'NIGHT' ? (
-                      <>
-                        <Sun className="w-3 h-3 text-amber-400" />
-                        <span className="hidden md:inline">Ngày</span>
-                      </>
-                    ) : (
-                      <>
-                        <Wind className="w-3 h-3 text-cyan-300" />
-                        <span className="hidden md:inline">Đêm</span>
-                      </>
-                    )}
+                    <span>{buildingTheme === 'NIGHT' ? 'Chế độ: Đêm' : 'Chế độ: Ngày'}</span>
                   </button>
-                </>
+                </div>
               )}
 
               {buildingPerspective === 'BUILDING_ELEVATION' && (
@@ -1153,7 +1009,7 @@ export default function AdminBuildingApartmentManager() {
                     >
                       {buildingFloors.map(f => (
                         <option key={f} value={f}>
-                          Tầng {f} {f === 30 ? '★ (Căn chủ hộ)' : ''}
+                          Tầng {f} {f === 30 ? '(Căn chủ hộ)' : ''}
                         </option>
                       ))}
                     </select>
@@ -1161,16 +1017,15 @@ export default function AdminBuildingApartmentManager() {
                   <button
                     type="button"
                     onClick={() => setIsFloorPlanExpanded(true)}
-                    className="px-2 py-0.5 bg-[#C5A880]/15 hover:bg-[#C5A880] text-[#C5A880] hover:text-black border border-[#C5A880]/60 font-bold text-[11px] font-mono transition-all flex items-center gap-1"
+                    className="px-2.5 py-0.5 bg-[#C5A880]/15 hover:bg-[#C5A880] text-[#C5A880] hover:text-black border border-[#C5A880]/60 font-bold text-[11px] font-mono transition-all"
                   >
-                    <Maximize2 className="w-3 h-3" />
-                    <span>Mở Rộng ⛶</span>
+                    <span>Mở Rộng</span>
                   </button>
                 </div>
               )}
 
               {buildingPerspective === 'GRID' && (
-                <div className="text-[11px] font-mono text-[#C5A880] px-2 py-0.5 bg-[#141E2B] border border-[#233345]">
+                <div className="text-[11px] font-mono text-[#C5A880] px-2.5 py-0.5 bg-[#141E2B] border border-[#233345]">
                   {filteredUnits.length}/{displayUnits.length} căn
                 </div>
               )}
@@ -1181,7 +1036,7 @@ export default function AdminBuildingApartmentManager() {
           {/* GÓC NHÌN 1: MÔ HÌNH KHỐI 3D KIẾN TRÚC TÒA NHÀ BỰ HƠN THỰC TẾ*/}
           {/* ----------------------------------------------------------- */}
           {buildingPerspective === '3D' && (() => {
-            const curTone = toneConfig[buildingColorTone] || toneConfig.GOLD_LUXURY;
+            const curTone = toneConfig.GOLD_LUXURY;
             const floorStep = (472 - 90) / (currentTotalFloors - 1);
             const rulerLevels = currentTotalFloors === 39 
               ? [39, 35, 30, 25, 20, 15, 10, 5, 1] 
@@ -1435,7 +1290,7 @@ export default function AdminBuildingApartmentManager() {
                                 <circle cx={b.side === 'LEFT' ? 370 : 630} cy={yBase - 18} r="3" fill="#FDE68A" stroke="#B45309" strokeWidth="1" />
                                 <rect x={b.side === 'LEFT' ? 315 : 575} y={yBase - 33} width="112" height="13" fill="#0B131E" fillOpacity="0.92" stroke="#F59E0B" strokeWidth="0.8" rx="2" />
                                 <text x={b.side === 'LEFT' ? 371 : 631} y={yBase - 23.5} fill="#FDE68A" fontSize="7" fontWeight="bold" fontFamily="monospace" textAnchor="middle">
-                                  ★ CĂN CHỦ HỘ LỰC
+                                  CĂN CHỦ HỘ (LỰC)
                                 </text>
                               </g>
                             )}
@@ -1549,14 +1404,14 @@ export default function AdminBuildingApartmentManager() {
                                 fontWeight="bold"
                               >
                                 {curFloor === 30 && (selectedAptCode === 'CH-06' || activeUnit?.code === 'CH-06')
-                                  ? `★ CHỦ HỘ: ${activeOwnerName} (0364967082)`
+                                  ? `CHỦ HỘ: ${activeOwnerName} (0364967082)`
                                   : curFloor === 30 && (selectedAptCode === 'CH-01' || activeUnit?.code === 'CH-01')
-                                  ? `★ CĂN PHỤ CHỦ HỘ: ${activeOwnerName}`
+                                  ? `CĂN PHỤ CHỦ HỘ: ${activeOwnerName}`
                                   : isCurOccupied
-                                  ? `★ CƯ DÂN: ${activeOwnerName}`
+                                  ? `CƯ DÂN: ${activeOwnerName}`
                                   : isCurMaint
-                                  ? '★ ĐANG NGHIỆM THU KỸ THUẬT'
-                                  : '★ NHÀ TRỐNG • SẴN SÀNG Ở'}
+                                  ? 'ĐANG NGHIỆM THU KỸ THUẬT'
+                                  : 'NHÀ TRỐNG • SẴN SÀNG Ở'}
                               </text>
 
                               <text
@@ -1576,7 +1431,7 @@ export default function AdminBuildingApartmentManager() {
                                 fontSize="7.5"
                                 fontWeight="semibold"
                               >
-                                ✦ Nhấp Mặt Bằng Tầng để xem 8 căn chi tiết ➜
+                                Nhấp Mặt Bằng Tầng để xem 8 căn chi tiết
                               </text>
                             </g>
                           </g>
@@ -1593,10 +1448,10 @@ export default function AdminBuildingApartmentManager() {
                             <g>
                               <rect x="735" y="25" width="245" height="42" fill="#0D1117" fillOpacity="0.94" stroke={curTone.borderBuilding} strokeWidth="1.2" rx="3" />
                               <text x="748" y="42" fill={curTone.titleColor} fontSize="9.5" fontWeight="bold" fontFamily="monospace">
-                                ✦ XEM NHANH: CĂN {hoveredUnitCode} (Tầng {hUnit?.floor || hoveredFloor || 30})
+                                XEM NHANH: CĂN {hoveredUnitCode} (Tầng {hUnit?.floor || hoveredFloor || 30})
                               </text>
                               <text x="748" y="56" fill="#94A3B8" fontSize="8" fontFamily="sans-serif">
-                                {hUnit?.status === 'OCCUPIED' ? '🟢 Đã có người ở' : hUnit?.status === 'MAINTENANCE' ? '🔵 Nghiệm thu kỹ thuật' : '🟡 Nhà trống (Sẵn sàng bàn giao)'} • Nhấp để định vị
+                                {hUnit?.status === 'OCCUPIED' ? 'Đã có người ở' : hUnit?.status === 'MAINTENANCE' ? 'Nghiệm thu kỹ thuật' : 'Nhà trống (Sẵn sàng bàn giao)'} • Nhấp để định vị
                               </text>
                             </g>
                           );
@@ -1631,8 +1486,7 @@ export default function AdminBuildingApartmentManager() {
                 <div className="bg-[#0B0F17] border border-[#222B35] p-3 rounded-none flex flex-col space-y-3">
                   {/* Tầng Mái Sân Thượng */}
                   {(selectedFloorRange === 'ALL' || selectedFloorRange === 'HIGH') && (
-                    <div className="p-2.5 bg-[#121822] border border-[#1E293B] text-[11px] text-gray-300 font-mono text-center flex items-center justify-center gap-2">
-                      <Sparkles className="w-3.5 h-3.5 text-[#C5A880]" />
+                    <div className="p-2.5 bg-[#121822] border border-[#1E293B] text-[11px] text-gray-300 font-mono text-center">
                       <span className="font-bold">TẦNG MÁI • SÂN THƯỢNG HELIPAD & KHU KỸ THUẬT TÒA {currentBlockName.toUpperCase()}</span>
                     </div>
                   )}
@@ -1651,9 +1505,8 @@ export default function AdminBuildingApartmentManager() {
                           }`}
                         >
                         <div className="flex items-center justify-between text-[11px] font-mono">
-                          <span className="text-white font-bold flex items-center gap-1.5">
-                            <Layers className="w-3.5 h-3.5 text-[#C5A880]" />
-                            TẦNG {floor} {isFloor30 ? '★ (Căn Chủ Hộ)' : ''}
+                          <span className="text-white font-bold">
+                            TẦNG {floor} {isFloor30 ? '(Căn Chủ Hộ)' : ''}
                           </span>
                           <button
                             type="button"
@@ -1661,9 +1514,9 @@ export default function AdminBuildingApartmentManager() {
                               setSelectedFloor(floor);
                               setBuildingPerspective('FLOOR_PLAN');
                             }}
-                            className="text-[10.5px] text-[#C5A880] hover:text-white hover:underline flex items-center gap-1 font-semibold"
+                            className="text-[10.5px] text-[#C5A880] hover:text-white hover:underline font-semibold"
                           >
-                            Xem mặt bằng tầng ➜
+                            Xem mặt bằng tầng
                           </button>
                         </div>
 
@@ -1696,12 +1549,12 @@ export default function AdminBuildingApartmentManager() {
                                     </span>
                                     {isOwnerPrimary && (
                                       <span className="text-[8.5px] px-1 bg-amber-500/25 text-amber-300 font-bold border border-amber-500/50 font-mono">
-                                        ★ CHỦ HỘ
+                                        CHỦ HỘ
                                       </span>
                                     )}
                                     {isOwnerSecondary && (
                                       <span className="text-[8.5px] px-1 bg-cyan-950 text-cyan-300 font-bold border border-cyan-700/60 font-mono">
-                                        ★ CĂN PHỤ
+                                        CĂN PHỤ
                                       </span>
                                     )}
                                   </div>
@@ -1730,11 +1583,11 @@ export default function AdminBuildingApartmentManager() {
                                 <div className="text-[9.5px] font-semibold mt-1 truncate">
                                   {isOwnerPrimary ? (
                                     <span className="text-amber-300 font-bold">
-                                      ★ {activeOwnerName}
+                                      {activeOwnerName} (Chính Chủ)
                                     </span>
                                   ) : isOwnerSecondary ? (
                                     <span className="text-cyan-300 font-bold">
-                                      ★ {activeOwnerName}
+                                      {activeOwnerName} (Căn Phụ)
                                     </span>
                                   ) : unit.status === 'OCCUPIED' ? (
                                     <span className="text-emerald-300 font-bold">
@@ -1821,14 +1674,14 @@ export default function AdminBuildingApartmentManager() {
                   </div>
                   <div className="p-1.5 bg-[#16202D] border border-[#2B394E]">
                     <div className="text-[9.5px] text-gray-400">Điện Tiêu Thụ Sàn:</div>
-                    <div className="text-xs sm:text-sm font-bold text-amber-300 mt-0.5 flex items-center gap-1">
-                      <Zap className="w-3 h-3 text-amber-400" /> {floorTotalElectric} kWh
+                    <div className="text-xs sm:text-sm font-bold text-amber-300 mt-0.5">
+                      {floorTotalElectric} kWh
                     </div>
                   </div>
                   <div className="p-1.5 bg-[#16202D] border border-[#2B394E]">
                     <div className="text-[9.5px] text-gray-400">Nước Tiêu Thụ Sàn:</div>
-                    <div className="text-xs sm:text-sm font-bold text-cyan-300 mt-0.5 flex items-center gap-1">
-                      <Droplets className="w-3 h-3 text-cyan-400" /> {floorTotalWater} m³
+                    <div className="text-xs sm:text-sm font-bold text-cyan-300 mt-0.5">
+                      {floorTotalWater} m³
                     </div>
                   </div>
                   <div className="p-1.5 bg-[#16202D] border border-[#2B394E]">
@@ -1842,8 +1695,7 @@ export default function AdminBuildingApartmentManager() {
               {/* Thông báo gợi ý chuyển tầng nhanh nếu căn đang chọn không nằm ở tầng hiện tại */}
               {activeUnit && activeUnit.floor !== selectedFloor && (
                 <div className="p-2.5 bg-[#C5A880]/10 border border-[#C5A880]/40 flex items-center justify-between gap-3 text-xs">
-                  <div className="flex items-center gap-2 text-amber-200">
-                    <Sparkles className="w-4 h-4 text-[#C5A880] shrink-0" />
+                  <div className="text-amber-200">
                     <span>
                       Bạn đang xem hồ sơ căn <strong className="text-white font-mono">{activeUnit.code}</strong> (Tầng {activeUnit.floor}), nhưng sơ đồ đang hiển thị Tầng {selectedFloor}.
                     </span>
@@ -1853,15 +1705,15 @@ export default function AdminBuildingApartmentManager() {
                     onClick={() => setSelectedFloor(activeUnit.floor)}
                     className="px-2.5 py-1 bg-[#C5A880] hover:bg-[#d8bb93] text-[#0D1117] font-bold text-[11px] shrink-0 transition-colors"
                   >
-                    Chuyển Tới Tầng {activeUnit.floor} →
+                    Chuyển Tới Tầng {activeUnit.floor}
                   </button>
                 </div>
               )}
 
               {/* BẢN VẼ MẶT BẰNG SÀN KIẾN TRÚC TẦNG THỰC TẾ (SVG FLOOR PLATE) */}
               <div className="relative w-full bg-[#090D14] border border-[#222B35] p-3 flex flex-col items-center">
-                <div className="text-[11px] font-mono text-[#C5A880] mb-2 self-start flex items-center gap-1.5">
-                  <Compass className="w-3.5 h-3.5" /> SƠ ĐỒ MẶT BẰNG SÀN TẦNG {selectedFloor} • CHUNG CƯ SKYLINE (BỐ TRÍ 8 CĂN HỘ / TẦNG)
+                <div className="text-[11px] font-mono text-[#C5A880] mb-2 self-start">
+                  SƠ ĐỒ MẶT BẰNG SÀN TẦNG {selectedFloor} • CHUNG CƯ SKYLINE (BỐ TRÍ 8 CĂN HỘ / TẦNG)
                 </div>
 
                 <svg viewBox="0 0 800 360" className="w-full max-w-[760px] drop-shadow-lg">
@@ -1949,7 +1801,7 @@ export default function AdminBuildingApartmentManager() {
                           )}
                           {selectedFloor === 30 && (
                             <text x="85" y="43.5" fill="#FFFFFF" fontSize="7.5" fontWeight="900" textAnchor="middle" fontFamily="sans-serif">
-                              ★ CĂN PHỤ CHỦ HỘ
+                              CĂN PHỤ CHỦ HỘ
                             </text>
                           )}
                           <text x="85" y={selectedFloor === 30 ? "67" : "70"} fill="#FFFFFF" fontSize="10" fontWeight="bold" textAnchor="middle" fontFamily="monospace">Căn {u01.code}</text>
@@ -2045,7 +1897,7 @@ export default function AdminBuildingApartmentManager() {
                           )}
                           {selectedFloor === 30 && (
                             <text x="715" y="43.5" fill="#000000" fontSize="7.5" fontWeight="900" textAnchor="middle" fontFamily="sans-serif">
-                              ★ CĂN CHỦ HỘ
+                              CĂN CHỦ HỘ
                             </text>
                           )}
                           <text x="715" y={selectedFloor === 30 ? "67" : "75"} fill="#FFFFFF" fontSize="10" fontWeight="bold" textAnchor="middle" fontFamily="monospace">Căn {u06.code}</text>
@@ -2144,12 +1996,12 @@ export default function AdminBuildingApartmentManager() {
                             <span>{codeToUse}</span>
                             {num === '06' && selectedFloor === 30 && (
                               <span className="text-[8.5px] px-1 bg-amber-500/25 text-amber-300 font-bold border border-amber-500/50">
-                                ★ CHỦ HỘ
+                                CHỦ HỘ
                               </span>
                             )}
                             {num === '01' && selectedFloor === 30 && (
                               <span className="text-[8.5px] px-1 bg-cyan-950 text-cyan-300 font-bold border border-cyan-700/60">
-                                ★ CĂN PHỤ
+                                CĂN PHỤ
                               </span>
                             )}
                           </div>
@@ -2160,12 +2012,12 @@ export default function AdminBuildingApartmentManager() {
                           </span>
                         </div>
                         <div className="text-[10px] text-gray-400 mt-1 truncate">
-                          {isOwnerLuc ? `★ ${activeOwnerName} (Chính Chủ)` : (isOccupied ? ownerName || 'Đã có cư dân' : 'Sẵn sàng bàn giao')}
+                          {isOwnerLuc ? `${activeOwnerName} (Chính Chủ)` : (isOccupied ? ownerName || 'Đã có cư dân' : 'Sẵn sàng bàn giao')}
                         </div>
                         {/* Tiêu thụ điện & doanh thu BQL */}
                         <div className="mt-1.5 pt-1.5 border-t border-[#1E293B] flex items-center justify-between text-[9.5px] font-mono">
-                          <span className="text-amber-300 flex items-center gap-0.5">
-                            <Zap className="w-2.5 h-2.5" /> {fin ? fin.electricKwh : 0} kWh
+                          <span className="text-amber-300">
+                            {fin ? fin.electricKwh : 0} kWh
                           </span>
                           <span className="text-emerald-400 font-bold">
                             {fin ? (fin.totalBqlRevenue / 1000000).toFixed(1) + ' tr' : '0 tr'}
@@ -2217,7 +2069,7 @@ export default function AdminBuildingApartmentManager() {
                         </div>
                         {isOccupied && unit.owner?.name && (
                           <div className="text-[11px] text-emerald-400 mt-1 font-medium truncate">
-                            👤 {unit.owner.name}
+                            {unit.owner.name}
                           </div>
                         )}
                       </div>
@@ -2262,26 +2114,14 @@ export default function AdminBuildingApartmentManager() {
                   </div>
 
                   {/* Trạng thái thực tế */}
-                  <span className={`px-2.5 py-1 text-[11px] font-bold uppercase rounded-none border inline-flex items-center gap-1.5 ${
+                  <span className={`px-2.5 py-1 text-[11px] font-bold uppercase rounded-none border ${
                     activeUnit.status === 'OCCUPIED'
                       ? 'bg-emerald-950 text-emerald-300 border-emerald-500'
                       : activeUnit.status === 'MAINTENANCE'
                       ? 'bg-blue-950 text-blue-300 border-blue-500'
                       : 'bg-amber-950 text-amber-300 border-amber-500'
                   }`}>
-                    {activeUnit.status === 'OCCUPIED' ? (
-                      <>
-                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> ĐÃ CÓ NGƯỜI Ở
-                      </>
-                    ) : activeUnit.status === 'MAINTENANCE' ? (
-                      <>
-                        <Wrench className="w-3.5 h-3.5 text-blue-400" /> NGHIỆM THU
-                      </>
-                    ) : (
-                      <>
-                        <Key className="w-3.5 h-3.5 text-amber-400" /> NHÀ TRỐNG
-                      </>
-                    )}
+                    {activeUnit.status === 'OCCUPIED' ? 'ĐÃ CÓ NGƯỜI Ở' : activeUnit.status === 'MAINTENANCE' ? 'NGHIỆM THU' : 'NHÀ TRỐNG'}
                   </span>
                 </div>
 
@@ -2316,19 +2156,18 @@ export default function AdminBuildingApartmentManager() {
                         : 'border-transparent text-gray-400 hover:text-white'
                     }`}
                   >
-                    {activeUnit.status === 'OCCUPIED' ? '👤 Hồ Sơ Cư Dân' : '🔑 Hiện Trạng'}
+                    {activeUnit.status === 'OCCUPIED' ? 'Hồ Sơ Cư Dân' : 'Hiện Trạng'}
                   </button>
                   <button
                     type="button"
                     onClick={() => setDetailTab('FINANCIAL')}
-                    className={`pb-2 px-2.5 transition-colors border-b-2 flex items-center gap-1 ${
+                    className={`pb-2 px-2.5 transition-colors border-b-2 ${
                       detailTab === 'FINANCIAL'
                         ? 'border-[#C5A880] text-[#C5A880]'
                         : 'border-transparent text-gray-400 hover:text-white'
                     }`}
                   >
-                    <Coins className="w-3.5 h-3.5 text-amber-400" />
-                    <span>Năng Lượng & Chi Phí</span>
+                    Năng Lượng & Chi Phí
                   </button>
                   <button
                     type="button"
@@ -2339,7 +2178,7 @@ export default function AdminBuildingApartmentManager() {
                         : 'border-transparent text-gray-400 hover:text-white'
                     }`}
                   >
-                    ⚙️ Kỹ Thuật & Pháp Lý
+                    Kỹ Thuật & Pháp Lý
                   </button>
                 </div>
 
@@ -2359,13 +2198,13 @@ export default function AdminBuildingApartmentManager() {
                             <div className="min-w-0">
                               <div className="font-bold text-white text-sm truncate">{activeUnit.owner.name}</div>
                               <div className="text-[11px] text-gray-300 font-mono flex items-center gap-2">
-                                <span>📞 {activeUnit.owner.phone}</span>
+                                <span>ĐT: {activeUnit.owner.phone}</span>
                                 <span>• CCCD: {activeUnit.owner.cccd}</span>
                               </div>
                             </div>
                           </div>
                           <span className="text-[9.5px] px-1.5 py-0.5 bg-emerald-950 text-emerald-300 border border-emerald-600 font-mono">
-                            Đã Đối Chiếu ✓
+                            Đã Đối Chiếu
                           </span>
                         </div>
 
@@ -2381,7 +2220,7 @@ export default function AdminBuildingApartmentManager() {
                           </div>
                           <div className="flex items-center justify-between text-gray-400">
                             <span>Chỉ số khi nhận:</span>
-                            <strong className="text-amber-400">⚡ 12.5 kWh • 💧 1.2 m³</strong>
+                            <strong className="text-amber-400">12.5 kWh • 1.2 m³</strong>
                           </div>
                         </div>
 
@@ -2405,8 +2244,8 @@ export default function AdminBuildingApartmentManager() {
                       </>
                     ) : activeUnit.status === 'MAINTENANCE' ? (
                       <div className="p-3 bg-[#121820] border border-blue-500/40 space-y-2">
-                        <div className="flex items-center gap-1.5 text-blue-400 font-bold text-xs font-mono">
-                          <Wrench className="w-3.5 h-3.5" /> Căn Hộ Đang Nghiệm Thu Kỹ Thuật
+                        <div className="text-blue-400 font-bold text-xs font-mono">
+                          Căn Hộ Đang Nghiệm Thu Kỹ Thuật
                         </div>
                         <p className="text-xs text-gray-300 leading-relaxed">
                           Tổ kỹ thuật BQL đang kiểm tra điều hòa trung tâm, cửa sổ kính cách âm và van cấp nước. Tiến độ đạt 85%, sẵn sàng bàn giao trong 2 ngày.
@@ -2421,8 +2260,8 @@ export default function AdminBuildingApartmentManager() {
                       </div>
                     ) : (
                       <div className="p-3 bg-[#121820] border border-amber-500/40 space-y-2.5">
-                        <div className="flex items-center gap-1.5 text-amber-400 font-bold text-xs font-mono">
-                          <Key className="w-3.5 h-3.5" /> Căn Hộ Trống (Sẵn Sàng Bàn Giao)
+                        <div className="text-amber-400 font-bold text-xs font-mono">
+                          Căn Hộ Trống (Sẵn Sàng Bàn Giao)
                         </div>
                         <p className="text-xs text-gray-300 leading-relaxed">
                           Căn hộ đã hoàn tất nghiệm thu hoàn thiện xây dựng, an toàn điện nước và đầu phun chữa cháy PCCC đạt chuẩn an toàn. Sẵn sàng bàn giao cho cư dân mới.
@@ -2430,9 +2269,9 @@ export default function AdminBuildingApartmentManager() {
                         <button
                           type="button"
                           onClick={() => setIsAssignModalOpen(true)}
-                          className="w-full py-2.5 px-3 bg-[#C5A880] hover:bg-white text-[#0D1117] text-xs font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-1.5 shadow"
+                          className="w-full py-2.5 px-3 bg-[#C5A880] hover:bg-white text-[#0D1117] text-xs font-bold uppercase tracking-wider transition-all flex items-center justify-center shadow"
                         >
-                          <Key className="w-4 h-4" /> Bàn Giao Căn Hộ & Cấp Tài Khoản
+                          Bàn Giao Căn Hộ & Cấp Tài Khoản
                         </button>
                       </div>
                     )}
@@ -2457,15 +2296,15 @@ export default function AdminBuildingApartmentManager() {
                       {/* 1. KHỐI TỔNG HỢP DOANH THU BQL & GIÁ TRỊ KHAI THÁC */}
                       <div className="p-2.5 bg-gradient-to-br from-[#16202E] to-[#0E1520] border border-[#2A374A] space-y-2">
                         <div className="flex items-center justify-between text-[11px]">
-                          <span className="text-gray-200 flex items-center gap-1.5 font-bold">
-                            <Coins className="w-3.5 h-3.5 text-amber-400" /> DÒNG TIỀN & DOANH THU CĂN HỘ
+                          <span className="text-gray-200 font-bold">
+                            DÒNG TIỀN & DOANH THU CĂN HỘ
                           </span>
                           <span className={`px-2 py-0.5 text-[9.5px] font-bold border ${
                             fin.isOccupied 
                               ? 'bg-emerald-950 text-emerald-300 border-emerald-500' 
                               : 'bg-amber-950 text-amber-300 border-amber-600'
                           }`}>
-                            {fin.isOccupied ? '✓ ĐÃ ĐÓNG ĐỦ' : 'CĐT BẢO DƯỠNG'}
+                            {fin.isOccupied ? 'ĐÃ ĐÓNG ĐỦ' : 'CĐT BẢO DƯỠNG'}
                           </span>
                         </div>
 
@@ -2482,8 +2321,8 @@ export default function AdminBuildingApartmentManager() {
                             <div className="text-sm sm:text-base font-bold text-amber-300 mt-0.5">
                               {new Intl.NumberFormat('vi-VN').format(fin.estimatedRentalPrice)} <span className="text-[10px] text-gray-400">đ/th</span>
                             </div>
-                            <div className="text-[9px] text-emerald-400 flex items-center gap-1">
-                              <TrendingUp className="w-2.5 h-2.5" /> Lợi suất: {fin.rentalYield}% / năm
+                            <div className="text-[9px] text-emerald-400">
+                              Lợi suất: {fin.rentalYield}% / năm
                             </div>
                           </div>
                         </div>
@@ -2492,8 +2331,8 @@ export default function AdminBuildingApartmentManager() {
                       {/* 2. CHỈ SỐ TIÊU THỤ NĂNG LƯỢNG HÀNG THÁNG (ĐIỆN - NƯỚC) */}
                       <div className="p-2.5 bg-[#121820] border border-[#222B35] space-y-2">
                         <div className="flex items-center justify-between text-[11px] pb-1 border-b border-[#222B35]">
-                          <span className="text-[#C5A880] font-bold flex items-center gap-1.5">
-                            <Gauge className="w-3.5 h-3.5" /> TIÊU THỤ HÀNG THÁNG (KỲ GẦN NHẤT)
+                          <span className="text-[#C5A880] font-bold">
+                            TIÊU THỤ HÀNG THÁNG (KỲ GẦN NHẤT)
                           </span>
                           <span className="text-[9px] text-gray-400">Đồng hồ IoT</span>
                         </div>
@@ -2501,8 +2340,8 @@ export default function AdminBuildingApartmentManager() {
                         {/* Tiêu thụ Điện */}
                         <div className="p-2 bg-[#161B22] border border-[#2D3748] space-y-1">
                           <div className="flex items-center justify-between">
-                            <span className="text-amber-300 font-bold flex items-center gap-1 text-[10.5px]">
-                              <Zap className="w-3 h-3 text-amber-400" /> Điện Sinh Hoạt ({fin.meterElectricId})
+                            <span className="text-amber-300 font-bold text-[10.5px]">
+                              Điện Sinh Hoạt ({fin.meterElectricId})
                             </span>
                             <span className="text-amber-300 font-bold text-xs">
                               {new Intl.NumberFormat('vi-VN').format(fin.electricCost)} đ
@@ -2510,7 +2349,7 @@ export default function AdminBuildingApartmentManager() {
                           </div>
                           <div className="flex items-baseline justify-between text-[11px]">
                             <span className="font-bold text-white text-sm">{fin.electricKwh} <span className="text-[10px] text-gray-400 font-normal">kWh</span></span>
-                            <span className="text-[9px] text-gray-400">{fin.electricKwh > 300 ? '⚠️ Cao hơn tb' : '✓ Tiêu thụ chuẩn'}</span>
+                            <span className="text-[9px] text-gray-400">{fin.electricKwh > 300 ? 'Cao hơn trung bình' : 'Tiêu thụ chuẩn'}</span>
                           </div>
                           {/* Thanh đo */}
                           <div className="w-full bg-gray-800 h-1.5 overflow-hidden">
@@ -2524,8 +2363,8 @@ export default function AdminBuildingApartmentManager() {
                         {/* Tiêu thụ Nước */}
                         <div className="p-2 bg-[#161B22] border border-[#2D3748] space-y-1">
                           <div className="flex items-center justify-between">
-                            <span className="text-cyan-300 font-bold flex items-center gap-1 text-[10.5px]">
-                              <Droplets className="w-3 h-3 text-cyan-400" /> Nước Sinh Hoạt ({fin.meterWaterId})
+                            <span className="text-cyan-300 font-bold text-[10.5px]">
+                              Nước Sinh Hoạt ({fin.meterWaterId})
                             </span>
                             <span className="text-cyan-300 font-bold text-xs">
                               {new Intl.NumberFormat('vi-VN').format(fin.waterCost)} đ
@@ -2533,7 +2372,7 @@ export default function AdminBuildingApartmentManager() {
                           </div>
                           <div className="flex items-baseline justify-between text-[11px]">
                             <span className="font-bold text-white text-sm">{fin.waterM3} <span className="text-[10px] text-gray-400 font-normal">m³</span></span>
-                            <span className="text-[9px] text-emerald-400">Áp lực ống: 2.8 bar ✓</span>
+                            <span className="text-[9px] text-emerald-400">Áp lực ống: 2.8 bar</span>
                           </div>
                           {/* Thanh đo */}
                           <div className="w-full bg-gray-800 h-1.5 overflow-hidden">
@@ -2562,23 +2401,23 @@ export default function AdminBuildingApartmentManager() {
                         <button
                           type="button"
                           onClick={() => {
-                            setBillToastMessage(`✓ Đã trích xuất biên lai phiếu thu căn hộ ${activeUnit.code} thành công.`);
+                            setBillToastMessage(`Đã trích xuất biên lai phiếu thu căn hộ ${activeUnit.code} thành công.`);
                             setTimeout(() => setBillToastMessage(null), 3500);
                           }}
-                          className="py-2 px-2 bg-[#16202E] hover:bg-[#1E2B3E] text-gray-200 hover:text-white border border-[#2D3B4E] font-semibold text-[10.5px] transition-all flex items-center justify-center gap-1"
+                          className="py-2 px-2 bg-[#16202E] hover:bg-[#1E2B3E] text-gray-200 hover:text-white border border-[#2D3B4E] font-semibold text-[10.5px] transition-all flex items-center justify-center"
                         >
-                          <Download className="w-3 h-3 text-[#C5A880]" /> Xuất Phiếu Thu
+                          Xuất Phiếu Thu
                         </button>
 
                         <button
                           type="button"
                           onClick={() => {
-                            setBillToastMessage(`✓ Đã gửi tin nhắn nhắc phí & hóa đơn tới chủ căn hộ ${activeUnit.code}.`);
+                            setBillToastMessage(`Đã gửi tin nhắn nhắc phí & hóa đơn tới chủ căn hộ ${activeUnit.code}.`);
                             setTimeout(() => setBillToastMessage(null), 3500);
                           }}
-                          className="py-2 px-2 bg-[#162B22] hover:bg-[#1E3B2F] text-emerald-300 hover:text-emerald-200 border border-emerald-600/50 font-semibold text-[10.5px] transition-all flex items-center justify-center gap-1"
+                          className="py-2 px-2 bg-[#162B22] hover:bg-[#1E3B2F] text-emerald-300 hover:text-emerald-200 border border-emerald-600/50 font-semibold text-[10.5px] transition-all flex items-center justify-center"
                         >
-                          <Send className="w-3 h-3 text-emerald-400" /> Gửi Thông Báo Phí
+                          Gửi Thông Báo Phí
                         </button>
                       </div>
                     </div>
@@ -2619,17 +2458,17 @@ export default function AdminBuildingApartmentManager() {
                 <button
                   type="button"
                   onClick={() => setIsDetailModalOpen(true)}
-                  className="flex-1 py-2 px-3 bg-[#161B22] hover:bg-[#202936] text-gray-200 hover:text-white border border-[#2D3748] font-semibold transition-all flex items-center justify-center gap-1.5"
+                  className="flex-1 py-2 px-3 bg-[#161B22] hover:bg-[#202936] text-gray-200 hover:text-white border border-[#2D3748] font-semibold transition-all flex items-center justify-center"
                 >
-                  <Maximize2 className="w-3.5 h-3.5 text-[#C5A880]" /> Mặt Bằng Sàn
+                  Mặt Bằng Sàn
                 </button>
 
                 <button
                   type="button"
                   onClick={() => setIsEditModalOpen(true)}
-                  className="py-2 px-3 bg-[#161B22] hover:bg-[#202936] text-gray-200 hover:text-white border border-[#2D3748] font-semibold transition-all flex items-center justify-center gap-1.5"
+                  className="py-2 px-3 bg-[#161B22] hover:bg-[#202936] text-gray-200 hover:text-white border border-[#2D3748] font-semibold transition-all flex items-center justify-center"
                 >
-                  <Edit className="w-3.5 h-3.5" /> Chỉnh Sửa
+                  Chỉnh Sửa
                 </button>
               </div>
             </div>
@@ -2744,29 +2583,23 @@ export default function AdminBuildingApartmentManager() {
               
               {/* Header Modal Mở Rộng */}
               <div className="p-3 sm:p-4 bg-[#101620] border-b border-[#222B35] flex items-center justify-between gap-4">
-                <div className="flex items-center gap-2.5">
-                  <div className="w-8 h-8 rounded-none bg-[#C5A880]/20 border border-[#C5A880] flex items-center justify-center">
-                    <Layers className="w-4 h-4 text-[#C5A880]" />
-                  </div>
-                  <div>
-                    <h2 className="text-sm sm:text-base font-serif font-bold text-white tracking-wide flex items-center gap-2">
-                      <span>MẶT BẰNG KIẾN TRÚC TOÀN CẢNH • TẦNG {selectedFloor}</span>
-                      <span className="text-[10px] px-2 py-0.5 bg-[#C5A880]/20 text-[#C5A880] border border-[#C5A880]/40 font-mono font-normal">
-                        CHUNG CƯ SKYLINE RESIDENCE
-                      </span>
-                    </h2>
-                    <div className="text-[10.5px] text-gray-400 font-mono mt-0.5">
-                      1.280 m² sàn • 8 Căn hộ • 4 Thang khách tốc độ cao • 1 Thang PCCC có phòng đệm • 2 Buồng thoát hiểm áp suất dương
-                    </div>
+                <div>
+                  <h2 className="text-sm sm:text-base font-serif font-bold text-white tracking-wide flex items-center gap-2">
+                    <span>MẶT BẰNG KIẾN TRÚC TOÀN CẢNH • TẦNG {selectedFloor}</span>
+                    <span className="text-[10px] px-2 py-0.5 bg-[#C5A880]/20 text-[#C5A880] border border-[#C5A880]/40 font-mono font-normal">
+                      CHUNG CƯ SKYLINE RESIDENCE
+                    </span>
+                  </h2>
+                  <div className="text-[10.5px] text-gray-400 font-mono mt-0.5">
+                    1.280 m² sàn • 8 Căn hộ • 4 Thang khách tốc độ cao • 1 Thang PCCC có phòng đệm • 2 Buồng thoát hiểm áp suất dương
                   </div>
                 </div>
 
                 <button
                   type="button"
                   onClick={() => setIsFloorPlanExpanded(false)}
-                  className="px-3 py-1.5 bg-[#161B22] hover:bg-rose-950 text-gray-300 hover:text-rose-200 border border-[#2D3748] hover:border-rose-500 text-xs font-mono transition-all flex items-center gap-1.5"
+                  className="px-3 py-1.5 bg-[#161B22] hover:bg-rose-950 text-gray-300 hover:text-rose-200 border border-[#2D3748] hover:border-rose-500 text-xs font-mono transition-all"
                 >
-                  <Minimize2 className="w-3.5 h-3.5" />
                   <span>Thu Nhỏ (Đóng) [✕]</span>
                 </button>
               </div>
@@ -2783,7 +2616,6 @@ export default function AdminBuildingApartmentManager() {
                       onClick={() => {
                         setSelectedFloor(fl);
                         if (fl === 30) setSelectedAptCode('CH-06');
-                        else if (fl === 12) setSelectedAptCode('12A05');
                       }}
                       className={`px-2 py-1 text-[11px] font-mono transition-all border ${
                         selectedFloor === fl
@@ -2791,7 +2623,7 @@ export default function AdminBuildingApartmentManager() {
                           : 'bg-[#161B22] text-gray-300 border-[#2D3748] hover:border-gray-500'
                       }`}
                     >
-                      {fl === 30 ? 'T30 ★ (Chủ Hộ)' : `T${fl}`}
+                      {fl === 30 ? 'T30 (Chủ Hộ)' : `T${fl}`}
                     </button>
                   ))}
                 </div>
@@ -2819,7 +2651,7 @@ export default function AdminBuildingApartmentManager() {
                         : 'bg-[#161B22] text-emerald-400/80 border-transparent hover:text-emerald-300'
                     }`}
                   >
-                    ✓ Đã Ở ({occupiedExpCount})
+                    Đã Ở ({occupiedExpCount})
                   </button>
                   <button
                     type="button"
@@ -2843,11 +2675,11 @@ export default function AdminBuildingApartmentManager() {
                 </div>
                 <div className="p-1 bg-[#121A26] border border-[#222E3E]">
                   <span className="text-gray-400 text-[10px]">Điện Tiêu Thụ:</span>
-                  <div className="text-amber-300 font-bold">⚡ {totalExpElectric} kWh</div>
+                  <div className="text-amber-300 font-bold">{totalExpElectric} kWh</div>
                 </div>
                 <div className="p-1 bg-[#121A26] border border-[#222E3E]">
                   <span className="text-gray-400 text-[10px]">Nước Tiêu Thụ:</span>
-                  <div className="text-cyan-300 font-bold">💧 {totalExpWater} m³</div>
+                  <div className="text-cyan-300 font-bold">{totalExpWater} m³</div>
                 </div>
                 <div className="p-1 bg-[#121A26] border border-[#222E3E]">
                   <span className="text-gray-400 text-[10px]">Lấp Đầy:</span>
@@ -3008,7 +2840,7 @@ export default function AdminBuildingApartmentManager() {
                                 textAnchor="middle"
                                 fontFamily="monospace"
                               >
-                                ⚡ {fin?.electricKwh} kWh • {fin ? (fin.totalBqlRevenue / 1000000).toFixed(1) + ' tr' : ''}
+                                {fin?.electricKwh} kWh • {fin ? (fin.totalBqlRevenue / 1000000).toFixed(1) + ' tr' : ''}
                               </text>
                             )}
 
@@ -3022,7 +2854,7 @@ export default function AdminBuildingApartmentManager() {
                                 fontWeight="bold"
                                 textAnchor="middle"
                               >
-                                {unit.owner?.name || 'Nguyễn Hữu Lực'}
+                                {unit.owner?.name || 'Trần Hữu Lực'}
                               </text>
                             )}
                           </g>
@@ -3061,8 +2893,8 @@ export default function AdminBuildingApartmentManager() {
 
                     {/* 1. Phân Bổ Kiến Trúc Không Gian Phòng Ốc */}
                     <div className="p-2.5 bg-[#121822] border border-[#222B35] space-y-2">
-                      <div className="text-[11px] font-bold text-[#C5A880] flex items-center gap-1.5">
-                        <Home className="w-3.5 h-3.5" /> BỐ TRÍ MẶT BẰNG KHÔNG GIAN
+                      <div className="text-[11px] font-bold text-[#C5A880]">
+                        BỐ TRÍ MẶT BẰNG KHÔNG GIAN
                       </div>
                       <div className="grid grid-cols-2 gap-1.5 text-[10.5px] font-mono">
                         <div className="p-1.5 bg-[#161F2C]">
@@ -3086,11 +2918,11 @@ export default function AdminBuildingApartmentManager() {
                       {/* Vi khí hậu & view nhìn */}
                       <div className="pt-1 border-t border-[#1F2A38] text-[10.5px] font-mono space-y-1">
                         <div className="flex justify-between text-gray-300">
-                          <span className="text-gray-400 flex items-center gap-1"><Sun className="w-3 h-3 text-amber-400" /> Hướng Ban Công:</span>
+                          <span className="text-gray-400">Hướng Ban Công:</span>
                           <strong className="text-[#C5A880]">{currentExpandedUnit.direction || 'Đông Nam'}</strong>
                         </div>
                         <div className="flex justify-between text-gray-300">
-                          <span className="text-gray-400 flex items-center gap-1"><Wind className="w-3 h-3 text-cyan-400" /> Tầm Nhìn (View):</span>
+                          <span className="text-gray-400">Tầm Nhìn (View):</span>
                           <strong className="text-white truncate max-w-[150px]">Sông Sài Gòn & Hồ Bơi</strong>
                         </div>
                         <div className="flex justify-between text-gray-300">
@@ -3102,22 +2934,22 @@ export default function AdminBuildingApartmentManager() {
 
                     {/* 2. Tiêu Thụ Hàng Tháng & Thu Nhập Căn Này */}
                     <div className="p-2.5 bg-[#121822] border border-[#222B35] space-y-2 text-xs font-mono">
-                      <div className="text-[11px] font-bold text-amber-300 flex items-center gap-1.5">
-                        <Coins className="w-3.5 h-3.5 text-amber-400" /> TIÊU THỤ NĂNG LƯỢNG & DOANH THU CĂN
+                      <div className="text-[11px] font-bold text-amber-300">
+                        TIÊU THỤ NĂNG LƯỢNG & DOANH THU CĂN
                       </div>
 
                       <div className="grid grid-cols-2 gap-2 text-[10.5px]">
                         <div className="p-1.5 bg-[#161F2C] border border-[#26354A]">
-                          <div className="text-gray-400 flex items-center gap-1">
-                            <Zap className="w-3 h-3 text-amber-400" /> Điện Tiêu Thụ:
+                          <div className="text-gray-400">
+                            Điện Tiêu Thụ:
                           </div>
                           <div className="text-white font-bold mt-0.5">{currentFin?.electricKwh} kWh</div>
                           <div className="text-[9.5px] text-amber-300">{new Intl.NumberFormat('vi-VN').format(currentFin?.electricCost || 0)} đ</div>
                         </div>
 
                         <div className="p-1.5 bg-[#161F2C] border border-[#26354A]">
-                          <div className="text-gray-400 flex items-center gap-1">
-                            <Droplets className="w-3 h-3 text-cyan-400" /> Nước Tiêu Thụ:
+                          <div className="text-gray-400">
+                            Nước Tiêu Thụ:
                           </div>
                           <div className="text-white font-bold mt-0.5">{currentFin?.waterM3} m³</div>
                           <div className="text-[9.5px] text-cyan-300">{new Intl.NumberFormat('vi-VN').format(currentFin?.waterCost || 0)} đ</div>
@@ -3150,9 +2982,9 @@ export default function AdminBuildingApartmentManager() {
                         setSelectedAptCode(currentExpandedUnit.code);
                         setDetailTab('FINANCIAL');
                       }}
-                      className="flex-1 py-2 px-3 bg-[#C5A880] hover:bg-white text-[#0D1117] font-bold text-xs font-mono transition-all flex items-center justify-center gap-1.5"
+                      className="flex-1 py-2 px-3 bg-[#C5A880] hover:bg-white text-[#0D1117] font-bold text-xs font-mono transition-all flex items-center justify-center"
                     >
-                      <Coins className="w-3.5 h-3.5" /> Xem Hóa Đơn & Tiêu Thụ
+                      Xem Hóa Đơn & Tiêu Thụ
                     </button>
                     <button
                       type="button"
