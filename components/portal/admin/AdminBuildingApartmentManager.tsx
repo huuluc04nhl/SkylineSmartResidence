@@ -603,62 +603,15 @@ export default function AdminBuildingApartmentManager() {
           </p>
         </div>
 
-        {/* Nút hành động & Chuyển góc nhìn */}
-        <div className="flex flex-wrap items-center gap-2.5">
+        {/* Nút hành động BQL */}
+        <div className="flex items-center gap-2.5">
           <button
             type="button"
             onClick={() => setIsAddModalOpen(true)}
-            className="px-3.5 py-1.5 bg-[#C5A880] hover:bg-white text-[#0D1117] text-xs font-bold uppercase tracking-wider rounded-none transition-all flex items-center gap-1.5 shadow-lg active:scale-95"
+            className="px-4 py-2 bg-[#C5A880] hover:bg-white text-[#0D1117] text-xs font-bold uppercase tracking-wider rounded-none transition-all flex items-center gap-1.5 shadow-lg active:scale-95"
           >
-            <Plus className="w-3.5 h-3.5" /> Thêm Căn Hộ
+            <Plus className="w-4 h-4" /> Thêm Căn Hộ Mới
           </button>
-
-          <div className="flex bg-[#121820] p-1 border border-[#222B35] rounded-none text-xs font-semibold overflow-x-auto no-scrollbar">
-            <button
-              type="button"
-              onClick={() => setBuildingPerspective('3D')}
-              className={`px-3 py-1.5 rounded-none flex items-center gap-1.5 transition-all shrink-0 ${
-                buildingPerspective === '3D'
-                  ? 'bg-[#C5A880] text-[#0D1117] font-bold shadow'
-                  : 'text-gray-400 hover:text-white'
-              }`}
-            >
-              <Box className="w-3.5 h-3.5" /> Mô Hình 3D (BIM)
-            </button>
-            <button
-              type="button"
-              onClick={() => setBuildingPerspective('BUILDING_ELEVATION')}
-              className={`px-3 py-1.5 rounded-none flex items-center gap-1.5 transition-all shrink-0 ${
-                buildingPerspective === 'BUILDING_ELEVATION'
-                  ? 'bg-[#C5A880] text-[#0D1117] font-bold shadow'
-                  : 'text-gray-400 hover:text-white'
-              }`}
-            >
-              <Building className="w-3.5 h-3.5" /> Mặt Cắt Đứng (Elevation)
-            </button>
-            <button
-              type="button"
-              onClick={() => setBuildingPerspective('FLOOR_PLAN')}
-              className={`px-3 py-1.5 rounded-none flex items-center gap-1.5 transition-all shrink-0 ${
-                buildingPerspective === 'FLOOR_PLAN'
-                  ? 'bg-[#C5A880] text-[#0D1117] font-bold shadow'
-                  : 'text-gray-400 hover:text-white'
-              }`}
-            >
-              <Layers className="w-3.5 h-3.5" /> Mặt Bằng Sàn (Floor Plan)
-            </button>
-            <button
-              type="button"
-              onClick={() => setBuildingPerspective('GRID')}
-              className={`px-3 py-1.5 rounded-none flex items-center gap-1.5 transition-all shrink-0 ${
-                buildingPerspective === 'GRID'
-                  ? 'bg-[#C5A880] text-[#0D1117] font-bold shadow'
-                  : 'text-gray-400 hover:text-white'
-              }`}
-            >
-              <Home className="w-3.5 h-3.5" /> Lưới Căn Hộ (Grid)
-            </button>
-          </div>
         </div>
       </div>
 
@@ -969,20 +922,58 @@ export default function AdminBuildingApartmentManager() {
         {/* CỘT TRÁI (7 COLS): SƠ ĐỒ TÒA NHÀ / MẶT BẰNG TẦNG / DANH SÁCH */}
         <div className="lg:col-span-7 bg-[#0D1117] border border-[#222B35] rounded-none overflow-hidden shadow-2xl flex flex-col">
           
-          {/* Header mô hình */}
-          <div className="p-4 bg-[#121820] border-b border-[#222B35] flex flex-wrap items-center justify-between gap-3">
-            <div className="flex items-center gap-2">
-              <Building className="w-4 h-4 text-[#C5A880]" />
-              <span className="font-bold text-sm text-white">
-                {buildingPerspective === '3D' && `Mô Hình Kiến Trúc 3D — ${currentBlockName} (${currentTotalFloors} Tầng)`}
-                {buildingPerspective === 'BUILDING_ELEVATION' && `Mặt Cắt Đứng Tòa Nhà — ${currentBlockName} (${currentTotalFloors} Tầng)`}
-                {buildingPerspective === 'FLOOR_PLAN' && `Mặt Bằng Bố Trí Căn Hộ — Tầng ${selectedFloor}`}
-                {buildingPerspective === 'GRID' && `Danh Sách Căn Hộ — ${currentBlockName} (${filteredUnits.length} Căn)`}
-              </span>
+          {/* Header mô hình & Bộ chuyển đổi góc nhìn trực quan */}
+          <div className="p-2 sm:p-2.5 bg-[#101722] border-b border-[#222B35] flex flex-wrap items-center justify-between gap-3">
+            {/* Bộ 4 Tab chuyển đổi góc nhìn trực quan của khung hiển thị */}
+            <div className="flex bg-[#0A1017] p-1 border border-[#1E293B] text-xs font-semibold overflow-x-auto no-scrollbar">
+              <button
+                type="button"
+                onClick={() => setBuildingPerspective('3D')}
+                className={`px-3 py-1.5 flex items-center gap-1.5 transition-all shrink-0 ${
+                  buildingPerspective === '3D'
+                    ? 'bg-[#C5A880] text-[#0D1117] font-bold shadow'
+                    : 'text-gray-400 hover:text-white'
+                }`}
+              >
+                <Box className="w-3.5 h-3.5" /> Mô Hình 3D (BIM)
+              </button>
+              <button
+                type="button"
+                onClick={() => setBuildingPerspective('BUILDING_ELEVATION')}
+                className={`px-3 py-1.5 flex items-center gap-1.5 transition-all shrink-0 ${
+                  buildingPerspective === 'BUILDING_ELEVATION'
+                    ? 'bg-[#C5A880] text-[#0D1117] font-bold shadow'
+                    : 'text-gray-400 hover:text-white'
+                }`}
+              >
+                <Building className="w-3.5 h-3.5" /> Mặt Cắt Đứng (Elevation)
+              </button>
+              <button
+                type="button"
+                onClick={() => setBuildingPerspective('FLOOR_PLAN')}
+                className={`px-3 py-1.5 flex items-center gap-1.5 transition-all shrink-0 ${
+                  buildingPerspective === 'FLOOR_PLAN'
+                    ? 'bg-[#C5A880] text-[#0D1117] font-bold shadow'
+                    : 'text-gray-400 hover:text-white'
+                }`}
+              >
+                <Layers className="w-3.5 h-3.5" /> Mặt Bằng Sàn (Floor Plan)
+              </button>
+              <button
+                type="button"
+                onClick={() => setBuildingPerspective('GRID')}
+                className={`px-3 py-1.5 flex items-center gap-1.5 transition-all shrink-0 ${
+                  buildingPerspective === 'GRID'
+                    ? 'bg-[#C5A880] text-[#0D1117] font-bold shadow'
+                    : 'text-gray-400 hover:text-white'
+                }`}
+              >
+                <Home className="w-3.5 h-3.5" /> Lưới Căn Hộ (Grid)
+              </button>
             </div>
             
             {/* Chú thích màu sắc */}
-            <div className="flex items-center gap-3 text-[10.5px] font-mono">
+            <div className="flex items-center gap-3 text-[10.5px] font-mono pr-1">
               <div className="flex items-center gap-1.5">
                 <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.8)]"></span>
                 <span className="text-gray-300">Đã Bàn Giao</span>
