@@ -110,11 +110,11 @@ export const INITIAL_APARTMENTS: ApartmentUnit[] = generateNksBlockUnits(
 );
 
 export function getApartmentStorageKey(blockCode: string = 'BS-07'): string {
-  return `nks_apartments_${blockCode}_v12`;
+  return `nks_apartments_${blockCode}_v15`;
 }
 
 /**
- * Lấy danh sách toàn bộ căn hộ từ bộ nhớ hoặc dữ liệu NKS SCRMAI API theo Block
+ * Lấy danh sách toàn bộ căn hộ từ bộ nhớ hoặc dữ liệu NKS SCRMAI API theo Chung Cư
  */
 export function getApartmentUnits(blockCode: string = 'BS-07'): ApartmentUnit[] {
   const floors = blockCode === 'BS-08' ? 39 : 34;
@@ -133,7 +133,8 @@ export function getApartmentUnits(blockCode: string = 'BS-07'): ApartmentUnit[] 
       'skyline_apartments_master_v4',
       'skyline_apartments_master_v5',
       'skyline_apartments_master_v6',
-      'skyline_apartments_master_v7'
+      'skyline_apartments_master_v7',
+      'nks_apartments_master_v10'
     ];
     LEGACY_STORAGE_KEYS.forEach(key => {
       try {
@@ -143,8 +144,14 @@ export function getApartmentUnits(blockCode: string = 'BS-07'): ApartmentUnit[] 
       } catch (e) {}
     });
 
+    ['v10', 'v11', 'v12', 'v13', 'v14'].forEach(ver => {
+      ['BS-07', 'BS-08', 'BS-09', 'BS-10'].forEach(b => {
+        try { localStorage.removeItem(`nks_apartments_${b}_${ver}`); } catch (e) {}
+      });
+    });
+
     const blockKey = getApartmentStorageKey(blockCode);
-    const raw = localStorage.getItem(blockKey) || (blockCode === 'BS-07' ? localStorage.getItem(APARTMENTS_STORAGE_KEY) : null);
+    const raw = localStorage.getItem(blockKey);
     if (!raw) {
       localStorage.setItem(blockKey, JSON.stringify(initial));
       return initial;

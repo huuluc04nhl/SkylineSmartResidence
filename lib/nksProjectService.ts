@@ -500,17 +500,17 @@ export function generateNksBlockUnits(
   const apiMap = new Map<string, NksApartment>();
 
   nksApts.forEach(apt => {
-    const key = `${apt.floor}_${apt.code.trim().toUpperCase()}`;
-    apiMap.set(key, apt);
+    const aptBlock = (apt.block?.post_title || apt.title || '').toUpperCase();
+    const cleanBlock = blockCode.toUpperCase();
+    // Khớp chặt chẽ: Chỉ ánh xạ căn hộ khi căn hộ đó thực sự thuộc chung cư đang tạo
+    const matchesBlock = aptBlock.includes(cleanBlock);
+    if (matchesBlock) {
+      const key = `${apt.floor}_${apt.code.trim().toUpperCase()}`;
+      apiMap.set(key, apt);
+    }
   });
 
-  const bTitle = blockCode === 'BS-08'
-    ? 'Tropical BS-08'
-    : blockCode === 'BS-09'
-    ? 'Tropical BS-09'
-    : blockCode === 'BS-10'
-    ? 'Tropical BS-10'
-    : 'Tropical BS-07';
+  const bTitle = `Chung Cư ${blockCode}`;
   const towerId = (blockCode === 'BS-09' || blockCode === 'BS-10') ? 'B' : 'A';
 
   for (let fl = totalFloors; fl >= 1; fl--) {
@@ -525,8 +525,8 @@ export function generateNksBlockUnits(
         const unit = convertNksToApartmentUnit(matchedApi, blockCode, bTitle);
         units.push({
           ...unit,
-          // Giữ mã căn CH-06, CH-01 cho tầng 30 của chủ hộ
-          code: fl === 30 ? cCode : `${fl}-${cCode}`,
+          // Giữ mã căn CH-06, CH-01 cho tầng 30 của chủ hộ nếu ở Chung Cư BS-07
+          code: (blockCode === 'BS-07' && fl === 30) ? cCode : `${fl}-${cCode}`,
         });
       } else {
         const is2Pn = cCode === 'CH-01' || cCode === 'CH-08' || cCode === 'CH-04' || cCode === 'CH-05';

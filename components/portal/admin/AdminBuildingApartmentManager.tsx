@@ -24,7 +24,7 @@ export type ViewPerspective = '3D' | 'BUILDING_ELEVATION' | 'FLOOR_PLAN' | 'GRID
 
 export type BuildingColorTone = 'GOLD_LUXURY';
 
-// Danh sách các khối căn hộ kiến trúc hiển thị trên mô hình 3D (hỗ trợ tối đa 39 tầng phân khu The Tropical - Block BS-07, BS-08, BS-09, BS-10 từ NKS API)
+// Danh sách các khối căn hộ kiến trúc hiển thị trên mô hình 3D (hỗ trợ tối đa 39 tầng phân khu The Tropical - Chung Cư BS-07, BS-08, BS-09, BS-10)
 export const BUILDING_3D_UNITS: {
   code: string;
   floor: number;
@@ -36,16 +36,8 @@ export const BUILDING_3D_UNITS: {
 }[] = (() => {
   const list: any[] = [];
   for (let fl = 39; fl >= 1; fl--) {
-    if (fl === 30) {
-      list.push({ code: 'CH-06', floor: 30, side: 'LEFT', type: '1PN', defaultStatus: 'OCCUPIED', area: 42, defaultName: 'Trần Hữu Lực' });
-      list.push({ code: 'CH-01', floor: 30, side: 'RIGHT', type: '2PN', defaultStatus: 'OCCUPIED', area: 50, defaultName: 'Trần Hữu Lực' });
-    } else if (fl === 20) {
-      list.push({ code: '20-CH-06', floor: 20, side: 'LEFT', type: '1PN', defaultStatus: 'OCCUPIED', area: 42, defaultName: 'Chủ Hộ (0364967080)' });
-      list.push({ code: '20-CH-01', floor: 20, side: 'RIGHT', type: '2PN', defaultStatus: 'VACANT', area: 60, defaultName: 'Căn Hộ Trống' });
-    } else {
-      list.push({ code: `${fl}-CH-06`, floor: fl, side: 'LEFT', type: '1PN', defaultStatus: 'VACANT', area: 42, defaultName: 'Căn Hộ Trống' });
-      list.push({ code: `${fl}-CH-01`, floor: fl, side: 'RIGHT', type: '2PN', defaultStatus: 'VACANT', area: 60, defaultName: 'Căn Hộ Trống' });
-    }
+    list.push({ code: `${fl}-CH-06`, floor: fl, side: 'LEFT', type: '1PN', defaultStatus: 'VACANT', area: 42, defaultName: 'Căn Hộ Trống' });
+    list.push({ code: `${fl}-CH-01`, floor: fl, side: 'RIGHT', type: '2PN', defaultStatus: 'VACANT', area: 60, defaultName: 'Căn Hộ Trống' });
   }
   return list;
 })();
@@ -177,16 +169,27 @@ export default function AdminBuildingApartmentManager() {
     setApartments(list);
   };
 
-  // Chuyển đổi giữa 4 Block tòa nhà
+  // Chuyển đổi giữa 4 Chung Cư
   const handleSwitchBlock = async (blockCode: 'BS-07' | 'BS-08' | 'BS-09' | 'BS-10') => {
     setSelectedBlock(blockCode);
     const maxFloors = blockCode === 'BS-08' ? 39 : 34;
-    if (selectedFloor > maxFloors) {
-      setSelectedFloor(maxFloors);
-    }
+    
     // Load local block units immediately for instant UI responsiveness
     const localUnits = getApartmentUnits(blockCode);
     setApartments(localUnits);
+
+    // Khi chuyển chung cư: Nếu về BS-07 thì chọn căn chủ hộ tầng 30, nếu sang chung cư khác thì chọn căn của chung cư đó
+    if (blockCode === 'BS-07') {
+      setSelectedFloor(30);
+      setSelectedAptCode('CH-06');
+    } else {
+      const nextFloor = selectedFloor > maxFloors ? 1 : selectedFloor;
+      setSelectedFloor(nextFloor);
+      const targetUnit = localUnits.find(u => u.floor === nextFloor) || localUnits[0];
+      if (targetUnit) {
+        setSelectedAptCode(targetUnit.code);
+      }
+    }
 
     try {
       const units = await syncApartmentsFromNksApi(blockCode);
@@ -284,22 +287,22 @@ export default function AdminBuildingApartmentManager() {
   const currentBlockConfig = useMemo(() => {
     switch (selectedBlock) {
       case 'BS-08':
-        return { name: 'Tòa BS-08', floors: 39, badge: 'Tòa Điểm Nhấn (39 Tầng)' };
+        return { name: 'Chung Cư BS-08', floors: 39, badge: 'Chung Cư Điểm Nhấn (39 Tầng)' };
       case 'BS-09':
-        return { name: 'Tòa BS-09', floors: 34, badge: 'Tòa Hướng Công Viên (34 Tầng)' };
+        return { name: 'Chung Cư BS-09', floors: 34, badge: 'Chung Cư View Công Viên (34 Tầng)' };
       case 'BS-10':
-        return { name: 'Tòa BS-10', floors: 34, badge: 'Tòa Hướng Quảng Trường (34 Tầng)' };
+        return { name: 'Chung Cư BS-10', floors: 34, badge: 'Chung Cư View Quảng Trường (34 Tầng)' };
       default:
-        return { name: 'Tòa BS-07', floors: 34, badge: 'Tòa Cư Dân Chính (34 Tầng)' };
+        return { name: 'Chung Cư BS-07', floors: 34, badge: 'Chung Cư Cư Dân Chính (34 Tầng)' };
     }
   }, [selectedBlock]);
 
   const currentBlockName = currentBlockConfig.name;
   const currentTotalFloors = currentBlockConfig.floors;
-  // Chủ hộ Trần Hữu Lực chỉ sở hữu 2 căn hộ (CH-06 và CH-01 Tầng 30) tại duy nhất Tòa BS-07
+  // Chủ hộ Trần Hữu Lực chỉ sở hữu 2 căn hộ (CH-06 và CH-01 Tầng 30) tại duy nhất Chung Cư BS-07
   const isOwnerBuilding = selectedBlock === 'BS-07';
 
-  // Danh sách căn hộ hiển thị với dữ liệu người thật của tòa nhà đang chọn
+  // Danh sách căn hộ hiển thị với dữ liệu người thật của chung cư đang chọn
   const displayUnits = useMemo(() => {
     return apartments.map(u => {
       const isOwnerPrimary = isOwnerBuilding && (u.code === 'CH-06' || (u.floor === 30 && u.code.includes('CH-06')) || u.code === '12A05');
@@ -357,7 +360,7 @@ export default function AdminBuildingApartmentManager() {
   // Bộ lọc căn hộ đa tiêu chí & tìm kiếm thông minh
   const filteredUnits = useMemo(() => {
     return displayUnits.filter(unit => {
-      // 1. Lọc theo chủ hộ chính (Trần Hữu Lực) - Chỉ có tại Tòa BS-07
+      // 1. Lọc theo chủ hộ chính (Trần Hữu Lực) - Chỉ có tại Chung Cư BS-07
       if (isOnlyOwnerUnits) {
         if (!isOwnerBuilding) return false;
         const isOwner = unit.owner?.phone === activeOwnerPhone || 
@@ -474,7 +477,7 @@ export default function AdminBuildingApartmentManager() {
     );
   }, [isAnyFilterActive, matchingUnitCodesSet, filteredUnits]);
 
-  // Căn hộ đang được chọn làm tiêu điểm hồ sơ (ưu tiên căn chủ hộ tầng 30 khi ở Tòa BS-07)
+  // Căn hộ đang được chọn làm tiêu điểm hồ sơ (ưu tiên căn chủ hộ tầng 30 khi ở Chung Cư BS-07)
   const activeUnit = useMemo(() => {
     return (
       displayUnits.find(u => u.code === selectedAptCode && u.floor === selectedFloor) ||
@@ -560,14 +563,14 @@ export default function AdminBuildingApartmentManager() {
       <div className="bg-[#0B121D] border border-[#22344B] p-2.5 sm:p-3 space-y-2.5 shadow-lg">
         {/* HÀNG 1: CHỌN TÒA CHUNG CƯ + 4 CHỈ SỐ THỐNG KÊ BQL */}
         <div className="flex flex-wrap items-center justify-between gap-3 pb-2 border-b border-[#1A283B]">
-          {/* Chọn Tòa Chung Cư */}
+          {/* Chọn Chung Cư */}
           <div className="flex items-center gap-1.5 flex-wrap">
-            <span className="text-[11px] font-mono text-gray-400 mr-1">Tòa Nhà:</span>
+            <span className="text-[11px] font-mono text-gray-400 mr-1">Chung Cư:</span>
             {[
-              { code: 'BS-07', name: 'Tòa BS-07', floors: 34, isOwner: true },
-              { code: 'BS-08', name: 'Tòa BS-08', floors: 39, highlight: true },
-              { code: 'BS-09', name: 'Tòa BS-09', floors: 34 },
-              { code: 'BS-10', name: 'Tòa BS-10', floors: 34 },
+              { code: 'BS-07', name: 'Chung Cư BS-07', floors: 34, isOwner: true },
+              { code: 'BS-08', name: 'Chung Cư BS-08', floors: 39, highlight: true },
+              { code: 'BS-09', name: 'Chung Cư BS-09', floors: 34 },
+              { code: 'BS-10', name: 'Chung Cư BS-10', floors: 34 },
             ].map(b => {
               const isCurrent = selectedBlock === b.code;
               return (
@@ -713,9 +716,9 @@ export default function AdminBuildingApartmentManager() {
                   ? 'bg-[#C5A880] text-black border-[#C5A880] font-bold shadow'
                   : 'text-amber-300 bg-[#292015] hover:bg-[#3D2F1E] border-amber-600/40'
               }`}
-              title="Lọc 2 căn chủ hộ của Trần Hữu Lực (CH-06 & CH-01 Tầng 30 - Tòa BS-07)"
+              title="Lọc 2 căn chủ hộ của Trần Hữu Lực (CH-06 & CH-01 Tầng 30 - Chung Cư BS-07)"
             >
-              <span>{isOwnerBuilding ? 'Căn Chủ Hộ (2)' : 'Căn Chủ Hộ (Tòa BS-07)'}</span>
+              <span>{isOwnerBuilding ? 'Căn Chủ Hộ (2)' : 'Căn Chủ Hộ (Chung Cư BS-07)'}</span>
             </button>
           </div>
 
@@ -1110,10 +1113,10 @@ export default function AdminBuildingApartmentManager() {
                       <line x1="590" y1="58" x2="590" y2="505" stroke={curTone.mullionColor} strokeWidth="0.8" opacity="0.4" />
                       <line x1="680" y1="48" x2="680" y2="489" stroke={curTone.mullionColor} strokeWidth="0.8" opacity="0.4" />
 
-                      {/* Mái Tòa Nhà (Sân Thượng Helipad) */}
+                      {/* Mái Chung Cư (Sân Thượng Helipad) */}
                       <polygon points="230,38 500,68 770,38 500,16" fill={curTone.roofColor} stroke={curTone.borderBuilding} strokeWidth="2" />
 
-                      {/* Sân đáp trực thăng Helipad trên đỉnh tòa nhà */}
+                      {/* Sân đáp trực thăng Helipad trên đỉnh chung cư */}
                       <ellipse cx="500" cy="54" rx="65" ry="18" fill="#0F172A" stroke={curTone.borderBuilding} strokeWidth="1.8" />
                       <circle cx="500" cy="54" r="11" fill="none" stroke={curTone.crownColor} strokeWidth="1.5" />
                       <text x="500" y="58" fill={curTone.crownColor} fontSize="10" fontWeight="bold" textAnchor="middle" fontFamily="sans-serif">H</text>
@@ -1122,19 +1125,26 @@ export default function AdminBuildingApartmentManager() {
                       <circle cx="500" cy="12" r="3.5" fill="#EF4444" className="animate-pulse" />
                       <line x1="500" y1="12" x2="500" y2="22" stroke="#64748B" strokeWidth="1.5" />
 
-                      {/* Tiêu đề Đỉnh Tòa Nhà */}
+                      {/* Tiêu đề Đỉnh Chung Cư */}
                       <text x="500" y="8" fill={curTone.titleColor} fontSize="12" fontWeight="bold" textAnchor="middle" fontFamily="serif" letterSpacing="0.05em">
                         {currentBlockName.toUpperCase()} ({currentTotalFloors} TẦNG) • CHUNG CƯ THE TROPICAL
                       </text>
 
-                      {/* RENDER CÁC TẦNG THỰC TẾ THEO TÒA NHÀ */}
+                      {/* RENDER CÁC TẦNG THỰC TẾ THEO CHUNG CƯ */}
                       {BUILDING_3D_UNITS.filter(b => b.floor <= currentTotalFloors).map(b => {
                         const liveUnit = displayUnits.find(u => 
                           u.code === b.code || 
-                          (u.floor === b.floor && (u.code.endsWith(b.code) || b.code.endsWith(u.code)))
+                          (u.floor === b.floor && (
+                            u.code.endsWith(b.code) || 
+                            b.code.endsWith(u.code) ||
+                            (b.side === 'LEFT' && (u.code.includes('CH-06') || u.code.endsWith('06'))) ||
+                            (b.side === 'RIGHT' && (u.code.includes('CH-01') || u.code.endsWith('01')))
+                          ))
                         );
                         const actualStatus = liveUnit ? liveUnit.status : 'VACANT';
-                        const actualOwnerName = isOwnerBuilding && (b.code === 'CH-06' || b.floor === 30) && b.side === 'LEFT' ? activeOwnerName : (liveUnit?.owner?.name || b.defaultName || 'Nhà Trống');
+                        const actualOwnerName = isOwnerBuilding && (b.code === 'CH-06' || b.floor === 30) && b.side === 'LEFT' 
+                          ? activeOwnerName 
+                          : (liveUnit?.owner?.name || (actualStatus === 'OCCUPIED' ? 'Cư Dân Sinh Sống' : 'Căn Hộ Trống'));
                         const isSelected = selectedAptCode === b.code || (selectedFloor === b.floor && (selectedAptCode === b.code || selectedAptCode.endsWith(b.code) || b.code.endsWith(selectedAptCode)));
                         const isHovered = hoveredUnitCode === b.code || (hoveredFloor === b.floor && (hoveredUnitCode?.endsWith(b.code) || b.code.endsWith(hoveredUnitCode || '')));
                         
@@ -1210,7 +1220,7 @@ export default function AdminBuildingApartmentManager() {
                               filter={isSelected || (b.floor === 30 && actualStatus === 'OCCUPIED') ? 'url(#unitGlow)' : undefined}
                             />
 
-                            {/* Ánh đèn phòng ấm cúng cho tầng 30 có cư dân ở ban đêm (Chỉ ở Tòa BS-07) */}
+                            {/* Ánh đèn phòng ấm cúng cho tầng 30 có cư dân ở ban đêm (Chỉ ở Chung Cư BS-07) */}
                             {isOwnerBuilding && b.floor === 30 && buildingTheme === 'NIGHT' && (
                               <line
                                 x1={b.side === 'LEFT' ? 290 : 540}
@@ -1225,7 +1235,7 @@ export default function AdminBuildingApartmentManager() {
                               />
                             )}
 
-                            {/* Điểm nhấn Pin vàng định vị Căn Hộ Chủ Hộ Tầng 30 (Chỉ ở Tòa BS-07) */}
+                            {/* Điểm nhấn Pin vàng định vị Căn Hộ Chủ Hộ Tầng 30 (Chỉ ở Chung Cư BS-07) */}
                             {isOwnerBuilding && b.floor === 30 && b.code === 'CH-06' && (
                               <g className="pointer-events-none">
                                 <circle cx={b.side === 'LEFT' ? 370 : 630} cy={yBase - 18} r="6" fill="#F59E0B" className="animate-ping opacity-75" />
@@ -1427,7 +1437,7 @@ export default function AdminBuildingApartmentManager() {
                   {/* Tầng Mái Sân Thượng */}
                   {(selectedFloorRange === 'ALL' || selectedFloorRange === 'HIGH') && (
                     <div className="p-2.5 bg-[#121822] border border-[#1E293B] text-[11px] text-gray-300 font-mono text-center">
-                      <span className="font-bold">TẦNG MÁI • SÂN THƯỢNG HELIPAD & KHU KỸ THUẬT TÒA {currentBlockName.toUpperCase()}</span>
+                      <span className="font-bold">TẦNG MÁI • SÂN THƯỢNG HELIPAD & KHU KỸ THUẬT {currentBlockName.toUpperCase()}</span>
                     </div>
                   )}
 
@@ -1653,7 +1663,7 @@ export default function AdminBuildingApartmentManager() {
               {/* BẢN VẼ MẶT BẰNG SÀN KIẾN TRÚC TẦNG THỰC TẾ (SVG FLOOR PLATE) */}
               <div className="relative w-full bg-[#090D14] border border-[#222B35] p-3 flex flex-col items-center">
                 <div className="text-[11px] font-mono text-[#C5A880] mb-2 self-start">
-                  SƠ ĐỒ MẶT BẰNG SÀN TẦNG {selectedFloor} • CHUNG CƯ SKYLINE (BỐ TRÍ 8 CĂN HỘ / TẦNG)
+                  SƠ ĐỒ MẶT BẰNG SÀN TẦNG {selectedFloor} • {currentBlockName.toUpperCase()} (BỐ TRÍ 8 CĂN HỘ / TẦNG)
                 </div>
 
                 <svg viewBox="0 0 800 360" className="w-full max-w-[760px] drop-shadow-lg">
@@ -1778,7 +1788,7 @@ export default function AdminBuildingApartmentManager() {
                             strokeWidth={u03.isSelected ? '2.5' : '1.5'} 
                           />
                           <text x="400" y="52" fill="#FFFFFF" fontSize="9.5" fontWeight="bold" textAnchor="middle" fontFamily="monospace">Căn {u03.code} (2PN • 75m²)</text>
-                          <text x="400" y="68" fill={u02.isOccupied ? '#10B981' : '#F59E0B'} fontSize="7.5" fontWeight="bold" textAnchor="middle">
+                          <text x="400" y="68" fill={u03.isOccupied ? '#10B981' : '#F59E0B'} fontSize="7.5" fontWeight="bold" textAnchor="middle">
                             {u03.isOccupied ? `CÓ CƯ DÂN: ${u03.ownerName}` : 'NHÀ TRỐNG'}
                           </text>
                         </g>
@@ -2326,7 +2336,7 @@ export default function AdminBuildingApartmentManager() {
                         {/* Chi tiết phí dịch vụ & xe */}
                         <div className="pt-1 space-y-1 text-[10.5px] text-gray-300">
                           <div className="flex justify-between py-0.5 border-b border-[#1E293B]">
-                            <span className="text-gray-400">• Phí quản lý tòa nhà ({fin.area} m² x 18k):</span>
+                            <span className="text-gray-400">• Phí quản lý chung cư ({fin.area} m² x 18k):</span>
                             <span className="font-bold text-white">{new Intl.NumberFormat('vi-VN').format(fin.managementFee)} đ</span>
                           </div>
                           <div className="flex justify-between py-0.5 border-b border-[#1E293B]">
@@ -2376,7 +2386,7 @@ export default function AdminBuildingApartmentManager() {
                       <strong className="text-white">{Math.round(activeUnit.area * 1.08)} m²</strong>
                     </div>
                     <div className="flex items-center justify-between pb-1.5 border-b border-[#222B35]">
-                      <span className="text-gray-400">Phí quản lý tòa nhà:</span>
+                      <span className="text-gray-400">Phí quản lý chung cư:</span>
                       <strong className="text-amber-300">
                         {new Intl.NumberFormat('vi-VN').format(Math.round(activeUnit.area * 18000))} đ/tháng (18.000 đ/m²)
                       </strong>
