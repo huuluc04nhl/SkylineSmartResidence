@@ -207,7 +207,6 @@ export default function AdminBuildingApartmentManager() {
   const [hoveredUnitCode, setHoveredUnitCode] = useState<string | null>(null);
   const [hoveredFloor, setHoveredFloor] = useState<number | null>(null);
   const [buildingTheme, setBuildingTheme] = useState<'NIGHT' | 'DAY'>('NIGHT');
-  const [elevationZoneFilter, setElevationZoneFilter] = useState<'ALL' | 'HIGH' | 'MID' | 'LOW'>('ALL');
   const [isFloorPlanExpanded, setIsFloorPlanExpanded] = useState<boolean>(false);
   const [floorFilterStatus, setFloorFilterStatus] = useState<'ALL' | 'OCCUPIED' | 'VACANT'>('ALL');
   const [billToastMessage, setBillToastMessage] = useState<string | null>(null);
@@ -591,16 +590,16 @@ export default function AdminBuildingApartmentManager() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#222B35] pb-4">
         <div>
           <div className="text-[11px] uppercase tracking-wider text-[#C5A880] font-semibold flex items-center gap-1.5 font-mono">
-            <Building className="w-3.5 h-3.5 text-[#C5A880]" /> BAN QUẢN LÝ DỰ ÁN THE TROPICAL - BEVERLY SOLARI
+            <Building className="w-3.5 h-3.5 text-[#C5A880]" /> THE TROPICAL • BEVERLY SOLARI
           </div>
-          <h2 className="font-serif text-2xl sm:text-3xl text-white font-bold mt-1 flex items-center gap-2">
+          <h2 className="font-serif text-2xl sm:text-3xl text-white font-bold mt-0.5 flex items-center gap-2">
             Sơ Đồ Tầng & Căn Hộ
             <span className="text-xs px-2.5 py-1 bg-emerald-950/80 text-emerald-300 border border-emerald-500/40 font-mono font-normal">
               100% LIVE NKS API
             </span>
           </h2>
-          <p className="text-xs text-gray-400 mt-0.5 max-w-3xl">
-            Hệ thống quản lý căn hộ & sơ đồ kiến trúc theo chuẩn NKS SCRMAI API: Tòa <strong className="text-white">{currentBlockName} ({currentTotalFloors} Tầng)</strong> • Căn hộ chủ sở hữu: <strong className="text-[#C5A880]">CH-06 & CH-01 (Tầng 30) — {activeOwnerName}</strong>.
+          <p className="text-xs text-gray-400 mt-0.5">
+            Trung tâm giám sát mặt bằng trực quan & quản lý kỹ thuật vận hành theo thời gian thực.
           </p>
         </div>
 
@@ -664,75 +663,19 @@ export default function AdminBuildingApartmentManager() {
       </div>
 
       {/* ============================================================= */}
-      {/* 1.1 THANH ĐIỀU HÀNH KIẾN TRÚC & THỐNG KÊ TỔNG THỂ (UNIFIED)   */}
+      {/* TRUNG TÂM ĐIỀU HÀNH BQL: KHỐI THÁP, KPI THỰC TẾ & BỘ LỌC TẬP TRUNG */}
       {/* ============================================================= */}
-      <div className="bg-[#0B131E] border border-[#22344B] p-2.5 sm:p-3 space-y-2.5 shadow-lg">
-        {/* ROW 1: BREADCRUMB PHÂN CẤP 5 TẦNG KIẾN TRÚC & NKS API SYNC */}
-        <div className="flex flex-wrap items-center justify-between gap-2 pb-2 border-b border-[#1A283B]">
-          <div className="flex flex-wrap items-center gap-1.5 text-xs font-mono">
-            <span className="text-gray-400 font-sans text-[11px] mr-0.5">Kiến trúc:</span>
-            <span className="px-1.5 py-0.5 bg-[#131D2D] border border-[#23354E] text-gray-200">
-              Beverly Solari
-            </span>
-            <ChevronRight className="w-3 h-3 text-gray-500 shrink-0" />
-            <span className="px-1.5 py-0.5 bg-[#131D2D] border border-[#23354E] text-[#C5A880] font-semibold">
-              The Tropical
-            </span>
-            <ChevronRight className="w-3 h-3 text-gray-500 shrink-0" />
-            <span className="px-1.5 py-0.5 bg-[#1E2E44] border border-[#3B82F6]/50 text-cyan-200 font-bold">
-              Tháp {selectedBlock} ({currentTotalFloors} Tầng)
-            </span>
-            <ChevronRight className="w-3 h-3 text-gray-500 shrink-0" />
-            <span className="px-1.5 py-0.5 bg-[#102A24] border border-emerald-500/40 text-emerald-300 font-bold">
-              Tầng {selectedFloor}
-            </span>
-            <ChevronRight className="w-3 h-3 text-gray-500 shrink-0" />
-            <span className="px-1.5 py-0.5 bg-[#2B1B0F] border border-amber-500/40 text-amber-300 font-bold">
-              Căn {selectedAptCode}
-            </span>
-          </div>
-
-          {/* Trạng thái NKS API Live & Nút Đồng Bộ */}
-          <div className="flex items-center gap-2">
-            {syncMessage && (
-              <span className="text-xs text-emerald-400 font-mono animate-fadeIn flex items-center gap-1 bg-emerald-950/60 px-2 py-0.5 border border-emerald-700/50">
-                ✓ {syncMessage}
-              </span>
-            )}
-            <div className="flex items-center gap-1 px-2 py-0.5 bg-[#0B1522] border border-[#1E2E44] text-[11px] font-mono text-emerald-400">
-              <span className="inline-block w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_6px_rgba(52,211,153,0.8)]" />
-              <span>NKS API Live</span>
-            </div>
-            <button
-              type="button"
-              onClick={async () => {
-                setIsSyncingApi(true);
-                const units = await syncApartmentsFromNksApi(selectedBlock);
-                setApartments(units);
-                setIsSyncingApi(false);
-                setSyncMessage('Đồng bộ 100% dữ liệu từ NKS API thành công!');
-                setTimeout(() => setSyncMessage(null), 3000);
-              }}
-              disabled={isSyncingApi}
-              className="px-2.5 py-1 bg-[#1A2638] hover:bg-[#23354E] text-[#C5A880] hover:text-white text-xs font-semibold border border-[#2D4363] transition-all flex items-center gap-1.5 active:scale-95 disabled:opacity-50"
-              title="Đồng bộ danh sách căn hộ theo chuẩn API NKS SCRMAI"
-            >
-              <RefreshCw className={`w-3 h-3 ${isSyncingApi ? 'animate-spin' : ''}`} />
-              <span>{isSyncingApi ? 'Đang tải...' : 'Đồng Bộ API'}</span>
-            </button>
-          </div>
-        </div>
-
-        {/* ROW 2: CHỌN 4 KHỐI THÁP + 4 CHỈ SỐ KPI THỐNG KÊ TÍCH HỢP GỌN GÀNG */}
-        <div className="flex flex-wrap items-center justify-between gap-2.5">
+      <div className="bg-[#0B121D] border border-[#22344B] p-2.5 sm:p-3 space-y-2.5 shadow-lg">
+        {/* HÀNG 1: CHỌN KHỐI THÁP + 4 CHỈ SỐ KPI BQL + ĐỒNG BỘ NKS API */}
+        <div className="flex flex-wrap items-center justify-between gap-3 pb-2 border-b border-[#1A283B]">
           {/* Chọn Khối Tháp */}
           <div className="flex items-center gap-1.5 flex-wrap">
             <span className="text-[11px] font-mono text-gray-400 mr-1">Khối Tháp:</span>
             {[
-              { code: 'BS-07', name: 'Tropical BS-07', floors: 34 },
-              { code: 'BS-08', name: 'Tropical BS-08', floors: 39, highlight: true },
-              { code: 'BS-09', name: 'Tropical BS-09', floors: 34 },
-              { code: 'BS-10', name: 'Tropical BS-10', floors: 34 },
+              { code: 'BS-07', name: 'BS-07', floors: 34 },
+              { code: 'BS-08', name: 'BS-08', floors: 39, highlight: true },
+              { code: 'BS-09', name: 'BS-09', floors: 34 },
+              { code: 'BS-10', name: 'BS-10', floors: 34 },
             ].map(b => {
               const isCurrent = selectedBlock === b.code;
               return (
@@ -743,7 +686,7 @@ export default function AdminBuildingApartmentManager() {
                   className={`px-2.5 py-1 text-xs font-mono transition-all flex items-center gap-1.5 border ${
                     isCurrent
                       ? 'bg-[#C5A880] text-black border-[#C5A880] font-bold shadow'
-                      : 'bg-[#0E1724] text-gray-300 border-[#1E2D42] hover:border-[#385175] hover:text-white'
+                      : 'bg-[#121B27] text-gray-300 border-[#1E2D42] hover:border-[#385175] hover:text-white'
                   }`}
                 >
                   <span>{b.name}</span>
@@ -758,122 +701,57 @@ export default function AdminBuildingApartmentManager() {
             })}
           </div>
 
-          {/* 4 Chỉ Số KPI Gọn Gàng (Inline KPI Badges) */}
+          {/* 4 Chỉ Số KPI BQL & Đồng bộ API */}
           <div className="flex items-center gap-2 flex-wrap text-xs font-mono">
-            <div className="px-2.5 py-1 bg-[#121820] border border-[#222B35] flex items-center gap-1.5" title="Tổng số căn hộ hiện có trong khối">
-              <Building className="w-3.5 h-3.5 text-cyan-400" />
+            <div className="px-2 py-0.5 bg-[#121820] border border-[#222B35] flex items-center gap-1.5" title="Tổng số căn hộ">
               <span className="text-gray-400">Tổng:</span>
               <strong className="text-white font-bold">{totalUnitsCount}</strong>
             </div>
-            <div className="px-2.5 py-1 bg-[#121820] border border-emerald-500/40 flex items-center gap-1.5" title="Căn hộ đã bàn giao và đang có cư dân sinh sống">
-              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+            <div className="px-2 py-0.5 bg-[#121820] border border-emerald-500/40 flex items-center gap-1.5" title="Căn hộ đã bàn giao">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
               <span className="text-gray-400">Đã Ở:</span>
               <strong className="text-emerald-300 font-bold">{occupiedCount} ({occupancyRate}%)</strong>
             </div>
-            <div className="px-2.5 py-1 bg-[#121820] border border-amber-500/40 flex items-center gap-1.5" title="Căn hộ trống sẵn sàng bàn giao đón cư dân mới">
-              <Key className="w-3.5 h-3.5 text-amber-400" />
+            <div className="px-2 py-0.5 bg-[#121820] border border-amber-500/40 flex items-center gap-1.5" title="Căn hộ trống">
+              <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
               <span className="text-gray-400">Trống:</span>
               <strong className="text-amber-300 font-bold">{vacantCount}</strong>
             </div>
-            <div className="px-2.5 py-1 bg-[#121820] border border-blue-500/40 flex items-center gap-1.5" title="Căn hộ đang nghiệm thu kỹ thuật hoặc hoàn thiện">
-              <Clock className="w-3.5 h-3.5 text-blue-400" />
+            <div className="px-2 py-0.5 bg-[#121820] border border-blue-500/40 flex items-center gap-1.5" title="Căn hộ nghiệm thu / bảo trì">
+              <span className="w-1.5 h-1.5 rounded-full bg-blue-400" />
               <span className="text-gray-400">Nghiệm Thu:</span>
               <strong className="text-blue-300 font-bold">{maintenanceCount}</strong>
             </div>
-          </div>
-        </div>
-      </div>
 
-      {/* ============================================================= */}
-      {/* 2. THANH NHẬN DIỆN CĂN HỘ CHỦ SỞ HỮU (COMPACT SPOTLIGHT BAR)  */}
-      {/* ============================================================= */}
-      <div className="bg-gradient-to-r from-[#101925] via-[#142337] to-[#0F1722] border border-[#C5A880]/70 px-3.5 py-2 shadow-md flex flex-wrap items-center justify-between gap-3">
-        {/* Thông tin chủ hộ gọn gàng */}
-        <div className="flex items-center gap-3 min-w-0">
-          <div className="relative shrink-0">
-            <img
-              src={activeOwnerAvatar}
-              alt={activeOwnerName}
-              className="w-9 h-9 object-cover border border-[#C5A880] shadow"
-            />
-            <span className="absolute -bottom-1 -right-1 w-3.5 h-3.5 bg-emerald-500 border border-[#121B27] rounded-full flex items-center justify-center text-[8px] text-white font-bold" title="FaceID eKYC Active">
-              ✓
-            </span>
-          </div>
+            <div className="h-4 w-[1px] bg-[#1E2E44] hidden sm:block" />
 
-          <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs font-mono">
-            <div className="flex items-center gap-1.5">
-              <span className="text-[10px] px-1.5 py-0.2 bg-[#C5A880] text-black font-bold uppercase tracking-wider">
-                ★ CHỦ HỘ
+            {/* Trạng thái NKS API Live & Nút Đồng Bộ */}
+            {syncMessage && (
+              <span className="text-xs text-emerald-400 font-mono animate-fadeIn flex items-center gap-1 bg-emerald-950/60 px-2 py-0.5 border border-emerald-700/50">
+                ✓ {syncMessage}
               </span>
-              <strong className="text-white font-serif text-sm font-bold tracking-wide">
-                {activeOwnerName}
-              </strong>
-            </div>
-
-            <span className="text-emerald-400 font-bold">
-              📞 {activeOwnerPhone}
-            </span>
-
-            <span className="hidden sm:inline text-gray-500">|</span>
-
-            <div className="flex items-center gap-1.5 flex-wrap">
-              <span className="px-1.5 py-0.5 bg-[#3B2514] border border-amber-500/70 text-amber-200 font-bold">
-                ★ Căn Chính: CH-06 (42 m²)
-              </span>
-              <span className="px-1.5 py-0.5 bg-[#1A2333] border border-[#2B3A4F] text-gray-300">
-                Căn Phụ: CH-01 (50 m²)
-              </span>
-              <span className="text-cyan-300">
-                • Tầng 30 ({selectedBlock})
-              </span>
-              <span className="text-emerald-400 hidden md:inline">
-                • Đông Nam (View Sông)
-              </span>
-            </div>
+            )}
+            <button
+              type="button"
+              onClick={async () => {
+                setIsSyncingApi(true);
+                const units = await syncApartmentsFromNksApi(selectedBlock);
+                setApartments(units);
+                setIsSyncingApi(false);
+                setSyncMessage('Đã đồng bộ NKS API!');
+                setTimeout(() => setSyncMessage(null), 3000);
+              }}
+              disabled={isSyncingApi}
+              className="px-2 py-0.5 bg-[#1A2638] hover:bg-[#23354E] text-[#C5A880] hover:text-white text-xs font-semibold border border-[#2D4363] transition-all flex items-center gap-1.5 disabled:opacity-50"
+              title="Đồng bộ dữ liệu từ NKS SCRMAI API"
+            >
+              <RefreshCw className={`w-3 h-3 ${isSyncingApi ? 'animate-spin' : ''}`} />
+              <span>{isSyncingApi ? 'Đang tải...' : 'Đồng Bộ NKS API'}</span>
+            </button>
           </div>
         </div>
 
-        {/* Nút hành động định vị & điều hướng nhanh */}
-        <div className="flex items-center gap-2 shrink-0">
-          <button
-            type="button"
-            onClick={() => {
-              if (selectedBlock !== 'BS-07') handleSwitchBlock('BS-07');
-              setSelectedFloor(30);
-              setSelectedAptCode('CH-06');
-              setBuildingPerspective('3D');
-              setSyncMessage('Đang chiếu laser định vị căn hộ CH-06 (Tầng 30)!');
-              setTimeout(() => setSyncMessage(null), 3000);
-            }}
-            className="px-2.5 py-1.5 bg-[#C5A880] hover:bg-white text-black font-bold text-xs font-mono transition-all flex items-center gap-1.5 shadow active:scale-95"
-            title="Định vị căn CH-06 trên mô hình 3D"
-          >
-            <Compass className="w-3.5 h-3.5 text-black" />
-            <span>Định Vị 3D</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => {
-              if (selectedBlock !== 'BS-07') handleSwitchBlock('BS-07');
-              setSelectedFloor(30);
-              setSelectedAptCode('CH-06');
-              setBuildingPerspective('FLOOR_PLAN');
-            }}
-            className="px-2.5 py-1.5 bg-[#121E2E] hover:bg-[#1B2B42] text-cyan-300 border border-cyan-700/60 font-semibold text-xs font-mono transition-all flex items-center gap-1"
-            title="Xem mặt bằng tầng 30"
-          >
-            <Layers className="w-3 h-3 text-cyan-400" />
-            <span>Mặt Bằng T30 →</span>
-          </button>
-        </div>
-      </div>
-
-      {/* ============================================================= */}
-      {/* 3. THANH CÔNG CỤ TÌM KIẾM & BỘ LỌC ĐIỀU KHIỂN TINH GỌN         */}
-      {/* ============================================================= */}
-      <div className="p-2.5 bg-[#121820] border border-[#222B35] flex flex-col gap-2 shadow-md">
+        {/* HÀNG 2: BỘ LỌC TÌM KIẾM CĂN HỘ TẬP TRUNG */}
         <div className="flex flex-wrap items-center justify-between gap-2.5 text-xs">
           {/* Nhóm trái: Ô tìm kiếm thông minh */}
           <div className="flex items-center gap-2 flex-1 min-w-[240px] max-w-sm">
@@ -886,7 +764,7 @@ export default function AdminBuildingApartmentManager() {
                 onBlur={() => setTimeout(() => setIsSearchFocused(false), 250)}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Tìm căn (CH-06), tầng (T30), cư dân (Lực)..."
-                className="w-full bg-[#161B22] border border-[#2D3748] pl-8 pr-7 py-1.5 text-white text-xs placeholder:text-gray-500 outline-none focus:border-[#C5A880] transition-colors"
+                className="w-full bg-[#161B22] border border-[#2D3748] pl-8 pr-7 py-1 text-white text-xs placeholder:text-gray-500 outline-none focus:border-[#C5A880] transition-colors font-mono"
               />
               {searchQuery && (
                 <button
@@ -951,18 +829,26 @@ export default function AdminBuildingApartmentManager() {
               )}
             </div>
 
-            {/* Nút lọc nhanh riêng Căn Chủ Hộ */}
+            {/* Nút lọc nhanh riêng Căn Chủ Hộ (Trần Hữu Lực) */}
             <button
               type="button"
-              onClick={() => setIsOnlyOwnerUnits(!isOnlyOwnerUnits)}
-              className={`px-2.5 py-1.5 text-xs font-semibold font-mono transition-all flex items-center gap-1 shrink-0 border ${
+              onClick={() => {
+                const next = !isOnlyOwnerUnits;
+                setIsOnlyOwnerUnits(next);
+                if (next) {
+                  if (selectedBlock !== 'BS-07') handleSwitchBlock('BS-07');
+                  setSelectedFloor(30);
+                  setSelectedAptCode('CH-06');
+                }
+              }}
+              className={`px-2.5 py-1 text-xs font-semibold font-mono transition-all flex items-center gap-1 shrink-0 border ${
                 isOnlyOwnerUnits
                   ? 'bg-[#C5A880] text-black border-[#C5A880] font-bold shadow'
                   : 'text-amber-300 bg-[#292015] hover:bg-[#3D2F1E] border-amber-600/40'
               }`}
-              title="Lọc các căn hộ thuộc sở hữu của chủ hộ Trần Hữu Lực"
+              title="Lọc nhanh 2 căn chủ hộ của Trần Hữu Lực (CH-06 & CH-01 Tầng 30)"
             >
-              <span>★ Chủ Hộ (2)</span>
+              <span>★ Căn Chủ Hộ (2)</span>
             </button>
           </div>
 
@@ -1019,7 +905,7 @@ export default function AdminBuildingApartmentManager() {
 
             {/* Đếm số căn */}
             <div className="text-[11px] text-gray-300 bg-[#161B22] px-2 py-1 border border-[#2D3748] hidden sm:block">
-              <strong className="text-white">{filteredUnits.length}</strong>/{displayUnits.length} căn
+              <strong className="text-white">{filteredUnits.length}</strong>/{displayUnits.length}
             </div>
 
             {/* Nút Đặt lại khi có bộ lọc hoạt động */}
@@ -1037,7 +923,7 @@ export default function AdminBuildingApartmentManager() {
           </div>
         </div>
 
-        {/* HÀNG PHỤ: CÁC TIÊU CHÍ ĐANG LỌC (CHỈ HIỆN KHI CÓ LỌC ĐƯỢC CHỌN) */}
+        {/* HÀNG PHỤ: TIÊU CHÍ ĐANG LỌC (CHỈ HIỆN KHI CÓ LỌC) */}
         {isAnyFilterActive && (
           <div className="flex flex-wrap items-center gap-1.5 pt-1.5 border-t border-[#1C2533] text-[11px] font-mono">
             <span className="text-gray-400 text-[10px]">Đang lọc:</span>
@@ -1049,7 +935,7 @@ export default function AdminBuildingApartmentManager() {
             )}
             {isOnlyOwnerUnits && (
               <span className="inline-flex items-center gap-1 px-1.5 py-0.2 bg-amber-950 text-amber-300 border border-amber-700/60 font-bold">
-                ★ Chỉ căn chủ hộ
+                ★ Căn Chủ Hộ (Trần Hữu Lực)
                 <button type="button" onClick={() => setIsOnlyOwnerUnits(false)} className="text-amber-400 hover:text-white">✕</button>
               </span>
             )}
@@ -1204,65 +1090,21 @@ export default function AdminBuildingApartmentManager() {
                   }}
                 />
 
-                {/* BẢNG ĐIỀU KHIỂN HUD TẦNG TRÊN (CONTROLS, TONE SELECTOR & ZONE NAVIGATOR) */}
-                <div className="relative z-20 flex flex-wrap items-center justify-between gap-2 p-3 bg-[#080E1A]/85 backdrop-blur-md border-b border-[#1E2E44] text-xs">
-                  {/* Tiêu đề & Shortcut Nhảy Nhanh */}
-                  <div className="flex flex-wrap items-center gap-2">
-                    <div className="flex items-center gap-1.5 px-2.5 py-1 bg-[#101C2E] border border-[#233854]">
+                {/* BẢNG ĐIỀU KHIỂN HUD TẦNG TRÊN (TINH GỌN CHO BQL) */}
+                <div className="relative z-20 flex flex-wrap items-center justify-between gap-2 p-2.5 bg-[#080E1A]/85 backdrop-blur-md border-b border-[#1E2E44] text-xs">
+                  {/* Trạng thái định vị hiện tại */}
+                  <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-1.5 px-2.5 py-1 bg-[#101C2E] border border-[#233854] text-xs font-mono">
                       <Building className="w-3.5 h-3.5 text-[#C5A880]" />
-                      <span className="font-bold text-white uppercase font-mono tracking-wider">
-                        {currentBlockName} ({currentTotalFloors} Tầng)
-                      </span>
-                    </div>
-
-                    <span className="text-gray-500 hidden sm:inline">|</span>
-
-                    {/* Phím nhảy nhanh đến tầng quan trọng */}
-                    <div className="flex items-center gap-1">
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setSelectedFloor(30);
-                          setSelectedAptCode('CH-06');
-                        }}
-                        className={`px-2.5 py-1 font-bold text-[11px] font-mono transition-all border ${
-                          selectedFloor === 30
-                            ? 'bg-emerald-600 text-white border-emerald-400 shadow-[0_0_10px_rgba(16,185,129,0.5)]'
-                            : 'bg-[#0E2018] text-emerald-300 border-emerald-700/60 hover:bg-[#163326]'
-                        }`}
-                      >
-                        ★ Tầng 30 (CH-06 & CH-01)
-                      </button>
-
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setSelectedFloor(20);
-                          setSelectedAptCode('20-CH-06');
-                        }}
-                        className={`px-2 py-1 font-semibold text-[11px] font-mono transition-all border ${
-                          selectedFloor === 20
-                            ? 'bg-cyan-600 text-white border-cyan-400'
-                            : 'bg-[#082236] text-cyan-300 border-cyan-700/60 hover:bg-[#0C324E]'
-                        }`}
-                      >
-                        ★ Tầng 20 (CH-06)
-                      </button>
-
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setSelectedFloor(currentTotalFloors);
-                        }}
-                        className="px-2 py-1 font-semibold text-[11px] font-mono bg-[#181F2C] text-gray-300 border border-[#2D3F59] hover:text-white"
-                      >
-                        👑 Tầng {currentTotalFloors} (Penthouse)
-                      </button>
+                      <span className="text-gray-300">Đang chiếu:</span>
+                      <strong className="text-white font-bold">TẦNG {selectedFloor}</strong>
+                      <span className="text-gray-500">•</span>
+                      <strong className="text-[#C5A880] font-bold">CĂN {selectedAptCode}</strong>
                     </div>
                   </div>
 
-                  {/* Chuyển Tone Màu, Phân Khu Tầng & Chế độ Ánh Sáng Ngày/Đêm */}
-                  <div className="flex items-center gap-2 flex-wrap">
+                  {/* Chuyển Tone Màu & Chế độ Ngày/Đêm */}
+                  <div className="flex items-center gap-2">
                     {/* BỘ LỰA CHỌN TONE MÀU KIẾN TRÚC */}
                     <div className="flex bg-[#0A1220] p-0.5 border border-[#1E2E44] text-[11px] font-mono">
                       {(['GOLD_LUXURY', 'AZURE_SKY', 'CYBER_BIM', 'TROPICAL_SUNSET'] as BuildingColorTone[]).map((tKey) => {
@@ -1285,46 +1127,6 @@ export default function AdminBuildingApartmentManager() {
                       })}
                     </div>
 
-                    {/* Lọc phân tầng */}
-                    <div className="flex bg-[#0A1220] p-0.5 border border-[#1E2E44] text-[11px] font-mono">
-                      <button
-                        type="button"
-                        onClick={() => setElevationZoneFilter('ALL')}
-                        className={`px-2 py-0.5 transition-all ${
-                          elevationZoneFilter === 'ALL' ? 'bg-[#C5A880] text-black font-bold' : 'text-gray-400 hover:text-white'
-                        }`}
-                      >
-                        Toàn Tháp ({currentTotalFloors}T)
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setElevationZoneFilter('HIGH')}
-                        className={`px-2 py-0.5 transition-all ${
-                          elevationZoneFilter === 'HIGH' ? 'bg-[#C5A880] text-black font-bold' : 'text-gray-400 hover:text-white'
-                        }`}
-                      >
-                        Cao (21-{currentTotalFloors})
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setElevationZoneFilter('MID')}
-                        className={`px-2 py-0.5 transition-all ${
-                          elevationZoneFilter === 'MID' ? 'bg-[#C5A880] text-black font-bold' : 'text-gray-400 hover:text-white'
-                        }`}
-                      >
-                        Trung (11-20)
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setElevationZoneFilter('LOW')}
-                        className={`px-2 py-0.5 transition-all ${
-                          elevationZoneFilter === 'LOW' ? 'bg-[#C5A880] text-black font-bold' : 'text-gray-400 hover:text-white'
-                        }`}
-                      >
-                        Hạ (1-10)
-                      </button>
-                    </div>
-
                     {/* Nút bật/tắt Chế độ Ánh Sáng */}
                     <button
                       type="button"
@@ -1334,12 +1136,12 @@ export default function AdminBuildingApartmentManager() {
                       {buildingTheme === 'NIGHT' ? (
                         <>
                           <Sun className="w-3.5 h-3.5 text-amber-400" />
-                          <span className="hidden sm:inline">Ngày</span>
+                          <span>Ngày</span>
                         </>
                       ) : (
                         <>
                           <Wind className="w-3.5 h-3.5 text-cyan-300" />
-                          <span className="hidden sm:inline">Đêm</span>
+                          <span>Đêm</span>
                         </>
                       )}
                     </button>
@@ -1498,12 +1300,12 @@ export default function AdminBuildingApartmentManager() {
                         const isSelected = selectedAptCode === b.code || (selectedFloor === b.floor && selectedAptCode.includes(b.code));
                         const isHovered = hoveredUnitCode === b.code || hoveredFloor === b.floor;
                         
-                        // Lọc theo vùng tầng
-                        const isMatchedZone = elevationZoneFilter === 'ALL'
+                        // Lọc theo vùng tầng đồng bộ với thanh điều hành
+                        const isMatchedZone = selectedFloorRange === 'ALL'
                           ? true
-                          : elevationZoneFilter === 'HIGH'
+                          : selectedFloorRange === 'HIGH'
                           ? b.floor >= 21
-                          : elevationZoneFilter === 'MID'
+                          : selectedFloorRange === 'MID'
                           ? (b.floor >= 11 && b.floor <= 20)
                           : (b.floor <= 10);
 
@@ -1761,33 +1563,33 @@ export default function AdminBuildingApartmentManager() {
           {/* ----------------------------------------------------------- */}
           {buildingPerspective === 'BUILDING_ELEVATION' && (() => {
             const displayedElevationFloors = buildingFloors.filter(floor => {
-              if (elevationZoneFilter === 'HIGH') return floor >= 21;
-              if (elevationZoneFilter === 'MID') return floor >= 11 && floor <= 20;
-              if (elevationZoneFilter === 'LOW') return floor <= 10;
+              if (selectedFloorRange === 'HIGH') return floor >= 21;
+              if (selectedFloorRange === 'MID') return floor >= 11 && floor <= 20;
+              if (selectedFloorRange === 'LOW') return floor <= 10;
               return true;
             });
 
             return (
               <div className="p-4 bg-[#05070A] h-[640px] overflow-y-auto space-y-4">
-                {/* Tiêu đề & thanh chọn phân khu tầng */}
+                {/* Tiêu đề & thanh chọn phân khu tầng đồng bộ */}
                 <div className="flex flex-wrap items-center justify-between gap-2.5 p-3 bg-[#121820] border border-[#222B35] text-xs">
                   <div className="flex items-center gap-2">
                     <Building className="w-4 h-4 text-[#C5A880]" />
-                    <span className="text-white font-bold font-serif">TÒA {currentBlockName.toUpperCase()} ({currentTotalFloors} TẦNG) • THE TROPICAL</span>
+                    <span className="text-white font-bold font-serif">MẶT ĐỨNG KIẾN TRÚC TÒA {currentBlockName.toUpperCase()}</span>
                     <span className="text-gray-400 font-mono text-[11px] hidden md:inline">
                       • Hiển thị {displayedElevationFloors.length}/{currentTotalFloors} tầng ({displayUnits.length} căn hộ)
                     </span>
                   </div>
 
-                  {/* Lọc Phân Vùng Tầng */}
+                  {/* Lọc Phân Vùng Tầng Đồng Bộ với Master Bar */}
                   <div className="flex items-center gap-1.5 flex-wrap">
                     <span className="text-gray-400 font-mono text-[11px] mr-1">Vùng tầng:</span>
                     <div className="flex bg-[#0A1017] p-0.5 border border-[#1E293B] text-[11px] font-mono">
                       <button
                         type="button"
-                        onClick={() => setElevationZoneFilter('ALL')}
+                        onClick={() => setSelectedFloorRange('ALL')}
                         className={`px-2.5 py-1 transition-all ${
-                          elevationZoneFilter === 'ALL'
+                          selectedFloorRange === 'ALL'
                             ? 'bg-[#C5A880] text-black font-bold shadow'
                             : 'text-gray-400 hover:text-white'
                         }`}
@@ -1796,9 +1598,9 @@ export default function AdminBuildingApartmentManager() {
                       </button>
                       <button
                         type="button"
-                        onClick={() => setElevationZoneFilter('HIGH')}
+                        onClick={() => setSelectedFloorRange('HIGH')}
                         className={`px-2.5 py-1 transition-all ${
-                          elevationZoneFilter === 'HIGH'
+                          selectedFloorRange === 'HIGH'
                             ? 'bg-[#C5A880] text-black font-bold shadow'
                             : 'text-gray-400 hover:text-white'
                         }`}
@@ -1807,9 +1609,9 @@ export default function AdminBuildingApartmentManager() {
                       </button>
                       <button
                         type="button"
-                        onClick={() => setElevationZoneFilter('MID')}
+                        onClick={() => setSelectedFloorRange('MID')}
                         className={`px-2.5 py-1 transition-all ${
-                          elevationZoneFilter === 'MID'
+                          selectedFloorRange === 'MID'
                             ? 'bg-[#C5A880] text-black font-bold shadow'
                             : 'text-gray-400 hover:text-white'
                         }`}
@@ -1818,9 +1620,9 @@ export default function AdminBuildingApartmentManager() {
                       </button>
                       <button
                         type="button"
-                        onClick={() => setElevationZoneFilter('LOW')}
+                        onClick={() => setSelectedFloorRange('LOW')}
                         className={`px-2.5 py-1 transition-all ${
-                          elevationZoneFilter === 'LOW'
+                          selectedFloorRange === 'LOW'
                             ? 'bg-[#C5A880] text-black font-bold shadow'
                             : 'text-gray-400 hover:text-white'
                         }`}
@@ -1828,25 +1630,13 @@ export default function AdminBuildingApartmentManager() {
                         Hạ Tầng (1-10)
                       </button>
                     </div>
-
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setElevationZoneFilter('HIGH');
-                        setSelectedFloor(30);
-                        setSelectedAptCode('CH-06');
-                      }}
-                      className="px-2.5 py-1 bg-[#064E3B] text-emerald-300 border border-emerald-500 hover:bg-[#065F46] font-bold text-[11px] font-mono transition-all"
-                    >
-                      ★ Tầng 30 (Trần Hữu Lực)
-                    </button>
                   </div>
                 </div>
 
                 {/* KHỐI HIỂN THỊ CÁC TẦNG CỦA TÒA NHÀ */}
                 <div className="bg-[#0B0F17] border border-[#222B35] p-3 rounded-none flex flex-col space-y-3">
                   {/* Tầng Mái Sân Thượng */}
-                  {(elevationZoneFilter === 'ALL' || elevationZoneFilter === 'HIGH') && (
+                  {(selectedFloorRange === 'ALL' || selectedFloorRange === 'HIGH') && (
                     <div className="p-2.5 bg-[#121822] border border-[#1E293B] text-[11px] text-gray-300 font-mono text-center flex items-center justify-center gap-2">
                       <Sparkles className="w-3.5 h-3.5 text-[#C5A880]" />
                       <span className="font-bold">TẦNG MÁI • SÂN THƯỢNG HELIPAD & KHU KỸ THUẬT TÒA {currentBlockName.toUpperCase()}</span>
@@ -1869,7 +1659,7 @@ export default function AdminBuildingApartmentManager() {
                         <div className="flex items-center justify-between text-[11px] font-mono">
                           <span className="text-white font-bold flex items-center gap-1.5">
                             <Layers className="w-3.5 h-3.5 text-[#C5A880]" />
-                            TẦNG {floor} {isFloor30 ? '★ (Căn CH-06 & CH-01 - Trần Hữu Lực)' : ''}
+                            TẦNG {floor} {isFloor30 ? '★ (Căn Chủ Hộ)' : ''}
                           </span>
                           <button
                             type="button"
@@ -1946,7 +1736,7 @@ export default function AdminBuildingApartmentManager() {
                                 <div className="text-[9.5px] font-semibold mt-1 truncate">
                                   {isOwnerPrimary ? (
                                     <span className="text-amber-300 font-bold">
-                                      ★ {activeOwnerName} (0364967082)
+                                      ★ {activeOwnerName}
                                     </span>
                                   ) : isOwnerSecondary ? (
                                     <span className="text-cyan-300 font-bold">
@@ -2039,7 +1829,7 @@ export default function AdminBuildingApartmentManager() {
                     >
                       {buildingFloors.map(f => (
                         <option key={f} value={f}>
-                          Tầng {f} {f === 30 ? '(Có căn CH-06 & CH-01 - Trần Hữu Lực ★)' : f === 20 ? '(Có căn CH-06 ★)' : ''}
+                          Tầng {f} {f === 30 ? '★ (Căn chủ hộ)' : ''}
                         </option>
                       ))}
                     </select>
@@ -2053,7 +1843,7 @@ export default function AdminBuildingApartmentManager() {
                         }}
                         className="px-2.5 py-1 bg-[#162B22] hover:bg-[#1E3B2F] text-emerald-300 border border-emerald-600/60 font-semibold text-xs transition-colors"
                       >
-                        ★ Tầng 30 (CH-06 & CH-01)
+                        ★ Tầng 30
                       </button>
                     )}
                   </div>
