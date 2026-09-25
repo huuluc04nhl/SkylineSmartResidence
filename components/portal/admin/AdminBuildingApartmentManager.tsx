@@ -561,8 +561,89 @@ export default function AdminBuildingApartmentManager() {
     return matchOccupancy && matchType && matchFloorRange && matchSearch;
   }, [selectedOccupancy, selectedType, selectedFloorRange, searchQuery, isOnlyOwnerUnits]);
 
-  // Căn hộ đang được chọn làm tiêu điểm hồ sơ
-  const activeUnit = displayUnits.find(u => u.code === selectedAptCode) || displayUnits[0] || null;
+  // Căn hộ đang được chọn làm tiêu điểm hồ sơ (ưu tiên căn chủ hộ tầng 30)
+  const activeUnit = useMemo(() => {
+    return (
+      displayUnits.find(u => u.code === selectedAptCode && u.floor === selectedFloor) ||
+      displayUnits.find(u => u.code === selectedAptCode) ||
+      displayUnits.find(u => u.floor === selectedFloor && (u.code === 'CH-06' || u.code.endsWith('CH-06'))) ||
+      displayUnits.find(u => u.floor === selectedFloor) ||
+      displayUnits[0] ||
+      null
+    );
+  }, [displayUnits, selectedAptCode, selectedFloor]);
+
+  // Cấu hình Tone màu phối cảnh BIM 3D
+  const toneConfig = useMemo(() => ({
+    GOLD_LUXURY: {
+      id: 'GOLD_LUXURY' as BuildingColorTone,
+      label: 'Hoàng Gia Gold',
+      icon: '⚜️',
+      containerBg: buildingTheme === 'NIGHT' ? 'bg-[#040711]' : 'bg-[#091122]',
+      gridLineColor: buildingTheme === 'NIGHT' ? '#1E293B' : '#C5A880',
+      glassL: buildingTheme === 'NIGHT' ? ['#172033', '#0F1626', '#060A13'] : ['#22324F', '#152136', '#0B1322'],
+      glassR: buildingTheme === 'NIGHT' ? ['#2D3D5A', '#1C293E', '#0B1320'] : ['#3A5074', '#25354F', '#111D30'],
+      borderBuilding: '#C5A880',
+      roofColor: '#172033',
+      crownColor: '#D4AF37',
+      titleColor: '#E6CA9E',
+      laserBeamColor: '#C5A880',
+      podiumGrad: ['#1A253A', '#0F1726', '#070C15'],
+      accentTag: 'bg-[#C5A880] text-black',
+      mullionColor: '#C5A880',
+    },
+    AZURE_SKY: {
+      id: 'AZURE_SKY' as BuildingColorTone,
+      label: 'Pha Lê Azure',
+      icon: '💎',
+      containerBg: buildingTheme === 'NIGHT' ? 'bg-[#020B17]' : 'bg-[#061833]',
+      gridLineColor: '#0284C7',
+      glassL: buildingTheme === 'NIGHT' ? ['#0E2A47', '#081D33', '#04101D'] : ['#0284C7', '#0369A1', '#0C4A6E'],
+      glassR: buildingTheme === 'NIGHT' ? ['#1C446D', '#0F2C4E', '#091C31'] : ['#38BDF8', '#0284C7', '#075985'],
+      borderBuilding: '#38BDF8',
+      roofColor: '#0C223B',
+      crownColor: '#7DD3FC',
+      titleColor: '#BAE6FD',
+      laserBeamColor: '#38BDF8',
+      podiumGrad: ['#0E2E52', '#081E38', '#030E1C'],
+      accentTag: 'bg-[#38BDF8] text-black',
+      mullionColor: '#38BDF8',
+    },
+    CYBER_BIM: {
+      id: 'CYBER_BIM' as BuildingColorTone,
+      label: 'Cyber BIM',
+      icon: '⚡',
+      containerBg: 'bg-[#01060A]',
+      gridLineColor: '#00F0FF',
+      glassL: ['#06232D', '#03141B', '#010A0F'],
+      glassR: ['#0B3746', '#05202A', '#021117'],
+      borderBuilding: '#00F0FF',
+      roofColor: '#04171F',
+      crownColor: '#00F0FF',
+      titleColor: '#67E8F9',
+      laserBeamColor: '#00F0FF',
+      podiumGrad: ['#082C3A', '#03161E', '#010A0F'],
+      accentTag: 'bg-[#00F0FF] text-black',
+      mullionColor: '#00F0FF',
+    },
+    TROPICAL_SUNSET: {
+      id: 'TROPICAL_SUNSET' as BuildingColorTone,
+      label: 'Hoàng Hôn Sunset',
+      icon: '🌅',
+      containerBg: buildingTheme === 'NIGHT' ? 'bg-[#120713]' : 'bg-[#200A1A]',
+      gridLineColor: '#D97706',
+      glassL: buildingTheme === 'NIGHT' ? ['#351829', '#240F1B', '#14070F'] : ['#9A3412', '#7C2D12', '#431407'],
+      glassR: buildingTheme === 'NIGHT' ? ['#4A223B', '#331728', '#1D0B16'] : ['#D97706', '#B45309', '#78350F'],
+      borderBuilding: '#F59E0B',
+      roofColor: '#28111F',
+      crownColor: '#FBBF24',
+      titleColor: '#FDE68A',
+      laserBeamColor: '#F59E0B',
+      podiumGrad: ['#3A162B', '#240D1B', '#12050D'],
+      accentTag: 'bg-[#F59E0B] text-black',
+      mullionColor: '#F59E0B',
+    },
+  }), [buildingTheme]);
 
   // Thống kê toàn tòa chung cư
   const totalUnitsCount = displayUnits.length;
@@ -922,70 +1003,166 @@ export default function AdminBuildingApartmentManager() {
         {/* CỘT TRÁI (7 COLS): SƠ ĐỒ TÒA NHÀ / MẶT BẰNG TẦNG / DANH SÁCH */}
         <div className="lg:col-span-7 bg-[#0D1117] border border-[#222B35] rounded-none overflow-hidden shadow-2xl flex flex-col">
           
-          {/* Header mô hình & Bộ chuyển đổi góc nhìn trực quan */}
-          <div className="p-2 sm:p-2.5 bg-[#101722] border-b border-[#222B35] flex flex-wrap items-center justify-between gap-3">
-            {/* Bộ 4 Tab chuyển đổi góc nhìn trực quan của khung hiển thị */}
-            <div className="flex bg-[#0A1017] p-1 border border-[#1E293B] text-xs font-semibold overflow-x-auto no-scrollbar">
+          {/* THANH ĐIỀU HÀNH GÓC NHÌN DUY NHẤT (SINGLE UNIFIED VIEWPORT TOOLBAR) */}
+          <div className="px-3 py-2 bg-[#0E1520] border-b border-[#222B35] flex items-center justify-between gap-2.5 text-xs">
+            {/* 4 Tab Chuyển Đổi Góc Nhìn */}
+            <div className="flex bg-[#070B11] p-0.5 border border-[#1E2A38] text-xs font-semibold shrink-0">
               <button
                 type="button"
                 onClick={() => setBuildingPerspective('3D')}
-                className={`px-3 py-1.5 flex items-center gap-1.5 transition-all shrink-0 ${
+                className={`px-3 py-1 flex items-center gap-1.5 transition-all ${
                   buildingPerspective === '3D'
                     ? 'bg-[#C5A880] text-[#0D1117] font-bold shadow'
                     : 'text-gray-400 hover:text-white'
                 }`}
               >
-                <Box className="w-3.5 h-3.5" /> Mô Hình 3D (BIM)
+                <Box className="w-3.5 h-3.5" />
+                <span>3D (BIM)</span>
               </button>
               <button
                 type="button"
                 onClick={() => setBuildingPerspective('BUILDING_ELEVATION')}
-                className={`px-3 py-1.5 flex items-center gap-1.5 transition-all shrink-0 ${
+                className={`px-3 py-1 flex items-center gap-1.5 transition-all ${
                   buildingPerspective === 'BUILDING_ELEVATION'
                     ? 'bg-[#C5A880] text-[#0D1117] font-bold shadow'
                     : 'text-gray-400 hover:text-white'
                 }`}
               >
-                <Building className="w-3.5 h-3.5" /> Mặt Cắt Đứng (Elevation)
+                <Building className="w-3.5 h-3.5" />
+                <span>Mặt Đứng</span>
               </button>
               <button
                 type="button"
                 onClick={() => setBuildingPerspective('FLOOR_PLAN')}
-                className={`px-3 py-1.5 flex items-center gap-1.5 transition-all shrink-0 ${
+                className={`px-3 py-1 flex items-center gap-1.5 transition-all ${
                   buildingPerspective === 'FLOOR_PLAN'
                     ? 'bg-[#C5A880] text-[#0D1117] font-bold shadow'
                     : 'text-gray-400 hover:text-white'
                 }`}
               >
-                <Layers className="w-3.5 h-3.5" /> Mặt Bằng Sàn (Floor Plan)
+                <Layers className="w-3.5 h-3.5" />
+                <span>Mặt Bằng</span>
               </button>
               <button
                 type="button"
                 onClick={() => setBuildingPerspective('GRID')}
-                className={`px-3 py-1.5 flex items-center gap-1.5 transition-all shrink-0 ${
+                className={`px-3 py-1 flex items-center gap-1.5 transition-all ${
                   buildingPerspective === 'GRID'
                     ? 'bg-[#C5A880] text-[#0D1117] font-bold shadow'
                     : 'text-gray-400 hover:text-white'
                 }`}
               >
-                <Home className="w-3.5 h-3.5" /> Lưới Căn Hộ (Grid)
+                <Home className="w-3.5 h-3.5" />
+                <span>Lưới Căn</span>
               </button>
             </div>
-            
-            {/* Chú thích màu sắc */}
-            <div className="flex items-center gap-3 text-[10.5px] font-mono pr-1">
-              <div className="flex items-center gap-1.5">
-                <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.8)]"></span>
-                <span className="text-gray-300">Đã Bàn Giao</span>
-              </div>
-              <div className="flex items-center gap-1.5">
-                <span className="w-2.5 h-2.5 rounded-full bg-amber-400 shadow-[0_0_8px_rgba(245,158,11,0.8)]"></span>
-                <span className="text-gray-300">Căn Trống</span>
-              </div>
-              <div className="flex items-center gap-1.5">
-                <span className="w-2.5 h-2.5 rounded-full bg-blue-400 shadow-[0_0_8px_rgba(96,165,250,0.8)]"></span>
-                <span className="text-gray-300">Nghiệm Thu</span>
-              </div>
+
+            {/* BÊN PHẢI: BỘ CÔNG CỤ THEO NGỮ CẢNH TƯƠNG ỨNG CỦA TỪNG VIEW */}
+            <div className="flex items-center gap-2 overflow-x-auto no-scrollbar">
+              {buildingPerspective === '3D' && (
+                <>
+                  <div className="hidden sm:flex items-center gap-1.5 px-2 py-1 bg-[#141E2B] border border-[#233345] text-[11px] font-mono shrink-0">
+                    <span className="text-gray-400">Đang chiếu:</span>
+                    <strong className="text-white">T{selectedFloor}</strong>
+                    <span className="text-gray-600">•</span>
+                    <strong className="text-[#C5A880]">{activeUnit?.code || selectedAptCode}</strong>
+                  </div>
+
+                  {/* 4 Tone Màu (Compact Icon Buttons) */}
+                  <div className="flex bg-[#070B11] p-0.5 border border-[#1E2A38] text-[11px] font-mono shrink-0">
+                    {(['GOLD_LUXURY', 'AZURE_SKY', 'CYBER_BIM', 'TROPICAL_SUNSET'] as BuildingColorTone[]).map((tKey) => {
+                      const t = toneConfig[tKey];
+                      const isSelected = buildingColorTone === tKey;
+                      return (
+                        <button
+                          key={tKey}
+                          type="button"
+                          onClick={() => setBuildingColorTone(tKey)}
+                          className={`px-1.5 py-0.5 transition-all ${
+                            isSelected ? t.accentTag + ' font-bold shadow' : 'text-gray-400 hover:text-white'
+                          }`}
+                          title={`Tone ${t.label}`}
+                        >
+                          <span>{t.icon}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+
+                  {/* Chế độ Ngày / Đêm */}
+                  <button
+                    type="button"
+                    onClick={() => setBuildingTheme(buildingTheme === 'NIGHT' ? 'DAY' : 'NIGHT')}
+                    className="px-2 py-1 bg-[#141E2B] hover:bg-[#1E2E40] border border-[#233345] text-white text-[11px] font-mono flex items-center gap-1 transition-all shrink-0"
+                    title={buildingTheme === 'NIGHT' ? 'Chuyển sang chế độ Ban Ngày' : 'Chuyển sang chế độ Ban Đêm'}
+                  >
+                    {buildingTheme === 'NIGHT' ? (
+                      <>
+                        <Sun className="w-3 h-3 text-amber-400" />
+                        <span className="hidden md:inline">Ngày</span>
+                      </>
+                    ) : (
+                      <>
+                        <Wind className="w-3 h-3 text-cyan-300" />
+                        <span className="hidden md:inline">Đêm</span>
+                      </>
+                    )}
+                  </button>
+                </>
+              )}
+
+              {buildingPerspective === 'BUILDING_ELEVATION' && (
+                <div className="flex items-center gap-1 font-mono text-[11px]">
+                  <span className="text-gray-400 hidden md:inline">Vùng:</span>
+                  {(['ALL', 'HIGH', 'MID', 'LOW'] as FloorRangeFilter[]).map((fr) => (
+                    <button
+                      key={fr}
+                      type="button"
+                      onClick={() => setSelectedFloorRange(fr)}
+                      className={`px-2 py-0.5 border transition-all ${
+                        selectedFloorRange === fr
+                          ? 'bg-[#C5A880] text-black font-bold border-[#C5A880]'
+                          : 'bg-[#141E2B] text-gray-300 border-[#233345] hover:text-white'
+                      }`}
+                    >
+                      {fr === 'ALL' ? 'Tất Cả' : fr === 'HIGH' ? 'Cao' : fr === 'MID' ? 'Trung' : 'Hạ'}
+                    </button>
+                  ))}
+                </div>
+              )}
+
+              {buildingPerspective === 'FLOOR_PLAN' && (
+                <div className="flex items-center gap-2 font-mono text-xs">
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-gray-400 text-[11px] hidden sm:inline">Tầng:</span>
+                    <select
+                      value={selectedFloor}
+                      onChange={(e) => setSelectedFloor(Number(e.target.value))}
+                      className="bg-[#141E2B] border border-[#233345] px-2 py-0.5 text-white font-mono text-[11px] outline-none focus:border-[#C5A880]"
+                    >
+                      {buildingFloors.map(f => (
+                        <option key={f} value={f}>
+                          Tầng {f} {f === 30 ? '★ (Căn chủ hộ)' : ''}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setIsFloorPlanExpanded(true)}
+                    className="px-2 py-0.5 bg-[#C5A880]/15 hover:bg-[#C5A880] text-[#C5A880] hover:text-black border border-[#C5A880]/60 font-bold text-[11px] font-mono transition-all flex items-center gap-1"
+                  >
+                    <Maximize2 className="w-3 h-3" />
+                    <span>Mở Rộng ⛶</span>
+                  </button>
+                </div>
+              )}
+
+              {buildingPerspective === 'GRID' && (
+                <div className="text-[11px] font-mono text-[#C5A880] px-2 py-0.5 bg-[#141E2B] border border-[#233345]">
+                  {filteredUnits.length}/{displayUnits.length} căn
+                </div>
+              )}
             </div>
           </div>
 
@@ -993,77 +1170,6 @@ export default function AdminBuildingApartmentManager() {
           {/* GÓC NHÌN 1: MÔ HÌNH KHỐI 3D KIẾN TRÚC TÒA NHÀ BỰ HƠN THỰC TẾ*/}
           {/* ----------------------------------------------------------- */}
           {buildingPerspective === '3D' && (() => {
-            const toneConfig = {
-              GOLD_LUXURY: {
-                id: 'GOLD_LUXURY' as BuildingColorTone,
-                label: 'Hoàng Gia Gold',
-                icon: '⚜️',
-                containerBg: buildingTheme === 'NIGHT' ? 'bg-[#040711]' : 'bg-[#091122]',
-                gridLineColor: buildingTheme === 'NIGHT' ? '#1E293B' : '#C5A880',
-                glassL: buildingTheme === 'NIGHT' ? ['#172033', '#0F1626', '#060A13'] : ['#22324F', '#152136', '#0B1322'],
-                glassR: buildingTheme === 'NIGHT' ? ['#2D3D5A', '#1C293E', '#0B1320'] : ['#3A5074', '#25354F', '#111D30'],
-                borderBuilding: '#C5A880',
-                roofColor: '#172033',
-                crownColor: '#D4AF37',
-                titleColor: '#E6CA9E',
-                laserBeamColor: '#C5A880',
-                podiumGrad: ['#1A253A', '#0F1726', '#070C15'],
-                accentTag: 'bg-[#C5A880] text-black',
-                mullionColor: '#C5A880',
-              },
-              AZURE_SKY: {
-                id: 'AZURE_SKY' as BuildingColorTone,
-                label: 'Pha Lê Azure',
-                icon: '💎',
-                containerBg: buildingTheme === 'NIGHT' ? 'bg-[#020B17]' : 'bg-[#061833]',
-                gridLineColor: '#0284C7',
-                glassL: buildingTheme === 'NIGHT' ? ['#0E2A47', '#081D33', '#04101D'] : ['#0284C7', '#0369A1', '#0C4A6E'],
-                glassR: buildingTheme === 'NIGHT' ? ['#1C446D', '#0F2C4E', '#091C31'] : ['#38BDF8', '#0284C7', '#075985'],
-                borderBuilding: '#38BDF8',
-                roofColor: '#0C223B',
-                crownColor: '#7DD3FC',
-                titleColor: '#BAE6FD',
-                laserBeamColor: '#38BDF8',
-                podiumGrad: ['#0E2E52', '#081E38', '#030E1C'],
-                accentTag: 'bg-[#38BDF8] text-black',
-                mullionColor: '#38BDF8',
-              },
-              CYBER_BIM: {
-                id: 'CYBER_BIM' as BuildingColorTone,
-                label: 'Cyber BIM',
-                icon: '⚡',
-                containerBg: 'bg-[#01060A]',
-                gridLineColor: '#00F0FF',
-                glassL: ['#06232D', '#03141B', '#010A0F'],
-                glassR: ['#0B3746', '#05202A', '#021117'],
-                borderBuilding: '#00F0FF',
-                roofColor: '#04171F',
-                crownColor: '#00F0FF',
-                titleColor: '#67E8F9',
-                laserBeamColor: '#00F0FF',
-                podiumGrad: ['#082C3A', '#03161E', '#010A0F'],
-                accentTag: 'bg-[#00F0FF] text-black',
-                mullionColor: '#00F0FF',
-              },
-              TROPICAL_SUNSET: {
-                id: 'TROPICAL_SUNSET' as BuildingColorTone,
-                label: 'Hoàng Hôn Sunset',
-                icon: '🌅',
-                containerBg: buildingTheme === 'NIGHT' ? 'bg-[#120713]' : 'bg-[#200A1A]',
-                gridLineColor: '#D97706',
-                glassL: buildingTheme === 'NIGHT' ? ['#351829', '#240F1B', '#14070F'] : ['#9A3412', '#7C2D12', '#431407'],
-                glassR: buildingTheme === 'NIGHT' ? ['#4A223B', '#331728', '#1D0B16'] : ['#D97706', '#B45309', '#78350F'],
-                borderBuilding: '#F59E0B',
-                roofColor: '#28111F',
-                crownColor: '#FBBF24',
-                titleColor: '#FDE68A',
-                laserBeamColor: '#F59E0B',
-                podiumGrad: ['#3A162B', '#240D1B', '#12050D'],
-                accentTag: 'bg-[#F59E0B] text-black',
-                mullionColor: '#F59E0B',
-              },
-            };
-
             const curTone = toneConfig[buildingColorTone] || toneConfig.GOLD_LUXURY;
             const floorStep = (472 - 90) / (currentTotalFloors - 1);
             const rulerLevels = currentTotalFloors === 39 
@@ -1080,64 +1186,6 @@ export default function AdminBuildingApartmentManager() {
                     backgroundSize: '24px 24px'
                   }}
                 />
-
-                {/* BẢNG ĐIỀU KHIỂN HUD TẦNG TRÊN (TINH GỌN CHO BQL) */}
-                <div className="relative z-20 flex flex-wrap items-center justify-between gap-2 p-2.5 bg-[#080E1A]/85 backdrop-blur-md border-b border-[#1E2E44] text-xs">
-                  {/* Trạng thái định vị hiện tại */}
-                  <div className="flex items-center gap-2">
-                    <div className="flex items-center gap-1.5 px-2.5 py-1 bg-[#101C2E] border border-[#233854] text-xs font-mono">
-                      <Building className="w-3.5 h-3.5 text-[#C5A880]" />
-                      <span className="text-gray-300">Đang chiếu:</span>
-                      <strong className="text-white font-bold">TẦNG {selectedFloor}</strong>
-                      <span className="text-gray-500">•</span>
-                      <strong className="text-[#C5A880] font-bold">CĂN {selectedAptCode}</strong>
-                    </div>
-                  </div>
-
-                  {/* Chuyển Tone Màu & Chế độ Ngày/Đêm */}
-                  <div className="flex items-center gap-2">
-                    {/* BỘ LỰA CHỌN TONE MÀU KIẾN TRÚC */}
-                    <div className="flex bg-[#0A1220] p-0.5 border border-[#1E2E44] text-[11px] font-mono">
-                      {(['GOLD_LUXURY', 'AZURE_SKY', 'CYBER_BIM', 'TROPICAL_SUNSET'] as BuildingColorTone[]).map((tKey) => {
-                        const t = toneConfig[tKey];
-                        const isSelected = buildingColorTone === tKey;
-                        return (
-                          <button
-                            key={tKey}
-                            type="button"
-                            onClick={() => setBuildingColorTone(tKey)}
-                            className={`px-2 py-0.5 flex items-center gap-1 transition-all ${
-                              isSelected ? t.accentTag + ' font-bold shadow' : 'text-gray-400 hover:text-white'
-                            }`}
-                            title={`Tone ${t.label}`}
-                          >
-                            <span>{t.icon}</span>
-                            <span className="hidden xl:inline">{t.label}</span>
-                          </button>
-                        );
-                      })}
-                    </div>
-
-                    {/* Nút bật/tắt Chế độ Ánh Sáng */}
-                    <button
-                      type="button"
-                      onClick={() => setBuildingTheme(buildingTheme === 'NIGHT' ? 'DAY' : 'NIGHT')}
-                      className="px-2.5 py-1 bg-[#121E30] hover:bg-[#1A2C46] border border-[#233B5B] text-white text-[11px] font-mono flex items-center gap-1.5 transition-all"
-                    >
-                      {buildingTheme === 'NIGHT' ? (
-                        <>
-                          <Sun className="w-3.5 h-3.5 text-amber-400" />
-                          <span>Ngày</span>
-                        </>
-                      ) : (
-                        <>
-                          <Wind className="w-3.5 h-3.5 text-cyan-300" />
-                          <span>Đêm</span>
-                        </>
-                      )}
-                    </button>
-                  </div>
-                </div>
 
                 {/* BẢN VẼ PHỐI CẢNH 3D CHUNG CƯ ISOMETRIC CHUẨN KIẾN TRÚC */}
                 <div className="relative flex-1 w-full h-full flex items-center justify-center">
@@ -1562,68 +1610,6 @@ export default function AdminBuildingApartmentManager() {
 
             return (
               <div className="p-4 bg-[#05070A] h-[640px] overflow-y-auto space-y-4">
-                {/* Tiêu đề & thanh chọn phân khu tầng đồng bộ */}
-                <div className="flex flex-wrap items-center justify-between gap-2.5 p-3 bg-[#121820] border border-[#222B35] text-xs">
-                  <div className="flex items-center gap-2">
-                    <Building className="w-4 h-4 text-[#C5A880]" />
-                    <span className="text-white font-bold font-serif">MẶT ĐỨNG KIẾN TRÚC TÒA {currentBlockName.toUpperCase()}</span>
-                    <span className="text-gray-400 font-mono text-[11px] hidden md:inline">
-                      • Hiển thị {displayedElevationFloors.length}/{currentTotalFloors} tầng ({displayUnits.length} căn hộ)
-                    </span>
-                  </div>
-
-                  {/* Lọc Phân Vùng Tầng Đồng Bộ với Master Bar */}
-                  <div className="flex items-center gap-1.5 flex-wrap">
-                    <span className="text-gray-400 font-mono text-[11px] mr-1">Vùng tầng:</span>
-                    <div className="flex bg-[#0A1017] p-0.5 border border-[#1E293B] text-[11px] font-mono">
-                      <button
-                        type="button"
-                        onClick={() => setSelectedFloorRange('ALL')}
-                        className={`px-2.5 py-1 transition-all ${
-                          selectedFloorRange === 'ALL'
-                            ? 'bg-[#C5A880] text-black font-bold shadow'
-                            : 'text-gray-400 hover:text-white'
-                        }`}
-                      >
-                        Tất Cả ({currentTotalFloors}T)
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setSelectedFloorRange('HIGH')}
-                        className={`px-2.5 py-1 transition-all ${
-                          selectedFloorRange === 'HIGH'
-                            ? 'bg-[#C5A880] text-black font-bold shadow'
-                            : 'text-gray-400 hover:text-white'
-                        }`}
-                      >
-                        Cao Tầng (21-{currentTotalFloors})
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setSelectedFloorRange('MID')}
-                        className={`px-2.5 py-1 transition-all ${
-                          selectedFloorRange === 'MID'
-                            ? 'bg-[#C5A880] text-black font-bold shadow'
-                            : 'text-gray-400 hover:text-white'
-                        }`}
-                      >
-                        Trung Tầng (11-20)
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setSelectedFloorRange('LOW')}
-                        className={`px-2.5 py-1 transition-all ${
-                          selectedFloorRange === 'LOW'
-                            ? 'bg-[#C5A880] text-black font-bold shadow'
-                            : 'text-gray-400 hover:text-white'
-                        }`}
-                      >
-                        Hạ Tầng (1-10)
-                      </button>
-                    </div>
-                  </div>
-                </div>
-
                 {/* KHỐI HIỂN THỊ CÁC TẦNG CỦA TÒA NHÀ */}
                 <div className="bg-[#0B0F17] border border-[#222B35] p-3 rounded-none flex flex-col space-y-3">
                   {/* Tầng Mái Sân Thượng */}
@@ -1806,49 +1792,6 @@ export default function AdminBuildingApartmentManager() {
 
             return (
               <div className="p-4 sm:p-5 bg-[#05070A] h-[640px] overflow-y-auto space-y-3">
-                
-                {/* Bộ điều khiển Tầng & Nút Mở Rộng */}
-                <div className="flex flex-wrap items-center justify-between gap-2.5 p-3 bg-[#121820] border border-[#222B35] text-xs">
-                  <div className="flex items-center gap-2.5 flex-wrap">
-                    <span className="text-gray-300 font-mono font-semibold flex items-center gap-1.5">
-                      <Layers className="w-3.5 h-3.5 text-[#C5A880]" /> Chọn Tầng:
-                    </span>
-                    <select
-                      value={selectedFloor}
-                      onChange={(e) => setSelectedFloor(Number(e.target.value))}
-                      className="bg-[#161B22] border border-[#2D3748] px-3 py-1.5 text-white font-mono text-xs outline-none focus:border-[#C5A880]"
-                    >
-                      {buildingFloors.map(f => (
-                        <option key={f} value={f}>
-                          Tầng {f} {f === 30 ? '★ (Căn chủ hộ)' : ''}
-                        </option>
-                      ))}
-                    </select>
-
-                    {selectedFloor !== 30 && (
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setSelectedFloor(30);
-                          setSelectedAptCode('CH-06');
-                        }}
-                        className="px-2.5 py-1 bg-[#162B22] hover:bg-[#1E3B2F] text-emerald-300 border border-emerald-600/60 font-semibold text-xs transition-colors"
-                      >
-                        ★ Tầng 30
-                      </button>
-                    )}
-                  </div>
-
-                  {/* Nút Mở Rộng Không Gian Mặt Bằng Toàn Cảnh */}
-                  <button
-                    type="button"
-                    onClick={() => setIsFloorPlanExpanded(true)}
-                    className="px-3 py-1.5 bg-[#C5A880]/15 hover:bg-[#C5A880] text-[#C5A880] hover:text-[#0D1117] border border-[#C5A880]/60 font-bold text-xs font-mono transition-all flex items-center gap-1.5 shadow-sm"
-                  >
-                    <Maximize2 className="w-3.5 h-3.5" />
-                    <span>Mở Rộng Mặt Bằng Chi Tiết ⛶</span>
-                  </button>
-                </div>
 
                 {/* Thanh KPI Tóm Tắt Dòng Tiền & Tiêu Thụ Toàn Tầng {selectedFloor} */}
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 p-2.5 bg-gradient-to-r from-[#101722] via-[#121A26] to-[#101722] border border-[#253244] text-[11px] font-mono">
