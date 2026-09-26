@@ -159,7 +159,7 @@ export default function SmartTechSection() {
                     <span>{feat.actionText}</span>
                     <ArrowRight className="w-3 h-3 transition-transform group-hover:translate-x-1" />
                   </Link>
-                  <span className={`text-[10px] ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>Portal AI</span>
+                  <span className={`text-[10px] ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>Hệ Thống AI</span>
                 </div>
               </div>
             );

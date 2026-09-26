@@ -136,7 +136,7 @@ export default function AmenitiesSection() {
                 }`}
               >
                 <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 group-hover:text-[#0D1117]" />
-                <span>Đặt Chỗ Tiện Ích Qua Portal</span>
+                <span>Đặt Chỗ Tiện Ích Trực Tuyến</span>
                 <ArrowRight className="w-3.5 h-3.5 ml-1 transition-transform group-hover:translate-x-1" />
               </Link>
             </div>

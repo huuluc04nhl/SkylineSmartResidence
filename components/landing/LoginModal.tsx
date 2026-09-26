@@ -108,7 +108,7 @@ export default function LoginModal({ isOpen, onClose, defaultAccount = '' }: Log
     let redirectTab = 'resident-home';
 
     if (role === 'ADMIN') {
-      roleNotice = `Chào mừng Quản trị viên BQL: ${loggedUser.full_name}`;
+      roleNotice = `Chào mừng Quản trị viên Ban Quản Lý: ${loggedUser.full_name}`;
       redirectTab = 'admin-dashboard';
     } else if (role === 'TECHNICIAN') {
       roleNotice = `Chào mừng Kỹ thuật viên: ${loggedUser.full_name}`;
@@ -163,7 +163,7 @@ export default function LoginModal({ isOpen, onClose, defaultAccount = '' }: Log
   const handleSendOtp = () => {
     const cleanPhone = phone.trim().replace(/\s+/g, '');
     if (!cleanPhone || cleanPhone.length < 9) {
-      setErrorMessage('Vui lòng nhập chính xác số điện thoại đã đăng ký với BQL!');
+      setErrorMessage('Vui lòng nhập chính xác số điện thoại đã đăng ký với Ban Quản Lý!');
       return;
     }
     setErrorMessage(null);
@@ -238,7 +238,7 @@ export default function LoginModal({ isOpen, onClose, defaultAccount = '' }: Log
       setIsCameraActive(false);
       setCameraError(
         err?.name === 'NotAllowedError'
-          ? 'Quyền truy cập Camera bị từ chối trên trình duyệt. Bạn có thể chọn "Tải File Ảnh Chân Dung" để đối chiếu với BQL.'
+          ? 'Quyền truy cập Camera bị từ chối trên trình duyệt. Bạn có thể chọn "Tải File Ảnh Chân Dung" để đối chiếu với Ban Quản Lý.'
           : 'Không thể kết nối Camera phần cứng trên thiết bị. Bạn có thể chuyển sang "Tải File Ảnh Chân Dung" để xác thực.'
       );
     }
@@ -483,7 +483,7 @@ export default function LoginModal({ isOpen, onClose, defaultAccount = '' }: Log
                 <span className="flex items-center gap-1.5">
                   <Mail className="w-3.5 h-3.5 text-[#C5A880]" /> Email / Tài Khoản:
                 </span>
-                <span className="text-[10px] text-gray-400 font-mono">Cư dân & BQL</span>
+                <span className="text-[10px] text-gray-400 font-mono">Cư dân &amp; Quản lý</span>
               </label>
               <input
                 type="text"

@@ -81,7 +81,7 @@ export default function HeroSection({ onOpenLogin }: HeroSectionProps) {
                 }`}
               >
                 <LayoutDashboard className="w-4 h-4" />
-                Vào Bảng Điều Khiển ({currentUser.role === 'ADMIN' ? 'BQL' : currentUser.role === 'TECHNICIAN' ? 'Kỹ Thuật' : 'Cư Dân'})
+                Vào Bảng Điều Khiển ({currentUser.role === 'ADMIN' ? 'Ban Quản Lý' : currentUser.role === 'TECHNICIAN' ? 'Kỹ Thuật' : 'Cư Dân'})
               </Link>
             ) : (
               <button
@@ -178,7 +178,7 @@ export default function HeroSection({ onOpenLogin }: HeroSectionProps) {
                   className="w-full py-3 bg-[#C5A880] hover:bg-[#D4AF37] text-[#0D1117] text-[11px] uppercase tracking-[0.18em] font-bold transition-all flex items-center justify-center gap-2 rounded-none cursor-pointer shadow-md"
                 >
                   <LayoutDashboard className="w-4 h-4" />
-                  {currentUser.role === 'ADMIN' ? 'Vào Bảng Quản Trị BQL' : currentUser.role === 'TECHNICIAN' ? 'Vào Bảng Việc Kỹ Thuật' : 'Vào Bảng Điều Khiển Căn Hộ'}
+                  {currentUser.role === 'ADMIN' ? 'Vào Bảng Quản Trị Ban Quản Lý' : currentUser.role === 'TECHNICIAN' ? 'Vào Bảng Việc Kỹ Thuật' : 'Vào Bảng Điều Khiển Căn Hộ'}
                 </Link>
               </div>
             </div>

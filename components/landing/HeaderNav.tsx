@@ -87,7 +87,7 @@ export default function HeaderNav({ onOpenLogin }: HeaderNavProps) {
                   {currentUser.full_name}
                 </div>
                 <div className="text-[10px] text-[#C5A880] font-mono uppercase font-bold">
-                  {currentUser.role === 'ADMIN' ? 'BQL Chung Cư' : `Căn ${currentUser.apartment_code || 'CH-06'} (${currentUser.role})`}
+                  {currentUser.role === 'ADMIN' ? 'Ban Quản Lý' : `Căn ${currentUser.apartment_code || 'CH-06'} (${currentUser.role})`}
                 </div>
               </div>
 
@@ -189,7 +189,7 @@ export default function HeaderNav({ onOpenLogin }: HeaderNavProps) {
                 onClick={() => setMobileMenuOpen(false)}
                 className="w-full py-2.5 bg-[#C5A880] text-[#0D1117] text-xs uppercase tracking-wider font-bold text-center block rounded-none"
               >
-                Vào Bảng Điều Khiển ({currentUser.role === 'ADMIN' ? 'BQL' : currentUser.role === 'TECHNICIAN' ? 'Kỹ Thuật' : 'Cư Dân'})
+                Vào Bảng Điều Khiển ({currentUser.role === 'ADMIN' ? 'Ban Quản Lý' : currentUser.role === 'TECHNICIAN' ? 'Kỹ Thuật' : 'Cư Dân'})
               </Link>
             ) : (
               <button

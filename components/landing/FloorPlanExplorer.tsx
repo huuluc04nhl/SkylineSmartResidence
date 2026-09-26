@@ -477,7 +477,7 @@ export default function FloorPlanExplorer({ onOpenLogin }: FloorPlanExplorerProp
                   className="px-4 py-2.5 bg-[#C5A880] hover:bg-[#D4AF37] text-[#0A0E17] font-bold text-xs tracking-wider uppercase rounded-none transition-all shadow-md flex items-center gap-2 cursor-pointer"
                 >
                   <LogIn className="w-3.5 h-3.5" />
-                  <span>Đăng Nhập Cư Dân / BQL</span>
+                  <span>Đăng Nhập Cư Dân &amp; Quản Lý</span>
                 </button>
                 <a
                   href="tel:0364967082"
@@ -503,7 +503,7 @@ export default function FloorPlanExplorer({ onOpenLogin }: FloorPlanExplorerProp
                   </div>
                   <div className="text-[10px] text-[#C5A880] font-mono uppercase font-bold">
                     {isAdmin 
-                      ? 'Quản Trị BQL Chung Cư' 
+                      ? 'Ban Quản Lý Chung Cư' 
                       : isTechnician 
                         ? 'Kỹ Thuật Viên Vận Hành' 
                         : `Chủ Hộ Căn ${currentUser?.apartment_code || 'CH-06'}`}
@@ -765,12 +765,12 @@ export default function FloorPlanExplorer({ onOpenLogin }: FloorPlanExplorerProp
                   <div className="flex items-center gap-2">
                     <Building className="w-4 h-4 text-blue-400 shrink-0" />
                     <div className="text-xs">
-                      <span className="font-bold text-blue-400 block uppercase">Chế Độ Quản Trị BQL Chung Cư</span>
+                      <span className="font-bold text-blue-400 block uppercase">Chế Độ Quản Trị Chung Cư</span>
                       <span className="text-[11px] text-gray-300">Dữ liệu NKS SCRMAI • Chung Cư BS-07 Tầng 30</span>
                     </div>
                   </div>
                   <span className="text-[10px] font-mono px-2 py-0.5 bg-blue-500/20 text-blue-300 border border-blue-500/40">
-                    BQL ADMIN
+                    QUẢN TRỊ VIÊN
                   </span>
                 </div>
               )}
@@ -969,7 +969,7 @@ export default function FloorPlanExplorer({ onOpenLogin }: FloorPlanExplorerProp
                     className="w-full py-3.5 bg-[#C5A880] hover:bg-[#D4AF37] text-[#0A0E17] font-bold text-xs tracking-wider uppercase rounded-none transition-all shadow-lg flex items-center justify-center gap-2"
                   >
                     <Building className="w-4 h-4" />
-                    <span>Quản Lý Căn Hộ &amp; Cư Dân (Portal BQL)</span>
+                    <span>Quản Trị Căn Hộ &amp; Cư Dân</span>
                   </Link>
 
                   <div className="grid grid-cols-2 gap-2">
@@ -1034,7 +1034,7 @@ export default function FloorPlanExplorer({ onOpenLogin }: FloorPlanExplorerProp
                     className="w-full py-3.5 bg-[#C5A880] hover:bg-[#D4AF37] text-[#0A0E17] font-bold text-xs tracking-wider uppercase rounded-none transition-all shadow-lg flex items-center justify-center gap-2 cursor-pointer"
                   >
                     <LogIn className="w-4 h-4" />
-                    <span>Đăng Nhập Cư Dân / BQL Để Quản Lý</span>
+                    <span>Đăng Nhập Cư Dân &amp; Quản Lý</span>
                   </button>
 
                   <a

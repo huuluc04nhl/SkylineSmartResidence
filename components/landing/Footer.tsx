@@ -69,13 +69,13 @@ export default function Footer() {
             <div className={`text-xs font-semibold uppercase tracking-widest ${
               isDark ? 'text-white' : 'text-gray-900'
             }`}>
-              Liên Hệ BQL
+              Liên Hệ Ban Quản Lý
             </div>
             <div className={`text-xs space-y-1.5 ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
               <div>Chung Cư BS-07, Phân khu Beverly Solari, Vinhomes Grand Park, TP. Thủ Đức, TP.HCM</div>
-              <div>Hotline Đón Khách: <strong className={isDark ? 'text-white' : 'text-gray-900'}>0901 888 999</strong></div>
+              <div>Hotline Tiếp Đón: <strong className={isDark ? 'text-white' : 'text-gray-900'}>0901 888 999</strong></div>
               <div>Hotline Kỹ Thuật: <strong className={isDark ? 'text-white' : 'text-gray-900'}>1900 1088</strong></div>
-              <div>Email: bql@skyline-residence.vn</div>
+              <div>Email: banquanly@skyline-residence.vn</div>
             </div>
           </div>
         </div>
