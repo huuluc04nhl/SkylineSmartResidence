@@ -511,7 +511,7 @@ export default function FloorPlanExplorer({ onOpenLogin }: FloorPlanExplorerProp
                 </div>
 
                 <Link
-                  href={isAdmin ? '/portal?tab=admin-building' : isTechnician ? '/portal?tab=admin-kanban' : '/portal?tab=resident-home'}
+                  href={isAdmin ? '/portal?tab=admin-dashboard' : isTechnician ? '/portal?tab=admin-kanban' : '/portal?tab=resident-home'}
                   className="px-4 py-2.5 bg-[#C5A880] hover:bg-[#D4AF37] text-[#0A0E17] font-bold text-xs tracking-wider uppercase rounded-none transition-all shadow-md flex items-center gap-2"
                 >
                   <Sparkles className="w-3.5 h-3.5" />
@@ -904,7 +904,7 @@ export default function FloorPlanExplorer({ onOpenLogin }: FloorPlanExplorerProp
 
                   <div className="grid grid-cols-3 gap-2">
                     <Link
-                      href="/portal?tab=resident-billing"
+                      href="/portal?tab=resident-finance"
                       className={`py-2 px-2 border text-center text-[11px] font-semibold rounded-none transition-colors flex flex-col items-center justify-center gap-1 ${
                         isDark ? 'bg-[#121824] hover:bg-[#1A2232] border-[#2A374A] text-gray-200 hover:text-[#C5A880]' : 'bg-slate-50 hover:bg-slate-100 border-gray-200 text-gray-800'
                       }`}
@@ -913,7 +913,7 @@ export default function FloorPlanExplorer({ onOpenLogin }: FloorPlanExplorerProp
                       <span>Hóa Đơn Căn</span>
                     </Link>
                     <Link
-                      href="/portal?tab=resident-visitor"
+                      href="/portal?tab=resident-home&action=visitor"
                       className={`py-2 px-2 border text-center text-[11px] font-semibold rounded-none transition-colors flex flex-col items-center justify-center gap-1 ${
                         isDark ? 'bg-[#121824] hover:bg-[#1A2232] border-[#2A374A] text-gray-200 hover:text-[#C5A880]' : 'bg-slate-50 hover:bg-slate-100 border-gray-200 text-gray-800'
                       }`}
@@ -922,7 +922,7 @@ export default function FloorPlanExplorer({ onOpenLogin }: FloorPlanExplorerProp
                       <span>Cấp Thẻ Khách</span>
                     </Link>
                     <Link
-                      href="/portal?tab=resident-request"
+                      href="/portal?tab=resident-tickets"
                       className={`py-2 px-2 border text-center text-[11px] font-semibold rounded-none transition-colors flex flex-col items-center justify-center gap-1 ${
                         isDark ? 'bg-[#121824] hover:bg-[#1A2232] border-[#2A374A] text-gray-200 hover:text-[#C5A880]' : 'bg-slate-50 hover:bg-slate-100 border-gray-200 text-gray-800'
                       }`}
@@ -965,7 +965,7 @@ export default function FloorPlanExplorer({ onOpenLogin }: FloorPlanExplorerProp
               {isAdmin && (
                 <div className="space-y-2">
                   <Link
-                    href="/portal?tab=admin-building"
+                    href="/portal?tab=admin-apartments"
                     className="w-full py-3.5 bg-[#C5A880] hover:bg-[#D4AF37] text-[#0A0E17] font-bold text-xs tracking-wider uppercase rounded-none transition-all shadow-lg flex items-center justify-center gap-2"
                   >
                     <Building className="w-4 h-4" />
@@ -974,7 +974,7 @@ export default function FloorPlanExplorer({ onOpenLogin }: FloorPlanExplorerProp
 
                   <div className="grid grid-cols-2 gap-2">
                     <Link
-                      href="/portal?tab=admin-visitor"
+                      href="/portal?tab=admin-visitors"
                       className={`py-2 px-2 border text-center text-xs font-semibold rounded-none transition-colors flex items-center justify-center gap-1.5 ${
                         isDark ? 'bg-[#121824] hover:bg-[#1A2232] border-[#2A374A] text-gray-200 hover:text-white' : 'bg-slate-50 hover:bg-slate-100 border-gray-200 text-gray-800'
                       }`}
@@ -1006,7 +1006,7 @@ export default function FloorPlanExplorer({ onOpenLogin }: FloorPlanExplorerProp
                     <span>Bảng Việc Kỹ Thuật (Kanban)</span>
                   </Link>
                   <Link
-                    href="/portal?tab=admin-dashboard"
+                    href="/portal?tab=admin-devices"
                     className={`w-full py-2.5 border text-xs font-semibold tracking-wider uppercase rounded-none transition-all flex items-center justify-center gap-2 ${
                       isDark
                         ? 'bg-[#121824] hover:bg-[#1A2232] border-[#2A374A] text-gray-300 hover:text-white'
@@ -1014,7 +1014,7 @@ export default function FloorPlanExplorer({ onOpenLogin }: FloorPlanExplorerProp
                     }`}
                   >
                     <Layers className="w-3.5 h-3.5 text-[#C5A880]" />
-                    <span>Xem Giám Sát Cơ Điện Chung Cư</span>
+                    <span>Xem Giám Sát Cơ Điện &amp; Thiết Bị</span>
                   </Link>
                 </div>
               )}

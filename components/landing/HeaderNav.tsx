@@ -92,7 +92,7 @@ export default function HeaderNav({ onOpenLogin }: HeaderNavProps) {
               </div>
 
               <Link
-                href="/portal"
+                href={currentUser.role === 'ADMIN' ? '/portal?tab=admin-dashboard' : currentUser.role === 'TECHNICIAN' ? '/portal?tab=admin-kanban' : '/portal?tab=resident-home'}
                 className="px-3 py-1.5 bg-[#C5A880] hover:bg-white text-[#0D1117] text-[11px] uppercase tracking-wider font-bold transition-colors flex items-center gap-1.5 rounded-none"
               >
                 <LayoutDashboard className="w-3.5 h-3.5" />
@@ -183,13 +183,13 @@ export default function HeaderNav({ onOpenLogin }: HeaderNavProps) {
           </nav>
 
           <div className={`pt-4 border-t ${isDark ? 'border-[#222B35]' : 'border-gray-200'}`}>
-            {isAuthenticated ? (
+            {isAuthenticated && currentUser ? (
               <Link
-                href="/portal"
+                href={currentUser.role === 'ADMIN' ? '/portal?tab=admin-dashboard' : currentUser.role === 'TECHNICIAN' ? '/portal?tab=admin-kanban' : '/portal?tab=resident-home'}
                 onClick={() => setMobileMenuOpen(false)}
                 className="w-full py-2.5 bg-[#C5A880] text-[#0D1117] text-xs uppercase tracking-wider font-bold text-center block rounded-none"
               >
-                Vào Bảng Điều Khiển ({currentUser?.role})
+                Vào Bảng Điều Khiển ({currentUser.role === 'ADMIN' ? 'BQL' : currentUser.role === 'TECHNICIAN' ? 'Kỹ Thuật' : 'Cư Dân'})
               </Link>
             ) : (
               <button

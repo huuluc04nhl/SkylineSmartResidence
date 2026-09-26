@@ -30,7 +30,7 @@ export default function Footer() {
             <div className={`text-[11px] ${
               isDark ? 'text-gray-400' : 'text-gray-700'
             }`}>
-              Phát triển bởi: <strong className={isDark ? 'text-white' : 'text-gray-900'}>Nguyễn Hữu Lực</strong>
+              Phát triển bởi: <strong className={isDark ? 'text-white' : 'text-gray-900'}>Trần Hữu Lực</strong>
             </div>
           </div>
 

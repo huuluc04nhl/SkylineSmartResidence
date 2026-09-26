@@ -71,9 +71,9 @@ export default function HeroSection({ onOpenLogin }: HeroSectionProps) {
               Xem Mặt Bằng Căn Hộ
             </a>
 
-            {isAuthenticated ? (
+            {isAuthenticated && currentUser ? (
               <Link
-                href="/portal"
+                href={currentUser.role === 'ADMIN' ? '/portal?tab=admin-dashboard' : currentUser.role === 'TECHNICIAN' ? '/portal?tab=admin-kanban' : '/portal?tab=resident-home'}
                 className={`text-[12px] flex items-center gap-2 px-5 py-3 border font-semibold tracking-wider uppercase transition-all rounded-none ${
                   isDark
                     ? 'border-[#C5A880] text-[#C5A880] hover:bg-[#C5A880] hover:text-[#0D1117]'
@@ -81,7 +81,7 @@ export default function HeroSection({ onOpenLogin }: HeroSectionProps) {
                 }`}
               >
                 <LayoutDashboard className="w-4 h-4" />
-                Vào Bảng Điều Khiển ({currentUser?.role})
+                Vào Bảng Điều Khiển ({currentUser.role === 'ADMIN' ? 'BQL' : currentUser.role === 'TECHNICIAN' ? 'Kỹ Thuật' : 'Cư Dân'})
               </Link>
             ) : (
               <button
@@ -174,11 +174,11 @@ export default function HeroSection({ onOpenLogin }: HeroSectionProps) {
 
               <div className="pt-2">
                 <Link
-                  href="/portal"
+                  href={currentUser.role === 'ADMIN' ? '/portal?tab=admin-dashboard' : currentUser.role === 'TECHNICIAN' ? '/portal?tab=admin-kanban' : '/portal?tab=resident-home'}
                   className="w-full py-3 bg-[#C5A880] hover:bg-[#D4AF37] text-[#0D1117] text-[11px] uppercase tracking-[0.18em] font-bold transition-all flex items-center justify-center gap-2 rounded-none cursor-pointer shadow-md"
                 >
                   <LayoutDashboard className="w-4 h-4" />
-                  Vào Bảng Điều Khiển Căn Hộ
+                  {currentUser.role === 'ADMIN' ? 'Vào Bảng Quản Trị BQL' : currentUser.role === 'TECHNICIAN' ? 'Vào Bảng Việc Kỹ Thuật' : 'Vào Bảng Điều Khiển Căn Hộ'}
                 </Link>
               </div>
             </div>

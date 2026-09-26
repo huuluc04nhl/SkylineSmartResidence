@@ -1,11 +1,14 @@
 'use client';
 
 import React from 'react';
-import { Eye, Shield, Cpu, Activity, Zap, MessageSquare, Car, FileCheck, Sparkles } from 'lucide-react';
+import Link from 'next/link';
+import { Eye, Shield, Cpu, Activity, Zap, MessageSquare, Car, FileCheck, Sparkles, ArrowRight } from 'lucide-react';
 import { useTheme } from '@/lib/themeContext';
+import { useAuth } from '@/lib/authContext';
 
 export default function SmartTechSection() {
   const { theme } = useTheme();
+  const { currentUser, isAuthenticated } = useAuth();
   const isDark = theme === 'dark';
 
   const features = [
@@ -14,36 +17,64 @@ export default function SmartTechSection() {
       code: 'An Ninh & FaceID',
       title: 'Vision AI & FaceID Sinh Trắc Học',
       desc: 'Mở sảnh đón và tự động bấm tầng thang máy với độ trễ < 0.5s. Camera AI giám sát phát hiện ngay lập tức khói lửa hoặc xô xát.',
+      href: isAuthenticated
+        ? currentUser?.role === 'ADMIN'
+          ? '/portal?tab=admin-ekyc'
+          : '/portal?tab=resident-profile'
+        : '/portal',
+      actionText: 'Xác thực FaceID'
     },
     {
       icon: Activity,
       code: 'Bảo Trì Dự Đoán',
       title: 'Chấm Điểm Tình Trạng Thiết Bị & Dự Báo',
       desc: 'AI tổng hợp dữ liệu IoT để tính điểm Health Score cho thang máy, máy bơm và tự động phát lệnh bảo trì trước khi hỏng hóc.',
+      href: isAuthenticated
+        ? currentUser?.role === 'ADMIN' || currentUser?.role === 'TECHNICIAN'
+          ? '/portal?tab=admin-devices'
+          : '/portal?tab=resident-tickets'
+        : '/portal',
+      actionText: 'Giám sát kỹ thuật'
     },
     {
       icon: Zap,
       code: 'Năng Lượng Thông Minh',
       title: 'AI Energy & Cảnh Báo Rò Rỉ Nước',
       desc: 'Học thói quen sinh hoạt và phát cảnh báo lập tức nếu phát hiện nước chảy liên tục vào khung giờ 2h - 4h sáng, chống ngập nhà.',
+      href: isAuthenticated ? '/portal?tab=resident-smarthome' : '/portal',
+      actionText: 'Điều khiển Smart Home'
     },
     {
       icon: Car,
       code: 'Bãi Xe Tự Động',
       title: 'Bãi Đỗ Xe Thông Minh Tự Động',
       desc: 'Nhận diện biển số xe tốc độ cao trong mọi điều kiện ánh sáng, kiểm soát sức chứa hầm tự động đóng/mở barrier an toàn.',
+      href: isAuthenticated
+        ? currentUser?.role === 'ADMIN'
+          ? '/portal?tab=admin-parking'
+          : '/portal?tab=resident-home'
+        : '/portal',
+      actionText: 'Quản lý phương tiện'
     },
     {
       icon: MessageSquare,
       code: 'Trợ Lý Ảo 24/7',
       title: 'Trợ Lý Ảo Skyline AI Concierge 24/7',
       desc: 'Đọc hiểu toàn bộ Sổ tay cư dân và Nội quy tòa nhà để giải đáp thắc mắc tức thời và chuyển tiếp Ban Quản Lý khi cần.',
+      href: isAuthenticated ? '/portal?tab=resident-ai-assistant' : '/portal',
+      actionText: 'Hỏi đáp Trợ lý AI'
     },
     {
       icon: FileCheck,
       code: 'Rà Soát Tài Chính',
       title: 'Smart Billing & Rà Soát Hóa Đơn Tự Động',
       desc: 'Tự động phát hiện các căn hộ có chi phí điện nước biến động bất thường trước ngày phát hành để bộ phận quản lý rà soát.',
+      href: isAuthenticated
+        ? currentUser?.role === 'ADMIN'
+          ? '/portal?tab=admin-billing'
+          : '/portal?tab=resident-finance'
+        : '/portal',
+      actionText: 'Tra cứu hóa đơn'
     },
   ];
 
@@ -117,6 +148,19 @@ export default function SmartTechSection() {
                 }`}>
                   {feat.desc}
                 </p>
+
+                <div className={`pt-3 border-t flex items-center justify-between text-[11px] font-mono ${
+                  isDark ? 'border-[#1E293B] text-[#C5A880]' : 'border-gray-100 text-amber-800'
+                }`}>
+                  <Link
+                    href={feat.href}
+                    className="inline-flex items-center gap-1 font-semibold hover:underline transition-colors"
+                  >
+                    <span>{feat.actionText}</span>
+                    <ArrowRight className="w-3 h-3 transition-transform group-hover:translate-x-1" />
+                  </Link>
+                  <span className={`text-[10px] ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>Portal AI</span>
+                </div>
               </div>
             );
           })}

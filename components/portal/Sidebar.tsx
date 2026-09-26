@@ -179,6 +179,13 @@ export default function Sidebar({
           { id: 'resident-ai-assistant', label: 'Trợ Lý AI', shortLabel: 'Trợ Lý AI', icon: Bot },
         ];
 
+      case 'TECHNICIAN':
+        return [
+          { id: 'admin-kanban', label: 'Sửa Chữa', shortLabel: 'Sửa Chữa', icon: KanbanSquare },
+          { id: 'admin-devices', label: 'Thiết Bị', shortLabel: 'Thiết Bị', icon: Activity },
+          { id: 'admin-apartments', label: 'Căn Hộ', shortLabel: 'Căn Hộ', icon: Building },
+        ];
+
       default:
         return [];
     }

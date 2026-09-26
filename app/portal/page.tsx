@@ -59,7 +59,22 @@ function PortalContent() {
   // Auto-route to the appropriate screen according to role
   useEffect(() => {
     if (currentUser) {
-      const tabParam = searchParams.get('tab');
+      let tabParam = searchParams.get('tab');
+      const actionParam = searchParams.get('action');
+
+      // Aliases for seamless linking
+      if (tabParam === 'resident-billing') tabParam = 'resident-finance';
+      if (tabParam === 'resident-request') tabParam = 'resident-tickets';
+      if (tabParam === 'admin-building') tabParam = 'admin-apartments';
+      if (tabParam === 'admin-visitor') tabParam = 'admin-visitors';
+
+      // Check if visitor pass action is requested
+      if (actionParam === 'visitor' || tabParam === 'resident-visitor') {
+        setIsVisitorModalOpen(true);
+        setActiveModule('resident-home');
+        return;
+      }
+
       if (currentUser.role === 'ADMIN') {
         if (tabParam && tabParam.startsWith('admin-')) {
           setActiveModule(tabParam);
@@ -183,10 +198,8 @@ function PortalContent() {
           }`}
         >
           <div className="w-full max-w-7xl mx-auto space-y-6">
-            {/* ------------------------------------------------------------- */}
-            {/* 1. ADMIN ROLE MODULES                                         */}
-            {/* ------------------------------------------------------------- */}
-            {currentUser.role === 'ADMIN' && (
+            {/* 1. ADMIN & TECHNICIAN ROLE MODULES */}
+            {(currentUser.role === 'ADMIN' || currentUser.role === 'TECHNICIAN') && (
               <>
                 {activeModule === 'admin-dashboard' && <AdminDashboard />}
                 {activeModule === 'admin-apartments' && <AdminBuildingApartmentManager />}

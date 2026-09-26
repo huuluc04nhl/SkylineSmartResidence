@@ -1,13 +1,22 @@
 'use client';
 
 import React from 'react';
+import Link from 'next/link';
 import { DEMO_FACILITIES } from '@/lib/dataStore';
-import { Star, Clock, Users, Sparkles, CheckCircle2 } from 'lucide-react';
+import { Star, Clock, Users, Sparkles, CheckCircle2, ArrowRight } from 'lucide-react';
 import { useTheme } from '@/lib/themeContext';
+import { useAuth } from '@/lib/authContext';
 
 export default function AmenitiesSection() {
   const { theme } = useTheme();
+  const { currentUser, isAuthenticated } = useAuth();
   const isDark = theme === 'dark';
+
+  const facilityPortalUrl = isAuthenticated
+    ? currentUser?.role === 'ADMIN'
+      ? '/portal?tab=admin-facilities'
+      : '/portal?tab=resident-facilities'
+    : '/portal';
 
   return (
     <section id="amenities" className={`py-20 sm:py-24 border-b scroll-mt-20 relative overflow-hidden transition-colors duration-300 ${
@@ -118,14 +127,18 @@ export default function AmenitiesSection() {
                 </div>
               </div>
 
-              <div className={`p-4 border-t flex items-center justify-center gap-2 text-[11px] font-mono uppercase tracking-wider font-semibold ${
-                isDark 
-                  ? 'bg-[#121824] border-[#1E293B] text-[#C5A880]' 
-                  : 'bg-slate-50 border-gray-100 text-amber-800'
-              }`}>
-                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
-                <span>Đặt Chỗ Trực Tuyến Qua Portal Cư Dân</span>
-              </div>
+              <Link
+                href={facilityPortalUrl}
+                className={`p-4 border-t flex items-center justify-center gap-2 text-[11px] font-mono uppercase tracking-wider font-semibold transition-colors cursor-pointer group-hover:bg-[#C5A880] group-hover:text-[#0D1117] ${
+                  isDark 
+                    ? 'bg-[#121824] border-[#1E293B] text-[#C5A880]' 
+                    : 'bg-slate-50 border-gray-100 text-amber-800'
+                }`}
+              >
+                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 group-hover:text-[#0D1117]" />
+                <span>Đặt Chỗ Tiện Ích Qua Portal</span>
+                <ArrowRight className="w-3.5 h-3.5 ml-1 transition-transform group-hover:translate-x-1" />
+              </Link>
             </div>
           ))}
         </div>
