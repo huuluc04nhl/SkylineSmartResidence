@@ -102,15 +102,15 @@ export default function AboutConcept() {
                   : 'bg-white/95 text-gray-900 border-gray-200 shadow-xl'
               }`}>
                 <div className="text-[10px] font-mono uppercase tracking-[0.2em] text-[#C5A880] font-semibold">
-                  {isAuthenticated && currentUser ? 'Căn Hộ Thực Tế 12A05' : 'Căn Hộ Mẫu Thực Tế'}
+                  {isAuthenticated && currentUser ? `Căn Hộ Thực Tế ${currentUser.apartment_code || 'CH-06'}` : 'Căn Hộ Mẫu Thực Tế'}
                 </div>
                 <div className={`text-sm font-serif mt-1 font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>
-                  2PN Tiêu Chuẩn • Ban Công Hướng Sông
+                  Căn Hộ Tiêu Chuẩn • Ban Công View Hồ & Công Viên
                 </div>
                 <div className={`text-xs font-light mt-0.5 ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
                   {isAuthenticated && currentUser 
-                    ? `Tầng 12A • Chung Cư Skyline • Cư dân: ${currentUser.full_name}`
-                    : 'Tầng 12A • Chung Cư Skyline • Tiêu Chuẩn Bàn Giao 5 Sao'}
+                    ? `Tầng 30 • Chung Cư BS-07 (The Tropical) • Cư dân: ${currentUser.full_name}`
+                    : 'Tầng 30 • Chung Cư BS-07 (The Tropical) • Tiêu Chuẩn Bàn Giao Cao Cấp'}
                 </div>
               </div>
             </div>

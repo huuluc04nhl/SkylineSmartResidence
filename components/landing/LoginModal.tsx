@@ -114,10 +114,10 @@ export default function LoginModal({ isOpen, onClose, defaultAccount = '' }: Log
       roleNotice = `Chào mừng Kỹ thuật viên: ${loggedUser.full_name}`;
       redirectTab = 'admin-kanban';
     } else if (role === 'OWNER') {
-      roleNotice = `Chào mừng Chủ hộ Căn ${loggedUser.apartment_code || '12A05'}: ${loggedUser.full_name}`;
+      roleNotice = `Chào mừng Chủ hộ Căn ${loggedUser.apartment_code || 'CH-06'}: ${loggedUser.full_name}`;
       redirectTab = 'resident-home';
     } else {
-      roleNotice = `Chào mừng Thành viên Căn ${loggedUser.apartment_code || '12A05'}: ${loggedUser.full_name}`;
+      roleNotice = `Chào mừng Thành viên Căn ${loggedUser.apartment_code || 'CH-06'}: ${loggedUser.full_name}`;
       redirectTab = 'resident-home';
     }
 
@@ -370,7 +370,7 @@ export default function LoginModal({ isOpen, onClose, defaultAccount = '' }: Log
           setFaceScanStatus('SUCCESS');
           setMatchedFaceResult({
             name: result.user.full_name || 'Cư Dân Skyline',
-            apt: result.user.apartment_code || '12A05',
+            apt: result.user.apartment_code || 'CH-06',
             score: result.matchScore || 99.2,
             bestAngle: (result as any).bestAngle || 'Chính diện',
           });

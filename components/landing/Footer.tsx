@@ -72,7 +72,7 @@ export default function Footer() {
               Liên Hệ BQL
             </div>
             <div className={`text-xs space-y-1.5 ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
-              <div>128 Bến Vân Đồn, P.6, Q.4, TP.HCM</div>
+              <div>Chung Cư BS-07, Phân khu Beverly Solari, Vinhomes Grand Park, TP. Thủ Đức, TP.HCM</div>
               <div>Hotline Đón Khách: <strong className={isDark ? 'text-white' : 'text-gray-900'}>0901 888 999</strong></div>
               <div>Hotline Kỹ Thuật: <strong className={isDark ? 'text-white' : 'text-gray-900'}>1900 1088</strong></div>
               <div>Email: bql@skyline-residence.vn</div>

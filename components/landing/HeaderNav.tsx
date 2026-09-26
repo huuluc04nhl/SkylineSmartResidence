@@ -87,7 +87,7 @@ export default function HeaderNav({ onOpenLogin }: HeaderNavProps) {
                   {currentUser.full_name}
                 </div>
                 <div className="text-[10px] text-[#C5A880] font-mono uppercase font-bold">
-                  {currentUser.role === 'ADMIN' ? 'BQL Tòa Nhà' : `Căn ${currentUser.apartment_code || '12A05'} (${currentUser.role})`}
+                  {currentUser.role === 'ADMIN' ? 'BQL Chung Cư' : `Căn ${currentUser.apartment_code || 'CH-06'} (${currentUser.role})`}
                 </div>
               </div>
 

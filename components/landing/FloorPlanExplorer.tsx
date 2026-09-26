@@ -26,12 +26,13 @@ import {
 } from 'lucide-react';
 import { useTheme } from '@/lib/themeContext';
 import { useAuth } from '@/lib/authContext';
+import { generateVisitorPassToken } from '@/lib/visitorStore';
 
 interface FloorPlanExplorerProps {
   onOpenLogin?: () => void;
 }
 
-export type ApartmentCategory = '2PN' | '3PN' | '1PN' | 'DUPLEX';
+export type ApartmentCategory = '1PN' | '2PN' | '3PN' | 'DUPLEX';
 
 export interface RoomHotspot {
   id: string;
@@ -66,27 +67,102 @@ export interface ApartmentData {
 }
 
 const APARTMENT_MODELS: Record<ApartmentCategory, ApartmentData> = {
-  '2PN': {
-    category: '2PN',
-    code: '12A05',
-    name: 'Căn Hộ 2PN Tiêu Chuẩn',
-    subtitle: 'Căn mẫu thực tế cư dân • Bố cục bóc mái 3D view trực diện Sông Sài Gòn',
-    floorText: 'Tầng 12A • Chung Cư Skyline',
-    area: 78.5,
-    wallArea: 83.2,
-    bedrooms: 2,
-    bathrooms: 2,
+  '1PN': {
+    category: '1PN',
+    code: 'CH-06',
+    name: 'Căn Hộ 1PN Chuẩn (CH-06)',
+    subtitle: 'Căn hộ thực tế cư dân • Chung Cư BS-07 phân khu The Tropical',
+    floorText: 'Tầng 30 • Chung Cư BS-07 (The Tropical)',
+    area: 42.0,
+    wallArea: 45.5,
+    bedrooms: 1,
+    bathrooms: 1,
     direction: 'Đông Nam',
-    viewDesc: 'Trực diện Sông Sài Gòn (Đón trọn bình minh & gió sông mát lành)',
-    priceBillion: 4.85,
+    viewDesc: 'View trực diện công viên nội khu & hồ cảnh quan The Tropical',
+    priceBillion: 2.31,
     statusLabel: 'Đã Bàn Giao Cư Dân',
     isRealResident: true,
-    residentName: 'Nguyễn Hữu Lực (Chủ hộ)',
+    residentName: 'Trần Hữu Lực (Chủ Hộ)',
+    render3DUrl: '/floorplans/1pn-3d.jpg',
+    features: [
+      'Căn hộ tiêu chuẩn 1PN - 1WC bàn giao thực tế tại Chung Cư BS-07',
+      'Ban công kính tràn viền kết nối trực tiếp phòng khách đón trọn gió mát',
+      'Đầy đủ nội thất cao cấp: tủ bếp, bếp điện từ âm, khóa thông minh FaceID'
+    ],
+    hotspots: [
+      {
+        id: 'living',
+        code: 'PK',
+        name: 'Phòng Khách & Bàn Ăn',
+        label: 'Phòng Khách & Ăn',
+        area: '18.5 m²',
+        desc: 'Sofa góc bọc nỉ cao cấp, Smart TV gắn tường và bàn ăn thông minh.',
+        top: 66,
+        left: 58
+      },
+      {
+        id: 'balcony',
+        code: 'BC',
+        name: 'Ban Công View Công Viên',
+        label: 'Ban Công View Hồ',
+        area: '3.5 m²',
+        desc: 'Ban công kính rộng ngắm trọn hồ cảnh quan và quảng trường nội khu.',
+        top: 68,
+        left: 23
+      },
+      {
+        id: 'bed',
+        code: 'PN',
+        name: 'Phòng Ngủ Master',
+        label: 'Phòng Ngủ Master',
+        area: '14.0 m²',
+        desc: 'Giường nệm êm ái, tủ áo kịch trần và cửa sổ kính Low-E tràn viền.',
+        top: 48,
+        left: 31
+      },
+      {
+        id: 'kitchen',
+        code: 'BẾP',
+        name: 'Khu Bếp & Logia',
+        label: 'Bếp & Logia',
+        area: '5.0 m²',
+        desc: 'Bếp từ âm Hafele, mặt đá cao cấp và khu giặt sấy thông thoáng.',
+        top: 28,
+        left: 58
+      },
+      {
+        id: 'bath',
+        code: 'WC',
+        name: 'Phòng Tắm & Vệ Sinh',
+        label: 'Phòng Tắm WC',
+        area: '4.0 m²',
+        desc: 'Vách kính cường lực, lavabo sứ Kohler và hệ thống sen tắm âm tường.',
+        top: 30,
+        left: 40
+      }
+    ]
+  },
+  '2PN': {
+    category: '2PN',
+    code: 'CH-01',
+    name: 'Căn Hộ 2PN Tiêu Chuẩn (CH-01)',
+    subtitle: 'Căn mẫu thực tế cư dân • Bố cục bóc mái 3D view trực diện Sông Tắc & Công Viên',
+    floorText: 'Tầng 30 • Chung Cư BS-07 (The Tropical)',
+    area: 50.0,
+    wallArea: 55.0,
+    bedrooms: 2,
+    bathrooms: 1,
+    direction: 'Đông Nam',
+    viewDesc: 'Trực diện Sông Tắc & Đại Công Viên 36ha Vinhomes Grand Park',
+    priceBillion: 2.75,
+    statusLabel: 'Đã Bàn Giao Cư Dân',
+    isRealResident: true,
+    residentName: 'Trần Hữu Lực (Chủ Hộ)',
     render3DUrl: '/floorplans/2pn-3d.jpg',
     features: [
-      'Căn góc 2 mặt thoáng view sông, ban công kính tràn viền kết nối trực tiếp phòng khách',
-      'Phòng ngủ Master khép kín có WC riêng biệt và tủ quần áo âm tường',
-      'Bếp đảo mở ốp đá Marble trắng Calacatta, bàn ăn 6 người sang trọng'
+      'Căn hộ 2 phòng ngủ tiêu chuẩn bàn giao thực tế tại Chung Cư BS-07',
+      'Phòng khách rộng liền kề ban công kính ngắm trọn sông và mảng xanh đại đô thị',
+      'Trang bị hệ thống Smart Home điều khiển đèn, rèm và máy lạnh qua ứng dụng'
     ],
     hotspots: [
       {
@@ -94,7 +170,7 @@ const APARTMENT_MODELS: Record<ApartmentCategory, ApartmentData> = {
         code: 'PK',
         name: 'Đại Sảnh & Phòng Khách',
         label: 'Phòng Khách & Ăn',
-        area: '22.0 m²',
+        area: '20.0 m²',
         desc: 'Sofa góc bọc nỉ cao cấp, Smart TV gắn tường và sàn gỗ chevron nhập khẩu Đức.',
         top: 46,
         left: 42
@@ -104,8 +180,8 @@ const APARTMENT_MODELS: Record<ApartmentCategory, ApartmentData> = {
         code: 'BC',
         name: 'Ban Công Panorama Kính Low-E',
         label: 'Ban Công View Sông',
-        area: '5.5 m²',
-        desc: 'Sàn gỗ nhựa ngoài trời, lan can kính cường lực đón trọn gió sông Sài Gòn.',
+        area: '5.0 m²',
+        desc: 'Sàn gỗ nhựa ngoài trời, lan can kính cường lực đón trọn gió sông.',
         top: 76,
         left: 35
       },
@@ -114,7 +190,7 @@ const APARTMENT_MODELS: Record<ApartmentCategory, ApartmentData> = {
         code: 'BẾP',
         name: 'Bếp Đảo & Quầy Bar',
         label: 'Bếp Đảo & Bar',
-        area: '12.0 m²',
+        area: '9.5 m²',
         desc: 'Mặt đá Marble vân mây, bếp từ đôi Hafele âm trần và quầy bar ăn sáng.',
         top: 32,
         left: 60
@@ -124,7 +200,7 @@ const APARTMENT_MODELS: Record<ApartmentCategory, ApartmentData> = {
         code: 'PN 1',
         name: 'Phòng Ngủ Master',
         label: 'Phòng Ngủ Master',
-        area: '21.0 m²',
+        area: '16.0 m²',
         desc: 'Giường King size, vách ốp đầu giường da cao cấp, cửa sổ lớn view sông.',
         top: 52,
         left: 23
@@ -134,15 +210,15 @@ const APARTMENT_MODELS: Record<ApartmentCategory, ApartmentData> = {
         code: 'PN 2',
         name: 'Phòng Ngủ Số 2',
         label: 'Phòng Ngủ Số 2',
-        area: '11.5 m²',
-        desc: 'Không gian riêng tư cho con hoặc khách, đầy đủ bàn làm việc và tủ áo.',
+        area: '10.5 m²',
+        desc: 'Không gian riêng tư cho thành viên gia đình hoặc phòng làm việc.',
         top: 72,
         left: 70
       },
       {
         id: 'bath',
         code: 'WC',
-        name: 'Phòng Tắm & WC Master',
+        name: 'Phòng Tắm & WC Tiêu Chuẩn',
         label: 'Phòng Tắm Master',
         area: '4.2 m²',
         desc: 'Vách kính tắm đứng, sen tắm âm tường Kohler và lavabo mặt đá.',
@@ -153,22 +229,22 @@ const APARTMENT_MODELS: Record<ApartmentCategory, ApartmentData> = {
   },
   '3PN': {
     category: '3PN',
-    code: '24A01',
-    name: 'Căn Hộ 3PN Sky Suite',
-    subtitle: 'Phân khu áp mái cao cấp • Căn góc 2 mặt thoáng view triệu đô',
-    floorText: 'Tầng 24 (Áp Mái) • Chung Cư Skyline',
-    area: 112.0,
-    wallArea: 119.5,
+    code: 'CH-04',
+    name: 'Căn Hộ 3PN Góc Panorama (CH-04)',
+    subtitle: 'Căn góc 2 mặt thoáng VIP • View trọn vẹn quảng trường The Tropical',
+    floorText: 'Tầng 30 • Chung Cư BS-07 (The Tropical)',
+    area: 85.0,
+    wallArea: 92.5,
     bedrooms: 3,
-    bathrooms: 3,
+    bathrooms: 2,
     direction: 'Đông Nam & Tây Nam',
-    viewDesc: 'View sông Sài Gòn & Bán đảo Nam Sài Gòn lung linh',
-    priceBillion: 8.50,
+    viewDesc: 'View sông Sài Gòn & Quảng trường Grand Park lung linh',
+    priceBillion: 4.68,
     statusLabel: 'Sẵn Sàng Bàn Giao',
     render3DUrl: '/floorplans/3pn-3d.jpg',
     features: [
-      'Căn góc VIP tầng áp mái, ban công góc kép 270° ngắm toàn cảnh thành phố',
-      'Đại sảnh phòng khách nối liền bàn tiệc 8 chỗ và khu bếp đảo phong cách Ý',
+      'Căn góc 2 mặt thoáng, ban công góc kép 270° ngắm toàn cảnh đại đô thị',
+      'Đại sảnh phòng khách nối liền bàn ăn 6-8 người và khu bếp tiện nghi',
       '3 Phòng ngủ biệt lập có cửa sổ kính Low-E kịch trần cản 99% tia UV'
     ],
     hotspots: [
@@ -177,7 +253,7 @@ const APARTMENT_MODELS: Record<ApartmentCategory, ApartmentData> = {
         code: 'PK',
         name: 'Đại Phòng Khách Lớn',
         label: 'Đại Phòng Khách',
-        area: '32.0 m²',
+        area: '28.0 m²',
         desc: 'Sofa cong nghệ thuật, bàn trà đôi mặt đá và hệ thống đèn LED âm trần dịu mắt.',
         top: 54,
         left: 33
@@ -187,7 +263,7 @@ const APARTMENT_MODELS: Record<ApartmentCategory, ApartmentData> = {
         code: 'BC',
         name: 'Ban Công Góc Kép 270°',
         label: 'Ban Công Góc 270°',
-        area: '7.2 m²',
+        area: '6.5 m²',
         desc: 'Kính Low-E tràn viền ngắm toàn cảnh thành phố và khúc sông uốn lượn.',
         top: 24,
         left: 30
@@ -197,8 +273,8 @@ const APARTMENT_MODELS: Record<ApartmentCategory, ApartmentData> = {
         code: 'BẾP',
         name: 'Khu Bếp Đảo Bar & Bàn Tiệc',
         label: 'Bếp Đảo & Bàn Tiệc',
-        area: '14.0 m²',
-        desc: 'Tủ rượu âm tường, bếp đảo đá tự nhiên và bàn ăn 8 người đẳng cấp.',
+        area: '12.0 m²',
+        desc: 'Tủ rượu âm tường, bếp đảo đá tự nhiên và bàn ăn sang trọng.',
         top: 32,
         left: 56
       },
@@ -206,9 +282,9 @@ const APARTMENT_MODELS: Record<ApartmentCategory, ApartmentData> = {
         id: 'masterSuite',
         code: 'PN 1',
         name: 'Master Presidential Suite',
-        label: 'Master Presidential Suite',
-        area: '26.0 m²',
-        desc: 'Phòng ngủ tổng thống có góc thay đồ walk-in closet và view ngắm hoàng hôn.',
+        label: 'Master Suite',
+        area: '20.0 m²',
+        desc: 'Phòng ngủ master có góc thay đồ walk-in closet và view ngắm hoàng hôn.',
         top: 40,
         left: 78
       },
@@ -217,8 +293,8 @@ const APARTMENT_MODELS: Record<ApartmentCategory, ApartmentData> = {
         code: 'PN 2',
         name: 'Phòng Ngủ Số 2 Ensuite',
         label: 'Phòng Ngủ Số 2',
-        area: '14.5 m²',
-        desc: 'Phòng ngủ lớn cho ông bà hoặc con lớn, giường Queen và WC khép kín.',
+        area: '13.0 m²',
+        desc: 'Phòng ngủ lớn tiện nghi cho người thân, giường Queen và tủ âm.',
         top: 53,
         left: 85
       },
@@ -227,103 +303,30 @@ const APARTMENT_MODELS: Record<ApartmentCategory, ApartmentData> = {
         code: 'PN 3',
         name: 'Phòng Ngủ Số 3 / Studio',
         label: 'Phòng Ngủ 3 / Studio',
-        area: '11.5 m²',
+        area: '10.5 m²',
         desc: 'Bàn làm việc cạnh cửa sổ lớn, sofa bed thư giãn hoặc phòng làm việc riêng.',
         top: 78,
         left: 52
       }
     ]
   },
-  '1PN': {
-    category: '1PN',
-    code: '12A02',
-    name: 'Căn Hộ 1PN Thông Minh',
-    subtitle: 'Tối ưu hóa không gian sống cho chuyên gia trẻ & người độc thân',
-    floorText: 'Tầng 12A • Chung Cư Skyline',
-    area: 52.0,
-    wallArea: 56.5,
-    bedrooms: 1,
-    bathrooms: 1,
-    direction: 'Chính Nam',
-    viewDesc: 'View công viên nội khu & hồ cảnh quan',
-    priceBillion: 3.35,
-    statusLabel: 'Sẵn Sàng Bàn Giao',
-    render3DUrl: '/floorplans/1pn-3d.jpg',
-    features: [
-      'Bố cục vuông vức không góc chết, tối ưu 100% diện tích sử dụng',
-      'Ban công gỗ teak kết nối trực tiếp phòng khách đón ánh sáng tự nhiên',
-      'Bàn giao đầy đủ tủ bếp, bếp điện từ âm và thiết bị vệ sinh cao cấp'
-    ],
-    hotspots: [
-      {
-        id: 'living',
-        code: 'PK',
-        name: 'Phòng Khách & Ăn',
-        label: 'Phòng Khách & Ăn',
-        area: '22.7 m²',
-        desc: 'Phòng khách thông liền ban công gỗ, TV âm tường và bàn ăn 2-4 người.',
-        top: 66,
-        left: 58
-      },
-      {
-        id: 'balcony',
-        code: 'BC',
-        name: 'Ban Công Gỗ Teak Tự Nhiên',
-        label: 'Ban Công Gỗ Teak',
-        area: '4.2 m²',
-        desc: 'Không gian thư giãn thưởng trà ngắm cảnh sân vườn nội khu.',
-        top: 68,
-        left: 23
-      },
-      {
-        id: 'bed',
-        code: 'PN',
-        name: 'Phòng Ngủ Master',
-        label: 'Phòng Ngủ Master',
-        area: '15.2 m²',
-        desc: 'Giường nệm êm ái, tủ áo kính trượt và cửa sổ thoáng đãng đón sáng.',
-        top: 48,
-        left: 31
-      },
-      {
-        id: 'kitchen',
-        code: 'BẾP',
-        name: 'Bếp Đảo & Khu Giặt',
-        label: 'Bếp Đảo & Khu Giặt',
-        area: '9.6 m²',
-        desc: 'Khu vực bếp âm hiện đại, quầy bar nhỏ và góc máy giặt tiện lợi.',
-        top: 28,
-        left: 58
-      },
-      {
-        id: 'bath',
-        code: 'WC',
-        name: 'Phòng Tắm & WC',
-        label: 'Phòng Tắm WC',
-        area: '4.5 m²',
-        desc: 'Vách kính cường lực, gương LED cảm ứng và lavabo sứ Kohler.',
-        top: 30,
-        left: 40
-      }
-    ]
-  },
   'DUPLEX': {
     category: 'DUPLEX',
-    code: '25PH-01',
+    code: 'PH-3401',
     name: 'Duplex Penthouse Hoàng Gia',
-    subtitle: 'Tuyệt tác thông 2 tầng đỉnh tháp Tầng 25 • Trần cao 6.5m & Hồ Jacuzzi',
-    floorText: 'Tầng 25 (Đỉnh Tháp) • Chung Cư Skyline',
+    subtitle: 'Tuyệt tác thông 2 tầng đỉnh Chung Cư BS-07 • Trần cao 6.5m & Hồ Jacuzzi',
+    floorText: 'Tầng 34 (Đỉnh Chung Cư) • The Tropical',
     area: 215.0,
     wallArea: 232.0,
     bedrooms: 4,
     bathrooms: 4,
     direction: 'Đông Nam & Tây Nam (270°)',
-    viewDesc: 'Tầm nhìn triệu đô ôm trọn Sông Sài Gòn & Landmark 81',
-    priceBillion: 18.50,
+    viewDesc: 'Tầm nhìn triệu đô ôm trọn Sông Tắc, Đại Công Viên & Landmark 81',
+    priceBillion: 12.80,
     statusLabel: 'Tuyệt Phẩm Độc Bản',
     render3DUrl: '/floorplans/duplex-3d.jpg',
     features: [
-      'Thiết kế 2 tầng thông suốt với trần phòng khách Double-Height cao 6.5m',
+      'Thiết kế thông 2 tầng với trần phòng khách Double-Height cao 6.5m',
       'Sky Terrace sân thượng có bồn sục Jacuzzi nước ấm ngoài trời ngắm thành phố',
       'Cầu thang kính nổi liên tầng, hầm rượu vang và sảnh tiệc 12 chỗ'
     ],
@@ -334,7 +337,7 @@ const APARTMENT_MODELS: Record<ApartmentCategory, ApartmentData> = {
         name: 'Sky Terrace & Bể Sục Jacuzzi',
         label: 'Bể Sục Jacuzzi Ngoài Trời',
         area: '26.0 m²',
-        desc: 'Sân thượng ngắm trọn thành phố từ độ cao 100m, hồ sục Jacuzzi thư giãn.',
+        desc: 'Sân thượng ngắm trọn thành phố từ độ cao đỉnh chung cư, hồ sục Jacuzzi thư giãn.',
         top: 70,
         left: 20
       },
@@ -344,7 +347,7 @@ const APARTMENT_MODELS: Record<ApartmentCategory, ApartmentData> = {
         name: 'Grand Living Thông Tầng',
         label: 'Grand Living Trần 6.5m',
         area: '58.0 m²',
-        desc: 'Phòng khách thông 2 tầng trần cao 6.5m, đèn chùm pha lê và lò sưởi nghệ thuật.',
+        desc: 'Phòng khách thông 2 tầng trần cao 6.5m, đèn chùm pha lê và vách kính thông tầng.',
         top: 66,
         left: 43
       },
@@ -451,7 +454,7 @@ export default function FloorPlanExplorer({ onOpenLogin }: FloorPlanExplorerProp
   const { currentUser, isAuthenticated } = useAuth();
   const isDark = theme === 'dark';
 
-  const [selectedCategory, setSelectedCategory] = useState<ApartmentCategory>('2PN');
+  const [selectedCategory, setSelectedCategory] = useState<ApartmentCategory>('1PN');
   const [activeHotspotId, setActiveHotspotId] = useState<string>('living');
   const [isRegisterOpen, setIsRegisterOpen] = useState(false);
   const [registerSuccess, setRegisterSuccess] = useState(false);
@@ -464,6 +467,7 @@ export default function FloorPlanExplorer({ onOpenLogin }: FloorPlanExplorerProp
     guests: '1-2 người'
   });
   const [confirmedBooking, setConfirmedBooking] = useState<{
+    id?: string;
     name: string;
     phone: string;
     apartmentCode: string;
@@ -501,7 +505,9 @@ export default function FloorPlanExplorer({ onOpenLogin }: FloorPlanExplorerProp
       dateText = leadForm.customDate;
     }
 
+    const bookingId = `TOUR-${Date.now().toString().slice(-6)}`;
     const booking = {
+      id: bookingId,
       name: leadForm.name,
       phone: leadForm.phone,
       apartmentCode: currentApartment.code,
@@ -512,9 +518,22 @@ export default function FloorPlanExplorer({ onOpenLogin }: FloorPlanExplorerProp
     };
 
     try {
+      // 1. Lưu danh sách đặt lịch tham quan cục bộ
       const existing = JSON.parse(localStorage.getItem('skyline_tour_bookings') || '[]');
       existing.unshift({ ...booking, createdAt: new Date().toISOString() });
-      localStorage.setItem('skyline_tour_bookings', JSON.stringify(existing.slice(0, 20)));
+      localStorage.setItem('skyline_tour_bookings', JSON.stringify(existing.slice(0, 30)));
+
+      // 2. Tạo thẻ khách tham quan đồng bộ vào hệ thống BQL
+      generateVisitorPassToken({
+        apartmentCode: currentApartment.code,
+        visitorName: leadForm.name,
+        phoneNumber: leadForm.phone,
+        entryType: 'SINGLE',
+        validHours: 12,
+        note: `Khách đăng ký tham quan căn hộ ${currentApartment.code} (${currentApartment.name}) ngày ${dateText} lúc ${leadForm.timeSlot} (${leadForm.guests})`,
+        hostName: currentApartment.residentName || 'Ban Quản Lý The Tropical',
+        hostPhone: '0364967082'
+      });
     } catch {
       // ignore
     }
@@ -547,7 +566,7 @@ export default function FloorPlanExplorer({ onOpenLogin }: FloorPlanExplorerProp
                 : 'bg-white border border-[#C5A880]/60 text-amber-800 shadow-sm'
             }`}>
               <Box className="w-3.5 h-3.5 text-[#C5A880]" />
-              <span>Phối Cảnh Bóc Mái 3D Căn Hộ Skyline</span>
+              <span>Phối Cảnh Bóc Mái 3D Căn Hộ The Tropical</span>
             </div>
             <h2 className={`text-2xl sm:text-3xl lg:text-4xl font-serif font-bold tracking-tight ${
               isDark ? 'text-white' : 'text-[#0D1117]'
@@ -574,7 +593,7 @@ export default function FloorPlanExplorer({ onOpenLogin }: FloorPlanExplorerProp
         {/* 2. BỘ CHỌN 4 LOẠI CĂN HỘ                                      */}
         {/* ============================================================= */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3">
-          {(['2PN', '3PN', '1PN', 'DUPLEX'] as ApartmentCategory[]).map((cat) => {
+          {(['1PN', '2PN', '3PN', 'DUPLEX'] as ApartmentCategory[]).map((cat) => {
             const apt = APARTMENT_MODELS[cat];
             const isSelected = selectedCategory === cat;
             return (
@@ -973,7 +992,7 @@ export default function FloorPlanExplorer({ onOpenLogin }: FloorPlanExplorerProp
                   <p className={`text-xs font-light leading-relaxed ${
                     isDark ? 'text-gray-300' : 'text-emerald-800'
                   }`}>
-                    Lễ tân và chuyên viên Ban Quản Lý Skyline đã tiếp nhận yêu cầu và sẽ sẵn sàng đón tiếp quý khách đúng khung giờ đã chọn.
+                    Lễ tân và chuyên viên Ban Quản Lý The Tropical đã tiếp nhận yêu cầu và sẽ sẵn sàng đón tiếp quý khách đúng khung giờ đã chọn.
                   </p>
                 </div>
 
@@ -983,17 +1002,27 @@ export default function FloorPlanExplorer({ onOpenLogin }: FloorPlanExplorerProp
                     ? 'bg-[#121824] border-[#1E293B]' 
                     : 'bg-slate-50 border-gray-200'
                 }`}>
+                  {confirmedBooking.id && (
+                    <div className={`flex justify-between items-center pb-2 border-b ${
+                      isDark ? 'border-[#1E293B]' : 'border-gray-200'
+                    }`}>
+                      <span className={isDark ? 'text-gray-400' : 'text-gray-500'}>Mã Phiếu Hẹn:</span>
+                      <span className="font-bold text-[#C5A880] bg-[#C5A880]/15 px-2 py-0.5 rounded-none border border-[#C5A880]/40">
+                        {confirmedBooking.id}
+                      </span>
+                    </div>
+                  )}
                   <div className={`flex justify-between items-center pb-2 border-b ${
                     isDark ? 'border-[#1E293B]' : 'border-gray-200'
                   }`}>
-                    <span className={isDark ? 'text-gray-400' : 'text-gray-500'}>Căn hộ mục tiêu:</span>
+                    <span className={isDark ? 'text-gray-400' : 'text-gray-500'}>Căn hộ tham quan:</span>
                     <span className={`font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>{confirmedBooking.apartmentCode} ({confirmedBooking.apartmentName})</span>
                   </div>
                   <div className={`flex justify-between items-center pb-2 border-b ${
                     isDark ? 'border-[#1E293B]' : 'border-gray-200'
                   }`}>
-                    <span className={isDark ? 'text-gray-400' : 'text-gray-500'}>Mốc giờ tham quan:</span>
-                    <span className="font-bold text-[#C5A880] bg-[#C5A880]/15 px-2 py-0.5 rounded-none border border-[#C5A880]/40">
+                    <span className={isDark ? 'text-gray-400' : 'text-gray-500'}>Mốc giờ đón tiếp:</span>
+                    <span className="font-bold text-emerald-400 bg-emerald-950/60 px-2 py-0.5 rounded-none border border-emerald-500/40">
                       {confirmedBooking.timeSlot}
                     </span>
                   </div>
@@ -1006,14 +1035,14 @@ export default function FloorPlanExplorer({ onOpenLogin }: FloorPlanExplorerProp
                   <div className={`flex justify-between items-center pb-2 border-b ${
                     isDark ? 'border-[#1E293B]' : 'border-gray-200'
                   }`}>
-                    <span className={isDark ? 'text-gray-400' : 'text-gray-500'}>Khách hẹn:</span>
+                    <span className={isDark ? 'text-gray-400' : 'text-gray-500'}>Khách đăng ký:</span>
                     <span className={isDark ? 'text-gray-200' : 'text-gray-800'}>{confirmedBooking.name} • {confirmedBooking.phone} ({confirmedBooking.guests})</span>
                   </div>
                   <div className={`flex items-start gap-2 pt-1 text-[11px] font-sans leading-relaxed ${
                     isDark ? 'text-gray-400' : 'text-gray-600'
                   }`}>
                     <MapPin className="w-4 h-4 text-[#C5A880] shrink-0 mt-0.5" />
-                    <span><strong>Địa điểm đón tiếp:</strong> Sảnh Lễ Tân Chung Cư Skyline, 128 Bến Vân Đồn, P.6, Q.4, TP.HCM (Hotline đón khách: 0901 888 999).</span>
+                    <span><strong>Địa điểm đón tiếp:</strong> Sảnh Đón Khách The Tropical • Chung Cư BS-07, Phân khu Beverly Solari, Vinhomes Grand Park, TP. Thủ Đức, TP.HCM (Hotline: 0364 967 082 / 0901 888 999).</span>
                   </div>
                 </div>
 

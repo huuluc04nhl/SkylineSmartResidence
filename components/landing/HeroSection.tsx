@@ -154,13 +154,13 @@ export default function HeroSection({ onOpenLogin }: HeroSectionProps) {
                 <div className={`flex justify-between py-1.5 border-b ${isDark ? 'border-[#1E2631]' : 'border-gray-100'}`}>
                   <span className={isDark ? 'text-gray-400' : 'text-gray-500'}>Vai trò:</span>
                   <span className="font-semibold text-right text-xs text-[#C5A880]">
-                    {currentUser.role === 'ADMIN' ? 'Ban Quản Lý Tòa Nhà' : currentUser.role === 'TECHNICIAN' ? 'Kỹ Thuật Viên' : `Chủ Hộ Căn ${currentUser.apartment_code || '12A05'}`}
+                    {currentUser.role === 'ADMIN' ? 'Ban Quản Lý Chung Cư' : currentUser.role === 'TECHNICIAN' ? 'Kỹ Thuật Viên' : `Chủ Hộ Căn ${currentUser.apartment_code || 'CH-06'}`}
                   </span>
                 </div>
                 <div className={`flex justify-between py-1.5 border-b ${isDark ? 'border-[#1E2631]' : 'border-gray-100'}`}>
                   <span className={isDark ? 'text-gray-400' : 'text-gray-500'}>Vị Trí:</span>
                   <span className={`font-medium text-right text-xs sm:text-sm ${isDark ? 'text-white' : 'text-gray-900'}`}>
-                    128 Bến Vân Đồn, Q.4, TP.HCM
+                    Chung Cư BS-07 • The Tropical, TP. Thủ Đức
                   </span>
                 </div>
                 <div className="flex justify-between py-1.5">
