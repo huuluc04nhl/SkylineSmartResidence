@@ -149,7 +149,6 @@ export default function Sidebar({
           { id: 'admin-billing', label: 'Hóa Đơn', shortLabel: 'Hóa Đơn', icon: Receipt },
           { id: 'admin-devices', label: 'Thiết Bị', shortLabel: 'Thiết Bị', icon: Activity },
           { id: 'admin-parking', label: 'Bãi Đỗ Xe', shortLabel: 'Bãi Đỗ Xe', icon: Car },
-          { id: 'admin-facilities', label: 'Tiện Ích', shortLabel: 'Tiện Ích', icon: CalendarCheck },
           { id: 'admin-community', label: 'Khảo Sát', shortLabel: 'Khảo Sát', icon: MessageSquareQuote },
         ];
 

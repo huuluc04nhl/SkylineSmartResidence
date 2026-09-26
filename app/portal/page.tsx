@@ -209,7 +209,6 @@ function PortalContent() {
                 {activeModule === 'admin-billing' && <BillingStudio />}
                 {activeModule === 'admin-devices' && <DeviceHealth />}
                 {activeModule === 'admin-parking' && <SmartParking />}
-                {activeModule === 'admin-facilities' && <SmartFacilityPass currentUser={currentUser} />}
                 {activeModule === 'admin-community' && <SurveysVoting currentUser={currentUser} />}
               </>
             )}

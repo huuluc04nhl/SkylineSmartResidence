@@ -20,7 +20,7 @@ export default function DeviceHealth() {
 
         <div className="flex items-center gap-2 text-xs text-gray-300">
           <span className="px-3 py-1 bg-[#161B22] border border-[#2D3748] text-[#C5A880]">
-            AI IoT Monitoring: 4 Cụm Thiết Bị Lõi
+            BMS IoT Monitoring: {DEMO_DEVICES.length} Hệ Thống Kỹ Thuật Lõi (Chung Cư BS-07)
           </span>
         </div>
       </div>

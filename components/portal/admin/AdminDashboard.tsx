@@ -39,10 +39,11 @@ import {
 } from 'lucide-react';
 import { getApartmentUnits } from '@/lib/apartmentStore';
 import { getAllVisitorPasses, getGateAuditLogs } from '@/lib/visitorStore';
+import { getBills } from '@/lib/billingStore';
 
 // Cấu trúc dữ liệu phân tầng an ninh và cảnh báo BMS
 interface FloorThreatData {
-  floor: 'B2' | 'B1' | 'L1' | '12' | '25';
+  floor: 'B2' | 'B1' | 'L1' | '20' | '30' | '34';
   floorName: string;
   threatLevel: 'NORMAL' | 'WARNING' | 'CRITICAL';
   activeNodes: number;
@@ -63,7 +64,7 @@ interface FloorThreatData {
 const FLOOR_THREAT_DATABASE: Record<string, FloorThreatData> = {
   B2: {
     floor: 'B2',
-    floorName: 'Hầm B2 - Trạm Bơm Cấp Nước Sinh Hoạt & Bể Ngầm PCCC 800m³',
+    floorName: 'Hầm B2 - Trạm Bơm Tăng Áp PCCC Grundfos & Bể Ngầm 800m³',
     threatLevel: 'NORMAL',
     activeNodes: 22,
     threats: [
@@ -83,7 +84,7 @@ const FLOOR_THREAT_DATABASE: Record<string, FloorThreatData> = {
   },
   B1: {
     floor: 'B1',
-    floorName: 'Hầm B1 - Bãi Đỗ Xe Thông Minh & Trạm Kỹ Thuật Điện 1500kVA',
+    floorName: 'Hầm B1 - Bãi Đỗ Xe Cư Dân, Trạm Biến Áp 1500kVA & Máy Phát Cummins',
     threatLevel: 'WARNING',
     activeNodes: 32,
     threats: [
@@ -91,7 +92,7 @@ const FLOOR_THREAT_DATABASE: Record<string, FloorThreatData> = {
         id: 'T-B1-01',
         type: 'FIRE',
         title: 'Camera AI Giám Sát Nhiệt Độ Tủ Điện Trung Thế (42°C)',
-        location: 'Trạm Biến Áp Trung Thế & Máy Phát Cummins 2500kVA',
+        location: 'Trạm Biến Áp Trung Thế & Máy Phát Cummins 1000kVA',
         severity: 'MEDIUM',
         confidence: 0.94,
         snapshot: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600',
@@ -115,7 +116,7 @@ const FLOOR_THREAT_DATABASE: Record<string, FloorThreatData> = {
   },
   L1: {
     floor: 'L1',
-    floorName: 'Tầng 1 - Sảnh Grand Lobby, Quầy Lễ Tân & Phòng Trực Ban An Ninh',
+    floorName: 'Tầng 1 - Sảnh Grand Lobby & Cổng Kiểm Soát FaceID Lễ Tân',
     threatLevel: 'NORMAL',
     activeNodes: 26,
     threats: [
@@ -133,17 +134,37 @@ const FLOOR_THREAT_DATABASE: Record<string, FloorThreatData> = {
       }
     ]
   },
-  '12': {
-    floor: '12',
-    floorName: 'Tầng 12 - Hành Lang Căn Hộ & Trục Kỹ Thuật (Căn 12A05)',
+  '20': {
+    floor: '20',
+    floorName: 'Tầng 20 - Gian Lánh Nạn PCCC (Refuge Floor) & Cửa Chống Cháy EI70',
+    threatLevel: 'NORMAL',
+    activeNodes: 18,
+    threats: [
+      {
+        id: 'T-20-01',
+        type: 'FIRE',
+        title: 'Áp Suất Dương Buồng Đệm & Cửa Chống Cháy Tầng Lánh Nạn Sẵn Sàng',
+        location: 'Gian Lánh Nạn PCCC Trục Giữa Tòa BS-07',
+        severity: 'LOW',
+        confidence: 0.97,
+        snapshot: 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=600',
+        time: '00:42:10',
+        coords: { x: 50, y: 50 },
+        actionHint: 'Hệ thống liên lạc khẩn cấp 2 chiều với phòng trực trung tâm BMS kết nối 100%.'
+      }
+    ]
+  },
+  '30': {
+    floor: '30',
+    floorName: 'Tầng 30 - Hành Lang Căn Hộ Cư Dân (Căn CH-06)',
     threatLevel: 'NORMAL',
     activeNodes: 20,
     threats: [
       {
-        id: 'T-12-01',
+        id: 'T-30-01',
         type: 'WATER',
-        title: 'Đồng Hồ Đo Lưu Lượng Nước IoT Căn 12A05 Hoạt Động Chuẩn',
-        location: 'Hộp Trục Kỹ Thuật Căn Hộ (M&E Shaft)',
+        title: 'Đồng Hồ Đo Lưu Lượng Nước IoT Căn CH-06 Hoạt Động Chuẩn',
+        location: 'Hộp Trục Kỹ Thuật Căn Hộ (M&E Shaft Tầng 30)',
         severity: 'LOW',
         confidence: 0.96,
         snapshot: 'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?w=600',
@@ -153,30 +174,30 @@ const FLOOR_THREAT_DATABASE: Record<string, FloorThreatData> = {
       }
     ]
   },
-  '25': {
-    floor: '25',
-    floorName: 'Tầng 25 - Tiện Ích Trên Cao Sky Pool, Vườn Treo & Sân Đáp Helipad',
+  '34': {
+    floor: '34',
+    floorName: 'Tầng 34 / Mái - Phòng Kỹ Thuật Thang Máy Otis & Quạt Hút Khói Tăng Áp',
     threatLevel: 'NORMAL',
-    activeNodes: 24,
+    activeNodes: 16,
     threats: [
       {
-        id: 'T-25-01',
+        id: 'T-34-01',
         type: 'FIRE',
-        title: 'Đèn Tín Hiệu Hàng Không & Cảm Biến Gió Helipad Sẵn Sàng',
-        location: 'Sân Thượng Helipad PCCC & Cứu Hộ Hàng Không',
+        title: 'Quạt Tăng Áp Hút Khói Cầu Thang Systemair Sẵn Sàng 100%',
+        location: 'Tầng Kỹ Thuật Mái & Trục Kỹ Thuật Tòa Nhà',
         severity: 'LOW',
         confidence: 0.99,
         snapshot: 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=600',
         time: '00:40:00',
         coords: { x: 28, y: 32 },
-        actionHint: 'Đèn chớp tín hiệu nhấp nháy chuẩn quốc tế, sàn đỗ thông thoáng.'
+        actionHint: 'Áp suất quạt tăng áp 50 Pa, van chặn lửa mở sẵn sàng theo lệnh BMS.'
       }
     ]
   }
 };
 
 export default function AdminDashboard() {
-  const [selectedFloor, setSelectedFloor] = useState<'B2' | 'B1' | 'L1' | '12' | '25'>('B1');
+  const [selectedFloor, setSelectedFloor] = useState<'B2' | 'B1' | 'L1' | '20' | '30' | '34'>('B1');
   const [selectedThreatId, setSelectedThreatId] = useState<string>('T-B1-01');
   const [isEmergencyActive, setIsEmergencyActive] = useState(false);
   const [dispatchStatus, setDispatchStatus] = useState<string | null>(null);
@@ -236,6 +257,36 @@ export default function AdminDashboard() {
   const maintPct = totalUnits > 0 ? ((maintenanceUnits / totalUnits) * 100).toFixed(1) : '0';
   const vacantPct = totalUnits > 0 ? ((vacantUnits / totalUnits) * 100).toFixed(1) : '0';
 
+  // Lấy dữ liệu thật từ billingStore
+  const bills = useMemo(() => {
+    try {
+      return getBills();
+    } catch {
+      return [];
+    }
+  }, []);
+
+  const totalPaidRevenue = useMemo(() => {
+    return bills.filter(b => b.status === 'Paid').reduce((sum, b) => sum + (b.total_amount || 0), 0);
+  }, [bills]);
+
+  const totalExpectedRevenue = useMemo(() => {
+    return bills.reduce((sum, b) => sum + (b.total_amount || 0), 0);
+  }, [bills]);
+
+  const collectionRate = useMemo(() => {
+    return totalExpectedRevenue > 0 ? ((totalPaidRevenue / totalExpectedRevenue) * 100).toFixed(1) : '100';
+  }, [totalPaidRevenue, totalExpectedRevenue]);
+
+  // Lấy dữ liệu phương tiện xe thực tế từ apartmentStore
+  const registeredCars = useMemo(() => {
+    return apartments.reduce((sum, apt) => sum + (apt.vehicles?.filter(v => v.type === 'CAR').length || 0), 0);
+  }, [apartments]);
+
+  const registeredMotos = useMemo(() => {
+    return apartments.reduce((sum, apt) => sum + (apt.vehicles?.filter(v => v.type === 'MOTORBIKE').length || 0), 0);
+  }, [apartments]);
+
   const currentFloorData = FLOOR_THREAT_DATABASE[selectedFloor] || FLOOR_THREAT_DATABASE['B1'];
   const activeThreat = currentFloorData.threats.find(t => t.id === selectedThreatId) || currentFloorData.threats[0];
 
@@ -291,18 +342,18 @@ export default function AdminDashboard() {
       {/* 2. 4 THẺ KPI CHỈ SỐ VẬN HÀNH TÒA NHÀ CỐT LÕI (CORE KPIS)       */}
       {/* ============================================================= */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
-        {/* KPI 1: Doanh thu & Phí dịch vụ */}
+        {/* KPI 1: Doanh thu thực tế từ billingStore */}
         <div className="p-4 bg-[#121820] border border-[#222B35] space-y-2 hover:border-[#C5A880]/60 transition-all shadow-lg">
           <div className="flex items-center justify-between text-xs text-gray-400">
-            <span className="font-semibold">Doanh Thu Vận Hành Tháng 09/2026</span>
+            <span className="font-semibold">Doanh Thu Vận Hành Thực Thu</span>
             <Receipt className="w-4 h-4 text-[#C5A880]" />
           </div>
           <div className="font-serif text-2xl text-white font-bold tracking-wide">
-            1.845.200.000 <span className="text-xs font-sans text-gray-400 font-normal">đ</span>
+            {totalPaidRevenue.toLocaleString('vi-VN')} <span className="text-xs font-sans text-gray-400 font-normal">đ</span>
           </div>
           <div className="text-[11px] text-emerald-400 flex items-center justify-between font-mono pt-1 border-t border-[#1C2533]">
-            <span className="flex items-center gap-1"><TrendingUp className="w-3 h-3" /> +8.4% so tháng trước</span>
-            <span className="text-gray-400">Thu hồi: 96.5%</span>
+            <span className="flex items-center gap-1"><TrendingUp className="w-3 h-3" /> Đã thu {bills.filter(b => b.status === 'Paid').length}/{bills.length} căn</span>
+            <span className="text-gray-400">Thu hồi: {collectionRate}%</span>
           </div>
         </div>
 
@@ -341,22 +392,22 @@ export default function AdminDashboard() {
           </div>
           <div className="text-[11px] text-cyan-400 flex items-center justify-between font-mono pt-1 border-t border-[#1C2533]">
             <span>100% Dữ Liệu Thật</span>
-            <span className="text-gray-400">Sảnh 1 & Hầm B1</span>
+            <span className="text-gray-400">Sảnh L1 & Hầm B1</span>
           </div>
         </div>
 
         {/* KPI 4: Hầm Bãi Xe Thông Minh */}
         <div className="p-4 bg-[#121820] border border-[#222B35] space-y-2 hover:border-[#C5A880]/60 transition-all shadow-lg">
           <div className="flex items-center justify-between text-xs text-gray-400">
-            <span className="font-semibold">Sức Chứa Bãi Xe Hầm B1-B2</span>
+            <span className="font-semibold">Phương Tiện Cư Dân Đăng Ký</span>
             <Car className="w-4 h-4 text-[#C5A880]" />
           </div>
           <div className="font-serif text-2xl text-white font-bold tracking-wide">
-            78% <span className="text-xs font-sans text-gray-400 font-normal">Công Suất Hầm</span>
+            {registeredCars + registeredMotos} <span className="text-xs font-sans text-gray-400 font-normal">Xe Đã Cấp Thẻ</span>
           </div>
           <div className="text-[11px] text-emerald-400 flex items-center justify-between font-mono pt-1 border-t border-[#1C2533]">
-            <span>Trống: 42 Ô tô</span>
-            <span>128 Xe máy</span>
+            <span>● {registeredCars} Ô tô (Hầm B2)</span>
+            <span>● {registeredMotos} Xe máy (Hầm B1)</span>
           </div>
         </div>
       </div>
@@ -376,9 +427,9 @@ export default function AdminDashboard() {
               <span>BẢN ĐỒ AN NINH & PCCC ĐA TẦNG (LIVE THREAT RADAR)</span>
             </div>
 
-            {/* Switch tầng: B2, B1, L1, 12, 25 */}
-            <div className="flex items-center gap-1 bg-[#16202D] border border-[#2B394E] p-1 text-xs font-mono">
-              {(['B2', 'B1', 'L1', '12', '25'] as const).map((fl) => {
+            {/* Switch tầng: B2, B1, L1, 20, 30, 34 */}
+            <div className="flex items-center gap-1 bg-[#16202D] border border-[#2B394E] p-1 text-xs font-mono flex-wrap">
+              {(['B2', 'B1', 'L1', '20', '30', '34'] as const).map((fl) => {
                 const fData = FLOOR_THREAT_DATABASE[fl];
                 const isCrit = fData.threatLevel === 'CRITICAL';
                 const isWarn = fData.threatLevel === 'WARNING';
@@ -400,7 +451,7 @@ export default function AdminDashboard() {
                         : 'bg-transparent text-gray-300 border-transparent hover:bg-[#1E2C3D] hover:text-white'
                     }`}
                   >
-                    <span>{fl === 'L1' ? 'Tầng 1' : fl === '12' ? 'Tầng 12' : fl === '25' ? 'Tầng 25' : `Hầm ${fl}`}</span>
+                    <span>{fl === 'L1' ? 'Tầng 1' : fl === 'B1' ? 'Hầm B1' : fl === 'B2' ? 'Hầm B2' : fl === '34' ? 'Tầng 34 (Mái)' : `Tầng ${fl}`}</span>
                     {isCrit && (
                       <span className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full animate-ping"></span>
                     )}
@@ -446,7 +497,7 @@ export default function AdminDashboard() {
               
               {/* Header sơ đồ sàn */}
               <div className="flex justify-between items-center text-[9px] font-mono text-gray-400 border-b border-gray-800/60 pb-1">
-                <span className="text-[#C5A880] font-bold">MẶT BẰNG BMS • CHUNG CƯ SKYLINE ({selectedFloor})</span>
+                <span className="text-[#C5A880] font-bold">MẶT BẰNG BMS • CHUNG CƯ THE TROPICAL BS-07 ({selectedFloor})</span>
                 <span className="text-gray-400 text-[8.5px]">
                   * Nhấp điểm radar để đối chiếu Camera AI bên phải
                 </span>
