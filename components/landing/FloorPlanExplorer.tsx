@@ -1,32 +1,32 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
+import Link from 'next/link';
 import { 
   Box, 
   Layers, 
-  Eye, 
-  PhoneCall, 
   Sparkles, 
   Check, 
-  X, 
   CheckCircle2, 
   Compass, 
-  Wind, 
-  Sun, 
   ShieldCheck, 
   Maximize2,
   BedDouble,
   Bath,
   ArrowRight,
   Info,
-  Calendar,
-  Clock,
-  MapPin,
-  Users
+  Phone,
+  LogIn,
+  Home,
+  UserCheck,
+  CreditCard,
+  UserPlus,
+  Wrench,
+  Building,
+  Crown
 } from 'lucide-react';
 import { useTheme } from '@/lib/themeContext';
 import { useAuth } from '@/lib/authContext';
-import { generateVisitorPassToken } from '@/lib/visitorStore';
 
 interface FloorPlanExplorerProps {
   onOpenLogin?: () => void;
@@ -38,11 +38,11 @@ export interface RoomHotspot {
   id: string;
   code: string;
   name: string;
-  label: string; // Tên hiển thị trực tiếp trên ảnh phối cảnh
+  label: string;
   area: string;
   desc: string;
-  top: number;   // Vị trí Y%
-  left: number;  // Vị trí X%
+  top: number;
+  left: number;
 }
 
 export interface ApartmentData {
@@ -66,7 +66,7 @@ export interface ApartmentData {
   hotspots: RoomHotspot[];
 }
 
-const APARTMENT_MODELS: Record<ApartmentCategory, ApartmentData> = {
+export const APARTMENT_MODELS: Record<ApartmentCategory, ApartmentData> = {
   '1PN': {
     category: '1PN',
     code: 'CH-06',
@@ -149,51 +149,41 @@ const APARTMENT_MODELS: Record<ApartmentCategory, ApartmentData> = {
     subtitle: 'Căn mẫu thực tế cư dân • Bố cục bóc mái 3D view trực diện Sông Tắc & Công Viên',
     floorText: 'Tầng 30 • Chung Cư BS-07 (The Tropical)',
     area: 50.0,
-    wallArea: 55.0,
+    wallArea: 54.8,
     bedrooms: 2,
     bathrooms: 1,
-    direction: 'Đông Nam',
-    viewDesc: 'Trực diện Sông Tắc & Đại Công Viên 36ha Vinhomes Grand Park',
+    direction: 'Đông Bắc',
+    viewDesc: 'View sông Sài Gòn & Quảng trường công viên ánh sáng 36ha',
     priceBillion: 2.75,
     statusLabel: 'Đã Bàn Giao Cư Dân',
     isRealResident: true,
     residentName: 'Trần Hữu Lực (Chủ Hộ)',
     render3DUrl: '/floorplans/2pn-3d.jpg',
     features: [
-      'Căn hộ 2 phòng ngủ tiêu chuẩn bàn giao thực tế tại Chung Cư BS-07',
-      'Phòng khách rộng liền kề ban công kính ngắm trọn sông và mảng xanh đại đô thị',
-      'Trang bị hệ thống Smart Home điều khiển đèn, rèm và máy lạnh qua ứng dụng'
+      'Thiết kế tối ưu 2 phòng ngủ ngập tràn ánh sáng tự nhiên từ mọi góc',
+      'Phòng khách liên thông phòng ăn tạo cảm giác rộng rãi và thoáng đãng',
+      'Trang bị hệ thống Smart Home chuẩn quốc tế, điều khiển qua ứng dụng Skyline'
     ],
     hotspots: [
       {
         id: 'living',
         code: 'PK',
-        name: 'Đại Sảnh & Phòng Khách',
-        label: 'Phòng Khách & Ăn',
+        name: 'Phòng Khách Trung Tâm',
+        label: 'Phòng Khách',
         area: '20.0 m²',
-        desc: 'Sofa góc bọc nỉ cao cấp, Smart TV gắn tường và sàn gỗ chevron nhập khẩu Đức.',
-        top: 46,
-        left: 42
+        desc: 'Sofa góc hiện đại, sàn gỗ công nghiệp cao cấp chống nước.',
+        top: 50,
+        left: 48
       },
       {
         id: 'balcony',
         code: 'BC',
-        name: 'Ban Công Panorama Kính Low-E',
+        name: 'Ban Công Hướng Đông Bắc',
         label: 'Ban Công View Sông',
-        area: '5.0 m²',
-        desc: 'Sàn gỗ nhựa ngoài trời, lan can kính cường lực đón trọn gió sông.',
-        top: 76,
+        area: '3.8 m²',
+        desc: 'Lan can kính cường lực an toàn, thoáng mát suốt ngày.',
+        top: 75,
         left: 35
-      },
-      {
-        id: 'kitchen',
-        code: 'BẾP',
-        name: 'Bếp Đảo & Quầy Bar',
-        label: 'Bếp Đảo & Bar',
-        area: '9.5 m²',
-        desc: 'Mặt đá Marble vân mây, bếp từ đôi Hafele âm trần và quầy bar ăn sáng.',
-        top: 32,
-        left: 60
       },
       {
         id: 'masterBed',
@@ -320,63 +310,53 @@ const APARTMENT_MODELS: Record<ApartmentCategory, ApartmentData> = {
     wallArea: 232.0,
     bedrooms: 4,
     bathrooms: 4,
-    direction: 'Đông Nam & Tây Nam (270°)',
-    viewDesc: 'Tầm nhìn triệu đô ôm trọn Sông Tắc, Đại Công Viên & Landmark 81',
+    direction: 'Đông Nam • Chính Diện Sông',
+    viewDesc: 'View triệu đô Panorama 360° ôm trọn sông Đồng Nai và toàn thành phố',
     priceBillion: 12.80,
-    statusLabel: 'Tuyệt Phẩm Độc Bản',
+    statusLabel: 'Phiên Bản Giới Hạn',
     render3DUrl: '/floorplans/duplex-3d.jpg',
     features: [
-      'Thiết kế thông 2 tầng với trần phòng khách Double-Height cao 6.5m',
-      'Sky Terrace sân thượng có bồn sục Jacuzzi nước ấm ngoài trời ngắm thành phố',
-      'Cầu thang kính nổi liên tầng, hầm rượu vang và sảnh tiệc 12 chỗ'
+      'Thiết kế thông tầng Duplex trần cao 6.5m với đèn chùm pha lê cao cấp',
+      'Hồ bơi Jacuzzi chân mây và sân vườn thượng uyển riêng trên cao',
+      'Hệ thống thang máy riêng bảo mật sinh trắc học FaceID tầng Penthouse'
     ],
     hotspots: [
       {
-        id: 'jacuzzi',
+        id: 'livingAtrium',
+        code: 'ĐẠI SẢNH',
+        name: 'Đại Phòng Khách Thông Tầng',
+        label: 'Đại Sảnh Thông Tầng',
+        area: '55.0 m²',
+        desc: 'Trần cao 6.5m, vách kính chịu lực ngắm bầu trời và toàn cảnh thành phố.',
+        top: 48,
+        left: 38
+      },
+      {
+        id: 'jacuzziSky',
         code: 'JACUZZI',
-        name: 'Sky Terrace & Bể Sục Jacuzzi',
-        label: 'Bể Sục Jacuzzi Ngoài Trời',
-        area: '26.0 m²',
-        desc: 'Sân thượng ngắm trọn thành phố từ độ cao đỉnh chung cư, hồ sục Jacuzzi thư giãn.',
-        top: 70,
-        left: 20
+        name: 'Sân Vườn & Hồ Jacuzzi Chân Mây',
+        label: 'Hồ Jacuzzi & Vườn',
+        area: '24.0 m²',
+        desc: 'Hồ sục nước ấm thư giãn ngoài trời với cây xanh nhiệt đới The Tropical.',
+        top: 80,
+        left: 28
       },
       {
-        id: 'doubleLiving',
-        code: 'TRẦN 6.5M',
-        name: 'Grand Living Thông Tầng',
-        label: 'Grand Living Trần 6.5m',
-        area: '58.0 m²',
-        desc: 'Phòng khách thông 2 tầng trần cao 6.5m, đèn chùm pha lê và vách kính thông tầng.',
-        top: 66,
-        left: 43
-      },
-      {
-        id: 'stair',
-        code: 'THANG KÍNH',
-        name: 'Cầu Thang Kính Nổi Liên Tầng',
-        label: 'Cầu Thang Kính Nổi',
-        area: 'Liên tầng',
-        desc: 'Cầu thang kết cấu kính cường lực và gỗ sồi nối liền 2 sàn penthouse.',
-        top: 45,
-        left: 55
-      },
-      {
-        id: 'presidentialSuite',
-        code: 'TẦNG 2 VIP',
-        name: 'Presidential Suite (Tầng 2)',
-        label: 'Presidential Suite (Tầng 2)',
-        area: '45.0 m²',
-        desc: 'Phòng ngủ tổng thống tầng trên có phòng thay đồ walk-in và view sông đêm.',
+        id: 'penthouseMaster',
+        code: 'ROYAL SUITE',
+        name: 'Phòng Ngủ Hoàng Gia Tầng 2',
+        label: 'Phòng Ngủ Hoàng Gia',
+        area: '32.0 m²',
+        desc: 'Phòng ngủ tổng thống, bồn tắm nằm đá cẩm thạch ngắm trọn sao trời.',
         top: 25,
-        left: 36
+        left: 45
       },
       {
-        id: 'vipBed2',
-        code: 'PN 2 LẦU',
-        name: 'Phòng Ngủ VIP Tầng Trên',
-        label: 'Phòng VIP Tầng Trên',
-        area: '22.0 m²',
+        id: 'guestLounge',
+        code: 'PN PHỤ',
+        name: 'Phòng Khách Phụ & Phòng Ngủ 2',
+        label: 'Phòng Khách Phụ',
+        area: '18.0 m²',
         desc: 'Phòng ngủ thứ 2 tầng trên có ban công lửng nhìn xuống phòng khách.',
         top: 30,
         left: 80
@@ -395,58 +375,14 @@ const APARTMENT_MODELS: Record<ApartmentCategory, ApartmentData> = {
   }
 };
 
-export interface TourTimeSlot {
-  id: string;
-  time: string;
-  period: 'Sáng' | 'Trưa' | 'Chiều' | 'Hoàng Hôn' | 'Tối';
-  tag: string;
-  popular?: boolean;
-}
-
-export const TOUR_TIME_SLOTS: TourTimeSlot[] = [
-  { id: 'morning_1', time: '09:00 - 10:00', period: 'Sáng', tag: 'Đón nắng mai & gió sông' },
-  { id: 'morning_2', time: '10:30 - 11:30', period: 'Trưa', tag: 'Tham quan tiện ích tầng 5' },
-  { id: 'afternoon_1', time: '14:30 - 15:30', period: 'Chiều', tag: 'Trải nghiệm Smart Home' },
-  { id: 'afternoon_2', time: '16:00 - 17:00', period: 'Chiều', tag: 'Căn hộ thực tế cư dân' },
-  { id: 'sunset', time: '17:30 - 18:30', period: 'Hoàng Hôn', tag: 'Ngắm hoàng hôn sông Sài Gòn', popular: true },
-  { id: 'evening', time: '19:00 - 20:00', period: 'Tối', tag: 'Skyline về đêm lung linh', popular: true },
-];
-
-export function getTourDateOptions() {
-  const now = new Date();
-  
-  // Ngày mai: luôn là now + 1 ngày
-  const tomorrow = new Date(now);
-  tomorrow.setDate(now.getDate() + 1);
-
-  // Tính ngày Thứ Bảy và Chủ Nhật gần nhất
-  // getDay(): 0 = Chủ Nhật, 1 = Thứ Hai, ..., 6 = Thứ Bảy
-  const dayOfWeek = now.getDay();
-  let daysToSaturday = (6 - dayOfWeek + 7) % 7;
-  if (dayOfWeek === 0) {
-    // Nếu hôm nay là Chủ Nhật, cuối tuần kế tiếp là Thứ Bảy tuần sau (+6 ngày)
-    daysToSaturday = 6;
-  }
-  const saturday = new Date(now);
-  saturday.setDate(now.getDate() + (daysToSaturday === 0 ? 0 : daysToSaturday));
-  
-  const sunday = new Date(saturday);
-  sunday.setDate(saturday.getDate() + 1);
-
-  const fmt = (d: Date) => `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}`;
-
-  const weekendLabel = dayOfWeek === 6 
-    ? `Cuối tuần (Hôm nay & CN)` 
-    : dayOfWeek === 0
-      ? `Cuối tuần (Hôm nay)`
-      : `Cuối tuần (${fmt(saturday)} - ${fmt(sunday)})`;
-
-  return [
-    { id: 'today', label: `Hôm nay (${fmt(now)})`, fullText: `Hôm nay (${fmt(now)})` },
-    { id: 'tomorrow', label: `Ngày mai (${fmt(tomorrow)})`, fullText: `Ngày mai (${fmt(tomorrow)})` },
-    { id: 'weekend', label: weekendLabel, fullText: `Cuối tuần (${fmt(saturday)} - ${fmt(sunday)})` },
-    { id: 'custom', label: 'Chọn ngày khác...', fullText: 'Ngày tùy chọn' },
-  ];
+function getUserAptCategory(code?: string): ApartmentCategory | null {
+  if (!code) return null;
+  const upper = code.toUpperCase();
+  if (upper.includes('CH-06')) return '1PN';
+  if (upper.includes('CH-01') || upper.includes('CH-08')) return '2PN';
+  if (upper.includes('CH-04')) return '3PN';
+  if (upper.includes('PH') || upper.includes('DUPLEX')) return 'DUPLEX';
+  return '1PN';
 }
 
 export default function FloorPlanExplorer({ onOpenLogin }: FloorPlanExplorerProps) {
@@ -456,90 +392,41 @@ export default function FloorPlanExplorer({ onOpenLogin }: FloorPlanExplorerProp
 
   const [selectedCategory, setSelectedCategory] = useState<ApartmentCategory>('1PN');
   const [activeHotspotId, setActiveHotspotId] = useState<string>('living');
-  const [isRegisterOpen, setIsRegisterOpen] = useState(false);
-  const [registerSuccess, setRegisterSuccess] = useState(false);
-  const [leadForm, setLeadForm] = useState({
-    name: '',
-    phone: '',
-    dateOption: 'tomorrow',
-    customDate: '',
-    timeSlot: '17:30 - 18:30',
-    guests: '1-2 người'
-  });
-  const [confirmedBooking, setConfirmedBooking] = useState<{
-    id?: string;
-    name: string;
-    phone: string;
-    apartmentCode: string;
-    apartmentName: string;
-    dateText: string;
-    timeSlot: string;
-    guests: string;
-  } | null>(null);
+
+  const isOwnerOrResident = isAuthenticated && (currentUser?.role === 'OWNER' || currentUser?.role === 'TENANT');
+  const isAdmin = isAuthenticated && currentUser?.role === 'ADMIN';
+  const isTechnician = isAuthenticated && currentUser?.role === 'TECHNICIAN';
+
+  // Xác định loại căn hộ mà cư dân đang sở hữu
+  const userAptCategory = useMemo(() => {
+    if (isOwnerOrResident && currentUser) {
+      return getUserAptCategory(currentUser.apartment_code || 'CH-06');
+    }
+    return null;
+  }, [isOwnerOrResident, currentUser]);
+
+  // Nếu cư dân đăng nhập, tự động ưu tiên hiển thị căn hộ của họ trước
+  useEffect(() => {
+    if (userAptCategory) {
+      setSelectedCategory(userAptCategory);
+      setActiveHotspotId(APARTMENT_MODELS[userAptCategory].hotspots[0].id);
+    }
+  }, [userAptCategory]);
 
   const currentApartment = APARTMENT_MODELS[selectedCategory];
+
+  // Người dùng đang xem đúng loại căn hộ mà họ sở hữu
+  const isUserOwnsThisApt = Boolean(isOwnerOrResident && userAptCategory === selectedCategory);
 
   // Phòng đang được chọn qua hotspot
   const activeRoom = useMemo(() => {
     return currentApartment.hotspots.find(h => h.id === activeHotspotId) || currentApartment.hotspots[0];
   }, [currentApartment, activeHotspotId]);
 
-  // Đổi loại căn hộ thì tự động chọn hotspot đầu tiên
   const handleSelectCategory = (cat: ApartmentCategory) => {
     setSelectedCategory(cat);
     const newApt = APARTMENT_MODELS[cat];
     setActiveHotspotId(newApt.hotspots[0].id);
-  };
-
-  const handleRegisterSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    const dateOptions = getTourDateOptions();
-    let dateText = 'Ngày mai';
-    if (leadForm.dateOption === 'today') {
-      dateText = dateOptions[0]?.fullText || 'Hôm nay';
-    } else if (leadForm.dateOption === 'tomorrow') {
-      dateText = dateOptions[1]?.fullText || 'Ngày mai';
-    } else if (leadForm.dateOption === 'weekend') {
-      dateText = dateOptions[2]?.fullText || 'Cuối tuần này';
-    } else if (leadForm.dateOption === 'custom' && leadForm.customDate) {
-      dateText = leadForm.customDate;
-    }
-
-    const bookingId = `TOUR-${Date.now().toString().slice(-6)}`;
-    const booking = {
-      id: bookingId,
-      name: leadForm.name,
-      phone: leadForm.phone,
-      apartmentCode: currentApartment.code,
-      apartmentName: currentApartment.name,
-      dateText,
-      timeSlot: leadForm.timeSlot,
-      guests: leadForm.guests
-    };
-
-    try {
-      // 1. Lưu danh sách đặt lịch tham quan cục bộ
-      const existing = JSON.parse(localStorage.getItem('skyline_tour_bookings') || '[]');
-      existing.unshift({ ...booking, createdAt: new Date().toISOString() });
-      localStorage.setItem('skyline_tour_bookings', JSON.stringify(existing.slice(0, 30)));
-
-      // 2. Tạo thẻ khách tham quan đồng bộ vào hệ thống BQL
-      generateVisitorPassToken({
-        apartmentCode: currentApartment.code,
-        visitorName: leadForm.name,
-        phoneNumber: leadForm.phone,
-        entryType: 'SINGLE',
-        validHours: 12,
-        note: `Khách đăng ký tham quan căn hộ ${currentApartment.code} (${currentApartment.name}) ngày ${dateText} lúc ${leadForm.timeSlot} (${leadForm.guests})`,
-        hostName: currentApartment.residentName || 'Ban Quản Lý The Tropical',
-        hostPhone: '0364967082'
-      });
-    } catch {
-      // ignore
-    }
-
-    setConfirmedBooking(booking);
-    setRegisterSuccess(true);
   };
 
   return (
@@ -554,7 +441,7 @@ export default function FloorPlanExplorer({ onOpenLogin }: FloorPlanExplorerProp
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 relative z-10 space-y-8 sm:space-y-10">
         {/* ============================================================= */}
-        {/* 1. TIÊU ĐỀ RÕ RÀNG, TINH TẾ, DỄ HIỂU                          */}
+        {/* 1. HEADER KHU VỰC: MINH BẠCH, HIỂN THỊ THEO TỪNG VAI TRÒ      */}
         {/* ============================================================= */}
         <div className={`flex flex-col md:flex-row md:items-end justify-between gap-4 pb-6 border-b ${
           isDark ? 'border-[#1E293B]' : 'border-gray-200'
@@ -566,7 +453,7 @@ export default function FloorPlanExplorer({ onOpenLogin }: FloorPlanExplorerProp
                 : 'bg-white border border-[#C5A880]/60 text-amber-800 shadow-sm'
             }`}>
               <Box className="w-3.5 h-3.5 text-[#C5A880]" />
-              <span>Phối Cảnh Bóc Mái 3D Căn Hộ The Tropical</span>
+              <span>Mặt Bằng 3D Minh Bạch • Chung Cư BS-07 The Tropical</span>
             </div>
             <h2 className={`text-2xl sm:text-3xl lg:text-4xl font-serif font-bold tracking-tight ${
               isDark ? 'text-white' : 'text-[#0D1117]'
@@ -576,26 +463,74 @@ export default function FloorPlanExplorer({ onOpenLogin }: FloorPlanExplorerProp
             <p className={`text-xs sm:text-sm font-light leading-relaxed ${
               isDark ? 'text-gray-300' : 'text-gray-600'
             }`}>
-              Mỗi dòng căn hộ sở hữu thiết kế hình khối bóc mái chân thực. Click vào nhãn các phòng trên ảnh 3D để xem chi tiết công năng.
+              Thông tin diện tích, mặt bằng bóc mái 3D và hiện trạng kỹ thuật được hiển thị minh bạch. Click trực tiếp vào các phòng trên mô hình để xem công năng chi tiết.
             </p>
           </div>
 
-          <button
-            onClick={() => setIsRegisterOpen(true)}
-            className="px-4 py-2.5 bg-[#C5A880] hover:bg-[#D4AF37] text-[#0A0E17] font-bold text-xs tracking-wider uppercase rounded-none transition-all shadow-lg flex items-center gap-2 shrink-0 self-start md:self-auto cursor-pointer"
-          >
-            <PhoneCall className="w-3.5 h-3.5" />
-            <span>Đăng Ký Xem Thực Tế</span>
-          </button>
+          {/* Phía bên phải Header: Phù hợp theo trạng thái đăng nhập & Role */}
+          <div className="shrink-0 self-start md:self-auto">
+            {!isAuthenticated ? (
+              <div className="flex flex-wrap items-center gap-2.5">
+                <button
+                  type="button"
+                  onClick={onOpenLogin || (() => { window.location.href = '/portal'; })}
+                  className="px-4 py-2.5 bg-[#C5A880] hover:bg-[#D4AF37] text-[#0A0E17] font-bold text-xs tracking-wider uppercase rounded-none transition-all shadow-md flex items-center gap-2 cursor-pointer"
+                >
+                  <LogIn className="w-3.5 h-3.5" />
+                  <span>Đăng Nhập Cư Dân / BQL</span>
+                </button>
+                <a
+                  href="tel:0364967082"
+                  className={`px-3 py-2.5 border rounded-none text-xs font-mono transition-colors flex items-center gap-1.5 ${
+                    isDark 
+                      ? 'border-[#2A374A] hover:border-[#C5A880] text-gray-300 hover:text-white' 
+                      : 'border-gray-300 hover:border-gray-500 text-gray-700 bg-white'
+                  }`}
+                  title="Hotline Ban Quản Lý"
+                >
+                  <Phone className="w-3.5 h-3.5 text-[#C5A880]" />
+                  <span>0364 967 082</span>
+                </a>
+              </div>
+            ) : (
+              <div className="flex items-center gap-3">
+                <div className={`text-right hidden sm:block ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+                  <div className="text-xs font-semibold flex items-center justify-end gap-1.5">
+                    {isOwnerOrResident && <Crown className="w-3.5 h-3.5 text-[#C5A880]" />}
+                    {isAdmin && <Building className="w-3.5 h-3.5 text-blue-400" />}
+                    {isTechnician && <Wrench className="w-3.5 h-3.5 text-amber-400" />}
+                    <span>{currentUser?.full_name}</span>
+                  </div>
+                  <div className="text-[10px] text-[#C5A880] font-mono uppercase font-bold">
+                    {isAdmin 
+                      ? 'Quản Trị BQL Chung Cư' 
+                      : isTechnician 
+                        ? 'Kỹ Thuật Viên Vận Hành' 
+                        : `Chủ Hộ Căn ${currentUser?.apartment_code || 'CH-06'}`}
+                  </div>
+                </div>
+
+                <Link
+                  href={isAdmin ? '/portal?tab=admin-building' : isTechnician ? '/portal?tab=admin-kanban' : '/portal?tab=resident-home'}
+                  className="px-4 py-2.5 bg-[#C5A880] hover:bg-[#D4AF37] text-[#0A0E17] font-bold text-xs tracking-wider uppercase rounded-none transition-all shadow-md flex items-center gap-2"
+                >
+                  <Sparkles className="w-3.5 h-3.5" />
+                  <span>Vào Bảng Điều Khiển</span>
+                </Link>
+              </div>
+            )}
+          </div>
         </div>
 
         {/* ============================================================= */}
-        {/* 2. BỘ CHỌN 4 LOẠI CĂN HỘ                                      */}
+        {/* 2. BỘ CHỌN 4 LOẠI CĂN HỘ (ĐÁNH DẤU CĂN CỦA CƯ DÂN NẾU CÓ)      */}
         {/* ============================================================= */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3">
           {(['1PN', '2PN', '3PN', 'DUPLEX'] as ApartmentCategory[]).map((cat) => {
             const apt = APARTMENT_MODELS[cat];
             const isSelected = selectedCategory === cat;
+            const isThisUserApt = Boolean(isOwnerOrResident && userAptCategory === cat);
+
             return (
               <button
                 key={cat}
@@ -611,6 +546,14 @@ export default function FloorPlanExplorer({ onOpenLogin }: FloorPlanExplorerProp
                       : 'bg-white border-gray-200 hover:border-gray-400 hover:bg-slate-50 shadow-sm'
                 }`}
               >
+                {/* Huy hiệu Căn Của Bạn nếu người dùng sở hữu loại căn này */}
+                {isThisUserApt && (
+                  <div className="absolute -top-2.5 right-3 bg-[#C5A880] text-[#0A0E17] text-[9.5px] font-mono font-bold px-2 py-0.5 uppercase tracking-wider shadow-md flex items-center gap-1 z-20">
+                    <Crown className="w-2.5 h-2.5" />
+                    <span>Căn Của Bạn</span>
+                  </div>
+                )}
+
                 <div>
                   <div className="flex items-center justify-between gap-1 mb-1">
                     <span className={`font-mono text-xs font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>
@@ -636,7 +579,9 @@ export default function FloorPlanExplorer({ onOpenLogin }: FloorPlanExplorerProp
                   isDark ? 'border-[#1E293B] text-gray-400' : 'border-gray-100 text-gray-500'
                 }`}>
                   <span>{cat === 'DUPLEX' ? 'Trần cao 6.5m' : `${apt.wallArea} m² tim tường`}</span>
-                  <span className={`font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`}>{apt.priceBillion.toFixed(2)} Tỷ</span>
+                  <span className={`font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                    {isThisUserApt ? 'Đang Cư Trú' : `${apt.priceBillion.toFixed(2)} Tỷ`}
+                  </span>
                 </div>
               </button>
             );
@@ -644,10 +589,10 @@ export default function FloorPlanExplorer({ onOpenLogin }: FloorPlanExplorerProp
         </div>
 
         {/* ============================================================= */}
-        {/* 3. KHU VỰC HIỂN THỊ PHỐI CẢNH 3D & THÔNG SỐ CÂN ĐỐI 100%       */}
+        {/* 3. KHU VỰC HIỂN THỊ PHỐI CẢNH 3D & THÔNG TIN THEO TỪNG VAI TRÒ */}
         {/* ============================================================= */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-stretch">
-          {/* CỘT TRÁI (7 CỘT): KHUNG PHỐI CẢNH 3D UNIFIED CARD - CÂN BẰNG HOÀN TOÀN */}
+          {/* CỘT TRÁI (7 CỘT): KHUNG PHỐI CẢNH 3D UNIFIED CARD */}
           <div className={`lg:col-span-7 flex flex-col justify-between h-full border rounded-none overflow-hidden shadow-2xl transition-colors ${
             isDark 
               ? 'border-[#C5A880]/40 bg-[#0E131C]' 
@@ -668,7 +613,7 @@ export default function FloorPlanExplorer({ onOpenLogin }: FloorPlanExplorerProp
                   ? 'text-[#C5A880] bg-[#070A10] border-[#1E293B]' 
                   : 'text-amber-800 bg-white border-gray-200 shadow-sm'
               }`}>
-                Click nhãn phòng để xem
+                Click nhãn phòng để xem chi tiết
               </div>
             </div>
 
@@ -692,10 +637,10 @@ export default function FloorPlanExplorer({ onOpenLogin }: FloorPlanExplorerProp
               {/* Trạng thái căn hộ góc trên bên phải */}
               <div className="absolute top-3 right-3 bg-[#0A0E17]/90 border border-emerald-500/50 px-3 py-1.5 rounded-none text-xs font-mono text-emerald-300 flex items-center gap-1.5 backdrop-blur-md z-10 shadow-lg">
                 <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
-                <span>{currentApartment.statusLabel}</span>
+                <span>{isUserOwnsThisApt ? 'Căn Hộ Của Bạn' : currentApartment.statusLabel}</span>
               </div>
 
-              {/* NHÃN PHÒNG VIẾT RÕ RÀNG TRÊN PHỐI CẢNH */}
+              {/* NHÃN PHÒNG TRÊN PHỐI CẢNH */}
               {currentApartment.hotspots.map((spot) => {
                 const isActive = activeHotspotId === spot.id;
                 return (
@@ -710,7 +655,6 @@ export default function FloorPlanExplorer({ onOpenLogin }: FloorPlanExplorerProp
                     }`}
                     style={{ top: `${spot.top}%`, left: `${spot.left}%` }}
                   >
-                    {/* Chấm vuông nhỏ phát sáng - KHÔNG BORDER-RADIUS */}
                     <span
                       className={`w-2 h-2 rounded-none shrink-0 transition-colors ${
                         isActive 
@@ -732,7 +676,7 @@ export default function FloorPlanExplorer({ onOpenLogin }: FloorPlanExplorerProp
                   <span className="text-white font-medium">{currentApartment.viewDesc}</span>
                 </div>
                 <div className="bg-[#0A0E17]/90 border border-gray-700 px-3 py-1.5 rounded-none backdrop-blur-md text-gray-300 font-mono text-xs hidden sm:block">
-                  Mô hình bóc mái 3D
+                  Mặt bằng bóc mái 3D
                 </div>
               </div>
             </div>
@@ -761,18 +705,90 @@ export default function FloorPlanExplorer({ onOpenLogin }: FloorPlanExplorerProp
               </div>
 
               <div className="text-[10px] font-mono text-emerald-400 shrink-0 bg-emerald-950/60 border border-emerald-500/40 px-2 py-1 rounded-none">
-                ✓ Đang Xem
+                ✓ Đang Xem Chi Tiết
               </div>
             </div>
           </div>
 
-          {/* CỘT PHẢI (5 CỘT): BÁO GIÁ, THÔNG SỐ VÀNG & NÚT HÀNH ĐỘNG */}
+          {/* CỘT PHẢI (5 CỘT): NỘI DUNG VÀ HÀNH ĐỘNG ĐƯỢC CÁ NHÂN HÓA THEO ROLE */}
           <div className={`lg:col-span-5 flex flex-col justify-between h-full p-5 sm:p-6 rounded-none shadow-2xl space-y-5 transition-colors ${
             isDark ? 'bg-[#0E131C] border border-[#C5A880]/50' : 'bg-white border border-gray-200 shadow-xl'
           }`}>
-            <div className="space-y-5">
-              {/* Tiêu đề căn & Giá niêm yết */}
-              <div className={`flex items-start justify-between pb-4 border-b gap-2 ${
+            <div className="space-y-4">
+              {/* ========================================================= */}
+              {/* BANNER THÔNG BÁO THEO ROLE / NGƯỜI CÓ CĂN HỘ              */}
+              {/* ========================================================= */}
+              {isUserOwnsThisApt && (
+                <div className="p-3 bg-gradient-to-r from-amber-500/20 via-[#C5A880]/15 to-transparent border-l-4 border-l-[#C5A880] border border-[#C5A880]/40 flex items-center justify-between gap-3">
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-8 h-8 rounded-none bg-[#C5A880]/20 border border-[#C5A880] text-[#C5A880] flex items-center justify-center font-bold shrink-0">
+                      <Crown className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <div className="text-xs font-bold text-[#C5A880] uppercase tracking-wider flex items-center gap-1.5">
+                        <span>Căn Hộ Đang Sở Hữu Của Bạn</span>
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                      </div>
+                      <div className={`text-[11px] mt-0.5 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+                        Chủ Hộ: <strong>{currentUser?.full_name}</strong> • Tầng 30 • Chung Cư BS-07
+                      </div>
+                    </div>
+                  </div>
+                  <span className="text-[10px] font-mono px-2 py-0.5 bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 shrink-0 font-semibold">
+                    ĐÃ BÀN GIAO
+                  </span>
+                </div>
+              )}
+
+              {isOwnerOrResident && !isUserOwnsThisApt && (
+                <div className="p-3 bg-blue-500/10 border-l-4 border-l-blue-500 border border-blue-500/30 flex items-center justify-between gap-3">
+                  <div className="text-xs">
+                    <div className="text-blue-400 font-bold uppercase tracking-wider">Mặt Bằng Dòng Căn Khác</div>
+                    <div className={`text-[11px] mt-0.5 ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
+                      Căn hộ của bạn là <strong>Căn {currentUser?.apartment_code || 'CH-06'}</strong> ({userAptCategory}).
+                    </div>
+                  </div>
+                  {userAptCategory && (
+                    <button
+                      type="button"
+                      onClick={() => handleSelectCategory(userAptCategory)}
+                      className="px-2.5 py-1 bg-[#C5A880] hover:bg-[#D4AF37] text-[#0A0E17] font-bold text-[10px] uppercase font-mono shrink-0 cursor-pointer shadow-sm"
+                    >
+                      Về Căn Của Tôi →
+                    </button>
+                  )}
+                </div>
+              )}
+
+              {isAdmin && (
+                <div className="p-3 bg-[#161F2E] border-l-4 border-l-blue-400 border border-[#233146] flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-2">
+                    <Building className="w-4 h-4 text-blue-400 shrink-0" />
+                    <div className="text-xs">
+                      <span className="font-bold text-blue-400 block uppercase">Chế Độ Quản Trị BQL Chung Cư</span>
+                      <span className="text-[11px] text-gray-300">Dữ liệu NKS SCRMAI • Chung Cư BS-07 Tầng 30</span>
+                    </div>
+                  </div>
+                  <span className="text-[10px] font-mono px-2 py-0.5 bg-blue-500/20 text-blue-300 border border-blue-500/40">
+                    BQL ADMIN
+                  </span>
+                </div>
+              )}
+
+              {isTechnician && (
+                <div className="p-3 bg-[#161F2E] border-l-4 border-l-amber-400 border border-[#233146] flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-2">
+                    <Wrench className="w-4 h-4 text-amber-400 shrink-0" />
+                    <div className="text-xs">
+                      <span className="font-bold text-amber-400 block uppercase">Chế Độ Kỹ Thuật Viên Vận Hành</span>
+                      <span className="text-[11px] text-gray-300">Giám sát sơ đồ MEP, điện nước &amp; PCCC</span>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Tiêu đề căn & Giá trị / Tình trạng */}
+              <div className={`flex items-start justify-between pb-3.5 border-b gap-2 ${
                 isDark ? 'border-[#1E293B]' : 'border-gray-200'
               }`}>
                 <div>
@@ -791,13 +807,13 @@ export default function FloorPlanExplorer({ onOpenLogin }: FloorPlanExplorerProp
 
                 <div className="text-right shrink-0">
                   <div className="text-[10px] font-mono uppercase tracking-widest text-gray-400">
-                    Giá Bán Dự Kiến
+                    {isUserOwnsThisApt ? 'Hồ Sơ Căn Hộ' : isAdmin ? 'Trạng Thái Căn' : 'Giá Tham Chiếu'}
                   </div>
                   <div className="font-mono text-xl sm:text-2xl font-bold text-[#C5A880] mt-0.5">
-                    {currentApartment.priceBillion.toFixed(2)} Tỷ
+                    {isUserOwnsThisApt ? 'Sổ Hồng Riêng' : isAdmin ? 'Đã Kích Hoạt' : `${currentApartment.priceBillion.toFixed(2)} Tỷ`}
                   </div>
                   <div className="text-[10px] text-gray-400 font-mono">
-                    ~ {(currentApartment.priceBillion * 1000 / currentApartment.area).toFixed(1)} tr/m²
+                    {isUserOwnsThisApt ? 'Sở Hữu Lâu Dài' : `~ ${(currentApartment.priceBillion * 1000 / currentApartment.area).toFixed(1)} tr/m²`}
                   </div>
                 </div>
               </div>
@@ -823,7 +839,7 @@ export default function FloorPlanExplorer({ onOpenLogin }: FloorPlanExplorerProp
                   <div className="font-mono text-base sm:text-lg font-bold text-emerald-500 mt-0.5">
                     {currentApartment.direction}
                   </div>
-                  <div className="text-[10px] text-gray-400 mt-0.5">Đón gió sông mát lành</div>
+                  <div className="text-[10px] text-gray-400 mt-0.5">Đón gió mát tự nhiên</div>
                 </div>
 
                 <div className={`p-3 rounded-none ${
@@ -836,45 +852,24 @@ export default function FloorPlanExplorer({ onOpenLogin }: FloorPlanExplorerProp
                     {currentApartment.bedrooms} PN • {currentApartment.bathrooms} WC
                   </div>
                   <div className="text-[10px] text-gray-400 mt-0.5">
-                    {currentApartment.category === 'DUPLEX' ? '2 Tầng Thông Suốt' : 'Ban công + Logia riêng'}
+                    {currentApartment.category === 'DUPLEX' ? '2 Tầng Thông Suốt' : 'Ban công & logia riêng'}
                   </div>
                 </div>
 
                 <div className={`p-3 rounded-none ${
                   isDark ? 'bg-[#121824] border border-[#1E293B]' : 'bg-slate-50 border border-gray-200'
                 }`}>
-                  <div className="text-[10px] text-gray-400 font-mono uppercase">Pháp Lý &amp; Bàn Giao</div>
+                  <div className="text-[10px] text-gray-400 font-mono uppercase">Pháp Lý &amp; Vận Hành</div>
                   <div className={`font-mono text-base sm:text-lg font-bold mt-0.5 ${
                     isDark ? 'text-white' : 'text-gray-900'
                   }`}>
                     Sổ Hồng Lâu Dài
                   </div>
-                  <div className="text-[10px] text-[#C5A880] mt-0.5 font-medium">{currentApartment.statusLabel}</div>
+                  <div className="text-[10px] text-[#C5A880] mt-0.5 font-medium">
+                    {isUserOwnsThisApt ? 'Phí QL: 12.500 đ/m²' : currentApartment.statusLabel}
+                  </div>
                 </div>
               </div>
-
-              {/* HUY HIỆU CĂN MẪU / CĂN CƯ DÂN */}
-              {currentApartment.isRealResident && (
-                <div className={`p-3 border rounded-none flex items-center gap-3 ${
-                  isDark 
-                    ? 'bg-[#1A160E] border-amber-500/50' 
-                    : 'bg-amber-50/80 border-amber-300'
-                }`}>
-                  <div className="w-8 h-8 rounded-none bg-amber-500/20 text-amber-500 flex items-center justify-center shrink-0 font-bold text-sm">
-                    ★
-                  </div>
-                  <div className="text-xs">
-                    <span className={`font-bold block ${isDark ? 'text-amber-300' : 'text-amber-900'}`}>
-                      {isAuthenticated && currentUser ? 'Căn Hộ Cư Dân Thực Tế Đã Bàn Giao' : 'Căn Hộ Mẫu Trải Nghiệm Thực Tế'}
-                    </span>
-                    <span className={`font-light ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
-                      {isAuthenticated && currentUser 
-                        ? `Chủ hộ: ${currentUser.full_name} • Đang sinh sống` 
-                        : 'Đã hoàn thiện nội thất tiêu chuẩn bàn giao • Mở cửa đón khách'}
-                    </span>
-                  </div>
-                </div>
-              )}
 
               {/* TIÊU CHUẨN KHÔNG GIAN BÀN GIAO */}
               <div className={`space-y-2 pt-2 border-t ${isDark ? 'border-[#1E293B]' : 'border-gray-200'}`}>
@@ -892,379 +887,180 @@ export default function FloorPlanExplorer({ onOpenLogin }: FloorPlanExplorerProp
               </div>
             </div>
 
-            {/* 2 NÚT HÀNH ĐỘNG CHÍNH */}
-            <div className={`pt-4 border-t space-y-2.5 mt-auto ${isDark ? 'border-[#1E293B]' : 'border-gray-200'}`}>
-              <button
-                type="button"
-                onClick={() => setIsRegisterOpen(true)}
-                className="w-full py-3.5 bg-[#C5A880] hover:bg-[#D4AF37] text-[#0A0E17] font-bold text-xs tracking-wider uppercase rounded-none transition-all shadow-lg flex items-center justify-center gap-2 cursor-pointer"
-              >
-                <PhoneCall className="w-4 h-4" />
-                <span>Đăng Ký Tham Quan Căn Hộ Thực Tế</span>
-              </button>
+            {/* ========================================================= */}
+            {/* 4. KHU VỰC HÀNH ĐỘNG MINH BẠCH - HOÀN TOÀN THEO TỪNG VAI TRÒ */}
+            {/* ========================================================= */}
+            <div className={`pt-4 border-t mt-auto ${isDark ? 'border-[#1E293B]' : 'border-gray-200'}`}>
+              {/* TRƯỜNG HỢP 1: CƯ DÂN ĐANG XEM ĐÚNG CĂN HỘ CỦA MÌNH */}
+              {isUserOwnsThisApt && (
+                <div className="space-y-2.5">
+                  <Link
+                    href="/portal?tab=resident-home"
+                    className="w-full py-3.5 bg-[#C5A880] hover:bg-[#D4AF37] text-[#0A0E17] font-bold text-xs tracking-wider uppercase rounded-none transition-all shadow-lg flex items-center justify-center gap-2"
+                  >
+                    <Home className="w-4 h-4" />
+                    <span>Vào Bảng Điều Khiển Căn Hộ Của Bạn</span>
+                  </Link>
 
-              <button
-                type="button"
-                onClick={() => {
-                  if (onOpenLogin) {
-                    onOpenLogin();
-                  } else {
-                    window.location.href = '/portal';
-                  }
-                }}
-                className={`w-full py-2.5 border text-xs font-semibold tracking-wider uppercase rounded-none transition-all flex items-center justify-center gap-2 cursor-pointer ${
-                  isDark
-                    ? 'bg-[#121824] hover:bg-[#1A2232] border-[#2A374A] hover:border-[#C5A880]/60 text-gray-300 hover:text-white'
-                    : 'bg-slate-100 hover:bg-slate-200 border-gray-300 hover:border-[#C5A880] text-gray-800'
-                }`}
-              >
-                <Sparkles className="w-3.5 h-3.5 text-[#C5A880]" />
-                <span>Đăng Nhập Portal Ban Quản Lý / Cư Dân</span>
-              </button>
+                  <div className="grid grid-cols-3 gap-2">
+                    <Link
+                      href="/portal?tab=resident-billing"
+                      className={`py-2 px-2 border text-center text-[11px] font-semibold rounded-none transition-colors flex flex-col items-center justify-center gap-1 ${
+                        isDark ? 'bg-[#121824] hover:bg-[#1A2232] border-[#2A374A] text-gray-200 hover:text-[#C5A880]' : 'bg-slate-50 hover:bg-slate-100 border-gray-200 text-gray-800'
+                      }`}
+                    >
+                      <CreditCard className="w-3.5 h-3.5 text-[#C5A880]" />
+                      <span>Hóa Đơn Căn</span>
+                    </Link>
+                    <Link
+                      href="/portal?tab=resident-visitor"
+                      className={`py-2 px-2 border text-center text-[11px] font-semibold rounded-none transition-colors flex flex-col items-center justify-center gap-1 ${
+                        isDark ? 'bg-[#121824] hover:bg-[#1A2232] border-[#2A374A] text-gray-200 hover:text-[#C5A880]' : 'bg-slate-50 hover:bg-slate-100 border-gray-200 text-gray-800'
+                      }`}
+                    >
+                      <UserPlus className="w-3.5 h-3.5 text-[#C5A880]" />
+                      <span>Cấp Thẻ Khách</span>
+                    </Link>
+                    <Link
+                      href="/portal?tab=resident-request"
+                      className={`py-2 px-2 border text-center text-[11px] font-semibold rounded-none transition-colors flex flex-col items-center justify-center gap-1 ${
+                        isDark ? 'bg-[#121824] hover:bg-[#1A2232] border-[#2A374A] text-gray-200 hover:text-[#C5A880]' : 'bg-slate-50 hover:bg-slate-100 border-gray-200 text-gray-800'
+                      }`}
+                    >
+                      <Wrench className="w-3.5 h-3.5 text-[#C5A880]" />
+                      <span>Báo Kỹ Thuật</span>
+                    </Link>
+                  </div>
+                </div>
+              )}
+
+              {/* TRƯỜNG HỢP 2: CƯ DÂN ĐANG THAM KHẢO DÒNG CĂN KHÁC */}
+              {isOwnerOrResident && !isUserOwnsThisApt && (
+                <div className="space-y-2">
+                  {userAptCategory && (
+                    <button
+                      type="button"
+                      onClick={() => handleSelectCategory(userAptCategory)}
+                      className="w-full py-3 bg-[#C5A880] hover:bg-[#D4AF37] text-[#0A0E17] font-bold text-xs tracking-wider uppercase rounded-none transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer"
+                    >
+                      <Crown className="w-4 h-4" />
+                      <span>Quay Về Căn Hộ Của Tôi ({currentUser?.apartment_code || 'CH-06'})</span>
+                    </button>
+                  )}
+                  <Link
+                    href="/portal?tab=resident-home"
+                    className={`w-full py-2.5 border text-xs font-semibold tracking-wider uppercase rounded-none transition-all flex items-center justify-center gap-2 ${
+                      isDark
+                        ? 'bg-[#121824] hover:bg-[#1A2232] border-[#2A374A] text-gray-300 hover:text-white'
+                        : 'bg-slate-100 hover:bg-slate-200 border-gray-300 text-gray-800'
+                    }`}
+                  >
+                    <Home className="w-3.5 h-3.5 text-[#C5A880]" />
+                    <span>Vào Bảng Điều Khiển Căn Hộ Của Bạn</span>
+                  </Link>
+                </div>
+              )}
+
+              {/* TRƯỜNG HỢP 3: QUẢN TRỊ VIÊN BAN QUẢN LÝ */}
+              {isAdmin && (
+                <div className="space-y-2">
+                  <Link
+                    href="/portal?tab=admin-building"
+                    className="w-full py-3.5 bg-[#C5A880] hover:bg-[#D4AF37] text-[#0A0E17] font-bold text-xs tracking-wider uppercase rounded-none transition-all shadow-lg flex items-center justify-center gap-2"
+                  >
+                    <Building className="w-4 h-4" />
+                    <span>Quản Lý Căn Hộ &amp; Cư Dân (Portal BQL)</span>
+                  </Link>
+
+                  <div className="grid grid-cols-2 gap-2">
+                    <Link
+                      href="/portal?tab=admin-visitor"
+                      className={`py-2 px-2 border text-center text-xs font-semibold rounded-none transition-colors flex items-center justify-center gap-1.5 ${
+                        isDark ? 'bg-[#121824] hover:bg-[#1A2232] border-[#2A374A] text-gray-200 hover:text-white' : 'bg-slate-50 hover:bg-slate-100 border-gray-200 text-gray-800'
+                      }`}
+                    >
+                      <UserCheck className="w-3.5 h-3.5 text-[#C5A880]" />
+                      <span>Kiểm Soát Thẻ Khách</span>
+                    </Link>
+                    <Link
+                      href="/portal?tab=admin-billing"
+                      className={`py-2 px-2 border text-center text-xs font-semibold rounded-none transition-colors flex items-center justify-center gap-1.5 ${
+                        isDark ? 'bg-[#121824] hover:bg-[#1A2232] border-[#2A374A] text-gray-200 hover:text-white' : 'bg-slate-50 hover:bg-slate-100 border-gray-200 text-gray-800'
+                      }`}
+                    >
+                      <CreditCard className="w-3.5 h-3.5 text-[#C5A880]" />
+                      <span>Thu Phí &amp; Hóa Đơn</span>
+                    </Link>
+                  </div>
+                </div>
+              )}
+
+              {/* TRƯỜNG HỢP 4: KỸ THUẬT VIÊN VẬN HÀNH */}
+              {isTechnician && (
+                <div className="space-y-2">
+                  <Link
+                    href="/portal?tab=admin-kanban"
+                    className="w-full py-3.5 bg-[#C5A880] hover:bg-[#D4AF37] text-[#0A0E17] font-bold text-xs tracking-wider uppercase rounded-none transition-all shadow-lg flex items-center justify-center gap-2"
+                  >
+                    <Wrench className="w-4 h-4" />
+                    <span>Bảng Việc Kỹ Thuật (Kanban)</span>
+                  </Link>
+                  <Link
+                    href="/portal?tab=admin-dashboard"
+                    className={`w-full py-2.5 border text-xs font-semibold tracking-wider uppercase rounded-none transition-all flex items-center justify-center gap-2 ${
+                      isDark
+                        ? 'bg-[#121824] hover:bg-[#1A2232] border-[#2A374A] text-gray-300 hover:text-white'
+                        : 'bg-slate-100 hover:bg-slate-200 border-gray-300 text-gray-800'
+                    }`}
+                  >
+                    <Layers className="w-3.5 h-3.5 text-[#C5A880]" />
+                    <span>Xem Giám Sát Cơ Điện Chung Cư</span>
+                  </Link>
+                </div>
+              )}
+
+              {/* TRƯỜNG HỢP 5: KHÁCH VÃNG LAI (CHƯA ĐĂNG NHẬP) - MINH BẠCH, TRỰC TIẾP */}
+              {!isAuthenticated && (
+                <div className="space-y-2">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (onOpenLogin) {
+                        onOpenLogin();
+                      } else {
+                        window.location.href = '/portal';
+                      }
+                    }}
+                    className="w-full py-3.5 bg-[#C5A880] hover:bg-[#D4AF37] text-[#0A0E17] font-bold text-xs tracking-wider uppercase rounded-none transition-all shadow-lg flex items-center justify-center gap-2 cursor-pointer"
+                  >
+                    <LogIn className="w-4 h-4" />
+                    <span>Đăng Nhập Cư Dân / BQL Để Quản Lý</span>
+                  </button>
+
+                  <a
+                    href="tel:0364967082"
+                    className={`w-full py-2.5 border text-xs font-semibold tracking-wider uppercase rounded-none transition-all flex items-center justify-center gap-2 cursor-pointer ${
+                      isDark
+                        ? 'bg-[#121824] hover:bg-[#1A2232] border-[#2A374A] hover:border-[#C5A880]/60 text-gray-300 hover:text-white'
+                        : 'bg-slate-100 hover:bg-slate-200 border-gray-300 hover:border-[#C5A880] text-gray-800'
+                    }`}
+                  >
+                    <Phone className="w-3.5 h-3.5 text-[#C5A880]" />
+                    <span>Hotline Ban Quản Lý: 0364 967 082</span>
+                  </a>
+
+                  <div className={`p-2.5 border rounded-none text-[11px] leading-relaxed flex items-start gap-2 ${
+                    isDark ? 'bg-[#0A0E17] border-[#1E293B] text-gray-400' : 'bg-slate-50 border-gray-200 text-gray-600'
+                  }`}>
+                    <Info className="w-4 h-4 text-[#C5A880] shrink-0 mt-0.5" />
+                    <span>Tiếp đón trực tiếp tại <strong>Sảnh The Tropical • Chung Cư BS-07</strong> (08:00 - 20:00). Minh bạch hồ sơ pháp lý, không qua trung gian.</span>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>
       </div>
-
-      {/* ============================================================= */}
-      {/* MODAL ĐĂNG KÝ XEM NHÀ - CHỌN MỐC GIỜ THAM QUAN CHUYÊN NGHIỆP  */}
-      {/* ============================================================= */}
-      {isRegisterOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/80 backdrop-blur-sm overflow-y-auto">
-          <div className={`border border-[#C5A880]/60 rounded-none p-5 sm:p-7 max-w-lg w-full shadow-2xl relative my-auto transition-colors duration-300 ${
-            isDark ? 'bg-[#0E131C] text-white' : 'bg-white text-gray-900'
-          }`}>
-            <button
-              type="button"
-              onClick={() => {
-                setIsRegisterOpen(false);
-                setRegisterSuccess(false);
-              }}
-              className={`absolute top-4 right-4 p-1 rounded-none transition-colors ${
-                isDark ? 'text-gray-400 hover:text-white hover:bg-white/10' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-100'
-              }`}
-            >
-              <X className="w-5 h-5" />
-            </button>
-
-            {/* Tiêu đề Modal */}
-            <div className="space-y-1 mb-5 pr-8">
-              <div className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-none text-[10px] font-mono uppercase tracking-wider ${
-                isDark 
-                  ? 'bg-[#161F2E] border border-[#C5A880]/40 text-[#C5A880]' 
-                  : 'bg-amber-50 border border-[#C5A880]/60 text-amber-800'
-              }`}>
-                <Clock className="w-3 h-3 text-[#C5A880]" />
-                <span>Đặt Lịch Tiếp Đón Trực Tiếp</span>
-              </div>
-              <h3 className={`font-serif text-xl sm:text-2xl font-bold ${
-                isDark ? 'text-white' : 'text-gray-900'
-              }`}>
-                Tham Quan Căn Hộ {currentApartment.code}
-              </h3>
-              <p className={`text-xs font-light leading-relaxed ${
-                isDark ? 'text-gray-400' : 'text-gray-600'
-              }`}>
-                {currentApartment.name} • {currentApartment.area} m² • {currentApartment.floorText}
-              </p>
-            </div>
-
-            {registerSuccess && confirmedBooking ? (
-              /* MÀN HÌNH XÁC NHẬN THÀNH CÔNG */
-              <div className="space-y-4">
-                <div className={`p-4 rounded-none text-center space-y-2 border ${
-                  isDark 
-                    ? 'bg-emerald-950/40 border-emerald-500/60' 
-                    : 'bg-emerald-50 border-emerald-300'
-                }`}>
-                  <div className={`w-12 h-12 rounded-none border flex items-center justify-center mx-auto ${
-                    isDark 
-                      ? 'bg-emerald-500/20 border-emerald-400 text-emerald-400' 
-                      : 'bg-emerald-100 border-emerald-500 text-emerald-600'
-                  }`}>
-                    <CheckCircle2 className="w-7 h-7" />
-                  </div>
-                  <h4 className={`font-serif text-base font-bold ${
-                    isDark ? 'text-white' : 'text-emerald-950'
-                  }`}>
-                    Đăng Ký Tham Quan Thành Công!
-                  </h4>
-                  <p className={`text-xs font-light leading-relaxed ${
-                    isDark ? 'text-gray-300' : 'text-emerald-800'
-                  }`}>
-                    Lễ tân và chuyên viên Ban Quản Lý The Tropical đã tiếp nhận yêu cầu và sẽ sẵn sàng đón tiếp quý khách đúng khung giờ đã chọn.
-                  </p>
-                </div>
-
-                {/* Thẻ tóm tắt thông tin lịch hẹn */}
-                <div className={`border rounded-none p-4 space-y-2.5 text-xs font-mono ${
-                  isDark 
-                    ? 'bg-[#121824] border-[#1E293B]' 
-                    : 'bg-slate-50 border-gray-200'
-                }`}>
-                  {confirmedBooking.id && (
-                    <div className={`flex justify-between items-center pb-2 border-b ${
-                      isDark ? 'border-[#1E293B]' : 'border-gray-200'
-                    }`}>
-                      <span className={isDark ? 'text-gray-400' : 'text-gray-500'}>Mã Phiếu Hẹn:</span>
-                      <span className="font-bold text-[#C5A880] bg-[#C5A880]/15 px-2 py-0.5 rounded-none border border-[#C5A880]/40">
-                        {confirmedBooking.id}
-                      </span>
-                    </div>
-                  )}
-                  <div className={`flex justify-between items-center pb-2 border-b ${
-                    isDark ? 'border-[#1E293B]' : 'border-gray-200'
-                  }`}>
-                    <span className={isDark ? 'text-gray-400' : 'text-gray-500'}>Căn hộ tham quan:</span>
-                    <span className={`font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>{confirmedBooking.apartmentCode} ({confirmedBooking.apartmentName})</span>
-                  </div>
-                  <div className={`flex justify-between items-center pb-2 border-b ${
-                    isDark ? 'border-[#1E293B]' : 'border-gray-200'
-                  }`}>
-                    <span className={isDark ? 'text-gray-400' : 'text-gray-500'}>Mốc giờ đón tiếp:</span>
-                    <span className="font-bold text-emerald-400 bg-emerald-950/60 px-2 py-0.5 rounded-none border border-emerald-500/40">
-                      {confirmedBooking.timeSlot}
-                    </span>
-                  </div>
-                  <div className={`flex justify-between items-center pb-2 border-b ${
-                    isDark ? 'border-[#1E293B]' : 'border-gray-200'
-                  }`}>
-                    <span className={isDark ? 'text-gray-400' : 'text-gray-500'}>Ngày tham quan:</span>
-                    <span className={`font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>{confirmedBooking.dateText}</span>
-                  </div>
-                  <div className={`flex justify-between items-center pb-2 border-b ${
-                    isDark ? 'border-[#1E293B]' : 'border-gray-200'
-                  }`}>
-                    <span className={isDark ? 'text-gray-400' : 'text-gray-500'}>Khách đăng ký:</span>
-                    <span className={isDark ? 'text-gray-200' : 'text-gray-800'}>{confirmedBooking.name} • {confirmedBooking.phone} ({confirmedBooking.guests})</span>
-                  </div>
-                  <div className={`flex items-start gap-2 pt-1 text-[11px] font-sans leading-relaxed ${
-                    isDark ? 'text-gray-400' : 'text-gray-600'
-                  }`}>
-                    <MapPin className="w-4 h-4 text-[#C5A880] shrink-0 mt-0.5" />
-                    <span><strong>Địa điểm đón tiếp:</strong> Sảnh Đón Khách The Tropical • Chung Cư BS-07, Phân khu Beverly Solari, Vinhomes Grand Park, TP. Thủ Đức, TP.HCM (Hotline: 0364 967 082 / 0901 888 999).</span>
-                  </div>
-                </div>
-
-                <div className="pt-2">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setIsRegisterOpen(false);
-                      setRegisterSuccess(false);
-                    }}
-                    className="w-full py-3 bg-[#C5A880] hover:bg-[#D4AF37] text-[#0A0E17] font-bold text-xs tracking-wider uppercase rounded-none transition-all shadow-lg"
-                  >
-                    Hoàn Tất & Đóng
-                  </button>
-                </div>
-              </div>
-            ) : (
-              /* FORM ĐĂNG KÝ VỚI BỘ CHỌN MỐC GIỜ THÔNG MINH */
-              <form onSubmit={handleRegisterSubmit} className="space-y-4 text-xs">
-                {/* 1. Họ tên và Số điện thoại */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <div>
-                    <label className={`block font-mono text-[11px] mb-1 ${
-                      isDark ? 'text-gray-300' : 'text-gray-700 font-medium'
-                    }`}>
-                      Họ và Tên (*):
-                    </label>
-                    <input
-                      type="text"
-                      required
-                      placeholder="Ví dụ: Nguyễn Hữu Lực"
-                      value={leadForm.name}
-                      onChange={(e) => setLeadForm({ ...leadForm, name: e.target.value })}
-                      className={`w-full rounded-none p-2.5 focus:outline-none focus:border-[#C5A880] transition-colors border ${
-                        isDark 
-                          ? 'bg-[#121824] border-[#1E293B] text-white' 
-                          : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
-                      }`}
-                    />
-                  </div>
-
-                  <div>
-                    <label className={`block font-mono text-[11px] mb-1 ${
-                      isDark ? 'text-gray-300' : 'text-gray-700 font-medium'
-                    }`}>
-                      Số Điện Thoại (*):
-                    </label>
-                    <input
-                      type="tel"
-                      required
-                      pattern="[0-9]{9,11}"
-                      placeholder="Ví dụ: 0901 888 999"
-                      value={leadForm.phone}
-                      onChange={(e) => setLeadForm({ ...leadForm, phone: e.target.value })}
-                      className={`w-full rounded-none p-2.5 focus:outline-none focus:border-[#C5A880] transition-colors border ${
-                        isDark 
-                          ? 'bg-[#121824] border-[#1E293B] text-white' 
-                          : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
-                      }`}
-                    />
-                  </div>
-                </div>
-
-                {/* 2. Chọn Ngày Tham Quan */}
-                <div className="space-y-1.5">
-                  <label className={`flex items-center gap-1.5 font-mono text-[11px] ${
-                    isDark ? 'text-gray-300' : 'text-gray-700 font-medium'
-                  }`}>
-                    <Calendar className="w-3.5 h-3.5 text-[#C5A880]" />
-                    <span>Ngày Quý Khách Muốn Tham Quan:</span>
-                  </label>
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5">
-                    {getTourDateOptions().map((opt) => (
-                      <button
-                        key={opt.id}
-                        type="button"
-                        onClick={() => setLeadForm({ ...leadForm, dateOption: opt.id })}
-                        className={`py-2 px-2 text-center rounded-none text-xs transition-all font-medium ${
-                          leadForm.dateOption === opt.id
-                            ? 'bg-[#C5A880] text-[#0A0E17] font-bold shadow-md'
-                            : isDark
-                              ? 'bg-[#121824] border border-[#1E293B] text-gray-300 hover:text-white hover:border-[#C5A880]/50'
-                              : 'bg-white border border-gray-200 text-gray-700 hover:text-gray-900 hover:border-[#C5A880]'
-                        }`}
-                      >
-                        {opt.label}
-                      </button>
-                    ))}
-                  </div>
-
-                  {leadForm.dateOption === 'custom' && (
-                    <input
-                      type="date"
-                      required
-                      min={new Date().toISOString().split('T')[0]}
-                      value={leadForm.customDate}
-                      onChange={(e) => setLeadForm({ ...leadForm, customDate: e.target.value })}
-                      className={`w-full rounded-none p-2 text-xs focus:outline-none focus:border-[#C5A880] mt-1.5 transition-colors border ${
-                        isDark 
-                          ? 'bg-[#121824] border-[#1E293B] text-white' 
-                          : 'bg-white border-gray-300 text-gray-900'
-                      }`}
-                    />
-                  )}
-                </div>
-
-                {/* 3. CHỌN MỐC GIỜ THAM QUAN (THEO CÁC MỐC CHUẨN) */}
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <label className={`flex items-center gap-1.5 font-mono text-[11px] ${
-                      isDark ? 'text-gray-300' : 'text-gray-700 font-medium'
-                    }`}>
-                      <Clock className="w-3.5 h-3.5 text-[#C5A880]" />
-                      <span>Chọn Mốc Giờ Đón Tiếp (*):</span>
-                    </label>
-                    <span className="text-[10px] font-mono text-[#C5A880]">60 phút / ca đón</span>
-                  </div>
-
-                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                    {TOUR_TIME_SLOTS.map((slot) => {
-                      const isSelected = leadForm.timeSlot === slot.time;
-                      return (
-                        <button
-                          key={slot.id}
-                          type="button"
-                          onClick={() => setLeadForm({ ...leadForm, timeSlot: slot.time })}
-                          className={`p-2.5 rounded-none border text-left transition-all relative flex flex-col justify-between cursor-pointer ${
-                            isSelected
-                              ? isDark
-                                ? 'bg-[#C5A880]/15 border-[#C5A880] ring-1 ring-[#C5A880] shadow-[0_0_15px_rgba(197,168,128,0.3)]'
-                                : 'bg-amber-50 border-[#C5A880] ring-1 ring-[#C5A880] shadow-md'
-                              : isDark
-                                ? 'bg-[#121824] border-[#1E293B] hover:border-[#C5A880]/50 hover:bg-[#161F2E]'
-                                : 'bg-white border-gray-200 hover:border-[#C5A880] hover:bg-amber-50/40'
-                          }`}
-                        >
-                          <div className="flex items-center justify-between gap-1">
-                            <span className={`text-[9.5px] font-mono uppercase px-1.5 py-0.5 rounded-none ${
-                              isSelected
-                                ? 'bg-[#C5A880] text-[#0A0E17] font-bold'
-                                : isDark
-                                  ? 'bg-[#1E293B] text-gray-400'
-                                  : 'bg-gray-100 text-gray-600'
-                            }`}>
-                              {slot.period}
-                            </span>
-                            {slot.popular && (
-                              <span className="text-[9px] text-amber-500 font-mono font-bold">
-                                ★ Hot
-                              </span>
-                            )}
-                          </div>
-
-                          <div className={`font-mono text-xs font-bold mt-1.5 ${
-                            isSelected 
-                              ? isDark ? 'text-white' : 'text-[#0D1117]' 
-                              : isDark ? 'text-gray-200' : 'text-gray-800'
-                          }`}>
-                            {slot.time}
-                          </div>
-
-                          <div className={`text-[10px] truncate mt-0.5 ${
-                            isDark ? 'text-gray-400' : 'text-gray-500'
-                          }`}>
-                            {slot.tag}
-                          </div>
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-
-                {/* 4. Số lượng người tham quan */}
-                <div className="space-y-1.5">
-                  <label className={`flex items-center gap-1.5 font-mono text-[11px] ${
-                    isDark ? 'text-gray-300' : 'text-gray-700 font-medium'
-                  }`}>
-                    <Users className="w-3.5 h-3.5 text-[#C5A880]" />
-                    <span>Số Lượng Người Đi Cùng:</span>
-                  </label>
-                  <div className="grid grid-cols-3 gap-2">
-                    {['1 - 2 người', '3 - 4 người', 'Đoàn > 4 người'].map((g) => (
-                      <button
-                        key={g}
-                        type="button"
-                        onClick={() => setLeadForm({ ...leadForm, guests: g })}
-                        className={`py-2 px-1 text-center rounded-none text-[11px] font-mono transition-all ${
-                          leadForm.guests === g
-                            ? isDark
-                              ? 'bg-[#1E293B] border border-[#C5A880] text-[#C5A880] font-bold'
-                              : 'bg-amber-50 border border-[#C5A880] text-amber-900 font-bold'
-                            : isDark
-                              ? 'bg-[#121824] border border-[#1E293B] text-gray-400 hover:text-white'
-                              : 'bg-white border border-gray-200 text-gray-600 hover:text-gray-900'
-                        }`}
-                      >
-                        {g}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* 5. Nút Xác Nhận Đặt Lịch */}
-                <div className="pt-2">
-                  <button
-                    type="submit"
-                    className="w-full py-3.5 bg-[#C5A880] hover:bg-[#D4AF37] text-[#0A0E17] font-bold text-xs tracking-wider uppercase rounded-none transition-all shadow-xl flex items-center justify-center gap-2 cursor-pointer"
-                  >
-                    <PhoneCall className="w-4 h-4" />
-                    <span>Xác Nhận Đặt Lịch Tham Quan ({leadForm.timeSlot})</span>
-                  </button>
-                  <div className={`text-center text-[10px] font-mono mt-2 ${
-                    isDark ? 'text-gray-400' : 'text-gray-500'
-                  }`}>
-                    ✓ Miễn phí tham quan • Có xe đưa đón nội khu & đồ uống welcome
-                  </div>
-                </div>
-              </form>
-            )}
-          </div>
-        </div>
-      )}
     </section>
   );
 }
