@@ -107,20 +107,20 @@ export default function SmartParking() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#222B35] pb-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#222B35] pb-3">
         <div>
-          <div className="text-[10px] uppercase tracking-[0.25em] text-[#C5A880] font-semibold">
-            Hạ Tầng Tòa Nhà • Kiểm Soát Ra Vào Hầm B1-B2 (Chung Cư BS-07)
+          <div className="text-[10px] uppercase tracking-[0.2em] text-[#C5A880] font-semibold">
+            BÃI ĐỖ XE HẦM B1 & B2 • BS-07
           </div>
-          <h2 className="font-serif text-2xl text-white font-bold mt-1">
-            Kiểm Soát Phương Tiện & Nhận Diện Biển Số LPR
+          <h2 className="font-serif text-xl sm:text-2xl text-white font-bold mt-0.5">
+            Kiểm Soát Phương Tiện & Camera LPR
           </h2>
         </div>
 
         <div className="flex items-center gap-2 text-xs">
           <span className="px-3 py-1 bg-[#161B22] border border-[#2D3748] text-emerald-400 flex items-center gap-1.5 font-mono">
             <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-            LPR Camera AI: &lt; 0.28s • Độ chính xác: 99.4%
+            Camera LPR: Nhận diện tự động
           </span>
         </div>
       </div>
@@ -207,15 +207,15 @@ export default function SmartParking() {
                   ? 'text-emerald-300 bg-emerald-950 border-emerald-500'
                   : 'text-red-300 bg-red-950 border-red-500'
               }`}>
-                {scanResult === 'MATCHED' ? 'BIỂN SỐ HỢP LỆ (HỢP ĐỒNG HIỆU LỰC)' : 'XE CHƯA ĐĂNG KÝ VÉ THÁNG'}
+                {scanResult === 'MATCHED' ? 'BIỂN SỐ HỢP LỆ' : 'CHƯA ĐĂNG KÝ VÉ THÁNG'}
               </span>
             </div>
           </div>
 
           {/* Quick Simulation Buttons based on REAL Registered Vehicles */}
-          <div className="space-y-2 pt-1">
+          <div className="space-y-1.5 pt-1">
             <div className="text-[11px] text-gray-400 font-semibold uppercase tracking-wider">
-              Kiểm Tra Nhanh Nhận Diện Thực Tế:
+              Kiểm Tra Nhanh Nhận Diện Biển Số:
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
               {registeredVehicles.slice(0, 3).map((v) => (
@@ -245,7 +245,7 @@ export default function SmartParking() {
         <div className="bg-[#121820] border border-[#222B35] p-5 space-y-4 flex flex-col justify-between">
           <div className="space-y-4">
             <div className="border-b border-[#222B35] pb-3 text-xs uppercase tracking-wider text-[#C5A880] font-semibold">
-              Đối Soát CSDL Phương Tiện Cư Dân & Trạng Thái Barrier
+              Đối Soát Cư Dân & Trạng Thái Barrier
             </div>
 
             <div className="p-4 bg-[#161B22] border border-[#222B35] space-y-2.5 text-xs">
@@ -256,21 +256,21 @@ export default function SmartParking() {
                 </span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-gray-400">Chủ sở hữu & Căn hộ:</span>
+                <span className="text-gray-400">Chủ sở hữu:</span>
                 <span className="text-gray-200 font-semibold">
-                  {matchedVehicle ? `${matchedVehicle.ownerName} (Căn ${matchedVehicle.aptCode})` : 'Khách Vãng Lai / Chưa Đăng Ký'}
+                  {matchedVehicle ? `${matchedVehicle.ownerName} (Căn ${matchedVehicle.aptCode})` : 'Khách Vãng Lai'}
                 </span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-gray-400">Loại xe & Dòng xe:</span>
+                <span className="text-gray-400">Dòng xe:</span>
                 <span className="text-gray-300 font-mono">
-                  {matchedVehicle ? `${matchedVehicle.type === 'CAR' ? 'Ô tô' : 'Xe máy'} • ${matchedVehicle.brand || 'Tiêu chuẩn'}` : 'Vãng lai'}
+                  {matchedVehicle ? `${matchedVehicle.type === 'CAR' ? 'Ô tô' : 'Xe máy'} • ${matchedVehicle.brand || '---'}` : 'Vãng lai'}
                 </span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-gray-400">Mã thẻ RFID / Vị trí ô đỗ:</span>
+                <span className="text-gray-400">Thẻ RFID / Ô đỗ:</span>
                 <span className="text-[#C5A880] font-mono font-bold">
-                  {matchedVehicle ? `${matchedVehicle.cardNo || 'RFID-TAG'} • Ô ${matchedVehicle.slot || 'B1-M01'}` : 'Lấy thẻ giấy / Quét VietQR thu phí lượt'}
+                  {matchedVehicle ? `${matchedVehicle.cardNo || 'RFID-TAG'} • Ô ${matchedVehicle.slot || 'B1-M01'}` : 'Vé lượt'}
                 </span>
               </div>
             </div>
