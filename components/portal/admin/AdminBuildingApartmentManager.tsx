@@ -4,14 +4,35 @@ import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { 
   getApartmentUnits, 
   getApartmentByCode, 
-  syncApartmentsFromNksApi,
+  syncApartmentsFromNksApi, 
   ApartmentUnit, 
-  ApartmentResidentOwner,
-  ApartmentType,
-  ApartmentStatus,
+  ApartmentResidentOwner, 
+  ApartmentType, 
+  ApartmentStatus, 
   saveApartmentsList 
 } from '@/lib/apartmentStore';
 import { getUserStore, getApartmentMembers, ApartmentMember } from '@/lib/userStore';
+import { 
+  Map, 
+  Layers, 
+  Compass, 
+  Maximize2, 
+  Minimize2, 
+  ZoomIn, 
+  Eye, 
+  ChevronRight, 
+  Sparkles, 
+  Building, 
+  MapPin, 
+  Check, 
+  ExternalLink,
+  Info,
+  X,
+  Navigation,
+  TreePine,
+  Waves,
+  Dumbbell
+} from 'lucide-react';
 import AssignResidentModal from '@/components/portal/admin/AssignResidentModal';
 import EditApartmentModal from '@/components/portal/admin/EditApartmentModal';
 import AddApartmentModal from '@/components/portal/admin/AddApartmentModal';
@@ -20,9 +41,31 @@ import ApartmentDetailModal from '@/components/portal/admin/ApartmentDetailModal
 export type OccupancyFilter = 'ALL' | 'OCCUPIED' | 'VACANT' | 'MAINTENANCE';
 export type ApartmentTypeFilter = 'ALL' | '1PN' | '2PN' | '3PN' | 'DUPLEX_PENTHOUSE';
 export type FloorRangeFilter = 'ALL' | 'LOW' | 'MID' | 'HIGH';
-export type ViewPerspective = '3D' | 'BUILDING_ELEVATION' | 'FLOOR_PLAN' | 'GRID';
+export type ViewPerspective = '3D' | 'BUILDING_ELEVATION' | 'FLOOR_PLAN' | 'GRID' | 'MASTER_PLAN';
 
 export type BuildingColorTone = 'GOLD_LUXURY';
+
+// Danh sách 18 tiện ích quy hoạch phân khu The Tropical chuẩn từ sơ đồ chủ đầu tư
+export const THE_TROPICAL_AMENITIES = [
+  { id: '01', name: 'Phố cọ Rodeo', category: 'PARK', desc: 'Tuyến phố thương mại shophouse & dạo bộ rợp bóng cọ nhiệt đới' },
+  { id: '02', name: 'Bể bơi nhiệt đới', category: 'POOL', desc: 'Cụm hồ bơi phong cách resort trung tâm phân khu' },
+  { id: '03', name: 'Bể bơi ốc đảo', category: 'POOL', desc: 'Khu bơi lội thư giãn cảnh quan ốc đảo sinh thái' },
+  { id: '04', name: 'Sân thể thao / Bể bơi Malibu', category: 'SPORT', desc: 'Cụm sân tennis, bóng rổ & bể bơi chuẩn thi đấu' },
+  { id: '05', name: 'Nhà phụ trợ bể bơi', category: 'POOL', desc: 'Khu thay đồ, tắm tráng & quầy cứu hộ vận hành' },
+  { id: '06', name: 'Sân chơi trẻ em', category: 'SPORT', desc: 'Khu vận động vui chơi liên hoàn an toàn cho cư dân nhí' },
+  { id: '07', name: 'Sân Gym ngoài trời', category: 'SPORT', desc: 'Trang thiết bị máy tập thể lực đa năng ngoài trời' },
+  { id: '08', name: 'Sân yoga', category: 'SPORT', desc: 'Không gian tĩnh lặng râm mát rèn luyện thể chất' },
+  { id: '09', name: 'Suối bậc cảnh quan', category: 'PARK', desc: 'Thác nước & dòng chảy sinh thái điều hòa nhiệt độ' },
+  { id: '10', name: 'Vườn cọ nhiệt đới Honolulu', category: 'PARK', desc: 'Đại cảnh quan công viên cọ xanh ngát trung tâm' },
+  { id: '11', name: 'Vườn California', category: 'PARK', desc: 'Khu vườn dạo bộ phong cách Bờ Tây nước Mỹ' },
+  { id: '12', name: 'Vườn San Mario', category: 'PARK', desc: 'Tiểu cảnh hoa cỏ & đường dạo dưỡng sinh' },
+  { id: '13', name: 'Biển tên phân khu', category: 'ACCESS', desc: 'Cổng chào nhận diện thương hiệu The Tropical' },
+  { id: '14', name: 'Chòi nghỉ thư giãn', category: 'PARK', desc: 'Khu vực dừng chân ngắm cảnh râm mát' },
+  { id: '15', name: 'Giàn cảnh quan nghệ thuật', category: 'PARK', desc: 'Điểm nhấn kiến trúc biểu tượng chụp ảnh check-in' },
+  { id: '16', name: 'Ghế nghỉ Sunken', category: 'PARK', desc: 'Không gian phòng khách chìm thư thái bên hồ' },
+  { id: 'P', name: 'Bãi đỗ xe thông minh', category: 'ACCESS', desc: 'Khu vực gửi xe & lối xuống hầm B1/B2 kiểm soát tự động' },
+  { id: 'D', name: 'Sảnh đón Drop-off', category: 'ACCESS', desc: 'Lối xe đón trả cư dân tại sảnh chính tòa nhà' },
+];
 
 // Danh sách các khối căn hộ kiến trúc hiển thị trên mô hình 3D (hỗ trợ tối đa 39 tầng phân khu The Tropical - Chung Cư BS-07, BS-08, BS-09, BS-10)
 export const BUILDING_3D_UNITS: {
@@ -150,6 +193,13 @@ export default function AdminBuildingApartmentManager() {
   const [isFloorPlanExpanded, setIsFloorPlanExpanded] = useState<boolean>(false);
   const [floorFilterStatus, setFloorFilterStatus] = useState<'ALL' | 'OCCUPIED' | 'VACANT'>('ALL');
   const [billToastMessage, setBillToastMessage] = useState<string | null>(null);
+
+  // Điều khiển chế độ xem Bản đồ Quy hoạch Phân khu & Đô thị
+  const [masterPlanTab, setMasterPlanTab] = useState<'TROPICAL' | 'CAD_FLOOR' | 'MACRO' | 'AMENITIES'>('TROPICAL');
+  const [isMasterPlanZoomed, setIsMasterPlanZoomed] = useState<boolean>(false);
+  const [modalZoomScale, setModalZoomScale] = useState<number>(1);
+  const [selectedAmenityCategory, setSelectedAmenityCategory] = useState<'ALL' | 'POOL' | 'PARK' | 'SPORT' | 'ACCESS'>('ALL');
+  const [selectedAmenityId, setSelectedAmenityId] = useState<string | null>(null);
 
   // Modals state
   const [isAssignModalOpen, setIsAssignModalOpen] = useState(false);
@@ -840,12 +890,12 @@ export default function AdminBuildingApartmentManager() {
           
           {/* THANH ĐIỀU HÀNH GÓC NHÌN DUY NHẤT (SINGLE UNIFIED VIEWPORT TOOLBAR) */}
           <div className="px-3 py-2 bg-[#0E1520] border-b border-[#222B35] flex items-center justify-between gap-2.5 text-xs">
-            {/* 4 Tab Chuyển Đổi Góc Nhìn */}
-            <div className="flex bg-[#070B11] p-0.5 border border-[#1E2A38] text-xs font-semibold shrink-0">
+            {/* 5 Tab Chuyển Đổi Góc Nhìn */}
+            <div className="flex bg-[#070B11] p-0.5 border border-[#1E2A38] text-xs font-semibold shrink-0 flex-wrap">
               <button
                 type="button"
                 onClick={() => setBuildingPerspective('3D')}
-                className={`px-3 py-1 transition-all ${
+                className={`px-2.5 sm:px-3 py-1 transition-all ${
                   buildingPerspective === '3D'
                     ? 'bg-[#C5A880] text-[#0D1117] font-bold shadow'
                     : 'text-gray-400 hover:text-white'
@@ -856,7 +906,7 @@ export default function AdminBuildingApartmentManager() {
               <button
                 type="button"
                 onClick={() => setBuildingPerspective('BUILDING_ELEVATION')}
-                className={`px-3 py-1 transition-all ${
+                className={`px-2.5 sm:px-3 py-1 transition-all ${
                   buildingPerspective === 'BUILDING_ELEVATION'
                     ? 'bg-[#C5A880] text-[#0D1117] font-bold shadow'
                     : 'text-gray-400 hover:text-white'
@@ -867,7 +917,7 @@ export default function AdminBuildingApartmentManager() {
               <button
                 type="button"
                 onClick={() => setBuildingPerspective('FLOOR_PLAN')}
-                className={`px-3 py-1 transition-all ${
+                className={`px-2.5 sm:px-3 py-1 transition-all ${
                   buildingPerspective === 'FLOOR_PLAN'
                     ? 'bg-[#C5A880] text-[#0D1117] font-bold shadow'
                     : 'text-gray-400 hover:text-white'
@@ -878,7 +928,7 @@ export default function AdminBuildingApartmentManager() {
               <button
                 type="button"
                 onClick={() => setBuildingPerspective('GRID')}
-                className={`px-3 py-1 transition-all ${
+                className={`px-2.5 sm:px-3 py-1 transition-all ${
                   buildingPerspective === 'GRID'
                     ? 'bg-[#C5A880] text-[#0D1117] font-bold shadow'
                     : 'text-gray-400 hover:text-white'
@@ -886,10 +936,80 @@ export default function AdminBuildingApartmentManager() {
               >
                 Lưới Căn
               </button>
+              <button
+                type="button"
+                onClick={() => setBuildingPerspective('MASTER_PLAN')}
+                className={`px-2.5 sm:px-3 py-1 transition-all flex items-center gap-1 ${
+                  buildingPerspective === 'MASTER_PLAN'
+                    ? 'bg-[#C5A880] text-[#0D1117] font-bold shadow'
+                    : 'text-[#C5A880] hover:text-white hover:bg-[#1E2A38]'
+                }`}
+              >
+                <Map className="w-3.5 h-3.5" />
+                <span>Quy Hoạch</span>
+              </button>
             </div>
 
             {/* BÊN PHẢI: BỘ CÔNG CỤ THEO NGỮ CẢNH TƯƠNG ỨNG CỦA TỪNG VIEW */}
             <div className="flex items-center gap-2 overflow-x-auto no-scrollbar">
+              {buildingPerspective === 'MASTER_PLAN' && (
+                <div className="flex items-center gap-1.5 font-mono text-xs">
+                  <div className="flex bg-[#141E2B] p-0.5 border border-[#233345] text-[11px]">
+                    <button
+                      type="button"
+                      onClick={() => setMasterPlanTab('TROPICAL')}
+                      className={`px-2 py-0.5 transition-all ${
+                        masterPlanTab === 'TROPICAL'
+                          ? 'bg-[#C5A880] text-black font-bold'
+                          : 'text-gray-400 hover:text-white'
+                      }`}
+                    >
+                      The Tropical
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setMasterPlanTab('CAD_FLOOR')}
+                      className={`px-2 py-0.5 transition-all ${
+                        masterPlanTab === 'CAD_FLOOR'
+                          ? 'bg-[#C5A880] text-black font-bold'
+                          : 'text-gray-400 hover:text-white'
+                      }`}
+                    >
+                      Mặt Bằng CAD
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setMasterPlanTab('MACRO')}
+                      className={`px-2 py-0.5 transition-all ${
+                        masterPlanTab === 'MACRO'
+                          ? 'bg-[#C5A880] text-black font-bold'
+                          : 'text-gray-400 hover:text-white'
+                      }`}
+                    >
+                      Đại Đô Thị
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setMasterPlanTab('AMENITIES')}
+                      className={`px-2 py-0.5 transition-all ${
+                        masterPlanTab === 'AMENITIES'
+                          ? 'bg-[#C5A880] text-black font-bold'
+                          : 'text-gray-400 hover:text-white'
+                      }`}
+                    >
+                      Tiện Ích
+                    </button>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setIsMasterPlanZoomed(true)}
+                    className="px-2 py-0.5 bg-[#C5A880]/20 hover:bg-[#C5A880] text-[#C5A880] hover:text-black border border-[#C5A880]/60 text-[11px] font-bold transition-all flex items-center gap-1"
+                  >
+                    <Maximize2 className="w-3 h-3" />
+                    <span>Phóng To</span>
+                  </button>
+                </div>
+              )}
               {buildingPerspective === '3D' && (
                 <div className="flex items-center gap-2">
                   <div className="flex items-center gap-1.5 px-2.5 py-1 bg-[#141E2B] border border-[#233345] text-[11px] font-mono shrink-0">
@@ -2044,6 +2164,339 @@ export default function AdminBuildingApartmentManager() {
               </div>
             </div>
           )}
+
+          {/* ----------------------------------------------------------- */}
+          {/* GÓC NHÌN 5: BẢN ĐỒ QUY HOẠCH ĐÔ THỊ & KIẾN TRÚC PHÂN KHU    */}
+          {/* ----------------------------------------------------------- */}
+          {buildingPerspective === 'MASTER_PLAN' && (
+            <div className="p-3 sm:p-4 bg-[#0A0E17] h-[660px] sm:h-[760px] overflow-y-auto space-y-4 no-scrollbar select-none">
+              
+              {/* SUB-VIEW 1: PHÂN KHU THE TROPICAL (THE BEVERLY SOLARI) */}
+              {masterPlanTab === 'TROPICAL' && (
+                <div className="space-y-3.5">
+                  {/* Thanh điều hướng 4 tòa tháp chung cư */}
+                  <div className="p-3 bg-[#111622] border border-[#222E3E] space-y-2">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 text-xs">
+                      <div>
+                        <span className="text-[#C5A880] font-mono font-bold tracking-wider uppercase text-[11px]">
+                          PHÂN KHU THE TROPICAL • THE BEVERLY SOLARI
+                        </span>
+                        <div className="text-gray-400 text-[11px] mt-0.5">
+                          Tổ hợp 4 tòa chung cư BS-07, BS-08, BS-09, BS-10 bao quanh 18 tiện ích & hồ bơi resort
+                        </div>
+                      </div>
+                      <span className="text-[10px] font-mono text-emerald-400 bg-emerald-950/70 border border-emerald-500/50 px-2 py-0.5 self-start sm:self-auto shrink-0">
+                        Đang vận hành: {selectedBlock}
+                      </span>
+                    </div>
+
+                    {/* Bộ chuyển nhanh 4 Chung Cư */}
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1">
+                      {[
+                        { code: 'BS-07', floors: 34, units: 714, loc: 'Trục Rodeo' },
+                        { code: 'BS-08', floors: 39, units: 819, loc: 'Vườn Cọ' },
+                        { code: 'BS-09', floors: 34, units: 714, loc: 'Hồ Nhiệt Đới' },
+                        { code: 'BS-10', floors: 34, units: 714, loc: 'Sân Malibu' },
+                      ].map((item) => {
+                        const isCurrent = selectedBlock === item.code;
+                        return (
+                          <button
+                            key={item.code}
+                            type="button"
+                            onClick={() => handleSwitchBlock(item.code as any)}
+                            className={`p-2 border text-left transition-all relative ${
+                              isCurrent
+                                ? 'bg-[#1E2A38] border-[#C5A880] ring-1 ring-[#C5A880]'
+                                : 'bg-[#141C27] border-[#223042] hover:border-gray-500 text-gray-300'
+                            }`}
+                          >
+                            <div className="flex items-center justify-between">
+                              <span className={`font-mono font-bold text-xs ${isCurrent ? 'text-[#C5A880]' : 'text-white'}`}>
+                                Chung Cư {item.code}
+                              </span>
+                              {isCurrent && (
+                                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                              )}
+                            </div>
+                            <div className="text-[10px] text-gray-400 mt-0.5 flex justify-between font-mono">
+                              <span>{item.floors} Tầng • {item.units} Căn</span>
+                            </div>
+                            <div className="text-[9.5px] text-[#C5A880]/80 mt-0.5 truncate">
+                              {item.loc}
+                            </div>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  {/* Bản đồ hình ảnh Phân khu The Tropical */}
+                  <div className="relative bg-[#070A0F] border border-[#222E3E] rounded-none overflow-hidden group shadow-2xl">
+                    <img
+                      src="/masterplan/the-tropical-masterplan.png"
+                      alt="Quy hoạch The Tropical"
+                      className="w-full h-auto object-contain max-h-[380px] sm:max-h-[420px] mx-auto block cursor-pointer transition-transform duration-300 group-hover:scale-[1.01]"
+                      onClick={() => setIsMasterPlanZoomed(true)}
+                    />
+
+                    {/* Nút phóng to nổi góc trên */}
+                    <div className="absolute top-2.5 right-2.5 flex items-center gap-1.5">
+                      <button
+                        type="button"
+                        onClick={() => setIsMasterPlanZoomed(true)}
+                        className="px-2.5 py-1 bg-black/80 hover:bg-[#C5A880] text-white hover:text-black border border-[#C5A880]/50 text-[11px] font-mono font-bold transition-all flex items-center gap-1 shadow-lg backdrop-blur-sm"
+                      >
+                        <Maximize2 className="w-3.5 h-3.5" />
+                        <span>Phóng To Chi Tiết</span>
+                      </button>
+                    </div>
+
+                    {/* La bàn / Định vị hướng góc dưới */}
+                    <div className="absolute bottom-2.5 left-2.5 px-2 py-1 bg-black/80 border border-[#233345] text-[10px] font-mono text-gray-300 backdrop-blur-sm flex items-center gap-2">
+                      <Navigation className="w-3 h-3 text-[#C5A880]" />
+                      <span>Hướng Bắc (N) • Trục Vành Đai 3 & Đại Lộ Rodeo</span>
+                    </div>
+                  </div>
+
+                  {/* Danh bạ 18 Tiện Ích Nội Khu The Tropical */}
+                  <div className="p-3 bg-[#111622] border border-[#222E3E] space-y-2.5">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5">
+                      <div className="flex items-center gap-1.5 text-xs font-mono font-bold text-white">
+                        <Sparkles className="w-3.5 h-3.5 text-[#C5A880]" />
+                        <span>18 TIỆN ÍCH NỘI KHU THE TROPICAL</span>
+                        <span className="text-gray-400 font-normal">({THE_TROPICAL_AMENITIES.length} hạng mục)</span>
+                      </div>
+
+                      {/* Bộ lọc loại tiện ích */}
+                      <div className="flex items-center gap-1 overflow-x-auto no-scrollbar font-mono text-[10.5px]">
+                        {[
+                          { key: 'ALL', label: 'Tất Cả' },
+                          { key: 'POOL', label: 'Bể Bơi' },
+                          { key: 'PARK', label: 'Cảnh Quan' },
+                          { key: 'SPORT', label: 'Thể Thao' },
+                          { key: 'ACCESS', label: 'Hạ Tầng' },
+                        ].map((c) => (
+                          <button
+                            key={c.key}
+                            type="button"
+                            onClick={() => setSelectedAmenityCategory(c.key as any)}
+                            className={`px-2 py-0.5 border transition-all ${
+                              selectedAmenityCategory === c.key
+                                ? 'bg-[#C5A880] text-black font-bold border-[#C5A880]'
+                                : 'bg-[#161F2C] text-gray-400 border-[#253346] hover:text-white'
+                            }`}
+                          >
+                            {c.label}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Lưới danh mục tiện ích */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 max-h-[220px] overflow-y-auto no-scrollbar pr-1">
+                      {THE_TROPICAL_AMENITIES
+                        .filter(item => selectedAmenityCategory === 'ALL' || item.category === selectedAmenityCategory)
+                        .map((item) => {
+                          const isSel = selectedAmenityId === item.id;
+                          return (
+                            <div
+                              key={item.id}
+                              onClick={() => setSelectedAmenityId(isSel ? null : item.id)}
+                              className={`p-2 border text-left cursor-pointer transition-all ${
+                                isSel
+                                  ? 'bg-[#1C2838] border-[#C5A880] ring-1 ring-[#C5A880]'
+                                  : 'bg-[#131A24] border-[#222E3E] hover:border-gray-600'
+                              }`}
+                            >
+                              <div className="flex items-start gap-2">
+                                <span className={`w-5 h-5 rounded-none flex items-center justify-center font-mono font-bold text-[10px] shrink-0 ${
+                                  item.category === 'POOL'
+                                    ? 'bg-cyan-950 text-cyan-300 border border-cyan-700/60'
+                                    : item.category === 'PARK'
+                                    ? 'bg-emerald-950 text-emerald-300 border border-emerald-700/60'
+                                    : item.category === 'SPORT'
+                                    ? 'bg-amber-950 text-amber-300 border border-amber-700/60'
+                                    : 'bg-indigo-950 text-indigo-300 border border-indigo-700/60'
+                                }`}>
+                                  {item.id}
+                                </span>
+                                <div className="min-w-0 flex-1">
+                                  <div className="text-[11.5px] font-bold text-white truncate">
+                                    {item.name}
+                                  </div>
+                                  <div className="text-[10px] text-gray-400 mt-0.5 line-clamp-2 leading-snug">
+                                    {item.desc}
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          );
+                        })}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* SUB-VIEW 2: MẶT BẰNG TẦNG ĐIỂN HÌNH BẢN VẼ KIẾN TRÚC CAD */}
+              {masterPlanTab === 'CAD_FLOOR' && (
+                <div className="space-y-3.5">
+                  <div className="p-3 bg-[#111622] border border-[#222E3E] flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                    <div>
+                      <div className="text-[#C5A880] font-mono font-bold tracking-wider uppercase text-[11px]">
+                        MẶT BẰNG TẦNG ĐIỂN HÌNH KIẾN TRÚC CAD (BS-07 & BS-09)
+                      </div>
+                      <div className="text-gray-400 text-[11px] mt-0.5">
+                        Layout thiết kế 21 căn hộ/sàn • Key Plan định vị hướng & trục giao thông đứng
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setBuildingPerspective('FLOOR_PLAN')}
+                      className="px-3 py-1 bg-[#C5A880] hover:bg-white text-black font-bold text-[11px] font-mono transition-all self-start sm:self-auto shrink-0 flex items-center gap-1"
+                    >
+                      <Layers className="w-3.5 h-3.5" />
+                      <span>Xem Mặt Bằng Tương Tác</span>
+                    </button>
+                  </div>
+
+                  {/* Bản vẽ CAD */}
+                  <div className="relative bg-[#070A0F] border border-[#222E3E] rounded-none overflow-hidden group shadow-2xl">
+                    <img
+                      src="/masterplan/the-tropical-floorplan-cad.png"
+                      alt="Mặt bằng tầng CAD"
+                      className="w-full h-auto object-contain max-h-[460px] mx-auto block cursor-pointer transition-transform duration-300 group-hover:scale-[1.01]"
+                      onClick={() => setIsMasterPlanZoomed(true)}
+                    />
+                    <div className="absolute top-2.5 right-2.5 flex items-center gap-1.5">
+                      <button
+                        type="button"
+                        onClick={() => setIsMasterPlanZoomed(true)}
+                        className="px-2.5 py-1 bg-black/80 hover:bg-[#C5A880] text-white hover:text-black border border-[#C5A880]/50 text-[11px] font-mono font-bold transition-all flex items-center gap-1 shadow-lg backdrop-blur-sm"
+                      >
+                        <Maximize2 className="w-3.5 h-3.5" />
+                        <span>Phóng To Bản Vẽ CAD</span>
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Thông số kỹ thuật kiến trúc mặt bằng */}
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs font-mono">
+                    <div className="p-2.5 bg-[#111622] border border-[#222E3E]">
+                      <div className="text-gray-400 text-[10px]">Cơ Cấu Sàn:</div>
+                      <div className="text-white font-bold text-sm mt-0.5">21 Căn / Sàn</div>
+                      <div className="text-[10px] text-[#C5A880] mt-0.5">CH-01 đến CH-21</div>
+                    </div>
+                    <div className="p-2.5 bg-[#111622] border border-[#222E3E]">
+                      <div className="text-gray-400 text-[10px]">Thang Máy:</div>
+                      <div className="text-white font-bold text-sm mt-0.5">6 Cư Dân + 1 PCCC</div>
+                      <div className="text-[10px] text-emerald-400 mt-0.5">Tốc độ cao 3.0 m/s</div>
+                    </div>
+                    <div className="p-2.5 bg-[#111622] border border-[#222E3E]">
+                      <div className="text-gray-400 text-[10px]">Thoát Hiểm:</div>
+                      <div className="text-white font-bold text-sm mt-0.5">2 Buồng Thang Bộ</div>
+                      <div className="text-[10px] text-cyan-400 mt-0.5">Áp suất dương chống khói</div>
+                    </div>
+                    <div className="p-2.5 bg-[#111622] border border-[#222E3E]">
+                      <div className="text-gray-400 text-[10px]">Hướng Đối Lưu:</div>
+                      <div className="text-white font-bold text-sm mt-0.5">Đông Nam - Tây Bắc</div>
+                      <div className="text-[10px] text-amber-300 mt-0.5">View hồ bơi & đại lộ</div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* SUB-VIEW 3: QUY HOẠCH TỔNG THỂ ĐẠI ĐÔ THỊ VINHOMES GRAND PARK */}
+              {masterPlanTab === 'MACRO' && (
+                <div className="space-y-3.5">
+                  <div className="p-3 bg-[#111622] border border-[#222E3E] space-y-1">
+                    <div className="text-[#C5A880] font-mono font-bold tracking-wider uppercase text-[11px]">
+                      QUY HOẠCH TỔNG THỂ ĐẠI ĐÔ THỊ VINHOMES GRAND PARK (271 HA)
+                    </div>
+                    <div className="text-gray-400 text-[11px]">
+                      Vị trí chiến lược phân khu The Beverly Solari (The Tropical) trong cấu trúc đô thị và kết nối tiện ích vùng
+                    </div>
+                  </div>
+
+                  {/* Bản đồ đại đô thị */}
+                  <div className="relative bg-[#070A0F] border border-[#222E3E] rounded-none overflow-hidden group shadow-2xl">
+                    <img
+                      src="/masterplan/vinhomes-grand-park-macro-plan.jpg"
+                      alt="Quy hoạch đại đô thị"
+                      className="w-full h-auto object-contain max-h-[460px] mx-auto block cursor-pointer transition-transform duration-300 group-hover:scale-[1.01]"
+                      onClick={() => setIsMasterPlanZoomed(true)}
+                    />
+                    <div className="absolute top-2.5 right-2.5 flex items-center gap-1.5">
+                      <button
+                        type="button"
+                        onClick={() => setIsMasterPlanZoomed(true)}
+                        className="px-2.5 py-1 bg-black/80 hover:bg-[#C5A880] text-white hover:text-black border border-[#C5A880]/50 text-[11px] font-mono font-bold transition-all flex items-center gap-1 shadow-lg backdrop-blur-sm"
+                      >
+                        <Maximize2 className="w-3.5 h-3.5" />
+                        <span>Phóng To Bản Đồ</span>
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Hạ tầng trọng điểm */}
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs font-mono">
+                    <div className="p-2.5 bg-[#111622] border border-[#222E3E]">
+                      <div className="text-[#C5A880] font-bold">TTTM Vincom Mega Mall</div>
+                      <div className="text-gray-400 text-[10.5px] mt-1">
+                        Trung tâm thương mại lớn nhất miền Nam, cách The Tropical 2 phút dạo bộ
+                      </div>
+                    </div>
+                    <div className="p-2.5 bg-[#111622] border border-[#222E3E]">
+                      <div className="text-emerald-400 font-bold">Đại Công Viên 36ha</div>
+                      <div className="text-gray-400 text-[10.5px] mt-1">
+                        Hồ cảnh quan cát trắng, bãi biển nhân tạo và 15 công viên chủ đề liên hoàn
+                      </div>
+                    </div>
+                    <div className="p-2.5 bg-[#111622] border border-[#222E3E]">
+                      <div className="text-cyan-400 font-bold">Vành Đai 3 & Tuyến VinBus</div>
+                      <div className="text-gray-400 text-[10.5px] mt-1">
+                        Huyết mạch giao thông kết nối liên vùng & mạng lưới xe buýt điện thông minh
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* SUB-VIEW 4: BẢN ĐỒ PHỐI CẢNH TIỆN ÍCH ĐÔ THỊ */}
+              {masterPlanTab === 'AMENITIES' && (
+                <div className="space-y-3.5">
+                  <div className="p-3 bg-[#111622] border border-[#222E3E] space-y-1">
+                    <div className="text-[#C5A880] font-mono font-bold tracking-wider uppercase text-[11px]">
+                      BẢN ĐỒ PHỐI CẢNH HỆ THỐNG TIỆN ÍCH TOÀN KHU
+                    </div>
+                    <div className="text-gray-400 text-[11px]">
+                      Mạng lưới tiện ích sinh thái, đại lộ mua sắm, bến du thuyền và các phân khu chức năng
+                    </div>
+                  </div>
+
+                  {/* Bản đồ tiện ích */}
+                  <div className="relative bg-[#070A0F] border border-[#222E3E] rounded-none overflow-hidden group shadow-2xl">
+                    <img
+                      src="/masterplan/vinhomes-amenities-map.jpg"
+                      alt="Bản đồ tiện ích đô thị"
+                      className="w-full h-auto object-contain max-h-[480px] mx-auto block cursor-pointer transition-transform duration-300 group-hover:scale-[1.01]"
+                      onClick={() => setIsMasterPlanZoomed(true)}
+                    />
+                    <div className="absolute top-2.5 right-2.5 flex items-center gap-1.5">
+                      <button
+                        type="button"
+                        onClick={() => setIsMasterPlanZoomed(true)}
+                        className="px-2.5 py-1 bg-black/80 hover:bg-[#C5A880] text-white hover:text-black border border-[#C5A880]/50 text-[11px] font-mono font-bold transition-all flex items-center gap-1 shadow-lg backdrop-blur-sm"
+                      >
+                        <Maximize2 className="w-3.5 h-3.5" />
+                        <span>Phóng To Bản Đồ</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+            </div>
+          )}
         </div>
 
         {/* CỘT PHẢI (5 COLS): THÔNG TIN CHI TIẾT CĂN HỘ (GỌN GÀNG, DỄ TƯƠNG TÁC) */}
@@ -2952,6 +3405,145 @@ export default function AdminBuildingApartmentManager() {
 
               </div>
 
+            </div>
+          </div>
+        );
+      })()}
+
+      {/* ------------------------------------------------------------- */}
+      {/* MODAL PHÓNG TO BẢN ĐỒ QUY HOẠCH & BẢN VẼ KIẾN TRÚC TOÀN MÀN HÌNH */}
+      {/* ------------------------------------------------------------- */}
+      {isMasterPlanZoomed && (() => {
+        const planMeta = {
+          TROPICAL: {
+            title: 'Quy Hoạch Phân Khu The Tropical (The Beverly Solari)',
+            desc: '4 Tòa Chung Cư BS-07, BS-08, BS-09, BS-10 & 18 Tiện Ích Chuẩn Resort',
+            src: '/masterplan/the-tropical-masterplan.png'
+          },
+          CAD_FLOOR: {
+            title: 'Mặt Bằng Tầng Điển Hình Kiến Trúc CAD (BS-07 & BS-09)',
+            desc: 'Layout Kỹ Thuật 21 Căn/Sàn, Lõi Thang Máy & Key Plan Định Vị',
+            src: '/masterplan/the-tropical-floorplan-cad.png'
+          },
+          MACRO: {
+            title: 'Quy Hoạch Tổng Thể Đại Đô Thị Vinhomes Grand Park (271 ha)',
+            desc: 'Vị Trí Phân Khu The Beverly Solari, Vincom Mega Mall, Công Viên 36ha & Vành Đai 3',
+            src: '/masterplan/vinhomes-grand-park-macro-plan.jpg'
+          },
+          AMENITIES: {
+            title: 'Bản Đồ Phối Cảnh Hệ Thống Tiện Ích Đô Thị',
+            desc: 'Tổng Thể Không Gian Tiện Ích Cảnh Quan & Mạng Lưới Đô Thị',
+            src: '/masterplan/vinhomes-amenities-map.jpg'
+          }
+        }[masterPlanTab] || {
+          title: 'Bản Đồ Quy Hoạch',
+          desc: '',
+          src: '/masterplan/the-tropical-masterplan.png'
+        };
+
+        return (
+          <div className="fixed inset-0 z-50 bg-black/95 backdrop-blur-md flex flex-col select-none">
+            {/* Thanh điều khiển đỉnh modal */}
+            <div className="px-4 py-2.5 bg-[#0D1117] border-b border-[#233345] flex flex-wrap items-center justify-between gap-3 shrink-0">
+              <div className="flex items-center gap-2">
+                <Map className="w-4 h-4 text-[#C5A880]" />
+                <div>
+                  <h3 className="text-white font-bold text-sm tracking-wide">
+                    {planMeta.title}
+                  </h3>
+                  <div className="text-[11px] text-gray-400 font-mono">
+                    {planMeta.desc}
+                  </div>
+                </div>
+              </div>
+
+              {/* Chuyển tab trực tiếp trong modal */}
+              <div className="flex items-center bg-[#141E2B] p-0.5 border border-[#233345] text-xs font-mono">
+                {(['TROPICAL', 'CAD_FLOOR', 'MACRO', 'AMENITIES'] as const).map((tab) => (
+                  <button
+                    key={tab}
+                    type="button"
+                    onClick={() => {
+                      setMasterPlanTab(tab);
+                      setModalZoomScale(1);
+                    }}
+                    className={`px-2.5 py-1 transition-all ${
+                      masterPlanTab === tab
+                        ? 'bg-[#C5A880] text-black font-bold'
+                        : 'text-gray-400 hover:text-white'
+                    }`}
+                  >
+                    {tab === 'TROPICAL' ? 'The Tropical' : tab === 'CAD_FLOOR' ? 'Mặt Bằng CAD' : tab === 'MACRO' ? 'Đại Đô Thị' : 'Tiện Ích'}
+                  </button>
+                ))}
+              </div>
+
+              {/* Công cụ thu phóng & đóng */}
+              <div className="flex items-center gap-2 font-mono text-xs">
+                <button
+                  type="button"
+                  onClick={() => setModalZoomScale(prev => Math.max(0.75, Number((prev - 0.25).toFixed(2))))}
+                  className="px-2.5 py-1 bg-[#16202C] hover:bg-[#223042] text-gray-300 hover:text-white border border-[#2B3B4E]"
+                  title="Thu nhỏ (-)"
+                >
+                  -
+                </button>
+                <span className="px-2 py-1 bg-[#101720] border border-[#223042] text-white min-w-[55px] text-center">
+                  {Math.round(modalZoomScale * 100)}%
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setModalZoomScale(prev => Math.min(2.5, Number((prev + 0.25).toFixed(2))))}
+                  className="px-2.5 py-1 bg-[#16202C] hover:bg-[#223042] text-gray-300 hover:text-white border border-[#2B3B4E]"
+                  title="Phóng to (+)"
+                >
+                  +
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setModalZoomScale(1)}
+                  className="px-2.5 py-1 bg-[#16202C] hover:bg-[#223042] text-gray-300 hover:text-white border border-[#2B3B4E]"
+                >
+                  100%
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsMasterPlanZoomed(false);
+                    setModalZoomScale(1);
+                  }}
+                  className="p-1.5 bg-red-950/60 hover:bg-red-900 text-red-200 border border-red-700 transition-all ml-2"
+                  title="Đóng cửa sổ"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+
+            {/* Vùng hiển thị ảnh độ phân giải cao */}
+            <div className="flex-1 overflow-auto flex items-center justify-center p-4 bg-[#05070A]">
+              <div 
+                className="max-w-none transition-transform duration-200 ease-out inline-block"
+                style={{
+                  transform: `scale(${modalZoomScale})`,
+                  transformOrigin: 'center center'
+                }}
+              >
+                <img
+                  src={planMeta.src}
+                  alt={planMeta.title}
+                  className="max-h-[85vh] w-auto object-contain mx-auto shadow-2xl border border-[#233345]"
+                />
+              </div>
+            </div>
+
+            {/* Ghi chú chân trang */}
+            <div className="px-4 py-2 bg-[#0D1117] border-t border-[#233345] flex items-center justify-between text-[11px] font-mono text-gray-400">
+              <span className="flex items-center gap-1.5 text-[#C5A880]">
+                <Info className="w-3.5 h-3.5" />
+                <span>Bản quyền dữ liệu quy hoạch & bản vẽ kiến trúc đô thị Skyline Apartment & Vinhomes Grand Park</span>
+              </span>
+              <span>Cuộn chuột hoặc dùng các nút +/- để phóng to từng chi tiết</span>
             </div>
           </div>
         );
