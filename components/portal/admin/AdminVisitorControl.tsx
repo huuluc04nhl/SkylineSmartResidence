@@ -174,7 +174,7 @@ export default function AdminVisitorControl() {
       if (scanResult && scanResult.visitor?.passId === passId) {
         setScanResult({
           ...scanResult,
-          title: 'KHÁCH ĐÃ CHECK-IN (ĐANG Ở TRONG TÒA NHÀ)',
+          title: 'KHÁCH ĐÃ CHECK-IN (ĐANG Ở TRONG CHUNG CƯ)',
           visitor: {
             ...scanResult.visitor,
             status: 'CHECKED_IN',
@@ -559,7 +559,7 @@ export default function AdminVisitorControl() {
         >
           <div className="text-[11px] text-emerald-400 flex items-center justify-between">
             <span className="flex items-center gap-1.5 font-semibold">
-              <LogIn className="w-3.5 h-3.5 text-emerald-400" /> Đang Trong Tòa Nhà
+              <LogIn className="w-3.5 h-3.5 text-emerald-400" /> Đang Trong Chung Cư
             </span>
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
           </div>
@@ -1478,7 +1478,7 @@ export default function AdminVisitorControl() {
             <div>
               <h3 className="font-serif text-base font-bold text-white flex items-center gap-2">
                 <ShieldCheck className="w-4 h-4 text-[#C5A880]" />
-                Nhật Ký Kiểm Soát An Ninh Ra Vào Tòa Nhà
+                Nhật Ký Kiểm Soát An Ninh Ra Vào Chung Cư
               </h3>
               <div className="text-[11px] text-gray-400">
                 Ghi nhận tự động thời gian thực mọi lượt quét thẻ, xác thực và check-in / check-out của khách thăm.
@@ -1533,7 +1533,7 @@ export default function AdminVisitorControl() {
                       <td className="py-3 px-3">
                         {log.action === 'CHECK_IN' ? (
                           <span className="px-2 py-0.5 bg-emerald-950 text-emerald-300 border border-emerald-600 text-[10px] font-bold">
-                            VÀO TÒA NHÀ
+                            VÀO CHUNG CƯ
                           </span>
                         ) : log.action === 'CHECK_OUT' ? (
                           <span className="px-2 py-0.5 bg-amber-950 text-amber-300 border border-amber-600 text-[10px] font-bold">

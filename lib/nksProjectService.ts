@@ -483,13 +483,47 @@ export function convertNksToApartmentUnit(
       period: 'Tháng 09/2026',
       dueDate: '10/10/2026'
     } : undefined,
+    nksId: item.id,
+    nksSlug: item.slug,
+    isApiSynced: true,
+    nksRawData: item,
     createdAt: item.created_at || '2026-09-21 09:00:00',
     updatedAt: item.updated_at || '2026-09-21 09:00:00',
   };
 }
 
+// 21 cấu hình căn hộ theo bản vẽ CAD kiến trúc
+export const NKS_FLOOR_ARCH_UNITS = [
+  // CÁNH 1: CÁNH BẮC (NORTH WING - Căn 01 đến 05)
+  { num: '01', code: 'CH-01', wing: 'NORTH' as const, wingLabel: 'Cánh Bắc', type: '2PN' as ApartmentType, typeLabel: '2PN Góc (Căn Phụ)', beds: 2, baths: 2, area: 68.4, dir: 'Đông Bắc', defaultPrice: 4.6 },
+  { num: '02', code: 'CH-02', wing: 'NORTH' as const, wingLabel: 'Cánh Bắc', type: '1PN' as ApartmentType, typeLabel: '1PN Tiêu Chuẩn', beds: 1, baths: 1, area: 38.2, dir: 'Đông Bắc', defaultPrice: 2.8 },
+  { num: '03', code: 'CH-03', wing: 'NORTH' as const, wingLabel: 'Cánh Bắc', type: '1PN' as ApartmentType, typeLabel: '1PN+ Đa Năng', beds: 1, baths: 1, area: 46.5, dir: 'Đông Bắc', defaultPrice: 3.2 },
+  { num: '04', code: 'CH-04', wing: 'NORTH' as const, wingLabel: 'Cánh Bắc', type: '2PN' as ApartmentType, typeLabel: '2PN Ban Công Kính', beds: 2, baths: 2, area: 59.1, dir: 'Đông Bắc', defaultPrice: 4.1 },
+  { num: '05', code: 'CH-05', wing: 'NORTH' as const, wingLabel: 'Cánh Bắc', type: '2PN' as ApartmentType, typeLabel: '2PN Góc Đẹp', beds: 2, baths: 2, area: 69.2, dir: 'Đông Bắc', defaultPrice: 4.8 },
+
+  // CÁNH 2: CÁNH NAM (SOUTH WING - Căn 06 đến 10, nơi đặt CĂN CHỦ HỘ TẦNG 30)
+  { num: '06', code: 'CH-06', wing: 'SOUTH' as const, wingLabel: 'Cánh Nam', type: '1PN' as ApartmentType, typeLabel: '1PN View Hồ Bơi (Căn Chủ Hộ)', beds: 1, baths: 1, area: 42.0, dir: 'Đông Nam', defaultPrice: 3.4 },
+  { num: '07', code: 'CH-07', wing: 'SOUTH' as const, wingLabel: 'Cánh Nam', type: '2PN' as ApartmentType, typeLabel: '2PN Gia Đình', beds: 2, baths: 2, area: 59.0, dir: 'Đông Nam', defaultPrice: 4.1 },
+  { num: '08', code: 'CH-08', wing: 'SOUTH' as const, wingLabel: 'Cánh Nam', type: '1PN' as ApartmentType, typeLabel: '1PN+ Đa Năng', beds: 1, baths: 1, area: 46.5, dir: 'Đông Nam', defaultPrice: 3.25 },
+  { num: '09', code: 'CH-09', wing: 'SOUTH' as const, wingLabel: 'Cánh Nam', type: '2PN' as ApartmentType, typeLabel: '2PN Góc Thoáng', beds: 2, baths: 2, area: 69.5, dir: 'Đông Nam', defaultPrice: 4.9 },
+  { num: '10', code: 'CH-10', wing: 'SOUTH' as const, wingLabel: 'Cánh Nam', type: 'STUDIO' as ApartmentType, typeLabel: 'Studio Tiện Nghi', beds: 1, baths: 1, area: 35.0, dir: 'Đông Nam', defaultPrice: 2.45 },
+
+  // CÁNH 3: CÁNH TÂY (WEST WING - Dãy căn 11 đến 21 đối xứng qua hành lang 1.8m)
+  { num: '11', code: 'CH-11', wing: 'WEST' as const, wingLabel: 'Cánh Tây', type: '2PN' as ApartmentType, typeLabel: '2PN Tây Bắc', beds: 2, baths: 2, area: 62.0, dir: 'Tây Bắc', defaultPrice: 4.2 },
+  { num: '12', code: 'CH-12', wing: 'WEST' as const, wingLabel: 'Cánh Tây', type: '1PN' as ApartmentType, typeLabel: '1PN Tiện Ích', beds: 1, baths: 1, area: 44.5, dir: 'Tây Bắc', defaultPrice: 3.1 },
+  { num: '13', code: 'CH-13', wing: 'WEST' as const, wingLabel: 'Cánh Tây', type: 'STUDIO' as ApartmentType, typeLabel: 'Studio Hiện Đại', beds: 1, baths: 1, area: 33.5, dir: 'Tây Bắc', defaultPrice: 2.3 },
+  { num: '14', code: 'CH-14', wing: 'WEST' as const, wingLabel: 'Cánh Tây', type: '2PN' as ApartmentType, typeLabel: '2PN Ban Công Rộng', beds: 2, baths: 2, area: 58.5, dir: 'Tây Bắc', defaultPrice: 4.0 },
+  { num: '15', code: 'CH-15', wing: 'WEST' as const, wingLabel: 'Cánh Tây', type: '2PN' as ApartmentType, typeLabel: '2PN Góc Tây', beds: 2, baths: 2, area: 67.0, dir: 'Tây Bắc', defaultPrice: 4.5 },
+  { num: '16', code: 'CH-16', wing: 'WEST' as const, wingLabel: 'Cánh Tây', type: '2PN' as ApartmentType, typeLabel: '2PN Tây Nam', beds: 2, baths: 2, area: 68.0, dir: 'Tây Nam', defaultPrice: 4.6 },
+  { num: '17', code: 'CH-17', wing: 'WEST' as const, wingLabel: 'Cánh Tây', type: '1PN' as ApartmentType, typeLabel: '1PN View Cây Xanh', beds: 1, baths: 1, area: 43.0, dir: 'Tây Nam', defaultPrice: 3.0 },
+  { num: '18', code: 'CH-18', wing: 'WEST' as const, wingLabel: 'Cánh Tây', type: '2PN' as ApartmentType, typeLabel: '2PN Tiêu Chuẩn', beds: 2, baths: 2, area: 61.5, dir: 'Tây Nam', defaultPrice: 4.15 },
+  { num: '19', code: 'CH-19', wing: 'WEST' as const, wingLabel: 'Cánh Tây', type: 'STUDIO' as ApartmentType, typeLabel: 'Studio Nhỏ Gọn', beds: 1, baths: 1, area: 34.0, dir: 'Tây Nam', defaultPrice: 2.4 },
+  { num: '20', code: 'CH-20', wing: 'WEST' as const, wingLabel: 'Cánh Tây', type: '1PN' as ApartmentType, typeLabel: '1PN Đón Gió', beds: 1, baths: 1, area: 45.0, dir: 'Tây Nam', defaultPrice: 3.15 },
+  { num: '21', code: 'CH-21', wing: 'WEST' as const, wingLabel: 'Cánh Tây', type: '2PN' as ApartmentType, typeLabel: '2PN Góc Nam', beds: 2, baths: 2, area: 70.0, dir: 'Tây Nam', defaultPrice: 4.95 },
+];
+
 /**
- * 6. Sinh danh sách căn hộ hoàn chỉnh 34 tầng từ NKS API
+ * 6. Sinh danh sách căn hộ hoàn chỉnh theo 21 căn/sàn kết hợp dữ liệu NKS API
  */
 export function generateNksBlockUnits(
   nksApts: NksApartment[],
@@ -507,6 +541,7 @@ export function generateNksBlockUnits(
     if (matchesBlock) {
       const key = `${apt.floor}_${apt.code.trim().toUpperCase()}`;
       apiMap.set(key, apt);
+      apiMap.set(`${apt.floor}_${apt.code.trim().toUpperCase().replace('CH-', '')}`, apt);
     }
   });
 
@@ -515,45 +550,60 @@ export function generateNksBlockUnits(
 
   for (let fl = totalFloors; fl >= 1; fl--) {
     const floorStr = String(fl);
-    const standardCodes = ['CH-01', 'CH-02', 'CH-03', 'CH-04', 'CH-05', 'CH-06', 'CH-07', 'CH-08'];
 
-    standardCodes.forEach((cCode, idx) => {
-      const key = `${floorStr}_${cCode}`;
-      const matchedApi = apiMap.get(key);
+    NKS_FLOOR_ARCH_UNITS.forEach(cfg => {
+      const cCode = cfg.code;
+      const targetCode = (blockCode === 'BS-07' && fl === 30 && (cfg.num === '06' || cfg.num === '01')) 
+        ? cCode 
+        : `${fl}-${cCode}`;
+
+      const matchedApi = apiMap.get(`${floorStr}_${cCode}`) || 
+                         apiMap.get(`${floorStr}_${cfg.num}`) ||
+                         Array.from(apiMap.values()).find(a => 
+                           String(a.floor) === floorStr && (
+                             a.code.toUpperCase() === cCode ||
+                             a.code.toUpperCase() === cfg.num ||
+                             a.code.toUpperCase() === targetCode.toUpperCase()
+                           )
+                         );
 
       if (matchedApi) {
         const unit = convertNksToApartmentUnit(matchedApi, blockCode, bTitle);
         units.push({
           ...unit,
-          // Giữ mã căn CH-06, CH-01 cho tầng 30 của chủ hộ nếu ở Chung Cư BS-07
-          code: (blockCode === 'BS-07' && fl === 30) ? cCode : `${fl}-${cCode}`,
+          code: targetCode,
+          wing: cfg.wing,
+          wingLabel: cfg.wingLabel,
+          nksId: matchedApi.id,
+          nksSlug: matchedApi.slug,
+          isApiSynced: true,
+          nksRawData: matchedApi,
         });
       } else {
-        const is2Pn = cCode === 'CH-01' || cCode === 'CH-08' || cCode === 'CH-04' || cCode === 'CH-05';
-        const area = is2Pn ? 60 : 42;
-        const bedrooms = is2Pn ? 2 : 1;
-        const bathrooms = 1;
-        const type: ApartmentType = is2Pn ? '2PN' : '1PN';
-        const typeLabel = `${bedrooms} Phòng Ngủ - ${bathrooms}WC`;
+        const isOwnerPrimary = (blockCode === 'BS-07' && fl === 30 && cfg.num === '06');
+        const isOwnerSecondary = (blockCode === 'BS-07' && fl === 30 && cfg.num === '01');
 
         units.push({
-          code: `${fl}-${cCode}`,
+          code: targetCode,
           tower: towerId,
           towerName: bTitle,
           floor: fl,
-          type,
-          typeLabel,
-          area,
-          wallArea: Math.round(area * 1.08 * 10) / 10,
-          bedrooms,
-          bathrooms,
-          direction: idx % 2 === 0 ? 'Đông Nam (View Sông & Công Viên)' : 'Tây Bắc (Nội Khu)',
-          mainDoorDirection: idx % 2 === 0 ? 'Tây Bắc' : 'Đông Nam',
-          priceBillion: Math.round(area * 0.055 * 100) / 100,
-          status: 'VACANT',
-          statusLabel: 'Căn Hộ Trống (Sẵn Sàng Bàn Giao)',
-          membersCount: 0,
+          type: cfg.type,
+          typeLabel: cfg.typeLabel,
+          area: cfg.area,
+          wallArea: Math.round(cfg.area * 1.08 * 10) / 10,
+          bedrooms: cfg.beds,
+          bathrooms: cfg.baths,
+          direction: cfg.dir,
+          mainDoorDirection: cfg.wing === 'SOUTH' ? 'Tây Bắc' : 'Đông Nam',
+          priceBillion: cfg.defaultPrice,
+          status: isOwnerPrimary || isOwnerSecondary ? 'OCCUPIED' : 'VACANT',
+          statusLabel: isOwnerPrimary ? 'Đã Bàn Giao (Căn Hộ Chính Chủ)' : isOwnerSecondary ? 'Đã Bàn Giao (Căn Phụ Cùng Chủ Hộ)' : 'Căn Hộ Trống (Sẵn Sàng Bàn Giao)',
+          wing: cfg.wing,
+          wingLabel: cfg.wingLabel,
+          membersCount: isOwnerPrimary ? 4 : isOwnerSecondary ? 1 : 0,
           vehicles: [],
+          isApiSynced: isOwnerPrimary || isOwnerSecondary,
           createdAt: '2026-09-21 09:00:00',
           updatedAt: '2026-09-21 09:00:00',
         });

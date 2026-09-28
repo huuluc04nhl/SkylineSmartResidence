@@ -11,7 +11,7 @@ import {
 } from './nksProjectService';
 
 export type TowerId = 'A' | 'B';
-export type ApartmentType = '1PN' | '2PN' | '3PN' | 'DUPLEX_PENTHOUSE';
+export type ApartmentType = 'STUDIO' | '1PN' | '2PN' | '3PN' | 'DUPLEX_PENTHOUSE';
 export type ApartmentStatus = 'OCCUPIED' | 'VACANT' | 'MAINTENANCE' | 'HANDOVER_PENDING';
 
 export interface ApartmentVehicle {
@@ -94,6 +94,12 @@ export interface ApartmentUnit {
   maintenanceHistory?: ApartmentMaintenanceRecord[];
   description?: string;
   handoverDate?: string;
+  wing?: 'NORTH' | 'SOUTH' | 'WEST';
+  wingLabel?: string;
+  nksId?: number;
+  nksSlug?: string;
+  isApiSynced?: boolean;
+  nksRawData?: any;
   createdAt: string;
   updatedAt: string;
 }

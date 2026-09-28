@@ -365,7 +365,7 @@ export default function ApartmentDetailModal({
                         <div className="p-2 bg-[#0D1117] border border-[#222B35]">
                           <span className="text-gray-400 block text-[10px]">Cán Bộ Bàn Giao:</span>
                           <strong className="text-white">
-                            {unit.handoverProtocol?.handoverOfficer || unit.owner?.handoverProtocol?.handoverOfficer || 'BQL Tòa Nhà'}
+                            {unit.handoverProtocol?.handoverOfficer || unit.owner?.handoverProtocol?.handoverOfficer || 'BQL Chung Cư'}
                           </strong>
                         </div>
                         <div className="p-2 bg-[#0D1117] border border-[#222B35]">
@@ -585,7 +585,7 @@ export default function ApartmentDetailModal({
                   {/* Bảng chi tiết từng khoản thu */}
                   <div className="border border-[#222B35] divide-y divide-[#222B35] text-xs">
                     <div className="p-3 flex items-center justify-between bg-[#161B22]/50">
-                      <span className="text-gray-300">Phí quản lý vận hành tòa nhà ({unit.area} m² x 18.500đ)</span>
+                      <span className="text-gray-300">Phí quản lý vận hành chung cư ({unit.area} m² x 18.500đ)</span>
                       <span className="font-mono font-bold text-white">{unit.billing.monthlyFee.toLocaleString('vi-VN')} đ</span>
                     </div>
                     <div className="p-3 flex items-center justify-between bg-[#161B22]/50">

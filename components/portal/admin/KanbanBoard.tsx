@@ -505,7 +505,7 @@ export default function KanbanBoard() {
               <div>
                 <h3 className="font-serif text-lg font-bold text-white flex items-center gap-2">
                   <Award className="w-5 h-5 text-[#C5A880]" />
-                  Bảng Lương & Thù Lao Kỹ Thuật Viên Tòa Nhà (Tháng Này)
+                  Bảng Lương & Thù Lao Kỹ Thuật Viên Chung Cư (Tháng Này)
                 </h3>
                 <p className="text-xs text-gray-400 mt-0.5">
                   Công thức: <strong>Tổng Lương = Lương Cứng + (Số ca sửa × Tiền công) + (Số ca 5⭐ × Thưởng 50.000đ)</strong>
@@ -858,7 +858,7 @@ export default function KanbanBoard() {
             </div>
 
             <div className="flex justify-between items-center text-xs text-gray-500">
-              <span>Xác nhận: <strong>Ban Quản Lý Tòa Nhà</strong></span>
+              <span>Xác nhận: <strong>Ban Quản Lý Chung Cư</strong></span>
               <button 
                 onClick={() => window.print()} 
                 className="px-4 py-2 bg-[#C5A880] text-[#0D1117] text-xs font-bold uppercase tracking-wider hover:bg-white"

@@ -310,10 +310,10 @@ export default function AddApartmentModal({
           {/* ----------------------------------------------------------- */}
           {activeTab === 'ARCHITECTURE' && (
             <div className="space-y-4">
-              {/* Tòa nhà & Tầng & Số căn */}
+              {/* Chung cư & Tầng & Số căn */}
               <div className="grid grid-cols-1 sm:grid-cols-4 gap-3 p-3 bg-[#121822] border border-[#222B35]">
                 <div>
-                  <label className="block text-gray-400 mb-1">Tòa Nhà:</label>
+                  <label className="block text-gray-400 mb-1">Chung Cư:</label>
                   <div className="px-3 py-2 bg-[#161F2C] border border-[#2B394E] text-[#C5A880] font-bold text-xs">
                     Chung Cư Skyline (25 Tầng)
                   </div>
@@ -637,7 +637,7 @@ export default function AddApartmentModal({
                 </div>
 
                 <div>
-                  <label className="block text-gray-300 font-semibold mb-1">Phí Quản Lý Tòa Nhà (Dự kiến):</label>
+                  <label className="block text-gray-300 font-semibold mb-1">Phí Quản Lý Chung Cư (Dự kiến):</label>
                   <div className="px-3 py-2 bg-[#161F2C] border border-[#2B394E] text-amber-300 font-bold text-xs">
                     {new Intl.NumberFormat('vi-VN').format(calculatedMonthlyFee)} đ/tháng
                   </div>

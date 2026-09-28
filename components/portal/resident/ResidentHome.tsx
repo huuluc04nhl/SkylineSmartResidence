@@ -439,7 +439,7 @@ export default function ResidentHome({ currentUser, onNavigate, onOpenVisitorMod
           <div className="bg-[#121820] border border-[#222B35] p-5 space-y-4">
             <div className="flex items-center justify-between border-b border-[#222B35] pb-3">
               <span className="text-xs uppercase tracking-wider text-[#C5A880] font-semibold flex items-center gap-2">
-                <Building className="w-4 h-4" /> Bảng Tin Tòa Nhà
+                <Building className="w-4 h-4" /> Bảng Tin Chung Cư
               </span>
               <span className="text-[10px] text-emerald-400 font-mono">Chính Thức BQL ✓</span>
             </div>

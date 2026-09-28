@@ -310,7 +310,7 @@ export default function SmartParking() {
               Danh Sách Phương Tiện Cư Dân Đã Đăng Ký ({filteredVehicles.length} phương tiện)
             </h3>
             <p className="text-xs text-gray-400 mt-0.5">
-              Toàn bộ phương tiện chính thức được cấp quyền ra vào hầm B1 và B2 Tòa BS-07
+              Toàn bộ phương tiện chính thức được cấp quyền ra vào hầm B1 và B2 Chung Cư BS-07
             </p>
           </div>
 

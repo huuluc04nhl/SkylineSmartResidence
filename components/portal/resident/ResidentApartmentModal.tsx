@@ -382,7 +382,7 @@ export default function ResidentApartmentModal({
           {/* ----------------------------------------------------------- */}
           {activeTab === 'HANDBOOK' && (
             <div className="space-y-4 animate-fadeIn">
-              {/* Hotline Khẩn Cấp BQL & Kỹ Thuật Tòa Nhà */}
+              {/* Hotline Khẩn Cấp BQL & Kỹ Thuật Chung Cư */}
               <div className="p-4 bg-gradient-to-r from-[#1C2533] to-[#121820] border border-[#C5A880]/60 space-y-3">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
@@ -392,7 +392,7 @@ export default function ResidentApartmentModal({
                         Đường Dây Nóng Kỹ Thuật & Dịch Vụ Cư Dân 24/7
                       </h3>
                       <p className="text-[11px] text-gray-300">
-                        Đội ngũ kỹ sư tòa nhà túc trực thường trực, hỗ trợ xử lý kỹ thuật trong vòng 10 phút.
+                        Đội ngũ kỹ sư chung cư túc trực thường trực, hỗ trợ xử lý kỹ thuật trong vòng 10 phút.
                       </p>
                     </div>
                   </div>
@@ -429,7 +429,7 @@ export default function ResidentApartmentModal({
                   <ul className="text-xs text-gray-300 space-y-1.5 list-disc pl-4 font-light leading-relaxed">
                     <li><strong>Tủ Aptomat Điện Tổng:</strong> Nằm ở sảnh đón cửa vào, phía sau tủ giày âm tường. Aptomat chống giật tự ngắt RCBO an toàn.</li>
                     <li><strong>Van Cấp Nước Sạch Tổng:</strong> Đặt trong hộp kỹ thuật cạnh cửa chính bên ngoài hành lang tầng 12. Khi có sự cố rò rỉ, hệ thống AI sẽ tự động đóng van điện từ trong 3 giây.</li>
-                    <li><strong>Đầu Báo Cháy & Khói Thông Minh:</strong> Bố trí tại phòng khách và 2 phòng ngủ, kết nối trực tiếp với trung tâm PCCC tòa nhà.</li>
+                    <li><strong>Đầu Báo Cháy & Khói Thông Minh:</strong> Bố trí tại phòng khách và 2 phòng ngủ, kết nối trực tiếp với trung tâm PCCC chung cư.</li>
                   </ul>
                 </div>
 
@@ -441,7 +441,7 @@ export default function ResidentApartmentModal({
                   <ul className="text-xs text-gray-300 space-y-1.5 list-disc pl-4 font-light leading-relaxed">
                     <li><strong>Ban Công Sinh Thái:</strong> Thiết kế lan can kính an toàn cao 1.4m. Tuyệt đối không treo đồ nặng quá tải hoặc xả rác qua ban công.</li>
                     <li><strong>Thiết Kế Nội Thất:</strong> Mọi hoạt động khoan đục hoặc thay đổi kết cấu tường chịu lực cần đăng ký trước với BQL để bảo đảm an toàn tĩnh tải.</li>
-                    <li><strong>Bảo Hiểm Tòa Nhà:</strong> Toàn bộ căn hộ được chủ đầu tư mua bảo hiểm cháy nổ và rủi ro tài sản trọn gói đến năm 2030.</li>
+                    <li><strong>Bảo Hiểm Chung Cư:</strong> Toàn bộ căn hộ được chủ đầu tư mua bảo hiểm cháy nổ và rủi ro tài sản trọn gói đến năm 2030.</li>
                   </ul>
                 </div>
               </div>

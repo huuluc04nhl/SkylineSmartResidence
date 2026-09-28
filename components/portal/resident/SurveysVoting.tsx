@@ -214,7 +214,7 @@ export default function SurveysVoting({ currentUser }: SurveysVotingProps) {
             <Vote className="w-3.5 h-3.5 text-[#C5A880]" /> Quyền Làm Chủ Cư Dân • Hội Nghị Nhà Chung Cư
           </div>
           <h2 className="font-serif text-2xl sm:text-3xl text-white font-bold mt-1 tracking-wide">
-            Ý Kiến Đóng Góp & Biểu Quyết Tòa Nhà
+            Ý Kiến Đóng Góp & Biểu Quyết Chung Cư
           </h2>
           <p className="text-xs text-gray-400 mt-1">
             Biểu quyết số minh bạch và bảo mật cho các quyết định bảo trì, nâng cấp cơ sở vật chất và quy chế sinh hoạt chung cư.
@@ -259,7 +259,7 @@ export default function SurveysVoting({ currentUser }: SurveysVotingProps) {
         <div className="p-4 bg-[#121820] border border-[#222B35] space-y-1">
           <div className="text-xs text-gray-400 font-medium">Tổng Số Cuộc Biểu Quyết</div>
           <div className="font-serif text-2xl font-bold text-white">{stats.total}</div>
-          <div className="text-[10px] text-[#C5A880] font-mono">Toàn bộ chiến dịch tòa nhà</div>
+          <div className="text-[10px] text-[#C5A880] font-mono">Toàn bộ chiến dịch chung cư</div>
         </div>
 
         <div className="p-4 bg-[#121820] border border-[#222B35] space-y-1">
@@ -275,7 +275,7 @@ export default function SurveysVoting({ currentUser }: SurveysVotingProps) {
         </div>
 
         <div className="p-4 bg-[#121820] border border-[#222B35] space-y-1">
-          <div className="text-xs text-gray-400 font-medium">Tỷ Lệ Cử Tri Toàn Tòa Nhà</div>
+          <div className="text-xs text-gray-400 font-medium">Tỷ Lệ Cử Tri Toàn Chung Cư</div>
           <div className="font-serif text-2xl font-bold text-cyan-400">{stats.avgParticipation}%</div>
           <div className="text-[10px] text-cyan-500/80 font-mono">250 căn hộ sở hữu hợp pháp</div>
         </div>
@@ -341,7 +341,7 @@ export default function SurveysVoting({ currentUser }: SurveysVotingProps) {
           >
             <option value="ALL">Mọi Loại Biểu Quyết</option>
             <option value="Đóng góp Quỹ Bảo trì">Quỹ Bảo Trì</option>
-            <option value="Quy Chế Chung Cư">Quy Chế Tòa Nhà</option>
+            <option value="Quy Chế Chung Cư">Quy Chế Chung Cư</option>
             <option value="Bầu Ban Quản Trị">Bầu Ban Quản Trị</option>
             <option value="Ý kiến Cải tạo">Ý Kiến Cải Tạo</option>
             <option value="Tiện Ích & Dịch Vụ">Tiện Ích & Dịch Vụ</option>
@@ -712,7 +712,7 @@ export default function SurveysVoting({ currentUser }: SurveysVotingProps) {
                   <Vote className="w-3.5 h-3.5 text-[#C5A880]" /> Ban Quản Trị • Khởi Tạo Biểu Quyết
                 </div>
                 <h3 className="font-serif text-xl font-bold text-white mt-0.5">
-                  Khởi Tạo Cuộc Biểu Quyết Toàn Tòa Nhà
+                  Khởi Tạo Cuộc Biểu Quyết Toàn Chung Cư
                 </h3>
               </div>
 

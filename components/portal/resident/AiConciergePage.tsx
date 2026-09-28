@@ -267,7 +267,7 @@ function getDynamicSuggestions(userQuestion: string, aiResponse: string): string
     '🧖 Tiện ích nào cần đăng ký trước?',
     '🏊 Giờ mở cửa Hồ bơi & Phòng gym',
     '💳 Hóa đơn điện nước & Phí quản lý tháng này',
-    '🏢 Tòa nhà có tất cả bao nhiêu tầng?'
+    '🏢 Chung cư có tất cả bao nhiêu tầng?'
   ];
 }
 
@@ -281,14 +281,14 @@ export default function AiConciergePage({ currentUser, onNavigateModule }: AiCon
       sender: 'ai',
       text: `Kính chào Quý cư dân **${residentName}** (Căn **${aptCode}**)! 
 
-Tôi là **Trợ lý ảo Skyline**, luôn sẵn sàng hỗ trợ Quý vị tra cứu thông tin tòa nhà, xem lịch hoạt động của hồ bơi, phòng gym, giải đáp biểu phí sinh hoạt hoặc tiếp nhận các yêu cầu kỹ thuật khẩn cấp bất cứ lúc nào ạ!`,
+Tôi là **Trợ lý ảo Skyline**, luôn sẵn sàng hỗ trợ Quý vị tra cứu thông tin chung cư, xem lịch hoạt động của hồ bơi, phòng gym, giải đáp biểu phí sinh hoạt hoặc tiếp nhận các yêu cầu kỹ thuật khẩn cấp bất cứ lúc nào ạ!`,
       timestamp: '08:00',
       ragSource: 'Sổ tay hướng dẫn cư dân Skyline Smart Residence',
       suggestions: [
         '🧖 Tiện ích nào cần đăng ký trước?',
         '🏊 Giờ mở cửa Hồ bơi & Gym',
         '💳 Hóa đơn sinh hoạt tháng này',
-        '🏢 Tòa nhà có bao nhiêu tầng?',
+        '🏢 Chung cư có bao nhiêu tầng?',
       ],
       actionButton: {
         label: 'Xem Tiện Ích',
@@ -440,7 +440,7 @@ Tôi là **Trợ lý ảo Skyline**, luôn sẵn sàng hỗ trợ Quý vị tra 
             </span>
           </h2>
           <p className="text-xs text-gray-400 mt-0.5">
-            Hỗ trợ tra cứu quy định tòa nhà, phân tích rò rỉ hóa đơn, đặt lịch tiện ích và giải đáp thắc mắc cho Căn <strong className="text-white font-mono">{aptCode}</strong>
+            Hỗ trợ tra cứu quy định chung cư, phân tích rò rỉ hóa đơn, đặt lịch tiện ích và giải đáp thắc mắc cho Căn <strong className="text-white font-mono">{aptCode}</strong>
           </p>
         </div>
 
@@ -494,7 +494,7 @@ Tôi là **Trợ lý ảo Skyline**, luôn sẵn sàng hỗ trợ Quý vị tra 
               <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" /> Bảo Mật & Thông Tin Chính Xác
             </div>
             <p className="leading-relaxed">
-              Mọi cuộc trò chuyện đều được bảo mật an toàn riêng tư. Nội dung giải đáp được đối soát và cập nhật liên tục theo quy chế mới nhất từ Ban Quản Lý Tòa Nhà.
+              Mọi cuộc trò chuyện đều được bảo mật an toàn riêng tư. Nội dung giải đáp được đối soát và cập nhật liên tục theo quy chế mới nhất từ Ban Quản Lý Chung Cư.
             </p>
           </div>
         </div>

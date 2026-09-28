@@ -121,7 +121,7 @@ export default function SmartFacilityPass({ currentUser }: SmartFacilityPassProp
       id: 'fac-kids',
       name: 'Khu Vui Chơi Trẻ Em',
       category: 'WELLNESS',
-      location: 'Tầng 1 (Sảnh Tòa A)',
+      location: 'Tầng 1 (Sảnh Chung cư A)',
       hours: '07:00 - 21:00',
       density: '30% (Vừa)',
       temp: '24°C • Sàn kháng khuẩn',

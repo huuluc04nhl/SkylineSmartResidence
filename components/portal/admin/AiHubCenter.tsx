@@ -83,7 +83,7 @@ export default function AiHubCenter() {
       icon: Activity,
       color: 'text-emerald-400',
       action: 'Chạy Dự Báo Rung Lắc Thang Máy',
-      simResult: 'Thang máy Tòa Diamond: Health Score 94/100 • Khuyến nghị tra mỡ vòng bi sau 14 ngày',
+      simResult: 'Thang máy Chung Cư Diamond: Health Score 94/100 • Khuyến nghị tra mỡ vòng bi sau 14 ngày',
     },
     {
       id: '3.1.10',
@@ -107,7 +107,7 @@ export default function AiHubCenter() {
       accuracy: '99.1%',
       latency: '80ms',
       status: 'Đang hoạt động',
-      desc: 'Tự động rà soát toàn bộ công tơ điện nước toàn tòa nhà, bôi đỏ các căn hộ biến động bất thường (>50%).',
+      desc: 'Tự động rà soát toàn bộ công tơ điện nước toàn chung cư, bôi đỏ các căn hộ biến động bất thường (>50%).',
       icon: Zap,
       color: 'text-yellow-400',
       action: 'Quét Đối Soát Hóa Đơn T08',

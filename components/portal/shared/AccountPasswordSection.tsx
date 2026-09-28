@@ -244,7 +244,7 @@ export default function AccountPasswordSection({
               <span>•</span>
               <span className="text-[#C5A880] font-medium">
                 {isAdmin 
-                  ? 'Ban Quản Lý Tòa Nhà' 
+                  ? 'Ban Quản Lý Chung Cư' 
                   : isOwner 
                   ? `Chủ Hộ Căn Hộ (Căn ${aptCode})` 
                   : `Cư Dân Thành Viên (Căn ${aptCode})`}

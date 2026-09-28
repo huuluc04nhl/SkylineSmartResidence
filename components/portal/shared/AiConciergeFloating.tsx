@@ -231,7 +231,7 @@ function getDynamicSuggestions(userQuestion: string, aiResponse: string): string
     '🧖 Tiện ích nào cần đăng ký trước?',
     '🏊 Giờ mở cửa Hồ bơi & Phòng gym',
     '💳 Hóa đơn điện nước & Phí quản lý tháng này',
-    '🏢 Tòa nhà có tất cả bao nhiêu tầng?'
+    '🏢 Chung cư có tất cả bao nhiêu tầng?'
   ];
 }
 
@@ -258,7 +258,7 @@ export default function AiConciergeFloating({
 Tôi là **Trợ lý ảo Skyline**, luôn đồng hành và hỗ trợ Quý vị 24/7. 
 
 Tôi có thể giúp Quý cư dân:
-* Tra cứu biểu phí quản lý tòa nhà, hóa đơn điện nước & phí gửi xe.
+* Tra cứu biểu phí quản lý chung cư, hóa đơn điện nước & phí gửi xe.
 * Xem giờ mở cửa Hồ bơi chân mây Tầng 25, Gym 24/7 Tầng 3, phòng xông hơi VIP.
 * Tiếp nhận báo hỏng kỹ thuật với cam kết thợ có mặt hỗ trợ trong vòng 60 phút.
 * Hướng dẫn mở cửa thông minh bằng khuôn mặt, thẻ cư dân hoặc mã số cho khách.
@@ -269,7 +269,7 @@ Quý cư dân có thể chọn câu hỏi gợi ý bên dưới hoặc nhập c�
         '🧖 Tiện ích nào cần đăng ký trước?',
         '🏊 Giờ mở cửa Hồ bơi & Gym',
         '💳 Xem hóa đơn sinh hoạt tháng này',
-        '🏢 Tòa nhà có bao nhiêu tầng?'
+        '🏢 Chung cư có bao nhiêu tầng?'
       ]
     },
   ]);
@@ -330,7 +330,7 @@ Quý cư dân có thể chọn câu hỏi gợi ý bên dưới hoặc nhập c�
           '🧖 Tiện ích nào cần đăng ký trước?',
           '💳 Biểu phí quản lý & gửi xe tháng này',
           '🏊 Giờ mở cửa Hồ bơi & Gym',
-          '🏢 Tòa nhà có bao nhiêu tầng?'
+          '🏢 Chung cư có bao nhiêu tầng?'
         ]
       }
     ]);

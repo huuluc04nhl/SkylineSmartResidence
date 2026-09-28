@@ -39,8 +39,7 @@ export async function GET(req: NextRequest) {
         if (id) bodyObj.id = Number(id);
         break;
       case 'apartment':
-        endpoint = '/rsapartment';
-        if (id) bodyObj.id = Number(id);
+        endpoint = '/rsapartments';
         break;
       case 'apartments':
       default:
@@ -65,6 +64,10 @@ export async function GET(req: NextRequest) {
     }
 
     const data = await res.json();
+    if (type === 'apartment' && id && data.success && Array.isArray(data.data)) {
+      const found = data.data.find((a: any) => String(a.id) === String(id) || a.code === id);
+      return NextResponse.json({ success: true, data: found || null });
+    }
     return NextResponse.json(data);
   } catch (err: any) {
     return NextResponse.json({ success: false, message: err.message || 'Server error' }, { status: 500 });

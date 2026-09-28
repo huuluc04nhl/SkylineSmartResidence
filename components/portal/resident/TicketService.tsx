@@ -524,7 +524,7 @@ export default function TicketService({ currentUser }: TicketServiceProps) {
 
             <div className="p-3 bg-[#161B22] border border-[#222B35] text-xs space-y-1">
               <div>Phiếu xử lý: <strong className="text-[#C5A880] font-mono">{ratingModalTicket.id}</strong></div>
-              <div>Kỹ thuật viên: <strong className="text-white">{ratingModalTicket.assigned_technician || 'Kỹ thuật viên tòa nhà'}</strong></div>
+              <div>Kỹ thuật viên: <strong className="text-white">{ratingModalTicket.assigned_technician || 'Kỹ thuật viên chung cư'}</strong></div>
             </div>
 
             {/* Interactive Stars */}

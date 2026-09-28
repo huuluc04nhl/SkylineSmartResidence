@@ -64,7 +64,7 @@ export default function AssignResidentModal({
   // Section 2: Biên bản bàn giao kỹ thuật
   const todayStr = new Date().toLocaleDateString('vi-VN');
   const [handoverDate, setHandoverDate] = useState(todayStr);
-  const [handoverOfficer, setHandoverOfficer] = useState('KS. Nguyễn Văn Quản Trị (BQL Tòa Nhà)');
+  const [handoverOfficer, setHandoverOfficer] = useState('KS. Nguyễn Văn Quản Trị (BQL Chung Cư)');
   const [keysCount, setKeysCount] = useState<number>(3);
   const [cardsCount, setCardsCount] = useState<number>(2);
   const [initialElectricMeter, setInitialElectricMeter] = useState<number>(15.0);

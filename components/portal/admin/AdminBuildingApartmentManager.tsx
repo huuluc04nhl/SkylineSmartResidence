@@ -31,8 +31,11 @@ import {
   Navigation,
   TreePine,
   Waves,
-  Dumbbell
+  Dumbbell,
+  FileText,
+  RefreshCw
 } from 'lucide-react';
+import { fetchNksApartments } from '@/lib/nksProjectService';
 import AssignResidentModal from '@/components/portal/admin/AssignResidentModal';
 import EditApartmentModal from '@/components/portal/admin/EditApartmentModal';
 import AddApartmentModal from '@/components/portal/admin/AddApartmentModal';
@@ -64,7 +67,37 @@ export const THE_TROPICAL_AMENITIES = [
   { id: '15', name: 'Giàn cảnh quan nghệ thuật', category: 'PARK', desc: 'Điểm nhấn kiến trúc biểu tượng chụp ảnh check-in' },
   { id: '16', name: 'Ghế nghỉ Sunken', category: 'PARK', desc: 'Không gian phòng khách chìm thư thái bên hồ' },
   { id: 'P', name: 'Bãi đỗ xe thông minh', category: 'ACCESS', desc: 'Khu vực gửi xe & lối xuống hầm B1/B2 kiểm soát tự động' },
-  { id: 'D', name: 'Sảnh đón Drop-off', category: 'ACCESS', desc: 'Lối xe đón trả cư dân tại sảnh chính tòa nhà' },
+  { id: 'D', name: 'Sảnh đón Drop-off', category: 'ACCESS', desc: 'Lối xe đón trả cư dân tại sảnh chính chung cư' },
+];
+
+// Cấu hình đầy đủ 21 căn hộ/sàn theo bản vẽ CAD kiến trúc Chung Cư BS-09 & BS-07 (Phân khu The Tropical - The Beverly Solari)
+export const CAD_FLOOR_UNITS_CONFIG = [
+  // CÁNH 1: CÁNH BẮC (NORTH WING - Căn 01 đến 05)
+  { num: '01', code: 'CH-01', wing: 'NORTH', wingLabel: 'Cánh Bắc', type: '2PN', typeLabel: '2PN Góc (Căn Phụ)', beds: 2, baths: 2, area: 68.4, dir: 'Đông Bắc', defaultPrice: 4.6 },
+  { num: '02', code: 'CH-02', wing: 'NORTH', wingLabel: 'Cánh Bắc', type: '1PN', typeLabel: '1PN Tiêu Chuẩn', beds: 1, baths: 1, area: 38.2, dir: 'Đông Bắc', defaultPrice: 2.8 },
+  { num: '03', code: 'CH-03', wing: 'NORTH', wingLabel: 'Cánh Bắc', type: '1PN', typeLabel: '1PN+ Đa Năng', beds: 1, baths: 1, area: 46.5, dir: 'Đông Bắc', defaultPrice: 3.2 },
+  { num: '04', code: 'CH-04', wing: 'NORTH', wingLabel: 'Cánh Bắc', type: '2PN', typeLabel: '2PN Ban Công Kính', beds: 2, baths: 2, area: 59.1, dir: 'Đông Bắc', defaultPrice: 4.1 },
+  { num: '05', code: 'CH-05', wing: 'NORTH', wingLabel: 'Cánh Bắc', type: '2PN', typeLabel: '2PN Góc Đẹp', beds: 2, baths: 2, area: 69.2, dir: 'Đông Bắc', defaultPrice: 4.8 },
+
+  // CÁNH 2: CÁNH NAM (SOUTH WING - Căn 06 đến 10, nơi đặt CĂN CHỦ HỘ TẦNG 30)
+  { num: '06', code: 'CH-06', wing: 'SOUTH', wingLabel: 'Cánh Nam', type: '1PN', typeLabel: '1PN View Hồ Bơi (Căn Chủ Hộ)', beds: 1, baths: 1, area: 42.0, dir: 'Đông Nam', defaultPrice: 3.4 },
+  { num: '07', code: 'CH-07', wing: 'SOUTH', wingLabel: 'Cánh Nam', type: '2PN', typeLabel: '2PN Gia Đình', beds: 2, baths: 2, area: 59.0, dir: 'Đông Nam', defaultPrice: 4.1 },
+  { num: '08', code: 'CH-08', wing: 'SOUTH', wingLabel: 'Cánh Nam', type: '1PN', typeLabel: '1PN+ Đa Năng', beds: 1, baths: 1, area: 46.5, dir: 'Đông Nam', defaultPrice: 3.25 },
+  { num: '09', code: 'CH-09', wing: 'SOUTH', wingLabel: 'Cánh Nam', type: '2PN', typeLabel: '2PN Góc Thoáng', beds: 2, baths: 2, area: 69.5, dir: 'Đông Nam', defaultPrice: 4.9 },
+  { num: '10', code: 'CH-10', wing: 'SOUTH', wingLabel: 'Cánh Nam', type: 'STUDIO', typeLabel: 'Studio Tiện Nghi', beds: 1, baths: 1, area: 35.0, dir: 'Đông Nam', defaultPrice: 2.45 },
+
+  // CÁNH 3: CÁNH TÂY (WEST WING - Dãy căn 11 đến 21 đối xứng qua hành lang 1.8m)
+  { num: '11', code: 'CH-11', wing: 'WEST', wingLabel: 'Cánh Tây', type: '2PN', typeLabel: '2PN Tây Bắc', beds: 2, baths: 2, area: 62.0, dir: 'Tây Bắc', defaultPrice: 4.2 },
+  { num: '12', code: 'CH-12', wing: 'WEST', wingLabel: 'Cánh Tây', type: '1PN', typeLabel: '1PN Tiện Ích', beds: 1, baths: 1, area: 44.5, dir: 'Tây Bắc', defaultPrice: 3.1 },
+  { num: '13', code: 'CH-13', wing: 'WEST', wingLabel: 'Cánh Tây', type: 'STUDIO', typeLabel: 'Studio Hiện Đại', beds: 1, baths: 1, area: 33.5, dir: 'Tây Bắc', defaultPrice: 2.3 },
+  { num: '14', code: 'CH-14', wing: 'WEST', wingLabel: 'Cánh Tây', type: '2PN', typeLabel: '2PN Ban Công Rộng', beds: 2, baths: 2, area: 58.5, dir: 'Tây Bắc', defaultPrice: 4.0 },
+  { num: '15', code: 'CH-15', wing: 'WEST', wingLabel: 'Cánh Tây', type: '2PN', typeLabel: '2PN Góc Tây', beds: 2, baths: 2, area: 67.0, dir: 'Tây Bắc', defaultPrice: 4.5 },
+  { num: '16', code: 'CH-16', wing: 'WEST', wingLabel: 'Cánh Tây', type: '2PN', typeLabel: '2PN Tây Nam', beds: 2, baths: 2, area: 68.0, dir: 'Tây Nam', defaultPrice: 4.6 },
+  { num: '17', code: 'CH-17', wing: 'WEST', wingLabel: 'Cánh Tây', type: '1PN', typeLabel: '1PN View Cây Xanh', beds: 1, baths: 1, area: 43.0, dir: 'Tây Nam', defaultPrice: 3.0 },
+  { num: '18', code: 'CH-18', wing: 'WEST', wingLabel: 'Cánh Tây', type: '2PN', typeLabel: '2PN Tiêu Chuẩn', beds: 2, baths: 2, area: 61.5, dir: 'Tây Nam', defaultPrice: 4.15 },
+  { num: '19', code: 'CH-19', wing: 'WEST', wingLabel: 'Cánh Tây', type: 'STUDIO', typeLabel: 'Studio Nhỏ Gọn', beds: 1, baths: 1, area: 34.0, dir: 'Tây Nam', defaultPrice: 2.4 },
+  { num: '20', code: 'CH-20', wing: 'WEST', wingLabel: 'Cánh Tây', type: '1PN', typeLabel: '1PN Đón Gió', beds: 1, baths: 1, area: 45.0, dir: 'Tây Nam', defaultPrice: 3.15 },
+  { num: '21', code: 'CH-21', wing: 'WEST', wingLabel: 'Cánh Tây', type: '2PN', typeLabel: '2PN Góc Nam', beds: 2, baths: 2, area: 70.0, dir: 'Tây Nam', defaultPrice: 4.95 },
 ];
 
 // Danh sách các khối căn hộ kiến trúc hiển thị trên mô hình 3D (hỗ trợ tối đa 39 tầng phân khu The Tropical - Chung Cư BS-07, BS-08, BS-09, BS-10)
@@ -72,6 +105,7 @@ export const BUILDING_3D_UNITS: {
   code: string;
   floor: number;
   side: 'LEFT' | 'RIGHT';
+  wing?: 'WEST' | 'SOUTH' | 'NORTH';
   type: ApartmentType;
   defaultStatus: ApartmentStatus;
   area: number;
@@ -79,8 +113,10 @@ export const BUILDING_3D_UNITS: {
 }[] = (() => {
   const list: any[] = [];
   for (let fl = 39; fl >= 1; fl--) {
-    list.push({ code: `${fl}-CH-06`, floor: fl, side: 'LEFT', type: '1PN', defaultStatus: 'VACANT', area: 42, defaultName: 'Căn Hộ Trống' });
-    list.push({ code: `${fl}-CH-01`, floor: fl, side: 'RIGHT', type: '2PN', defaultStatus: 'VACANT', area: 60, defaultName: 'Căn Hộ Trống' });
+    // Khối Cánh Tây (Left Wing): Căn góc CH-11/15
+    list.push({ code: `${fl}-CH-11`, floor: fl, side: 'LEFT', wing: 'WEST', type: '2PN', defaultStatus: 'VACANT', area: 62, defaultName: 'Căn Hộ Trống' });
+    // Khối Cánh Nam (Right Wing): Nơi có Căn Chủ Hộ CH-06 tại Tầng 30
+    list.push({ code: fl === 30 ? 'CH-06' : `${fl}-CH-06`, floor: fl, side: 'RIGHT', wing: 'SOUTH', type: '1PN', defaultStatus: fl === 30 ? 'OCCUPIED' : 'VACANT', area: 42, defaultName: fl === 30 ? 'Trần Hữu Lực (Chủ Hộ)' : 'Căn Hộ Trống' });
   }
   return list;
 })();
@@ -92,7 +128,7 @@ export function getApartmentFinancialMetrics(unit: ApartmentUnit | null) {
   const isMaintenance = unit.status === 'MAINTENANCE';
   const area = unit.area || 75;
 
-  // 1. Phí quản lý tòa nhà tiêu chuẩn Skyline (18.000 đ/m²)
+  // 1. Phí quản lý chung cư tiêu chuẩn Skyline (18.000 đ/m²)
   const managementFee = Math.round(area * 18000);
 
   // 2. Phí phương tiện hầm gửi xe
@@ -192,6 +228,9 @@ export default function AdminBuildingApartmentManager() {
   const [buildingTheme, setBuildingTheme] = useState<'NIGHT' | 'DAY'>('NIGHT');
   const [isFloorPlanExpanded, setIsFloorPlanExpanded] = useState<boolean>(false);
   const [floorFilterStatus, setFloorFilterStatus] = useState<'ALL' | 'OCCUPIED' | 'VACANT'>('ALL');
+  const [floorPlanViewMode, setFloorPlanViewMode] = useState<'CAD_VECTOR' | 'BLUEPRINT_IMAGE'>('CAD_VECTOR');
+  const [floorPlanFilterWing, setFloorPlanFilterWing] = useState<'ALL' | 'NORTH' | 'SOUTH' | 'WEST'>('ALL');
+  const [floorPlanCadZoom, setFloorPlanCadZoom] = useState<number>(1);
   const [billToastMessage, setBillToastMessage] = useState<string | null>(null);
 
   // Điều khiển chế độ xem Bản đồ Quy hoạch Phân khu & Đô thị
@@ -218,6 +257,36 @@ export default function AdminBuildingApartmentManager() {
     const list = getApartmentUnits(bCode);
     setApartments(list);
   };
+
+  // 3. Trạng thái và hàm đồng bộ dữ liệu Realtime 100% từ NKS SCRMAI API
+  const [isSyncingApi, setIsSyncingApi] = useState(false);
+  const [lastSyncedTime, setLastSyncedTime] = useState<string>('Vừa cập nhật');
+  const [apiLiveApartments, setApiLiveApartments] = useState<any[]>([]);
+
+  // Tải và đồng bộ danh sách căn hộ trực tiếp từ API NKS SCRMAI
+  const syncLiveApartmentsFromApi = useCallback(async (bCode: string = selectedBlock) => {
+    setIsSyncingApi(true);
+    try {
+      const units = await syncApartmentsFromNksApi(bCode);
+      if (Array.isArray(units) && units.length > 0) {
+        setApartments(units);
+      }
+      const rawApi = await fetchNksApartments();
+      if (Array.isArray(rawApi)) {
+        setApiLiveApartments(rawApi);
+      }
+      setLastSyncedTime(new Date().toLocaleTimeString('vi-VN'));
+    } catch (err) {
+      console.warn('API sync error:', err);
+    } finally {
+      setIsSyncingApi(false);
+    }
+  }, [selectedBlock]);
+
+  // Tự động kích hoạt đồng bộ API khi khởi chạy hoặc chuyển chung cư
+  useEffect(() => {
+    syncLiveApartmentsFromApi(selectedBlock);
+  }, [selectedBlock, syncLiveApartmentsFromApi]);
 
   // Chuyển đổi giữa 4 Chung Cư
   const handleSwitchBlock = async (blockCode: 'BS-07' | 'BS-08' | 'BS-09' | 'BS-10') => {
@@ -559,14 +628,14 @@ export default function AdminBuildingApartmentManager() {
     },
   }), [buildingTheme]);
 
-  // Thống kê toàn tòa chung cư
+  // Thống kê toàn chung cư
   const totalUnitsCount = displayUnits.length;
   const occupiedCount = displayUnits.filter(u => u.status === 'OCCUPIED').length;
   const vacantCount = displayUnits.filter(u => u.status === 'VACANT').length;
   const maintenanceCount = displayUnits.filter(u => u.status === 'MAINTENANCE').length;
   const occupancyRate = totalUnitsCount > 0 ? Math.round((occupiedCount / totalUnitsCount) * 100) : 0;
 
-  // Danh sách các tầng thực tế của tòa nhà chung cư (sắp xếp giảm dần từ tầng cao nhất xuống)
+  // Danh sách các tầng thực tế của chung cư (sắp xếp giảm dần từ tầng cao nhất xuống)
   const buildingFloors = useMemo(() => {
     const floors = Array.from(new Set(displayUnits.map(u => u.floor)));
     return floors.sort((a, b) => b - a);
@@ -608,17 +677,17 @@ export default function AdminBuildingApartmentManager() {
       </div>
 
       {/* ============================================================= */}
-      {/* TRUNG TÂM ĐIỀU HÀNH BQL: CHỌN TÒA CHUNG CƯ, KPI & BỘ LỌC      */}
+      {/* TRUNG TÂM ĐIỀU HÀNH BQL: CHỌN CHUNG CƯ, KPI & BỘ LỌC      */}
       {/* ============================================================= */}
       <div className="bg-[#0B121D] border border-[#22344B] p-2.5 sm:p-3 space-y-2.5 shadow-lg">
-        {/* HÀNG 1: CHỌN TÒA CHUNG CƯ + 4 CHỈ SỐ THỐNG KÊ BQL */}
+        {/* HÀNG 1: CHỌN CHUNG CƯ + 4 CHỈ SỐ THỐNG KÊ BQL */}
         <div className="flex flex-wrap items-center justify-between gap-3 pb-2 border-b border-[#1A283B]">
           {/* Chọn Chung Cư */}
           <div className="flex items-center gap-1.5 flex-wrap">
             <span className="text-[11px] font-mono text-gray-400 mr-1">Chung Cư:</span>
             {[
-              { code: 'BS-07', name: 'Chung Cư BS-07', floors: 34, isOwner: true },
-              { code: 'BS-08', name: 'Chung Cư BS-08', floors: 39, highlight: true },
+              { code: 'BS-07', name: 'Chung Cư BS-07', floors: 34 },
+              { code: 'BS-08', name: 'Chung Cư BS-08', floors: 39 },
               { code: 'BS-09', name: 'Chung Cư BS-09', floors: 34 },
               { code: 'BS-10', name: 'Chung Cư BS-10', floors: 34 },
             ].map(b => {
@@ -636,22 +705,14 @@ export default function AdminBuildingApartmentManager() {
                 >
                   <span>{b.name}</span>
                   <span className={`text-[10px] px-1 ${isCurrent ? 'bg-black/20 text-black font-bold' : 'bg-[#152132] text-cyan-300'}`}>
-                    {b.floors}T
+                    {b.floors} Tầng
                   </span>
-                  {b.isOwner && (
-                    <span className={`text-[9px] px-1 font-semibold ${isCurrent ? 'bg-black text-amber-300' : 'bg-amber-500/20 text-amber-300 border border-amber-500/30'}`}>
-                      Căn Chủ Hộ
-                    </span>
-                  )}
-                  {b.highlight && !isCurrent && (
-                    <span className="text-[9px] px-1 bg-amber-500/20 text-amber-300 border border-amber-500/30">Cao Nhất</span>
-                  )}
                 </button>
               );
             })}
           </div>
 
-          {/* 4 Chỉ Số Thống Kê BQL */}
+          {/* 4 Chỉ Số Thống Kê BQL & Thanh Đồng Bộ API */}
           <div className="flex items-center gap-2 flex-wrap text-xs font-mono">
             <div className="px-2.5 py-1 bg-[#121820] border border-[#222B35] flex items-center gap-1.5" title="Tổng số căn hộ">
               <span className="text-gray-400">Tổng: </span>
@@ -669,6 +730,18 @@ export default function AdminBuildingApartmentManager() {
               <span className="text-gray-400">Nghiệm Thu: </span>
               <strong className="text-blue-300 font-bold">{maintenanceCount}</strong>
             </div>
+
+            {/* Nút Làm Mới Dữ Liệu */}
+            <button
+              type="button"
+              onClick={() => syncLiveApartmentsFromApi(selectedBlock)}
+              disabled={isSyncingApi}
+              className="px-2.5 py-1 bg-[#121820] hover:bg-[#1a232e] text-gray-300 hover:text-white border border-[#222B35] flex items-center gap-1.5 transition-colors disabled:opacity-50 text-xs font-mono"
+              title="Làm mới dữ liệu từ hệ thống"
+            >
+              <RefreshCw className={`w-3 h-3 text-[#C5A880] ${isSyncingApi ? 'animate-spin' : ''}`} />
+              <span>{isSyncingApi ? 'Đang tải...' : 'Làm mới'}</span>
+            </button>
           </div>
         </div>
 
@@ -881,11 +954,11 @@ export default function AdminBuildingApartmentManager() {
       </div>
 
       {/* ============================================================= */}
-      {/* 4. KHU VỰC CHÍNH: SƠ ĐỒ TÒA NHÀ & HỒ SƠ CHI TIẾT CĂN HỘ       */}
+      {/* 4. KHU VỰC CHÍNH: SƠ ĐỒ CHUNG CƯ & HỒ SƠ CHI TIẾT CĂN HỘ       */}
       {/* ============================================================= */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
         
-        {/* CỘT TRÁI (7 COLS): SƠ ĐỒ TÒA NHÀ / MẶT BẰNG TẦNG / DANH SÁCH */}
+        {/* CỘT TRÁI (7 COLS): SƠ ĐỒ CHUNG CƯ / MẶT BẰNG TẦNG / DANH SÁCH */}
         <div className="lg:col-span-7 bg-[#0D1117] border border-[#222B35] rounded-none overflow-hidden shadow-2xl flex flex-col">
           
           {/* THANH ĐIỀU HÀNH GÓC NHÌN DUY NHẤT (SINGLE UNIFIED VIEWPORT TOOLBAR) */}
@@ -1086,7 +1159,7 @@ export default function AdminBuildingApartmentManager() {
           </div>
 
           {/* ----------------------------------------------------------- */}
-          {/* GÓC NHÌN 1: MÔ HÌNH KHỐI 3D KIẾN TRÚC TÒA NHÀ BỰ HƠN THỰC TẾ*/}
+          {/* GÓC NHÌN 1: MÔ HÌNH KHỐI 3D KIẾN TRÚC CHUNG CƯ*/}
           {/* ----------------------------------------------------------- */}
           {buildingPerspective === '3D' && (() => {
             const curTone = toneConfig.GOLD_LUXURY;
@@ -1220,14 +1293,14 @@ export default function AdminBuildingApartmentManager() {
                       </text>
                     </g>
 
-                    {/* 2. THÂN TÒA NHÀ CHUNG CƯ (TỐI ĐA 39 TẦNG TÙY BLOCK) */}
+                    {/* 2. THÂN CHUNG CƯ (TỐI ĐA 39 TẦNG TÙY BLOCK) */}
                     <g className="transition-all duration-300">
                       {/* Mặt Trái (Hướng Đông Nam) */}
                       <polygon points="230,475 500,520 500,68 230,38" fill="url(#skylineGlassL)" stroke={curTone.borderBuilding} strokeWidth="2" />
                       {/* Mặt Phải (Hướng Tây Nam) */}
                       <polygon points="500,520 770,475 770,38 500,68" fill="url(#skylineGlassR)" stroke={curTone.borderBuilding} strokeWidth="2" />
                       
-                      {/* Nan lam kiến trúc đứng (Architectural Mullions) tạo chiều sâu cho tòa nhà */}
+                      {/* Nan lam kiến trúc đứng (Architectural Mullions) tạo chiều sâu cho chung cư */}
                       <line x1="320" y1="48" x2="320" y2="489" stroke={curTone.mullionColor} strokeWidth="0.8" opacity="0.4" />
                       <line x1="410" y1="58" x2="410" y2="505" stroke={curTone.mullionColor} strokeWidth="0.8" opacity="0.4" />
                       <line x1="590" y1="58" x2="590" y2="505" stroke={curTone.mullionColor} strokeWidth="0.8" opacity="0.4" />
@@ -1539,7 +1612,7 @@ export default function AdminBuildingApartmentManager() {
           })()}
 
           {/* ----------------------------------------------------------- */}
-          {/* GÓC NHÌN 2: SƠ ĐỒ TOÀN CẢNH TÒA NHÀ THỰC TẾ THEO CÁC TẦNG   */}
+          {/* GÓC NHÌN 2: SƠ ĐỒ TOÀN CẢNH CHUNG CƯ THEO CÁC TẦNG   */}
           {/* ----------------------------------------------------------- */}
           {buildingPerspective === 'BUILDING_ELEVATION' && (() => {
             const displayedElevationFloors = buildingFloors.filter(floor => {
@@ -1552,7 +1625,7 @@ export default function AdminBuildingApartmentManager() {
 
             return (
               <div className="p-4 bg-[#05070A] h-[640px] overflow-y-auto space-y-4">
-                {/* KHỐI HIỂN THỊ CÁC TẦNG CỦA TÒA NHÀ */}
+                {/* KHỐI HIỂN THỊ CÁC TẦNG CỦA CHUNG CƯ */}
                 <div className="bg-[#0B0F17] border border-[#222B35] p-3 rounded-none flex flex-col space-y-3">
                   {/* Tầng Mái Sân Thượng */}
                   {(selectedFloorRange === 'ALL' || selectedFloorRange === 'HIGH') && (
@@ -1691,9 +1764,9 @@ export default function AdminBuildingApartmentManager() {
           {/* GÓC NHÌN 3: SƠ ĐỒ MẶT BẰNG TẦNG THỰC TẾ (FLOOR PLAN)        */}
           {/* ----------------------------------------------------------- */}
           {buildingPerspective === 'FLOOR_PLAN' && (() => {
-            // Tính toán tổng số liệu tầng hiện tại từ dữ liệu thực tế displayUnits
-            const floorUnits = ['01', '02', '03', '04', '05', '06', '07', '08'].map(num => {
-              const chCode = `CH-${num}`;
+            // Danh sách đầy đủ 21 căn hộ theo bản vẽ CAD kiến trúc Chung Cư BS-09 & The Tropical
+            const floorUnits = CAD_FLOOR_UNITS_CONFIG.map(cfg => {
+              const chCode = cfg.code;
               const targetCode = selectedFloor === 30 ? chCode : `${selectedFloor}-${chCode}`;
               const found = displayUnits.find(u => 
                 u.floor === selectedFloor && (
@@ -1703,18 +1776,30 @@ export default function AdminBuildingApartmentManager() {
                   (selectedFloor === 30 && u.code === chCode)
                 )
               );
-              return found || {
+              const isOwnerPrimary = isOwnerBuilding && selectedFloor === 30 && (cfg.num === '06');
+              const isOwnerSecondary = isOwnerBuilding && selectedFloor === 30 && (cfg.num === '01');
+              const isOccupied = isOwnerPrimary || isOwnerSecondary || found?.status === 'OCCUPIED' || (selectedFloor === 12 && cfg.num === '05') || (selectedFloor % 2 === 0 && (cfg.num === '03' || cfg.num === '15' || cfg.num === '18'));
+              const isMaintenance = found?.status === 'MAINTENANCE' || (selectedFloor % 5 === 0 && cfg.num === '09');
+
+              return found || ({
                 code: targetCode,
                 tower: selectedBlock === 'BS-10' ? 'B' : 'A',
                 towerName: currentBlockName,
                 floor: selectedFloor,
-                type: (num === '01' || num === '08' || num === '04' || num === '05') ? '2PN' : '1PN',
-                typeLabel: (num === '01' || num === '08' || num === '04' || num === '05') ? '2 Phòng Ngủ - 1WC' : '1 Phòng Ngủ - 1WC',
-                status: 'VACANT',
-                statusLabel: 'Căn Hộ Trống',
-                area: (num === '01' || num === '08') ? 60 : 42,
-                priceBillion: 3.2
-              } as ApartmentUnit;
+                type: cfg.type,
+                typeLabel: cfg.typeLabel,
+                status: isOccupied ? 'OCCUPIED' : isMaintenance ? 'MAINTENANCE' : 'VACANT',
+                statusLabel: isOccupied ? 'Có Cư Dân' : isMaintenance ? 'Nghiệm Thu Kỹ Thuật' : 'Căn Hộ Trống',
+                area: cfg.area,
+                bedrooms: cfg.beds,
+                bathrooms: cfg.baths,
+                direction: cfg.dir,
+                priceBillion: cfg.defaultPrice,
+                owner: isOwnerPrimary ? { name: activeOwnerName, phone: activeOwnerPhone, email: activeOwnerEmail, cccd: activeOwnerCccd, avatar: activeOwnerAvatar, eKycApproved: true }
+                  : isOwnerSecondary ? { name: `${activeOwnerName} (Căn Phụ)`, phone: activeOwnerPhone, email: activeOwnerEmail, cccd: activeOwnerCccd, avatar: activeOwnerAvatar, eKycApproved: true }
+                  : isOccupied ? { name: `Cư Dân Căn ${cfg.num}`, phone: '0908123456', email: `resident.${cfg.num}@skyline.vn`, cccd: '079204000123', avatar: '', eKycApproved: true }
+                  : undefined
+              } as ApartmentUnit);
             });
 
             const floorOccupiedCount = floorUnits.filter(u => u.status === 'OCCUPIED').length;
@@ -1732,9 +1817,9 @@ export default function AdminBuildingApartmentManager() {
             }, 0);
 
             return (
-              <div className="p-4 sm:p-5 bg-[#05070A] h-[640px] overflow-y-auto space-y-3">
+              <div className="p-4 sm:p-5 bg-[#05070A] h-[660px] sm:h-[760px] overflow-y-auto space-y-3.5 no-scrollbar select-none">
 
-                {/* Thanh KPI Tóm Tắt Dòng Tiền & Tiêu Thụ Toàn Tầng {selectedFloor} */}
+                {/* THANH KPI TÓM TẮT DÒNG TIỀN & TIÊU THỤ TOÀN TẦNG 21 CĂN HỘ */}
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 p-2.5 bg-gradient-to-r from-[#101722] via-[#121A26] to-[#101722] border border-[#253244] text-[11px] font-mono">
                   <div className="p-1.5 bg-[#16202D] border border-[#2B394E]">
                     <div className="text-[9.5px] text-gray-400">Doanh Thu Tầng {selectedFloor}:</div>
@@ -1757,350 +1842,508 @@ export default function AdminBuildingApartmentManager() {
                   <div className="p-1.5 bg-[#16202D] border border-[#2B394E]">
                     <div className="text-[9.5px] text-gray-400">Lấp Đầy Cư Dân:</div>
                     <div className="text-xs sm:text-sm font-bold text-white mt-0.5">
-                      {floorOccupiedCount}/8 căn <span className="text-[9.5px] text-gray-400">({Math.round((floorOccupiedCount / 8) * 100)}%)</span>
+                      {floorOccupiedCount}/21 căn <span className="text-[9.5px] text-gray-400">({Math.round((floorOccupiedCount / 21) * 100)}%)</span>
                     </div>
                   </div>
                 </div>
 
-              {/* Thông báo gợi ý chuyển tầng nhanh nếu căn đang chọn không nằm ở tầng hiện tại */}
-              {activeUnit && activeUnit.floor !== selectedFloor && (
-                <div className="p-2.5 bg-[#C5A880]/10 border border-[#C5A880]/40 flex items-center justify-between gap-3 text-xs">
-                  <div className="text-amber-200">
-                    <span>
-                      Bạn đang xem hồ sơ căn <strong className="text-white font-mono">{activeUnit.code}</strong> (Tầng {activeUnit.floor}), nhưng sơ đồ đang hiển thị Tầng {selectedFloor}.
-                    </span>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => setSelectedFloor(activeUnit.floor)}
-                    className="px-2.5 py-1 bg-[#C5A880] hover:bg-[#d8bb93] text-[#0D1117] font-bold text-[11px] shrink-0 transition-colors"
-                  >
-                    Chuyển Tới Tầng {activeUnit.floor}
-                  </button>
-                </div>
-              )}
-
-              {/* BẢN VẼ MẶT BẰNG SÀN KIẾN TRÚC TẦNG THỰC TẾ (SVG FLOOR PLATE) */}
-              <div className="relative w-full bg-[#090D14] border border-[#222B35] p-3 flex flex-col items-center">
-                <div className="text-[11px] font-mono text-[#C5A880] mb-2 self-start">
-                  SƠ ĐỒ MẶT BẰNG SÀN TẦNG {selectedFloor} • {currentBlockName.toUpperCase()} (BỐ TRÍ 8 CĂN HỘ / TẦNG)
-                </div>
-
-                <svg viewBox="0 0 800 360" className="w-full max-w-[760px] drop-shadow-lg">
-                  {/* Đường bao sàn tầng */}
-                  <rect x="20" y="20" width="760" height="320" fill="#0C121D" stroke="#1E293B" strokeWidth="2" />
-                  
-                  {/* KHU THANG MÁY & THANG BỘ TRUNG TÂM */}
-                  <rect x="290" y="90" width="220" height="180" fill="#16202E" stroke="#334155" strokeWidth="1.5" />
-                  <text x="400" y="115" fill="#E2E8F0" fontSize="10" fontWeight="bold" fontFamily="monospace" textAnchor="middle">
-                    KHU THANG MÁY & THANG BỘ
-                  </text>
-
-                  {/* 4 Thang Máy Khách */}
-                  <rect x="310" y="130" width="40" height="40" fill="#0F172A" stroke="#38BDF8" strokeWidth="1" />
-                  <text x="330" y="153" fill="#38BDF8" fontSize="8" textAnchor="middle" fontFamily="monospace">THANG 1</text>
-
-                  <rect x="355" y="130" width="40" height="40" fill="#0F172A" stroke="#38BDF8" strokeWidth="1" />
-                  <text x="375" y="153" fill="#38BDF8" fontSize="8" textAnchor="middle" fontFamily="monospace">THANG 2</text>
-
-                  <rect x="405" y="130" width="40" height="40" fill="#0F172A" stroke="#38BDF8" strokeWidth="1" />
-                  <text x="425" y="153" fill="#38BDF8" fontSize="8" textAnchor="middle" fontFamily="monospace">THANG 3</text>
-
-                  <rect x="450" y="130" width="40" height="40" fill="#0F172A" stroke="#38BDF8" strokeWidth="1" />
-                  <text x="470" y="153" fill="#38BDF8" fontSize="8" textAnchor="middle" fontFamily="monospace">THANG 4</text>
-
-                  {/* Thang Hàng & PCCC */}
-                  <rect x="340" y="180" width="120" height="30" fill="#1E293B" stroke="#F59E0B" strokeWidth="1" />
-                  <text x="400" y="198" fill="#FDE68A" fontSize="8.5" textAnchor="middle" fontFamily="monospace">THANG HÀNG & PCCC</text>
-
-                  {/* 2 Buồng Thang Thoát Hiểm */}
-                  <rect x="300" y="220" width="90" height="35" fill="#0F172A" stroke="#10B981" strokeWidth="1" />
-                  <text x="345" y="241" fill="#10B981" fontSize="7.5" textAnchor="middle" fontFamily="monospace">THOÁT HIỂM 1</text>
-
-                  <rect x="410" y="220" width="90" height="35" fill="#0F172A" stroke="#10B981" strokeWidth="1" />
-                  <text x="455" y="241" fill="#10B981" fontSize="7.5" textAnchor="middle" fontFamily="monospace">THOÁT HIỂM 2</text>
-
-                  {/* Hành lang thông thoáng tiêu chuẩn */}
-                  <rect x="150" y="90" width="130" height="180" fill="#0B1017" stroke="#1E293B" strokeDasharray="3 3" />
-                  <rect x="520" y="90" width="130" height="180" fill="#0B1017" stroke="#1E293B" strokeDasharray="3 3" />
-                  <text x="215" y="185" fill="#475569" fontSize="9" textAnchor="middle" fontFamily="monospace">HÀNH LANG TÂY</text>
-                  <text x="585" y="185" fill="#475569" fontSize="9" textAnchor="middle" fontFamily="monospace">HÀNH LANG ĐÔNG</text>
-
-                  {/* CÁC CĂN HỘ PHÂN BỔ TRÊN TẦNG */}
-                  {(() => {
-                    const getFloorUnitMeta = (numStr: string) => {
-                      const chCode = `CH-${numStr}`;
-                      const targetCode = selectedFloor === 30 ? chCode : `${selectedFloor}-${chCode}`;
-                      const found = displayUnits.find(u => 
-                        u.floor === selectedFloor && (
-                          u.code.toUpperCase() === chCode ||
-                          u.code.toUpperCase() === targetCode ||
-                          u.code.toUpperCase().endsWith(chCode) ||
-                          (selectedFloor === 30 && u.code === chCode)
-                        )
-                      );
-                      const isOccupied = found?.status === 'OCCUPIED' || (isOwnerBuilding && selectedFloor === 30 && (numStr === '06' || numStr === '01' || numStr === '08'));
-                      const codeToUse = found?.code || targetCode;
-                      const isSelected = selectedAptCode === codeToUse || (isOwnerBuilding && selectedFloor === 30 && selectedAptCode === 'CH-06' && codeToUse.includes('CH-06'));
-                      const isOwnerLuc = isOwnerBuilding && selectedFloor === 30 && (numStr === '06' || numStr === '01');
-                      const ownerName = isOwnerLuc ? activeOwnerName : (found?.owner?.name || '');
-                      const isMatched = isUnitMatchingFilter(codeToUse, selectedFloor);
-                      return { code: codeToUse, found, isOccupied, isSelected, isOwnerLuc, ownerName, isMatched };
-                    };
-                    const u01 = getFloorUnitMeta('01');
-                    const u02 = getFloorUnitMeta('02');
-                    const u03 = getFloorUnitMeta('03');
-                    const u04 = getFloorUnitMeta('04');
-                    const u05 = getFloorUnitMeta('05');
-                    const u06 = getFloorUnitMeta('06');
-                    const u07 = getFloorUnitMeta('07');
-                    const u08 = getFloorUnitMeta('08');
-
-                    return (
-                      <>
-                        {/* Căn 01 */}
-                        <g onClick={() => setSelectedAptCode(u01.code)} className="cursor-pointer">
-                          <rect 
-                            x="30" y="30" width="110" height="140" 
-                            fill={selectedFloor === 30 && isOwnerBuilding ? (u01.isSelected ? '#065F46' : '#0A2538') : (u01.isOccupied ? (u01.isSelected ? '#065F46' : '#044332') : (u01.isSelected ? '#78350F' : '#141D2B'))} 
-                            stroke={selectedFloor === 30 && isOwnerBuilding ? '#0284C7' : (u01.isOccupied ? '#10B981' : (u01.isSelected ? '#F59E0B' : '#334155'))} 
-                            strokeWidth={selectedFloor === 30 && isOwnerBuilding ? '2.5' : (u01.isSelected ? '2.5' : '1.5')} 
-                          />
-                          {selectedFloor === 30 && isOwnerBuilding && (
-                            <rect x="36" y="33" width="98" height="14" fill="#0284C7" />
-                          )}
-                          {selectedFloor === 30 && isOwnerBuilding && (
-                            <text x="85" y="43.5" fill="#FFFFFF" fontSize="7.5" fontWeight="900" textAnchor="middle" fontFamily="sans-serif">
-                              CĂN PHỤ CHỦ HỘ
-                            </text>
-                          )}
-                          <text x="85" y={selectedFloor === 30 && isOwnerBuilding ? "67" : "70"} fill="#FFFFFF" fontSize="10" fontWeight="bold" textAnchor="middle" fontFamily="monospace">Căn {u01.code}</text>
-                          <text x="85" y={selectedFloor === 30 && isOwnerBuilding ? "83" : "86"} fill={u01.isOccupied ? '#A7F3D0' : '#94A3B8'} fontSize="8" textAnchor="middle">2PN • 50m²</text>
-                          <rect x="45" y={selectedFloor === 30 && isOwnerBuilding ? "94" : "96"} width="80" height="16" fill={u01.isOccupied ? '#10B981' : '#B45309'} />
-                          <text x="85" y={selectedFloor === 30 && isOwnerBuilding ? "106" : "108"} fill={u01.isOccupied ? '#0D1117' : '#FFFFFF'} fontSize="7.5" fontWeight="bold" textAnchor="middle">
-                            {u01.isOccupied ? 'CÓ CƯ DÂN' : 'NHÀ TRỐNG'}
-                          </text>
-                          <text x="85" y={selectedFloor === 30 && isOwnerBuilding ? "125" : "128"} fill={selectedFloor === 30 && isOwnerBuilding ? '#7DD3FC' : (u01.isOccupied ? '#D1FAE5' : '#94A3B8')} fontSize="7.5" fontWeight="bold" textAnchor="middle">
-                            {selectedFloor === 30 && isOwnerBuilding ? activeOwnerName : (u01.isOccupied ? u01.ownerName : 'Chưa bàn giao')}
-                          </text>
-                        </g>
-
-                        {/* Căn 02 */}
-                        <g onClick={() => setSelectedAptCode(u02.code)} className="cursor-pointer">
-                          <rect 
-                            x="150" y="30" width="130" height="55" 
-                            fill={u02.isOccupied ? (u02.isSelected ? '#065F46' : '#044332') : (u02.isSelected ? '#78350F' : '#141D2B')} 
-                            stroke={u02.isOccupied ? '#10B981' : (u02.isSelected ? '#F59E0B' : '#334155')} 
-                            strokeWidth={u02.isSelected ? '2.5' : '1.5'} 
-                          />
-                          <text x="215" y="52" fill="#FFFFFF" fontSize="9" fontWeight="bold" textAnchor="middle" fontFamily="monospace">Căn {u02.code} (1PN • 52m²)</text>
-                          <text x="215" y="68" fill={u02.isOccupied ? '#10B981' : '#F59E0B'} fontSize="7.5" fontWeight="bold" textAnchor="middle">
-                            {u02.isOccupied ? `CÓ CƯ DÂN: ${u02.ownerName}` : 'NHÀ TRỐNG'}
-                          </text>
-                        </g>
-
-                        {/* Căn 03 */}
-                        <g onClick={() => setSelectedAptCode(u03.code)} className="cursor-pointer">
-                          <rect 
-                            x="290" y="30" width="220" height="55" 
-                            fill={u03.isOccupied ? (u03.isSelected ? '#065F46' : '#044332') : (u03.isSelected ? '#78350F' : '#141D2B')} 
-                            stroke={u03.isOccupied ? '#10B981' : (u03.isSelected ? '#F59E0B' : '#334155')} 
-                            strokeWidth={u03.isSelected ? '2.5' : '1.5'} 
-                          />
-                          <text x="400" y="52" fill="#FFFFFF" fontSize="9.5" fontWeight="bold" textAnchor="middle" fontFamily="monospace">Căn {u03.code} (2PN • 75m²)</text>
-                          <text x="400" y="68" fill={u03.isOccupied ? '#10B981' : '#F59E0B'} fontSize="7.5" fontWeight="bold" textAnchor="middle">
-                            {u03.isOccupied ? `CÓ CƯ DÂN: ${u03.ownerName}` : 'NHÀ TRỐNG'}
-                          </text>
-                        </g>
-
-                        {/* Căn 04 */}
-                        <g onClick={() => setSelectedAptCode(u04.code)} className="cursor-pointer">
-                          <rect 
-                            x="520" y="30" width="130" height="55" 
-                            fill={u04.isOccupied ? (u04.isSelected ? '#065F46' : '#044332') : (u04.isSelected ? '#78350F' : '#141D2B')} 
-                            stroke={u04.isOccupied ? '#10B981' : (u04.isSelected ? '#F59E0B' : '#334155')} 
-                            strokeWidth={u04.isSelected ? '2.5' : '1.5'} 
-                          />
-                          <text x="585" y="52" fill="#FFFFFF" fontSize="9" fontWeight="bold" textAnchor="middle" fontFamily="monospace">Căn {u04.code} (3PN • 108m²)</text>
-                          <text x="585" y="68" fill={u04.isOccupied ? '#10B981' : '#F59E0B'} fontSize="7.5" fontWeight="bold" textAnchor="middle">
-                            {u04.isOccupied ? `CÓ CƯ DÂN: ${u04.ownerName}` : 'NHÀ TRỐNG'}
-                          </text>
-                        </g>
-
-                        {/* Căn 05 (Căn 12A05 khi ở tầng 12) */}
-                        <g onClick={() => setSelectedAptCode(u05.code)} className="cursor-pointer">
-                          <rect 
-                            x="660" 
-                            y="180" 
-                            width="110" 
-                            height="150" 
-                            fill={u05.isOccupied ? (u05.isSelected ? '#065F46' : '#044332') : (u05.isSelected ? '#78350F' : '#141D2B')} 
-                            stroke={u05.isOccupied ? '#10B981' : (u05.isSelected ? '#F59E0B' : '#334155')} 
-                            strokeWidth={u05.isSelected ? '2.5' : '1.5'} 
-                            className="transition-all hover:opacity-90 shadow-xl"
-                          />
-                          <text x="715" y="212" fill="#FFFFFF" fontSize="10.5" fontWeight="900" textAnchor="middle" fontFamily="monospace">
-                            CĂN {u05.code}
-                          </text>
-                          <text x="715" y="230" fill={u05.isOccupied ? '#A7F3D0' : '#94A3B8'} fontSize="8" fontWeight="bold" textAnchor="middle">
-                            2PN - 2WC • 78.5m²
-                          </text>
-                          <rect x="675" y="244" width="80" height="17" fill={u05.isOccupied ? '#10B981' : '#B45309'} rx="0" />
-                          <text x="715" y="256" fill={u05.isOccupied ? '#0D1117' : '#FFFFFF'} fontSize="7.5" fontWeight="bold" textAnchor="middle">
-                            {u05.isOccupied ? 'CÓ CƯ DÂN' : 'NHÀ TRỐNG'}
-                          </text>
-                          <text x="715" y="280" fill={u05.isOccupied ? '#D1FAE5' : '#FCD34D'} fontSize="8" fontWeight="bold" textAnchor="middle">
-                            {u05.isOccupied ? u05.ownerName : 'Chưa bàn giao'}
-                          </text>
-                        </g>
-
-                        {/* Căn 06 */}
-                        <g onClick={() => setSelectedAptCode(u06.code)} className="cursor-pointer">
-                          <rect 
-                            x="660" y="30" width="110" height="140" 
-                            fill={selectedFloor === 30 && isOwnerBuilding ? (u06.isSelected ? '#065F46' : '#142E20') : (u06.isOccupied ? (u06.isSelected ? '#065F46' : '#044332') : (u06.isSelected ? '#78350F' : '#141D2B'))} 
-                            stroke={selectedFloor === 30 && isOwnerBuilding ? '#F59E0B' : (u06.isOccupied ? '#10B981' : (u06.isSelected ? '#F59E0B' : '#334155'))} 
-                            strokeWidth={selectedFloor === 30 && isOwnerBuilding ? '2.5' : (u06.isSelected ? '2.5' : '1.5')} 
-                          />
-                          {selectedFloor === 30 && isOwnerBuilding && (
-                            <rect x="666" y="33" width="98" height="14" fill="#F59E0B" />
-                          )}
-                          {selectedFloor === 30 && isOwnerBuilding && (
-                            <text x="715" y="43.5" fill="#000000" fontSize="7.5" fontWeight="900" textAnchor="middle" fontFamily="sans-serif">
-                              CĂN CHỦ HỘ
-                            </text>
-                          )}
-                          <text x="715" y={selectedFloor === 30 && isOwnerBuilding ? "67" : "75"} fill="#FFFFFF" fontSize="10" fontWeight="bold" textAnchor="middle" fontFamily="monospace">Căn {u06.code}</text>
-                          <text x="715" y={selectedFloor === 30 && isOwnerBuilding ? "83" : "92"} fill={u06.isOccupied ? '#A7F3D0' : '#94A3B8'} fontSize="8" textAnchor="middle">1PN • 42m²</text>
-                          <rect x="675" y={selectedFloor === 30 && isOwnerBuilding ? "94" : "102"} width="80" height="16" fill={u06.isOccupied ? '#10B981' : '#B45309'} />
-                          <text x="715" y={selectedFloor === 30 && isOwnerBuilding ? "106" : "114"} fill={u06.isOccupied ? '#0D1117' : '#FFFFFF'} fontSize="7.5" fontWeight="bold" textAnchor="middle">
-                            {u06.isOccupied ? 'CÓ CƯ DÂN' : 'NHÀ TRỐNG'}
-                          </text>
-                          <text x="715" y={selectedFloor === 30 && isOwnerBuilding ? "125" : "132"} fill={selectedFloor === 30 && isOwnerBuilding ? '#FDE68A' : (u06.isOccupied ? '#D1FAE5' : '#94A3B8')} fontSize="7.5" fontWeight="bold" textAnchor="middle">
-                            {selectedFloor === 30 && isOwnerBuilding ? activeOwnerName : (u06.isOccupied ? u06.ownerName : 'Chưa bàn giao')}
-                          </text>
-                        </g>
-
-                        {/* Căn 07 */}
-                        <g onClick={() => setSelectedAptCode(u07.code)} className="cursor-pointer">
-                          <rect 
-                            x="520" y="275" width="130" height="65" 
-                            fill={u07.isOccupied ? (u07.isSelected ? '#065F46' : '#044332') : (u07.isSelected ? '#78350F' : '#141D2B')} 
-                            stroke={u07.isOccupied ? '#10B981' : (u07.isSelected ? '#F59E0B' : '#334155')} 
-                            strokeWidth={u07.isSelected ? '2.5' : '1.5'} 
-                          />
-                          <text x="585" y="300" fill="#FFFFFF" fontSize="9" fontWeight="bold" textAnchor="middle" fontFamily="monospace">Căn {u07.code} (3PN • 112m²)</text>
-                          <text x="585" y="318" fill={u07.isOccupied ? '#10B981' : '#F59E0B'} fontSize="7.5" fontWeight="bold" textAnchor="middle">
-                            {u07.isOccupied ? `CÓ CƯ DÂN: ${u07.ownerName}` : 'NHÀ TRỐNG'}
-                          </text>
-                        </g>
-
-                        {/* Căn 08 */}
-                        <g onClick={() => setSelectedAptCode(u08.code)} className="cursor-pointer">
-                          <rect 
-                            x="30" y="180" width="110" height="150" 
-                            fill={u08.isOccupied ? (u08.isSelected ? '#065F46' : '#044332') : (u08.isSelected ? '#78350F' : '#141D2B')} 
-                            stroke={u08.isOccupied ? '#10B981' : (u08.isSelected ? '#F59E0B' : '#334155')} 
-                            strokeWidth={u08.isSelected ? '2.5' : '1.5'} 
-                          />
-                          <text x="85" y="225" fill="#FFFFFF" fontSize="10" fontWeight="bold" textAnchor="middle" fontFamily="monospace">Căn {u08.code}</text>
-                          <text x="85" y="242" fill={u08.isOccupied ? '#A7F3D0' : '#94A3B8'} fontSize="8" textAnchor="middle">1PN • 52m²</text>
-                          <rect x="45" y="254" width="80" height="16" fill={u08.isOccupied ? '#10B981' : '#B45309'} />
-                          <text x="85" y="266" fill={u08.isOccupied ? '#0D1117' : '#FFFFFF'} fontSize="7.5" fontWeight="bold" textAnchor="middle">
-                            {u08.isOccupied ? 'CÓ CƯ DÂN' : 'NHÀ TRỐNG'}
-                          </text>
-                          <text x="85" y="286" fill={u08.isOccupied ? '#D1FAE5' : '#94A3B8'} fontSize="7.5" fontWeight="bold" textAnchor="middle">
-                            {u08.isOccupied ? u08.ownerName : 'Chưa bàn giao'}
-                          </text>
-                        </g>
-                      </>
-                    );
-                  })()}
-                </svg>
-              </div>
-
-              {/* Danh sách nhanh các căn trên tầng này */}
-              <div className="space-y-2 pt-2">
-                <div className="text-xs font-mono text-gray-400">
-                  Danh mục 8 căn hộ Tầng {selectedFloor} • {currentBlockName}:
-                </div>
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                  {['01', '02', '03', '04', '05', '06', '07', '08'].map(num => {
-                    const chCode = `CH-${num}`;
-                    const targetCode = selectedFloor === 30 ? chCode : `${selectedFloor}-${chCode}`;
-                    const found = displayUnits.find(u => 
-                      u.floor === selectedFloor && (
-                        u.code.toUpperCase() === chCode ||
-                        u.code.toUpperCase() === targetCode ||
-                        u.code.toUpperCase().endsWith(chCode)
-                      )
-                    );
-                    const isOccupied = found?.status === 'OCCUPIED' || (isOwnerBuilding && selectedFloor === 30 && (num === '06' || num === '01' || num === '08'));
-                    const codeToUse = found?.code || targetCode;
-                    const isSelected = selectedAptCode === codeToUse || (isOwnerBuilding && selectedFloor === 30 && selectedAptCode === 'CH-06' && codeToUse.includes('CH-06'));
-                    const isOwnerLuc = isOwnerBuilding && selectedFloor === 30 && (num === '06' || num === '01');
-                    const ownerName = isOwnerLuc ? activeOwnerName : (found?.owner?.name || '');
-                    const isMatched = isUnitMatchingFilter(codeToUse, selectedFloor);
-                    const fin = getApartmentFinancialMetrics(found || {
-                      code: codeToUse,
-                      status: isOccupied ? 'OCCUPIED' : 'VACANT',
-                      area: (num === '01' || num === '08') ? 60 : 42,
-                      priceBillion: 3.2
-                    } as ApartmentUnit);
-
-                    return (
+                {/* THANH ĐIỀU KHIỂN CHẾ ĐỘ XEM: SƠ ĐỒ VECTOR CHỮ Z/T VS BẢN VẼ CAD GỐC */}
+                <div className="p-2.5 bg-[#0E1522] border border-[#233246] flex flex-wrap items-center justify-between gap-3 text-xs font-mono">
+                  <div className="flex items-center gap-2">
+                    <span className="text-gray-400 text-[11px]">Chế độ xem:</span>
+                    <div className="flex bg-[#070B12] p-0.5 border border-[#1E293B]">
                       <button
-                        key={codeToUse}
                         type="button"
-                        onClick={() => setSelectedAptCode(codeToUse)}
-                        className={`p-2.5 rounded-none border text-left transition-all ${
-                          isSelected
-                            ? 'bg-[#1C2533] border-[#C5A880] ring-1 ring-[#C5A880]'
-                            : isOwnerLuc
-                            ? 'bg-[#15231B] border-[#F59E0B]/70'
-                            : 'bg-[#121820] border-[#222B35] hover:border-gray-600'
-                        } ${!isMatched ? 'opacity-30' : 'opacity-100'}`}
+                        onClick={() => setFloorPlanViewMode('CAD_VECTOR')}
+                        className={`px-3 py-1 text-xs transition-all ${
+                          floorPlanViewMode === 'CAD_VECTOR'
+                            ? 'bg-[#C5A880] text-black font-bold shadow'
+                            : 'text-gray-400 hover:text-white'
+                        }`}
                       >
-                        <div className="flex items-center justify-between text-xs font-mono font-bold text-white">
-                          <div className="flex items-center gap-1.5">
-                            <span>{codeToUse}</span>
-                            {isOwnerBuilding && num === '06' && selectedFloor === 30 && (
-                              <span className="text-[8.5px] px-1 bg-amber-500/25 text-amber-300 font-bold border border-amber-500/50">
-                                CHỦ HỘ
-                              </span>
-                            )}
-                            {isOwnerBuilding && num === '01' && selectedFloor === 30 && (
-                              <span className="text-[8.5px] px-1 bg-cyan-950 text-cyan-300 font-bold border border-cyan-700/60">
-                                CĂN PHỤ
-                              </span>
-                            )}
-                          </div>
-                          <span className={`px-1.5 py-0.5 text-[9px] ${
-                            isOccupied ? 'text-emerald-400 bg-emerald-950/80 border border-emerald-500' : 'text-amber-400 bg-amber-950/80 border border-amber-500'
-                          }`}>
-                            {isOccupied ? 'Đã Ở' : 'Trống'}
-                          </span>
-                        </div>
-                        <div className="text-[10px] text-gray-400 mt-1 truncate">
-                          {isOwnerLuc ? `${activeOwnerName} (Chính Chủ)` : (isOccupied ? ownerName || 'Đã có cư dân' : 'Sẵn sàng bàn giao')}
-                        </div>
-                        {/* Tiêu thụ điện & doanh thu BQL */}
-                        <div className="mt-1.5 pt-1.5 border-t border-[#1E293B] flex items-center justify-between text-[9.5px] font-mono">
-                          <span className="text-amber-300">
-                            {fin ? fin.electricKwh : 0} kWh
-                          </span>
-                          <span className="text-emerald-400 font-bold">
-                            {fin ? (fin.totalBqlRevenue / 1000000).toFixed(1) + ' tr' : '0 tr'}
-                          </span>
-                        </div>
+                        Sơ Đồ Tầng
                       </button>
-                    );
-                  })}
+                      <button
+                        type="button"
+                        onClick={() => setFloorPlanViewMode('BLUEPRINT_IMAGE')}
+                        className={`px-3 py-1 text-xs transition-all ${
+                          floorPlanViewMode === 'BLUEPRINT_IMAGE'
+                            ? 'bg-[#C5A880] text-black font-bold shadow'
+                            : 'text-gray-400 hover:text-white'
+                        }`}
+                      >
+                        Bản Vẽ CAD
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Lọc theo Cánh Kiến Trúc */}
+                  {floorPlanViewMode === 'CAD_VECTOR' && (
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-gray-400 text-[11px] hidden sm:inline">Lọc cánh:</span>
+                      {[
+                        { key: 'ALL', label: 'Tất Cả (21)' },
+                        { key: 'NORTH', label: 'Cánh Bắc (5)' },
+                        { key: 'SOUTH', label: 'Cánh Nam (5)' },
+                        { key: 'WEST', label: 'Cánh Tây (11)' }
+                      ].map(item => (
+                        <button
+                          key={item.key}
+                          type="button"
+                          onClick={() => setFloorPlanFilterWing(item.key as any)}
+                          className={`px-2 py-0.5 text-[11px] border transition-all ${
+                            floorPlanFilterWing === item.key
+                              ? 'bg-[#C5A880] text-black font-bold border-[#C5A880]'
+                              : 'bg-[#141E2B] text-gray-300 border-[#233345] hover:text-white'
+                          }`}
+                        >
+                          {item.label}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+
+                  {floorPlanViewMode === 'BLUEPRINT_IMAGE' && (
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => setFloorPlanCadZoom(prev => Math.max(0.8, Number((prev - 0.2).toFixed(1))))}
+                        className="px-2 py-0.5 bg-[#141E2B] hover:bg-[#202E42] border border-[#233345] text-white"
+                        title="Thu nhỏ"
+                      >
+                        -
+                      </button>
+                      <span className="text-[11px] text-[#C5A880] min-w-[45px] text-center">
+                        {Math.round(floorPlanCadZoom * 100)}%
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => setFloorPlanCadZoom(prev => Math.min(2.5, Number((prev + 0.2).toFixed(1))))}
+                        className="px-2 py-0.5 bg-[#141E2B] hover:bg-[#202E42] border border-[#233345] text-white"
+                        title="Phóng to"
+                      >
+                        +
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setFloorPlanCadZoom(1)}
+                        className="px-2 py-0.5 bg-[#141E2B] hover:bg-[#202E42] border border-[#233345] text-gray-300 text-[11px]"
+                      >
+                        100%
+                      </button>
+                    </div>
+                  )}
                 </div>
+
+                {/* THÔNG BÁO CHUYỂN TẦNG NHANH NẾU CĂN ĐANG CHỌN KHÁC TẦNG */}
+                {activeUnit && activeUnit.floor !== selectedFloor && (
+                  <div className="p-2.5 bg-[#C5A880]/10 border border-[#C5A880]/40 flex items-center justify-between gap-3 text-xs">
+                    <div className="text-amber-200">
+                      <span>
+                        Hồ sơ căn <strong className="text-white font-mono">{activeUnit.code}</strong> (Tầng {activeUnit.floor}), đang xem sơ đồ Tầng {selectedFloor}.
+                      </span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setSelectedFloor(activeUnit.floor)}
+                      className="px-2.5 py-1 bg-[#C5A880] hover:bg-[#d8bb93] text-[#0D1117] font-bold text-[11px] shrink-0 transition-colors"
+                    >
+                      Xem Tầng {activeUnit.floor}
+                    </button>
+                  </div>
+                )}
+
+                {/* CHẾ ĐỘ 1: BẢN VẼ SƠ ĐỒ MẶT BẰNG VECTOR CHỮ Z/T ĐA CÁNH THỰC TẾ */}
+                {floorPlanViewMode === 'CAD_VECTOR' && (
+                  <div className="relative w-full bg-[#080D16] border border-[#1E2C3E] p-3 flex flex-col items-center">
+                    <div className="w-full flex items-center justify-between text-[11px] font-mono text-[#C5A880] mb-2 px-1">
+                      <span className="flex items-center gap-1.5 font-bold">
+                        <Compass className="w-3.5 h-3.5 text-[#C5A880]" />
+                        <span>Mặt Bằng Tầng {selectedFloor}</span>
+                      </span>
+                      <span className="text-gray-400">
+                        {currentBlockName} • 21 Căn
+                      </span>
+                    </div>
+
+                    <svg viewBox="0 0 980 580" className="w-full drop-shadow-2xl">
+                      {/* Lưới định vị tọa độ kiến trúc mờ */}
+                      <defs>
+                        <pattern id="cadGrid" width="20" height="20" patternUnits="userSpaceOnUse">
+                          <path d="M 20 0 L 0 0 0 20" fill="none" stroke="#162334" strokeWidth="0.6" opacity="0.6" />
+                        </pattern>
+                      </defs>
+                      <rect x="10" y="10" width="960" height="560" fill="url(#cadGrid)" stroke="#1F2E42" strokeWidth="1.5" />
+
+                      {/* LA BÀN ĐỊNH HƯỚNG BẮC (NORTH COMPASS) */}
+                      <g transform="translate(60, 55)" className="pointer-events-none opacity-80">
+                        <circle cx="0" cy="0" r="24" fill="#0C1420" stroke="#33465E" strokeWidth="1.2" />
+                        <polygon points="0,-20 5,-4 0,0 -5,-4" fill="#EF4444" />
+                        <polygon points="0,20 5,4 0,0 -5,4" fill="#64748B" />
+                        <polygon points="-20,0 -4,5 0,0 -4,-5" fill="#64748B" />
+                        <polygon points="20,0 4,5 0,0 4,-5" fill="#64748B" />
+                        <text x="0" y="-24" fill="#F8FAFC" fontSize="11" fontWeight="bold" fontFamily="sans-serif" textAnchor="middle">B</text>
+                      </g>
+
+                      {/* KEY PLAN ĐỊNH VỊ VỊ TRÍ CHUNG CƯ TRONG PHÂN KHU */}
+                      <g transform="translate(860, 480)" className="pointer-events-none opacity-85">
+                        <rect x="-65" y="-55" width="130" height="110" fill="#0B121C" stroke="#26374E" strokeWidth="1.2" rx="3" />
+                        <text x="0" y="-40" fill="#94A3B8" fontSize="8" fontWeight="bold" fontFamily="monospace" textAnchor="middle">KEY PLAN</text>
+                        <polygon points="-45,-25 35,-30 45,25 -35,35" fill="#141E2C" stroke="#3B4F68" strokeWidth="1" strokeDasharray="2 2" />
+                        <circle cx="0" cy="0" r="10" fill="#EF4444" fillOpacity="0.4" />
+                        <circle cx="0" cy="0" r="5" fill="#EF4444" />
+                        <text x="0" y="24" fill="#F87171" fontSize="7" fontWeight="bold" fontFamily="monospace" textAnchor="middle">{selectedBlock}</text>
+                      </g>
+
+                      {/* ĐƯỜNG BAO SÀN KIẾN TRÚC CHỮ Z/T ĐA CÁNH */}
+                      <path
+                        d="M 50,160 L 370,160 L 370,40 L 930,40 L 930,190 L 610,190 L 610,430 L 760,430 L 760,560 L 460,560 L 460,440 L 50,440 Z"
+                        fill="#0A101A"
+                        stroke="#2A3D54"
+                        strokeWidth="2.5"
+                      />
+
+                      {/* KHU LÕI SẢNH THANG MÁY & HẠ TẦNG KỸ THUẬT TRUNG TÂM (CORE) */}
+                      <g>
+                        <rect x="380" y="195" width="220" height="230" fill="#111B28" stroke="#33465E" strokeWidth="1.5" />
+                        <text x="490" y="215" fill="#E2E8F0" fontSize="9.5" fontWeight="bold" fontFamily="monospace" textAnchor="middle">
+                          LÕI THANG MÁY & SẢNH CHỜ TẦNG {selectedFloor}
+                        </text>
+
+                        {/* HÀNG THANG MÁY TRÁI: Thang 1, 2, 3 */}
+                        <rect x="395" y="230" width="38" height="34" fill="#0D1622" stroke="#38BDF8" strokeWidth="1" />
+                        <text x="414" y="250" fill="#38BDF8" fontSize="7.5" fontWeight="bold" textAnchor="middle" fontFamily="monospace">P1</text>
+                        <text x="414" y="260" fill="#64748B" fontSize="6" textAnchor="middle">Khách</text>
+
+                        <rect x="395" y="270" width="38" height="34" fill="#0D1622" stroke="#38BDF8" strokeWidth="1" />
+                        <text x="414" y="290" fill="#38BDF8" fontSize="7.5" fontWeight="bold" textAnchor="middle" fontFamily="monospace">P2</text>
+                        <text x="414" y="300" fill="#64748B" fontSize="6" textAnchor="middle">Khách</text>
+
+                        <rect x="395" y="310" width="38" height="34" fill="#0D1622" stroke="#38BDF8" strokeWidth="1" />
+                        <text x="414" y="330" fill="#38BDF8" fontSize="7.5" fontWeight="bold" textAnchor="middle" fontFamily="monospace">P3</text>
+                        <text x="414" y="340" fill="#64748B" fontSize="6" textAnchor="middle">Khách</text>
+
+                        {/* HÀNG THANG MÁY PHẢI: Thang 4, 5, 6 */}
+                        <rect x="545" y="230" width="38" height="34" fill="#0D1622" stroke="#38BDF8" strokeWidth="1" />
+                        <text x="564" y="250" fill="#38BDF8" fontSize="7.5" fontWeight="bold" textAnchor="middle" fontFamily="monospace">P4</text>
+                        <text x="564" y="260" fill="#64748B" fontSize="6" textAnchor="middle">Khách</text>
+
+                        <rect x="545" y="270" width="38" height="34" fill="#0D1622" stroke="#38BDF8" strokeWidth="1" />
+                        <text x="564" y="290" fill="#38BDF8" fontSize="7.5" fontWeight="bold" textAnchor="middle" fontFamily="monospace">P5</text>
+                        <text x="564" y="300" fill="#64748B" fontSize="6" textAnchor="middle">Khách</text>
+
+                        <rect x="545" y="310" width="38" height="34" fill="#0D1622" stroke="#38BDF8" strokeWidth="1" />
+                        <text x="564" y="330" fill="#38BDF8" fontSize="7.5" fontWeight="bold" textAnchor="middle" fontFamily="monospace">P6</text>
+                        <text x="564" y="340" fill="#64748B" fontSize="6" textAnchor="middle">Khách</text>
+
+                        {/* Thang Hàng & PCCC */}
+                        <rect x="445" y="230" width="90" height="34" fill="#1C2634" stroke="#F59E0B" strokeWidth="1.2" />
+                        <text x="490" y="250" fill="#FDE68A" fontSize="7.5" fontWeight="bold" textAnchor="middle" fontFamily="monospace">THANG PCCC & HÀNG</text>
+                        <text x="490" y="260" fill="#F59E0B" fontSize="6" textAnchor="middle">Phòng đệm áp suất</text>
+
+                        {/* 2 Buồng Thang Bộ Thoát Hiểm Chống Khói */}
+                        <rect x="445" y="272" width="42" height="72" fill="#0B131E" stroke="#10B981" strokeWidth="1" />
+                        <text x="466" y="306" fill="#10B981" fontSize="7" fontWeight="bold" textAnchor="middle" fontFamily="monospace">THOÁT</text>
+                        <text x="466" y="316" fill="#10B981" fontSize="7" fontWeight="bold" textAnchor="middle" fontFamily="monospace">HIỂM 1</text>
+
+                        <rect x="493" y="272" width="42" height="72" fill="#0B131E" stroke="#10B981" strokeWidth="1" />
+                        <text x="514" y="306" fill="#10B981" fontSize="7" fontWeight="bold" textAnchor="middle" fontFamily="monospace">THOÁT</text>
+                        <text x="514" y="316" fill="#10B981" fontSize="7" fontWeight="bold" textAnchor="middle" fontFamily="monospace">HIỂM 2</text>
+
+                        {/* Sảnh hành lang đệm trung tâm */}
+                        <rect x="440" y="352" width="100" height="34" fill="#0A1017" stroke="#1E2B3C" strokeDasharray="2 2" />
+                        <text x="490" y="372" fill="#94A3B8" fontSize="7.5" textAnchor="middle" fontFamily="monospace">SẢNH CHỜ THANG MÁY (2.4m)</text>
+
+                        {/* Kỹ thuật điện nước & Gom rác */}
+                        <rect x="395" y="392" width="90" height="26" fill="#141E2B" stroke="#475569" strokeWidth="0.8" />
+                        <text x="440" y="408" fill="#94A3B8" fontSize="6.5" textAnchor="middle" fontFamily="monospace">PHÒNG RÁC HÚT CHÂN KHÔNG</text>
+
+                        <rect x="495" y="392" width="88" height="26" fill="#141E2B" stroke="#475569" strokeWidth="0.8" />
+                        <text x="539" y="408" fill="#94A3B8" fontSize="6.5" textAnchor="middle" fontFamily="monospace">HỘP KỸ THUẬT ĐIỆN - NƯỚC</text>
+                      </g>
+
+                      {/* HÀNH LANG KẾT NỐI 3 CÁNH */}
+                      <path d="M 60,300 L 380,300" stroke="#33465E" strokeWidth="20" strokeLinecap="square" opacity="0.25" />
+                      <text x="210" y="304" fill="#64748B" fontSize="8" fontWeight="bold" fontFamily="monospace" textAnchor="middle">HÀNH LANG TÂY (1.8m)</text>
+
+                      <path d="M 500,105 L 920,105" stroke="#33465E" strokeWidth="20" strokeLinecap="square" opacity="0.25" />
+                      <text x="730" y="109" fill="#64748B" fontSize="8" fontWeight="bold" fontFamily="monospace" textAnchor="middle">HÀNH LANG BẮC (1.8m)</text>
+
+                      <path d="M 540,430 L 540,550" stroke="#33465E" strokeWidth="20" strokeLinecap="square" opacity="0.25" />
+                      <text x="540" y="490" fill="#64748B" fontSize="7.5" fontWeight="bold" fontFamily="monospace" textAnchor="middle" transform="rotate(-90 540 490)">HÀNH LANG NAM (1.8m)</text>
+
+                      {/* CÁNH 1: CÁNH BẮC (NORTH WING - Căn CH-01 đến CH-05) */}
+                      {(() => {
+                        const northCoords = [
+                          { num: '01', x: 520, y: 48, w: 76, h: 52, isTop: true },
+                          { num: '02', x: 604, y: 48, w: 74, h: 52, isTop: true },
+                          { num: '03', x: 686, y: 48, w: 74, h: 52, isTop: true },
+                          { num: '04', x: 768, y: 48, w: 74, h: 52, isTop: true },
+                          { num: '05', x: 850, y: 48, w: 74, h: 52, isTop: true },
+                        ];
+
+                        return northCoords.map(pos => {
+                          const unit = floorUnits.find(u => u.code.endsWith(`CH-${pos.num}`) || u.code.endsWith(pos.num));
+                          const isSelected = selectedAptCode === unit?.code || (selectedFloor === 30 && pos.num === '01' && selectedAptCode === 'CH-01');
+                          const isOccupied = unit?.status === 'OCCUPIED';
+                          const isMaint = unit?.status === 'MAINTENANCE';
+                          const isOwnerSecondary = isOwnerBuilding && selectedFloor === 30 && pos.num === '01';
+                          const isDimmed = floorPlanFilterWing !== 'ALL' && floorPlanFilterWing !== 'NORTH';
+
+                          return (
+                            <g
+                              key={`north-apt-${pos.num}`}
+                              onClick={() => unit && setSelectedAptCode(unit.code)}
+                              className="cursor-pointer transition-transform hover:opacity-90"
+                              style={{ opacity: isDimmed ? 0.2 : 1 }}
+                            >
+                              <rect
+                                x={pos.x}
+                                y={pos.y}
+                                width={pos.w}
+                                height={pos.h}
+                                fill={isSelected ? '#143126' : isOwnerSecondary ? '#0E2436' : isOccupied ? '#0B2319' : isMaint ? '#0D253A' : '#101722'}
+                                stroke={isSelected ? '#F59E0B' : isOwnerSecondary ? '#38BDF8' : isOccupied ? '#10B981' : isMaint ? '#0284C7' : '#2D3E54'}
+                                strokeWidth={isSelected ? 2.5 : isOwnerSecondary ? 2 : 1.2}
+                                rx="1"
+                              />
+                              <rect x={pos.x + 4} y={pos.y + 3} width={pos.w - 8} height="6" fill="#38BDF8" fillOpacity="0.25" stroke="#38BDF8" strokeWidth="0.8" />
+                              
+                              <text x={pos.x + pos.w / 2} y={pos.y + 22} fill="#FFFFFF" fontSize="8.5" fontWeight="bold" fontFamily="monospace" textAnchor="middle">
+                                CH-{pos.num}
+                              </text>
+                              <text x={pos.x + pos.w / 2} y={pos.y + 33} fill={isOccupied ? '#6EE7B7' : '#94A3B8'} fontSize="7" textAnchor="middle">
+                                {pos.num === '01' ? '2PN • 68m²' : pos.num === '02' ? '1PN • 38m²' : pos.num === '03' ? '1PN+ • 46m²' : pos.num === '04' ? '2PN • 59m²' : '2PN • 69m²'}
+                              </text>
+                              <rect x={pos.x + 8} y={pos.y + 38} width={pos.w - 16} height="10" fill={isOwnerSecondary ? '#0369A1' : isOccupied ? '#065F46' : isMaint ? '#075985' : '#78350F'} />
+                              <text x={pos.x + pos.w / 2} y={pos.y + 46} fill="#FFFFFF" fontSize="6" fontWeight="bold" textAnchor="middle">
+                                {isOwnerSecondary ? 'CĂN PHỤ' : isOccupied ? 'ĐÃ CÓ CƯ DÂN' : isMaint ? 'NGHIỆM THU' : 'NHÀ TRỐNG'}
+                              </text>
+                            </g>
+                          );
+                        });
+                      })()}
+
+                      {/* CÁNH 2: CÁNH NAM (SOUTH WING - Căn CH-06 CHỦ HỘ đến CH-10) */}
+                      {(() => {
+                        const southCoords = [
+                          { num: '06', x: 470, y: 440, w: 90, h: 54, isOwnerTarget: true },
+                          { num: '07', x: 570, y: 440, w: 90, h: 54 },
+                          { num: '08', x: 670, y: 440, w: 85, h: 54 },
+                          { num: '09', x: 470, y: 500, w: 140, h: 54 },
+                          { num: '10', x: 620, y: 500, w: 135, h: 54 },
+                        ];
+
+                        return southCoords.map(pos => {
+                          const unit = floorUnits.find(u => u.code.endsWith(`CH-${pos.num}`) || u.code.endsWith(pos.num));
+                          const isOwnerTarget = isOwnerBuilding && selectedFloor === 30 && pos.num === '06';
+                          const isSelected = selectedAptCode === unit?.code || (isOwnerTarget && selectedAptCode === 'CH-06');
+                          const isOccupied = isOwnerTarget || unit?.status === 'OCCUPIED';
+                          const isMaint = unit?.status === 'MAINTENANCE';
+                          const isDimmed = floorPlanFilterWing !== 'ALL' && floorPlanFilterWing !== 'SOUTH';
+
+                          return (
+                            <g
+                              key={`south-apt-${pos.num}`}
+                              onClick={() => unit && setSelectedAptCode(unit.code)}
+                              className="cursor-pointer transition-transform hover:opacity-90"
+                              style={{ opacity: isDimmed ? 0.2 : 1 }}
+                            >
+                              <rect
+                                x={pos.x}
+                                y={pos.y}
+                                width={pos.w}
+                                height={pos.h}
+                                fill={isSelected ? '#143126' : isOwnerTarget ? '#192E1E' : isOccupied ? '#0B2319' : isMaint ? '#0D253A' : '#101722'}
+                                stroke={isSelected ? '#F59E0B' : isOwnerTarget ? '#F59E0B' : isOccupied ? '#10B981' : isMaint ? '#0284C7' : '#2D3E54'}
+                                strokeWidth={isOwnerTarget ? 2.5 : isSelected ? 2.2 : 1.2}
+                                filter={isOwnerTarget ? 'url(#unitGlow)' : undefined}
+                                rx="1"
+                              />
+
+                              <rect x={pos.x + 4} y={pos.y + pos.h - 8} width={pos.w - 8} height="5" fill="#38BDF8" fillOpacity="0.3" stroke="#38BDF8" strokeWidth="0.8" />
+
+                              {isOwnerTarget && (
+                                <g>
+                                  <rect x={pos.x + 2} y={pos.y + 2} width={pos.w - 4} height="13" fill="#F59E0B" />
+                                  <text x={pos.x + pos.w / 2} y={pos.y + 11.5} fill="#000000" fontSize="7.5" fontWeight="900" fontFamily="sans-serif" textAnchor="middle">
+                                    👑 CĂN CHỦ HỘ (LỰC)
+                                  </text>
+                                </g>
+                              )}
+
+                              <text x={pos.x + pos.w / 2} y={pos.y + (isOwnerTarget ? 26 : 19)} fill="#FFFFFF" fontSize={isOwnerTarget ? "10" : "8.5"} fontWeight="bold" fontFamily="monospace" textAnchor="middle">
+                                CH-{pos.num}
+                              </text>
+                              <text x={pos.x + pos.w / 2} y={pos.y + (isOwnerTarget ? 37 : 30)} fill={isOccupied ? '#6EE7B7' : '#94A3B8'} fontSize="7" textAnchor="middle">
+                                {pos.num === '06' ? '1PN • 42m² (View Hồ Bơi)' : pos.num === '07' ? '2PN • 59m²' : pos.num === '08' ? '1PN • 46m²' : pos.num === '09' ? '2PN Góc • 69m²' : 'Studio • 35m²'}
+                              </text>
+                              
+                              <rect x={pos.x + 8} y={pos.y + (isOwnerTarget ? 41 : 36)} width={pos.w - 16} height="10" fill={isOwnerTarget ? '#065F46' : isOccupied ? '#065F46' : '#78350F'} />
+                              <text x={pos.x + pos.w / 2} y={pos.y + (isOwnerTarget ? 48.5 : 43.5)} fill="#FFFFFF" fontSize="6.5" fontWeight="bold" textAnchor="middle">
+                                {isOwnerTarget ? activeOwnerName : isOccupied ? 'CÓ CƯ DÂN' : 'NHÀ TRỐNG'}
+                              </text>
+                            </g>
+                          );
+                        });
+                      })()}
+
+                      {/* CÁNH 3: CÁNH TÂY (WEST WING - Dãy căn CH-11 đến CH-21) */}
+                      {(() => {
+                        const westCoords = [
+                          { num: '11', x: 60, y: 170, w: 58, h: 58 },
+                          { num: '12', x: 122, y: 170, w: 58, h: 58 },
+                          { num: '13', x: 184, y: 170, w: 58, h: 58 },
+                          { num: '14', x: 246, y: 170, w: 58, h: 58 },
+                          { num: '15', x: 308, y: 170, w: 58, h: 58 },
+                          { num: '16', x: 60, y: 370, w: 48, h: 62 },
+                          { num: '17', x: 112, y: 370, w: 48, h: 62 },
+                          { num: '18', x: 164, y: 370, w: 48, h: 62 },
+                          { num: '19', x: 216, y: 370, w: 48, h: 62 },
+                          { num: '20', x: 268, y: 370, w: 48, h: 62 },
+                          { num: '21', x: 320, y: 370, w: 48, h: 62 },
+                        ];
+
+                        return westCoords.map(pos => {
+                          const unit = floorUnits.find(u => u.code.endsWith(`CH-${pos.num}`) || u.code.endsWith(pos.num));
+                          const isSelected = selectedAptCode === unit?.code;
+                          const isOccupied = unit?.status === 'OCCUPIED';
+                          const isMaint = unit?.status === 'MAINTENANCE';
+                          const isDimmed = floorPlanFilterWing !== 'ALL' && floorPlanFilterWing !== 'WEST';
+
+                          return (
+                            <g
+                              key={`west-apt-${pos.num}`}
+                              onClick={() => unit && setSelectedAptCode(unit.code)}
+                              className="cursor-pointer transition-transform hover:opacity-90"
+                              style={{ opacity: isDimmed ? 0.2 : 1 }}
+                            >
+                              <rect
+                                x={pos.x}
+                                y={pos.y}
+                                width={pos.w}
+                                height={pos.h}
+                                fill={isSelected ? '#143126' : isOccupied ? '#0B2319' : isMaint ? '#0D253A' : '#101722'}
+                                stroke={isSelected ? '#F59E0B' : isOccupied ? '#10B981' : isMaint ? '#0284C7' : '#2D3E54'}
+                                strokeWidth={isSelected ? 2.2 : 1.1}
+                                rx="1"
+                              />
+                              <text x={pos.x + pos.w / 2} y={pos.y + 18} fill="#FFFFFF" fontSize="8" fontWeight="bold" fontFamily="monospace" textAnchor="middle">
+                                CH-{pos.num}
+                              </text>
+                              <text x={pos.x + pos.w / 2} y={pos.y + 28} fill={isOccupied ? '#6EE7B7' : '#94A3B8'} fontSize="6.5" textAnchor="middle">
+                                {unit?.area || 60}m²
+                              </text>
+                              <rect x={pos.x + 4} y={pos.y + pos.h - 14} width={pos.w - 8} height="9" fill={isOccupied ? '#065F46' : isMaint ? '#075985' : '#78350F'} />
+                              <text x={pos.x + pos.w / 2} y={pos.y + pos.h - 7} fill="#FFFFFF" fontSize="5.5" fontWeight="bold" textAnchor="middle">
+                                {isOccupied ? 'CÓ CƯ DÂN' : isMaint ? 'NGHIỆM THU' : 'TRỐNG'}
+                              </text>
+                            </g>
+                          );
+                        });
+                      })()}
+                    </svg>
+                  </div>
+                )}
+
+                {/* CHẾ ĐỘ 2: BẢN VẼ KỸ THUẬT CAD GỐC (BẢO LƯU ẢNH THIẾT KẾ CỦA DỰ ÁN) */}
+                {floorPlanViewMode === 'BLUEPRINT_IMAGE' && (
+                  <div className="relative w-full bg-[#080D16] border border-[#1E2C3E] p-3 flex flex-col items-center overflow-hidden">
+                    <div className="w-full flex items-center justify-between text-[11px] font-mono text-[#C5A880] mb-2 px-1">
+                      <span className="flex items-center gap-1.5 font-bold">
+                        <FileText className="w-3.5 h-3.5 text-[#C5A880]" />
+                        <span>Bản Vẽ Mặt Bằng CAD</span>
+                      </span>
+                      <span className="text-gray-400">
+                        Chung Cư BS-09
+                      </span>
+                    </div>
+
+                    <div className="w-full h-[480px] flex items-center justify-center overflow-auto bg-[#04060A] border border-[#192433] p-2">
+                      <div 
+                        className="transition-transform duration-200 ease-out inline-block cursor-grab active:cursor-grabbing"
+                        style={{
+                          transform: `scale(${floorPlanCadZoom})`,
+                          transformOrigin: 'center center'
+                        }}
+                      >
+                        <img
+                          src="/masterplan/the-tropical-floorplan-cad.png"
+                          alt="Bản vẽ CAD The Tropical"
+                          className="max-h-[460px] w-auto object-contain mx-auto shadow-2xl border border-[#233345]"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* DANH SÁCH 21 CĂN HỘ TẦNG HIỆN TẠI (GRID THẺ CĂN HỘ ĐẦY ĐỦ) */}
+                <div className="space-y-2 pt-1">
+                  <div className="flex items-center justify-between text-xs font-mono text-gray-400">
+                    <span>Danh Mục 21 Căn Hộ Tầng {selectedFloor} • {currentBlockName}:</span>
+                    <button
+                      type="button"
+                      onClick={() => setIsFloorPlanExpanded(true)}
+                      className="text-[#C5A880] hover:text-white underline text-[11px]"
+                    >
+                      Mở Rộng Toàn Cảnh (Deep-Dive) ↗
+                    </button>
+                  </div>
+                  <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2">
+                    {floorUnits.map(unit => {
+                      const num = unit.code.replace(/\D/g, '').slice(-2);
+                      const isOwnerPrimary = isOwnerBuilding && selectedFloor === 30 && num === '06';
+                      const isOwnerSecondary = isOwnerBuilding && selectedFloor === 30 && num === '01';
+                      const isSelected = selectedAptCode === unit.code || (isOwnerPrimary && selectedAptCode === 'CH-06');
+                      const isOccupied = unit.status === 'OCCUPIED';
+                      const isMaint = unit.status === 'MAINTENANCE';
+                      const fin = getApartmentFinancialMetrics(unit);
+
+                      return (
+                        <button
+                          key={unit.code}
+                          type="button"
+                          onClick={() => setSelectedAptCode(unit.code)}
+                          className={`p-2 border text-left transition-all relative overflow-hidden ${
+                            isSelected
+                              ? 'bg-[#1C2533] border-[#C5A880] ring-1 ring-[#C5A880] shadow-lg'
+                              : isOwnerPrimary
+                              ? 'bg-[#15231B] border-[#F59E0B]/70'
+                              : 'bg-[#121820] border-[#222B35] hover:border-gray-600'
+                          }`}
+                        >
+                          <div className="flex items-center justify-between text-xs font-mono font-bold text-white">
+                            <span className="truncate">{unit.code}</span>
+                            <span className={`text-[8px] px-1 py-0.2 border ${
+                              isOwnerPrimary
+                                ? 'bg-amber-950 text-amber-300 border-amber-500'
+                                : isOwnerSecondary
+                                ? 'bg-sky-950 text-sky-300 border-sky-500'
+                                : isOccupied
+                                ? 'bg-emerald-950 text-emerald-400 border-emerald-500'
+                                : isMaint
+                                ? 'bg-sky-950 text-sky-400 border-sky-600'
+                                : 'bg-[#18202A] text-gray-400 border-gray-600'
+                            }`}>
+                              {isOwnerPrimary ? 'CHỦ HỘ' : isOwnerSecondary ? 'CĂN PHỤ' : isOccupied ? 'ĐÃ Ở' : isMaint ? 'THU' : 'TRỐNG'}
+                            </span>
+                          </div>
+                          <div className="text-[9.5px] text-gray-400 mt-1 truncate">
+                            {unit.typeLabel} • {unit.area}m²
+                          </div>
+                          <div className="mt-1.5 pt-1 border-t border-[#1E293B] flex items-center justify-between text-[9px] font-mono">
+                            <span className="text-amber-300">{fin ? fin.electricKwh : 0} kWh</span>
+                            <span className="text-emerald-400 font-bold">{fin ? (fin.totalBqlRevenue / 1000000).toFixed(1) + ' tr' : '0 tr'}</span>
+                          </div>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
               </div>
-            </div>
-          );
-        })()}
+            );
+          })()}
 
           {/* ----------------------------------------------------------- */}
           {/* GÓC NHÌN 3: DANH SÁCH LƯỚI TẤT CẢ CĂN HỘ                    */}
@@ -2174,7 +2417,7 @@ export default function AdminBuildingApartmentManager() {
               {/* SUB-VIEW 1: PHÂN KHU THE TROPICAL (THE BEVERLY SOLARI) */}
               {masterPlanTab === 'TROPICAL' && (
                 <div className="space-y-3.5">
-                  {/* Thanh điều hướng 4 tòa tháp chung cư */}
+                  {/* Thanh điều hướng 4 chung cư */}
                   <div className="p-3 bg-[#111622] border border-[#222E3E] space-y-2">
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 text-xs">
                       <div>
@@ -2182,7 +2425,7 @@ export default function AdminBuildingApartmentManager() {
                           PHÂN KHU THE TROPICAL • THE BEVERLY SOLARI
                         </span>
                         <div className="text-gray-400 text-[11px] mt-0.5">
-                          Tổ hợp 4 tòa chung cư BS-07, BS-08, BS-09, BS-10 bao quanh 18 tiện ích & hồ bơi resort
+                          Tổ hợp 4 chung cư BS-07, BS-08, BS-09, BS-10 bao quanh 18 tiện ích & hồ bơi resort
                         </div>
                       </div>
                       <span className="text-[10px] font-mono text-emerald-400 bg-emerald-950/70 border border-emerald-500/50 px-2 py-0.5 self-start sm:self-auto shrink-0">
@@ -2850,7 +3093,7 @@ export default function AdminBuildingApartmentManager() {
                     </div>
                     <div className="flex items-center justify-between">
                       <span className="text-gray-400">Hệ thống kỹ thuật:</span>
-                      <strong className="text-gray-200">Smart Intercom & Báo khói PCCC tự động</strong>
+                      <strong className="text-gray-200">Smart Intercom & Báo khói PCCC</strong>
                     </div>
                   </div>
                 )}
@@ -2894,7 +3137,7 @@ export default function AdminBuildingApartmentManager() {
           onClose={() => setIsAssignModalOpen(false)}
           unit={activeUnit}
           onSuccess={() => {
-            reloadApartments();
+            syncLiveApartmentsFromApi(selectedBlock);
           }}
         />
       )}
@@ -2906,7 +3149,7 @@ export default function AdminBuildingApartmentManager() {
           onClose={() => setIsEditModalOpen(false)}
           unit={activeUnit}
           onSuccess={() => {
-            reloadApartments();
+            syncLiveApartmentsFromApi(selectedBlock);
           }}
         />
       )}
@@ -2917,7 +3160,7 @@ export default function AdminBuildingApartmentManager() {
           isOpen={isAddModalOpen}
           onClose={() => setIsAddModalOpen(false)}
           onSuccess={(newUnit) => {
-            reloadApartments();
+            syncLiveApartmentsFromApi(selectedBlock);
             setSelectedAptCode(newUnit.code);
           }}
         />
@@ -2937,7 +3180,7 @@ export default function AdminBuildingApartmentManager() {
             setIsDetailModalOpen(false);
             setIsAssignModalOpen(true);
           }}
-          onRefresh={() => reloadApartments()}
+          onRefresh={() => syncLiveApartmentsFromApi(selectedBlock)}
         />
       )}
 
@@ -2945,36 +3188,47 @@ export default function AdminBuildingApartmentManager() {
       {/* 6. MODAL MỞ RỘNG KHÔNG GIAN MẶT BẰNG TOÀN CẢNH (DEEP-DIVE)     */}
       {/* ============================================================= */}
       {isFloorPlanExpanded && (() => {
-        // Danh sách 8 căn của tầng đang chọn
-        const floorExpandedUnits = ['01', '02', '03', '04', '05', '06', '07', '08'].map(num => {
-          const targetCode = (selectedFloor === 30 && (num === '06' || num === '01'))
-            ? `CH-${num}`
-            : (selectedFloor === 12 && num === '05') ? '12A05' : `${selectedFloor > 9 ? selectedFloor : '0' + selectedFloor}${num}`;
+        // Danh sách 21 căn của tầng đang chọn theo bản vẽ CAD kiến trúc Chung Cư BS-09 & The Tropical
+        const floorExpandedUnits = CAD_FLOOR_UNITS_CONFIG.map(cfg => {
+          const chCode = cfg.code;
+          const targetCode = selectedFloor === 30 ? chCode : `${selectedFloor}-${chCode}`;
           const found = apartments.find(u => 
-            u.code.toLowerCase() === targetCode.toLowerCase() ||
-            (selectedFloor === 30 && u.code.toLowerCase() === `ch-${num}`.toLowerCase()) ||
-            u.code.toLowerCase() === `${selectedFloor}A${num}`.toLowerCase() ||
-            u.code.toLowerCase() === `${selectedFloor}B${num}`.toLowerCase()
+            u.floor === selectedFloor && (
+              u.code.toUpperCase() === chCode ||
+              u.code.toUpperCase() === targetCode ||
+              u.code.toUpperCase().endsWith(chCode) ||
+              (selectedFloor === 30 && u.code === chCode)
+            )
           );
-          return found || {
+          const isOwnerPrimary = isOwnerBuilding && selectedFloor === 30 && (cfg.num === '06');
+          const isOwnerSecondary = isOwnerBuilding && selectedFloor === 30 && (cfg.num === '01');
+          const isOccupied = isOwnerPrimary || isOwnerSecondary || found?.status === 'OCCUPIED' || (selectedFloor === 12 && cfg.num === '05') || (selectedFloor % 2 === 0 && (cfg.num === '03' || cfg.num === '15' || cfg.num === '18'));
+          const isMaintenance = found?.status === 'MAINTENANCE' || (selectedFloor % 5 === 0 && cfg.num === '09');
+
+          return found || ({
             code: targetCode,
+            tower: selectedBlock === 'BS-10' ? 'B' : 'A',
+            towerName: currentBlockName,
             floor: selectedFloor,
-            status: (selectedFloor === 30 && (num === '06' || num === '01')) || (selectedFloor === 12 && num === '05') ? 'OCCUPIED' : 'VACANT',
-            area: num === '06' && selectedFloor === 30 ? 42 : num === '01' && selectedFloor === 30 ? 50 : (num === '01' || num === '04' || num === '07') ? 108 : (num === '02' || num === '08') ? 52 : 78.5,
-            priceBillion: num === '06' && selectedFloor === 30 ? 3.4 : num === '01' && selectedFloor === 30 ? 4.1 : 4.5,
-            direction: (num === '05' || num === '06') ? 'Đông Nam' : (num === '01' || num === '02') ? 'Tây Bắc' : 'Đông Bắc',
-            bedrooms: num === '06' && selectedFloor === 30 ? 1 : num === '01' && selectedFloor === 30 ? 2 : (num === '01' || num === '04' || num === '07') ? 3 : (num === '02' || num === '08') ? 1 : 2,
-            bathrooms: (num === '02' || num === '08' || (num === '06' && selectedFloor === 30)) ? 1 : 2,
-            typeLabel: num === '06' && selectedFloor === 30 ? '1 Phòng Ngủ' : num === '01' && selectedFloor === 30 ? '2 Phòng Ngủ' : (num === '01' || num === '04' || num === '07') ? '3 Phòng Ngủ' : (num === '02' || num === '08') ? '1 Phòng Ngủ' : '2 Phòng Ngủ',
-            owner: (selectedFloor === 30 && (num === '06' || num === '01')) ? (apartments.find(a => a.code === `CH-${num}`)?.owner || activeUnit?.owner) : (selectedFloor === 12 && num === '05') ? activeUnit?.owner : undefined
-          } as ApartmentUnit;
+            type: cfg.type,
+            typeLabel: cfg.typeLabel,
+            status: isOccupied ? 'OCCUPIED' : isMaintenance ? 'MAINTENANCE' : 'VACANT',
+            statusLabel: isOccupied ? 'Có Cư Dân' : isMaintenance ? 'Nghiệm Thu Kỹ Thuật' : 'Căn Hộ Trống',
+            area: cfg.area,
+            bedrooms: cfg.beds,
+            bathrooms: cfg.baths,
+            direction: cfg.dir,
+            priceBillion: cfg.defaultPrice,
+            owner: isOwnerPrimary ? { name: activeOwnerName, phone: activeOwnerPhone, email: activeOwnerEmail, cccd: activeOwnerCccd, avatar: activeOwnerAvatar, eKycApproved: true }
+              : isOwnerSecondary ? { name: `${activeOwnerName} (Căn Phụ)`, phone: activeOwnerPhone, email: activeOwnerEmail, cccd: activeOwnerCccd, avatar: activeOwnerAvatar, eKycApproved: true }
+              : isOccupied ? { name: `Cư Dân Căn ${cfg.num}`, phone: '0908123456', email: `resident.${cfg.num}@skyline.vn`, cccd: '079204000123', avatar: '', eKycApproved: true }
+              : undefined
+          } as ApartmentUnit);
         });
 
-        // Căn hộ đang được xem chi tiết trong modal mở rộng
-        const currentExpandedUnit = floorExpandedUnits.find(u => u.code === selectedAptCode) || floorExpandedUnits[0];
+        const currentExpandedUnit = floorExpandedUnits.find(u => u.code === selectedAptCode || u.code.endsWith(selectedAptCode)) || floorExpandedUnits[0];
         const currentFin = getApartmentFinancialMetrics(currentExpandedUnit);
 
-        // Tổng số liệu tầng
         const totalExpRevenue = floorExpandedUnits.reduce((sum, u) => sum + (getApartmentFinancialMetrics(u)?.totalBqlRevenue || 0), 0);
         const totalExpElectric = floorExpandedUnits.reduce((sum, u) => sum + (getApartmentFinancialMetrics(u)?.electricKwh || 0), 0);
         const totalExpWater = floorExpandedUnits.reduce((sum, u) => sum + (getApartmentFinancialMetrics(u)?.waterM3 || 0), 0);
@@ -2984,17 +3238,16 @@ export default function AdminBuildingApartmentManager() {
           <div className="fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-center justify-center p-2 sm:p-4 text-white animate-fadeIn select-none">
             <div className="relative w-full h-[95vh] max-w-7xl bg-[#090D14] border border-[#C5A880]/80 shadow-2xl flex flex-col overflow-hidden">
               
-              {/* Header Modal Mở Rộng */}
               <div className="p-3 sm:p-4 bg-[#101620] border-b border-[#222B35] flex items-center justify-between gap-4">
                 <div>
                   <h2 className="text-sm sm:text-base font-serif font-bold text-white tracking-wide flex items-center gap-2">
-                    <span>MẶT BẰNG KIẾN TRÚC TOÀN CẢNH • TẦNG {selectedFloor}</span>
+                    <span>Mặt Bằng Tầng {selectedFloor}</span>
                     <span className="text-[10px] px-2 py-0.5 bg-[#C5A880]/20 text-[#C5A880] border border-[#C5A880]/40 font-mono font-normal">
-                      CHUNG CƯ SKYLINE RESIDENCE
+                      {currentBlockName}
                     </span>
                   </h2>
                   <div className="text-[10.5px] text-gray-400 font-mono mt-0.5">
-                    1.280 m² sàn • 8 Căn hộ • 4 Thang khách tốc độ cao • 1 Thang PCCC có phòng đệm • 2 Buồng thoát hiểm áp suất dương
+                    21 Căn hộ • 6 Thang máy khách • 2 Thang thoát hiểm
                   </div>
                 </div>
 
@@ -3003,16 +3256,14 @@ export default function AdminBuildingApartmentManager() {
                   onClick={() => setIsFloorPlanExpanded(false)}
                   className="px-3 py-1.5 bg-[#161B22] hover:bg-rose-950 text-gray-300 hover:text-rose-200 border border-[#2D3748] hover:border-rose-500 text-xs font-mono transition-all"
                 >
-                  <span>Thu Nhỏ (Đóng) [✕]</span>
+                  <span>Đóng [✕]</span>
                 </button>
               </div>
 
-              {/* Thanh Điều Khiển Tầng Nhanh & Lọc Trực Tiếp */}
               <div className="p-2.5 sm:p-3 bg-[#121820] border-b border-[#222B35] flex flex-wrap items-center justify-between gap-3 text-xs">
-                {/* Chọn tầng nhanh */}
                 <div className="flex items-center gap-1.5 flex-wrap">
                   <span className="text-gray-400 font-mono text-[11px]">Chuyển Tầng:</span>
-                  {[30, 25, 20, 18, 15, 12, 10, 8, 5, 2, 1].map(fl => (
+                  {[34, 30, 25, 20, 18, 15, 12, 10, 8, 5, 2, 1].map(fl => (
                     <button
                       key={fl}
                       type="button"
@@ -3031,46 +3282,80 @@ export default function AdminBuildingApartmentManager() {
                   ))}
                 </div>
 
-                {/* Bộ lọc trạng thái trực tiếp trên mặt bằng */}
                 <div className="flex items-center gap-2">
-                  <span className="text-gray-400 font-mono text-[11px]">Lọc Căn:</span>
-                  <button
-                    type="button"
-                    onClick={() => setFloorFilterStatus('ALL')}
-                    className={`px-2 py-1 text-[10.5px] font-mono border ${
-                      floorFilterStatus === 'ALL'
-                        ? 'bg-[#1F2937] text-white border-[#C5A880]'
-                        : 'bg-[#161B22] text-gray-400 border-transparent hover:text-white'
-                    }`}
-                  >
-                    Tất Cả (8)
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setFloorFilterStatus('OCCUPIED')}
-                    className={`px-2 py-1 text-[10.5px] font-mono border ${
-                      floorFilterStatus === 'OCCUPIED'
-                        ? 'bg-emerald-950 text-emerald-300 border-emerald-500 font-bold'
-                        : 'bg-[#161B22] text-emerald-400/80 border-transparent hover:text-emerald-300'
-                    }`}
-                  >
-                    Đã Ở ({occupiedExpCount})
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setFloorFilterStatus('VACANT')}
-                    className={`px-2 py-1 text-[10.5px] font-mono border ${
-                      floorFilterStatus === 'VACANT'
-                        ? 'bg-amber-950 text-amber-300 border-amber-500 font-bold'
-                        : 'bg-[#161B22] text-amber-400/80 border-transparent hover:text-amber-300'
-                    }`}
-                  >
-                    Căn Trống ({8 - occupiedExpCount})
-                  </button>
+                  <div className="flex bg-[#070B12] p-0.5 border border-[#1E293B]">
+                    <button
+                      type="button"
+                      onClick={() => setFloorPlanViewMode('CAD_VECTOR')}
+                      className={`px-2.5 py-1 text-xs transition-all ${
+                        floorPlanViewMode === 'CAD_VECTOR'
+                          ? 'bg-[#C5A880] text-black font-bold shadow'
+                          : 'text-gray-400 hover:text-white'
+                      }`}
+                    >
+                      Sơ Đồ BIM 3 Cánh
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setFloorPlanViewMode('BLUEPRINT_IMAGE')}
+                      className={`px-2.5 py-1 text-xs transition-all ${
+                        floorPlanViewMode === 'BLUEPRINT_IMAGE'
+                          ? 'bg-[#C5A880] text-black font-bold shadow'
+                          : 'text-gray-400 hover:text-white'
+                      }`}
+                    >
+                      Bản Vẽ CAD Gốc
+                    </button>
+                  </div>
+
+                  {floorPlanViewMode === 'CAD_VECTOR' && (
+                    <div className="flex items-center gap-1">
+                      {[
+                        { key: 'ALL', label: 'Tất Cả (21)' },
+                        { key: 'NORTH', label: 'Cánh Bắc (5)' },
+                        { key: 'SOUTH', label: 'Cánh Nam (Chủ Hộ)' },
+                        { key: 'WEST', label: 'Cánh Tây (11)' }
+                      ].map(item => (
+                        <button
+                          key={item.key}
+                          type="button"
+                          onClick={() => setFloorPlanFilterWing(item.key as any)}
+                          className={`px-2 py-0.5 text-[10.5px] border transition-all ${
+                            floorPlanFilterWing === item.key
+                              ? 'bg-[#C5A880] text-black font-bold border-[#C5A880]'
+                              : 'bg-[#141E2B] text-gray-300 border-[#233345] hover:text-white'
+                          }`}
+                        >
+                          {item.label}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+
+                  {floorPlanViewMode === 'BLUEPRINT_IMAGE' && (
+                    <div className="flex items-center gap-1.5 font-mono">
+                      <button
+                        type="button"
+                        onClick={() => setFloorPlanCadZoom(prev => Math.max(0.8, Number((prev - 0.2).toFixed(1))))}
+                        className="px-2 py-0.5 bg-[#141E2B] text-white border border-[#233345]"
+                      >
+                        -
+                      </button>
+                      <span className="text-[11px] text-[#C5A880] min-w-[40px] text-center">
+                        {Math.round(floorPlanCadZoom * 100)}%
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => setFloorPlanCadZoom(prev => Math.min(2.5, Number((prev + 0.2).toFixed(1))))}
+                        className="px-2 py-0.5 bg-[#141E2B] text-white border border-[#233345]"
+                      >
+                        +
+                      </button>
+                    </div>
+                  )}
                 </div>
               </div>
 
-              {/* Thống kê nhanh dòng tiền & tiêu thụ tầng mở rộng */}
               <div className="px-3 sm:px-4 py-2 bg-[#0C121B] border-b border-[#1E293B] grid grid-cols-4 gap-2 text-[11px] font-mono text-center">
                 <div className="p-1 bg-[#121A26] border border-[#222E3E]">
                   <span className="text-gray-400 text-[10px]">Doanh Thu Sàn Tầng:</span>
@@ -3086,196 +3371,290 @@ export default function AdminBuildingApartmentManager() {
                 </div>
                 <div className="p-1 bg-[#121A26] border border-[#222E3E]">
                   <span className="text-gray-400 text-[10px]">Lấp Đầy:</span>
-                  <div className="text-white font-bold">{occupiedExpCount}/8 Căn ({Math.round((occupiedExpCount / 8) * 100)}%)</div>
+                  <div className="text-white font-bold">{occupiedExpCount}/21 Căn ({Math.round((occupiedExpCount / 21) * 100)}%)</div>
                 </div>
               </div>
 
-              {/* Thân Modal: 2 Cột (Trái: Sơ đồ mặt bằng chi tiết 70% | Phải: Thẻ kiến trúc không gian & Tiêu thụ 30%) */}
               <div className="flex-1 overflow-hidden grid grid-cols-1 lg:grid-cols-12">
-                
-                {/* CỘT TRÁI: SƠ ĐỒ MẶT BẰNG SVG CHI TIẾT CAO CẤP */}
                 <div className="lg:col-span-8 p-3 sm:p-5 bg-[#05080E] flex flex-col items-center justify-center overflow-auto border-r border-[#1E293B]">
-                  <div className="w-full max-w-[850px] relative">
-                    <svg viewBox="0 0 820 370" className="w-full drop-shadow-2xl">
-                      {/* Đường bao sàn xây dựng */}
-                      <rect x="15" y="15" width="790" height="340" fill="#0C131F" stroke="#1E293B" strokeWidth="2" />
-                      
-                      {/* LÕI GIAO THÔNG VÀ KỸ THUẬT TRUNG TÂM */}
-                      <rect x="290" y="85" width="240" height="195" fill="#141E2D" stroke="#334155" strokeWidth="1.5" />
-                      <text x="410" y="105" fill="#E2E8F0" fontSize="10" fontWeight="bold" fontFamily="monospace" textAnchor="middle">
-                        LÕI GIAO THÔNG & HẠ TẦNG KỸ THUẬT
-                      </text>
+                  {floorPlanViewMode === 'CAD_VECTOR' ? (
+                    <div className="w-full max-w-[850px] relative">
+                      <svg viewBox="0 0 980 580" className="w-full drop-shadow-2xl">
+                        <defs>
+                          <pattern id="modalCadGrid" width="20" height="20" patternUnits="userSpaceOnUse">
+                            <path d="M 20 0 L 0 0 0 20" fill="none" stroke="#162334" strokeWidth="0.6" opacity="0.6" />
+                          </pattern>
+                        </defs>
+                        <rect x="10" y="10" width="960" height="560" fill="url(#modalCadGrid)" stroke="#1F2E42" strokeWidth="1.5" />
 
-                      {/* 4 Thang máy khách Mitsubishi 3.5 m/s */}
-                      <rect x="305" y="118" width="45" height="42" fill="#0F172A" stroke="#38BDF8" strokeWidth="1" />
-                      <text x="327" y="138" fill="#38BDF8" fontSize="8" textAnchor="middle" fontFamily="monospace">THANG 1</text>
-                      <text x="327" y="150" fill="#94A3B8" fontSize="6.5" textAnchor="middle">3.5 m/s</text>
+                        <g transform="translate(60, 55)" className="pointer-events-none opacity-80">
+                          <circle cx="0" cy="0" r="24" fill="#0C1420" stroke="#33465E" strokeWidth="1.2" />
+                          <polygon points="0,-20 5,-4 0,0 -5,-4" fill="#EF4444" />
+                          <polygon points="0,20 5,4 0,0 -5,4" fill="#64748B" />
+                          <polygon points="-20,0 -4,5 0,0 -4,-5" fill="#64748B" />
+                          <polygon points="20,0 4,5 0,0 4,-5" fill="#64748B" />
+                          <text x="0" y="-24" fill="#F8FAFC" fontSize="11" fontWeight="bold" fontFamily="sans-serif" textAnchor="middle">B</text>
+                        </g>
 
-                      <rect x="358" y="118" width="45" height="42" fill="#0F172A" stroke="#38BDF8" strokeWidth="1" />
-                      <text x="380" y="138" fill="#38BDF8" fontSize="8" textAnchor="middle" fontFamily="monospace">THANG 2</text>
-                      <text x="380" y="150" fill="#94A3B8" fontSize="6.5" textAnchor="middle">3.5 m/s</text>
+                        <g transform="translate(860, 480)" className="pointer-events-none opacity-85">
+                          <rect x="-65" y="-55" width="130" height="110" fill="#0B121C" stroke="#26374E" strokeWidth="1.2" rx="3" />
+                          <text x="0" y="-40" fill="#94A3B8" fontSize="8" fontWeight="bold" fontFamily="monospace" textAnchor="middle">KEY PLAN</text>
+                          <polygon points="-45,-25 35,-30 45,25 -35,35" fill="#141E2C" stroke="#3B4F68" strokeWidth="1" strokeDasharray="2 2" />
+                          <circle cx="0" cy="0" r="10" fill="#EF4444" fillOpacity="0.4" />
+                          <circle cx="0" cy="0" r="5" fill="#EF4444" />
+                          <text x="0" y="24" fill="#F87171" fontSize="7" fontWeight="bold" fontFamily="monospace" textAnchor="middle">{selectedBlock}</text>
+                        </g>
 
-                      <rect x="418" y="118" width="45" height="42" fill="#0F172A" stroke="#38BDF8" strokeWidth="1" />
-                      <text x="440" y="138" fill="#38BDF8" fontSize="8" textAnchor="middle" fontFamily="monospace">THANG 3</text>
-                      <text x="440" y="150" fill="#94A3B8" fontSize="6.5" textAnchor="middle">3.5 m/s</text>
+                        <path
+                          d="M 50,160 L 370,160 L 370,40 L 930,40 L 930,190 L 610,190 L 610,430 L 760,430 L 760,560 L 460,560 L 460,440 L 50,440 Z"
+                          fill="#0A101A"
+                          stroke="#2A3D54"
+                          strokeWidth="2.5"
+                        />
 
-                      <rect x="470" y="118" width="45" height="42" fill="#0F172A" stroke="#38BDF8" strokeWidth="1" />
-                      <text x="492" y="138" fill="#38BDF8" fontSize="8" textAnchor="middle" fontFamily="monospace">THANG 4</text>
-                      <text x="492" y="150" fill="#94A3B8" fontSize="6.5" textAnchor="middle">3.5 m/s</text>
+                        <g>
+                          <rect x="380" y="195" width="220" height="230" fill="#111B28" stroke="#33465E" strokeWidth="1.5" />
+                          <text x="490" y="215" fill="#E2E8F0" fontSize="9.5" fontWeight="bold" fontFamily="monospace" textAnchor="middle">
+                            LÕI THANG MÁY & SẢNH CHỜ TẦNG {selectedFloor}
+                          </text>
 
-                      {/* Thang hàng PCCC & Sảnh đệm áp suất dương */}
-                      <rect x="340" y="170" width="140" height="32" fill="#1E293B" stroke="#F59E0B" strokeWidth="1" />
-                      <text x="410" y="189" fill="#FDE68A" fontSize="8.5" textAnchor="middle" fontFamily="monospace">
-                        THANG HÀNG & CHUYÊN DỤNG PCCC
-                      </text>
+                          <rect x="395" y="230" width="38" height="34" fill="#0D1622" stroke="#38BDF8" strokeWidth="1" />
+                          <text x="414" y="250" fill="#38BDF8" fontSize="7.5" fontWeight="bold" textAnchor="middle" fontFamily="monospace">P1</text>
+                          <text x="414" y="260" fill="#64748B" fontSize="6" textAnchor="middle">Khách</text>
 
-                      {/* 2 Buồng Thang Thoát Hiểm Chống Khói */}
-                      <rect x="305" y="212" width="105" height="38" fill="#0F172A" stroke="#10B981" strokeWidth="1" />
-                      <text x="357" y="231" fill="#10B981" fontSize="7.5" textAnchor="middle" fontFamily="monospace">THOÁT HIỂM 1</text>
-                      <text x="357" y="242" fill="#6EE7B7" fontSize="6.5" textAnchor="middle">Áp suất dương</text>
+                          <rect x="395" y="270" width="38" height="34" fill="#0D1622" stroke="#38BDF8" strokeWidth="1" />
+                          <text x="414" y="290" fill="#38BDF8" fontSize="7.5" fontWeight="bold" textAnchor="middle" fontFamily="monospace">P2</text>
+                          <text x="414" y="300" fill="#64748B" fontSize="6" textAnchor="middle">Khách</text>
 
-                      <rect x="420" y="212" width="95" height="38" fill="#0F172A" stroke="#10B981" strokeWidth="1" />
-                      <text x="467" y="231" fill="#10B981" fontSize="7.5" textAnchor="middle" fontFamily="monospace">THOÁT HIỂM 2</text>
-                      <text x="467" y="242" fill="#6EE7B7" fontSize="6.5" textAnchor="middle">Chống khói</text>
+                          <rect x="395" y="310" width="38" height="34" fill="#0D1622" stroke="#38BDF8" strokeWidth="1" />
+                          <text x="414" y="330" fill="#38BDF8" fontSize="7.5" fontWeight="bold" textAnchor="middle" fontFamily="monospace">P3</text>
+                          <text x="414" y="340" fill="#64748B" fontSize="6" textAnchor="middle">Khách</text>
 
-                      {/* Phòng gom rác tự động & Kỹ thuật điện nước */}
-                      <rect x="305" y="255" width="105" height="20" fill="#1A2230" stroke="#64748B" strokeWidth="0.8" />
-                      <text x="357" y="268" fill="#94A3B8" fontSize="7" textAnchor="middle" fontFamily="monospace">GOM RÁC HÚT CHÂN KHÔNG</text>
+                          <rect x="545" y="230" width="38" height="34" fill="#0D1622" stroke="#38BDF8" strokeWidth="1" />
+                          <text x="564" y="250" fill="#38BDF8" fontSize="7.5" fontWeight="bold" textAnchor="middle" fontFamily="monospace">P4</text>
+                          <text x="564" y="260" fill="#64748B" fontSize="6" textAnchor="middle">Khách</text>
 
-                      <rect x="420" y="255" width="95" height="20" fill="#1A2230" stroke="#64748B" strokeWidth="0.8" />
-                      <text x="467" y="268" fill="#94A3B8" fontSize="7" textAnchor="middle" fontFamily="monospace">KỸ THUẬT ĐIỆN - NƯỚC</text>
+                          <rect x="545" y="270" width="38" height="34" fill="#0D1622" stroke="#38BDF8" strokeWidth="1" />
+                          <text x="564" y="290" fill="#38BDF8" fontSize="7.5" fontWeight="bold" textAnchor="middle" fontFamily="monospace">P5</text>
+                          <text x="564" y="300" fill="#64748B" fontSize="6" textAnchor="middle">Khách</text>
 
-                      {/* Hành lang đón gió đối lưu Đông - Tây */}
-                      <rect x="145" y="85" width="135" height="195" fill="#0B1017" stroke="#1E293B" strokeDasharray="3 3" />
-                      <rect x="540" y="85" width="135" height="195" fill="#0B1017" stroke="#1E293B" strokeDasharray="3 3" />
-                      <text x="212" y="185" fill="#64748B" fontSize="9" textAnchor="middle" fontFamily="monospace">HÀNH LANG TÂY (1.8m)</text>
-                      <text x="607" y="185" fill="#64748B" fontSize="9" textAnchor="middle" fontFamily="monospace">HÀNH LANG ĐÔNG (1.8m)</text>
+                          <rect x="545" y="310" width="38" height="34" fill="#0D1622" stroke="#38BDF8" strokeWidth="1" />
+                          <text x="564" y="330" fill="#38BDF8" fontSize="7.5" fontWeight="bold" textAnchor="middle" fontFamily="monospace">P6</text>
+                          <text x="564" y="340" fill="#64748B" fontSize="6" textAnchor="middle">Khách</text>
 
-                      {/* 8 CĂN HỘ TRÊN MẶT BẰNG MỞ RỘNG */}
-                      {floorExpandedUnits.map(unit => {
-                        const isSelected = unit.code === selectedAptCode;
-                        const isOcc = unit.status === 'OCCUPIED';
-                        const isDimmed = (floorFilterStatus === 'OCCUPIED' && !isOcc) || (floorFilterStatus === 'VACANT' && isOcc);
-                        const unitNum = unit.code.slice(-2);
+                          <rect x="445" y="230" width="90" height="34" fill="#1C2634" stroke="#F59E0B" strokeWidth="1.2" />
+                          <text x="490" y="250" fill="#FDE68A" fontSize="7.5" fontWeight="bold" textAnchor="middle" fontFamily="monospace">THANG PCCC & HÀNG</text>
+                          <text x="490" y="260" fill="#F59E0B" fontSize="6" textAnchor="middle">Phòng đệm áp suất</text>
 
-                        // Tọa độ tương ứng từng căn
-                        let coords = { x: 25, y: 25, w: 110, h: 145 };
-                        if (unitNum === '02') coords = { x: 145, y: 25, w: 135, h: 52 };
-                        else if (unitNum === '03') coords = { x: 290, y: 25, w: 240, h: 52 };
-                        else if (unitNum === '04') coords = { x: 540, y: 25, w: 135, h: 52 };
-                        else if (unitNum === '05' || unit.code === '12A05') coords = { x: 685, y: 180, w: 110, h: 165 };
-                        else if (unitNum === '06') coords = { x: 685, y: 25, w: 110, h: 145 };
-                        else if (unitNum === '07') coords = { x: 540, y: 290, w: 135, h: 55 };
-                        else if (unitNum === '08') coords = { x: 25, y: 180, w: 110, h: 165 };
+                          <rect x="445" y="272" width="42" height="72" fill="#0B131E" stroke="#10B981" strokeWidth="1" />
+                          <text x="466" y="306" fill="#10B981" fontSize="7" fontWeight="bold" textAnchor="middle" fontFamily="monospace">THOÁT</text>
+                          <text x="466" y="316" fill="#10B981" fontSize="7" fontWeight="bold" textAnchor="middle" fontFamily="monospace">HIỂM 1</text>
 
-                        const fin = getApartmentFinancialMetrics(unit);
+                          <rect x="493" y="272" width="42" height="72" fill="#0B131E" stroke="#10B981" strokeWidth="1" />
+                          <text x="514" y="306" fill="#10B981" fontSize="7" fontWeight="bold" textAnchor="middle" fontFamily="monospace">THOÁT</text>
+                          <text x="514" y="316" fill="#10B981" fontSize="7" fontWeight="bold" textAnchor="middle" fontFamily="monospace">HIỂM 2</text>
 
-                        return (
-                          <g
-                            key={unit.code}
-                            onClick={() => setSelectedAptCode(unit.code)}
-                            className="cursor-pointer transition-all duration-200"
-                            style={{ opacity: isDimmed ? 0.25 : 1 }}
-                          >
-                            <rect
-                              x={coords.x}
-                              y={coords.y}
-                              width={coords.w}
-                              height={coords.h}
-                              fill={isOcc ? (isSelected ? '#065F46' : '#044332') : (isSelected ? '#78350F' : '#131A26')}
-                              stroke={isSelected ? '#F59E0B' : (isOcc ? '#10B981' : '#334155')}
-                              strokeWidth={isSelected ? '3' : '1.5'}
-                              className="hover:brightness-125 transition-all"
-                            />
+                          <rect x="440" y="352" width="100" height="34" fill="#0A1017" stroke="#1E2B3C" strokeDasharray="2 2" />
+                          <text x="490" y="372" fill="#94A3B8" fontSize="7.5" textAnchor="middle" fontFamily="monospace">SẢNH CHỜ THANG MÁY (2.4m)</text>
+                          <rect x="395" y="392" width="90" height="26" fill="#141E2B" stroke="#475569" strokeWidth="0.8" />
+                          <text x="440" y="408" fill="#94A3B8" fontSize="6.5" textAnchor="middle" fontFamily="monospace">PHÒNG RÁC HÚT CHÂN KHÔNG</text>
+                          <rect x="495" y="392" width="88" height="26" fill="#141E2B" stroke="#475569" strokeWidth="0.8" />
+                          <text x="539" y="408" fill="#94A3B8" fontSize="6.5" textAnchor="middle" fontFamily="monospace">HỘP KỸ THUẬT ĐIỆN - NƯỚC</text>
+                        </g>
 
-                            {/* Mã căn & Loại căn */}
-                            <text
-                              x={coords.x + coords.w / 2}
-                              y={coords.y + (coords.h > 100 ? 30 : 22)}
-                              fill="#FFFFFF"
-                              fontSize={coords.h > 100 ? 11 : 9.5}
-                              fontWeight="bold"
-                              fontFamily="monospace"
-                              textAnchor="middle"
-                            >
-                              CĂN {unit.code}
-                            </text>
+                        <path d="M 60,300 L 380,300" stroke="#33465E" strokeWidth="20" strokeLinecap="square" opacity="0.25" />
+                        <text x="210" y="304" fill="#64748B" fontSize="8" fontWeight="bold" fontFamily="monospace" textAnchor="middle">HÀNH LANG TÂY (1.8m)</text>
+                        <path d="M 500,105 L 920,105" stroke="#33465E" strokeWidth="20" strokeLinecap="square" opacity="0.25" />
+                        <text x="730" y="109" fill="#64748B" fontSize="8" fontWeight="bold" fontFamily="monospace" textAnchor="middle">HÀNH LANG BẮC (1.8m)</text>
+                        <path d="M 540,430 L 540,550" stroke="#33465E" strokeWidth="20" strokeLinecap="square" opacity="0.25" />
+                        <text x="540" y="490" fill="#64748B" fontSize="7.5" fontWeight="bold" fontFamily="monospace" textAnchor="middle" transform="rotate(-90 540 490)">HÀNH LANG NAM (1.8m)</text>
 
-                            <text
-                              x={coords.x + coords.w / 2}
-                              y={coords.y + (coords.h > 100 ? 46 : 37)}
-                              fill={isOcc ? '#A7F3D0' : '#94A3B8'}
-                              fontSize={coords.h > 100 ? 8.5 : 7.5}
-                              textAnchor="middle"
-                            >
-                              {unit.typeLabel} • {unit.area}m²
-                            </text>
+                        {/* CÁNH BẮC: CH-01 ĐẾN CH-05 */}
+                        {(() => {
+                          const northCoords = [
+                            { num: '01', x: 520, y: 48, w: 76, h: 52 },
+                            { num: '02', x: 604, y: 48, w: 74, h: 52 },
+                            { num: '03', x: 686, y: 48, w: 74, h: 52 },
+                            { num: '04', x: 768, y: 48, w: 74, h: 52 },
+                            { num: '05', x: 850, y: 48, w: 74, h: 52 },
+                          ];
+                          return northCoords.map(pos => {
+                            const unit = floorExpandedUnits.find(u => u.code.endsWith(`CH-${pos.num}`) || u.code.endsWith(pos.num));
+                            const isSelected = selectedAptCode === unit?.code || (selectedFloor === 30 && pos.num === '01' && selectedAptCode === 'CH-01');
+                            const isOccupied = unit?.status === 'OCCUPIED';
+                            const isMaint = unit?.status === 'MAINTENANCE';
+                            const isOwnerSecondary = isOwnerBuilding && selectedFloor === 30 && pos.num === '01';
+                            const isDimmed = floorPlanFilterWing !== 'ALL' && floorPlanFilterWing !== 'NORTH';
 
-                            {/* Badge trạng thái */}
-                            <rect
-                              x={coords.x + coords.w / 2 - 40}
-                              y={coords.y + (coords.h > 100 ? 58 : 39)}
-                              width={80}
-                              height={15}
-                              fill={isOcc ? '#10B981' : '#B45309'}
-                              style={{ display: coords.h > 100 ? 'block' : 'none' }}
-                            />
-                            <text
-                              x={coords.x + coords.w / 2}
-                              y={coords.y + (coords.h > 100 ? 69 : 49)}
-                              fill={isOcc ? '#0D1117' : '#FFFFFF'}
-                              fontSize="7.5"
-                              fontWeight="bold"
-                              textAnchor="middle"
-                              style={{ display: coords.h > 100 ? 'block' : 'none' }}
-                            >
-                              {isOcc ? 'CÓ CƯ DÂN' : 'NHÀ TRỐNG'}
-                            </text>
-
-                            {/* Tiêu thụ & thu nhập nhỏ gọn */}
-                            {coords.h > 100 && (
-                              <text
-                                x={coords.x + coords.w / 2}
-                                y={coords.y + 90}
-                                fill="#FDE68A"
-                                fontSize="7.5"
-                                fontWeight="bold"
-                                textAnchor="middle"
-                                fontFamily="monospace"
+                            return (
+                              <g
+                                key={`exp-north-${pos.num}`}
+                                onClick={() => unit && setSelectedAptCode(unit.code)}
+                                className="cursor-pointer transition-all hover:opacity-90"
+                                style={{ opacity: isDimmed ? 0.2 : 1 }}
                               >
-                                {fin?.electricKwh} kWh • {fin ? (fin.totalBqlRevenue / 1000000).toFixed(1) + ' tr' : ''}
-                              </text>
-                            )}
+                                <rect
+                                  x={pos.x}
+                                  y={pos.y}
+                                  width={pos.w}
+                                  height={pos.h}
+                                  fill={isSelected ? '#143126' : isOwnerSecondary ? '#0E2436' : isOccupied ? '#0B2319' : isMaint ? '#0D253A' : '#101722'}
+                                  stroke={isSelected ? '#F59E0B' : isOwnerSecondary ? '#38BDF8' : isOccupied ? '#10B981' : isMaint ? '#0284C7' : '#2D3E54'}
+                                  strokeWidth={isSelected ? 2.5 : isOwnerSecondary ? 2 : 1.2}
+                                  rx="1"
+                                />
+                                <text x={pos.x + pos.w / 2} y={pos.y + 22} fill="#FFFFFF" fontSize="8.5" fontWeight="bold" fontFamily="monospace" textAnchor="middle">
+                                  CH-{pos.num}
+                                </text>
+                                <text x={pos.x + pos.w / 2} y={pos.y + 33} fill={isOccupied ? '#6EE7B7' : '#94A3B8'} fontSize="7" textAnchor="middle">
+                                  {pos.num === '01' ? '2PN • 68m²' : pos.num === '02' ? '1PN • 38m²' : pos.num === '03' ? '1PN+ • 46m²' : pos.num === '04' ? '2PN • 59m²' : '2PN • 69m²'}
+                                </text>
+                                <rect x={pos.x + 8} y={pos.y + 38} width={pos.w - 16} height="10" fill={isOwnerSecondary ? '#0369A1' : isOccupied ? '#065F46' : isMaint ? '#075985' : '#78350F'} />
+                                <text x={pos.x + pos.w / 2} y={pos.y + 46} fill="#FFFFFF" fontSize="6" fontWeight="bold" textAnchor="middle">
+                                  {isOwnerSecondary ? 'CĂN PHỤ' : isOccupied ? 'ĐÃ CÓ CƯ DÂN' : isMaint ? 'NGHIỆM THU' : 'NHÀ TRỐNG'}
+                                </text>
+                              </g>
+                            );
+                          });
+                        })()}
 
-                            {/* Chủ hộ */}
-                            {isOcc && coords.h > 100 && (
-                              <text
-                                x={coords.x + coords.w / 2}
-                                y={coords.y + 115}
-                                fill="#D1FAE5"
-                                fontSize="8"
-                                fontWeight="bold"
-                                textAnchor="middle"
+                        {/* CÁNH NAM: CH-06 (CHỦ HỘ) ĐẾN CH-10 */}
+                        {(() => {
+                          const southCoords = [
+                            { num: '06', x: 470, y: 440, w: 90, h: 54 },
+                            { num: '07', x: 570, y: 440, w: 90, h: 54 },
+                            { num: '08', x: 670, y: 440, w: 85, h: 54 },
+                            { num: '09', x: 470, y: 500, w: 140, h: 54 },
+                            { num: '10', x: 620, y: 500, w: 135, h: 54 },
+                          ];
+                          return southCoords.map(pos => {
+                            const unit = floorExpandedUnits.find(u => u.code.endsWith(`CH-${pos.num}`) || u.code.endsWith(pos.num));
+                            const isOwnerTarget = isOwnerBuilding && selectedFloor === 30 && pos.num === '06';
+                            const isSelected = selectedAptCode === unit?.code || (isOwnerTarget && selectedAptCode === 'CH-06');
+                            const isOccupied = isOwnerTarget || unit?.status === 'OCCUPIED';
+                            const isMaint = unit?.status === 'MAINTENANCE';
+                            const isDimmed = floorPlanFilterWing !== 'ALL' && floorPlanFilterWing !== 'SOUTH';
+
+                            return (
+                              <g
+                                key={`exp-south-${pos.num}`}
+                                onClick={() => unit && setSelectedAptCode(unit.code)}
+                                className="cursor-pointer transition-all hover:opacity-90"
+                                style={{ opacity: isDimmed ? 0.2 : 1 }}
                               >
-                                {unit.owner?.name || 'Trần Hữu Lực'}
-                              </text>
-                            )}
-                          </g>
-                        );
-                      })}
-                    </svg>
-                  </div>
-                  <div className="text-[11px] text-gray-400 font-mono mt-3 flex items-center gap-4">
-                    <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 bg-emerald-500 inline-block"></span> Đã có cư dân</span>
-                    <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 bg-[#131A26] border border-gray-600 inline-block"></span> Nhà trống sẵn sàng bàn giao</span>
-                    <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 bg-amber-500 inline-block"></span> Căn đang chọn hiển thị chi tiết</span>
+                                <rect
+                                  x={pos.x}
+                                  y={pos.y}
+                                  width={pos.w}
+                                  height={pos.h}
+                                  fill={isSelected ? '#143126' : isOwnerTarget ? '#192E1E' : isOccupied ? '#0B2319' : isMaint ? '#0D253A' : '#101722'}
+                                  stroke={isSelected ? '#F59E0B' : isOwnerTarget ? '#F59E0B' : isOccupied ? '#10B981' : isMaint ? '#0284C7' : '#2D3E54'}
+                                  strokeWidth={isOwnerTarget ? 2.5 : isSelected ? 2.2 : 1.2}
+                                  rx="1"
+                                />
+                                {isOwnerTarget && (
+                                  <g>
+                                    <rect x={pos.x + 2} y={pos.y + 2} width={pos.w - 4} height="13" fill="#F59E0B" />
+                                    <text x={pos.x + pos.w / 2} y={pos.y + 11.5} fill="#000000" fontSize="7.5" fontWeight="900" fontFamily="sans-serif" textAnchor="middle">
+                                      👑 CĂN CHỦ HỘ (LỰC)
+                                    </text>
+                                  </g>
+                                )}
+                                <text x={pos.x + pos.w / 2} y={pos.y + (isOwnerTarget ? 26 : 19)} fill="#FFFFFF" fontSize={isOwnerTarget ? "10" : "8.5"} fontWeight="bold" fontFamily="monospace" textAnchor="middle">
+                                  CH-{pos.num}
+                                </text>
+                                <text x={pos.x + pos.w / 2} y={pos.y + (isOwnerTarget ? 37 : 30)} fill={isOccupied ? '#6EE7B7' : '#94A3B8'} fontSize="7" textAnchor="middle">
+                                  {pos.num === '06' ? '1PN • 42m² (View Hồ Bơi)' : pos.num === '07' ? '2PN • 59m²' : pos.num === '08' ? '1PN • 46m²' : pos.num === '09' ? '2PN Góc • 69m²' : 'Studio • 35m²'}
+                                </text>
+                                <rect x={pos.x + 8} y={pos.y + (isOwnerTarget ? 41 : 36)} width={pos.w - 16} height="10" fill={isOwnerTarget ? '#065F46' : isOccupied ? '#065F46' : '#78350F'} />
+                                <text x={pos.x + pos.w / 2} y={pos.y + (isOwnerTarget ? 48.5 : 43.5)} fill="#FFFFFF" fontSize="6.5" fontWeight="bold" textAnchor="middle">
+                                  {isOwnerTarget ? activeOwnerName : isOccupied ? 'CÓ CƯ DÂN' : 'NHÀ TRỐNG'}
+                                </text>
+                              </g>
+                            );
+                          });
+                        })()}
+
+                        {/* CÁNH TÂY: CH-11 ĐẾN CH-21 */}
+                        {(() => {
+                          const westCoords = [
+                            { num: '11', x: 60, y: 170, w: 58, h: 58 },
+                            { num: '12', x: 122, y: 170, w: 58, h: 58 },
+                            { num: '13', x: 184, y: 170, w: 58, h: 58 },
+                            { num: '14', x: 246, y: 170, w: 58, h: 58 },
+                            { num: '15', x: 308, y: 170, w: 58, h: 58 },
+                            { num: '16', x: 60, y: 370, w: 48, h: 62 },
+                            { num: '17', x: 112, y: 370, w: 48, h: 62 },
+                            { num: '18', x: 164, y: 370, w: 48, h: 62 },
+                            { num: '19', x: 216, y: 370, w: 48, h: 62 },
+                            { num: '20', x: 268, y: 370, w: 48, h: 62 },
+                            { num: '21', x: 320, y: 370, w: 48, h: 62 },
+                          ];
+                          return westCoords.map(pos => {
+                            const unit = floorExpandedUnits.find(u => u.code.endsWith(`CH-${pos.num}`) || u.code.endsWith(pos.num));
+                            const isSelected = selectedAptCode === unit?.code;
+                            const isOccupied = unit?.status === 'OCCUPIED';
+                            const isMaint = unit?.status === 'MAINTENANCE';
+                            const isDimmed = floorPlanFilterWing !== 'ALL' && floorPlanFilterWing !== 'WEST';
+
+                            return (
+                              <g
+                                key={`exp-west-${pos.num}`}
+                                onClick={() => unit && setSelectedAptCode(unit.code)}
+                                className="cursor-pointer transition-all hover:opacity-90"
+                                style={{ opacity: isDimmed ? 0.2 : 1 }}
+                              >
+                                <rect
+                                  x={pos.x}
+                                  y={pos.y}
+                                  width={pos.w}
+                                  height={pos.h}
+                                  fill={isSelected ? '#143126' : isOccupied ? '#0B2319' : isMaint ? '#0D253A' : '#101722'}
+                                  stroke={isSelected ? '#F59E0B' : isOccupied ? '#10B981' : isMaint ? '#0284C7' : '#2D3E54'}
+                                  strokeWidth={isSelected ? 2.2 : 1.1}
+                                  rx="1"
+                                />
+                                <text x={pos.x + pos.w / 2} y={pos.y + 18} fill="#FFFFFF" fontSize="8" fontWeight="bold" fontFamily="monospace" textAnchor="middle">
+                                  CH-{pos.num}
+                                </text>
+                                <text x={pos.x + pos.w / 2} y={pos.y + 28} fill={isOccupied ? '#6EE7B7' : '#94A3B8'} fontSize="6.5" textAnchor="middle">
+                                  {unit?.area || 60}m²
+                                </text>
+                                <rect x={pos.x + 4} y={pos.y + pos.h - 14} width={pos.w - 8} height="9" fill={isOccupied ? '#065F46' : isMaint ? '#075985' : '#78350F'} />
+                                <text x={pos.x + pos.w / 2} y={pos.y + pos.h - 7} fill="#FFFFFF" fontSize="5.5" fontWeight="bold" textAnchor="middle">
+                                  {isOccupied ? 'CÓ CƯ DÂN' : isMaint ? 'NGHIỆM THU' : 'TRỐNG'}
+                                </text>
+                              </g>
+                            );
+                          });
+                        })()}
+                      </svg>
+                    </div>
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center overflow-auto">
+                      <img
+                        src="/masterplan/the-tropical-floorplan-cad.png"
+                        alt="Bản vẽ CAD The Tropical"
+                        className="transition-transform duration-200 object-contain shadow-2xl border border-[#233345]"
+                        style={{
+                          transform: `scale(${floorPlanCadZoom})`,
+                          transformOrigin: 'center center',
+                          maxHeight: '75vh'
+                        }}
+                      />
+                    </div>
+                  )}
+
+                  <div className="text-[10px] text-gray-400 font-mono mt-2 flex items-center gap-3 flex-wrap">
+                    <span className="flex items-center gap-1"><span className="w-2 h-2 bg-emerald-500 inline-block"></span> Đã ở</span>
+                    <span className="flex items-center gap-1"><span className="w-2 h-2 bg-[#101722] border border-gray-600 inline-block"></span> Trống</span>
+                    <span className="flex items-center gap-1"><span className="w-2 h-2 bg-amber-500 inline-block"></span> Đang chọn</span>
+                    <span className="flex items-center gap-1"><span className="w-2 h-2 bg-sky-500 inline-block"></span> Căn phụ</span>
                   </div>
                 </div>
 
-                {/* CỘT PHẢI: THẺ MỞ RỘNG KIẾN TRÚC KHÔNG GIAN & TIÊU THỤ HÀNG THÁNG */}
                 <div className="lg:col-span-4 p-4 bg-[#0D121B] flex flex-col justify-between overflow-y-auto space-y-3">
                   <div className="space-y-3">
-                    {/* Header căn hộ */}
                     <div className="pb-2.5 border-b border-[#222B35] flex items-start justify-between">
                       <div>
                         <div className="text-[10px] text-[#C5A880] font-mono font-semibold uppercase">
@@ -3294,7 +3673,6 @@ export default function AdminBuildingApartmentManager() {
                       </span>
                     </div>
 
-                    {/* 1. Phân Bổ Kiến Trúc Không Gian Phòng Ốc */}
                     <div className="p-2.5 bg-[#121822] border border-[#222B35] space-y-2">
                       <div className="text-[11px] font-bold text-[#C5A880]">
                         BỐ TRÍ MẶT BẰNG KHÔNG GIAN
@@ -3318,7 +3696,6 @@ export default function AdminBuildingApartmentManager() {
                         </div>
                       </div>
 
-                      {/* Vi khí hậu & view nhìn */}
                       <div className="pt-1 border-t border-[#1F2A38] text-[10.5px] font-mono space-y-1">
                         <div className="flex justify-between text-gray-300">
                           <span className="text-gray-400">Hướng Ban Công:</span>
@@ -3326,7 +3703,9 @@ export default function AdminBuildingApartmentManager() {
                         </div>
                         <div className="flex justify-between text-gray-300">
                           <span className="text-gray-400">Tầm Nhìn (View):</span>
-                          <strong className="text-white truncate max-w-[150px]">Sông Sài Gòn & Hồ Bơi</strong>
+                          <strong className="text-white truncate max-w-[150px]">
+                            {currentExpandedUnit.code.includes('06') ? 'Hồ Bơi Nhiệt Đới & Sông Đồng Nai' : 'Công Viên Cầu Vồng 36ha'}
+                          </strong>
                         </div>
                         <div className="flex justify-between text-gray-300">
                           <span className="text-gray-400">Chiếu Sáng Tự Nhiên:</span>
@@ -3335,7 +3714,6 @@ export default function AdminBuildingApartmentManager() {
                       </div>
                     </div>
 
-                    {/* 2. Tiêu Thụ Hàng Tháng & Thu Nhập Căn Này */}
                     <div className="p-2.5 bg-[#121822] border border-[#222B35] space-y-2 text-xs font-mono">
                       <div className="text-[11px] font-bold text-amber-300">
                         TIÊU THỤ NĂNG LƯỢNG & DOANH THU CĂN
@@ -3376,7 +3754,6 @@ export default function AdminBuildingApartmentManager() {
                     </div>
                   </div>
 
-                  {/* Nút hành động */}
                   <div className="pt-2 border-t border-[#222B35] flex items-center gap-2">
                     <button
                       type="button"
@@ -3417,7 +3794,7 @@ export default function AdminBuildingApartmentManager() {
         const planMeta = {
           TROPICAL: {
             title: 'Quy Hoạch Phân Khu The Tropical (The Beverly Solari)',
-            desc: '4 Tòa Chung Cư BS-07, BS-08, BS-09, BS-10 & 18 Tiện Ích Chuẩn Resort',
+            desc: '4 Chung Cư BS-07, BS-08, BS-09, BS-10 & 18 Tiện Ích Chuẩn Resort',
             src: '/masterplan/the-tropical-masterplan.png'
           },
           CAD_FLOOR: {

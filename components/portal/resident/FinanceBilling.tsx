@@ -1986,7 +1986,7 @@ export default function FinanceBilling({ currentUser }: FinanceBillingProps) {
                             ) : (
                               <div className="w-4 h-4 rounded-full border border-gray-600 flex-shrink-0" />
                             )}
-                            <span>3. Gửi gói tin IPN gạch nợ sang hệ thống Tòa nhà Skyline...</span>
+                            <span>3. Gửi gói tin IPN gạch nợ sang hệ thống Chung cư Skyline...</span>
                           </div>
                         </div>
                       </div>

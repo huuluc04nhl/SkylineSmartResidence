@@ -353,7 +353,7 @@ export default function AdminDashboard() {
         {/* KPI 3: Khách thăm */}
         <div className="p-3.5 bg-[#121820] border border-[#222B35] space-y-1.5 hover:border-[#C5A880]/60 transition-all shadow">
           <div className="flex items-center justify-between text-xs text-gray-400">
-            <span className="font-semibold">Khách Thăm Tòa Nhà</span>
+            <span className="font-semibold">Khách Thăm Chung Cư</span>
             <ShieldCheck className="w-4 h-4 text-cyan-400" />
           </div>
           <div className="font-serif text-2xl text-white font-bold tracking-wide flex items-baseline gap-2">

@@ -708,7 +708,7 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
               <Lock className="w-4 h-4 text-[#C5A880] mt-0.5 flex-shrink-0" />
               <div>
                 <strong className="text-white block font-semibold mb-0.5">
-                  Quy định an ninh & an toàn cư dân tòa nhà Skyline:
+                  Quy định an ninh & an toàn cư dân chung cư Skyline:
                 </strong>
                 {ekycStatus === 'VERIFIED' ? (
                   <span>
@@ -1231,7 +1231,7 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
                     <p>Quý cư dân vui lòng tải lên đầy đủ ảnh 2 mặt thẻ CCCD và thu thập mẫu FaceID 4 bước, sau đó bấm nút &quot;Gửi Hồ Sơ Cho BQL Duyệt&quot; để được cấp quyền mở cửa, thang máy và sảnh đón.</p>
                   )}
                   {ekycStatus === 'PENDING' && (
-                    <p>Hồ sơ định danh kèm ảnh CCCD 2 mặt và mẫu FaceID đã gửi đến Ban Quản Lý lúc <strong className="text-white font-mono">{currentEkyc?.submittedAt || 'hôm nay'}</strong>. Nhân sự BQL đang thẩm định đối chiếu trước khi kích hoạt phân quyền tòa nhà.</p>
+                    <p>Hồ sơ định danh kèm ảnh CCCD 2 mặt và mẫu FaceID đã gửi đến Ban Quản Lý lúc <strong className="text-white font-mono">{currentEkyc?.submittedAt || 'hôm nay'}</strong>. Nhân sự BQL đang thẩm định đối chiếu trước khi kích hoạt phân quyền chung cư.</p>
                   )}
                   {ekycStatus === 'REJECTED' && (
                     <div className="p-2.5 bg-rose-950/70 border border-rose-500/60 text-rose-200 text-xs rounded-none space-y-0.5">

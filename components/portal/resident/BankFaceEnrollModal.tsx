@@ -1007,8 +1007,8 @@ export default function BankFaceEnrollModal({
               </div>
               <ul className="space-y-1 text-gray-400 pl-4 list-disc text-[11px]">
                 <li>Cho phép đăng nhập trực tiếp bằng camera trên trang chủ mà không cần mật khẩu.</li>
-                <li>Tự động nhận diện mở cổng hầm gửi xe và cửa sảnh đón tầng trệt (Tòa Skyline).</li>
-                <li>Dữ liệu được bảo mật an toàn và chỉ dùng nội bộ phục vụ an ninh cư dân tòa nhà.</li>
+                <li>Tự động nhận diện mở cổng hầm gửi xe và cửa sảnh đón tầng trệt (Chung Cư Skyline).</li>
+                <li>Dữ liệu được bảo mật an toàn và chỉ dùng nội bộ phục vụ an ninh cư dân chung cư.</li>
               </ul>
             </div>
 

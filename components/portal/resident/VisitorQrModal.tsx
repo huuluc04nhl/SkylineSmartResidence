@@ -158,7 +158,7 @@ export default function VisitorQrModal({
   const getShareText = (pass: GeneratedVisitorPass) => {
     const expTime = new Date(pass.validUntil).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
     const expDate = new Date(pass.validUntil).toLocaleDateString('vi-VN');
-    const towerName = pass.apartmentCode.includes('A') ? 'Tòa A (Sapphire)' : 'Tòa B (Diamond)';
+    const towerName = pass.apartmentCode.includes('A') ? 'Chung cư Sapphire' : 'Chung cư Diamond';
 
     let text = `✨ [SKYLINE SMART RESIDENCE] THƯ MỜI ĐÓN KHÁCH ĐIỆN TỬ ✨\n`;
     text += `━━━━━━━━━━━━━━━━━━━━\n`;
@@ -173,7 +173,7 @@ export default function VisitorQrModal({
     text += `⏳ Thời hạn hiệu lực: Đến ${expTime} ngày ${expDate} (${pass.validHours} giờ)\n`;
     text += `━━━━━━━━━━━━━━━━━━━━\n`;
     text += `📲 HƯỚNG DẪN TIẾP ĐÓN:\n`;
-    text += `1. Quý khách vui lòng xuất trình mã QR này tại Bàn Lễ Tân / Chốt An Ninh Tòa Nhà để làm thủ tục vào chung cư.\n`;
+    text += `1. Quý khách vui lòng xuất trình mã QR này tại Bàn Lễ Tân / Chốt An Ninh Chung Cư để làm thủ tục vào chung cư.\n`;
     text += `2. Nhân viên lễ tân sẽ xác thực thông tin bảo lãnh của chủ hộ và hướng dẫn Quý khách lên căn hộ ${pass.apartmentCode}.\n`;
     text += `(Quý khách cũng có thể đọc mã PIN ${pass.pinCode} cho lễ tân nếu cần).\n`;
     text += `Trân trọng đón tiếp!`;
@@ -364,7 +364,7 @@ export default function VisitorQrModal({
 
       ctx.fillStyle = '#9FB1C7';
       ctx.font = '14px sans-serif';
-      const towerText = activePass.apartmentCode.includes('A') ? 'Tòa A (Sapphire)' : 'Tòa B (Diamond)';
+      const towerText = activePass.apartmentCode.includes('A') ? 'Chung cư Sapphire' : 'Chung cư Diamond';
       ctx.fillText(`Điểm đến: Căn hộ ${activePass.apartmentCode} • ${towerText} • Chung cư Skyline`, 110, 304);
       ctx.fillStyle = '#C5A880';
       ctx.font = '13px sans-serif';
@@ -477,7 +477,7 @@ export default function VisitorQrModal({
             <div className="p-3 bg-[#121E2A] border border-[#1E3A5F] rounded-xl flex items-start gap-2.5 text-xs text-cyan-200/95 leading-relaxed">
               <Info className="w-4 h-4 text-cyan-400 flex-shrink-0 mt-0.5" />
               <div>
-                <strong>Chung cư Skyline Smart Residence:</strong> Đã bố trí <strong>Điểm Nhận Hàng & Bưu Phẩm Tập Trung tại Sảnh Lễ Tân</strong> dành riêng cho Shipper. Mã QR dưới đây dành để cư dân đón <strong>Khách Thăm</strong> trực tiếp lên căn hộ qua bàn lễ tân / chốt an ninh tòa nhà.
+                <strong>Chung cư Skyline Smart Residence:</strong> Đã bố trí <strong>Điểm Nhận Hàng & Bưu Phẩm Tập Trung tại Sảnh Lễ Tân</strong> dành riêng cho Shipper. Mã QR dưới đây dành để cư dân đón <strong>Khách Thăm</strong> trực tiếp lên căn hộ qua bàn lễ tân / chốt an ninh chung cư.
               </div>
             </div>
 
