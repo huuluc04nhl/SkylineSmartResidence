@@ -39,7 +39,8 @@ import {
   GraduationCap,
   ShoppingBag,
   Bus,
-  HeartPulse
+  HeartPulse,
+  Radar
 } from 'lucide-react';
 import { fetchNksApartments } from '@/lib/nksProjectService';
 import AssignResidentModal from '@/components/portal/admin/AssignResidentModal';
@@ -845,7 +846,10 @@ export default function AdminBuildingApartmentManager() {
               <span className="font-bold text-white">Skyline Smart Residence</span>
               <button
                 type="button"
-                onClick={() => setBuildingPerspective('MASTER_PLAN')}
+                onClick={() => {
+                  setBuildingPerspective('MASTER_PLAN');
+                  setMasterPlanTab('TROPICAL');
+                }}
                 className="text-[10px] px-1.5 py-0.2 bg-[#1B293C] hover:bg-[#C5A880] text-[#C5A880] hover:text-black font-mono border border-[#263C58] transition-colors ml-0.5"
                 title="Xem bản đồ nội khu & tiện ích xung quanh"
               >
@@ -1183,13 +1187,16 @@ export default function AdminBuildingApartmentManager() {
         <div className="lg:col-span-7 bg-[#0D1117] border border-[#222B35] rounded-none overflow-hidden shadow-2xl flex flex-col">
           
           {/* THANH ĐIỀU HÀNH GÓC NHÌN DUY NHẤT (SINGLE UNIFIED VIEWPORT TOOLBAR) */}
-          <div className="px-3 py-2 bg-[#0E1520] border-b border-[#222B35] flex items-center justify-between gap-2.5 text-xs">
-            {/* 5 Tab Chuyển Đổi Góc Nhìn */}
-            <div className="flex bg-[#070B11] p-0.5 border border-[#1E2A38] text-xs font-semibold shrink-0 flex-wrap">
+          <div className="px-3 py-2 bg-[#0E1520] border-b border-[#222B35] flex items-center justify-between gap-2 text-xs">
+            {/* 5 Tab Chuyển Đổi Góc Nhìn - Tên ngắn gọn, thanh lịch, vừa vặn không bị rớt dòng */}
+            <div className="flex bg-[#070B11] p-0.5 border border-[#1E2A38] text-xs font-semibold shrink-0">
               {/* Bước 1: Bản Đồ Phân Khu */}
               <button
                 type="button"
-                onClick={() => setBuildingPerspective('MASTER_PLAN')}
+                onClick={() => {
+                  setBuildingPerspective('MASTER_PLAN');
+                  setMasterPlanTab('TROPICAL');
+                }}
                 className={`px-2.5 sm:px-3 py-1 transition-all flex items-center gap-1.5 ${
                   buildingPerspective === 'MASTER_PLAN'
                     ? 'bg-[#C5A880] text-[#0D1117] font-bold shadow'
@@ -1197,7 +1204,7 @@ export default function AdminBuildingApartmentManager() {
                 }`}
               >
                 <Map className="w-3.5 h-3.5" />
-                <span>1. Bản Đồ Phân Khu The Tropical</span>
+                <span>1. Phân Khu The Tropical</span>
               </button>
 
               {/* Bước 2: Danh Sách Số Tầng */}
@@ -1211,7 +1218,7 @@ export default function AdminBuildingApartmentManager() {
                 }`}
               >
                 <Building2 className="w-3.5 h-3.5" />
-                <span>2. Danh Sách Số Tầng ({selectedBlock})</span>
+                <span>2. Số Tầng ({selectedBlock})</span>
               </button>
 
               {/* Bước 3: Mặt Bằng Tầng & Căn Hộ */}
@@ -1225,7 +1232,7 @@ export default function AdminBuildingApartmentManager() {
                 }`}
               >
                 <Layers className="w-3.5 h-3.5" />
-                <span>3. Mặt Bằng Tầng {selectedFloor} & 21 Căn</span>
+                <span>3. Mặt Bằng T{selectedFloor}</span>
               </button>
 
               {/* Mô Hình 3D */}
@@ -1257,65 +1264,18 @@ export default function AdminBuildingApartmentManager() {
               </button>
             </div>
 
-            {/* BÊN PHẢI: BỘ CÔNG CỤ THEO NGỮ CẢNH TƯƠNG ỨNG CỦA TỪNG VIEW */}
-            <div className="flex items-center gap-2 overflow-x-auto no-scrollbar">
+            {/* BÊN PHẢI: BỘ CÔNG CỤ THEO NGỮ CẢNH CỦA VIEW */}
+            <div className="flex items-center gap-2">
               {buildingPerspective === 'MASTER_PLAN' && (
-                <div className="flex items-center gap-1.5 font-mono text-xs">
-                  <div className="flex bg-[#141E2B] p-0.5 border border-[#233345] text-[11px]">
-                    <button
-                      type="button"
-                      onClick={() => setMasterPlanTab('TROPICAL')}
-                      className={`px-2 py-0.5 transition-all ${
-                        masterPlanTab === 'TROPICAL'
-                          ? 'bg-[#C5A880] text-black font-bold'
-                          : 'text-gray-400 hover:text-white'
-                      }`}
-                    >
-                      Nội Khu (18 Tiện Ích)
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setMasterPlanTab('SURROUNDINGS')}
-                      className={`px-2 py-0.5 transition-all ${
-                        masterPlanTab === 'SURROUNDINGS'
-                          ? 'bg-[#C5A880] text-black font-bold'
-                          : 'text-gray-400 hover:text-white'
-                      }`}
-                    >
-                      Xung Quanh Dự Án
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setMasterPlanTab('CAD_FLOOR')}
-                      className={`px-2 py-0.5 transition-all ${
-                        masterPlanTab === 'CAD_FLOOR'
-                          ? 'bg-[#C5A880] text-black font-bold'
-                          : 'text-gray-400 hover:text-white'
-                      }`}
-                    >
-                      Mặt Bằng CAD
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setMasterPlanTab('MACRO')}
-                      className={`px-2 py-0.5 transition-all ${
-                        masterPlanTab === 'MACRO'
-                          ? 'bg-[#C5A880] text-black font-bold'
-                          : 'text-gray-400 hover:text-white'
-                      }`}
-                    >
-                      Đại Đô Thị
-                    </button>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => setIsMasterPlanZoomed(true)}
-                    className="px-2 py-0.5 bg-[#C5A880]/20 hover:bg-[#C5A880] text-[#C5A880] hover:text-black border border-[#C5A880]/60 text-[11px] font-bold transition-all flex items-center gap-1"
-                  >
-                    <Maximize2 className="w-3 h-3" />
-                    <span>Phóng To</span>
-                  </button>
-                </div>
+                <button
+                  type="button"
+                  onClick={() => setIsMasterPlanZoomed(true)}
+                  className="px-2.5 py-1 bg-[#141E2B] hover:bg-[#C5A880] text-[#C5A880] hover:text-black border border-[#223348] text-xs font-mono font-bold transition-all flex items-center gap-1 shrink-0"
+                  title="Phóng to toàn cảnh"
+                >
+                  <Maximize2 className="w-3 h-3" />
+                  <span className="hidden sm:inline">Toàn Cảnh</span>
+                </button>
               )}
               {buildingPerspective === '3D' && (
                 <div className="flex items-center gap-2">
@@ -1391,6 +1351,59 @@ export default function AdminBuildingApartmentManager() {
               )}
             </div>
           </div>
+
+          {/* THANH PHÂN CẤP BẢN ĐỒ QUY HOẠCH (DEDICATED MASTER PLAN LEVEL TABS) */}
+          {buildingPerspective === 'MASTER_PLAN' && (
+            <div className="px-3 py-1.5 bg-[#090E17] border-b border-[#1E293B] flex flex-wrap items-center justify-between gap-2 text-xs font-mono">
+              <div className="flex items-center gap-1 bg-[#121A26] p-0.5 border border-[#202E42]">
+                <button
+                  type="button"
+                  onClick={() => setMasterPlanTab('TROPICAL')}
+                  className={`px-2.5 py-1 text-[11px] transition-all flex items-center gap-1.5 ${
+                    masterPlanTab === 'TROPICAL'
+                      ? 'bg-[#C5A880] text-black font-bold shadow'
+                      : 'text-gray-400 hover:text-white'
+                  }`}
+                >
+                  <Map className="w-3.5 h-3.5" />
+                  <span>Phân Khu The Tropical (23 Tiện Ích)</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setMasterPlanTab('SURROUNDINGS')}
+                  className={`px-2.5 py-1 text-[11px] transition-all flex items-center gap-1.5 ${
+                    masterPlanTab === 'SURROUNDINGS'
+                      ? 'bg-[#C5A880] text-black font-bold shadow'
+                      : 'text-gray-400 hover:text-white'
+                  }`}
+                >
+                  <Radar className="w-3.5 h-3.5" />
+                  <span>Tiện Ích Xung Quanh (1km)</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setMasterPlanTab('MACRO')}
+                  className={`px-2.5 py-1 text-[11px] transition-all flex items-center gap-1.5 ${
+                    masterPlanTab === 'MACRO'
+                      ? 'bg-[#C5A880] text-black font-bold shadow'
+                      : 'text-gray-400 hover:text-white'
+                  }`}
+                >
+                  <Building2 className="w-3.5 h-3.5" />
+                  <span>Quy Hoạch Đại Đô Thị (271 ha)</span>
+                </button>
+              </div>
+
+              <div className="text-[11px] text-gray-400 hidden sm:flex items-center gap-1">
+                <span>Đang xem:</span>
+                <strong className="text-[#C5A880]">
+                  {masterPlanTab === 'TROPICAL' ? 'Bản Đồ The Tropical' : masterPlanTab === 'SURROUNDINGS' ? 'Radar Đô Thị' : 'Đại Đô Thị 271ha'}
+                </strong>
+              </div>
+            </div>
+          )}
 
           {/* ----------------------------------------------------------- */}
           {/* GÓC NHÌN 1: MÔ HÌNH KHỐI 3D KIẾN TRÚC CHUNG CƯ*/}
@@ -2690,16 +2703,6 @@ export default function AdminBuildingApartmentManager() {
               {/* SUB-VIEW 2: TIỆN ÍCH XUNG QUANH CỦA DỰ ÁN & KHU DÂN CƯ */}
               {masterPlanTab === 'SURROUNDINGS' && (
                 <div className="space-y-3.5">
-                  <div className="p-3 bg-[#111622] border border-[#222E3E] space-y-1">
-                    <div className="text-[#C5A880] font-mono font-bold tracking-wider uppercase text-[11px] flex items-center gap-1.5">
-                      <Sparkles className="w-3.5 h-3.5 text-[#C5A880]" />
-                      <span>HỆ THỐNG TIỆN ÍCH XUNG QUANH DỰ ÁN & KHU DÂN CƯ</span>
-                    </div>
-                    <div className="text-gray-400 text-[11px]">
-                      Rê chuột xem danh sách hoặc các điểm ghim trên bản đồ để khám phá tiện ích đẳng cấp xung quanh chung cư
-                    </div>
-                  </div>
-
                   {/* MÔ HÌNH RADAR TIỆN ÍCH ĐÔ THỊ TỰ VẼ (SELF-DRAWN RADAR VECTOR) */}
                   <SurroundingRadarSvgModel
                     amenities={SURROUNDING_AMENITIES}
@@ -2771,79 +2774,13 @@ export default function AdminBuildingApartmentManager() {
                 </div>
               )}
 
-              {/* SUB-VIEW 2: MẶT BẰNG TẦNG ĐIỂN HÌNH BẢN VẼ KIẾN TRÚC CAD */}
-              {masterPlanTab === 'CAD_FLOOR' && (
-                <div className="space-y-3.5">
-                  <div className="p-3 bg-[#111622] border border-[#222E3E] flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                    <div>
-                      <div className="text-[#C5A880] font-mono font-bold tracking-wider uppercase text-[11px]">
-                        MẶT BẰNG TẦNG ĐIỂN HÌNH KIẾN TRÚC CAD (BS-07 & BS-09)
-                      </div>
-                      <div className="text-gray-400 text-[11px] mt-0.5">
-                        Layout thiết kế 21 căn hộ/sàn • Key Plan định vị hướng & trục giao thông đứng
-                      </div>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => setBuildingPerspective('FLOOR_PLAN')}
-                      className="px-3 py-1 bg-[#C5A880] hover:bg-white text-black font-bold text-[11px] font-mono transition-all self-start sm:self-auto shrink-0 flex items-center gap-1"
-                    >
-                      <Layers className="w-3.5 h-3.5" />
-                      <span>Xem Mặt Bằng Tương Tác</span>
-                    </button>
-                  </div>
-
-                  {/* SƠ ĐỒ MẶT BẰNG TẦNG CAD TỰ VẼ (SELF-DRAWN CAD MODEL) */}
-                  <CadFloorplanSvgModel
-                    selectedFloor={selectedFloor}
-                    selectedBlock={selectedBlock}
-                    activeUnitCode={activeUnit?.code}
-                    onSelectUnit={(u) => handleSelectApartment(u)}
-                    unitsOnFloor={displayUnits.filter(u => u.floor === selectedFloor)}
-                    onOpenZoomModal={() => setIsMasterPlanZoomed(true)}
-                  />
-
-                  {/* Thông số kỹ thuật kiến trúc mặt bằng */}
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs font-mono">
-                    <div className="p-2.5 bg-[#111622] border border-[#222E3E]">
-                      <div className="text-gray-400 text-[10px]">Cơ Cấu Sàn:</div>
-                      <div className="text-white font-bold text-sm mt-0.5">21 Căn / Sàn</div>
-                      <div className="text-[10px] text-[#C5A880] mt-0.5">CH-01 đến CH-21</div>
-                    </div>
-                    <div className="p-2.5 bg-[#111622] border border-[#222E3E]">
-                      <div className="text-gray-400 text-[10px]">Thang Máy:</div>
-                      <div className="text-white font-bold text-sm mt-0.5">6 Cư Dân + 1 PCCC</div>
-                      <div className="text-[10px] text-emerald-400 mt-0.5">Tốc độ cao 3.0 m/s</div>
-                    </div>
-                    <div className="p-2.5 bg-[#111622] border border-[#222E3E]">
-                      <div className="text-gray-400 text-[10px]">Thoát Hiểm:</div>
-                      <div className="text-white font-bold text-sm mt-0.5">2 Buồng Thang Bộ</div>
-                      <div className="text-[10px] text-cyan-400 mt-0.5">Áp suất dương chống khói</div>
-                    </div>
-                    <div className="p-2.5 bg-[#111622] border border-[#222E3E]">
-                      <div className="text-gray-400 text-[10px]">Hướng Đối Lưu:</div>
-                      <div className="text-white font-bold text-sm mt-0.5">Đông Nam - Tây Bắc</div>
-                      <div className="text-[10px] text-amber-300 mt-0.5">View hồ bơi & đại lộ</div>
-                    </div>
-                  </div>
-                </div>
-              )}
-
               {/* SUB-VIEW 3: QUY HOẠCH TỔNG THỂ ĐẠI ĐÔ THỊ VINHOMES GRAND PARK */}
               {masterPlanTab === 'MACRO' && (
                 <div className="space-y-3.5">
-                  <div className="p-3 bg-[#111622] border border-[#222E3E] space-y-1">
-                    <div className="text-[#C5A880] font-mono font-bold tracking-wider uppercase text-[11px]">
-                      QUY HOẠCH TỔNG THỂ ĐẠI ĐÔ THỊ VINHOMES GRAND PARK (271 HA)
-                    </div>
-                    <div className="text-gray-400 text-[11px]">
-                      Vị trí chiến lược phân khu The Beverly Solari (The Tropical) trong cấu trúc đô thị và kết nối tiện ích vùng
-                    </div>
-                  </div>
-
                   {/* MÔ HÌNH QUY HOẠCH ĐẠI ĐÔ THỊ TỰ VẼ (SELF-DRAWN MACRO MODEL) */}
                   <MacroCitySvgModel
                     selectedBlock={selectedBlock}
+                    onSelectTropical={() => setMasterPlanTab('TROPICAL')}
                     onOpenZoomModal={() => setIsMasterPlanZoomed(true)}
                   />
 
