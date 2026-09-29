@@ -147,7 +147,7 @@ export default function TropicalCampusSvgModel({
             </span>
           </div>
           <span className="text-gray-400 text-[10.5px] hidden md:inline">
-            Chọn Chung Cư để xem danh sách số tầng
+            Bản đồ không gian kiến trúc & 23 tiện ích nội khu
           </span>
         </div>
 
@@ -177,53 +177,6 @@ export default function TropicalCampusSvgModel({
           >
             <ZoomIn className="w-3.5 h-3.5" />
           </button>
-        </div>
-      </div>
-
-      {/* THANH 4 KHỐI CHUNG CƯ NỔI BẬT: BẤM ĐỂ CHỌN & XEM SỐ TẦNG */}
-      <div className="px-2.5 sm:px-3 py-1.5 bg-[#0B1017] border-b border-[#1E293B] flex flex-wrap items-center justify-between gap-1.5 font-mono text-xs">
-        <div className="flex items-center gap-1.5">
-          <Building2 className="w-3.5 h-3.5 text-[#C5A880] shrink-0" />
-          <span className="text-[11px] text-gray-300 font-bold uppercase tracking-wider hidden sm:inline">
-            Chọn Chung Cư:
-          </span>
-        </div>
-
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5 flex-1 min-w-[280px]">
-          {buildings.map(b => (
-            <div
-              key={b.code}
-              onClick={() => handleBlockClick(b.code)}
-              className={`px-2 py-1 border text-left transition-all relative flex items-center justify-between gap-1 cursor-pointer ${
-                b.isCurrent
-                  ? 'bg-[#182333] border-[#C5A880] text-white shadow ring-1 ring-[#C5A880]/50'
-                  : 'bg-[#0E1522] border-[#222E3E] text-gray-400 hover:text-white hover:border-gray-500'
-              }`}
-              title={`${b.name} (${b.floors} tầng, ${b.units} căn) - Nhấp để chọn`}
-            >
-              <div className="flex items-center gap-1 truncate">
-                <span className={`font-bold text-[11px] sm:text-xs ${b.isCurrent ? 'text-[#C5A880]' : 'text-gray-200'}`}>
-                  {b.name}
-                </span>
-                <span className="text-[10px] text-gray-400">({b.floors}T)</span>
-              </div>
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  if (onSelectBlockAndShowFloors) {
-                    onSelectBlockAndShowFloors(b.code);
-                  } else {
-                    onSelectBlock(b.code);
-                  }
-                }}
-                className="text-[9.5px] font-mono text-emerald-400 hover:text-white font-bold shrink-0 flex items-center gap-0.5 px-1 py-0.5 rounded hover:bg-emerald-900/60 transition-colors"
-                title={`Xem các tầng của ${b.name}`}
-              >
-                Xem Tầng ➔
-              </button>
-            </div>
-          ))}
         </div>
       </div>
 
