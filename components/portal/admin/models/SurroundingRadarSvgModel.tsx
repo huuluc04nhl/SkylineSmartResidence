@@ -84,16 +84,6 @@ export default function SurroundingRadarSvgModel({
           >
             100%
           </button>
-          {onOpenZoomModal && (
-            <button
-              type="button"
-              onClick={onOpenZoomModal}
-              className="px-2.5 py-0.5 bg-[#C5A880] hover:bg-[#D4BC96] text-black font-bold flex items-center gap-1 ml-1 transition-all"
-            >
-              <Maximize2 className="w-3 h-3" />
-              <span className="text-[10.5px]">Toàn Cảnh</span>
-            </button>
-          )}
         </div>
       </div>
 
