@@ -285,7 +285,7 @@ export const DEMO_USERS: User[] = [
     pob: 'Triệu Trạch, Triệu Phong, Quảng Trị',
   },
 
-  // 4. Family Member 1 (Nguyễn Hữu Nhựt)
+  // 4. Family Member 1 (Tài khoản mẫu người thuê độc lập)
   {
     id: 'user-tenant-1',
     role: 'TENANT',
@@ -298,13 +298,11 @@ export const DEMO_USERS: User[] = [
     emergency_phone: '0917795211',
     avatar_url: 'https://data.nks.vn/storage/users/202607191405195335.jpg',
     ui_language: 'vi',
-    apartment_code: 'CH-06',
-    relationship: 'Family',
-    license_plate: '59P1-886.79',
+    apartment_code: '',
     dob: '2004-09-02',
   },
 
-  // 5. Family Member 2 (Nguyễn Văn Cường)
+  // 5. Family Member 2 (Tài khoản mẫu người thuê độc lập)
   {
     id: 'user-member-1',
     role: 'TENANT',
@@ -315,13 +313,12 @@ export const DEMO_USERS: User[] = [
     id_card_no: '074204001708',
     avatar_url: 'https://data.nks.vn/storage/users/202608301345022366.jpg',
     ui_language: 'vi',
-    apartment_code: 'CH-06',
-    relationship: 'Family',
+    apartment_code: '',
     dob: '2004-01-16',
     pob: 'Tỉnh Thanh Hóa',
   },
 
-  // 6. Family Member 3 (Lê Đức Hải)
+  // 6. Family Member 3 (Tài khoản mẫu người thuê độc lập)
   {
     id: 'user-member-2',
     role: 'TENANT',
@@ -332,13 +329,12 @@ export const DEMO_USERS: User[] = [
     id_card_no: '070204001704',
     avatar_url: 'https://data.nks.vn/storage/users/202607210516458204.jpg',
     ui_language: 'vi',
-    apartment_code: 'CH-06',
-    relationship: 'Family',
+    apartment_code: '',
     dob: '2004-08-17',
     pob: 'Xuân Thọ, Triệu Sơn, Thanh Hóa',
   },
 
-  // 7. Family Member 4 (Vũ Cát Thịnh)
+  // 7. Family Member 4 (Tài khoản mẫu người thuê độc lập)
   {
     id: 'user-member-3',
     role: 'TENANT',
@@ -349,8 +345,7 @@ export const DEMO_USERS: User[] = [
     id_card_no: '079201002626',
     avatar_url: 'https://data.nks.vn/storage/users/default.png',
     ui_language: 'vi',
-    apartment_code: 'CH-06',
-    relationship: 'Family',
+    apartment_code: '',
   },
 ];
 

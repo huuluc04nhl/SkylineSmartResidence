@@ -85,13 +85,13 @@ function initUserStore(): Record<string, StoredUser> {
       intro: u.role === 'ADMIN' 
         ? 'Ban Quản Lý Tòa Nhà Skyline' 
         : u.role === 'OWNER' 
-        ? 'Chủ Hộ Căn Hộ 12A05' 
-        : u.relationship || 'Cư Dân Căn Hộ 12A05',
+        ? 'Chủ Hộ Căn Hộ' 
+        : u.relationship || 'Cư Dân',
       license_plate: u.license_plate || '',
       avatar_url: u.avatar_url,
       role: u.role as any,
       relationship: u.relationship,
-      apartment_code: u.apartment_code || '12A05',
+      apartment_code: u.apartment_code || '',
     };
 
     // Clean potential double slashes in avatar
@@ -363,46 +363,15 @@ export function registerNewOwnerUser(data: {
   return newUser;
 }
 
-export const DEFAULT_12A05_MEMBERS: ApartmentMember[] = [
-  {
-    id: 'user-tenant-1',
-    username: 'nguyenhuunhut1309@gmail.com',
-    fullName: 'Nguyễn Hữu Nhựt',
-    role: 'Family',
-    relationship: 'Em Trai / Người Nhà',
-    phone: '0917795211',
-    idCard: '079198005678',
-    licensePlate: '59P1-886.79',
-    faceStatus: 'Đang Chờ BQL Phê Duyệt',
-    avatarUrl: 'https://data.nks.vn/storage/users/202607191405195335.jpg',
-    addedDate: '03/09/2026',
-  },
-  {
-    id: 'user-member-1',
-    username: 'vanncuong1614@gmail.com',
-    fullName: 'Nguyễn Văn Cường',
-    role: 'Family',
-    relationship: 'Người Thân Cùng Căn Hộ',
-    phone: '0325524482',
-    idCard: '074204001708',
-    licensePlate: '',
-    faceStatus: 'Đang Chờ BQL Phê Duyệt',
-    avatarUrl: 'https://data.nks.vn/storage/users/202608301345022366.jpg',
-    addedDate: '03/09/2026',
-  }
-];
+export const DEFAULT_12A05_MEMBERS: ApartmentMember[] = [];
 
 export function getApartmentMembers(aptCode: string): ApartmentMember[] {
   if (!globalScope.__NKS_FAMILY_STORE) {
     globalScope.__NKS_FAMILY_STORE = {};
   }
-  const normalizedKey = (!aptCode || aptCode === 'CH-06' || aptCode === '12A05' || aptCode.endsWith('CH-06')) ? 'CH-06' : aptCode.toUpperCase().trim();
+  const normalizedKey = (!aptCode || aptCode === 'CH-06' || aptCode === '12A05') ? 'CH-06' : aptCode.toUpperCase().trim();
   if (!globalScope.__NKS_FAMILY_STORE[normalizedKey]) {
-    if (normalizedKey === 'CH-06') {
-      globalScope.__NKS_FAMILY_STORE['CH-06'] = [...DEFAULT_12A05_MEMBERS];
-    } else {
-      globalScope.__NKS_FAMILY_STORE[normalizedKey] = [];
-    }
+    globalScope.__NKS_FAMILY_STORE[normalizedKey] = [];
   }
   return globalScope.__NKS_FAMILY_STORE[normalizedKey] || [];
 }

@@ -384,105 +384,20 @@ export function convertNksToApartmentUnit(
     status,
     statusLabel: status === 'OCCUPIED' ? 'Đã Bàn Giao (Cư Dân Đang Ở)' : 'Đang Trống (Sẵn Sàng Bàn Giao)',
     owner: cleanOwnerId ? {
-      name: isUserLuc ? 'Trần Hữu Lực' : `Chủ Hộ Căn ${formattedCode}`,
+      name: isUserLuc ? 'Trần Hữu Lực' : `Chủ Hộ (${cleanOwnerId})`,
       phone: cleanOwnerId,
-      email: isUserLuc ? 'huuluc04@gmail.com' : `owner.${formattedCode.toLowerCase()}@nks.vn`,
-      cccd: isUserLuc ? '067204000961' : '079204008888',
-      avatar: isUserLuc ? 'https://data.nks.vn/storage/users/202609021654232258.jpg' : 'https://data.nks.vn/storage/users/default.png',
-      eKycApproved: true,
-      handoverDate: item.created_at ? item.created_at.split(' ')[0] : '2026-09-21',
-      dob: isUserLuc ? '18/08/2004' : '01/01/1990',
-      pob: isUserLuc ? 'Triệu Trạch, Triệu Phong, Quảng Trị' : 'TP. Hồ Chí Minh',
-      handoverProtocol: isUserLuc ? {
-        protocolCode: `BBBG-TROPICAL-${bCode}-${formattedCode}-20260921`,
-        handoverDate: '21/09/2026',
-        handoverOfficer: 'KTS. Lê Quang Minh (Trưởng Ban Quản Lý)',
-        keysCount: 3,
-        cardsCount: 2,
-        initialElectricMeter: 12.5,
-        initialWaterMeter: 1.2,
-        notes: 'Đã nghiệm thu căn hộ hoàn thiện phân khu The Tropical - Tòa BS-07. Khóa điện tử FaceID và thiết bị nước hoạt động ổn định.'
-      } : undefined
+      email: isUserLuc ? 'huuluc04nhl@gmail.com' : '',
+      cccd: isUserLuc ? '067204000961' : '',
+      avatar: isUserLuc ? 'https://data.nks.vn/storage/users/202609021654232258.jpg' : '',
+      eKycApproved: isUserLuc,
+      handoverDate: item.created_at ? item.created_at.split(' ')[0] : '',
+      dob: isUserLuc ? '18/08/2004' : '',
+      pob: isUserLuc ? 'Triệu Trạch, Triệu Phong, Quảng Trị' : '',
     } : undefined,
-    handoverProtocol: isUserLuc ? {
-      protocolCode: `BBBG-TROPICAL-${bCode}-${formattedCode}-20260921`,
-      handoverDate: '21/09/2026',
-      handoverOfficer: 'KTS. Lê Quang Minh (Trưởng Ban Quản Lý)',
-      keysCount: 3,
-      cardsCount: 2,
-      initialElectricMeter: 12.5,
-      initialWaterMeter: 1.2,
-      notes: 'Đã nghiệm thu căn hộ hoàn thiện phân khu The Tropical - Tòa BS-07. Khóa điện tử FaceID và thiết bị nước hoạt động ổn định.'
-    } : undefined,
-    membersCount: isUserLuc ? 4 : (cleanOwnerId ? 2 : 0),
-    members: isUserLuc ? [
-      {
-        id: 'mem-1',
-        fullName: 'Nguyễn Hữu Nhựt',
-        role: 'Family',
-        relationship: 'Em trai / Người nhà',
-        phone: '0917795211',
-        idCard: '079198005678',
-        avatarUrl: 'https://data.nks.vn/storage/users/202607191405195335.jpg',
-        licensePlate: '59P1-886.79',
-        faceStatus: 'Đã xác thực',
-        addedDate: '03/09/2026'
-      },
-      {
-        id: 'mem-2',
-        fullName: 'Nguyễn Văn Cường',
-        role: 'Family',
-        relationship: 'Thành viên gia đình',
-        phone: '0325524482',
-        idCard: '074204001708',
-        avatarUrl: 'https://data.nks.vn/storage/users/202608301345022366.jpg',
-        faceStatus: 'Đã xác thực',
-        addedDate: '30/08/2026'
-      },
-      {
-        id: 'mem-3',
-        fullName: 'Lê Đức Hải',
-        role: 'Family',
-        relationship: 'Thành viên gia đình',
-        phone: '0977758215',
-        idCard: '070204001704',
-        avatarUrl: 'https://data.nks.vn/storage/users/202607210516458204.jpg',
-        faceStatus: 'Đã xác thực',
-        addedDate: '21/07/2026'
-      },
-      {
-        id: 'mem-4',
-        fullName: 'Vũ Cát Thịnh',
-        role: 'Family',
-        relationship: 'Thành viên gia đình',
-        phone: '0909262626',
-        idCard: '079201002626',
-        avatarUrl: 'https://data.nks.vn/storage/users/default.png',
-        faceStatus: 'Chờ duyệt FaceID',
-        addedDate: '01/09/2026'
-      }
-    ] : [],
-    vehicles: isUserLuc ? [
-      { id: 'veh-1', type: 'CAR', plate: '51K-889.99', brand: 'Mercedes C300 AMG', cardNo: `RFID-${bCode}-${formattedCode}-01`, slot: 'B2-A15' },
-      { id: 'veh-2', type: 'MOTORBIKE', plate: '59P1-886.79', brand: 'Honda SH 160i', cardNo: `RFID-${bCode}-${formattedCode}-02`, slot: 'B1-M88' }
-    ] : (cleanOwnerId ? [
-      {
-        id: `veh-${item.id}-1`,
-        type: 'MOTORBIKE',
-        plate: '59P1-123.45',
-        cardNo: `CARD-${item.id}-01`,
-        brand: 'Honda AirBlade',
-      }
-    ] : []),
-    billing: isUserLuc ? {
-      monthlyFee: 1450000,
-      parkingFee: 1800000,
-      serviceFee: 215000,
-      totalAmount: 3465000,
-      status: 'UNPAID',
-      period: 'Tháng 09/2026',
-      dueDate: '10/10/2026'
-    } : undefined,
+    membersCount: 0,
+    members: [],
+    vehicles: [],
+    billing: undefined,
     nksId: item.id,
     nksSlug: item.slug,
     isApiSynced: true,

@@ -653,10 +653,7 @@ Nếu cần hỗ trợ khẩn cấp hơn, Quý cư dân vui lòng bấm gọi ng
   if (text.includes('người nhà') || text.includes('thành viên') || text.includes('gia đình') || text.includes('ai') || text.includes('chủ hộ') || text.includes('diện tích') || text.includes('phòng')) {
     const membersListStr = familyMembers.length > 0
       ? familyMembers.map((m) => `  - **${m.fullName}** (${m.relationship || 'Thành viên'}): SĐT ${m.phone || 'Chưa cập nhật'}, CCCD ${m.idCard || 'Đã định danh'}${m.licensePlate ? `, Biển số: ${m.licensePlate}` : ''} (${m.faceStatus || 'Đã xác thực'})`).join('\n')
-      : `  - **Nguyễn Hữu Nhật** (Em trai / Người nhà): SĐT 0917795211, Xe SH: 59P1-886.79 (FaceID: Đã xác thực)
-  - **Nguyễn Văn Cường** (Thành viên gia đình): SĐT 0325524482 (FaceID: Đã xác thực)
-  - **Lê Đức Hải** (Thành viên gia đình): SĐT 0977758215 (FaceID: Đã xác thực)
-  - **Vũ Cát Thịnh** (Thành viên gia đình): SĐT 0909262626 (FaceID: Chờ duyệt)`;
+      : `  - Hiện chưa có thành viên nào khác đăng ký cùng cư trú (Chỉ có Chủ Hộ).`;
 
     return `Dạ thưa Quý cư dân ${residentName}, thông tin cư trú và căn hộ **${targetAptCode}** như sau:
 
