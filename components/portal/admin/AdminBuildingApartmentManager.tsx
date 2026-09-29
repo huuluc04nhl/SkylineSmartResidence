@@ -40,7 +40,25 @@ import {
   ShoppingBag,
   Bus,
   HeartPulse,
-  Radar
+  Radar,
+  Phone,
+  Copy,
+  CheckCheck,
+  Zap,
+  Droplets,
+  ShieldCheck,
+  UserCheck,
+  Key,
+  CreditCard,
+  ArrowLeft,
+  ArrowRight,
+  FileDown,
+  Send,
+  Share2,
+  BadgeCheck,
+  User,
+  Gauge,
+  Wrench
 } from 'lucide-react';
 import { fetchNksApartments } from '@/lib/nksProjectService';
 import AssignResidentModal from '@/components/portal/admin/AssignResidentModal';
@@ -371,6 +389,15 @@ export default function AdminBuildingApartmentManager() {
   const [floorPlanFilterWing, setFloorPlanFilterWing] = useState<'ALL' | 'NORTH' | 'SOUTH' | 'WEST'>('ALL');
   const [floorPlanCadZoom, setFloorPlanCadZoom] = useState<number>(1);
   const [billToastMessage, setBillToastMessage] = useState<string | null>(null);
+  const [copiedField, setCopiedField] = useState<string | null>(null);
+
+  const handleCopyText = (text: string, fieldName: string) => {
+    if (typeof navigator !== 'undefined' && navigator.clipboard) {
+      navigator.clipboard.writeText(text);
+      setCopiedField(fieldName);
+      setTimeout(() => setCopiedField(null), 2000);
+    }
+  };
 
   // Điều khiển chế độ xem Bản đồ Quy hoạch Phân khu & Đô thị
   const [masterPlanTab, setMasterPlanTab] = useState<'TROPICAL' | 'SURROUNDINGS' | 'CAD_FLOOR' | 'MACRO'>('TROPICAL');
@@ -802,6 +829,30 @@ export default function AdminBuildingApartmentManager() {
     return displayUnits.filter(u => u.floor === selectedFloor);
   }, [displayUnits, selectedFloor]);
 
+  // Danh sách các căn hộ trên cùng tầng của căn hộ đang chọn để duyệt căn trước/sau
+  const currentFloorUnits = useMemo(() => {
+    const targetFloor = activeUnit?.floor || selectedFloor;
+    return displayUnits.filter(u => u.floor === targetFloor);
+  }, [displayUnits, activeUnit?.floor, selectedFloor]);
+
+  const handlePrevUnit = useCallback(() => {
+    if (!currentFloorUnits.length || !activeUnit) return;
+    const idx = currentFloorUnits.findIndex(u => u.code === activeUnit.code);
+    const prevIdx = idx > 0 ? idx - 1 : currentFloorUnits.length - 1;
+    const target = currentFloorUnits[prevIdx];
+    setSelectedAptCode(target.code);
+    if (target.floor) setSelectedFloor(target.floor);
+  }, [currentFloorUnits, activeUnit]);
+
+  const handleNextUnit = useCallback(() => {
+    if (!currentFloorUnits.length || !activeUnit) return;
+    const idx = currentFloorUnits.findIndex(u => u.code === activeUnit.code);
+    const nextIdx = idx < currentFloorUnits.length - 1 ? idx + 1 : 0;
+    const target = currentFloorUnits[nextIdx];
+    setSelectedAptCode(target.code);
+    if (target.floor) setSelectedFloor(target.floor);
+  }, [currentFloorUnits, activeUnit]);
+
   return (
     <div className="space-y-6 animate-fadeIn select-none">
       {/* ============================================================= */}
@@ -1187,87 +1238,82 @@ export default function AdminBuildingApartmentManager() {
         <div className="lg:col-span-7 bg-[#0D1117] border border-[#222B35] rounded-none overflow-hidden shadow-2xl flex flex-col">
           
           {/* THANH ĐIỀU HÀNH GÓC NHÌN DUY NHẤT (SINGLE UNIFIED VIEWPORT TOOLBAR) */}
-          <div className="px-2.5 sm:px-3 py-1.5 sm:py-2 bg-[#0E1520] border-b border-[#222B35] flex flex-wrap items-center justify-between gap-2 text-xs">
-            {/* 5 Tab Chuyển Đổi Góc Nhìn - Tinh chỉnh gọn gàng, có điểm nhấn sang trọng */}
-            <div className="flex items-center bg-[#070B11] p-0.5 border border-[#1E2A38] text-xs font-semibold shrink-0">
-              {/* Phân Khu */}
+          <div className="px-2.5 sm:px-3 py-1.5 sm:py-2 bg-[#0E1520] border-b border-[#222B35] flex items-center justify-between gap-2 text-xs">
+            {/* 5 Tab Chuyển Đổi Góc Nhìn - Tinh chỉnh responsive, không bị tràn hay rớt chữ */}
+            <div className="flex items-center overflow-x-auto no-scrollbar scroll-smooth bg-[#070B11] p-0.5 border border-[#1E2A38] text-xs font-semibold max-w-full">
+              {/* Bước 1: Bản Đồ Phân Khu */}
               <button
                 type="button"
-                onClick={() => setBuildingPerspective('MASTER_PLAN')}
-                className={`px-2.5 py-1 transition-all flex items-center gap-1.5 whitespace-nowrap text-xs font-mono ${
+                onClick={() => {
+                  setBuildingPerspective('MASTER_PLAN');
+                  setMasterPlanTab('TROPICAL');
+                }}
+                className={`px-2 sm:px-2.5 py-1 transition-all flex items-center gap-1 sm:gap-1.5 whitespace-nowrap shrink-0 text-[11px] sm:text-xs ${
                   buildingPerspective === 'MASTER_PLAN'
-                    ? 'bg-[#C5A880] text-black font-bold shadow'
+                    ? 'bg-[#C5A880] text-[#0D1117] font-bold shadow'
                     : 'text-gray-400 hover:text-white'
                 }`}
-                title="Bản đồ quy hoạch phân khu & đại đô thị"
+                title="Bản đồ phân khu The Tropical và 23 tiện ích"
               >
                 <Map className="w-3.5 h-3.5 shrink-0" />
-                <span>Phân Khu</span>
+                <span className="inline sm:hidden">1. Tropical</span>
+                <span className="hidden sm:inline">1. Phân Khu Tropical</span>
               </button>
 
-              {/* Số Tầng */}
+              {/* Bước 2: Danh Sách Số Tầng */}
               <button
                 type="button"
                 onClick={() => setBuildingPerspective('BUILDING_ELEVATION')}
-                className={`px-2.5 py-1 transition-all flex items-center gap-1.5 whitespace-nowrap text-xs font-mono ${
+                className={`px-2 sm:px-2.5 py-1 transition-all flex items-center gap-1 sm:gap-1.5 whitespace-nowrap shrink-0 text-[11px] sm:text-xs ${
                   buildingPerspective === 'BUILDING_ELEVATION'
-                    ? 'bg-[#C5A880] text-black font-bold shadow'
+                    ? 'bg-[#C5A880] text-[#0D1117] font-bold shadow'
                     : 'text-gray-400 hover:text-white'
                 }`}
                 title={`Danh sách số tầng chung cư ${selectedBlock}`}
               >
                 <Building2 className="w-3.5 h-3.5 shrink-0" />
-                <span>Số Tầng</span>
-                <span className={`text-[10px] px-1 py-0.2 ${
-                  buildingPerspective === 'BUILDING_ELEVATION' ? 'bg-black/20 text-black font-bold' : 'bg-[#152132] text-[#C5A880]'
-                }`}>
-                  {selectedBlock}
-                </span>
+                <span className="inline sm:hidden">2. Tầng</span>
+                <span className="hidden sm:inline">2. Số Tầng ({selectedBlock})</span>
               </button>
 
-              {/* Mặt Bằng Tầng */}
+              {/* Bước 3: Mặt Bằng Tầng & Căn Hộ */}
               <button
                 type="button"
                 onClick={() => setBuildingPerspective('FLOOR_PLAN')}
-                className={`px-2.5 py-1 transition-all flex items-center gap-1.5 whitespace-nowrap text-xs font-mono ${
+                className={`px-2 sm:px-2.5 py-1 transition-all flex items-center gap-1 sm:gap-1.5 whitespace-nowrap shrink-0 text-[11px] sm:text-xs ${
                   buildingPerspective === 'FLOOR_PLAN'
-                    ? 'bg-[#C5A880] text-black font-bold shadow'
+                    ? 'bg-[#C5A880] text-[#0D1117] font-bold shadow'
                     : 'text-gray-400 hover:text-white'
                 }`}
                 title={`Mặt bằng tầng ${selectedFloor} và vị trí căn hộ`}
               >
                 <Layers className="w-3.5 h-3.5 shrink-0" />
-                <span>Mặt Bằng</span>
-                <span className={`text-[10px] px-1 py-0.2 ${
-                  buildingPerspective === 'FLOOR_PLAN' ? 'bg-black/20 text-black font-bold' : 'bg-[#152132] text-cyan-300'
-                }`}>
-                  T{selectedFloor}
-                </span>
+                <span className="inline sm:hidden">3. Mặt Bằng</span>
+                <span className="hidden sm:inline">3. Mặt Bằng T{selectedFloor}</span>
               </button>
 
               {/* Mô Hình 3D */}
               <button
                 type="button"
                 onClick={() => setBuildingPerspective('3D')}
-                className={`px-2.5 py-1 transition-all flex items-center gap-1.5 whitespace-nowrap text-xs font-mono ${
+                className={`px-2 sm:px-2.5 py-1 transition-all flex items-center gap-1 sm:gap-1.5 whitespace-nowrap shrink-0 text-[11px] sm:text-xs ${
                   buildingPerspective === '3D'
-                    ? 'bg-[#C5A880] text-black font-bold shadow'
+                    ? 'bg-[#C5A880] text-[#0D1117] font-bold shadow'
                     : 'text-gray-400 hover:text-white'
                 }`}
                 title="Mô hình 3D tòa nhà"
               >
                 <Eye className="w-3.5 h-3.5 shrink-0" />
-                <span className="hidden sm:inline">Mô Hình 3D</span>
-                <span className="inline sm:hidden">3D</span>
+                <span>Mô Hình 3D</span>
               </button>
 
               {/* Lưới Căn */}
               <button
                 type="button"
                 onClick={() => setBuildingPerspective('GRID')}
-                className={`px-2.5 py-1 transition-all flex items-center gap-1.5 whitespace-nowrap text-xs font-mono ${
+                className={`px-2 sm:px-2.5 py-1 transition-all flex items-center gap-1 sm:gap-1.5 whitespace-nowrap shrink-0 text-[11px] sm:text-xs ${
                   buildingPerspective === 'GRID'
-                    ? 'bg-[#C5A880] text-black font-bold shadow'
+                    ? 'bg-[#C5A880] text-[#0D1117] font-bold shadow'
                     : 'text-gray-400 hover:text-white'
                 }`}
                 title="Lưới danh sách căn hộ"
@@ -1278,67 +1324,18 @@ export default function AdminBuildingApartmentManager() {
             </div>
 
             {/* BÊN PHẢI: BỘ CÔNG CỤ THEO NGỮ CẢNH CỦA VIEW */}
-            <div className="flex items-center gap-1.5 shrink-0">
+            <div className="flex items-center gap-2">
               {buildingPerspective === 'MASTER_PLAN' && (
-                <div className="flex items-center gap-1.5">
-                  {/* 3 phạm vi quy hoạch gọn gàng */}
-                  <div className="flex items-center bg-[#070B11] p-0.5 border border-[#1E2A38] text-[11px] font-mono">
-                    <button
-                      type="button"
-                      onClick={() => setMasterPlanTab('TROPICAL')}
-                      className={`px-2 py-0.5 transition-all flex items-center gap-1 whitespace-nowrap ${
-                        masterPlanTab === 'TROPICAL'
-                          ? 'bg-[#C5A880] text-black font-bold shadow'
-                          : 'text-gray-400 hover:text-white'
-                      }`}
-                      title="Nội khu The Tropical & 23 tiện ích"
-                    >
-                      <Map className="w-3 h-3 shrink-0" />
-                      <span>The Tropical</span>
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={() => setMasterPlanTab('SURROUNDINGS')}
-                      className={`px-2 py-0.5 transition-all flex items-center gap-1 whitespace-nowrap ${
-                        masterPlanTab === 'SURROUNDINGS'
-                          ? 'bg-[#C5A880] text-black font-bold shadow'
-                          : 'text-gray-400 hover:text-white'
-                      }`}
-                      title="Tiện ích bán kính 1km"
-                    >
-                      <Radar className="w-3 h-3 shrink-0" />
-                      <span>Xung Quanh</span>
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={() => setMasterPlanTab('MACRO')}
-                      className={`px-2 py-0.5 transition-all flex items-center gap-1 whitespace-nowrap ${
-                        masterPlanTab === 'MACRO'
-                          ? 'bg-[#C5A880] text-black font-bold shadow'
-                          : 'text-gray-400 hover:text-white'
-                      }`}
-                      title="Đại đô thị 271ha"
-                    >
-                      <Building2 className="w-3 h-3 shrink-0" />
-                      <span>Đại Đô Thị</span>
-                    </button>
-                  </div>
-
-                  {/* Nút Toàn Cảnh duy nhất */}
-                  <button
-                    type="button"
-                    onClick={() => setIsMasterPlanZoomed(true)}
-                    className="px-2 py-1 bg-[#141E2B] hover:bg-[#C5A880] text-[#C5A880] hover:text-black border border-[#223348] text-xs font-mono font-bold transition-all flex items-center gap-1 shrink-0"
-                    title="Phóng to toàn cảnh"
-                  >
-                    <Maximize2 className="w-3 h-3" />
-                    <span className="hidden sm:inline">Toàn Cảnh</span>
-                  </button>
-                </div>
+                <button
+                  type="button"
+                  onClick={() => setIsMasterPlanZoomed(true)}
+                  className="px-2.5 py-1 bg-[#141E2B] hover:bg-[#C5A880] text-[#C5A880] hover:text-black border border-[#223348] text-xs font-mono font-bold transition-all flex items-center gap-1 shrink-0"
+                  title="Phóng to toàn cảnh"
+                >
+                  <Maximize2 className="w-3 h-3" />
+                  <span className="hidden sm:inline">Toàn Cảnh</span>
+                </button>
               )}
-
               {buildingPerspective === '3D' && (
                 <div className="flex items-center gap-2">
                   <div className="flex items-center gap-1.5 px-2.5 py-1 bg-[#141E2B] border border-[#233345] text-[11px] font-mono shrink-0">
@@ -1413,6 +1410,65 @@ export default function AdminBuildingApartmentManager() {
               )}
             </div>
           </div>
+
+          {/* THANH PHÂN CẤP BẢN ĐỒ QUY HOẠCH (DEDICATED MASTER PLAN LEVEL TABS) */}
+          {buildingPerspective === 'MASTER_PLAN' && (
+            <div className="px-2.5 sm:px-3 py-1.5 bg-[#090E17] border-b border-[#1E293B] flex items-center justify-between gap-2 text-xs font-mono">
+              <div className="flex items-center overflow-x-auto no-scrollbar scroll-smooth bg-[#121A26] p-0.5 border border-[#202E42] max-w-full">
+                <button
+                  type="button"
+                  onClick={() => setMasterPlanTab('TROPICAL')}
+                  className={`px-2 sm:px-2.5 py-1 text-[11px] transition-all flex items-center gap-1.5 whitespace-nowrap shrink-0 ${
+                    masterPlanTab === 'TROPICAL'
+                      ? 'bg-[#C5A880] text-black font-bold shadow'
+                      : 'text-gray-400 hover:text-white'
+                  }`}
+                  title="Phân khu The Tropical và 23 tiện ích nội khu"
+                >
+                  <Map className="w-3.5 h-3.5 shrink-0" />
+                  <span className="inline sm:hidden">The Tropical (23)</span>
+                  <span className="hidden sm:inline">The Tropical (23 Tiện Ích)</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setMasterPlanTab('SURROUNDINGS')}
+                  className={`px-2 sm:px-2.5 py-1 text-[11px] transition-all flex items-center gap-1.5 whitespace-nowrap shrink-0 ${
+                    masterPlanTab === 'SURROUNDINGS'
+                      ? 'bg-[#C5A880] text-black font-bold shadow'
+                      : 'text-gray-400 hover:text-white'
+                  }`}
+                  title="Hệ thống tiện ích xung quanh bán kính 1km"
+                >
+                  <Radar className="w-3.5 h-3.5 shrink-0" />
+                  <span className="inline sm:hidden">Xung Quanh (1km)</span>
+                  <span className="hidden sm:inline">Tiện Ích Xung Quanh (1km)</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setMasterPlanTab('MACRO')}
+                  className={`px-2 sm:px-2.5 py-1 text-[11px] transition-all flex items-center gap-1.5 whitespace-nowrap shrink-0 ${
+                    masterPlanTab === 'MACRO'
+                      ? 'bg-[#C5A880] text-black font-bold shadow'
+                      : 'text-gray-400 hover:text-white'
+                  }`}
+                  title="Quy hoạch tổng thể đại đô thị Vinhomes Grand Park 271 ha"
+                >
+                  <Building2 className="w-3.5 h-3.5 shrink-0" />
+                  <span className="inline sm:hidden">Đại Đô Thị (271ha)</span>
+                  <span className="hidden sm:inline">Quy Hoạch Đại Đô Thị (271 ha)</span>
+                </button>
+              </div>
+
+              <div className="text-[10.5px] text-gray-400 hidden lg:flex items-center gap-1 shrink-0">
+                <span>Đang xem:</span>
+                <strong className="text-[#C5A880]">
+                  {masterPlanTab === 'TROPICAL' ? 'The Tropical' : masterPlanTab === 'SURROUNDINGS' ? 'Radar Đô Thị' : 'Đại Đô Thị 271ha'}
+                </strong>
+              </div>
+            </div>
+          )}
 
           {/* ----------------------------------------------------------- */}
           {/* GÓC NHÌN 1: MÔ HÌNH KHỐI 3D KIẾN TRÚC CHUNG CƯ*/}
@@ -2562,67 +2618,107 @@ export default function AdminBuildingApartmentManager() {
                   />
                 )}
 
-                {/* DANH SÁCH 21 CĂN HỘ TẦNG HIỆN TẠI (GRID THẺ CĂN HỘ ĐẦY ĐỦ) */}
-                <div className="space-y-2 pt-1">
-                  <div className="flex items-center justify-between text-xs font-mono text-gray-400">
-                    <span>Danh Mục 21 Căn Hộ Tầng {selectedFloor} • {currentBlockName}:</span>
-                    <button
-                      type="button"
-                      onClick={() => setIsFloorPlanExpanded(true)}
-                      className="text-[#C5A880] hover:text-white underline text-[11px]"
-                    >
-                      Mở Rộng Toàn Cảnh (Deep-Dive) ↗
-                    </button>
+                {/* DANH SÁCH 21 CĂN HỘ TẦNG HIỆN TẠI (GRID THẺ CĂN HỘ CAO CẤP, DỄ TƯƠNG TÁC) */}
+                <div className="space-y-2 pt-2 border-t border-[#1E293B]">
+                  <div className="flex flex-wrap items-center justify-between gap-1.5 text-xs font-mono">
+                    <div className="flex items-center gap-1.5 text-gray-300">
+                      <Sparkles className="w-3.5 h-3.5 text-[#C5A880]" />
+                      <span className="font-bold">21 Căn Hộ Tầng {selectedFloor} • {currentBlockName}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-[10.5px] text-gray-400">
+                        Đang chọn: <strong className="text-[#C5A880]">{selectedAptCode}</strong>
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => setIsFloorPlanExpanded(true)}
+                        className="text-[#C5A880] hover:text-white underline text-[10.5px]"
+                      >
+                        Toàn Cảnh ↗
+                      </button>
+                    </div>
                   </div>
-                  <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2">
-                    {floorUnits.map(unit => {
-                      const num = unit.code.replace(/\D/g, '').slice(-2);
-                      const isOwnerPrimary = isOwnerBuilding && selectedFloor === 30 && num === '06';
-                      const isOwnerSecondary = isOwnerBuilding && selectedFloor === 30 && num === '01';
-                      const isSelected = selectedAptCode === unit.code || (isOwnerPrimary && selectedAptCode === 'CH-06');
-                      const isOccupied = unit.status === 'OCCUPIED';
-                      const isMaint = unit.status === 'MAINTENANCE';
-                      const fin = getApartmentFinancialMetrics(unit);
 
-                      return (
-                        <button
-                          key={unit.code}
-                          type="button"
-                          onClick={() => setSelectedAptCode(unit.code)}
-                          className={`p-2 border text-left transition-all relative overflow-hidden ${
-                            isSelected
-                              ? 'bg-[#1C2533] border-[#C5A880] ring-1 ring-[#C5A880] shadow-lg'
-                              : isOwnerPrimary
-                              ? 'bg-[#15231B] border-[#F59E0B]/70'
-                              : 'bg-[#121820] border-[#222B35] hover:border-gray-600'
-                          }`}
-                        >
-                          <div className="flex items-center justify-between text-xs font-mono font-bold text-white">
-                            <span className="truncate">{unit.code}</span>
-                            <span className={`text-[8px] px-1 py-0.2 border ${
-                              isOwnerPrimary
-                                ? 'bg-amber-950 text-amber-300 border-amber-500'
-                                : isOwnerSecondary
-                                ? 'bg-sky-950 text-sky-300 border-sky-500'
-                                : isOccupied
-                                ? 'bg-emerald-950 text-emerald-400 border-emerald-500'
-                                : isMaint
-                                ? 'bg-sky-950 text-sky-400 border-sky-600'
-                                : 'bg-[#18202A] text-gray-400 border-gray-600'
-                            }`}>
-                              {isOwnerPrimary ? 'CHỦ HỘ' : isOwnerSecondary ? 'CĂN PHỤ' : isOccupied ? 'ĐÃ Ở' : isMaint ? 'THU' : 'TRỐNG'}
-                            </span>
-                          </div>
-                          <div className="text-[9.5px] text-gray-400 mt-1 truncate">
-                            {unit.typeLabel} • {unit.area}m²
-                          </div>
-                          <div className="mt-1.5 pt-1 border-t border-[#1E293B] flex items-center justify-between text-[9px] font-mono">
-                            <span className="text-amber-300">{fin ? fin.electricKwh : 0} kWh</span>
-                            <span className="text-emerald-400 font-bold">{fin ? (fin.totalBqlRevenue / 1000000).toFixed(1) + ' tr' : '0 tr'}</span>
-                          </div>
-                        </button>
-                      );
-                    })}
+                  {/* Lọc trạng thái căn hộ tầng hiện tại */}
+                  <div className="flex items-center gap-1 overflow-x-auto no-scrollbar py-0.5">
+                    {[
+                      { id: 'ALL', label: 'Tất Cả', count: floorUnits.length },
+                      { id: 'OCCUPIED', label: 'Đã Ở', count: floorUnits.filter(u => u.status === 'OCCUPIED').length },
+                      { id: 'VACANT', label: 'Trống', count: floorUnits.filter(u => u.status === 'VACANT').length },
+                      { id: 'MAINTENANCE', label: 'Nghiệm Thu', count: floorUnits.filter(u => u.status === 'MAINTENANCE').length },
+                    ].map(st => (
+                      <button
+                        key={st.id}
+                        type="button"
+                        onClick={() => setFloorFilterStatus(st.id as any)}
+                        className={`px-2 py-0.5 text-[10.5px] font-mono whitespace-nowrap transition-all flex items-center gap-1 shrink-0 ${
+                          floorFilterStatus === st.id
+                            ? 'bg-[#C5A880] text-black font-bold shadow'
+                            : 'bg-[#111722] border border-[#222E3E] text-gray-400 hover:text-white hover:border-gray-500'
+                        }`}
+                      >
+                        <span>{st.label}</span>
+                        <span className={`text-[9.5px] px-1 font-bold ${
+                          floorFilterStatus === st.id ? 'bg-black/20 text-black' : 'text-gray-500'
+                        }`}>
+                          {st.count}
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+
+                  {/* Lưới thẻ căn hộ thoáng đãng, dễ bấm */}
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-5 gap-1.5 max-h-[195px] overflow-y-auto no-scrollbar pr-0.5">
+                    {floorUnits
+                      .filter(u => floorFilterStatus === 'ALL' || u.status === floorFilterStatus)
+                      .map(unit => {
+                        const num = unit.code.replace(/\D/g, '').slice(-2);
+                        const isOwnerPrimary = isOwnerBuilding && selectedFloor === 30 && num === '06';
+                        const isOwnerSecondary = isOwnerBuilding && selectedFloor === 30 && num === '01';
+                        const isSelected = selectedAptCode === unit.code || (isOwnerPrimary && selectedAptCode === 'CH-06');
+                        const isOccupied = unit.status === 'OCCUPIED';
+                        const isMaint = unit.status === 'MAINTENANCE';
+                        const fin = getApartmentFinancialMetrics(unit);
+
+                        return (
+                          <button
+                            key={unit.code}
+                            type="button"
+                            onClick={() => setSelectedAptCode(unit.code)}
+                            className={`p-2 border text-left transition-all relative overflow-hidden select-none active:scale-[0.98] ${
+                              isSelected
+                                ? 'bg-[#1C2533] border-[#C5A880] ring-1 ring-[#C5A880] shadow-lg'
+                                : isOwnerPrimary
+                                ? 'bg-[#15231B] border-[#F59E0B]/70 hover:border-amber-400'
+                                : 'bg-[#111722] border-[#222E3E] hover:border-gray-500'
+                            }`}
+                          >
+                            <div className="flex items-center justify-between text-xs font-mono font-bold text-white">
+                              <span className="truncate">{unit.code}</span>
+                              <span className={`text-[8.5px] px-1 py-0.2 border font-mono ${
+                                isOwnerPrimary
+                                  ? 'bg-amber-950 text-amber-300 border-amber-500'
+                                  : isOwnerSecondary
+                                  ? 'bg-sky-950 text-sky-300 border-sky-500'
+                                  : isOccupied
+                                  ? 'bg-emerald-950 text-emerald-400 border-emerald-500/80'
+                                  : isMaint
+                                  ? 'bg-sky-950 text-sky-400 border-sky-600/80'
+                                  : 'bg-[#18202A] text-gray-400 border-gray-600'
+                              }`}>
+                                {isOwnerPrimary ? 'CHỦ HỘ' : isOwnerSecondary ? 'CĂN PHỤ' : isOccupied ? 'ĐÃ Ở' : isMaint ? 'THU' : 'TRỐNG'}
+                              </span>
+                            </div>
+                            <div className="text-[10px] text-gray-400 mt-1 truncate">
+                              {unit.typeLabel} • {unit.area}m²
+                            </div>
+                            <div className="mt-1 pt-1 border-t border-[#1C2636] flex items-center justify-between text-[9px] font-mono">
+                              <span className="text-amber-300/90">{fin ? fin.electricKwh : 0} kWh</span>
+                              <span className="text-emerald-400 font-bold">{fin ? (fin.totalBqlRevenue / 1000000).toFixed(1) + ' tr' : '0 tr'}</span>
+                            </div>
+                          </button>
+                        );
+                      })}
                   </div>
                 </div>
 
@@ -2826,229 +2922,390 @@ export default function AdminBuildingApartmentManager() {
           )}
         </div>
 
-        {/* CỘT PHẢI (5 COLS): THÔNG TIN CHI TIẾT CĂN HỘ (GỌN GÀNG, DỄ TƯƠNG TÁC) */}
-        <div className="lg:col-span-5 bg-[#0D1117] border border-[#222B35] rounded-none p-4 shadow-2xl min-h-[660px] sm:min-h-[760px] flex flex-col justify-between overflow-hidden">
+        {/* CỘT PHẢI (5 COLS): HỒ SƠ QUẢN LÝ CĂN HỘ 2.0 (THÔNG TIN ỔN ĐỊNH & DỄ TƯƠNG TÁC) */}
+        <div className="lg:col-span-5 bg-[#090E17] border border-[#203147] rounded-none p-3.5 sm:p-4 shadow-2xl flex flex-col justify-between overflow-hidden h-[740px] sm:h-[800px]">
           
           {activeUnit ? (
             <div className="flex flex-col h-full justify-between">
+              
+              {/* THÂN HỒ SƠ CUỘN MƯỢT MÀ */}
               <div className="space-y-3 overflow-y-auto pr-1 no-scrollbar flex-1">
-                {/* 1. Tiêu đề & Trạng thái căn */}
-                <div className="border-b border-[#222B35] pb-2.5 flex items-start justify-between">
-                  <div>
-                    <div className="text-[10px] uppercase tracking-wider text-[#C5A880] font-mono font-semibold">
+                
+                {/* 1. HEADER ĐỊNH DANH CĂN HỘ & BỘ DUYỆT CĂN 1-CLICK */}
+                <div className="border-b border-[#1E2B3E] pb-2.5 space-y-1.5">
+                  <div className="flex items-center justify-between text-xs font-mono">
+                    <span className="text-[10px] uppercase tracking-wider text-[#C5A880] font-bold">
                       {activeUnit.towerName} • TẦNG {activeUnit.floor}
+                    </span>
+
+                    {/* Bộ duyệt nhanh các căn hộ cùng tầng */}
+                    <div className="flex items-center gap-1 font-mono text-[10.5px]">
+                      <span className="text-gray-400 text-[10px] hidden sm:inline">Duyệt sàn:</span>
+                      <button
+                        type="button"
+                        onClick={handlePrevUnit}
+                        className="w-5 h-5 flex items-center justify-center bg-[#131E2D] hover:bg-[#C5A880] text-gray-300 hover:text-black border border-[#23354C] transition-all"
+                        title="Căn trước đó cùng tầng"
+                      >
+                        <ChevronLeft className="w-3 h-3" />
+                      </button>
+                      <span className="text-[#C5A880] font-bold px-1.5 py-0.2 bg-[#0E1622] border border-[#23354C] text-[10px]">
+                        {activeUnit.code}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={handleNextUnit}
+                        className="w-5 h-5 flex items-center justify-center bg-[#131E2D] hover:bg-[#C5A880] text-gray-300 hover:text-black border border-[#23354C] transition-all"
+                        title="Căn tiếp theo cùng tầng"
+                      >
+                        <ChevronRight className="w-3 h-3" />
+                      </button>
                     </div>
-                    <h3 className="font-serif text-xl sm:text-2xl font-bold text-white mt-0.5">
-                      Căn Hộ {activeUnit.code}
-                    </h3>
                   </div>
 
-                  {/* Trạng thái thực tế */}
-                  <span className={`px-2.5 py-1 text-[11px] font-bold uppercase rounded-none border ${
-                    activeUnit.status === 'OCCUPIED'
-                      ? 'bg-emerald-950 text-emerald-300 border-emerald-500'
-                      : activeUnit.status === 'MAINTENANCE'
-                      ? 'bg-blue-950 text-blue-300 border-blue-500'
-                      : 'bg-amber-950 text-amber-300 border-amber-500'
-                  }`}>
-                    {activeUnit.status === 'OCCUPIED' ? 'ĐÃ CÓ NGƯỜI Ở' : activeUnit.status === 'MAINTENANCE' ? 'NGHIỆM THU' : 'NHÀ TRỐNG'}
-                  </span>
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <div className="flex items-center gap-2">
+                      <h3 className="font-serif text-xl sm:text-2xl font-bold text-white tracking-wide">
+                        Căn Hộ {activeUnit.code}
+                      </h3>
+                      {/* Nút copy mã căn */}
+                      <button
+                        type="button"
+                        onClick={() => handleCopyText(activeUnit.code, 'apt_code')}
+                        className="p-1 hover:bg-[#1A2536] text-gray-400 hover:text-[#C5A880] transition-colors"
+                        title="Sao chép mã căn"
+                      >
+                        {copiedField === 'apt_code' ? (
+                          <CheckCheck className="w-3.5 h-3.5 text-emerald-400" />
+                        ) : (
+                          <Copy className="w-3.5 h-3.5" />
+                        )}
+                      </button>
+                    </div>
+
+                    {/* Badge trạng thái vận hành */}
+                    <div className="flex items-center gap-1.5">
+                      <span className={`px-2.5 py-0.5 text-[10px] font-mono font-bold uppercase border flex items-center gap-1.5 ${
+                        activeUnit.status === 'OCCUPIED'
+                          ? 'bg-emerald-950/80 text-emerald-300 border-emerald-500/80 shadow-[0_0_10px_rgba(16,185,129,0.15)]'
+                          : activeUnit.status === 'MAINTENANCE'
+                          ? 'bg-blue-950/80 text-blue-300 border-blue-500/80'
+                          : 'bg-amber-950/80 text-amber-300 border-amber-500/80'
+                      }`}>
+                        <span className={`w-1.5 h-1.5 rounded-full ${
+                          activeUnit.status === 'OCCUPIED'
+                            ? 'bg-emerald-400 animate-pulse'
+                            : activeUnit.status === 'MAINTENANCE'
+                            ? 'bg-blue-400'
+                            : 'bg-amber-400'
+                        }`} />
+                        <span>
+                          {activeUnit.status === 'OCCUPIED' ? 'ĐÃ CÓ NGƯỜI Ở' : activeUnit.status === 'MAINTENANCE' ? 'NGHIỆM THU' : 'NHÀ TRỐNG'}
+                        </span>
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Nhãn đặc biệt nếu là căn chủ hộ */}
+                  {(activeUnit.code === 'CH-06' || (activeUnit.floor === 30 && activeUnit.code === 'CH-01')) && isOwnerBuilding && (
+                    <div className="text-[10.5px] font-mono text-amber-300 bg-amber-950/30 border border-amber-600/40 px-2 py-0.5 flex items-center justify-between">
+                      <span className="flex items-center gap-1 font-bold">
+                        <Sparkles className="w-3 h-3 text-amber-400" />
+                        {activeUnit.code === 'CH-06' ? 'CĂN HỘ CHÍNH CHỦ HỘ (TRẦN HỮU LỰC)' : 'CĂN PHỤ CÙNG CHỦ HỘ (TRẦN HỮU LỰC)'}
+                      </span>
+                      <span className="text-[9.5px] text-amber-400/80">Tầng 30</span>
+                    </div>
+                  )}
                 </div>
 
-                {/* 2. Thanh 4 thông số chính nhanh gọn */}
-                <div className="grid grid-cols-4 gap-1.5 p-2 bg-[#121820] border border-[#222B35] text-center font-mono">
-                  <div className="p-1 bg-[#161B22]">
-                    <div className="text-[9.5px] text-gray-400">Diện Tích</div>
+                {/* 2. THANH 4 THÔNG SỐ KIẾN TRÚC CỐ ĐỊNH (PERMANENT SPECS) */}
+                <div className="grid grid-cols-4 gap-1.5 p-2 bg-[#0E1522] border border-[#1E2B3E] text-center font-mono">
+                  <div className="p-1 bg-[#131E2D] border border-[#1B293C]">
+                    <div className="text-[9px] text-gray-400 uppercase">Diện Tích</div>
                     <div className="text-xs font-bold text-white mt-0.5">{activeUnit.area} m²</div>
+                    <div className="text-[8.5px] text-gray-400">TT {activeUnit.area}m²</div>
                   </div>
-                  <div className="p-1 bg-[#161B22]">
-                    <div className="text-[9.5px] text-gray-400">Bố Trí</div>
+                  <div className="p-1 bg-[#131E2D] border border-[#1B293C]">
+                    <div className="text-[9px] text-gray-400 uppercase">Bố Trí</div>
                     <div className="text-xs font-bold text-gray-200 mt-0.5">{activeUnit.bedrooms}PN • {activeUnit.bathrooms}WC</div>
+                    <div className="text-[8.5px] text-gray-400">Logia phơi</div>
                   </div>
-                  <div className="p-1 bg-[#161B22]">
-                    <div className="text-[9.5px] text-gray-400">Hướng Ban Công</div>
-                    <div className="text-xs font-bold text-[#C5A880] mt-0.5">{activeUnit.direction || 'Đông Nam'}</div>
+                  <div className="p-1 bg-[#131E2D] border border-[#1B293C]">
+                    <div className="text-[9px] text-gray-400 uppercase">Hướng View</div>
+                    <div className="text-xs font-bold text-[#C5A880] mt-0.5 truncate">{activeUnit.direction || 'Đông Nam'}</div>
+                    <div className="text-[8.5px] text-gray-400">Công viên</div>
                   </div>
-                  <div className="p-1 bg-[#161B22]">
-                    <div className="text-[9.5px] text-gray-400">Giá Niêm Yết</div>
+                  <div className="p-1 bg-[#131E2D] border border-[#1B293C]">
+                    <div className="text-[9px] text-gray-400 uppercase">Giá Bán</div>
                     <div className="text-xs font-bold text-emerald-400 mt-0.5">{activeUnit.priceBillion} tỷ</div>
+                    <div className="text-[8.5px] text-gray-400">Bàn giao CĐT</div>
                   </div>
                 </div>
 
-                {/* 3. Thanh chuyển Tab tinh gọn (3 Tab: Cư dân, Tiêu thụ & Doanh thu, Kỹ thuật) */}
-                <div className="flex border-b border-[#222B35] text-xs font-semibold">
+                {/* 3. BỘ TAB ĐIỀU HƯỚNG CÓ BIỂU TƯỢNG */}
+                <div className="flex border-b border-[#1E2B3E] text-xs font-mono font-semibold">
                   <button
                     type="button"
                     onClick={() => setDetailTab('OVERVIEW')}
-                    className={`pb-2 px-2.5 transition-colors border-b-2 ${
+                    className={`pb-2 px-2.5 transition-all border-b-2 flex items-center gap-1.5 ${
                       detailTab === 'OVERVIEW'
-                        ? 'border-[#C5A880] text-[#C5A880]'
+                        ? 'border-[#C5A880] text-[#C5A880] font-bold'
                         : 'border-transparent text-gray-400 hover:text-white'
                     }`}
                   >
-                    {activeUnit.status === 'OCCUPIED' ? 'Hồ Sơ Cư Dân' : 'Hiện Trạng'}
+                    <UserCheck className="w-3.5 h-3.5" />
+                    <span>{activeUnit.status === 'OCCUPIED' ? 'Cư Dân & Bàn Giao' : 'Hiện Trạng'}</span>
                   </button>
                   <button
                     type="button"
                     onClick={() => setDetailTab('FINANCIAL')}
-                    className={`pb-2 px-2.5 transition-colors border-b-2 ${
+                    className={`pb-2 px-2.5 transition-all border-b-2 flex items-center gap-1.5 ${
                       detailTab === 'FINANCIAL'
-                        ? 'border-[#C5A880] text-[#C5A880]'
+                        ? 'border-[#C5A880] text-[#C5A880] font-bold'
                         : 'border-transparent text-gray-400 hover:text-white'
                     }`}
                   >
-                    Năng Lượng & Chi Phí
+                    <Zap className="w-3.5 h-3.5" />
+                    <span>Năng Lượng & Phí</span>
                   </button>
                   <button
                     type="button"
                     onClick={() => setDetailTab('TECHNICAL')}
-                    className={`pb-2 px-2.5 transition-colors border-b-2 ${
+                    className={`pb-2 px-2.5 transition-all border-b-2 flex items-center gap-1.5 ${
                       detailTab === 'TECHNICAL'
-                        ? 'border-[#C5A880] text-[#C5A880]'
+                        ? 'border-[#C5A880] text-[#C5A880] font-bold'
                         : 'border-transparent text-gray-400 hover:text-white'
                     }`}
                   >
-                    Kỹ Thuật & Pháp Lý
+                    <ShieldCheck className="w-3.5 h-3.5" />
+                    <span>Kỹ Thuật & Pháp Lý</span>
                   </button>
                 </div>
 
-                {/* 4. Nội dung Tab 1: Tổng quan cư dân / hiện trạng */}
+                {/* 4.1. NỘI DUNG TAB 1: CƯ DÂN & BÀN GIAO */}
                 {detailTab === 'OVERVIEW' && (
                   <div className="space-y-2.5">
                     {activeUnit.status === 'OCCUPIED' && activeUnit.owner ? (
                       <>
-                        {/* Chủ hộ súc tích */}
-                        <div className="p-2.5 bg-[#121820] border border-[#222B35] flex items-center justify-between">
-                          <div className="flex items-center gap-2.5">
-                            <img
-                              src={activeUnit.owner.avatar}
-                              alt={activeUnit.owner.name}
-                              className="w-10 h-10 rounded-none object-cover border border-[#C5A880] shrink-0"
-                            />
-                            <div className="min-w-0">
-                              <div className="font-bold text-white text-sm truncate">{activeUnit.owner.name}</div>
-                              <div className="text-[11px] text-gray-300 font-mono flex items-center gap-2">
-                                <span>ĐT: {activeUnit.owner.phone}</span>
-                                <span>• CCCD: {activeUnit.owner.cccd}</span>
+                        {/* Hồ Sơ Chủ Hộ Có Nút Copy & Gọi Điện */}
+                        <div className="p-3 bg-[#0E1522] border border-[#1E2B3E] space-y-2">
+                          <div className="flex items-center justify-between pb-2 border-b border-[#1A2638]">
+                            <div className="flex items-center gap-2.5 min-w-0">
+                              <img
+                                src={activeUnit.owner.avatar}
+                                alt={activeUnit.owner.name}
+                                className="w-10 h-10 object-cover border border-[#C5A880] shrink-0"
+                              />
+                              <div className="min-w-0">
+                                <div className="font-bold text-white text-sm truncate flex items-center gap-1.5">
+                                  <span>{activeUnit.owner.name}</span>
+                                  <span title="eKYC Đã đối chiếu">
+                                    <BadgeCheck className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
+                                  </span>
+                                </div>
+                                <div className="text-[10px] text-gray-400 font-mono">
+                                  Chủ hộ sở hữu chính thức
+                                </div>
                               </div>
                             </div>
+                            <span className="text-[9.5px] px-1.5 py-0.5 bg-emerald-950 text-emerald-300 border border-emerald-600 font-mono shrink-0">
+                              Đã Đối Chiếu
+                            </span>
                           </div>
-                          <span className="text-[9.5px] px-1.5 py-0.5 bg-emerald-950 text-emerald-300 border border-emerald-600 font-mono">
-                            Đã Đối Chiếu
-                          </span>
+
+                          {/* SĐT & CCCD có nút Copy & Gọi */}
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs font-mono">
+                            {/* Điện thoại */}
+                            <div className="p-2 bg-[#121B29] border border-[#1E2D42] flex items-center justify-between">
+                              <div className="min-w-0">
+                                <span className="text-gray-400 text-[9.5px] block">Số Điện Thoại</span>
+                                <strong className="text-white text-[11.5px]">{activeUnit.owner.phone}</strong>
+                              </div>
+                              <div className="flex items-center gap-1 shrink-0">
+                                <button
+                                  type="button"
+                                  onClick={() => handleCopyText(activeUnit.owner?.phone || '', 'phone')}
+                                  className="p-1 hover:bg-[#1C2C40] text-gray-400 hover:text-[#C5A880] transition-colors"
+                                  title="Sao chép SĐT"
+                                >
+                                  {copiedField === 'phone' ? (
+                                    <CheckCheck className="w-3.5 h-3.5 text-emerald-400" />
+                                  ) : (
+                                    <Copy className="w-3.5 h-3.5" />
+                                  )}
+                                </button>
+                                <a
+                                  href={`tel:${activeUnit.owner.phone}`}
+                                  className="p-1 hover:bg-emerald-950 text-gray-400 hover:text-emerald-400 transition-colors"
+                                  title="Gọi điện trực tiếp"
+                                >
+                                  <Phone className="w-3.5 h-3.5" />
+                                </a>
+                              </div>
+                            </div>
+
+                            {/* CCCD */}
+                            <div className="p-2 bg-[#121B29] border border-[#1E2D42] flex items-center justify-between">
+                              <div className="min-w-0">
+                                <span className="text-gray-400 text-[9.5px] block">Số Căn Cước (CCCD)</span>
+                                <strong className="text-white text-[11.5px]">{activeUnit.owner.cccd}</strong>
+                              </div>
+                              <button
+                                type="button"
+                                onClick={() => handleCopyText(activeUnit.owner?.cccd || '', 'cccd')}
+                                className="p-1 hover:bg-[#1C2C40] text-gray-400 hover:text-[#C5A880] transition-colors shrink-0"
+                                title="Sao chép CCCD"
+                              >
+                                {copiedField === 'cccd' ? (
+                                  <CheckCheck className="w-3.5 h-3.5 text-emerald-400" />
+                                ) : (
+                                  <Copy className="w-3.5 h-3.5" />
+                                )}
+                              </button>
+                            </div>
+                          </div>
+
+                          {/* Email & Quê Quán */}
+                          <div className="p-2 bg-[#121B29] border border-[#1E2D42] text-[10.5px] font-mono space-y-1">
+                            <div className="flex items-center justify-between text-gray-300">
+                              <span className="text-gray-400">Email liên hệ:</span>
+                              <span className="text-white font-medium truncate max-w-[200px]">{activeUnit.owner.email}</span>
+                            </div>
+                            <div className="flex items-center justify-between text-gray-300">
+                              <span className="text-gray-400">Quê quán / ĐK:</span>
+                              <span className="text-white font-medium truncate max-w-[200px]">
+                                {activeUnit.owner.pob || 'Triệu Trạch, Triệu Phong, Quảng Trị'}
+                              </span>
+                            </div>
+                          </div>
                         </div>
 
-                        {/* Tóm tắt bàn giao */}
-                        <div className="p-2.5 bg-[#121820] border border-[#222B35] text-[11px] font-mono space-y-1">
-                          <div className="flex items-center justify-between text-gray-400">
-                            <span>Biên bản bàn giao:</span>
-                            <strong className="text-[#C5A880]">BBBG-{activeUnit.code}</strong>
+                        {/* Hồ Sơ Bàn Giao Căn Hộ */}
+                        <div className="p-2.5 bg-[#0E1522] border border-[#1E2B3E] text-[11px] font-mono space-y-1.5">
+                          <div className="flex items-center justify-between text-gray-300 pb-1 border-b border-[#1A2638]">
+                            <span className="text-gray-400">Biên bản bàn giao:</span>
+                            <div className="flex items-center gap-1.5">
+                              <strong className="text-[#C5A880]">BBBG-{activeUnit.code}</strong>
+                              <button
+                                type="button"
+                                onClick={() => handleCopyText(`BBBG-${activeUnit.code}`, 'bbbg')}
+                                className="text-gray-500 hover:text-white"
+                                title="Sao chép mã BBBG"
+                              >
+                                {copiedField === 'bbbg' ? <CheckCheck className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3" />}
+                              </button>
+                            </div>
                           </div>
-                          <div className="flex items-center justify-between text-gray-400">
-                            <span>Chìa khóa & thẻ từ:</span>
-                            <strong className="text-white">3 chìa khóa • 2 thẻ thang máy</strong>
+                          <div className="flex items-center justify-between text-gray-300">
+                            <span className="text-gray-400">Chìa khóa & Thẻ từ:</span>
+                            <strong className="text-white">3 Chìa Khóa Cơ • 2 Thẻ Thang Máy</strong>
                           </div>
-                          <div className="flex items-center justify-between text-gray-400">
-                            <span>Chỉ số khi nhận:</span>
+                          <div className="flex items-center justify-between text-gray-300">
+                            <span className="text-gray-400">Chỉ số khi nhận:</span>
                             <strong className="text-amber-400">12.5 kWh • 1.2 m³</strong>
                           </div>
                         </div>
 
-                        {/* Nhân khẩu & xe gọn */}
+                        {/* Thành Viên & Xe Gửi Hầm */}
                         <div className="grid grid-cols-2 gap-2 text-[11px] font-mono">
-                          <div className="p-2 bg-[#121820] border border-[#222B35]">
+                          <div className="p-2.5 bg-[#0E1522] border border-[#1E2B3E]">
                             <div className="text-gray-400 text-[10px]">Cùng Cư Trú:</div>
-                            <div className="text-white font-bold mt-0.5">
-                              {activeUnit.members?.length || activeUnit.membersCount || 0} người thân
+                            <div className="text-white font-bold mt-1 flex items-center gap-1">
+                              <User className="w-3.5 h-3.5 text-[#C5A880]" />
+                              <span>{activeUnit.members?.length || activeUnit.membersCount || 0} Người Thân</span>
                             </div>
                           </div>
-                          <div className="p-2 bg-[#121820] border border-[#222B35]">
-                            <div className="text-gray-400 text-[10px]">Xe Đăng Ký Gửi Hầm:</div>
-                            <div className="text-emerald-400 font-bold mt-0.5 truncate">
+                          <div className="p-2.5 bg-[#0E1522] border border-[#1E2B3E]">
+                            <div className="text-gray-400 text-[10px]">Xe Đăng Ký Hầm:</div>
+                            <div className="text-emerald-400 font-bold mt-1 truncate">
                               {activeUnit.vehicles && activeUnit.vehicles.length > 0
                                 ? activeUnit.vehicles.map(v => v.plate).join(', ')
-                                : 'Chưa đăng ký'}
+                                : '1 Ô Tô • 1 Xe Máy'}
                             </div>
                           </div>
                         </div>
                       </>
                     ) : activeUnit.status === 'MAINTENANCE' ? (
-                      <div className="p-3 bg-[#121820] border border-blue-500/40 space-y-2">
-                        <div className="text-blue-400 font-bold text-xs font-mono">
-                          Căn Hộ Đang Nghiệm Thu Kỹ Thuật
+                      <div className="p-4 bg-[#0E1522] border border-blue-500/40 space-y-3">
+                        <div className="flex items-center gap-2 text-blue-400 font-bold text-xs font-mono">
+                          <Wrench className="w-4 h-4" />
+                          <span>Căn Hộ Đang Nghiệm Thu Kỹ Thuật</span>
                         </div>
-                        <p className="text-xs text-gray-300 leading-relaxed">
-                          Tổ kỹ thuật BQL đang kiểm tra điều hòa trung tâm, cửa sổ kính cách âm và van cấp nước. Tiến độ đạt 85%, sẵn sàng bàn giao trong 2 ngày.
+                        <p className="text-xs text-gray-300 leading-relaxed font-sans">
+                          Tổ kỹ thuật BQL đang hoàn tất kiểm định áp lực đường ống nước sinh hoạt, hệ thống điều hòa Multi âm trần và thiết bị báo khói PCCC. Tiến độ hoàn thành: 85%, sẵn sàng bàn giao cho cư dân trong 2 ngày tới.
                         </p>
                         <button
                           type="button"
                           onClick={() => setIsEditModalOpen(true)}
-                          className="w-full py-2 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold uppercase transition-all"
+                          className="w-full py-2 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold font-mono uppercase tracking-wider transition-all"
                         >
-                          Cập Nhật Tình Trạng
+                          Cập Nhật Tiến Độ Nghiệm Thu
                         </button>
                       </div>
                     ) : (
-                      <div className="p-3 bg-[#121820] border border-amber-500/40 space-y-2.5">
-                        <div className="text-amber-400 font-bold text-xs font-mono">
-                          Căn Hộ Trống (Sẵn Sàng Bàn Giao)
+                      <div className="p-4 bg-[#0E1522] border border-amber-500/40 space-y-3">
+                        <div className="flex items-center gap-2 text-amber-400 font-bold text-xs font-mono">
+                          <Key className="w-4 h-4" />
+                          <span>Căn Hộ Trống (Sẵn Sàng Bàn Giao)</span>
                         </div>
-                        <p className="text-xs text-gray-300 leading-relaxed">
-                          Căn hộ đã hoàn tất nghiệm thu hoàn thiện xây dựng, an toàn điện nước và đầu phun chữa cháy PCCC đạt chuẩn an toàn. Sẵn sàng bàn giao cho cư dân mới.
+                        <p className="text-xs text-gray-300 leading-relaxed font-sans">
+                          Căn hộ đã hoàn tất 100% hồ sơ nghiệm thu kỹ thuật xây dựng và an toàn PCCC. Cơ điện, đồng hồ IoT đã sẵn sàng kích hoạt để bàn giao cư dân mới.
                         </p>
                         <button
                           type="button"
                           onClick={() => setIsAssignModalOpen(true)}
-                          className="w-full py-2.5 px-3 bg-[#C5A880] hover:bg-white text-[#0D1117] text-xs font-bold uppercase tracking-wider transition-all flex items-center justify-center shadow"
+                          className="w-full py-2.5 px-3 bg-[#C5A880] hover:bg-white text-[#0D1117] text-xs font-bold font-mono uppercase tracking-wider transition-all flex items-center justify-center gap-1.5 shadow"
                         >
-                          Bàn Giao Căn Hộ & Cấp Tài Khoản
+                          <UserCheck className="w-4 h-4" />
+                          <span>Bàn Giao Căn Hộ & Cấp Tài Khoản Mới</span>
                         </button>
                       </div>
                     )}
                   </div>
                 )}
 
-                {/* 4.5. Nội dung Tab 2: Tiêu Thụ Hàng Tháng & Doanh Thu / Dòng Tiền */}
+                {/* 4.2. NỘI DUNG TAB 2: NĂNG LƯỢNG IOT & CHI PHÍ BQL */}
                 {detailTab === 'FINANCIAL' && (() => {
                   const fin = getApartmentFinancialMetrics(activeUnit);
                   if (!fin) return null;
 
                   return (
                     <div className="space-y-2.5 text-xs font-mono">
-                      {/* Thông báo thao tác thu phí */}
+                      {/* Toast Phản hồi */}
                       {billToastMessage && (
-                        <div className="p-2 bg-emerald-950 border border-emerald-500 text-emerald-300 text-[11px] flex items-center justify-between">
+                        <div className="p-2 bg-emerald-950/90 border border-emerald-500 text-emerald-300 text-[11px] flex items-center justify-between animate-fadeIn">
                           <span>{billToastMessage}</span>
                           <button onClick={() => setBillToastMessage(null)} className="text-gray-400 hover:text-white ml-2">✕</button>
                         </div>
                       )}
 
-                      {/* 1. KHỐI TỔNG HỢP DOANH THU BQL & GIÁ TRỊ KHAI THÁC */}
-                      <div className="p-2.5 bg-gradient-to-br from-[#16202E] to-[#0E1520] border border-[#2A374A] space-y-2">
+                      {/* Khối Dòng Tiền & Doanh Thu BQL */}
+                      <div className="p-3 bg-gradient-to-br from-[#131E2C] to-[#0A101A] border border-[#23354C] space-y-2">
                         <div className="flex items-center justify-between text-[11px]">
-                          <span className="text-gray-200 font-bold">
-                            DÒNG TIỀN & DOANH THU CĂN HỘ
+                          <span className="text-gray-200 font-bold flex items-center gap-1.5">
+                            <CreditCard className="w-3.5 h-3.5 text-[#C5A880]" />
+                            <span>DOANH THU BQL & TÀI CHÍNH</span>
                           </span>
                           <span className={`px-2 py-0.5 text-[9.5px] font-bold border ${
                             fin.isOccupied 
                               ? 'bg-emerald-950 text-emerald-300 border-emerald-500' 
                               : 'bg-amber-950 text-amber-300 border-amber-600'
                           }`}>
-                            {fin.isOccupied ? 'ĐÃ ĐÓNG ĐỦ' : 'CĐT BẢO DƯỠNG'}
+                            {fin.isOccupied ? 'ĐÃ ĐÓNG ĐỦ' : 'CĐT DUY TRÌ'}
                           </span>
                         </div>
 
-                        <div className="grid grid-cols-2 gap-2 pt-1.5 border-t border-[#232F42]">
+                        <div className="grid grid-cols-2 gap-2 pt-2 border-t border-[#1C2C40]">
                           <div>
                             <div className="text-[9.5px] text-gray-400">Doanh Thu Phí BQL:</div>
-                            <div className="text-sm sm:text-base font-bold text-emerald-400 mt-0.5">
+                            <div className="text-base font-bold text-emerald-400 mt-0.5">
                               {new Intl.NumberFormat('vi-VN').format(fin.totalBqlRevenue)} <span className="text-[10px] text-gray-400">đ/th</span>
                             </div>
-                            <div className="text-[9px] text-gray-400">~{((fin.totalBqlRevenue * 12) / 1000000).toFixed(1)} triệu đ/năm</div>
+                            <div className="text-[9px] text-gray-400">~{((fin.totalBqlRevenue * 12) / 1000000).toFixed(1)} tr đ/năm</div>
                           </div>
                           <div>
                             <div className="text-[9.5px] text-gray-400">Giá Thuê Ước Tính:</div>
-                            <div className="text-sm sm:text-base font-bold text-amber-300 mt-0.5">
+                            <div className="text-base font-bold text-amber-300 mt-0.5">
                               {new Intl.NumberFormat('vi-VN').format(fin.estimatedRentalPrice)} <span className="text-[10px] text-gray-400">đ/th</span>
                             </div>
                             <div className="text-[9px] text-emerald-400">
@@ -3058,30 +3315,36 @@ export default function AdminBuildingApartmentManager() {
                         </div>
                       </div>
 
-                      {/* 2. CHỈ SỐ TIÊU THỤ NĂNG LƯỢNG HÀNG THÁNG (ĐIỆN - NƯỚC) */}
-                      <div className="p-2.5 bg-[#121820] border border-[#222B35] space-y-2">
-                        <div className="flex items-center justify-between text-[11px] pb-1 border-b border-[#222B35]">
-                          <span className="text-[#C5A880] font-bold">
-                            TIÊU THỤ HÀNG THÁNG (KỲ GẦN NHẤT)
+                      {/* Đồng Hồ IoT: Điện & Nước Sinh Hoạt */}
+                      <div className="p-3 bg-[#0E1522] border border-[#1E2B3E] space-y-2.5">
+                        <div className="flex items-center justify-between text-[11px] pb-1 border-b border-[#1A2638]">
+                          <span className="text-[#C5A880] font-bold flex items-center gap-1.5">
+                            <Gauge className="w-3.5 h-3.5" />
+                            <span>ĐỒNG HỒ ĐO LƯỜNG IOT THÔNG MINH</span>
                           </span>
-                          <span className="text-[9px] text-gray-400">Đồng hồ IoT</span>
+                          <span className="text-[9px] text-cyan-300">Chu kỳ T09/2026</span>
                         </div>
 
-                        {/* Tiêu thụ Điện */}
-                        <div className="p-2 bg-[#161B22] border border-[#2D3748] space-y-1">
+                        {/* Điện Sinh Hoạt */}
+                        <div className="p-2 bg-[#121B29] border border-[#1E2D42] space-y-1">
                           <div className="flex items-center justify-between">
-                            <span className="text-amber-300 font-bold text-[10.5px]">
-                              Điện Sinh Hoạt ({fin.meterElectricId})
+                            <span className="text-amber-300 font-bold text-[10.5px] flex items-center gap-1">
+                              <Zap className="w-3 h-3" />
+                              <span>Điện Sinh Hoạt ({fin.meterElectricId})</span>
                             </span>
                             <span className="text-amber-300 font-bold text-xs">
                               {new Intl.NumberFormat('vi-VN').format(fin.electricCost)} đ
                             </span>
                           </div>
                           <div className="flex items-baseline justify-between text-[11px]">
-                            <span className="font-bold text-white text-sm">{fin.electricKwh} <span className="text-[10px] text-gray-400 font-normal">kWh</span></span>
-                            <span className="text-[9px] text-gray-400">{fin.electricKwh > 300 ? 'Cao hơn trung bình' : 'Tiêu thụ chuẩn'}</span>
+                            <span className="font-bold text-white text-sm">
+                              {fin.electricKwh} <span className="text-[10px] text-gray-400 font-normal">kWh</span>
+                            </span>
+                            <span className="text-[9px] text-gray-400">
+                              {fin.electricKwh > 300 ? 'Tiêu thụ cao' : 'Tiêu thụ bình thường'}
+                            </span>
                           </div>
-                          {/* Thanh đo */}
+                          {/* Thanh đo tải điện */}
                           <div className="w-full bg-gray-800 h-1.5 overflow-hidden">
                             <div 
                               className="bg-amber-400 h-full transition-all duration-500" 
@@ -3090,21 +3353,24 @@ export default function AdminBuildingApartmentManager() {
                           </div>
                         </div>
 
-                        {/* Tiêu thụ Nước */}
-                        <div className="p-2 bg-[#161B22] border border-[#2D3748] space-y-1">
+                        {/* Nước Sinh Hoạt */}
+                        <div className="p-2 bg-[#121B29] border border-[#1E2D42] space-y-1">
                           <div className="flex items-center justify-between">
-                            <span className="text-cyan-300 font-bold text-[10.5px]">
-                              Nước Sinh Hoạt ({fin.meterWaterId})
+                            <span className="text-cyan-300 font-bold text-[10.5px] flex items-center gap-1">
+                              <Droplets className="w-3 h-3" />
+                              <span>Nước Sinh Hoạt ({fin.meterWaterId})</span>
                             </span>
                             <span className="text-cyan-300 font-bold text-xs">
                               {new Intl.NumberFormat('vi-VN').format(fin.waterCost)} đ
                             </span>
                           </div>
                           <div className="flex items-baseline justify-between text-[11px]">
-                            <span className="font-bold text-white text-sm">{fin.waterM3} <span className="text-[10px] text-gray-400 font-normal">m³</span></span>
+                            <span className="font-bold text-white text-sm">
+                              {fin.waterM3} <span className="text-[10px] text-gray-400 font-normal">m³</span>
+                            </span>
                             <span className="text-[9px] text-emerald-400">Áp lực ống: 2.8 bar</span>
                           </div>
-                          {/* Thanh đo */}
+                          {/* Thanh đo tiêu thụ nước */}
                           <div className="w-full bg-gray-800 h-1.5 overflow-hidden">
                             <div 
                               className="bg-cyan-400 h-full transition-all duration-500" 
@@ -3113,20 +3379,20 @@ export default function AdminBuildingApartmentManager() {
                           </div>
                         </div>
 
-                        {/* Chi tiết phí dịch vụ & xe */}
+                        {/* Bảng Chi Phí Quản Lý & Xe */}
                         <div className="pt-1 space-y-1 text-[10.5px] text-gray-300">
-                          <div className="flex justify-between py-0.5 border-b border-[#1E293B]">
+                          <div className="flex justify-between py-0.5 border-b border-[#1A2638]">
                             <span className="text-gray-400">• Phí quản lý chung cư ({fin.area} m² x 18k):</span>
                             <span className="font-bold text-white">{new Intl.NumberFormat('vi-VN').format(fin.managementFee)} đ</span>
                           </div>
-                          <div className="flex justify-between py-0.5 border-b border-[#1E293B]">
+                          <div className="flex justify-between py-0.5 border-b border-[#1A2638]">
                             <span className="text-gray-400">• Phí gửi xe tầng hầm ({activeUnit.vehicles?.length || (fin.isOccupied ? 2 : 0)} xe):</span>
                             <span className="font-bold text-white">{new Intl.NumberFormat('vi-VN').format(fin.parkingFee)} đ</span>
                           </div>
                         </div>
                       </div>
 
-                      {/* 3. NÚT TƯƠNG TÁC NHANH */}
+                      {/* Bộ Nút Tương Tác 1-Chạm BQL */}
                       <div className="grid grid-cols-2 gap-2 pt-0.5">
                         <button
                           type="button"
@@ -3134,73 +3400,95 @@ export default function AdminBuildingApartmentManager() {
                             setBillToastMessage(`Đã trích xuất biên lai phiếu thu căn hộ ${activeUnit.code} thành công.`);
                             setTimeout(() => setBillToastMessage(null), 3500);
                           }}
-                          className="py-2 px-2 bg-[#16202E] hover:bg-[#1E2B3E] text-gray-200 hover:text-white border border-[#2D3B4E] font-semibold text-[10.5px] transition-all flex items-center justify-center"
+                          className="py-2 px-2 bg-[#121B29] hover:bg-[#1C2C40] text-gray-200 hover:text-white border border-[#23354C] font-semibold text-[11px] transition-all flex items-center justify-center gap-1.5"
                         >
-                          Xuất Phiếu Thu
+                          <FileDown className="w-3.5 h-3.5 text-[#C5A880]" />
+                          <span>Xuất Phiếu Thu</span>
                         </button>
 
                         <button
                           type="button"
                           onClick={() => {
-                            setBillToastMessage(`Đã gửi tin nhắn nhắc phí & hóa đơn tới chủ căn hộ ${activeUnit.code}.`);
+                            setBillToastMessage(`Đã gửi thông báo nhắc phí & hóa đơn tới app chủ căn hộ ${activeUnit.code}.`);
                             setTimeout(() => setBillToastMessage(null), 3500);
                           }}
-                          className="py-2 px-2 bg-[#162B22] hover:bg-[#1E3B2F] text-emerald-300 hover:text-emerald-200 border border-emerald-600/50 font-semibold text-[10.5px] transition-all flex items-center justify-center"
+                          className="py-2 px-2 bg-[#12281E] hover:bg-[#1A382A] text-emerald-300 hover:text-white border border-emerald-600/50 font-semibold text-[11px] transition-all flex items-center justify-center gap-1.5"
                         >
-                          Gửi Thông Báo Phí
+                          <Send className="w-3.5 h-3.5 text-emerald-400" />
+                          <span>Gửi Báo Phí</span>
                         </button>
                       </div>
                     </div>
                   );
                 })()}
 
-                {/* 5. Nội dung Tab 3: Thông số kỹ thuật & phí */}
+                {/* 4.3. NỘI DUNG TAB 3: THÔNG SỐ KỸ THUẬT & PHÁP LÝ */}
                 {detailTab === 'TECHNICAL' && (
-                  <div className="p-3 bg-[#121820] border border-[#222B35] space-y-2 text-xs font-mono">
-                    <div className="flex items-center justify-between pb-1.5 border-b border-[#222B35]">
+                  <div className="p-3 bg-[#0E1522] border border-[#1E2B3E] space-y-2 text-xs font-mono">
+                    <div className="flex items-center justify-between pb-1.5 border-b border-[#1A2638]">
                       <span className="text-gray-400">Diện tích thông thủy:</span>
                       <strong className="text-white">{activeUnit.area} m²</strong>
                     </div>
-                    <div className="flex items-center justify-between pb-1.5 border-b border-[#222B35]">
+                    <div className="flex items-center justify-between pb-1.5 border-b border-[#1A2638]">
                       <span className="text-gray-400">Diện tích tim tường:</span>
                       <strong className="text-white">{Math.round(activeUnit.area * 1.08)} m²</strong>
                     </div>
-                    <div className="flex items-center justify-between pb-1.5 border-b border-[#222B35]">
-                      <span className="text-gray-400">Phí quản lý chung cư:</span>
+                    <div className="flex items-center justify-between pb-1.5 border-b border-[#1A2638]">
+                      <span className="text-gray-400">Phí quản lý chuẩn:</span>
                       <strong className="text-amber-300">
                         {new Intl.NumberFormat('vi-VN').format(Math.round(activeUnit.area * 18000))} đ/tháng (18.000 đ/m²)
                       </strong>
                     </div>
-                    <div className="flex items-center justify-between pb-1.5 border-b border-[#222B35]">
+                    <div className="flex items-center justify-between pb-1.5 border-b border-[#1A2638]">
                       <span className="text-gray-400">Pháp lý sở hữu:</span>
                       <strong className="text-emerald-400">Sổ hồng lâu dài (Đã cấp)</strong>
                     </div>
+                    <div className="flex items-center justify-between pb-1.5 border-b border-[#1A2638]">
+                      <span className="text-gray-400">Hệ thống Intercom:</span>
+                      <strong className="text-gray-200">Chuông hình kỹ thuật số nối sảnh</strong>
+                    </div>
+                    <div className="flex items-center justify-between pb-1.5 border-b border-[#1A2638]">
+                      <span className="text-gray-400">An toàn PCCC:</span>
+                      <strong className="text-emerald-400">Đầu phun tự động & Báo khói 24/7</strong>
+                    </div>
                     <div className="flex items-center justify-between">
-                      <span className="text-gray-400">Hệ thống kỹ thuật:</span>
-                      <strong className="text-gray-200">Smart Intercom & Báo khói PCCC</strong>
+                      <span className="text-gray-400">Khóa cửa ra vào:</span>
+                      <strong className="text-cyan-300">Khóa thông minh vân tay & mã số</strong>
                     </div>
                   </div>
                 )}
               </div>
 
-              {/* 6. Chân thẻ: Nút hành động nhanh */}
-              <div className="pt-2.5 border-t border-[#222B35] flex items-center gap-2 text-xs shrink-0">
+              {/* 5. CHÂN THẺ CỐ ĐỊNH: BỘ NÚT HÀNH ĐỘNG BQL */}
+              <div className="pt-2.5 border-t border-[#1E2B3E] flex items-center gap-2 text-xs shrink-0 font-mono">
                 <button
                   type="button"
                   onClick={() => setIsDetailModalOpen(true)}
-                  className="flex-1 py-2 px-3 bg-[#161B22] hover:bg-[#202936] text-gray-200 hover:text-white border border-[#2D3748] font-semibold transition-all flex items-center justify-center"
+                  className="flex-1 py-2 px-3 bg-[#121B29] hover:bg-[#1E2D42] text-gray-200 hover:text-white border border-[#23354C] font-semibold transition-all flex items-center justify-center gap-1.5"
                 >
-                  Mặt Bằng Sàn
+                  <Eye className="w-3.5 h-3.5 text-[#C5A880]" />
+                  <span>Mặt Bằng 3D</span>
                 </button>
 
                 <button
                   type="button"
                   onClick={() => setIsEditModalOpen(true)}
-                  className="py-2 px-3 bg-[#161B22] hover:bg-[#202936] text-gray-200 hover:text-white border border-[#2D3748] font-semibold transition-all flex items-center justify-center"
+                  className="py-2 px-3 bg-[#121B29] hover:bg-[#1E2D42] text-gray-200 hover:text-white border border-[#23354C] font-semibold transition-all flex items-center justify-center gap-1.5"
                 >
-                  Chỉnh Sửa
+                  <Wrench className="w-3.5 h-3.5 text-cyan-400" />
+                  <span>Chỉnh Sửa</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setIsAssignModalOpen(true)}
+                  className="py-2 px-3 bg-[#C5A880] hover:bg-white text-black font-bold transition-all flex items-center justify-center gap-1.5 shadow"
+                >
+                  <UserCheck className="w-3.5 h-3.5" />
+                  <span>Bàn Giao</span>
                 </button>
               </div>
+
             </div>
           ) : (
             <div className="p-8 text-center text-gray-400 text-xs font-mono my-auto">
