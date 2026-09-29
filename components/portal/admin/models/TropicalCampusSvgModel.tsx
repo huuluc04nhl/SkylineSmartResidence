@@ -130,29 +130,36 @@ export default function TropicalCampusSvgModel({
     'H': { x: 475, y: 435 }, // Lối xuống hầm
   };
 
-  // Chia danh sách tiện ích làm 2 cột chuẩn 100% theo bản phân loại
-  const colLeftAmenities = amenities.slice(0, 12);
-  const colRightAmenities = amenities.slice(12);
+  // Lọc tiện ích theo danh mục đang chọn
+  const filteredAmenities = amenities.filter(item => {
+    if (activeAmenityCategory === 'ALL') return true;
+    return item.category === activeAmenityCategory;
+  });
+
+  // Chia danh sách tiện ích làm 2 cột cân đối
+  const midIdx = Math.ceil(filteredAmenities.length / 2);
+  const colLeftAmenities = filteredAmenities.slice(0, midIdx);
+  const colRightAmenities = filteredAmenities.slice(midIdx);
 
   return (
     <div className="relative bg-[#06090F] border border-[#1E293B] rounded-none overflow-hidden select-none shadow-2xl flex flex-col">
       
       {/* THANH TIÊU ĐỀ ĐIỀU HÀNH & NÚT THU PHÓNG */}
-      <div className="px-3.5 py-2.5 bg-[#0B111A] border-b border-[#1E293B] flex flex-wrap items-center justify-between gap-2.5 text-xs font-mono">
-        <div className="flex items-center gap-2">
-          <div className="flex items-center gap-1.5 px-2.5 py-1 bg-[#141E2D] border border-[#23354C] text-[#C5A880]">
-            <Compass className="w-3.5 h-3.5 text-[#C5A880]" />
-            <span className="font-bold tracking-wider uppercase text-[11px]">
-              QUY HOẠCH KIẾN TRÚC PHÂN KHU THE TROPICAL (MÔ HÌNH TỰ VẼ 2.5D)
+      <div className="px-2.5 sm:px-3.5 py-2 bg-[#0B111A] border-b border-[#1E293B] flex flex-wrap items-center justify-between gap-2 text-xs font-mono">
+        <div className="flex items-center gap-1.5 sm:gap-2">
+          <div className="flex items-center gap-1.5 px-2 py-0.5 bg-[#141E2D] border border-[#23354C] text-[#C5A880]">
+            <Compass className="w-3.5 h-3.5 text-[#C5A880] shrink-0" />
+            <span className="font-bold tracking-wider uppercase text-[10.5px] sm:text-[11px]">
+              QUY HOẠCH THE TROPICAL (2.5D)
             </span>
           </div>
-          <span className="text-gray-400 text-[11px] hidden md:inline">
-            Chọn Chung Cư để chuyển tới danh sách số tầng
+          <span className="text-gray-400 text-[10.5px] hidden md:inline">
+            Chọn Chung Cư để xem danh sách số tầng
           </span>
         </div>
 
         {/* Cụm nút điều khiển & Thu phóng */}
-        <div className="flex items-center gap-1.5">
+        <div className="flex items-center gap-1">
           <div className="flex items-center gap-1">
             <button
               type="button"
@@ -165,7 +172,7 @@ export default function TropicalCampusSvgModel({
             <button
               type="button"
               onClick={() => setZoomLevel(1)}
-              className="px-2 py-0.5 bg-[#090D14] border border-[#223247] text-[#C5A880] text-[11px] min-w-[48px] text-center hover:bg-[#121A26]"
+              className="px-2 py-0.5 bg-[#090D14] border border-[#223247] text-[#C5A880] text-[11px] min-w-[44px] text-center hover:bg-[#121A26]"
               title="Mặc định 100%"
             >
               {Math.round(zoomLevel * 100)}%
@@ -184,57 +191,57 @@ export default function TropicalCampusSvgModel({
             <button
               type="button"
               onClick={onOpenZoomModal}
-              className="px-2.5 py-1 bg-[#C5A880] hover:bg-[#D4BC96] text-black font-bold flex items-center gap-1 transition-all"
+              className="px-2 py-0.5 bg-[#C5A880] hover:bg-[#D4BC96] text-black font-bold flex items-center gap-1 transition-all ml-0.5"
               title="Phóng to toàn màn hình"
             >
               <Maximize2 className="w-3 h-3" />
-              <span className="text-[10.5px]">Toàn Cảnh</span>
+              <span className="text-[10px] sm:text-[10.5px]">Toàn Cảnh</span>
             </button>
           )}
         </div>
       </div>
 
       {/* THANH 4 KHỐI CHUNG CƯ NỔI BẬT: BẤM ĐỂ XEM DANH SÁCH TẦNG */}
-      <div className="p-2.5 bg-[#0B1017] border-b border-[#1E293B]">
-        <div className="flex items-center justify-between mb-1.5">
-          <span className="text-[11px] font-mono text-[#C5A880] font-bold uppercase tracking-wider flex items-center gap-1.5">
-            <Building2 className="w-3.5 h-3.5" />
-            4 Khối Chung Cư Phân Khu The Tropical (Nhấp để xem danh sách số tầng):
+      <div className="p-2 sm:p-2.5 bg-[#0B1017] border-b border-[#1E293B]">
+        <div className="flex items-center justify-between mb-1.5 text-xs font-mono">
+          <span className="text-[10.5px] sm:text-[11px] text-[#C5A880] font-bold uppercase tracking-wider flex items-center gap-1.5">
+            <Building2 className="w-3.5 h-3.5 shrink-0" />
+            <span>4 Khối Chung Cư (Bấm để xem số tầng):</span>
           </span>
-          <span className="text-[10.5px] text-gray-400 font-mono hidden sm:inline">
+          <span className="text-[10px] text-gray-400 hidden sm:inline">
             Đang chọn: <strong className="text-white font-bold">{selectedBlock}</strong>
           </span>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5 sm:gap-2">
           {buildings.map(b => (
             <button
               key={b.code}
               type="button"
               onClick={() => handleBlockClick(b.code)}
-              className={`p-2 border text-left transition-all relative group ${
+              className={`p-1.5 sm:p-2 border text-left transition-all relative group cursor-pointer ${
                 b.isCurrent
                   ? 'bg-gradient-to-r from-[#1E293B] to-[#121B27] border-[#C5A880] ring-1 ring-[#C5A880]'
                   : 'bg-[#0E1522] border-[#222E3E] hover:border-gray-500 hover:bg-[#151E2B]'
               }`}
             >
               <div className="flex items-center justify-between">
-                <span className={`font-mono font-bold text-xs ${b.isCurrent ? 'text-[#C5A880]' : 'text-white'}`}>
+                <span className={`font-mono font-bold text-[11px] sm:text-xs ${b.isCurrent ? 'text-[#C5A880]' : 'text-white'}`}>
                   {b.name}
                 </span>
-                <span className="text-[9.5px] px-1.5 py-0.2 bg-[#C5A880]/20 text-[#C5A880] border border-[#C5A880]/40 font-mono font-bold">
-                  {b.floors} Tầng
+                <span className="text-[9px] px-1 py-0.2 bg-[#C5A880]/20 text-[#C5A880] border border-[#C5A880]/40 font-mono font-bold">
+                  {b.floors}T
                 </span>
               </div>
-              <div className="text-[10px] text-gray-400 mt-1 flex items-center justify-between font-mono">
-                <span>{b.units} Căn Hộ</span>
+              <div className="text-[9.5px] sm:text-[10px] text-gray-400 mt-1 flex items-center justify-between font-mono">
+                <span>{b.units} Căn</span>
                 <span className="text-emerald-400 group-hover:translate-x-0.5 transition-transform flex items-center gap-0.5 font-bold">
-                  Xem Số Tầng <ChevronRight className="w-3 h-3" />
+                  Xem Tầng <ChevronRight className="w-3 h-3" />
                 </span>
               </div>
               {b.isOwner && (
-                <div className="text-[9px] text-amber-300 font-mono font-semibold mt-0.5 truncate">
-                  ⭐ Căn Của Bạn (Tầng 30)
+                <div className="text-[8.5px] sm:text-[9px] text-amber-300 font-mono font-semibold mt-0.5 truncate">
+                  ⭐ Căn Của Bạn (T30)
                 </div>
               )}
             </button>
@@ -245,7 +252,7 @@ export default function TropicalCampusSvgModel({
       {/* ========================================================================= */}
       {/* VÙNG MÔ HÌNH KIẾN TRÚC SVG TỰ VẼ 100% (KHÔNG SỬ DỤNG HÌNH ĐÈ)             */}
       {/* ========================================================================= */}
-      <div className="relative w-full h-[500px] sm:h-[550px] bg-[#070B12] overflow-hidden flex items-center justify-center">
+      <div className="relative w-full h-[400px] sm:h-[460px] md:h-[500px] bg-[#070B12] overflow-hidden flex items-center justify-center">
         
         <svg
           viewBox="0 0 1000 640"
@@ -684,72 +691,72 @@ export default function TropicalCampusSvgModel({
       {/* ========================================================================= */}
       {/* BẢNG DANH MỤC 23 TIỆN ÍCH NỘI KHU CHUẨN 100% THEO SƠ ĐỒ CHỦ ĐẦU TƯ         */}
       {/* ========================================================================= */}
-      <div className="p-3 bg-[#0A0E17] border-t border-[#1E293B] space-y-2.5">
-        <div className="flex items-center justify-between">
+      {/* ========================================================================= */}
+      {/* BẢNG DANH MỤC 23 TIỆN ÍCH NỘI KHU CHUẨN 100% THEO SƠ ĐỒ CHỦ ĐẦU TƯ         */}
+      {/* ========================================================================= */}
+      <div className="p-2.5 sm:p-3 bg-[#0A0E17] border-t border-[#1E293B] space-y-2">
+        <div className="flex flex-wrap items-center justify-between gap-1.5">
           <div className="text-xs font-mono font-bold text-white flex items-center gap-1.5">
-            <Sparkles className="w-3.5 h-3.5 text-[#C5A880]" />
-            <span>DANH MỤC 23 TIỆN ÍCH NỘI KHU THE TROPICAL (RÊ CHUỘT ĐỂ ĐỊNH VỊ)</span>
+            <Sparkles className="w-3.5 h-3.5 text-[#C5A880] shrink-0" />
+            <span className="hidden sm:inline">23 TIỆN ÍCH NỘI KHU THE TROPICAL</span>
+            <span className="inline sm:hidden">23 TIỆN ÍCH TROPICAL</span>
           </div>
-          <span className="text-[10.5px] text-gray-400 font-mono">
-            Tổng cộng: {amenities.length} hạng mục tiện ích
+          <span className="text-[10px] text-gray-400 font-mono">
+            Hiển thị: <strong className="text-[#C5A880]">{filteredAmenities.length}</strong>/{amenities.length} mục
           </span>
         </div>
 
-        {/* 2 CỘT DANH MỤC TIỆN ÍCH CHUẨN HÌNH ẢNH */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1.5 font-sans text-xs">
+        {/* BỘ LỌC DANH MỤC TIỆN ÍCH NHANH (RESPONSIVE CHIPS) */}
+        <div className="flex items-center gap-1 overflow-x-auto no-scrollbar py-0.5">
+          {[
+            { id: 'ALL', label: 'Tất Cả', count: amenities.length },
+            { id: 'POOL', label: 'Bể Bơi & Chòi', count: amenities.filter(a => a.category === 'POOL').length },
+            { id: 'PARK', label: 'Cảnh Quan & Vườn', count: amenities.filter(a => a.category === 'PARK').length },
+            { id: 'SPORT', label: 'Sân Thể Thao', count: amenities.filter(a => a.category === 'SPORT').length },
+            { id: 'ACCESS', label: 'Hạ Tầng & Sảnh', count: amenities.filter(a => a.category === 'ACCESS').length },
+          ].map(cat => (
+            <button
+              key={cat.id}
+              type="button"
+              onClick={() => setActiveAmenityCategory(cat.id as any)}
+              className={`px-2 py-0.5 text-[10.5px] sm:text-[11px] font-mono whitespace-nowrap transition-all flex items-center gap-1 shrink-0 ${
+                activeAmenityCategory === cat.id
+                  ? 'bg-[#C5A880] text-black font-bold shadow'
+                  : 'bg-[#0E1522] border border-[#23354C] text-gray-400 hover:text-white hover:border-gray-500'
+              }`}
+            >
+              <span>{cat.label}</span>
+              <span className={`text-[9.5px] px-1 py-0.1 font-bold ${
+                activeAmenityCategory === cat.id ? 'bg-black/20 text-black' : 'text-gray-500'
+              }`}>
+                {cat.count}
+              </span>
+            </button>
+          ))}
+        </div>
+
+        {/* 2 CỘT DANH MỤC TIỆN ÍCH CUỘN VỪA KHUNG (RESPONSIVE TOUCH & HOVER) */}
+        <div className="max-h-[175px] sm:max-h-[210px] overflow-y-auto no-scrollbar pr-0.5 grid grid-cols-1 sm:grid-cols-2 gap-x-3 gap-y-1 font-sans text-xs">
           
-          {/* CỘT TRÁI (01 ĐẾN 12) */}
+          {/* CỘT TRÁI */}
           <div className="space-y-1">
             {colLeftAmenities.map(item => {
               const isHovered = hoveredAmenityId === item.id;
               return (
                 <div
                   key={item.id}
+                  onClick={() => onHoverAmenity(isHovered ? null : item.id)}
                   onMouseEnter={() => onHoverAmenity(item.id)}
                   onMouseLeave={() => onHoverAmenity(null)}
-                  className={`p-1.5 px-2 rounded-sm flex items-center justify-between cursor-pointer transition-all ${
+                  className={`p-1.5 px-2 rounded-sm flex items-center justify-between cursor-pointer transition-all active:scale-[0.99] ${
                     isHovered
                       ? 'bg-[#1C2838] border border-[#C5A880] text-white shadow'
                       : 'bg-[#0E1522] border border-transparent hover:border-gray-600 text-gray-300'
                   }`}
+                  title={`${item.name} - Bấm để xem vị trí`}
                 >
-                  <div className="flex items-center gap-2 min-w-0">
-                    <span className={`w-5 h-5 rounded-full font-mono text-[9px] font-bold flex items-center justify-center shrink-0 ${
-                      isHovered
-                        ? 'bg-[#C5A880] text-black'
-                        : 'bg-black text-white border border-gray-600'
-                    }`}>
-                      {item.displayNumber || item.id}
-                    </span>
-                    <span className="font-medium text-[11.5px] truncate">
-                      {item.name}
-                    </span>
-                  </div>
-                  <span className="text-[10px] font-mono text-cyan-300/80 shrink-0 ml-1">
-                    {item.distance.replace('Cách BS-07: ', '').replace('Liền kề BS-07 ', '')}
-                  </span>
-                </div>
-              );
-            })}
-          </div>
-
-          {/* CỘT PHẢI (13 ĐẾN 16, 01-04 VÀNG, P, D, ▼) */}
-          <div className="space-y-1">
-            {colRightAmenities.map(item => {
-              const isHovered = hoveredAmenityId === item.id;
-              return (
-                <div
-                  key={item.id}
-                  onMouseEnter={() => onHoverAmenity(item.id)}
-                  onMouseLeave={() => onHoverAmenity(null)}
-                  className={`p-1.5 px-2 rounded-sm flex items-center justify-between cursor-pointer transition-all ${
-                    isHovered
-                      ? 'bg-[#1C2838] border border-[#C5A880] text-white shadow'
-                      : 'bg-[#0E1522] border border-transparent hover:border-gray-600 text-gray-300'
-                  }`}
-                >
-                  <div className="flex items-center gap-2 min-w-0">
-                    <span className={`w-5 h-5 rounded-full font-mono text-[9px] font-bold flex items-center justify-center shrink-0 ${
+                  <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
+                    <span className={`w-4.5 h-4.5 sm:w-5 sm:h-5 rounded-full font-mono text-[9px] font-bold flex items-center justify-center shrink-0 ${
                       isHovered
                         ? 'bg-[#C5A880] text-black'
                         : item.isGoldBadge
@@ -758,11 +765,50 @@ export default function TropicalCampusSvgModel({
                     }`}>
                       {item.displayNumber || item.id}
                     </span>
-                    <span className="font-medium text-[11.5px] truncate">
+                    <span className="font-medium text-[11px] sm:text-[11.5px] truncate">
                       {item.name}
                     </span>
                   </div>
-                  <span className="text-[10px] font-mono text-cyan-300/80 shrink-0 ml-1">
+                  <span className="text-[9.5px] sm:text-[10px] font-mono text-cyan-300/80 shrink-0 ml-1">
+                    {item.distance.replace('Cách BS-07: ', '').replace('Liền kề BS-07 ', '')}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* CỘT PHẢI */}
+          <div className="space-y-1">
+            {colRightAmenities.map(item => {
+              const isHovered = hoveredAmenityId === item.id;
+              return (
+                <div
+                  key={item.id}
+                  onClick={() => onHoverAmenity(isHovered ? null : item.id)}
+                  onMouseEnter={() => onHoverAmenity(item.id)}
+                  onMouseLeave={() => onHoverAmenity(null)}
+                  className={`p-1.5 px-2 rounded-sm flex items-center justify-between cursor-pointer transition-all active:scale-[0.99] ${
+                    isHovered
+                      ? 'bg-[#1C2838] border border-[#C5A880] text-white shadow'
+                      : 'bg-[#0E1522] border border-transparent hover:border-gray-600 text-gray-300'
+                  }`}
+                  title={`${item.name} - Bấm để xem vị trí`}
+                >
+                  <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
+                    <span className={`w-4.5 h-4.5 sm:w-5 sm:h-5 rounded-full font-mono text-[9px] font-bold flex items-center justify-center shrink-0 ${
+                      isHovered
+                        ? 'bg-[#C5A880] text-black'
+                        : item.isGoldBadge
+                        ? 'bg-[#F59E0B] text-black font-bold'
+                        : 'bg-black text-white border border-gray-600'
+                    }`}>
+                      {item.displayNumber || item.id}
+                    </span>
+                    <span className="font-medium text-[11px] sm:text-[11.5px] truncate">
+                      {item.name}
+                    </span>
+                  </div>
+                  <span className="text-[9.5px] sm:text-[10px] font-mono text-cyan-300/80 shrink-0 ml-1">
                     {item.distance.replace('Cách BS-07: ', '')}
                   </span>
                 </div>
