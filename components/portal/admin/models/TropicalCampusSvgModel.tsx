@@ -160,90 +160,65 @@ export default function TropicalCampusSvgModel({
 
         {/* Cụm nút điều khiển & Thu phóng */}
         <div className="flex items-center gap-1">
-          <div className="flex items-center gap-1">
-            <button
-              type="button"
-              onClick={() => setZoomLevel(prev => Math.max(0.7, Number((prev - 0.15).toFixed(2))))}
-              className="p-1 bg-[#121A26] hover:bg-[#1A2637] border border-[#223247] text-gray-300 hover:text-white"
-              title="Thu nhỏ"
-            >
-              <ZoomOut className="w-3.5 h-3.5" />
-            </button>
-            <button
-              type="button"
-              onClick={() => setZoomLevel(1)}
-              className="px-2 py-0.5 bg-[#090D14] border border-[#223247] text-[#C5A880] text-[11px] min-w-[44px] text-center hover:bg-[#121A26]"
-              title="Mặc định 100%"
-            >
-              {Math.round(zoomLevel * 100)}%
-            </button>
-            <button
-              type="button"
-              onClick={() => setZoomLevel(prev => Math.min(2.0, Number((prev + 0.15).toFixed(2))))}
-              className="p-1 bg-[#121A26] hover:bg-[#1A2637] border border-[#223247] text-gray-300 hover:text-white"
-              title="Phóng to"
-            >
-              <ZoomIn className="w-3.5 h-3.5" />
-            </button>
-          </div>
-
-          {onOpenZoomModal && (
-            <button
-              type="button"
-              onClick={onOpenZoomModal}
-              className="px-2 py-0.5 bg-[#C5A880] hover:bg-[#D4BC96] text-black font-bold flex items-center gap-1 transition-all ml-0.5"
-              title="Phóng to toàn màn hình"
-            >
-              <Maximize2 className="w-3 h-3" />
-              <span className="text-[10px] sm:text-[10.5px]">Toàn Cảnh</span>
-            </button>
-          )}
+          <button
+            type="button"
+            onClick={() => setZoomLevel(prev => Math.max(0.7, Number((prev - 0.15).toFixed(2))))}
+            className="p-1 bg-[#121A26] hover:bg-[#1A2637] border border-[#223247] text-gray-300 hover:text-white"
+            title="Thu nhỏ"
+          >
+            <ZoomOut className="w-3.5 h-3.5" />
+          </button>
+          <button
+            type="button"
+            onClick={() => setZoomLevel(1)}
+            className="px-2 py-0.5 bg-[#090D14] border border-[#223247] text-[#C5A880] text-[11px] min-w-[44px] text-center hover:bg-[#121A26]"
+            title="Mặc định 100%"
+          >
+            {Math.round(zoomLevel * 100)}%
+          </button>
+          <button
+            type="button"
+            onClick={() => setZoomLevel(prev => Math.min(2.0, Number((prev + 0.15).toFixed(2))))}
+            className="p-1 bg-[#121A26] hover:bg-[#1A2637] border border-[#223247] text-gray-300 hover:text-white"
+            title="Phóng to"
+          >
+            <ZoomIn className="w-3.5 h-3.5" />
+          </button>
         </div>
       </div>
 
-      {/* THANH 4 KHỐI CHUNG CƯ NỔI BẬT: BẤM ĐỂ XEM DANH SÁCH TẦNG */}
-      <div className="p-2 sm:p-2.5 bg-[#0B1017] border-b border-[#1E293B]">
-        <div className="flex items-center justify-between mb-1.5 text-xs font-mono">
-          <span className="text-[10.5px] sm:text-[11px] text-[#C5A880] font-bold uppercase tracking-wider flex items-center gap-1.5">
-            <Building2 className="w-3.5 h-3.5 shrink-0" />
-            <span>4 Khối Chung Cư (Bấm để xem số tầng):</span>
-          </span>
-          <span className="text-[10px] text-gray-400 hidden sm:inline">
-            Đang chọn: <strong className="text-white font-bold">{selectedBlock}</strong>
+      {/* THANH 4 KHỐI CHUNG CƯ NỔI BẬT: BẤM ĐỂ CHỌN & XEM SỐ TẦNG */}
+      <div className="px-2.5 sm:px-3 py-1.5 bg-[#0B1017] border-b border-[#1E293B] flex flex-wrap items-center justify-between gap-1.5 font-mono text-xs">
+        <div className="flex items-center gap-1.5">
+          <Building2 className="w-3.5 h-3.5 text-[#C5A880] shrink-0" />
+          <span className="text-[11px] text-gray-300 font-bold uppercase tracking-wider hidden sm:inline">
+            Chọn Chung Cư:
           </span>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5 sm:gap-2">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5 flex-1 min-w-[280px]">
           {buildings.map(b => (
             <button
               key={b.code}
               type="button"
               onClick={() => handleBlockClick(b.code)}
-              className={`p-1.5 sm:p-2 border text-left transition-all relative group cursor-pointer ${
+              className={`px-2 py-1 border text-left transition-all relative flex items-center justify-between gap-1 ${
                 b.isCurrent
-                  ? 'bg-gradient-to-r from-[#1E293B] to-[#121B27] border-[#C5A880] ring-1 ring-[#C5A880]'
-                  : 'bg-[#0E1522] border-[#222E3E] hover:border-gray-500 hover:bg-[#151E2B]'
+                  ? 'bg-[#182333] border-[#C5A880] text-white shadow ring-1 ring-[#C5A880]/50'
+                  : 'bg-[#0E1522] border-[#222E3E] text-gray-400 hover:text-white hover:border-gray-500'
               }`}
+              title={`${b.name} (${b.floors} tầng, ${b.units} căn) - Bấm để xem số tầng`}
             >
-              <div className="flex items-center justify-between">
-                <span className={`font-mono font-bold text-[11px] sm:text-xs ${b.isCurrent ? 'text-[#C5A880]' : 'text-white'}`}>
+              <div className="flex items-center gap-1 truncate">
+                {b.isOwner && <span className="text-amber-400 text-xs">⭐</span>}
+                <span className={`font-bold text-[11px] sm:text-xs ${b.isCurrent ? 'text-[#C5A880]' : 'text-gray-200'}`}>
                   {b.name}
                 </span>
-                <span className="text-[9px] px-1 py-0.2 bg-[#C5A880]/20 text-[#C5A880] border border-[#C5A880]/40 font-mono font-bold">
-                  {b.floors}T
-                </span>
+                <span className="text-[10px] text-gray-400">({b.floors}T)</span>
               </div>
-              <div className="text-[9.5px] sm:text-[10px] text-gray-400 mt-1 flex items-center justify-between font-mono">
-                <span>{b.units} Căn</span>
-                <span className="text-emerald-400 group-hover:translate-x-0.5 transition-transform flex items-center gap-0.5 font-bold">
-                  Xem Tầng <ChevronRight className="w-3 h-3" />
-                </span>
-              </div>
-              {b.isOwner && (
-                <div className="text-[8.5px] sm:text-[9px] text-amber-300 font-mono font-semibold mt-0.5 truncate">
-                  ⭐ Căn Của Bạn (T30)
-                </div>
-              )}
+              <span className="text-[9.5px] font-mono text-emerald-400 font-bold shrink-0 flex items-center gap-0.5">
+                Xem Tầng ➔
+              </span>
             </button>
           ))}
         </div>
