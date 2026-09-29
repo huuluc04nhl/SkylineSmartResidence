@@ -12,6 +12,8 @@ interface TropicalCampusSvgModelProps {
   selectedBlock: string;
   onSelectBlock: (blockCode: any) => void;
   onSelectBlockAndShowFloors?: (blockCode: any) => void;
+  selectedAmenityId?: string | null;
+  onSelectAmenity?: (id: string | null) => void;
   hoveredAmenityId: string | null;
   onHoverAmenity: (id: string | null) => void;
   onOpenZoomModal?: () => void;
@@ -22,6 +24,8 @@ export default function TropicalCampusSvgModel({
   selectedBlock,
   onSelectBlock,
   onSelectBlockAndShowFloors,
+  selectedAmenityId,
+  onSelectAmenity,
   hoveredAmenityId,
   onHoverAmenity,
   onOpenZoomModal
@@ -29,7 +33,7 @@ export default function TropicalCampusSvgModel({
   const [zoomLevel, setZoomLevel] = useState<number>(1);
   const [activeAmenityCategory, setActiveAmenityCategory] = useState<'ALL' | 'POOL' | 'PARK' | 'SPORT' | 'ACCESS'>('ALL');
 
-  const activeAmenity = amenities.find(a => a.id === hoveredAmenityId);
+  const activeAmenity = amenities.find(a => a.id === (hoveredAmenityId || selectedAmenityId));
 
   // 4 Khối Chung Cư chuẩn quy hoạch The Tropical (Tọa độ tự vẽ chuẩn kiến trúc 2.5D)
   const buildings = [
@@ -464,28 +468,40 @@ export default function TropicalCampusSvgModel({
 
 
               {/* Nút Call To Action chuyển tới Danh Sách Số Tầng */}
-              <rect
-                x={b.svgX + 10}
-                y={b.svgY + b.svgH - 26}
-                width={b.svgW - 20}
-                height={20}
-                rx="3"
-                fill={b.isCurrent ? '#C5A880' : '#1E293B'}
-                stroke={b.isCurrent ? '#FFFFFF' : '#334155'}
-                strokeWidth="1"
-                className="transition-all group-hover:brightness-125"
-              />
-              <text
-                x={b.svgX + b.svgW / 2}
-                y={b.svgY + b.svgH - 13}
-                fill={b.isCurrent ? '#000000' : '#E2E8F0'}
-                fontSize="9.5"
-                fontWeight="bold"
-                fontFamily="monospace"
-                textAnchor="middle"
+              <g
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (onSelectBlockAndShowFloors) {
+                    onSelectBlockAndShowFloors(b.code);
+                  } else {
+                    handleBlockClick(b.code);
+                  }
+                }}
+                className="cursor-pointer"
               >
-                {b.isCurrent ? `★ XEM ${b.floors} TẦNG & CĂN HỘ ➔` : `Bấm Xem ${b.floors} Tầng ➔`}
-              </text>
+                <rect
+                  x={b.svgX + 10}
+                  y={b.svgY + b.svgH - 26}
+                  width={b.svgW - 20}
+                  height={20}
+                  rx="3"
+                  fill={b.isCurrent ? '#C5A880' : '#1E293B'}
+                  stroke={b.isCurrent ? '#FFFFFF' : '#334155'}
+                  strokeWidth="1"
+                  className="transition-all hover:brightness-125"
+                />
+                <text
+                  x={b.svgX + b.svgW / 2}
+                  y={b.svgY + b.svgH - 13}
+                  fill={b.isCurrent ? '#000000' : '#E2E8F0'}
+                  fontSize="9.5"
+                  fontWeight="bold"
+                  fontFamily="monospace"
+                  textAnchor="middle"
+                >
+                  {b.isCurrent ? `★ XEM ${b.floors} TẦNG & CĂN HỘ ➔` : `Bấm Xem ${b.floors} Tầng ➔`}
+                </text>
+              </g>
             </g>
           ))}
 
@@ -494,7 +510,9 @@ export default function TropicalCampusSvgModel({
           {/* ===================================================================== */}
           {amenities.map(item => {
             const pos = AMENITY_SVG_POSITIONS[item.id] || { x: item.x * 9.5, y: item.y * 6.0 };
+            const isSelected = selectedAmenityId === item.id;
             const isHovered = hoveredAmenityId === item.id;
+            const isHighlighted = isSelected || isHovered;
             const isGold = item.isGoldBadge;
             const isSpecialCode = item.id === 'P' || item.id === 'D' || item.id === 'H';
 
@@ -503,16 +521,26 @@ export default function TropicalCampusSvgModel({
                 key={item.id}
                 transform={`translate(${pos.x}, ${pos.y})`}
                 className="cursor-pointer"
+                onClick={() => onSelectAmenity?.(isSelected ? null : item.id)}
                 onMouseEnter={() => onHoverAmenity(item.id)}
                 onMouseLeave={() => onHoverAmenity(null)}
               >
-                {/* Vòng pulse phát sáng khi hover */}
-                {isHovered && (
+                {/* Vòng pulse phát sáng khi selected hoặc hover */}
+                {isHighlighted && (
                   <circle
-                    r="18"
-                    fill="#C5A880"
-                    opacity="0.4"
+                    r={isSelected ? 22 : 18}
+                    fill={isSelected ? '#F59E0B' : '#C5A880'}
+                    opacity={isSelected ? 0.6 : 0.4}
                     className="animate-ping"
+                  />
+                )}
+                {isSelected && (
+                  <circle
+                    r="15"
+                    fill="none"
+                    stroke="#FFFFFF"
+                    strokeWidth="2"
+                    strokeDasharray="3 3"
                   />
                 )}
 
@@ -520,35 +548,35 @@ export default function TropicalCampusSvgModel({
                 <circle
                   cx="1"
                   cy="2"
-                  r={isHovered ? 12 : 9}
+                  r={isHighlighted ? 13 : 9}
                   fill="#000000"
-                  opacity="0.6"
+                  opacity="0.7"
                 />
 
-                {/* Vòng tròn ghim chuẩn phong cách Chủ Đầu Tư:
-                    - Số tròn đen viền trắng (01 đến 16)
-                    - Số tròn vàng viền vàng kim (01 đến 04 vàng)
-                    - Ký hiệu chữ P, D, ▼
-                */}
+                {/* Vòng tròn ghim */}
                 <circle
-                  r={isHovered ? 12 : 9}
+                  r={isHighlighted ? 13 : 9}
                   fill={
-                    isHovered
+                    isSelected
+                      ? '#F59E0B'
+                      : isHovered
                       ? '#C5A880'
                       : isGold
-                      ? '#F59E0B'
+                      ? '#D97706'
                       : isSpecialCode
                       ? '#1E293B'
                       : '#000000'
                   }
                   stroke={
-                    isHovered
+                    isSelected
+                      ? '#FFFFFF'
+                      : isHovered
                       ? '#FFFFFF'
                       : isGold
                       ? '#FEF08A'
                       : '#94A3B8'
                   }
-                  strokeWidth={isHovered ? 2 : 1.2}
+                  strokeWidth={isHighlighted ? 2.2 : 1.2}
                   className="transition-all duration-150"
                 />
 
@@ -556,13 +584,13 @@ export default function TropicalCampusSvgModel({
                 <text
                   y="3"
                   fill={
-                    isHovered
+                    isHighlighted
                       ? '#000000'
                       : isGold
                       ? '#000000'
                       : '#FFFFFF'
                   }
-                  fontSize={isHovered ? 10 : 8}
+                  fontSize={isHighlighted ? 10.5 : 8}
                   fontWeight="bold"
                   fontFamily="monospace"
                   textAnchor="middle"
@@ -647,23 +675,29 @@ export default function TropicalCampusSvgModel({
           {/* CỘT TRÁI */}
           <div className="space-y-1">
             {colLeftAmenities.map(item => {
+              const isSelected = selectedAmenityId === item.id;
               const isHovered = hoveredAmenityId === item.id;
+              const isHighlighted = isSelected || isHovered;
               return (
                 <div
                   key={item.id}
-                  onClick={() => onHoverAmenity(isHovered ? null : item.id)}
+                  onClick={() => onSelectAmenity?.(isSelected ? null : item.id)}
                   onMouseEnter={() => onHoverAmenity(item.id)}
                   onMouseLeave={() => onHoverAmenity(null)}
                   className={`p-1.5 px-2 rounded-sm flex items-center justify-between cursor-pointer transition-all active:scale-[0.99] ${
-                    isHovered
+                    isSelected
+                      ? 'bg-[#223348] border border-[#F59E0B] text-white shadow-md ring-1 ring-[#F59E0B]/50'
+                      : isHovered
                       ? 'bg-[#1C2838] border border-[#C5A880] text-white shadow'
                       : 'bg-[#0E1522] border border-transparent hover:border-gray-600 text-gray-300'
                   }`}
-                  title={`${item.name} - Bấm để xem vị trí`}
+                  title={`${item.name} - Bấm để chọn xem chi tiết`}
                 >
                   <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
                     <span className={`w-4.5 h-4.5 sm:w-5 sm:h-5 rounded-full font-mono text-[9px] font-bold flex items-center justify-center shrink-0 ${
-                      isHovered
+                      isSelected
+                        ? 'bg-[#F59E0B] text-black ring-1 ring-white'
+                        : isHovered
                         ? 'bg-[#C5A880] text-black'
                         : item.isGoldBadge
                         ? 'bg-[#F59E0B] text-black font-bold'
@@ -686,23 +720,29 @@ export default function TropicalCampusSvgModel({
           {/* CỘT PHẢI */}
           <div className="space-y-1">
             {colRightAmenities.map(item => {
+              const isSelected = selectedAmenityId === item.id;
               const isHovered = hoveredAmenityId === item.id;
+              const isHighlighted = isSelected || isHovered;
               return (
                 <div
                   key={item.id}
-                  onClick={() => onHoverAmenity(isHovered ? null : item.id)}
+                  onClick={() => onSelectAmenity?.(isSelected ? null : item.id)}
                   onMouseEnter={() => onHoverAmenity(item.id)}
                   onMouseLeave={() => onHoverAmenity(null)}
                   className={`p-1.5 px-2 rounded-sm flex items-center justify-between cursor-pointer transition-all active:scale-[0.99] ${
-                    isHovered
+                    isSelected
+                      ? 'bg-[#223348] border border-[#F59E0B] text-white shadow-md ring-1 ring-[#F59E0B]/50'
+                      : isHovered
                       ? 'bg-[#1C2838] border border-[#C5A880] text-white shadow'
                       : 'bg-[#0E1522] border border-transparent hover:border-gray-600 text-gray-300'
                   }`}
-                  title={`${item.name} - Bấm để xem vị trí`}
+                  title={`${item.name} - Bấm để chọn xem chi tiết`}
                 >
                   <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
                     <span className={`w-4.5 h-4.5 sm:w-5 sm:h-5 rounded-full font-mono text-[9px] font-bold flex items-center justify-center shrink-0 ${
-                      isHovered
+                      isSelected
+                        ? 'bg-[#F59E0B] text-black ring-1 ring-white'
+                        : isHovered
                         ? 'bg-[#C5A880] text-black'
                         : item.isGoldBadge
                         ? 'bg-[#F59E0B] text-black font-bold'

@@ -5,12 +5,16 @@ import { Map, Compass, Maximize2, Sparkles, Navigation, ChevronRight, Building2,
 
 interface MacroCitySvgModelProps {
   selectedBlock: string;
+  selectedAmenityId?: string | null;
+  onSelectAmenity?: (id: string | null) => void;
   onSelectTropical?: () => void;
   onOpenZoomModal?: () => void;
 }
 
 export default function MacroCitySvgModel({
   selectedBlock,
+  selectedAmenityId,
+  onSelectAmenity,
   onSelectTropical,
   onOpenZoomModal
 }: MacroCitySvgModelProps) {
@@ -139,8 +143,25 @@ export default function MacroCitySvgModel({
           {/* ================================================================= */}
           {/* TRÁI TIM ĐÔ THỊ: ĐẠI CÔNG VIÊN 36HA & BIỂN HỒ CÁT TRẮNG           */}
           {/* ================================================================= */}
-          <g className="cursor-pointer group" onMouseEnter={() => setHoveredDistrict('PARK_36HA')} onMouseLeave={() => setHoveredDistrict(null)}>
-            <ellipse cx="640" cy="330" rx="145" ry="110" fill="url(#macroParkGrad)" stroke="#10B981" strokeWidth="2.5" />
+          {/* ================================================================= */}
+          {/* TRÁI TIM ĐÔ THỊ: ĐẠI CÔNG VIÊN 36HA & BIỂN HỒ CÁT TRẮNG           */}
+          {/* ================================================================= */}
+          <g
+            className="cursor-pointer group"
+            onClick={() => onSelectAmenity && onSelectAmenity(selectedAmenityId === 'R-02' ? null : 'R-02')}
+            onMouseEnter={() => setHoveredDistrict('PARK_36HA')}
+            onMouseLeave={() => setHoveredDistrict(null)}
+          >
+            <ellipse
+              cx="640"
+              cy="330"
+              rx="145"
+              ry="110"
+              fill="url(#macroParkGrad)"
+              stroke={selectedAmenityId === 'R-02' ? '#F59E0B' : '#10B981'}
+              strokeWidth={selectedAmenityId === 'R-02' ? '4' : '2.5'}
+              className="transition-all"
+            />
             <ellipse cx="640" cy="330" rx="85" ry="60" fill="url(#macroLakeGrad)" stroke="#E0F2FE" strokeWidth="1.5" />
             <text x="640" y="325" fill="#FFFFFF" fontSize="13" fontWeight="bold" fontFamily="sans-serif" textAnchor="middle" filter="drop-shadow(0 2px 4px #000)">
               ĐẠI CÔNG VIÊN 36HA
@@ -148,6 +169,11 @@ export default function MacroCitySvgModel({
             <text x="640" y="345" fill="#E0F2FE" fontSize="10" fontFamily="monospace" textAnchor="middle">
               Biển Hồ Cát Trắng Nhân Tạo
             </text>
+            {selectedAmenityId === 'R-02' && (
+              <text x="640" y="365" fill="#FEF08A" fontSize="9.5" fontWeight="bold" fontFamily="monospace" textAnchor="middle">
+                ● ĐANG XEM HỒ SƠ QUY HOẠCH
+              </text>
+            )}
           </g>
 
           {/* ================================================================= */}
@@ -175,10 +201,25 @@ export default function MacroCitySvgModel({
           </g>
 
           {/* Khu The Manhattan & Manhattan Glory (Biệt thự thấp tầng & Bến du thuyền) */}
-          <g className="cursor-pointer group" onMouseEnter={() => setHoveredDistrict('MANHATTAN')} onMouseLeave={() => setHoveredDistrict(null)}>
-            <polygon points="500,470 780,440 810,570 520,590" fill="#0C1523" stroke="#334155" strokeWidth="1.5" />
+          <g
+            className="cursor-pointer group"
+            onClick={() => onSelectAmenity && onSelectAmenity(selectedAmenityId === 'R-08' ? null : 'R-08')}
+            onMouseEnter={() => setHoveredDistrict('MANHATTAN')}
+            onMouseLeave={() => setHoveredDistrict(null)}
+          >
+            <polygon
+              points="500,470 780,440 810,570 520,590"
+              fill={selectedAmenityId === 'R-08' ? '#1E293B' : '#0C1523'}
+              stroke={selectedAmenityId === 'R-08' ? '#F59E0B' : '#334155'}
+              strokeWidth={selectedAmenityId === 'R-08' ? '2.5' : '1.5'}
+            />
             <text x="650" y="525" fill="#E2E8F0" fontSize="12" fontWeight="bold" textAnchor="middle">THE MANHATTAN GLORY</text>
             <text x="650" y="545" fill="#94A3B8" fontSize="9.5" fontFamily="monospace" textAnchor="middle">Bến Du Thuyền Thượng Lưu & Biệt Thự Ven Sông</text>
+            {selectedAmenityId === 'R-08' && (
+              <text x="650" y="562" fill="#FEF08A" fontSize="9" fontWeight="bold" fontFamily="monospace" textAnchor="middle">
+                ● ĐANG CHỌN BẾN THUYỀN GLORY
+              </text>
+            )}
           </g>
 
           {/* ================================================================= */}
@@ -244,22 +285,61 @@ export default function MacroCitySvgModel({
           {/* CÁC ĐẠI TIỆN ÍCH BIỂU TƯỢNG (VINCOM, VINMEC, VINSCHOOL)            */}
           {/* ================================================================= */}
           {/* TTTM Vincom Mega Mall (Liền kề The Beverly Solari) */}
-          <g className="cursor-pointer">
-            <rect x="420" y="410" width="70" height="42" rx="4" fill="#881337" stroke="#F43F5E" strokeWidth="1.5" />
+          <g
+            className="cursor-pointer group"
+            onClick={() => onSelectAmenity && onSelectAmenity(selectedAmenityId === 'R-01' ? null : 'R-01')}
+          >
+            <rect
+              x="420"
+              y="410"
+              width="70"
+              height="42"
+              rx="4"
+              fill={selectedAmenityId === 'R-01' ? '#BE123C' : '#881337'}
+              stroke={selectedAmenityId === 'R-01' ? '#FDE047' : '#F43F5E'}
+              strokeWidth={selectedAmenityId === 'R-01' ? '2.5' : '1.5'}
+              className="group-hover:brightness-125 transition-all"
+            />
             <text x="455" y="428" fill="#FFFFFF" fontSize="9" fontWeight="bold" textAnchor="middle">VINCOM</text>
             <text x="455" y="442" fill="#FECDD3" fontSize="7.5" fontFamily="monospace" textAnchor="middle">Mega Mall</text>
           </g>
 
           {/* Bệnh viện Vinmec */}
-          <g className="cursor-pointer">
-            <rect x="330" y="500" width="70" height="38" rx="4" fill="#450A0A" stroke="#EF4444" strokeWidth="1.5" />
+          <g
+            className="cursor-pointer group"
+            onClick={() => onSelectAmenity && onSelectAmenity(selectedAmenityId === 'R-06' ? null : 'R-06')}
+          >
+            <rect
+              x="330"
+              y="500"
+              width="70"
+              height="38"
+              rx="4"
+              fill={selectedAmenityId === 'R-06' ? '#991B1B' : '#450A0A'}
+              stroke={selectedAmenityId === 'R-06' ? '#FDE047' : '#EF4444'}
+              strokeWidth={selectedAmenityId === 'R-06' ? '2.5' : '1.5'}
+              className="group-hover:brightness-125 transition-all"
+            />
             <text x="365" y="518" fill="#FFFFFF" fontSize="9" fontWeight="bold" textAnchor="middle">VINMEC</text>
             <text x="365" y="530" fill="#FCA5A5" fontSize="7.5" fontFamily="monospace" textAnchor="middle">Bệnh Viện QT</text>
           </g>
 
           {/* Trường Vinschool */}
-          <g className="cursor-pointer">
-            <rect x="390" y="190" width="70" height="36" rx="4" fill="#0C4A6E" stroke="#38BDF8" strokeWidth="1.5" />
+          <g
+            className="cursor-pointer group"
+            onClick={() => onSelectAmenity && onSelectAmenity(selectedAmenityId === 'R-07' ? null : 'R-07')}
+          >
+            <rect
+              x="390"
+              y="190"
+              width="70"
+              height="36"
+              rx="4"
+              fill={selectedAmenityId === 'R-07' ? '#0369A1' : '#0C4A6E'}
+              stroke={selectedAmenityId === 'R-07' ? '#FDE047' : '#38BDF8'}
+              strokeWidth={selectedAmenityId === 'R-07' ? '2.5' : '1.5'}
+              className="group-hover:brightness-125 transition-all"
+            />
             <text x="425" y="207" fill="#FFFFFF" fontSize="9" fontWeight="bold" textAnchor="middle">VINSCHOOL</text>
             <text x="425" y="219" fill="#BAE6FD" fontSize="7.5" fontFamily="monospace" textAnchor="middle">Liên Cấp K-12</text>
           </g>

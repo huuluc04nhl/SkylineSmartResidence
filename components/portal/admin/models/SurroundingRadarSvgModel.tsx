@@ -10,6 +10,8 @@ import { SurroundingAmenity } from '../AdminBuildingApartmentManager';
 interface SurroundingRadarSvgModelProps {
   amenities: SurroundingAmenity[];
   selectedBlock: string;
+  selectedAmenityId?: string | null;
+  onSelectAmenity?: (id: string | null) => void;
   hoveredAmenityId: string | null;
   onHoverAmenity: (id: string | null) => void;
   onOpenZoomModal?: () => void;
@@ -18,6 +20,8 @@ interface SurroundingRadarSvgModelProps {
 export default function SurroundingRadarSvgModel({
   amenities,
   selectedBlock,
+  selectedAmenityId,
+  onSelectAmenity,
   hoveredAmenityId,
   onHoverAmenity,
   onOpenZoomModal
@@ -39,8 +43,8 @@ export default function SurroundingRadarSvgModel({
     'SUR-08': { x: 680, y: 280, icon: Building2, color: '#C5A880', label: 'Tháp Biểu Tượng 45T' }, // ~480m Đông Bắc
   };
 
-  const activeAmenity = amenities.find(a => a.id === hoveredAmenityId);
-  const activeCoord = hoveredAmenityId ? AMENITY_COORDS[hoveredAmenityId] : null;
+  const activeAmenity = amenities.find(a => a.id === (hoveredAmenityId || selectedAmenityId));
+  const activeCoord = (hoveredAmenityId || selectedAmenityId) ? AMENITY_COORDS[hoveredAmenityId || selectedAmenityId || ''] : null;
 
   return (
     <div className="relative bg-[#06090F] border border-[#1E293B] rounded-none overflow-hidden select-none shadow-2xl flex flex-col">
@@ -278,22 +282,28 @@ export default function SurroundingRadarSvgModel({
           {/* 7. TỰ VẼ 8 NODE ĐẠI TIỆN ÍCH XUNG QUANH */}
           {amenities.map((item) => {
             const coord = AMENITY_COORDS[item.id] || { x: 500, y: 200, color: '#C5A880', label: item.name };
+            const isSelected = selectedAmenityId === item.id;
             const isHovered = hoveredAmenityId === item.id;
+            const isHighlighted = isSelected || isHovered;
 
             return (
               <g
                 key={item.id}
                 transform={`translate(${coord.x}, ${coord.y})`}
+                onClick={() => onSelectAmenity?.(isSelected ? null : item.id)}
                 onMouseEnter={() => onHoverAmenity(item.id)}
                 onMouseLeave={() => onHoverAmenity(null)}
                 className="cursor-pointer group"
               >
-                {/* Vòng phát sáng khi rê chuột */}
-                {isHovered && (
+                {/* Vòng phát sáng khi selected hoặc rê chuột */}
+                {isHighlighted && (
                   <>
-                    <circle cx="0" cy="0" r="32" fill="none" stroke={coord.color} strokeWidth="2" opacity="0.8" className="animate-ping" />
-                    <circle cx="0" cy="0" r="24" fill={coord.color} fillOpacity="0.25" stroke={coord.color} strokeWidth="1.5" />
+                    <circle cx="0" cy="0" r="32" fill="none" stroke={isSelected ? '#F59E0B' : coord.color} strokeWidth="2" opacity="0.8" className="animate-ping" />
+                    <circle cx="0" cy="0" r="24" fill={coord.color} fillOpacity="0.3" stroke={coord.color} strokeWidth="1.5" />
                   </>
+                )}
+                {isSelected && (
+                  <circle cx="0" cy="0" r="20" fill="none" stroke="#FFFFFF" strokeWidth="2" strokeDasharray="3 3" />
                 )}
 
                 {/* Node kiến trúc đại diện */}
@@ -303,9 +313,9 @@ export default function SurroundingRadarSvgModel({
                   width="32"
                   height="32"
                   rx="6"
-                  fill={isHovered ? coord.color : '#0D1522'}
-                  stroke={isHovered ? '#FFFFFF' : coord.color}
-                  strokeWidth={isHovered ? 2.5 : 1.5}
+                  fill={isHighlighted ? (isSelected ? '#F59E0B' : coord.color) : '#0D1522'}
+                  stroke={isHighlighted ? '#FFFFFF' : coord.color}
+                  strokeWidth={isHighlighted ? 2.5 : 1.5}
                   className="transition-all duration-200 shadow-xl"
                 />
 
@@ -313,7 +323,7 @@ export default function SurroundingRadarSvgModel({
                 <text
                   x="0"
                   y="4"
-                  fill={isHovered ? '#000000' : '#FFFFFF'}
+                  fill={isHighlighted ? '#000000' : '#FFFFFF'}
                   fontSize="9"
                   fontFamily="monospace"
                   fontWeight="bold"
@@ -330,9 +340,9 @@ export default function SurroundingRadarSvgModel({
                     width="130"
                     height="18"
                     rx="3"
-                    fill={isHovered ? '#0B111A' : '#070D16'}
-                    stroke={isHovered ? coord.color : '#233246'}
-                    strokeWidth={isHovered ? 1.5 : 1}
+                    fill={isHighlighted ? '#0B111A' : '#070D16'}
+                    stroke={isSelected ? '#F59E0B' : isHovered ? coord.color : '#233246'}
+                    strokeWidth={isHighlighted ? 1.5 : 1}
                   />
                   <text
                     x="0"
