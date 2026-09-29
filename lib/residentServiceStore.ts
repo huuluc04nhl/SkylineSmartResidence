@@ -5,11 +5,25 @@
  * - Cho thuê người giúp việc & Dọn dẹp căn hộ theo giờ
  * - Thuê Huấn luyện viên cá nhân PT Bơi lội (Sky Pool Tầng 25) & PT Gym (Tầng 3)
  * - Chăm sóc xe & Rửa xe cao cấp tại Hầm B2
+ * - Spa & Wellness (Massage thư giãn, Chăm sóc da mặt, Xông hơi muối đá)
+ * - Tổ Chức Tiệc & BBQ Sân Thượng (Đặt khu bếp nướng tầng mái)
+ * - Nhà Hàng & Suất Ăn (Đặt bàn nhà hàng, Giao suất ăn tận căn hộ)
+ * - Di Chuyển Thông Minh (VinBus, Xe điện nội khu, Đưa đón sân bay)
+ * - Đặt Sân Thể Thao (Sân tennis, Sân bóng rổ, Yoga, Sân đa năng)
  */
 
 import { addServiceChargeToBill } from './billingStore';
 
-export type ServiceCategory = 'LAUNDRY' | 'HOUSEKEEPING' | 'PERSONAL_TRAINER' | 'CAR_CARE';
+export type ServiceCategory =
+  | 'LAUNDRY'
+  | 'HOUSEKEEPING'
+  | 'PERSONAL_TRAINER'
+  | 'CAR_CARE'
+  | 'SPA_WELLNESS'
+  | 'PARTY_BBQ'
+  | 'RESTAURANT'
+  | 'TRANSPORT'
+  | 'SPORTS_COURT';
 
 export interface ServicePackageOption {
   id: string;
@@ -242,6 +256,243 @@ export const RESIDENT_SERVICES_CATALOG: ResidentServiceItem[] = [
       },
     ],
   },
+
+  // 5. SPA & WELLNESS — Phòng Xông Hơi Đá Muối & Massage Cao Cấp Tầng 3
+  {
+    id: 'srv-spa-wellness',
+    name: 'Spa & Wellness Cao Cấp',
+    category: 'SPA_WELLNESS',
+    tagline: 'Massage thư giãn & xông hơi muối đá tầng 3',
+    description: 'Trải nghiệm thư giãn 5 sao ngay trong khuôn viên Skyline. Đội ngũ chuyên viên spa được đào tạo bài bản tại Thái Lan, sử dụng tinh dầu hữu cơ thiên nhiên và đá nóng Himalaya.',
+    rating: 4.97,
+    reviewCount: 163,
+    location: 'Tầng 3 (Khu Wellness & Spa)',
+    imageUrl: 'https://images.unsplash.com/photo-1540555700478-4be289fbecef?w=600&auto=format&fit=crop&q=80',
+    badge: 'Được Yêu Thích Nhất',
+    operatingHours: '09:00 - 21:00 Hàng Ngày',
+    packages: [
+      {
+        id: 'pkg-spa-massage-60',
+        name: 'Massage Thư Giãn Toàn Thân (60 Phút)',
+        unit: 'lần',
+        unitPrice: 450000,
+        description: 'Kết hợp kỹ thuật massage Thụy Điển & Balinese, giảm căng cơ, cải thiện tuần hoàn máu.',
+        estimatedDuration: '60 phút',
+      },
+      {
+        id: 'pkg-spa-massage-90',
+        name: 'Massage Đá Nóng Himalaya Cao Cấp (90 Phút)',
+        unit: 'lần',
+        unitPrice: 680000,
+        description: 'Đá nóng basalt kết hợp tinh dầu sả gừng giải độc, phục hồi năng lượng sâu cơ bắp sau ngày dài.',
+        estimatedDuration: '90 phút',
+      },
+      {
+        id: 'pkg-spa-sauna-family',
+        name: 'Xông Hơi Đá Muối Phòng Gia Đình (2 Người)',
+        unit: 'ca',
+        unitPrice: 550000,
+        description: 'Phòng xông riêng tư cho cặp đôi/gia đình. Đá muối Himalaya 48°C, tinh dầu thảo mộc khử độc.',
+        estimatedDuration: '60 phút/ca',
+      },
+      {
+        id: 'pkg-spa-facial',
+        name: 'Chăm Sóc Da Mặt Chuyên Sâu (Facial Treatment)',
+        unit: 'lần',
+        unitPrice: 380000,
+        description: 'Làm sạch sâu lỗ chân lông, đắp mặt nạ collagen thủy phân, tăng độ ẩm và đàn hồi da.',
+        estimatedDuration: '60 phút',
+      },
+    ],
+  },
+
+  // 6. TỔ CHỨC TIỆC & BBQ SÂN THƯỢNG — Khu BBQ Tầng 25
+  {
+    id: 'srv-party-bbq',
+    name: 'Tổ Chức Tiệc & BBQ Sân Thượng',
+    category: 'PARTY_BBQ',
+    tagline: 'Đặt khu bếp nướng ngoài trời tầng 25 đẳng cấp resort',
+    description: 'Khu vườn tiệc BBQ cao cấp tầng 25 với view thoáng toàn khu Vinhomes Grand Park. Trang bị bếp Weber chuyên nghiệp, bàn ghế ngoại thất cao cấp, ánh đèn chuỗi lung linh & đội phục vụ dọn dẹp sau tiệc.',
+    rating: 4.93,
+    reviewCount: 77,
+    location: 'Tầng 25 (Vườn Tiệc Nướng Sân Thượng)',
+    imageUrl: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=600&auto=format&fit=crop&q=80',
+    badge: 'View Panorama 360°',
+    operatingHours: '17:00 - 23:00 Thứ 2 → CN',
+    packages: [
+      {
+        id: 'pkg-bbq-ca-toi',
+        name: 'Ca Tiệc Tối 3 Giờ (Khu Bếp Weber Set A)',
+        unit: 'ca',
+        unitPrice: 600000,
+        description: 'Set bếp Weber, bàn 8 người, khăn trải, dao dĩa inox, đội dọn dẹp sau tiệc. Tối đa 8 khách.',
+        estimatedDuration: 'Ca 3 giờ (17:00-20:00 hoặc 20:00-23:00)',
+      },
+      {
+        id: 'pkg-bbq-premium',
+        name: 'Ca Tiệc Premium (Khu Bếp Lớn 15 Người)',
+        unit: 'ca',
+        unitPrice: 1200000,
+        description: 'Khu bếp liên hoàn 2 bếp Weber lớn, bàn tiệc 15 người, hệ thống loa ngoài trời, cắm hoa trang trí.',
+        estimatedDuration: 'Ca 3 giờ (Đặt tối thiểu 48 giờ trước)',
+      },
+      {
+        id: 'pkg-bbq-kids-day',
+        name: 'Tiệc Ban Ngày Trẻ Em & Dã Ngoại Gia Đình',
+        unit: 'ca',
+        unitPrice: 450000,
+        description: 'Sân cỏ đa năng & khu bếp ban ngày, phù hợp sinh nhật trẻ em, picnic gia đình & đội nhóm.',
+        estimatedDuration: 'Ca 2.5 giờ (10:00-12:30)',
+      },
+    ],
+  },
+
+  // 7. NHÀ HÀNG & SUẤT ĂN — Skyline Kitchen & Giao Tận Căn Hộ
+  {
+    id: 'srv-restaurant',
+    name: 'Nhà Hàng & Giao Suất Ăn Tận Cửa',
+    category: 'RESTAURANT',
+    tagline: 'Đặt bàn nhà hàng Skyline & giao cơm bếp Việt tận căn hộ',
+    description: 'Nhà hàng Skyline Kitchen & Café phục vụ ẩm thực Á-Âu tinh tế ngay tầng 1. Giao suất ăn đóng gói tươi nóng từ bếp trưởng chuyên nghiệp, giao trong 30 phút, đúng giờ tận cửa căn hộ.',
+    rating: 4.88,
+    reviewCount: 211,
+    location: 'Tầng 1 (Skyline Kitchen & Café)',
+    imageUrl: 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=600&auto=format&fit=crop&q=80',
+    badge: 'Giao Trong 30 Phút',
+    operatingHours: '06:30 - 22:00 Hàng Ngày',
+    packages: [
+      {
+        id: 'pkg-rest-combo-lunch',
+        name: 'Combo Cơm Phần Trưa Bếp Việt (1 Người)',
+        unit: 'phần',
+        unitPrice: 85000,
+        description: 'Cơm trắng + 1 món mặn + canh + tráng miệng. Giao nóng đến cửa căn hộ trong 30 phút.',
+        estimatedDuration: 'Giao trong 30 phút',
+      },
+      {
+        id: 'pkg-rest-dim-sum',
+        name: 'Set Dim Sum Sáng (2 Người)',
+        unit: 'set',
+        unitPrice: 160000,
+        description: 'Trà Tàu nóng + 5 loại bánh dim sum đặc trưng Hồng Kông từ bếp trưởng 5 sao.',
+        estimatedDuration: 'Giao trong 25 phút',
+      },
+      {
+        id: 'pkg-rest-book-table',
+        name: 'Đặt Bàn Nhà Hàng (Tối đa 6 người)',
+        unit: 'bàn',
+        unitPrice: 0,
+        description: 'Đặt bàn ưu tiên tại nhà hàng Skyline Kitchen. Miễn phí giữ chỗ. Menu A-la-carte tại chỗ.',
+        estimatedDuration: 'Liên hệ xác nhận khung giờ',
+      },
+      {
+        id: 'pkg-rest-amenities-basket',
+        name: 'Giỏ Quà Trái Cây Cao Cấp & Bánh Ngọt Tầng Cao',
+        unit: 'giỏ',
+        unitPrice: 280000,
+        description: 'Hoa quả nhập khẩu Hàn Quốc tươi, bánh Macaron & Éclair từ bếp bánh của nhà hàng. Phù hợp tặng quà cư dân mới.',
+        estimatedDuration: 'Giao trong 45 phút',
+      },
+    ],
+  },
+
+  // 8. DI CHUYỂN THÔNG MINH — VinBus, Xe điện, Đưa đón sân bay
+  {
+    id: 'srv-transport',
+    name: 'Di Chuyển Thông Minh Nội Khu',
+    category: 'TRANSPORT',
+    tagline: 'VinBus điện, xe buggey nội khu & đưa đón sân bay Tân Sơn Nhất',
+    description: 'Dịch vụ di chuyển xanh – thông minh trong và ngoài Vinhomes Grand Park. Từ xe buggey điện kết nối nội khu đến đặt xe đưa đón sân bay Tân Sơn Nhất tiêu chuẩn VIP.',
+    rating: 4.82,
+    reviewCount: 129,
+    location: 'Sảnh Đón Tầng 1 / Trạm VinBus Nội Khu',
+    imageUrl: 'https://images.unsplash.com/photo-1570125909232-eb263c188f7e?w=600&auto=format&fit=crop&q=80',
+    badge: 'Di Chuyển Xanh',
+    operatingHours: '05:30 - 23:30 Hàng Ngày',
+    packages: [
+      {
+        id: 'pkg-trans-buggy-intra',
+        name: 'Xe Buggey Điện Nội Khu (1 Chiều)',
+        unit: 'chuyến',
+        unitPrice: 20000,
+        description: 'Đưa đón trong phạm vi Vinhomes Grand Park: Vincom Mega Mall, Bến xe điện, Vinmec, Vinschool.',
+        estimatedDuration: '10 - 20 phút',
+      },
+      {
+        id: 'pkg-trans-airport',
+        name: 'Đưa Đón Sân Bay Tân Sơn Nhất (Ô Tô 4 Chỗ)',
+        unit: 'chuyến',
+        unitPrice: 350000,
+        description: 'Đặt lịch trước 2 giờ. Lái xe chuyên nghiệp trang phục lịch sự, xe sạch & đúng giờ.',
+        estimatedDuration: '45 - 60 phút (tùy giờ cao điểm)',
+      },
+      {
+        id: 'pkg-trans-airport-suv',
+        name: 'Đưa Đón Sân Bay VIP (SUV 7 Chỗ)',
+        unit: 'chuyến',
+        unitPrice: 480000,
+        description: 'Dịch vụ cao cấp xe Innova/Fortuner, hỗ trợ hành lý, theo dõi chuyến bay & đón đúng cửa xuất.',
+        estimatedDuration: '45 - 60 phút',
+      },
+      {
+        id: 'pkg-trans-vinbus-monthly',
+        name: 'Vé Tháng VinBus Điện D4 (Trung Tâm TP)',
+        unit: 'thẻ/tháng',
+        unitPrice: 230000,
+        description: 'Vé tháng VinBus tuyến D4 kết nối trực tiếp Quận 1, Bến Thành & các tiện ích Vinhomes.',
+        estimatedDuration: 'Hiệu lực 30 ngày',
+      },
+    ],
+  },
+
+  // 9. ĐẶT SÂN THỂ THAO — Tennis, Bóng rổ, Yoga ngoài trời, Sân cỏ đa năng
+  {
+    id: 'srv-sports-court',
+    name: 'Đặt Sân Thể Thao & Yoga',
+    category: 'SPORTS_COURT',
+    tagline: 'Đặt sân tennis, bóng rổ, yoga ngoài trời & sân cỏ đa năng Malibu',
+    description: 'Hệ thống sân thể thao tiêu chuẩn quốc tế trong khuôn viên The Tropical. Sân Malibu (tennis + bóng rổ), không gian Yoga ngoài trời cạnh Suối Bậc, Sân Cỏ Đa Năng Y-01 rộng 800m² phục vụ bóng đá 5 người, cầu lông, pickleball.',
+    rating: 4.91,
+    reviewCount: 98,
+    location: 'Cụm Thể Thao Malibu (Phía Tây) & Sân Yoga BS-07',
+    imageUrl: 'https://images.unsplash.com/photo-1554068865-24cecd4e34b8?w=600&auto=format&fit=crop&q=80',
+    badge: 'Chuẩn Quốc Tế',
+    operatingHours: '06:00 - 21:30 Hàng Ngày',
+    packages: [
+      {
+        id: 'pkg-sport-tennis',
+        name: 'Đặt Sân Tennis Malibu (60 Phút)',
+        unit: 'ca',
+        unitPrice: 150000,
+        description: 'Sân tennis cứng tiêu chuẩn ATP, hệ thống chiếu sáng ban đêm. Mượn vợt miễn phí khi đặt sân.',
+        estimatedDuration: '60 phút / ca',
+      },
+      {
+        id: 'pkg-sport-basketball',
+        name: 'Đặt Sân Bóng Rổ (60 Phút)',
+        unit: 'ca',
+        unitPrice: 100000,
+        description: 'Sân bóng rổ outdoor 3v3 tiêu chuẩn FIBA, mặt sàn chuyên dụng chống trơn trượt.',
+        estimatedDuration: '60 phút / ca',
+      },
+      {
+        id: 'pkg-sport-yoga-outdoor',
+        name: 'Đặt Bục Yoga Ngoài Trời (60 Phút, Tối Đa 10 Người)',
+        unit: 'ca',
+        unitPrice: 80000,
+        description: 'Khu yoga mở bên Suối Bậc Cảnh Quan, thảm tập chuyên dụng, không khí trong lành, âm thanh tự nhiên.',
+        estimatedDuration: '60 phút / ca',
+      },
+      {
+        id: 'pkg-sport-multipurpose',
+        name: 'Sân Cỏ Đa Năng Y-01 (2 Giờ / Nhóm ≤20 Người)',
+        unit: 'ca',
+        unitPrice: 300000,
+        description: 'Sân cỏ nhân tạo 800m² tổ chức bóng đá 5 người, cầu lông, pickleball, dã ngoại nhóm & team building.',
+        estimatedDuration: '2 giờ / ca',
+      },
+    ],
+  },
 ];
 
 // Danh sách đơn đặt dịch vụ ban đầu hoàn toàn sạch, không có dữ liệu ảo/mẫu
@@ -313,7 +564,12 @@ export function createResidentBooking(params: {
 
   const codePrefix = service.category === 'LAUNDRY' ? 'LAUN' :
                      service.category === 'HOUSEKEEPING' ? 'CLEAN' :
-                     service.category === 'PERSONAL_TRAINER' ? 'PT' : 'CAR';
+                     service.category === 'PERSONAL_TRAINER' ? 'PT' :
+                     service.category === 'CAR_CARE' ? 'CAR' :
+                     service.category === 'SPA_WELLNESS' ? 'SPA' :
+                     service.category === 'PARTY_BBQ' ? 'BBQ' :
+                     service.category === 'RESTAURANT' ? 'REST' :
+                     service.category === 'TRANSPORT' ? 'TRANS' : 'SPORT';
 
   const randomNum = Math.floor(1000 + Math.random() * 9000);
   const bookingCode = `SRV-${codePrefix}-${randomNum}`;
@@ -334,6 +590,21 @@ export function createResidentBooking(params: {
   } else if (service.category === 'CAR_CARE') {
     assignedStaff = 'Nguyễn Văn Đạt (Kỹ thuật viên rửa xe B2)';
     staffPhone = '0944 556 677';
+  } else if (service.category === 'SPA_WELLNESS') {
+    assignedStaff = 'Chuyên viên Spa Nguyễn Thị Lan Anh (Tầng 3)';
+    staffPhone = '0955 667 788';
+  } else if (service.category === 'PARTY_BBQ') {
+    assignedStaff = 'Đội Sự Kiện & Tiệc Nướng Skyline (Tầng 25)';
+    staffPhone = '0966 778 899';
+  } else if (service.category === 'RESTAURANT') {
+    assignedStaff = 'Bếp Trưởng Skyline Kitchen (Tầng 1)';
+    staffPhone = '0977 889 900';
+  } else if (service.category === 'TRANSPORT') {
+    assignedStaff = 'Điều Phối Viên Di Chuyển Nội Khu';
+    staffPhone = '0988 990 011';
+  } else if (service.category === 'SPORTS_COURT') {
+    assignedStaff = 'Quản Lý Sân Thể Thao Cụm Malibu';
+    staffPhone = '0999 001 122';
   }
 
   const newBooking: ServiceBooking = {

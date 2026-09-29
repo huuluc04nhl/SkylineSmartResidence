@@ -39,6 +39,14 @@ import {
   cancelResidentBooking 
 } from '@/lib/residentServiceStore';
 
+import { 
+  Waves,
+  UtensilsCrossed,
+  Bus,
+  Activity,
+  FlameKindling
+} from 'lucide-react';
+
 interface ResidentServicesProps {
   currentUser: User;
   onNavigateModule?: (moduleId: string) => void;
@@ -142,7 +150,7 @@ export default function ResidentServices({ currentUser, onNavigateModule }: Resi
             Dịch Vụ Đời Sống & Tiện Ích Căn Hộ
           </h2>
           <p className="text-xs text-gray-400 mt-1">
-            Đặt lịch giặt ủi cao cấp, giúp việc theo giờ, thuê Huấn luyện viên cá nhân PT Bơi/Gym và chăm sóc xe hầm B2. Tự động gộp chi phí vào hóa đơn hàng tháng.
+            9 danh mục dịch vụ cao cấp: Giặt ủi, Giúp việc, PT Gym/Bơi, Chăm sóc xe, Spa & Wellness, Tiệc BBQ, Nhà hàng, Di chuyển thông minh & Đặt sân thể thao. Tự động gộp chi phí vào hóa đơn hàng tháng.
           </p>
         </div>
 
@@ -205,7 +213,7 @@ export default function ResidentServices({ currentUser, onNavigateModule }: Resi
                   : 'bg-[#121820] border-[#222B35] text-gray-300 hover:text-white'
               }`}
             >
-              Tất Cả Dịch Vụ
+              Tất Cả ({RESIDENT_SERVICES_CATALOG.length})
             </button>
 
             <button
@@ -249,7 +257,62 @@ export default function ResidentServices({ currentUser, onNavigateModule }: Resi
                   : 'bg-[#121820] border-[#222B35] text-gray-300 hover:text-white'
               }`}
             >
-              <Car className="w-3.5 h-3.5" /> Chăm Sóc Xe Hầm B2
+              <Car className="w-3.5 h-3.5" /> Chăm Sóc Xe B2
+            </button>
+
+            <button
+              onClick={() => setSelectedCategory('SPA_WELLNESS')}
+              className={`px-3.5 py-1.5 font-semibold transition-all whitespace-nowrap border flex items-center gap-1.5 ${
+                selectedCategory === 'SPA_WELLNESS'
+                  ? 'bg-[#C5A880] text-[#0D1117] border-[#C5A880] font-bold shadow'
+                  : 'bg-[#121820] border-[#222B35] text-gray-300 hover:text-white'
+              }`}
+            >
+              <Waves className="w-3.5 h-3.5" /> Spa & Wellness
+            </button>
+
+            <button
+              onClick={() => setSelectedCategory('PARTY_BBQ')}
+              className={`px-3.5 py-1.5 font-semibold transition-all whitespace-nowrap border flex items-center gap-1.5 ${
+                selectedCategory === 'PARTY_BBQ'
+                  ? 'bg-[#C5A880] text-[#0D1117] border-[#C5A880] font-bold shadow'
+                  : 'bg-[#121820] border-[#222B35] text-gray-300 hover:text-white'
+              }`}
+            >
+              <FlameKindling className="w-3.5 h-3.5" /> Tiệc BBQ Sân Thượng
+            </button>
+
+            <button
+              onClick={() => setSelectedCategory('RESTAURANT')}
+              className={`px-3.5 py-1.5 font-semibold transition-all whitespace-nowrap border flex items-center gap-1.5 ${
+                selectedCategory === 'RESTAURANT'
+                  ? 'bg-[#C5A880] text-[#0D1117] border-[#C5A880] font-bold shadow'
+                  : 'bg-[#121820] border-[#222B35] text-gray-300 hover:text-white'
+              }`}
+            >
+              <UtensilsCrossed className="w-3.5 h-3.5" /> Nhà Hàng & Suất Ăn
+            </button>
+
+            <button
+              onClick={() => setSelectedCategory('TRANSPORT')}
+              className={`px-3.5 py-1.5 font-semibold transition-all whitespace-nowrap border flex items-center gap-1.5 ${
+                selectedCategory === 'TRANSPORT'
+                  ? 'bg-[#C5A880] text-[#0D1117] border-[#C5A880] font-bold shadow'
+                  : 'bg-[#121820] border-[#222B35] text-gray-300 hover:text-white'
+              }`}
+            >
+              <Bus className="w-3.5 h-3.5" /> Di Chuyển Thông Minh
+            </button>
+
+            <button
+              onClick={() => setSelectedCategory('SPORTS_COURT')}
+              className={`px-3.5 py-1.5 font-semibold transition-all whitespace-nowrap border flex items-center gap-1.5 ${
+                selectedCategory === 'SPORTS_COURT'
+                  ? 'bg-[#C5A880] text-[#0D1117] border-[#C5A880] font-bold shadow'
+                  : 'bg-[#121820] border-[#222B35] text-gray-300 hover:text-white'
+              }`}
+            >
+              <Activity className="w-3.5 h-3.5" /> Đặt Sân Thể Thao
             </button>
           </div>
 

@@ -33,7 +33,8 @@ import {
   AlertTriangle,
   RotateCcw,
   Receipt,
-  Coins
+  Coins,
+  Trees
 } from 'lucide-react';
 import { User } from '@/lib/dataStore';
 import SkylineLogo from '@/components/shared/SkylineLogo';
@@ -63,8 +64,8 @@ export default function SmartFacilityPass({ currentUser }: SmartFacilityPassProp
 
   // 3 Chức năng rõ ràng
   const [activeTab, setActiveTab] = useState<'DISCOVER' | 'BOOKING' | 'LOGS'>('DISCOVER');
-  const [filterCategory, setFilterCategory] = useState<'ALL' | 'SPORTS' | 'WELLNESS' | 'PARTY'>('ALL');
-  const [logFilter, setLogFilter] = useState<'ALL' | 'fac-pool' | 'fac-gym' | 'fac-sauna' | 'fac-kids' | 'fac-bbq'>('ALL');
+  const [filterCategory, setFilterCategory] = useState<'ALL' | 'SPORTS' | 'WELLNESS' | 'PARTY' | 'PARK'>('ALL');
+  const [logFilter, setLogFilter] = useState<string>('ALL');
 
   // Modal State
   const [showSmartCardModal, setShowSmartCardModal] = useState(false);
@@ -75,15 +76,30 @@ export default function SmartFacilityPass({ currentUser }: SmartFacilityPassProp
 
   // Danh mục 5 tiện ích chính với dữ liệu quy chế minh bạch
   const amenitiesList = [
+    // ===== SPORTS =====
     {
-      id: 'fac-pool',
-      name: 'Hồ Bơi Vô Cực Chân Mây',
+      id: 'fac-pool-resort',
+      name: 'Bể Bơi Nhiệt Đới Resort',
       category: 'SPORTS',
-      location: 'Tầng 25 (Sân Thượng)',
+      location: 'Trung Tâm Phân Khu (Giữa BS-08/BS-09)',
       hours: '06:00 - 22:00',
-      density: '18% (Thoáng)',
-      temp: '28°C • Nước lọc ozone',
+      density: 'Ozone xử lý • 29°C',
+      temp: 'Chuẩn Resort 5★',
       image: 'https://images.unsplash.com/photo-1582719508461-905c673771fd?w=600&auto=format&fit=crop&q=80',
+      icon: Waves,
+      accessType: 'FREE_ENTRY',
+      accessBadge: 'Vào Tự Do (NFC / FaceID)',
+      price: 'Miễn phí theo Thẻ cư dân'
+    },
+    {
+      id: 'fac-pool-malibu',
+      name: 'Bể Bơi Malibu California',
+      category: 'SPORTS',
+      location: 'Cụm Phía Tây (Cạnh Sân Thể Thao BS-10)',
+      hours: '06:00 - 21:30',
+      density: 'Phong cách Bờ Tây nước Mỹ',
+      temp: 'Ozone lọc 3 cấp',
+      image: 'https://images.unsplash.com/photo-1620232679659-af84ef3e5fc4?w=600&auto=format&fit=crop&q=80',
       icon: Waves,
       accessType: 'FREE_ENTRY',
       accessBadge: 'Vào Tự Do (NFC / FaceID)',
@@ -104,46 +120,160 @@ export default function SmartFacilityPass({ currentUser }: SmartFacilityPassProp
       price: 'Miễn phí theo Thẻ cư dân'
     },
     {
+      id: 'fac-gym-outdoor',
+      name: 'Sân Gym Ngoài Trời',
+      category: 'SPORTS',
+      location: 'Cạnh BS-09 (Phía Đông Hồ Bơi)',
+      hours: '06:00 - 21:30',
+      density: 'Máy tập đa năng ngoài trời',
+      temp: 'Trời thoáng mát',
+      image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=600&auto=format&fit=crop&q=80',
+      icon: Dumbbell,
+      accessType: 'FREE_ENTRY',
+      accessBadge: 'Vào Tự Do (Không cần thẻ)',
+      price: 'Hoàn toàn miễn phí'
+    },
+    {
+      id: 'fac-sports-malibu',
+      name: 'Sân Thể Thao Malibu (Tennis & Bóng Rổ)',
+      category: 'SPORTS',
+      location: 'Cụm Malibu Phía Tây (BS-10)',
+      hours: '06:00 - 21:30',
+      density: 'Sân Tennis ATP + Sân Bóng Rổ FIBA',
+      temp: 'Đèn chiếu sáng ban đêm',
+      image: 'https://images.unsplash.com/photo-1554068865-24cecd4e34b8?w=600&auto=format&fit=crop&q=80',
+      icon: Flame,
+      accessType: 'BOOKING_REQUIRED',
+      accessBadge: 'Đặt Sân Theo Ca (Ứng Dụng)',
+      price: 'Đặt sân qua mục Dịch Vụ — từ 100.000 đ/ca'
+    },
+    {
+      id: 'fac-yoga',
+      name: 'Sân Yoga Ngoài Trời & Thiền',
+      category: 'WELLNESS',
+      location: 'Cạnh BS-07 (Liền kề Phố Cọ Rodeo)',
+      hours: '06:00 - 20:00',
+      density: 'Không gian tĩnh lặng, thảm tập outdoor',
+      temp: 'Cây xanh bóng mát tự nhiên',
+      image: 'https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=600&auto=format&fit=crop&q=80',
+      icon: Smile,
+      accessType: 'BOOKING_REQUIRED',
+      accessBadge: 'Đặt Khung Giờ Yoga (App)',
+      price: 'Đặt giờ yoga qua mục Dịch Vụ — từ 80.000 đ/ca'
+    },
+    {
       id: 'fac-sauna',
-      name: 'Phòng Xông Hơi Đá Muối',
+      name: 'Phòng Xông Hơi Đá Muối VIP',
       category: 'WELLNESS',
       location: 'Tầng 3 (Khu Chăm Sóc Sức Khỏe)',
-      hours: '08:00 - 22:00 (Theo giờ đặt)',
+      hours: '09:00 - 21:00 (Theo giờ đặt)',
       density: 'Phòng riêng gia đình',
-      temp: '48°C • Tinh dầu thảo mộc',
+      temp: '48°C • Tinh dầu thảo mộc Himalaya',
       image: 'https://images.unsplash.com/photo-1540555700478-4be289fbecef?w=600&auto=format&fit=crop&q=80',
       icon: Flame,
       accessType: 'BOOKING_REQUIRED',
-      accessBadge: 'Đặt Giữ Chỗ (Phòng VIP)',
-      price: '500.000 đ / giờ (Phòng gia đình VIP)'
+      accessBadge: 'Đặt Phòng VIP (Tối Đa 2 Người)',
+      price: 'Đặt qua mục Dịch Vụ Spa — 550.000 đ/ca'
     },
     {
       id: 'fac-kids',
       name: 'Khu Vui Chơi Trẻ Em',
       category: 'WELLNESS',
-      location: 'Tầng 1 (Sảnh Chung cư A)',
+      location: 'Tầng 1 (Sảnh Chung Cư A) & Ngoài Trời',
       hours: '07:00 - 21:00',
       density: '30% (Vừa)',
-      temp: '24°C • Sàn kháng khuẩn',
+      temp: '24°C • Sàn kháng khuẩn nhập khẩu',
       image: 'https://images.unsplash.com/photo-1566454544259-f4b94c3d758c?w=600&auto=format&fit=crop&q=80',
       icon: Smile,
       accessType: 'FREE_ENTRY',
-      accessBadge: 'Vào Tự Do (Trẻ Em)',
+      accessBadge: 'Vào Tự Do (Trẻ Em & Gia Đình)',
       price: 'Miễn phí theo Thẻ cư dân'
     },
+    // ===== PARK & GARDEN =====
+    {
+      id: 'fac-rodeo-street',
+      name: 'Phố Cọ Rodeo & Dạo Bộ',
+      category: 'PARK',
+      location: 'Liền Kề BS-07 (Trục Phía Tây)',
+      hours: '00:00 - 24:00 (Mở cửa cả ngày)',
+      density: 'Shophouse & Cà phê nhiệt đới',
+      temp: 'Bóng cọ tự nhiên thoáng mát',
+      image: 'https://images.unsplash.com/photo-1540541338537-a37bde9cc4c4?w=600&auto=format&fit=crop&q=80',
+      icon: UtensilsCrossed,
+      accessType: 'FREE_ENTRY',
+      accessBadge: 'Không Gian Công Cộng',
+      price: 'Tự do ra vào cả ngày'
+    },
+    {
+      id: 'fac-california-garden',
+      name: 'Vườn California & Dạo Bộ',
+      category: 'PARK',
+      location: 'Giữa BS-07 & BS-08 (Trung Tâm)',
+      hours: '06:00 - 22:00',
+      density: 'Cảnh quan cây xanh Bờ Tây',
+      temp: 'Hệ thống tưới nhỏ giọt tự động',
+      image: 'https://images.unsplash.com/photo-1585320806297-9794b3e4eeae?w=600&auto=format&fit=crop&q=80',
+      icon: Trees,
+      accessType: 'FREE_ENTRY',
+      accessBadge: 'Không Gian Xanh Công Cộng',
+      price: 'Tự do ra vào cả ngày'
+    },
+    {
+      id: 'fac-stream-waterfall',
+      name: 'Suối Bậc Thang & Thác Cảnh Quan',
+      category: 'PARK',
+      location: 'Trung Tâm Phân Khu (Ven Hồ Bơi)',
+      hours: '06:00 - 23:00',
+      density: 'Hệ thống thác nước tự động',
+      temp: 'Âm thanh suối tự nhiên',
+      image: 'https://images.unsplash.com/photo-1528360983277-13d401cdc186?w=600&auto=format&fit=crop&q=80',
+      icon: Waves,
+      accessType: 'FREE_ENTRY',
+      accessBadge: 'Không Gian Công Cộng',
+      price: 'Tự do ngắm cảnh & chụp ảnh'
+    },
+    {
+      id: 'fac-cabana',
+      name: 'Chòi Nghỉ Cabana Ven Hồ',
+      category: 'PARK',
+      location: 'Ven Hồ Bơi Resort BS-09',
+      hours: '08:00 - 21:00 (Đặt trước)',
+      density: 'Chòi riêng tư, view hồ bơi',
+      temp: 'Mái lá tự nhiên chống nắng',
+      image: 'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=600&auto=format&fit=crop&q=80',
+      icon: Smile,
+      accessType: 'BOOKING_REQUIRED',
+      accessBadge: 'Đặt Chòi Riêng (Tối Đa 4 Người)',
+      price: 'Miễn phí • Đặt trước qua Thẻ Cư Dân'
+    },
+    // ===== PARTY =====
     {
       id: 'fac-bbq',
       name: 'Vườn Tiệc Nướng BBQ Sân Thượng',
       category: 'PARTY',
-      location: 'Tầng 25 (Khu Vườn Nhật)',
+      location: 'Tầng 25 (Khu Vườn Nướng Ngoài Trời)',
       hours: '17:00 - 23:00 (Theo ca)',
-      density: 'Sẵn sàng 4/6 khu bếp',
-      temp: 'Gió trời tự nhiên',
+      density: 'Sẵn sàng 4/6 khu bếp Weber',
+      temp: 'View Panorama 360° toàn khu',
       image: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=600&auto=format&fit=crop&q=80',
       icon: UtensilsCrossed,
       accessType: 'BOOKING_REQUIRED',
-      accessBadge: 'Đăng Ký Theo Ca',
-      price: '600.000 đ / ca tiệc (Set bếp Weber & dọn dẹp)'
+      accessBadge: 'Đăng Ký Theo Ca Tiệc',
+      price: 'Đặt qua mục Dịch Vụ BBQ — từ 450.000 đ/ca'
+    },
+    {
+      id: 'fac-multipurpose-lawn',
+      name: 'Sân Cỏ Đa Năng Y-01 (Malibu)',
+      category: 'PARTY',
+      location: 'Cụm Malibu Phía Tây (Cạnh BS-10)',
+      hours: '07:00 - 21:00',
+      density: '800m² cỏ nhân tạo thế hệ 4',
+      temp: 'Hệ thống thoát nước tự động',
+      image: 'https://images.unsplash.com/photo-1558008258-3256797b43f3?w=600&auto=format&fit=crop&q=80',
+      icon: Flame,
+      accessType: 'BOOKING_REQUIRED',
+      accessBadge: 'Đặt Sân Nhóm (≤ 20 Người)',
+      price: 'Đặt qua Dịch Vụ Thể Thao — 300.000 đ/2 giờ'
     },
   ];
 
