@@ -40,8 +40,7 @@ export default function TropicalCampusSvgModel({
       floors: 34,
       units: 714,
       loc: 'Trục Phố Cọ Rodeo & Vành Đai',
-      badge: 'Căn Hộ Của Bạn (Tầng 30 • Căn CH-06)',
-      isOwner: true,
+      badge: 'Chung Cư BS-07 (34 Tầng)',
       svgX: 170,
       svgY: 400,
       svgW: 210,
@@ -56,7 +55,6 @@ export default function TropicalCampusSvgModel({
       units: 819,
       loc: 'Hướng Vườn Cọ & Sân Thiền',
       badge: '39 Tầng (Cao Nhất Phân Khu)',
-      isOwner: false,
       svgX: 230,
       svgY: 70,
       svgW: 260,
@@ -71,7 +69,6 @@ export default function TropicalCampusSvgModel({
       units: 714,
       loc: 'View Trực Diện Hồ Bơi Resort',
       badge: 'View Hồ Bơi Nhiệt Đới',
-      isOwner: false,
       svgX: 635,
       svgY: 75,
       svgW: 175,
@@ -86,7 +83,6 @@ export default function TropicalCampusSvgModel({
       units: 714,
       loc: 'Cụm Thể Thao Malibu & Bãi Đỗ Xe',
       badge: 'Gần Cụm Sân Malibu',
-      isOwner: false,
       svgX: 575,
       svgY: 400,
       svgW: 235,
@@ -95,12 +91,9 @@ export default function TropicalCampusSvgModel({
     }
   ];
 
+  // Chỉ chuyển chung cư đang chọn trên bản đồ, KHÔNG tự ý nhảy tab
   const handleBlockClick = (blockCode: string) => {
-    if (onSelectBlockAndShowFloors) {
-      onSelectBlockAndShowFloors(blockCode);
-    } else {
-      onSelectBlock(blockCode);
-    }
+    onSelectBlock(blockCode);
   };
 
   // Tọa độ SVG tự vẽ cho 23 tiện ích chuẩn khớp với bản vẽ kiến trúc
@@ -198,28 +191,38 @@ export default function TropicalCampusSvgModel({
 
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5 flex-1 min-w-[280px]">
           {buildings.map(b => (
-            <button
+            <div
               key={b.code}
-              type="button"
               onClick={() => handleBlockClick(b.code)}
-              className={`px-2 py-1 border text-left transition-all relative flex items-center justify-between gap-1 ${
+              className={`px-2 py-1 border text-left transition-all relative flex items-center justify-between gap-1 cursor-pointer ${
                 b.isCurrent
                   ? 'bg-[#182333] border-[#C5A880] text-white shadow ring-1 ring-[#C5A880]/50'
                   : 'bg-[#0E1522] border-[#222E3E] text-gray-400 hover:text-white hover:border-gray-500'
               }`}
-              title={`${b.name} (${b.floors} tầng, ${b.units} căn) - Bấm để xem số tầng`}
+              title={`${b.name} (${b.floors} tầng, ${b.units} căn) - Nhấp để chọn`}
             >
               <div className="flex items-center gap-1 truncate">
-                {b.isOwner && <span className="text-amber-400 text-xs">⭐</span>}
                 <span className={`font-bold text-[11px] sm:text-xs ${b.isCurrent ? 'text-[#C5A880]' : 'text-gray-200'}`}>
                   {b.name}
                 </span>
                 <span className="text-[10px] text-gray-400">({b.floors}T)</span>
               </div>
-              <span className="text-[9.5px] font-mono text-emerald-400 font-bold shrink-0 flex items-center gap-0.5">
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (onSelectBlockAndShowFloors) {
+                    onSelectBlockAndShowFloors(b.code);
+                  } else {
+                    onSelectBlock(b.code);
+                  }
+                }}
+                className="text-[9.5px] font-mono text-emerald-400 hover:text-white font-bold shrink-0 flex items-center gap-0.5 px-1 py-0.5 rounded hover:bg-emerald-900/60 transition-colors"
+                title={`Xem các tầng của ${b.name}`}
+              >
                 Xem Tầng ➔
-              </span>
-            </button>
+              </button>
+            </div>
           ))}
         </div>
       </div>
@@ -505,32 +508,7 @@ export default function TropicalCampusSvgModel({
                 {b.floors} TẦNG
               </text>
 
-              {/* Badge Căn Chủ Hộ (Dành riêng cho BS-7 Tầng 30) */}
-              {b.isOwner && (
-                <g>
-                  <rect
-                    x={b.svgX + 8}
-                    y={b.svgY + 34}
-                    width={b.svgW - 16}
-                    height={18}
-                    rx="2"
-                    fill="#78350F"
-                    stroke="#F59E0B"
-                    strokeWidth="1"
-                  />
-                  <text
-                    x={b.svgX + b.svgW / 2}
-                    y={b.svgY + 46}
-                    fill="#FEF08A"
-                    fontSize="9"
-                    fontWeight="bold"
-                    fontFamily="sans-serif"
-                    textAnchor="middle"
-                  >
-                    ⭐ CĂN CỦA BẠN: TẦNG 30 (CH-06)
-                  </text>
-                </g>
-              )}
+
 
               {/* Nút Call To Action chuyển tới Danh Sách Số Tầng */}
               <rect

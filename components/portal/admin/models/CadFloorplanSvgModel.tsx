@@ -35,7 +35,7 @@ export default function CadFloorplanSvgModel({
     '04': { x: 410, y: 70, w: 100, h: 90, balcony: 'TOP' },
     '05': { x: 300, y: 70, w: 100, h: 90, balcony: 'TOP' },
 
-    // Cánh Nam: Căn 06 - 10 (Nơi có Căn Chủ Hộ CH-06)
+    // Cánh Nam: Căn 06 - 10
     '06': { x: 740, y: 390, w: 120, h: 95, balcony: 'RIGHT' },
     '07': { x: 630, y: 390, w: 100, h: 95, balcony: 'BOTTOM' },
     '08': { x: 520, y: 390, w: 100, h: 95, balcony: 'BOTTOM' },
@@ -163,12 +163,10 @@ export default function CadFloorplanSvgModel({
           {CAD_FLOOR_UNITS_CONFIG.map(cfg => {
             const coord = UNIT_LAYOUT_COORDS[cfg.num] || { x: 100, y: 100, w: 80, h: 80, balcony: 'TOP' };
             const unit = unitsOnFloor.find(u => u.code.endsWith(cfg.code) || u.code === cfg.code);
-            const isOwnerUnit = selectedFloor === 30 && (cfg.num === '06');
-            const isOwnerSecondary = selectedFloor === 30 && (cfg.num === '01');
             const isSelected = activeUnitCode === cfg.code || activeUnitCode?.endsWith(cfg.code);
             const isHovered = hoveredUnitCode === cfg.code;
 
-            const isOccupied = isOwnerUnit || isOwnerSecondary || unit?.status === 'OCCUPIED' || (selectedFloor === 12 && cfg.num === '05') || (selectedFloor % 2 === 0 && (cfg.num === '03' || cfg.num === '15' || cfg.num === '18'));
+            const isOccupied = unit?.status === 'OCCUPIED' || (selectedFloor === 12 && cfg.num === '05') || (selectedFloor % 2 === 0 && (cfg.num === '03' || cfg.num === '15' || cfg.num === '18'));
 
             return (
               <g
@@ -180,7 +178,7 @@ export default function CadFloorplanSvgModel({
                 onMouseEnter={() => setHoveredUnitCode(cfg.code)}
                 onMouseLeave={() => setHoveredUnitCode(null)}
                 className="cursor-pointer group"
-                filter={isSelected || isOwnerUnit ? 'url(#cadGoldGlow)' : undefined}
+                filter={isSelected ? 'url(#cadGoldGlow)' : undefined}
               >
                 {/* Viền tường căn hộ CAD (Wall outline with thickness) */}
                 <rect
@@ -189,9 +187,7 @@ export default function CadFloorplanSvgModel({
                   width={coord.w}
                   height={coord.h}
                   fill={
-                    isOwnerUnit
-                      ? '#1E2419'
-                      : isSelected
+                    isSelected
                       ? '#162235'
                       : isHovered
                       ? '#111C2D'
@@ -200,9 +196,7 @@ export default function CadFloorplanSvgModel({
                       : '#08111D'
                   }
                   stroke={
-                    isOwnerUnit
-                      ? '#C5A880'
-                      : isSelected
+                    isSelected
                       ? '#38BDF8'
                       : isHovered
                       ? '#94A3B8'
@@ -210,7 +204,7 @@ export default function CadFloorplanSvgModel({
                       ? '#0284C7'
                       : '#1E293B'
                   }
-                  strokeWidth={isOwnerUnit || isSelected ? 2.5 : 1.5}
+                  strokeWidth={isSelected ? 2.5 : 1.5}
                   className="transition-colors"
                 />
 
@@ -241,7 +235,7 @@ export default function CadFloorplanSvgModel({
                 <text
                   x={coord.w / 2}
                   y={coord.h / 2 - 12}
-                  fill={isOwnerUnit ? '#F59E0B' : isSelected ? '#38BDF8' : '#FFFFFF'}
+                  fill={isSelected ? '#38BDF8' : '#FFFFFF'}
                   fontSize="12"
                   fontFamily="sans-serif"
                   fontWeight="bold"
@@ -254,7 +248,7 @@ export default function CadFloorplanSvgModel({
                 <text
                   x={coord.w / 2}
                   y={coord.h / 2 + 3}
-                  fill={isOwnerUnit ? '#C5A880' : '#94A3B8'}
+                  fill={isSelected ? '#C5A880' : '#94A3B8'}
                   fontSize="9.5"
                   fontFamily="monospace"
                   textAnchor="middle"
@@ -270,18 +264,18 @@ export default function CadFloorplanSvgModel({
                     width="72"
                     height="16"
                     rx="3"
-                    fill={isOwnerUnit ? '#C5A880' : isOccupied ? '#065F46' : '#1E293B'}
+                    fill={isOccupied ? '#065F46' : '#1E293B'}
                   />
                   <text
                     x="0"
                     y="3.5"
-                    fill={isOwnerUnit ? '#000000' : isOccupied ? '#A7F3D0' : '#94A3B8'}
+                    fill={isOccupied ? '#A7F3D0' : '#94A3B8'}
                     fontSize="7.5"
                     fontFamily="monospace"
                     fontWeight="bold"
                     textAnchor="middle"
                   >
-                    {isOwnerUnit ? 'CHỦ HỘ' : isOccupied ? 'CÓ CƯ DÂN' : 'CĂN TRỐNG'}
+                    {isOccupied ? 'CÓ CƯ DÂN' : 'CĂN TRỐNG'}
                   </text>
                 </g>
               </g>
@@ -293,8 +287,8 @@ export default function CadFloorplanSvgModel({
         <div className="absolute bottom-3 left-3 bg-[#08101A]/95 border border-[#1E293B] p-2.5 text-[10.5px] font-mono text-gray-400 backdrop-blur-md">
           <div className="text-[#C5A880] font-bold">MẶT BẰNG 21 CĂN HỘ CHUNG CƯ {selectedBlock}:</div>
           <div className="flex items-center gap-2 mt-1">
-            <span className="w-2.5 h-2.5 bg-[#C5A880] inline-block" />
-            <span>Căn Chủ Hộ (CH-06)</span>
+            <span className="w-2.5 h-2.5 bg-[#38BDF8] inline-block" />
+            <span>Đang Chọn</span>
             <span className="w-2.5 h-2.5 bg-[#065F46] inline-block ml-2" />
             <span>Đã Có Cư Dân</span>
             <span className="w-2.5 h-2.5 bg-[#1E293B] inline-block ml-2" />
