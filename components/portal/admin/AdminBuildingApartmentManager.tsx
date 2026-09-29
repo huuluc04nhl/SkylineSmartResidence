@@ -1670,9 +1670,6 @@ export default function AdminBuildingApartmentManager() {
                 return found;
               }
 
-              const isOccupied = (selectedFloor === 12 && cfg.num === '05') || (cfg.num !== '04' && cfg.num !== '13' && cfg.num !== '19');
-              const isMaintenance = cfg.num === '09';
-
               return ({
                 code: targetCode,
                 tower: selectedBlock === 'BS-10' ? 'B' : 'A',
@@ -1680,14 +1677,13 @@ export default function AdminBuildingApartmentManager() {
                 floor: selectedFloor,
                 type: cfg.type,
                 typeLabel: cfg.typeLabel,
-                status: isOccupied ? 'OCCUPIED' : isMaintenance ? 'MAINTENANCE' : 'VACANT',
-                statusLabel: isOccupied ? 'Có Cư Dân' : isMaintenance ? 'Nghiệm Thu Kỹ Thuật' : 'Căn Hộ Trống',
+                status: 'VACANT',
+                statusLabel: 'Căn Hộ Trống',
                 area: cfg.area,
                 bedrooms: cfg.beds,
                 bathrooms: cfg.baths,
                 direction: cfg.dir,
                 priceBillion: cfg.defaultPrice,
-                owner: isOccupied ? { name: `Cư Dân Căn ${cfg.num}`, phone: '0908123456', email: `resident.${cfg.num}@skyline.vn`, cccd: '079204000123', avatar: '', eKycApproved: true } : undefined
               } as ApartmentUnit);
             });
 
@@ -2865,9 +2861,6 @@ export default function AdminBuildingApartmentManager() {
             return found;
           }
 
-          const isOccupied = (selectedFloor === 12 && cfg.num === '05') || (cfg.num !== '04' && cfg.num !== '13' && cfg.num !== '19');
-          const isMaintenance = cfg.num === '09';
-
           return ({
             code: targetCode,
             tower: selectedBlock === 'BS-10' ? 'B' : 'A',
@@ -2875,14 +2868,13 @@ export default function AdminBuildingApartmentManager() {
             floor: selectedFloor,
             type: cfg.type,
             typeLabel: cfg.typeLabel,
-            status: isOccupied ? 'OCCUPIED' : isMaintenance ? 'MAINTENANCE' : 'VACANT',
-            statusLabel: isOccupied ? 'Có Cư Dân' : isMaintenance ? 'Nghiệm Thu Kỹ Thuật' : 'Căn Hộ Trống',
+            status: 'VACANT',
+            statusLabel: 'Căn Hộ Trống',
             area: cfg.area,
             bedrooms: cfg.beds,
             bathrooms: cfg.baths,
             direction: cfg.dir,
             priceBillion: cfg.defaultPrice,
-            owner: isOccupied ? { name: `Cư Dân Căn ${cfg.num}`, phone: '0908123456', email: `resident.${cfg.num}@skyline.vn`, cccd: '079204000123', avatar: '', eKycApproved: true } : undefined
           } as ApartmentUnit);
         });
 

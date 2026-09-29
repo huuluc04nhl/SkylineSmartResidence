@@ -522,35 +522,8 @@ export const NKS_FLOOR_ARCH_UNITS = [
   { num: '21', code: 'CH-21', wing: 'WEST' as const, wingLabel: 'Cánh Tây', type: '2PN' as ApartmentType, typeLabel: '2PN Góc Nam', beds: 2, baths: 2, area: 70.0, dir: 'Tây Nam', defaultPrice: 4.95 },
 ];
 
-export const REALISTIC_RESIDENTS_POOL = [
-  { name: 'Nguyễn Văn Tuấn', phone: '0903124589', cccd: '079201004123', dob: '14/05/1988', pob: 'TP. Hồ Chí Minh' },
-  { name: 'Trần Thị Ngọc Mai', phone: '0918456721', cccd: '079195007845', dob: '22/11/1992', pob: 'Hà Nội' },
-  { name: 'Lê Hoàng Long', phone: '0989234567', cccd: '079203001298', dob: '05/03/1985', pob: 'Đà Nẵng' },
-  { name: 'Phạm Quốc Dũng', phone: '0977654321', cccd: '079200008765', dob: '19/09/1990', pob: 'Cần Thơ' },
-  { name: 'Hoàng Kim Oanh', phone: '0933112233', cccd: '079198003412', dob: '30/01/1994', pob: 'Hải Phòng' },
-  { name: 'Vũ Minh Quân', phone: '0908889911', cccd: '079202005678', dob: '12/07/1989', pob: 'Bình Dương' },
-  { name: 'Đặng Quang Huy', phone: '0912348877', cccd: '079197009823', dob: '18/10/1986', pob: 'Đồng Nai' },
-  { name: 'Bùi Thanh Trúc', phone: '0988776655', cccd: '079199002341', dob: '08/04/1995', pob: 'Bà Rịa - Vũng Tàu' },
-  { name: 'Đỗ Hải Nam', phone: '0902334455', cccd: '079201006543', dob: '25/12/1991', pob: 'Quảng Ninh' },
-  { name: 'Ngô Phương Thảo', phone: '0938445566', cccd: '079196008712', dob: '17/06/1993', pob: 'Lâm Đồng' },
-  { name: 'Dương Quốc Bảo', phone: '0919223344', cccd: '079204001928', dob: '03/02/1987', pob: 'Khánh Hòa' },
-  { name: 'Hồ Trọng Nghĩa', phone: '0906778899', cccd: '079194004567', dob: '11/08/1984', pob: 'Nghệ An' },
-  { name: 'Lý Gia Hân', phone: '0983114477', cccd: '079202003891', dob: '27/03/1996', pob: 'TP. Hồ Chí Minh' },
-  { name: 'Trịnh Anh Khoa', phone: '0972556688', cccd: '079198007123', dob: '09/09/1990', pob: 'Thừa Thiên Huế' },
-  { name: 'Võ Hoài An', phone: '0937668899', cccd: '079200005432', dob: '15/01/1992', pob: 'Quảng Nam' },
-  { name: 'Mai Văn Hùng', phone: '0913998877', cccd: '079193006789', dob: '20/05/1983', pob: 'Thanh Hóa' },
-  { name: 'Chu Thị Bích Ngọc', phone: '0907224466', cccd: '079197008912', dob: '14/11/1994', pob: 'Bắc Ninh' },
-  { name: 'Lâm Kiến Quốc', phone: '0981335577', cccd: '079203004321', dob: '06/07/1988', pob: 'TP. Hồ Chí Minh' },
-  { name: 'Đoàn Nhật Minh', phone: '0978446688', cccd: '079201007654', dob: '23/04/1991', pob: 'An Giang' },
-  { name: 'Phan Diệu Linh', phone: '0932557799', cccd: '079199009876', dob: '31/08/1995', pob: 'Tiền Giang' },
-  { name: 'Tạ Minh Khang', phone: '0909113355', cccd: '079195003214', dob: '16/02/1989', pob: 'Bình Thuận' },
-  { name: 'Cao Thu Trang', phone: '0917448822', cccd: '079202008761', dob: '28/10/1993', pob: 'Vĩnh Long' },
-  { name: 'Lương Tấn Phát', phone: '0985226611', cccd: '079196005431', dob: '10/06/1986', pob: 'Tây Ninh' },
-  { name: 'Đinh Hoàng Yến', phone: '0973881144', cccd: '079200002198', dob: '04/12/1992', pob: 'Hà Tĩnh' },
-];
-
 /**
- * 6. Sinh danh sách căn hộ hoàn chỉnh theo 21 căn/sàn kết hợp dữ liệu NKS API & Cư dân thực tế
+ * 6. Sinh danh sách căn hộ hoàn chỉnh theo 21 căn/sàn kết hợp dữ liệu chuẩn 100% từ NKS SCRMAI API
  */
 export function generateNksBlockUnits(
   nksApts: NksApartment[],
@@ -607,68 +580,6 @@ export function generateNksBlockUnits(
           nksRawData: matchedApi,
         });
       } else {
-        const isOwnerPrimary = (blockCode === 'BS-07' && fl === 30 && cfg.num === '06');
-        const isOwnerSecondary = (blockCode === 'BS-07' && fl === 30 && cfg.num === '01');
-
-        const numInt = parseInt(cfg.num, 10);
-        const blockSeed = blockCode.charCodeAt(3) || 7;
-        const hash = (fl * 17 + numInt * 23 + blockSeed * 11) % 100;
-
-        let status: ApartmentStatus = 'OCCUPIED';
-        let statusLabel = 'Đã Bàn Giao (Cư Dân Đang Ở)';
-
-        if (isOwnerPrimary) {
-          status = 'OCCUPIED';
-          statusLabel = 'Đã Bàn Giao (Căn Hộ Chính Chủ)';
-        } else if (isOwnerSecondary) {
-          status = 'OCCUPIED';
-          statusLabel = 'Đã Bàn Giao (Căn Phụ Cùng Chủ Hộ)';
-        } else if (hash < 24) {
-          // ~24% căn hộ đang trống
-          status = 'VACANT';
-          statusLabel = 'Căn Hộ Trống (Sẵn Sàng Bàn Giao)';
-        } else if (hash < 30) {
-          // ~6% căn hộ đang nghiệm thu kỹ thuật
-          status = 'MAINTENANCE';
-          statusLabel = 'Nghiệm Thu Kỹ Thuật (Đang Bàn Giao)';
-        } else {
-          // ~70% căn hộ đã có cư dân sinh sống
-          status = 'OCCUPIED';
-          statusLabel = 'Đã Bàn Giao (Cư Dân Đang Ở)';
-        }
-
-        const isOccupied = status === 'OCCUPIED';
-        const resIdx = (fl * 21 + numInt + blockSeed) % REALISTIC_RESIDENTS_POOL.length;
-        const res = REALISTIC_RESIDENTS_POOL[resIdx];
-
-        const ownerName = isOwnerPrimary || isOwnerSecondary ? 'Trần Hữu Lực' : res.name;
-        const ownerPhone = isOwnerPrimary || isOwnerSecondary ? '0364967082' : res.phone;
-        const ownerCccd = isOwnerPrimary || isOwnerSecondary ? '067204000961' : res.cccd;
-        const ownerEmail = isOwnerPrimary ? 'huuluc04@gmail.com' : `resident.${targetCode.toLowerCase().replace(/[^a-z0-9]/g, '')}@skyline.vn`;
-        const ownerAvatar = isOwnerPrimary 
-          ? 'https://data.nks.vn/storage/users/202609021654232258.jpg'
-          : `https://ui-avatars.com/api/?name=${encodeURIComponent(ownerName)}&background=065F46&color=A7F3D0&bold=true`;
-
-        const hasCar = (hash % 3) === 0;
-        const vehicles: ApartmentVehicle[] = isOccupied ? [
-          {
-            id: `veh-${blockCode}-${targetCode}-1`,
-            type: 'MOTORBIKE',
-            plate: `59-${String.fromCharCode(65 + (hash % 20))}${1 + (hash % 9)}-${100 + (hash * 7) % 899}.${10 + (hash * 3) % 89}`,
-            brand: hash % 2 === 0 ? 'Honda SH 160i' : 'Honda AirBlade 160',
-            cardNo: `RFID-${blockCode}-${targetCode}-M1`,
-            slot: `B1-M${10 + (hash % 80)}`
-          },
-          ...(hasCar ? [{
-            id: `veh-${blockCode}-${targetCode}-2`,
-            type: 'CAR' as const,
-            plate: `51K-${100 + (hash * 9) % 899}.${10 + (hash * 5) % 89}`,
-            brand: hash % 3 === 0 ? 'Mazda CX-5' : hash % 3 === 1 ? 'VinFast VF8' : 'Toyota Cross',
-            cardNo: `RFID-${blockCode}-${targetCode}-C1`,
-            slot: `B2-A${10 + (hash % 40)}`
-          }] : [])
-        ] : [];
-
         units.push({
           code: targetCode,
           tower: towerId,
@@ -683,53 +594,13 @@ export function generateNksBlockUnits(
           direction: cfg.dir,
           mainDoorDirection: cfg.wing === 'SOUTH' ? 'Tây Bắc' : 'Đông Nam',
           priceBillion: cfg.defaultPrice,
-          status,
-          statusLabel,
+          status: 'VACANT',
+          statusLabel: 'Căn Hộ Trống (Sẵn Sàng Bàn Giao)',
           wing: cfg.wing,
           wingLabel: cfg.wingLabel,
-          owner: isOccupied ? {
-            name: ownerName,
-            phone: ownerPhone,
-            email: ownerEmail,
-            cccd: ownerCccd,
-            avatar: ownerAvatar,
-            eKycApproved: true,
-            dob: isOwnerPrimary ? '18/08/2004' : res.dob,
-            pob: isOwnerPrimary ? 'Triệu Trạch, Triệu Phong, Quảng Trị' : res.pob,
-            handoverDate: fl > 20 ? '15/06/2026' : '10/05/2026',
-            handoverProtocol: {
-              protocolCode: `BBBG-TROPICAL-${blockCode}-${targetCode}-2026`,
-              handoverDate: fl > 20 ? '15/06/2026' : '10/05/2026',
-              handoverOfficer: 'KTS. Lê Quang Minh (Trưởng Ban Quản Lý)',
-              keysCount: 3,
-              cardsCount: 2,
-              initialElectricMeter: Math.round((fl * 12 + numInt * 4.5) * 10) / 10,
-              initialWaterMeter: Math.round((fl * 1.5 + numInt * 0.8) * 10) / 10,
-              notes: `Căn hộ ${targetCode} đã hoàn tất bàn giao cho cư dân ${ownerName}. Khóa số thông minh và hệ thống kỹ thuật sẵn sàng.`
-            }
-          } : undefined,
-          handoverProtocol: isOccupied ? {
-            protocolCode: `BBBG-TROPICAL-${blockCode}-${targetCode}-2026`,
-            handoverDate: fl > 20 ? '15/06/2026' : '10/05/2026',
-            handoverOfficer: 'KTS. Lê Quang Minh (Trưởng Ban Quản Lý)',
-            keysCount: 3,
-            cardsCount: 2,
-            initialElectricMeter: Math.round((fl * 12 + numInt * 4.5) * 10) / 10,
-            initialWaterMeter: Math.round((fl * 1.5 + numInt * 0.8) * 10) / 10,
-            notes: `Căn hộ ${targetCode} đã hoàn tất bàn giao.`
-          } : undefined,
-          membersCount: isOwnerPrimary ? 4 : isOccupied ? (2 + (hash % 3)) : 0,
-          vehicles,
-          billing: isOccupied ? {
-            monthlyFee: Math.round(cfg.area * 18000),
-            parkingFee: hasCar ? 1950000 : 150000,
-            serviceFee: 200000,
-            totalAmount: Math.round(cfg.area * 18000) + (hasCar ? 1950000 : 150000) + 200000,
-            status: hash % 6 === 0 ? 'UNPAID' : 'PAID',
-            period: 'Tháng 09/2026',
-            dueDate: '10/10/2026'
-          } : undefined,
-          isApiSynced: isOwnerPrimary || isOwnerSecondary,
+          membersCount: 0,
+          vehicles: [],
+          isApiSynced: false,
           createdAt: '2026-09-21 09:00:00',
           updatedAt: '2026-09-21 09:00:00',
         });

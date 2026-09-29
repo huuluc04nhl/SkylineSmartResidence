@@ -116,7 +116,7 @@ export const INITIAL_APARTMENTS: ApartmentUnit[] = generateNksBlockUnits(
 );
 
 export function getApartmentStorageKey(blockCode: string = 'BS-07'): string {
-  return `nks_apartments_${blockCode}_v16`;
+  return `nks_apartments_${blockCode}_v17`;
 }
 
 /**
@@ -150,7 +150,7 @@ export function getApartmentUnits(blockCode: string = 'BS-07'): ApartmentUnit[] 
       } catch (e) {}
     });
 
-    ['v10', 'v11', 'v12', 'v13', 'v14', 'v15'].forEach(ver => {
+    ['v10', 'v11', 'v12', 'v13', 'v14', 'v15', 'v16'].forEach(ver => {
       ['BS-07', 'BS-08', 'BS-09', 'BS-10'].forEach(b => {
         try { localStorage.removeItem(`nks_apartments_${b}_${ver}`); } catch (e) {}
       });
@@ -165,13 +165,7 @@ export function getApartmentUnits(blockCode: string = 'BS-07'): ApartmentUnit[] 
 
     const parsed = JSON.parse(raw);
     if (Array.isArray(parsed) && parsed.length > 0) {
-      // Đảm bảo dữ liệu trong localStorage không bị kẹt ở trạng thái mock cũ thiếu căn hộ có người ở
-      const occupiedCount = parsed.filter((u: any) => u.status === 'OCCUPIED').length;
-      if (occupiedCount >= 20) {
-        return parsed;
-      }
-      localStorage.setItem(blockKey, JSON.stringify(initial));
-      return initial;
+      return parsed;
     }
   } catch (e) {
     console.warn('Load apartments storage error:', e);
