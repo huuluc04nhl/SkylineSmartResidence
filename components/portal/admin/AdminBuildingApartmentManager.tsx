@@ -60,34 +60,48 @@ export type BuildingColorTone = 'GOLD_LUXURY';
 
 export interface TropicalAmenity {
   id: string;
+  displayNumber?: string;
   name: string;
   category: 'POOL' | 'PARK' | 'SPORT' | 'ACCESS';
   desc: string;
   x: number;
   y: number;
   distance: string;
+  isGoldBadge?: boolean;
 }
 
-// Danh sách 18 tiện ích quy hoạch phân khu The Tropical chuẩn từ sơ đồ chủ đầu tư (kèm tọa độ định vị trên bản đồ)
+// Danh sách 23 tiện ích quy hoạch phân khu The Tropical chuẩn 100% theo sơ đồ chủ đầu tư (kèm tọa độ định vị trên bản đồ)
 export const THE_TROPICAL_AMENITIES: TropicalAmenity[] = [
-  { id: '01', name: 'Phố cọ Rodeo', category: 'PARK', desc: 'Tuyến phố thương mại shophouse & dạo bộ rợp bóng cọ nhiệt đới', x: 20, y: 34, distance: 'Liền kề BS-07 (20m)' },
-  { id: '02', name: 'Bể bơi nhiệt đới Resort', category: 'POOL', desc: 'Cụm hồ bơi phong cách resort nhiệt đới trung tâm phân khu', x: 47, y: 46, distance: 'Cách BS-07: ~60m' },
-  { id: '03', name: 'Bể bơi ốc đảo sinh thái', category: 'POOL', desc: 'Khu bơi lội thư giãn cảnh quan ốc đảo sinh thái trong lành', x: 55, y: 53, distance: 'Cách BS-07: ~85m' },
-  { id: '04', name: 'Sân thể thao / Bể bơi Malibu', category: 'SPORT', desc: 'Cụm sân tennis, bóng rổ & bể bơi chuẩn thi đấu Olympic', x: 74, y: 36, distance: 'Cách BS-07: ~135m' },
-  { id: '05', name: 'Nhà phụ trợ bể bơi', category: 'POOL', desc: 'Khu thay đồ, tắm tráng & quầy cứu hộ vận hành chuyên nghiệp', x: 51, y: 39, distance: 'Cách BS-07: ~75m' },
-  { id: '06', name: 'Sân chơi trẻ em sắc màu', category: 'SPORT', desc: 'Khu vận động vui chơi liên hoàn an toàn cho cư dân nhí', x: 38, y: 63, distance: 'Cách BS-07: ~75m' },
-  { id: '07', name: 'Sân Gym ngoài trời', category: 'SPORT', desc: 'Trang thiết bị máy tập thể lực đa năng ngoài trời hiện đại', x: 43, y: 32, distance: 'Cách BS-07: ~50m' },
-  { id: '08', name: 'Sân thiền & Yoga', category: 'SPORT', desc: 'Không gian tĩnh lặng râm mát rèn luyện thể chất & tái tạo năng lượng', x: 62, y: 31, distance: 'Cách BS-07: ~110m' },
-  { id: '09', name: 'Suối bậc cảnh quan sinh thái', category: 'PARK', desc: 'Thác nước bậc thang & dòng chảy sinh thái điều hòa nhiệt độ', x: 45, y: 57, distance: 'Cách BS-07: ~65m' },
-  { id: '10', name: 'Vườn cọ nhiệt đới Honolulu', category: 'PARK', desc: 'Đại cảnh quan công viên cọ xanh ngát trung tâm The Tropical', x: 33, y: 50, distance: 'Cách BS-07: ~40m' },
-  { id: '11', name: 'Vườn dạo California', category: 'PARK', desc: 'Khu vườn dạo bộ phong cách Bờ Tây nước Mỹ sang trọng', x: 25, y: 68, distance: 'Cách BS-07: ~60m' },
-  { id: '12', name: 'Vườn San Mario', category: 'PARK', desc: 'Tiểu cảnh hoa cỏ & đường dạo dưỡng sinh cho người cao tuổi', x: 68, y: 66, distance: 'Cách BS-07: ~125m' },
-  { id: '13', name: 'Biển tên phân khu The Tropical', category: 'ACCESS', desc: 'Cổng chào nhận diện thương hiệu The Tropical biểu tượng', x: 15, y: 43, distance: 'Trước sảnh BS-07 (30m)' },
-  { id: '14', name: 'Chòi nghỉ thư giãn phong cách Resort', category: 'PARK', desc: 'Khu vực dừng chân ngắm cảnh râm mát bên hồ cảnh quan', x: 59, y: 44, distance: 'Cách BS-07: ~95m' },
-  { id: '15', name: 'Giàn cảnh quan nghệ thuật', category: 'PARK', desc: 'Điểm nhấn kiến trúc biểu tượng chụp ảnh check-in sống ảo', x: 51, y: 70, distance: 'Cách BS-07: ~105m' },
-  { id: '16', name: 'Ghế nghỉ Sunken chìm bên hồ', category: 'PARK', desc: 'Không gian phòng khách chìm thư thái độc bản giữa làn nước xanh', x: 44, y: 48, distance: 'Cách BS-07: ~55m' },
-  { id: 'P', name: 'Bãi đỗ xe & Lối xuống hầm B1/B2', category: 'ACCESS', desc: 'Khu vực gửi xe & lối xuống hầm B1/B2 kiểm soát tự động thông minh', x: 80, y: 78, distance: 'Dưới hầm kết nối cả 4 chung cư' },
-  { id: 'D', name: 'Sảnh đón Drop-off Chung Cư', category: 'ACCESS', desc: 'Lối xe đón trả cư dân tại sảnh chính chung cư có mái che', x: 28, y: 28, distance: 'Ngay mặt tiền sảnh BS-07' },
+  // Cột trái (Số tròn đen 01 - 12)
+  { id: '01', displayNumber: '01', name: 'Phố cọ Rodeo', category: 'PARK', desc: 'Tuyến phố thương mại shophouse & dạo bộ rợp bóng cọ nhiệt đới', x: 22, y: 84, distance: 'Liền kề BS-7' },
+  { id: '02', displayNumber: '02', name: 'Bể bơi nhiệt đới', category: 'POOL', desc: 'Cụm hồ bơi phong cách resort nhiệt đới trung tâm phân khu', x: 42, y: 20, distance: 'Cách BS-7: ~60m' },
+  { id: '03', displayNumber: '03', name: 'Bể bơi ốc đảo', category: 'POOL', desc: 'Khu bơi lội thư giãn cảnh quan ốc đảo sinh thái trong lành', x: 48, y: 22, distance: 'Cách BS-7: ~85m' },
+  { id: '04', displayNumber: '04', name: 'Bể bơi Malibu', category: 'POOL', desc: 'Bể bơi Malibu chuẩn phong cách resort miền nhiệt đới California', x: 12, y: 14, distance: 'Cụm phía Tây phân khu' },
+  { id: '05', displayNumber: '05', name: 'Nhà phụ trợ bể bơi', category: 'POOL', desc: 'Khu thay đồ, tắm tráng & quầy cứu hộ vận hành chuyên nghiệp', x: 44, y: 24, distance: 'Cạnh bể bơi nhiệt đới' },
+  { id: '06', displayNumber: '06', name: 'Sân chơi trẻ em', category: 'SPORT', desc: 'Khu vận động vui chơi liên hoàn an toàn cho cư dân nhí', x: 62, y: 22, distance: 'Cách BS-7: ~75m' },
+  { id: '07', displayNumber: '07', name: 'Sân Gym ngoài trời', category: 'SPORT', desc: 'Trang thiết bị máy tập thể lực đa năng ngoài trời hiện đại', x: 56, y: 18, distance: 'Cách BS-7: ~50m' },
+  { id: '08', displayNumber: '08', name: 'Sân yoga', category: 'SPORT', desc: 'Không gian tĩnh lặng râm mát rèn luyện thể chất & tái tạo năng lượng', x: 26, y: 20, distance: 'Cách BS-7: ~40m' },
+  { id: '09', displayNumber: '09', name: 'Suối bậc cảnh quan', category: 'PARK', desc: 'Thác nước bậc thang & dòng chảy sinh thái điều hòa nhiệt độ', x: 45, y: 18, distance: 'Khu vườn trung tâm' },
+  { id: '10', displayNumber: '10', name: 'Vườn cọ nhiệt đới Honolulu', category: 'PARK', desc: 'Đại cảnh quan công viên cọ xanh ngát trung tâm The Tropical', x: 49, y: 27, distance: 'Cách BS-7: ~40m' },
+  { id: '11', displayNumber: '11', name: 'Vườn California', category: 'PARK', desc: 'Khu vườn dạo bộ phong cách Bờ Tây nước Mỹ sang trọng', x: 30, y: 24, distance: 'Cách BS-7: ~50m' },
+  { id: '12', displayNumber: '12', name: 'Vườn San Mario', category: 'PARK', desc: 'Tiểu cảnh hoa cỏ & đường dạo dưỡng sinh cho người cao tuổi', x: 74, y: 29, distance: 'Khu phía Đông phân khu' },
+
+  // Cột phải (Số tròn đen 13 - 16)
+  { id: '13', displayNumber: '13', name: 'Biển tên', category: 'ACCESS', desc: 'Cổng chào nhận diện thương hiệu phân khu The Tropical biểu tượng', x: 90, y: 29, distance: 'Cổng đón phân khu' },
+  { id: '14', displayNumber: '14', name: 'Chòi nghỉ', category: 'PARK', desc: 'Khu vực dừng chân ngắm cảnh râm mát bên hồ cảnh quan sinh thái', x: 52, y: 18, distance: 'Ven hồ bơi resort' },
+  { id: '15', displayNumber: '15', name: 'Giàn cảnh quan', category: 'PARK', desc: 'Điểm nhấn kiến trúc biểu tượng chụp ảnh check-in sống ảo', x: 57, y: 23, distance: 'Cách BS-7: ~65m' },
+  { id: '16', displayNumber: '16', name: 'Ghế nghỉ Sunken', category: 'PARK', desc: 'Không gian phòng khách chìm thư thái độc bản giữa làn nước xanh', x: 25, y: 22, distance: 'Ven hồ cảnh quan' },
+
+  // Số tròn vàng (Tiện ích điểm nhấn 01 - 04)
+  { id: 'Y-01', displayNumber: '01', isGoldBadge: true, name: 'Sân cỏ đa năng', category: 'PARK', desc: 'Thảm cỏ mở rộng tổ chức sự kiện cộng đồng & dã ngoại gia đình ngoài trời', x: 13, y: 31, distance: 'Cạnh bể bơi Malibu' },
+  { id: 'Y-02', displayNumber: '02', isGoldBadge: true, name: 'Thác nước điểm nhấn', category: 'PARK', desc: 'Thác nước trang trí tạo âm thanh róc rách thư giãn tinh thần', x: 13, y: 33, distance: 'Khu Malibu' },
+  { id: 'Y-03', displayNumber: '03', isGoldBadge: true, name: 'Artwork điểm nhấn', category: 'PARK', desc: 'Tác phẩm điêu khắc nghệ thuật biểu tượng phong cách nhiệt đới', x: 13, y: 29, distance: 'Khu cảnh quan Tây' },
+  { id: 'Y-04', displayNumber: '04', isGoldBadge: true, name: 'Sân thể thao', category: 'SPORT', desc: 'Cụm sân tennis, bóng rổ tiêu chuẩn quốc tế cho cư dân', x: 12, y: 20, distance: 'Khu thể thao Malibu' },
+
+  // Ký hiệu chữ & biểu tượng hạ tầng
+  { id: 'P', displayNumber: 'P', name: 'Bãi đỗ xe', category: 'ACCESS', desc: 'Khu vực gửi xe thông minh và lối đón trả khách thuận tiện', x: 77, y: 32, distance: 'Gần Chung Cư BS-10' },
+  { id: 'D', displayNumber: 'D', name: 'Lối vào sảnh (Drop off)', category: 'ACCESS', desc: 'Sảnh đón trả khách có mái che trang trọng tại từng chung cư', x: 70, y: 29, distance: 'Sảnh chính chung cư' },
+  { id: 'H', displayNumber: '▼', name: 'Lối xuống hầm', category: 'ACCESS', desc: 'Ram dốc kết nối trực tiếp 2 tầng hầm để xe B1/B2 thông minh', x: 47, y: 31, distance: 'Lối xe xuống hầm trung tâm' },
 ];
 
 export interface SurroundingAmenity {
@@ -690,6 +704,16 @@ export default function AdminBuildingApartmentManager() {
     if (unit.floor) setSelectedFloor(unit.floor);
   };
 
+  const handleSelectBlockAndShowFloors = (blockCode: any) => {
+    handleSwitchBlock(blockCode);
+    setBuildingPerspective('BUILDING_ELEVATION');
+  };
+
+  const handleSelectFloorAndShowUnits = (floor: number) => {
+    setSelectedFloor(floor);
+    setBuildingPerspective('FLOOR_PLAN');
+  };
+
   const isAnyFilterActive = 
     selectedOccupancy !== 'ALL' || 
     selectedType !== 'ALL' || 
@@ -1162,18 +1186,7 @@ export default function AdminBuildingApartmentManager() {
           <div className="px-3 py-2 bg-[#0E1520] border-b border-[#222B35] flex items-center justify-between gap-2.5 text-xs">
             {/* 5 Tab Chuyển Đổi Góc Nhìn */}
             <div className="flex bg-[#070B11] p-0.5 border border-[#1E2A38] text-xs font-semibold shrink-0 flex-wrap">
-              <button
-                type="button"
-                onClick={() => setBuildingPerspective('FLOOR_PLAN')}
-                className={`px-2.5 sm:px-3 py-1 transition-all flex items-center gap-1.5 ${
-                  buildingPerspective === 'FLOOR_PLAN'
-                    ? 'bg-[#C5A880] text-[#0D1117] font-bold shadow'
-                    : 'text-gray-400 hover:text-white'
-                }`}
-              >
-                <Layers className="w-3.5 h-3.5" />
-                <span>Sơ Đồ Tầng & Căn Hộ</span>
-              </button>
+              {/* Bước 1: Bản Đồ Phân Khu */}
               <button
                 type="button"
                 onClick={() => setBuildingPerspective('MASTER_PLAN')}
@@ -1184,20 +1197,10 @@ export default function AdminBuildingApartmentManager() {
                 }`}
               >
                 <Map className="w-3.5 h-3.5" />
-                <span>Bản Đồ Nội Khu & Tiện Ích</span>
+                <span>1. Bản Đồ Phân Khu The Tropical</span>
               </button>
-              <button
-                type="button"
-                onClick={() => setBuildingPerspective('3D')}
-                className={`px-2.5 sm:px-3 py-1 transition-all flex items-center gap-1.5 ${
-                  buildingPerspective === '3D'
-                    ? 'bg-[#C5A880] text-[#0D1117] font-bold shadow'
-                    : 'text-gray-400 hover:text-white'
-                }`}
-              >
-                <Building2 className="w-3.5 h-3.5" />
-                <span>Mô Hình 3D</span>
-              </button>
+
+              {/* Bước 2: Danh Sách Số Tầng */}
               <button
                 type="button"
                 onClick={() => setBuildingPerspective('BUILDING_ELEVATION')}
@@ -1207,9 +1210,39 @@ export default function AdminBuildingApartmentManager() {
                     : 'text-gray-400 hover:text-white'
                 }`}
               >
-                <Eye className="w-3.5 h-3.5" />
-                <span>Mặt Đứng</span>
+                <Building2 className="w-3.5 h-3.5" />
+                <span>2. Danh Sách Số Tầng ({selectedBlock})</span>
               </button>
+
+              {/* Bước 3: Mặt Bằng Tầng & Căn Hộ */}
+              <button
+                type="button"
+                onClick={() => setBuildingPerspective('FLOOR_PLAN')}
+                className={`px-2.5 sm:px-3 py-1 transition-all flex items-center gap-1.5 ${
+                  buildingPerspective === 'FLOOR_PLAN'
+                    ? 'bg-[#C5A880] text-[#0D1117] font-bold shadow'
+                    : 'text-gray-400 hover:text-white'
+                }`}
+              >
+                <Layers className="w-3.5 h-3.5" />
+                <span>3. Mặt Bằng Tầng {selectedFloor} & 21 Căn</span>
+              </button>
+
+              {/* Mô Hình 3D */}
+              <button
+                type="button"
+                onClick={() => setBuildingPerspective('3D')}
+                className={`px-2.5 sm:px-3 py-1 transition-all flex items-center gap-1.5 ${
+                  buildingPerspective === '3D'
+                    ? 'bg-[#C5A880] text-[#0D1117] font-bold shadow'
+                    : 'text-gray-400 hover:text-white'
+                }`}
+              >
+                <Eye className="w-3.5 h-3.5" />
+                <span>Mô Hình 3D</span>
+              </button>
+
+              {/* Lưới Căn */}
               <button
                 type="button"
                 onClick={() => setBuildingPerspective('GRID')}
@@ -1825,7 +1858,27 @@ export default function AdminBuildingApartmentManager() {
             });
 
             return (
-              <div className="p-4 bg-[#05070A] h-[640px] overflow-y-auto space-y-4">
+              <div className="p-4 bg-[#05070A] h-[640px] overflow-y-auto space-y-3.5 select-none">
+                {/* THANH ĐIỀU HƯỚNG BƯỚC 2: DANH SÁCH CÁC TẦNG CHUNG CƯ */}
+                <div className="p-3 bg-[#0E1522] border border-[#233346] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                  <div>
+                    <div className="text-[11px] font-mono text-[#C5A880] uppercase font-bold flex items-center gap-1.5">
+                      <Building2 className="w-3.5 h-3.5" />
+                      <span>BƯỚC 2: DANH SÁCH {currentTotalFloors} TẦNG • {currentBlockName.toUpperCase()}</span>
+                    </div>
+                    <div className="text-[11px] text-gray-400 mt-0.5">
+                      Nhấp vào bất kỳ tầng nào bên dưới để mở Sơ Đồ Mặt Bằng Tầng & Vị Trí Căn Hộ
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setBuildingPerspective('MASTER_PLAN')}
+                    className="px-2.5 py-1 bg-[#141E2B] hover:bg-[#C5A880] text-[#C5A880] hover:text-black border border-[#223348] text-xs font-mono font-bold transition-all flex items-center gap-1 self-start sm:self-auto shrink-0"
+                  >
+                    <span>◀ Xem Bản Đồ The Tropical</span>
+                  </button>
+                </div>
+
                 {/* KHỐI HIỂN THỊ CÁC TẦNG CỦA CHUNG CƯ */}
                 <div className="bg-[#0B0F17] border border-[#222B35] p-3 rounded-none flex flex-col space-y-3">
                   {/* Tầng Mái Sân Thượng */}
@@ -1848,19 +1901,22 @@ export default function AdminBuildingApartmentManager() {
                             isFloor30 ? 'border-[#10B981]/60 bg-[#064E3B]/10' : 'border-[#1F2937] hover:border-gray-600'
                           }`}
                         >
-                        <div className="flex items-center justify-between text-[11px] font-mono">
-                          <span className="text-white font-bold">
-                            TẦNG {floor} {isFloor30 ? '(Căn Chủ Hộ)' : ''}
-                          </span>
+                        <div className="flex items-center justify-between text-xs font-mono">
+                          <div className="flex items-center gap-2">
+                            <span className={`font-bold ${isFloor30 ? 'text-[#F59E0B] text-sm' : 'text-white'}`}>
+                              TẦNG {floor} {isFloor30 ? '⭐ (Căn Chủ Hộ Tầng 30)' : ''}
+                            </span>
+                            <span className="text-[10px] text-gray-400">
+                              (21 Căn / Sàn)
+                            </span>
+                          </div>
                           <button
                             type="button"
-                            onClick={() => {
-                              setSelectedFloor(floor);
-                              setBuildingPerspective('FLOOR_PLAN');
-                            }}
-                            className="text-[10.5px] text-[#C5A880] hover:text-white hover:underline font-semibold"
+                            onClick={() => handleSelectFloorAndShowUnits(floor)}
+                            className="px-2.5 py-1 bg-[#182333] hover:bg-[#C5A880] text-[#C5A880] hover:text-black border border-[#26374D] text-xs font-mono font-bold transition-all flex items-center gap-1.5 shadow"
                           >
-                            Xem mặt bằng tầng
+                            <Layers className="w-3.5 h-3.5" />
+                            <span>Bấm Xem Mặt Bằng Tầng {floor} & 21 Căn ➔</span>
                           </button>
                         </div>
 
@@ -2019,6 +2075,26 @@ export default function AdminBuildingApartmentManager() {
 
             return (
               <div className="p-4 sm:p-5 bg-[#05070A] h-[660px] sm:h-[760px] overflow-y-auto space-y-3.5 no-scrollbar select-none">
+
+                {/* THANH ĐIỀU HƯỚNG BƯỚC 3: MẶT BẰNG TẦNG ĐIỂN HÌNH */}
+                <div className="p-2.5 bg-[#0F1724] border border-[#233345] flex items-center justify-between gap-3 text-xs font-mono">
+                  <div className="flex items-center gap-2">
+                    <span className="px-2 py-0.5 bg-[#C5A880] text-black font-bold text-[10.5px]">BƯỚC 3</span>
+                    <span className="text-white font-bold">
+                      MẶT BẰNG SÀN TẦNG {selectedFloor} • {currentBlockName.toUpperCase()}
+                    </span>
+                    <span className="text-gray-400 text-[11px] hidden sm:inline">
+                      (21 Căn Hộ • Nhấp vào căn hộ để xem chi tiết bên phải)
+                    </span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setBuildingPerspective('BUILDING_ELEVATION')}
+                    className="px-2.5 py-1 bg-[#16202E] hover:bg-[#C5A880] text-[#C5A880] hover:text-black border border-[#24354B] text-[11px] font-bold transition-all flex items-center gap-1 shrink-0"
+                  >
+                    <span>◀ Xem Danh Sách Các Tầng</span>
+                  </button>
+                </div>
 
                 {/* THANH KPI TÓM TẮT DÒNG TIỀN & TIÊU THỤ TOÀN TẦNG 21 CĂN HỘ */}
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 p-2.5 bg-gradient-to-r from-[#101722] via-[#121A26] to-[#101722] border border-[#253244] text-[11px] font-mono">
@@ -2596,163 +2672,18 @@ export default function AdminBuildingApartmentManager() {
           {buildingPerspective === 'MASTER_PLAN' && (
             <div className="p-3 sm:p-4 bg-[#0A0E17] h-[660px] sm:h-[760px] overflow-y-auto space-y-4 no-scrollbar select-none">
               
-              {/* SUB-VIEW 1: PHÂN KHU THE TROPICAL - BẢN ĐỒ NỘI KHU 18 TIỆN ÍCH */}
+              {/* SUB-VIEW 1: PHÂN KHU THE TROPICAL - BẢN ĐỒ NỘI KHU 23 TIỆN ÍCH (TỰ VẼ 2.5D) */}
               {masterPlanTab === 'TROPICAL' && (
                 <div className="space-y-3.5">
-                  {/* Thanh điều hướng 4 chung cư */}
-                  <div className="p-3 bg-[#111622] border border-[#222E3E] space-y-2">
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 text-xs">
-                      <div>
-                        <span className="text-[#C5A880] font-mono font-bold tracking-wider uppercase text-[11px] flex items-center gap-1.5">
-                          <Sparkles className="w-3.5 h-3.5 text-[#C5A880]" />
-                          BẢN ĐỒ NỘI KHU PHÂN KHU THE TROPICAL (18 TIỆN ÍCH)
-                        </span>
-                        <div className="text-gray-400 text-[11px] mt-0.5">
-                          Rê chuột vào điểm ghim trên bản đồ hoặc danh sách bên dưới để xem chi tiết vị trí & khoảng cách
-                        </div>
-                      </div>
-                      <span className="text-[10px] font-mono text-emerald-400 bg-emerald-950/70 border border-emerald-500/50 px-2 py-0.5 self-start sm:self-auto shrink-0">
-                        Đang vận hành: {selectedBlock}
-                      </span>
-                    </div>
-
-                    {/* Bộ chuyển nhanh 4 Chung Cư */}
-                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1">
-                      {[
-                        { code: 'BS-07', floors: 34, units: 714, loc: 'Trục Rodeo' },
-                        { code: 'BS-08', floors: 39, units: 819, loc: 'Vườn Cọ' },
-                        { code: 'BS-09', floors: 34, units: 714, loc: 'Hồ Nhiệt Đới' },
-                        { code: 'BS-10', floors: 34, units: 714, loc: 'Sân Malibu' },
-                      ].map((item) => {
-                        const isCurrent = selectedBlock === item.code;
-                        return (
-                          <button
-                            key={item.code}
-                            type="button"
-                            onClick={() => handleSwitchBlock(item.code as any)}
-                            className={`p-2 border text-left transition-all relative ${
-                              isCurrent
-                                ? 'bg-[#1E2A38] border-[#C5A880] ring-1 ring-[#C5A880]'
-                                : 'bg-[#141C27] border-[#223042] hover:border-gray-500 text-gray-300'
-                            }`}
-                          >
-                            <div className="flex items-center justify-between">
-                              <span className={`font-mono font-bold text-xs ${isCurrent ? 'text-[#C5A880]' : 'text-white'}`}>
-                                Chung Cư {item.code}
-                              </span>
-                              {isCurrent && (
-                                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                              )}
-                            </div>
-                            <div className="text-[10px] text-gray-400 mt-0.5 flex justify-between font-mono">
-                              <span>{item.floors} Tầng • {item.units} Căn</span>
-                            </div>
-                            <div className="text-[9.5px] text-[#C5A880]/80 mt-0.5 truncate">
-                              {item.loc}
-                            </div>
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
-
-                  {/* MÔ HÌNH QUY HOẠCH NỘI KHU THE TROPICAL TỰ VẼ (SELF-DRAWN 2.5D VECTOR) */}
                   <TropicalCampusSvgModel
                     amenities={THE_TROPICAL_AMENITIES}
                     selectedBlock={selectedBlock}
                     onSelectBlock={handleSwitchBlock}
+                    onSelectBlockAndShowFloors={handleSelectBlockAndShowFloors}
                     hoveredAmenityId={hoveredAmenityId}
                     onHoverAmenity={setHoveredAmenityId}
                     onOpenZoomModal={() => setIsMasterPlanZoomed(true)}
                   />
-
-                  {/* Danh bạ 18 Tiện Ích Nội Khu The Tropical (HOVER XEM TIỆN ÍCH TRÊN BẢN ĐỒ) */}
-                  <div className="p-3 bg-[#111622] border border-[#222E3E] space-y-2.5">
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5">
-                      <div className="flex items-center gap-1.5 text-xs font-mono font-bold text-white">
-                        <Sparkles className="w-3.5 h-3.5 text-[#C5A880]" />
-                        <span>18 TIỆN ÍCH NỘI KHU THE TROPICAL</span>
-                        <span className="text-gray-400 font-normal">({THE_TROPICAL_AMENITIES.length} hạng mục)</span>
-                      </div>
-
-                      {/* Bộ lọc loại tiện ích */}
-                      <div className="flex items-center gap-1 overflow-x-auto no-scrollbar font-mono text-[10.5px]">
-                        {[
-                          { key: 'ALL', label: 'Tất Cả' },
-                          { key: 'POOL', label: 'Bể Bơi' },
-                          { key: 'PARK', label: 'Cảnh Quan' },
-                          { key: 'SPORT', label: 'Thể Thao' },
-                          { key: 'ACCESS', label: 'Hạ Tầng' },
-                        ].map((c) => (
-                          <button
-                            key={c.key}
-                            type="button"
-                            onClick={() => setSelectedAmenityCategory(c.key as any)}
-                            className={`px-2 py-0.5 border transition-all ${
-                              selectedAmenityCategory === c.key
-                                ? 'bg-[#C5A880] text-black font-bold border-[#C5A880]'
-                                : 'bg-[#161F2C] text-gray-400 border-[#253346] hover:text-white'
-                            }`}
-                          >
-                            {c.label}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-
-                    {/* Lưới danh mục tiện ích: HOVER VÀO THẺ ĐỂ SÁNG GHIM TRÊN BẢN ĐỒ */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 max-h-[220px] overflow-y-auto no-scrollbar pr-1">
-                      {THE_TROPICAL_AMENITIES
-                        .filter(item => selectedAmenityCategory === 'ALL' || item.category === selectedAmenityCategory)
-                        .map((item) => {
-                          const isHovered = hoveredAmenityId === item.id;
-                          const isSel = selectedAmenityId === item.id;
-                          const isHighlighted = isHovered || isSel;
-                          return (
-                            <div
-                              key={item.id}
-                              onMouseEnter={() => setHoveredAmenityId(item.id)}
-                              onMouseLeave={() => setHoveredAmenityId(null)}
-                              onClick={() => setSelectedAmenityId(isSel ? null : item.id)}
-                              className={`p-2 border text-left cursor-pointer transition-all ${
-                                isHighlighted
-                                  ? 'bg-[#1C2838] border-[#C5A880] ring-1 ring-[#C5A880]'
-                                  : 'bg-[#131A24] border-[#222E3E] hover:border-gray-600'
-                              }`}
-                            >
-                              <div className="flex items-start gap-2">
-                                <span className={`w-5 h-5 rounded-none flex items-center justify-center font-mono font-bold text-[10px] shrink-0 ${
-                                  isHighlighted
-                                    ? 'bg-[#C5A880] text-black border border-white'
-                                    : item.category === 'POOL'
-                                    ? 'bg-cyan-950 text-cyan-300 border border-cyan-700/60'
-                                    : item.category === 'PARK'
-                                    ? 'bg-emerald-950 text-emerald-300 border border-emerald-700/60'
-                                    : item.category === 'SPORT'
-                                    ? 'bg-amber-950 text-amber-300 border border-amber-700/60'
-                                    : 'bg-indigo-950 text-indigo-300 border border-indigo-700/60'
-                                }`}>
-                                  {item.id}
-                                </span>
-                                <div className="min-w-0 flex-1">
-                                  <div className="flex items-center justify-between">
-                                    <div className="text-[11.5px] font-bold text-white truncate">
-                                      {item.name}
-                                    </div>
-                                    <span className="text-[9.5px] font-mono text-cyan-300 shrink-0 ml-1">
-                                      {item.distance.replace('Cách BS-07: ', '')}
-                                    </span>
-                                  </div>
-                                  <div className="text-[10px] text-gray-400 mt-0.5 line-clamp-2 leading-snug">
-                                    {item.desc}
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          );
-                        })}
-                    </div>
-                  </div>
                 </div>
               )}
 
@@ -4107,6 +4038,10 @@ export default function AdminBuildingApartmentManager() {
                     amenities={THE_TROPICAL_AMENITIES}
                     selectedBlock={selectedBlock}
                     onSelectBlock={handleSwitchBlock}
+                    onSelectBlockAndShowFloors={(b) => {
+                      setIsMasterPlanZoomed(false);
+                      handleSelectBlockAndShowFloors(b);
+                    }}
                     hoveredAmenityId={hoveredAmenityId}
                     onHoverAmenity={setHoveredAmenityId}
                   />
