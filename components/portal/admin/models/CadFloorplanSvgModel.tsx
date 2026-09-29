@@ -162,11 +162,18 @@ export default function CadFloorplanSvgModel({
           {/* 2. TỰ VẼ 21 CĂN HỘ TRÊN MẶT SÀN CAD */}
           {CAD_FLOOR_UNITS_CONFIG.map(cfg => {
             const coord = UNIT_LAYOUT_COORDS[cfg.num] || { x: 100, y: 100, w: 80, h: 80, balcony: 'TOP' };
-            const unit = unitsOnFloor.find(u => u.code.endsWith(cfg.code) || u.code === cfg.code);
-            const isSelected = activeUnitCode === cfg.code || activeUnitCode?.endsWith(cfg.code);
+            const unit = unitsOnFloor.find(u => 
+              u.code === cfg.code || 
+              u.code.endsWith(`-${cfg.code}`) || 
+              u.code.endsWith(cfg.code) || 
+              u.code.endsWith(`-${cfg.num}`) || 
+              u.code.endsWith(cfg.num)
+            );
+            const isSelected = activeUnitCode === cfg.code || activeUnitCode?.endsWith(cfg.code) || (unit && activeUnitCode === unit.code);
             const isHovered = hoveredUnitCode === cfg.code;
 
-            const isOccupied = unit?.status === 'OCCUPIED' || (selectedFloor === 12 && cfg.num === '05') || (selectedFloor % 2 === 0 && (cfg.num === '03' || cfg.num === '15' || cfg.num === '18'));
+            const isOccupied = unit?.status === 'OCCUPIED';
+            const isMaintenance = unit?.status === 'MAINTENANCE';
 
             return (
               <g
@@ -192,7 +199,9 @@ export default function CadFloorplanSvgModel({
                       : isHovered
                       ? '#111C2D'
                       : isOccupied
-                      ? '#0B192A'
+                      ? '#09261B'
+                      : isMaintenance
+                      ? '#0D2235'
                       : '#08111D'
                   }
                   stroke={
@@ -201,6 +210,8 @@ export default function CadFloorplanSvgModel({
                       : isHovered
                       ? '#94A3B8'
                       : isOccupied
+                      ? '#10B981'
+                      : isMaintenance
                       ? '#0284C7'
                       : '#1E293B'
                   }
@@ -264,18 +275,18 @@ export default function CadFloorplanSvgModel({
                     width="72"
                     height="16"
                     rx="3"
-                    fill={isOccupied ? '#065F46' : '#1E293B'}
+                    fill={isOccupied ? '#065F46' : isMaintenance ? '#075985' : '#1E293B'}
                   />
                   <text
                     x="0"
                     y="3.5"
-                    fill={isOccupied ? '#A7F3D0' : '#94A3B8'}
+                    fill={isOccupied ? '#A7F3D0' : isMaintenance ? '#BAE6FD' : '#94A3B8'}
                     fontSize="7.5"
                     fontFamily="monospace"
                     fontWeight="bold"
                     textAnchor="middle"
                   >
-                    {isOccupied ? 'CÓ CƯ DÂN' : 'CĂN TRỐNG'}
+                    {isOccupied ? 'CÓ CƯ DÂN' : isMaintenance ? 'NGHIỆM THU' : 'CĂN TRỐNG'}
                   </text>
                 </g>
               </g>

@@ -602,7 +602,12 @@ export default function AdminBuildingApartmentManager() {
   // Căn hộ đang được chọn làm tiêu điểm hồ sơ
   const activeUnit = useMemo(() => {
     return (
-      displayUnits.find(u => u.code === selectedAptCode && u.floor === selectedFloor) ||
+      displayUnits.find(u => u.floor === selectedFloor && (
+        u.code === selectedAptCode || 
+        u.code.endsWith(`-${selectedAptCode}`) || 
+        u.code.endsWith(selectedAptCode) ||
+        selectedAptCode.endsWith(u.code)
+      )) ||
       displayUnits.find(u => u.code === selectedAptCode) ||
       displayUnits.find(u => u.floor === selectedFloor) ||
       displayUnits[0] ||
@@ -1653,14 +1658,22 @@ export default function AdminBuildingApartmentManager() {
                 u.floor === selectedFloor && (
                   u.code.toUpperCase() === chCode ||
                   u.code.toUpperCase() === targetCode ||
+                  u.code.toUpperCase().endsWith(`-${chCode}`) ||
                   u.code.toUpperCase().endsWith(chCode) ||
+                  u.code.toUpperCase().endsWith(`-${cfg.num}`) ||
+                  u.code.toUpperCase().endsWith(cfg.num) ||
                   (selectedFloor === 30 && u.code === chCode)
                 )
               );
-              const isOccupied = found?.status === 'OCCUPIED' || (selectedFloor === 12 && cfg.num === '05') || (selectedFloor % 2 === 0 && (cfg.num === '03' || cfg.num === '15' || cfg.num === '18'));
-              const isMaintenance = found?.status === 'MAINTENANCE' || (selectedFloor % 5 === 0 && cfg.num === '09');
 
-              return found || ({
+              if (found) {
+                return found;
+              }
+
+              const isOccupied = (selectedFloor === 12 && cfg.num === '05') || (cfg.num !== '04' && cfg.num !== '13' && cfg.num !== '19');
+              const isMaintenance = cfg.num === '09';
+
+              return ({
                 code: targetCode,
                 tower: selectedBlock === 'BS-10' ? 'B' : 'A',
                 towerName: currentBlockName,
@@ -2840,14 +2853,22 @@ export default function AdminBuildingApartmentManager() {
             u.floor === selectedFloor && (
               u.code.toUpperCase() === chCode ||
               u.code.toUpperCase() === targetCode ||
+              u.code.toUpperCase().endsWith(`-${chCode}`) ||
               u.code.toUpperCase().endsWith(chCode) ||
+              u.code.toUpperCase().endsWith(`-${cfg.num}`) ||
+              u.code.toUpperCase().endsWith(cfg.num) ||
               (selectedFloor === 30 && u.code === chCode)
             )
           );
-          const isOccupied = found?.status === 'OCCUPIED' || (selectedFloor === 12 && cfg.num === '05') || (selectedFloor % 2 === 0 && (cfg.num === '03' || cfg.num === '15' || cfg.num === '18'));
-          const isMaintenance = found?.status === 'MAINTENANCE' || (selectedFloor % 5 === 0 && cfg.num === '09');
 
-          return found || ({
+          if (found) {
+            return found;
+          }
+
+          const isOccupied = (selectedFloor === 12 && cfg.num === '05') || (cfg.num !== '04' && cfg.num !== '13' && cfg.num !== '19');
+          const isMaintenance = cfg.num === '09';
+
+          return ({
             code: targetCode,
             tower: selectedBlock === 'BS-10' ? 'B' : 'A',
             towerName: currentBlockName,
