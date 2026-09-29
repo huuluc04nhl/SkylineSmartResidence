@@ -349,11 +349,7 @@ export default function AdminBuildingApartmentManager() {
   const [selectedBlock, setSelectedBlock] = useState<'BS-07' | 'BS-08' | 'BS-09' | 'BS-10'>('BS-07');
   const buildingColorTone: BuildingColorTone = 'GOLD_LUXURY';
 
-  const [selectedOccupancy, setSelectedOccupancy] = useState<OccupancyFilter>('ALL');
-  const [selectedType, setSelectedType] = useState<ApartmentTypeFilter>('ALL');
   const [selectedFloorRange, setSelectedFloorRange] = useState<FloorRangeFilter>('ALL');
-  const [searchQuery, setSearchQuery] = useState('');
-  const [isSearchFocused, setIsSearchFocused] = useState(false);
   const [buildingPerspective, setBuildingPerspective] = useState<ViewPerspective>('FLOOR_PLAN');
   const [detailTab, setDetailTab] = useState<'OVERVIEW' | 'FINANCIAL' | 'TECHNICAL'>('OVERVIEW');
 
@@ -561,78 +557,8 @@ export default function AdminBuildingApartmentManager() {
     }));
   }, [apartments, currentBlockName]);
 
-  // Bộ lọc căn hộ đa tiêu chí & tìm kiếm thông minh
-  const filteredUnits = useMemo(() => {
-    return displayUnits.filter(unit => {
-      const matchOccupancy = selectedOccupancy === 'ALL'
-        ? true
-        : selectedOccupancy === 'OCCUPIED'
-        ? unit.status === 'OCCUPIED'
-        : selectedOccupancy === 'VACANT'
-        ? unit.status === 'VACANT'
-        : unit.status === 'MAINTENANCE';
-
-      const matchType = selectedType === 'ALL'
-        ? true
-        : selectedType === '1PN'
-        ? (unit.type === '1PN' || unit.typeLabel.includes('1PN'))
-        : selectedType === '2PN'
-        ? (unit.type === '2PN' || unit.typeLabel.includes('2PN'))
-        : selectedType === '3PN'
-        ? (unit.type === '3PN' || unit.typeLabel.includes('3PN'))
-        : (unit.type === 'DUPLEX_PENTHOUSE' || unit.typeLabel.toLowerCase().includes('duplex') || unit.typeLabel.toLowerCase().includes('penthouse'));
-
-      const matchFloorRange = selectedFloorRange === 'ALL'
-        ? true
-        : selectedFloorRange === 'LOW'
-        ? (unit.floor >= 1 && unit.floor <= 10)
-        : selectedFloorRange === 'MID'
-        ? (unit.floor >= 11 && unit.floor <= 20)
-        : (unit.floor >= 21);
-
-      const q = searchQuery.toLowerCase().trim();
-      if (!q) return matchOccupancy && matchType && matchFloorRange;
-
-      // Hỗ trợ tìm: mã căn, tên chủ hộ, sđt, cccd, email, loại căn, hướng, số tầng ("tầng 12", "tang 12", "12")
-      const matchSearch = 
-        unit.code.toLowerCase().includes(q) ||
-        (unit.owner?.name && unit.owner.name.toLowerCase().includes(q)) ||
-        (unit.owner?.phone && unit.owner.phone.includes(q)) ||
-        (unit.owner?.cccd && unit.owner.cccd.includes(q)) ||
-        (unit.owner?.email && unit.owner.email.toLowerCase().includes(q)) ||
-        unit.typeLabel.toLowerCase().includes(q) ||
-        (unit.direction && unit.direction.toLowerCase().includes(q)) ||
-        `tầng ${unit.floor}`.toLowerCase().includes(q) ||
-        `tang ${unit.floor}`.toLowerCase().includes(q) ||
-        (q.startsWith('tầng ') && unit.floor === parseInt(q.replace('tầng ', ''))) ||
-        (q.startsWith('tang ') && unit.floor === parseInt(q.replace('tang ', '')));
-
-      return matchOccupancy && matchType && matchFloorRange && matchSearch;
-    });
-  }, [displayUnits, selectedOccupancy, selectedType, selectedFloorRange, searchQuery]);
-
-  // Danh sách gợi ý tìm kiếm tức thì
-  const instantSearchMatches = useMemo(() => {
-    const q = searchQuery.trim().toLowerCase();
-    if (!q) return [];
-    return displayUnits.filter(u => {
-      return (
-        u.code.toLowerCase().includes(q) ||
-        (u.owner?.name && u.owner.name.toLowerCase().includes(q)) ||
-        (u.owner?.phone && u.owner.phone.includes(q)) ||
-        (u.owner?.cccd && u.owner.cccd.includes(q)) ||
-        (u.owner?.email && u.owner.email.toLowerCase().includes(q)) ||
-        u.typeLabel.toLowerCase().includes(q) ||
-        (u.direction && u.direction.toLowerCase().includes(q))
-      );
-    }).slice(0, 6);
-  }, [displayUnits, searchQuery]);
-
-  const handleSelectSearchResult = (unit: ApartmentUnit) => {
-    setSelectedAptCode(unit.code);
-    setSelectedFloor(unit.floor);
-    setIsSearchFocused(false);
-  };
+  // Danh sách căn hộ hiển thị đồng bộ theo dữ liệu quản lý tòa nhà
+  const filteredUnits = displayUnits;
 
   const handleSelectApartment = (unit: ApartmentUnit) => {
     setSelectedAptCode(unit.code);
@@ -649,18 +575,7 @@ export default function AdminBuildingApartmentManager() {
     setBuildingPerspective('FLOOR_PLAN');
   };
 
-  const isAnyFilterActive = 
-    selectedOccupancy !== 'ALL' || 
-    selectedType !== 'ALL' || 
-    selectedFloorRange !== 'ALL' || 
-    searchQuery.trim() !== '';
-
-  const resetAllFilters = () => {
-    setSelectedOccupancy('ALL');
-    setSelectedType('ALL');
-    setSelectedFloorRange('ALL');
-    setSearchQuery('');
-  };
+  const isAnyFilterActive = false;
 
   // Bộ tra cứu O(1) phục vụ lọc thống nhất trên toàn bộ hệ thống (3D, Mặt Đứng, Mặt Bằng, Lưới)
   const matchingUnitCodesSet = useMemo(() => {
@@ -766,9 +681,9 @@ export default function AdminBuildingApartmentManager() {
       {/* ============================================================= */}
       {/* TRUNG TÂM ĐIỀU HÀNH: PHÂN CẤP DỰ ÁN > CHUNG CƯ > TẦNG > CĂN HỘ */}
       {/* ============================================================= */}
-      <div className="bg-[#0B121D] border border-[#22344B] p-3 space-y-2.5 shadow-lg">
-        {/* HÀNG 1: BREADCRUMB PHÂN CẤP TRỰC QUAN */}
-        <div className="flex flex-wrap items-center justify-between gap-3 pb-2.5 border-b border-[#1A283B]">
+      <div className="bg-[#0B121D] border border-[#22344B] p-2.5 sm:p-3 shadow-lg">
+        {/* THANH ĐIỀU HƯỚNG BREADCRUMB & CHỈ SỐ THỐNG KÊ */}
+        <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap text-xs">
             {/* 1. DỰ ÁN */}
             <div className="flex items-center gap-1.5 px-2.5 py-1 bg-[#121B27] border border-[#1E2D42] text-gray-200">
@@ -900,182 +815,6 @@ export default function AdminBuildingApartmentManager() {
             </button>
           </div>
         </div>
-
-        {/* HÀNG 2: BỘ LỌC TÌM KIẾM CĂN HỘ TẬP TRUNG */}
-        <div className="flex flex-wrap items-center justify-between gap-2.5 text-xs">
-          {/* Nhóm trái: Ô tìm kiếm thông minh */}
-          <div className="flex items-center gap-2 flex-1 min-w-[240px] max-w-sm">
-            <div className="relative flex-1">
-              <input
-                type="text"
-                value={searchQuery}
-                onFocus={() => setIsSearchFocused(true)}
-                onBlur={() => setTimeout(() => setIsSearchFocused(false), 250)}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Tìm căn (CH-06), tầng (T30), cư dân (Lực)..."
-                className="w-full bg-[#161B22] border border-[#2D3748] px-2.5 py-1 text-white text-xs placeholder:text-gray-500 outline-none focus:border-[#C5A880] transition-colors font-mono"
-              />
-              {searchQuery && (
-                <button
-                  type="button"
-                  onClick={() => setSearchQuery('')}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white font-mono text-xs"
-                  title="Xóa tìm kiếm"
-                >
-                  ✕
-                </button>
-              )}
-
-              {/* Instant Search Matches Dropdown */}
-              {isSearchFocused && searchQuery.trim() !== '' && (
-                <div className="absolute top-full left-0 mt-1.5 w-84 bg-[#0F141C] border border-[#C5A880]/50 shadow-2xl z-50 divide-y divide-[#1F2937] max-h-64 overflow-y-auto">
-                  <div className="px-3 py-1 bg-[#161F2C] text-[10px] font-mono text-[#C5A880] uppercase tracking-wider flex items-center justify-between">
-                    <span>Khớp ({instantSearchMatches.length} căn)</span>
-                    <span className="text-gray-400 text-[9px]">Nhấp chọn</span>
-                  </div>
-                  {instantSearchMatches.length === 0 ? (
-                    <div className="p-3 text-center text-gray-400 text-xs">
-                      Không tìm thấy căn &ldquo;{searchQuery}&rdquo;
-                    </div>
-                  ) : (
-                    instantSearchMatches.map(u => (
-                      <div
-                        key={u.code}
-                        onMouseDown={() => handleSelectSearchResult(u)}
-                        className={`p-2 hover:bg-[#1C2533] cursor-pointer flex items-center justify-between transition-colors ${
-                          selectedAptCode === u.code ? 'bg-[#1C2533] border-l-2 border-[#C5A880]' : ''
-                        }`}
-                      >
-                        <div className="flex items-center gap-2">
-                          <span className="font-mono font-bold text-white text-xs bg-[#161B22] px-1.5 py-0.5 border border-[#2D3748]">
-                            {u.code}
-                          </span>
-                          <div className="min-w-0">
-                            <div className="text-white text-xs font-semibold truncate flex items-center gap-1">
-                              <span>{u.owner?.name ? u.owner.name : 'Nhà Trống'}</span>
-                            </div>
-                            <div className="text-[10px] text-gray-400 truncate">
-                              Tầng {u.floor} • {u.typeLabel}
-                            </div>
-                          </div>
-                        </div>
-                        <span className={`text-[9px] px-1.5 py-0.5 font-mono shrink-0 ${
-                          u.status === 'OCCUPIED'
-                            ? 'bg-emerald-950 text-emerald-300 border border-emerald-800/60'
-                            : u.status === 'MAINTENANCE'
-                            ? 'bg-blue-950 text-blue-300 border border-blue-800/60'
-                            : 'bg-amber-950 text-amber-300 border border-amber-800/60'
-                        }`}>
-                          {u.status === 'OCCUPIED' ? 'Đã Ở' : u.status === 'MAINTENANCE' ? 'Nghiệm Thu' : 'Trống'}
-                        </span>
-                      </div>
-                    ))
-                  )}
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* Nhóm giữa: Nút chọn Tình trạng */}
-          <div className="flex items-center gap-1 font-mono">
-            {[
-              { id: 'ALL', label: 'Tất Cả' },
-              { id: 'OCCUPIED', label: 'Đã Ở' },
-              { id: 'VACANT', label: 'Trống' },
-              { id: 'MAINTENANCE', label: 'Nghiệm Thu' }
-            ].map(o => (
-              <button
-                key={o.id}
-                onClick={() => setSelectedOccupancy(o.id as any)}
-                className={`px-2.5 py-1 text-xs transition-all border ${
-                  selectedOccupancy === o.id
-                    ? 'bg-[#1C2533] text-[#C5A880] border-[#C5A880] font-bold shadow'
-                    : 'text-gray-400 hover:text-white bg-[#161B22]/70 border-transparent hover:bg-[#161B22]'
-                }`}
-              >
-                {o.label}
-              </button>
-            ))}
-          </div>
-
-          {/* Nhóm phải: Select Loại Căn + Select Tầng + Số lượng & Reset */}
-          <div className="flex items-center gap-2 font-mono flex-wrap">
-            {/* Select Loại Căn */}
-            <select
-              value={selectedType}
-              onChange={(e) => setSelectedType(e.target.value as any)}
-              className="bg-[#161B22] border border-[#2D3748] text-xs text-gray-200 px-2 py-1 outline-none focus:border-[#C5A880]"
-              title="Lọc theo loại phòng ngủ"
-            >
-              <option value="ALL">Mọi loại căn</option>
-              <option value="1PN">1 Phòng Ngủ</option>
-              <option value="2PN">2 Phòng Ngủ</option>
-              <option value="3PN">3 Phòng Ngủ</option>
-              <option value="DUPLEX_PENTHOUSE">Căn Lớn / Duplex</option>
-            </select>
-
-            {/* Select Tầng */}
-            <select
-              value={selectedFloorRange}
-              onChange={(e) => setSelectedFloorRange(e.target.value as any)}
-              className="bg-[#161B22] border border-[#2D3748] text-xs text-gray-200 px-2 py-1 outline-none focus:border-[#C5A880]"
-              title="Lọc theo khoảng tầng"
-            >
-              <option value="ALL">Mọi tầng</option>
-              <option value="LOW">Thấp (1-10)</option>
-              <option value="MID">Trung (11-20)</option>
-              <option value="HIGH">Cao (21-{currentTotalFloors})</option>
-            </select>
-
-            {/* Đếm số căn */}
-            <div className="text-[11px] text-gray-300 bg-[#161B22] px-2 py-1 border border-[#2D3748] hidden sm:block">
-              <strong className="text-white">{filteredUnits.length}</strong>/{displayUnits.length}
-            </div>
-
-            {/* Nút Đặt lại khi có bộ lọc hoạt động */}
-            {isAnyFilterActive && (
-              <button
-                type="button"
-                onClick={resetAllFilters}
-                className="px-2.5 py-1 bg-[#2B1D1D] hover:bg-[#3D2525] text-rose-300 border border-rose-800/60 text-xs font-semibold transition-all active:scale-95"
-                title="Đặt lại toàn bộ tiêu chí lọc"
-              >
-                <span>Đặt Lại</span>
-              </button>
-            )}
-          </div>
-        </div>
-
-        {/* HÀNG PHỤ: TIÊU CHÍ ĐANG LỌC (CHỈ HIỆN KHI CÓ LỌC) */}
-        {isAnyFilterActive && (
-          <div className="flex flex-wrap items-center gap-1.5 pt-1.5 border-t border-[#1C2533] text-[11px] font-mono">
-            <span className="text-gray-400 text-[10px]">Đang lọc:</span>
-            {searchQuery && (
-              <span className="inline-flex items-center gap-1 px-1.5 py-0.2 bg-[#1F2A38] text-white border border-[#2D3E54]">
-                &ldquo;{searchQuery}&rdquo;
-                <button type="button" onClick={() => setSearchQuery('')} className="text-gray-400 hover:text-white">✕</button>
-              </span>
-            )}
-            {selectedOccupancy !== 'ALL' && (
-              <span className="inline-flex items-center gap-1 px-1.5 py-0.2 bg-[#1A2533] text-[#C5A880] border border-[#2F4259]">
-                {selectedOccupancy === 'OCCUPIED' ? 'Đã ở' : selectedOccupancy === 'VACANT' ? 'Trống' : 'Nghiệm thu'}
-                <button type="button" onClick={() => setSelectedOccupancy('ALL')} className="text-gray-400 hover:text-white">✕</button>
-              </span>
-            )}
-            {selectedType !== 'ALL' && (
-              <span className="inline-flex items-center gap-1 px-1.5 py-0.2 bg-[#1A2533] text-sky-300 border border-[#2F4259]">
-                {selectedType}
-                <button type="button" onClick={() => setSelectedType('ALL')} className="text-gray-400 hover:text-white">✕</button>
-              </span>
-            )}
-            {selectedFloorRange !== 'ALL' && (
-              <span className="inline-flex items-center gap-1 px-1.5 py-0.2 bg-[#1A2533] text-amber-300 border border-[#2F4259]">
-                Tầng: {selectedFloorRange === 'LOW' ? '1-10' : selectedFloorRange === 'MID' ? '11-20' : `21-${currentTotalFloors}`}
-                <button type="button" onClick={() => setSelectedFloorRange('ALL')} className="text-gray-400 hover:text-white">✕</button>
-              </span>
-            )}
-          </div>
-        )}
       </div>
 
       {/* ============================================================= */}
