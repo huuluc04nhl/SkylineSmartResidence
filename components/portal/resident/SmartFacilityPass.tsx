@@ -476,35 +476,6 @@ export default function SmartFacilityPass({ currentUser, onNavigateModule }: Sma
         </div>
       </div>
 
-      {/* Distinction Callout Banner: Phân định rạch ròi Tiện Ích vs Dịch Vụ */}
-      <div className="p-3.5 bg-gradient-to-r from-[#121820] via-[#1A2332] to-[#121820] border border-[#2A374A] flex flex-col md:flex-row md:items-center justify-between gap-3 text-xs">
-        <div className="flex items-start gap-2.5">
-          <div className="p-1.5 bg-[#C5A880]/15 border border-[#C5A880]/40 text-[#C5A880] shrink-0 mt-0.5">
-            <Info className="w-4 h-4" />
-          </div>
-          <div>
-            <div className="font-bold text-white flex items-center gap-2">
-              <span>Định Hướng: Phân Biệt Tiện Ích & Dịch Vụ Cư Dân</span>
-              <span className="text-[10px] font-mono px-1.5 py-0.5 bg-emerald-950 text-emerald-400 border border-emerald-500/50">Không Gian & Cổng Vào Tự Động</span>
-            </div>
-            <p className="text-[11px] text-gray-400 mt-0.5 leading-relaxed">
-              • <strong className="text-gray-200">Tiện Ích:</strong> Là hệ thống cơ sở vật chất nội khu bạn trực tiếp đến trải nghiệm (Hồ bơi resort, Gym, Sân Tennis/Bóng rổ Malibu, Sân Yoga, Vườn nướng BBQ, Suối cảnh quan) — kiểm soát tự động bằng Thẻ/FaceID hoặc đặt trước khung giờ.<br className="hidden sm:inline" />
-              • <strong className="text-gray-200">Dịch Vụ:</strong> Là các dịch vụ theo yêu cầu có nhân viên phục vụ tận phòng (giặt ủi, dọn dẹp căn hộ, PT riêng, rửa xe B2, spa massage, giao cơm nóng tận cửa).
-            </p>
-          </div>
-        </div>
-        {onNavigateModule && (
-          <button
-            type="button"
-            onClick={() => onNavigateModule('resident-services')}
-            className="px-3.5 py-2 bg-[#161D26] hover:bg-[#C5A880] hover:text-[#0D1117] text-gray-200 font-bold text-[11px] uppercase tracking-wider transition-all shrink-0 flex items-center gap-1.5 border border-[#C5A880]/40 shadow"
-          >
-            <Sparkles className="w-3.5 h-3.5 text-[#C5A880]" />
-            <span>Mở Dịch Vụ Đời Sống →</span>
-          </button>
-        )}
-      </div>
-
       {/* ============================================================= */}
       {/* 2. THANH ĐIỀU HƯỚNG 3 CHỨC NĂNG (WORKFLOW TABS)               */}
       {/* ============================================================= */}

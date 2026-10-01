@@ -178,35 +178,6 @@ export default function ResidentServices({ currentUser, onNavigateModule }: Resi
         </div>
       </div>
 
-      {/* Distinction Callout Banner: Phân định rạch ròi Dịch Vụ vs Tiện Ích */}
-      <div className="p-3.5 bg-gradient-to-r from-[#121820] via-[#1A2332] to-[#121820] border border-[#2A374A] flex flex-col md:flex-row md:items-center justify-between gap-3 text-xs">
-        <div className="flex items-start gap-2.5">
-          <div className="p-1.5 bg-[#C5A880]/15 border border-[#C5A880]/40 text-[#C5A880] shrink-0 mt-0.5">
-            <Info className="w-4 h-4" />
-          </div>
-          <div>
-            <div className="font-bold text-white flex items-center gap-2">
-              <span>Định Hướng: Phân Biệt Dịch Vụ & Tiện Ích Nội Khu</span>
-              <span className="text-[10px] font-mono px-1.5 py-0.5 bg-[#C5A880]/20 text-[#C5A880] border border-[#C5A880]/40">Nhân Viên Phục Vụ Tận Nơi</span>
-            </div>
-            <p className="text-[11px] text-gray-400 mt-0.5 leading-relaxed">
-              • <strong className="text-gray-200">Dịch Vụ:</strong> Là các dịch vụ đặt theo đơn có nhân sự chuyên trách phục vụ tại căn hộ (giặt đồ, dọn nhà, PT kèm riêng, rửa xe B2, spa, ẩm thực, xe đón).<br className="hidden sm:inline" />
-              • <strong className="text-gray-200">Tiện Ích:</strong> Là không gian công cộng/thể thao nội khu (Hồ bơi, Gym, Sân Tennis Malibu, Sân Yoga, Vườn nướng BBQ, Công viên) — ra vào tự do bằng Thẻ/FaceID hoặc đặt lịch sử dụng không gian.
-            </p>
-          </div>
-        </div>
-        {onNavigateModule && (
-          <button
-            type="button"
-            onClick={() => onNavigateModule('resident-facilities')}
-            className="px-3.5 py-2 bg-[#161D26] hover:bg-[#C5A880] hover:text-[#0D1117] text-gray-200 font-bold text-[11px] uppercase tracking-wider transition-all shrink-0 flex items-center gap-1.5 border border-[#C5A880]/40 shadow"
-          >
-            <Waves className="w-3.5 h-3.5 text-[#C5A880]" />
-            <span>Mở Trang Tiện Ích & Thẻ →</span>
-          </button>
-        )}
-      </div>
-
       {/* Thông báo thành công */}
       {bookingSuccessMsg && (
         <div className="p-4 bg-emerald-950/80 border border-emerald-500 text-emerald-200 text-xs flex items-center justify-between gap-3 animate-fadeIn shadow-lg">
