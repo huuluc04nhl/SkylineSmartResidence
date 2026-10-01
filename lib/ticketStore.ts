@@ -411,6 +411,35 @@ export function rateTicket(
 }
 
 /**
+ * Xóa phiếu phản hồi sự cố (cục bộ và đồng bộ lên API)
+ */
+export async function deleteTicketAsync(ticketId: string | number): Promise<boolean> {
+  const idStr = String(ticketId);
+  const allTickets = getTickets();
+  const updatedTickets = allTickets.filter(t => t.id !== idStr && String(t.nks_id) !== idStr);
+  saveTickets(updatedTickets);
+
+  try {
+    const res = await fetch('/api/tickets', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'DELETE', ticketId }),
+    });
+    if (res.ok) {
+      const data = await res.json();
+      return data.success === true;
+    }
+  } catch (err) {
+    console.warn('Lỗi gọi API xóa ticket:', err);
+  }
+  return true;
+}
+
+export function deleteTicket(ticketId: string | number): void {
+  deleteTicketAsync(ticketId);
+}
+
+/**
  * Tính toán Bảng Lương Thù Lao tự động 100% từ các ca sửa thực tế
  */
 export function getTechnicianPayroll(): TechnicianPayrollSummary[] {

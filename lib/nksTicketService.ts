@@ -183,7 +183,33 @@ export async function createNksTicket(payload: NksCreateTicketPayload): Promise<
 }
 
 /**
- * 4. Chuyển đổi dữ liệu NKS Ticket sang chuẩn ExtendedServiceRequest của Skyline
+ * 4. Xóa phiếu phản hồi / ticket trên hệ thống NKS SCRMAI API
+ * POST /skyline/ticket/delete
+ */
+export async function deleteNksTicket(id: number): Promise<boolean> {
+  try {
+    const res = await fetch(`${NKS_TICKET_API_BASE_URL}/skyline/ticket/delete`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${NKS_TICKET_API_TOKEN}`,
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ id }),
+      cache: 'no-store',
+    });
+    if (res.ok) {
+      const json = await res.json().catch(() => ({}));
+      return json.success === true;
+    }
+  } catch (err) {
+    console.warn(`Lỗi xóa NKS Ticket #${id}:`, err);
+  }
+  return false;
+}
+
+/**
+ * 5. Chuyển đổi dữ liệu NKS Ticket sang chuẩn ExtendedServiceRequest của Skyline
  * Giữ nguyên trạng thái điều phối KTV, nghiệm thu và đánh giá nếu đã lưu cục bộ
  */
 export function nksTicketToServiceRequest(

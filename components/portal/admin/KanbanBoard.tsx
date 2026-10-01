@@ -29,12 +29,14 @@ import {
   BadgeCheck,
   RefreshCw,
   SlidersHorizontal,
-  PhoneCall
+  PhoneCall,
+  Trash2
 } from 'lucide-react';
 import { 
   getTickets, 
   getTechnicians, 
   syncTicketsWithServer,
+  deleteTicketAsync,
   assignTechnicianToTicket, 
   resolveTicket, 
   getTechnicianPayroll, 
@@ -84,6 +86,17 @@ export default function KanbanBoard() {
     } finally {
       setIsSyncing(false);
     }
+  };
+
+  const handleDeleteTicket = async (ticket: ExtendedServiceRequest) => {
+    const code = ticket.nks_id ? `#${ticket.nks_id}` : `#${ticket.id}`;
+    if (!window.confirm(`Quý Ban Quản Lý có chắc chắn muốn xóa vĩnh viễn phiếu ${code} khỏi hệ thống?`)) {
+      return;
+    }
+    await deleteTicketAsync(ticket.nks_id || ticket.id);
+    refreshAllData();
+    setActionSuccessMsg(`Đã xóa vĩnh viễn phiếu ${code} thành công!`);
+    setTimeout(() => setActionSuccessMsg(null), 3000);
   };
 
   useEffect(() => {
@@ -293,9 +306,18 @@ export default function KanbanBoard() {
                             Trực tuyến
                           </span>
                         </div>
-                        <span className="px-2 py-0.5 bg-red-950 text-red-300 border border-red-500 text-[10px] font-mono font-bold">
-                          {ticket.ai_category} • Mức {ticket.ai_priority}
-                        </span>
+                        <div className="flex items-center gap-1.5">
+                          <span className="px-2 py-0.5 bg-red-950 text-red-300 border border-red-500 text-[10px] font-mono font-bold">
+                            {ticket.ai_category} • Mức {ticket.ai_priority}
+                          </span>
+                          <button
+                            onClick={() => handleDeleteTicket(ticket)}
+                            className="text-gray-500 hover:text-red-400 p-1 transition-colors"
+                            title="Xóa phiếu khỏi hệ thống"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
                       </div>
 
                       <div className="text-xs text-white font-semibold flex items-center justify-between">
@@ -372,9 +394,18 @@ export default function KanbanBoard() {
                             Trực tuyến
                           </span>
                         </div>
-                        <span className="px-2 py-0.5 bg-amber-950 text-amber-300 border border-amber-500 text-[10px] font-mono font-bold">
-                          {ticket.ai_category}
-                        </span>
+                        <div className="flex items-center gap-1.5">
+                          <span className="px-2 py-0.5 bg-amber-950 text-amber-300 border border-amber-500 text-[10px] font-mono font-bold">
+                            {ticket.ai_category}
+                          </span>
+                          <button
+                            onClick={() => handleDeleteTicket(ticket)}
+                            className="text-gray-500 hover:text-red-400 p-1 transition-colors"
+                            title="Xóa phiếu khỏi hệ thống"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
                       </div>
 
                       <div className="text-xs text-white font-semibold flex items-center justify-between">
@@ -454,7 +485,7 @@ export default function KanbanBoard() {
                             Trực tuyến
                           </span>
                         </div>
-                        <div className="flex items-center gap-1">
+                        <div className="flex items-center gap-1.5">
                           {ticket.rating ? (
                             <span className="px-2 py-0.5 bg-yellow-950 text-yellow-300 border border-yellow-500 text-[10px] font-bold flex items-center gap-0.5">
                               <Star className="w-3 h-3 fill-current text-yellow-400" /> {ticket.rating} ⭐
@@ -462,6 +493,13 @@ export default function KanbanBoard() {
                           ) : (
                             <span className="text-[10px] text-gray-400 italic">Chờ cư dân chấm</span>
                           )}
+                          <button
+                            onClick={() => handleDeleteTicket(ticket)}
+                            className="text-gray-500 hover:text-red-400 p-1 transition-colors ml-1"
+                            title="Xóa phiếu khỏi hệ thống"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
                         </div>
                       </div>
 

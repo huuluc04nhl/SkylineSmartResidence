@@ -10,6 +10,7 @@ import {
 import { 
   fetchNksTickets, 
   createNksTicket, 
+  deleteNksTicket,
   nksTicketToServiceRequest,
   NksTicket
 } from '@/lib/nksTicketService';
@@ -263,6 +264,19 @@ export async function POST(req: Request) {
       data.updatedAt = new Date().toISOString();
       writeServerData(data);
       return NextResponse.json({ success: true, message: 'Đã ghi nhận đánh giá của cư dân.' });
+    }
+
+    // 6. Xóa phiếu trên NKS API và cơ sở dữ liệu
+    if (action === 'DELETE' && body.ticketId) {
+      const ticketIdStr = String(body.ticketId);
+      const numId = Number(ticketIdStr.replace('TICK-', ''));
+      if (!isNaN(numId) && numId > 0) {
+        await deleteNksTicket(numId);
+      }
+      data.tickets = data.tickets.filter(t => t.id !== ticketIdStr && String(t.nks_id) !== ticketIdStr);
+      data.updatedAt = new Date().toISOString();
+      writeServerData(data);
+      return NextResponse.json({ success: true, message: 'Đã xóa phiếu thành công.' });
     }
 
     return NextResponse.json({ success: true, data });
