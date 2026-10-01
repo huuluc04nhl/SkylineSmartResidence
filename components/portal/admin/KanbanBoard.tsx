@@ -187,15 +187,26 @@ export default function KanbanBoard() {
     setAiAutoMode(isAutoDispatchEnabled());
     refreshAllData();
 
+    const triggerAutonomousAi = () => {
+      if (!isAutoDispatchEnabled()) return;
+      const all = getTickets();
+      const pending = all.filter(t => t.status === 'Open');
+      if (pending.length > 0) {
+        autoDispatchAllPendingTickets();
+        refreshAllData();
+      }
+    };
+
     // Tự động đồng bộ live dữ liệu và quét AI tự động điều phối
     syncTicketsWithServer().then(() => {
-      if (isAutoDispatchEnabled()) {
-        autoDispatchAllPendingTickets();
-      }
+      triggerAutonomousAi();
       refreshAllData();
     });
 
-    const handleUpdate = () => refreshAllData();
+    const handleUpdate = () => {
+      refreshAllData();
+      triggerAutonomousAi();
+    };
     window.addEventListener('skyline_tickets_updated', handleUpdate);
     return () => window.removeEventListener('skyline_tickets_updated', handleUpdate);
   }, []);
@@ -352,6 +363,27 @@ export default function KanbanBoard() {
         </div>
       </div>
 
+      {/* Autonomous AI System Status Banner */}
+      <div className="p-3 bg-gradient-to-r from-purple-950/40 via-[#161B22] to-[#121820] border border-purple-500/30 flex items-center justify-between flex-wrap gap-2 text-xs">
+        <div className="flex items-center gap-2.5 text-purple-200">
+          <div className="w-6 h-6 bg-purple-900/60 border border-purple-400/40 flex items-center justify-center text-purple-300 flex-shrink-0">
+            <Sparkles className="w-3.5 h-3.5 animate-pulse text-purple-400" />
+          </div>
+          <div>
+            <span className="font-semibold text-white">Chế Độ Tự Động Hóa AI 24/7:</span>{' '}
+            <span className="text-gray-300">
+              Sự cố phát sinh được AI tự động phân tích &amp; điều phối thợ tối ưu theo thời gian thực. Ban Quản Lý chỉ cần giám sát và can thiệp khi có thiếu sót hoặc yêu cầu ngoại lệ.
+            </span>
+          </div>
+        </div>
+        <div className="flex items-center gap-2">
+          <span className="text-[10px] font-mono text-emerald-400 bg-emerald-950/80 border border-emerald-500/40 px-2.5 py-1 flex items-center gap-1.5 font-bold">
+            <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-ping"></span>
+            AI ĐANG TỰ ĐỘNG VẬN HÀNH
+          </span>
+        </div>
+      </div>
+
       {actionSuccessMsg && (
         <div className="p-3.5 bg-emerald-950/80 border border-emerald-500 text-emerald-300 text-xs flex items-center gap-2 animate-fadeIn">
           <CheckCircle2 className="w-4 h-4 text-emerald-400 flex-shrink-0" />
@@ -412,21 +444,10 @@ export default function KanbanBoard() {
                   </span>
                 </div>
 
-                {openTickets.length > 0 ? (
-                  <button
-                    onClick={handleOneClickAutoDispatch}
-                    disabled={isAutoDispatching}
-                    className="px-2.5 py-1 bg-gradient-to-r from-purple-700 to-indigo-700 hover:from-purple-600 hover:to-indigo-600 text-white text-[11px] font-bold uppercase tracking-wider flex items-center gap-1.5 shadow transition-all disabled:opacity-50 border border-purple-400/40"
-                    title="Kích hoạt AI tự động gán thợ tối ưu cho toàn bộ các phiếu trong hàng chờ"
-                  >
-                    <Sparkles className={`w-3 h-3 ${isAutoDispatching ? 'animate-spin' : 'text-purple-200'}`} />
-                    <span>{isAutoDispatching ? 'Đang phân công...' : `AI Phân Công Hết`}</span>
-                  </button>
-                ) : (
-                  <span className="text-[10px] font-mono text-gray-400 flex items-center gap-1">
-                    <CheckCircle2 className="w-3 h-3 text-emerald-400" /> Sẵn sàng
-                  </span>
-                )}
+                <span className="text-[10px] font-mono text-purple-300 bg-purple-950/60 border border-purple-500/40 px-2 py-0.5 flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 bg-purple-400 rounded-full animate-ping"></span>
+                  AI Tự Động Phân Công 24/7
+                </span>
               </div>
 
               <div className="p-4 space-y-4 min-h-[420px] overflow-y-auto">
@@ -493,21 +514,15 @@ export default function KanbanBoard() {
 
                         <div className="flex items-center gap-1.5">
                           <button
-                            onClick={() => handleAutoDispatchOne(ticket.id)}
-                            className="px-2.5 py-1.5 bg-purple-900/60 hover:bg-purple-800 text-purple-200 border border-purple-500/50 text-xs font-semibold flex items-center gap-1 transition-colors shadow"
-                            title="AI tự động phân tích và gán KTV tối ưu ngay lập tức"
-                          >
-                            <Sparkles className="w-3.5 h-3.5 text-purple-400" /> AI Gán Ngay
-                          </button>
-
-                          <button
                             onClick={() => {
                               setAssigningTicket(ticket);
                               setSelectedTechId('KTV-01');
                             }}
-                            className="px-2.5 py-1.5 bg-[#161B22] hover:bg-[#1C2533] border border-[#2D3748] text-gray-300 hover:text-white text-xs font-semibold uppercase tracking-wider transition-colors flex items-center gap-1 shadow"
+                            className="px-2.5 py-1.5 bg-[#161B22] hover:bg-[#1C2533] border border-[#2D3748] hover:border-[#C5A880] text-gray-300 hover:text-white text-xs font-medium transition-colors flex items-center gap-1.5 shadow"
+                            title="BQL chỉ can thiệp khi có thiếu sót hoặc muốn chỉ định thợ riêng"
                           >
-                            <Users className="w-3.5 h-3.5" /> Thủ Công
+                            <Users className="w-3.5 h-3.5 text-[#C5A880]" />
+                            <span>Can Thiệp BQL</span>
                           </button>
                         </div>
                       </div>
@@ -530,21 +545,10 @@ export default function KanbanBoard() {
                   </span>
                 </div>
 
-                {inProgressTickets.length > 0 ? (
-                  <button
-                    onClick={handleAiAutoResolveAll}
-                    disabled={isAutoResolving}
-                    className="px-2.5 py-1 bg-gradient-to-r from-emerald-700 to-teal-700 hover:from-emerald-600 hover:to-teal-600 text-white text-[11px] font-bold uppercase tracking-wider flex items-center gap-1.5 shadow transition-all disabled:opacity-50 border border-emerald-400/40"
-                    title="Kích hoạt AI kiểm định hiện trường và tự động nghiệm thu toàn bộ các phiếu đang xử lý"
-                  >
-                    <Sparkles className={`w-3 h-3 ${isAutoResolving ? 'animate-spin' : 'text-emerald-200'}`} />
-                    <span>{isAutoResolving ? 'Đang nghiệm thu...' : `AI Nghiệm Thu Hết`}</span>
-                  </button>
-                ) : (
-                  <span className="text-[10px] font-mono text-gray-400 flex items-center gap-1">
-                    <CheckCircle2 className="w-3 h-3 text-emerald-400" /> Sẵn sàng
-                  </span>
-                )}
+                <span className="text-[10px] font-mono text-amber-300 bg-amber-950/60 border border-amber-500/40 px-2 py-0.5 flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 bg-amber-400 rounded-full animate-pulse"></span>
+                  KTV Khắc Phục Hiện Trường
+                </span>
               </div>
 
               <div className="p-4 space-y-4 min-h-[420px] overflow-y-auto">
@@ -630,31 +634,31 @@ export default function KanbanBoard() {
                               setSelectedTechId(ticket.assigned_technician_id || 'KTV-01');
                             }}
                             className="px-2 py-1.5 bg-[#161B22] hover:bg-[#1C2533] text-gray-400 hover:text-white border border-[#2D3748] text-xs transition-colors"
-                            title="Đổi KTV khác nếu BQL muốn can thiệp thủ công"
+                            title="Can thiệp đổi KTV khác khi có phát sinh"
                           >
                             Đổi KTV
                           </button>
 
-                          {/* 1-Click AI Auto Resolve */}
+                          {/* KTV Báo Xong - AI tự động kiểm định nghiệm thu */}
                           <button
                             onClick={() => handleAiAutoResolveSingle(ticket)}
                             className="px-2.5 py-1.5 bg-emerald-950/80 hover:bg-emerald-900 border border-emerald-500/50 hover:border-emerald-400 text-emerald-300 hover:text-white text-xs font-bold transition-all flex items-center gap-1 shadow"
-                            title="AI tự động kiểm định chất lượng, sinh ảnh biên bản và nghiệm thu đóng phiếu ngay"
+                            title="Xác nhận KTV đã hoàn thành hiện trường - AI kiểm định chất lượng và đóng phiếu tự động"
                           >
                             <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
-                            <span>AI Nghiệm Thu</span>
+                            <span>KTV Báo Xong (AI Duyệt)</span>
                           </button>
 
-                          {/* Manual Resolve */}
+                          {/* BQL Can Thiệp Thủ Công */}
                           <button
                             onClick={() => {
                               setResolvingTicket(ticket);
                               setAfterImageBase64('');
                             }}
-                            className="px-2.5 py-1.5 bg-[#C5A880] hover:bg-white text-[#0D1117] text-xs font-bold uppercase tracking-wider transition-colors flex items-center gap-1 shadow"
-                            title="Mở biểu mẫu để tự chụp ảnh hoặc nhập ghi chú thủ công"
+                            className="px-2 py-1.5 bg-[#161B22] hover:bg-[#1C2533] border border-[#2D3748] text-gray-400 hover:text-white text-xs transition-colors"
+                            title="BQL chỉ can thiệp kiểm tra thủ công khi có khiếu nại hoặc phát sinh ngoài ý muốn"
                           >
-                            <Check className="w-3.5 h-3.5" /> Thủ Công
+                            Can Thiệp BQL
                           </button>
                         </div>
                       </div>
@@ -666,12 +670,20 @@ export default function KanbanBoard() {
 
             {/* Column 3: Đã nghiệm thu */}
             <div className="bg-[#121820] border border-[#222B35] flex flex-col justify-between shadow-xl">
-              <div className="p-4 border-b border-[#222B35] flex items-center justify-between bg-[#161B22]">
-                <span className="text-xs uppercase tracking-wider font-semibold text-emerald-300 flex items-center gap-2">
+              <div className="p-3.5 border-b border-[#222B35] flex items-center justify-between bg-[#161B22]">
+                <div className="flex items-center gap-2">
                   <span className="w-2.5 h-2.5 bg-emerald-500 rounded-none"></span>
-                  3. Đã Nghiệm Thu Xong ({resolvedTickets.length})
+                  <span className="text-xs uppercase tracking-wider font-semibold text-gray-200">
+                    3. Đã Nghiệm Thu Xong
+                  </span>
+                  <span className="px-1.5 py-0.5 bg-emerald-950/80 border border-emerald-500/40 text-emerald-300 font-mono text-[10px] font-bold">
+                    {resolvedTickets.length}
+                  </span>
+                </div>
+                <span className="text-[10px] font-mono text-emerald-300 bg-emerald-950/60 border border-emerald-500/40 px-2 py-0.5 flex items-center gap-1.5">
+                  <CheckCircle2 className="w-3 h-3 text-emerald-400" />
+                  AI Nghiệm Thu &amp; Chốt Thù Lao
                 </span>
-                <span className="text-[10px] font-mono text-emerald-400">Đã Lưu Bảng Lương</span>
               </div>
 
               <div className="p-4 space-y-4 min-h-[420px] overflow-y-auto">
