@@ -14,7 +14,7 @@ export interface TechnicianProfile {
   name: string;
   phone: string;
   email: string;
-  specialty: 'Cơ Điện & Nước' | 'Điện Lạnh & Kỹ Thuật Tòa Nhà' | 'Đa Năng';
+  specialty: 'Cơ Điện & Nước' | 'Điện Lạnh & Kỹ Thuật Tòa Nhà' | 'Vệ Sinh & Cảnh Quan Chung Cư' | 'Đa Năng' | string;
   baseSalary: number; // Lương cơ bản tháng (VNĐ)
   payPerTicket: number; // Tiền công định mức theo ca sửa (VNĐ)
   bonusPerFiveStar: number; // Thưởng khi cư dân chấm 5 sao (VNĐ)
@@ -32,6 +32,9 @@ export interface ExtendedServiceRequest extends Omit<ServiceRequest, 'after_imag
   resident_feedback?: string;
   rated_at?: string;
   resolved_at?: string;
+  // Điều phối tự động bằng AI
+  auto_dispatched?: boolean;
+  ai_dispatch_reason?: string;
 }
 
 export interface TechnicianPayrollSummary {
@@ -49,6 +52,7 @@ export interface TechnicianPayrollSummary {
 // Storage keys v2 - Không dữ liệu ảo
 const TICKETS_STORAGE_KEY = 'skyline_service_tickets_v2';
 const TECHNICIANS_STORAGE_KEY = 'skyline_technicians_v2';
+const AUTO_DISPATCH_SETTING_KEY = 'skyline_ai_auto_dispatch_enabled';
 
 /**
  * Đội ngũ Kỹ thuật viên thực tế của Ban Quản Lý Tòa Nhà Skyline
@@ -74,6 +78,17 @@ export const DEFAULT_TECHNICIANS: TechnicianProfile[] = [
     specialty: 'Điện Lạnh & Kỹ Thuật Tòa Nhà',
     baseSalary: 9000000,
     payPerTicket: 180000,
+    bonusPerFiveStar: 50000,
+    status: 'AVAILABLE',
+  },
+  {
+    id: 'KTV-03',
+    name: 'Nguyễn Văn Nghiệp Vụ',
+    phone: '0908.777.666',
+    email: 'vesinh.skyline@gmail.com',
+    specialty: 'Vệ Sinh & Cảnh Quan Chung Cư',
+    baseSalary: 8000000,
+    payPerTicket: 120000,
     bonusPerFiveStar: 50000,
     status: 'AVAILABLE',
   }

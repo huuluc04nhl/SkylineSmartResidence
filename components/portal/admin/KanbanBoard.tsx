@@ -44,6 +44,12 @@ import {
   TechnicianProfile,
   TechnicianPayrollSummary 
 } from '@/lib/ticketStore';
+import { 
+  isAutoDispatchEnabled, 
+  setAutoDispatchEnabled, 
+  autoDispatchSingleTicket, 
+  autoDispatchAllPendingTickets 
+} from '@/lib/aiDispatchService';
 import { fileToBase64 } from '@/lib/imageUtils';
 
 export default function KanbanBoard() {
@@ -51,6 +57,10 @@ export default function KanbanBoard() {
   const [tickets, setTickets] = useState<ExtendedServiceRequest[]>([]);
   const [technicians, setTechnicians] = useState<TechnicianProfile[]>([]);
   const [payrollList, setPayrollList] = useState<TechnicianPayrollSummary[]>([]);
+
+  // AI Auto-Dispatch States
+  const [aiAutoMode, setAiAutoMode] = useState<boolean>(true);
+  const [isAutoDispatching, setIsAutoDispatching] = useState<boolean>(false);
 
   // Modals State
   const [assigningTicket, setAssigningTicket] = useState<ExtendedServiceRequest | null>(null);
@@ -99,10 +109,49 @@ export default function KanbanBoard() {
     setTimeout(() => setActionSuccessMsg(null), 3000);
   };
 
+  const handleToggleAutoDispatch = (enabled: boolean) => {
+    setAiAutoMode(enabled);
+    setAutoDispatchEnabled(enabled);
+    setActionSuccessMsg(`Chế độ Tự Động Phân Công KTV bằng AI đã được ${enabled ? 'KÍCH HOẠT (24/7)' : 'TẠM TẮT'}!`);
+    setTimeout(() => setActionSuccessMsg(null), 3000);
+  };
+
+  const handleOneClickAutoDispatch = () => {
+    setIsAutoDispatching(true);
+    try {
+      const res = autoDispatchAllPendingTickets();
+      refreshAllData();
+      if (res.successCount > 0) {
+        setActionSuccessMsg(`AI đã tự động phân tích và phân công thành công ${res.successCount} phiếu sự cố cho KTV phù hợp nhất!`);
+      } else {
+        setActionSuccessMsg('Không còn phiếu nào đang chờ tiếp nhận.');
+      }
+      setTimeout(() => setActionSuccessMsg(null), 4000);
+    } finally {
+      setIsAutoDispatching(false);
+    }
+  };
+
+  const handleAutoDispatchOne = (ticketId: string) => {
+    const res = autoDispatchSingleTicket(ticketId);
+    if (res && res.assigned_technician) {
+      refreshAllData();
+      setActionSuccessMsg(`AI đã tự động phân công KTV ${res.assigned_technician} xử lý phiếu #${res.nks_id || res.id}!`);
+      setTimeout(() => setActionSuccessMsg(null), 3500);
+    }
+  };
+
   useEffect(() => {
+    setAiAutoMode(isAutoDispatchEnabled());
     refreshAllData();
-    // Tự động đồng bộ live với NKS API khi mở trang BQL
-    syncTicketsWithServer().then(() => refreshAllData());
+
+    // Tự động đồng bộ live dữ liệu và quét AI tự động điều phối
+    syncTicketsWithServer().then(() => {
+      if (isAutoDispatchEnabled()) {
+        autoDispatchAllPendingTickets();
+      }
+      refreshAllData();
+    });
 
     const handleUpdate = () => refreshAllData();
     window.addEventListener('skyline_tickets_updated', handleUpdate);
@@ -191,6 +240,33 @@ export default function KanbanBoard() {
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
+          {/* AI Auto-Dispatch 24/7 Switch */}
+          <button
+            onClick={() => handleToggleAutoDispatch(!aiAutoMode)}
+            className={`px-3 py-2 border text-xs font-semibold flex items-center gap-1.5 transition-all ${
+              aiAutoMode
+                ? 'bg-purple-950/80 border-purple-500/60 text-purple-300 shadow-md'
+                : 'bg-[#121820] border-[#222B35] text-gray-400 hover:text-white'
+            }`}
+            title="Bật/Tắt chế độ AI tự động phân tích và gán KTV ngay khi tiếp nhận sự cố"
+          >
+            <Sparkles className={`w-3.5 h-3.5 ${aiAutoMode ? 'text-purple-400 animate-pulse' : 'text-gray-500'}`} />
+            <span>AI Tự Động Phân Công: <strong className={aiAutoMode ? 'text-white' : 'text-gray-400'}>{aiAutoMode ? 'BẬT' : 'TẮT'}</strong></span>
+          </button>
+
+          {/* 1-Click AI Auto Dispatch All if any open tickets */}
+          {openTickets.length > 0 && (
+            <button
+              onClick={handleOneClickAutoDispatch}
+              disabled={isAutoDispatching}
+              className="px-3.5 py-2 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 shadow-lg transition-all disabled:opacity-50"
+              title="Kích hoạt AI tự động gán thợ tối ưu cho toàn bộ các phiếu đang chờ"
+            >
+              <Sparkles className={`w-3.5 h-3.5 ${isAutoDispatching ? 'animate-spin' : ''}`} />
+              <span>{isAutoDispatching ? 'AI Đang Phân Công...' : `AI Phân Công Hết (${openTickets.length})`}</span>
+            </button>
+          )}
+
           {/* Nút Làm Mới Dữ Liệu Trực Tuyến */}
           <button
             onClick={handleSyncNks}
@@ -348,15 +424,25 @@ export default function KanbanBoard() {
                           {new Date(ticket.created_at).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })}
                         </span>
 
-                        <button
-                          onClick={() => {
-                            setAssigningTicket(ticket);
-                            setSelectedTechId('KTV-01');
-                          }}
-                          className="px-3 py-1.5 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold uppercase tracking-wider transition-colors flex items-center gap-1 shadow"
-                        >
-                          <Users className="w-3.5 h-3.5" /> Phân Công KTV
-                        </button>
+                        <div className="flex items-center gap-1.5">
+                          <button
+                            onClick={() => handleAutoDispatchOne(ticket.id)}
+                            className="px-2.5 py-1.5 bg-purple-900/60 hover:bg-purple-800 text-purple-200 border border-purple-500/50 text-xs font-semibold flex items-center gap-1 transition-colors shadow"
+                            title="AI tự động phân tích và gán KTV tối ưu ngay lập tức"
+                          >
+                            <Sparkles className="w-3.5 h-3.5 text-purple-400" /> AI Gán Ngay
+                          </button>
+
+                          <button
+                            onClick={() => {
+                              setAssigningTicket(ticket);
+                              setSelectedTechId('KTV-01');
+                            }}
+                            className="px-2.5 py-1.5 bg-[#161B22] hover:bg-[#1C2533] border border-[#2D3748] text-gray-300 hover:text-white text-xs font-semibold uppercase tracking-wider transition-colors flex items-center gap-1 shadow"
+                          >
+                            <Users className="w-3.5 h-3.5" /> Thủ Công
+                          </button>
+                        </div>
                       </div>
                     </div>
                   ))
@@ -434,20 +520,44 @@ export default function KanbanBoard() {
                         )}
                       </div>
 
+                      {/* AI Dispatch Detail Box */}
+                      {ticket.ai_dispatch_reason && (
+                        <div className="p-2 bg-purple-950/40 border border-purple-500/30 text-[11px] text-purple-200 flex items-start gap-1.5">
+                          <Sparkles className="w-3.5 h-3.5 text-purple-400 flex-shrink-0 mt-0.5" />
+                          <div>
+                            <span className="font-semibold text-purple-300">AI Tự Động Phân Công:</span>{' '}
+                            <span>{ticket.ai_dispatch_reason}</span>
+                          </div>
+                        </div>
+                      )}
+
                       <div className="pt-2 border-t border-[#222B35] flex items-center justify-between">
                         <span className="text-[10px] text-amber-400 font-mono flex items-center gap-1">
                           <Clock className="w-3 h-3" /> Cam kết xử lý: {ticket.ai_category === 'Nước' || ticket.ai_category === 'Điện' ? 'Trong 45 phút' : 'Trong 2 giờ'}
                         </span>
 
-                        <button
-                          onClick={() => {
-                            setResolvingTicket(ticket);
-                            setAfterImageBase64('');
-                          }}
-                          className="px-3 py-1.5 bg-[#C5A880] hover:bg-white text-[#0D1117] text-xs font-bold uppercase tracking-wider transition-colors flex items-center gap-1 shadow"
-                        >
-                          <Check className="w-3.5 h-3.5" /> Nghiệm Thu Xong
-                        </button>
+                        <div className="flex items-center gap-1.5">
+                          <button
+                            onClick={() => {
+                              setAssigningTicket(ticket);
+                              setSelectedTechId(ticket.assigned_technician_id || 'KTV-01');
+                            }}
+                            className="px-2.5 py-1.5 bg-[#161B22] hover:bg-[#1C2533] text-gray-300 hover:text-white border border-[#2D3748] text-xs transition-colors"
+                            title="Đổi KTV khác nếu BQL muốn can thiệp thủ công"
+                          >
+                            Đổi KTV
+                          </button>
+
+                          <button
+                            onClick={() => {
+                              setResolvingTicket(ticket);
+                              setAfterImageBase64('');
+                            }}
+                            className="px-3 py-1.5 bg-[#C5A880] hover:bg-white text-[#0D1117] text-xs font-bold uppercase tracking-wider transition-colors flex items-center gap-1 shadow"
+                          >
+                            <Check className="w-3.5 h-3.5" /> Nghiệm Thu Xong
+                          </button>
+                        </div>
                       </div>
                     </div>
                   ))

@@ -14,6 +14,7 @@ import {
   nksTicketToServiceRequest,
   NksTicket
 } from '@/lib/nksTicketService';
+import { evaluateBestTechnicianWithAI } from '@/lib/aiDispatchService';
 
 const TICKETS_FILE = path.join(process.cwd(), '.skyline_tickets.json');
 
@@ -180,13 +181,38 @@ export async function POST(req: Request) {
       });
 
       const newId = nksResult.success && nksResult.id ? String(nksResult.id) : (t.id || `TICK-${Math.floor(100 + Math.random() * 900)}`);
+
+      // Tự động phân công thông minh bằng AI ngay khi tiếp nhận
+      let assignedTech = undefined;
+      let scheduledTime = undefined;
+      let aiReason = undefined;
+      let ticketStatus: 'Open' | 'In_Progress' = 'Open';
+
+      if (data.technicians && data.technicians.length > 0) {
+        const evalResult = evaluateBestTechnicianWithAI(
+          { ...t, id: newId },
+          data.technicians,
+          data.tickets
+        );
+        assignedTech = evalResult.technician;
+        scheduledTime = evalResult.scheduledTime;
+        aiReason = evalResult.reason;
+        ticketStatus = 'In_Progress';
+      }
+
       const newTicket: ExtendedServiceRequest = {
         ...t,
         id: newId,
         nks_id: nksResult.id,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
-        status: t.status || 'Open',
+        status: ticketStatus,
+        assigned_technician_id: assignedTech?.id,
+        assigned_technician: assignedTech?.name,
+        assigned_technician_phone: assignedTech?.phone,
+        scheduled_time: scheduledTime,
+        auto_dispatched: true,
+        ai_dispatch_reason: aiReason,
       };
 
       // Thêm vào danh sách local
@@ -202,14 +228,14 @@ export async function POST(req: Request) {
       });
     }
 
-    // 3. Phân công Kỹ thuật viên
+    // 3. Phân công Kỹ thuật viên (Thủ công hoặc AI)
     if (action === 'ASSIGN' && body.ticketId && technicianId) {
       const tech = data.technicians.find(t => t.id === technicianId);
       if (!tech) {
         return NextResponse.json({ success: false, message: 'Không tìm thấy kỹ thuật viên.' }, { status: 404 });
       }
       data.tickets = data.tickets.map(t => {
-        if (t.id === body.ticketId) {
+        if (t.id === body.ticketId || String(t.nks_id) === String(body.ticketId)) {
           return {
             ...t,
             status: 'In_Progress',
@@ -217,6 +243,8 @@ export async function POST(req: Request) {
             assigned_technician: tech.name,
             assigned_technician_phone: tech.phone,
             scheduled_time: scheduledTime || 'Có mặt trong vòng 30 phút',
+            auto_dispatched: Boolean(body.autoDispatched),
+            ai_dispatch_reason: body.aiReason || t.ai_dispatch_reason,
             updated_at: new Date().toISOString(),
           };
         }
