@@ -22,6 +22,7 @@ export interface TechnicianProfile {
 }
 
 export interface ExtendedServiceRequest extends Omit<ServiceRequest, 'after_image'> {
+  nks_id?: number; // ID định danh thực tế từ NKS SCRMAI API
   after_image?: string;
   assigned_technician_id?: string;
   assigned_technician_phone?: string;
@@ -162,7 +163,98 @@ export function saveTickets(tickets: ExtendedServiceRequest[]): void {
 // -----------------------------------------------------------------------------
 
 /**
- * Cư Dân tạo phiếu báo sự cố mới từ thực tế
+ * Đồng bộ toàn bộ tickets với máy chủ và NKS SCRMAI API
+ */
+export async function syncTicketsWithServer(aptCode?: string, phone?: string): Promise<ExtendedServiceRequest[]> {
+  try {
+    const params = new URLSearchParams();
+    if (aptCode) params.set('aptCode', aptCode);
+    if (phone) params.set('phone', phone);
+    const res = await fetch(`/api/tickets?${params.toString()}`);
+    if (res.ok) {
+      const data = await res.json();
+      if (data.success && Array.isArray(data.tickets)) {
+        if (typeof window !== 'undefined') {
+          localStorage.setItem(TICKETS_STORAGE_KEY, JSON.stringify(data.tickets));
+          if (Array.isArray(data.technicians) && data.technicians.length > 0) {
+            localStorage.setItem(TECHNICIANS_STORAGE_KEY, JSON.stringify(data.technicians));
+          }
+          notifyTicketsUpdated();
+        }
+        return data.tickets;
+      }
+    }
+  } catch (err) {
+    console.warn('Lỗi đồng bộ phiếu với máy chủ & NKS API:', err);
+  }
+  return getTickets(aptCode);
+}
+
+/**
+ * Cư Dân tạo phiếu báo sự cố mới và đồng bộ trực tiếp lên NKS SCRMAI API
+ */
+export async function createTicketAsync(payload: {
+  apartment_id?: string;
+  apt_code: string;
+  resident_name: string;
+  resident_phone: string;
+  content: string;
+  ai_category?: 'Điện' | 'Nước' | 'Vệ sinh' | 'An ninh' | 'Khác';
+  before_image?: string; // Base64 ảnh chụp thực tế
+}): Promise<ExtendedServiceRequest> {
+  const cat = payload.ai_category || 'Khác';
+  const isUrgent = cat === 'Nước' || cat === 'Điện';
+
+  const optimisticTicket: ExtendedServiceRequest = {
+    id: `TICK-${Math.floor(100 + Math.random() * 900)}`,
+    apartment_id: payload.apartment_id || `apt-${payload.apt_code.toLowerCase()}`,
+    apt_code: payload.apt_code,
+    resident_name: payload.resident_name,
+    resident_phone: payload.resident_phone,
+    content: payload.content,
+    ai_category: cat,
+    ai_priority: isUrgent ? 1 : 2,
+    priority_color: isUrgent ? '#DC2626' : '#D97706',
+    sla_deadline: new Date(Date.now() + (isUrgent ? 45 : 120) * 60000).toISOString(),
+    sla_minutes_left: isUrgent ? 45 : 120,
+    status: 'Open',
+    before_image: payload.before_image || '',
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+  };
+
+  try {
+    const res = await fetch('/api/tickets', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        action: 'CREATE',
+        ticket: optimisticTicket,
+      }),
+    });
+    if (res.ok) {
+      const data = await res.json();
+      if (data.success && data.ticket) {
+        const saved = data.ticket as ExtendedServiceRequest;
+        const currentTickets = getTickets();
+        const updated = [saved, ...currentTickets.filter(t => t.id !== saved.id && t.id !== optimisticTicket.id)];
+        saveTickets(updated);
+        return saved;
+      }
+    }
+  } catch (err) {
+    console.warn('Lỗi gọi API tạo phiếu NKS:', err);
+  }
+
+  // Fallback nếu ngoại tuyến
+  const currentTickets = getTickets();
+  const updatedList = [optimisticTicket, ...currentTickets];
+  saveTickets(updatedList);
+  return optimisticTicket;
+}
+
+/**
+ * Cư Dân tạo phiếu báo sự cố mới từ thực tế (đồng bộ đồng thời)
  */
 export function createTicket(payload: {
   apartment_id?: string;

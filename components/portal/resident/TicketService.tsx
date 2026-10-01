@@ -25,6 +25,8 @@ import { User as UserType } from '@/lib/dataStore';
 import { 
   getTickets, 
   createTicket, 
+  createTicketAsync,
+  syncTicketsWithServer,
   rateTicket, 
   ExtendedServiceRequest 
 } from '@/lib/ticketStore';
@@ -49,6 +51,8 @@ export default function TicketService({ currentUser }: TicketServiceProps) {
   const [aiDetectedCat, setAiDetectedCat] = useState<'Điện' | 'Nước' | 'Khác'>('Nước');
   const [attachedImageBase64, setAttachedImageBase64] = useState<string>('');
   const [isUploadingImage, setIsUploadingImage] = useState(false);
+  const [isSyncing, setIsSyncing] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [createdSuccessMsg, setCreatedSuccessMsg] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -63,12 +67,27 @@ export default function TicketService({ currentUser }: TicketServiceProps) {
     setTickets(list);
   };
 
+  const handleRefreshSync = async () => {
+    setIsSyncing(true);
+    try {
+      await syncTicketsWithServer(aptCode, residentPhone);
+      refreshTicketList();
+    } finally {
+      setIsSyncing(false);
+    }
+  };
+
   useEffect(() => {
     refreshTicketList();
+    // Đồng bộ trực tiếp từ NKS API ngầm khi mở tab
+    syncTicketsWithServer(aptCode, residentPhone).then(() => {
+      refreshTicketList();
+    });
+
     const handleUpdate = () => refreshTicketList();
     window.addEventListener('skyline_tickets_updated', handleUpdate);
     return () => window.removeEventListener('skyline_tickets_updated', handleUpdate);
-  }, [aptCode]);
+  }, [aptCode, residentPhone]);
 
   // Chọn ticket so sánh: các phiếu đã giải quyết (Resolved) có cả 2 ảnh thật (trước & sau)
   const comparisonTickets = tickets.filter(t => t.status === 'Resolved' && t.before_image && t.after_image);
@@ -108,27 +127,36 @@ export default function TicketService({ currentUser }: TicketServiceProps) {
     }
   };
 
-  const handleCreateTicket = (e: React.FormEvent) => {
+  const handleCreateTicket = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!content.trim()) return;
+    if (!content.trim() || isSubmitting) return;
 
-    // Sử dụng ảnh thật cư dân đính kèm nếu có, tuyệt đối không dùng ảnh mạng giả lập
+    setIsSubmitting(true);
+    // Sử dụng ảnh thật cư dân đính kèm nếu có
     const beforeImage = attachedImageBase64 || '';
 
-    const newTicket = createTicket({
-      apt_code: aptCode,
-      resident_name: residentName,
-      resident_phone: residentPhone,
-      content: content.trim(),
-      ai_category: aiDetectedCat,
-      before_image: beforeImage,
-    });
+    try {
+      const newTicket = await createTicketAsync({
+        apt_code: aptCode,
+        resident_name: residentName,
+        resident_phone: residentPhone,
+        content: content.trim(),
+        ai_category: aiDetectedCat,
+        before_image: beforeImage,
+      });
 
-    setContent('');
-    setAttachedImageBase64('');
-    setShowCreateForm(false);
-    setCreatedSuccessMsg(`Yêu cầu #${newTicket.id} đã được gửi tới Ban Quản Lý và đang chờ tiếp nhận!`);
-    setTimeout(() => setCreatedSuccessMsg(null), 4000);
+      setContent('');
+      setAttachedImageBase64('');
+      setShowCreateForm(false);
+      const ticketDisplayId = newTicket.nks_id ? `#${newTicket.nks_id}` : `#${newTicket.id}`;
+      setCreatedSuccessMsg(`Yêu cầu ${ticketDisplayId} đã được đồng bộ trực tiếp lên hệ thống NKS SCRMAI và BQL đang xử lý!`);
+      setTimeout(() => setCreatedSuccessMsg(null), 5000);
+      refreshTicketList();
+    } catch (err) {
+      console.error('Lỗi gửi ticket:', err);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleSubmitRating = () => {
@@ -257,9 +285,17 @@ export default function TicketService({ currentUser }: TicketServiceProps) {
             </button>
             <button
               type="submit"
-              className="px-5 py-2 bg-[#C5A880] hover:bg-white text-[#0D1117] text-xs font-bold uppercase tracking-wider transition-colors shadow-lg"
+              disabled={isSubmitting}
+              className="px-5 py-2 bg-[#C5A880] hover:bg-white text-[#0D1117] text-xs font-bold uppercase tracking-wider transition-colors shadow-lg disabled:opacity-60 flex items-center gap-1.5"
             >
-              Gửi Tới BQL Ngay
+              {isSubmitting ? (
+                <>
+                  <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                  Đang Gửi Lên NKS API...
+                </>
+              ) : (
+                'Gửi Tới BQL Ngay'
+              )}
             </button>
           </div>
         </form>
@@ -377,10 +413,21 @@ export default function TicketService({ currentUser }: TicketServiceProps) {
 
       {/* Tickets List */}
       <div className="space-y-4">
-        <div className="flex items-center justify-between text-xs uppercase tracking-wider text-gray-400 font-semibold border-b border-[#222B35] pb-2">
-          <span>Danh Sách Yêu Cầu Căn Hộ {aptCode} ({tickets.length}):</span>
-          <button onClick={refreshTicketList} className="text-gray-400 hover:text-white flex items-center gap-1 text-[11px]">
-            <RefreshCw className="w-3 h-3" /> Làm mới
+        <div className="flex flex-wrap items-center justify-between gap-2 text-xs uppercase tracking-wider text-gray-400 font-semibold border-b border-[#222B35] pb-2">
+          <div className="flex items-center gap-2">
+            <span>Danh Sách Yêu Cầu Căn Hộ {aptCode} ({tickets.length})</span>
+            <span className="px-2 py-0.5 bg-emerald-950/80 border border-emerald-500/40 text-emerald-400 text-[10px] font-mono lowercase flex items-center gap-1">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+              NKS SCRMAI API
+            </span>
+          </div>
+          <button 
+            onClick={handleRefreshSync} 
+            disabled={isSyncing}
+            className="text-gray-400 hover:text-white flex items-center gap-1.5 text-[11px] disabled:opacity-50"
+          >
+            <RefreshCw className={`w-3 h-3 ${isSyncing ? 'animate-spin text-[#C5A880]' : ''}`} />
+            {isSyncing ? 'Đang đồng bộ...' : 'Đồng bộ live'}
           </button>
         </div>
 
@@ -402,8 +449,15 @@ export default function TicketService({ currentUser }: TicketServiceProps) {
                 }`}
               >
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                  <div className="flex items-center gap-2">
-                    <span className="font-mono text-[#C5A880] font-bold text-sm">{t.id}</span>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="font-mono text-[#C5A880] font-bold text-sm">
+                      {t.nks_id ? `#${t.nks_id}` : `#${t.id}`}
+                    </span>
+                    {t.nks_id && (
+                      <span className="px-1.5 py-0.5 bg-blue-950 border border-blue-500/50 text-blue-300 text-[9px] font-mono">
+                        NKS #{t.nks_id}
+                      </span>
+                    )}
                     <span className="px-2 py-0.5 bg-[#1C2533] border border-gray-700 text-gray-300 text-[10px] font-mono">
                       {t.ai_category}
                     </span>

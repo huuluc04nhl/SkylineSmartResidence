@@ -34,6 +34,7 @@ import {
 import { 
   getTickets, 
   getTechnicians, 
+  syncTicketsWithServer,
   assignTechnicianToTicket, 
   resolveTicket, 
   getTechnicianPayroll, 
@@ -63,6 +64,7 @@ export default function KanbanBoard() {
   const [inspectingTicket, setInspectingTicket] = useState<ExtendedServiceRequest | null>(null);
   const [viewingPayrollTech, setViewingPayrollTech] = useState<TechnicianPayrollSummary | null>(null);
   const [actionSuccessMsg, setActionSuccessMsg] = useState<string | null>(null);
+  const [isSyncing, setIsSyncing] = useState(false);
 
   const refreshAllData = () => {
     setTickets(getTickets());
@@ -70,8 +72,25 @@ export default function KanbanBoard() {
     setPayrollList(getTechnicianPayroll());
   };
 
+  const handleSyncNks = async () => {
+    setIsSyncing(true);
+    try {
+      await syncTicketsWithServer();
+      refreshAllData();
+      setActionSuccessMsg('Đã đồng bộ thành công danh sách sự cố từ NKS SCRMAI API!');
+      setTimeout(() => setActionSuccessMsg(null), 3000);
+    } catch (err) {
+      console.warn('Lỗi đồng bộ NKS API:', err);
+    } finally {
+      setIsSyncing(false);
+    }
+  };
+
   useEffect(() => {
     refreshAllData();
+    // Tự động đồng bộ live với NKS API khi mở trang BQL
+    syncTicketsWithServer().then(() => refreshAllData());
+
     const handleUpdate = () => refreshAllData();
     window.addEventListener('skyline_tickets_updated', handleUpdate);
     return () => window.removeEventListener('skyline_tickets_updated', handleUpdate);
@@ -158,29 +177,42 @@ export default function KanbanBoard() {
           </h2>
         </div>
 
-        {/* Tab Switcher: KANBAN vs PAYROLL */}
-        <div className="flex items-center gap-2 bg-[#121820] p-1 border border-[#222B35]">
+        <div className="flex flex-wrap items-center gap-2">
+          {/* NKS SCRMAI Live Sync Button */}
           <button
-            onClick={() => setActiveTab('KANBAN')}
-            className={`px-4 py-2 text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 ${
-              activeTab === 'KANBAN'
-                ? 'bg-[#C5A880] text-[#0D1117] shadow-lg'
-                : 'text-gray-300 hover:text-white'
-            }`}
+            onClick={handleSyncNks}
+            disabled={isSyncing}
+            className="px-3 py-2 bg-[#121820] hover:bg-[#161B22] border border-[#222B35] text-xs font-semibold text-gray-300 hover:text-white flex items-center gap-1.5 transition-colors disabled:opacity-50"
+            title="Đồng bộ danh sách yêu cầu thực tế từ NKS SCRMAI API"
           >
-            <Wrench className="w-3.5 h-3.5" /> Bảng Theo Dõi Sự Cố ({tickets.length})
+            <RefreshCw className={`w-3.5 h-3.5 ${isSyncing ? 'animate-spin text-[#C5A880]' : 'text-emerald-400'}`} />
+            <span>{isSyncing ? 'Đang đồng bộ...' : 'Đồng bộ NKS API'}</span>
           </button>
 
-          <button
-            onClick={() => setActiveTab('PAYROLL')}
-            className={`px-4 py-2 text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 ${
-              activeTab === 'PAYROLL'
-                ? 'bg-[#C5A880] text-[#0D1117] shadow-lg'
-                : 'text-gray-300 hover:text-white'
-            }`}
-          >
-            <Award className="w-3.5 h-3.5" /> Danh Sách Kỹ Thuật Viên & Thù Lao ({technicians.length})
-          </button>
+          {/* Tab Switcher: KANBAN vs PAYROLL */}
+          <div className="flex items-center gap-1 bg-[#121820] p-1 border border-[#222B35]">
+            <button
+              onClick={() => setActiveTab('KANBAN')}
+              className={`px-3 py-1.5 text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 ${
+                activeTab === 'KANBAN'
+                  ? 'bg-[#C5A880] text-[#0D1117] shadow-lg'
+                  : 'text-gray-300 hover:text-white'
+              }`}
+            >
+              <Wrench className="w-3.5 h-3.5" /> Sự Cố ({tickets.length})
+            </button>
+
+            <button
+              onClick={() => setActiveTab('PAYROLL')}
+              className={`px-3 py-1.5 text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 ${
+                activeTab === 'PAYROLL'
+                  ? 'bg-[#C5A880] text-[#0D1117] shadow-lg'
+                  : 'text-gray-300 hover:text-white'
+              }`}
+            >
+              <Award className="w-3.5 h-3.5" /> KTV & Thù Lao ({technicians.length})
+            </button>
+          </div>
         </div>
       </div>
 
@@ -252,8 +284,17 @@ export default function KanbanBoard() {
                       key={ticket.id} 
                       className="p-4 bg-[#161B22] border border-[#2D3748] hover:border-blue-400 transition-all space-y-3 shadow-md group"
                     >
-                      <div className="flex items-center justify-between">
-                        <span className="font-mono text-[#C5A880] font-bold text-xs">{ticket.id}</span>
+                      <div className="flex items-center justify-between flex-wrap gap-1">
+                        <div className="flex items-center gap-1.5">
+                          <span className="font-mono text-[#C5A880] font-bold text-xs">
+                            {ticket.nks_id ? `#${ticket.nks_id}` : `#${ticket.id}`}
+                          </span>
+                          {ticket.nks_id && (
+                            <span className="px-1.5 py-0.5 bg-blue-950 border border-blue-500/50 text-blue-300 text-[9px] font-mono">
+                              NKS #{ticket.nks_id}
+                            </span>
+                          )}
+                        </div>
                         <span className="px-2 py-0.5 bg-red-950 text-red-300 border border-red-500 text-[10px] font-mono font-bold">
                           {ticket.ai_category} • Mức {ticket.ai_priority}
                         </span>
@@ -321,8 +362,17 @@ export default function KanbanBoard() {
                       key={ticket.id} 
                       className="p-4 bg-[#161B22] border border-amber-500/50 hover:border-amber-400 transition-all space-y-3 shadow-md"
                     >
-                      <div className="flex items-center justify-between">
-                        <span className="font-mono text-[#C5A880] font-bold text-xs">{ticket.id}</span>
+                      <div className="flex items-center justify-between flex-wrap gap-1">
+                        <div className="flex items-center gap-1.5">
+                          <span className="font-mono text-[#C5A880] font-bold text-xs">
+                            {ticket.nks_id ? `#${ticket.nks_id}` : `#${ticket.id}`}
+                          </span>
+                          {ticket.nks_id && (
+                            <span className="px-1.5 py-0.5 bg-blue-950 border border-blue-500/50 text-blue-300 text-[9px] font-mono">
+                              NKS #{ticket.nks_id}
+                            </span>
+                          )}
+                        </div>
                         <span className="px-2 py-0.5 bg-amber-950 text-amber-300 border border-amber-500 text-[10px] font-mono font-bold">
                           {ticket.ai_category}
                         </span>
@@ -393,8 +443,17 @@ export default function KanbanBoard() {
                       key={ticket.id} 
                       className="p-4 bg-[#161B22] border border-emerald-500/40 hover:border-emerald-400 transition-all space-y-3 shadow-md"
                     >
-                      <div className="flex items-center justify-between">
-                        <span className="font-mono text-[#C5A880] font-bold text-xs">{ticket.id}</span>
+                      <div className="flex items-center justify-between flex-wrap gap-1">
+                        <div className="flex items-center gap-1.5">
+                          <span className="font-mono text-[#C5A880] font-bold text-xs">
+                            {ticket.nks_id ? `#${ticket.nks_id}` : `#${ticket.id}`}
+                          </span>
+                          {ticket.nks_id && (
+                            <span className="px-1.5 py-0.5 bg-blue-950 border border-blue-500/50 text-blue-300 text-[9px] font-mono">
+                              NKS #{ticket.nks_id}
+                            </span>
+                          )}
+                        </div>
                         <div className="flex items-center gap-1">
                           {ticket.rating ? (
                             <span className="px-2 py-0.5 bg-yellow-950 text-yellow-300 border border-yellow-500 text-[10px] font-bold flex items-center gap-0.5">

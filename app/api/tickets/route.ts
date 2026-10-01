@@ -7,6 +7,12 @@ import {
   DEFAULT_TECHNICIANS, 
   TechnicianProfile 
 } from '@/lib/ticketStore';
+import { 
+  fetchNksTickets, 
+  createNksTicket, 
+  nksTicketToServiceRequest,
+  NksTicket
+} from '@/lib/nksTicketService';
 
 const TICKETS_FILE = path.join(process.cwd(), '.skyline_tickets.json');
 
@@ -44,26 +50,88 @@ function writeServerData(data: ServerStorageData) {
 }
 
 /**
- * GET /api/tickets?aptCode=12A05
+ * GET /api/tickets?aptCode=12A05&phone=0364967082
+ * Tự động đồng bộ live với NKS SCRMAI API
  */
 export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
     const aptCode = searchParams.get('aptCode');
-    const data = readServerData();
+    const phone = searchParams.get('phone');
+    const action = searchParams.get('action');
 
-    let tickets = data.tickets;
+    // Nếu yêu cầu trực tiếp danh sách thô từ NKS SCRMAI API
+    if (action === 'FETCH_NKS') {
+      const nksList = await fetchNksTickets(phone || undefined);
+      return NextResponse.json({ success: true, data: nksList });
+    }
+
+    const data = readServerData();
+    let nksTickets: NksTicket[] = [];
+
+    try {
+      // Gọi trực tiếp NKS SCRMAI API
+      nksTickets = await fetchNksTickets(phone || undefined);
+    } catch (apiErr) {
+      console.warn('Không thể kết nối NKS API, sử dụng dữ liệu lưu cục bộ:', apiErr);
+    }
+
+    // Merge NKS tickets với local technician assignment & resolution notes
+    const localMap = new Map<string, ExtendedServiceRequest>();
+    data.tickets.forEach(t => {
+      localMap.set(t.id, t);
+      if (t.nks_id) {
+        localMap.set(String(t.nks_id), t);
+      }
+    });
+
+    const mergedList: ExtendedServiceRequest[] = [];
+    const processedNksIds = new Set<number>();
+
+    // 1. Chuyển đổi và merge toàn bộ tickets thực tế từ NKS
+    if (Array.isArray(nksTickets) && nksTickets.length > 0) {
+      for (const nks of nksTickets) {
+        processedNksIds.add(nks.id);
+        const existingLocal = localMap.get(String(nks.id));
+        const unified = nksTicketToServiceRequest(nks, existingLocal);
+        mergedList.push(unified);
+      }
+    }
+
+    // 2. Giữ lại các phiếu cục bộ chưa kịp đồng bộ hoặc được tạo offline
+    for (const localT of data.tickets) {
+      if (localT.nks_id && processedNksIds.has(localT.nks_id)) {
+        continue;
+      }
+      if (processedNksIds.has(Number(localT.id))) {
+        continue;
+      }
+      mergedList.push(localT);
+    }
+
+    // Sắp xếp theo ngày tạo mới nhất lên đầu
+    mergedList.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+
+    // Cập nhật lại kho lưu trữ server
+    data.tickets = mergedList;
+    data.updatedAt = new Date().toISOString();
+    writeServerData(data);
+
+    let filtered = mergedList;
     if (aptCode) {
       const clean = aptCode.trim().toUpperCase();
-      tickets = tickets.filter(t => t.apt_code.trim().toUpperCase() === clean);
+      filtered = filtered.filter(t => t.apt_code.trim().toUpperCase() === clean);
     }
 
     return NextResponse.json({
       success: true,
-      tickets,
+      tickets: filtered,
       technicians: data.technicians,
+      nksConnected: Array.isArray(nksTickets) && nksTickets.length > 0,
+      totalCount: mergedList.length,
     });
   } catch (error: any) {
+    console.error('Lỗi GET /api/tickets:', error);
     return NextResponse.json(
       { success: false, message: error?.message || 'Lỗi tải danh sách phiếu.' },
       { status: 500 }
@@ -88,12 +156,43 @@ export async function POST(req: Request) {
       return NextResponse.json({ success: true, count: tickets.length });
     }
 
-    // 2. Cư Dân tạo phiếu mới
-    if (action === 'CREATE' && ticket) {
-      data.tickets.unshift(ticket);
+    // 2. Cư Dân tạo phiếu mới -> Gửi trực tiếp lên NKS SCRMAI API
+    if (action === 'CREATE' && (ticket || body.content)) {
+      const t = ticket || body;
+      
+      // Gọi NKS SCRMAI API
+      const nksResult = await createNksTicket({
+        fullname: t.resident_name || 'Nguyễn Hữu Lực',
+        phone: t.resident_phone || '0364967082',
+        email: t.email || 'huuluc04nhl@gmail.com',
+        service: t.ai_category || 'Kỹ thuật',
+        subject: `[Căn ${t.apt_code || '12A05'}] ${t.ai_category || 'Báo hỏng'} - ${t.resident_name || 'Cư dân'}`,
+        description: t.content || '',
+        image: t.before_image || '',
+        system: 'skyline',
+      });
+
+      const newId = nksResult.success && nksResult.id ? String(nksResult.id) : (t.id || `TICK-${Math.floor(100 + Math.random() * 900)}`);
+      const newTicket: ExtendedServiceRequest = {
+        ...t,
+        id: newId,
+        nks_id: nksResult.id,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+        status: t.status || 'Open',
+      };
+
+      // Thêm vào danh sách local
+      data.tickets = [newTicket, ...data.tickets.filter(item => item.id !== newId)];
       data.updatedAt = new Date().toISOString();
       writeServerData(data);
-      return NextResponse.json({ success: true, ticket });
+
+      return NextResponse.json({ 
+        success: true, 
+        ticket: newTicket,
+        nksId: nksResult.id,
+        nksSuccess: nksResult.success 
+      });
     }
 
     // 3. Phân công Kỹ thuật viên
