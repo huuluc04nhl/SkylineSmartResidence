@@ -160,15 +160,21 @@ export async function POST(req: Request) {
     if (action === 'CREATE' && (ticket || body.content)) {
       const t = ticket || body;
       
-      // Gọi NKS SCRMAI API
+      // Gọi NKS SCRMAI API với thông tin tài khoản cư dân thực tế
+      const residentFullName = (t.resident_name || body.resident_name || 'Cư dân Skyline').trim();
+      const residentPhoneNumber = (t.resident_phone || body.resident_phone || '').trim();
+      const residentEmail = (t.email || body.email || 'resident@skyline.vn').trim();
+      const apt = (t.apt_code || body.apt_code || '12A05').trim();
+      const category = t.ai_category || body.ai_category || 'Kỹ thuật';
+
       const nksResult = await createNksTicket({
-        fullname: t.resident_name || 'Nguyễn Hữu Lực',
-        phone: t.resident_phone || '0364967082',
-        email: t.email || 'huuluc04nhl@gmail.com',
-        service: t.ai_category || 'Kỹ thuật',
-        subject: `[Căn ${t.apt_code || '12A05'}] ${t.ai_category || 'Báo hỏng'} - ${t.resident_name || 'Cư dân'}`,
-        description: t.content || '',
-        image: t.before_image || '',
+        fullname: residentFullName,
+        phone: residentPhoneNumber,
+        email: residentEmail,
+        service: category,
+        subject: `[Căn ${apt}] ${category} - ${residentFullName}`,
+        description: t.content || body.content || '',
+        image: t.before_image || body.before_image || '',
         system: 'skyline',
       });
 

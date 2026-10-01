@@ -190,14 +190,24 @@ export function nksTicketToServiceRequest(
   nks: NksTicket, 
   existingLocalTicket?: ExtendedServiceRequest
 ): ExtendedServiceRequest {
-  // Trích xuất mã căn hộ từ tiêu đề, nội dung hoặc mặc định
-  let aptCode = '12A05';
+  // Trích xuất mã căn hộ hoặc vị trí phát sinh sự cố từ tiêu đề, nội dung hoặc dịch vụ
+  let aptCode = '';
   const text = `${nks.subject || ''} ${nks.description || ''} ${nks.title || ''}`;
-  const aptMatch = text.match(/\b([A-Za-z]?\d{1,2}[A-Za-z]\d{1,2}|A\d{3,4}|B\d{3,4})\b/i);
+  const aptMatch = text.match(/\b([A-Za-z]?\d{1,2}[A-Za-z]\d{1,2}|A\d{3,4}|B\d{3,4}|CH-\d{2})\b/i);
   if (aptMatch) {
     aptCode = aptMatch[1].toUpperCase();
+  } else if (text.toLowerCase().includes('block 07') || text.toLowerCase().includes('block 7')) {
+    aptCode = 'Block 07';
+  } else if (nks.service?.toLowerCase().includes('hồ bơi') || text.toLowerCase().includes('hồ bơi')) {
+    aptCode = 'Tiện ích Hồ Bơi';
+  } else if (nks.service?.toLowerCase().includes('nhà hàng') || text.toLowerCase().includes('nhà hàng')) {
+    aptCode = 'Khu Nhà Hàng';
   } else if (existingLocalTicket?.apt_code) {
     aptCode = existingLocalTicket.apt_code;
+  } else if (nks.phone === '0364967082' || nks.fullname?.toLowerCase().includes('lực')) {
+    aptCode = '12A05';
+  } else {
+    aptCode = nks.service ? `Khu ${nks.service}` : 'Tòa Nhà';
   }
 
   // Phân loại hạng mục sự cố
@@ -227,13 +237,16 @@ export function nksTicketToServiceRequest(
     status = 'In_Progress';
   }
 
+  const actualName = nks.fullname?.trim() || existingLocalTicket?.resident_name || 'Cư dân';
+  const actualPhone = nks.phone?.trim() || existingLocalTicket?.resident_phone || '';
+
   return {
     id: String(nks.id),
     nks_id: nks.id,
-    apartment_id: `apt-${aptCode.toLowerCase()}`,
+    apartment_id: `apt-${aptCode.toLowerCase().replace(/[^a-z0-9]/g, '-')}`,
     apt_code: existingLocalTicket?.apt_code || aptCode,
-    resident_name: nks.fullname || existingLocalTicket?.resident_name || 'Nguyễn Hữu Lực',
-    resident_phone: nks.phone || existingLocalTicket?.resident_phone || '0364967082',
+    resident_name: actualName,
+    resident_phone: actualPhone,
     content: nks.description || nks.subject || nks.title,
     ai_category: cat,
     ai_priority: isUrgent ? 1 : 2,

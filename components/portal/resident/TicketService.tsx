@@ -149,7 +149,7 @@ export default function TicketService({ currentUser }: TicketServiceProps) {
       setAttachedImageBase64('');
       setShowCreateForm(false);
       const ticketDisplayId = newTicket.nks_id ? `#${newTicket.nks_id}` : `#${newTicket.id}`;
-      setCreatedSuccessMsg(`Yêu cầu ${ticketDisplayId} đã được đồng bộ trực tiếp lên hệ thống NKS SCRMAI và BQL đang xử lý!`);
+      setCreatedSuccessMsg(`Yêu cầu ${ticketDisplayId} đã được chuyển tới Đội ngũ Kỹ thuật Ban Quản Lý và đang được tiếp nhận xử lý!`);
       setTimeout(() => setCreatedSuccessMsg(null), 5000);
       refreshTicketList();
     } catch (err) {
@@ -291,10 +291,10 @@ export default function TicketService({ currentUser }: TicketServiceProps) {
               {isSubmitting ? (
                 <>
                   <RefreshCw className="w-3.5 h-3.5 animate-spin" />
-                  Đang Gửi Lên NKS API...
+                  Đang Gửi Yêu Cầu...
                 </>
               ) : (
-                'Gửi Tới BQL Ngay'
+                'Gửi Yêu Cầu Tới BQL'
               )}
             </button>
           </div>
@@ -416,9 +416,9 @@ export default function TicketService({ currentUser }: TicketServiceProps) {
         <div className="flex flex-wrap items-center justify-between gap-2 text-xs uppercase tracking-wider text-gray-400 font-semibold border-b border-[#222B35] pb-2">
           <div className="flex items-center gap-2">
             <span>Danh Sách Yêu Cầu Căn Hộ {aptCode} ({tickets.length})</span>
-            <span className="px-2 py-0.5 bg-emerald-950/80 border border-emerald-500/40 text-emerald-400 text-[10px] font-mono lowercase flex items-center gap-1">
+            <span className="px-2 py-0.5 bg-emerald-950/80 border border-emerald-500/40 text-emerald-400 text-[10px] font-medium flex items-center gap-1">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-              NKS SCRMAI API
+              Kết Nối Trực Tuyến
             </span>
           </div>
           <button 
@@ -427,7 +427,7 @@ export default function TicketService({ currentUser }: TicketServiceProps) {
             className="text-gray-400 hover:text-white flex items-center gap-1.5 text-[11px] disabled:opacity-50"
           >
             <RefreshCw className={`w-3 h-3 ${isSyncing ? 'animate-spin text-[#C5A880]' : ''}`} />
-            {isSyncing ? 'Đang đồng bộ...' : 'Đồng bộ live'}
+            {isSyncing ? 'Đang cập nhật...' : 'Cập nhật'}
           </button>
         </div>
 
@@ -451,14 +451,9 @@ export default function TicketService({ currentUser }: TicketServiceProps) {
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                   <div className="flex items-center gap-2 flex-wrap">
                     <span className="font-mono text-[#C5A880] font-bold text-sm">
-                      {t.nks_id ? `#${t.nks_id}` : `#${t.id}`}
+                      {t.nks_id ? `#${t.nks_id}` : `#${t.id.replace('TICK-', '')}`}
                     </span>
-                    {t.nks_id && (
-                      <span className="px-1.5 py-0.5 bg-blue-950 border border-blue-500/50 text-blue-300 text-[9px] font-mono">
-                        NKS #{t.nks_id}
-                      </span>
-                    )}
-                    <span className="px-2 py-0.5 bg-[#1C2533] border border-gray-700 text-gray-300 text-[10px] font-mono">
+                    <span className="px-1.5 py-0.5 bg-[#1C2533] border border-gray-700 text-gray-300 text-[10px] font-mono">
                       {t.ai_category}
                     </span>
                     <span className="text-[11px] text-gray-400">

@@ -77,10 +77,10 @@ export default function KanbanBoard() {
     try {
       await syncTicketsWithServer();
       refreshAllData();
-      setActionSuccessMsg('Đã đồng bộ thành công danh sách sự cố từ NKS SCRMAI API!');
+      setActionSuccessMsg('Đã cập nhật danh sách sự cố mới nhất từ hệ thống tiếp nhận!');
       setTimeout(() => setActionSuccessMsg(null), 3000);
     } catch (err) {
-      console.warn('Lỗi đồng bộ NKS API:', err);
+      console.warn('Lỗi cập nhật dữ liệu sự cố:', err);
     } finally {
       setIsSyncing(false);
     }
@@ -178,15 +178,15 @@ export default function KanbanBoard() {
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
-          {/* NKS SCRMAI Live Sync Button */}
+          {/* Nút Làm Mới Dữ Liệu Trực Tuyến */}
           <button
             onClick={handleSyncNks}
             disabled={isSyncing}
             className="px-3 py-2 bg-[#121820] hover:bg-[#161B22] border border-[#222B35] text-xs font-semibold text-gray-300 hover:text-white flex items-center gap-1.5 transition-colors disabled:opacity-50"
-            title="Đồng bộ danh sách yêu cầu thực tế từ NKS SCRMAI API"
+            title="Cập nhật danh sách yêu cầu thực tế mới nhất từ cư dân"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${isSyncing ? 'animate-spin text-[#C5A880]' : 'text-emerald-400'}`} />
-            <span>{isSyncing ? 'Đang đồng bộ...' : 'Đồng bộ NKS API'}</span>
+            <span>{isSyncing ? 'Đang cập nhật...' : 'Làm mới dữ liệu'}</span>
           </button>
 
           {/* Tab Switcher: KANBAN vs PAYROLL */}
@@ -287,21 +287,22 @@ export default function KanbanBoard() {
                       <div className="flex items-center justify-between flex-wrap gap-1">
                         <div className="flex items-center gap-1.5">
                           <span className="font-mono text-[#C5A880] font-bold text-xs">
-                            {ticket.nks_id ? `#${ticket.nks_id}` : `#${ticket.id}`}
+                            {ticket.nks_id ? `#${ticket.nks_id}` : `#${ticket.id.replace('TICK-', '')}`}
                           </span>
-                          {ticket.nks_id && (
-                            <span className="px-1.5 py-0.5 bg-blue-950 border border-blue-500/50 text-blue-300 text-[9px] font-mono">
-                              NKS #{ticket.nks_id}
-                            </span>
-                          )}
+                          <span className="px-1.5 py-0.5 bg-[#1F2937] border border-gray-700 text-gray-300 text-[9px] font-medium">
+                            Trực tuyến
+                          </span>
                         </div>
                         <span className="px-2 py-0.5 bg-red-950 text-red-300 border border-red-500 text-[10px] font-mono font-bold">
                           {ticket.ai_category} • Mức {ticket.ai_priority}
                         </span>
                       </div>
 
-                      <div className="text-xs text-white font-semibold">
-                        Căn {ticket.apt_code} • {ticket.resident_name} ({ticket.resident_phone})
+                      <div className="text-xs text-white font-semibold flex items-center justify-between">
+                        <span>{ticket.apt_code.startsWith('Khu') || ticket.apt_code.startsWith('Block') || ticket.apt_code.startsWith('Tiện') ? ticket.apt_code : `Căn ${ticket.apt_code}`} • {ticket.resident_name}</span>
+                        {ticket.resident_phone && (
+                          <span className="font-mono text-gray-400 text-[11px] font-normal">{ticket.resident_phone}</span>
+                        )}
                       </div>
 
                       <p className="text-xs text-gray-300 line-clamp-2 leading-relaxed">
@@ -365,21 +366,22 @@ export default function KanbanBoard() {
                       <div className="flex items-center justify-between flex-wrap gap-1">
                         <div className="flex items-center gap-1.5">
                           <span className="font-mono text-[#C5A880] font-bold text-xs">
-                            {ticket.nks_id ? `#${ticket.nks_id}` : `#${ticket.id}`}
+                            {ticket.nks_id ? `#${ticket.nks_id}` : `#${ticket.id.replace('TICK-', '')}`}
                           </span>
-                          {ticket.nks_id && (
-                            <span className="px-1.5 py-0.5 bg-blue-950 border border-blue-500/50 text-blue-300 text-[9px] font-mono">
-                              NKS #{ticket.nks_id}
-                            </span>
-                          )}
+                          <span className="px-1.5 py-0.5 bg-[#1F2937] border border-gray-700 text-gray-300 text-[9px] font-medium">
+                            Trực tuyến
+                          </span>
                         </div>
                         <span className="px-2 py-0.5 bg-amber-950 text-amber-300 border border-amber-500 text-[10px] font-mono font-bold">
                           {ticket.ai_category}
                         </span>
                       </div>
 
-                      <div className="text-xs text-white font-semibold">
-                        Căn {ticket.apt_code} • {ticket.resident_name}
+                      <div className="text-xs text-white font-semibold flex items-center justify-between">
+                        <span>{ticket.apt_code.startsWith('Khu') || ticket.apt_code.startsWith('Block') || ticket.apt_code.startsWith('Tiện') ? ticket.apt_code : `Căn ${ticket.apt_code}`} • {ticket.resident_name}</span>
+                        {ticket.resident_phone && (
+                          <span className="font-mono text-gray-400 text-[11px] font-normal">{ticket.resident_phone}</span>
+                        )}
                       </div>
 
                       <p className="text-xs text-gray-300 line-clamp-2">
@@ -446,13 +448,11 @@ export default function KanbanBoard() {
                       <div className="flex items-center justify-between flex-wrap gap-1">
                         <div className="flex items-center gap-1.5">
                           <span className="font-mono text-[#C5A880] font-bold text-xs">
-                            {ticket.nks_id ? `#${ticket.nks_id}` : `#${ticket.id}`}
+                            {ticket.nks_id ? `#${ticket.nks_id}` : `#${ticket.id.replace('TICK-', '')}`}
                           </span>
-                          {ticket.nks_id && (
-                            <span className="px-1.5 py-0.5 bg-blue-950 border border-blue-500/50 text-blue-300 text-[9px] font-mono">
-                              NKS #{ticket.nks_id}
-                            </span>
-                          )}
+                          <span className="px-1.5 py-0.5 bg-[#1F2937] border border-gray-700 text-gray-300 text-[9px] font-medium">
+                            Trực tuyến
+                          </span>
                         </div>
                         <div className="flex items-center gap-1">
                           {ticket.rating ? (
@@ -465,8 +465,11 @@ export default function KanbanBoard() {
                         </div>
                       </div>
 
-                      <div className="text-xs text-white font-semibold">
-                        Căn {ticket.apt_code} • {ticket.resident_name}
+                      <div className="text-xs text-white font-semibold flex items-center justify-between">
+                        <span>{ticket.apt_code.startsWith('Khu') || ticket.apt_code.startsWith('Block') || ticket.apt_code.startsWith('Tiện') ? ticket.apt_code : `Căn ${ticket.apt_code}`} • {ticket.resident_name}</span>
+                        {ticket.resident_phone && (
+                          <span className="font-mono text-gray-400 text-[11px] font-normal">{ticket.resident_phone}</span>
+                        )}
                       </div>
 
                       <p className="text-xs text-gray-300 line-clamp-2">
