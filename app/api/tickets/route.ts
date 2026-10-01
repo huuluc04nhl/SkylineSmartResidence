@@ -258,7 +258,7 @@ export async function POST(req: Request) {
     // 4. Nghiệm thu hoàn tất
     if (action === 'RESOLVE' && body.ticketId && afterImage) {
       data.tickets = data.tickets.map(t => {
-        if (t.id === body.ticketId) {
+        if (t.id === body.ticketId || String(t.nks_id) === String(body.ticketId)) {
           return {
             ...t,
             status: 'Resolved',

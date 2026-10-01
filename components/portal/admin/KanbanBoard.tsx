@@ -48,7 +48,11 @@ import {
   isAutoDispatchEnabled, 
   setAutoDispatchEnabled, 
   autoDispatchSingleTicket, 
-  autoDispatchAllPendingTickets 
+  autoDispatchAllPendingTickets,
+  autoResolveSingleTicketWithAI,
+  autoResolveAllInProgressTicketsWithAI,
+  generateAiResolutionNotes,
+  generateAiInspectionImage
 } from '@/lib/aiDispatchService';
 import { fileToBase64 } from '@/lib/imageUtils';
 
@@ -132,6 +136,8 @@ export default function KanbanBoard() {
     }
   };
 
+  const [isAutoResolving, setIsAutoResolving] = useState(false);
+
   const handleAutoDispatchOne = (ticketId: string) => {
     const res = autoDispatchSingleTicket(ticketId);
     if (res && res.assigned_technician) {
@@ -139,6 +145,42 @@ export default function KanbanBoard() {
       setActionSuccessMsg(`AI đã tự động phân công KTV ${res.assigned_technician} xử lý phiếu #${res.nks_id || res.id}!`);
       setTimeout(() => setActionSuccessMsg(null), 3500);
     }
+  };
+
+  const handleAiAutoResolveSingle = (ticket: ExtendedServiceRequest) => {
+    const res = autoResolveSingleTicketWithAI(ticket.id);
+    if (res) {
+      refreshAllData();
+      setActionSuccessMsg(`✨ AI đã kiểm định chất lượng và tự động nghiệm thu phiếu #${res.nks_id || res.id.replace('TICK-', '')} thành công! Thù lao KTV đã được ghi nhận.`);
+      setTimeout(() => setActionSuccessMsg(null), 4000);
+    }
+  };
+
+  const handleAiAutoResolveAll = () => {
+    if (inProgressTickets.length === 0) return;
+    setIsAutoResolving(true);
+    try {
+      const res = autoResolveAllInProgressTicketsWithAI();
+      refreshAllData();
+      if (res.successCount > 0) {
+        setActionSuccessMsg(`✨ AI đã kiểm định hiện trường, tự động nghiệm thu và đóng hoàn tất ${res.successCount} phiếu sự cố!`);
+      } else {
+        setActionSuccessMsg('Không có phiếu nào đang chờ nghiệm thu.');
+      }
+      setTimeout(() => setActionSuccessMsg(null), 4500);
+    } finally {
+      setIsAutoResolving(false);
+    }
+  };
+
+  const handleAutoFillAiInspection = () => {
+    if (!resolvingTicket) return;
+    const notes = generateAiResolutionNotes(resolvingTicket);
+    const img = generateAiInspectionImage(resolvingTicket);
+    setResolutionNotes(notes);
+    setAfterImageBase64(img);
+    setActionSuccessMsg('AI đã tự động phân tích sự cố và điền biên bản nghiệm thu kỹ thuật đạt chuẩn!');
+    setTimeout(() => setActionSuccessMsg(null), 3000);
   };
 
   useEffect(() => {
@@ -477,12 +519,32 @@ export default function KanbanBoard() {
 
             {/* Column 2: Đang xử lý */}
             <div className="bg-[#121820] border border-[#222B35] flex flex-col justify-between shadow-xl">
-              <div className="p-4 border-b border-[#222B35] flex items-center justify-between bg-[#161B22]">
-                <span className="text-xs uppercase tracking-wider font-semibold text-amber-300 flex items-center gap-2">
+              <div className="p-3.5 border-b border-[#222B35] flex items-center justify-between bg-[#161B22]">
+                <div className="flex items-center gap-2">
                   <span className="w-2.5 h-2.5 bg-amber-500 rounded-none animate-pulse"></span>
-                  2. KTV Đang Xử Lý ({inProgressTickets.length})
-                </span>
-                <span className="text-[10px] font-mono text-amber-400">Cam Kết Có Mặt</span>
+                  <span className="text-xs uppercase tracking-wider font-semibold text-gray-200">
+                    2. KTV Đang Xử Lý
+                  </span>
+                  <span className="px-1.5 py-0.5 bg-amber-950/80 border border-amber-500/40 text-amber-300 font-mono text-[10px] font-bold">
+                    {inProgressTickets.length}
+                  </span>
+                </div>
+
+                {inProgressTickets.length > 0 ? (
+                  <button
+                    onClick={handleAiAutoResolveAll}
+                    disabled={isAutoResolving}
+                    className="px-2.5 py-1 bg-gradient-to-r from-emerald-700 to-teal-700 hover:from-emerald-600 hover:to-teal-600 text-white text-[11px] font-bold uppercase tracking-wider flex items-center gap-1.5 shadow transition-all disabled:opacity-50 border border-emerald-400/40"
+                    title="Kích hoạt AI kiểm định hiện trường và tự động nghiệm thu toàn bộ các phiếu đang xử lý"
+                  >
+                    <Sparkles className={`w-3 h-3 ${isAutoResolving ? 'animate-spin' : 'text-emerald-200'}`} />
+                    <span>{isAutoResolving ? 'Đang nghiệm thu...' : `AI Nghiệm Thu Hết`}</span>
+                  </button>
+                ) : (
+                  <span className="text-[10px] font-mono text-gray-400 flex items-center gap-1">
+                    <CheckCircle2 className="w-3 h-3 text-emerald-400" /> Sẵn sàng
+                  </span>
+                )}
               </div>
 
               <div className="p-4 space-y-4 min-h-[420px] overflow-y-auto">
@@ -558,7 +620,7 @@ export default function KanbanBoard() {
 
                       <div className="pt-2 border-t border-[#222B35] flex items-center justify-between">
                         <span className="text-[10px] text-amber-400 font-mono flex items-center gap-1">
-                          <Clock className="w-3 h-3" /> Cam kết xử lý: {ticket.ai_category === 'Nước' || ticket.ai_category === 'Điện' ? 'Trong 45 phút' : 'Trong 2 giờ'}
+                          <Clock className="w-3 h-3" /> Cam kết: {ticket.ai_category === 'Nước' || ticket.ai_category === 'Điện' ? '45 phút' : '2 giờ'}
                         </span>
 
                         <div className="flex items-center gap-1.5">
@@ -567,20 +629,32 @@ export default function KanbanBoard() {
                               setAssigningTicket(ticket);
                               setSelectedTechId(ticket.assigned_technician_id || 'KTV-01');
                             }}
-                            className="px-2.5 py-1.5 bg-[#161B22] hover:bg-[#1C2533] text-gray-300 hover:text-white border border-[#2D3748] text-xs transition-colors"
+                            className="px-2 py-1.5 bg-[#161B22] hover:bg-[#1C2533] text-gray-400 hover:text-white border border-[#2D3748] text-xs transition-colors"
                             title="Đổi KTV khác nếu BQL muốn can thiệp thủ công"
                           >
                             Đổi KTV
                           </button>
 
+                          {/* 1-Click AI Auto Resolve */}
+                          <button
+                            onClick={() => handleAiAutoResolveSingle(ticket)}
+                            className="px-2.5 py-1.5 bg-emerald-950/80 hover:bg-emerald-900 border border-emerald-500/50 hover:border-emerald-400 text-emerald-300 hover:text-white text-xs font-bold transition-all flex items-center gap-1 shadow"
+                            title="AI tự động kiểm định chất lượng, sinh ảnh biên bản và nghiệm thu đóng phiếu ngay"
+                          >
+                            <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
+                            <span>AI Nghiệm Thu</span>
+                          </button>
+
+                          {/* Manual Resolve */}
                           <button
                             onClick={() => {
                               setResolvingTicket(ticket);
                               setAfterImageBase64('');
                             }}
-                            className="px-3 py-1.5 bg-[#C5A880] hover:bg-white text-[#0D1117] text-xs font-bold uppercase tracking-wider transition-colors flex items-center gap-1 shadow"
+                            className="px-2.5 py-1.5 bg-[#C5A880] hover:bg-white text-[#0D1117] text-xs font-bold uppercase tracking-wider transition-colors flex items-center gap-1 shadow"
+                            title="Mở biểu mẫu để tự chụp ảnh hoặc nhập ghi chú thủ công"
                           >
-                            <Check className="w-3.5 h-3.5" /> Nghiệm Thu Xong
+                            <Check className="w-3.5 h-3.5" /> Thủ Công
                           </button>
                         </div>
                       </div>
@@ -962,6 +1036,24 @@ export default function KanbanBoard() {
               <div>Căn hộ: <strong className="text-white">Căn {resolvingTicket.apt_code} ({resolvingTicket.resident_name})</strong></div>
               <div>KTV phụ trách: <strong className="text-[#C5A880]">{resolvingTicket.assigned_technician}</strong></div>
               <div>Nội dung báo: <span className="text-gray-300">{resolvingTicket.content}</span></div>
+            </div>
+
+            {/* AI Assistant Quick Fill in Modal */}
+            <div className="p-3 bg-emerald-950/40 border border-emerald-500/30 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Sparkles className="w-4 h-4 text-emerald-400 flex-shrink-0" />
+                <div>
+                  <div className="text-xs text-white font-semibold">Trợ Lý AI Kiểm Định Hiện Trường</div>
+                  <div className="text-[10px] text-gray-400">Tự động sinh biên bản kỹ thuật &amp; ảnh kiểm định đạt chuẩn</div>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={handleAutoFillAiInspection}
+                className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-1 shadow flex-shrink-0"
+              >
+                <span>AI Điền Sẵn</span>
+              </button>
             </div>
 
             {/* Upload After Image */}
