@@ -42,9 +42,7 @@ import {
 import { 
   Waves,
   UtensilsCrossed,
-  Bus,
-  Activity,
-  FlameKindling
+  Bus
 } from 'lucide-react';
 
 interface ResidentServicesProps {
@@ -147,10 +145,10 @@ export default function ResidentServices({ currentUser, onNavigateModule }: Resi
             <Sparkles className="w-3.5 h-3.5 text-[#C5A880]" /> Dịch Vụ Đời Sống 5 Sao • Căn Hộ {aptCode}
           </div>
           <h2 className="font-serif text-2xl sm:text-3xl text-white font-bold mt-1 tracking-wide">
-            Dịch Vụ Đời Sống & Tiện Ích Căn Hộ
+            Dịch Vụ Đời Sống Cư Dân
           </h2>
-          <p className="text-xs text-gray-400 mt-1">
-            9 danh mục dịch vụ cao cấp: Giặt ủi, Giúp việc, PT Gym/Bơi, Chăm sóc xe, Spa & Wellness, Tiệc BBQ, Nhà hàng, Di chuyển thông minh & Đặt sân thể thao. Tự động gộp chi phí vào hóa đơn hàng tháng.
+          <p className="text-xs text-gray-400 mt-1 max-w-3xl leading-relaxed">
+            7 danh mục dịch vụ theo yêu cầu: Giặt ủi & hấp, Giúp việc dọn dẹp, PT cá nhân bơi/gym, Chăm sóc xe Hầm B2, Spa & Trị liệu thư giãn, Nhà hàng giao cơm nóng tận căn hộ, và Di chuyển thông minh. Đội ngũ nhân sự chuyên trách phục vụ tận nơi, chi phí tự động gộp vào hóa đơn tháng.
           </p>
         </div>
 
@@ -164,7 +162,7 @@ export default function ResidentServices({ currentUser, onNavigateModule }: Resi
                 : 'text-gray-300 hover:text-white'
             }`}
           >
-            <Sparkles className="w-3.5 h-3.5" /> Danh Mục Dịch Vụ
+            <Sparkles className="w-3.5 h-3.5" /> Danh Mục Dịch Vụ (7)
           </button>
 
           <button
@@ -178,6 +176,35 @@ export default function ResidentServices({ currentUser, onNavigateModule }: Resi
             <History className="w-3.5 h-3.5" /> Lịch Sử & Đơn Hàng ({bookings.length})
           </button>
         </div>
+      </div>
+
+      {/* Distinction Callout Banner: Phân định rạch ròi Dịch Vụ vs Tiện Ích */}
+      <div className="p-3.5 bg-gradient-to-r from-[#121820] via-[#1A2332] to-[#121820] border border-[#2A374A] flex flex-col md:flex-row md:items-center justify-between gap-3 text-xs">
+        <div className="flex items-start gap-2.5">
+          <div className="p-1.5 bg-[#C5A880]/15 border border-[#C5A880]/40 text-[#C5A880] shrink-0 mt-0.5">
+            <Info className="w-4 h-4" />
+          </div>
+          <div>
+            <div className="font-bold text-white flex items-center gap-2">
+              <span>Định Hướng: Phân Biệt Dịch Vụ & Tiện Ích Nội Khu</span>
+              <span className="text-[10px] font-mono px-1.5 py-0.5 bg-[#C5A880]/20 text-[#C5A880] border border-[#C5A880]/40">Nhân Viên Phục Vụ Tận Nơi</span>
+            </div>
+            <p className="text-[11px] text-gray-400 mt-0.5 leading-relaxed">
+              • <strong className="text-gray-200">Dịch Vụ:</strong> Là các dịch vụ đặt theo đơn có nhân sự chuyên trách phục vụ tại căn hộ (giặt đồ, dọn nhà, PT kèm riêng, rửa xe B2, spa, ẩm thực, xe đón).<br className="hidden sm:inline" />
+              • <strong className="text-gray-200">Tiện Ích:</strong> Là không gian công cộng/thể thao nội khu (Hồ bơi, Gym, Sân Tennis Malibu, Sân Yoga, Vườn nướng BBQ, Công viên) — ra vào tự do bằng Thẻ/FaceID hoặc đặt lịch sử dụng không gian.
+            </p>
+          </div>
+        </div>
+        {onNavigateModule && (
+          <button
+            type="button"
+            onClick={() => onNavigateModule('resident-facilities')}
+            className="px-3.5 py-2 bg-[#161D26] hover:bg-[#C5A880] hover:text-[#0D1117] text-gray-200 font-bold text-[11px] uppercase tracking-wider transition-all shrink-0 flex items-center gap-1.5 border border-[#C5A880]/40 shadow"
+          >
+            <Waves className="w-3.5 h-3.5 text-[#C5A880]" />
+            <span>Mở Trang Tiện Ích & Thẻ →</span>
+          </button>
+        )}
       </div>
 
       {/* Thông báo thành công */}
@@ -272,17 +299,6 @@ export default function ResidentServices({ currentUser, onNavigateModule }: Resi
             </button>
 
             <button
-              onClick={() => setSelectedCategory('PARTY_BBQ')}
-              className={`px-3.5 py-1.5 font-semibold transition-all whitespace-nowrap border flex items-center gap-1.5 ${
-                selectedCategory === 'PARTY_BBQ'
-                  ? 'bg-[#C5A880] text-[#0D1117] border-[#C5A880] font-bold shadow'
-                  : 'bg-[#121820] border-[#222B35] text-gray-300 hover:text-white'
-              }`}
-            >
-              <FlameKindling className="w-3.5 h-3.5" /> Tiệc BBQ Sân Thượng
-            </button>
-
-            <button
               onClick={() => setSelectedCategory('RESTAURANT')}
               className={`px-3.5 py-1.5 font-semibold transition-all whitespace-nowrap border flex items-center gap-1.5 ${
                 selectedCategory === 'RESTAURANT'
@@ -302,17 +318,6 @@ export default function ResidentServices({ currentUser, onNavigateModule }: Resi
               }`}
             >
               <Bus className="w-3.5 h-3.5" /> Di Chuyển Thông Minh
-            </button>
-
-            <button
-              onClick={() => setSelectedCategory('SPORTS_COURT')}
-              className={`px-3.5 py-1.5 font-semibold transition-all whitespace-nowrap border flex items-center gap-1.5 ${
-                selectedCategory === 'SPORTS_COURT'
-                  ? 'bg-[#C5A880] text-[#0D1117] border-[#C5A880] font-bold shadow'
-                  : 'bg-[#121820] border-[#222B35] text-gray-300 hover:text-white'
-              }`}
-            >
-              <Activity className="w-3.5 h-3.5" /> Đặt Sân Thể Thao
             </button>
           </div>
 

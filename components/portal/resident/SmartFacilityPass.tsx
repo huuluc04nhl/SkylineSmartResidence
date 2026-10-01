@@ -55,9 +55,10 @@ import {
 
 interface SmartFacilityPassProps {
   currentUser: User;
+  onNavigateModule?: (moduleId: string) => void;
 }
 
-export default function SmartFacilityPass({ currentUser }: SmartFacilityPassProps) {
+export default function SmartFacilityPass({ currentUser, onNavigateModule }: SmartFacilityPassProps) {
   const aptCode = currentUser.apartment_code || '12A05';
   const isOwner = currentUser.role === 'OWNER';
   const userName = currentUser?.full_name || (currentUser as any)?.fullname || 'Cư Dân';
@@ -74,7 +75,7 @@ export default function SmartFacilityPass({ currentUser }: SmartFacilityPassProp
   const [isTurnstileScanning, setIsTurnstileScanning] = useState(false);
   const [turnstileSuccessMsg, setTurnstileSuccessMsg] = useState<string | null>(null);
 
-  // Danh mục 5 tiện ích chính với dữ liệu quy chế minh bạch
+  // 14 tiện ích chuẩn phân khu The Tropical Vinhomes Grand Park
   const amenitiesList = [
     // ===== SPORTS =====
     {
@@ -89,7 +90,7 @@ export default function SmartFacilityPass({ currentUser }: SmartFacilityPassProp
       icon: Waves,
       accessType: 'FREE_ENTRY',
       accessBadge: 'Vào Tự Do (NFC / FaceID)',
-      price: 'Miễn phí theo Thẻ cư dân'
+      price: 'Miễn phí theo Thẻ Cư Dân'
     },
     {
       id: 'fac-pool-malibu',
@@ -103,7 +104,7 @@ export default function SmartFacilityPass({ currentUser }: SmartFacilityPassProp
       icon: Waves,
       accessType: 'FREE_ENTRY',
       accessBadge: 'Vào Tự Do (NFC / FaceID)',
-      price: 'Miễn phí theo Thẻ cư dân'
+      price: 'Miễn phí theo Thẻ Cư Dân'
     },
     {
       id: 'fac-gym',
@@ -117,7 +118,7 @@ export default function SmartFacilityPass({ currentUser }: SmartFacilityPassProp
       icon: Dumbbell,
       accessType: 'FREE_ENTRY',
       accessBadge: 'Vào Tự Do 24/7',
-      price: 'Miễn phí theo Thẻ cư dân'
+      price: 'Miễn phí theo Thẻ Cư Dân'
     },
     {
       id: 'fac-gym-outdoor',
@@ -144,8 +145,8 @@ export default function SmartFacilityPass({ currentUser }: SmartFacilityPassProp
       image: 'https://images.unsplash.com/photo-1554068865-24cecd4e34b8?w=600&auto=format&fit=crop&q=80',
       icon: Flame,
       accessType: 'BOOKING_REQUIRED',
-      accessBadge: 'Đặt Sân Theo Ca (Ứng Dụng)',
-      price: 'Đặt sân qua mục Dịch Vụ — từ 100.000 đ/ca'
+      accessBadge: 'Đặt Sân Giữ Chỗ (Tab Đặt Chỗ)',
+      price: 'Miễn phí theo Thẻ Cư Dân (Tối đa 2 ca/tuần)'
     },
     {
       id: 'fac-yoga',
@@ -158,8 +159,8 @@ export default function SmartFacilityPass({ currentUser }: SmartFacilityPassProp
       image: 'https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=600&auto=format&fit=crop&q=80',
       icon: Smile,
       accessType: 'BOOKING_REQUIRED',
-      accessBadge: 'Đặt Khung Giờ Yoga (App)',
-      price: 'Đặt giờ yoga qua mục Dịch Vụ — từ 80.000 đ/ca'
+      accessBadge: 'Đăng Ký Khung Giờ (Tab Đặt Chỗ)',
+      price: 'Miễn phí theo Thẻ Cư Dân'
     },
     {
       id: 'fac-sauna',
@@ -173,7 +174,7 @@ export default function SmartFacilityPass({ currentUser }: SmartFacilityPassProp
       icon: Flame,
       accessType: 'BOOKING_REQUIRED',
       accessBadge: 'Đặt Phòng VIP (Tối Đa 2 Người)',
-      price: 'Đặt qua mục Dịch Vụ Spa — 550.000 đ/ca'
+      price: 'Phòng riêng tư VIP • 500.000 đ/giờ'
     },
     {
       id: 'fac-kids',
@@ -187,7 +188,7 @@ export default function SmartFacilityPass({ currentUser }: SmartFacilityPassProp
       icon: Smile,
       accessType: 'FREE_ENTRY',
       accessBadge: 'Vào Tự Do (Trẻ Em & Gia Đình)',
-      price: 'Miễn phí theo Thẻ cư dân'
+      price: 'Miễn phí theo Thẻ Cư Dân'
     },
     // ===== PARK & GARDEN =====
     {
@@ -259,7 +260,7 @@ export default function SmartFacilityPass({ currentUser }: SmartFacilityPassProp
       icon: UtensilsCrossed,
       accessType: 'BOOKING_REQUIRED',
       accessBadge: 'Đăng Ký Theo Ca Tiệc',
-      price: 'Đặt qua mục Dịch Vụ BBQ — từ 450.000 đ/ca'
+      price: 'Bếp Weber & dọn sau tiệc • 600.000 đ/ca (Ca 3 giờ)'
     },
     {
       id: 'fac-multipurpose-lawn',
@@ -273,7 +274,7 @@ export default function SmartFacilityPass({ currentUser }: SmartFacilityPassProp
       icon: Flame,
       accessType: 'BOOKING_REQUIRED',
       accessBadge: 'Đặt Sân Nhóm (≤ 20 Người)',
-      price: 'Đặt qua Dịch Vụ Thể Thao — 300.000 đ/2 giờ'
+      price: 'Miễn phí theo Thẻ Cư Dân (Đăng ký ca 2 giờ)'
     },
   ];
 
@@ -357,15 +358,16 @@ export default function SmartFacilityPass({ currentUser }: SmartFacilityPassProp
     }
   };
 
-  // Tạo đặt chỗ mới (hỗ trợ phòng xông hơi riêng tư và thanh toán giữ chỗ)
+  // Tạo đặt chỗ mới (hỗ trợ phòng xông hơi riêng tư, BBQ sân thượng và đặt sân thể thao miễn phí)
   const handleCreateBooking = (e: React.FormEvent) => {
     e.preventDefault();
-    const fac = amenitiesList.find(f => f.id === bookingFacilityId) || amenitiesList[2];
+    const fac = amenitiesList.find(f => f.id === bookingFacilityId) || amenitiesList[0];
     const isPrivate = fac.id === 'fac-sauna';
-    const depositAmount = isPrivate ? bookingDurationHours * 500000 : (fac.id === 'fac-bbq' ? 600000 : 0);
+    const isBbq = fac.id === 'fac-bbq';
+    const depositAmount = isPrivate ? bookingDurationHours * 500000 : (isBbq ? 600000 : 0);
     const pricingText = isPrivate 
       ? `${(bookingDurationHours * 500000).toLocaleString('vi-VN')} đ (${bookingDurationHours} tiếng phòng VIP)` 
-      : fac.price;
+      : (isBbq ? '600.000 đ / ca tiệc BBQ' : 'Miễn phí theo Thẻ Cư Dân');
 
     const { bookings: updated, newBooking } = createFacilityBooking(
       aptCode,
@@ -442,12 +444,12 @@ export default function SmartFacilityPass({ currentUser }: SmartFacilityPassProp
             <span>Tiện Ích 5 Sao • Căn Hộ {aptCode}</span>
           </div>
           <h2 className="text-xl sm:text-2xl font-serif font-bold text-white flex items-center gap-2">
-            <span>Đặc Quyền Dịch Vụ & Cổng Ra Vào Tự Động</span>
+            <span>Tiện Ích Nội Khu & Thẻ Thông Minh</span>
           </h2>
           <p className="text-xs text-gray-400 font-mono flex flex-wrap items-center gap-2">
             <span>Chủ Hộ: <strong className="text-white">{userName}</strong></span>
             <span className="text-gray-600">•</span>
-            <span className="text-emerald-400">Gym & Hồ bơi: Miễn phí</span>
+            <span className="text-emerald-400">Gym, Bể bơi, Sân Malibu: Miễn phí Cư Dân</span>
             <span className="text-gray-600">•</span>
             <span>Mở cổng 0.28s</span>
           </p>
@@ -474,6 +476,35 @@ export default function SmartFacilityPass({ currentUser }: SmartFacilityPassProp
         </div>
       </div>
 
+      {/* Distinction Callout Banner: Phân định rạch ròi Tiện Ích vs Dịch Vụ */}
+      <div className="p-3.5 bg-gradient-to-r from-[#121820] via-[#1A2332] to-[#121820] border border-[#2A374A] flex flex-col md:flex-row md:items-center justify-between gap-3 text-xs">
+        <div className="flex items-start gap-2.5">
+          <div className="p-1.5 bg-[#C5A880]/15 border border-[#C5A880]/40 text-[#C5A880] shrink-0 mt-0.5">
+            <Info className="w-4 h-4" />
+          </div>
+          <div>
+            <div className="font-bold text-white flex items-center gap-2">
+              <span>Định Hướng: Phân Biệt Tiện Ích & Dịch Vụ Cư Dân</span>
+              <span className="text-[10px] font-mono px-1.5 py-0.5 bg-emerald-950 text-emerald-400 border border-emerald-500/50">Không Gian & Cổng Vào Tự Động</span>
+            </div>
+            <p className="text-[11px] text-gray-400 mt-0.5 leading-relaxed">
+              • <strong className="text-gray-200">Tiện Ích:</strong> Là hệ thống cơ sở vật chất nội khu bạn trực tiếp đến trải nghiệm (Hồ bơi resort, Gym, Sân Tennis/Bóng rổ Malibu, Sân Yoga, Vườn nướng BBQ, Suối cảnh quan) — kiểm soát tự động bằng Thẻ/FaceID hoặc đặt trước khung giờ.<br className="hidden sm:inline" />
+              • <strong className="text-gray-200">Dịch Vụ:</strong> Là các dịch vụ theo yêu cầu có nhân viên phục vụ tận phòng (giặt ủi, dọn dẹp căn hộ, PT riêng, rửa xe B2, spa massage, giao cơm nóng tận cửa).
+            </p>
+          </div>
+        </div>
+        {onNavigateModule && (
+          <button
+            type="button"
+            onClick={() => onNavigateModule('resident-services')}
+            className="px-3.5 py-2 bg-[#161D26] hover:bg-[#C5A880] hover:text-[#0D1117] text-gray-200 font-bold text-[11px] uppercase tracking-wider transition-all shrink-0 flex items-center gap-1.5 border border-[#C5A880]/40 shadow"
+          >
+            <Sparkles className="w-3.5 h-3.5 text-[#C5A880]" />
+            <span>Mở Dịch Vụ Đời Sống →</span>
+          </button>
+        )}
+      </div>
+
       {/* ============================================================= */}
       {/* 2. THANH ĐIỀU HƯỚNG 3 CHỨC NĂNG (WORKFLOW TABS)               */}
       {/* ============================================================= */}
@@ -489,7 +520,7 @@ export default function SmartFacilityPass({ currentUser }: SmartFacilityPassProp
           }`}
         >
           <DoorOpen className="w-4 h-4" />
-          <span>1. Danh Mục Tiện Ích (5)</span>
+          <span>1. Danh Mục Tiện Ích ({amenitiesList.length})</span>
         </button>
 
         {/* Chức năng 2 */}
@@ -536,7 +567,7 @@ export default function SmartFacilityPass({ currentUser }: SmartFacilityPassProp
                   filterCategory === 'ALL' ? 'bg-[#C5A880] text-[#0D1117]' : 'bg-[#161D26] text-gray-400 hover:text-white'
                 }`}
               >
-                Tất Cả (5)
+                Tất Cả ({amenitiesList.length})
               </button>
               <button
                 type="button"
@@ -545,7 +576,7 @@ export default function SmartFacilityPass({ currentUser }: SmartFacilityPassProp
                   filterCategory === 'SPORTS' ? 'bg-[#C5A880] text-[#0D1117]' : 'bg-[#161D26] text-gray-400 hover:text-white'
                 }`}
               >
-                Thể Thao & Hồ Bơi (2)
+                Thể Thao & Hồ Bơi ({amenitiesList.filter(a => a.category === 'SPORTS').length})
               </button>
               <button
                 type="button"
@@ -554,7 +585,16 @@ export default function SmartFacilityPass({ currentUser }: SmartFacilityPassProp
                   filterCategory === 'WELLNESS' ? 'bg-[#C5A880] text-[#0D1117]' : 'bg-[#161D26] text-gray-400 hover:text-white'
                 }`}
               >
-                Sức Khỏe & Trẻ Em (2)
+                Sức Khỏe & Trẻ Em ({amenitiesList.filter(a => a.category === 'WELLNESS').length})
+              </button>
+              <button
+                type="button"
+                onClick={() => setFilterCategory('PARK')}
+                className={`px-3 py-1.5 text-xs font-bold rounded-none transition-colors ${
+                  filterCategory === 'PARK' ? 'bg-[#C5A880] text-[#0D1117]' : 'bg-[#161D26] text-gray-400 hover:text-white'
+                }`}
+              >
+                Công Viên & Cảnh Quan ({amenitiesList.filter(a => a.category === 'PARK').length})
               </button>
               <button
                 type="button"
@@ -563,7 +603,7 @@ export default function SmartFacilityPass({ currentUser }: SmartFacilityPassProp
                   filterCategory === 'PARTY' ? 'bg-[#C5A880] text-[#0D1117]' : 'bg-[#161D26] text-gray-400 hover:text-white'
                 }`}
               >
-                Tiệc Nướng BBQ (1)
+                Tiệc BBQ & Sân Nhóm ({amenitiesList.filter(a => a.category === 'PARTY').length})
               </button>
             </div>
 
@@ -712,8 +752,12 @@ export default function SmartFacilityPass({ currentUser }: SmartFacilityPassProp
                   onChange={(e) => setBookingFacilityId(e.target.value)}
                   className="w-full bg-[#161D26] border border-[#2A374A] p-2.5 text-white text-xs rounded-none focus:outline-none focus:border-[#C5A880]"
                 >
-                  <option value="fac-sauna">Phòng Xông Hơi Đá Muối Himalaya (VIP Tầng 3) • 500.000 đ/giờ</option>
                   <option value="fac-bbq">Vườn Tiệc Nướng BBQ Panoramic (Sân Thượng Tầng 25) • 600.000 đ/ca</option>
+                  <option value="fac-sports-malibu">Sân Thể Thao Malibu (Tennis & Bóng Rổ) • Miễn Phí Cư Dân</option>
+                  <option value="fac-yoga">Sân Yoga Ngoài Trời & Thiền Tĩnh BS-07 • Miễn Phí Cư Dân</option>
+                  <option value="fac-cabana">Chòi Nghỉ Cabana Ven Hồ Bơi Resort BS-09 • Miễn Phí Cư Dân</option>
+                  <option value="fac-multipurpose-lawn">Sân Cỏ Đa Năng Y-01 Malibu (Bóng đá/Pickleball) • Miễn Phí Cư Dân</option>
+                  <option value="fac-sauna">Phòng Xông Hơi Đá Muối Himalaya (VIP Tầng 3) • 500.000 đ/giờ</option>
                 </select>
               </div>
 
@@ -781,6 +825,7 @@ export default function SmartFacilityPass({ currentUser }: SmartFacilityPassProp
                     onChange={(e) => setBookingTimeSlot(e.target.value)}
                     className="w-full bg-[#161D26] border border-[#2A374A] p-2 text-white text-xs rounded-none focus:outline-none focus:border-[#C5A880]"
                   >
+                    <option>06:00 - 08:00 (Sáng sớm bình minh)</option>
                     <option>08:00 - 10:00 (Buổi sáng thư giãn)</option>
                     <option>10:00 - 12:00 (Trưa thanh tịnh)</option>
                     <option>14:00 - 16:00 (Đầu giờ chiều)</option>
@@ -791,8 +836,8 @@ export default function SmartFacilityPass({ currentUser }: SmartFacilityPassProp
                 </div>
               </div>
 
-              {/* Chọn phương thức thanh toán giữ chỗ nếu là phòng xông hơi */}
-              {bookingFacilityId === 'fac-sauna' && (
+              {/* Chọn phương thức thanh toán giữ chỗ nếu tiện ích có phí */}
+              {(bookingFacilityId === 'fac-sauna' || bookingFacilityId === 'fac-bbq') && (
                 <div className="space-y-1">
                   <label className="text-[10.5px] text-gray-300 font-semibold uppercase block">
                     Phương thức thanh toán giữ chỗ:
@@ -847,42 +892,60 @@ export default function SmartFacilityPass({ currentUser }: SmartFacilityPassProp
                   type="text"
                   value={bookingNotes}
                   onChange={(e) => setBookingNotes(e.target.value)}
-                  placeholder={bookingFacilityId === 'fac-sauna' ? 'VD: Cần thêm khăn nhung, tinh dầu sả chanh...' : 'VD: Cần 2 bếp nướng Weber, dụng cụ BBQ...'}
+                  placeholder={
+                    bookingFacilityId === 'fac-sauna' 
+                      ? 'VD: Cần thêm khăn nhung, tinh dầu sả chanh...' 
+                      : bookingFacilityId === 'fac-bbq'
+                      ? 'VD: Cần 2 bếp nướng Weber, dụng cụ kẹp BBQ...'
+                      : 'VD: Mượn vợt tennis, bóng tập...'
+                  }
                   className="w-full bg-[#161D26] border border-[#2A374A] p-2 text-white text-xs rounded-none focus:outline-none focus:border-[#C5A880]"
                 />
               </div>
 
-              {/* Chi phí & Chính sách hoàn tiền minh bạch khi bận đột xuất */}
+              {/* Chi phí & Chính sách */}
               <div className="p-3 bg-[#0D1117] border border-[#222B35] rounded-none space-y-2 text-xs">
                 <div className="flex items-center justify-between">
                   <span className="text-gray-400 font-medium">Chi phí đặt giữ chỗ:</span>
                   <span className="text-[#C5A880] font-bold text-sm font-mono">
                     {bookingFacilityId === 'fac-sauna'
                       ? `${(bookingDurationHours * 500000).toLocaleString('vi-VN')} đ (${bookingDurationHours} tiếng phòng VIP)`
-                      : '600.000 đ / ca tiệc (Set bếp Weber & nhân viên)'}
+                      : bookingFacilityId === 'fac-bbq'
+                      ? '600.000 đ / ca tiệc (Set bếp Weber & dọn sau tiệc)'
+                      : '0 đ (Miễn phí theo Thẻ Cư Dân Skyline)'}
                   </span>
                 </div>
 
-                <div className="pt-2 border-t border-[#1F2937] space-y-1 text-[11px] leading-relaxed">
-                  <div className="text-[#C5A880] font-bold flex items-center gap-1.5">
-                    <RotateCcw className="w-3.5 h-3.5" />
-                    <span>Chính sách hoàn tiền khi có việc bận đột xuất:</span>
+                {(bookingFacilityId === 'fac-sauna' || bookingFacilityId === 'fac-bbq') ? (
+                  <div className="pt-2 border-t border-[#1F2937] space-y-1 text-[11px] leading-relaxed">
+                    <div className="text-[#C5A880] font-bold flex items-center gap-1.5">
+                      <RotateCcw className="w-3.5 h-3.5" />
+                      <span>Chính sách hoàn tiền khi có việc bận đột xuất:</span>
+                    </div>
+                    <div className="space-y-0.5 text-gray-300">
+                      <div className="flex items-start gap-1.5 text-emerald-400">
+                        <span className="font-bold">✓</span>
+                        <span><strong>Trước giờ hẹn &gt; 30 phút:</strong> Hoàn trả <strong>100%</strong> tiền giữ chỗ.</span>
+                      </div>
+                      <div className="flex items-start gap-1.5 text-amber-300">
+                        <span className="font-bold">⚡</span>
+                        <span><strong>Cận giờ (trong 30 phút):</strong> Hoàn trả <strong>50%</strong> (50% bù đắp chi phí chuẩn bị).</span>
+                      </div>
+                      <div className="flex items-start gap-1.5 text-gray-400">
+                        <span className="font-bold">✕</span>
+                        <span><strong>Quá giờ hẹn bắt đầu:</strong> Không hoàn tiền do tiện ích đã khóa giữ chỗ.</span>
+                      </div>
+                    </div>
                   </div>
-                  <div className="space-y-0.5 text-gray-300">
-                    <div className="flex items-start gap-1.5 text-emerald-400">
-                      <span className="font-bold">✓</span>
-                      <span><strong>Trước giờ hẹn &gt; 30 phút:</strong> Hoàn trả <strong>100%</strong> tiền giữ chỗ.</span>
+                ) : (
+                  <div className="pt-2 border-t border-[#1F2937] space-y-1 text-[11px] text-gray-400 leading-relaxed">
+                    <div className="text-emerald-400 font-semibold flex items-center gap-1">
+                      <CheckCircle2 className="w-3.5 h-3.5" />
+                      <span>Đặc quyền tiện ích thể thao miễn phí dành riêng cho Cư Dân</span>
                     </div>
-                    <div className="flex items-start gap-1.5 text-amber-300">
-                      <span className="font-bold">⚡</span>
-                      <span><strong>Cận giờ (trong 30 phút):</strong> Hoàn trả <strong>50%</strong> (50% bù đắp chi phí chuẩn bị).</span>
-                    </div>
-                    <div className="flex items-start gap-1.5 text-gray-400">
-                      <span className="font-bold">✕</span>
-                      <span><strong>Quá giờ hẹn bắt đầu:</strong> Không hoàn tiền do tiện ích đã khóa giữ chỗ.</span>
-                    </div>
+                    <p>Vé điện tử QR sẽ được tạo tự động để quét tại cổng kiểm soát. Nếu có thay đổi lịch, vui lòng bấm hủy vé trong danh sách để nhường khung giờ cho cư dân khác.</p>
                   </div>
-                </div>
+                )}
               </div>
 
               <button

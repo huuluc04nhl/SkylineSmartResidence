@@ -5,11 +5,12 @@
  * - Cho thuê người giúp việc & Dọn dẹp căn hộ theo giờ
  * - Thuê Huấn luyện viên cá nhân PT Bơi lội (Sky Pool Tầng 25) & PT Gym (Tầng 3)
  * - Chăm sóc xe & Rửa xe cao cấp tại Hầm B2
- * - Spa & Wellness (Massage thư giãn, Chăm sóc da mặt, Xông hơi muối đá)
- * - Tổ Chức Tiệc & BBQ Sân Thượng (Đặt khu bếp nướng tầng mái)
- * - Nhà Hàng & Suất Ăn (Đặt bàn nhà hàng, Giao suất ăn tận căn hộ)
- * - Di Chuyển Thông Minh (VinBus, Xe điện nội khu, Đưa đón sân bay)
- * - Đặt Sân Thể Thao (Sân tennis, Sân bóng rổ, Yoga, Sân đa năng)
+ * - Spa & Wellness (Massage thư giãn, Chăm sóc da mặt, Xông hơi trị liệu)
+ * - Nhà Hàng & Suất Ăn (Skyline Kitchen & Café, Giao suất ăn tận căn hộ)
+ * - Di Chuyển Thông Minh (Xe điện buggey nội khu, Đưa đón sân bay VIP, Vé tháng VinBus)
+ * 
+ * Lưu ý: Các tiện ích không gian (Hồ bơi, Gym, Sân Tennis/Bóng rổ, Yoga, Vườn BBQ) 
+ * được quản lý riêng biệt tại SmartFacilityPass (Tiện Ích & Thẻ Thông Minh).
  */
 
 import { addServiceChargeToBill } from './billingStore';
@@ -20,10 +21,8 @@ export type ServiceCategory =
   | 'PERSONAL_TRAINER'
   | 'CAR_CARE'
   | 'SPA_WELLNESS'
-  | 'PARTY_BBQ'
   | 'RESTAURANT'
-  | 'TRANSPORT'
-  | 'SPORTS_COURT';
+  | 'TRANSPORT';
 
 export interface ServicePackageOption {
   id: string;
@@ -306,48 +305,7 @@ export const RESIDENT_SERVICES_CATALOG: ResidentServiceItem[] = [
     ],
   },
 
-  // 6. TỔ CHỨC TIỆC & BBQ SÂN THƯỢNG — Khu BBQ Tầng 25
-  {
-    id: 'srv-party-bbq',
-    name: 'Tổ Chức Tiệc & BBQ Sân Thượng',
-    category: 'PARTY_BBQ',
-    tagline: 'Đặt khu bếp nướng ngoài trời tầng 25 đẳng cấp resort',
-    description: 'Khu vườn tiệc BBQ cao cấp tầng 25 với view thoáng toàn khu Vinhomes Grand Park. Trang bị bếp Weber chuyên nghiệp, bàn ghế ngoại thất cao cấp, ánh đèn chuỗi lung linh & đội phục vụ dọn dẹp sau tiệc.',
-    rating: 4.93,
-    reviewCount: 77,
-    location: 'Tầng 25 (Vườn Tiệc Nướng Sân Thượng)',
-    imageUrl: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=600&auto=format&fit=crop&q=80',
-    badge: 'View Panorama 360°',
-    operatingHours: '17:00 - 23:00 Thứ 2 → CN',
-    packages: [
-      {
-        id: 'pkg-bbq-ca-toi',
-        name: 'Ca Tiệc Tối 3 Giờ (Khu Bếp Weber Set A)',
-        unit: 'ca',
-        unitPrice: 600000,
-        description: 'Set bếp Weber, bàn 8 người, khăn trải, dao dĩa inox, đội dọn dẹp sau tiệc. Tối đa 8 khách.',
-        estimatedDuration: 'Ca 3 giờ (17:00-20:00 hoặc 20:00-23:00)',
-      },
-      {
-        id: 'pkg-bbq-premium',
-        name: 'Ca Tiệc Premium (Khu Bếp Lớn 15 Người)',
-        unit: 'ca',
-        unitPrice: 1200000,
-        description: 'Khu bếp liên hoàn 2 bếp Weber lớn, bàn tiệc 15 người, hệ thống loa ngoài trời, cắm hoa trang trí.',
-        estimatedDuration: 'Ca 3 giờ (Đặt tối thiểu 48 giờ trước)',
-      },
-      {
-        id: 'pkg-bbq-kids-day',
-        name: 'Tiệc Ban Ngày Trẻ Em & Dã Ngoại Gia Đình',
-        unit: 'ca',
-        unitPrice: 450000,
-        description: 'Sân cỏ đa năng & khu bếp ban ngày, phù hợp sinh nhật trẻ em, picnic gia đình & đội nhóm.',
-        estimatedDuration: 'Ca 2.5 giờ (10:00-12:30)',
-      },
-    ],
-  },
-
-  // 7. NHÀ HÀNG & SUẤT ĂN — Skyline Kitchen & Giao Tận Căn Hộ
+  // 6. NHÀ HÀNG & SUẤT ĂN — Skyline Kitchen & Giao Tận Căn Hộ
   {
     id: 'srv-restaurant',
     name: 'Nhà Hàng & Giao Suất Ăn Tận Cửa',
@@ -396,7 +354,7 @@ export const RESIDENT_SERVICES_CATALOG: ResidentServiceItem[] = [
     ],
   },
 
-  // 8. DI CHUYỂN THÔNG MINH — VinBus, Xe điện, Đưa đón sân bay
+  // 7. DI CHUYỂN THÔNG MINH — VinBus, Xe điện, Đưa đón sân bay
   {
     id: 'srv-transport',
     name: 'Di Chuyển Thông Minh Nội Khu',
@@ -441,55 +399,6 @@ export const RESIDENT_SERVICES_CATALOG: ResidentServiceItem[] = [
         unitPrice: 230000,
         description: 'Vé tháng VinBus tuyến D4 kết nối trực tiếp Quận 1, Bến Thành & các tiện ích Vinhomes.',
         estimatedDuration: 'Hiệu lực 30 ngày',
-      },
-    ],
-  },
-
-  // 9. ĐẶT SÂN THỂ THAO — Tennis, Bóng rổ, Yoga ngoài trời, Sân cỏ đa năng
-  {
-    id: 'srv-sports-court',
-    name: 'Đặt Sân Thể Thao & Yoga',
-    category: 'SPORTS_COURT',
-    tagline: 'Đặt sân tennis, bóng rổ, yoga ngoài trời & sân cỏ đa năng Malibu',
-    description: 'Hệ thống sân thể thao tiêu chuẩn quốc tế trong khuôn viên The Tropical. Sân Malibu (tennis + bóng rổ), không gian Yoga ngoài trời cạnh Suối Bậc, Sân Cỏ Đa Năng Y-01 rộng 800m² phục vụ bóng đá 5 người, cầu lông, pickleball.',
-    rating: 4.91,
-    reviewCount: 98,
-    location: 'Cụm Thể Thao Malibu (Phía Tây) & Sân Yoga BS-07',
-    imageUrl: 'https://images.unsplash.com/photo-1554068865-24cecd4e34b8?w=600&auto=format&fit=crop&q=80',
-    badge: 'Chuẩn Quốc Tế',
-    operatingHours: '06:00 - 21:30 Hàng Ngày',
-    packages: [
-      {
-        id: 'pkg-sport-tennis',
-        name: 'Đặt Sân Tennis Malibu (60 Phút)',
-        unit: 'ca',
-        unitPrice: 150000,
-        description: 'Sân tennis cứng tiêu chuẩn ATP, hệ thống chiếu sáng ban đêm. Mượn vợt miễn phí khi đặt sân.',
-        estimatedDuration: '60 phút / ca',
-      },
-      {
-        id: 'pkg-sport-basketball',
-        name: 'Đặt Sân Bóng Rổ (60 Phút)',
-        unit: 'ca',
-        unitPrice: 100000,
-        description: 'Sân bóng rổ outdoor 3v3 tiêu chuẩn FIBA, mặt sàn chuyên dụng chống trơn trượt.',
-        estimatedDuration: '60 phút / ca',
-      },
-      {
-        id: 'pkg-sport-yoga-outdoor',
-        name: 'Đặt Bục Yoga Ngoài Trời (60 Phút, Tối Đa 10 Người)',
-        unit: 'ca',
-        unitPrice: 80000,
-        description: 'Khu yoga mở bên Suối Bậc Cảnh Quan, thảm tập chuyên dụng, không khí trong lành, âm thanh tự nhiên.',
-        estimatedDuration: '60 phút / ca',
-      },
-      {
-        id: 'pkg-sport-multipurpose',
-        name: 'Sân Cỏ Đa Năng Y-01 (2 Giờ / Nhóm ≤20 Người)',
-        unit: 'ca',
-        unitPrice: 300000,
-        description: 'Sân cỏ nhân tạo 800m² tổ chức bóng đá 5 người, cầu lông, pickleball, dã ngoại nhóm & team building.',
-        estimatedDuration: '2 giờ / ca',
       },
     ],
   },
@@ -567,9 +476,7 @@ export function createResidentBooking(params: {
                      service.category === 'PERSONAL_TRAINER' ? 'PT' :
                      service.category === 'CAR_CARE' ? 'CAR' :
                      service.category === 'SPA_WELLNESS' ? 'SPA' :
-                     service.category === 'PARTY_BBQ' ? 'BBQ' :
-                     service.category === 'RESTAURANT' ? 'REST' :
-                     service.category === 'TRANSPORT' ? 'TRANS' : 'SPORT';
+                     service.category === 'RESTAURANT' ? 'REST' : 'TRANS';
 
   const randomNum = Math.floor(1000 + Math.random() * 9000);
   const bookingCode = `SRV-${codePrefix}-${randomNum}`;
@@ -593,18 +500,12 @@ export function createResidentBooking(params: {
   } else if (service.category === 'SPA_WELLNESS') {
     assignedStaff = 'Chuyên viên Spa Nguyễn Thị Lan Anh (Tầng 3)';
     staffPhone = '0955 667 788';
-  } else if (service.category === 'PARTY_BBQ') {
-    assignedStaff = 'Đội Sự Kiện & Tiệc Nướng Skyline (Tầng 25)';
-    staffPhone = '0966 778 899';
   } else if (service.category === 'RESTAURANT') {
     assignedStaff = 'Bếp Trưởng Skyline Kitchen (Tầng 1)';
     staffPhone = '0977 889 900';
   } else if (service.category === 'TRANSPORT') {
     assignedStaff = 'Điều Phối Viên Di Chuyển Nội Khu';
     staffPhone = '0988 990 011';
-  } else if (service.category === 'SPORTS_COURT') {
-    assignedStaff = 'Quản Lý Sân Thể Thao Cụm Malibu';
-    staffPhone = '0999 001 122';
   }
 
   const newBooking: ServiceBooking = {
@@ -640,7 +541,10 @@ export function createResidentBooking(params: {
   if (params.paymentChoice === 'ADD_TO_BILL') {
     const serviceType = service.category === 'LAUNDRY' ? 'Laundry' :
                         service.category === 'HOUSEKEEPING' ? 'Housekeeping' :
-                        service.category === 'PERSONAL_TRAINER' ? 'Personal_Trainer' : 'Car_Care';
+                        service.category === 'PERSONAL_TRAINER' ? 'Personal_Trainer' :
+                        service.category === 'CAR_CARE' ? 'Car_Care' :
+                        service.category === 'SPA_WELLNESS' ? 'Spa' :
+                        service.category === 'RESTAURANT' ? 'Dining' : 'Transport';
 
     addServiceChargeToBill(params.aptCode, {
       service_type: serviceType,

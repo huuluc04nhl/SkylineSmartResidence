@@ -228,7 +228,12 @@ function PortalContent() {
                 )}
                 {activeModule === 'resident-profile' && <ProfileEkyc currentUser={currentUser} />}
                 {activeModule === 'resident-smarthome' && <SmartHomeHub currentUser={currentUser} />}
-                {activeModule === 'resident-facilities' && <SmartFacilityPass currentUser={currentUser} />}
+                {activeModule === 'resident-facilities' && (
+                  <SmartFacilityPass 
+                    currentUser={currentUser} 
+                    onNavigateModule={(modId) => handleSelectModule(modId)} 
+                  />
+                )}
                 {activeModule === 'resident-services' && (
                   <ResidentServices
                     currentUser={currentUser}

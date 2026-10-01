@@ -73,6 +73,9 @@ export type BillServiceType =
   | 'Housekeeping' 
   | 'Personal_Trainer' 
   | 'Car_Care' 
+  | 'Spa'
+  | 'Dining'
+  | 'Transport'
   | 'Other';
 
 export interface BillDetail {

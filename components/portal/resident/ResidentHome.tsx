@@ -430,7 +430,24 @@ export default function ResidentHome({ currentUser, onNavigate, onOpenVisitorMod
                 <ArrowRight className="w-3.5 h-3.5 text-gray-500 group-hover:text-blue-400" />
               </div>
               <p className="text-[11px] text-gray-400">
-                Mở cổng Hồ bơi chân mây Tầng 25, Gym Technogym, Sauna, BBQ.
+                Thẻ quẹt mở cổng Hồ bơi, Gym Technogym, Sân Malibu, Yoga, BBQ.
+              </p>
+            </div>
+
+            {/* Action 5: Dịch Vụ Đời Sống */}
+            <div
+              onClick={() => onNavigate('resident-services')}
+              className="p-4 bg-[#121820] border border-[#222B35] hover:border-[#C5A880] cursor-pointer transition-all space-y-2 group shadow-md"
+            >
+              <div className="w-9 h-9 bg-[#1C2533] border border-[#2D3748] flex items-center justify-center text-amber-400 group-hover:bg-amber-500 group-hover:text-[#0D1117] transition-colors">
+                <Sparkles className="w-4 h-4" />
+              </div>
+              <div className="font-serif text-sm font-bold text-white group-hover:text-amber-400 flex items-center justify-between">
+                <span>Dịch Vụ Đời Sống</span>
+                <ArrowRight className="w-3.5 h-3.5 text-gray-500 group-hover:text-amber-400" />
+              </div>
+              <p className="text-[11px] text-gray-400">
+                Nhân viên phục vụ tận phòng: Giặt ủi, Dọn dẹp, PT Gym, Rửa xe B2, Spa, Cơm nóng.
               </p>
             </div>
           </div>
