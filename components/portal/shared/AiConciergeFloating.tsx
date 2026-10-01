@@ -241,8 +241,8 @@ export default function AiConciergeFloating({
   onToggle,
   onNavigateModule,
 }: AiConciergeFloatingProps) {
-  const aptCode = currentUser.apartment_code || '12A05';
-  const residentName = currentUser.full_name || (currentUser as any)?.fullname || 'Nguyễn Hữu Lực';
+  const aptCode = currentUser.apartment_code || 'CH-06';
+  const residentName = currentUser.full_name || (currentUser as any)?.fullname || 'Trần Hữu Lực';
 
   // Window view state: 'normal' (420px) or 'expanded' (560px)
   const [isExpanded, setIsExpanded] = useState(false);

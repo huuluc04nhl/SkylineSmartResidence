@@ -77,8 +77,8 @@ export default function AiConcierge() {
         body: JSON.stringify({
           message: text,
           history: historyPayload,
-          aptCode: '12A05',
-          userName: 'Nguyễn Hữu Lực',
+          aptCode: 'CH-06',
+          userName: 'Trần Hữu Lực',
           userRole: 'OWNER',
         }),
       });

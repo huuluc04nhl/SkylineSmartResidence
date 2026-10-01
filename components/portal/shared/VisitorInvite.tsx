@@ -9,7 +9,7 @@ interface VisitorInviteProps {
   aptCode?: string;
 }
 
-export default function VisitorInvite({ isOpen, onClose, aptCode = '12A05' }: VisitorInviteProps) {
+export default function VisitorInvite({ isOpen, onClose, aptCode = 'CH-06' }: VisitorInviteProps) {
   return (
     <VisitorQrModal
       isOpen={isOpen}

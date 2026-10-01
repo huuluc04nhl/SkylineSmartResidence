@@ -157,7 +157,7 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
     const defaultCards: CardState[] = [
       {
         cardUid: `NFC-SKY-${aptCode}-01`,
-        holderName: currentUser.full_name || (isOwner ? 'Nguyễn Hữu Lực' : 'Cư Dân'),
+        holderName: currentUser.full_name || (currentUser as any)?.fullname || (isOwner ? 'Trần Hữu Lực' : 'Cư Dân'),
         role: isOwner ? 'Chủ Hộ (Master)' : 'Người Nhà',
         isOwner: true,
         status: 'ACTIVE'

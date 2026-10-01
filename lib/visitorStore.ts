@@ -90,14 +90,14 @@ declare global {
 
 const globalScope = (typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : {}) as any;
 
-// Danh sách thẻ khách thăm tiêu chuẩn theo dữ liệu căn hộ thực tế (Căn 12A05, Chủ hộ Nguyễn Hữu Lực)
+// Danh sách thẻ khách thăm tiêu chuẩn theo dữ liệu căn hộ thực tế (Căn CH-06, Tòa Tropical BS-07, Chủ hộ Trần Hữu Lực)
 const INITIAL_SAMPLE_PASSES: GeneratedVisitorPass[] = [
   {
     id: 'SKY-PASS-8492',
-    apartmentCode: '12A05',
-    hostName: 'Nguyễn Hữu Lực',
+    apartmentCode: 'CH-06',
+    hostName: 'Trần Hữu Lực',
     hostPhone: '0364967082',
-    towerName: 'Chung Cư Skyline',
+    towerName: 'Tropical BS-07',
     visitorName: 'Trần Quốc Bảo',
     phoneNumber: '0903123456',
     licensePlate: '51G-888.88',
@@ -110,9 +110,9 @@ const INITIAL_SAMPLE_PASSES: GeneratedVisitorPass[] = [
     qrData: JSON.stringify({
       skyline_pass: true,
       passId: 'SKY-PASS-8492',
-      aptCode: '12A05',
-      tower: 'Chung Cư Skyline',
-      hostName: 'Nguyễn Hữu Lực',
+      aptCode: 'CH-06',
+      tower: 'Tropical BS-07',
+      hostName: 'Trần Hữu Lực',
       hostPhone: '0364967082',
       visitorName: 'Trần Quốc Bảo',
       phone: '0903123456',
@@ -121,16 +121,16 @@ const INITIAL_SAMPLE_PASSES: GeneratedVisitorPass[] = [
       pin: '849201'
     }),
     pinCode: '849201',
-    note: 'Khách đối tác công việc lên căn 12A05',
+    note: 'Khách đối tác công việc lên căn CH-06 (Tòa BS-07)',
     status: 'CHECKED_IN',
     checkedInAt: '10:15 02/10/2026',
   },
   {
     id: 'SKY-PASS-6521',
-    apartmentCode: '12A05',
-    hostName: 'Nguyễn Hữu Lực',
+    apartmentCode: 'CH-06',
+    hostName: 'Trần Hữu Lực',
     hostPhone: '0364967082',
-    towerName: 'Chung Cư Skyline',
+    towerName: 'Tropical BS-07',
     visitorName: 'Phạm Minh Tuấn',
     phoneNumber: '0918765432',
     licensePlate: '59P1-999.99',
@@ -143,9 +143,9 @@ const INITIAL_SAMPLE_PASSES: GeneratedVisitorPass[] = [
     qrData: JSON.stringify({
       skyline_pass: true,
       passId: 'SKY-PASS-6521',
-      aptCode: '12A05',
-      tower: 'Chung Cư Skyline',
-      hostName: 'Nguyễn Hữu Lực',
+      aptCode: 'CH-06',
+      tower: 'Tropical BS-07',
+      hostName: 'Trần Hữu Lực',
       hostPhone: '0364967082',
       visitorName: 'Phạm Minh Tuấn',
       phone: '0918765432',
@@ -174,8 +174,8 @@ export function getPassRegistry(): Map<string, GeneratedVisitorPass> {
         if (stored) {
           const raw = JSON.parse(stored);
           if (Array.isArray(raw)) {
-            // Lọc bỏ toàn bộ thẻ ảo cũ
-            loadedList = raw.filter((p: any) => p && !DUMMY_PASS_IDS.has(p.id));
+            // Lọc bỏ toàn bộ thẻ ảo cũ hoặc thẻ căn 12A05 cũ
+            loadedList = raw.filter((p: any) => p && !DUMMY_PASS_IDS.has(p.id) && p.apartmentCode !== '12A05');
             if (loadedList.length === 0) {
               loadedList = [...INITIAL_SAMPLE_PASSES];
             }
@@ -265,24 +265,24 @@ export function getAllVisitorPasses(): GeneratedVisitorPass[] {
   return passes.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 }
 
-// Danh sách nhật ký tiếp đón ban đầu gắn liền với Căn 12A05 (Chủ hộ Nguyễn Hữu Lực)
+// Danh sách nhật ký tiếp đón ban đầu gắn liền với Căn CH-06 (Chủ hộ Trần Hữu Lực - Tòa BS-07)
 const INITIAL_SAMPLE_LOGS: GateAuditLog[] = [
   {
     id: 'LOG-INIT-1',
     timestamp: '10:15 02/10/2026',
-    apartmentCode: '12A05',
-    hostName: 'Nguyễn Hữu Lực',
+    apartmentCode: 'CH-06',
+    hostName: 'Trần Hữu Lực',
     visitorName: 'Trần Quốc Bảo',
     licensePlate: '51G-888.88',
     action: 'CHECK_IN',
     result: 'VALID',
-    note: 'Mời khách vào tòa nhà lên Căn 12A05 qua Sảnh Tiếp Tân Tầng 1'
+    note: 'Mời khách vào tòa nhà lên Căn CH-06 (Tòa BS-07) qua Sảnh Tiếp Tân Tầng 1'
   },
   {
     id: 'LOG-INIT-2',
     timestamp: '09:45 02/10/2026',
-    apartmentCode: '12A05',
-    hostName: 'Nguyễn Hữu Lực',
+    apartmentCode: 'CH-06',
+    hostName: 'Trần Hữu Lực',
     visitorName: 'Phạm Minh Tuấn',
     licensePlate: '59P1-999.99',
     action: 'SCAN',
@@ -304,8 +304,8 @@ export function getGateAuditLogs(): GateAuditLog[] {
         if (stored) {
           const raw = JSON.parse(stored);
           if (Array.isArray(raw)) {
-            // Lọc bỏ toàn bộ logs ảo cũ
-            loadedLogs = raw.filter((log: any) => log && !DUMMY_LOG_IDS.has(log.id));
+            // Lọc bỏ toàn bộ logs ảo cũ hoặc logs gắn với căn 12A05 cũ
+            loadedLogs = raw.filter((log: any) => log && !DUMMY_LOG_IDS.has(log.id) && log.apartmentCode !== '12A05');
             if (loadedLogs.length === 0) {
               loadedLogs = [...INITIAL_SAMPLE_LOGS];
             }
@@ -367,6 +367,7 @@ export function addGateAuditLog(log: Omit<GateAuditLog, 'id'>): GateAuditLog {
  */
 export function generateVisitorPassToken(params: {
   apartmentCode: string;
+  towerName?: string;
   hostName?: string;
   hostPhone?: string;
   visitorName?: string;
@@ -376,10 +377,10 @@ export function generateVisitorPassToken(params: {
   validHours?: number;
   note?: string;
 }): GeneratedVisitorPass {
-  const aptCode = params.apartmentCode || '12A05';
+  const aptCode = params.apartmentCode || 'CH-06';
   const hostName = params.hostName?.trim() || `Chủ hộ Căn ${aptCode}`;
   const hostPhone = params.hostPhone?.trim() || '';
-  const towerName = 'Chung Cư Skyline';
+  const towerName = params.towerName || 'Tropical BS-07';
 
   const visitorName = params.visitorName?.trim() || 'Khách Thăm Nhà';
   const phone = params.phoneNumber?.trim() || '';
@@ -604,8 +605,8 @@ export function verifyVisitorQr(qrInput: string, checkpoint: string = 'Sảnh L�
   // 2. If pass came from parsed JSON but was created on another client/session
   if (parsedFromJson && parsedFromJson.skyline_pass) {
     const isExpired = now > parsedFromJson.expiresAt;
-    const aptCode = parsedFromJson.aptCode || '12A05';
-    const towerName = parsedFromJson.tower || 'Chung Cư Skyline';
+    const aptCode = parsedFromJson.aptCode || 'CH-06';
+    const towerName = parsedFromJson.tower || 'Tropical BS-07';
 
     // Reconstruct pass and add to registry
     const reconstructedPass: GeneratedVisitorPass = {

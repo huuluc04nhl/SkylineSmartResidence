@@ -86,7 +86,7 @@ interface VisitorQrModalProps {
 export default function VisitorQrModal({ 
   isOpen, 
   onClose, 
-  apartmentCode = '12A05',
+  apartmentCode = 'CH-06',
   currentUser,
 }: VisitorQrModalProps) {
 
@@ -115,7 +115,7 @@ export default function VisitorQrModal({
     if (activePass?.qrData) {
       QRCode.toDataURL(activePass.qrData, {
         width: 320,
-        margin: 1,
+        margin: 2,
         color: {
           dark: '#0D1117',
           light: '#FFFFFF',
@@ -140,8 +140,9 @@ export default function VisitorQrModal({
     setTimeout(() => {
       const pass = generateVisitorPassToken({
         apartmentCode,
-        hostName: currentUser?.full_name || `Chủ hộ Căn ${apartmentCode}`,
-        hostPhone: currentUser?.phone || currentUser?.username || '',
+        towerName: 'Tropical BS-07',
+        hostName: currentUser?.full_name || (currentUser as any)?.fullname || 'Trần Hữu Lực',
+        hostPhone: currentUser?.phone || currentUser?.username || '0364967082',
         visitorName: visitorName.trim(),
         phoneNumber: visitorPhone.trim(),
         licensePlate: licensePlate.trim().toUpperCase(),
@@ -158,14 +159,14 @@ export default function VisitorQrModal({
   const getShareText = (pass: GeneratedVisitorPass) => {
     const expTime = new Date(pass.validUntil).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
     const expDate = new Date(pass.validUntil).toLocaleDateString('vi-VN');
-    const towerName = pass.apartmentCode.includes('A') ? 'Chung cư Sapphire' : 'Chung cư Diamond';
+    const towerName = pass.towerName || 'Tòa Tropical BS-07';
 
     let text = `✨ [SKYLINE SMART RESIDENCE] THƯ MỜI ĐÓN KHÁCH ĐIỆN TỬ ✨\n`;
     text += `━━━━━━━━━━━━━━━━━━━━\n`;
     text += `👤 Kính gửi: ${pass.visitorName}\n`;
     if (pass.phoneNumber) text += `📞 Số điện thoại: ${pass.phoneNumber}\n`;
     if (pass.licensePlate) text += `🚗 Biển số xe: ${pass.licensePlate}\n`;
-    text += `🏠 Chủ hộ bảo lãnh: ${pass.hostName || 'Chủ hộ'} (${pass.hostPhone || ''})\n`;
+    text += `🏠 Chủ hộ bảo lãnh: ${pass.hostName || 'Trần Hữu Lực'} (${pass.hostPhone || '0364967082'})\n`;
     text += `🏢 Điểm đến: Căn hộ ${pass.apartmentCode} - ${towerName}\n`;
     text += `📍 Địa chỉ: Chung cư Skyline Smart Residence\n`;
     text += `━━━━━━━━━━━━━━━━━━━━\n`;

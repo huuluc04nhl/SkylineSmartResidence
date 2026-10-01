@@ -91,9 +91,9 @@ interface FamilyMembersProps {
 }
 
 export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
-  const aptCode = currentUser.apartment_code || '12A05';
+  const aptCode = currentUser.apartment_code || 'CH-06';
   const isOwner = currentUser.role === 'OWNER';
-  const ownerName = currentUser.full_name || 'Nguyễn Hữu Lực';
+  const ownerName = currentUser.full_name || (currentUser as any)?.fullname || 'Trần Hữu Lực';
 
   const [members, setMembers] = useState<FamilyMemberItem[]>([]);
   const [bqlAccounts, setBqlAccounts] = useState<BqlEligibleAccount[]>([]);

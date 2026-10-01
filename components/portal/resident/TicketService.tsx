@@ -37,8 +37,8 @@ interface TicketServiceProps {
 }
 
 export default function TicketService({ currentUser }: TicketServiceProps) {
-  const aptCode = currentUser?.apartment_code || '12A05';
-  const residentName = currentUser?.full_name || (currentUser as any)?.fullname || 'Nguyễn Hữu Lực';
+  const aptCode = currentUser?.apartment_code || 'CH-06';
+  const residentName = currentUser?.full_name || (currentUser as any)?.fullname || 'Trần Hữu Lực';
   const residentPhone = currentUser?.phone || '0364967082';
 
   const [tickets, setTickets] = useState<ExtendedServiceRequest[]>([]);

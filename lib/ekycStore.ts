@@ -37,15 +37,15 @@ export interface EkycRequest {
   rejectionReason?: string;
 }
 
-const STORAGE_KEY = 'skyline_ekyc_requests_v3';
+const STORAGE_KEY = 'skyline_ekyc_requests_v4';
 
 export const INITIAL_EKYC_REQUESTS: EkycRequest[] = [
   {
     id: 'EKYC-120',
     userId: 'user-owner-1',
-    fullName: 'Nguyễn Hữu Lực',
-    roleLabel: 'Chủ Hộ (Căn 12A05)',
-    apartmentCode: '12A05',
+    fullName: 'Trần Hữu Lực',
+    roleLabel: 'Chủ Hộ (Căn CH-06 - Tòa BS-07)',
+    apartmentCode: 'CH-06',
     phone: '0364967082',
     email: 'huuluc04@gmail.com',
     idCardNo: '067204000961',
@@ -66,8 +66,8 @@ export const INITIAL_EKYC_REQUESTS: EkycRequest[] = [
     id: 'EKYC-121',
     userId: 'user-tenant-1',
     fullName: 'Nguyễn Hữu Nhựt',
-    roleLabel: 'Người Nhà (Căn 12A05)',
-    apartmentCode: '12A05',
+    roleLabel: 'Người Nhà (Căn CH-06 - Tòa BS-07)',
+    apartmentCode: 'CH-06',
     phone: '0917795211',
     email: 'nguyenhuunhut1309@gmail.com',
     idCardNo: '079198005678',
@@ -86,8 +86,8 @@ export const INITIAL_EKYC_REQUESTS: EkycRequest[] = [
     id: 'EKYC-122',
     userId: 'user-member-1',
     fullName: 'Nguyễn Văn Cường',
-    roleLabel: 'Người Nhà (Căn 12A05)',
-    apartmentCode: '12A05',
+    roleLabel: 'Người Nhà (Căn CH-06 - Tòa BS-07)',
+    apartmentCode: 'CH-06',
     phone: '0325524482',
     email: 'vanncuong1614@gmail.com',
     idCardNo: '074204001708',
@@ -217,7 +217,7 @@ export function submitEkycRequest(data: {
     userId: data.userId,
     fullName: data.fullName,
     roleLabel: data.roleLabel || 'Cư Dân Căn Hộ',
-    apartmentCode: data.apartmentCode || '12A05',
+    apartmentCode: data.apartmentCode || 'CH-06',
     phone: data.phone,
     email: data.email,
     idCardNo: data.idCardNo,

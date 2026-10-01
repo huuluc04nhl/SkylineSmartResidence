@@ -101,7 +101,7 @@ export default function AdminVisitorControl() {
   const [detailQrDataUrl, setDetailQrDataUrl] = useState<string>('');
 
   // Quick Pass Creation Form State (Cấp thẻ tại quầy)
-  const [newPassApt, setNewPassApt] = useState('12A05');
+  const [newPassApt, setNewPassApt] = useState('CH-06');
   const [newPassVisitorName, setNewPassVisitorName] = useState('');
   const [newPassVisitorPhone, setNewPassVisitorPhone] = useState('');
   const [newPassPlate, setNewPassPlate] = useState('');
@@ -361,8 +361,8 @@ export default function AdminVisitorControl() {
     }
 
     const selectedUnitObj = apartments.find(u => u.code === newPassApt);
-    const hostName = selectedUnitObj?.owner?.name || (newPassApt === '12A05' ? 'Nguyễn Hữu Lực' : `Chủ Hộ Căn ${newPassApt}`);
-    const hostPhone = selectedUnitObj?.owner?.phone || (newPassApt === '12A05' ? '0364967082' : '0900.000.000');
+    const hostName = selectedUnitObj?.owner?.name || (newPassApt === 'CH-06' || newPassApt === 'CH-01' ? 'Trần Hữu Lực' : `Chủ Hộ Căn ${newPassApt}`);
+    const hostPhone = selectedUnitObj?.owner?.phone || (newPassApt === 'CH-06' || newPassApt === 'CH-01' ? '0364967082' : '0900.000.000');
 
     const pass = generateVisitorPassToken({
       apartmentCode: newPassApt,
@@ -735,7 +735,7 @@ export default function AdminVisitorControl() {
                 type="text"
                 value={tableSearch}
                 onChange={(e) => setTableSearch(e.target.value)}
-                placeholder="Tìm tên khách, PIN, căn 12A05, biển số..."
+                placeholder="Tìm tên khách, PIN, căn CH-06, biển số..."
                 className="w-full bg-[#161B22] border border-[#2D3748] pl-9 pr-8 py-1.5 text-xs text-white placeholder-gray-500 rounded-none focus:border-[#C5A880] outline-none"
               />
               {tableSearch && (
@@ -1231,7 +1231,7 @@ export default function AdminVisitorControl() {
                     }}
                     className="px-2 py-1 bg-[#161D26] hover:bg-[#1E2530] text-[#C5A880] border border-[#2D3748] rounded-none text-[10.5px] cursor-pointer"
                   >
-                    PIN 849201 (Căn 12A05)
+                    PIN 849201 (Căn CH-06 - Tòa BS-07)
                   </button>
                   <button
                     type="button"
@@ -1596,9 +1596,11 @@ export default function AdminVisitorControl() {
                     onChange={(e) => setNewPassApt(e.target.value)}
                     className="w-full bg-[#161B22] border border-[#2D3748] text-[#C5A880] font-bold p-2.5 outline-none"
                   >
-                    <option value="12A05">Căn 12A05 (Chủ hộ: Nguyễn Hữu Lực • 0364967082)</option>
+                    <option value="CH-06">Căn CH-06 - Tòa BS-07 (Chủ hộ: Trần Hữu Lực • 0364967082)</option>
+                    <option value="CH-01">Căn CH-01 - Tòa BS-07 (Chủ hộ: Trần Hữu Lực • 0364967082)</option>
+                    <option value="CH-08">Căn CH-08 - Tòa BS-07 (Chủ hộ: 0364967081)</option>
                     <option value="10A03">Căn 10A03 (BQL Nghiệm Thu Kỹ Thuật)</option>
-                    {apartments.filter(u => u.code !== '12A05' && u.code !== '10A03').slice(0, 15).map(u => (
+                    {apartments.filter(u => u.code !== 'CH-06' && u.code !== 'CH-01' && u.code !== 'CH-08' && u.code !== '10A03' && u.code !== '12A05').slice(0, 15).map(u => (
                       <option key={u.code} value={u.code}>
                         Căn {u.code} (Tầng {u.floor})
                       </option>

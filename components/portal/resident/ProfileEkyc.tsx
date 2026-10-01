@@ -72,7 +72,7 @@ interface ProfileEkycProps {
 export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
   const { updateUserInfo, refreshUser } = useAuth();
   const isOwner = currentUser.role === 'OWNER';
-  const aptCode = currentUser.apartment_code || '12A05';
+  const aptCode = currentUser.apartment_code || 'CH-06';
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [activeTab, setActiveTab] = useState<'INFO' | 'EKYC' | 'PASSWORD'>('INFO');
@@ -1501,7 +1501,7 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
                 <span className="flex items-center gap-1.5 text-emerald-400 font-semibold">
                   <CheckCircle2 className="w-3.5 h-3.5" /> Thẻ Cư Dân Đã Kích Hoạt (Chạm Là Mở)
                 </span>
-                <span className="font-mono text-gray-400">Mã thẻ: SKY-12A05-PASS</span>
+                <span className="font-mono text-gray-400">Mã thẻ: SKY-{aptCode}-PASS</span>
               </div>
             </div>
           </div>

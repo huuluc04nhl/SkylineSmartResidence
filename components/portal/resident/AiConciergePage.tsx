@@ -272,8 +272,8 @@ function getDynamicSuggestions(userQuestion: string, aiResponse: string): string
 }
 
 export default function AiConciergePage({ currentUser, onNavigateModule }: AiConciergePageProps) {
-  const aptCode = currentUser.apartment_code || '12A05';
-  const residentName = currentUser.full_name || (currentUser as any)?.fullname || 'Nguyễn Hữu Lực';
+  const aptCode = currentUser.apartment_code || 'CH-06';
+  const residentName = currentUser.full_name || (currentUser as any)?.fullname || 'Trần Hữu Lực';
 
   const [messages, setMessages] = useState<AiMessage[]>([
     {

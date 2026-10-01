@@ -291,7 +291,7 @@ export default function EkycApproval() {
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Tìm theo Căn hộ (12A05), Tên, CCCD..."
+            placeholder="Tìm theo Căn hộ (CH-06), Tên, CCCD..."
             className="w-full bg-[#161B22] border border-[#2D3748] pl-8 pr-3 py-1.5 text-xs text-white rounded-none focus:outline-none focus:border-[#C5A880]"
           />
           <Search className="w-3.5 h-3.5 text-gray-500 absolute left-2.5 top-2.5" />

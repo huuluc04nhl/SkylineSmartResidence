@@ -5,8 +5,8 @@ import { getUserStore } from '@/lib/userStore';
 export async function POST(req: NextRequest) {
   let userMessage = '';
   let fallbackContext: any = {
-    aptCode: '12A05',
-    userName: 'Nguyễn Hữu Lực',
+    aptCode: 'CH-06',
+    userName: 'Trần Hữu Lực',
     userRole: 'OWNER',
   };
 
@@ -36,12 +36,12 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const targetApt = aptCode || '12A05';
+    const targetApt = aptCode || 'CH-06';
     const dynamicUser = getUserStore(targetApt);
 
     const context = {
       aptCode: targetApt,
-      userName: userName || dynamicUser?.fullname || dynamicUser?.full_name || 'Nguyễn Hữu Lực',
+      userName: userName || dynamicUser?.fullname || dynamicUser?.full_name || 'Trần Hữu Lực',
       userRole: userRole || dynamicUser?.role || 'OWNER',
       phone: phone || dynamicUser?.phone,
       email: email || dynamicUser?.email,
