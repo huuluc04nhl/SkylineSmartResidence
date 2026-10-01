@@ -461,11 +461,11 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
             Thông Tin Cá Nhân & Định Danh Cư Dân
           </h2>
           <p className="text-xs text-gray-400 mt-0.5">
-            Căn hộ: <strong className="text-white font-mono">{aptCode}</strong> • Thông tin cá nhân, định danh e-KYC và bảo mật tài khoản
+            Căn hộ: <strong className="text-white font-mono">{aptCode}</strong> • Thông tin cá nhân, căn cước công dân và bảo mật tài khoản
           </p>
         </div>
 
-        {/* Cụm Nút e-KYC & Trạng Thái */}
+        {/* Cụm Nút Căn Cước & Trạng Thái */}
         {isOwner ? (
           <div className="flex items-center gap-2.5 flex-shrink-0">
             <button
@@ -478,7 +478,7 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
 
             {ekycStatus === 'VERIFIED' && (
               <span className="px-3 py-1 bg-emerald-950/80 border border-emerald-500 text-emerald-300 text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 rounded-none">
-                <ShieldCheck className="w-4 h-4 text-emerald-400" /> Đã Xác Thực e-KYC
+                <ShieldCheck className="w-4 h-4 text-emerald-400" /> Đã Xác Thực Căn Cước
               </span>
             )}
 
@@ -508,7 +508,7 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
 
             {enrolledFaceProfile?.status === 'ACTIVE' && (
               <span className="px-3 py-1 bg-emerald-950/80 border border-emerald-500 text-emerald-300 text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 rounded-none">
-                <CheckCircle2 className="w-4 h-4 text-emerald-400" /> FaceID Đã Kích Hoạt
+                <CheckCircle2 className="w-4 h-4 text-emerald-400" /> Nhận Diện Đã Kích Hoạt
               </span>
             )}
 
@@ -533,7 +533,7 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
                 }}
                 className="px-3 py-1.5 bg-[#C5A880] hover:bg-white text-[#0D1117] text-xs font-bold uppercase tracking-wider rounded-none flex items-center gap-1.5 transition-all shadow"
               >
-                <Camera className="w-3.5 h-3.5" /> Quét FaceID
+                <Camera className="w-3.5 h-3.5" /> Đăng Ký Khuôn Mặt
               </button>
             )}
           </div>
@@ -563,7 +563,7 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
               : 'border-transparent text-gray-400 hover:text-gray-200'
           }`}
         >
-          <ScanFace className="w-4 h-4" /> {isOwner ? '2. Định Danh e-KYC & FaceID' : '2. Sinh Trắc Học FaceID'}
+          <ScanFace className="w-4 h-4" /> {isOwner ? '2. Căn Cước & Nhận Diện Khuôn Mặt' : '2. Nhận Diện Khuôn Mặt (FaceID)'}
         </button>
 
         <button

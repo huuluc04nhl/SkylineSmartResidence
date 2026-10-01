@@ -184,13 +184,13 @@ export default function EkycApproval() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#222B35] pb-4">
         <div>
           <div className="text-[10px] uppercase tracking-[0.25em] text-[#C5A880] font-semibold flex items-center gap-1.5">
-            <UserCheck className="w-3.5 h-3.5 text-[#C5A880]" /> Trung Tâm Kiểm Duyệt e-KYC • Ban Quản Lý
+            <UserCheck className="w-3.5 h-3.5 text-[#C5A880]" /> Xác Thực Cư Dân • Ban Quản Lý
           </div>
           <h2 className="font-serif text-2xl text-white font-bold mt-1">
-            Phê Duyệt Hồ Sơ Định Danh e-KYC & Cấp Quyền FaceID
+            Xác Thực Căn Cước Công Dân &amp; Kích Hoạt Quyền Ra Vào
           </h2>
           <p className="text-xs text-gray-400 mt-0.5">
-            Thẩm định đối chiếu ảnh chụp CCCD thật với khuôn mặt sinh trắc học của cư dân trước khi cấp quyền mở cửa thang máy và sảnh đón.
+            Kiểm tra và đối chiếu căn cước công dân với khuôn mặt cư dân trước khi kích hoạt quyền ra vào thang máy và sảnh đón.
           </p>
         </div>
 
@@ -231,7 +231,7 @@ export default function EkycApproval() {
           }`}
         >
           <div className="text-amber-400 text-[11px] flex items-center gap-1 font-semibold">
-            <Clock className="w-3 h-3 animate-pulse" /> Đang Chờ BQL Thẩm Duyệt
+            <Clock className="w-3 h-3 animate-pulse" /> Đang Chờ Xác Thực
           </div>
           <div className="text-xl font-bold font-mono text-amber-300">{pendingCount}</div>
         </div>
@@ -243,7 +243,7 @@ export default function EkycApproval() {
           }`}
         >
           <div className="text-emerald-400 text-[11px] flex items-center gap-1 font-semibold">
-            <CheckCircle2 className="w-3 h-3" /> Đã Cấp Quyền FaceID
+            <CheckCircle2 className="w-3 h-3" /> Đã Kích Hoạt Quyền Ra Vào
           </div>
           <div className="text-xl font-bold font-mono text-emerald-300">{approvedCount}</div>
         </div>
@@ -255,7 +255,7 @@ export default function EkycApproval() {
           }`}
         >
           <div className="text-rose-400 text-[11px] flex items-center gap-1 font-semibold">
-            <XCircle className="w-3 h-3" /> Bị Từ Chối (Chụp Lại)
+            <XCircle className="w-3 h-3" /> Cần Cập Nhật / Chụp Lại
           </div>
           <div className="text-xl font-bold font-mono text-rose-300">{rejectedCount}</div>
         </div>
@@ -266,9 +266,9 @@ export default function EkycApproval() {
         <div className="flex gap-1.5 text-xs overflow-x-auto">
           {[
             { id: 'ALL', label: 'Tất Cả' },
-            { id: 'PENDING', label: `Chờ Duyệt (${pendingCount})` },
-            { id: 'APPROVED', label: `Đã Duyệt (${approvedCount})` },
-            { id: 'REJECTED', label: `Từ Chối (${rejectedCount})` },
+            { id: 'PENDING', label: `Chờ Xác Thực (${pendingCount})` },
+            { id: 'APPROVED', label: `Đã Kích Hoạt (${approvedCount})` },
+            { id: 'REJECTED', label: `Cần Bổ Sung (${rejectedCount})` },
           ].map(tab => (
             <button
               key={tab.id}
@@ -307,12 +307,12 @@ export default function EkycApproval() {
         </div>
       </div>
 
-      {/* List of e-KYC Dossiers */}
+      {/* Danh Sách Hồ Sơ Xác Thực Căn Cước & Khuôn Mặt */}
       <div className="space-y-4">
         {filteredRequests.length === 0 ? (
           <div className="p-12 text-center text-gray-400 bg-[#121820] border border-[#222B35] rounded-none space-y-2">
             <UserCheck className="w-10 h-10 text-gray-600 mx-auto" />
-            <div className="font-semibold text-white text-sm">Không tìm thấy hồ sơ e-KYC nào</div>
+            <div className="font-semibold text-white text-sm">Không tìm thấy hồ sơ cư dân nào</div>
             <div className="text-xs text-gray-500">Hồ sơ gửi từ cư dân sẽ tự động xuất hiện tại đây theo thời gian thực.</div>
           </div>
         ) : (
@@ -372,10 +372,10 @@ export default function EkycApproval() {
                     </div>
                   </div>
 
-                  {/* Middle: CCCD OCR Details */}
+                  {/* Middle: CCCD Details */}
                   <div className="lg:col-span-5 grid grid-cols-2 gap-2 text-xs bg-[#161D26] p-3 rounded-none border border-[#222B35]">
                     <div>
-                      <span className="text-gray-400 text-[10px] block">Số CCCD (Trích Xuất Thẻ):</span>
+                      <span className="text-gray-400 text-[10px] block">Số Căn Cước Công Dân:</span>
                       <strong className="font-mono text-[#C5A880] text-sm tracking-wider">{req.idCardNo}</strong>
                     </div>
                     <div>
@@ -392,7 +392,7 @@ export default function EkycApproval() {
                         }}
                         className="text-[#C5A880] hover:text-white font-bold flex items-center gap-1 underline flex-shrink-0 ml-2"
                       >
-                        <Eye className="w-3 h-3" /> Thẩm Định Hồ Sơ
+                        <Eye className="w-3 h-3" /> Kiểm Tra Chi Tiết
                       </button>
                     </div>
                   </div>
@@ -408,7 +408,7 @@ export default function EkycApproval() {
                         }}
                         className="px-3 py-1.5 bg-[#1C2533] hover:bg-[#2B394E] border border-gray-700 text-gray-200 text-xs font-semibold rounded-none transition-all flex items-center justify-center gap-1"
                       >
-                        <Eye className="w-3.5 h-3.5 text-[#C5A880]" /> Thẩm Định
+                        <Eye className="w-3.5 h-3.5 text-[#C5A880]" /> Kiểm Tra
                       </button>
 
                       {isPending && (
@@ -419,7 +419,7 @@ export default function EkycApproval() {
                             onClick={() => handleApprove(req.id, req.fullName)}
                             className="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-none shadow transition-all flex items-center justify-center gap-1"
                           >
-                            <Check className="w-3.5 h-3.5" /> Duyệt
+                            <Check className="w-3.5 h-3.5" /> Xác Nhận
                           </button>
                           <button
                             type="button"
@@ -430,7 +430,7 @@ export default function EkycApproval() {
                             }}
                             className="px-2.5 py-1.5 bg-rose-950 hover:bg-rose-900 border border-rose-500 text-rose-300 text-xs font-semibold rounded-none transition-all flex items-center justify-center gap-1"
                           >
-                            <X className="w-3.5 h-3.5" /> Từ Chối
+                            <X className="w-3.5 h-3.5" /> Báo Chụp Lại
                           </button>
                         </>
                       )}
@@ -439,16 +439,16 @@ export default function EkycApproval() {
                     {isApproved && (
                       <div className="text-right space-y-0.5">
                         <span className="px-3 py-1 bg-emerald-950 text-emerald-300 border border-emerald-500 text-xs font-bold rounded-none inline-flex items-center gap-1.5">
-                          <CheckCircle2 className="w-3.5 h-3.5" /> Đã Kích Hoạt FaceID
+                          <CheckCircle2 className="w-3.5 h-3.5" /> Đã Kích Hoạt Quyền Ra Vào
                         </span>
-                        <div className="text-[10px] text-gray-400">Duyệt bởi: {req.reviewedBy}</div>
+                        <div className="text-[10px] text-gray-400">Xác nhận bởi: {req.reviewedBy}</div>
                       </div>
                     )}
 
                     {isRejected && (
                       <div className="text-right space-y-0.5">
                         <span className="px-3 py-1 bg-rose-950 text-rose-300 border border-rose-500 text-xs font-bold rounded-none inline-flex items-center gap-1.5">
-                          <XCircle className="w-3.5 h-3.5" /> Bị Từ Chối
+                          <XCircle className="w-3.5 h-3.5" /> Cần Cập Nhật Lại
                         </span>
                         <div className="text-[10px] text-rose-400 max-w-[180px] truncate" title={req.rejectionReason}>
                           Lý do: {req.rejectionReason}
@@ -475,7 +475,7 @@ export default function EkycApproval() {
             <div className="flex items-center justify-between border-b border-[#222B35] pb-3">
               <div>
                 <div className="text-[10px] uppercase font-mono text-[#C5A880] font-bold flex items-center gap-1.5 flex-wrap">
-                  <Shield className="w-3.5 h-3.5" /> Thẩm Định Hồ Sơ e-KYC • Căn Hộ {inspectingRequest.apartmentCode}
+                  <Shield className="w-3.5 h-3.5" /> Hồ Sơ Căn Cước &amp; Khuôn Mặt • Căn Hộ {inspectingRequest.apartmentCode}
                   {inspectingRequest.roleLabel.includes('Bảo lãnh') && (
                     <span className="px-2 py-0.5 bg-purple-950/90 border border-purple-500/80 text-purple-300 font-sans text-[10px] rounded-none normal-case font-semibold flex items-center gap-1">
                       <Users className="w-3 h-3 text-purple-400" /> Được Chủ Hộ Bảo Lãnh Kê Khai
@@ -483,7 +483,7 @@ export default function EkycApproval() {
                   )}
                 </div>
                 <h3 className="font-serif text-lg font-bold text-white mt-0.5">
-                  Đối Chiếu Sinh Trắc Học & Thẻ Căn Cước Công Dân
+                  Đối Chiếu Khuôn Mặt Cư Dân &amp; Thẻ Căn Cước Công Dân
                 </h3>
               </div>
               <button
@@ -507,10 +507,10 @@ export default function EkycApproval() {
                     <div className="p-4 bg-[#161D26] border border-[#2D3748] rounded-none space-y-3 text-center">
                       <div className="flex items-center justify-between text-xs text-gray-300 font-semibold border-b border-[#222B35] pb-2">
                         <span className="flex items-center gap-1.5">
-                          <Camera className="w-3.5 h-3.5 text-[#C5A880]" /> Ảnh Chân Dung & Mẫu FaceID:
+                          <Camera className="w-3.5 h-3.5 text-[#C5A880]" /> Ảnh Chân Dung Nhận Diện:
                         </span>
                         <span className="px-2 py-0.5 bg-emerald-950 text-emerald-400 border border-emerald-500/50 rounded-none font-mono text-[10px]">
-                          Khớp Sinh Trắc: {inspectingRequest.faceScore}%
+                          Độ Trùng Khớp: {inspectingRequest.faceScore}%
                         </span>
                       </div>
                       
@@ -561,7 +561,7 @@ export default function EkycApproval() {
                       )}
 
                       <div className="text-[11px] text-gray-400">
-                        {samples ? 'Dữ liệu khuôn mặt đã mã hóa vector phục vụ nhận diện tự động' : 'Ảnh chân dung chụp trực tiếp từ thiết bị'}
+                        {samples ? 'Dữ liệu nhận diện khuôn mặt đã sẵn sàng kích hoạt quyền ra vào sảnh & thang máy' : 'Ảnh chân dung chụp trực tiếp từ thiết bị'}
                       </div>
                     </div>
 
@@ -659,12 +659,12 @@ export default function EkycApproval() {
                       {isEligible ? (
                         <span className="text-emerald-400 flex items-center gap-1.5">
                           <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                          Đạt Tiêu Chuẩn Sinh Trắc Học Cấp Quyền FaceID
+                          Đạt Tiêu Chuẩn Xác Thực &amp; Đủ Điều Kiện Kích Hoạt Quyền Ra Vào
                         </span>
                       ) : (
                         <span className="text-rose-400 flex items-center gap-1.5">
                           <AlertTriangle className="w-4 h-4 text-rose-400" />
-                          Cảnh Báo: Không Khớp Khuôn Mặt Hoặc Thẻ CCCD Lệch Chuẩn
+                          Cần Kiểm Tra: Ảnh Khuôn Mặt Chưa Khớp Hoặc Thẻ CCCD Mờ
                         </span>
                       )}
                     </div>
@@ -751,7 +751,7 @@ export default function EkycApproval() {
                   }}
                   className="px-4 py-2 bg-rose-950 hover:bg-rose-900 border border-rose-500 text-rose-300 text-xs font-bold rounded-none transition-all flex items-center gap-1.5 shadow"
                 >
-                  <X className="w-3.5 h-3.5" /> Từ Chối Hồ Sơ
+                  <X className="w-3.5 h-3.5" /> Yêu Cầu Bổ Sung
                 </button>
 
                 <button
@@ -760,7 +760,7 @@ export default function EkycApproval() {
                   onClick={() => handleApprove(inspectingRequest.id, inspectingRequest.fullName)}
                   className="px-5 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-none shadow-lg transition-all flex items-center gap-1.5 active:scale-[0.99]"
                 >
-                  <Check className="w-4 h-4" /> Phê Duyệt & Kích Hoạt Quyền FaceID
+                  <Check className="w-4 h-4" /> Xác Nhận Hợp Lệ &amp; Kích Hoạt Quyền Ra Vào
                 </button>
               </div>
             </div>
@@ -775,7 +775,7 @@ export default function EkycApproval() {
           <div className="bg-[#0D1117] border border-rose-500/80 max-w-md w-full p-5 rounded-none space-y-4 shadow-2xl">
             <div className="flex items-center justify-between border-b border-[#222B35] pb-3">
               <h3 className="font-serif text-base font-bold text-white flex items-center gap-2 text-rose-400">
-                <AlertTriangle className="w-4 h-4" /> Từ Chối Hồ Sơ e-KYC
+                <AlertTriangle className="w-4 h-4" /> Yêu Cầu Cư Dân Cập Nhật Lại Hồ Sơ
               </h3>
               <button
                 type="button"
@@ -787,7 +787,7 @@ export default function EkycApproval() {
             </div>
 
             <div className="space-y-2 text-xs">
-              <label className="text-gray-300 font-medium block">Chọn hoặc nhập lý do từ chối (Gửi tới cư dân):</label>
+              <label className="text-gray-300 font-medium block">Chọn hoặc nhập lý do cần bổ sung (Gửi thông báo tới cư dân):</label>
               <select
                 value={rejectionReason}
                 onChange={(e) => setRejectionReason(e.target.value)}
@@ -795,7 +795,7 @@ export default function EkycApproval() {
               >
                 <option value="Ảnh chụp CCCD bị mờ/lóa sáng/mất góc, vui lòng chụp lại rõ nét">Ảnh chụp CCCD bị mờ/lóa sáng/mất góc</option>
                 <option value="Số CCCD hoặc thông tin không trùng khớp với hồ sơ đăng ký căn hộ">Số CCCD không trùng khớp hồ sơ</option>
-                <option value="Ảnh chân dung FaceID không khớp với ảnh trên thẻ CCCD">Ảnh FaceID không khớp ảnh CCCD</option>
+                <option value="Ảnh chân dung khuôn mặt chưa trùng khớp với ảnh trên thẻ CCCD">Ảnh chân dung chưa trùng khớp ảnh CCCD</option>
                 <option value="Chưa cung cấp đủ 2 mặt thẻ CCCD hợp lệ">Chưa cung cấp đủ 2 mặt thẻ CCCD</option>
                 <option value="Thẻ CCCD đã hết hạn sử dụng theo quy định pháp luật">Thẻ CCCD đã hết hạn sử dụng</option>
               </select>

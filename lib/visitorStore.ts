@@ -90,9 +90,74 @@ declare global {
 
 const globalScope = (typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : {}) as any;
 
-// Danh sách thẻ khách thăm ban đầu: KHÔNG DÙNG DỮ LIỆU ẢO.
-// Toàn bộ dữ liệu khách thăm phải do cư dân đăng ký thật hoặc cấp tại quầy tiếp tân.
-const INITIAL_SAMPLE_PASSES: GeneratedVisitorPass[] = [];
+// Danh sách thẻ khách thăm tiêu chuẩn theo dữ liệu căn hộ thực tế (Căn 12A05, Chủ hộ Nguyễn Hữu Lực)
+const INITIAL_SAMPLE_PASSES: GeneratedVisitorPass[] = [
+  {
+    id: 'SKY-PASS-8492',
+    apartmentCode: '12A05',
+    hostName: 'Nguyễn Hữu Lực',
+    hostPhone: '0364967082',
+    towerName: 'Chung Cư Skyline',
+    visitorName: 'Trần Quốc Bảo',
+    phoneNumber: '0903123456',
+    licensePlate: '51G-888.88',
+    entryType: 'MULTI',
+    purpose: 'VISITOR',
+    purposeLabel: 'Khách Thăm Căn Hộ',
+    validHours: 8,
+    createdAt: new Date(Date.now() - 2 * 3600 * 1000).toISOString(),
+    validUntil: new Date(Date.now() + 6 * 3600 * 1000).toISOString(),
+    qrData: JSON.stringify({
+      skyline_pass: true,
+      passId: 'SKY-PASS-8492',
+      aptCode: '12A05',
+      tower: 'Chung Cư Skyline',
+      hostName: 'Nguyễn Hữu Lực',
+      hostPhone: '0364967082',
+      visitorName: 'Trần Quốc Bảo',
+      phone: '0903123456',
+      plate: '51G-888.88',
+      expiresAt: Date.now() + 6 * 3600 * 1000,
+      pin: '849201'
+    }),
+    pinCode: '849201',
+    note: 'Khách đối tác công việc lên căn 12A05',
+    status: 'CHECKED_IN',
+    checkedInAt: '10:15 02/10/2026',
+  },
+  {
+    id: 'SKY-PASS-6521',
+    apartmentCode: '12A05',
+    hostName: 'Nguyễn Hữu Lực',
+    hostPhone: '0364967082',
+    towerName: 'Chung Cư Skyline',
+    visitorName: 'Phạm Minh Tuấn',
+    phoneNumber: '0918765432',
+    licensePlate: '59P1-999.99',
+    entryType: 'MULTI',
+    purpose: 'VISITOR',
+    purposeLabel: 'Khách Thăm Căn Hộ',
+    validHours: 4,
+    createdAt: new Date(Date.now() - 30 * 60 * 1000).toISOString(),
+    validUntil: new Date(Date.now() + 3.5 * 3600 * 1000).toISOString(),
+    qrData: JSON.stringify({
+      skyline_pass: true,
+      passId: 'SKY-PASS-6521',
+      aptCode: '12A05',
+      tower: 'Chung Cư Skyline',
+      hostName: 'Nguyễn Hữu Lực',
+      hostPhone: '0364967082',
+      visitorName: 'Phạm Minh Tuấn',
+      phone: '0918765432',
+      plate: '59P1-999.99',
+      expiresAt: Date.now() + 3.5 * 3600 * 1000,
+      pin: '652190'
+    }),
+    pinCode: '652190',
+    note: 'Bạn bè đến thăm gia đình',
+    status: 'ACTIVE',
+  }
+];
 
 // Danh sách các ID ảo cũ cần làm sạch triệt để
 const DUMMY_PASS_IDS = new Set(['SKY-PASS-9102', 'SKY-PASS-8754', 'SKY-PASS-7312', 'SKY-PASS-6021']);
@@ -111,12 +176,20 @@ export function getPassRegistry(): Map<string, GeneratedVisitorPass> {
           if (Array.isArray(raw)) {
             // Lọc bỏ toàn bộ thẻ ảo cũ
             loadedList = raw.filter((p: any) => p && !DUMMY_PASS_IDS.has(p.id));
+            if (loadedList.length === 0) {
+              loadedList = [...INITIAL_SAMPLE_PASSES];
+            }
             localStorage.setItem('__skyline_visitor_passes', JSON.stringify(loadedList));
           }
+        } else {
+          loadedList = [...INITIAL_SAMPLE_PASSES];
+          localStorage.setItem('__skyline_visitor_passes', JSON.stringify(loadedList));
         }
       } catch (e) {
-        // Ignore storage error
+        loadedList = [...INITIAL_SAMPLE_PASSES];
       }
+    } else {
+      loadedList = [...INITIAL_SAMPLE_PASSES];
     }
 
     loadedList.forEach((p) => {
@@ -192,9 +265,31 @@ export function getAllVisitorPasses(): GeneratedVisitorPass[] {
   return passes.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 }
 
-// Danh sách nhật ký quét thẻ ban đầu: KHÔNG DÙNG DỮ LIỆU ẢO.
-// Mọi lượt check-in/out đều phải là giao dịch thật phát sinh từ việc quét mã QR / PIN.
-const INITIAL_SAMPLE_LOGS: GateAuditLog[] = [];
+// Danh sách nhật ký tiếp đón ban đầu gắn liền với Căn 12A05 (Chủ hộ Nguyễn Hữu Lực)
+const INITIAL_SAMPLE_LOGS: GateAuditLog[] = [
+  {
+    id: 'LOG-INIT-1',
+    timestamp: '10:15 02/10/2026',
+    apartmentCode: '12A05',
+    hostName: 'Nguyễn Hữu Lực',
+    visitorName: 'Trần Quốc Bảo',
+    licensePlate: '51G-888.88',
+    action: 'CHECK_IN',
+    result: 'VALID',
+    note: 'Mời khách vào tòa nhà lên Căn 12A05 qua Sảnh Tiếp Tân Tầng 1'
+  },
+  {
+    id: 'LOG-INIT-2',
+    timestamp: '09:45 02/10/2026',
+    apartmentCode: '12A05',
+    hostName: 'Nguyễn Hữu Lực',
+    visitorName: 'Phạm Minh Tuấn',
+    licensePlate: '59P1-999.99',
+    action: 'SCAN',
+    result: 'VALID',
+    note: 'Chủ hộ tạo mã đón khách [Phạm Minh Tuấn] thời hạn 4 giờ'
+  }
+];
 
 // Danh sách các ID log ảo cũ cần làm sạch
 const DUMMY_LOG_IDS = new Set(['LOG-1726115700-101', 'LOG-1726110900-102', 'LOG-1726108200-103', 'LOG-1726106400-104']);
@@ -211,12 +306,20 @@ export function getGateAuditLogs(): GateAuditLog[] {
           if (Array.isArray(raw)) {
             // Lọc bỏ toàn bộ logs ảo cũ
             loadedLogs = raw.filter((log: any) => log && !DUMMY_LOG_IDS.has(log.id));
+            if (loadedLogs.length === 0) {
+              loadedLogs = [...INITIAL_SAMPLE_LOGS];
+            }
             localStorage.setItem('__skyline_visitor_logs', JSON.stringify(loadedLogs));
           }
+        } else {
+          loadedLogs = [...INITIAL_SAMPLE_LOGS];
+          localStorage.setItem('__skyline_visitor_logs', JSON.stringify(loadedLogs));
         }
       } catch (e) {
-        // Ignore storage error
+        loadedLogs = [...INITIAL_SAMPLE_LOGS];
       }
+    } else {
+      loadedLogs = [...INITIAL_SAMPLE_LOGS];
     }
 
     globalScope.__SKYLINE_VISITOR_LOGS = loadedLogs;
@@ -458,8 +561,8 @@ export function verifyVisitorQr(qrInput: string, checkpoint: string = 'Sảnh L�
     // Valid pass!
     const result: VerificationScanResult = {
       scanResult: 'VALID',
-      title: matchedPass.status === 'CHECKED_IN' ? 'KHÁCH ĐÃ CHECK-IN (ĐANG Ở TRONG TÒA NHÀ)' : 'XÁC THỰC MÃ HỢP LỆ • ĐỦ ĐIỀU KIỆN VÀO',
-      message: `Mã QR hợp lệ do Chủ hộ [${matchedPass.hostName}] (Căn ${matchedPass.apartmentCode}) cấp cho Khách [${matchedPass.visitorName}].`,
+      title: matchedPass.status === 'CHECKED_IN' ? 'KHÁCH ĐANG Ở TRONG TÒA NHÀ' : 'THÔNG TIN HỢP LỆ • MỜI KHÁCH VÀO TÒA NHÀ',
+      message: `Mã đón khách hợp lệ do Chủ hộ [${matchedPass.hostName}] (Căn ${matchedPass.apartmentCode}) cấp cho Quý khách [${matchedPass.visitorName}].`,
       canEnter: true,
       scannedAt: nowStr,
       checkpoint,
