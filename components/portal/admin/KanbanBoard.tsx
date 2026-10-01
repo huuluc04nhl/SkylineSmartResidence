@@ -229,7 +229,7 @@ export default function KanbanBoard() {
   return (
     <div className="space-y-6 animate-fadeIn">
       {/* Header & Sub-Navigation Tabs */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#222B35] pb-4">
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-[#222B35] pb-4">
         <div>
           <div className="text-[10px] uppercase tracking-[0.25em] text-[#C5A880] font-semibold flex items-center gap-1.5">
             <Wrench className="w-3.5 h-3.5" /> Quản Trị Kỹ Thuật • Ban Quản Lý Skyline
@@ -239,67 +239,72 @@ export default function KanbanBoard() {
           </h2>
         </div>
 
-        <div className="flex flex-wrap items-center gap-2">
+        {/* Unified Static Toolbar (Never wraps or jumps between ticket states) */}
+        <div className="flex items-center gap-2.5 flex-wrap sm:flex-nowrap">
           {/* AI Auto-Dispatch 24/7 Switch */}
           <button
             onClick={() => handleToggleAutoDispatch(!aiAutoMode)}
-            className={`px-3 py-2 border text-xs font-semibold flex items-center gap-1.5 transition-all ${
+            className={`px-3 py-1.5 border text-xs font-semibold flex items-center gap-2 transition-all ${
               aiAutoMode
-                ? 'bg-purple-950/80 border-purple-500/60 text-purple-300 shadow-md'
+                ? 'bg-purple-950/50 border-purple-500/50 text-purple-200 hover:border-purple-400'
                 : 'bg-[#121820] border-[#222B35] text-gray-400 hover:text-white'
             }`}
             title="Bật/Tắt chế độ AI tự động phân tích và gán KTV ngay khi tiếp nhận sự cố"
           >
             <Sparkles className={`w-3.5 h-3.5 ${aiAutoMode ? 'text-purple-400 animate-pulse' : 'text-gray-500'}`} />
-            <span>AI Tự Động Phân Công: <strong className={aiAutoMode ? 'text-white' : 'text-gray-400'}>{aiAutoMode ? 'BẬT' : 'TẮT'}</strong></span>
+            <span>AI Tự Động:</span>
+            <span className={`text-[10px] px-1.5 py-0.5 font-bold uppercase tracking-wider ${
+              aiAutoMode ? 'bg-purple-500/30 text-purple-200 border border-purple-400/40' : 'bg-gray-800 text-gray-400'
+            }`}>
+              {aiAutoMode ? 'BẬT' : 'TẮT'}
+            </span>
           </button>
 
-          {/* 1-Click AI Auto Dispatch All if any open tickets */}
-          {openTickets.length > 0 && (
-            <button
-              onClick={handleOneClickAutoDispatch}
-              disabled={isAutoDispatching}
-              className="px-3.5 py-2 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 shadow-lg transition-all disabled:opacity-50"
-              title="Kích hoạt AI tự động gán thợ tối ưu cho toàn bộ các phiếu đang chờ"
-            >
-              <Sparkles className={`w-3.5 h-3.5 ${isAutoDispatching ? 'animate-spin' : ''}`} />
-              <span>{isAutoDispatching ? 'AI Đang Phân Công...' : `AI Phân Công Hết (${openTickets.length})`}</span>
-            </button>
-          )}
-
-          {/* Nút Làm Mới Dữ Liệu Trực Tuyến */}
+          {/* Nút Làm Mới Dữ Liệu */}
           <button
             onClick={handleSyncNks}
             disabled={isSyncing}
-            className="px-3 py-2 bg-[#121820] hover:bg-[#161B22] border border-[#222B35] text-xs font-semibold text-gray-300 hover:text-white flex items-center gap-1.5 transition-colors disabled:opacity-50"
+            className="px-3 py-1.5 bg-[#121820] hover:bg-[#161B22] border border-[#222B35] hover:border-[#C5A880]/50 text-xs font-semibold text-gray-300 hover:text-white flex items-center gap-1.5 transition-colors disabled:opacity-50"
             title="Cập nhật danh sách yêu cầu thực tế mới nhất từ cư dân"
           >
-            <RefreshCw className={`w-3.5 h-3.5 ${isSyncing ? 'animate-spin text-[#C5A880]' : 'text-emerald-400'}`} />
-            <span>{isSyncing ? 'Đang cập nhật...' : 'Làm mới dữ liệu'}</span>
+            <RefreshCw className={`w-3.5 h-3.5 text-[#C5A880] ${isSyncing ? 'animate-spin' : ''}`} />
+            <span>{isSyncing ? 'Đang cập nhật...' : 'Làm mới'}</span>
           </button>
 
           {/* Tab Switcher: KANBAN vs PAYROLL */}
-          <div className="flex items-center gap-1 bg-[#121820] p-1 border border-[#222B35]">
+          <div className="flex items-center bg-[#0D1117] p-1 border border-[#222B35]">
             <button
               onClick={() => setActiveTab('KANBAN')}
               className={`px-3 py-1.5 text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 ${
                 activeTab === 'KANBAN'
-                  ? 'bg-[#C5A880] text-[#0D1117] shadow-lg'
-                  : 'text-gray-300 hover:text-white'
+                  ? 'bg-[#C5A880] text-[#0D1117] shadow-md'
+                  : 'text-gray-400 hover:text-white'
               }`}
             >
-              <Wrench className="w-3.5 h-3.5" /> Sự Cố ({tickets.length})
+              <Wrench className="w-3.5 h-3.5" />
+              <span>Sự Cố</span>
+              <span className={`text-[10px] px-1.5 py-0.2 font-mono font-bold ${
+                activeTab === 'KANBAN' ? 'bg-[#0D1117]/20 text-[#0D1117]' : 'bg-[#161B22] text-gray-400'
+              }`}>
+                {tickets.length}
+              </span>
             </button>
 
             <button
               onClick={() => setActiveTab('PAYROLL')}
               className={`px-3 py-1.5 text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 ${
                 activeTab === 'PAYROLL'
-                  ? 'bg-[#C5A880] text-[#0D1117] shadow-lg'
-                  : 'text-gray-300 hover:text-white'
+                  ? 'bg-[#C5A880] text-[#0D1117] shadow-md'
+                  : 'text-gray-400 hover:text-white'
               }`}
             >
-              <Award className="w-3.5 h-3.5" /> KTV & Thù Lao ({technicians.length})
+              <Award className="w-3.5 h-3.5" />
+              <span>KTV & Thù Lao</span>
+              <span className={`text-[10px] px-1.5 py-0.2 font-mono font-bold ${
+                activeTab === 'PAYROLL' ? 'bg-[#0D1117]/20 text-[#0D1117]' : 'bg-[#161B22] text-gray-400'
+              }`}>
+                {payrollList.length}
+              </span>
             </button>
           </div>
         </div>
@@ -354,12 +359,32 @@ export default function KanbanBoard() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Column 1: Chờ tiếp nhận */}
             <div className="bg-[#121820] border border-[#222B35] flex flex-col justify-between shadow-xl">
-              <div className="p-4 border-b border-[#222B35] flex items-center justify-between bg-[#161B22]">
-                <span className="text-xs uppercase tracking-wider font-semibold text-gray-300 flex items-center gap-2">
-                  <span className="w-2.5 h-2.5 bg-blue-500 rounded-none"></span>
-                  1. Chờ Tiếp Nhận ({openTickets.length})
-                </span>
-                <span className="text-[10px] font-mono text-blue-400">Mới gửi từ Cư dân</span>
+              <div className="p-3.5 border-b border-[#222B35] flex items-center justify-between bg-[#161B22]">
+                <div className="flex items-center gap-2">
+                  <span className="w-2.5 h-2.5 bg-blue-500"></span>
+                  <span className="text-xs uppercase tracking-wider font-semibold text-gray-200">
+                    1. Chờ Tiếp Nhận
+                  </span>
+                  <span className="px-1.5 py-0.5 bg-blue-950/80 border border-blue-500/40 text-blue-300 font-mono text-[10px] font-bold">
+                    {openTickets.length}
+                  </span>
+                </div>
+
+                {openTickets.length > 0 ? (
+                  <button
+                    onClick={handleOneClickAutoDispatch}
+                    disabled={isAutoDispatching}
+                    className="px-2.5 py-1 bg-gradient-to-r from-purple-700 to-indigo-700 hover:from-purple-600 hover:to-indigo-600 text-white text-[11px] font-bold uppercase tracking-wider flex items-center gap-1.5 shadow transition-all disabled:opacity-50 border border-purple-400/40"
+                    title="Kích hoạt AI tự động gán thợ tối ưu cho toàn bộ các phiếu trong hàng chờ"
+                  >
+                    <Sparkles className={`w-3 h-3 ${isAutoDispatching ? 'animate-spin' : 'text-purple-200'}`} />
+                    <span>{isAutoDispatching ? 'Đang phân công...' : `AI Phân Công Hết`}</span>
+                  </button>
+                ) : (
+                  <span className="text-[10px] font-mono text-gray-400 flex items-center gap-1">
+                    <CheckCircle2 className="w-3 h-3 text-emerald-400" /> Sẵn sàng
+                  </span>
+                )}
               </div>
 
               <div className="p-4 space-y-4 min-h-[420px] overflow-y-auto">
