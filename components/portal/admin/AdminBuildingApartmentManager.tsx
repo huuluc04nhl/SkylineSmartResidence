@@ -358,7 +358,7 @@ export default function AdminBuildingApartmentManager() {
   const [hoveredUnitCode, setHoveredUnitCode] = useState<string | null>(null);
   const [hoveredFloor, setHoveredFloor] = useState<number | null>(null);
   const [buildingTheme, setBuildingTheme] = useState<'NIGHT' | 'DAY'>('NIGHT');
-  const [building3dZoom, setBuilding3dZoom] = useState<number>(1);
+  const [building3dZoom, setBuilding3dZoom] = useState<number>(1.25);
   const [isFloorPlanExpanded, setIsFloorPlanExpanded] = useState<boolean>(false);
   const [floorFilterStatus, setFloorFilterStatus] = useState<'ALL' | 'OCCUPIED' | 'VACANT'>('ALL');
   const [floorPlanViewMode, setFloorPlanViewMode] = useState<'CAD_VECTOR' | 'BLUEPRINT_IMAGE'>('CAD_VECTOR');
@@ -1040,7 +1040,7 @@ export default function AdminBuildingApartmentManager() {
                     </span>
                     <button
                       type="button"
-                      onClick={() => setBuilding3dZoom(z => Math.min(1.6, Number((z + 0.15).toFixed(2))))}
+                      onClick={() => setBuilding3dZoom(z => Math.min(2.2, Number((z + 0.15).toFixed(2))))}
                       className="w-6 h-6 flex items-center justify-center bg-[#141E2B] hover:bg-[#C5A880] text-gray-300 hover:text-black font-bold transition-all"
                       title="Phóng to mô hình"
                     >
@@ -1048,11 +1048,11 @@ export default function AdminBuildingApartmentManager() {
                     </button>
                     <button
                       type="button"
-                      onClick={() => setBuilding3dZoom(1)}
+                      onClick={() => setBuilding3dZoom(1.25)}
                       className="px-1.5 h-6 flex items-center justify-center bg-[#141E2B] hover:bg-[#1E2E40] text-gray-400 hover:text-white text-[10px] transition-all ml-0.5"
-                      title="Đặt lại kích thước chuẩn 100%"
+                      title="Đặt lại kích thước chuẩn"
                     >
-                      100%
+                      Chuẩn
                     </button>
                   </div>
                 </div>
@@ -1067,7 +1067,7 @@ export default function AdminBuildingApartmentManager() {
                     }}
                   >
                     <svg
-                      viewBox="0 -30 1100 730"
+                      viewBox="20 -25 1060 625"
                       preserveAspectRatio="xMidYMid meet"
                       className="w-full h-full cursor-default drop-shadow-[0_30px_60px_rgba(0,0,0,0.95)]"
                     >
@@ -1553,12 +1553,12 @@ export default function AdminBuildingApartmentManager() {
                           const elbowX = 765;
                           const elbowY = wallY;
 
-                          const cardX = 780;
-                          const cardW = 285;
-                          const cardH = 118;
-                          const targetCardY = Math.max(50, Math.min(460, Math.round(wallY - cardH / 2)));
+                          const cardX = 750;
+                          const cardW = 325;
+                          const cardH = 146;
+                          const targetCardY = Math.max(40, Math.min(450, Math.round(wallY - cardH / 2)));
                           const dockX = cardX;
-                          const dockY = Math.max(targetCardY + 22, Math.min(targetCardY + cardH - 22, wallY));
+                          const dockY = Math.max(targetCardY + 24, Math.min(targetCardY + cardH - 24, wallY));
 
                           const laserPath = `M ${pinX} ${pinY} L ${wallX} ${wallY} L ${elbowX} ${elbowY} L ${dockX} ${dockY}`;
                           const curFloorStats = floorStatsList.find(f => f.floor === curFloor);
@@ -1573,23 +1573,26 @@ export default function AdminBuildingApartmentManager() {
 
                           return (
                             <g key={`dynamic-floor-pointer-${curFloor}`} className="pointer-events-none">
-                              <circle cx={pinX} cy={pinY} r="4.5" fill={themeNeon} filter="url(#unitGlow)" />
-                              <circle cx={pinX} cy={pinY} r="16" fill="none" stroke={themeNeon} strokeWidth="1.6" className="anim-ping-pulse" />
-                              <circle cx={pinX} cy={pinY} r="2" fill="#FFFFFF" />
+                              {/* Vòng tâm định vị tầng */}
+                              <circle cx={pinX} cy={pinY} r="5" fill={themeNeon} filter="url(#unitGlow)" />
+                              <circle cx={pinX} cy={pinY} r="18" fill="none" stroke={themeNeon} strokeWidth="1.8" className="anim-ping-pulse" />
+                              <circle cx={pinX} cy={pinY} r="2.5" fill="#FFFFFF" />
 
+                              {/* Đường dẫn Laser */}
                               <path
                                 d={laserPath}
                                 fill="none"
                                 stroke={themeNeon}
-                                strokeWidth="2.2"
+                                strokeWidth="2.5"
                                 strokeLinecap="round"
                                 strokeLinejoin="round"
                                 className="anim-laser-line"
                                 filter="url(#unitGlow)"
                               />
-                              <circle cx={wallX} cy={wallY} r="3" fill={themeNeon} />
-                              <circle cx={dockX} cy={dockY} r="3.5" fill={themeBorder} />
+                              <circle cx={wallX} cy={wallY} r="3.5" fill={themeNeon} />
+                              <circle cx={dockX} cy={dockY} r="4" fill={themeBorder} />
 
+                              {/* Thẻ Callout Tầng - Phóng to sắc nét dễ đọc */}
                               <g className="anim-callout-card">
                                 <rect
                                   x={cardX}
@@ -1597,48 +1600,51 @@ export default function AdminBuildingApartmentManager() {
                                   width={cardW}
                                   height={cardH}
                                   fill={themeBg}
-                                  fillOpacity="0.96"
+                                  fillOpacity="0.97"
                                   stroke={themeBorder}
-                                  strokeWidth="1.8"
-                                  rx="4"
+                                  strokeWidth="2"
+                                  rx="5"
                                   filter="url(#unitGlow)"
                                 />
 
+                                {/* Dải viền vàng bên trái */}
                                 <rect
                                   x={cardX}
                                   y={targetCardY}
-                                  width="4"
+                                  width="5"
                                   height={cardH}
                                   fill="#C5A880"
-                                  rx="2"
+                                  rx="2.5"
                                 />
 
-                                <circle cx={cardX + 18} cy={targetCardY + 20} r="3.5" fill={themeNeon} />
+                                {/* Tiêu đề tầng */}
+                                <circle cx={cardX + 20} cy={targetCardY + 22} r="4" fill={themeNeon} />
                                 <text
-                                  x={cardX + 28}
-                                  y={targetCardY + 24}
+                                  x={cardX + 32}
+                                  y={targetCardY + 27}
                                   fill="#FFFFFF"
-                                  fontSize="12"
+                                  fontSize="14.5"
                                   fontWeight="900"
                                   fontFamily="monospace"
                                 >
                                   {curFloor === 1 ? `TẦNG 1 (ĐẠI SẢNH) • ${currentBlockName.toUpperCase()}` : `TẦNG ${curFloor} • ${currentBlockName.toUpperCase()}`}
                                 </text>
 
+                                {/* Huy hiệu mặt bằng */}
                                 <rect
-                                  x={cardX + cardW - 74}
+                                  x={cardX + cardW - 86}
                                   y={targetCardY + 12}
-                                  width="60"
-                                  height="16"
+                                  width="74"
+                                  height="20"
                                   fill="#162232"
                                   stroke="#26374D"
-                                  rx="2"
+                                  rx="3"
                                 />
                                 <text
-                                  x={cardX + cardW - 44}
-                                  y={targetCardY + 23.5}
+                                  x={cardX + cardW - 49}
+                                  y={targetCardY + 26}
                                   fill="#C5A880"
-                                  fontSize="8.5"
+                                  fontSize="10.5"
                                   fontWeight="bold"
                                   textAnchor="middle"
                                   fontFamily="monospace"
@@ -1646,11 +1652,12 @@ export default function AdminBuildingApartmentManager() {
                                   {curFloor === 1 ? 'SẢNH TRỆT' : '21 CĂN HỘ'}
                                 </text>
 
+                                {/* Trạng thái cư dân phóng to */}
                                 <text
-                                  x={cardX + 18}
-                                  y={targetCardY + 46}
+                                  x={cardX + 20}
+                                  y={targetCardY + 53}
                                   fill={hasOcc ? '#34D399' : '#94A3B8'}
-                                  fontSize="9.5"
+                                  fontSize="12.5"
                                   fontWeight="bold"
                                   fontFamily="monospace"
                                 >
@@ -1661,33 +1668,35 @@ export default function AdminBuildingApartmentManager() {
                                     : '⚪ TẦNG TRỐNG / SẴN SÀNG BÀN GIAO'}
                                 </text>
 
+                                {/* Thông số chi tiết phóng to */}
                                 <text
-                                  x={cardX + 18}
-                                  y={targetCardY + 68}
-                                  fill="#CBD5E1"
-                                  fontSize="8.5"
+                                  x={cardX + 20}
+                                  y={targetCardY + 77}
+                                  fill="#E2E8F0"
+                                  fontSize="11.5"
                                   fontFamily="monospace"
                                 >
                                   {curFloor === 1 
                                     ? 'Quầy Lễ Tân • Ban Quản Lý • Cổng An Ninh FaceID' 
-                                    : `Đã ở: ${occCount} • Nghiệm thu: ${maintCount} • Trống: ${vacCount}`}
+                                    : `Đã ở: ${occCount}  •  Nghiệm thu: ${maintCount}  •  Trống: ${vacCount}`}
                                 </text>
 
                                 <text
-                                  x={cardX + 18}
-                                  y={targetCardY + 84}
+                                  x={cardX + 20}
+                                  y={targetCardY + 99}
                                   fill="#94A3B8"
-                                  fontSize="8"
+                                  fontSize="10.5"
                                   fontFamily="sans-serif"
                                 >
                                   {curFloor === 1 ? 'Mặt bằng sảnh: Quầy tiếp tân, sảnh chờ, thang máy' : 'Mặt bằng kiến trúc: Căn CH-01 đến CH-21'}
                                 </text>
 
+                                {/* Chỉ dẫn sang mặt bằng tầng bên phải */}
                                 <text
-                                  x={cardX + 18}
-                                  y={targetCardY + 104}
+                                  x={cardX + 20}
+                                  y={targetCardY + 124}
                                   fill="#C5A880"
-                                  fontSize="8.5"
+                                  fontSize="11"
                                   fontWeight="bold"
                                   fontFamily="sans-serif"
                                 >
@@ -1722,65 +1731,6 @@ export default function AdminBuildingApartmentManager() {
                   </div>
                 </div>
 
-                {/* THANH ĐIỀU HÀNH & CHỌN TẦNG THỐNG KÊ (QUICK ELEVATOR FLOOR NAVIGATOR) */}
-                <div className="p-2 sm:p-2.5 bg-[#080D15]/95 border-t border-[#1E293B] flex flex-col gap-2 shrink-0 z-10 font-mono">
-                  <div className="flex items-center justify-between text-xs">
-                    <div className="flex items-center gap-2">
-                      <span className="text-[11px] text-[#C5A880] font-bold flex items-center gap-1">
-                        <Building2 className="w-3.5 h-3.5 text-[#C5A880]" />
-                        <span>CHỌN TẦNG XEM MẶT BẰNG BÊN PHẢI:</span>
-                      </span>
-                      <span className="text-[10px] text-gray-400 hidden sm:inline">
-                        (Bấm tầng để đổi mặt bằng ngay)
-                      </span>
-                    </div>
-
-                    <div className="flex items-center gap-2 text-[10.5px]">
-                      <span className="text-gray-400">Đang chọn:</span>
-                      <span className="px-1.5 py-0.2 bg-[#C5A880] text-black font-bold">
-                        TẦNG {selectedFloor} ➔
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Dãy các nút số tầng dạng thang máy */}
-                  <div className="flex items-center gap-1 overflow-x-auto no-scrollbar py-0.5">
-                    {floorStatsList
-                      .filter(item => {
-                        if (selectedFloorRange === 'HIGH' && item.floor < 21) return false;
-                        if (selectedFloorRange === 'MID' && (item.floor < 11 || item.floor > 20)) return false;
-                        if (selectedFloorRange === 'LOW' && item.floor > 10) return false;
-                        return true;
-                      })
-                      .map(item => {
-                        const isCurFloor = item.floor === selectedFloor;
-                        const hasOccupied = item.occupied > 0;
-                        return (
-                          <button
-                            key={`btn-floor-${item.floor}`}
-                            type="button"
-                            onClick={() => {
-                              setSelectedFloor(item.floor);
-                              setUnifiedRightTab('FLOOR_PLAN');
-                            }}
-                            className={`px-2 py-1 text-xs shrink-0 flex items-center gap-1 border transition-all ${
-                              isCurFloor
-                                ? 'bg-[#C5A880] text-black font-bold border-[#C5A880] shadow-md ring-1 ring-white'
-                                : hasOccupied
-                                ? 'bg-[#0E1B2A] text-emerald-300 border-[#1E3A5F] hover:border-[#3B82F6]'
-                                : 'bg-[#0F1722] text-gray-400 border-[#1E293B] hover:text-white hover:border-gray-500'
-                            }`}
-                            title={`Tầng ${item.floor}: ${item.occupied} căn đã ở, ${item.vacant} căn trống`}
-                          >
-                            <span>T{item.floor}</span>
-                            {hasOccupied && (
-                              <span className={`w-1.5 h-1.5 rounded-full ${isCurFloor ? 'bg-black' : 'bg-emerald-400 animate-pulse'}`} />
-                            )}
-                          </button>
-                        );
-                      })}
-                  </div>
-                </div>
               </div>
             );
           })()}
