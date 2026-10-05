@@ -358,7 +358,7 @@ export default function AdminBuildingApartmentManager() {
   const [hoveredUnitCode, setHoveredUnitCode] = useState<string | null>(null);
   const [hoveredFloor, setHoveredFloor] = useState<number | null>(null);
   const [buildingTheme, setBuildingTheme] = useState<'NIGHT' | 'DAY'>('NIGHT');
-  const [building3dZoom, setBuilding3dZoom] = useState<number>(1.25);
+  const [building3dZoom, setBuilding3dZoom] = useState<number>(1);
   const [isFloorPlanExpanded, setIsFloorPlanExpanded] = useState<boolean>(false);
   const [floorFilterStatus, setFloorFilterStatus] = useState<'ALL' | 'OCCUPIED' | 'VACANT'>('ALL');
   const [floorPlanViewMode, setFloorPlanViewMode] = useState<'CAD_VECTOR' | 'BLUEPRINT_IMAGE'>('CAD_VECTOR');
@@ -1048,11 +1048,11 @@ export default function AdminBuildingApartmentManager() {
                     </button>
                     <button
                       type="button"
-                      onClick={() => setBuilding3dZoom(1.25)}
+                      onClick={() => setBuilding3dZoom(1)}
                       className="px-1.5 h-6 flex items-center justify-center bg-[#141E2B] hover:bg-[#1E2E40] text-gray-400 hover:text-white text-[10px] transition-all ml-0.5"
                       title="Đặt lại kích thước chuẩn"
                     >
-                      Chuẩn
+                      100%
                     </button>
                   </div>
                 </div>
@@ -1067,7 +1067,7 @@ export default function AdminBuildingApartmentManager() {
                     }}
                   >
                     <svg
-                      viewBox="20 -25 1060 625"
+                      viewBox="0 -20 1200 680"
                       preserveAspectRatio="xMidYMid meet"
                       className="w-full h-full cursor-default drop-shadow-[0_30px_60px_rgba(0,0,0,0.95)]"
                     >
@@ -1183,9 +1183,6 @@ export default function AdminBuildingApartmentManager() {
                       <g className="opacity-95">
                         <polygon points="100,530 500,595 900,530 500,465" fill="#070B12" stroke="#1E293B" strokeWidth="2" />
                         <polygon points="360,565 500,588 640,565 500,542" fill="#0369A1" fillOpacity="0.4" stroke="#38BDF8" strokeWidth="1.2" />
-                        <text x="500" y="572" fill="#38BDF8" fontSize="8" fontFamily="monospace" textAnchor="middle" fontWeight="bold">
-                          HỒ CẢNH QUAN NỘI KHU THE TROPICAL
-                        </text>
                       </g>
 
                       {/* 2. THÂN CHUNG CƯ CAO TẦNG */}
@@ -1486,56 +1483,19 @@ export default function AdminBuildingApartmentManager() {
                           {/* Đèn rọi lối đón khách */}
                           <ellipse cx="500" cy="546" rx="36" ry="7" fill="#FDE68A" fillOpacity="0.28" filter="url(#unitGlow)" />
 
-                          {/* Chữ biểu hiệu Đại Sảnh */}
+                          {/* Chữ biểu hiệu Đại Sảnh Tầng 1 thanh thoát, không đè chữ */}
                           <text 
                             x="500" 
-                            y="520" 
+                            y="530" 
                             fill={selectedFloor === 1 ? '#0D1117' : '#FFFFFF'} 
-                            fontSize="9.5" 
+                            fontSize="10" 
                             fontFamily="sans-serif" 
                             textAnchor="middle" 
-                            fontWeight="900" 
-                            letterSpacing="0.06em"
+                            fontWeight="bold" 
+                            letterSpacing="0.04em"
                           >
-                            ĐẠI SẢNH ĐÓN TIẾP TÂN & DỊCH VỤ CƯ DÂN (TẦNG 1)
+                            ĐẠI SẢNH ĐÓN TIẾP TÂN (TẦNG 1)
                           </text>
-                          <text 
-                            x="500" 
-                            y="534" 
-                            fill={selectedFloor === 1 ? '#1E293B' : '#CBD5E1'} 
-                            fontSize="8" 
-                            fontFamily="monospace" 
-                            textAnchor="middle"
-                          >
-                            Lễ Tân 24/7 • Ban Quản Lý • Hầm B1 - B2
-                          </text>
-
-                          {selectedFloor === 1 && (
-                            <g className="pointer-events-none">
-                              <rect
-                                x="466"
-                                y="542"
-                                width="68"
-                                height="18"
-                                rx="3"
-                                fill="#C5A880"
-                                stroke="#FFFFFF"
-                                strokeWidth="2"
-                                filter="url(#unitGlow)"
-                              />
-                              <text
-                                x="500"
-                                y="555"
-                                fill="#0D1117"
-                                fontSize="10"
-                                fontWeight="900"
-                                textAnchor="middle"
-                                fontFamily="monospace"
-                              >
-                                TẦNG 1 (SẢNH)
-                              </text>
-                            </g>
-                          )}
                         </g>
 
                         {/* CON TRỎ LASER VÀ BẢNG CALLOUT HOLOGRAPHIC */}
@@ -1550,13 +1510,13 @@ export default function AdminBuildingApartmentManager() {
                           const pinX = curFloor === 1 ? 500 : 635;
                           const pinY = curFloor === 1 ? 515 : Number((curYBase - 20).toFixed(1));
 
-                          const elbowX = 765;
+                          const elbowX = 750;
                           const elbowY = wallY;
 
-                          const cardX = 750;
-                          const cardW = 325;
-                          const cardH = 146;
-                          const targetCardY = Math.max(40, Math.min(450, Math.round(wallY - cardH / 2)));
+                          const cardX = 760;
+                          const cardW = 390;
+                          const cardH = 152;
+                          const targetCardY = Math.max(30, Math.min(450, Math.round(wallY - cardH / 2)));
                           const dockX = cardX;
                           const dockY = Math.max(targetCardY + 24, Math.min(targetCardY + cardH - 24, wallY));
 
@@ -1592,7 +1552,7 @@ export default function AdminBuildingApartmentManager() {
                               <circle cx={wallX} cy={wallY} r="3.5" fill={themeNeon} />
                               <circle cx={dockX} cy={dockY} r="4" fill={themeBorder} />
 
-                              {/* Thẻ Callout Tầng - Phóng to sắc nét dễ đọc */}
+                              {/* Thẻ Callout Tầng - Rộng 390px sắc nét, không bao giờ tràn chữ */}
                               <g className="anim-callout-card">
                                 <rect
                                   x={cardX}
@@ -1623,7 +1583,7 @@ export default function AdminBuildingApartmentManager() {
                                   x={cardX + 32}
                                   y={targetCardY + 27}
                                   fill="#FFFFFF"
-                                  fontSize="14.5"
+                                  fontSize="14"
                                   fontWeight="900"
                                   fontFamily="monospace"
                                 >
@@ -1632,16 +1592,16 @@ export default function AdminBuildingApartmentManager() {
 
                                 {/* Huy hiệu mặt bằng */}
                                 <rect
-                                  x={cardX + cardW - 86}
+                                  x={cardX + cardW - 88}
                                   y={targetCardY + 12}
-                                  width="74"
+                                  width="76"
                                   height="20"
                                   fill="#162232"
                                   stroke="#26374D"
                                   rx="3"
                                 />
                                 <text
-                                  x={cardX + cardW - 49}
+                                  x={cardX + cardW - 50}
                                   y={targetCardY + 26}
                                   fill="#C5A880"
                                   fontSize="10.5"
@@ -1655,7 +1615,7 @@ export default function AdminBuildingApartmentManager() {
                                 {/* Trạng thái cư dân phóng to */}
                                 <text
                                   x={cardX + 20}
-                                  y={targetCardY + 53}
+                                  y={targetCardY + 54}
                                   fill={hasOcc ? '#34D399' : '#94A3B8'}
                                   fontSize="12.5"
                                   fontWeight="bold"
@@ -1671,30 +1631,30 @@ export default function AdminBuildingApartmentManager() {
                                 {/* Thông số chi tiết phóng to */}
                                 <text
                                   x={cardX + 20}
-                                  y={targetCardY + 77}
+                                  y={targetCardY + 78}
                                   fill="#E2E8F0"
                                   fontSize="11.5"
                                   fontFamily="monospace"
                                 >
                                   {curFloor === 1 
                                     ? 'Quầy Lễ Tân • Ban Quản Lý • Cổng An Ninh FaceID' 
-                                    : `Đã ở: ${occCount}  •  Nghiệm thu: ${maintCount}  •  Trống: ${vacCount}`}
+                                    : `Đã ở: ${occCount} căn  •  Nghiệm thu: ${maintCount} căn  •  Trống: ${vacCount} căn`}
                                 </text>
 
                                 <text
                                   x={cardX + 20}
-                                  y={targetCardY + 99}
+                                  y={targetCardY + 101}
                                   fill="#94A3B8"
                                   fontSize="10.5"
                                   fontFamily="sans-serif"
                                 >
-                                  {curFloor === 1 ? 'Mặt bằng sảnh: Quầy tiếp tân, sảnh chờ, thang máy' : 'Mặt bằng kiến trúc: Căn CH-01 đến CH-21'}
+                                  {curFloor === 1 ? 'Mặt bằng sảnh: Quầy tiếp tân, sảnh chờ, thang máy' : 'Kiến trúc chuẩn: 21 Căn Hộ (CH-01 đến CH-21)'}
                                 </text>
 
                                 {/* Chỉ dẫn sang mặt bằng tầng bên phải */}
                                 <text
                                   x={cardX + 20}
-                                  y={targetCardY + 124}
+                                  y={targetCardY + 127}
                                   fill="#C5A880"
                                   fontSize="11"
                                   fontWeight="bold"
