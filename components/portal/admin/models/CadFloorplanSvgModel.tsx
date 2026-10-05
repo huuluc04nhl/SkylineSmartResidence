@@ -61,52 +61,30 @@ export default function CadFloorplanSvgModel({
 
   return (
     <div className="relative bg-[#060B12] border border-[#1E293B] rounded-none overflow-hidden select-none shadow-2xl flex flex-col">
-      {/* Header */}
-      <div className="px-3.5 py-2 bg-[#0A101A] border-b border-[#1E293B] flex flex-wrap items-center justify-between gap-2 text-xs font-mono">
-        <div className="flex items-center gap-2">
-          <div className="flex items-center gap-1.5 px-2 py-0.5 bg-[#121C2B] border border-[#23354C] text-[#C5A880]">
-            <Layers className="w-3.5 h-3.5 text-[#C5A880]" />
-            <span className="font-bold tracking-wider uppercase text-[11px]">Sơ Đồ Mặt Bằng Tầng CAD Kỹ Thuật (Tự Vẽ 21 Căn)</span>
-          </div>
-          <span className="text-gray-400 text-[11px] hidden sm:inline">
-            Chung Cư {selectedBlock} • Tầng {selectedFloor} • Tỉ lệ 1:100
-          </span>
-        </div>
-
-        {/* Nút thu phóng */}
-        <div className="flex items-center gap-1.5">
+      {/* KHUNG VẼ MẶT BẰNG 21 CĂN HỘ SVG */}
+      <div className="relative w-full h-[480px] sm:h-[530px] bg-[#050C16] overflow-hidden flex items-center justify-center">
+        {/* Nút thu phóng nổi tinh gọn */}
+        <div className="absolute top-2.5 right-2.5 z-10 flex items-center gap-1 bg-[#0A101A]/85 backdrop-blur border border-[#1E293B] p-1 font-mono shadow-md">
           <button
             type="button"
             onClick={() => setZoomLevel(prev => Math.max(0.8, Number((prev - 0.2).toFixed(1))))}
-            className="px-2 py-0.5 bg-[#121A26] hover:bg-[#1A2637] border border-[#223247] text-gray-300 hover:text-white"
+            className="w-6 h-6 flex items-center justify-center bg-[#121A26] hover:bg-[#1A2637] border border-[#223247] text-gray-300 hover:text-white text-xs transition-all"
+            title="Thu nhỏ"
           >
             -
           </button>
-          <span className="px-2 py-0.5 bg-[#090D14] border border-[#223247] text-[#C5A880] text-[11px] min-w-[48px] text-center">
+          <span className="px-1.5 text-[#C5A880] text-[10.5px] font-bold min-w-[36px] text-center">
             {Math.round(zoomLevel * 100)}%
           </span>
           <button
             type="button"
             onClick={() => setZoomLevel(prev => Math.min(2.0, Number((prev + 0.2).toFixed(1))))}
-            className="px-2 py-0.5 bg-[#121A26] hover:bg-[#1A2637] border border-[#223247] text-gray-300 hover:text-white"
+            className="w-6 h-6 flex items-center justify-center bg-[#121A26] hover:bg-[#1A2637] border border-[#223247] text-gray-300 hover:text-white text-xs transition-all"
+            title="Phóng to"
           >
             +
           </button>
-          {onOpenZoomModal && (
-            <button
-              type="button"
-              onClick={onOpenZoomModal}
-              className="px-2.5 py-0.5 bg-[#C5A880] hover:bg-[#D4BC96] text-black font-bold flex items-center gap-1 ml-1"
-            >
-              <Maximize2 className="w-3 h-3" />
-              <span className="text-[10.5px]">Toàn Cảnh</span>
-            </button>
-          )}
         </div>
-      </div>
-
-      {/* KHUNG VẼ CAD BLUEPRINT SVG */}
-      <div className="relative w-full h-[480px] sm:h-[530px] bg-[#050C16] overflow-hidden flex items-center justify-center">
         {/* Lưới tọa độ CAD Blueprint Blueprint Grid */}
         <div 
           className="absolute inset-0 opacity-15 pointer-events-none"

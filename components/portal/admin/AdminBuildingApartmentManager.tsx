@@ -364,7 +364,7 @@ export default function AdminBuildingApartmentManager() {
   const [billToastMessage, setBillToastMessage] = useState<string | null>(null);
 
   // Điều khiển chế độ xem Bản đồ Quy hoạch Phân khu & Đô thị
-  const [masterPlanTab, setMasterPlanTab] = useState<'TROPICAL' | 'SURROUNDINGS' | 'CAD_FLOOR' | 'MACRO'>('TROPICAL');
+  const [masterPlanTab, setMasterPlanTab] = useState<'TROPICAL' | 'SURROUNDINGS' | 'MACRO'>('TROPICAL');
   const [isMasterPlanZoomed, setIsMasterPlanZoomed] = useState<boolean>(false);
   const [modalZoomScale, setModalZoomScale] = useState<number>(1);
   const [selectedAmenityCategory, setSelectedAmenityCategory] = useState<'ALL' | 'POOL' | 'PARK' | 'SPORT' | 'ACCESS'>('ALL');
@@ -2121,20 +2121,12 @@ export default function AdminBuildingApartmentManager() {
                   <div className="flex items-center gap-1.5">
                     <button
                       type="button"
-                      onClick={() => setFloorPlanViewMode(floorPlanViewMode === 'CAD_VECTOR' ? 'BLUEPRINT_IMAGE' : 'CAD_VECTOR')}
-                      className="px-2 py-0.5 bg-[#141E2D] hover:bg-[#1E2E42] text-[#C5A880] text-[10.5px] border border-[#23354C] transition-all"
-                      title="Chuyển đổi Bản vẽ CAD kiến trúc / Sơ đồ Vector"
-                    >
-                      {floorPlanViewMode === 'CAD_VECTOR' ? 'Bản Vẽ CAD' : 'Sơ Đồ Vector'}
-                    </button>
-                    <button
-                      type="button"
                       onClick={() => setIsFloorPlanExpanded(true)}
-                      className="px-2 py-0.5 bg-[#141E2D] hover:bg-[#C5A880] text-[#C5A880] hover:text-black text-[10.5px] border border-[#23354C] flex items-center gap-1 transition-all"
+                      className="px-2.5 py-1 bg-[#141E2D] hover:bg-[#C5A880] text-[#C5A880] hover:text-black text-xs border border-[#23354C] flex items-center gap-1.5 transition-all shadow"
                       title="Mở rộng mặt bằng toàn màn hình"
                     >
-                      <Maximize2 className="w-3 h-3" />
-                      <span className="hidden sm:inline">Phóng To</span>
+                      <Maximize2 className="w-3.5 h-3.5" />
+                      <span>Phóng To</span>
                     </button>
                   </div>
                 </div>
@@ -2867,7 +2859,7 @@ export default function AdminBuildingApartmentManager() {
                           : 'text-gray-400 hover:text-white'
                       }`}
                     >
-                      Bản Vẽ CAD Gốc
+                      Bản Vẽ Thiết Kế
                     </button>
                   </div>
 
@@ -3345,23 +3337,19 @@ export default function AdminBuildingApartmentManager() {
       {isMasterPlanZoomed && (() => {
         const planMeta = {
           TROPICAL: {
-            title: 'Mô Hình Quy Hoạch Tự Vẽ Phân Khu The Tropical (The Beverly Solari)',
-            desc: '4 Chung Cư BS-07, BS-08, BS-09, BS-10 & 18 Tiện Ích Kiến Trúc 2.5D Vector'
-          },
-          CAD_FLOOR: {
-            title: 'Sơ Đồ Mặt Bằng Tầng CAD Kỹ Thuật Tự Vẽ (21 Căn Hộ/Sàn)',
-            desc: 'Bản Vẽ Kiến Trúc Lõi Thang Máy, Thang Bộ Thoát Hiểm & 21 Căn Hộ Tương Tác'
+            title: 'Mô Hình Quy Hoạch Phân Khu The Tropical (The Beverly Solari)',
+            desc: '4 Chung Cư BS-07, BS-08, BS-09, BS-10 & 23 Tiện Ích Kiến Trúc Nội Khu'
           },
           MACRO: {
-            title: 'Mô Hình Quy Hoạch Đại Đô Thị 271 ha Tự Vẽ Vector',
+            title: 'Mô Hình Quy Hoạch Đại Đô Thị 271 ha',
             desc: 'Vị Trí Phân Khu The Beverly Solari, Vincom Mega Mall, Công Viên 36ha & Vành Đai 3'
           },
           SURROUNDINGS: {
-            title: 'Bản Đồ Radar Tiện Ích Đô Thị & Khu Dân Cư Tự Vẽ Vector',
+            title: 'Bản Đồ Radar Tiện Ích Đô Thị & Khu Dân Cư',
             desc: 'Mạng Lưới Tiện Ích Giáo Dục, Y Tế, Mua Sắm & Giao Thông Xung Quanh Dự Án'
           }
         }[masterPlanTab] || {
-          title: 'Mô Hình Quy Hoạch Tự Vẽ',
+          title: 'Mô Hình Quy Hoạch',
           desc: ''
         };
 
@@ -3383,7 +3371,7 @@ export default function AdminBuildingApartmentManager() {
 
               {/* Chuyển tab trực tiếp trong modal */}
               <div className="flex items-center bg-[#141E2B] p-0.5 border border-[#233345] text-xs font-mono">
-                {(['TROPICAL', 'SURROUNDINGS', 'CAD_FLOOR', 'MACRO'] as const).map((tab) => (
+                {(['TROPICAL', 'SURROUNDINGS', 'MACRO'] as const).map((tab) => (
                   <button
                     key={tab}
                     type="button"
@@ -3397,7 +3385,7 @@ export default function AdminBuildingApartmentManager() {
                         : 'text-gray-400 hover:text-white'
                     }`}
                   >
-                    {tab === 'TROPICAL' ? 'The Tropical (Nội Khu)' : tab === 'SURROUNDINGS' ? 'Tiện Ích Xung Quanh' : tab === 'CAD_FLOOR' ? 'Mặt Bằng CAD' : 'Đại Đô Thị'}
+                    {tab === 'TROPICAL' ? 'The Tropical (Nội Khu)' : tab === 'SURROUNDINGS' ? 'Tiện Ích Xung Quanh' : 'Đại Đô Thị'}
                   </button>
                 ))}
               </div>
@@ -3476,15 +3464,6 @@ export default function AdminBuildingApartmentManager() {
                     onSelectAmenity={setSelectedAmenityId}
                     hoveredAmenityId={hoveredAmenityId}
                     onHoverAmenity={setHoveredAmenityId}
-                  />
-                )}
-                {masterPlanTab === 'CAD_FLOOR' && (
-                  <CadFloorplanSvgModel
-                    selectedFloor={selectedFloor}
-                    selectedBlock={selectedBlock}
-                    activeUnitCode={activeUnit?.code}
-                    onSelectUnit={(u) => handleSelectApartment(u)}
-                    unitsOnFloor={displayUnits.filter(u => u.floor === selectedFloor)}
                   />
                 )}
                 {masterPlanTab === 'MACRO' && (
