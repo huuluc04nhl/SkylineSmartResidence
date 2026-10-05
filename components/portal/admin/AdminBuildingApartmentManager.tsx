@@ -21,6 +21,7 @@ import {
   Eye, 
   ChevronRight, 
   ChevronLeft,
+  ChevronUp,
   Sparkles, 
   Building, 
   Building2,
@@ -341,6 +342,52 @@ export function getApartmentFinancialMetrics(unit: ApartmentUnit | null) {
   };
 }
 
+// Cấu hình chi tiết các phân khu chức năng Tầng Sảnh (Lobby / G)
+const LOBBY_ZONES_DETAIL: Record<string, { title: string; status: string; desc: string; staff: string; hotline: string }> = {
+  RECEPTION: {
+    title: 'Quầy Đại Lễ Tân & Concierge 24/7',
+    status: 'Trực 24/7',
+    desc: 'Đón tiếp cư dân, hướng dẫn khách đến thăm, tiếp nhận bàn giao bưu phẩm và điều phối các yêu cầu hỗ trợ khẩn cấp.',
+    staff: '2 Lễ tân chuyên nghiệp',
+    hotline: '028.7300.8888 (Nhánh 1)'
+  },
+  BQL_OFFICE: {
+    title: 'Văn Phòng Ban Quản Lý (BQL)',
+    status: '08:00 - 17:30 (T2 - T7)',
+    desc: 'Tiếp nhận ý kiến cư dân, cấp thẻ ra vào, đăng ký gửi xe hầm B1-B2, hỗ trợ thủ tục bàn giao căn hộ và hồ sơ thi công.',
+    staff: 'Trưởng ban & 3 Chuyên viên BQL',
+    hotline: '028.7300.8888 (Nhánh 2)'
+  },
+  ELEVATOR_LOBBY: {
+    title: 'Sảnh Chờ 6 Thang Máy & Cổng FaceID',
+    status: 'Hoạt động liên tục',
+    desc: 'Hệ thống kiểm soát an ninh AI thông minh nhận diện khuôn mặt tự động gọi tầng thang máy cho cư dân, 6 thang khách tốc độ cao 3.5m/s.',
+    staff: 'Hệ thống AI tự động',
+    hotline: 'Kỹ Thuật Thang: 1900.6368'
+  },
+  LOUNGE: {
+    title: 'Resident Lounge Tiếp Khách Sang Trọng',
+    status: '06:00 - 22:30',
+    desc: 'Không gian tiếp khách sang trọng chuẩn resort nhiệt đới, trang bị điều hòa trung tâm, wifi tốc độ cao và bàn ghế thư giãn.',
+    staff: 'Nhân viên sảnh phục vụ',
+    hotline: '028.7300.8888 (Nhánh 3)'
+  },
+  MAIL_LOCKER: {
+    title: 'Phòng Hòm Thư & Tủ Smart Locker',
+    status: 'Mở cửa 24/7',
+    desc: 'Hòm thư bưu điện riêng cho từng căn hộ (T1 đến T34) và hệ thống tủ gửi đồ thông minh mở bằng mã QR hoặc mã OTP.',
+    staff: 'Tự phục vụ bằng mã số',
+    hotline: 'Hỗ trợ Locker: 1900.2244'
+  },
+  DROP_OFF: {
+    title: 'Ram Dốc Lối Xuống Hầm Xe B1 - B2',
+    status: 'Thông suốt 24/7',
+    desc: 'Lối ram dốc 2 chiều rộng 7m dẫn xuống hầm B1 (xe máy & sạc xe điện) và hầm B2 (ô tô), barrier tự động nhận diện biển số.',
+    staff: '2 Nhân viên điều phối giao thông',
+    hotline: 'Đội An Ninh Hầm: Nhánh 4'
+  }
+};
+
 export default function AdminBuildingApartmentManager() {
   // 1. Quản lý danh sách căn hộ thực tế từ apartmentStore & NKS API
   const [apartments, setApartments] = useState<ApartmentUnit[]>([]);
@@ -354,6 +401,7 @@ export default function AdminBuildingApartmentManager() {
 
   // Điều khiển Floor Plan View (Mặt Bằng Tầng & Chế độ Mở Rộng) - Mặc định tầng 30 của chủ hộ
   const [selectedFloor, setSelectedFloor] = useState<number>(30);
+  const [selectedLobbyZone, setSelectedLobbyZone] = useState<string>('RECEPTION');
   const [hoveredUnitCode, setHoveredUnitCode] = useState<string | null>(null);
   const [hoveredFloor, setHoveredFloor] = useState<number | null>(null);
   const [buildingTheme, setBuildingTheme] = useState<'NIGHT' | 'DAY'>('NIGHT');
@@ -498,12 +546,14 @@ export default function AdminBuildingApartmentManager() {
 
   // Điều hướng và chọn tầng thông minh - Đồng bộ 100% dữ liệu mặt bằng, số căn và hồ sơ căn hộ
   const handleSelectFloor = useCallback((targetFloor: number) => {
-    const safeFloor = Math.max(1, Math.min(currentTotalFloors, targetFloor));
+    const safeFloor = Math.max(0, Math.min(currentTotalFloors, targetFloor));
     setSelectedFloor(safeFloor);
-    // Chuyển mã căn hộ sang tầng mới tương ứng theo đúng vị trí
-    const baseCode = selectedAptCode?.includes('-') ? selectedAptCode.split('-').pop() : (selectedAptCode || 'CH-06');
-    const newTargetCode = (safeFloor === 30 && selectedBlock === 'BS-07') ? (baseCode || 'CH-06') : `${safeFloor}-${baseCode || 'CH-06'}`;
-    setSelectedAptCode(newTargetCode);
+    if (safeFloor >= 1) {
+      // Chuyển mã căn hộ sang tầng mới tương ứng theo đúng vị trí
+      const baseCode = selectedAptCode?.includes('-') ? selectedAptCode.split('-').pop() : (selectedAptCode || 'CH-06');
+      const newTargetCode = (safeFloor === 30 && selectedBlock === 'BS-07') ? (baseCode || 'CH-06') : `${safeFloor}-${baseCode || 'CH-06'}`;
+      setSelectedAptCode(newTargetCode);
+    }
   }, [currentTotalFloors, selectedAptCode, selectedBlock]);
 
   const handleSelectBlockAndShowFloors = (blockCode: any) => {
@@ -881,7 +931,7 @@ export default function AdminBuildingApartmentManager() {
                     ? 'bg-black/20 text-black' 
                     : 'text-amber-300'
                 }`}>
-                  {selectedBlock} • T{selectedFloor}
+                  {selectedBlock} • {selectedFloor === 0 ? 'Sảnh (G)' : `T${selectedFloor}`}
                 </span>
               </button>
 
@@ -919,7 +969,7 @@ export default function AdminBuildingApartmentManager() {
                 <div className="flex items-center gap-2">
                   <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 bg-[#141E2B] border border-[#233345] text-[11px] font-mono shrink-0">
                     <span className="text-gray-400">Đang chiếu:</span>
-                    <strong className="text-amber-300">Tầng {selectedFloor}</strong>
+                    <strong className="text-amber-300">{selectedFloor === 0 ? "Tầng Sảnh (G)" : `Tầng ${selectedFloor}`}</strong>
                     <span className="text-gray-600">•</span>
                     <strong className="text-[#C5A880]">Căn {selectedAptCode}</strong>
                   </div>
@@ -1155,6 +1205,48 @@ export default function AdminBuildingApartmentManager() {
 
                       {/* THƯỚC ĐO CAO ĐỘ CÁC TẦNG BÊN TRÁI (LEVEL RULER) */}
                       <g className="font-mono text-[9.5px]">
+                        {/* VẠCH TẦNG SẢNH (G) */}
+                        {(() => {
+                          const yPos = 845;
+                          const isFloorSelected = selectedFloor === 0;
+                          const rulerColor = isFloorSelected ? '#C5A880' : '#38BDF8';
+                          const rulerTextColor = isFloorSelected ? '#E6CA9E' : '#7DD3FC';
+                          const rulerBg = isFloorSelected ? '#2A2015' : '#082F49';
+                          const rulerBorder = isFloorSelected ? '#C5A880' : '#0369A1';
+                          return (
+                            <g
+                              key="level-ruler-lobby"
+                              onClick={() => handleSelectFloor(0)}
+                              onMouseEnter={() => setHoveredFloor(0)}
+                              onMouseLeave={() => setHoveredFloor(null)}
+                              className="cursor-pointer group"
+                            >
+                              <line 
+                                x1="88" 
+                                y1={yPos} 
+                                x2="218" 
+                                y2={yPos} 
+                                stroke={rulerColor} 
+                                strokeWidth={isFloorSelected ? 2 : 1.2} 
+                              />
+                              <circle cx="218" cy={yPos} r={isFloorSelected ? 4 : 3} fill={rulerColor} />
+                              <rect
+                                x="18"
+                                y={yPos - 9}
+                                width="68"
+                                height="18"
+                                rx="3"
+                                fill={rulerBg}
+                                stroke={rulerBorder}
+                                strokeWidth={isFloorSelected ? 1.6 : 1}
+                                className="group-hover:stroke-cyan-300 transition-all"
+                              />
+                              <text x="52" y={yPos + 3.8} fill={rulerTextColor} fontWeight="bold" textAnchor="middle">
+                                SẢNH (G)
+                              </text>
+                            </g>
+                          );
+                        })()}
                         {rulerLevels.map(fl => {
                           const yBase = 790 - (fl - 1) * floorStep;
                           const yPos = Number((yBase - 30).toFixed(1));
@@ -1225,7 +1317,7 @@ export default function AdminBuildingApartmentManager() {
                         <line x1="590" y1="68" x2="590" y2="763" stroke={curTone.mullionColor} strokeWidth="0.8" opacity="0.35" />
 
                         {/* RENDER CÁC TẦNG CĂN HỘ (TẦNG 2 ĐẾN TẦNG MAX) */}
-                        {floorStatsList.filter(item => item.floor >= 2).map(item => {
+                        {floorStatsList.filter(item => item.floor >= 1).map(item => {
                           const fl = item.floor;
                           const isSelected = selectedFloor === fl;
                           const isHovered = hoveredFloor === fl;
@@ -1428,13 +1520,13 @@ export default function AdminBuildingApartmentManager() {
                           </text>
                         </g>
 
-                        {/* 4. ĐẠI SẢNH ĐÓN TIẾP TÂN (TẦNG 1) - TƯƠNG XỨNG VỚI TÒA NHÀ & NẰM VỮNG CHÃI Ở ĐẾ */}
+                        {/* 4. ĐẠI SẢNH CHÀO ĐÓN & DỊCH VỤ BQL (TẦNG SẢNH / G) */}
                         <g 
                           id="grand-lobby-podium"
                           onClick={() => {
-                            handleSelectFloor(1);
+                            handleSelectFloor(0);
                           }}
-                          onMouseEnter={() => setHoveredFloor(1)}
+                          onMouseEnter={() => setHoveredFloor(0)}
                           onMouseLeave={() => setHoveredFloor(null)}
                           className="cursor-pointer group"
                         >
@@ -1449,33 +1541,33 @@ export default function AdminBuildingApartmentManager() {
                           {/* Mặt kính sảnh trái */}
                           <polygon 
                             points="200,747 440,790 440,865 200,822" 
-                            fill={selectedFloor === 1 ? '#C5A880' : 'url(#skylineGlassL)'} 
-                            fillOpacity={selectedFloor === 1 ? 0.95 : 0.88}
-                            stroke={selectedFloor === 1 ? '#FFFFFF' : curTone.borderBuilding} 
-                            strokeWidth={selectedFloor === 1 ? 2.2 : 1.6} 
+                            fill={selectedFloor === 0 ? '#C5A880' : 'url(#skylineGlassL)'} 
+                            fillOpacity={selectedFloor === 0 ? 0.95 : 0.88}
+                            stroke={selectedFloor === 0 ? '#FFFFFF' : curTone.borderBuilding} 
+                            strokeWidth={selectedFloor === 0 ? 2.2 : 1.6} 
                           />
 
                           {/* Mặt kính sảnh phải */}
                           <polygon 
                             points="440,790 680,747 680,822 440,865" 
-                            fill={selectedFloor === 1 ? '#D8BC94' : 'url(#skylineGlassR)'} 
-                            fillOpacity={selectedFloor === 1 ? 0.95 : 0.88}
-                            stroke={selectedFloor === 1 ? '#FFFFFF' : curTone.borderBuilding} 
-                            strokeWidth={selectedFloor === 1 ? 2.2 : 1.6} 
+                            fill={selectedFloor === 0 ? '#D8BC94' : 'url(#skylineGlassR)'} 
+                            fillOpacity={selectedFloor === 0 ? 0.95 : 0.88}
+                            stroke={selectedFloor === 0 ? '#FFFFFF' : curTone.borderBuilding} 
+                            strokeWidth={selectedFloor === 0 ? 2.2 : 1.6} 
                           />
 
                           {/* Ánh sáng vàng tiếp tân ấm cúng */}
                           <polygon 
                             points="220,760 440,798 440,858 220,822" 
                             fill="#F59E0B" 
-                            fillOpacity={selectedFloor === 1 ? 0.35 : 0.18} 
+                            fillOpacity={selectedFloor === 0 ? 0.35 : 0.18} 
                             stroke="#FDE68A" 
                             strokeWidth="0.8" 
                           />
                           <polygon 
                             points="440,798 660,760 660,822 440,858" 
                             fill="#F59E0B" 
-                            fillOpacity={selectedFloor === 1 ? 0.35 : 0.18} 
+                            fillOpacity={selectedFloor === 0 ? 0.35 : 0.18} 
                             stroke="#FDE68A" 
                             strokeWidth="0.8" 
                           />
@@ -1497,32 +1589,32 @@ export default function AdminBuildingApartmentManager() {
                           <text 
                             x="440" 
                             y="845" 
-                            fill={selectedFloor === 1 ? '#0D1117' : '#FFFFFF'} 
+                            fill={selectedFloor === 0 ? '#0D1117' : '#FFFFFF'} 
                             fontSize="9.5" 
                             fontFamily="sans-serif" 
                             textAnchor="middle" 
                             fontWeight="900" 
                             letterSpacing="0.06em"
                           >
-                            ĐẠI SẢNH ĐÓN TIẾP TÂN & DỊCH VỤ CƯ DÂN (TẦNG 1)
+                            🏛️ ĐẠI SẢNH CHÀO ĐÓN & DỊCH VỤ CƯ DÂN (TẦNG SẢNH / G)
                           </text>
                           <text 
                             x="440" 
                             y="860" 
-                            fill={selectedFloor === 1 ? '#1E293B' : '#CBD5E1'} 
+                            fill={selectedFloor === 0 ? '#1E293B' : '#CBD5E1'} 
                             fontSize="8" 
                             fontFamily="monospace" 
                             textAnchor="middle"
                           >
-                            Lễ Tân 24/7 • Ban Quản Lý • Hầm B1 - B2
+                            Lễ Tân 24/7 • Ban Quản Lý • Sảnh Thang Máy • Hầm B1 - B2
                           </text>
 
-                          {selectedFloor === 1 && (
+                          {selectedFloor === 0 && (
                             <g className="pointer-events-none">
                               <rect
-                                x="406"
+                                x="385"
                                 y="868"
-                                width="68"
+                                width="110"
                                 height="18"
                                 rx="3"
                                 fill="#C5A880"
@@ -1534,12 +1626,12 @@ export default function AdminBuildingApartmentManager() {
                                 x="440"
                                 y="881"
                                 fill="#0D1117"
-                                fontSize="10"
+                                fontSize="9.5"
                                 fontWeight="900"
                                 textAnchor="middle"
                                 fontFamily="monospace"
                               >
-                                TẦNG 1 (SẢNH)
+                                TẦNG SẢNH (G)
                               </text>
                             </g>
                           )}
@@ -1744,7 +1836,7 @@ export default function AdminBuildingApartmentManager() {
                     <span className="text-gray-400">TÒA {selectedBlock}:</span>
                     <span className="text-[#C5A880] font-bold">{currentTotalFloors} TẦNG</span>
                     <span className="text-gray-500">|</span>
-                    <span className="text-gray-300">Đang chọn: <strong className="text-white bg-[#142030] px-1.5 py-0.5 border border-[#23354C]">TẦNG {selectedFloor}</strong></span>
+                    <span className="text-gray-300">Đang chọn: <strong className="text-white bg-[#142030] px-1.5 py-0.5 border border-[#23354C]">TẦNG {selectedFloor === 0 ? "SẢNH (G)" : selectedFloor}</strong></span>
                   </div>
                   <div className="flex items-center gap-1.5 text-[11px] text-gray-400">
                     <span className="w-2 h-2 rounded-full bg-[#C5A880] animate-pulse" />
@@ -2165,37 +2257,371 @@ export default function AdminBuildingApartmentManager() {
             );
           })() : (buildingPerspective === 'BUILDING_3D_FLOOR' || buildingPerspective === '3D' || buildingPerspective === 'BUILDING_ELEVATION' || buildingPerspective === 'FLOOR_PLAN') ? (
             /* ========================================================================= */
-            /* MẶT BẰNG TẦNG TƯƠNG ỨNG CỦA TẦNG ĐANG CHỌN (HIỂN THỊ BÊN PHẢI THEO YÊU CẦU) */
+            /* PHÂN ĐỊNH RÕ RÀNG: TẦNG SẢNH (G) vs TẦNG CĂN HỘ (TẦNG 1 ĐẾN 34/39)         */
             /* ========================================================================= */
-            <div className="flex flex-col h-full justify-between select-none">
-              <div className="space-y-3 overflow-y-auto pr-1 no-scrollbar flex-1">
-                
-                {/* THANH TIÊU ĐỀ MẶT BẰNG TẦNG (ĐÃ BỎ TAB HỒ SƠ CĂN) */}
-                <div className="flex items-center justify-between border-b border-[#222B35] pb-2 text-xs font-mono">
-                  <div className="flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-[#C5A880]" />
-                    <span className="text-white font-bold text-sm tracking-wide">
-                      MẶT BẰNG TẦNG {selectedFloor}
-                    </span>
-                    <span className="text-gray-500">•</span>
-                    <span className="text-[#C5A880] font-bold">{selectedBlock}</span>
-                    <span className="text-[10.5px] px-2 py-0.5 bg-[#162232] border border-[#23354C] text-[#C5A880] hidden sm:inline">
-                      21 Căn Hộ CAD
-                    </span>
+            selectedFloor === 0 ? (
+              /* TRƯỜNG HỢP A: TẦNG SẢNH CHÀO ĐÓN (LOBBY / G) - TIỆN ÍCH DỊCH VỤ & BQL (KHÔNG CÓ CĂN HỘ) */
+              <div className="flex flex-col h-full justify-between select-none">
+                <div className="space-y-3 overflow-y-auto pr-1 no-scrollbar flex-1">
+                  
+                  {/* TIÊU ĐỀ TẦNG SẢNH */}
+                  <div className="flex items-center justify-between border-b border-[#222B35] pb-2 text-xs font-mono">
+                    <div className="flex items-center gap-2">
+                      <span className="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-pulse" />
+                      <span className="text-white font-bold text-sm tracking-wide">
+                        MẶT BẰNG ĐẠI SẢNH CHÀO ĐÓN (TẦNG G)
+                      </span>
+                      <span className="text-gray-500">•</span>
+                      <span className="text-[#C5A880] font-bold">{selectedBlock}</span>
+                      <span className="text-[10px] px-2 py-0.5 bg-blue-950 border border-blue-500 text-blue-300 font-bold uppercase hidden sm:inline">
+                        TIỆN ÍCH & BQL (KHÔNG CÓ CĂN HỘ)
+                      </span>
+                    </div>
+
+                    <div className="flex items-center gap-1.5">
+                      <button
+                        type="button"
+                        onClick={() => handleSelectFloor(1)}
+                        className="px-2.5 py-1 bg-[#141E2D] hover:bg-[#C5A880] text-[#C5A880] hover:text-black text-xs border border-[#23354C] flex items-center gap-1.5 transition-all shadow"
+                        title="Lên Tầng 1 xem mặt bằng căn hộ"
+                      >
+                        <ChevronUp className="w-3.5 h-3.5" />
+                        <span>Lên Tầng 1 (Căn Hộ) ➔</span>
+                      </button>
+                    </div>
                   </div>
 
-                  <div className="flex items-center gap-1.5">
-                    <button
-                      type="button"
-                      onClick={() => setIsFloorPlanExpanded(true)}
-                      className="px-2.5 py-1 bg-[#141E2D] hover:bg-[#C5A880] text-[#C5A880] hover:text-black text-xs border border-[#23354C] flex items-center gap-1.5 transition-all shadow"
-                      title="Mở rộng mặt bằng toàn màn hình"
-                    >
-                      <Maximize2 className="w-3.5 h-3.5" />
-                      <span className="hidden sm:inline">Phóng To Mặt Bằng</span>
-                    </button>
+                  {/* 4 THẺ THỐNG KÊ VẬN HÀNH TẦNG SẢNH */}
+                  <div className="grid grid-cols-4 gap-1.5 p-2 bg-[#121820] border border-[#222B35] text-center font-mono">
+                    <div className="p-1 bg-[#161B22]">
+                      <div className="text-[9.5px] text-gray-400">Diện Tích Sảnh</div>
+                      <div className="text-xs font-bold text-white mt-0.5">850 m²</div>
+                    </div>
+                    <div className="p-1 bg-[#161B22] border-b-2 border-emerald-500">
+                      <div className="text-[9.5px] text-gray-400">Lễ Tân & BQL</div>
+                      <div className="text-xs font-bold text-emerald-400 mt-0.5">Trực 24/7</div>
+                    </div>
+                    <div className="p-1 bg-[#161B22] border-b-2 border-sky-500">
+                      <div className="text-[9.5px] text-gray-400">An Ninh Sảnh</div>
+                      <div className="text-xs font-bold text-sky-400 mt-0.5">12 Camera AI</div>
+                    </div>
+                    <div className="p-1 bg-[#161B22] border-b-2 border-amber-500">
+                      <div className="text-[9.5px] text-gray-400">Lõi Thang Máy</div>
+                      <div className="text-xs font-bold text-amber-300 mt-0.5">6 Thang FaceID</div>
+                    </div>
                   </div>
+
+                  {/* SƠ ĐỒ MẶT BẰNG KIẾN TRÚC TẦNG SẢNH CAD SVG */}
+                  <div className="border border-[#1E293B] bg-[#05080E] p-2 relative overflow-hidden">
+                    <svg viewBox="0 0 800 420" className="w-full h-auto select-none font-mono">
+                      <defs>
+                        <pattern id="lobbyCadGrid" width="20" height="20" patternUnits="userSpaceOnUse">
+                          <path d="M 20 0 L 0 0 0 20" fill="none" stroke="#131D2A" strokeWidth="0.6" />
+                        </pattern>
+                      </defs>
+                      <rect width="800" height="420" fill="#070B12" />
+                      <rect width="800" height="420" fill="url(#lobbyCadGrid)" opacity="0.6" />
+
+                      {/* Tường bao chu vi đại sảnh */}
+                      <rect x="30" y="30" width="740" height="360" fill="none" stroke="#334155" strokeWidth="3" />
+                      <rect x="35" y="35" width="730" height="350" fill="#0B1320" fillOpacity="0.85" />
+
+                      {/* 1. DROP-OFF & LỐI VÀO CHÍNH CÓ MÁI CHE */}
+                      <rect x="280" y="360" width="240" height="30" fill="#162234" stroke="#C5A880" strokeWidth="1.5" strokeDasharray="4 2" />
+                      <text x="400" y="380" fill="#E2E8F0" fontSize="10" fontWeight="bold" textAnchor="middle">▼ LỐI VÀO SẢNH ĐÓN CHÍNH (DROP-OFF CANOPY) ▼</text>
+
+                      {/* Cửa xoay tự động */}
+                      <circle cx="400" cy="355" r="14" fill="#1E293B" stroke="#C5A880" strokeWidth="1.5" />
+                      <line x1="400" y1="341" x2="400" y2="369" stroke="#C5A880" strokeWidth="1.5" />
+                      <line x1="386" y1="355" x2="414" y2="355" stroke="#C5A880" strokeWidth="1.5" />
+
+                      {/* 2. QUẦY ĐẠI LỄ TÂN & CONCIERGE 24/7 */}
+                      <g
+                        onClick={() => setSelectedLobbyZone('RECEPTION')}
+                        className="cursor-pointer group"
+                      >
+                        <rect 
+                          x="300" 
+                          y="245" 
+                          width="200" 
+                          height="65" 
+                          rx="6"
+                          fill={selectedLobbyZone === 'RECEPTION' ? '#2A2314' : '#141C26'} 
+                          stroke={selectedLobbyZone === 'RECEPTION' ? '#C5A880' : '#2D3E54'} 
+                          strokeWidth={selectedLobbyZone === 'RECEPTION' ? 2 : 1.2} 
+                        />
+                        <path d="M 330 268 Q 400 252 470 268" fill="none" stroke="#C5A880" strokeWidth="3" />
+                        <text x="400" y="285" fill={selectedLobbyZone === 'RECEPTION' ? '#FDE68A' : '#FFFFFF'} fontSize="11" fontWeight="bold" textAnchor="middle">
+                          QUẦY ĐẠI LỄ TÂN & CONCIERGE
+                        </text>
+                        <text x="400" y="300" fill="#94A3B8" fontSize="8.5" textAnchor="middle">
+                          Trực Tiếp Đón Khách 24/7 • Bàn Tròn VIP
+                        </text>
+                      </g>
+
+                      {/* 3. LÕI 6 THANG MÁY CƯ DÂN & CỔNG FACEID */}
+                      <g
+                        onClick={() => setSelectedLobbyZone('ELEVATOR_LOBBY')}
+                        className="cursor-pointer group"
+                      >
+                        <rect 
+                          x="260" 
+                          y="50" 
+                          width="280" 
+                          height="150" 
+                          rx="4"
+                          fill={selectedLobbyZone === 'ELEVATOR_LOBBY' ? '#0E241E' : '#0F1A24'} 
+                          stroke={selectedLobbyZone === 'ELEVATOR_LOBBY' ? '#34D399' : '#1E3A34'} 
+                          strokeWidth={selectedLobbyZone === 'ELEVATOR_LOBBY' ? 2 : 1.2} 
+                        />
+                        <text x="400" y="75" fill="#34D399" fontSize="11" fontWeight="bold" textAnchor="middle">
+                          LÕI 6 THANG MÁY CƯ DÂN (TỐC ĐỘ CAO 3.5m/s)
+                        </text>
+
+                        {[0, 1, 2].map(i => (
+                          <rect key={`elev-l-${i}`} x={280 + i * 42} y="90" width="34" height="42" fill="#162232" stroke="#38BDF8" strokeWidth="1" />
+                        ))}
+                        {[0, 1, 2].map(i => (
+                          <rect key={`elev-r-${i}`} x={425 + i * 42} y="90" width="34" height="42" fill="#162232" stroke="#38BDF8" strokeWidth="1" />
+                        ))}
+                        <text x="330" y="115" fill="#E2E8F0" fontSize="8.5" textAnchor="middle">THANG 1-3</text>
+                        <text x="475" y="115" fill="#E2E8F0" fontSize="8.5" textAnchor="middle">THANG 4-6</text>
+
+                        {/* Cổng Flap Barrier FaceID */}
+                        <line x1="280" y1="165" x2="520" y2="165" stroke="#34D399" strokeWidth="2" strokeDasharray="6 3" />
+                        <text x="400" y="185" fill="#6EE7B7" fontSize="9" textAnchor="middle">
+                          [ CỔNG KIỂM SOÁT AN NINH FACEID AI & FLAP BARRIER ]
+                        </text>
+                      </g>
+
+                      {/* 4. VĂN PHÒNG BAN QUẢN LÝ (BQL) */}
+                      <g
+                        onClick={() => setSelectedLobbyZone('BQL_OFFICE')}
+                        className="cursor-pointer group"
+                      >
+                        <rect 
+                          x="50" 
+                          y="220" 
+                          width="210" 
+                          height="150" 
+                          rx="4"
+                          fill={selectedLobbyZone === 'BQL_OFFICE' ? '#0F2338' : '#0B1622'} 
+                          stroke={selectedLobbyZone === 'BQL_OFFICE' ? '#38BDF8' : '#1D334C'} 
+                          strokeWidth={selectedLobbyZone === 'BQL_OFFICE' ? 2 : 1.2} 
+                        />
+                        <text x="155" y="245" fill="#38BDF8" fontSize="11" fontWeight="bold" textAnchor="middle">
+                          VĂN PHÒNG BAN QUẢN LÝ (BQL)
+                        </text>
+                        <text x="155" y="265" fill="#E2E8F0" fontSize="9" textAnchor="middle">
+                          Phòng Tiếp Dân & Thủ Tục Cư Trú
+                        </text>
+                        <rect x="70" y="280" width="80" height="35" fill="#142436" stroke="#2563EB" strokeWidth="0.8" />
+                        <text x="110" y="302" fill="#93C5FD" fontSize="8.5" textAnchor="middle">Bàn BQL</text>
+                        <rect x="160" y="280" width="80" height="35" fill="#142436" stroke="#2563EB" strokeWidth="0.8" />
+                        <text x="200" y="302" fill="#93C5FD" fontSize="8.5" textAnchor="middle">Bàn Kỹ Thuật</text>
+                        <text x="155" y="350" fill="#94A3B8" fontSize="8.5" textAnchor="middle">
+                          Giờ làm việc: 08h00 - 17h30 (T2-T7)
+                        </text>
+                      </g>
+
+                      {/* 5. RESIDENT LOUNGE */}
+                      <g
+                        onClick={() => setSelectedLobbyZone('LOUNGE')}
+                        className="cursor-pointer group"
+                      >
+                        <rect 
+                          x="50" 
+                          y="50" 
+                          width="190" 
+                          height="150" 
+                          rx="4"
+                          fill={selectedLobbyZone === 'LOUNGE' ? '#2A2012' : '#14141E'} 
+                          stroke={selectedLobbyZone === 'LOUNGE' ? '#FBBF24' : '#2D2938'} 
+                          strokeWidth={selectedLobbyZone === 'LOUNGE' ? 2 : 1.2} 
+                        />
+                        <text x="145" y="75" fill="#FBBF24" fontSize="11" fontWeight="bold" textAnchor="middle">
+                          RESIDENT LOUNGE RESORT
+                        </text>
+                        <text x="145" y="95" fill="#E2E8F0" fontSize="9" textAnchor="middle">
+                          Sảnh Tiếp Khách Cư Dân 5★
+                        </text>
+                        <rect x="80" y="115" width="130" height="50" rx="4" fill="#201C2B" stroke="#D97706" strokeWidth="0.8" />
+                        <text x="145" y="145" fill="#FDE68A" fontSize="9" textAnchor="middle">Sofa Thư Giãn • Máy Pha Cà Phê</text>
+                      </g>
+
+                      {/* 6. HÒM THƯ CƯ DÂN & SMART LOCKER */}
+                      <g
+                        onClick={() => setSelectedLobbyZone('MAIL_LOCKER')}
+                        className="cursor-pointer group"
+                      >
+                        <rect 
+                          x="560" 
+                          y="50" 
+                          width="190" 
+                          height="150" 
+                          rx="4"
+                          fill={selectedLobbyZone === 'MAIL_LOCKER' ? '#1C162A' : '#12101C'} 
+                          stroke={selectedLobbyZone === 'MAIL_LOCKER' ? '#A78BFA' : '#2D2444'} 
+                          strokeWidth={selectedLobbyZone === 'MAIL_LOCKER' ? 2 : 1.2} 
+                        />
+                        <text x="655" y="75" fill="#A78BFA" fontSize="11" fontWeight="bold" textAnchor="middle">
+                          HÒM THƯ & SMART LOCKER
+                        </text>
+                        <text x="655" y="95" fill="#E2E8F0" fontSize="9" textAnchor="middle">
+                          Giao Nhận Bưu Kiện Tự Động 24/7
+                        </text>
+                        <rect x="580" y="115" width="150" height="50" fill="#1C182E" stroke="#8B5CF6" strokeWidth="0.8" />
+                        <text x="655" y="135" fill="#DDD6FE" fontSize="8.5" textAnchor="middle">Tủ Locker Thông Minh (Mở QR/OTP)</text>
+                        <text x="655" y="152" fill="#94A3B8" fontSize="8" textAnchor="middle">Hòm Thư Từng Căn T1 - T34</text>
+                      </g>
+
+                      {/* 7. RAM DỐC HẦM XE B1 - B2 */}
+                      <g
+                        onClick={() => setSelectedLobbyZone('DROP_OFF')}
+                        className="cursor-pointer group"
+                      >
+                        <rect 
+                          x="560" 
+                          y="220" 
+                          width="190" 
+                          height="150" 
+                          rx="4"
+                          fill={selectedLobbyZone === 'DROP_OFF' ? '#2A1420' : '#1A0E18'} 
+                          stroke={selectedLobbyZone === 'DROP_OFF' ? '#F472B6' : '#3E1E34'} 
+                          strokeWidth={selectedLobbyZone === 'DROP_OFF' ? 2 : 1.2} 
+                        />
+                        <text x="655" y="245" fill="#F472B6" fontSize="11" fontWeight="bold" textAnchor="middle">
+                          RAM DỐC HẦM XE B1 - B2
+                        </text>
+                        <text x="655" y="265" fill="#E2E8F0" fontSize="9" textAnchor="middle">
+                          Lối Xe Ô Tô & Xe Máy Xuống Hầm
+                        </text>
+                        <rect x="585" y="280" width="140" height="40" fill="#261022" stroke="#E11D48" strokeWidth="0.8" strokeDasharray="3 2" />
+                        <text x="655" y="305" fill="#FDA4AF" fontSize="9" textAnchor="middle">▼ RAM DỐC B1 - B2 ▼</text>
+                        <text x="655" y="350" fill="#94A3B8" fontSize="8.5" textAnchor="middle">
+                          Kiểm soát Barrier tự động biển số
+                        </text>
+                      </g>
+                    </svg>
+                  </div>
+
+                  {/* DANH SÁCH 6 KHU VỰC CHỨC NĂNG TẦNG SẢNH */}
+                  <div className="space-y-1.5 pt-1">
+                    <div className="flex items-center justify-between text-[11px] font-mono text-gray-400">
+                      <span>PHÂN KHU CHỨC NĂNG ĐẠI SẢNH (TẦNG G):</span>
+                      <span className="text-[#C5A880] text-[10.5px]">Bấm vào khu vực để xem chi tiết</span>
+                    </div>
+                    <div className="grid grid-cols-3 gap-1.5 text-xs font-mono">
+                      {[
+                        { id: 'RECEPTION', name: 'Quầy Lễ Tân 24/7', tag: 'Tiếp đón', color: 'border-[#C5A880] text-[#C5A880]' },
+                        { id: 'BQL_OFFICE', name: 'Văn Phòng BQL', tag: 'Hành chính', color: 'border-sky-400 text-sky-400' },
+                        { id: 'ELEVATOR_LOBBY', name: 'Lõi 6 Thang Máy', tag: 'FaceID AI', color: 'border-emerald-400 text-emerald-400' },
+                        { id: 'LOUNGE', name: 'Resident Lounge', tag: 'Tiếp khách 5★', color: 'border-amber-400 text-amber-400' },
+                        { id: 'MAIL_LOCKER', name: 'Hòm Thư & Locker', tag: 'Smart Locker', color: 'border-purple-400 text-purple-400' },
+                        { id: 'DROP_OFF', name: 'Ram Dốc Hầm B1-B2', tag: 'Lối xe', color: 'border-pink-400 text-pink-400' },
+                      ].map(z => {
+                        const isCur = selectedLobbyZone === z.id;
+                        return (
+                          <button
+                            key={z.id}
+                            type="button"
+                            onClick={() => setSelectedLobbyZone(z.id)}
+                            className={`p-2 border text-left transition-all ${
+                              isCur 
+                                ? 'bg-[#182333] border-[#C5A880] ring-1 ring-[#C5A880]' 
+                                : 'bg-[#101622] border-[#1E293B] hover:border-gray-500'
+                            }`}
+                          >
+                            <div className="font-bold text-white truncate text-[11px]">{z.name}</div>
+                            <div className={`text-[10px] mt-0.5 font-bold ${z.color}`}>{z.tag}</div>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  {/* CHI TIẾT KHU VỰC TẦNG SẢNH ĐANG CHỌN */}
+                  {(() => {
+                    const curZoneInfo = LOBBY_ZONES_DETAIL[selectedLobbyZone] || LOBBY_ZONES_DETAIL['RECEPTION'];
+                    return (
+                      <div className="p-3 bg-[#111824] border border-[#23354C] space-y-2 font-mono">
+                        <div className="flex items-center justify-between border-b border-[#1E2D42] pb-1.5">
+                          <div className="flex items-center gap-2">
+                            <span className="w-2 h-2 rounded-full bg-[#C5A880]" />
+                            <strong className="text-white text-xs">{curZoneInfo.title}</strong>
+                          </div>
+                          <span className="text-[10.5px] px-2 py-0.5 bg-[#182436] text-[#C5A880] border border-[#2B3E59]">
+                            {curZoneInfo.status}
+                          </span>
+                        </div>
+
+                        <p className="text-xs text-gray-300 font-sans leading-relaxed">
+                          {curZoneInfo.desc}
+                        </p>
+
+                        <div className="grid grid-cols-2 gap-2 text-[11px] pt-1">
+                          <div className="p-1.5 bg-[#0C121C] border border-[#1A2636]">
+                            <span className="text-gray-400">Nhân sự phụ trách:</span>
+                            <div className="text-emerald-400 font-bold mt-0.5">{curZoneInfo.staff}</div>
+                          </div>
+                          <div className="p-1.5 bg-[#0C121C] border border-[#1A2636]">
+                            <span className="text-gray-400">Hotline BQL nội bộ:</span>
+                            <div className="text-cyan-400 font-bold mt-0.5">{curZoneInfo.hotline}</div>
+                          </div>
+                        </div>
+
+                        {/* Thông báo phân định kiến trúc */}
+                        <div className="p-2 bg-[#0A0F18] border border-[#182638] text-[10.5px] text-gray-400 flex items-center justify-between">
+                          <span className="flex items-center gap-1.5">
+                            <span className="text-[#C5A880]">ℹ️</span>
+                            <span>Tầng sảnh là khu vực dịch vụ công cộng, không có căn hộ ở.</span>
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => handleSelectFloor(1)}
+                            className="text-[#C5A880] hover:underline font-bold ml-2 shrink-0 flex items-center gap-1"
+                          >
+                            <span>Xem Tầng 1 (Căn Hộ)</span>
+                            <ChevronRight className="w-3 h-3" />
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })()}
+
                 </div>
+              </div>
+            ) : (
+              /* TRƯỜNG HỢP B: CÁC TẦNG CĂN HỘ (TẦNG 1 ĐẾN TẦNG 34/39) - HIỂN THỊ 21 CĂN HỘ CAD */
+              <div className="flex flex-col h-full justify-between select-none">
+                <div className="space-y-3 overflow-y-auto pr-1 no-scrollbar flex-1">
+                  
+                  {/* THANH TIÊU ĐỀ MẶT BẰNG TẦNG CĂN HỘ */}
+                  <div className="flex items-center justify-between border-b border-[#222B35] pb-2 text-xs font-mono">
+                    <div className="flex items-center gap-2">
+                      <span className="w-2 h-2 rounded-full bg-[#C5A880]" />
+                      <span className="text-white font-bold text-sm tracking-wide">
+                        MẶT BẰNG TẦNG {selectedFloor}
+                      </span>
+                      <span className="text-gray-500">•</span>
+                      <span className="text-[#C5A880] font-bold">{selectedBlock}</span>
+                      <span className="text-[10.5px] px-2 py-0.5 bg-[#162232] border border-[#23354C] text-[#C5A880] hidden sm:inline">
+                        21 Căn Hộ CAD
+                      </span>
+                    </div>
+
+                    <div className="flex items-center gap-1.5">
+                      <button
+                        type="button"
+                        onClick={() => setIsFloorPlanExpanded(true)}
+                        className="px-2.5 py-1 bg-[#141E2D] hover:bg-[#C5A880] text-[#C5A880] hover:text-black text-xs border border-[#23354C] flex items-center gap-1.5 transition-all shadow"
+                        title="Mở rộng mặt bằng toàn màn hình"
+                      >
+                        <Maximize2 className="w-3.5 h-3.5" />
+                        <span className="hidden sm:inline">Phóng To Mặt Bằng</span>
+                      </button>
+                    </div>
+                  </div>
 
                 {/* 4 THẺ THỐNG KÊ SÀN TẦNG HIỆN TẠI */}
                 <div className="grid grid-cols-4 gap-1.5 p-2 bg-[#121820] border border-[#222B35] text-center font-mono">
@@ -2355,6 +2781,7 @@ export default function AdminBuildingApartmentManager() {
 
               </div>
             </div>
+            )
           ) : activeUnit ? (
             <div className="flex flex-col h-full justify-between">
               <div className="space-y-3 overflow-y-auto pr-1 no-scrollbar flex-1">
