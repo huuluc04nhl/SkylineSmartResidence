@@ -490,10 +490,25 @@ export default function AdminBuildingApartmentManager() {
   // Danh sách căn hộ hiển thị đồng bộ theo dữ liệu quản lý tòa nhà
   const filteredUnits = displayUnits;
 
+  // Điều phối chọn căn hộ
   const handleSelectApartment = (unit: ApartmentUnit) => {
     setSelectedAptCode(unit.code);
-    if (unit.floor) setSelectedFloor(unit.floor);
+    if (unit.floor && unit.floor !== selectedFloor) {
+      setSelectedFloor(unit.floor);
+    }
   };
+
+  // Điều hướng và chọn tầng thông minh - Đồng bộ 100% dữ liệu mặt bằng, số căn và hồ sơ căn hộ
+  const handleSelectFloor = useCallback((targetFloor: number) => {
+    const safeFloor = Math.max(1, Math.min(currentTotalFloors, targetFloor));
+    setSelectedFloor(safeFloor);
+    setUnifiedRightTab('FLOOR_PLAN');
+
+    // Chuyển mã căn hộ sang tầng mới tương ứng theo đúng vị trí
+    const baseCode = selectedAptCode?.includes('-') ? selectedAptCode.split('-').pop() : (selectedAptCode || 'CH-06');
+    const newTargetCode = (safeFloor === 30 && selectedBlock === 'BS-07') ? (baseCode || 'CH-06') : `${safeFloor}-${baseCode || 'CH-06'}`;
+    setSelectedAptCode(newTargetCode);
+  }, [currentTotalFloors, selectedAptCode, selectedBlock]);
 
   const handleSelectBlockAndShowFloors = (blockCode: any) => {
     handleSwitchBlock(blockCode);
@@ -502,9 +517,8 @@ export default function AdminBuildingApartmentManager() {
   };
 
   const handleSelectFloorAndShowUnits = (floor: number) => {
-    setSelectedFloor(floor);
+    handleSelectFloor(floor);
     setBuildingPerspective('BUILDING_3D_FLOOR');
-    setUnifiedRightTab('FLOOR_PLAN');
   };
 
   const isAnyFilterActive = false;
@@ -530,20 +544,6 @@ export default function AdminBuildingApartmentManager() {
       (floor !== undefined && f.floor === floor && (clean.includes(f.code.toUpperCase()) || f.code.toUpperCase().includes(clean)))
     );
   }, [isAnyFilterActive, matchingUnitCodesSet, filteredUnits]);
-
-  // Căn hộ đang được chọn làm tiêu điểm hồ sơ
-  const activeUnit = useMemo(() => {
-    return (
-      displayUnits.find(u => u.code === selectedAptCode && u.floor === selectedFloor) ||
-      displayUnits.find(u => u.code === selectedAptCode) ||
-      displayUnits.find(u => u.floor === selectedFloor && (
-        u.code.endsWith(`-${selectedAptCode}`) || 
-        u.code.endsWith(selectedAptCode) ||
-        selectedAptCode.endsWith(u.code)
-      )) ||
-      null
-    );
-  }, [displayUnits, selectedAptCode, selectedFloor]);
 
   // Cấu hình Tone màu sang trọng mặc định (Hoàng Gia Gold) cho phối cảnh BIM 3D
   const toneConfig = useMemo(() => ({
@@ -572,17 +572,20 @@ export default function AdminBuildingApartmentManager() {
   const maintenanceCount = displayUnits.filter(u => u.status === 'MAINTENANCE').length;
   const occupancyRate = totalUnitsCount > 0 ? Math.round((occupiedCount / totalUnitsCount) * 100) : 0;
 
-  // Danh sách các tầng thực tế của chung cư (sắp xếp giảm dần từ tầng cao nhất xuống)
+  // Danh sách các tầng thực tế của chung cư (sắp xếp giảm dần từ tầng cao nhất xuống tầng 1)
   const buildingFloors = useMemo(() => {
-    const floors = Array.from(new Set(displayUnits.map(u => u.floor)));
-    return floors.sort((a, b) => b - a);
-  }, [displayUnits]);
+    const list: number[] = [];
+    for (let f = currentTotalFloors; f >= 1; f--) {
+      list.push(f);
+    }
+    return list;
+  }, [currentTotalFloors]);
 
   // Danh sách các căn hộ thuộc tầng đang chọn theo mặt bằng kiến trúc 21 căn The Tropical
   const floorUnits = useMemo(() => {
     return CAD_FLOOR_UNITS_CONFIG.map(cfg => {
       const chCode = cfg.code;
-      const targetCode = selectedFloor === 30 ? chCode : `${selectedFloor}-${chCode}`;
+      const targetCode = (selectedFloor === 30 && selectedBlock === 'BS-07') ? chCode : `${selectedFloor}-${chCode}`;
       const found = displayUnits.find(u => 
         u.floor === selectedFloor && (
           u.code.toUpperCase() === chCode ||
@@ -601,7 +604,7 @@ export default function AdminBuildingApartmentManager() {
 
       return ({
         code: targetCode,
-        tower: selectedBlock === 'BS-10' ? 'B' : 'A',
+        tower: (selectedBlock === 'BS-09' || selectedBlock === 'BS-10') ? 'B' : 'A',
         towerName: currentBlockName,
         floor: selectedFloor,
         type: cfg.type,
@@ -609,6 +612,7 @@ export default function AdminBuildingApartmentManager() {
         status: 'VACANT',
         statusLabel: 'Căn Hộ Trống',
         area: cfg.area,
+        wallArea: Math.round(cfg.area * 1.08 * 10) / 10,
         bedrooms: cfg.beds,
         bathrooms: cfg.baths,
         direction: cfg.dir,
@@ -621,7 +625,35 @@ export default function AdminBuildingApartmentManager() {
   const floorMaintenanceCount = useMemo(() => floorUnits.filter(u => u.status === 'MAINTENANCE').length, [floorUnits]);
   const floorVacantCount = useMemo(() => floorUnits.filter(u => u.status === 'VACANT').length, [floorUnits]);
 
-  // Thống kê từng tầng của tòa nhà phục vụ mô hình 3D và thanh chọn tầng nhanh
+  // Căn hộ đang được chọn làm tiêu điểm hồ sơ - LUÔN THUỘC TẦNG ĐANG CHỌN (selectedFloor)
+  const activeUnit = useMemo(() => {
+    if (!floorUnits || floorUnits.length === 0) return null;
+
+    // 1. Tìm chính xác theo mã căn hộ trong danh sách 21 căn của tầng đang chọn
+    let unit = floorUnits.find(u => u.code === selectedAptCode);
+    if (unit) return unit;
+
+    // 2. Tìm theo số hiệu / mã đuôi căn hộ (ví dụ: 'CH-06' hoặc '30-CH-06' khớp với '12-CH-06')
+    const baseCode = selectedAptCode?.includes('-') ? selectedAptCode.split('-').pop() : selectedAptCode;
+    if (baseCode) {
+      unit = floorUnits.find(u => 
+        u.code === baseCode || 
+        u.code === `${selectedFloor}-${baseCode}` ||
+        u.code.endsWith(`-${baseCode}`) || 
+        u.code.endsWith(baseCode)
+      );
+      if (unit) return unit;
+    }
+
+    // 3. Ưu tiên căn đã có người ở trên tầng này nếu có
+    unit = floorUnits.find(u => u.status === 'OCCUPIED');
+    if (unit) return unit;
+
+    // 4. Mặc định là căn đầu tiên của tầng đang chọn
+    return floorUnits[0] || null;
+  }, [floorUnits, selectedAptCode, selectedFloor]);
+
+  // Thống kê từng tầng của tòa nhà phục vụ mô hình 3D
   const floorStatsList = useMemo(() => {
     const list: Array<{ floor: number; total: number; occupied: number; maintenance: number; vacant: number }> = [];
     for (let fl = currentTotalFloors; fl >= 1; fl--) {
@@ -729,7 +761,7 @@ export default function AdminBuildingApartmentManager() {
               <span className="text-gray-400 font-mono text-[10.5px]">TẦNG:</span>
               <button
                 type="button"
-                onClick={() => setSelectedFloor(prev => Math.max(1, prev - 1))}
+                onClick={() => handleSelectFloor(selectedFloor - 1)}
                 disabled={selectedFloor <= 1}
                 className="w-5 h-5 flex items-center justify-center bg-[#1A2536] hover:bg-[#25354D] text-gray-300 hover:text-white disabled:opacity-30 border border-[#2C3E56]"
                 title="Tầng dưới"
@@ -738,7 +770,7 @@ export default function AdminBuildingApartmentManager() {
               </button>
               <select
                 value={selectedFloor}
-                onChange={(e) => setSelectedFloor(Number(e.target.value))}
+                onChange={(e) => handleSelectFloor(Number(e.target.value))}
                 className="bg-[#182333] border border-[#2D3E56] text-white font-mono font-bold text-xs px-1.5 py-0.5 outline-none focus:border-[#C5A880]"
               >
                 {buildingFloors.map(f => (
@@ -749,7 +781,7 @@ export default function AdminBuildingApartmentManager() {
               </select>
               <button
                 type="button"
-                onClick={() => setSelectedFloor(prev => Math.min(currentTotalFloors, prev + 1))}
+                onClick={() => handleSelectFloor(selectedFloor + 1)}
                 disabled={selectedFloor >= currentTotalFloors}
                 className="w-5 h-5 flex items-center justify-center bg-[#1A2536] hover:bg-[#25354D] text-gray-300 hover:text-white disabled:opacity-30 border border-[#2C3E56]"
                 title="Tầng trên"
@@ -1142,8 +1174,7 @@ export default function AdminBuildingApartmentManager() {
                             <g
                               key={`level-ruler-${fl}`}
                               onClick={() => {
-                                setSelectedFloor(fl);
-                                setUnifiedRightTab('FLOOR_PLAN');
+                                handleSelectFloor(fl);
                               }}
                               onMouseEnter={() => setHoveredFloor(fl)}
                               onMouseLeave={() => setHoveredFloor(null)}
@@ -1421,8 +1452,7 @@ export default function AdminBuildingApartmentManager() {
                         <g 
                           id="grand-lobby-podium"
                           onClick={() => {
-                            setSelectedFloor(1);
-                            setUnifiedRightTab('FLOOR_PLAN');
+                            handleSelectFloor(1);
                           }}
                           onMouseEnter={() => setHoveredFloor(1)}
                           onMouseLeave={() => setHoveredFloor(null)}
@@ -1483,19 +1513,56 @@ export default function AdminBuildingApartmentManager() {
                           {/* Đèn rọi lối đón khách */}
                           <ellipse cx="500" cy="546" rx="36" ry="7" fill="#FDE68A" fillOpacity="0.28" filter="url(#unitGlow)" />
 
-                          {/* Chữ biểu hiệu Đại Sảnh Tầng 1 thanh thoát, không đè chữ */}
+                          {/* Chữ biểu hiệu Đại Sảnh */}
                           <text 
                             x="500" 
-                            y="530" 
+                            y="520" 
                             fill={selectedFloor === 1 ? '#0D1117' : '#FFFFFF'} 
-                            fontSize="10" 
+                            fontSize="9.5" 
                             fontFamily="sans-serif" 
                             textAnchor="middle" 
-                            fontWeight="bold" 
-                            letterSpacing="0.04em"
+                            fontWeight="900" 
+                            letterSpacing="0.06em"
                           >
-                            ĐẠI SẢNH ĐÓN TIẾP TÂN (TẦNG 1)
+                            ĐẠI SẢNH ĐÓN TIẾP TÂN & DỊCH VỤ CƯ DÂN (TẦNG 1)
                           </text>
+                          <text 
+                            x="500" 
+                            y="534" 
+                            fill={selectedFloor === 1 ? '#1E293B' : '#CBD5E1'} 
+                            fontSize="8" 
+                            fontFamily="monospace" 
+                            textAnchor="middle"
+                          >
+                            Lễ Tân 24/7 • Ban Quản Lý • Hầm B1 - B2
+                          </text>
+
+                          {selectedFloor === 1 && (
+                            <g className="pointer-events-none">
+                              <rect
+                                x="466"
+                                y="542"
+                                width="68"
+                                height="18"
+                                rx="3"
+                                fill="#C5A880"
+                                stroke="#FFFFFF"
+                                strokeWidth="2"
+                                filter="url(#unitGlow)"
+                              />
+                              <text
+                                x="500"
+                                y="555"
+                                fill="#0D1117"
+                                fontSize="10"
+                                fontWeight="900"
+                                textAnchor="middle"
+                                fontFamily="monospace"
+                              >
+                                TẦNG 1 (SẢNH)
+                              </text>
+                            </g>
+                          )}
                         </g>
 
                         {/* CON TRỎ LASER VÀ BẢNG CALLOUT HOLOGRAPHIC */}
@@ -1510,13 +1577,13 @@ export default function AdminBuildingApartmentManager() {
                           const pinX = curFloor === 1 ? 500 : 635;
                           const pinY = curFloor === 1 ? 515 : Number((curYBase - 20).toFixed(1));
 
-                          const elbowX = 750;
+                          const elbowX = 765;
                           const elbowY = wallY;
 
-                          const cardX = 760;
-                          const cardW = 390;
-                          const cardH = 152;
-                          const targetCardY = Math.max(30, Math.min(450, Math.round(wallY - cardH / 2)));
+                          const cardX = 750;
+                          const cardW = 325;
+                          const cardH = 146;
+                          const targetCardY = Math.max(40, Math.min(450, Math.round(wallY - cardH / 2)));
                           const dockX = cardX;
                           const dockY = Math.max(targetCardY + 24, Math.min(targetCardY + cardH - 24, wallY));
 
@@ -1552,7 +1619,7 @@ export default function AdminBuildingApartmentManager() {
                               <circle cx={wallX} cy={wallY} r="3.5" fill={themeNeon} />
                               <circle cx={dockX} cy={dockY} r="4" fill={themeBorder} />
 
-                              {/* Thẻ Callout Tầng - Rộng 390px sắc nét, không bao giờ tràn chữ */}
+                              {/* Thẻ Callout Tầng - Phóng to sắc nét dễ đọc */}
                               <g className="anim-callout-card">
                                 <rect
                                   x={cardX}
@@ -1583,7 +1650,7 @@ export default function AdminBuildingApartmentManager() {
                                   x={cardX + 32}
                                   y={targetCardY + 27}
                                   fill="#FFFFFF"
-                                  fontSize="14"
+                                  fontSize="14.5"
                                   fontWeight="900"
                                   fontFamily="monospace"
                                 >
@@ -1592,16 +1659,16 @@ export default function AdminBuildingApartmentManager() {
 
                                 {/* Huy hiệu mặt bằng */}
                                 <rect
-                                  x={cardX + cardW - 88}
+                                  x={cardX + cardW - 86}
                                   y={targetCardY + 12}
-                                  width="76"
+                                  width="74"
                                   height="20"
                                   fill="#162232"
                                   stroke="#26374D"
                                   rx="3"
                                 />
                                 <text
-                                  x={cardX + cardW - 50}
+                                  x={cardX + cardW - 49}
                                   y={targetCardY + 26}
                                   fill="#C5A880"
                                   fontSize="10.5"
@@ -1615,7 +1682,7 @@ export default function AdminBuildingApartmentManager() {
                                 {/* Trạng thái cư dân phóng to */}
                                 <text
                                   x={cardX + 20}
-                                  y={targetCardY + 54}
+                                  y={targetCardY + 53}
                                   fill={hasOcc ? '#34D399' : '#94A3B8'}
                                   fontSize="12.5"
                                   fontWeight="bold"
@@ -1631,30 +1698,30 @@ export default function AdminBuildingApartmentManager() {
                                 {/* Thông số chi tiết phóng to */}
                                 <text
                                   x={cardX + 20}
-                                  y={targetCardY + 78}
+                                  y={targetCardY + 77}
                                   fill="#E2E8F0"
                                   fontSize="11.5"
                                   fontFamily="monospace"
                                 >
                                   {curFloor === 1 
                                     ? 'Quầy Lễ Tân • Ban Quản Lý • Cổng An Ninh FaceID' 
-                                    : `Đã ở: ${occCount} căn  •  Nghiệm thu: ${maintCount} căn  •  Trống: ${vacCount} căn`}
+                                    : `Đã ở: ${occCount}  •  Nghiệm thu: ${maintCount}  •  Trống: ${vacCount}`}
                                 </text>
 
                                 <text
                                   x={cardX + 20}
-                                  y={targetCardY + 101}
+                                  y={targetCardY + 99}
                                   fill="#94A3B8"
                                   fontSize="10.5"
                                   fontFamily="sans-serif"
                                 >
-                                  {curFloor === 1 ? 'Mặt bằng sảnh: Quầy tiếp tân, sảnh chờ, thang máy' : 'Kiến trúc chuẩn: 21 Căn Hộ (CH-01 đến CH-21)'}
+                                  {curFloor === 1 ? 'Mặt bằng sảnh: Quầy tiếp tân, sảnh chờ, thang máy' : 'Mặt bằng kiến trúc: Căn CH-01 đến CH-21'}
                                 </text>
 
                                 {/* Chỉ dẫn sang mặt bằng tầng bên phải */}
                                 <text
                                   x={cardX + 20}
-                                  y={targetCardY + 127}
+                                  y={targetCardY + 124}
                                   fill="#C5A880"
                                   fontSize="11"
                                   fontWeight="bold"
@@ -2213,28 +2280,33 @@ export default function AdminBuildingApartmentManager() {
                 </div>
               </div>
             );
-          })() : (buildingPerspective === 'BUILDING_3D_FLOOR' || buildingPerspective === '3D' || buildingPerspective === 'BUILDING_ELEVATION' || buildingPerspective === 'FLOOR_PLAN') ? (
+          })() : (buildingPerspective === 'BUILDING_3D_FLOOR' || buildingPerspective === '3D' || buildingPerspective === 'BUILDING_ELEVATION' || buildingPerspective === 'FLOOR_PLAN') && unifiedRightTab === 'FLOOR_PLAN' ? (
             /* ========================================================================= */
             /* MẶT BẰNG TẦNG TƯƠNG ỨNG CỦA TẦNG ĐANG CHỌN (HIỂN THỊ BÊN PHẢI THEO YÊU CẦU) */
             /* ========================================================================= */
             <div className="flex flex-col h-full justify-between select-none">
               <div className="space-y-3 overflow-y-auto pr-1 no-scrollbar flex-1">
                 
-                {/* THANH TIÊU ĐỀ MẶT BẰNG TẦNG TINH GỌN */}
+                {/* THANH TIÊU ĐỀ & CHUYỂN ĐỔI TAB MẶT BẰNG / HỒ SƠ TINH GỌN */}
                 <div className="flex items-center justify-between border-b border-[#222B35] pb-2 text-xs font-mono">
-                  <div className="flex items-center gap-2">
-                    <div className="flex items-center gap-1.5 px-2.5 py-1 bg-[#121A26] border border-[#202E42] text-[#C5A880] font-bold shadow">
-                      <Layers className="w-3.5 h-3.5 text-[#C5A880]" />
-                      <span>Mặt Bằng Tầng {selectedFloor}</span>
-                      <span className="text-[10px] px-1.5 py-0.2 bg-black/40 text-[#C5A880] ml-1">
-                        21 Căn Hộ
-                      </span>
-                    </div>
-                    {selectedAptCode && (
-                      <span className="text-gray-400 text-xs hidden sm:inline">
-                        Đang chọn: <strong className="text-white font-mono">Căn {selectedAptCode}</strong>
-                      </span>
-                    )}
+                  <div className="flex items-center gap-1 bg-[#0A101A] p-0.5 border border-[#1E293B]">
+                    <button
+                      type="button"
+                      onClick={() => setUnifiedRightTab('FLOOR_PLAN')}
+                      className="px-2.5 py-1 text-xs bg-[#C5A880] text-black font-bold transition-all flex items-center gap-1.5 shadow"
+                    >
+                      <Layers className="w-3.5 h-3.5" />
+                      <span>Mặt Bằng T{selectedFloor}</span>
+                      <span className="text-[10px] px-1 py-0.2 bg-black/30 text-black">21 Căn</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setUnifiedRightTab('APARTMENT')}
+                      className="px-2.5 py-1 text-xs text-gray-400 hover:text-white transition-all flex items-center gap-1.5"
+                    >
+                      <Building className="w-3.5 h-3.5" />
+                      <span>Hồ Sơ Căn {activeUnit?.code || selectedAptCode}</span>
+                    </button>
                   </div>
 
                   <div className="flex items-center gap-1.5">
@@ -2245,7 +2317,7 @@ export default function AdminBuildingApartmentManager() {
                       title="Mở rộng mặt bằng toàn màn hình"
                     >
                       <Maximize2 className="w-3.5 h-3.5" />
-                      <span>Phóng To</span>
+                      <span className="hidden sm:inline">Phóng To</span>
                     </button>
                   </div>
                 </div>
@@ -2292,7 +2364,7 @@ export default function AdminBuildingApartmentManager() {
                   </div>
                   <div className="grid grid-cols-7 gap-1">
                     {floorUnits.map(unit => {
-                      const isSelected = selectedAptCode === unit.code;
+                      const isSelected = activeUnit?.code === unit.code || selectedAptCode === unit.code;
                       const isOccupied = unit.status === 'OCCUPIED';
                       const isMaint = unit.status === 'MAINTENANCE';
                       const chShort = unit.code.includes('-') ? unit.code.split('-').pop() : unit.code;
@@ -2351,10 +2423,12 @@ export default function AdminBuildingApartmentManager() {
                       <div>
                         <span className="text-gray-400">Chủ hộ: </span>
                         <strong className="text-white">
-                          {activeUnit.owner?.name || (activeUnit.code === 'CH-06' || activeUnit.code === 'CH-01' ? 'Trần Hữu Lực' : 'Chưa bàn giao')}
+                          {activeUnit.status === 'OCCUPIED'
+                            ? (activeUnit.owner?.name || (activeUnit.code === 'CH-06' || activeUnit.code === 'CH-01' ? 'Trần Hữu Lực' : 'Cư Dân Đã Nhận Nhà'))
+                            : 'Chưa Bàn Giao (Nhà Trống)'}
                         </strong>
-                        {(activeUnit.owner?.phone || (activeUnit.code === 'CH-06' || activeUnit.code === 'CH-01')) && (
-                          <span className="text-gray-400 ml-1">
+                        {activeUnit.status === 'OCCUPIED' && (activeUnit.owner?.phone || activeUnit.code === 'CH-06' || activeUnit.code === 'CH-01') && (
+                          <span className="text-gray-400 ml-1 font-mono">
                             ({activeUnit.owner?.phone || '0364967082'})
                           </span>
                         )}
@@ -2385,11 +2459,20 @@ export default function AdminBuildingApartmentManager() {
                       </button>
                       <button
                         type="button"
+                        onClick={() => setUnifiedRightTab('APARTMENT')}
+                        className="px-2.5 py-1.5 bg-[#172335] hover:bg-[#20324A] text-[#C5A880] text-xs font-mono border border-[#2B3E59] transition-all flex items-center gap-1"
+                        title="Xem toàn bộ hồ sơ chi tiết căn hộ này"
+                      >
+                        <Building className="w-3.5 h-3.5" />
+                        <span>Hồ Sơ Chi Tiết ➔</span>
+                      </button>
+                      <button
+                        type="button"
                         onClick={() => setIsEditModalOpen(true)}
-                        className="px-3 py-1.5 bg-[#172335] hover:bg-[#22354F] text-gray-200 text-xs font-mono border border-[#2B3E59] transition-all flex items-center gap-1"
+                        className="px-2.5 py-1.5 bg-[#172335] hover:bg-[#22354F] text-gray-200 text-xs font-mono border border-[#2B3E59] transition-all flex items-center gap-1"
                         title="Chỉnh sửa thông số căn hộ"
                       >
-                        <span>Chỉnh Sửa</span>
+                        <span>Sửa</span>
                       </button>
                     </div>
                   </div>
@@ -2400,6 +2483,37 @@ export default function AdminBuildingApartmentManager() {
           ) : activeUnit ? (
             <div className="flex flex-col h-full justify-between">
               <div className="space-y-3 overflow-y-auto pr-1 no-scrollbar flex-1">
+                {/* THANH ĐIỀU HƯỚNG SUB-TAB */}
+                <div className="flex items-center justify-between border-b border-[#222B35] pb-2 text-xs font-mono">
+                  <div className="flex items-center gap-1 bg-[#0A101A] p-0.5 border border-[#1E293B]">
+                    <button
+                      type="button"
+                      onClick={() => setUnifiedRightTab('FLOOR_PLAN')}
+                      className="px-2.5 py-1 text-xs text-gray-400 hover:text-white transition-all flex items-center gap-1.5"
+                    >
+                      <Layers className="w-3.5 h-3.5" />
+                      <span>Mặt Bằng T{selectedFloor}</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setUnifiedRightTab('APARTMENT')}
+                      className="px-2.5 py-1 text-xs bg-[#C5A880] text-black font-bold transition-all flex items-center gap-1.5 shadow"
+                    >
+                      <Building className="w-3.5 h-3.5" />
+                      <span>Hồ Sơ Căn {activeUnit.code}</span>
+                    </button>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => setUnifiedRightTab('FLOOR_PLAN')}
+                    className="px-2.5 py-1 bg-[#141E2D] hover:bg-[#C5A880] text-[#C5A880] hover:text-black text-xs border border-[#23354C] flex items-center gap-1.5 transition-all shadow"
+                  >
+                    <Layers className="w-3.5 h-3.5" />
+                    <span>Về Mặt Bằng</span>
+                  </button>
+                </div>
+
                 {/* 1. Tiêu đề & Trạng thái căn */}
                 <div className="border-b border-[#222B35] pb-2.5 flex items-start justify-between">
                   <div>
@@ -2929,7 +3043,7 @@ export default function AdminBuildingApartmentManager() {
                     <button
                       key={fl}
                       type="button"
-                      onClick={() => setSelectedFloor(fl)}
+                      onClick={() => handleSelectFloor(fl)}
                       className={`px-2 py-1 text-[11px] font-mono transition-all border ${
                         selectedFloor === fl
                           ? 'bg-[#C5A880] text-[#0D1117] font-bold border-[#C5A880] shadow'
