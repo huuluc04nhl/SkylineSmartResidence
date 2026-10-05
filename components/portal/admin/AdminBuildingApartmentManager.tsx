@@ -26,6 +26,8 @@ import {
   Building2,
   MapPin, 
   Check, 
+  Key,
+  UserCheck,
   ExternalLink,
   Info,
   X,
@@ -2243,10 +2245,19 @@ export default function AdminBuildingApartmentManager() {
                         type="button"
                         onClick={() => setIsAssignModalOpen(true)}
                         className="flex-1 py-1.5 bg-[#C5A880] hover:bg-[#d8bc94] text-black text-xs font-bold font-mono transition-all flex items-center justify-center gap-1.5 shadow"
-                        title="Bàn giao cư dân vào ở"
+                        title={activeUnit.status === 'OCCUPIED' ? 'Xem và cập nhật thông tin cư dân' : 'Bàn giao căn hộ và cấp quyền cho cư dân'}
                       >
-                        <Check className="w-3.5 h-3.5" />
-                        <span>Bàn Giao Cư Dân</span>
+                        {activeUnit.status === 'OCCUPIED' ? (
+                          <>
+                            <UserCheck className="w-3.5 h-3.5" />
+                            <span>Thông Tin Cư Dân</span>
+                          </>
+                        ) : (
+                          <>
+                            <Key className="w-3.5 h-3.5" />
+                            <span>Bàn Giao Căn Hộ</span>
+                          </>
+                        )}
                       </button>
                       <button
                         type="button"
