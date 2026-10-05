@@ -1126,7 +1126,7 @@ export default function AdminBuildingApartmentManager() {
                         </linearGradient>
                       </defs>
 
-                      {/* THƯỚC ĐO CAO ĐỘ CÁC TẦNG BÊN TRÁI (LEVEL RULER - KHÔNG BAO GIỜ BỊ CHE KHUẤT) */}
+                      {/* THƯỚC ĐO CAO ĐỘ CÁC TẦNG BÊN TRÁI (LEVEL RULER) */}
                       <g className="font-mono text-[9px]">
                         {rulerLevels.map(fl => {
                           const yBase = 480 - (fl - 1) * floorStep;
@@ -1149,7 +1149,6 @@ export default function AdminBuildingApartmentManager() {
                               onMouseLeave={() => setHoveredFloor(null)}
                               className="cursor-pointer group"
                             >
-                              {/* Đường nối đến cạnh trái tòa nhà */}
                               <line 
                                 x1="108" 
                                 y1={yPos} 
@@ -1161,7 +1160,6 @@ export default function AdminBuildingApartmentManager() {
                               />
                               <circle cx="252" cy={yPos} r={isFloorSelected ? 4 : hasOccupied ? 3 : 2} fill={rulerColor} />
                               
-                              {/* Huy hiệu số tầng bên trái */}
                               <rect
                                 x="35"
                                 y={yPos - 9}
@@ -1183,24 +1181,21 @@ export default function AdminBuildingApartmentManager() {
 
                       {/* 1. KHUÔN VIÊN QUẢNG TRƯỜNG & HỒ NƯỚC NỀN */}
                       <g className="opacity-95">
-                        {/* Mặt đất quảng trường tổng thể */}
-                        <polygon points="60,560 500,650 940,560 500,470" fill="#070B12" stroke="#1E293B" strokeWidth="2" />
-
-                        {/* Hồ nước cảnh quan sinh thái The Tropical */}
-                        <polygon points="320,610 500,642 680,610 500,578" fill="#0369A1" fillOpacity="0.4" stroke="#38BDF8" strokeWidth="1.2" />
-                        <text x="500" y="614" fill="#38BDF8" fontSize="8.5" fontFamily="monospace" textAnchor="middle" fontWeight="bold">
-                          HỒ CẢNH QUAN & QUẢNG TRƯỜNG NỘI KHU THE TROPICAL
+                        <polygon points="100,530 500,595 900,530 500,465" fill="#070B12" stroke="#1E293B" strokeWidth="2" />
+                        <polygon points="360,565 500,588 640,565 500,542" fill="#0369A1" fillOpacity="0.4" stroke="#38BDF8" strokeWidth="1.2" />
+                        <text x="500" y="572" fill="#38BDF8" fontSize="8" fontFamily="monospace" textAnchor="middle" fontWeight="bold">
+                          HỒ CẢNH QUAN NỘI KHU THE TROPICAL
                         </text>
                       </g>
 
-                      {/* 2. THÂN CHUNG CƯ (TỐI ĐA 39 TẦNG TÙY BLOCK) */}
+                      {/* 2. THÂN CHUNG CƯ CAO TẦNG */}
                       <g className="transition-all duration-300">
-                        {/* Mặt Trái Tòa Nhà (Hướng Đông Nam) */}
+                        {/* Mặt Trái Tòa Nhà */}
                         <polygon points="260,440 500,480 500,90 260,50" fill="url(#skylineGlassL)" stroke={curTone.borderBuilding} strokeWidth="2" />
-                        {/* Mặt Phải Tòa Nhà (Hướng Tây Nam) */}
+                        {/* Mặt Phải Tòa Nhà */}
                         <polygon points="500,480 740,440 740,50 500,90" fill="url(#skylineGlassR)" stroke={curTone.borderBuilding} strokeWidth="2" />
                         
-                        {/* Nan lam kiến trúc đứng (Architectural Mullions) tạo chiều sâu */}
+                        {/* Nan lam kiến trúc đứng */}
                         <line x1="340" y1="63" x2="340" y2="453" stroke={curTone.mullionColor} strokeWidth="0.8" opacity="0.35" />
                         <line x1="420" y1="77" x2="420" y2="467" stroke={curTone.mullionColor} strokeWidth="0.8" opacity="0.35" />
                         <line x1="580" y1="77" x2="580" y2="467" stroke={curTone.mullionColor} strokeWidth="0.8" opacity="0.35" />
@@ -1214,11 +1209,9 @@ export default function AdminBuildingApartmentManager() {
                           const hasOccupied = item.occupied > 0;
                           const hasMaint = item.maintenance > 0;
 
-                          // Vị trí cao độ sàn tầng theo phối cảnh Isometric chuẩn xác
                           const yBase = 480 - (fl - 1) * floorStep;
                           const h = fl === currentTotalFloors ? 13 : 9.5;
 
-                          // Lọc theo vùng tầng đồng bộ với toolbar
                           const isMatchedZone = selectedFloorRange === 'ALL'
                             ? true
                             : selectedFloorRange === 'HIGH'
@@ -1230,11 +1223,9 @@ export default function AdminBuildingApartmentManager() {
                           let opacityVal = isMatchedZone ? 0.94 : 0.22;
                           if (isSelected || isHovered) opacityVal = 1;
 
-                          // Tọa độ đa giác mặt trái & mặt phải đúng góc dốc 1/6 (40px / 240px)
                           const leftPts = `262,${(yBase - 40 - h).toFixed(1)} 498,${(yBase - h).toFixed(1)} 498,${(yBase).toFixed(1)} 262,${(yBase - 40).toFixed(1)}`;
                           const rightPts = `502,${(yBase - h).toFixed(1)} 738,${(yBase - 40 - h).toFixed(1)} 738,${(yBase - 40).toFixed(1)} 502,${(yBase).toFixed(1)}`;
 
-                          // Màu sắc sàn tầng theo trạng thái
                           let fillColorL = buildingTheme === 'NIGHT' ? '#0E1726' : '#0369A1';
                           let fillColorR = buildingTheme === 'NIGHT' ? '#131F33' : '#0284C7';
                           let strokeColor = buildingTheme === 'NIGHT' ? '#1E293B' : '#0E3A66';
@@ -1274,19 +1265,6 @@ export default function AdminBuildingApartmentManager() {
                               className="cursor-pointer transition-all duration-150"
                               style={{ opacity: opacityVal }}
                             >
-                              {/* Lớp nền phiến sàn nổi bật khi tầng được chọn (Extruded 3D Floor Plate) */}
-                              {isSelected && (
-                                <polygon
-                                  points={`254,${(yBase - 40 - h - 3).toFixed(1)} 500,${(yBase - h - 4).toFixed(1)} 746,${(yBase - 40 - h - 3).toFixed(1)} 500,${(yBase - 80 - h - 4).toFixed(1)}`}
-                                  fill="#FDE68A"
-                                  fillOpacity="0.45"
-                                  stroke="#FFFFFF"
-                                  strokeWidth="1.8"
-                                  filter="url(#unitGlow)"
-                                />
-                              )}
-
-                              {/* Mặt trái của tầng */}
                               <polygon
                                 points={leftPts}
                                 fill={fillColorL}
@@ -1296,7 +1274,6 @@ export default function AdminBuildingApartmentManager() {
                                 filter={isSelected ? 'url(#unitGlow)' : undefined}
                               />
 
-                              {/* Mặt phải của tầng */}
                               <polygon
                                 points={rightPts}
                                 fill={fillColorR}
@@ -1306,7 +1283,6 @@ export default function AdminBuildingApartmentManager() {
                                 filter={isSelected ? 'url(#unitGlow)' : undefined}
                               />
 
-                              {/* Đèn phòng cư dân ban đêm nếu tầng có người ở */}
                               {hasOccupied && (
                                 <>
                                   <line
@@ -1334,7 +1310,6 @@ export default function AdminBuildingApartmentManager() {
                                 </>
                               )}
 
-                              {/* Huy hiệu số tầng tại trục trung tâm (Center Spine Badge) */}
                               {isSelected ? (
                                 <g className="pointer-events-none">
                                   <rect
@@ -1375,9 +1350,9 @@ export default function AdminBuildingApartmentManager() {
                           );
                         })}
 
-                        {/* 3. MÁI CHUNG CƯ & SÂN BAY TRỰC THĂNG (HELIPAD) - CHUẨN ĐỐI XỨNG & ĐỘ CAO ISOMETRIC */}
+                        {/* 3. MÁI CHUNG CƯ & SÂN BAY TRỰC THĂNG (HELIPAD) - TỈ LỆ CHUẨN XÁC VỚI MẶT PHẲNG MÁI */}
                         <g id="helipad-roof-system">
-                          {/* Mặt sàn mái chung cư (Isometric Diamond) */}
+                          {/* Sàn mái hình thoi */}
                           <polygon 
                             points="260,50 500,90 740,50 500,10" 
                             fill={curTone.roofColor} 
@@ -1385,58 +1360,55 @@ export default function AdminBuildingApartmentManager() {
                             strokeWidth="2" 
                           />
 
-                          {/* Thành bục Helipad nâng cao 3D (Đế sàn chịu lực) */}
-                          <ellipse cx="500" cy="53" rx="60" ry="20" fill="#080D1A" stroke="#1E293B" strokeWidth="1.5" />
-                          
-                          {/* Bề mặt sân đáp Helipad chính thức */}
-                          <ellipse cx="500" cy="50" rx="60" ry="20" fill="#0F172A" stroke="#C5A880" strokeWidth="2" />
+                          {/* Bục Helipad 3D: tỉ lệ 1/6 (rx=66, ry=11) nằm phẳng tuyệt đối trên mặt mái */}
+                          <ellipse cx="500" cy="52" rx="66" ry="11" fill="#0A0F18" stroke="#1E293B" strokeWidth="1.2" />
+                          <ellipse cx="500" cy="50" rx="66" ry="11" fill="#111827" stroke="#C5A880" strokeWidth="1.8" />
 
-                          {/* Vòng tròn tiếp đất an toàn (Touchdown circle - Vàng phản quang) */}
-                          <ellipse cx="500" cy="50" rx="44" ry="14.7" fill="none" stroke="#FDE68A" strokeWidth="1.8" strokeDasharray="8 4" />
+                          {/* Vòng tiếp đất vàng đứt nét */}
+                          <ellipse cx="500" cy="50" rx="48" ry="8" fill="none" stroke="#FDE68A" strokeWidth="1.6" strokeDasharray="6 3" />
 
-                          {/* Vòng tròn tâm định vị (Inner circle) */}
-                          <ellipse cx="500" cy="50" rx="26" ry="8.7" fill="none" stroke="#FFFFFF" strokeWidth="2" />
+                          {/* Vòng tròn tâm định vị */}
+                          <ellipse cx="500" cy="50" rx="30" ry="5" fill="none" stroke="#FFFFFF" strokeWidth="1.8" />
 
-                          {/* Chữ H tiêu chuẩn hàng không quốc tế */}
+                          {/* Ký hiệu H tiêu chuẩn hàng không */}
                           <text 
                             x="500" 
-                            y="55" 
+                            y="54" 
                             fill="#FFFFFF" 
-                            fontSize="15" 
+                            fontSize="13" 
                             fontWeight="900" 
                             textAnchor="middle" 
                             fontFamily="sans-serif"
-                            letterSpacing="0.05em"
                           >
                             H
                           </text>
 
-                          {/* Dàn đèn LED tín hiệu dẫn đường hàng không xung quanh chu vi Helipad */}
+                          {/* 8 đèn LED viền sân bay */}
                           {[0, 45, 90, 135, 180, 225, 270, 315].map((deg, idx) => {
                             const rad = (deg * Math.PI) / 180;
-                            const lx = 500 + 58 * Math.cos(rad);
-                            const ly = 50 + 19.3 * Math.sin(rad);
+                            const lx = 500 + 64 * Math.cos(rad);
+                            const ly = 50 + 10.7 * Math.sin(rad);
                             const ledColor = idx % 2 === 0 ? '#10B981' : '#F59E0B';
                             return (
                               <circle 
                                 key={`helipad-led-${deg}`} 
                                 cx={lx.toFixed(1)} 
                                 cy={ly.toFixed(1)} 
-                                r="2" 
+                                r="1.8" 
                                 fill={ledColor} 
                                 className="animate-pulse" 
                               />
                             );
                           })}
 
-                          {/* Cột ăng-ten viễn thông & Đèn cảnh báo hàng không đỉnh tháp */}
-                          <line x1="500" y1="10" x2="500" y2="-12" stroke="#64748B" strokeWidth="2" />
-                          <circle cx="500" cy="-12" r="3.8" fill="#EF4444" className="animate-pulse" filter="url(#unitGlow)" />
+                          {/* Cột ăng-ten & Đèn chớp đỏ */}
+                          <line x1="500" y1="10" x2="500" y2="-10" stroke="#64748B" strokeWidth="1.8" />
+                          <circle cx="500" cy="-10" r="3.5" fill="#EF4444" className="animate-pulse" filter="url(#unitGlow)" />
 
                           {/* Tiêu đề Đỉnh Chung Cư */}
                           <text 
                             x="500" 
-                            y="-20" 
+                            y="-18" 
                             fill={curTone.titleColor} 
                             fontSize="11" 
                             fontWeight="bold" 
@@ -1448,7 +1420,7 @@ export default function AdminBuildingApartmentManager() {
                           </text>
                         </g>
 
-                        {/* 4. KHỐI ĐẠI SẢNH ĐÓN TIẾP TÂN HOÀNG GIA (TẦNG 1) - HIỂN THỊ PHÍA TRƯỚC KHÔNG BỊ CHE KHUẤT */}
+                        {/* 4. ĐẠI SẢNH ĐÓN TIẾP TÂN (TẦNG 1) - TƯƠNG XỨNG VỚI TÒA NHÀ & HIỂN THỊ PHÍA TRƯỚC */}
                         <g 
                           id="grand-lobby-podium"
                           onClick={() => {
@@ -1459,92 +1431,90 @@ export default function AdminBuildingApartmentManager() {
                           onMouseLeave={() => setHoveredFloor(null)}
                           className="cursor-pointer group"
                         >
-                          {/* Sân thượng khối đế (Terrace bao quanh chân tháp) */}
+                          {/* Mái vát khối sảnh Tầng 1 (kết nối chân tháp) */}
                           <polygon 
-                            points="180,457 500,510 820,457 500,404" 
+                            points="240,437 500,480 760,437 500,394" 
                             fill="url(#podiumMallGrad)" 
                             stroke={curTone.borderBuilding} 
-                            strokeWidth="1.8" 
+                            strokeWidth="1.6" 
                           />
 
-                          {/* Vách kính khối đế Đại Sảnh - Mặt Trái */}
+                          {/* Mặt kính sảnh trái */}
                           <polygon 
-                            points="180,457 500,510 500,570 180,517" 
+                            points="240,437 500,480 500,540 240,497" 
                             fill={selectedFloor === 1 ? '#C5A880' : 'url(#skylineGlassL)'} 
-                            fillOpacity={selectedFloor === 1 ? 0.9 : 0.85}
+                            fillOpacity={selectedFloor === 1 ? 0.95 : 0.88}
                             stroke={selectedFloor === 1 ? '#FFFFFF' : curTone.borderBuilding} 
                             strokeWidth={selectedFloor === 1 ? 2.2 : 1.6} 
                           />
 
-                          {/* Vách kính khối đế Đại Sảnh - Mặt Phải */}
+                          {/* Mặt kính sảnh phải */}
                           <polygon 
-                            points="500,510 820,457 820,517 500,570" 
+                            points="500,480 760,437 760,497 500,540" 
                             fill={selectedFloor === 1 ? '#D8BC94' : 'url(#skylineGlassR)'} 
-                            fillOpacity={selectedFloor === 1 ? 0.9 : 0.85}
+                            fillOpacity={selectedFloor === 1 ? 0.95 : 0.88}
                             stroke={selectedFloor === 1 ? '#FFFFFF' : curTone.borderBuilding} 
                             strokeWidth={selectedFloor === 1 ? 2.2 : 1.6} 
                           />
 
-                          {/* Ánh sáng vàng sang trọng tỏa ra từ sảnh tiếp tân */}
+                          {/* Ánh sáng vàng tiếp tân ấm cúng */}
                           <polygon 
-                            points="210,474 500,519 500,565 210,520" 
+                            points="260,450 500,488 500,535 260,497" 
                             fill="#F59E0B" 
                             fillOpacity={selectedFloor === 1 ? 0.35 : 0.18} 
                             stroke="#FDE68A" 
-                            strokeWidth="1" 
+                            strokeWidth="0.8" 
                           />
                           <polygon 
-                            points="500,519 790,474 790,520 500,565" 
+                            points="500,488 740,450 740,497 500,535" 
                             fill="#F59E0B" 
                             fillOpacity={selectedFloor === 1 ? 0.35 : 0.18} 
                             stroke="#FDE68A" 
-                            strokeWidth="1" 
+                            strokeWidth="0.8" 
                           />
 
-                          {/* Mái đón sảnh vươn ra đón khách (Drop-off Grand Canopy) */}
+                          {/* Mái đón sảnh chính (Canopy đón trả khách) */}
                           <polygon 
-                            points="350,545 500,570 650,545 500,528" 
+                            points="390,522 500,540 610,522 500,505" 
                             fill="#0F172A" 
                             stroke="#C5A880" 
-                            strokeWidth="2" 
+                            strokeWidth="1.8" 
                           />
-                          {/* Cột chống mái đón bằng đồng sang trọng */}
-                          <line x1="365" y1="548" x2="365" y2="585" stroke="#C5A880" strokeWidth="2.5" />
-                          <line x1="635" y1="548" x2="635" y2="585" stroke="#C5A880" strokeWidth="2.5" />
+                          <line x1="400" y1="524" x2="400" y2="550" stroke="#C5A880" strokeWidth="2.2" />
+                          <line x1="600" y1="524" x2="600" y2="550" stroke="#C5A880" strokeWidth="2.2" />
 
-                          {/* Vệt sáng chiếu xuống sảnh đón khách */}
-                          <ellipse cx="500" cy="578" rx="48" ry="12" fill="#FDE68A" fillOpacity="0.25" filter="url(#unitGlow)" />
+                          {/* Đèn rọi lối đón khách */}
+                          <ellipse cx="500" cy="546" rx="36" ry="7" fill="#FDE68A" fillOpacity="0.28" filter="url(#unitGlow)" />
 
-                          {/* Biển hiệu Đại Sảnh Tiếp Tân */}
+                          {/* Chữ biểu hiệu Đại Sảnh */}
                           <text 
                             x="500" 
-                            y="544" 
+                            y="520" 
                             fill={selectedFloor === 1 ? '#0D1117' : '#FFFFFF'} 
-                            fontSize="10.5" 
+                            fontSize="9.5" 
                             fontFamily="sans-serif" 
                             textAnchor="middle" 
                             fontWeight="900" 
-                            letterSpacing="0.08em"
+                            letterSpacing="0.06em"
                           >
-                            ĐẠI SẢNH ĐÓN TIẾP TÂN & KHU DỊCH VỤ CƯ DÂN (TẦNG 1)
+                            ĐẠI SẢNH ĐÓN TIẾP TÂN & DỊCH VỤ CƯ DÂN (TẦNG 1)
                           </text>
                           <text 
                             x="500" 
-                            y="560" 
+                            y="534" 
                             fill={selectedFloor === 1 ? '#1E293B' : '#CBD5E1'} 
-                            fontSize="8.5" 
+                            fontSize="8" 
                             fontFamily="monospace" 
                             textAnchor="middle"
                           >
-                            Lễ Tân 24/7 • Ban Quản Lý • Hầm Để Xe B1 - B2
+                            Lễ Tân 24/7 • Ban Quản Lý • Hầm B1 - B2
                           </text>
 
-                          {/* Huy hiệu TẦNG 1 nổi bật khi chọn */}
                           {selectedFloor === 1 && (
                             <g className="pointer-events-none">
                               <rect
                                 x="466"
-                                y="572"
+                                y="542"
                                 width="68"
                                 height="18"
                                 rx="3"
@@ -1555,7 +1525,7 @@ export default function AdminBuildingApartmentManager() {
                               />
                               <text
                                 x="500"
-                                y="585"
+                                y="555"
                                 fill="#0D1117"
                                 fontSize="10"
                                 fontWeight="900"
@@ -1568,20 +1538,17 @@ export default function AdminBuildingApartmentManager() {
                           )}
                         </g>
 
-                        {/* =================================================================== */}
-                        {/* CON TRỎ LASER VÀ BẢNG CALLOUT HOLOGRAPHIC ĐỊNH VỊ CHÍNH XÁC TẦNG ĐANG CHỌN */}
-                        {/* =================================================================== */}
+                        {/* CON TRỎ LASER VÀ BẢNG CALLOUT HOLOGRAPHIC */}
                         {(() => {
                           const curFloor = Math.max(1, Math.min(currentTotalFloors, selectedFloor));
                           const curYBase = 480 - (curFloor - 1) * floorStep;
                           const curH = curFloor === currentTotalFloors ? 13 : 9.5;
 
-                          // Điểm xuất phát của Laser từ mép phải của tầng đang chọn (hoặc từ sảnh tầng 1)
-                          const wallX = curFloor === 1 ? 650 : 738;
-                          const wallY = curFloor === 1 ? 545 : Number((curYBase - 40 - (curH / 2)).toFixed(1));
+                          const wallX = curFloor === 1 ? 620 : 738;
+                          const wallY = curFloor === 1 ? 520 : Number((curYBase - 40 - (curH / 2)).toFixed(1));
 
                           const pinX = curFloor === 1 ? 500 : 635;
-                          const pinY = curFloor === 1 ? 540 : Number((curYBase - 20).toFixed(1));
+                          const pinY = curFloor === 1 ? 515 : Number((curYBase - 20).toFixed(1));
 
                           const elbowX = 765;
                           const elbowY = wallY;
@@ -1606,12 +1573,10 @@ export default function AdminBuildingApartmentManager() {
 
                           return (
                             <g key={`dynamic-floor-pointer-${curFloor}`} className="pointer-events-none">
-                              {/* Vòng tâm định vị tầng */}
                               <circle cx={pinX} cy={pinY} r="4.5" fill={themeNeon} filter="url(#unitGlow)" />
                               <circle cx={pinX} cy={pinY} r="16" fill="none" stroke={themeNeon} strokeWidth="1.6" className="anim-ping-pulse" />
                               <circle cx={pinX} cy={pinY} r="2" fill="#FFFFFF" />
 
-                              {/* Đường dẫn Laser */}
                               <path
                                 d={laserPath}
                                 fill="none"
@@ -1625,7 +1590,6 @@ export default function AdminBuildingApartmentManager() {
                               <circle cx={wallX} cy={wallY} r="3" fill={themeNeon} />
                               <circle cx={dockX} cy={dockY} r="3.5" fill={themeBorder} />
 
-                              {/* Thẻ Callout Tầng - Sang trọng & Khoa học */}
                               <g className="anim-callout-card">
                                 <rect
                                   x={cardX}
@@ -1640,7 +1604,6 @@ export default function AdminBuildingApartmentManager() {
                                   filter="url(#unitGlow)"
                                 />
 
-                                {/* Dải phân cách trang trí bên trái thẻ */}
                                 <rect
                                   x={cardX}
                                   y={targetCardY}
@@ -1650,7 +1613,6 @@ export default function AdminBuildingApartmentManager() {
                                   rx="2"
                                 />
 
-                                {/* Tiêu đề tầng */}
                                 <circle cx={cardX + 18} cy={targetCardY + 20} r="3.5" fill={themeNeon} />
                                 <text
                                   x={cardX + 28}
@@ -1663,7 +1625,6 @@ export default function AdminBuildingApartmentManager() {
                                   {curFloor === 1 ? `TẦNG 1 (ĐẠI SẢNH) • ${currentBlockName.toUpperCase()}` : `TẦNG ${curFloor} • ${currentBlockName.toUpperCase()}`}
                                 </text>
 
-                                {/* Huy hiệu mặt bằng */}
                                 <rect
                                   x={cardX + cardW - 74}
                                   y={targetCardY + 12}
@@ -1685,7 +1646,6 @@ export default function AdminBuildingApartmentManager() {
                                   {curFloor === 1 ? 'SẢNH TRỆT' : '21 CĂN HỘ'}
                                 </text>
 
-                                {/* Trạng thái cư dân */}
                                 <text
                                   x={cardX + 18}
                                   y={targetCardY + 46}
@@ -1701,7 +1661,6 @@ export default function AdminBuildingApartmentManager() {
                                     : '⚪ TẦNG TRỐNG / SẴN SÀNG BÀN GIAO'}
                                 </text>
 
-                                {/* Thông số chi tiết */}
                                 <text
                                   x={cardX + 18}
                                   y={targetCardY + 68}
@@ -1724,7 +1683,6 @@ export default function AdminBuildingApartmentManager() {
                                   {curFloor === 1 ? 'Mặt bằng sảnh: Quầy tiếp tân, sảnh chờ, thang máy' : 'Mặt bằng kiến trúc: Căn CH-01 đến CH-21'}
                                 </text>
 
-                                {/* Chỉ dẫn chuyển đổi sang mặt bằng tầng bên phải */}
                                 <text
                                   x={cardX + 18}
                                   y={targetCardY + 104}
@@ -1741,7 +1699,7 @@ export default function AdminBuildingApartmentManager() {
                         })()}
                       </g>
 
-                      {/* THẺ QUAN SÁT TỨC THÌ KHI HOVER TẦNG KHÁC */}
+                      {/* THẺ HOVER */}
                       {hoveredFloor && hoveredFloor !== selectedFloor && (
                         <g className="pointer-events-none">
                           {(() => {
@@ -2027,7 +1985,7 @@ export default function AdminBuildingApartmentManager() {
         </div>
 
         {/* CỘT PHẢI (5 COLS): THÔNG TIN CHI TIẾT CĂN HỘ HOẶC QUY HOẠCH */}
-        <div className="${(buildingPerspective === 'BUILDING_3D_FLOOR' || buildingPerspective === '3D' || buildingPerspective === 'BUILDING_ELEVATION' || buildingPerspective === 'FLOOR_PLAN') ? 'lg:col-span-6' : 'lg:col-span-5'} bg-[#0D1117] border border-[#222B35] rounded-none p-4 shadow-2xl min-h-[660px] sm:min-h-[760px] flex flex-col justify-between overflow-hidden">
+        <div className={`${(buildingPerspective === 'BUILDING_3D_FLOOR' || buildingPerspective === '3D' || buildingPerspective === 'BUILDING_ELEVATION' || buildingPerspective === 'FLOOR_PLAN') ? 'lg:col-span-6' : 'lg:col-span-5'} bg-[#0D1117] border border-[#222B35] rounded-none p-4 shadow-2xl min-h-[660px] sm:min-h-[760px] flex flex-col justify-between overflow-hidden`}>
           {/* NẾU ĐANG Ở GÓC NHÌN QUY HOẠCH VÀ CHỌN TAB QUY HOẠCH: HIỂN THỊ CONSOLE QUY HOẠCH & TIỆN ÍCH */}
           {buildingPerspective === 'MASTER_PLAN' && masterPlanRightTab === 'PLANNING' ? (() => {
             const activeAmenityId = selectedAmenityId || hoveredAmenityId;
