@@ -2087,35 +2087,28 @@ export default function AdminBuildingApartmentManager() {
                 </div>
               </div>
             );
-          })() : (buildingPerspective === 'BUILDING_3D_FLOOR' || buildingPerspective === '3D' || buildingPerspective === 'BUILDING_ELEVATION' || buildingPerspective === 'FLOOR_PLAN') && unifiedRightTab === 'FLOOR_PLAN' ? (
+          })() : (buildingPerspective === 'BUILDING_3D_FLOOR' || buildingPerspective === '3D' || buildingPerspective === 'BUILDING_ELEVATION' || buildingPerspective === 'FLOOR_PLAN') ? (
             /* ========================================================================= */
             /* MẶT BẰNG TẦNG TƯƠNG ỨNG CỦA TẦNG ĐANG CHỌN (HIỂN THỊ BÊN PHẢI THEO YÊU CẦU) */
             /* ========================================================================= */
             <div className="flex flex-col h-full justify-between select-none">
               <div className="space-y-3 overflow-y-auto pr-1 no-scrollbar flex-1">
                 
-                {/* THANH ĐIỀU HƯỚNG TAB MẶT BẰNG vs HỒ SƠ CĂN HỘ */}
+                {/* THANH TIÊU ĐỀ MẶT BẰNG TẦNG TINH GỌN */}
                 <div className="flex items-center justify-between border-b border-[#222B35] pb-2 text-xs font-mono">
-                  <div className="flex items-center gap-1 bg-[#121A26] p-0.5 border border-[#202E42]">
-                    <button
-                      type="button"
-                      onClick={() => setUnifiedRightTab('FLOOR_PLAN')}
-                      className="px-2.5 py-1 text-xs transition-all flex items-center gap-1.5 bg-[#C5A880] text-black font-bold shadow"
-                    >
-                      <Layers className="w-3.5 h-3.5" />
+                  <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-1.5 px-2.5 py-1 bg-[#121A26] border border-[#202E42] text-[#C5A880] font-bold shadow">
+                      <Layers className="w-3.5 h-3.5 text-[#C5A880]" />
                       <span>Mặt Bằng Tầng {selectedFloor}</span>
-                      <span className="text-[9.5px] px-1 font-mono font-bold bg-black/20 text-black">
-                        21 Căn
+                      <span className="text-[10px] px-1.5 py-0.2 bg-black/40 text-[#C5A880] ml-1">
+                        21 Căn Hộ
                       </span>
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setUnifiedRightTab('APARTMENT')}
-                      className="px-2.5 py-1 text-xs transition-all flex items-center gap-1.5 text-gray-400 hover:text-white"
-                    >
-                      <Building className="w-3.5 h-3.5" />
-                      <span>Hồ Sơ Căn {activeUnit?.code || selectedAptCode}</span>
-                    </button>
+                    </div>
+                    {selectedAptCode && (
+                      <span className="text-gray-400 text-xs hidden sm:inline">
+                        Đang chọn: <strong className="text-white font-mono">Căn {selectedAptCode}</strong>
+                      </span>
+                    )}
                   </div>
 
                   <div className="flex items-center gap-1.5">
@@ -2248,27 +2241,20 @@ export default function AdminBuildingApartmentManager() {
                     <div className="flex items-center gap-2 pt-1">
                       <button
                         type="button"
-                        onClick={() => setUnifiedRightTab('APARTMENT')}
-                        className="flex-1 py-1.5 bg-[#C5A880] hover:bg-[#d8bc94] text-black text-xs font-bold font-mono transition-all flex items-center justify-center gap-1 shadow"
-                      >
-                        <FileText className="w-3.5 h-3.5" />
-                        <span>Xem Hồ Sơ Chi Tiết Căn {activeUnit.code} ➔</span>
-                      </button>
-                      <button
-                        type="button"
                         onClick={() => setIsAssignModalOpen(true)}
-                        className="px-2.5 py-1.5 bg-[#172335] hover:bg-[#22354F] text-gray-200 text-xs font-mono border border-[#2B3E59] transition-all flex items-center gap-1"
+                        className="flex-1 py-1.5 bg-[#C5A880] hover:bg-[#d8bc94] text-black text-xs font-bold font-mono transition-all flex items-center justify-center gap-1.5 shadow"
                         title="Bàn giao cư dân vào ở"
                       >
-                        <span>Bàn Giao</span>
+                        <Check className="w-3.5 h-3.5" />
+                        <span>Bàn Giao Cư Dân</span>
                       </button>
                       <button
                         type="button"
                         onClick={() => setIsEditModalOpen(true)}
-                        className="px-2.5 py-1.5 bg-[#172335] hover:bg-[#22354F] text-gray-200 text-xs font-mono border border-[#2B3E59] transition-all flex items-center gap-1"
+                        className="px-3 py-1.5 bg-[#172335] hover:bg-[#22354F] text-gray-200 text-xs font-mono border border-[#2B3E59] transition-all flex items-center gap-1"
                         title="Chỉnh sửa thông số căn hộ"
                       >
-                        <span>Sửa</span>
+                        <span>Chỉnh Sửa</span>
                       </button>
                     </div>
                   </div>
@@ -2279,23 +2265,6 @@ export default function AdminBuildingApartmentManager() {
           ) : activeUnit ? (
             <div className="flex flex-col h-full justify-between">
               <div className="space-y-3 overflow-y-auto pr-1 no-scrollbar flex-1">
-                {/* THANH ĐIỀU HƯỚNG QUAY LẠI MẶT BẰNG TẦNG NẾU Ở CHẾ ĐỘ UNIFIED */}
-                {(buildingPerspective === 'BUILDING_3D_FLOOR' || buildingPerspective === '3D' || buildingPerspective === 'BUILDING_ELEVATION' || buildingPerspective === 'FLOOR_PLAN') && (
-                  <div className="flex items-center justify-between border-b border-[#222B35] pb-2 text-xs font-mono">
-                    <button
-                      type="button"
-                      onClick={() => setUnifiedRightTab('FLOOR_PLAN')}
-                      className="px-2.5 py-1 bg-[#162232] hover:bg-[#C5A880] text-[#C5A880] hover:text-black border border-[#26374D] font-bold text-xs transition-all flex items-center gap-1.5 shadow"
-                    >
-                      <Layers className="w-3.5 h-3.5" />
-                      <span>◀ Quay Lại Mặt Bằng Tầng {selectedFloor} (21 Căn)</span>
-                    </button>
-                    <span className="text-gray-400 text-[10.5px]">
-                      Hồ sơ căn: <strong className="text-white font-mono">{activeUnit.code}</strong>
-                    </span>
-                  </div>
-                )}
-
                 {/* 1. Tiêu đề & Trạng thái căn */}
                 <div className="border-b border-[#222B35] pb-2.5 flex items-start justify-between">
                   <div>
