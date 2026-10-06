@@ -25,6 +25,7 @@ export interface User {
   license_plate?: string;
   dob?: string;
   pob?: string;
+  password?: string;
 }
 
 export interface Block {
@@ -251,6 +252,7 @@ export const DEMO_USERS: User[] = [
     emergency_phone: '19001088',
     apartment_code: 'BQL_OFFICE',
     relationship: 'Staff',
+    password: 'admin123',
   },
 
   // 2. Kỹ Thuật (Kỹ Sư Vận Hành Tòa Nhà)
@@ -266,6 +268,7 @@ export const DEMO_USERS: User[] = [
     emergency_phone: '0901888998',
     apartment_code: 'TECH_ROOM',
     relationship: 'Staff',
+    password: '12345678',
   },
 
   // 3. Citizen / Owner (Chủ hộ căn hộ 12A05)
@@ -286,6 +289,7 @@ export const DEMO_USERS: User[] = [
     license_plate: '51K-889.99',
     dob: '2004-08-18',
     pob: 'Triệu Trạch, Triệu Phong, Quảng Trị',
+    password: '12345678',
   },
 
   // 4. Family Member 1 (Tài khoản mẫu người thuê độc lập)
@@ -303,6 +307,7 @@ export const DEMO_USERS: User[] = [
     ui_language: 'vi',
     apartment_code: '',
     dob: '2004-09-02',
+    password: '12345678',
   },
 
   // 5. Family Member 2 (Tài khoản mẫu người thuê độc lập)
@@ -319,6 +324,7 @@ export const DEMO_USERS: User[] = [
     apartment_code: '',
     dob: '2004-01-16',
     pob: 'Tỉnh Thanh Hóa',
+    password: '12345678',
   },
 
   // 6. Family Member 3 (Tài khoản mẫu người thuê độc lập)
@@ -335,6 +341,7 @@ export const DEMO_USERS: User[] = [
     apartment_code: '',
     dob: '2004-08-17',
     pob: 'Xuân Thọ, Triệu Sơn, Thanh Hóa',
+    password: '12345678',
   },
 
   // 7. Family Member 4 (Tài khoản mẫu người thuê độc lập)
@@ -349,6 +356,7 @@ export const DEMO_USERS: User[] = [
     avatar_url: 'https://data.nks.vn/storage/users/default.png',
     ui_language: 'vi',
     apartment_code: '',
+    password: '12345678',
   },
 ];
 
@@ -988,6 +996,7 @@ export function updateDemoUser(identifier: string, updates: Partial<User>): User
     if (updates.license_plate) matched.license_plate = updates.license_plate;
     if (updates.dob) matched.dob = updates.dob;
     if (updates.pob) matched.pob = updates.pob;
+    if (updates.password) matched.password = updates.password;
     return matched;
   }
   return null;

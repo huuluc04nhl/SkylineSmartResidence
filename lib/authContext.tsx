@@ -8,7 +8,7 @@ interface AuthContextType {
   currentUser: User | null;
   isAuthenticated: boolean;
   isLoading: boolean;
-  login: (roleOrUsername: UserRole | string, password?: string) => Promise<User | null>;
+  login: (roleOrUsername: UserRole | string, password?: string, isOtpAuth?: boolean) => Promise<User | null>;
   faceLogin: (payload?: { 
     faceImage?: string; 
     faceVector?: string; 
@@ -63,24 +63,35 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   // 2. Login via NKS API (Server sets HTTP-Only Cookie)
-  const login = async (roleOrUsername: UserRole | string, password?: string): Promise<User | null> => {
+  const login = async (roleOrUsername: UserRole | string, password?: string, isOtpAuth?: boolean): Promise<User | null> => {
     setIsLoading(true);
     try {
       // Map quick role to standard NKS account if role string is provided
       let usernameToSubmit = roleOrUsername;
-      if (roleOrUsername === 'ADMIN') usernameToSubmit = 'nks.manager01@gmail.com';
-      else if (roleOrUsername === 'TECHNICIAN') usernameToSubmit = 'nks.manager02@gmail.com';
-      else if (roleOrUsername === 'OWNER') usernameToSubmit = 'huuluc04@gmail.com';
-      else if (roleOrUsername === 'TENANT') usernameToSubmit = 'nguyenhuunhut1309@gmail.com';
+      let pwdToSubmit = password;
+      if (roleOrUsername === 'ADMIN') {
+        usernameToSubmit = 'nks.manager01@gmail.com';
+        if (!pwdToSubmit) pwdToSubmit = 'admin123';
+      } else if (roleOrUsername === 'TECHNICIAN') {
+        usernameToSubmit = 'nks.manager02@gmail.com';
+        if (!pwdToSubmit) pwdToSubmit = '12345678';
+      } else if (roleOrUsername === 'OWNER') {
+        usernameToSubmit = 'huuluc04@gmail.com';
+        if (!pwdToSubmit) pwdToSubmit = '12345678';
+      } else if (roleOrUsername === 'TENANT') {
+        usernameToSubmit = 'nguyenhuunhut1309@gmail.com';
+        if (!pwdToSubmit) pwdToSubmit = '12345678';
+      }
 
-      const nksRes = await nksLogin(usernameToSubmit, password || '12345678');
+      const nksRes = await nksLogin(usernameToSubmit, pwdToSubmit, isOtpAuth);
       if (nksRes.success && nksRes.user) {
         const u = nksRes.user as any as User;
         setCurrentUser(u);
         return u;
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error('Login API error', err);
+      throw err;
     } finally {
       setIsLoading(false);
     }

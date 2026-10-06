@@ -29,6 +29,7 @@ export interface StoredUser {
   role: 'ADMIN' | 'OWNER' | 'TENANT' | 'TECHNICIAN' | 'RECEPTIONIST';
   relationship?: string;
   apartment_code: string;
+  password?: string;
   updated_at?: string;
 }
 
@@ -92,6 +93,7 @@ function initUserStore(): Record<string, StoredUser> {
       role: u.role as any,
       relationship: u.relationship,
       apartment_code: u.apartment_code || '',
+      password: u.password || (u.role === 'ADMIN' ? 'admin123' : '12345678'),
     };
 
     // Clean potential double slashes in avatar
@@ -282,9 +284,62 @@ export function updateUserStore(identifier: string, updates: Partial<StoredUser>
     license_plate: updated.license_plate,
     dob: updated.dob,
     pob: updated.pob,
+    password: updated.password,
   });
 
   return updated;
+}
+
+/**
+ * Lấy mật khẩu của tài khoản
+ */
+export function getUserPassword(identifier: string): string {
+  const user = getUserStore(identifier);
+  if (user && user.password) {
+    return user.password;
+  }
+  return user?.role === 'ADMIN' ? 'admin123' : '12345678';
+}
+
+/**
+ * Xác thực mật khẩu tài khoản một cách nghiêm ngặt
+ */
+export function verifyUserPassword(identifier: string, passwordAttempt: string): boolean {
+  if (!passwordAttempt || typeof passwordAttempt !== 'string') return false;
+  const cleanAttempt = passwordAttempt.trim();
+  const user = getUserStore(identifier);
+  if (!user) return false;
+
+  const storedPass = user.password || (user.role === 'ADMIN' ? 'admin123' : '12345678');
+  
+  // So sánh chính xác mật khẩu
+  if (cleanAttempt === storedPass) return true;
+
+  // Với Admin, hỗ trợ cả mật khẩu mặc định admin123 và 12345678 nếu chưa đổi mật khẩu riêng
+  if (user.role === 'ADMIN' && (!user.password || user.password === 'admin123' || user.password === '12345678')) {
+    if (cleanAttempt === 'admin123' || cleanAttempt === '12345678') {
+      return true;
+    }
+  }
+
+  // Với tài khoản demo cư dân chưa đổi mật khẩu, cho phép mật khẩu mặc định 12345678
+  if (!user.password && cleanAttempt === '12345678') {
+    return true;
+  }
+
+  return false;
+}
+
+/**
+ * Cập nhật mật khẩu mới cho tài khoản (Lưu thực tế vào userStore & DEMO_USERS)
+ */
+export function updateUserPassword(identifier: string, newPassword: string): boolean {
+  if (!newPassword || newPassword.trim().length < 6) return false;
+  const user = getUserStore(identifier);
+  if (!user) return false;
+
+  updateUserStore(user.id, { password: newPassword.trim() });
+  return true;
 }
 
 /**
@@ -327,6 +382,7 @@ export function registerNewOwnerUser(data: {
     role: 'OWNER',
     relationship: 'Owner',
     apartment_code: data.apartmentCode,
+    password: '12345678',
   };
 
   if (!globalScope.__NKS_USER_STORE) {
@@ -357,7 +413,8 @@ export function registerNewOwnerUser(data: {
     apartment_code: newUser.apartment_code,
     relationship: 'Owner',
     dob: newUser.dob,
-    pob: newUser.pob
+    pob: newUser.pob,
+    password: '12345678',
   });
 
   return newUser;

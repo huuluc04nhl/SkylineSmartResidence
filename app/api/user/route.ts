@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
-import { getUserStore, extractUserIdFromToken } from '@/lib/userStore';
 
 function formatToDateInput(d?: string): string {
   if (!d) return '';
@@ -43,99 +42,65 @@ export async function POST(req: Request) {
       return NextResponse.json({ success: false, message: 'Chưa đăng nhập (No Token)' }, { status: 401 });
     }
 
-    // 1. Call official live NKS Server (https://account.nks.vn/api/nks/user)
-    try {
-      const formData = new URLSearchParams();
-      formData.append('access_token', access_token);
+    // Xác thực trực tiếp qua NKS API (https://account.nks.vn/api/nks/user)
+    const formData = new URLSearchParams();
+    formData.append('access_token', access_token);
 
-      const remoteRes = await fetch('https://account.nks.vn/api/nks/user', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: formData.toString(),
-      });
-
-      if (remoteRes.ok) {
-        const data = await remoteRes.json();
-        if (data.success && data.data) {
-          const apiUser = data.data;
-          const role = (apiUser.email && (apiUser.email.includes('manager01') || apiUser.email.includes('admin')))
-            ? 'ADMIN'
-            : (apiUser.email && apiUser.email.includes('manager02'))
-            ? 'TECHNICIAN'
-            : (apiUser.email && (apiUser.email.includes('nhut') || apiUser.email.includes('cuong') || apiUser.email.includes('hai') || apiUser.email.includes('thinh')))
-            ? 'TENANT'
-            : 'OWNER';
-
-          const formatted = {
-            id: String(apiUser.id || 'usr-120'),
-            username: apiUser.email || 'huuluc04@gmail.com',
-            firstname: apiUser.firstname || '',
-            lastname: apiUser.lastname || '',
-            fullname: apiUser.name || `${apiUser.lastname || ''} ${apiUser.firstname || ''}`.trim() || 'Trần Hữu Lực',
-            full_name: apiUser.name || `${apiUser.lastname || ''} ${apiUser.firstname || ''}`.trim() || 'Trần Hữu Lực',
-            email: apiUser.email || 'huuluc04@gmail.com',
-            phone: apiUser.phone || '',
-            role: role,
-            apartment_code: (role === 'ADMIN' ? 'BQL_OFFICE' : role === 'TECHNICIAN' ? 'TECH_ROOM' : '12A05'),
-            avatar_url: apiUser.avatar ? (apiUser.avatar.startsWith('http') ? apiUser.avatar : `https://data.nks.vn/${apiUser.avatar}`) : undefined,
-            avatar: apiUser.avatar ? (apiUser.avatar.startsWith('http') ? apiUser.avatar : `https://data.nks.vn/${apiUser.avatar}`) : undefined,
-            id_number: apiUser.id_number || '',
-            id_card_no: apiUser.id_number || '',
-            id_card_number: apiUser.id_number || '',
-            id_date: formatToDateInput(apiUser.id_date || apiUser.formatedCccdDate || ''),
-            id_place: apiUser.id_place || '',
-            province: apiUser.province || '',
-            gender: apiUser.gender ?? 1,
-            dob: formatToDateInput(apiUser.dob || apiUser.formatedDob || ''),
-            pob: apiUser.pob || '',
-            intro: apiUser.intro || '',
-            cccd_front_url: getUserStore(role === 'OWNER' ? 'user-owner-1' : role === 'ADMIN' ? 'user-manager-1' : 'user-tenant-1')?.cccd_front_url,
-            cccd_back_url: getUserStore(role === 'OWNER' ? 'user-owner-1' : role === 'ADMIN' ? 'user-manager-1' : 'user-tenant-1')?.cccd_back_url,
-          };
-          return NextResponse.json({ success: true, user: formatted });
-        }
-      }
-    } catch (e) {
-      console.warn('Remote NKS user fetch error:', e);
-    }
-
-    // 2. Server-side Session Token Resolver (Direct Per-User Identification)
-    const targetUserId = extractUserIdFromToken(access_token);
-    if (targetUserId) {
-      return NextResponse.json({
-        success: true,
-        user: getUserStore(targetUserId),
-      });
-    }
-
-    if (access_token.includes('ADMIN') || access_token.includes('MANAGER')) {
-      return NextResponse.json({
-        success: true,
-        user: getUserStore('user-manager-1'),
-      });
-    }
-
-    if (access_token.includes('TECHNICIAN')) {
-      return NextResponse.json({
-        success: true,
-        user: getUserStore('user-tech-1'),
-      });
-    }
-
-    if (access_token.includes('TENANT')) {
-      return NextResponse.json({
-        success: true,
-        user: getUserStore('user-tenant-1'),
-      });
-    }
-
-    // Default Owner
-    return NextResponse.json({
-      success: true,
-      user: getUserStore('user-owner-1'),
+    const remoteRes = await fetch('https://account.nks.vn/api/nks/user', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: formData.toString(),
     });
+
+    if (remoteRes.ok) {
+      const data = await remoteRes.json();
+      if (data.success && data.data) {
+        const apiUser = data.data;
+        const emailLower = (apiUser.email || '').toLowerCase();
+        const role = (emailLower.includes('manager01') || emailLower.includes('admin'))
+          ? 'ADMIN'
+          : (emailLower.includes('manager02'))
+          ? 'TECHNICIAN'
+          : (emailLower.includes('nhut') || emailLower.includes('cuong') || emailLower.includes('hai') || emailLower.includes('thinh'))
+          ? 'TENANT'
+          : 'OWNER';
+
+        const formatted = {
+          id: String(apiUser.id || 'usr-120'),
+          username: apiUser.email || '',
+          firstname: apiUser.firstname || '',
+          lastname: apiUser.lastname || '',
+          fullname: apiUser.name || `${apiUser.lastname || ''} ${apiUser.firstname || ''}`.trim() || 'Cư Dân SKYLINE',
+          full_name: apiUser.name || `${apiUser.lastname || ''} ${apiUser.firstname || ''}`.trim() || 'Cư Dân SKYLINE',
+          email: apiUser.email || '',
+          phone: apiUser.phone || '',
+          role: role,
+          apartment_code: (role === 'ADMIN' ? 'BQL_OFFICE' : role === 'TECHNICIAN' ? 'TECH_ROOM' : 'CH-06'),
+          relationship: (role === 'ADMIN' || role === 'TECHNICIAN') ? 'Staff' : role === 'OWNER' ? 'Owner' : 'Family',
+          avatar_url: apiUser.avatar ? (apiUser.avatar.startsWith('http') ? apiUser.avatar : `https://data.nks.vn/${apiUser.avatar}`) : undefined,
+          avatar: apiUser.avatar ? (apiUser.avatar.startsWith('http') ? apiUser.avatar : `https://data.nks.vn/${apiUser.avatar}`) : undefined,
+          id_number: apiUser.id_number || '',
+          id_card_no: apiUser.id_number || '',
+          id_card_number: apiUser.id_number || '',
+          id_date: formatToDateInput(apiUser.id_date || apiUser.formatedCccdDate || ''),
+          id_place: apiUser.id_place || '',
+          province: apiUser.province || 'Thành phố Hồ Chí Minh',
+          gender: apiUser.gender ?? 1,
+          dob: formatToDateInput(apiUser.dob || apiUser.formatedDob || ''),
+          pob: apiUser.pob || '',
+          intro: apiUser.intro || '',
+        };
+        return NextResponse.json({ success: true, user: formatted });
+      }
+    }
+
+    // Nếu token không hợp lệ hoặc API từ chối, trả về lỗi, không dùng mock demo
+    return NextResponse.json(
+      { success: false, user: null, message: 'Phiên đăng nhập không hợp lệ hoặc đã hết hạn.' },
+      { status: 401 }
+    );
   } catch (error) {
-    return NextResponse.json({ success: false, message: 'Lỗi xác thực NKS User Info' }, { status: 500 });
+    return NextResponse.json({ success: false, message: 'Lỗi xác thực người dùng từ API' }, { status: 500 });
   }
 }
 
@@ -162,25 +127,27 @@ export async function GET() {
       const data = await remoteRes.json();
       if (data.success && data.data) {
         const apiUser = data.data;
-        const role = (apiUser.email && (apiUser.email.includes('manager01') || apiUser.email.includes('admin')))
+        const emailLower = (apiUser.email || '').toLowerCase();
+        const role = (emailLower.includes('manager01') || emailLower.includes('admin'))
           ? 'ADMIN'
-          : (apiUser.email && apiUser.email.includes('manager02'))
+          : (emailLower.includes('manager02'))
           ? 'TECHNICIAN'
-          : (apiUser.email && (apiUser.email.includes('nhut') || apiUser.email.includes('cuong') || apiUser.email.includes('hai') || apiUser.email.includes('thinh')))
+          : (emailLower.includes('nhut') || emailLower.includes('cuong') || emailLower.includes('hai') || emailLower.includes('thinh'))
           ? 'TENANT'
           : 'OWNER';
 
         const formatted = {
           id: String(apiUser.id || 'usr-120'),
-          username: apiUser.email || 'huuluc04@gmail.com',
+          username: apiUser.email || '',
           firstname: apiUser.firstname || '',
           lastname: apiUser.lastname || '',
-          fullname: apiUser.name || `${apiUser.lastname || ''} ${apiUser.firstname || ''}`.trim() || 'Trần Hữu Lực',
-          full_name: apiUser.name || `${apiUser.lastname || ''} ${apiUser.firstname || ''}`.trim() || 'Trần Hữu Lực',
-          email: apiUser.email || 'huuluc04@gmail.com',
+          fullname: apiUser.name || `${apiUser.lastname || ''} ${apiUser.firstname || ''}`.trim() || 'Cư Dân SKYLINE',
+          full_name: apiUser.name || `${apiUser.lastname || ''} ${apiUser.firstname || ''}`.trim() || 'Cư Dân SKYLINE',
+          email: apiUser.email || '',
           phone: apiUser.phone || '',
           role: role,
-          apartment_code: (role === 'ADMIN' ? 'BQL_OFFICE' : role === 'TECHNICIAN' ? 'TECH_ROOM' : '12A05'),
+          apartment_code: (role === 'ADMIN' ? 'BQL_OFFICE' : role === 'TECHNICIAN' ? 'TECH_ROOM' : 'CH-06'),
+          relationship: (role === 'ADMIN' || role === 'TECHNICIAN') ? 'Staff' : role === 'OWNER' ? 'Owner' : 'Family',
           avatar_url: apiUser.avatar ? (apiUser.avatar.startsWith('http') ? apiUser.avatar : `https://data.nks.vn/${apiUser.avatar}`) : undefined,
           avatar: apiUser.avatar ? (apiUser.avatar.startsWith('http') ? apiUser.avatar : `https://data.nks.vn/${apiUser.avatar}`) : undefined,
           id_number: apiUser.id_number || '',
@@ -188,7 +155,7 @@ export async function GET() {
           id_card_number: apiUser.id_number || '',
           id_date: formatToDateInput(apiUser.id_date || apiUser.formatedCccdDate || ''),
           id_place: apiUser.id_place || '',
-          province: apiUser.province || '',
+          province: apiUser.province || 'Thành phố Hồ Chí Minh',
           gender: apiUser.gender ?? 1,
           dob: formatToDateInput(apiUser.dob || apiUser.formatedDob || ''),
           pob: apiUser.pob || '',
@@ -197,41 +164,9 @@ export async function GET() {
         return NextResponse.json({ success: true, user: formatted });
       }
     }
+
+    return NextResponse.json({ success: false, user: null, message: 'Phiên làm việc hết hạn' }, { status: 200 });
   } catch (e) {
-    // Remote offline
+    return NextResponse.json({ success: false, user: null, message: 'Lỗi kết nối API' }, { status: 200 });
   }
-
-  const targetUserId = extractUserIdFromToken(token);
-  if (targetUserId) {
-    return NextResponse.json({
-      success: true,
-      user: getUserStore(targetUserId),
-    });
-  }
-
-  if (token.includes('ADMIN') || token.includes('MANAGER')) {
-    return NextResponse.json({
-      success: true,
-      user: getUserStore('user-manager-1'),
-    });
-  }
-
-  if (token.includes('TECHNICIAN')) {
-    return NextResponse.json({
-      success: true,
-      user: getUserStore('user-tech-1'),
-    });
-  }
-
-  if (token.includes('TENANT')) {
-    return NextResponse.json({
-      success: true,
-      user: getUserStore('user-tenant-1'),
-    });
-  }
-
-  return NextResponse.json({
-    success: true,
-    user: getUserStore('user-owner-1'),
-  });
 }

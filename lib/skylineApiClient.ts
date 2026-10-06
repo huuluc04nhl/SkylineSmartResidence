@@ -46,11 +46,13 @@ export type NksLoginResponse = SkylineLoginResponse;
  */
 export async function skylineLogin(
   username: string, 
-  password?: string
+  password?: string,
+  isOtpAuth?: boolean
 ): Promise<SkylineLoginResponse> {
   const payload = {
     username: username.trim(),
-    password: password || '12345678',
+    password: password || '',
+    isOtpAuth: !!isOtpAuth,
     fbtoken: 'SKYLINE_FCM_TOKEN_' + Date.now(),
     system: 'SKYLINE',
     device: 'Web Browser (Skyline Smart Residence)',
@@ -64,11 +66,12 @@ export async function skylineLogin(
     body: JSON.stringify(payload),
   });
 
+  const data = await res.json().catch(() => null);
   if (!res.ok) {
-    throw new Error('Skyline Login API returned status ' + res.status);
+    throw new Error(data?.message || 'Lỗi xác thực đăng nhập: ' + res.status);
   }
 
-  return await res.json();
+  return data;
 }
 export const nksLogin = skylineLogin;
 

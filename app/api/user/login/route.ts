@@ -1,7 +1,4 @@
 import { NextResponse } from 'next/server';
-import { cookies } from 'next/headers';
-import { DEMO_USERS } from '@/lib/dataStore';
-import { getUserStore } from '@/lib/userStore';
 
 function formatToDateInput(d?: string): string {
   if (!d) return '';
@@ -36,168 +33,114 @@ export async function POST(req: Request) {
       );
     }
 
-    const u = username.toLowerCase().trim();
+    if (!password || typeof password !== 'string' || password.trim() === '') {
+      return NextResponse.json(
+        { success: false, message: 'Vui lòng nhập mật khẩu tài khoản để đăng nhập.' },
+        { status: 400 }
+      );
+    }
 
-    // 1. Call official live NKS Server (https://account.nks.vn/api/nks/user/login)
+    const u = username.trim();
+
+    // 1. Xác thực trực tiếp 100% qua API chính thức (https://account.nks.vn/api/nks/user/login)
+    const formData = new URLSearchParams();
+    formData.append('username', u);
+    formData.append('password', password);
+    formData.append('system', 'NKS');
+    formData.append('device', 'Web Browser');
+
+    let remoteRes: Response;
     try {
-      const formData = new URLSearchParams();
-      formData.append('username', username.trim());
-      formData.append('password', password || '12345678');
-      formData.append('system', 'NKS');
-      formData.append('device', 'Web Browser');
-
-      const remoteRes = await fetch('https://account.nks.vn/api/nks/user/login', {
+      remoteRes = await fetch('https://account.nks.vn/api/nks/user/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: formData.toString(),
       });
-
-      if (remoteRes.ok) {
-        const data = await remoteRes.json();
-        if (data.success && data.data) {
-          const apiUser = data.data.user || {};
-          const accessToken = data.data.access_token || '';
-
-          const role = (u.includes('manager01') || u.includes('admin')) 
-            ? 'ADMIN' 
-            : u.includes('manager02')
-            ? 'TECHNICIAN'
-            : (u.includes('nhut') || u.includes('cuong') || u.includes('hai') || u.includes('thinh'))
-            ? 'TENANT'
-            : 'OWNER';
-
-          const formattedUser = {
-            id: String(apiUser.id || 'usr-120'),
-            username: apiUser.email || username,
-            firstname: apiUser.firstname || '',
-            lastname: apiUser.lastname || '',
-            fullname: apiUser.name || `${apiUser.lastname || ''} ${apiUser.firstname || ''}`.trim() || 'Trần Hữu Lực',
-            full_name: apiUser.name || `${apiUser.lastname || ''} ${apiUser.firstname || ''}`.trim() || 'Trần Hữu Lực',
-            email: apiUser.email || username,
-            phone: apiUser.phone || '0364967082',
-            role: role,
-            apartment_code: (role === 'ADMIN' || role === 'TECHNICIAN') ? 'BQL_OFFICE' : 'CH-06',
-            relationship: (role === 'ADMIN' || role === 'TECHNICIAN') ? 'Staff' : role === 'OWNER' ? 'Owner' : 'Family',
-            avatar_url: apiUser.avatar ? (apiUser.avatar.startsWith('http') ? apiUser.avatar : `https://data.nks.vn/${apiUser.avatar}`) : undefined,
-            avatar: apiUser.avatar ? (apiUser.avatar.startsWith('http') ? apiUser.avatar : `https://data.nks.vn/${apiUser.avatar}`) : undefined,
-            id_number: apiUser.id_number || '',
-            id_card_no: apiUser.id_number || '',
-            id_card_number: apiUser.id_number || '',
-            id_date: formatToDateInput(apiUser.id_date || apiUser.formatedCccdDate || ''),
-            id_place: apiUser.id_place || '',
-            province: apiUser.province || 'Thành phố Hồ Chí Minh',
-            gender: apiUser.gender ?? 1,
-            dob: formatToDateInput(apiUser.dob || apiUser.formatedDob || ''),
-            pob: apiUser.pob || '',
-          };
-
-          const response = NextResponse.json({
-            success: true,
-            message: 'Đăng nhập thành công từ NKS API',
-            access_token: accessToken,
-            user: formattedUser,
-          });
-
-          if (accessToken) {
-            response.cookies.set('nks_token', accessToken, {
-              httpOnly: true,
-              secure: process.env.NODE_ENV === 'production',
-              sameSite: 'lax',
-              path: '/',
-              maxAge: 60 * 60 * 24 * 7,
-            });
-          }
-          return response;
-        }
-      }
-    } catch (e) {
-      console.warn('Remote NKS login error:', e);
-    }
-
-    // 2. Query User Database (Check userStore first for provisioned users, then DEMO_USERS)
-    const storeUser = getUserStore(u);
-    const matched = storeUser ? {
-      id: storeUser.id,
-      role: storeUser.role,
-      username: storeUser.username,
-      full_name: storeUser.fullname || storeUser.full_name,
-      phone: storeUser.phone,
-      email: storeUser.email,
-      id_card_no: storeUser.id_number || storeUser.id_card_no,
-      avatar_url: storeUser.avatar_url,
-      apartment_code: storeUser.apartment_code,
-      relationship: storeUser.relationship as any,
-      license_plate: storeUser.license_plate,
-      dob: storeUser.dob,
-      pob: storeUser.pob,
-      ui_language: 'vi' as const,
-    } : DEMO_USERS.find((user) => {
-      const uName = (user.username || '').toLowerCase().trim();
-      const uEmail = (user.email || '').toLowerCase().trim();
-      const uPhone = (user.phone || '').toLowerCase().trim();
-      const uId = (user.id_card_no || '').toLowerCase().trim();
-      return uName === u || uEmail === u || uPhone === u || uId === u;
-    });
-
-    if (!matched) {
+    } catch (networkErr: any) {
       return NextResponse.json(
         { 
           success: false, 
-          message: 'Tài khoản không tồn tại. Vui lòng kiểm tra lại số điện thoại hoặc email đã đăng ký với BQL tòa nhà.' 
+          message: 'Không thể kết nối đến máy chủ API xác thực (https://account.nks.vn). Vui lòng kiểm tra mạng.' 
         },
+        { status: 503 }
+      );
+    }
+
+    const data = await remoteRes.json().catch(() => null);
+
+    if (!data) {
+      return NextResponse.json(
+        { success: false, message: 'Máy chủ API không phản hồi dữ liệu hợp lệ.' },
+        { status: 502 }
+      );
+    }
+
+    // 2. Kiểm tra phản hồi từ API: Nếu API từ chối -> Báo lỗi chính xác từ API, KHÔNG fallback tài khoản demo
+    if (!data.success || !data.data) {
+      const errorMessage = data.error || data.message || 'Tài khoản hoặc mật khẩu không chính xác trên hệ thống API.';
+      return NextResponse.json(
+        { success: false, message: errorMessage },
         { status: 401 }
       );
     }
 
-    // 3. For Admin / Manager, verify password
-    if (matched.role === 'ADMIN') {
-      if (password && password !== '12345678' && password !== 'admin123') {
-        return NextResponse.json(
-          { success: false, message: 'Mật khẩu quản trị Ban Quản Lý không chính xác.' },
-          { status: 401 }
-        );
-      }
-    }
+    // 3. API xác thực thành công -> Chuẩn hóa thông tin User & Access Token từ API response
+    const apiUser = data.data.user || {};
+    const accessToken = data.data.access_token || '';
 
-    // 4. Generate Access Token & Build User Profile with specific user ID
-    const token = `NKS_SESSION_${matched.id}_${matched.role}_${Date.now()}`;
-    const userProfile = {
-      id: matched.id,
-      username: matched.username,
-      firstname: matched.full_name.split(' ').slice(-1)[0] || '',
-      lastname: matched.full_name.split(' ').slice(0, -1).join(' ') || '',
-      fullname: matched.full_name,
-      full_name: matched.full_name,
-      email: matched.email || `${matched.username}@skyline.vn`,
-      phone: matched.phone || matched.username,
-      role: matched.role,
-      relationship: matched.relationship,
-      apartment_code: matched.apartment_code || (matched.role === 'ADMIN' ? 'BQL_OFFICE' : 'CH-06'),
-      avatar_url: matched.avatar_url,
-      license_plate: matched.license_plate || '',
-      id_number: matched.id_card_no || '',
-      id_card_no: matched.id_card_no || '',
-      dob: matched.dob,
-      pob: matched.pob,
+    const uLower = u.toLowerCase();
+    const emailLower = (apiUser.email || '').toLowerCase();
+    const role = (emailLower.includes('manager01') || emailLower.includes('admin') || uLower.includes('manager01') || uLower.includes('admin')) 
+      ? 'ADMIN' 
+      : (emailLower.includes('manager02') || uLower.includes('manager02'))
+      ? 'TECHNICIAN'
+      : (emailLower.includes('nhut') || emailLower.includes('cuong') || emailLower.includes('hai') || emailLower.includes('thinh'))
+      ? 'TENANT'
+      : 'OWNER';
+
+    const formattedUser = {
+      id: String(apiUser.id || 'usr-120'),
+      username: apiUser.email || u,
+      firstname: apiUser.firstname || '',
+      lastname: apiUser.lastname || '',
+      fullname: apiUser.name || `${apiUser.lastname || ''} ${apiUser.firstname || ''}`.trim() || 'Cư Dân SKYLINE',
+      full_name: apiUser.name || `${apiUser.lastname || ''} ${apiUser.firstname || ''}`.trim() || 'Cư Dân SKYLINE',
+      email: apiUser.email || u,
+      phone: apiUser.phone || '',
+      role: role,
+      apartment_code: (role === 'ADMIN' || role === 'TECHNICIAN') ? 'BQL_OFFICE' : 'CH-06',
+      relationship: (role === 'ADMIN' || role === 'TECHNICIAN') ? 'Staff' : role === 'OWNER' ? 'Owner' : 'Family',
+      avatar_url: apiUser.avatar ? (apiUser.avatar.startsWith('http') ? apiUser.avatar : `https://data.nks.vn/${apiUser.avatar}`) : undefined,
+      avatar: apiUser.avatar ? (apiUser.avatar.startsWith('http') ? apiUser.avatar : `https://data.nks.vn/${apiUser.avatar}`) : undefined,
+      id_number: apiUser.id_number || '',
+      id_card_no: apiUser.id_number || '',
+      id_card_number: apiUser.id_number || '',
+      id_date: formatToDateInput(apiUser.id_date || apiUser.formatedCccdDate || ''),
+      id_place: apiUser.id_place || '',
+      province: apiUser.province || 'Thành phố Hồ Chí Minh',
+      gender: apiUser.gender ?? 1,
+      dob: formatToDateInput(apiUser.dob || apiUser.formatedDob || ''),
+      pob: apiUser.pob || '',
     };
 
-    const res = NextResponse.json({
+    const response = NextResponse.json({
       success: true,
-      message: 'Đăng nhập thành công',
-      access_token: token,
-      user: userProfile,
+      message: 'Đăng nhập thành công từ API',
+      access_token: accessToken,
+      user: formattedUser,
     });
 
-    // Set secure HTTP-Only session cookie
-    res.cookies.set('nks_token', token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      path: '/',
-      maxAge: 60 * 60 * 24 * 7,
-    });
+    if (accessToken) {
+      response.cookies.set('nks_token', accessToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
+        path: '/',
+        maxAge: 60 * 60 * 24 * 7,
+      });
+    }
 
-    return res;
+    return response;
   } catch (error: any) {
     console.error('Login route error:', error?.message || error);
     return NextResponse.json(

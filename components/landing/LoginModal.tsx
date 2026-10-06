@@ -198,14 +198,14 @@ export default function LoginModal({ isOpen, onClose, defaultAccount = '' }: Log
     setSuccessMessage(null);
 
     try {
-      const loggedUser = await login(cleanPhone, '12345678');
+      const loggedUser = await login(cleanPhone, undefined, true);
       if (loggedUser) {
         handleRoleRedirect(loggedUser);
       } else {
         setErrorMessage('Số điện thoại chưa tồn tại trong cơ sở dữ liệu cư dân tòa nhà.');
       }
     } catch (err: any) {
-      setErrorMessage('Lỗi xác thực OTP từ máy chủ.');
+      setErrorMessage(err?.message || 'Lỗi xác thực OTP từ máy chủ.');
     } finally {
       setIsSubmitting(false);
     }
