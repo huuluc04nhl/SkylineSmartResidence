@@ -63,8 +63,10 @@ function PortalContent() {
       const actionParam = searchParams.get('action');
 
       // Aliases for seamless linking
-      if (tabParam === 'resident-billing') tabParam = 'resident-finance';
-      if (tabParam === 'resident-request') tabParam = 'resident-tickets';
+      if (tabParam === 'finance' || tabParam === 'billing' || tabParam === 'resident-billing') {
+        tabParam = 'resident-finance';
+      }
+      if (tabParam === 'resident-request' || tabParam === 'tickets') tabParam = 'resident-tickets';
       if (tabParam === 'admin-building') tabParam = 'admin-apartments';
       if (tabParam === 'admin-visitor') tabParam = 'admin-visitors';
 

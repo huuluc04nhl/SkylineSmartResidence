@@ -29,28 +29,28 @@ export async function GET(req: Request) {
     if (!isValid) {
       console.error('Cảnh báo: Sai mã kiểm tra chữ ký VNPAY (Checksum mismatch)');
       return NextResponse.redirect(
-        `${baseUrl}/portal?tab=finance&vnp_status=invalid_checksum&billId=${encodeURIComponent(billId)}`
+        `${baseUrl}/portal?tab=resident-finance&vnp_status=invalid_checksum&billId=${encodeURIComponent(billId)}`
       );
     }
 
     if (vnp_ResponseCode === '00') {
-      // Thanh toán thành công, thực hiện gạch nợ tự động
+      // Thanh toán thành công, thực hiện gạch nợ tự động trên server
       if (billId) {
         payBill(billId, 'VNPAY', vnp_TransactionNo, vnp_BankCode);
       }
 
       return NextResponse.redirect(
-        `${baseUrl}/portal?tab=finance&vnp_status=success&billId=${encodeURIComponent(billId)}&transId=${encodeURIComponent(vnp_TransactionNo)}&amount=${vnp_Amount}&bank=${encodeURIComponent(vnp_BankCode)}`
+        `${baseUrl}/portal?tab=resident-finance&vnp_status=success&billId=${encodeURIComponent(billId)}&transId=${encodeURIComponent(vnp_TransactionNo)}&amount=${vnp_Amount}&bank=${encodeURIComponent(vnp_BankCode)}`
       );
     } else {
       // Giao dịch không thành công hoặc người dùng hủy
       return NextResponse.redirect(
-        `${baseUrl}/portal?tab=finance&vnp_status=failed&code=${encodeURIComponent(vnp_ResponseCode || '99')}&billId=${encodeURIComponent(billId)}`
+        `${baseUrl}/portal?tab=resident-finance&vnp_status=failed&code=${encodeURIComponent(vnp_ResponseCode || '99')}&billId=${encodeURIComponent(billId)}`
       );
     }
   } catch (error: any) {
     console.error('Lỗi xử lý VNPAY Return URL:', error);
     const origin = new URL(req.url).origin;
-    return NextResponse.redirect(`${origin}/portal?tab=finance&vnp_status=error`);
+    return NextResponse.redirect(`${origin}/portal?tab=resident-finance&vnp_status=error`);
   }
 }

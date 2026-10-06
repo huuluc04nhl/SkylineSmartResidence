@@ -165,38 +165,82 @@ export default function FinanceBilling({ currentUser }: FinanceBillingProps) {
         const transId = urlParams.get('transId') || `VNP${Date.now().toString().slice(-8)}`;
         const amountStr = urlParams.get('amount');
         const billIdParam = urlParams.get('billId');
+        const bankCode = urlParams.get('bank') || 'VNPAY';
+        const code = urlParams.get('code') || '';
 
         if (vnpStatus === 'success') {
           if (billIdParam) {
-            payBill(billIdParam, 'VNPAY', transId);
+            payBill(billIdParam, 'VNPAY', transId, bankCode);
+            setSelectedBillId(billIdParam);
+            // Đồng bộ trạng thái gạch nợ lên Server Route
+            fetch('/api/billing', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                action: 'PAY',
+                billId: billIdParam,
+                method: 'VNPAY',
+                transactionCode: transId,
+              }),
+            }).catch(() => {});
           }
           refreshBills();
+          const paidAmount = amountStr ? parseFloat(amountStr) : 0;
           setLastPaymentResult({
             gateway: 'VNPAY',
             transId,
-            amount: amountStr ? parseFloat(amountStr) : 0,
+            amount: paidAmount,
             paidAt: new Date().toLocaleString('vi-VN'),
           });
           setShowPaymentModal(true);
           setRedirectBanner({
             type: 'success',
-            message: `Giao dịch qua Cổng VNPAY Sandbox thành công! Mã chuẩn chi: #${transId}. Hóa đơn đã được tự động gạch nợ.`,
+            message: `Giao dịch qua Cổng VNPAY Sandbox thành công! Mã chuẩn chi: #${transId} (${bankCode}) • Số tiền: ${paidAmount.toLocaleString('vi-VN')} VNĐ. Hóa đơn căn ${aptCode} đã được tự động gạch nợ thành công!`,
           });
         } else if (vnpStatus === 'failed') {
-          const code = urlParams.get('code') || '';
+          if (billIdParam) setSelectedBillId(billIdParam);
+          const getVnpayErrMsg = (c: string) => {
+            switch (c) {
+              case '24': return 'Khách hàng đã hủy giao dịch trên cổng VNPAY.';
+              case '09': return 'Thẻ/Tài khoản của quý khách chưa đăng ký dịch vụ InternetBanking.';
+              case '10': return 'Quý khách đã xác thực thông tin thẻ/tài khoản không đúng quá 3 lần.';
+              case '11': return 'Đã hết thời gian chờ thanh toán (Timeout).';
+              case '12': return 'Thẻ/Tài khoản của quý khách đang bị khóa.';
+              case '51': return 'Số dư tài khoản không đủ để thực hiện thanh toán.';
+              case '65': return 'Tài khoản đã vượt quá hạn mức giao dịch trong ngày.';
+              case '75': return 'Ngân hàng thanh toán đang trong quá trình bảo trì.';
+              case '79': return 'Nhập sai mật khẩu xác thực quá số lần quy định.';
+              default: return `Giao dịch thanh toán VNPAY không hoàn tất (Mã lỗi: ${c || 'Không xác định'}).`;
+            }
+          };
           setRedirectBanner({
             type: 'failed',
-            message: `Giao dịch thanh toán qua VNPAY không hoàn tất hoặc đã bị hủy (Mã phản hồi VNPAY: ${code}).`,
+            message: getVnpayErrMsg(code),
           });
         } else if (vnpStatus === 'invalid_checksum') {
           setRedirectBanner({
             type: 'failed',
-            message: 'Chữ ký số bảo mật VNPAY (Checksum) không hợp lệ. Giao dịch đã bị từ chối.',
+            message: 'Chữ ký số bảo mật VNPAY (Checksum) không hợp lệ. Giao dịch đã bị từ chối để đảm bảo an toàn.',
+          });
+        } else if (vnpStatus === 'error') {
+          setRedirectBanner({
+            type: 'failed',
+            message: 'Đã xảy ra lỗi trong quá trình tiếp nhận dữ liệu phản hồi từ VNPAY.',
           });
         }
 
-        const cleanUrl = window.location.pathname;
-        window.history.replaceState({}, document.title, cleanUrl);
+        // Dọn dẹp query param VNPAY nhưng giữ nguyên tab resident-finance
+        const newUrl = new URL(window.location.href);
+        newUrl.searchParams.delete('vnp_status');
+        newUrl.searchParams.delete('transId');
+        newUrl.searchParams.delete('amount');
+        newUrl.searchParams.delete('bank');
+        newUrl.searchParams.delete('billId');
+        newUrl.searchParams.delete('code');
+        if (!newUrl.searchParams.get('tab')) {
+          newUrl.searchParams.set('tab', 'resident-finance');
+        }
+        window.history.replaceState({}, document.title, newUrl.toString());
       }
     }
 
