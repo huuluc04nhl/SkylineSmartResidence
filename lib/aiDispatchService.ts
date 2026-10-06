@@ -18,6 +18,10 @@ import {
   saveTickets,
   resolveTicket 
 } from './ticketStore';
+import { 
+  classifyTicket, 
+  findInquiryAnswer 
+} from './ticketClassification';
 
 const AUTO_DISPATCH_SETTING_KEY = 'skyline_ai_auto_dispatch_enabled';
 
@@ -144,7 +148,10 @@ export function evaluateBestTechnicianWithAI(
 }
 
 /**
- * Tự động điều phối 1 phiếu đơn lẻ bằng AI
+ * Tự động điều phối 1 phiếu đơn lẻ:
+ * - INQUIRY (Hỏi đáp): AI tự động phản hồi tức thì 24/7 từ cơ sở tri thức tòa nhà.
+ * - FEEDBACK / SERVICE_REQUEST (Phản ánh / Yêu cầu): Chuyển BQL tiếp nhận, KHÔNG gán KTV sửa chữa.
+ * - REPAIR (Sự cố hỏng hóc): AI tự động phân tích và gán KTV kỹ thuật tối ưu.
  */
 export function autoDispatchSingleTicket(ticketId: string): ExtendedServiceRequest | null {
   const allTickets = getTickets();
@@ -152,9 +159,56 @@ export function autoDispatchSingleTicket(ticketId: string): ExtendedServiceReque
   const targetTicket = allTickets.find(t => t.id === ticketId || String(t.nks_id) === ticketId);
   if (!targetTicket) return null;
 
-  // Nếu phiếu đã được giao hoặc đã giải quyết thì bỏ qua
+  // Nếu phiếu đã được xử lý hoặc nghiệm thu thì bỏ qua
   if (targetTicket.status !== 'Open') return targetTicket;
 
+  // Xác định rõ loại phiếu
+  const type = targetTicket.ticket_type || classifyTicket(targetTicket.content, targetTicket.ai_category).type;
+
+  // 1. Nếu là Hỏi Đáp (INQUIRY): AI tự động giải đáp ngay lập tức
+  if (type === 'INQUIRY') {
+    const aiAnswer = targetTicket.ai_reply || findInquiryAnswer(targetTicket.content);
+    let answeredTicket: ExtendedServiceRequest | null = null;
+    const updatedTickets = allTickets.map(t => {
+      if (t.id === targetTicket.id) {
+        answeredTicket = {
+          ...t,
+          ticket_type: 'INQUIRY',
+          ticket_type_label: 'Hỏi Đáp & Trợ Giúp',
+          handled_by: 'AI',
+          ai_reply: aiAnswer,
+          ai_replied_at: t.ai_replied_at || new Date().toISOString(),
+          status: 'Resolved' as const,
+          updated_at: new Date().toISOString(),
+        };
+        return answeredTicket;
+      }
+      return t;
+    });
+
+    if (answeredTicket) {
+      saveTickets(updatedTickets);
+      if (typeof window !== 'undefined') {
+        fetch('/api/tickets', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            action: 'AI_ANSWER',
+            ticketId: targetTicket.id,
+            customAnswer: aiAnswer,
+          }),
+        }).catch(err => console.warn('Lỗi đồng bộ AI answer:', err));
+      }
+    }
+    return answeredTicket;
+  }
+
+  // 2. Nếu là Phản ánh (FEEDBACK) hoặc Yêu cầu (SERVICE_REQUEST): Giữ nguyên cho Ban Quản Lý, KHÔNG gán KTV sửa chữa
+  if (type === 'FEEDBACK' || type === 'SERVICE_REQUEST') {
+    return targetTicket;
+  }
+
+  // 3. Nếu là Sự cố hỏng hóc (REPAIR): Phân công KTV kỹ thuật
   const evaluation = evaluateBestTechnicianWithAI(targetTicket, technicians, allTickets);
   const tech = evaluation.technician;
 
@@ -163,6 +217,9 @@ export function autoDispatchSingleTicket(ticketId: string): ExtendedServiceReque
     if (t.id === targetTicket.id) {
       dispatchedTicket = {
         ...t,
+        ticket_type: 'REPAIR',
+        ticket_type_label: 'Sự Cố Kỹ Thuật',
+        handled_by: 'TECHNICIAN',
         status: 'In_Progress' as const,
         assigned_technician_id: tech.id,
         assigned_technician: tech.name,
@@ -205,7 +262,10 @@ export function autoDispatchSingleTicket(ticketId: string): ExtendedServiceReque
 }
 
 /**
- * Tự động quét và điều phối toàn bộ các phiếu đang chờ (1-Click AI Auto Dispatch All)
+ * Tự động quét và xử lý toàn bộ các phiếu đang chờ:
+ * - Tự động trả lời các câu hỏi (INQUIRY)
+ * - Tự động điều phối KTV cho các sự cố kỹ thuật (REPAIR)
+ * - Giữ lại phản ánh (FEEDBACK) cho BQL giải quyết
  */
 export function autoDispatchAllPendingTickets(): {
   successCount: number;
@@ -217,12 +277,20 @@ export function autoDispatchAllPendingTickets(): {
 
   for (const t of openTickets) {
     const dispatched = autoDispatchSingleTicket(t.id);
-    if (dispatched && dispatched.assigned_technician) {
-      results.push({
-        ticketId: dispatched.nks_id ? `#${dispatched.nks_id}` : `#${dispatched.id}`,
-        techName: dispatched.assigned_technician,
-        reason: dispatched.ai_dispatch_reason || 'AI phân công tối ưu',
-      });
+    if (dispatched) {
+      if (dispatched.ticket_type === 'INQUIRY' && dispatched.ai_reply) {
+        results.push({
+          ticketId: dispatched.nks_id ? `#${dispatched.nks_id}` : `#${dispatched.id}`,
+          techName: 'AI Tự Động Trả Lời',
+          reason: 'Giải đáp thắc mắc nội quy / tiện ích 24/7',
+        });
+      } else if (dispatched.assigned_technician) {
+        results.push({
+          ticketId: dispatched.nks_id ? `#${dispatched.nks_id}` : `#${dispatched.id}`,
+          techName: dispatched.assigned_technician,
+          reason: dispatched.ai_dispatch_reason || 'AI phân công tối ưu',
+        });
+      }
     }
   }
 

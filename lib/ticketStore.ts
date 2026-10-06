@@ -8,6 +8,14 @@
  */
 
 import { ServiceRequest } from './dataStore';
+import { 
+  TicketCategoryType, 
+  TicketHandlerRole, 
+  classifyTicket, 
+  findInquiryAnswer 
+} from './ticketClassification';
+
+export type { TicketCategoryType, TicketHandlerRole };
 
 export interface TechnicianProfile {
   id: string; // 'KTV-01', 'KTV-02'
@@ -21,8 +29,25 @@ export interface TechnicianProfile {
   status: 'AVAILABLE' | 'BUSY' | 'OFF_DUTY';
 }
 
-export interface ExtendedServiceRequest extends Omit<ServiceRequest, 'after_image'> {
+export interface ExtendedServiceRequest extends Omit<ServiceRequest, 'after_image' | 'ai_category'> {
   nks_id?: number; // ID định danh thực tế từ NKS SCRMAI API
+  ai_category?: 'Điện' | 'Nước' | 'Vệ sinh' | 'An ninh' | 'Khác' | string;
+  
+  // Phân loại mục đích phiếu (Sửa chữa / Hỏi đáp / Phản ánh / Dịch vụ)
+  ticket_type?: TicketCategoryType;
+  ticket_type_label?: string;
+  handled_by?: TicketHandlerRole; // 'AI' | 'MANAGEMENT' | 'TECHNICIAN'
+
+  // Phản hồi tự động bằng AI (cho câu hỏi, tra cứu quy chế)
+  ai_reply?: string;
+  ai_replied_at?: string;
+
+  // Phản hồi chính thức của Ban Quản Lý (cho khiếu nại, phản ánh)
+  admin_reply?: string;
+  admin_replied_at?: string;
+  admin_replied_by?: string;
+
+  // Kỹ thuật hiện trường (cho trường hợp sự cố sửa chữa)
   after_image?: string;
   assigned_technician_id?: string;
   assigned_technician_phone?: string;
@@ -32,6 +57,7 @@ export interface ExtendedServiceRequest extends Omit<ServiceRequest, 'after_imag
   resident_feedback?: string;
   rated_at?: string;
   resolved_at?: string;
+
   // Điều phối tự động bằng AI
   auto_dispatched?: boolean;
   ai_dispatch_reason?: string;
@@ -206,7 +232,7 @@ export async function syncTicketsWithServer(aptCode?: string, phone?: string): P
 }
 
 /**
- * Cư Dân tạo phiếu báo sự cố mới và đồng bộ trực tiếp lên NKS SCRMAI API
+ * Cư Dân tạo phiếu mới (sửa chữa, hỏi đáp hoặc phản ánh) và đồng bộ trực tiếp lên NKS SCRMAI API
  */
 export async function createTicketAsync(payload: {
   apartment_id?: string;
@@ -214,11 +240,18 @@ export async function createTicketAsync(payload: {
   resident_name: string;
   resident_phone: string;
   content: string;
-  ai_category?: 'Điện' | 'Nước' | 'Vệ sinh' | 'An ninh' | 'Khác';
+  ticket_type?: TicketCategoryType;
+  ticket_type_label?: string;
+  ai_category?: 'Điện' | 'Nước' | 'Vệ sinh' | 'An ninh' | 'Khác' | string;
   before_image?: string; // Base64 ảnh chụp thực tế
 }): Promise<ExtendedServiceRequest> {
   const cat = payload.ai_category || 'Khác';
   const isUrgent = cat === 'Nước' || cat === 'Điện';
+
+  // Tự động phân loại nếu người dùng chưa chọn thủ công
+  const classification = classifyTicket(payload.content, payload.ai_category);
+  const ticketType = payload.ticket_type || classification.type;
+  const handler = ticketType === 'INQUIRY' ? 'AI' : ticketType === 'REPAIR' ? 'TECHNICIAN' : 'MANAGEMENT';
 
   const optimisticTicket: ExtendedServiceRequest = {
     id: `TICK-${Math.floor(100 + Math.random() * 900)}`,
@@ -227,12 +260,18 @@ export async function createTicketAsync(payload: {
     resident_name: payload.resident_name,
     resident_phone: payload.resident_phone,
     content: payload.content,
+    ticket_type: ticketType,
+    ticket_type_label: ticketType === 'REPAIR' ? 'Sửa Chữa Kỹ Thuật' : ticketType === 'INQUIRY' ? 'Hỏi Đáp & Hỗ Trợ' : ticketType === 'FEEDBACK' ? 'Phản Ánh & Góp Ý' : 'Yêu Cầu Dịch Vụ',
+    handled_by: handler,
     ai_category: cat,
     ai_priority: isUrgent ? 1 : 2,
     priority_color: isUrgent ? '#DC2626' : '#D97706',
     sla_deadline: new Date(Date.now() + (isUrgent ? 45 : 120) * 60000).toISOString(),
     sla_minutes_left: isUrgent ? 45 : 120,
-    status: 'Open',
+    status: ticketType === 'INQUIRY' ? 'Resolved' : 'Open',
+    // Nếu là câu hỏi, AI lập tức giải đáp tự động
+    ai_reply: ticketType === 'INQUIRY' ? (classification.suggestedAiReply || findInquiryAnswer(payload.content)) : undefined,
+    ai_replied_at: ticketType === 'INQUIRY' ? new Date().toISOString() : undefined,
     before_image: payload.before_image || '',
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
@@ -269,7 +308,7 @@ export async function createTicketAsync(payload: {
 }
 
 /**
- * Cư Dân tạo phiếu báo sự cố mới từ thực tế (đồng bộ đồng thời)
+ * Cư Dân tạo phiếu mới đồng bộ cục bộ
  */
 export function createTicket(payload: {
   apartment_id?: string;
@@ -277,12 +316,18 @@ export function createTicket(payload: {
   resident_name: string;
   resident_phone: string;
   content: string;
-  ai_category?: 'Điện' | 'Nước' | 'Vệ sinh' | 'An ninh' | 'Khác';
-  before_image?: string; // Base64 ảnh chụp thực tế
+  ticket_type?: TicketCategoryType;
+  ticket_type_label?: string;
+  ai_category?: 'Điện' | 'Nước' | 'Vệ sinh' | 'An ninh' | 'Khác' | string;
+  before_image?: string;
 }): ExtendedServiceRequest {
   const allTickets = getTickets();
   const cat = payload.ai_category || 'Khác';
   const isUrgent = cat === 'Nước' || cat === 'Điện';
+
+  const classification = classifyTicket(payload.content, payload.ai_category);
+  const ticketType = payload.ticket_type || classification.type;
+  const handler = ticketType === 'INQUIRY' ? 'AI' : ticketType === 'REPAIR' ? 'TECHNICIAN' : 'MANAGEMENT';
 
   const newTicket: ExtendedServiceRequest = {
     id: `TICK-${Math.floor(100 + Math.random() * 900)}`,
@@ -291,12 +336,17 @@ export function createTicket(payload: {
     resident_name: payload.resident_name,
     resident_phone: payload.resident_phone,
     content: payload.content,
+    ticket_type: ticketType,
+    ticket_type_label: ticketType === 'REPAIR' ? 'Sửa Chữa Kỹ Thuật' : ticketType === 'INQUIRY' ? 'Hỏi Đáp & Hỗ Trợ' : ticketType === 'FEEDBACK' ? 'Phản Ánh & Góp Ý' : 'Yêu Cầu Dịch Vụ',
+    handled_by: handler,
     ai_category: cat,
     ai_priority: isUrgent ? 1 : 2,
     priority_color: isUrgent ? '#DC2626' : '#D97706',
     sla_deadline: new Date(Date.now() + (isUrgent ? 45 : 120) * 60000).toISOString(),
     sla_minutes_left: isUrgent ? 45 : 120,
-    status: 'Open',
+    status: ticketType === 'INQUIRY' ? 'Resolved' : 'Open',
+    ai_reply: ticketType === 'INQUIRY' ? (classification.suggestedAiReply || findInquiryAnswer(payload.content)) : undefined,
+    ai_replied_at: ticketType === 'INQUIRY' ? new Date().toISOString() : undefined,
     before_image: payload.before_image || '',
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
@@ -305,6 +355,86 @@ export function createTicket(payload: {
   const updatedList = [newTicket, ...allTickets];
   saveTickets(updatedList);
   return newTicket;
+}
+
+/**
+ * Ban Quản Lý trực tiếp gửi câu trả lời / phản hồi chính thức cho cư dân
+ */
+export function adminRespondToTicket(
+  ticketId: string,
+  replyText: string,
+  adminName: string = 'Ban Quản Lý Chung Cư'
+): ExtendedServiceRequest | null {
+  const allTickets = getTickets();
+  let targetTicket: ExtendedServiceRequest | null = null;
+
+  const updatedTickets = allTickets.map(t => {
+    if (t.id === ticketId || String(t.nks_id) === ticketId) {
+      targetTicket = {
+        ...t,
+        admin_reply: replyText.trim(),
+        admin_replied_at: new Date().toISOString(),
+        admin_replied_by: adminName,
+        status: 'Resolved' as const,
+        updated_at: new Date().toISOString(),
+      };
+      return targetTicket;
+    }
+    return t;
+  });
+
+  if (targetTicket) {
+    saveTickets(updatedTickets);
+
+    // Bắn sync ngầm lên server
+    if (typeof window !== 'undefined') {
+      fetch('/api/tickets', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'ADMIN_REPLY',
+          ticketId,
+          replyText,
+          adminName
+        }),
+      }).catch(e => console.warn('Lỗi đồng bộ phản hồi BQL lên server:', e));
+    }
+  }
+
+  return targetTicket;
+}
+
+/**
+ * Kích hoạt AI giải đáp tự động câu hỏi cho ticket
+ */
+export function aiAnswerTicket(
+  ticketId: string,
+  customAnswer?: string
+): ExtendedServiceRequest | null {
+  const allTickets = getTickets();
+  let targetTicket: ExtendedServiceRequest | null = null;
+
+  const updatedTickets = allTickets.map(t => {
+    if (t.id === ticketId || String(t.nks_id) === ticketId) {
+      const answer = customAnswer || findInquiryAnswer(t.content);
+      targetTicket = {
+        ...t,
+        handled_by: 'AI' as const,
+        ai_reply: answer,
+        ai_replied_at: new Date().toISOString(),
+        status: 'Resolved' as const,
+        updated_at: new Date().toISOString(),
+      };
+      return targetTicket;
+    }
+    return t;
+  });
+
+  if (targetTicket) {
+    saveTickets(updatedTickets);
+  }
+
+  return targetTicket;
 }
 
 /**

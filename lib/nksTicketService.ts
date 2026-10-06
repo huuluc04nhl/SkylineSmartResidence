@@ -11,6 +11,7 @@
  */
 
 import type { ExtendedServiceRequest } from './ticketStore';
+import { classifyTicket } from './ticketClassification';
 
 export const NKS_TICKET_API_BASE_URL = 'https://sdata.io.vn/wp-json/scrmai/v1';
 export const NKS_TICKET_API_TOKEN = '01KWKATNQGB5TWXYDPJ671X3X1';
@@ -236,7 +237,14 @@ export function nksTicketToServiceRequest(
     aptCode = nks.service ? `Khu ${nks.service}` : 'Tòa Nhà';
   }
 
-  // Phân loại hạng mục sự cố
+  // Phân loại mục đích & trách nhiệm xử lý
+  const classification = classifyTicket(
+    nks.description || nks.subject || nks.title, 
+    nks.service, 
+    nks.subject
+  );
+
+  // Phân loại hạng mục sự cố kỹ thuật
   const s = (nks.service || '').toLowerCase();
   const textLower = text.toLowerCase();
   let cat: 'Điện' | 'Nước' | 'Vệ sinh' | 'An ninh' | 'Khác' = 'Khác';
@@ -250,7 +258,7 @@ export function nksTicketToServiceRequest(
     cat = 'An ninh';
   }
 
-  const isUrgent = cat === 'Điện' || cat === 'Nước';
+  const isUrgent = classification.urgent || cat === 'Điện' || cat === 'Nước';
   const img = typeof nks.image === 'string' && nks.image.trim() ? nks.image : '';
 
   // Trạng thái đồng bộ
@@ -259,12 +267,18 @@ export function nksTicketToServiceRequest(
     status = existingLocalTicket.status;
   } else if (nks.status === 'resolved' || nks.status === 'closed') {
     status = 'Resolved';
+  } else if (classification.type === 'INQUIRY') {
+    // Hỏi đáp được AI giải đáp tức thì
+    status = 'Resolved';
   } else if (nks.status === 'pending') {
     status = 'In_Progress';
   }
 
   const actualName = nks.fullname?.trim() || existingLocalTicket?.resident_name || 'Cư dân';
   const actualPhone = nks.phone?.trim() || existingLocalTicket?.resident_phone || '';
+
+  const ticketType = existingLocalTicket?.ticket_type || classification.type;
+  const handlerRole = existingLocalTicket?.handled_by || classification.handledBy;
 
   return {
     id: String(nks.id),
@@ -274,12 +288,21 @@ export function nksTicketToServiceRequest(
     resident_name: actualName,
     resident_phone: actualPhone,
     content: nks.description || nks.subject || nks.title,
+    ticket_type: ticketType,
+    ticket_type_label: classification.typeLabel,
+    handled_by: handlerRole,
     ai_category: cat,
     ai_priority: isUrgent ? 1 : 2,
     priority_color: isUrgent ? '#DC2626' : '#D97706',
     sla_deadline: new Date(Date.now() + (isUrgent ? 45 : 120) * 60000).toISOString(),
     sla_minutes_left: isUrgent ? 45 : 120,
     status: status,
+    // AI tự động giải đáp nếu là câu hỏi
+    ai_reply: existingLocalTicket?.ai_reply || (ticketType === 'INQUIRY' ? classification.suggestedAiReply : undefined),
+    ai_replied_at: existingLocalTicket?.ai_replied_at || (ticketType === 'INQUIRY' ? nks.created_at : undefined),
+    admin_reply: existingLocalTicket?.admin_reply,
+    admin_replied_at: existingLocalTicket?.admin_replied_at,
+    admin_replied_by: existingLocalTicket?.admin_replied_by,
     before_image: img || existingLocalTicket?.before_image || '',
     created_at: nks.created_at || existingLocalTicket?.created_at || new Date().toISOString(),
     updated_at: nks.updated_at || existingLocalTicket?.updated_at || new Date().toISOString(),

@@ -15,6 +15,11 @@ import {
   NksTicket
 } from '@/lib/nksTicketService';
 import { evaluateBestTechnicianWithAI } from '@/lib/aiDispatchService';
+import { 
+  classifyTicket, 
+  findInquiryAnswer, 
+  generateSuggestedAdminReply 
+} from '@/lib/ticketClassification';
 
 const TICKETS_FILE = path.join(process.cwd(), '.skyline_tickets.json');
 
@@ -180,24 +185,51 @@ export async function POST(req: Request) {
         system: 'skyline',
       });
 
+      // Phân loại mục đích của ticket (REPAIR | INQUIRY | FEEDBACK | SERVICE_REQUEST)
+      const ticketCategory = t.ticket_type || t.ai_category || body.ai_category || 'Kỹ thuật';
+      const classification = classifyTicket(
+        t.content || body.content || '',
+        ticketCategory,
+        t.subject || t.title || body.subject || ''
+      );
+
+      // Nếu cư dân đã chỉ định rõ mục đích lúc tạo phiếu thì ưu tiên
+      const finalCategoryType = t.ticket_type || classification.type;
+      const finalCategoryLabel = t.ticket_type_label || classification.typeLabel;
+      const finalHandledBy = classification.handledBy;
+
       const newId = nksResult.success && nksResult.id ? String(nksResult.id) : (t.id || `TICK-${Math.floor(100 + Math.random() * 900)}`);
 
-      // Tự động phân công thông minh bằng AI ngay khi tiếp nhận
       let assignedTech = undefined;
       let scheduledTime = undefined;
       let aiReason = undefined;
-      let ticketStatus: 'Open' | 'In_Progress' = 'Open';
+      let ticketStatus: 'Open' | 'In_Progress' | 'Resolved' = 'Open';
+      let aiReplyText: string | undefined = undefined;
+      let aiRepliedAt: string | undefined = undefined;
 
-      if (data.technicians && data.technicians.length > 0) {
-        const evalResult = evaluateBestTechnicianWithAI(
-          { ...t, id: newId },
-          data.technicians,
-          data.tickets
-        );
-        assignedTech = evalResult.technician;
-        scheduledTime = evalResult.scheduledTime;
-        aiReason = evalResult.reason;
-        ticketStatus = 'In_Progress';
+      // 1. Nếu là Hỏi Đáp (INQUIRY) -> AI tự động giải đáp ngay lập tức 24/7 từ Knowledge Base
+      if (finalCategoryType === 'INQUIRY') {
+        aiReplyText = findInquiryAnswer(t.content || body.content || '');
+        aiRepliedAt = new Date().toISOString();
+        ticketStatus = 'Resolved'; // Đã có câu trả lời tức thì cho cư dân
+      } 
+      // 2. Nếu là Sự Cố Kỹ Thuật (REPAIR) -> AI tự động điều phối Kỹ thuật viên (KTV)
+      else if (finalCategoryType === 'REPAIR') {
+        if (data.technicians && data.technicians.length > 0) {
+          const evalResult = evaluateBestTechnicianWithAI(
+            { ...t, id: newId },
+            data.technicians,
+            data.tickets
+          );
+          assignedTech = evalResult.technician;
+          scheduledTime = evalResult.scheduledTime;
+          aiReason = evalResult.reason;
+          ticketStatus = 'In_Progress';
+        }
+      }
+      // 3. Nếu là Phản ánh / Góp ý (FEEDBACK) hoặc Yêu cầu (SERVICE_REQUEST) -> Chuyển trực tiếp BQL xử lý
+      else {
+        ticketStatus = 'Open';
       }
 
       const newTicket: ExtendedServiceRequest = {
@@ -207,11 +239,16 @@ export async function POST(req: Request) {
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
         status: ticketStatus,
+        ticket_type: finalCategoryType,
+        ticket_type_label: finalCategoryLabel,
+        handled_by: finalHandledBy,
+        ai_reply: aiReplyText,
+        ai_replied_at: aiRepliedAt,
         assigned_technician_id: assignedTech?.id,
         assigned_technician: assignedTech?.name,
         assigned_technician_phone: assignedTech?.phone,
         scheduled_time: scheduledTime,
-        auto_dispatched: true,
+        auto_dispatched: finalCategoryType === 'REPAIR' && Boolean(assignedTech),
         ai_dispatch_reason: aiReason,
       };
 
@@ -294,7 +331,58 @@ export async function POST(req: Request) {
       return NextResponse.json({ success: true, message: 'Đã ghi nhận đánh giá của cư dân.' });
     }
 
-    // 6. Xóa phiếu trên NKS API và cơ sở dữ liệu
+    // 6. Ban Quản Lý (BQL) phản hồi ý kiến / phản ánh / thắc mắc của cư dân
+    if (action === 'ADMIN_REPLY' && body.ticketId && body.replyText) {
+      const ticketIdStr = String(body.ticketId);
+      const adminName = body.adminName || 'Ban Quản Lý Skyline';
+      let found = false;
+
+      data.tickets = data.tickets.map(t => {
+        if (t.id === ticketIdStr || String(t.nks_id) === ticketIdStr) {
+          found = true;
+          return {
+            ...t,
+            admin_reply: String(body.replyText).trim(),
+            admin_replied_at: new Date().toISOString(),
+            admin_replied_by: adminName,
+            status: 'Resolved',
+            updated_at: new Date().toISOString(),
+          };
+        }
+        return t;
+      });
+
+      if (!found) {
+        return NextResponse.json({ success: false, message: 'Không tìm thấy phiếu yêu cầu.' }, { status: 404 });
+      }
+
+      data.updatedAt = new Date().toISOString();
+      writeServerData(data);
+      return NextResponse.json({ success: true, message: 'Đã gửi phản hồi chính thức từ Ban Quản Lý tới cư dân.' });
+    }
+
+    // 7. AI tự động trả lời / cập nhật câu trả lời thông minh
+    if (action === 'AI_ANSWER' && body.ticketId) {
+      const ticketIdStr = String(body.ticketId);
+      data.tickets = data.tickets.map(t => {
+        if (t.id === ticketIdStr || String(t.nks_id) === ticketIdStr) {
+          const answer = body.customAnswer || findInquiryAnswer(t.content);
+          return {
+            ...t,
+            ai_reply: answer,
+            ai_replied_at: new Date().toISOString(),
+            status: 'Resolved',
+            updated_at: new Date().toISOString(),
+          };
+        }
+        return t;
+      });
+      data.updatedAt = new Date().toISOString();
+      writeServerData(data);
+      return NextResponse.json({ success: true, message: 'AI đã cập nhật câu trả lời giải đáp cho cư dân.' });
+    }
+
+    // 8. Xóa phiếu trên NKS API và cơ sở dữ liệu
     if (action === 'DELETE' && body.ticketId) {
       const ticketIdStr = String(body.ticketId);
       const numId = Number(ticketIdStr.replace('TICK-', ''));

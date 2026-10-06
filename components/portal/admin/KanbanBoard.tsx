@@ -30,7 +30,11 @@ import {
   RefreshCw,
   SlidersHorizontal,
   PhoneCall,
-  Trash2
+  Trash2,
+  MessageSquare,
+  HelpCircle,
+  Send,
+  MessageCircle
 } from 'lucide-react';
 import { 
   getTickets, 
@@ -39,6 +43,8 @@ import {
   deleteTicketAsync,
   assignTechnicianToTicket, 
   resolveTicket, 
+  adminRespondToTicket,
+  aiAnswerTicket,
   getTechnicianPayroll, 
   ExtendedServiceRequest, 
   TechnicianProfile,
@@ -54,6 +60,10 @@ import {
   generateAiResolutionNotes,
   generateAiInspectionImage
 } from '@/lib/aiDispatchService';
+import { 
+  generateSuggestedAdminReply, 
+  classifyTicket 
+} from '@/lib/ticketClassification';
 import { fileToBase64 } from '@/lib/imageUtils';
 
 export default function KanbanBoard() {
@@ -61,6 +71,9 @@ export default function KanbanBoard() {
   const [tickets, setTickets] = useState<ExtendedServiceRequest[]>([]);
   const [technicians, setTechnicians] = useState<TechnicianProfile[]>([]);
   const [payrollList, setPayrollList] = useState<TechnicianPayrollSummary[]>([]);
+
+  // Category Filter: ALL | REPAIR | FEEDBACK | INQUIRY
+  const [categoryFilter, setCategoryFilter] = useState<'ALL' | 'REPAIR' | 'FEEDBACK' | 'INQUIRY'>('ALL');
 
   // AI Auto-Dispatch States
   const [aiAutoMode, setAiAutoMode] = useState<boolean>(true);
@@ -70,6 +83,11 @@ export default function KanbanBoard() {
   const [assigningTicket, setAssigningTicket] = useState<ExtendedServiceRequest | null>(null);
   const [selectedTechId, setSelectedTechId] = useState<string>('KTV-01');
   const [scheduledTimeInput, setScheduledTimeInput] = useState<string>('Có mặt trong vòng 30 phút');
+
+  // Modal BQL Phản Hồi Cư Dân (cho FEEDBACK & INQUIRY)
+  const [feedbackReplyTicket, setFeedbackReplyTicket] = useState<ExtendedServiceRequest | null>(null);
+  const [feedbackReplyContent, setFeedbackReplyContent] = useState<string>('');
+  const [feedbackReplyAdminName, setFeedbackReplyAdminName] = useState<string>('Ban Quản Lý Skyline');
 
   const [resolvingTicket, setResolvingTicket] = useState<ExtendedServiceRequest | null>(null);
   const [afterImageBase64, setAfterImageBase64] = useState<string>('');
@@ -211,10 +229,44 @@ export default function KanbanBoard() {
     return () => window.removeEventListener('skyline_tickets_updated', handleUpdate);
   }, []);
 
-  // Filter lists for 3 Kanban columns
-  const openTickets = tickets.filter(t => t.status === 'Open');
-  const inProgressTickets = tickets.filter(t => t.status === 'In_Progress' || t.status === 'Assigned');
-  const resolvedTickets = tickets.filter(t => t.status === 'Resolved');
+  // Counts for Category Badges
+  const repairCount = tickets.filter(t => (t.ticket_type || 'REPAIR') === 'REPAIR').length;
+  const feedbackCount = tickets.filter(t => t.ticket_type === 'FEEDBACK').length;
+  const inquiryCount = tickets.filter(t => t.ticket_type === 'INQUIRY').length;
+
+  // Filter lists for 3 Kanban columns based on active category filter
+  const filteredTickets = tickets.filter(t => {
+    if (categoryFilter === 'ALL') return true;
+    const cat = t.ticket_type || 'REPAIR';
+    return cat === categoryFilter;
+  });
+
+  const openTickets = filteredTickets.filter(t => t.status === 'Open');
+  const inProgressTickets = filteredTickets.filter(t => t.status === 'In_Progress' || t.status === 'Assigned');
+  const resolvedTickets = filteredTickets.filter(t => t.status === 'Resolved');
+
+  // Handle BQL official response to resident feedback / inquiry
+  const handleConfirmAdminReply = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!feedbackReplyTicket || !feedbackReplyContent.trim()) return;
+
+    adminRespondToTicket(feedbackReplyTicket.id, feedbackReplyContent.trim(), feedbackReplyAdminName);
+    refreshAllData();
+    setActionSuccessMsg(`Đã gửi phản hồi chính thức từ Ban Quản Lý tới cư dân cho phiếu #${feedbackReplyTicket.nks_id || feedbackReplyTicket.id}!`);
+    setTimeout(() => setActionSuccessMsg(null), 4000);
+    setFeedbackReplyTicket(null);
+    setFeedbackReplyContent('');
+  };
+
+  // AI auto answer inquiry
+  const handleAiAutoAnswerInquiry = (ticket: ExtendedServiceRequest) => {
+    const res = aiAnswerTicket(ticket.id);
+    if (res) {
+      refreshAllData();
+      setActionSuccessMsg(`AI đã hoàn tất giải đáp thông tin cho phiếu #${res.nks_id || res.id}!`);
+      setTimeout(() => setActionSuccessMsg(null), 3500);
+    }
+  };
 
   // Handle assigning tech
   const handleConfirmAssign = (e: React.FormEvent) => {
@@ -285,10 +337,10 @@ export default function KanbanBoard() {
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-[#222B35] pb-4">
         <div>
           <div className="text-[10px] uppercase tracking-[0.25em] text-[#C5A880] font-semibold flex items-center gap-1.5">
-            <Wrench className="w-3.5 h-3.5" /> Kỹ Thuật & Vận Hành
+            <Wrench className="w-3.5 h-3.5" /> Quản Lý & Vận Hành
           </div>
           <h2 className="font-serif text-2xl text-white font-bold mt-1">
-            Điều Phối Sự Cố Kỹ Thuật
+            Trung Tâm Xử Lý Yêu Cầu Cư Dân
           </h2>
         </div>
 
@@ -335,7 +387,7 @@ export default function KanbanBoard() {
               }`}
             >
               <Wrench className="w-3.5 h-3.5" />
-              <span>Sự Cố</span>
+              <span>Yêu Cầu & Sự Cố</span>
               <span className={`text-[10px] px-1.5 py-0.2 font-mono font-bold ${
                 activeTab === 'KANBAN' ? 'bg-[#0D1117]/20 text-[#0D1117]' : 'bg-[#161B22] text-gray-400'
               }`}>
@@ -375,6 +427,69 @@ export default function KanbanBoard() {
       {/* ========================================================================= */}
       {activeTab === 'KANBAN' && (
         <div className="space-y-6">
+          {/* Category Filter Pills: Phân loại rõ ràng AI vs BQL vs KTV */}
+          <div className="flex items-center gap-2 overflow-x-auto pb-1 text-xs">
+            <span className="text-gray-400 text-[11px] font-semibold whitespace-nowrap">Bộ lọc:</span>
+            
+            <button
+              onClick={() => setCategoryFilter('ALL')}
+              className={`px-3 py-1.5 font-semibold text-xs transition-all flex items-center gap-1.5 ${
+                categoryFilter === 'ALL'
+                  ? 'bg-white text-[#0D1117] font-bold shadow'
+                  : 'bg-[#121820] text-gray-400 hover:text-white border border-[#222B35]'
+              }`}
+            >
+              <span>Tất Cả</span>
+              <span className="text-[10px] px-1.5 py-0.2 bg-black/20 font-mono font-bold">
+                {tickets.length}
+              </span>
+            </button>
+
+            <button
+              onClick={() => setCategoryFilter('REPAIR')}
+              className={`px-3 py-1.5 font-semibold text-xs transition-all flex items-center gap-1.5 ${
+                categoryFilter === 'REPAIR'
+                  ? 'bg-amber-500 text-black font-bold shadow'
+                  : 'bg-[#121820] text-amber-300 hover:text-white border border-[#222B35]'
+              }`}
+            >
+              <Wrench className="w-3.5 h-3.5" />
+              <span>Sự Cố Kỹ Thuật (KTV)</span>
+              <span className="text-[10px] px-1.5 py-0.2 bg-black/20 font-mono font-bold">
+                {repairCount}
+              </span>
+            </button>
+
+            <button
+              onClick={() => setCategoryFilter('FEEDBACK')}
+              className={`px-3 py-1.5 font-semibold text-xs transition-all flex items-center gap-1.5 ${
+                categoryFilter === 'FEEDBACK'
+                  ? 'bg-rose-500 text-white font-bold shadow'
+                  : 'bg-[#121820] text-rose-300 hover:text-white border border-[#222B35]'
+              }`}
+            >
+              <MessageSquare className="w-3.5 h-3.5" />
+              <span>Phản Ánh Cư Dân (BQL)</span>
+              <span className="text-[10px] px-1.5 py-0.2 bg-black/20 font-mono font-bold">
+                {feedbackCount}
+              </span>
+            </button>
+
+            <button
+              onClick={() => setCategoryFilter('INQUIRY')}
+              className={`px-3 py-1.5 font-semibold text-xs transition-all flex items-center gap-1.5 ${
+                categoryFilter === 'INQUIRY'
+                  ? 'bg-sky-500 text-black font-bold shadow'
+                  : 'bg-[#121820] text-sky-300 hover:text-white border border-[#222B35]'
+              }`}
+            >
+              <Sparkles className="w-3.5 h-3.5" />
+              <span>Hỏi Đáp Tiện Ích (AI 24/7)</span>
+              <span className="text-[10px] px-1.5 py-0.2 bg-black/20 font-mono font-bold">
+                {inquiryCount}
+              </span>
+            </button>
+          </div>
           {/* Quick Metrics Bar */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div className="p-4 bg-[#121820] border border-blue-500/40 flex items-center justify-between">
@@ -435,78 +550,123 @@ export default function KanbanBoard() {
                     Không có phiếu nào đang chờ tiếp nhận.
                   </div>
                 ) : (
-                  openTickets.map((ticket) => (
-                    <div 
-                      key={ticket.id} 
-                      className="p-4 bg-[#161B22] border border-[#2D3748] hover:border-blue-400 transition-all space-y-3 shadow-md group"
-                    >
-                      <div className="flex items-center justify-between flex-wrap gap-1">
-                        <div className="flex items-center gap-1.5">
-                          <span className="font-mono text-[#C5A880] font-bold text-xs">
-                            {ticket.nks_id ? `#${ticket.nks_id}` : `#${ticket.id.replace('TICK-', '')}`}
-                          </span>
-                          <span className="px-1.5 py-0.5 bg-[#1F2937] border border-gray-700 text-gray-300 text-[9px] font-medium">
-                            Trực tuyến
-                          </span>
-                        </div>
-                        <div className="flex items-center gap-1.5">
-                          <span className="px-2 py-0.5 bg-red-950 text-red-300 border border-red-500 text-[10px] font-mono font-bold">
-                            {ticket.ai_category} • Mức {ticket.ai_priority}
-                          </span>
-                          <button
-                            onClick={() => handleDeleteTicket(ticket)}
-                            className="text-gray-500 hover:text-red-400 p-1 transition-colors"
-                            title="Xóa phiếu khỏi hệ thống"
-                          >
-                            <Trash2 className="w-3.5 h-3.5" />
-                          </button>
-                        </div>
-                      </div>
+                  openTickets.map((ticket) => {
+                    const isFeedback = ticket.ticket_type === 'FEEDBACK';
+                    const isInquiry = ticket.ticket_type === 'INQUIRY';
+                    const isRepair = !isFeedback && !isInquiry;
 
-                      <div className="text-xs text-white font-semibold flex items-center justify-between">
-                        <span>{ticket.apt_code.startsWith('Khu') || ticket.apt_code.startsWith('Block') || ticket.apt_code.startsWith('Tiện') ? ticket.apt_code : `Căn ${ticket.apt_code}`} • {ticket.resident_name}</span>
-                        {ticket.resident_phone && (
-                          <span className="font-mono text-gray-400 text-[11px] font-normal">{ticket.resident_phone}</span>
+                    return (
+                      <div 
+                        key={ticket.id} 
+                        className={`p-4 bg-[#161B22] border transition-all space-y-3 shadow-md group ${
+                          isFeedback 
+                            ? 'border-rose-500/50 hover:border-rose-400' 
+                            : isInquiry 
+                              ? 'border-sky-500/50 hover:border-sky-400' 
+                              : 'border-[#2D3748] hover:border-blue-400'
+                        }`}
+                      >
+                        <div className="flex items-center justify-between flex-wrap gap-1">
+                          <div className="flex items-center gap-1.5">
+                            <span className="font-mono text-[#C5A880] font-bold text-xs">
+                              {ticket.nks_id ? `#${ticket.nks_id}` : `#${ticket.id.replace('TICK-', '')}`}
+                            </span>
+                            <span className="px-1.5 py-0.5 bg-[#1F2937] border border-gray-700 text-gray-300 text-[9px] font-medium">
+                              Trực tuyến
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-1.5">
+                            {isFeedback ? (
+                              <span className="px-2 py-0.5 bg-rose-950 text-rose-300 border border-rose-500 text-[10px] font-bold">
+                                📢 Phản Ánh • BQL
+                              </span>
+                            ) : isInquiry ? (
+                              <span className="px-2 py-0.5 bg-sky-950 text-sky-300 border border-sky-500 text-[10px] font-bold">
+                                💬 Hỏi Đáp • AI 24/7
+                              </span>
+                            ) : (
+                              <span className="px-2 py-0.5 bg-amber-950 text-amber-300 border border-amber-500 text-[10px] font-mono font-bold">
+                                🔧 {ticket.ai_category}
+                              </span>
+                            )}
+                            <button
+                              onClick={() => handleDeleteTicket(ticket)}
+                              className="text-gray-500 hover:text-red-400 p-1 transition-colors"
+                              title="Xóa phiếu khỏi hệ thống"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                        </div>
+
+                        <div className="text-xs text-white font-semibold flex items-center justify-between">
+                          <span>{ticket.apt_code.startsWith('Khu') || ticket.apt_code.startsWith('Block') || ticket.apt_code.startsWith('Tiện') ? ticket.apt_code : `Căn ${ticket.apt_code}`} • {ticket.resident_name}</span>
+                          {ticket.resident_phone && (
+                            <span className="font-mono text-gray-400 text-[11px] font-normal">{ticket.resident_phone}</span>
+                          )}
+                        </div>
+
+                        <p className="text-xs text-gray-300 line-clamp-2 leading-relaxed">
+                          {ticket.content}
+                        </p>
+
+                        {ticket.before_image && (
+                          <div className="flex items-center gap-2 pt-1">
+                            <img 
+                              src={ticket.before_image} 
+                              alt="Before" 
+                              className="w-12 h-12 object-cover border border-gray-700 cursor-pointer hover:opacity-80"
+                              onClick={() => setInspectingTicket(ticket)}
+                            />
+                            <span className="text-[11px] text-gray-400">Ảnh hiện trường cư dân gửi</span>
+                          </div>
                         )}
-                      </div>
 
-                      <p className="text-xs text-gray-300 line-clamp-2 leading-relaxed">
-                        {ticket.content}
-                      </p>
+                        <div className="pt-2 border-t border-[#222B35] flex items-center justify-between">
+                          <span className="text-[10px] text-gray-500 font-mono">
+                            {new Date(ticket.created_at).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })}
+                          </span>
 
-                      {ticket.before_image && (
-                        <div className="flex items-center gap-2 pt-1">
-                          <img 
-                            src={ticket.before_image} 
-                            alt="Before" 
-                            className="w-12 h-12 object-cover border border-gray-700 cursor-pointer hover:opacity-80"
-                            onClick={() => setInspectingTicket(ticket)}
-                          />
-                          <span className="text-[11px] text-gray-400">Ảnh hiện trường cư dân chụp</span>
+                          <div className="flex items-center gap-1.5">
+                            {isFeedback ? (
+                              <button
+                                onClick={() => {
+                                  setFeedbackReplyTicket(ticket);
+                                  setFeedbackReplyContent(ticket.admin_reply || generateSuggestedAdminReply(ticket.content, ticket.ai_category));
+                                }}
+                                className="px-2.5 py-1.5 bg-rose-950/70 hover:bg-rose-900 border border-rose-500/70 hover:border-rose-400 text-rose-200 text-xs font-semibold transition-colors flex items-center gap-1.5 shadow"
+                                title="BQL trực tiếp gửi phản hồi văn bản tới cư dân"
+                              >
+                                <MessageSquare className="w-3.5 h-3.5 text-rose-400" />
+                                <span>BQL Phản Hồi</span>
+                              </button>
+                            ) : isInquiry ? (
+                              <button
+                                onClick={() => handleAiAutoAnswerInquiry(ticket)}
+                                className="px-2.5 py-1.5 bg-sky-950/70 hover:bg-sky-900 border border-sky-500/70 hover:border-sky-400 text-sky-200 text-xs font-semibold transition-colors flex items-center gap-1.5 shadow"
+                                title="AI giải đáp tự động ngay lập tức"
+                              >
+                                <Sparkles className="w-3.5 h-3.5 text-sky-400" />
+                                <span>AI Giải Đáp Ngay</span>
+                              </button>
+                            ) : (
+                              <button
+                                onClick={() => {
+                                  setAssigningTicket(ticket);
+                                  setSelectedTechId('KTV-01');
+                                }}
+                                className="px-2.5 py-1.5 bg-[#161B22] hover:bg-[#1C2533] border border-[#2D3748] hover:border-[#C5A880] text-gray-300 hover:text-white text-xs font-medium transition-colors flex items-center gap-1.5 shadow"
+                                title="Chỉ định hoặc thay đổi thợ KTV phụ trách"
+                              >
+                                <Users className="w-3.5 h-3.5 text-[#C5A880]" />
+                                <span>Chỉ Định KTV</span>
+                              </button>
+                            )}
+                          </div>
                         </div>
-                      )}
-
-                      <div className="pt-2 border-t border-[#222B35] flex items-center justify-between">
-                        <span className="text-[10px] text-gray-500 font-mono">
-                          {new Date(ticket.created_at).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })}
-                        </span>
-
-                        <div className="flex items-center gap-1.5">
-                          <button
-                            onClick={() => {
-                              setAssigningTicket(ticket);
-                              setSelectedTechId('KTV-01');
-                            }}
-                            className="px-2.5 py-1.5 bg-[#161B22] hover:bg-[#1C2533] border border-[#2D3748] hover:border-[#C5A880] text-gray-300 hover:text-white text-xs font-medium transition-colors flex items-center gap-1.5 shadow"
-                            title="BQL chỉ can thiệp khi có thiếu sót hoặc muốn chỉ định thợ riêng"
-                          >
-                            <Users className="w-3.5 h-3.5 text-[#C5A880]" />
-                            <span>Can Thiệp BQL</span>
-                          </button>
-                        </div>
                       </div>
-                    </div>
-                  ))
+                    );
+                  })
                 )}
               </div>
             </div>
@@ -517,7 +677,7 @@ export default function KanbanBoard() {
                 <div className="flex items-center gap-2">
                   <span className="w-2.5 h-2.5 bg-amber-500 rounded-none animate-pulse"></span>
                   <span className="text-xs uppercase tracking-wider font-semibold text-gray-200">
-                    2. KTV Đang Xử Lý
+                    2. Đang Xử Lý
                   </span>
                   <span className="px-1.5 py-0.5 bg-amber-950/80 border border-amber-500/40 text-amber-300 font-mono text-[10px] font-bold">
                     {inProgressTickets.length}
@@ -526,7 +686,7 @@ export default function KanbanBoard() {
 
                 <span className="text-[10px] font-mono text-amber-300 bg-amber-950/60 border border-amber-500/40 px-2 py-0.5 flex items-center gap-1.5">
                   <span className="w-1.5 h-1.5 bg-amber-400 rounded-full animate-pulse"></span>
-                  KTV Khắc Phục Hiện Trường
+                  Đang Khắc Phục Hiện Trường
                 </span>
               </div>
 
@@ -536,115 +696,155 @@ export default function KanbanBoard() {
                     Không có phiếu nào đang xử lý.
                   </div>
                 ) : (
-                  inProgressTickets.map((ticket) => (
-                    <div 
-                      key={ticket.id} 
-                      className="p-4 bg-[#161B22] border border-amber-500/50 hover:border-amber-400 transition-all space-y-3 shadow-md"
-                    >
-                      <div className="flex items-center justify-between flex-wrap gap-1">
-                        <div className="flex items-center gap-1.5">
-                          <span className="font-mono text-[#C5A880] font-bold text-xs">
-                            {ticket.nks_id ? `#${ticket.nks_id}` : `#${ticket.id.replace('TICK-', '')}`}
-                          </span>
-                          <span className="px-1.5 py-0.5 bg-[#1F2937] border border-gray-700 text-gray-300 text-[9px] font-medium">
-                            Trực tuyến
-                          </span>
-                        </div>
-                        <div className="flex items-center gap-1.5">
-                          <span className="px-2 py-0.5 bg-amber-950 text-amber-300 border border-amber-500 text-[10px] font-mono font-bold">
-                            {ticket.ai_category}
-                          </span>
-                          <button
-                            onClick={() => handleDeleteTicket(ticket)}
-                            className="text-gray-500 hover:text-red-400 p-1 transition-colors"
-                            title="Xóa phiếu khỏi hệ thống"
-                          >
-                            <Trash2 className="w-3.5 h-3.5" />
-                          </button>
-                        </div>
-                      </div>
+                  inProgressTickets.map((ticket) => {
+                    const isFeedback = ticket.ticket_type === 'FEEDBACK';
+                    const isInquiry = ticket.ticket_type === 'INQUIRY';
 
-                      <div className="text-xs text-white font-semibold flex items-center justify-between">
-                        <span>{ticket.apt_code.startsWith('Khu') || ticket.apt_code.startsWith('Block') || ticket.apt_code.startsWith('Tiện') ? ticket.apt_code : `Căn ${ticket.apt_code}`} • {ticket.resident_name}</span>
-                        {ticket.resident_phone && (
-                          <span className="font-mono text-gray-400 text-[11px] font-normal">{ticket.resident_phone}</span>
-                        )}
-                      </div>
-
-                      <p className="text-xs text-gray-300 line-clamp-2">
-                        {ticket.content}
-                      </p>
-
-                      {/* Tech Info Box */}
-                      <div className="p-2.5 bg-[#121820] border border-[#2D3748] text-xs space-y-1">
-                        <div className="flex items-center justify-between text-gray-300">
-                          <span className="flex items-center gap-1.5 text-amber-400 font-semibold">
-                            <Wrench className="w-3 h-3" /> {ticket.assigned_technician || 'Chưa chỉ định'}
-                          </span>
-                          <span className="font-mono text-[11px] text-gray-400">{ticket.scheduled_time || 'Đang di chuyển'}</span>
-                        </div>
-                        {ticket.assigned_technician_phone && (
-                          <div className="text-[11px] text-gray-400 flex items-center gap-1">
-                            <Phone className="w-3 h-3 text-[#C5A880]" /> SĐT thợ: <span className="font-mono text-white">{ticket.assigned_technician_phone}</span>
+                    return (
+                      <div 
+                        key={ticket.id} 
+                        className={`p-4 bg-[#161B22] border transition-all space-y-3 shadow-md ${
+                          isFeedback 
+                            ? 'border-rose-500/60 hover:border-rose-400' 
+                            : 'border-amber-500/50 hover:border-amber-400'
+                        }`}
+                      >
+                        <div className="flex items-center justify-between flex-wrap gap-1">
+                          <div className="flex items-center gap-1.5">
+                            <span className="font-mono text-[#C5A880] font-bold text-xs">
+                              {ticket.nks_id ? `#${ticket.nks_id}` : `#${ticket.id.replace('TICK-', '')}`}
+                            </span>
+                            <span className="px-1.5 py-0.5 bg-[#1F2937] border border-gray-700 text-gray-300 text-[9px] font-medium">
+                              Trực tuyến
+                            </span>
                           </div>
-                        )}
-                      </div>
-
-                      {/* AI Dispatch Detail Box */}
-                      {ticket.ai_dispatch_reason && (
-                        <div className="p-2 bg-purple-950/40 border border-purple-500/30 text-[11px] text-purple-200 flex items-start gap-1.5">
-                          <Sparkles className="w-3.5 h-3.5 text-purple-400 flex-shrink-0 mt-0.5" />
-                          <div>
-                            <span className="font-semibold text-purple-300">AI Tự Động Phân Công:</span>{' '}
-                            <span>{ticket.ai_dispatch_reason}</span>
+                          <div className="flex items-center gap-1.5">
+                            {isFeedback ? (
+                              <span className="px-2 py-0.5 bg-rose-950 text-rose-300 border border-rose-500 text-[10px] font-bold">
+                                📢 BQL Đang Thụ Lý
+                              </span>
+                            ) : (
+                              <span className="px-2 py-0.5 bg-amber-950 text-amber-300 border border-amber-500 text-[10px] font-mono font-bold">
+                                🔧 {ticket.ai_category}
+                              </span>
+                            )}
+                            <button
+                              onClick={() => handleDeleteTicket(ticket)}
+                              className="text-gray-500 hover:text-red-400 p-1 transition-colors"
+                              title="Xóa phiếu khỏi hệ thống"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
                           </div>
                         </div>
-                      )}
 
-                      <div className="pt-2 border-t border-[#222B35] flex items-center justify-between">
-                        <span className="text-[10px] text-amber-400 font-mono flex items-center gap-1">
-                          <Clock className="w-3 h-3" /> Cam kết: {ticket.ai_category === 'Nước' || ticket.ai_category === 'Điện' ? '45 phút' : '2 giờ'}
-                        </span>
+                        <div className="text-xs text-white font-semibold flex items-center justify-between">
+                          <span>{ticket.apt_code.startsWith('Khu') || ticket.apt_code.startsWith('Block') || ticket.apt_code.startsWith('Tiện') ? ticket.apt_code : `Căn ${ticket.apt_code}`} • {ticket.resident_name}</span>
+                          {ticket.resident_phone && (
+                            <span className="font-mono text-gray-400 text-[11px] font-normal">{ticket.resident_phone}</span>
+                          )}
+                        </div>
 
-                        <div className="flex items-center gap-1.5">
-                          <button
-                            onClick={() => {
-                              setAssigningTicket(ticket);
-                              setSelectedTechId(ticket.assigned_technician_id || 'KTV-01');
-                            }}
-                            className="px-2.5 py-1.5 bg-[#161B22] hover:bg-[#1C2533] text-gray-400 hover:text-white border border-[#2D3748] text-xs transition-colors"
-                            title="Can thiệp đổi KTV khác khi có phát sinh"
-                          >
-                            Đổi KTV
-                          </button>
+                        <p className="text-xs text-gray-300 line-clamp-2">
+                          {ticket.content}
+                        </p>
 
-                          {/* BQL Can Thiệp Nghiệm Thu */}
-                          <button
-                            onClick={() => {
-                              setResolvingTicket(ticket);
-                              setAfterImageBase64('');
-                            }}
-                            className="px-2.5 py-1.5 bg-[#161B22] hover:bg-[#1C2533] border border-[#2D3748] hover:border-emerald-500/60 text-emerald-400 hover:text-emerald-300 text-xs font-semibold transition-colors flex items-center gap-1.5 shadow"
-                            title="BQL nghiệm thu và đóng phiếu khi KTV hoàn thành (Có trợ lý AI điền sẵn biên bản)"
-                          >
-                            <Check className="w-3.5 h-3.5" />
-                            <span>Nghiệm Thu</span>
-                          </button>
+                        {/* Handled role status box */}
+                        {isFeedback ? (
+                          <div className="p-2.5 bg-rose-950/30 border border-rose-500/40 text-xs space-y-1">
+                            <div className="text-rose-300 font-semibold flex items-center gap-1.5">
+                              <MessageSquare className="w-3.5 h-3.5 text-rose-400" />
+                              Ban Quản Lý đang kiểm tra hiện trường & lập phương án giải quyết
+                            </div>
+                            <div className="text-[11px] text-gray-400">
+                              Chuyên trách: Đội ngũ CSKH & Vận hành tòa nhà
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="p-2.5 bg-[#121820] border border-[#2D3748] text-xs space-y-1">
+                            <div className="flex items-center justify-between text-gray-300">
+                              <span className="flex items-center gap-1.5 text-amber-400 font-semibold">
+                                <Wrench className="w-3 h-3" /> {ticket.assigned_technician || 'Chưa chỉ định'}
+                              </span>
+                              <span className="font-mono text-[11px] text-gray-400">{ticket.scheduled_time || 'Đang di chuyển'}</span>
+                            </div>
+                            {ticket.assigned_technician_phone && (
+                              <div className="text-[11px] text-gray-400 flex items-center gap-1">
+                                <Phone className="w-3 h-3 text-[#C5A880]" /> SĐT thợ: <span className="font-mono text-white">{ticket.assigned_technician_phone}</span>
+                              </div>
+                            )}
+                          </div>
+                        )}
+
+                        {/* AI Dispatch Detail Box (Chỉ cho sửa chữa) */}
+                        {!isFeedback && ticket.ai_dispatch_reason && (
+                          <div className="p-2 bg-purple-950/40 border border-purple-500/30 text-[11px] text-purple-200 flex items-start gap-1.5">
+                            <Sparkles className="w-3.5 h-3.5 text-purple-400 flex-shrink-0 mt-0.5" />
+                            <div>
+                              <span className="font-semibold text-purple-300">AI Tự Động Phân Công:</span>{' '}
+                              <span>{ticket.ai_dispatch_reason}</span>
+                            </div>
+                          </div>
+                        )}
+
+                        <div className="pt-2 border-t border-[#222B35] flex items-center justify-between">
+                          <span className="text-[10px] text-amber-400 font-mono flex items-center gap-1">
+                            <Clock className="w-3 h-3" /> Cam kết: {isFeedback ? 'Trong 24 giờ' : '45 phút'}
+                          </span>
+
+                          <div className="flex items-center gap-1.5">
+                            {isFeedback ? (
+                              <button
+                                onClick={() => {
+                                  setFeedbackReplyTicket(ticket);
+                                  setFeedbackReplyContent(ticket.admin_reply || generateSuggestedAdminReply(ticket.content, ticket.ai_category));
+                                }}
+                                className="px-2.5 py-1.5 bg-rose-600 hover:bg-rose-500 text-white text-xs font-semibold transition-colors flex items-center gap-1.5 shadow"
+                              >
+                                <Send className="w-3 h-3" />
+                                <span>BQL Phản Hồi</span>
+                              </button>
+                            ) : (
+                              <>
+                                <button
+                                  onClick={() => {
+                                    setAssigningTicket(ticket);
+                                    setSelectedTechId(ticket.assigned_technician_id || 'KTV-01');
+                                  }}
+                                  className="px-2.5 py-1.5 bg-[#161B22] hover:bg-[#1C2533] text-gray-400 hover:text-white border border-[#2D3748] text-xs transition-colors"
+                                  title="Can thiệp đổi KTV khác khi có phát sinh"
+                                >
+                                  Đổi KTV
+                                </button>
+                                <button
+                                  onClick={() => {
+                                    setResolvingTicket(ticket);
+                                    setAfterImageBase64('');
+                                  }}
+                                  className="px-2.5 py-1.5 bg-[#161B22] hover:bg-[#1C2533] border border-[#2D3748] hover:border-emerald-500/60 text-emerald-400 hover:text-emerald-300 text-xs font-semibold transition-colors flex items-center gap-1.5 shadow"
+                                  title="BQL nghiệm thu và đóng phiếu khi KTV hoàn thành"
+                                >
+                                  <Check className="w-3.5 h-3.5" />
+                                  <span>Nghiệm Thu</span>
+                                </button>
+                              </>
+                            )}
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  ))
+                    );
+                  })
                 )}
               </div>
             </div>
 
-            {/* Column 3: Đã nghiệm thu */}
+            {/* Column 3: Đã nghiệm thu / Đã đóng */}
             <div className="bg-[#121820] border border-[#222B35] flex flex-col justify-between shadow-xl">
               <div className="p-3.5 border-b border-[#222B35] flex items-center justify-between bg-[#161B22]">
                 <div className="flex items-center gap-2">
                   <span className="w-2.5 h-2.5 bg-emerald-500 rounded-none"></span>
                   <span className="text-xs uppercase tracking-wider font-semibold text-gray-200">
-                    3. Đã Nghiệm Thu Xong
+                    3. Đã Xử Lý Xong
                   </span>
                   <span className="px-1.5 py-0.5 bg-emerald-950/80 border border-emerald-500/40 text-emerald-300 font-mono text-[10px] font-bold">
                     {resolvedTickets.length}
@@ -652,7 +852,7 @@ export default function KanbanBoard() {
                 </div>
                 <span className="text-[10px] font-mono text-emerald-300 bg-emerald-950/60 border border-emerald-500/40 px-2 py-0.5 flex items-center gap-1.5">
                   <CheckCircle2 className="w-3 h-3 text-emerald-400" />
-                  Nghiệm Thu
+                  Hoàn Tất
                 </span>
               </div>
 
@@ -662,87 +862,124 @@ export default function KanbanBoard() {
                     Chưa có phiếu hoàn thành.
                   </div>
                 ) : (
-                  resolvedTickets.map((ticket) => (
-                    <div 
-                      key={ticket.id} 
-                      className="p-4 bg-[#161B22] border border-emerald-500/40 hover:border-emerald-400 transition-all space-y-3 shadow-md"
-                    >
-                      <div className="flex items-center justify-between flex-wrap gap-1">
-                        <div className="flex items-center gap-1.5">
-                          <span className="font-mono text-[#C5A880] font-bold text-xs">
-                            {ticket.nks_id ? `#${ticket.nks_id}` : `#${ticket.id.replace('TICK-', '')}`}
-                          </span>
-                          <span className="px-1.5 py-0.5 bg-[#1F2937] border border-gray-700 text-gray-300 text-[9px] font-medium">
-                            Trực tuyến
-                          </span>
-                        </div>
-                        <div className="flex items-center gap-1.5">
-                          {ticket.rating ? (
-                            <span className="px-2 py-0.5 bg-yellow-950 text-yellow-300 border border-yellow-500 text-[10px] font-bold flex items-center gap-0.5">
-                              <Star className="w-3 h-3 fill-current text-yellow-400" /> {ticket.rating} ⭐
+                  resolvedTickets.map((ticket) => {
+                    const isFeedback = ticket.ticket_type === 'FEEDBACK';
+                    const isInquiry = ticket.ticket_type === 'INQUIRY';
+
+                    return (
+                      <div 
+                        key={ticket.id} 
+                        className="p-4 bg-[#161B22] border border-emerald-500/40 hover:border-emerald-400 transition-all space-y-3 shadow-md"
+                      >
+                        <div className="flex items-center justify-between flex-wrap gap-1">
+                          <div className="flex items-center gap-1.5">
+                            <span className="font-mono text-[#C5A880] font-bold text-xs">
+                              {ticket.nks_id ? `#${ticket.nks_id}` : `#${ticket.id.replace('TICK-', '')}`}
                             </span>
-                          ) : (
-                            <span className="text-[10px] text-gray-400 italic">Chờ cư dân chấm</span>
+                            <span className="px-1.5 py-0.5 bg-[#1F2937] border border-gray-700 text-gray-300 text-[9px] font-medium">
+                              Trực tuyến
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-1.5">
+                            {ticket.rating ? (
+                              <span className="px-2 py-0.5 bg-yellow-950 text-yellow-300 border border-yellow-500 text-[10px] font-bold flex items-center gap-0.5">
+                                <Star className="w-3 h-3 fill-current text-yellow-400" /> {ticket.rating} ⭐
+                              </span>
+                            ) : (
+                              <span className="text-[10px] text-gray-400 italic">Đã giải quyết</span>
+                            )}
+                            <button
+                              onClick={() => handleDeleteTicket(ticket)}
+                              className="text-gray-500 hover:text-red-400 p-1 transition-colors ml-1"
+                              title="Xóa phiếu khỏi hệ thống"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                        </div>
+
+                        <div className="text-xs text-white font-semibold flex items-center justify-between">
+                          <span>{ticket.apt_code.startsWith('Khu') || ticket.apt_code.startsWith('Block') || ticket.apt_code.startsWith('Tiện') ? ticket.apt_code : `Căn ${ticket.apt_code}`} • {ticket.resident_name}</span>
+                          {ticket.resident_phone && (
+                            <span className="font-mono text-gray-400 text-[11px] font-normal">{ticket.resident_phone}</span>
                           )}
-                          <button
-                            onClick={() => handleDeleteTicket(ticket)}
-                            className="text-gray-500 hover:text-red-400 p-1 transition-colors ml-1"
-                            title="Xóa phiếu khỏi hệ thống"
-                          >
-                            <Trash2 className="w-3.5 h-3.5" />
-                          </button>
                         </div>
-                      </div>
 
-                      <div className="text-xs text-white font-semibold flex items-center justify-between">
-                        <span>{ticket.apt_code.startsWith('Khu') || ticket.apt_code.startsWith('Block') || ticket.apt_code.startsWith('Tiện') ? ticket.apt_code : `Căn ${ticket.apt_code}`} • {ticket.resident_name}</span>
-                        {ticket.resident_phone && (
-                          <span className="font-mono text-gray-400 text-[11px] font-normal">{ticket.resident_phone}</span>
-                        )}
-                      </div>
+                        <p className="text-xs text-gray-300 line-clamp-2">
+                          {ticket.content}
+                        </p>
 
-                      <p className="text-xs text-gray-300 line-clamp-2">
-                        {ticket.content}
-                      </p>
-
-                      {/* Before / After Mini Preview */}
-                      <div className="grid grid-cols-2 gap-2 text-[10px] text-gray-400">
-                        {ticket.before_image && (
-                          <div>
-                            <div className="mb-1">Trước sửa:</div>
-                            <img 
-                              src={ticket.before_image} 
-                              alt="Before" 
-                              className="w-full h-16 object-cover border border-red-500/40"
-                            />
+                        {/* HIỂN THỊ PHẢN HỒI BQL */}
+                        {ticket.admin_reply && (
+                          <div className="p-2.5 bg-rose-950/40 border border-rose-500/40 text-rose-200 text-xs space-y-1">
+                            <div className="font-semibold text-[10px] uppercase text-rose-300 flex items-center gap-1">
+                              <BadgeCheck className="w-3.5 h-3.5 text-rose-400" /> 
+                              Phản hồi từ {ticket.admin_replied_by || 'Ban Quản Lý Skyline'}:
+                            </div>
+                            <p className="italic leading-relaxed text-[11px]">"{ticket.admin_reply}"</p>
                           </div>
                         )}
-                        {ticket.after_image && (
-                          <div>
-                            <div className="mb-1">Sau sửa:</div>
-                            <img 
-                              src={ticket.after_image} 
-                              alt="After" 
-                              className="w-full h-16 object-cover border border-emerald-500/40"
-                            />
+
+                        {/* HIỂN THỊ CÂU TRẢ LỜI AI CHO INQUIRY */}
+                        {ticket.ai_reply && (
+                          <div className="p-2.5 bg-sky-950/40 border border-sky-500/40 text-sky-200 text-xs space-y-1">
+                            <div className="font-semibold text-[10px] uppercase text-sky-300 flex items-center gap-1">
+                              <Sparkles className="w-3.5 h-3.5 text-sky-400" /> 
+                              Giải đáp tự động từ Trợ Lý AI 24/7:
+                            </div>
+                            <p className="leading-relaxed text-[11px] whitespace-pre-line">"{ticket.ai_reply}"</p>
                           </div>
                         )}
-                      </div>
 
-                      {ticket.resolution_notes && (
-                        <div className="text-[11px] text-emerald-300/90 italic bg-emerald-950/30 p-2 border border-emerald-500/30">
-                          "{ticket.resolution_notes}"
+                        {/* Before / After Mini Preview cho sự cố kỹ thuật */}
+                        {!isFeedback && !isInquiry && (ticket.before_image || ticket.after_image) && (
+                          <div className="grid grid-cols-2 gap-2 text-[10px] text-gray-400">
+                            {ticket.before_image && (
+                              <div>
+                                <div className="mb-1">Trước sửa:</div>
+                                <img 
+                                  src={ticket.before_image} 
+                                  alt="Before" 
+                                  className="w-full h-16 object-cover border border-red-500/40"
+                                />
+                              </div>
+                            )}
+                            {ticket.after_image && (
+                              <div>
+                                <div className="mb-1">Sau sửa:</div>
+                                <img 
+                                  src={ticket.after_image} 
+                                  alt="After" 
+                                  className="w-full h-16 object-cover border border-emerald-500/40"
+                                />
+                              </div>
+                            )}
+                          </div>
+                        )}
+
+                        {ticket.resolution_notes && (
+                          <div className="text-[11px] text-emerald-300/90 italic bg-emerald-950/30 p-2 border border-emerald-500/30">
+                            "{ticket.resolution_notes}"
+                          </div>
+                        )}
+
+                        <div className="pt-2 border-t border-[#222B35] flex items-center justify-between text-[10px] text-gray-400">
+                          {isFeedback ? (
+                            <span className="text-rose-300 font-medium">Đã phản hồi cư dân qua hệ thống</span>
+                          ) : isInquiry ? (
+                            <span className="text-sky-300 font-medium">Đã cung cấp thông tin tiện ích</span>
+                          ) : (
+                            <>
+                              <span>KTV: <strong className="text-white">{ticket.assigned_technician || 'Kỹ thuật viên'}</strong></span>
+                              <span className="text-emerald-400 font-mono">
+                                +{(technicians.find(tc => tc.id === ticket.assigned_technician_id)?.payPerTicket || 150000).toLocaleString('vi-VN')} đ
+                              </span>
+                            </>
+                          )}
                         </div>
-                      )}
-
-                      <div className="pt-2 border-t border-[#222B35] flex items-center justify-between text-[10px] text-gray-400">
-                        <span>KTV: <strong className="text-white">{ticket.assigned_technician || 'Kỹ thuật viên'}</strong></span>
-                        <span className="text-emerald-400 font-mono">
-                          +{(technicians.find(tc => tc.id === ticket.assigned_technician_id)?.payPerTicket || 150000).toLocaleString('vi-VN')} đ
-                        </span>
                       </div>
-                    </div>
-                  ))
+                    );
+                  })
                 )}
               </div>
             </div>
@@ -1233,6 +1470,110 @@ export default function KanbanBoard() {
                 Đóng
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* ========================================================================= */}
+      {/* MODAL 5: BAN QUẢN LÝ PHẢN HỒI Ý KIẾN / KHIẾU NẠI CƯ DÂN                  */}
+      {/* ========================================================================= */}
+      {feedbackReplyTicket && (
+        <div className="fixed inset-0 bg-black/85 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-[#121820] border border-[#C5A880] max-w-xl w-full p-6 text-white space-y-4 shadow-2xl animate-fadeIn">
+            <div className="flex items-center justify-between border-b border-[#222B35] pb-3">
+              <div className="flex items-center gap-2">
+                <MessageSquare className="w-5 h-5 text-rose-400" />
+                <h3 className="font-serif text-base font-bold text-white">
+                  Phản Hồi Chính Thức Từ Ban Quản Lý
+                </h3>
+              </div>
+              <button 
+                onClick={() => setFeedbackReplyTicket(null)} 
+                className="text-gray-400 hover:text-white"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="p-3 bg-[#161B22] border border-[#222B35] space-y-1.5 text-xs">
+              <div className="flex justify-between">
+                <span className="text-gray-400">Mã yêu cầu:</span>
+                <strong className="text-[#C5A880] font-mono">
+                  {feedbackReplyTicket.nks_id ? `#${feedbackReplyTicket.nks_id}` : `#${feedbackReplyTicket.id}`}
+                </strong>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-gray-400">Cư dân:</span>
+                <span className="text-white font-semibold">{feedbackReplyTicket.resident_name} • Căn {feedbackReplyTicket.apt_code}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-gray-400">Hạng mục:</span>
+                <span className="text-rose-300 font-bold">{feedbackReplyTicket.ai_category || 'Phản ánh dịch vụ'}</span>
+              </div>
+              <div className="pt-1 text-gray-300 border-t border-[#222B35]">
+                <span className="text-gray-400 font-medium">Nội dung phản ánh:</span> "{feedbackReplyTicket.content}"
+              </div>
+            </div>
+
+            {/* AI Assistant Suggested Draft */}
+            <div className="flex items-center justify-between">
+              <label className="text-xs text-gray-300 font-semibold">Nội dung phản hồi cư dân:</label>
+              <button
+                type="button"
+                onClick={() => {
+                  const draft = generateSuggestedAdminReply(
+                    feedbackReplyTicket.content,
+                    feedbackReplyTicket.ai_category
+                  );
+                  setFeedbackReplyContent(draft);
+                }}
+                className="text-[11px] px-2.5 py-1 bg-purple-950/70 border border-purple-500/50 hover:border-purple-400 text-purple-300 flex items-center gap-1.5 transition-colors"
+                title="Sử dụng AI tạo sẵn mẫu phản hồi chuẩn mực, lịch sự và giải pháp cụ thể"
+              >
+                <Sparkles className="w-3.5 h-3.5 text-purple-400" />
+                <span>AI Gợi Ý Mẫu Trả Lời</span>
+              </button>
+            </div>
+
+            <form onSubmit={handleConfirmAdminReply} className="space-y-4">
+              <textarea
+                rows={5}
+                value={feedbackReplyContent}
+                onChange={(e) => setFeedbackReplyContent(e.target.value)}
+                placeholder="Nhập nội dung phản hồi, xin lỗi hoặc giải pháp xử lý từ BQL..."
+                className="w-full bg-[#161B22] border border-[#2D3748] text-xs text-white p-3 focus:outline-none focus:border-[#C5A880] leading-relaxed"
+                required
+              />
+
+              <div className="flex items-center justify-between text-xs text-gray-400 pt-1">
+                <div className="flex items-center gap-2">
+                  <span>Người ký phản hồi:</span>
+                  <input
+                    type="text"
+                    value={feedbackReplyAdminName}
+                    onChange={(e) => setFeedbackReplyAdminName(e.target.value)}
+                    className="bg-[#161B22] border border-[#2D3748] px-2 py-1 text-xs text-white focus:outline-none focus:border-[#C5A880]"
+                  />
+                </div>
+              </div>
+
+              <div className="flex justify-end gap-3 pt-3 border-t border-[#222B35]">
+                <button
+                  type="button"
+                  onClick={() => setFeedbackReplyTicket(null)}
+                  className="px-4 py-2 border border-gray-700 text-xs text-gray-300 hover:text-white"
+                >
+                  Hủy
+                </button>
+                <button
+                  type="submit"
+                  className="px-5 py-2 bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold uppercase tracking-wider transition-colors shadow-lg flex items-center gap-1.5"
+                >
+                  <Send className="w-3.5 h-3.5" />
+                  <span>Gửi Phản Hồi Cho Cư Dân</span>
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}

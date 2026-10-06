@@ -19,7 +19,10 @@ import {
   MessageSquare,
   ShieldCheck,
   ChevronRight,
-  RefreshCw
+  RefreshCw,
+  BadgeCheck,
+  HelpCircle,
+  Send
 } from 'lucide-react';
 import { User as UserType } from '@/lib/dataStore';
 import { 
@@ -30,6 +33,7 @@ import {
   rateTicket, 
   ExtendedServiceRequest 
 } from '@/lib/ticketStore';
+import { TicketCategoryType } from '@/lib/ticketClassification';
 import { fileToBase64 } from '@/lib/imageUtils';
 
 interface TicketServiceProps {
@@ -45,7 +49,8 @@ export default function TicketService({ currentUser }: TicketServiceProps) {
   const [sliderPos, setSliderPos] = useState<number>(50); // 50% for before-after slider
   const [selectedComparisonTicketId, setSelectedComparisonTicketId] = useState<string>('');
   
-  // Create Form State
+  // Create Form State: REPAIR (Báo hỏng) | INQUIRY (Hỏi đáp) | FEEDBACK (Góp ý/Khiếu nại)
+  const [ticketPurpose, setTicketPurpose] = useState<'REPAIR' | 'INQUIRY' | 'FEEDBACK'>('REPAIR');
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [content, setContent] = useState('');
   const [aiDetectedCat, setAiDetectedCat] = useState<'Điện' | 'Nước' | 'Khác'>('Nước');
@@ -132,24 +137,47 @@ export default function TicketService({ currentUser }: TicketServiceProps) {
     if (!content.trim() || isSubmitting) return;
 
     setIsSubmitting(true);
-    // Sử dụng ảnh thật cư dân đính kèm nếu có
     const beforeImage = attachedImageBase64 || '';
 
     try {
+      let finalCategory = 'Kỹ thuật';
+      let typeLabel = 'Sự Cố Kỹ Thuật';
+
+      if (ticketPurpose === 'INQUIRY') {
+        finalCategory = 'Hỏi đáp';
+        typeLabel = 'Hỏi Đáp & Trợ Giúp';
+      } else if (ticketPurpose === 'FEEDBACK') {
+        finalCategory = 'Phản ánh';
+        typeLabel = 'Phản Ánh & Khiếu Nại';
+      } else {
+        finalCategory = aiDetectedCat;
+        typeLabel = 'Sự Cố Kỹ Thuật';
+      }
+
       const newTicket = await createTicketAsync({
         apt_code: aptCode,
         resident_name: residentName,
         resident_phone: residentPhone,
         content: content.trim(),
-        ai_category: aiDetectedCat,
+        ai_category: finalCategory,
         before_image: beforeImage,
+        ticket_type: ticketPurpose,
+        ticket_type_label: typeLabel,
       });
 
       setContent('');
       setAttachedImageBase64('');
       setShowCreateForm(false);
       const ticketDisplayId = newTicket.nks_id ? `#${newTicket.nks_id}` : `#${newTicket.id}`;
-      setCreatedSuccessMsg(`Yêu cầu ${ticketDisplayId} đã được chuyển tới Đội ngũ Kỹ thuật Ban Quản Lý và đang được tiếp nhận xử lý!`);
+      
+      if (ticketPurpose === 'INQUIRY') {
+        setCreatedSuccessMsg(`Trợ lý AI đã giải đáp câu hỏi ${ticketDisplayId} ngay bên dưới!`);
+      } else if (ticketPurpose === 'FEEDBACK') {
+        setCreatedSuccessMsg(`Ban Quản Lý đã tiếp nhận ý kiến ${ticketDisplayId} và đang thụ lý giải quyết!`);
+      } else {
+        setCreatedSuccessMsg(`Yêu cầu sửa chữa ${ticketDisplayId} đã được chuyển tới Đội ngũ KTV tòa nhà!`);
+      }
+
       setTimeout(() => setCreatedSuccessMsg(null), 5000);
       refreshTicketList();
     } catch (err) {
@@ -175,10 +203,10 @@ export default function TicketService({ currentUser }: TicketServiceProps) {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#222B35] pb-4">
         <div>
           <div className="text-[10px] uppercase tracking-[0.25em] text-[#C5A880] font-semibold flex items-center gap-1.5">
-            <Wrench className="w-3.5 h-3.5" /> Kỹ Thuật • Căn {aptCode}
+            <Wrench className="w-3.5 h-3.5" /> Dịch Vụ Cư Dân • Căn {aptCode}
           </div>
           <h2 className="font-serif text-2xl text-white font-bold mt-1">
-            Báo Hỏng & Sửa Chữa
+            Yêu Cầu, Hỏi Đáp & Sửa Chữa
           </h2>
         </div>
 
@@ -186,7 +214,7 @@ export default function TicketService({ currentUser }: TicketServiceProps) {
           onClick={() => setShowCreateForm(!showCreateForm)}
           className="px-4 py-2 bg-[#C5A880] hover:bg-white text-[#0D1117] text-xs font-bold uppercase tracking-wider transition-colors flex items-center gap-1.5 shadow-lg"
         >
-          <Plus className="w-4 h-4" /> Báo Sự Cố Mới
+          <Plus className="w-4 h-4" /> Gửi Yêu Cầu Mới
         </button>
       </div>
 
@@ -209,16 +237,94 @@ export default function TicketService({ currentUser }: TicketServiceProps) {
         <form onSubmit={handleCreateTicket} className="p-6 bg-[#121820] border border-[#C5A880] space-y-4 shadow-2xl animate-fadeIn">
           <div className="flex items-center justify-between border-b border-[#222B35] pb-2 text-xs">
             <span className="font-serif font-bold text-white uppercase tracking-wider flex items-center gap-1.5">
-              <Wrench className="w-4 h-4 text-[#C5A880]" /> Báo Sự Cố - Căn {aptCode}
+              <Plus className="w-4 h-4 text-[#C5A880]" /> Tạo Phiếu Mới - Căn {aptCode}
             </span>
-            <span className="text-gray-400">Xử lý trong 15 - 45 phút</span>
+            <span className="text-gray-400">
+              {ticketPurpose === 'INQUIRY' 
+                ? '⚡ AI Giải đáp tức thì < 1s' 
+                : ticketPurpose === 'FEEDBACK'
+                  ? 'Ban Quản Lý thụ lý'
+                  : 'KTV có mặt trong 15 - 45 phút'}
+            </span>
+          </div>
+
+          {/* Chọn mục đích: Sự Cố Kỹ Thuật | Hỏi Đáp Tiện Ích | Góp Ý & Phản Ánh */}
+          <div className="space-y-1.5">
+            <label className="text-xs text-gray-300 font-semibold">Loại yêu cầu bạn cần gửi:</label>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+              <button
+                type="button"
+                onClick={() => setTicketPurpose('REPAIR')}
+                className={`p-3 text-left border transition-all flex flex-col gap-1 ${
+                  ticketPurpose === 'REPAIR'
+                    ? 'bg-amber-950/50 border-amber-500 text-amber-200'
+                    : 'bg-[#161B22] border-[#2D3748] text-gray-400 hover:text-white'
+                }`}
+              >
+                <div className="font-bold text-xs flex items-center gap-1.5">
+                  <Wrench className="w-3.5 h-3.5 text-amber-400" />
+                  <span>Sự Cố Kỹ Thuật</span>
+                </div>
+                <div className="text-[10px] text-gray-400">
+                  Hỏng điện, vòi nước, khóa cửa, điều hòa
+                </div>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setTicketPurpose('INQUIRY')}
+                className={`p-3 text-left border transition-all flex flex-col gap-1 ${
+                  ticketPurpose === 'INQUIRY'
+                    ? 'bg-sky-950/50 border-sky-500 text-sky-200'
+                    : 'bg-[#161B22] border-[#2D3748] text-gray-400 hover:text-white'
+                }`}
+              >
+                <div className="font-bold text-xs flex items-center gap-1.5">
+                  <Sparkles className="w-3.5 h-3.5 text-sky-400" />
+                  <span>Hỏi Đáp & Trợ Giúp</span>
+                </div>
+                <div className="text-[10px] text-gray-400">
+                  Giờ hồ bơi, gym, nội quy, gửi xe (AI trả lời 24/7)
+                </div>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setTicketPurpose('FEEDBACK')}
+                className={`p-3 text-left border transition-all flex flex-col gap-1 ${
+                  ticketPurpose === 'FEEDBACK'
+                    ? 'bg-rose-950/50 border-rose-500 text-rose-200'
+                    : 'bg-[#161B22] border-[#2D3748] text-gray-400 hover:text-white'
+                }`}
+              >
+                <div className="font-bold text-xs flex items-center gap-1.5">
+                  <MessageSquare className="w-3.5 h-3.5 text-rose-400" />
+                  <span>Góp Ý & Phản Ánh</span>
+                </div>
+                <div className="text-[10px] text-gray-400">
+                  Vệ sinh, rác thải, tiếng ồn, dịch vụ BQL
+                </div>
+              </button>
+            </div>
           </div>
 
           <div className="space-y-1.5">
-            <label className="text-xs text-gray-300 font-medium">Mô tả sự cố:</label>
+            <label className="text-xs text-gray-300 font-medium">
+              {ticketPurpose === 'INQUIRY'
+                ? 'Nội dung câu hỏi hoặc thông tin bạn cần hỗ trợ:'
+                : ticketPurpose === 'FEEDBACK'
+                  ? 'Ý kiến góp ý hoặc phản ánh chi tiết tới Ban Quản Lý:'
+                  : 'Mô tả cụ thể sự cố cần sửa chữa:'}
+            </label>
             <textarea
               rows={3}
-              placeholder="VD: Vòi sen nhà tắm bị rò rỉ nước liên tục..."
+              placeholder={
+                ticketPurpose === 'INQUIRY'
+                  ? 'VD: Hồ bơi mở cửa đến mấy giờ? Quy định đăng ký vận chuyển đồ vào sảnh ra sao?...'
+                  : ticketPurpose === 'FEEDBACK'
+                    ? 'VD: Khu vực tập kết rác Block 07 chưa được dọn sạch cuối ngày, phát sinh mùi hôi...'
+                    : 'VD: Vòi sen nhà tắm bị rò rỉ nước liên tục, aptomat tổng bị nhảy liên tục...'
+              }
               value={content}
               onChange={(e) => handleContentChange(e.target.value)}
               className="w-full bg-[#161B22] border border-[#2D3748] text-xs text-white p-3 focus:outline-none focus:border-[#C5A880] placeholder-gray-500"
@@ -226,21 +332,23 @@ export default function TicketService({ currentUser }: TicketServiceProps) {
             />
           </div>
 
-          {/* AI NLP Indicator */}
-          <div className="p-3 bg-[#161B22] border border-[#222B35] flex items-center justify-between text-xs">
-            <span className="text-gray-400 flex items-center gap-1.5">
-              <Sparkles className="w-3.5 h-3.5 text-[#C5A880]" /> Phân loại:
-            </span>
-            <span className="px-2.5 py-0.5 bg-[#1C2533] border border-[#C5A880] text-[#C5A880] font-mono font-bold">
-              {aiDetectedCat} • {aiDetectedCat === 'Nước' ? 'Khẩn cấp (45 phút)' : 'Tiêu chuẩn (2 giờ)'}
-            </span>
-          </div>
+          {/* Phân loại sự cố (khi chọn Sửa Chữa) */}
+          {ticketPurpose === 'REPAIR' && (
+            <div className="p-3 bg-[#161B22] border border-[#222B35] flex items-center justify-between text-xs">
+              <span className="text-gray-400 flex items-center gap-1.5">
+                <Sparkles className="w-3.5 h-3.5 text-[#C5A880]" /> AI nhận diện hạng mục:
+              </span>
+              <span className="px-2.5 py-0.5 bg-[#1C2533] border border-[#C5A880] text-[#C5A880] font-mono font-bold">
+                {aiDetectedCat} • {aiDetectedCat === 'Nước' ? 'Khẩn cấp (45 phút)' : 'Tiêu chuẩn (2 giờ)'}
+              </span>
+            </div>
+          )}
 
-          {/* Attach Before Photo (Image -> Base64) */}
+          {/* Đính kèm hình ảnh (Bắt buộc với sửa chữa/phản ánh, tùy chọn với hỏi đáp) */}
           <div className="space-y-2 pt-1">
             <label className="text-xs text-gray-300 font-medium flex items-center justify-between">
-              <span>Đính kèm hình ảnh hiện trường sự cố:</span>
-              <span className="text-[11px] text-gray-400">* Ảnh được gửi trực tiếp đến Ban Quản Lý</span>
+              <span>Đính kèm hình ảnh thực tế (Tùy chọn):</span>
+              <span className="text-[11px] text-gray-400">Giúp xử lý nhanh chóng và chính xác</span>
             </label>
 
             <input
@@ -259,7 +367,7 @@ export default function TicketService({ currentUser }: TicketServiceProps) {
                 className="px-3.5 py-2 bg-[#161B22] border border-[#2D3748] hover:border-[#C5A880] text-gray-300 hover:text-white text-xs flex items-center gap-2 transition-colors"
               >
                 <Camera className="w-3.5 h-3.5 text-[#C5A880]" />
-                {isUploadingImage ? 'Đang đọc ảnh...' : attachedImageBase64 ? 'Đổi Ảnh Khác' : 'Chụp / Tải Ảnh Hiện Trường'}
+                {isUploadingImage ? 'Đang đọc ảnh...' : attachedImageBase64 ? 'Đổi Ảnh Khác' : 'Chụp / Tải Ảnh'}
               </button>
 
               {attachedImageBase64 && (
@@ -286,15 +394,31 @@ export default function TicketService({ currentUser }: TicketServiceProps) {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="px-5 py-2 bg-[#C5A880] hover:bg-white text-[#0D1117] text-xs font-bold uppercase tracking-wider transition-colors shadow-lg disabled:opacity-60 flex items-center gap-1.5"
+              className={`px-5 py-2 text-xs font-bold uppercase tracking-wider transition-colors shadow-lg disabled:opacity-60 flex items-center gap-1.5 ${
+                ticketPurpose === 'INQUIRY'
+                  ? 'bg-sky-500 hover:bg-sky-400 text-black'
+                  : ticketPurpose === 'FEEDBACK'
+                    ? 'bg-rose-600 hover:bg-rose-500 text-white'
+                    : 'bg-[#C5A880] hover:bg-white text-[#0D1117]'
+              }`}
             >
               {isSubmitting ? (
                 <>
                   <RefreshCw className="w-3.5 h-3.5 animate-spin" />
-                  Đang Gửi Yêu Cầu...
+                  Đang Gửi...
+                </>
+              ) : ticketPurpose === 'INQUIRY' ? (
+                <>
+                  <Sparkles className="w-3.5 h-3.5" />
+                  Hỏi Trợ Lý AI (Giải Đáp 24/7)
+                </>
+              ) : ticketPurpose === 'FEEDBACK' ? (
+                <>
+                  <Send className="w-3.5 h-3.5" />
+                  Gửi Phản Hồi Cho BQL
                 </>
               ) : (
-                'Gửi Yêu Cầu Tới BQL'
+                'Gửi Yêu Cầu Sửa Chữa'
               )}
             </button>
           </div>
@@ -437,119 +561,200 @@ export default function TicketService({ currentUser }: TicketServiceProps) {
           </div>
         ) : (
           <div className="space-y-3">
-            {tickets.map((t) => (
-              <div 
-                key={t.id} 
-                className={`p-4 bg-[#121820] border transition-all space-y-3 text-xs ${
-                  t.status === 'Resolved' 
-                    ? 'border-emerald-500/40 bg-gradient-to-r from-[#121820] to-[#0d1e15]' 
-                    : t.status === 'In_Progress'
-                      ? 'border-amber-500/40 bg-gradient-to-r from-[#121820] to-[#1e1a0f]'
-                      : 'border-[#222B35]'
-                }`}
-              >
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <span className="font-mono text-[#C5A880] font-bold text-sm">
-                      {t.nks_id ? `#${t.nks_id}` : `#${t.id.replace('TICK-', '')}`}
-                    </span>
-                    <span className="px-1.5 py-0.5 bg-[#1C2533] border border-gray-700 text-gray-300 text-[10px] font-mono">
-                      {t.ai_category}
-                    </span>
-                    <span className="text-[11px] text-gray-400">
-                      {new Date(t.created_at).toLocaleString('vi-VN')}
-                    </span>
-                  </div>
+            {tickets.map((t) => {
+              const isFeedback = t.ticket_type === 'FEEDBACK';
+              const isInquiry = t.ticket_type === 'INQUIRY';
+              const isRepair = !isFeedback && !isInquiry;
 
-                  <div className="flex items-center gap-2">
-                    <span className={`px-2.5 py-1 font-semibold text-[10px] uppercase tracking-wider flex items-center gap-1.5 ${
-                      t.status === 'Resolved' 
-                        ? 'bg-emerald-950 text-emerald-400 border border-emerald-600' 
-                        : t.status === 'In_Progress' || t.status === 'Assigned'
-                          ? 'bg-amber-950 text-amber-400 border border-amber-600 animate-pulse'
-                          : 'bg-blue-950 text-blue-400 border border-blue-600'
-                    }`}>
-                      {t.status === 'Resolved' ? (
-                        <>✓ Đã Nghiệm Thu Xong</>
-                      ) : t.status === 'In_Progress' || t.status === 'Assigned' ? (
-                        <>⏱ KTV Đang Xử Lý</>
+              return (
+                <div 
+                  key={t.id} 
+                  className={`p-4 bg-[#121820] border transition-all space-y-3 text-xs ${
+                    t.status === 'Resolved' 
+                      ? 'border-emerald-500/40 bg-gradient-to-r from-[#121820] to-[#0d1e15]' 
+                      : t.status === 'In_Progress'
+                        ? 'border-amber-500/40 bg-gradient-to-r from-[#121820] to-[#1e1a0f]'
+                        : isFeedback
+                          ? 'border-rose-500/40'
+                          : isInquiry
+                            ? 'border-sky-500/40'
+                            : 'border-[#222B35]'
+                  }`}
+                >
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="font-mono text-[#C5A880] font-bold text-sm">
+                        {t.nks_id ? `#${t.nks_id}` : `#${t.id.replace('TICK-', '')}`}
+                      </span>
+                      
+                      {isFeedback ? (
+                        <span className="px-2 py-0.5 bg-rose-950 text-rose-300 border border-rose-500 text-[10px] font-bold">
+                          📢 Góp Ý & Phản Ánh
+                        </span>
+                      ) : isInquiry ? (
+                        <span className="px-2 py-0.5 bg-sky-950 text-sky-300 border border-sky-500 text-[10px] font-bold">
+                          💬 Hỏi Đáp • AI 24/7
+                        </span>
                       ) : (
-                        <>⏳ Chờ BQL Tiếp Nhận</>
+                        <span className="px-1.5 py-0.5 bg-[#1C2533] border border-gray-700 text-gray-300 text-[10px] font-mono">
+                          🔧 {t.ai_category}
+                        </span>
                       )}
-                    </span>
 
-                    {/* Nút Đánh giá 5 sao cho KTV nếu phiếu đã hoàn tất */}
-                    {t.status === 'Resolved' && (
-                      <button
-                        onClick={() => {
-                          setRatingModalTicket(t);
-                          setSelectedRating(t.rating || 5);
-                          setFeedbackText(t.resident_feedback || '');
-                        }}
-                        className="px-2.5 py-1 bg-yellow-500/20 hover:bg-yellow-500 text-yellow-300 hover:text-[#0D1117] border border-yellow-500/40 text-[10px] font-bold transition-all flex items-center gap-1"
-                      >
-                        <Star className="w-3 h-3 fill-current" />
-                        {t.rating ? `${t.rating} ⭐ (Xem Đánh Giá)` : 'Chấm Điểm KTV'}
-                      </button>
-                    )}
+                      <span className="text-[11px] text-gray-400">
+                        {new Date(t.created_at).toLocaleString('vi-VN')}
+                      </span>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <span className={`px-2.5 py-1 font-semibold text-[10px] uppercase tracking-wider flex items-center gap-1.5 ${
+                        t.status === 'Resolved' 
+                          ? 'bg-emerald-950 text-emerald-400 border border-emerald-600' 
+                          : t.status === 'In_Progress' || t.status === 'Assigned'
+                            ? 'bg-amber-950 text-amber-400 border border-amber-600 animate-pulse'
+                            : isFeedback
+                              ? 'bg-rose-950 text-rose-400 border border-rose-600'
+                              : 'bg-blue-950 text-blue-400 border border-blue-600'
+                      }`}>
+                        {isInquiry ? (
+                          t.status === 'Resolved' ? <>✓ AI Đã Giải Đáp Tức Thì</> : <>⏳ AI Đang Xử Lý</>
+                        ) : isFeedback ? (
+                          t.status === 'Resolved' ? <>✓ BQL Đã Phản Hồi</> : <>⏳ BQL Đang Thụ Lý</>
+                        ) : (
+                          t.status === 'Resolved' 
+                            ? <>✓ Đã Nghiệm Thu Xong</> 
+                            : t.status === 'In_Progress' || t.status === 'Assigned'
+                              ? <>⏱ KTV Đang Xử Lý</>
+                              : <>⏳ Chờ BQL Tiếp Nhận</>
+                        )}
+                      </span>
+
+                      {/* Nút Đánh giá 5 sao cho KTV nếu phiếu sửa chữa đã hoàn tất */}
+                      {isRepair && t.status === 'Resolved' && (
+                        <button
+                          onClick={() => {
+                            setRatingModalTicket(t);
+                            setSelectedRating(t.rating || 5);
+                            setFeedbackText(t.resident_feedback || '');
+                          }}
+                          className="px-2.5 py-1 bg-yellow-500/20 hover:bg-yellow-500 text-yellow-300 hover:text-[#0D1117] border border-yellow-500/40 text-[10px] font-bold transition-all flex items-center gap-1"
+                        >
+                          <Star className="w-3 h-3 fill-current" />
+                          {t.rating ? `${t.rating} ⭐ (Xem Đánh Giá)` : 'Chấm Điểm KTV'}
+                        </button>
+                      )}
+                    </div>
                   </div>
-                </div>
 
-                <p className="text-gray-200 text-xs leading-relaxed">{t.content}</p>
+                  <p className="text-gray-200 text-xs leading-relaxed">{t.content}</p>
 
-                {(t.before_image || t.after_image) && (
-                  <div className="flex items-center gap-4 pt-1">
-                    {t.before_image && (
-                      <div className="flex items-center gap-1.5 text-[11px] text-gray-400">
-                        <img 
-                          src={t.before_image} 
-                          alt="Ảnh lúc báo" 
-                          className="w-10 h-10 object-cover border border-red-500/40"
-                        />
-                        <span>Ảnh hiện trường</span>
+                  {/* CÂU TRẢ LỜI CỦA AI NẾU LÀ INQUIRY */}
+                  {isInquiry && t.ai_reply && (
+                    <div className="p-3 bg-sky-950/40 border border-sky-500/40 space-y-1">
+                      <div className="text-[11px] font-bold text-sky-300 flex items-center gap-1.5">
+                        <Sparkles className="w-3.5 h-3.5 text-sky-400" /> 
+                        Giải Đáp Từ Trợ Lý AI Skyline (Tự Động 24/7):
                       </div>
-                    )}
-                    {t.after_image && (
-                      <div className="flex items-center gap-1.5 text-[11px] text-gray-400">
-                        <img 
-                          src={t.after_image} 
-                          alt="Ảnh nghiệm thu" 
-                          className="w-10 h-10 object-cover border border-emerald-500/40"
-                        />
-                        <span className="text-emerald-400 font-medium">Ảnh nghiệm thu</span>
-                      </div>
-                    )}
-                  </div>
-                )}
-
-                {/* Technician & Action Status Bar */}
-                <div className="pt-2 border-t border-[#222B35] flex flex-wrap items-center justify-between gap-3 text-[11px]">
-                  <div className="flex items-center gap-4 text-gray-400">
-                    <span>
-                      Kỹ thuật viên phụ trách: {' '}
-                      <strong className="text-white">
-                        {t.assigned_technician || 'Ban Quản Lý đang điều phối'}
-                      </strong>
-                    </span>
-
-                    {t.assigned_technician_phone && (
-                      <a 
-                        href={`tel:${t.assigned_technician_phone}`} 
-                        className="text-[#C5A880] hover:underline flex items-center gap-1"
-                      >
-                        <Phone className="w-3 h-3" /> {t.assigned_technician_phone}
-                      </a>
-                    )}
-                  </div>
-
-                  {t.scheduled_time && (
-                    <span className="text-amber-400 font-mono">
-                      Hẹn đến: {t.scheduled_time}
-                    </span>
+                      <p className="text-gray-200 text-xs whitespace-pre-line leading-relaxed">
+                        {t.ai_reply}
+                      </p>
+                    </div>
                   )}
+
+                  {/* PHẢN HỒI TỪ BQL NẾU LÀ FEEDBACK */}
+                  {isFeedback && (
+                    t.admin_reply ? (
+                      <div className="p-3 bg-rose-950/40 border border-rose-500/40 space-y-1">
+                        <div className="text-[11px] font-bold text-rose-300 flex items-center gap-1.5">
+                          <BadgeCheck className="w-3.5 h-3.5 text-rose-400" />
+                          Phản hồi chính thức từ {t.admin_replied_by || 'Ban Quản Lý Skyline'}:
+                        </div>
+                        <p className="text-gray-200 text-xs italic leading-relaxed">
+                          "{t.admin_reply}"
+                        </p>
+                        {t.admin_replied_at && (
+                          <div className="text-[10px] text-gray-400 text-right">
+                            {new Date(t.admin_replied_at).toLocaleTimeString('vi-VN')} {new Date(t.admin_replied_at).toLocaleDateString('vi-VN')}
+                          </div>
+                        )}
+                      </div>
+                    ) : (
+                      <div className="p-2.5 bg-[#161B22] border border-[#222B35] text-[11px] text-gray-400 flex items-center gap-2">
+                        <Clock className="w-3.5 h-3.5 text-amber-400" />
+                        <span>Ban Quản Lý đang xác minh và kiểm tra hiện trường để gửi văn bản phản hồi.</span>
+                      </div>
+                    )
+                  )}
+
+                  {/* ẢNH HIỆN TRƯỜNG & NGHIỆM THU */}
+                  {(t.before_image || t.after_image) && (
+                    <div className="flex items-center gap-4 pt-1">
+                      {t.before_image && (
+                        <div className="flex items-center gap-1.5 text-[11px] text-gray-400">
+                          <img 
+                            src={t.before_image} 
+                            alt="Ảnh lúc báo" 
+                            className="w-10 h-10 object-cover border border-red-500/40"
+                          />
+                          <span>Ảnh hiện trường</span>
+                        </div>
+                      )}
+                      {t.after_image && (
+                        <div className="flex items-center gap-1.5 text-[11px] text-gray-400">
+                          <img 
+                            src={t.after_image} 
+                            alt="Ảnh nghiệm thu" 
+                            className="w-10 h-10 object-cover border border-emerald-500/40"
+                          />
+                          <span className="text-emerald-400 font-medium">Ảnh nghiệm thu</span>
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {/* FOOTER BAR: TUỲ THEO LOẠI TICKET */}
+                  <div className="pt-2 border-t border-[#222B35] flex flex-wrap items-center justify-between gap-3 text-[11px]">
+                    {isInquiry ? (
+                      <span className="text-sky-300 font-medium flex items-center gap-1.5">
+                        <Sparkles className="w-3 h-3 text-sky-400" />
+                        Trợ lý AI tự động hỗ trợ 24/7 • Cần gặp trực tiếp: 0364 967 082
+                      </span>
+                    ) : isFeedback ? (
+                      <span className="text-rose-300 font-medium flex items-center gap-1.5">
+                        <MessageSquare className="w-3 h-3 text-rose-400" />
+                        Chuyên viên CSKH & Ban Quản Lý chịu trách nhiệm thụ lý
+                      </span>
+                    ) : (
+                      <>
+                        <div className="flex items-center gap-4 text-gray-400">
+                          <span>
+                            Kỹ thuật viên phụ trách: {' '}
+                            <strong className="text-white">
+                              {t.assigned_technician || 'Ban Quản Lý đang điều phối'}
+                            </strong>
+                          </span>
+
+                          {t.assigned_technician_phone && (
+                            <a 
+                              href={`tel:${t.assigned_technician_phone}`} 
+                              className="text-[#C5A880] hover:underline flex items-center gap-1"
+                            >
+                              <Phone className="w-3 h-3" /> {t.assigned_technician_phone}
+                            </a>
+                          )}
+                        </div>
+
+                        {t.scheduled_time && (
+                          <span className="text-amber-400 font-mono">
+                            Hẹn đến: {t.scheduled_time}
+                          </span>
+                        )}
+                      </>
+                    )}
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </div>
