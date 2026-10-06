@@ -513,13 +513,13 @@ export default function AdminBuildingApartmentManager() {
   const currentBlockConfig = useMemo(() => {
     switch (selectedBlock) {
       case 'BS-08':
-        return { name: 'Tòa BS-08', floors: 39, badge: 'Tòa Điểm Nhấn (39 Tầng)' };
+        return { name: 'Chung Cư BS-08', floors: 39, badge: 'Chung Cư Điểm Nhấn (39 Tầng)' };
       case 'BS-09':
-        return { name: 'Tòa BS-09', floors: 34, badge: 'Tòa Hướng Công Viên (34 Tầng)' };
+        return { name: 'Chung Cư BS-09', floors: 34, badge: 'Chung Cư Hướng Công Viên (34 Tầng)' };
       case 'BS-10':
-        return { name: 'Tòa BS-10', floors: 34, badge: 'Tòa Hướng Quảng Trường (34 Tầng)' };
+        return { name: 'Chung Cư BS-10', floors: 34, badge: 'Chung Cư Hướng Quảng Trường (34 Tầng)' };
       default:
-        return { name: 'Tòa BS-07', floors: 34, badge: 'Tòa Tháp Cư Dân (34 Tầng)' };
+        return { name: 'Chung Cư BS-07', floors: 34, badge: 'Chung Cư Cư Dân (34 Tầng)' };
     }
   }, [selectedBlock]);
 
@@ -757,25 +757,24 @@ export default function AdminBuildingApartmentManager() {
       </div>
 
       {/* ============================================================= */}
-      {/* THANH ĐIỀU HÀNH BQL: CHỌN TÒA • TẦNG • CĂN HỘ & BỘ LỌC VẬN HÀNH */}
+      {/* BỘ LỌC TINH GỌN BQL: CHUNG CƯ • TẦNG • TÌM KIẾM • TRẠNG THÁI   */}
       {/* ============================================================= */}
-      <div className="bg-[#0B121D] border border-[#22344B] p-2.5 sm:p-3 shadow-lg">
-        <div className="flex flex-wrap items-center justify-between gap-3">
+      <div className="bg-[#0B121D] border border-[#1E2D42] p-2.5 shadow-lg">
+        <div className="flex flex-wrap items-center justify-between gap-2.5">
           
-          {/* KHU VỰC ĐIỀU HƯỚNG BQL (TRỰC QUAN, THÂN THIỆN) */}
+          {/* Cụm 1: Chọn Chung Cư & Tầng & Tìm Kiếm */}
           <div className="flex items-center gap-2 flex-wrap text-xs">
-            
-            {/* 1. CHỌN TÒA NHÀ */}
-            <div className="flex items-center gap-1.5 bg-[#121B27] border border-[#1E2D42] p-1">
-              <span className="text-gray-400 font-medium text-[11px] px-1 flex items-center gap-1">
+            {/* 1. CHỌN CHUNG CƯ */}
+            <div className="flex items-center gap-1 bg-[#121B27] border border-[#1E2D42] p-1">
+              <span className="text-gray-400 font-medium text-[11px] px-1.5 flex items-center gap-1">
                 <Building className="w-3.5 h-3.5 text-[#C5A880]" />
-                <span className="hidden sm:inline">Tòa Nhà:</span>
+                <span className="hidden sm:inline">Chung Cư:</span>
               </span>
               {[
-                { code: 'BS-07', name: 'Tòa BS-07', floors: 34 },
-                { code: 'BS-08', name: 'Tòa BS-08', floors: 39 },
-                { code: 'BS-09', name: 'Tòa BS-09', floors: 34 },
-                { code: 'BS-10', name: 'Tòa BS-10', floors: 34 },
+                { code: 'BS-07', name: 'BS-07', floors: 34 },
+                { code: 'BS-08', name: 'BS-08', floors: 39 },
+                { code: 'BS-09', name: 'BS-09', floors: 34 },
+                { code: 'BS-10', name: 'BS-10', floors: 34 },
               ].map(b => {
                 const isCurrent = selectedBlock === b.code;
                 return (
@@ -798,28 +797,12 @@ export default function AdminBuildingApartmentManager() {
               })}
             </div>
 
-            <ChevronRight className="w-3.5 h-3.5 text-gray-600 shrink-0 hidden sm:inline" />
-
-            {/* 2. CHỌN TẦNG */}
+            {/* 2. CHỌN TẦNG TINH GỌN */}
             <div className="flex items-center gap-1 bg-[#121B27] border border-[#1E2D42] p-1">
-              <span className="text-gray-400 font-medium text-[11px] px-1 flex items-center gap-1">
+              <span className="text-gray-400 font-medium text-[11px] px-1.5 flex items-center gap-1">
                 <Layers className="w-3.5 h-3.5 text-[#C5A880]" />
                 <span className="hidden sm:inline">Tầng:</span>
               </span>
-              
-              {/* Nút chọn nhanh Tầng Sảnh */}
-              <button
-                type="button"
-                onClick={() => handleSelectFloor(0)}
-                className={`px-2 py-1 text-xs font-mono transition-colors border ${
-                  selectedFloor === 0
-                    ? 'bg-[#C5A880] text-black border-[#C5A880] font-bold shadow'
-                    : 'bg-[#0E1521] text-gray-300 border-[#1B293C] hover:text-white'
-                }`}
-                title="Xem mặt bằng tiện ích Đại Sảnh (Tầng G)"
-              >
-                Sảnh (G)
-              </button>
 
               <button
                 type="button"
@@ -836,10 +819,10 @@ export default function AdminBuildingApartmentManager() {
                 onChange={(e) => handleSelectFloor(Number(e.target.value))}
                 className="bg-[#182333] border border-[#2D3E56] text-white font-mono font-bold text-xs px-2 py-0.5 outline-none focus:border-[#C5A880] cursor-pointer"
               >
-                <option value={0}>Tầng Sảnh (G) - Dịch Vụ</option>
+                <option value={0}>Sảnh (G) - Dịch Vụ</option>
                 {buildingFloors.map(f => (
                   <option key={f} value={f}>
-                    Tầng {f} - Căn Hộ
+                    Tầng {f} {f === 30 ? '(Chủ Hộ)' : ''}
                   </option>
                 ))}
               </select>
@@ -855,31 +838,7 @@ export default function AdminBuildingApartmentManager() {
               </button>
             </div>
 
-            <ChevronRight className="w-3.5 h-3.5 text-gray-600 shrink-0 hidden sm:inline" />
-
-            {/* 3. CĂN HỘ ĐANG CHỌN */}
-            {selectedFloor > 0 && (
-              <div className="flex items-center gap-1.5 px-2.5 py-1.5 bg-[#121B27] border border-[#1E2D42]">
-                <span className="text-gray-400 text-[11px]">Đang xem:</span>
-                <strong className="text-[#C5A880] font-mono font-bold">Căn {selectedAptCode}</strong>
-                {activeUnit && (
-                  <span className={`text-[10px] px-1.5 py-0.5 font-sans font-semibold flex items-center gap-1 border ${
-                    activeUnit.status === 'OCCUPIED' 
-                      ? 'bg-emerald-950/80 text-emerald-300 border-emerald-600/50' 
-                      : activeUnit.status === 'MAINTENANCE'
-                      ? 'bg-blue-950/80 text-blue-300 border-blue-600/50'
-                      : 'bg-amber-950/80 text-amber-300 border-amber-600/50'
-                  }`}>
-                    <span className={`w-1.5 h-1.5 rounded-full ${
-                      activeUnit.status === 'OCCUPIED' ? 'bg-emerald-400' : activeUnit.status === 'MAINTENANCE' ? 'bg-blue-400' : 'bg-amber-400'
-                    }`} />
-                    {activeUnit.status === 'OCCUPIED' ? 'Đã có cư dân' : activeUnit.status === 'MAINTENANCE' ? 'Bảo trì' : 'Chưa ở'}
-                  </span>
-                )}
-              </div>
-            )}
-
-            {/* 4. Ô TÌM NHANH CĂN HỘ */}
+            {/* 3. Ô TÌM NHANH CĂN HỘ */}
             <div className="relative flex items-center">
               <Search className="w-3.5 h-3.5 text-gray-400 absolute left-2 pointer-events-none" />
               <input
@@ -913,47 +872,38 @@ export default function AdminBuildingApartmentManager() {
                 </button>
               )}
             </div>
-
           </div>
 
-          {/* PHÍA PHẢI: BỘ LỌC TÌNH TRẠNG & THỐNG KÊ THÂN THIỆN */}
-          <div className="flex items-center gap-2 flex-wrap text-xs">
-            
-            {/* Bộ lọc tình trạng cư trú */}
-            <div className="flex items-center gap-0.5 bg-[#121B27] border border-[#1E2D42] p-0.5">
+          {/* Cụm 2: Bộ Lọc Trạng Thái Cư Trú Kèm Số Lượng Trực Tiếp & Làm Mới */}
+          <div className="flex items-center gap-1.5 flex-wrap text-xs">
+            <div className="flex items-center gap-1 bg-[#121B27] border border-[#1E2D42] p-1">
               {[
-                { key: 'ALL', label: 'Tất Cả' },
-                { key: 'OCCUPIED', label: 'Có Cư Dân' },
-                { key: 'VACANT', label: 'Căn Trống' },
-                { key: 'MAINTENANCE', label: 'Bảo Trì' },
-              ].map(item => (
-                <button
-                  key={item.key}
-                  type="button"
-                  onClick={() => setFloorFilterStatus(item.key as any)}
-                  className={`px-2 py-0.5 text-[11px] transition-all ${
-                    floorFilterStatus === item.key
-                      ? 'bg-[#C5A880] text-black font-bold shadow'
-                      : 'text-gray-300 hover:text-white'
-                  }`}
-                >
-                  <span>{item.label}</span>
-                </button>
-              ))}
-            </div>
-
-            {/* Chỉ số thống kê thân thiện */}
-            <div className="px-2 py-1 bg-[#121820] border border-[#222B35] flex items-center gap-1.5 text-xs font-mono" title="Tổng số căn hộ trong tòa">
-              <span className="text-gray-400">Tổng:</span>
-              <strong className="text-white font-bold">{totalUnitsCount}</strong>
-            </div>
-            <div className="px-2 py-1 bg-[#121820] border border-emerald-500/30 flex items-center gap-1.5 text-xs font-mono" title="Căn hộ đã có người ở">
-              <span className="text-emerald-400">Đã ở:</span>
-              <strong className="text-emerald-300 font-bold">{occupiedCount} ({occupancyRate}%)</strong>
-            </div>
-            <div className="px-2 py-1 bg-[#121820] border border-amber-500/30 flex items-center gap-1.5 text-xs font-mono" title="Căn hộ còn trống">
-              <span className="text-amber-400">Trống:</span>
-              <strong className="text-amber-300 font-bold">{vacantCount}</strong>
+                { key: 'ALL', label: 'Tất Cả', count: totalUnitsCount, countColor: 'text-gray-300' },
+                { key: 'OCCUPIED', label: 'Đã Ở', count: occupiedCount, countColor: 'text-emerald-400' },
+                { key: 'VACANT', label: 'Căn Trống', count: vacantCount, countColor: 'text-amber-400' },
+                { key: 'MAINTENANCE', label: 'Bảo Trì', count: maintenanceCount, countColor: 'text-blue-400' },
+              ].map(item => {
+                const isActive = floorFilterStatus === item.key;
+                return (
+                  <button
+                    key={item.key}
+                    type="button"
+                    onClick={() => setFloorFilterStatus(item.key as any)}
+                    className={`px-2.5 py-1 text-xs transition-all flex items-center gap-1.5 border ${
+                      isActive
+                        ? 'bg-[#C5A880] text-black border-[#C5A880] font-bold shadow'
+                        : 'bg-[#0E1521] text-gray-300 border-[#1B293C] hover:border-[#385175] hover:text-white'
+                    }`}
+                  >
+                    <span>{item.label}</span>
+                    <span className={`text-[10px] font-mono px-1 py-0.2 ${
+                      isActive ? 'bg-black/20 text-black font-bold' : `${item.countColor} bg-[#152132]`
+                    }`}>
+                      {item.count}
+                    </span>
+                  </button>
+                );
+              })}
             </div>
 
             {/* Nút Đồng bộ dữ liệu BQL */}
@@ -961,11 +911,10 @@ export default function AdminBuildingApartmentManager() {
               type="button"
               onClick={() => syncLiveApartmentsFromApi(selectedBlock)}
               disabled={isSyncingApi}
-              className="px-2.5 py-1 bg-[#121820] hover:bg-[#1a232e] text-gray-300 hover:text-white border border-[#222B35] flex items-center gap-1.5 transition-colors disabled:opacity-50 text-xs font-mono"
-              title="Đồng bộ dữ liệu cư dân mới nhất từ hệ thống"
+              className="p-1.5 bg-[#121B27] hover:bg-[#1A2536] text-gray-300 hover:text-white border border-[#1E2D42] transition-colors disabled:opacity-50"
+              title="Đồng bộ dữ liệu cư dân mới nhất"
             >
-              <RefreshCw className={`w-3 h-3 text-[#C5A880] ${isSyncingApi ? 'animate-spin' : ''}`} />
-              <span className="hidden sm:inline">{isSyncingApi ? 'Đang tải...' : 'Làm mới'}</span>
+              <RefreshCw className={`w-3.5 h-3.5 text-[#C5A880] ${isSyncingApi ? 'animate-spin' : ''}`} />
             </button>
           </div>
 
@@ -2175,7 +2124,7 @@ export default function AdminBuildingApartmentManager() {
                           setHoveredAmenityId(null);
                         }}
                         className="px-2 py-0.5 bg-[#141E2D] hover:bg-[#1E2E42] text-[#C5A880] text-[10.5px] border border-[#23354C] flex items-center gap-1 transition-all"
-                        title="Đóng chi tiết tiện ích, quay về tòa nhà"
+                        title="Đóng chi tiết tiện ích, quay về chung cư"
                       >
                         <X className="w-3 h-3" />
                         <span>Về Tổng Quan</span>
