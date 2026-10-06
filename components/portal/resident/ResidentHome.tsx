@@ -110,8 +110,8 @@ export default function ResidentHome({ currentUser, onNavigate, onOpenVisitorMod
       {/* Top Welcome & Environmental Widget Header */}
       <div className="p-5 sm:p-6 bg-gradient-to-r from-[#161D26] via-[#121820] to-[#0D1117] border border-[#C5A880]/70 flex flex-col md:flex-row md:items-center justify-between gap-5 shadow-2xl">
         <div>
-          <div className="text-[10px] uppercase tracking-[0.25em] text-[#C5A880] font-bold flex items-center gap-1.5">
-            <Sparkles className="w-3.5 h-3.5" /> Không Gian Cư Dân • SKYLINE RESIDENCE
+          <div className="text-[10px] uppercase tracking-wider text-[#C5A880] font-bold flex items-center gap-1.5">
+            <Sparkles className="w-3.5 h-3.5" /> Cư Dân • Căn {aptCode}
           </div>
           <h2 className="font-serif text-2xl sm:text-3xl text-white font-bold mt-1 tracking-wide">
             Xin Chào, {userName}
@@ -218,10 +218,10 @@ export default function ResidentHome({ currentUser, onNavigate, onOpenVisitorMod
             </div>
             <div>
               <div className="text-xs font-bold uppercase tracking-wider text-amber-300">
-                Có {pendingConfirmCount} Hồ Sơ FaceID Người Nhà Đang Chờ Bạn Xác Nhận
+                Có {pendingConfirmCount} hồ sơ FaceID cần xác nhận
               </div>
               <p className="text-xs text-gray-300 mt-0.5">
-                Thành viên trong căn hộ đã hoàn tất quét 4 góc FaceID. Vui lòng kiểm tra và xác nhận bảo lãnh để chuyển tới Ban Quản Lý phê duyệt.
+                Người nhà đã quét FaceID. Vui lòng xác nhận bảo lãnh để gửi BQL duyệt.
               </p>
             </div>
           </div>
@@ -231,7 +231,7 @@ export default function ResidentHome({ currentUser, onNavigate, onOpenVisitorMod
             onClick={() => onNavigate('resident-family')}
             className="px-4 py-2 bg-[#C5A880] hover:bg-white text-[#0D1117] text-xs font-bold uppercase tracking-wider transition-all shadow-lg flex-shrink-0 cursor-pointer active:scale-95 flex items-center gap-1.5"
           >
-            <ShieldCheck className="w-4 h-4" /> Xem & Xác Nhận Ngay
+            <ShieldCheck className="w-4 h-4" /> Xác Nhận Ngay
           </button>
         </div>
       )}
@@ -240,7 +240,7 @@ export default function ResidentHome({ currentUser, onNavigate, onOpenVisitorMod
       <div className="p-4 bg-[#121820] border border-[#222B35] space-y-2.5 shadow-lg">
         <div className="flex items-center justify-between">
           <span className="text-[11px] uppercase tracking-wider text-[#C5A880] font-bold flex items-center gap-1.5">
-            <Home className="w-3.5 h-3.5" /> Ngữ Cảnh Thông Minh:
+            <Home className="w-3.5 h-3.5" /> Ngữ Cảnh Nhanh:
           </span>
           {sceneMessage && (
             <span className="text-xs font-mono text-emerald-400 animate-fadeIn">
@@ -352,7 +352,7 @@ export default function ResidentHome({ currentUser, onNavigate, onOpenVisitorMod
                 Thẻ Cư Dân Điện Tử
               </div>
               <p className="text-xs text-gray-400">
-                Nhấp để lật thẻ xem 2 mặt • Quẹt thẻ mở cổng sảnh & thang máy
+                Chạm để lật thẻ • Dùng mở cổng sảnh & thang máy
               </p>
             </div>
 
@@ -377,7 +377,7 @@ export default function ResidentHome({ currentUser, onNavigate, onOpenVisitorMod
                 <ArrowRight className="w-3.5 h-3.5 text-gray-500 group-hover:text-[#C5A880]" />
               </div>
               <p className="text-[11px] text-gray-400">
-                Tạo mã QR gửi khách qua Zalo để tự quét mở sảnh đón và thang máy.
+                Tạo mã QR cho khách quét mở sảnh và thang máy.
               </p>
             </div>
 
@@ -394,7 +394,7 @@ export default function ResidentHome({ currentUser, onNavigate, onOpenVisitorMod
                 <ArrowRight className="w-3.5 h-3.5 text-gray-500 group-hover:text-amber-400" />
               </div>
               <p className="text-[11px] text-gray-400">
-                Tiếp nhận sự cố kỹ thuật, cử kỹ thuật viên xử lý trong 60 phút.
+                Gửi yêu cầu kiểm tra và sửa chữa thiết bị căn hộ.
               </p>
             </div>
 
@@ -412,12 +412,12 @@ export default function ResidentHome({ currentUser, onNavigate, onOpenVisitorMod
                   <span className="text-[10px] font-mono bg-emerald-950 text-emerald-300 px-1.5 py-0.5 border border-emerald-500">2.465.000 đ</span>
                 </div>
                 <p className="text-[11px] text-gray-400">
-                  Thanh toán trực tuyến VietQR, MoMo, VNPay 24/7 đối soát tức thì.
+                  Thanh toán tiền điện, nước và phí quản lý.
                 </p>
               </div>
             )}
 
-            {/* Action 4: Tiện Ích 5 Sao */}
+            {/* Action 4: Tiện Ích */}
             <div
               onClick={() => onNavigate('resident-facilities')}
               className="p-4 bg-[#121820] border border-[#222B35] hover:border-[#C5A880] cursor-pointer transition-all space-y-2 group shadow-md"
@@ -430,7 +430,7 @@ export default function ResidentHome({ currentUser, onNavigate, onOpenVisitorMod
                 <ArrowRight className="w-3.5 h-3.5 text-gray-500 group-hover:text-blue-400" />
               </div>
               <p className="text-[11px] text-gray-400">
-                Thẻ quẹt mở cổng Hồ bơi, Gym Technogym, Sân Malibu, Yoga, BBQ.
+                Đặt lịch hồ bơi, phòng gym, sân BBQ.
               </p>
             </div>
 
@@ -443,11 +443,11 @@ export default function ResidentHome({ currentUser, onNavigate, onOpenVisitorMod
                 <Sparkles className="w-4 h-4" />
               </div>
               <div className="font-serif text-sm font-bold text-white group-hover:text-amber-400 flex items-center justify-between">
-                <span>Dịch Vụ Đời Sống</span>
+                <span>Dịch Vụ Căn Hộ</span>
                 <ArrowRight className="w-3.5 h-3.5 text-gray-500 group-hover:text-amber-400" />
               </div>
               <p className="text-[11px] text-gray-400">
-                Nhân viên phục vụ tận phòng: Giặt ủi, Dọn dẹp, PT Gym, Rửa xe B2, Spa, Cơm nóng.
+                Dọn dẹp, giặt ủi, rửa xe và hỗ trợ kỹ thuật.
               </p>
             </div>
           </div>

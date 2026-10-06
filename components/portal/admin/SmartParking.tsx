@@ -110,10 +110,10 @@ export default function SmartParking() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#222B35] pb-3">
         <div>
           <div className="text-[10px] uppercase tracking-[0.2em] text-[#C5A880] font-semibold">
-            BÃI ĐỖ XE HẦM B1 & B2 • BS-07
+            BÃI ĐỖ XE HẦM B1 & B2
           </div>
           <h2 className="font-serif text-xl sm:text-2xl text-white font-bold mt-0.5">
-            Kiểm Soát Phương Tiện & Camera LPR
+            Kiểm Soát Phương Tiện
           </h2>
         </div>
 

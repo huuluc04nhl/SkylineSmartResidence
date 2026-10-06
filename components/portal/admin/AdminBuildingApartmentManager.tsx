@@ -740,7 +740,7 @@ export default function AdminBuildingApartmentManager() {
             Sơ Đồ Tầng & Căn Hộ
           </h2>
           <p className="text-xs text-gray-400 mt-0.5">
-            Trung tâm giám sát mặt bằng trực quan & quản lý kỹ thuật vận hành theo thời gian thực.
+            Sơ đồ mặt bằng và trạng thái kỹ thuật căn hộ.
           </p>
         </div>
 

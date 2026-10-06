@@ -58,7 +58,7 @@ export default function BillingStudio() {
   const handlePublishAll = () => {
     publishAllBills();
     setIsPublishedAll(true);
-    setActionSuccessMsg('Đã phát hành và gửi thông báo hóa đơn thành công tới toàn bộ căn hộ!');
+    setActionSuccessMsg('Đã phát hành hóa đơn cho toàn bộ căn hộ.');
     setTimeout(() => {
       setIsPublishedAll(false);
       setActionSuccessMsg(null);
@@ -68,7 +68,7 @@ export default function BillingStudio() {
   const handleSendReminders = () => {
     setReminderSent(true);
     const unpaidCount = bills.filter(b => b.status === 'Unpaid').length;
-    setActionSuccessMsg(`Đã gửi thông báo nhắc hạn thanh toán tới ${unpaidCount} căn hộ chưa hoàn tất nghĩa vụ phí!`);
+    setActionSuccessMsg(`Đã gửi nhắc phí tới ${unpaidCount} căn hộ chưa thanh toán.`);
     setTimeout(() => {
       setReminderSent(false);
       setActionSuccessMsg(null);
@@ -78,7 +78,7 @@ export default function BillingStudio() {
   const handleConfirmPaid = (billId: string, aptCode: string) => {
     const updated = confirmPaidByAdmin(billId);
     if (updated) {
-      setActionSuccessMsg(`Đã duyệt gạch nợ thành công cho Căn ${aptCode}! Hệ thống đã đồng bộ sang cổng Cư dân.`);
+      setActionSuccessMsg(`Đã duyệt gạch nợ Căn ${aptCode}.`);
       setTimeout(() => setActionSuccessMsg(null), 3500);
     }
   };
@@ -92,10 +92,10 @@ export default function BillingStudio() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#222B35] pb-4">
         <div>
           <div className="text-[10px] uppercase tracking-[0.25em] text-[#C5A880] font-semibold flex items-center gap-1.5">
-            <Building className="w-3.5 h-3.5" /> Quản Trị Tài Chính • Kế Toán & Dịch Vụ
+            <Building className="w-3.5 h-3.5" /> Tài Chính • Kế Toán
           </div>
           <h2 className="font-serif text-2xl text-white font-bold mt-1">
-            Sổ Cái Tài Chính & Đối Soát Thu Phí
+            Sổ Cái Thu Phí Dịch Vụ
           </h2>
         </div>
 
@@ -104,7 +104,7 @@ export default function BillingStudio() {
             onClick={handlePublishAll}
             className="px-4 py-2 bg-[#C5A880] text-[#0D1117] text-xs font-bold uppercase tracking-wider hover:bg-white transition-colors shadow"
           >
-            {isPublishedAll ? 'Đã Phát Hành Xong ✓' : 'Phát Hành Toàn Bộ Hóa Đơn'}
+            {isPublishedAll ? 'Đã Phát Hành Xong ✓' : 'Phát Hành Hóa Đơn'}
           </button>
 
           <button
@@ -112,7 +112,7 @@ export default function BillingStudio() {
             className="px-4 py-2 bg-[#1C2533] border border-[#2D3748] hover:border-[#C5A880] text-gray-200 text-xs font-semibold uppercase tracking-wider transition-colors flex items-center gap-1.5"
           >
             <Send className="w-3.5 h-3.5 text-[#C5A880]" />
-            {reminderSent ? 'Đã Gửi Nhắc Phí ✓' : 'Gửi Nhắc Thanh Toán'}
+            {reminderSent ? 'Đã Gửi Nhắc Phí ✓' : 'Gửi Nhắc Phí'}
           </button>
         </div>
       </div>
@@ -127,30 +127,30 @@ export default function BillingStudio() {
       {/* KPI Summary Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div className="p-4 bg-[#121820] border border-[#222B35] space-y-1">
-          <div className="text-xs text-gray-400">Tổng Số Hóa Đơn Phát Hành</div>
+          <div className="text-xs text-gray-400">Tổng Hóa Đơn</div>
           <div className="text-2xl font-bold font-mono text-white mt-1">
             {bills.length} <span className="text-xs text-gray-400 font-normal">căn hộ</span>
           </div>
-          <div className="text-[11px] text-gray-400">Kỳ thanh toán: Tháng 08/2026</div>
+          <div className="text-[11px] text-gray-400">Kỳ: Tháng 08/2026</div>
         </div>
 
         <div className="p-4 bg-[#121820] border border-emerald-500/30 space-y-1">
-          <div className="text-xs text-gray-400">Đã Thu Thành Công</div>
+          <div className="text-xs text-gray-400">Đã Thu</div>
           <div className="text-2xl font-bold font-mono text-emerald-400 mt-1">
             {totalRevenue.toLocaleString('vi-VN')} <span className="text-xs text-gray-400 font-normal">đ</span>
           </div>
           <div className="text-[11px] text-emerald-400 font-mono">
-            {bills.filter(b => b.status === 'Paid').length} / {bills.length} căn hộ đã hoàn tất
+            {bills.filter(b => b.status === 'Paid').length} / {bills.length} căn hộ đã nộp
           </div>
         </div>
 
         <div className="p-4 bg-[#121820] border border-amber-500/30 space-y-1">
-          <div className="text-xs text-gray-400">Chờ Cư Dân Thanh Toán</div>
+          <div className="text-xs text-gray-400">Chưa Thu</div>
           <div className="text-2xl font-bold font-mono text-amber-400 mt-1">
             {totalUnpaid.toLocaleString('vi-VN')} <span className="text-xs text-gray-400 font-normal">đ</span>
           </div>
           <div className="text-[11px] text-amber-400 font-mono">
-            {bills.filter(b => b.status === 'Unpaid').length} căn hộ chưa thanh toán
+            {bills.filter(b => b.status === 'Unpaid').length} căn hộ chưa nộp
           </div>
         </div>
       </div>
@@ -161,10 +161,10 @@ export default function BillingStudio() {
           <AlertTriangle className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
           <div className="space-y-1 text-xs">
             <div className="text-red-300 font-bold uppercase tracking-wider">
-              Cảnh Báo Biến Động Tiêu Thụ Bất Thường (&gt; 50%)
+              Cảnh Báo Tiêu Thụ Bất Thường (&gt; 50%)
             </div>
             <p className="text-gray-300 leading-relaxed">
-              Hệ thống tự động phát hiện và bôi đỏ các căn hộ có chỉ số nước/điện tăng đột biến trong tháng để Kế toán đối soát với số đo thực tế trước khi phát hành hoặc nhắc phí.
+              Chỉ số điện hoặc nước tăng đột biến so với tháng trước. Vui lòng đối soát trước khi gửi nhắc phí.
             </p>
           </div>
         </div>
@@ -386,9 +386,9 @@ export default function BillingStudio() {
           <div className="bg-[#121820] border border-[#C5A880] max-w-lg w-full p-6 space-y-4 shadow-2xl animate-fadeIn text-white">
             <div className="flex items-center justify-between border-b border-[#222B35] pb-3">
               <div>
-                <span className="text-[10px] text-[#C5A880] font-mono uppercase font-bold tracking-wider">BAN QUẢN LÝ SKYLINE SMART RESIDENCE</span>
+                <span className="text-[10px] text-[#C5A880] font-mono uppercase font-bold tracking-wider">BAN QUẢN LÝ CHUNG CƯ</span>
                 <h3 className="font-serif text-lg font-bold text-white">
-                  Phiếu Thu Phí Dịch Vụ - Căn {selectedDetailBill.apt_code}
+                  Chi Tiết Hóa Đơn - Căn {selectedDetailBill.apt_code}
                 </h3>
               </div>
               <button 
@@ -404,7 +404,7 @@ export default function BillingStudio() {
               <div>Kỳ thanh toán: <span className="font-mono text-white">{selectedDetailBill.billing_month}</span></div>
               <div>Hạn nộp: <span className="font-mono text-amber-400">{new Date(selectedDetailBill.due_date).toLocaleDateString('vi-VN')}</span></div>
               <div>Trạng thái: <strong className={selectedDetailBill.status === 'Paid' ? 'text-emerald-400' : 'text-amber-400'}>
-                {selectedDetailBill.status === 'Paid' ? 'Đã Thanh Toán Hoàn Tất ✓' : 'Chưa Thu Tiền'}
+                {selectedDetailBill.status === 'Paid' ? 'Đã Thanh Toán ✓' : 'Chưa Thanh Toán'}
               </strong></div>
               {selectedDetailBill.status === 'Paid' && (
                 <div className="pt-2 mt-2 border-t border-[#222B35] space-y-1 bg-[#0D1117] p-2.5 rounded border border-[#2D3748]">

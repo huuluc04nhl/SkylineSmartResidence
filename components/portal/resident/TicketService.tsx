@@ -175,10 +175,10 @@ export default function TicketService({ currentUser }: TicketServiceProps) {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#222B35] pb-4">
         <div>
           <div className="text-[10px] uppercase tracking-[0.25em] text-[#C5A880] font-semibold flex items-center gap-1.5">
-            <Wrench className="w-3.5 h-3.5" /> Hỗ Trợ Kỹ Thuật • Căn Hộ {aptCode}
+            <Wrench className="w-3.5 h-3.5" /> Kỹ Thuật • Căn {aptCode}
           </div>
           <h2 className="font-serif text-2xl text-white font-bold mt-1">
-            Gửi Yêu Cầu Sửa Chữa & Khắc Phục Sự Cố
+            Báo Hỏng & Sửa Chữa
           </h2>
         </div>
 
@@ -209,16 +209,16 @@ export default function TicketService({ currentUser }: TicketServiceProps) {
         <form onSubmit={handleCreateTicket} className="p-6 bg-[#121820] border border-[#C5A880] space-y-4 shadow-2xl animate-fadeIn">
           <div className="flex items-center justify-between border-b border-[#222B35] pb-2 text-xs">
             <span className="font-serif font-bold text-white uppercase tracking-wider flex items-center gap-1.5">
-              <Wrench className="w-4 h-4 text-[#C5A880]" /> Tạo Phiếu Báo Sự Cố Căn Hộ {aptCode}
+              <Wrench className="w-4 h-4 text-[#C5A880]" /> Báo Sự Cố - Căn {aptCode}
             </span>
-            <span className="text-gray-400">Kỹ thuật viên có mặt trong 15 - 45 phút</span>
+            <span className="text-gray-400">Xử lý trong 15 - 45 phút</span>
           </div>
 
           <div className="space-y-1.5">
-            <label className="text-xs text-gray-300 font-medium">Mô tả chi tiết hiện trạng hỏng hóc:</label>
+            <label className="text-xs text-gray-300 font-medium">Mô tả sự cố:</label>
             <textarea
               rows={3}
-              placeholder="VD: Vòi sen nhà tắm master bị rò rỉ nước liên tục, nước tràn ra sàn phòng vệ sinh..."
+              placeholder="VD: Vòi sen nhà tắm bị rò rỉ nước liên tục..."
               value={content}
               onChange={(e) => handleContentChange(e.target.value)}
               className="w-full bg-[#161B22] border border-[#2D3748] text-xs text-white p-3 focus:outline-none focus:border-[#C5A880] placeholder-gray-500"
@@ -229,10 +229,10 @@ export default function TicketService({ currentUser }: TicketServiceProps) {
           {/* AI NLP Indicator */}
           <div className="p-3 bg-[#161B22] border border-[#222B35] flex items-center justify-between text-xs">
             <span className="text-gray-400 flex items-center gap-1.5">
-              <Sparkles className="w-3.5 h-3.5 text-[#C5A880]" /> Tự động phân loại sự cố:
+              <Sparkles className="w-3.5 h-3.5 text-[#C5A880]" /> Phân loại:
             </span>
             <span className="px-2.5 py-0.5 bg-[#1C2533] border border-[#C5A880] text-[#C5A880] font-mono font-bold">
-              {aiDetectedCat} (Mức độ: {aiDetectedCat === 'Nước' ? 'Khẩn cấp (Cam kết 45 phút)' : 'Bình thường (Cam kết 2 giờ)'})
+              {aiDetectedCat} • {aiDetectedCat === 'Nước' ? 'Khẩn cấp (45 phút)' : 'Tiêu chuẩn (2 giờ)'}
             </span>
           </div>
 

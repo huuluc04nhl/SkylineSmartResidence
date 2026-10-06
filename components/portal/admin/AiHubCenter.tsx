@@ -181,17 +181,17 @@ export default function AiHubCenter() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#222B35] pb-4">
         <div>
           <div className="text-[10px] uppercase tracking-[0.25em] text-[#C5A880] font-semibold flex items-center gap-1.5">
-            <BrainCircuit className="w-3.5 h-3.5 text-[#C5A880]" /> Mục 3.1 & 3.2 • Nền Tảng Trí Tuệ Nhân Tạo Toàn Diện
+            <BrainCircuit className="w-3.5 h-3.5 text-[#C5A880]" /> Trí Tuệ Nhân Tạo • AI Hub
           </div>
           <h2 className="font-serif text-2xl text-white font-bold mt-1">
-            Trung Tâm Điều Hành 9 Phân Hệ Trí Tuệ Nhân Tạo (AI Command Hub)
+            Trung Tâm Điều Hành AI
           </h2>
         </div>
 
         <div className="flex items-center gap-2">
           <span className="px-3 py-1 bg-[#161B22] border border-[#2D3748] text-emerald-400 text-xs flex items-center gap-1.5">
             <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-            9/9 AI Models: Sẵn Sàng Vận Hành
+            9/9 Mô Hình Hoạt Động
           </span>
         </div>
       </div>
@@ -200,7 +200,7 @@ export default function AiHubCenter() {
       <div className="p-4 bg-[#080B10] border border-[#222B35] space-y-2">
         <div className="flex items-center justify-between text-xs text-gray-400 border-b border-[#1A222C] pb-2 font-mono">
           <span className="flex items-center gap-2 text-[#C5A880]">
-            <Terminal className="w-4 h-4" /> Live AI Inference Stream & Logs (Thời Gian Thực)
+            <Terminal className="w-4 h-4" /> Nhật Ký Xử Lý AI
           </span>
           <span className="text-[10px] text-gray-500">CUDA Cores: Active • TensorRT FP16</span>
         </div>

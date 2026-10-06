@@ -83,14 +83,14 @@ export default function Topbar({
     };
   }, [currentUser]);
 
-  // Semantic search examples mapped from SRS Module 3.2.8
+  // Semantic search suggestions
   const semanticSuggestions = [
-    { query: 'nhà bị rò rỉ nước', action: 'resident-tickets', label: 'Báo sửa chữa đường ống nước (Hỗ trợ khẩn trong 1 giờ)' },
-    { query: 'hóa đơn tháng 8', action: 'resident-finance', label: 'Xem chi tiết nợ & Hóa đơn điện nước tháng này' },
-    { query: 'quẹt thẻ hồ bơi', action: 'resident-facilities', label: 'Mở thẻ cư dân dùng Hồ bơi vô cực & Gym' },
-    { query: 'điều khiển smart home', action: 'resident-smarthome', label: 'Điều khiển khóa cửa & thiết bị căn hộ' },
-    { query: 'cảnh báo camera khói lửa', action: 'admin-dashboard', label: 'Bản đồ an ninh & Cảnh báo an toàn (Hầm B1)' },
-    { query: 'báo cáo bất thường điện nước', action: 'admin-billing', label: 'Kiểm tra mức tiêu thụ điện nước bất thường' },
+    { query: 'nhà bị rò rỉ nước', action: 'resident-tickets', label: 'Báo sửa chữa đường ống nước' },
+    { query: 'hóa đơn tháng 8', action: 'resident-finance', label: 'Hóa đơn điện nước tháng này' },
+    { query: 'quẹt thẻ hồ bơi', action: 'resident-facilities', label: 'Thẻ cư dân & tiện ích' },
+    { query: 'điều khiển smart home', action: 'resident-smarthome', label: 'Thiết bị nhà thông minh' },
+    { query: 'cảnh báo camera khói lửa', action: 'admin-dashboard', label: 'Bản đồ an ninh & cảnh báo' },
+    { query: 'báo cáo bất thường điện nước', action: 'admin-billing', label: 'Kiểm tra bất thường điện nước' },
   ];
 
   const filteredSuggestions = searchQuery.trim() === ''
@@ -164,7 +164,7 @@ export default function Topbar({
           <div className="absolute top-full left-0 right-0 mt-1 bg-[#121820] border border-[#C5A880]/60 p-2 shadow-2xl z-50">
             <div className="flex items-center justify-between px-2 py-1 text-[10px] uppercase tracking-wider text-[#C5A880] font-semibold border-b border-[#222B35]">
               <span className="flex items-center gap-1">
-                <Sparkles className="w-3 h-3" /> Gợi ý tìm kiếm nhanh cho cư dân
+                <Sparkles className="w-3 h-3" /> Gợi ý tìm kiếm
               </span>
               <button
                 onClick={() => setShowSearchSuggestions(false)}

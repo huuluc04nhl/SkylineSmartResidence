@@ -269,8 +269,8 @@ export default function AdminDashboard() {
   const activeThreat = currentFloorData.threats.find(t => t.id === selectedThreatId) || currentFloorData.threats[0];
 
   const handleDispatchSecurity = () => {
-    setDispatchStatus(`Đã phát lệnh điều động bảo vệ tới ${currentFloorData.floorName}!`);
-    setTimeout(() => setDispatchStatus(null), 4000);
+    setDispatchStatus(`Đã điều động bảo vệ tới ${currentFloorData.floorName}.`);
+    setTimeout(() => setDispatchStatus(null), 3500);
   };
 
   return (
@@ -281,10 +281,10 @@ export default function AdminDashboard() {
         <div>
           <div className="flex items-center gap-2 text-[10px] uppercase tracking-[0.2em] text-[#C5A880] font-mono font-bold">
             <Radio className="w-3.5 h-3.5 text-red-500 animate-pulse" />
-            <span>TRUNG TÂM VẬN HÀNH BMS • BS-07</span>
+            <span>TRUNG TÂM VẬN HÀNH BMS</span>
           </div>
           <h1 className="font-serif text-xl sm:text-2xl font-bold text-white mt-0.5 tracking-wide flex items-center gap-2.5">
-            <span>Giám Sát An Ninh & Kỹ Thuật</span>
+            <span>Giám Sát Vận Hành</span>
             <span className="text-[10px] px-2 py-0.5 bg-emerald-950/80 text-emerald-300 border border-emerald-500/80 font-mono font-normal">
               TRỰC TUYẾN
             </span>
@@ -609,7 +609,7 @@ export default function AdminDashboard() {
               }`}
             >
               <Flame className="w-3.5 h-3.5" />
-              <span>{isEmergencyActive ? 'TẮT BÁO ĐỘNG KHẨN CẤP' : 'Báo Động Khẩn Cấp'}</span>
+              <span>{isEmergencyActive ? 'Tắt Báo Động' : 'Báo Động Khẩn Cấp'}</span>
             </button>
 
             <button 
@@ -618,7 +618,7 @@ export default function AdminDashboard() {
               className="w-full py-2 bg-[#1C2533] hover:bg-[#C5A880] text-gray-200 hover:text-[#0D1117] border border-gray-700 hover:border-[#C5A880] text-xs uppercase tracking-wider font-bold transition-colors flex items-center justify-center gap-2"
             >
               <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
-              <span>Điều Phối Bảo Vệ Hiện Trường</span>
+              <span>Điều Động Bảo Vệ</span>
             </button>
           </div>
         </div>

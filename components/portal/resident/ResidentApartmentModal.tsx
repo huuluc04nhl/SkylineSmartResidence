@@ -183,7 +183,7 @@ export default function ResidentApartmentModal({
           <div>
             <div className="flex items-center gap-2 text-[10px] sm:text-[10.5px] uppercase tracking-[0.2em] text-[#C5A880] font-mono font-bold">
               <Sparkles className="w-3.5 h-3.5 text-[#C5A880]" />
-              <span>Sổ Tay Căn Hộ • SKYLINE LUXURY RESIDENCE</span>
+              <span>Sổ Tay Căn Hộ</span>
               <span>•</span>
               <span>Tầng 12</span>
             </div>
@@ -232,7 +232,7 @@ export default function ResidentApartmentModal({
             }`}
           >
             <Maximize2 className="w-3.5 h-3.5" />
-            <span>1. Phối Cảnh & Kích Thước Phòng</span>
+            <span>1. Phối Cảnh & Mặt Bằng</span>
           </button>
 
           <button
@@ -245,7 +245,7 @@ export default function ResidentApartmentModal({
             }`}
           >
             <Cpu className="w-3.5 h-3.5" />
-            <span>2. Thiết Bị Bàn Giao Cao Cấp ({PREMIUM_EQUIPMENTS.length})</span>
+            <span>2. Thiết Bị Bàn Giao ({PREMIUM_EQUIPMENTS.length})</span>
           </button>
 
           <button
@@ -258,7 +258,7 @@ export default function ResidentApartmentModal({
             }`}
           >
             <HelpCircle className="w-3.5 h-3.5" />
-            <span>3. Cẩm Nang Căn Hộ & Hotline 24/7</span>
+            <span>3. Cẩm Nang & Hotline</span>
           </button>
         </div>
 
@@ -332,8 +332,8 @@ export default function ResidentApartmentModal({
           {activeTab === 'EQUIPMENTS' && (
             <div className="space-y-3 animate-fadeIn">
               <div className="p-3 bg-[#121820] border border-[#222B35] text-xs text-gray-300 flex items-center justify-between">
-                <span>Danh mục trang thiết bị hoàn thiện & bàn giao chính thức cho chủ sở hữu căn hộ <strong>{apartmentCode}</strong>.</span>
-                <span className="text-emerald-400 font-mono text-[11px] hidden sm:inline">Tiêu chuẩn bàn giao 5 sao ✓</span>
+                <span>Danh mục thiết bị bàn giao căn hộ <strong>{apartmentCode}</strong>.</span>
+                <span className="text-emerald-400 font-mono text-[11px] hidden sm:inline">Bàn giao chuẩn ✓</span>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">

@@ -457,10 +457,10 @@ export default function VisitorQrModal({
         <div className="flex items-center justify-between border-b border-[#222B35] pb-4">
           <div>
             <div className="text-[10px] uppercase tracking-[0.25em] text-[#C5A880] font-semibold flex items-center gap-1.5">
-              <QrCode className="w-3.5 h-3.5" /> Dịch Vụ Đón Khách Thăm Căn Hộ
+              <QrCode className="w-3.5 h-3.5" /> Đón Khách • Căn {apartmentCode}
             </div>
             <h2 className="font-serif text-xl sm:text-2xl font-bold text-white mt-0.5">
-              Mã QR Đón Khách • Căn Hộ {apartmentCode}
+              Mã QR Đón Khách
             </h2>
           </div>
 
@@ -475,10 +475,10 @@ export default function VisitorQrModal({
         {/* Resident Pass Creation & Sharing */}
         <div className="space-y-4">
             {/* Building Policy & Privacy Guarantee Banner */}
-            <div className="p-3 bg-[#121E2A] border border-[#1E3A5F] rounded-xl flex items-start gap-2.5 text-xs text-cyan-200/95 leading-relaxed">
+            <div className="p-3 bg-[#121E2A] border border-[#1E3A5F] rounded-xl flex items-start gap-2.5 text-xs text-cyan-200">
               <Info className="w-4 h-4 text-cyan-400 flex-shrink-0 mt-0.5" />
               <div>
-                <strong>Chung cư Skyline Smart Residence:</strong> Đã bố trí <strong>Điểm Nhận Hàng & Bưu Phẩm Tập Trung tại Sảnh Lễ Tân</strong> dành riêng cho Shipper. Mã QR dưới đây dành để cư dân đón <strong>Khách Thăm</strong> trực tiếp lên căn hộ qua bàn lễ tân / chốt an ninh chung cư.
+                Mã QR dùng để khách quét qua sảnh lễ tân và thang máy lên căn hộ. Hàng shipper vui lòng gửi tại sảnh lễ tân.
               </div>
             </div>
 

@@ -441,10 +441,10 @@ export default function SmartFacilityPass({ currentUser, onNavigateModule }: Sma
         <div className="space-y-1">
           <div className="text-[11px] uppercase tracking-[0.2em] text-[#C5A880] font-bold flex items-center gap-2">
             <Sparkles className="w-4 h-4 text-[#C5A880]" />
-            <span>Tiện Ích 5 Sao • Căn Hộ {aptCode}</span>
+            <span>Tiện Ích Cư Dân • Căn {aptCode}</span>
           </div>
           <h2 className="text-xl sm:text-2xl font-serif font-bold text-white flex items-center gap-2">
-            <span>Tiện Ích Nội Khu & Thẻ Thông Minh</span>
+            <span>Tiện Ích Nội Khu</span>
           </h2>
           <p className="text-xs text-gray-400 font-mono flex flex-wrap items-center gap-2">
             <span>Chủ Hộ: <strong className="text-white">{userName}</strong></span>

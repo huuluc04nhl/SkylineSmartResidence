@@ -261,10 +261,10 @@ export default function ApartmentDetailModal({
               {/* Mô tả căn hộ & ghi chú kỹ thuật */}
               <div className="p-4 bg-[#121820] border border-[#222B35] space-y-2">
                 <div className="text-xs uppercase tracking-wider text-gray-300 font-bold font-mono">
-                  Mô Tả Không Gian & Tiện Ích Bàn Giao
+                  Mô Tả Tiện Ích Bàn Giao
                 </div>
                 <p className="text-xs text-gray-300 leading-relaxed">
-                  {unit.description || 'Căn hộ tiêu chuẩn 5 sao tại Skyline Smart Residence. Được trang bị thiết bị điều khiển thông minh Smart Home Hub, khóa cửa điện tử nhận diện khuôn mặt FaceID, chuông hình cảm ứng và kính cách âm 3 lớp.'}
+                  {unit.description || 'Căn hộ trang bị Smart Home Hub, khóa FaceID, chuông hình cảm ứng và kính cách âm.'}
                 </p>
               </div>
 

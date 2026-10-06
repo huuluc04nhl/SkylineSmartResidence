@@ -128,10 +128,10 @@ export default function DeviceHealth() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#222B35] pb-4">
         <div>
           <div className="text-[10px] uppercase tracking-[0.25em] text-[#C5A880] font-semibold flex items-center gap-1.5">
-            <Radio className="w-3.5 h-3.5 animate-pulse text-emerald-400" /> Hạ Tầng Chung Cư • IoT & Giám Sát Kỹ Thuật
+            <Radio className="w-3.5 h-3.5 animate-pulse text-emerald-400" /> Hạ Tầng Kỹ Thuật • BMS IoT
           </div>
           <h2 className="font-serif text-2xl text-white font-bold mt-1">
-            Giám Sát Hạ Tầng Kỹ Thuật & Dự Báo Bảo Trì
+            Sức Khỏe Thiết Bị & Bảo Trì
           </h2>
         </div>
 
@@ -146,11 +146,11 @@ export default function DeviceHealth() {
             ) : (
               <Cpu className="w-3.5 h-3.5 text-[#C5A880]" />
             )}
-            <span>{isScanning ? 'Đang Chẩn Đoán...' : 'Chẩn Đoán Toàn Bộ IoT'}</span>
+            <span>{isScanning ? 'Đang Chẩn Đoán...' : 'Chẩn Đoán IoT'}</span>
           </button>
 
           <span className="hidden md:inline-block px-3 py-2 bg-[#121820] border border-[#2D3748] text-xs text-[#C5A880]">
-            BMS IoT: {devices.length} Hệ Thống Kỹ Thuật (Tháp BS-07)
+            BMS IoT: {devices.length} Thiết Bị
           </span>
         </div>
       </div>

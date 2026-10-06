@@ -104,19 +104,19 @@ export default function KanbanBoard() {
 
   const handleDeleteTicket = async (ticket: ExtendedServiceRequest) => {
     const code = ticket.nks_id ? `#${ticket.nks_id}` : `#${ticket.id}`;
-    if (!window.confirm(`Quý Ban Quản Lý có chắc chắn muốn xóa vĩnh viễn phiếu ${code} khỏi hệ thống?`)) {
+    if (!window.confirm(`Bạn có chắc muốn xóa phiếu ${code}?`)) {
       return;
     }
     await deleteTicketAsync(ticket.nks_id || ticket.id);
     refreshAllData();
-    setActionSuccessMsg(`Đã xóa vĩnh viễn phiếu ${code} thành công!`);
+    setActionSuccessMsg(`Đã xóa phiếu ${code}.`);
     setTimeout(() => setActionSuccessMsg(null), 3000);
   };
 
   const handleToggleAutoDispatch = (enabled: boolean) => {
     setAiAutoMode(enabled);
     setAutoDispatchEnabled(enabled);
-    setActionSuccessMsg(`Chế độ Tự Động Phân Công KTV bằng AI đã được ${enabled ? 'KÍCH HOẠT (24/7)' : 'TẠM TẮT'}!`);
+    setActionSuccessMsg(`Tự động phân công AI: ${enabled ? 'Bật' : 'Tắt'}.`);
     setTimeout(() => setActionSuccessMsg(null), 3000);
   };
 
@@ -126,7 +126,7 @@ export default function KanbanBoard() {
       const res = autoDispatchAllPendingTickets();
       refreshAllData();
       if (res.successCount > 0) {
-        setActionSuccessMsg(`AI đã tự động phân tích và phân công thành công ${res.successCount} phiếu sự cố cho KTV phù hợp nhất!`);
+        setActionSuccessMsg(`AI đã phân công ${res.successCount} phiếu sự cố.`);
       } else {
         setActionSuccessMsg('Không còn phiếu nào đang chờ tiếp nhận.');
       }
@@ -142,7 +142,7 @@ export default function KanbanBoard() {
     const res = autoDispatchSingleTicket(ticketId);
     if (res && res.assigned_technician) {
       refreshAllData();
-      setActionSuccessMsg(`AI đã tự động phân công KTV ${res.assigned_technician} xử lý phiếu #${res.nks_id || res.id}!`);
+      setActionSuccessMsg(`Đã phân công ${res.assigned_technician} cho phiếu #${res.nks_id || res.id}.`);
       setTimeout(() => setActionSuccessMsg(null), 3500);
     }
   };
@@ -151,7 +151,7 @@ export default function KanbanBoard() {
     const res = autoResolveSingleTicketWithAI(ticket.id);
     if (res) {
       refreshAllData();
-      setActionSuccessMsg(`✨ AI đã kiểm định chất lượng và tự động nghiệm thu phiếu #${res.nks_id || res.id.replace('TICK-', '')} thành công! Thù lao KTV đã được ghi nhận.`);
+      setActionSuccessMsg(`Đã nghiệm thu phiếu #${res.nks_id || res.id.replace('TICK-', '')}.`);
       setTimeout(() => setActionSuccessMsg(null), 4000);
     }
   };
@@ -163,7 +163,7 @@ export default function KanbanBoard() {
       const res = autoResolveAllInProgressTicketsWithAI();
       refreshAllData();
       if (res.successCount > 0) {
-        setActionSuccessMsg(`✨ AI đã kiểm định hiện trường, tự động nghiệm thu và đóng hoàn tất ${res.successCount} phiếu sự cố!`);
+        setActionSuccessMsg(`Đã nghiệm thu ${res.successCount} phiếu sự cố.`);
       } else {
         setActionSuccessMsg('Không có phiếu nào đang chờ nghiệm thu.');
       }
@@ -179,7 +179,7 @@ export default function KanbanBoard() {
     const img = generateAiInspectionImage(resolvingTicket);
     setResolutionNotes(notes);
     setAfterImageBase64(img);
-    setActionSuccessMsg('AI đã tự động phân tích sự cố và điền biên bản nghiệm thu kỹ thuật đạt chuẩn!');
+    setActionSuccessMsg('Đã tạo biên bản nghiệm thu tự động.');
     setTimeout(() => setActionSuccessMsg(null), 3000);
   };
 
@@ -285,10 +285,10 @@ export default function KanbanBoard() {
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-[#222B35] pb-4">
         <div>
           <div className="text-[10px] uppercase tracking-[0.25em] text-[#C5A880] font-semibold flex items-center gap-1.5">
-            <Wrench className="w-3.5 h-3.5" /> Quản Trị Kỹ Thuật • Ban Quản Lý Skyline
+            <Wrench className="w-3.5 h-3.5" /> Kỹ Thuật & Vận Hành
           </div>
           <h2 className="font-serif text-2xl text-white font-bold mt-1">
-            Điều Phối Sự Cố & Phân Công Kỹ Thuật Viên
+            Điều Phối Sự Cố Kỹ Thuật
           </h2>
         </div>
 
@@ -1074,7 +1074,7 @@ export default function KanbanBoard() {
                     <span className="text-xs text-emerald-400 font-medium">Đã tải ảnh nghiệm thu ✓</span>
                   </div>
                 ) : (
-                  <span className="text-[11px] text-amber-400 font-medium">* Bắt buộc đính kèm ảnh chụp hiện trường thực tế để hoàn tất nghiệm thu</span>
+                  <span className="text-[11px] text-amber-400 font-medium">* Cần đính kèm ảnh chụp sau khi sửa.</span>
                 )}
               </div>
             </div>
@@ -1103,7 +1103,7 @@ export default function KanbanBoard() {
                 type="submit"
                 className="px-5 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold uppercase tracking-wider transition-colors shadow-lg"
               >
-                Xác Nhận Nghiệm Thu & Đóng Phiếu
+                Xác Nhận Nghiệm Thu
               </button>
             </div>
           </form>
@@ -1118,8 +1118,8 @@ export default function KanbanBoard() {
           <div className="bg-[#0D1117] border border-[#C5A880] max-w-xl w-full p-6 text-white space-y-5 shadow-2xl animate-fadeIn">
             <div className="flex items-center justify-between border-b border-[#222B35] pb-3">
               <div>
-                <span className="text-[10px] text-[#C5A880] font-mono uppercase font-bold tracking-wider">BAN QUẢN LÝ SKYLINE SMART RESIDENCE</span>
-                <h3 className="font-serif text-lg font-bold text-white">Phiếu Quyết Toán Lương & Thù Lao Kỹ Thuật</h3>
+                <span className="text-[10px] text-[#C5A880] font-mono uppercase font-bold tracking-wider">BAN QUẢN LÝ CHUNG CƯ</span>
+                <h3 className="font-serif text-lg font-bold text-white">Phiếu Thù Lao Kỹ Thuật Viên</h3>
               </div>
               <button onClick={() => setViewingPayrollTech(null)} className="text-gray-400 hover:text-white">✕</button>
             </div>

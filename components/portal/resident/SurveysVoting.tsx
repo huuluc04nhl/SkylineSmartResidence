@@ -211,13 +211,13 @@ export default function SurveysVoting({ currentUser }: SurveysVotingProps) {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#222B35] pb-4">
         <div>
           <div className="text-[10px] uppercase tracking-[0.25em] text-[#C5A880] font-semibold flex items-center gap-1.5">
-            <Vote className="w-3.5 h-3.5 text-[#C5A880]" /> Quyền Làm Chủ Cư Dân • Hội Nghị Nhà Chung Cư
+            <Vote className="w-3.5 h-3.5 text-[#C5A880]" /> Biểu Quyết • Căn {aptCode}
           </div>
           <h2 className="font-serif text-2xl sm:text-3xl text-white font-bold mt-1 tracking-wide">
-            Ý Kiến Đóng Góp & Biểu Quyết Chung Cư
+            Biểu Quyết Cư Dân
           </h2>
           <p className="text-xs text-gray-400 mt-1">
-            Biểu quyết số minh bạch và bảo mật cho các quyết định bảo trì, nâng cấp cơ sở vật chất và quy chế sinh hoạt chung cư.
+            Lấy ý kiến biểu quyết về bảo trì, nâng cấp cơ sở vật chất và nội quy chung cư.
           </p>
         </div>
 
@@ -231,11 +231,11 @@ export default function SurveysVoting({ currentUser }: SurveysVotingProps) {
             </button>
           ) : isOwner ? (
             <span className="px-3 py-1.5 bg-[#161B22] border border-[#C5A880] text-[#C5A880] text-xs font-semibold flex items-center gap-1.5 shadow">
-              <ShieldCheck className="w-4 h-4 text-[#C5A880]" /> Chủ Hộ Hợp Pháp (Căn {aptCode})
+              <ShieldCheck className="w-4 h-4 text-[#C5A880]" /> Chủ Hộ (Căn {aptCode})
             </span>
           ) : (
             <span className="px-3 py-1.5 bg-[#161B22] border border-[#2D3748] text-gray-300 text-xs font-semibold flex items-center gap-1.5 shadow">
-              <Users className="w-4 h-4 text-gray-400" /> Cư Dân Căn Hộ {aptCode} (Xem Kết Quả)
+              <Users className="w-4 h-4 text-gray-400" /> Cư Dân Căn {aptCode}
             </span>
           )}
         </div>

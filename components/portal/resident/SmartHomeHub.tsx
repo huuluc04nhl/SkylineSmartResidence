@@ -530,10 +530,10 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#222B35] pb-4">
         <div>
           <div className="text-[10px] uppercase tracking-[0.25em] text-[#C5A880] font-semibold flex items-center gap-2">
-            <Cpu className="w-3.5 h-3.5" /> Điều Khiển Thiết Bị Thông Minh • Sơ Đồ Kỹ Thuật Số
+            <Cpu className="w-3.5 h-3.5" /> Nhà Thông Minh • Căn {aptCode}
           </div>
           <h2 className="font-serif text-2xl text-white font-bold mt-1">
-            Trung Tâm Tự Động Hóa Căn Hộ {aptCode}
+            Điều Khiển Thiết Bị Căn Hộ
           </h2>
         </div>
 
@@ -541,11 +541,11 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
         <div className="flex items-center gap-2">
           {isOwner ? (
             <span className="px-3 py-1 bg-emerald-950/80 border border-emerald-500 text-emerald-300 text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 rounded shadow">
-              <ShieldCheck className="w-3.5 h-3.5" /> Toàn Quyền Quản Trị Master (Chủ Hộ)
+              <ShieldCheck className="w-3.5 h-3.5" /> Chủ Hộ (Toàn Quyền)
             </span>
           ) : (
             <span className="px-3 py-1 bg-amber-950/80 border border-amber-500 text-amber-300 text-xs font-semibold uppercase tracking-wider flex items-center gap-1.5 rounded shadow">
-              <LockKeyhole className="w-3.5 h-3.5" /> Quyền Cư Dân Thuộc Chủ Hộ (Gia Đình)
+              <LockKeyhole className="w-3.5 h-3.5" /> Thành Viên Căn Hộ
             </span>
           )}
         </div>

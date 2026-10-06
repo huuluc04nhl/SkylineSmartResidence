@@ -142,13 +142,13 @@ export default function ResidentServices({ currentUser, onNavigateModule }: Resi
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#222B35] pb-4">
         <div>
           <div className="text-[10px] uppercase tracking-[0.25em] text-[#C5A880] font-semibold flex items-center gap-1.5">
-            <Sparkles className="w-3.5 h-3.5 text-[#C5A880]" /> Dịch Vụ Đời Sống 5 Sao • Căn Hộ {aptCode}
+            <Sparkles className="w-3.5 h-3.5 text-[#C5A880]" /> Dịch Vụ Cư Dân • Căn {aptCode}
           </div>
           <h2 className="font-serif text-2xl sm:text-3xl text-white font-bold mt-1 tracking-wide">
-            Dịch Vụ Đời Sống Cư Dân
+            Dịch Vụ Theo Yêu Cầu
           </h2>
-          <p className="text-xs text-gray-400 mt-1 max-w-3xl leading-relaxed">
-            7 danh mục dịch vụ theo yêu cầu: Giặt ủi & hấp, Giúp việc dọn dẹp, PT cá nhân bơi/gym, Chăm sóc xe Hầm B2, Spa & Trị liệu thư giãn, Nhà hàng giao cơm nóng tận căn hộ, và Di chuyển thông minh. Đội ngũ nhân sự chuyên trách phục vụ tận nơi, chi phí tự động gộp vào hóa đơn tháng.
+          <p className="text-xs text-gray-400 mt-1 max-w-2xl">
+            Đặt dịch vụ tận phòng: dọn dẹp, giặt ủi, rửa xe, giao đồ ăn và trị liệu spa.
           </p>
         </div>
 
