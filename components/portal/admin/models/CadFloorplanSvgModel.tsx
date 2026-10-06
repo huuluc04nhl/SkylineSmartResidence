@@ -12,6 +12,7 @@ interface CadFloorplanSvgModelProps {
   onSelectUnit: (unit: ApartmentUnit) => void;
   unitsOnFloor: ApartmentUnit[];
   onOpenZoomModal?: () => void;
+  statusFilter?: 'ALL' | 'OCCUPIED' | 'VACANT' | 'MAINTENANCE';
 }
 
 export default function CadFloorplanSvgModel({
@@ -20,7 +21,8 @@ export default function CadFloorplanSvgModel({
   activeUnitCode,
   onSelectUnit,
   unitsOnFloor,
-  onOpenZoomModal
+  onOpenZoomModal,
+  statusFilter = 'ALL'
 }: CadFloorplanSvgModelProps) {
   const [zoomLevel, setZoomLevel] = useState<number>(1);
   const [hoveredUnitCode, setHoveredUnitCode] = useState<string | null>(null);
@@ -152,6 +154,7 @@ export default function CadFloorplanSvgModel({
 
             const isOccupied = unit?.status === 'OCCUPIED';
             const isMaintenance = unit?.status === 'MAINTENANCE';
+            const isMatchedFilter = statusFilter === 'ALL' || (unit && unit.status === statusFilter);
 
             return (
               <g
@@ -163,6 +166,7 @@ export default function CadFloorplanSvgModel({
                 onMouseEnter={() => setHoveredUnitCode(cfg.code)}
                 onMouseLeave={() => setHoveredUnitCode(null)}
                 className="cursor-pointer group"
+                opacity={isMatchedFilter ? 1 : 0.22}
                 filter={isSelected ? 'url(#cadGoldGlow)' : undefined}
               >
                 {/* Viền tường căn hộ CAD (Wall outline with thickness) */}
