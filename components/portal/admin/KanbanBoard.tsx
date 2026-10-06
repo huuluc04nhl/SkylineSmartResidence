@@ -87,7 +87,7 @@ export default function KanbanBoard() {
   // Modal BQL Phản Hồi Cư Dân (cho FEEDBACK & INQUIRY)
   const [feedbackReplyTicket, setFeedbackReplyTicket] = useState<ExtendedServiceRequest | null>(null);
   const [feedbackReplyContent, setFeedbackReplyContent] = useState<string>('');
-  const [feedbackReplyAdminName, setFeedbackReplyAdminName] = useState<string>('Ban Quản Lý Skyline');
+  const feedbackReplyAdminName = 'Ban Quản Lý Chung Cư Skyline';
 
   const [resolvingTicket, setResolvingTicket] = useState<ExtendedServiceRequest | null>(null);
   const [afterImageBase64, setAfterImageBase64] = useState<string>('');
@@ -1547,14 +1547,14 @@ export default function KanbanBoard() {
 
               <div className="flex items-center justify-between text-xs text-gray-400 pt-1">
                 <div className="flex items-center gap-2">
-                  <span>Người ký phản hồi:</span>
-                  <input
-                    type="text"
-                    value={feedbackReplyAdminName}
-                    onChange={(e) => setFeedbackReplyAdminName(e.target.value)}
-                    className="bg-[#161B22] border border-[#2D3748] px-2 py-1 text-xs text-white focus:outline-none focus:border-[#C5A880]"
-                  />
+                  <span>Đơn vị ký duyệt:</span>
+                  <div className="px-2.5 py-1 bg-[#161B22] border border-[#2D3748] text-white font-medium flex items-center gap-1.5 select-none">
+                    <ShieldCheck className="w-3.5 h-3.5 text-[#C5A880]" />
+                    <span>Ban Quản Lý Chung Cư Skyline</span>
+                    <span className="text-[10px] text-emerald-400 font-mono font-bold">(Chính thức)</span>
+                  </div>
                 </div>
+                <span className="text-[11px] text-gray-500 italic">* Chữ ký số tự động gắn kèm văn bản</span>
               </div>
 
               <div className="flex justify-end gap-3 pt-3 border-t border-[#222B35]">
