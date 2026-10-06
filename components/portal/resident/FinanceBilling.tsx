@@ -53,6 +53,7 @@ import {
   payBill, 
   ExtendedBill 
 } from '@/lib/billingStore';
+import { exportInvoicePdf } from '@/lib/pdfExport';
 const VNPAY_NCB_TEST_CARD = {
   bank: 'NCB',
   cardNumber: '9704198526191432198',
@@ -113,6 +114,44 @@ export default function FinanceBilling({ currentUser }: FinanceBillingProps) {
     amount: number;
     paidAt: string;
   } | null>(null);
+
+  // Toast thông báo thanh toán thành công
+  const [paymentSuccessToast, setPaymentSuccessToast] = useState<{
+    show: boolean;
+    transId: string;
+    amount: number;
+    gateway: string;
+    paidAt: string;
+    message?: string;
+  } | null>(null);
+
+  const [isExportingInvoicePdf, setIsExportingInvoicePdf] = useState(false);
+
+  const triggerPaymentSuccessToast = (transId: string, amount: number, gateway = 'VNPAY', message?: string) => {
+    setPaymentSuccessToast({
+      show: true,
+      transId,
+      amount,
+      gateway,
+      paidAt: new Date().toLocaleString('vi-VN'),
+      message,
+    });
+    setTimeout(() => {
+      setPaymentSuccessToast(null);
+    }, 7000);
+  };
+
+  const handleExportInvoicePdf = async (billToExport?: ExtendedBill) => {
+    const target = billToExport || currentBill;
+    if (!target) return;
+    setIsExportingInvoicePdf(true);
+    await exportInvoicePdf({
+      bill: target,
+      residentName,
+      aptCode,
+    });
+    setIsExportingInvoicePdf(false);
+  };
 
   // Đếm ngược 15:00 phút của VNPAY
   useEffect(() => {
@@ -197,6 +236,12 @@ export default function FinanceBilling({ currentUser }: FinanceBillingProps) {
             type: 'success',
             message: `Giao dịch qua Cổng VNPAY Sandbox thành công! Mã chuẩn chi: #${transId} (${bankCode}) • Số tiền: ${paidAmount.toLocaleString('vi-VN')} VNĐ. Hóa đơn căn ${aptCode} đã được tự động gạch nợ thành công!`,
           });
+          triggerPaymentSuccessToast(
+            transId, 
+            paidAmount, 
+            'VNPAY', 
+            `Hóa đơn căn ${aptCode} kỳ ${currentBill?.billing_month || ''} đã được tự động gạch nợ thành công.`
+          );
         } else if (vnpStatus === 'failed') {
           if (billIdParam) setSelectedBillId(billIdParam);
           const getVnpayErrMsg = (c: string) => {
@@ -297,6 +342,12 @@ export default function FinanceBilling({ currentUser }: FinanceBillingProps) {
         });
         refreshBills();
         setVnpFlowStep('SELECT_METHOD');
+        triggerPaymentSuccessToast(
+          transId, 
+          currentBill.total_amount, 
+          'VNPAY', 
+          `Gạch nợ tự động thành công cho Căn ${aptCode}. Mã chuẩn chi: #${transId}`
+        );
       }
     }, 3800);
   };
@@ -319,6 +370,13 @@ export default function FinanceBilling({ currentUser }: FinanceBillingProps) {
           paidAt: new Date().toLocaleString('vi-VN'),
         });
         setMomoStep('PHONE');
+        refreshBills();
+        triggerPaymentSuccessToast(
+          transId, 
+          currentBill.total_amount, 
+          'MOMO', 
+          `Gạch nợ qua Ví điện tử MoMo thành công cho Căn ${aptCode}. Mã GD: #${transId}`
+        );
       }
     }, 1000);
   };
@@ -606,7 +664,57 @@ export default function FinanceBilling({ currentUser }: FinanceBillingProps) {
   };
 
   return (
-    <div className="space-y-6 w-full animate-fadeIn">
+    <div className="space-y-6 w-full animate-fadeIn relative">
+      {/* Toast Báo Kết Quả Thanh Toán Thành Công */}
+      {paymentSuccessToast && (
+        <div className="fixed top-6 right-6 z-[9999] max-w-md w-full bg-[#121820] border-2 border-[#10B981] p-4 shadow-2xl animate-fadeIn text-white">
+          <div className="flex items-start justify-between gap-3">
+            <div className="flex items-start gap-3">
+              <div className="w-9 h-9 bg-emerald-500/20 text-emerald-400 flex items-center justify-center flex-shrink-0 border border-emerald-500/50">
+                <CheckCircle2 className="w-5 h-5 text-emerald-400" />
+              </div>
+              <div className="space-y-1">
+                <div className="flex items-center gap-2">
+                  <span className="font-bold text-xs uppercase tracking-wider text-emerald-400 font-sans">
+                    THANH TOÁN THÀNH CÔNG
+                  </span>
+                  <span className="px-1.5 py-0.5 bg-[#005BAA]/40 border border-[#005BAA] text-[10px] font-mono text-[#4CC9F0]">
+                    {paymentSuccessToast.gateway}
+                  </span>
+                </div>
+                <div className="text-xs text-gray-200">
+                  {paymentSuccessToast.message || `Hóa đơn căn ${aptCode} đã được gạch nợ thành công.`}
+                </div>
+                <div className="text-[11px] font-mono text-gray-300 pt-1 space-y-0.5">
+                  <div>Mã GD: <strong className="text-[#C5A880]">#{paymentSuccessToast.transId}</strong></div>
+                  <div>Số tiền: <strong className="text-white">{paymentSuccessToast.amount.toLocaleString('vi-VN')} VNĐ</strong></div>
+                  <div className="text-[10px] text-gray-400">Thời gian: {paymentSuccessToast.paidAt}</div>
+                </div>
+              </div>
+            </div>
+
+            <button 
+              onClick={() => setPaymentSuccessToast(null)}
+              className="text-gray-400 hover:text-white p-1"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+
+          <div className="mt-3 pt-2.5 border-t border-[#222B35] flex items-center justify-between">
+            <button
+              onClick={() => handleExportInvoicePdf(currentBill)}
+              disabled={isExportingInvoicePdf}
+              className="px-3 py-1 bg-[#161B22] border border-[#C5A880] hover:bg-[#C5A880] hover:text-[#0D1117] text-[#C5A880] text-[11px] font-bold uppercase tracking-wider transition-all flex items-center gap-1.5"
+            >
+              {isExportingInvoicePdf ? <RefreshCw className="w-3 h-3 animate-spin" /> : <Download className="w-3 h-3" />}
+              <span>Tải Hóa Đơn PDF</span>
+            </button>
+            <span className="text-[10px] text-gray-400 italic">Tự động đóng sau 7s</span>
+          </div>
+        </div>
+      )}
+
       {/* Thông báo kết quả giao dịch sau khi quay lại từ cổng VNPAY */}
       {redirectBanner && (
         <div className={`p-4 border flex items-start justify-between gap-3 animate-fadeIn ${
@@ -661,6 +769,22 @@ export default function FinanceBilling({ currentUser }: FinanceBillingProps) {
                   className="px-4 py-2 bg-[#C5A880] hover:bg-white text-[#0D1117] text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 shadow"
                 >
                   <CreditCard className="w-4 h-4" /> Thanh Toán
+                </button>
+              )}
+
+              {currentBill && (
+                <button
+                  onClick={() => handleExportInvoicePdf(currentBill)}
+                  disabled={isExportingInvoicePdf}
+                  className="px-3.5 py-2 bg-[#161B22] border border-[#2D3748] hover:border-[#C5A880] text-gray-200 text-xs font-semibold uppercase tracking-wider transition-all flex items-center gap-1.5"
+                  title="Xuất Hóa Đơn Ra File PDF Chuẩn A4"
+                >
+                  {isExportingInvoicePdf ? (
+                    <RefreshCw className="w-4 h-4 animate-spin text-[#C5A880]" />
+                  ) : (
+                    <Download className="w-4 h-4 text-[#C5A880]" />
+                  )}
+                  <span>{isExportingInvoicePdf ? 'Đang Xuất PDF...' : 'Xuất Hóa Đơn PDF'}</span>
                 </button>
               )}
 
@@ -1495,13 +1619,29 @@ export default function FinanceBilling({ currentUser }: FinanceBillingProps) {
                   </div>
                 </div>
 
-                <button
-                  type="button"
-                  onClick={() => setShowPaymentModal(false)}
-                  className="px-6 py-2.5 bg-[#C5A880] hover:bg-white text-[#0D1117] text-xs font-bold uppercase tracking-wider transition-colors shadow"
-                >
-                  Hoàn Tất & Đóng
-                </button>
+                <div className="flex flex-col sm:flex-row justify-center gap-2 pt-2">
+                  <button
+                    type="button"
+                    onClick={() => handleExportInvoicePdf(currentBill)}
+                    disabled={isExportingInvoicePdf}
+                    className="px-4 py-2.5 bg-[#1C2533] border border-[#2D3748] hover:border-[#C5A880] text-gray-200 text-xs font-bold uppercase tracking-wider transition-colors flex items-center justify-center gap-1.5"
+                  >
+                    {isExportingInvoicePdf ? (
+                      <RefreshCw className="w-4 h-4 animate-spin text-[#C5A880]" />
+                    ) : (
+                      <Download className="w-4 h-4 text-[#C5A880]" />
+                    )}
+                    <span>{isExportingInvoicePdf ? 'Đang Xuất PDF...' : 'Tải Hóa Đơn PDF'}</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setShowPaymentModal(false)}
+                    className="px-6 py-2.5 bg-[#C5A880] hover:bg-white text-[#0D1117] text-xs font-bold uppercase tracking-wider transition-colors shadow"
+                  >
+                    Hoàn Tất & Đóng
+                  </button>
+                </div>
               </div>
             ) : (
               <div className="space-y-4">
