@@ -327,20 +327,23 @@ export function nksTicketToServiceRequest(
   const remoteReply = typeof nks.reply === 'string' && nks.reply.trim() ? nks.reply.trim() : undefined;
   const remoteEngineer = typeof nks.engineername === 'string' && nks.engineername.trim() ? nks.engineername.trim() : undefined;
 
-  // Trạng thái đồng bộ: Nếu đã có reply hoặc đóng trên NKS -> Resolved
+  // Trạng thái đồng bộ từ NKS API:
+  // - Chỉ 'Resolved' khi phiếu thực sự có phản hồi văn bản chính thức (remoteReply) hoặc trạng thái đóng/resolved trên NKS
+  // - Chỉ 'In_Progress' khi đã có tên KTV chính thức (remoteEngineer)
+  // - Tất cả trường hợp còn lại (bao gồm cả 'pending', 'open', hoặc câu hỏi) đều là 'Open' (Chờ BQL tiếp nhận & xử lý)
   let status: 'Open' | 'In_Progress' | 'Resolved' | 'Assigned' | 'Cancelled' = 'Open';
   if (existingLocalTicket) {
     status = existingLocalTicket.status;
-    if (remoteReply && status === 'Open') {
+    if (remoteReply && remoteReply.trim() && status === 'Open') {
       status = 'Resolved';
     }
-  } else if (nks.status === 'resolved' || nks.status === 'closed' || remoteReply) {
+  } else if (nks.status === 'resolved' || nks.status === 'closed' || (remoteReply && remoteReply.trim())) {
     status = 'Resolved';
-  } else if (remoteEngineer || nks.status === 'pending') {
+  } else if (remoteEngineer && remoteEngineer.trim()) {
     status = 'In_Progress';
-  } else if (classification.type === 'INQUIRY') {
-    // Hỏi đáp được AI giải đáp tức thì
-    status = 'Resolved';
+  } else {
+    // Mặc định luôn là Open: BQL xem xét và duyệt, AI KHÔNG tự ý đóng phiếu
+    status = 'Open';
   }
 
   const actualName = nks.fullname?.trim() || existingLocalTicket?.resident_name || 'Cư dân';
@@ -366,10 +369,11 @@ export function nksTicketToServiceRequest(
     sla_deadline: new Date(Date.now() + (isUrgent ? 45 : 120) * 60000).toISOString(),
     sla_minutes_left: isUrgent ? 45 : 120,
     status: status,
-    // AI tự động giải đáp nếu là câu hỏi
-    ai_reply: existingLocalTicket?.ai_reply || (ticketType === 'INQUIRY' ? (remoteReply || classification.suggestedAiReply) : undefined),
-    ai_replied_at: existingLocalTicket?.ai_replied_at || (ticketType === 'INQUIRY' ? nks.created_at : undefined),
-    // Phản hồi từ BQL / Hệ thống NKS
+    // AI chỉ đưa ra BẢN THẢO GỢI Ý (ai_suggested_reply), KHÔNG tự ý gán vào ai_reply chính thức
+    ai_suggested_reply: existingLocalTicket?.ai_suggested_reply || classification.suggestedAiReply,
+    ai_reply: existingLocalTicket?.ai_reply,
+    ai_replied_at: existingLocalTicket?.ai_replied_at,
+    // Phản hồi chính thức từ BQL / Hệ thống NKS
     admin_reply: existingLocalTicket?.admin_reply || remoteReply,
     admin_replied_at: existingLocalTicket?.admin_replied_at || (remoteReply ? nks.updated_at || nks.created_at : undefined),
     admin_replied_by: existingLocalTicket?.admin_replied_by || (remoteReply ? 'Ban Quản Lý Skyline' : undefined),

@@ -167,42 +167,30 @@ export function autoDispatchSingleTicket(ticketId: string): ExtendedServiceReque
   // Xác định rõ loại phiếu
   const type = targetTicket.ticket_type || classifyTicket(targetTicket.content, targetTicket.ai_category).type;
 
-  // 1. Nếu là Hỏi Đáp (INQUIRY): AI tự động giải đáp ngay lập tức
+  // 1. Nếu là Hỏi Đáp (INQUIRY): AI chỉ soạn thảo bản thảo gợi ý (ai_suggested_reply), KHÔNG tự ý đóng phiếu
   if (type === 'INQUIRY') {
-    const aiAnswer = targetTicket.ai_reply || findInquiryAnswer(targetTicket.content);
-    let answeredTicket: ExtendedServiceRequest | null = null;
+    const aiAnswer = targetTicket.ai_suggested_reply || findInquiryAnswer(targetTicket.content);
+    let updatedTicket: ExtendedServiceRequest | null = null;
     const updatedTickets = allTickets.map(t => {
       if (t.id === targetTicket.id) {
-        answeredTicket = {
+        updatedTicket = {
           ...t,
           ticket_type: 'INQUIRY',
           ticket_type_label: 'Hỏi Đáp & Trợ Giúp',
-          handled_by: 'AI',
-          ai_reply: aiAnswer,
-          ai_replied_at: t.ai_replied_at || new Date().toISOString(),
-          status: 'Resolved' as const,
+          handled_by: 'MANAGEMENT',
+          ai_suggested_reply: aiAnswer,
+          status: 'Open' as const, // Luôn giữ Open để BQL xem xét & duyệt
           updated_at: new Date().toISOString(),
         };
-        return answeredTicket;
+        return updatedTicket;
       }
       return t;
     });
 
-    if (answeredTicket) {
+    if (updatedTicket) {
       saveTickets(updatedTickets);
-      if (typeof window !== 'undefined') {
-        fetch('/api/tickets', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            action: 'AI_ANSWER',
-            ticketId: targetTicket.id,
-            customAnswer: aiAnswer,
-          }),
-        }).catch(err => console.warn('Lỗi đồng bộ AI answer:', err));
-      }
     }
-    return answeredTicket;
+    return updatedTicket;
   }
 
   // 2. Nếu là Phản ánh (FEEDBACK) hoặc Yêu cầu (SERVICE_REQUEST): Giữ nguyên cho Ban Quản Lý, KHÔNG gán KTV sửa chữa

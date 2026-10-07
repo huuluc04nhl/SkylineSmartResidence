@@ -197,25 +197,13 @@ export default function KanbanBoard() {
   useEffect(() => {
     refreshAllData();
 
-    const triggerAutonomousAi = () => {
-      if (!isAutoDispatchEnabled()) return;
-      const all = getTickets();
-      const pending = all.filter(t => t.status === 'Open');
-      if (pending.length > 0) {
-        autoDispatchAllPendingTickets();
-        refreshAllData();
-      }
-    };
-
-    // Tự động đồng bộ live dữ liệu và quét AI tự động điều phối
+    // Tự động đồng bộ live dữ liệu từ máy chủ & NKS API (Tuyệt đối không tự ý chuyển trạng thái vé)
     syncTicketsWithServer().then(() => {
-      triggerAutonomousAi();
       refreshAllData();
     });
 
     const handleUpdate = () => {
       refreshAllData();
-      triggerAutonomousAi();
     };
     window.addEventListener('skyline_tickets_updated', handleUpdate);
     return () => window.removeEventListener('skyline_tickets_updated', handleUpdate);
@@ -676,27 +664,18 @@ export default function KanbanBoard() {
                                 <span>BQL Phản Hồi</span>
                               </button>
                             ) : isInquiry ? (
-                              <div className="flex items-center gap-1">
-                                <button
-                                  onClick={() => {
-                                    setFeedbackReplyTicket(ticket);
-                                    setFeedbackReplyContent(ticket.ai_suggested_reply || ticket.admin_reply || generateSuggestedAdminReply(ticket.content, ticket.ai_category));
-                                    setReplyEngineerName('');
-                                  }}
-                                  className="px-2.5 py-1.5 bg-sky-950/80 hover:bg-sky-900 border border-sky-500 text-sky-200 text-xs font-semibold transition-colors flex items-center gap-1.5 shadow"
-                                  title="Duyệt bản thảo hoặc chỉnh sửa câu trả lời cho cư dân"
-                                >
-                                  <MessageSquare className="w-3.5 h-3.5 text-sky-400" />
-                                  <span>Duyệt & Gửi Phản Hồi</span>
-                                </button>
-                                <button
-                                  onClick={() => handleAiAutoAnswerInquiry(ticket)}
-                                  className="px-2 py-1.5 bg-[#161B22] hover:bg-[#1C2533] border border-[#2D3748] text-gray-400 hover:text-white text-xs transition-colors"
-                                  title="AI gửi ngay câu trả lời mẫu 24/7"
-                                >
-                                  <Sparkles className="w-3 h-3 text-sky-400" />
-                                </button>
-                              </div>
+                              <button
+                                onClick={() => {
+                                  setFeedbackReplyTicket(ticket);
+                                  setFeedbackReplyContent(ticket.ai_suggested_reply || ticket.admin_reply || generateSuggestedAdminReply(ticket.content, ticket.ai_category));
+                                  setReplyEngineerName('');
+                                }}
+                                className="px-2.5 py-1.5 bg-sky-950/80 hover:bg-sky-900 border border-sky-500 text-sky-200 text-xs font-semibold transition-colors flex items-center gap-1.5 shadow"
+                                title="Xem xét bản thảo AI và gửi phản hồi chính thức cho cư dân"
+                              >
+                                <MessageSquare className="w-3.5 h-3.5 text-sky-400" />
+                                <span>Duyệt & Gửi Phản Hồi</span>
+                              </button>
                             ) : (
                               <div className="flex items-center gap-1">
                                 {ticket.suggested_technician && (

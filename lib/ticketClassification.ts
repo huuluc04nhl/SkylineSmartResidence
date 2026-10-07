@@ -149,18 +149,18 @@ export function classifyTicket(
     };
   }
 
-  // --- TRƯỜNG HỢP 2: HỎI ĐÁP / HỖ TRỢ THÔNG TIN (INQUIRY) -> AI TỰ ĐỘNG PHẢN HỒI ---
+  // --- TRƯỜNG HỢP 2: HỎI ĐÁP / HỖ TRỢ THÔNG TIN (INQUIRY) -> BQL PHÊ DUYỆT (AI HỖ TRỢ SOẠN THẢO) ---
   if (isInquiry && !isRepair) {
     const aiKnowledge = findInquiryAnswer(text);
     return {
       type: 'INQUIRY',
       typeLabel: 'Hỏi Đáp & Hỗ Trợ',
-      handledBy: 'AI',
-      handledByLabel: 'Trợ Lý AI Tự Động Giải Đáp (24/7)',
+      handledBy: 'MANAGEMENT',
+      handledByLabel: 'Ban Quản Lý Phê Duyệt & Phản Hồi',
       urgent: false,
       priority: 2,
       suggestedAiReply: aiKnowledge,
-      actionHint: 'AI đã tự động tra cứu nội quy và giải đáp tức thì cho cư dân.',
+      actionHint: 'AI gợi ý bản thảo câu trả lời từ nội quy, Ban Quản Lý phê duyệt trước khi gửi tới cư dân.',
     };
   }
 
