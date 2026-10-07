@@ -256,9 +256,9 @@ export async function POST(req: Request) {
       // Đồng bộ thông tin phản hồi ban đầu hoặc KTV lên NKS API
       if (nksResult.id) {
         if (aiReplyText) {
-          updateNksTicket({ id: nksResult.id, reply: aiReplyText }).catch(e => console.warn('Lỗi sync AI reply lên NKS:', e));
+          await updateNksTicket({ id: nksResult.id, reply: aiReplyText }).catch(e => console.warn('Lỗi sync AI reply lên NKS:', e));
         } else if (assignedTech?.name) {
-          updateNksTicket({ id: nksResult.id, engineername: assignedTech.name }).catch(e => console.warn('Lỗi sync KTV lên NKS:', e));
+          await updateNksTicket({ id: nksResult.id, engineername: assignedTech.name }).catch(e => console.warn('Lỗi sync KTV lên NKS:', e));
         }
       }
 
