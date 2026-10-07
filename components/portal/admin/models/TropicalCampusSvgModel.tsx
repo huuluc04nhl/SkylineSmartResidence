@@ -32,11 +32,8 @@ export default function TropicalCampusSvgModel({
   onOpenZoomModal
 }: TropicalCampusSvgModelProps) {
   const [zoomLevel, setZoomLevel] = useState<number>(1);
-  const [viewMode, setViewMode] = useState<'FOCUS_CAMPUS' | 'FULL_POSTER'>('FOCUS_CAMPUS');
   const [showHotspots, setShowHotspots] = useState<boolean>(true);
   const [activeAmenityCategory, setActiveAmenityCategory] = useState<'ALL' | 'POOL' | 'PARK' | 'SPORT' | 'ACCESS'>('ALL');
-
-  const activeAmenity = amenities.find(a => a.id === (hoveredAmenityId || selectedAmenityId));
 
   // 4 Khối Chung Cư chuẩn quy hoạch The Tropical trên bản đồ kiến trúc gốc (kích thước gốc 453 x 677)
   const buildings = [
@@ -143,11 +140,6 @@ export default function TropicalCampusSvgModel({
   const colLeftAmenities = filteredAmenities.slice(0, midIdx);
   const colRightAmenities = filteredAmenities.slice(midIdx);
 
-  // Chọn vùng hiển thị SVG dựa vào chế độ xem
-  const viewBoxSetting = viewMode === 'FOCUS_CAMPUS' 
-    ? '0 15 453 315'    // Tập trung vào vùng mặt bằng kiến trúc khuôn viên
-    : '0 0 453 677';     // Toàn bộ poster bao gồm cả bảng chú thích
-
   return (
     <div className="relative bg-[#06090F] border border-[#1E293B] rounded-none overflow-hidden select-none shadow-2xl flex flex-col">
       
@@ -165,36 +157,8 @@ export default function TropicalCampusSvgModel({
           </span>
         </div>
 
-        {/* Nút chuyển chế độ xem & Thu phóng */}
+        {/* Nút bật tắt lớp phủ & Thu phóng */}
         <div className="flex items-center gap-1.5">
-          {/* Chuyển chế độ xem */}
-          <div className="flex items-center bg-[#101723] p-0.5 border border-[#1E2B3C] text-[10.5px]">
-            <button
-              type="button"
-              onClick={() => setViewMode('FOCUS_CAMPUS')}
-              className={`px-2 py-0.5 transition-all ${
-                viewMode === 'FOCUS_CAMPUS'
-                  ? 'bg-[#C5A880] text-black font-bold'
-                  : 'text-gray-400 hover:text-white'
-              }`}
-              title="Tập trung vào khuôn viên 4 tòa tháp"
-            >
-              Khuôn Viên
-            </button>
-            <button
-              type="button"
-              onClick={() => setViewMode('FULL_POSTER')}
-              className={`px-2 py-0.5 transition-all ${
-                viewMode === 'FULL_POSTER'
-                  ? 'bg-[#C5A880] text-black font-bold'
-                  : 'text-gray-400 hover:text-white'
-              }`}
-              title="Xem toàn bộ sơ đồ và bảng chú thích"
-            >
-              Toàn Bộ + Chú Thích
-            </button>
-          </div>
-
           {/* Bật/Tắt Lớp phủ tương tác */}
           <button
             type="button"
@@ -262,7 +226,7 @@ export default function TropicalCampusSvgModel({
           style={{ transform: `scale(${zoomLevel})` }}
         >
           <svg
-            viewBox={viewBoxSetting}
+            viewBox="0 15 453 315"
             className="w-full h-full max-h-full object-contain filter drop-shadow-2xl"
           >
             <defs>
@@ -412,6 +376,7 @@ export default function TropicalCampusSvgModel({
                   onMouseEnter={() => onHoverAmenity(item.id)}
                   onMouseLeave={() => onHoverAmenity(null)}
                 >
+                  <title>{item.name} (#{item.displayNumber || item.id}) - {item.distance}</title>
                   {/* Radar pulse khi chọn hoặc hover */}
                   {isHighlighted && (
                     <circle
@@ -482,33 +447,6 @@ export default function TropicalCampusSvgModel({
             })}
           </svg>
         </div>
-
-        {/* HUD OVERLAY GÓC TRÁI DƯỚI: THÔNG TIN TIỆN ÍCH HOVER/SELECT */}
-        {activeAmenity && (
-          <div className="absolute bottom-3 left-3 bg-[#0A0F17]/95 border border-[#C5A880] p-3 max-w-sm backdrop-blur-md shadow-2xl animate-in fade-in duration-150 pointer-events-none z-30">
-            <div className="flex items-center justify-between text-[#C5A880] font-mono text-[10.5px] uppercase font-bold tracking-wider pb-1 border-b border-[#1E293B]">
-              <span className="flex items-center gap-1.5">
-                <Sparkles className="w-3.5 h-3.5 text-[#F59E0B]" />
-                Mục #{activeAmenity.displayNumber || activeAmenity.id}
-              </span>
-              <span className="text-cyan-300 font-bold">{activeAmenity.distance}</span>
-            </div>
-            <div className="text-white font-bold text-sm mt-1.5 flex items-center justify-between gap-2">
-              <span>{activeAmenity.name}</span>
-              <span className={`text-[10px] px-1.5 py-0.5 font-mono ${
-                activeAmenity.category === 'POOL' ? 'bg-cyan-950 text-cyan-300 border border-cyan-700' :
-                activeAmenity.category === 'PARK' ? 'bg-emerald-950 text-emerald-300 border border-emerald-700' :
-                activeAmenity.category === 'SPORT' ? 'bg-blue-950 text-blue-300 border border-blue-700' :
-                'bg-amber-950 text-amber-300 border border-amber-700'
-              }`}>
-                {activeAmenity.category}
-              </span>
-            </div>
-            <div className="text-gray-300 text-[11px] mt-1 leading-relaxed">
-              {activeAmenity.desc}
-            </div>
-          </div>
-        )}
 
         {/* GHI CHÚ ĐIỀU HƯỚNG GÓC PHẢI DƯỚI */}
         <div className="absolute bottom-2 right-2 px-2 py-1 bg-[#0A0F17]/85 border border-[#1E2B3C] text-[10px] font-mono text-gray-400 backdrop-blur-sm pointer-events-none hidden sm:block">
