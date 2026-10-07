@@ -172,7 +172,7 @@ export default function TicketService({ currentUser }: TicketServiceProps) {
   const [rateSuccessMsg, setRateSuccessMsg] = useState<string | null>(null);
 
   const refreshTicketList = () => {
-    const list = getTickets(aptCode);
+    const list = getTickets(aptCode, residentPhone);
     setTickets(list);
   };
 
@@ -197,6 +197,18 @@ export default function TicketService({ currentUser }: TicketServiceProps) {
     window.addEventListener('skyline_tickets_updated', handleUpdate);
     return () => window.removeEventListener('skyline_tickets_updated', handleUpdate);
   }, [aptCode, residentPhone]);
+
+  // Tự động điền gợi ý nhanh đầu tiên khi mở form báo hỏng nếu chưa có nội dung
+  useEffect(() => {
+    if (showCreateForm && ticketPurpose === 'REPAIR' && !content) {
+      const defaultPreset = COMMON_REPAIR_PRESETS[0];
+      setSelectedPresetId(defaultPreset.id);
+      setContent(defaultPreset.description);
+      setSelectedArea(defaultPreset.area);
+      setAiDetectedCat(defaultPreset.category);
+      setUrgencyLevel(defaultPreset.urgency);
+    }
+  }, [showCreateForm, ticketPurpose]);
 
   // Chọn ticket so sánh: các phiếu đã giải quyết (Resolved) có cả 2 ảnh thật (trước & sau)
   const comparisonTickets = tickets.filter(t => t.status === 'Resolved' && t.before_image && t.after_image);
@@ -249,7 +261,11 @@ export default function TicketService({ currentUser }: TicketServiceProps) {
 
   const handleCreateTicket = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!content.trim() || isSubmitting) return;
+    if (!content.trim()) {
+      alert('Vui lòng nhập mô tả sự cố hoặc chạm chọn một gợi ý nhanh bên trên.');
+      return;
+    }
+    if (isSubmitting) return;
 
     setIsSubmitting(true);
     const beforeImage = attachedImageBase64 || '';
@@ -285,7 +301,9 @@ export default function TicketService({ currentUser }: TicketServiceProps) {
         ticket_type_label: typeLabel,
       });
 
+      // Hiển thị kết quả và đóng form ngay
       setCreatedTicketResult(newTicket);
+      setTickets(prev => [newTicket, ...prev.filter(t => t.id !== newTicket.id)]);
       setContent('');
       setAttachedImageBase64('');
       setSelectedPresetId(null);
@@ -309,6 +327,7 @@ export default function TicketService({ currentUser }: TicketServiceProps) {
       refreshTicketList();
     } catch (err) {
       console.error('Lỗi gửi ticket:', err);
+      alert('Có lỗi khi tạo phiếu. Phiếu đã được lưu tạm để gửi lại.');
     } finally {
       setIsSubmitting(false);
     }

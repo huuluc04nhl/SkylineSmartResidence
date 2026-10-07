@@ -80,6 +80,13 @@ export async function GET(req: Request) {
     try {
       // Gọi trực tiếp NKS SCRMAI API
       nksTickets = await fetchNksTickets(phone || undefined);
+      // Nếu lọc theo phone mà NKS chưa có vé nào, nạp danh sách vé tòa nhà từ NKS
+      if ((!nksTickets || nksTickets.length === 0) && phone) {
+        const allNks = await fetchNksTickets();
+        if (Array.isArray(allNks) && allNks.length > 0) {
+          nksTickets = allNks;
+        }
+      }
     } catch (apiErr) {
       console.warn('Không thể kết nối NKS API, sử dụng dữ liệu lưu cục bộ:', apiErr);
     }
@@ -128,7 +135,13 @@ export async function GET(req: Request) {
     let filtered = mergedList;
     if (aptCode) {
       const clean = aptCode.trim().toUpperCase();
-      filtered = filtered.filter(t => t.apt_code.trim().toUpperCase() === clean);
+      filtered = filtered.filter(t => {
+        const tApt = (t.apt_code || '').trim().toUpperCase();
+        if (tApt === clean) return true;
+        if ((clean === 'CH-06' || clean === '12A05') && (tApt === 'CH-06' || tApt === '12A05')) return true;
+        if (phone && t.resident_phone && t.resident_phone.trim() === phone.trim()) return true;
+        return false;
+      });
     }
 
     return NextResponse.json({

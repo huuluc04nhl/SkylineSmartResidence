@@ -168,7 +168,7 @@ export function getTechnicianById(id: string): TechnicianProfile | undefined {
 // -----------------------------------------------------------------------------
 // GET / SAVE TICKETS
 // -----------------------------------------------------------------------------
-export function getTickets(aptCode?: string): ExtendedServiceRequest[] {
+export function getTickets(aptCode?: string, phone?: string): ExtendedServiceRequest[] {
   let allTickets: ExtendedServiceRequest[] = [];
   if (typeof window !== 'undefined') {
     try {
@@ -186,7 +186,14 @@ export function getTickets(aptCode?: string): ExtendedServiceRequest[] {
 
   if (aptCode) {
     const cleanCode = aptCode.trim().toUpperCase();
-    return allTickets.filter(t => t.apt_code.trim().toUpperCase() === cleanCode);
+    return allTickets.filter(t => {
+      const tApt = (t.apt_code || '').trim().toUpperCase();
+      if (tApt === cleanCode) return true;
+      // Linh hoạt đồng bộ căn hộ cư dân mẫu CH-06 và 12A05
+      if ((cleanCode === 'CH-06' || cleanCode === '12A05') && (tApt === 'CH-06' || tApt === '12A05')) return true;
+      if (phone && t.resident_phone && t.resident_phone.trim() === phone.trim()) return true;
+      return false;
+    });
   }
   return allTickets;
 }
@@ -223,7 +230,21 @@ export async function syncTicketsWithServer(aptCode?: string, phone?: string): P
       const data = await res.json();
       if (data.success && Array.isArray(data.tickets)) {
         if (typeof window !== 'undefined') {
-          localStorage.setItem(TICKETS_STORAGE_KEY, JSON.stringify(data.tickets));
+          // Merge an toàn không xóa mất các phiếu khác
+          const currentAll = getTickets();
+          const map = new Map<string, ExtendedServiceRequest>();
+          currentAll.forEach(t => {
+            map.set(t.id, t);
+            if (t.nks_id) map.set(String(t.nks_id), t);
+          });
+          data.tickets.forEach((t: ExtendedServiceRequest) => {
+            map.set(t.id, t);
+            if (t.nks_id) map.set(String(t.nks_id), t);
+          });
+          const mergedList = Array.from(new Set(map.values()));
+          mergedList.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+
+          localStorage.setItem(TICKETS_STORAGE_KEY, JSON.stringify(mergedList));
           if (Array.isArray(data.technicians) && data.technicians.length > 0) {
             localStorage.setItem(TECHNICIANS_STORAGE_KEY, JSON.stringify(data.technicians));
           }
@@ -235,7 +256,7 @@ export async function syncTicketsWithServer(aptCode?: string, phone?: string): P
   } catch (err) {
     console.warn('Lỗi đồng bộ phiếu với máy chủ & NKS API:', err);
   }
-  return getTickets(aptCode);
+  return getTickets(aptCode, phone);
 }
 
 /**

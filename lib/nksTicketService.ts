@@ -282,21 +282,23 @@ export function nksTicketToServiceRequest(
   // Trích xuất mã căn hộ hoặc vị trí phát sinh sự cố từ tiêu đề, nội dung hoặc dịch vụ
   let aptCode = '';
   const text = `${nks.subject || ''} ${nks.description || ''} ${nks.title || ''}`;
-  const aptMatch = text.match(/\b([A-Za-z]?\d{1,2}[A-Za-z]\d{1,2}|A\d{3,4}|B\d{3,4}|CH-\d{2})\b/i);
-  if (aptMatch) {
-    aptCode = aptMatch[1].toUpperCase();
-  } else if (text.toLowerCase().includes('block 07') || text.toLowerCase().includes('block 7')) {
-    aptCode = 'Block 07';
-  } else if (nks.service?.toLowerCase().includes('hồ bơi') || text.toLowerCase().includes('hồ bơi')) {
-    aptCode = 'Tiện ích Hồ Bơi';
-  } else if (nks.service?.toLowerCase().includes('nhà hàng') || text.toLowerCase().includes('nhà hàng')) {
-    aptCode = 'Khu Nhà Hàng';
-  } else if (existingLocalTicket?.apt_code) {
+  if (existingLocalTicket?.apt_code) {
     aptCode = existingLocalTicket.apt_code;
-  } else if (nks.phone === '0364967082' || nks.fullname?.toLowerCase().includes('lực')) {
-    aptCode = '12A05';
   } else {
-    aptCode = nks.service ? `Khu ${nks.service}` : 'Tòa Nhà';
+    const aptMatch = text.match(/\b([A-Za-z]?\d{1,2}[A-Za-z]\d{1,2}|A\d{3,4}|B\d{3,4}|CH-\d{2})\b/i);
+    if (aptMatch) {
+      aptCode = aptMatch[1].toUpperCase();
+    } else if (text.toLowerCase().includes('block 07') || text.toLowerCase().includes('block 7')) {
+      aptCode = 'Block 07';
+    } else if (nks.service?.toLowerCase().includes('hồ bơi') || text.toLowerCase().includes('hồ bơi')) {
+      aptCode = 'Tiện ích Hồ Bơi';
+    } else if (nks.service?.toLowerCase().includes('nhà hàng') || text.toLowerCase().includes('nhà hàng')) {
+      aptCode = 'Khu Nhà Hàng';
+    } else if (nks.phone === '0364967082' || nks.fullname?.toLowerCase().includes('lực')) {
+      aptCode = 'CH-06';
+    } else {
+      aptCode = nks.service ? `Khu ${nks.service}` : 'Tòa Nhà';
+    }
   }
 
   // Phân loại mục đích & trách nhiệm xử lý

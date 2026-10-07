@@ -37,5 +37,6 @@ next-env.d.ts
 # temp IDE / agents
 .agents/
 .codex/
+.skyline_tickets.json
 
 *.traineddata
