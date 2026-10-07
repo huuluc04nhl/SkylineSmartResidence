@@ -52,7 +52,6 @@ import {
 } from '@/lib/ticketStore';
 import { 
   isAutoDispatchEnabled, 
-  setAutoDispatchEnabled, 
   autoDispatchSingleTicket, 
   autoDispatchAllPendingTickets,
   autoResolveSingleTicketWithAI,
@@ -76,7 +75,6 @@ export default function KanbanBoard() {
   const [categoryFilter, setCategoryFilter] = useState<'ALL' | 'REPAIR' | 'FEEDBACK' | 'INQUIRY'>('ALL');
 
   // AI Auto-Dispatch States
-  const [aiAutoMode, setAiAutoMode] = useState<boolean>(true);
   const [isAutoDispatching, setIsAutoDispatching] = useState<boolean>(false);
 
   // Modals State
@@ -131,12 +129,6 @@ export default function KanbanBoard() {
     setTimeout(() => setActionSuccessMsg(null), 3000);
   };
 
-  const handleToggleAutoDispatch = (enabled: boolean) => {
-    setAiAutoMode(enabled);
-    setAutoDispatchEnabled(enabled);
-    setActionSuccessMsg(`Tự động phân công AI: ${enabled ? 'Bật' : 'Tắt'}.`);
-    setTimeout(() => setActionSuccessMsg(null), 3000);
-  };
 
   const handleOneClickAutoDispatch = () => {
     setIsAutoDispatching(true);
@@ -202,7 +194,6 @@ export default function KanbanBoard() {
   };
 
   useEffect(() => {
-    setAiAutoMode(isAutoDispatchEnabled());
     refreshAllData();
 
     const triggerAutonomousAi = () => {
@@ -346,25 +337,6 @@ export default function KanbanBoard() {
 
         {/* Unified Static Toolbar (Never wraps or jumps between ticket states) */}
         <div className="flex items-center gap-2.5 flex-wrap sm:flex-nowrap">
-          {/* AI Auto-Dispatch 24/7 Switch */}
-          <button
-            onClick={() => handleToggleAutoDispatch(!aiAutoMode)}
-            className={`px-3 py-1.5 border text-xs font-semibold flex items-center gap-2 transition-all ${
-              aiAutoMode
-                ? 'bg-purple-950/50 border-purple-500/50 text-purple-200 hover:border-purple-400'
-                : 'bg-[#121820] border-[#222B35] text-gray-400 hover:text-white'
-            }`}
-            title="Bật/Tắt chế độ AI tự động phân tích và gán KTV ngay khi tiếp nhận sự cố"
-          >
-            <Sparkles className={`w-3.5 h-3.5 ${aiAutoMode ? 'text-purple-400 animate-pulse' : 'text-gray-500'}`} />
-            <span>AI Tự Động:</span>
-            <span className={`text-[10px] px-1.5 py-0.5 font-bold uppercase tracking-wider ${
-              aiAutoMode ? 'bg-purple-500/30 text-purple-200 border border-purple-400/40' : 'bg-gray-800 text-gray-400'
-            }`}>
-              {aiAutoMode ? 'BẬT' : 'TẮT'}
-            </span>
-          </button>
-
           {/* Nút Làm Mới Dữ Liệu */}
           <button
             onClick={handleSyncNks}
