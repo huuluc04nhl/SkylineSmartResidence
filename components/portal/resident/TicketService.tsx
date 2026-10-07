@@ -293,15 +293,15 @@ export default function TicketService({ currentUser }: TicketServiceProps) {
       const ticketDisplayId = newTicket.nks_id ? `#${newTicket.nks_id}` : `#${newTicket.id}`;
       
       if (ticketPurpose === 'INQUIRY') {
-        setCreatedSuccessMsg(`Đã gửi câu hỏi ${ticketDisplayId} lên Ban Quản Lý! AI đã tạo gợi ý giải đáp sơ bộ trong khi chờ BQL xác nhận.`);
+        setCreatedSuccessMsg(`⚡ Trợ lý AI đã giải đáp tức thì cho phiếu ${ticketDisplayId} (không cần chờ BQL)!`);
       } else if (ticketPurpose === 'FEEDBACK') {
-        setCreatedSuccessMsg(`Ban Quản Lý đã tiếp nhận ý kiến ${ticketDisplayId} và đang thụ lý giải quyết!`);
+        setCreatedSuccessMsg(`Ban Quản Lý đã tiếp nhận ý kiến ${ticketDisplayId} và đang thụ lý! (Trạng thái: Chờ BQL xác nhận)`);
       } else {
-        const techName = newTicket.assigned_technician || newTicket.suggested_technician;
+        const techName = newTicket.assigned_technician;
         setCreatedSuccessMsg(
           techName
-            ? `Yêu cầu sửa chữa ${ticketDisplayId} đã được tiếp nhận! AI đề xuất KTV ${techName} (${newTicket.scheduled_time || 'Dự kiến 30 - 45 phút'}), đang chờ BQL duyệt điều phối.`
-            : `Yêu cầu sửa chữa ${ticketDisplayId} đã được gửi tới Ban Quản Lý và đang chờ điều phối KTV!`
+            ? `Sự cố kỹ thuật ${ticketDisplayId} đã được phân bổ cho KTV ${techName} (${newTicket.scheduled_time || 'Có mặt trong vòng 30 - 45 phút'})!`
+            : `Yêu cầu sửa chữa ${ticketDisplayId} đã được tiếp nhận và chuyển tới Đội ngũ Kỹ Thuật!`
         );
       }
 
@@ -345,23 +345,49 @@ export default function TicketService({ currentUser }: TicketServiceProps) {
         </button>
       </div>
 
-      {/* Thẻ Kết Quả Tiếp Nhận & Trạng Thái Điều Phối Minh Bạch */}
+      {/* Thẻ Kết Quả Xử Lý Rõ Ràng Từng Luồng (AI Tự Động / KTV Phân Bổ / BQL Xác Nhận) */}
       {createdTicketResult && (
         <div className="p-5 bg-[#121A22] border-2 border-[#C5A880] text-white shadow-2xl animate-fadeIn space-y-3.5 relative">
           <div className="flex items-center justify-between border-b border-[#222B35] pb-3">
             <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 bg-amber-500/20 border border-amber-500/60 flex items-center justify-center text-amber-400">
-                <Clock className="w-4 h-4" />
-              </div>
+              {createdTicketResult.ticket_type === 'INQUIRY' ? (
+                <div className="w-8 h-8 bg-sky-500/20 border border-sky-500/60 flex items-center justify-center text-sky-400">
+                  <Sparkles className="w-4 h-4" />
+                </div>
+              ) : createdTicketResult.ticket_type === 'REPAIR' ? (
+                <div className="w-8 h-8 bg-emerald-500/20 border border-emerald-500/60 flex items-center justify-center text-emerald-400">
+                  <Wrench className="w-4 h-4" />
+                </div>
+              ) : (
+                <div className="w-8 h-8 bg-rose-500/20 border border-rose-500/60 flex items-center justify-center text-rose-400">
+                  <MessageSquare className="w-4 h-4" />
+                </div>
+              )}
               <div>
                 <h4 className="font-serif text-sm font-bold text-white flex items-center gap-2">
-                  <span>Tiếp Nhận Phiếu Yêu Cầu Thành Công</span>
-                  <span className="text-[10px] px-2 py-0.5 bg-amber-950 text-amber-300 border border-amber-500/60 font-mono font-bold">
-                    {createdTicketResult.assigned_technician ? 'ĐÃ ĐIỀU PHỐI KTV' : 'CHỜ BQL XÁC NHẬN'}
+                  <span>
+                    {createdTicketResult.ticket_type === 'INQUIRY'
+                      ? '⚡ Trợ Lý AI Đã Giải Đáp Tự Động 24/7'
+                      : createdTicketResult.ticket_type === 'REPAIR'
+                        ? '🔧 Đã Phân Bổ Kỹ Thuật Viên Xử Lý'
+                        : '📋 Đã Tiếp Nhận - Chờ Ban Quản Lý Xác Nhận'}
+                  </span>
+                  <span className={`text-[10px] px-2 py-0.5 font-mono font-bold border ${
+                    createdTicketResult.ticket_type === 'INQUIRY'
+                      ? 'bg-sky-950 text-sky-300 border-sky-500/60'
+                      : createdTicketResult.ticket_type === 'REPAIR'
+                        ? 'bg-emerald-950 text-emerald-300 border-emerald-500/60'
+                        : 'bg-rose-950 text-rose-300 border-rose-500/60'
+                  }`}>
+                    {createdTicketResult.ticket_type === 'INQUIRY'
+                      ? 'AI AUTO-REPLY'
+                      : createdTicketResult.ticket_type === 'REPAIR'
+                        ? 'KTV DISPATCHED'
+                        : 'CHỜ BQL XÁC NHẬN'}
                   </span>
                 </h4>
                 <div className="text-[11px] text-[#C5A880] font-mono mt-0.5">
-                  Mã phiếu: #{createdTicketResult.nks_id || createdTicketResult.id} • Căn {createdTicketResult.apt_code} • {createdTicketResult.ai_category || 'Sự Cố Kỹ Thuật'}
+                  Mã phiếu: #{createdTicketResult.nks_id || createdTicketResult.id} • Căn {createdTicketResult.apt_code} • {createdTicketResult.ticket_type_label || createdTicketResult.ai_category}
                 </div>
               </div>
             </div>
@@ -373,63 +399,79 @@ export default function TicketService({ currentUser }: TicketServiceProps) {
             </button>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs bg-[#161F2B] p-3.5 border border-[#2D3A4B]">
-            <div className="space-y-1">
-              <span className="text-gray-400 text-[11px] block">
-                {createdTicketResult.assigned_technician ? 'Kỹ thuật viên phụ trách:' : 'KTV Đề Xuất Bởi AI:'}
-              </span>
-              <div className="text-white font-bold text-sm flex items-center gap-1.5">
-                <Wrench className="w-3.5 h-3.5 text-amber-400" />
-                <span>{createdTicketResult.assigned_technician || createdTicketResult.suggested_technician || 'Đang rà soát ca trực'}</span>
+          {/* NỘI DUNG RIÊNG CHO TỪNG LUỒNG */}
+          {createdTicketResult.ticket_type === 'INQUIRY' ? (
+            /* Luồng 1: AI tự động phản hồi ngay không qua BQL */
+            <div className="p-3.5 bg-sky-950/40 border border-sky-500/40 space-y-2">
+              <div className="text-xs font-bold text-sky-300 flex items-center justify-between">
+                <span className="flex items-center gap-1.5">
+                  <Sparkles className="w-4 h-4 text-sky-400" /> Giải Đáp Từ Trợ Lý Ảo Skyline (Tức Thì 24/7):
+                </span>
+                <span className="text-[10px] text-gray-400 font-normal">Không cần chờ Ban Quản Lý</span>
               </div>
-              <span className="text-[10px] text-gray-400">
-                {createdTicketResult.assigned_technician ? 'Đã chính thức nhận việc' : 'Đang chờ Ban Quản Lý phê duyệt'}
-              </span>
+              <p className="text-gray-200 text-xs whitespace-pre-line leading-relaxed">
+                {createdTicketResult.ai_reply || 'Hệ thống đã tiếp nhận câu hỏi của Cư dân và xử lý tự động.'}
+              </p>
             </div>
-
-            <div className="space-y-1">
-              <span className="text-gray-400 text-[11px] block">Thời gian xử lý dự kiến:</span>
-              <div className="text-amber-300 font-bold font-mono text-xs flex items-center gap-1.5">
-                <Clock className="w-3.5 h-3.5" />
-                <span>{createdTicketResult.scheduled_time || 'Trong vòng 30 - 45 phút'}</span>
+          ) : createdTicketResult.ticket_type === 'REPAIR' ? (
+            /* Luồng 2: Sự cố cần thiết thì phân bổ KTV */
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs bg-[#161F2B] p-3.5 border border-[#2D3A4B]">
+              <div className="space-y-1">
+                <span className="text-gray-400 text-[11px] block">Kỹ thuật viên phụ trách:</span>
+                <div className="text-white font-bold text-sm flex items-center gap-1.5">
+                  <Wrench className="w-3.5 h-3.5 text-amber-400" />
+                  <span>{createdTicketResult.assigned_technician || 'Lê Văn Kỹ Thuật'}</span>
+                </div>
+                <span className="text-[10px] text-gray-400">Chuyên môn: {createdTicketResult.ai_category || 'Cơ Điện & Nước'}</span>
               </div>
-              <span className="text-[10px] text-gray-400">
-                {createdTicketResult.assigned_technician ? 'KTV đang chuẩn bị dụng cụ' : 'Theo quy chuẩn tiếp nhận dịch vụ'}
-              </span>
-            </div>
 
-            <div className="space-y-1">
-              <span className="text-gray-400 text-[11px] block">Đường dây hỗ trợ khẩn cấp:</span>
-              {createdTicketResult.assigned_technician_phone ? (
-                <a
-                  href={`tel:${createdTicketResult.assigned_technician_phone}`}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#C5A880] text-[#0D1117] hover:bg-white font-mono font-bold text-xs transition-colors shadow"
-                >
-                  <Phone className="w-3 h-3" /> Gọi KTV: {createdTicketResult.assigned_technician_phone}
-                </a>
-              ) : (
-                <a
-                  href="tel:0909888777"
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#C5A880] text-[#0D1117] hover:bg-white font-mono font-bold text-xs transition-colors shadow"
-                >
-                  <Phone className="w-3 h-3" /> Hotline BQL: 0909.888.777
-                </a>
-              )}
-            </div>
-          </div>
+              <div className="space-y-1">
+                <span className="text-gray-400 text-[11px] block">Thời gian dự kiến có mặt:</span>
+                <div className="text-emerald-400 font-bold font-mono text-xs flex items-center gap-1.5">
+                  <Clock className="w-3.5 h-3.5" />
+                  <span>{createdTicketResult.scheduled_time || 'Trong vòng 30 - 45 phút'}</span>
+                </div>
+                <span className="text-[10px] text-emerald-400/80">KTV đang chuẩn bị dụng cụ di chuyển</span>
+              </div>
 
-          {(createdTicketResult.ai_dispatch_reason || createdTicketResult.ai_suggested_reply) && (
+              <div className="space-y-1">
+                <span className="text-gray-400 text-[11px] block">Liên hệ KTV trực tiếp:</span>
+                {createdTicketResult.assigned_technician_phone ? (
+                  <a
+                    href={`tel:${createdTicketResult.assigned_technician_phone}`}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#C5A880] text-[#0D1117] hover:bg-white font-mono font-bold text-xs transition-colors shadow"
+                  >
+                    <Phone className="w-3 h-3" /> Gọi KTV: {createdTicketResult.assigned_technician_phone}
+                  </a>
+                ) : (
+                  <a
+                    href="tel:0909888777"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#C5A880] text-[#0D1117] hover:bg-white font-mono font-bold text-xs transition-colors shadow"
+                  >
+                    <Phone className="w-3 h-3" /> Hotline BQL: 0909.888.777
+                  </a>
+                )}
+              </div>
+            </div>
+          ) : (
+            /* Luồng 3: Chờ BQL xác nhận & thụ lý */
+            <div className="p-3.5 bg-rose-950/30 border border-rose-500/40 text-xs space-y-2">
+              <div className="text-rose-300 font-bold flex items-center gap-1.5">
+                <Clock className="w-4 h-4 text-rose-400" />
+                Phiếu Đã Chuyển Tới Ban Quản Lý Skyline:
+              </div>
+              <p className="text-gray-300 text-[11px] leading-relaxed">
+                Nội dung góp ý / phản ánh của Quý cư dân đã được lưu vào hệ thống điều hành. Bộ phận quản lý tòa nhà sẽ trực tiếp xác minh thực tế hiện trường và gửi văn bản phản hồi chính thức trong thời gian sớm nhất.
+              </p>
+            </div>
+          )}
+
+          {createdTicketResult.ai_dispatch_reason && (
             <div className="text-[11px] text-purple-200 bg-purple-950/50 border border-purple-500/40 p-2.5 flex items-start gap-2">
               <Sparkles className="w-3.5 h-3.5 text-purple-400 flex-shrink-0 mt-0.5" />
               <div>
-                <strong className="text-purple-300">Minh bạch hỗ trợ bởi Trợ Lý AI:</strong>{' '}
-                <span>
-                  {createdTicketResult.ai_dispatch_reason 
-                    ? `AI đã phân tích sự cố và đề xuất KTV phù hợp với ca trực hiện tại. Ban Quản Lý sẽ xác nhận phân công chính thức ngay trong ít phút.` 
-                    : createdTicketResult.ai_suggested_reply
-                      ? `AI đã soạn thảo câu trả lời tham khảo dựa trên quy chế chung cư trong khi chờ Ban Quản Lý xác nhận chính thức.`
-                      : ''}
-                </span>
+                <strong className="text-purple-300">Đánh giá phân bổ KTV bằng AI:</strong>{' '}
+                <span>{createdTicketResult.ai_dispatch_reason}</span>
               </div>
             </div>
           )}
@@ -997,7 +1039,7 @@ export default function TicketService({ currentUser }: TicketServiceProps) {
                               : 'bg-blue-950 text-blue-400 border border-blue-600'
                       }`}>
                         {isInquiry ? (
-                          t.status === 'Resolved' ? <>✓ BQL Đã Phản Hồi</> : <>⏳ Chờ BQL Xác Nhận</>
+                          t.status === 'Resolved' ? <>✓ AI Đã Giải Đáp Tức Thì</> : <>⏳ Chờ BQL Xác Nhận</>
                         ) : isFeedback ? (
                           t.status === 'Resolved' ? <>✓ BQL Đã Phản Hồi</> : <>⏳ BQL Đang Thụ Lý</>
                         ) : (

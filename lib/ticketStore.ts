@@ -275,8 +275,11 @@ export async function createTicketAsync(payload: {
     priority_color: isUrgent ? '#DC2626' : '#D97706',
     sla_deadline: new Date(Date.now() + (isUrgent ? 45 : 120) * 60000).toISOString(),
     sla_minutes_left: isUrgent ? 45 : 120,
-    status: 'Open', // Minh bạch 100%: Luôn ở trạng thái Chờ BQL tiếp nhận / xác nhận
-    // AI chỉ đóng vai trò Trợ lý đề xuất bản thảo sơ bộ, KHÔNG tự ý đóng phiếu
+    status: ticketType === 'INQUIRY' ? 'Resolved' : ticketType === 'REPAIR' ? 'In_Progress' : 'Open',
+    // 1. Nếu là Hỏi Đáp: AI tự động phản hồi ngay 24/7
+    ai_reply: ticketType === 'INQUIRY' ? (classification.suggestedAiReply || findInquiryAnswer(payload.content)) : undefined,
+    ai_replied_at: ticketType === 'INQUIRY' ? new Date().toISOString() : undefined,
+    // 2. Nếu là Góp Ý / Khiếu Nại: AI gợi ý câu trả lời để BQL duyệt
     ai_suggested_reply: ticketType === 'INQUIRY' ? (classification.suggestedAiReply || findInquiryAnswer(payload.content)) : undefined,
     before_image: payload.before_image || '',
     created_at: new Date().toISOString(),
@@ -350,7 +353,9 @@ export function createTicket(payload: {
     priority_color: isUrgent ? '#DC2626' : '#D97706',
     sla_deadline: new Date(Date.now() + (isUrgent ? 45 : 120) * 60000).toISOString(),
     sla_minutes_left: isUrgent ? 45 : 120,
-    status: 'Open', // Mặc định luôn là Chờ BQL xác nhận
+    status: ticketType === 'INQUIRY' ? 'Resolved' : ticketType === 'REPAIR' ? 'In_Progress' : 'Open',
+    ai_reply: ticketType === 'INQUIRY' ? (classification.suggestedAiReply || findInquiryAnswer(payload.content)) : undefined,
+    ai_replied_at: ticketType === 'INQUIRY' ? new Date().toISOString() : undefined,
     ai_suggested_reply: ticketType === 'INQUIRY' ? (classification.suggestedAiReply || findInquiryAnswer(payload.content)) : undefined,
     before_image: payload.before_image || '',
     created_at: new Date().toISOString(),

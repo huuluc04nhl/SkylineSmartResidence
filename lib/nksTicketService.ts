@@ -327,10 +327,10 @@ export function nksTicketToServiceRequest(
   const remoteReply = typeof nks.reply === 'string' && nks.reply.trim() ? nks.reply.trim() : undefined;
   const remoteEngineer = typeof nks.engineername === 'string' && nks.engineername.trim() ? nks.engineername.trim() : undefined;
 
-  // Trạng thái đồng bộ từ NKS API:
-  // - Chỉ 'Resolved' khi phiếu thực sự có phản hồi văn bản chính thức (remoteReply) hoặc trạng thái đóng/resolved trên NKS
-  // - Chỉ 'In_Progress' khi đã có tên KTV chính thức (remoteEngineer)
-  // - Tất cả trường hợp còn lại (bao gồm cả 'pending', 'open', hoặc câu hỏi) đều là 'Open' (Chờ BQL tiếp nhận & xử lý)
+  // Trạng thái đồng bộ từ NKS API theo 3 luồng rõ ràng:
+  // 1. Phản hồi tự động AI (INQUIRY): Resolved tức thì mà không cần qua BQL
+  // 2. Sự cố kỹ thuật (REPAIR): In_Progress khi phân bổ KTV
+  // 3. Phản ánh / Góp ý (FEEDBACK): Open chờ BQL xác nhận & phản hồi
   let status: 'Open' | 'In_Progress' | 'Resolved' | 'Assigned' | 'Cancelled' = 'Open';
   if (existingLocalTicket) {
     status = existingLocalTicket.status;
@@ -341,8 +341,11 @@ export function nksTicketToServiceRequest(
     status = 'Resolved';
   } else if (remoteEngineer && remoteEngineer.trim()) {
     status = 'In_Progress';
+  } else if (classification.type === 'INQUIRY' && classification.suggestedAiReply) {
+    // Luồng 1: Hỏi đáp tra cứu tiện ích - AI tự động phản hồi không cần qua BQL
+    status = 'Resolved';
   } else {
-    // Mặc định luôn là Open: BQL xem xét và duyệt, AI KHÔNG tự ý đóng phiếu
+    // Luồng 3: FEEDBACK / Khiếu nại - Chờ BQL xác nhận
     status = 'Open';
   }
 
@@ -351,6 +354,9 @@ export function nksTicketToServiceRequest(
 
   const ticketType = existingLocalTicket?.ticket_type || classification.type;
   const handlerRole = existingLocalTicket?.handled_by || classification.handledBy;
+
+  // Lấy câu trả lời AI cho câu hỏi
+  const resolvedAiReply = existingLocalTicket?.ai_reply || (ticketType === 'INQUIRY' ? classification.suggestedAiReply : undefined);
 
   return {
     id: String(nks.id),
@@ -369,10 +375,10 @@ export function nksTicketToServiceRequest(
     sla_deadline: new Date(Date.now() + (isUrgent ? 45 : 120) * 60000).toISOString(),
     sla_minutes_left: isUrgent ? 45 : 120,
     status: status,
-    // AI chỉ đưa ra BẢN THẢO GỢI Ý (ai_suggested_reply), KHÔNG tự ý gán vào ai_reply chính thức
+    // AI tự động giải đáp nếu là câu hỏi
+    ai_reply: resolvedAiReply,
+    ai_replied_at: existingLocalTicket?.ai_replied_at || (ticketType === 'INQUIRY' ? (nks.created_at || new Date().toISOString()) : undefined),
     ai_suggested_reply: existingLocalTicket?.ai_suggested_reply || classification.suggestedAiReply,
-    ai_reply: existingLocalTicket?.ai_reply,
-    ai_replied_at: existingLocalTicket?.ai_replied_at,
     // Phản hồi chính thức từ BQL / Hệ thống NKS
     admin_reply: existingLocalTicket?.admin_reply || remoteReply,
     admin_replied_at: existingLocalTicket?.admin_replied_at || (remoteReply ? nks.updated_at || nks.created_at : undefined),

@@ -134,37 +134,37 @@ export function classifyTicket(
     text.includes('thang máy kẹt')
   );
 
-  // --- TRƯỜNG HỢP 1: PHẢN ÁNH / KHIẾU NẠI (FEEDBACK) -> BQL TRỰC TIẾP XỬ LÝ ---
+  // --- TRƯỜNG HỢP 1: PHẢN ÁNH / KHIẾU NẠI (FEEDBACK) -> CHỜ BQL TRỰC TIẾP XÁC NHẬN ---
   if (isFeedback) {
     const isUrgent = text.includes('tràn') || text.includes('chắn lối') || text.includes('cháy');
     return {
       type: 'FEEDBACK',
       typeLabel: 'Phản Ánh & Góp Ý',
       handledBy: 'MANAGEMENT',
-      handledByLabel: 'Ban Quản Lý Trực Tiếp Phản Hồi',
+      handledByLabel: 'Ban Quản Lý Trực Tiếp Xác Nhận',
       urgent: isUrgent,
       priority: isUrgent ? 1 : 2,
       suggestedAdminReply: generateSuggestedAdminReply(content, service),
-      actionHint: 'Ý kiến cư dân cần BQL xác nhận, kiểm tra thực địa và phản hồi chính thức.',
+      actionHint: 'Ý kiến / khiếu nại cư dân: Đang chờ BQL xác nhận, kiểm tra thực địa và phản hồi chính thức.',
     };
   }
 
-  // --- TRƯỜNG HỢP 2: HỎI ĐÁP / HỖ TRỢ THÔNG TIN (INQUIRY) -> BQL PHÊ DUYỆT (AI HỖ TRỢ SOẠN THẢO) ---
+  // --- TRƯỜNG HỢP 2: HỎI ĐÁP / TRA CỨU TIỆN ÍCH (INQUIRY) -> AI TỰ ĐỘNG PHẢN HỒI (KHÔNG CẦN QUA BQL) ---
   if (isInquiry && !isRepair) {
     const aiKnowledge = findInquiryAnswer(text);
     return {
       type: 'INQUIRY',
-      typeLabel: 'Hỏi Đáp & Hỗ Trợ',
-      handledBy: 'MANAGEMENT',
-      handledByLabel: 'Ban Quản Lý Phê Duyệt & Phản Hồi',
+      typeLabel: 'Hỏi Đáp & Trợ Giúp',
+      handledBy: 'AI',
+      handledByLabel: 'Trợ Lý AI Tự Động Phản Hồi 24/7',
       urgent: false,
       priority: 2,
       suggestedAiReply: aiKnowledge,
-      actionHint: 'AI gợi ý bản thảo câu trả lời từ nội quy, Ban Quản Lý phê duyệt trước khi gửi tới cư dân.',
+      actionHint: 'AI tự động tra cứu nội quy và phản hồi tức thì 24/7 cho cư dân mà không cần thông qua BQL.',
     };
   }
 
-  // --- TRƯỜNG HỢP 3: SỰ CỐ KỸ THUẬT (REPAIR) -> KỸ THUẬT VIÊN HIỆN TRƯỜNG ---
+  // --- TRƯỜNG HỢP 3: SỰ CỐ KỸ THUẬT (REPAIR) -> CẦN THIẾT PHÂN BỔ KỸ THUẬT VIÊN ---
   if (isRepair) {
     const isUrgent = text.includes('tràn nước') || text.includes('chập điện') || text.includes('vỡ ống') || text.includes('thang máy');
     return {
@@ -175,8 +175,8 @@ export function classifyTicket(
       urgent: isUrgent,
       priority: isUrgent ? 1 : 2,
       actionHint: isUrgent 
-        ? 'Sự cố khẩn cấp: AI điều phối KTV có mặt trong 15 - 30 phút.' 
-        : 'AI điều phối KTV chuyên môn phù hợp trong vòng 45 - 60 phút.',
+        ? 'Sự cố cấp bách: AI tự động phân bổ KTV chuyên môn có mặt trong 15 - 30 phút.' 
+        : 'Sự cố kỹ thuật: AI phân tích và phân bổ KTV phù hợp theo ca trực.',
     };
   }
 

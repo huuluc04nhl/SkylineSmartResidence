@@ -201,57 +201,93 @@ export async function POST(req: Request) {
 
       const newId = nksResult.success && nksResult.id ? String(nksResult.id) : (t.id || `TICK-${Math.floor(100 + Math.random() * 900)}`);
 
-      let suggestedTech = undefined;
+      let assignedTech = undefined;
       let scheduledTime = undefined;
       let aiReason = undefined;
-      let matchScore = undefined;
-      let aiSuggestedReplyText: string | undefined = undefined;
+      let ticketStatus: 'Open' | 'In_Progress' | 'Resolved' = 'Open';
+      let aiReplyText: string | undefined = undefined;
+      let aiRepliedAt: string | undefined = undefined;
+      let actualHandledBy = classification.handledBy;
 
-      // 1. Nếu là Hỏi Đáp (INQUIRY) -> AI soạn thảo bản thảo phản hồi gợi ý (chờ BQL xác nhận hoặc gửi)
+      // =========================================================================
+      // LUỒNG 1: PHẢN HỒI CỦA AI TỰ ĐỘNG MÀ KHÔNG CẦN THÔNG QUA BQL (INQUIRY)
+      // =========================================================================
       if (finalCategoryType === 'INQUIRY') {
-        aiSuggestedReplyText = findInquiryAnswer(t.content || body.content || '');
+        const knowledgeAnswer = findInquiryAnswer(t.content || body.content || '');
+        if (knowledgeAnswer) {
+          aiReplyText = knowledgeAnswer;
+          aiRepliedAt = new Date().toISOString();
+          ticketStatus = 'Resolved'; // AI tự động giải đáp xong tức thì 24/7 mà không cần thông qua BQL
+          actualHandledBy = 'AI';
+        } else {
+          // Câu hỏi chuyên biệt chưa có trong cơ sở tri thức -> Chờ BQL xác nhận & hỗ trợ
+          ticketStatus = 'Open';
+          actualHandledBy = 'MANAGEMENT';
+        }
       } 
-      // 2. Nếu là Sự Cố Kỹ Thuật (REPAIR) -> AI phân tích và ĐỀ XUẤT KTV tối ưu (chờ BQL phê duyệt)
+      // =========================================================================
+      // LUỒNG 2: MỘT SỐ CÁI CẦN THIẾT THÌ MỚI PHÂN BỔ KỸ THUẬT VIÊN (REPAIR)
+      // =========================================================================
       else if (finalCategoryType === 'REPAIR') {
+        // Sự cố kỹ thuật hỏng hóc trong căn hộ: Phân bổ KTV có chuyên môn phù hợp
         if (data.technicians && data.technicians.length > 0) {
           const evalResult = evaluateBestTechnicianWithAI(
             { ...t, id: newId },
             data.technicians,
             data.tickets
           );
-          suggestedTech = evalResult.technician;
+          assignedTech = evalResult.technician;
           scheduledTime = evalResult.scheduledTime;
           aiReason = evalResult.reason;
-          matchScore = evalResult.matchScore;
+          ticketStatus = 'In_Progress'; // KTV đã được phân công tiếp nhận
+          actualHandledBy = 'TECHNICIAN';
+        } else {
+          ticketStatus = 'Open';
+          actualHandledBy = 'MANAGEMENT';
         }
       }
+      // =========================================================================
+      // LUỒNG 3: MỘT SỐ CÁI CHỜ BQL XÁC NHẬN (FEEDBACK, GÓP Ý, KHIẾU NẠI, DỊCH VỤ)
+      // =========================================================================
+      else {
+        // Phản ánh cư dân, khiếu nại, vệ sinh, an ninh: BQL trực tiếp xác minh và giải quyết
+        ticketStatus = 'Open'; // Chờ Ban Quản Lý xác nhận
+        actualHandledBy = 'MANAGEMENT';
+      }
 
-      // NGUYÊN TẮC MINH BẠCH: Mọi ticket mới tạo BẮT BUỘC khởi đầu ở trạng thái 'Open' (Chờ BQL tiếp nhận & xác nhận)
-      // AI chỉ đóng vai trò Trợ lý phân tích & đề xuất, KHÔNG tự ý đóng phiếu hay gán chính thức khi chưa qua BQL.
       const newTicket: ExtendedServiceRequest = {
         ...t,
         id: newId,
         nks_id: nksResult.id,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
-        status: 'Open', // Chờ BQL tiếp nhận & xác nhận
+        status: ticketStatus,
         ticket_type: finalCategoryType,
         ticket_type_label: finalCategoryLabel,
-        handled_by: finalHandledBy,
-        ai_suggested_reply: aiSuggestedReplyText,
-        // Các trường đề xuất của AI (Minh bạch trên Admin Kanban)
-        suggested_technician: suggestedTech?.name,
-        suggested_technician_id: suggestedTech?.id,
-        suggested_technician_phone: suggestedTech?.phone,
-        suggested_match_score: matchScore,
-        ai_dispatch_reason: aiReason,
+        handled_by: actualHandledBy,
+        ai_reply: aiReplyText,
+        ai_replied_at: aiRepliedAt,
+        ai_suggested_reply: finalCategoryType === 'INQUIRY' ? aiReplyText : generateSuggestedAdminReply(t.content || body.content || '', t.ai_category || body.ai_category),
+        assigned_technician_id: assignedTech?.id,
+        assigned_technician: assignedTech?.name,
+        assigned_technician_phone: assignedTech?.phone,
         scheduled_time: scheduledTime,
-        // Chưa gán chính thức KTV cho đến khi BQL bấm Duyệt / Phân bổ
-        assigned_technician: undefined,
-        assigned_technician_id: undefined,
-        assigned_technician_phone: undefined,
-        auto_dispatched: false,
+        auto_dispatched: Boolean(assignedTech),
+        ai_dispatch_reason: aiReason,
       };
+
+      // Đồng bộ thông minh lên NKS SCRMAI API:
+      if (nksResult.id) {
+        // 1. Nếu là AI tự động phản hồi (INQUIRY) -> Đồng bộ trực tiếp reply lên NKS
+        if (aiReplyText && ticketStatus === 'Resolved') {
+          await updateNksTicket({ id: nksResult.id, reply: aiReplyText }).catch(e => console.warn('Lỗi sync AI reply lên NKS:', e));
+        }
+        // 2. Nếu là phân bổ KTV cho sự cố (REPAIR) -> Đồng bộ trực tiếp engineername lên NKS
+        else if (assignedTech?.name && ticketStatus === 'In_Progress') {
+          await updateNksTicket({ id: nksResult.id, engineername: assignedTech.name }).catch(e => console.warn('Lỗi sync KTV lên NKS:', e));
+        }
+        // 3. Nếu là Chờ BQL xác nhận (FEEDBACK) -> Giữ nguyên, khi BQL bấm gửi phản hồi mới đồng bộ
+      }
 
       // Thêm vào danh sách local
       data.tickets = [newTicket, ...data.tickets.filter(item => item.id !== newId)];
