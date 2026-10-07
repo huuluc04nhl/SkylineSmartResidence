@@ -82,9 +82,10 @@ export default function KanbanBoard() {
   const [selectedTechId, setSelectedTechId] = useState<string>('KTV-01');
   const [scheduledTimeInput, setScheduledTimeInput] = useState<string>('Có mặt trong vòng 30 phút');
 
-  // Modal BQL Phản Hồi Cư Dân (cho FEEDBACK & INQUIRY)
+  // Modal BQL Phản Hồi Cư Dân (cho FEEDBACK, INQUIRY & Cập nhật KTV)
   const [feedbackReplyTicket, setFeedbackReplyTicket] = useState<ExtendedServiceRequest | null>(null);
   const [feedbackReplyContent, setFeedbackReplyContent] = useState<string>('');
+  const [replyEngineerName, setReplyEngineerName] = useState<string>('');
   const feedbackReplyAdminName = 'Ban Quản Lý Chung Cư Skyline';
 
   const [resolvingTicket, setResolvingTicket] = useState<ExtendedServiceRequest | null>(null);
@@ -236,17 +237,23 @@ export default function KanbanBoard() {
   const inProgressTickets = filteredTickets.filter(t => t.status === 'In_Progress' || t.status === 'Assigned');
   const resolvedTickets = filteredTickets.filter(t => t.status === 'Resolved');
 
-  // Handle BQL official response to resident feedback / inquiry
+  // Handle BQL official response to resident feedback / inquiry & update engineer
   const handleConfirmAdminReply = (e: React.FormEvent) => {
     e.preventDefault();
     if (!feedbackReplyTicket || !feedbackReplyContent.trim()) return;
 
-    adminRespondToTicket(feedbackReplyTicket.id, feedbackReplyContent.trim(), feedbackReplyAdminName);
+    adminRespondToTicket(
+      feedbackReplyTicket.id, 
+      feedbackReplyContent.trim(), 
+      feedbackReplyAdminName,
+      replyEngineerName.trim() || undefined
+    );
     refreshAllData();
-    setActionSuccessMsg(`Đã gửi phản hồi chính thức từ Ban Quản Lý tới cư dân cho phiếu #${feedbackReplyTicket.nks_id || feedbackReplyTicket.id}!`);
+    setActionSuccessMsg(`Đã gửi phản hồi và cập nhật KTV cho phiếu #${feedbackReplyTicket.nks_id || feedbackReplyTicket.id}!`);
     setTimeout(() => setActionSuccessMsg(null), 4000);
     setFeedbackReplyTicket(null);
     setFeedbackReplyContent('');
+    setReplyEngineerName('');
   };
 
   // AI auto answer inquiry
@@ -605,6 +612,7 @@ export default function KanbanBoard() {
                                 onClick={() => {
                                   setFeedbackReplyTicket(ticket);
                                   setFeedbackReplyContent(ticket.admin_reply || generateSuggestedAdminReply(ticket.content, ticket.ai_category));
+                                  setReplyEngineerName(ticket.assigned_technician || '');
                                 }}
                                 className="px-2.5 py-1.5 bg-rose-950/70 hover:bg-rose-900 border border-rose-500/70 hover:border-rose-400 text-rose-200 text-xs font-semibold transition-colors flex items-center gap-1.5 shadow"
                                 title="BQL trực tiếp gửi phản hồi văn bản tới cư dân"
@@ -770,6 +778,7 @@ export default function KanbanBoard() {
                                 onClick={() => {
                                   setFeedbackReplyTicket(ticket);
                                   setFeedbackReplyContent(ticket.admin_reply || generateSuggestedAdminReply(ticket.content, ticket.ai_category));
+                                  setReplyEngineerName(ticket.assigned_technician || '');
                                 }}
                                 className="px-2.5 py-1.5 bg-rose-600 hover:bg-rose-500 text-white text-xs font-semibold transition-colors flex items-center gap-1.5 shadow"
                               >
@@ -787,6 +796,18 @@ export default function KanbanBoard() {
                                   title="Can thiệp đổi KTV khác khi có phát sinh"
                                 >
                                   Đổi KTV
+                                </button>
+                                <button
+                                  onClick={() => {
+                                    setFeedbackReplyTicket(ticket);
+                                    setFeedbackReplyContent(ticket.admin_reply || generateSuggestedAdminReply(ticket.content, ticket.ai_category));
+                                    setReplyEngineerName(ticket.assigned_technician || '');
+                                  }}
+                                  className="px-2.5 py-1.5 bg-[#161B22] hover:bg-[#1C2533] border border-[#2D3748] hover:border-rose-500/60 text-rose-300 hover:text-rose-200 text-xs font-medium transition-colors flex items-center gap-1 shadow"
+                                  title="Gửi phản hồi ghi chú cho cư dân hoặc cập nhật KTV"
+                                >
+                                  <MessageSquare className="w-3 h-3 text-rose-400" />
+                                  <span>Phản Hồi</span>
                                 </button>
                                 <button
                                   onClick={() => {
@@ -937,9 +958,19 @@ export default function KanbanBoard() {
 
                         <div className="pt-2 border-t border-[#222B35] flex items-center justify-between text-[10px] text-gray-400">
                           {isFeedback ? (
-                            <span className="text-rose-300 font-medium">Đã phản hồi cư dân qua hệ thống</span>
+                            <>
+                              <span className="text-rose-300 font-medium">Đã phản hồi cư dân qua hệ thống</span>
+                              {ticket.assigned_technician && (
+                                <span className="text-amber-400 font-medium">KTV: <strong className="text-white">{ticket.assigned_technician}</strong></span>
+                              )}
+                            </>
                           ) : isInquiry ? (
-                            <span className="text-sky-300 font-medium">Đã cung cấp thông tin tiện ích</span>
+                            <>
+                              <span className="text-sky-300 font-medium">Đã cung cấp thông tin tiện ích</span>
+                              {ticket.assigned_technician && (
+                                <span className="text-amber-400 font-medium">KTV: <strong className="text-white">{ticket.assigned_technician}</strong></span>
+                              )}
+                            </>
                           ) : (
                             <>
                               <span>KTV: <strong className="text-white">{ticket.assigned_technician || 'Kỹ thuật viên'}</strong></span>
@@ -1516,6 +1547,40 @@ export default function KanbanBoard() {
                 className="w-full bg-[#161B22] border border-[#2D3748] text-xs text-white p-3 focus:outline-none focus:border-[#C5A880] leading-relaxed"
                 required
               />
+
+              {/* Kỹ thuật viên xử lý (engineername) */}
+              <div className="space-y-1.5 pt-1">
+                <div className="flex items-center justify-between">
+                  <label className="text-xs text-gray-300 font-semibold flex items-center gap-1.5">
+                    <Wrench className="w-3.5 h-3.5 text-amber-400" />
+                    <span>Kỹ thuật viên xử lý (engineername - nếu có):</span>
+                  </label>
+                  <span className="text-[10px] text-gray-500 italic">Tùy chọn</span>
+                </div>
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={replyEngineerName}
+                    onChange={(e) => setReplyEngineerName(e.target.value)}
+                    placeholder="Nhập tên KTV xử lý (VD: Lê Văn Kỹ Thuật, Hoàng, Nguyễn Văn An...)"
+                    className="flex-1 bg-[#161B22] border border-[#2D3748] text-xs text-white px-3 py-2 focus:outline-none focus:border-[#C5A880]"
+                  />
+                  {technicians.length > 0 && (
+                    <select
+                      onChange={(e) => {
+                        if (e.target.value) setReplyEngineerName(e.target.value);
+                      }}
+                      defaultValue=""
+                      className="bg-[#161B22] border border-[#2D3748] text-xs text-gray-300 px-2 py-2 focus:outline-none focus:border-[#C5A880]"
+                    >
+                      <option value="" disabled>-- Chọn nhanh KTV --</option>
+                      {technicians.map(k => (
+                        <option key={k.id} value={k.name}>{k.name}</option>
+                      ))}
+                    </select>
+                  )}
+                </div>
+              </div>
 
               <div className="flex items-center justify-between text-xs text-gray-400 pt-1">
                 <div className="flex items-center gap-2">

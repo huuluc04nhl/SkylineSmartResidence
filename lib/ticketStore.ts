@@ -359,11 +359,13 @@ export function createTicket(payload: {
 
 /**
  * Ban Quản Lý trực tiếp gửi câu trả lời / phản hồi chính thức cho cư dân
+ * Đồng thời có thể phân công hoặc cập nhật tên Kỹ thuật viên xử lý (engineername)
  */
 export function adminRespondToTicket(
   ticketId: string,
   replyText: string,
-  adminName: string = 'Ban Quản Lý Chung Cư'
+  adminName: string = 'Ban Quản Lý Chung Cư',
+  engineername?: string
 ): ExtendedServiceRequest | null {
   const allTickets = getTickets();
   let targetTicket: ExtendedServiceRequest | null = null;
@@ -375,6 +377,7 @@ export function adminRespondToTicket(
         admin_reply: replyText.trim(),
         admin_replied_at: new Date().toISOString(),
         admin_replied_by: adminName,
+        assigned_technician: engineername?.trim() || t.assigned_technician,
         status: 'Resolved' as const,
         updated_at: new Date().toISOString(),
       };
@@ -386,7 +389,7 @@ export function adminRespondToTicket(
   if (targetTicket) {
     saveTickets(updatedTickets);
 
-    // Bắn sync ngầm lên server
+    // Bắn sync ngầm lên server và NKS API
     if (typeof window !== 'undefined') {
       fetch('/api/tickets', {
         method: 'POST',
@@ -395,7 +398,8 @@ export function adminRespondToTicket(
           action: 'ADMIN_REPLY',
           ticketId,
           replyText,
-          adminName
+          adminName,
+          engineername: engineername?.trim() || (targetTicket as ExtendedServiceRequest).assigned_technician,
         }),
       }).catch(e => console.warn('Lỗi đồng bộ phản hồi BQL lên server:', e));
     }
@@ -432,6 +436,19 @@ export function aiAnswerTicket(
 
   if (targetTicket) {
     saveTickets(updatedTickets);
+
+    // Đồng bộ lên server và NKS API
+    if (typeof window !== 'undefined') {
+      fetch('/api/tickets', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'AI_ANSWER',
+          ticketId,
+          customAnswer: (targetTicket as ExtendedServiceRequest).ai_reply,
+        }),
+      }).catch(e => console.warn('Lỗi đồng bộ AI answer lên server:', e));
+    }
   }
 
   return targetTicket;
@@ -451,7 +468,7 @@ export function assignTechnicianToTicket(
 
   let targetTicket: ExtendedServiceRequest | null = null;
   const updatedTickets = allTickets.map(t => {
-    if (t.id === ticketId) {
+    if (t.id === ticketId || String(t.nks_id) === ticketId) {
       targetTicket = {
         ...t,
         status: 'In_Progress' as const,
@@ -472,6 +489,20 @@ export function assignTechnicianToTicket(
     // Cập nhật trạng thái KTV thành BUSY
     const techs = getTechnicians();
     saveTechnicians(techs.map(k => k.id === tech.id ? { ...k, status: 'BUSY' } : k));
+
+    // Đồng bộ phân công KTV lên server & NKS API
+    if (typeof window !== 'undefined') {
+      fetch('/api/tickets', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'ASSIGN',
+          ticketId,
+          technicianId: tech.id,
+          scheduledTime,
+        }),
+      }).catch(e => console.warn('Lỗi đồng bộ phân công KTV lên server:', e));
+    }
   }
 
   return targetTicket;
@@ -490,7 +521,7 @@ export function resolveTicket(
   let assignedTechId: string | undefined;
 
   const updatedTickets = allTickets.map(t => {
-    if (t.id === ticketId) {
+    if (t.id === ticketId || String(t.nks_id) === ticketId) {
       assignedTechId = t.assigned_technician_id;
       targetTicket = {
         ...t,
@@ -518,9 +549,77 @@ export function resolveTicket(
         saveTechnicians(techs.map(k => k.id === assignedTechId ? { ...k, status: 'AVAILABLE' } : k));
       }
     }
+
+    // Đồng bộ nghiệm thu lên server & NKS API
+    if (typeof window !== 'undefined') {
+      fetch('/api/tickets', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'RESOLVE',
+          ticketId,
+          afterImage,
+          resolutionNotes,
+        }),
+      }).catch(e => console.warn('Lỗi đồng bộ nghiệm thu lên server:', e));
+    }
   }
 
   return targetTicket;
+}
+
+/**
+ * Cập nhật trực tiếp thông tin vé (id, reply, engineername) lên NKS SCRMAI API
+ */
+export async function updateTicketApiAsync(payload: {
+  id: string | number;
+  reply?: string;
+  engineername?: string;
+}): Promise<boolean> {
+  const idStr = String(payload.id);
+  const allTickets = getTickets();
+  
+  const updatedTickets = allTickets.map(t => {
+    if (t.id === idStr || String(t.nks_id) === idStr) {
+      return {
+        ...t,
+        ...(payload.reply ? {
+          admin_reply: payload.reply.trim(),
+          admin_replied_at: new Date().toISOString(),
+          resolution_notes: payload.reply.trim(),
+          status: 'Resolved' as const,
+        } : {}),
+        ...(payload.engineername ? {
+          assigned_technician: payload.engineername.trim(),
+          status: t.status === 'Open' ? ('In_Progress' as const) : t.status,
+        } : {}),
+        updated_at: new Date().toISOString(),
+      };
+    }
+    return t;
+  });
+
+  saveTickets(updatedTickets);
+
+  try {
+    const res = await fetch('/api/tickets', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        action: 'UPDATE_TICKET',
+        id: payload.id,
+        reply: payload.reply,
+        engineername: payload.engineername,
+      }),
+    });
+    if (res.ok) {
+      const json = await res.json().catch(() => ({}));
+      return json.success === true;
+    }
+  } catch (err) {
+    console.warn('Lỗi gọi API cập nhật ticket:', err);
+  }
+  return false;
 }
 
 /**

@@ -661,8 +661,8 @@ export default function TicketService({ currentUser }: TicketServiceProps) {
                     </div>
                   )}
 
-                  {/* PHẢN HỒI TỪ BQL NẾU LÀ FEEDBACK */}
-                  {isFeedback && (
+                  {/* PHẢN HỒI TỪ BQL NẾU CÓ HOẶC LÀ FEEDBACK */}
+                  {(isFeedback || t.admin_reply) && (
                     t.admin_reply ? (
                       <div className="p-3 bg-rose-950/40 border border-rose-500/40 space-y-1">
                         <div className="text-[11px] font-bold text-rose-300 flex items-center gap-1.5">

@@ -10,6 +10,7 @@ import {
 import { 
   fetchNksTickets, 
   createNksTicket, 
+  updateNksTicket,
   deleteNksTicket,
   nksTicketToServiceRequest,
   NksTicket
@@ -252,6 +253,15 @@ export async function POST(req: Request) {
         ai_dispatch_reason: aiReason,
       };
 
+      // Đồng bộ thông tin phản hồi ban đầu hoặc KTV lên NKS API
+      if (nksResult.id) {
+        if (aiReplyText) {
+          updateNksTicket({ id: nksResult.id, reply: aiReplyText }).catch(e => console.warn('Lỗi sync AI reply lên NKS:', e));
+        } else if (assignedTech?.name) {
+          updateNksTicket({ id: nksResult.id, engineername: assignedTech.name }).catch(e => console.warn('Lỗi sync KTV lên NKS:', e));
+        }
+      }
+
       // Thêm vào danh sách local
       data.tickets = [newTicket, ...data.tickets.filter(item => item.id !== newId)];
       data.updatedAt = new Date().toISOString();
@@ -271,9 +281,10 @@ export async function POST(req: Request) {
       if (!tech) {
         return NextResponse.json({ success: false, message: 'Không tìm thấy kỹ thuật viên.' }, { status: 404 });
       }
+      let targetTicket: ExtendedServiceRequest | undefined;
       data.tickets = data.tickets.map(t => {
         if (t.id === body.ticketId || String(t.nks_id) === String(body.ticketId)) {
-          return {
+          targetTicket = {
             ...t,
             status: 'In_Progress',
             assigned_technician_id: tech.id,
@@ -284,9 +295,21 @@ export async function POST(req: Request) {
             ai_dispatch_reason: body.aiReason || t.ai_dispatch_reason,
             updated_at: new Date().toISOString(),
           };
+          return targetTicket;
         }
         return t;
       });
+
+      // Đồng bộ phân công KTV lên NKS API
+      const nksIdNum = targetTicket?.nks_id || Number(String(body.ticketId).replace('TICK-', ''));
+      if (!isNaN(nksIdNum) && nksIdNum > 0) {
+        await updateNksTicket({
+          id: nksIdNum,
+          engineername: tech.name,
+          reply: targetTicket?.admin_reply || targetTicket?.ai_reply,
+        });
+      }
+
       data.updatedAt = new Date().toISOString();
       writeServerData(data);
       return NextResponse.json({ success: true, message: `Đã phân công ${tech.name} xử lý phiếu.` });
@@ -294,19 +317,33 @@ export async function POST(req: Request) {
 
     // 4. Nghiệm thu hoàn tất
     if (action === 'RESOLVE' && body.ticketId && afterImage) {
+      let targetTicket: ExtendedServiceRequest | undefined;
+      const notes = resolutionNotes || 'Đã sửa chữa và bàn giao xong.';
       data.tickets = data.tickets.map(t => {
         if (t.id === body.ticketId || String(t.nks_id) === String(body.ticketId)) {
-          return {
+          targetTicket = {
             ...t,
             status: 'Resolved',
             after_image: afterImage,
-            resolution_notes: resolutionNotes || 'Đã sửa chữa và bàn giao xong.',
+            resolution_notes: notes,
             resolved_at: new Date().toISOString(),
             updated_at: new Date().toISOString(),
           };
+          return targetTicket;
         }
         return t;
       });
+
+      // Đồng bộ biên bản nghiệm thu & KTV lên NKS API
+      const nksIdNum = targetTicket?.nks_id || Number(String(body.ticketId).replace('TICK-', ''));
+      if (!isNaN(nksIdNum) && nksIdNum > 0) {
+        await updateNksTicket({
+          id: nksIdNum,
+          reply: notes,
+          engineername: targetTicket?.assigned_technician,
+        });
+      }
+
       data.updatedAt = new Date().toISOString();
       writeServerData(data);
       return NextResponse.json({ success: true, message: 'Đã nghiệm thu và đóng phiếu thành công.' });
@@ -336,24 +373,37 @@ export async function POST(req: Request) {
       const ticketIdStr = String(body.ticketId);
       const adminName = body.adminName || 'Ban Quản Lý Skyline';
       let found = false;
+      let targetTicket: ExtendedServiceRequest | undefined;
 
       data.tickets = data.tickets.map(t => {
         if (t.id === ticketIdStr || String(t.nks_id) === ticketIdStr) {
           found = true;
-          return {
+          targetTicket = {
             ...t,
             admin_reply: String(body.replyText).trim(),
             admin_replied_at: new Date().toISOString(),
             admin_replied_by: adminName,
+            assigned_technician: body.engineername || t.assigned_technician,
             status: 'Resolved',
             updated_at: new Date().toISOString(),
           };
+          return targetTicket;
         }
         return t;
       });
 
       if (!found) {
         return NextResponse.json({ success: false, message: 'Không tìm thấy phiếu yêu cầu.' }, { status: 404 });
+      }
+
+      // Đồng bộ nội dung phản hồi BQL và tên KTV lên NKS API
+      const nksIdNum = targetTicket?.nks_id || Number(ticketIdStr.replace('TICK-', ''));
+      if (!isNaN(nksIdNum) && nksIdNum > 0) {
+        await updateNksTicket({
+          id: nksIdNum,
+          reply: String(body.replyText).trim(),
+          engineername: body.engineername || targetTicket?.assigned_technician,
+        });
       }
 
       data.updatedAt = new Date().toISOString();
@@ -364,25 +414,84 @@ export async function POST(req: Request) {
     // 7. AI tự động trả lời / cập nhật câu trả lời thông minh
     if (action === 'AI_ANSWER' && body.ticketId) {
       const ticketIdStr = String(body.ticketId);
+      let targetTicket: ExtendedServiceRequest | undefined;
       data.tickets = data.tickets.map(t => {
         if (t.id === ticketIdStr || String(t.nks_id) === ticketIdStr) {
           const answer = body.customAnswer || findInquiryAnswer(t.content);
-          return {
+          targetTicket = {
             ...t,
             ai_reply: answer,
             ai_replied_at: new Date().toISOString(),
             status: 'Resolved',
             updated_at: new Date().toISOString(),
           };
+          return targetTicket;
         }
         return t;
       });
+
+      // Đồng bộ câu trả lời AI lên NKS API
+      const nksIdNum = targetTicket?.nks_id || Number(ticketIdStr.replace('TICK-', ''));
+      if (!isNaN(nksIdNum) && nksIdNum > 0) {
+        await updateNksTicket({
+          id: nksIdNum,
+          reply: targetTicket?.ai_reply,
+          engineername: targetTicket?.assigned_technician,
+        });
+      }
+
       data.updatedAt = new Date().toISOString();
       writeServerData(data);
       return NextResponse.json({ success: true, message: 'AI đã cập nhật câu trả lời giải đáp cho cư dân.' });
     }
 
-    // 8. Xóa phiếu trên NKS API và cơ sở dữ liệu
+    // 8. Cập nhật trực tiếp vé (id, reply, engineername) lên NKS SCRMAI API
+    if ((action === 'UPDATE' || action === 'UPDATE_TICKET') && (body.id || body.ticketId)) {
+      const rawId = body.id || body.ticketId;
+      const ticketIdStr = String(rawId);
+      const replyVal = body.reply !== undefined && body.reply !== null ? String(body.reply).trim() : undefined;
+      const engineerVal = body.engineername !== undefined && body.engineername !== null ? String(body.engineername).trim() : undefined;
+
+      let found = false;
+      data.tickets = data.tickets.map(t => {
+        if (t.id === ticketIdStr || String(t.nks_id) === ticketIdStr) {
+          found = true;
+          return {
+            ...t,
+            ...(replyVal ? {
+              admin_reply: replyVal,
+              admin_replied_at: new Date().toISOString(),
+              resolution_notes: replyVal,
+              status: 'Resolved',
+            } : {}),
+            ...(engineerVal ? {
+              assigned_technician: engineerVal,
+              status: t.status === 'Open' ? 'In_Progress' : t.status,
+            } : {}),
+            updated_at: new Date().toISOString(),
+          };
+        }
+        return t;
+      });
+
+      const nksIdNum = Number(ticketIdStr.replace('TICK-', ''));
+      if (!isNaN(nksIdNum) && nksIdNum > 0) {
+        await updateNksTicket({
+          id: nksIdNum,
+          reply: replyVal,
+          engineername: engineerVal,
+        });
+      }
+
+      data.updatedAt = new Date().toISOString();
+      writeServerData(data);
+      return NextResponse.json({ 
+        success: true, 
+        message: 'Đã cập nhật vé lên hệ thống NKS SCRMAI thành công.' 
+      });
+    }
+
+    // 9. Xóa phiếu trên NKS API và cơ sở dữ liệu
     if (action === 'DELETE' && body.ticketId) {
       const ticketIdStr = String(body.ticketId);
       const numId = Number(ticketIdStr.replace('TICK-', ''));

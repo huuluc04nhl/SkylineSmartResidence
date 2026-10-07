@@ -33,6 +33,8 @@ export interface NksTicket {
   description: string;
   image: string | false;
   system: string;
+  reply?: string; // Phản hồi từ BQL / AI
+  engineername?: string; // Tên kỹ thuật viên xử lý (nếu có)
 }
 
 export interface NksCreateTicketPayload {
@@ -49,6 +51,17 @@ export interface NksCreateTicketPayload {
 export interface NksCreateTicketResponse {
   success: boolean;
   id?: number;
+  message?: string;
+}
+
+export interface NksUpdateTicketPayload {
+  id: number | string;
+  reply?: string; // Phản hồi từ BQL hoặc AI
+  engineername?: string; // Tên kỹ thuật viên xử lý (nếu có)
+}
+
+export interface NksUpdateTicketResponse {
+  success: boolean;
   message?: string;
 }
 
@@ -184,7 +197,55 @@ export async function createNksTicket(payload: NksCreateTicketPayload): Promise<
 }
 
 /**
- * 4. Xóa phiếu phản hồi / ticket trên hệ thống NKS SCRMAI API
+ * 4. Cập nhật phản hồi (reply) và kỹ thuật viên xử lý (engineername) lên NKS SCRMAI API
+ * POST /skyline/ticket/update
+ * Chấp nhận: id, reply (phản hồi từ BQL / AI), engineername (tên kỹ thuật viên xử lý - nếu có)
+ */
+export async function updateNksTicket(payload: NksUpdateTicketPayload): Promise<NksUpdateTicketResponse> {
+  try {
+    const numericId = typeof payload.id === 'string'
+      ? Number(payload.id.replace('TICK-', ''))
+      : payload.id;
+
+    if (isNaN(numericId) || numericId <= 0) {
+      return { success: false, message: 'Mã số ticket không hợp lệ.' };
+    }
+
+    const form = new URLSearchParams();
+    form.append('id', String(numericId));
+
+    if (payload.reply !== undefined && payload.reply !== null) {
+      form.append('reply', String(payload.reply).trim());
+    }
+    if (payload.engineername !== undefined && payload.engineername !== null) {
+      form.append('engineername', String(payload.engineername).trim());
+    }
+
+    const res = await fetch(`${NKS_TICKET_API_BASE_URL}/skyline/ticket/update`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${NKS_TICKET_API_TOKEN}`,
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: form.toString(),
+      cache: 'no-store',
+    });
+
+    if (res.ok) {
+      const json = await res.json().catch(() => ({}));
+      if (json.success === true) {
+        return { success: true };
+      }
+    }
+    return { success: false, message: 'NKS API cập nhật vé không thành công.' };
+  } catch (err: any) {
+    console.warn(`Lỗi cập nhật NKS Ticket #${payload.id}:`, err);
+    return { success: false, message: err?.message || 'Lỗi kết nối NKS API.' };
+  }
+}
+
+/**
+ * 5. Xóa phiếu phản hồi / ticket trên hệ thống NKS SCRMAI API
  * POST /skyline/ticket/delete
  */
 export async function deleteNksTicket(id: number): Promise<boolean> {
@@ -210,8 +271,9 @@ export async function deleteNksTicket(id: number): Promise<boolean> {
 }
 
 /**
- * 5. Chuyển đổi dữ liệu NKS Ticket sang chuẩn ExtendedServiceRequest của Skyline
- * Giữ nguyên trạng thái điều phối KTV, nghiệm thu và đánh giá nếu đã lưu cục bộ
+ * 6. Chuyển đổi dữ liệu NKS Ticket sang chuẩn ExtendedServiceRequest của Skyline
+ * Giữ nguyên trạng thái điều phối KTV, nghiệm thu và đánh giá nếu đã lưu cục bộ,
+ * đồng thời đồng bộ hai trường mới nhất từ NKS: reply và engineername.
  */
 export function nksTicketToServiceRequest(
   nks: NksTicket, 
@@ -261,17 +323,24 @@ export function nksTicketToServiceRequest(
   const isUrgent = classification.urgent || cat === 'Điện' || cat === 'Nước';
   const img = typeof nks.image === 'string' && nks.image.trim() ? nks.image : '';
 
-  // Trạng thái đồng bộ
+  // Đồng bộ hai trường mới từ API NKS: reply và engineername
+  const remoteReply = typeof nks.reply === 'string' && nks.reply.trim() ? nks.reply.trim() : undefined;
+  const remoteEngineer = typeof nks.engineername === 'string' && nks.engineername.trim() ? nks.engineername.trim() : undefined;
+
+  // Trạng thái đồng bộ: Nếu đã có reply hoặc đóng trên NKS -> Resolved
   let status: 'Open' | 'In_Progress' | 'Resolved' | 'Assigned' | 'Cancelled' = 'Open';
   if (existingLocalTicket) {
     status = existingLocalTicket.status;
-  } else if (nks.status === 'resolved' || nks.status === 'closed') {
+    if (remoteReply && status === 'Open') {
+      status = 'Resolved';
+    }
+  } else if (nks.status === 'resolved' || nks.status === 'closed' || remoteReply) {
     status = 'Resolved';
+  } else if (remoteEngineer || nks.status === 'pending') {
+    status = 'In_Progress';
   } else if (classification.type === 'INQUIRY') {
     // Hỏi đáp được AI giải đáp tức thì
     status = 'Resolved';
-  } else if (nks.status === 'pending') {
-    status = 'In_Progress';
   }
 
   const actualName = nks.fullname?.trim() || existingLocalTicket?.resident_name || 'Cư dân';
@@ -298,21 +367,22 @@ export function nksTicketToServiceRequest(
     sla_minutes_left: isUrgent ? 45 : 120,
     status: status,
     // AI tự động giải đáp nếu là câu hỏi
-    ai_reply: existingLocalTicket?.ai_reply || (ticketType === 'INQUIRY' ? classification.suggestedAiReply : undefined),
+    ai_reply: existingLocalTicket?.ai_reply || (ticketType === 'INQUIRY' ? (remoteReply || classification.suggestedAiReply) : undefined),
     ai_replied_at: existingLocalTicket?.ai_replied_at || (ticketType === 'INQUIRY' ? nks.created_at : undefined),
-    admin_reply: existingLocalTicket?.admin_reply,
-    admin_replied_at: existingLocalTicket?.admin_replied_at,
-    admin_replied_by: existingLocalTicket?.admin_replied_by,
+    // Phản hồi từ BQL / Hệ thống NKS
+    admin_reply: existingLocalTicket?.admin_reply || remoteReply,
+    admin_replied_at: existingLocalTicket?.admin_replied_at || (remoteReply ? nks.updated_at || nks.created_at : undefined),
+    admin_replied_by: existingLocalTicket?.admin_replied_by || (remoteReply ? 'Ban Quản Lý Skyline' : undefined),
     before_image: img || existingLocalTicket?.before_image || '',
     created_at: nks.created_at || existingLocalTicket?.created_at || new Date().toISOString(),
     updated_at: nks.updated_at || existingLocalTicket?.updated_at || new Date().toISOString(),
-    // Giữ nguyên các trường phân công KTV & đánh giá cục bộ
+    // Giữ nguyên các trường phân công KTV & đánh giá cục bộ + đồng bộ engineername từ NKS
     after_image: existingLocalTicket?.after_image,
     assigned_technician_id: existingLocalTicket?.assigned_technician_id,
-    assigned_technician: existingLocalTicket?.assigned_technician,
+    assigned_technician: existingLocalTicket?.assigned_technician || remoteEngineer,
     assigned_technician_phone: existingLocalTicket?.assigned_technician_phone,
     scheduled_time: existingLocalTicket?.scheduled_time,
-    resolution_notes: existingLocalTicket?.resolution_notes,
+    resolution_notes: existingLocalTicket?.resolution_notes || remoteReply,
     rating: existingLocalTicket?.rating,
     resident_feedback: existingLocalTicket?.resident_feedback,
     rated_at: existingLocalTicket?.rated_at,
