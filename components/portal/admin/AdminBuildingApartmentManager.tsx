@@ -1683,59 +1683,84 @@ export default function AdminBuildingApartmentManager() {
 
                         {/* CON TRỎ LASER VÀ BẢNG CALLOUT HOLOGRAPHIC ĐỒNG BỘ */}
                         {(() => {
+                          const isPodium = selectedFloor === 0;
                           const curFloor = Math.max(1, Math.min(currentTotalFloors, selectedFloor));
                           const curYBase = 790 - (curFloor - 1) * floorStep;
                           const curH = curFloor === currentTotalFloors ? 18 : 14;
 
-                          const wallX = curFloor === 1 ? 560 : 658;
-                          const wallY = curFloor === 1 ? 845 : Number((curYBase - 40 - (curH / 2)).toFixed(1));
+                          // Tọa độ định vị laser khớp chuẩn xác 100% với trục tim dải tầng 3D
+                          const pinX = isPodium ? 560 : 550;
+                          const pinY = isPodium ? 806 : Number((curYBase - 20 - (curH / 2)).toFixed(1));
 
-                          const pinX = curFloor === 1 ? 440 : 550;
-                          const pinY = curFloor === 1 ? 840 : Number((curYBase - 20).toFixed(1));
+                          const wallX = isPodium ? 680 : 658;
+                          const wallY = isPodium ? 785 : Number((curYBase - 40 - (curH / 2)).toFixed(1));
 
-                          const elbowX = 680;
-                          const elbowY = wallY;
-
-                          const cardX = 675;
-                          const cardW = 285;
-                          const cardH = 144;
-                          const targetCardY = Math.max(35, Math.min(740, Math.round(wallY - cardH / 2)));
+                          // Thẻ Callout Tầng - Tinh gọn, thanh thoát, định vị cao độ kiến trúc
+                          const cardX = 692;
+                          const cardW = 250;
+                          const cardH = 90;
+                          const targetCardY = Math.max(25, Math.min(780, Math.round(wallY - cardH / 2)));
                           const dockX = cardX;
-                          const dockY = Math.max(targetCardY + 24, Math.min(targetCardY + cardH - 24, wallY));
+                          const dockY = Math.max(targetCardY + 18, Math.min(targetCardY + cardH - 18, wallY));
 
-                          const laserPath = `M ${pinX} ${pinY} L ${wallX} ${wallY} L ${elbowX} ${elbowY} L ${dockX} ${dockY}`;
+                          // Đường dẫn laze chuẩn xác không bị gập ziczac hay ngược chiều
+                          const isDirectHorizontal = Math.abs(dockY - wallY) < 2;
+                          const midX = Math.round((wallX + dockX) / 2);
+                          const laserPath = isDirectHorizontal
+                            ? `M ${pinX} ${pinY} L ${wallX} ${wallY} L ${dockX} ${dockY}`
+                            : `M ${pinX} ${pinY} L ${wallX} ${wallY} L ${midX} ${wallY} L ${midX} ${dockY} L ${dockX} ${dockY}`;
+
                           const curFloorStats = floorStatsList.find(f => f.floor === curFloor);
                           const occCount = curFloorStats?.occupied || floorOccupiedCount;
-                          const maintCount = curFloorStats?.maintenance || floorMaintenanceCount;
-                          const vacCount = curFloorStats?.vacant || floorVacantCount;
-
                           const hasOcc = occCount > 0;
+
+                          // Thông tin đặc thù theo cao độ & kiến trúc tòa nhà (tránh trùng lặp với mặt bằng bên phải)
+                          const floorZone = isPodium
+                            ? 'SẢNH TRỆT / G'
+                            : curFloor >= 21
+                            ? 'PHÂN KHU TẦNG CAO'
+                            : curFloor >= 11
+                            ? 'PHÂN KHU TẦNG TRUNG'
+                            : curFloor === 1
+                            ? 'KHỐI ĐẾ THƯƠNG MẠI'
+                            : 'PHÂN KHU TẦNG THẤP';
+
+                          const elevationM = isPodium ? '0m' : `~${(curFloor * 3.2).toFixed(0)}m`;
+                          const elevatorAccess = isPodium ? 'Trục thang máy sảnh' : '4 Thang khách + 1 Thang PCCC';
+                          const viewOrientation = isPodium
+                            ? 'Sảnh đón tiếp tân & Kiểm soát FaceID'
+                            : curFloor >= 21
+                            ? 'Tầm nhìn: View Sông & Panorama thoáng đãng'
+                            : curFloor >= 11
+                            ? 'Tầm nhìn: View Toàn cảnh nội khu & Hồ bơi'
+                            : 'Tầm nhìn: View Mảng xanh & Tiện ích tầng thấp';
+
                           const themeNeon = '#C5A880';
                           const themeBg = '#0B121D';
                           const themeBorder = '#C5A880';
 
                           return (
-                            <g key={`dynamic-floor-pointer-${curFloor}`} className="pointer-events-none">
-                              {/* Vòng tâm định vị tầng */}
-                              <circle cx={pinX} cy={pinY} r="5" fill={themeNeon} filter="url(#unitGlow)" />
-                              <circle cx={pinX} cy={pinY} r="18" fill="none" stroke={themeNeon} strokeWidth="1.8" className="anim-ping-pulse" />
-                              <circle cx={pinX} cy={pinY} r="2.5" fill="#FFFFFF" />
+                            <g key={`dynamic-floor-pointer-${selectedFloor}`} className="pointer-events-none">
+                              {/* Vòng tâm định vị tầng chuẩn xác trên dải 3D */}
+                              <circle cx={pinX} cy={pinY} r="4.5" fill={themeNeon} filter="url(#unitGlow)" />
+                              <circle cx={pinX} cy={pinY} r="14" fill="none" stroke={themeNeon} strokeWidth="1.5" className="anim-ping-pulse" />
+                              <circle cx={pinX} cy={pinY} r="2" fill="#FFFFFF" />
 
-                              {/* Đường dẫn Laser */}
+                              {/* Đường dẫn Laser chỉ tầng */}
                               <path
                                 d={laserPath}
                                 fill="none"
                                 stroke={themeNeon}
-                                strokeWidth="2.5"
+                                strokeWidth="2"
                                 strokeLinecap="round"
                                 strokeLinejoin="round"
                                 className="anim-laser-line"
                                 filter="url(#unitGlow)"
                               />
-                              <circle cx={wallX} cy={wallY} r="3.5" fill={themeNeon} />
-                              <circle cx={dockX} cy={dockY} r="4" fill={themeBorder} />
+                              <circle cx={wallX} cy={wallY} r="3" fill={themeNeon} />
+                              <circle cx={dockX} cy={dockY} r="3.5" fill={themeBorder} />
 
-                              {/* Thẻ Callout Tầng - Phóng to sắc nét dễ đọc */}
+                              {/* Thẻ Callout Tầng Tinh Gọn - Tránh trùng lặp với mặt bằng bên phải */}
                               <g className="anim-callout-card">
                                 <rect
                                   x={cardX}
@@ -1743,10 +1768,10 @@ export default function AdminBuildingApartmentManager() {
                                   width={cardW}
                                   height={cardH}
                                   fill={themeBg}
-                                  fillOpacity="0.97"
+                                  fillOpacity="0.96"
                                   stroke={themeBorder}
-                                  strokeWidth="2"
-                                  rx="5"
+                                  strokeWidth="1.6"
+                                  rx="4"
                                   filter="url(#unitGlow)"
                                 />
 
@@ -1754,96 +1779,78 @@ export default function AdminBuildingApartmentManager() {
                                 <rect
                                   x={cardX}
                                   y={targetCardY}
-                                  width="5"
+                                  width="4"
                                   height={cardH}
                                   fill="#C5A880"
-                                  rx="2.5"
+                                  rx="2"
                                 />
 
-                                {/* Tiêu đề tầng */}
-                                <circle cx={cardX + 18} cy={targetCardY + 22} r="4" fill={themeNeon} />
+                                {/* Dòng 1: Tiêu đề tầng & Phân khu kiến trúc */}
+                                <circle cx={cardX + 16} cy={targetCardY + 20} r="3.5" fill={themeNeon} />
                                 <text
-                                  x={cardX + 28}
-                                  y={targetCardY + 26}
+                                  x={cardX + 25}
+                                  y={targetCardY + 24}
                                   fill="#FFFFFF"
-                                  fontSize="13.5"
+                                  fontSize="12.5"
                                   fontWeight="900"
                                   fontFamily="monospace"
                                 >
-                                  {curFloor === 1 ? `TẦNG 1 • ${currentBlockName.toUpperCase()}` : `TẦNG ${curFloor} • ${currentBlockName.toUpperCase()}`}
+                                  {isPodium ? 'TẦNG SẢNH (G)' : `TẦNG ${curFloor}`}
                                 </text>
 
-                                {/* Huy hiệu mặt bằng */}
+                                <text
+                                  x={cardX + (isPodium ? 122 : 94)}
+                                  y={targetCardY + 24}
+                                  fill="#C5A880"
+                                  fontSize="10"
+                                  fontWeight="bold"
+                                  fontFamily="monospace"
+                                >
+                                  • {floorZone}
+                                </text>
+
+                                {/* Huy hiệu tỷ lệ ở ngắn gọn góc phải */}
                                 <rect
-                                  x={cardX + cardW - 82}
-                                  y={targetCardY + 12}
-                                  width="72"
-                                  height="20"
+                                  x={cardX + cardW - 84}
+                                  y={targetCardY + 11}
+                                  width="74"
+                                  height="18"
                                   fill="#162232"
                                   stroke="#26374D"
                                   rx="3"
                                 />
                                 <text
-                                  x={cardX + cardW - 46}
-                                  y={targetCardY + 26}
-                                  fill="#C5A880"
-                                  fontSize="10"
+                                  x={cardX + cardW - 47}
+                                  y={targetCardY + 23}
+                                  fill={hasOcc ? '#34D399' : '#94A3B8'}
+                                  fontSize="9.5"
                                   fontWeight="bold"
                                   textAnchor="middle"
                                   fontFamily="monospace"
                                 >
-                                  {curFloor === 1 ? 'SẢNH TRỆT' : '21 CĂN HỘ'}
+                                  {isPodium ? 'SẢNH ĐÓN' : `Ở: ${occCount}/21 CĂN`}
                                 </text>
 
-                                {/* Trạng thái cư dân phóng to */}
+                                {/* Dòng 2: Cao độ tĩnh không & Trục giao thông đứng */}
                                 <text
-                                  x={cardX + 18}
-                                  y={targetCardY + 52}
-                                  fill={hasOcc ? '#34D399' : '#94A3B8'}
-                                  fontSize="12"
-                                  fontWeight="bold"
-                                  fontFamily="monospace"
-                                >
-                                  {curFloor === 1 
-                                    ? '🏛️ SẢNH ĐÓN TIẾP TÂN & DỊCH VỤ CƯ DÂN' 
-                                    : hasOcc 
-                                    ? `🟢 ĐÃ CÓ ${occCount} CĂN CƯ DÂN Ở` 
-                                    : '⚪ TẦNG TRỐNG / SẴN SÀNG BÀN GIAO'}
-                                </text>
-
-                                {/* Thông số chi tiết phóng to */}
-                                <text
-                                  x={cardX + 18}
-                                  y={targetCardY + 75}
-                                  fill="#E2E8F0"
-                                  fontSize="11"
-                                  fontFamily="monospace"
-                                >
-                                  {curFloor === 1 
-                                    ? 'Quầy Lễ Tân • Ban Quản Lý • Cổng FaceID' 
-                                    : `Đã ở: ${occCount}  •  Nghiệm thu: ${maintCount}  •  Trống: ${vacCount}`}
-                                </text>
-
-                                <text
-                                  x={cardX + 18}
-                                  y={targetCardY + 97}
+                                  x={cardX + 16}
+                                  y={targetCardY + 48}
                                   fill="#94A3B8"
+                                  fontSize="10"
+                                  fontFamily="monospace"
+                                >
+                                  Cao độ: <tspan fill="#F1F5F9" fontWeight="bold">{elevationM}</tspan>  •  {elevatorAccess}
+                                </text>
+
+                                {/* Dòng 3: Tầm nhìn kiến trúc & Hướng cảnh quan */}
+                                <text
+                                  x={cardX + 16}
+                                  y={targetCardY + 70}
+                                  fill="#CBD5E1"
                                   fontSize="10"
                                   fontFamily="sans-serif"
                                 >
-                                  {curFloor === 1 ? 'Mặt bằng sảnh: Tiếp tân, sảnh chờ, thang máy' : 'Mặt bằng kiến trúc: Căn CH-01 đến CH-21'}
-                                </text>
-
-                                {/* Chỉ dẫn sang mặt bằng tầng bên phải */}
-                                <text
-                                  x={cardX + 18}
-                                  y={targetCardY + 122}
-                                  fill="#C5A880"
-                                  fontSize="10.5"
-                                  fontWeight="bold"
-                                  fontFamily="sans-serif"
-                                >
-                                  ➔ Mặt bằng tầng chi tiết đang hiển thị ở cột bên phải
+                                  {viewOrientation}
                                 </text>
                               </g>
                             </g>
