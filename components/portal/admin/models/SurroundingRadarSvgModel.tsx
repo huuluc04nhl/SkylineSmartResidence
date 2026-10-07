@@ -56,8 +56,6 @@ export default function SurroundingRadarSvgModel({
     'SUR-08': { x: 650, y: 220 },
   };
 
-  const activeAmenity = amenities.find(a => a.id === (hoveredAmenityId || selectedAmenityId));
-
   return (
     <div className="relative bg-[#06090F] border border-[#1E293B] rounded-none overflow-hidden select-none shadow-2xl flex flex-col">
       {/* THANH ĐIỀU HÀNH BẢN ĐỒ TIỆN ÍCH */}
@@ -210,6 +208,7 @@ export default function SurroundingRadarSvgModel({
                     onMouseEnter={() => onHoverAmenity(sur.id)}
                     onMouseLeave={() => onHoverAmenity(null)}
                   >
+                    <title>{sur.name} ({sur.distance})</title>
                     {/* Ping animation khi hover / select */}
                     {isHighlighted && (
                       <circle
@@ -329,6 +328,7 @@ export default function SurroundingRadarSvgModel({
                     onMouseEnter={() => onHoverAmenity(sur.id)}
                     onMouseLeave={() => onHoverAmenity(null)}
                   >
+                    <title>{sur.name} ({sur.distance})</title>
                     <line x1="0" y1="0" x2={RADAR_CENTER.x - rCoord.x} y2={RADAR_CENTER.y - rCoord.y} stroke="#334155" strokeWidth="0.8" opacity="0.4" />
                     
                     <circle
@@ -353,28 +353,6 @@ export default function SurroundingRadarSvgModel({
             </svg>
           )}
         </div>
-
-        {/* THẺ THÔNG TIN TIỆN ÍCH HOVER / CLICK */}
-        {activeAmenity && (
-          <div className="absolute bottom-3 left-3 bg-[#0A0F17]/95 border border-[#C5A880] p-3 max-w-sm backdrop-blur-md shadow-2xl animate-in fade-in duration-150 z-30 pointer-events-none">
-            <div className="flex items-center justify-between text-[#C5A880] font-mono text-[10.5px] uppercase font-bold tracking-wider pb-1 border-b border-[#1E293B]">
-              <span className="flex items-center gap-1.5">
-                <Sparkles className="w-3.5 h-3.5 text-[#F59E0B]" />
-                Mục #{activeAmenity.id.replace('SUR-', '')} • {activeAmenity.categoryLabel}
-              </span>
-              <span className="text-cyan-300 font-bold">{activeAmenity.distance}</span>
-            </div>
-            <div className="text-white font-bold text-sm mt-1.5">
-              {activeAmenity.name}
-            </div>
-            <div className="text-gray-300 text-[11px] mt-1 leading-relaxed">
-              {activeAmenity.desc}
-            </div>
-            <div className="text-[10px] font-mono text-emerald-400 mt-1.5">
-              ⏱ {activeAmenity.walkTime}
-            </div>
-          </div>
-        )}
       </div>
     </div>
   );

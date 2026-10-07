@@ -132,9 +132,6 @@ export default function MacroCitySvgModel({
     }
   ];
 
-  const activeDistrictId = hoveredDistrict || selectedDistrict;
-  const activeDistrict = MACRO_LANDMARKS.find(d => d.id === activeDistrictId);
-
   return (
     <div className="relative bg-[#06090F] border border-[#1E293B] rounded-none overflow-hidden select-none shadow-2xl flex flex-col">
       {/* THANH ĐIỀU HÀNH MÔ HÌNH ĐẠI ĐÔ THỊ */}
@@ -256,6 +253,7 @@ export default function MacroCitySvgModel({
                   onMouseEnter={() => setHoveredDistrict(lm.id)}
                   onMouseLeave={() => setHoveredDistrict(null)}
                 >
+                  <title>{lm.name} • {lm.tag} ({lm.distance})</title>
                   {/* Radar beacon pulse */}
                   {isCore && (
                     <circle
@@ -322,36 +320,6 @@ export default function MacroCitySvgModel({
             })}
           </svg>
         </div>
-
-        {/* THẺ POPUP THÔNG TIN PHÂN KHU ĐANG CHỌN / HOVER */}
-        {activeDistrict && (
-          <div className="absolute bottom-3 left-3 bg-[#0A0F17]/95 border border-[#C5A880] p-3 max-w-sm backdrop-blur-md shadow-2xl animate-in fade-in duration-150 z-30">
-            <div className="flex items-center justify-between text-[#C5A880] font-mono text-[10.5px] uppercase font-bold tracking-wider pb-1 border-b border-[#1E293B]">
-              <span className="flex items-center gap-1.5">
-                <Sparkles className="w-3.5 h-3.5 text-[#F59E0B]" />
-                {activeDistrict.tag}
-              </span>
-              <span className="text-cyan-300 font-bold">{activeDistrict.distance}</span>
-            </div>
-            <div className="text-white font-bold text-sm mt-1.5">
-              {activeDistrict.name}
-            </div>
-            <div className="text-gray-300 text-[11px] mt-1 leading-relaxed">
-              {activeDistrict.desc}
-            </div>
-
-            {activeDistrict.isProjectCore && onSelectTropical && (
-              <button
-                type="button"
-                onClick={onSelectTropical}
-                className="mt-2.5 w-full py-1.5 px-3 bg-[#F59E0B] hover:bg-amber-400 text-black font-bold font-mono text-xs flex items-center justify-center gap-1.5 transition-all shadow"
-              >
-                <span>CHUYỂN SANG XEM CHI TIẾT THE TROPICAL</span>
-                <ChevronRight className="w-3.5 h-3.5" />
-              </button>
-            )}
-          </div>
-        )}
 
         {/* Hướng dẫn thao tác */}
         <div className="absolute bottom-2 right-2 px-2 py-1 bg-[#0A0F17]/85 border border-[#1E2B3C] text-[10px] font-mono text-gray-400 backdrop-blur-sm pointer-events-none hidden sm:block">
