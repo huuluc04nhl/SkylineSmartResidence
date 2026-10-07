@@ -18,6 +18,9 @@ interface TropicalCampusSvgModelProps {
   hoveredAmenityId: string | null;
   onHoverAmenity: (id: string | null) => void;
   onOpenZoomModal?: () => void;
+  hideHeader?: boolean;
+  hideFooter?: boolean;
+  showHotspotsOverride?: boolean;
 }
 
 export default function TropicalCampusSvgModel({
@@ -29,11 +32,16 @@ export default function TropicalCampusSvgModel({
   onSelectAmenity,
   hoveredAmenityId,
   onHoverAmenity,
-  onOpenZoomModal
+  onOpenZoomModal,
+  hideHeader = false,
+  hideFooter = false,
+  showHotspotsOverride
 }: TropicalCampusSvgModelProps) {
   const [zoomLevel, setZoomLevel] = useState<number>(1);
   const [showHotspots, setShowHotspots] = useState<boolean>(true);
   const [activeAmenityCategory, setActiveAmenityCategory] = useState<'ALL' | 'POOL' | 'PARK' | 'SPORT' | 'ACCESS'>('ALL');
+
+  const isHotspotsVisible = showHotspotsOverride !== undefined ? showHotspotsOverride : showHotspots;
 
   // 4 Khối Chung Cư chuẩn quy hoạch The Tropical trên bản đồ kiến trúc gốc (kích thước gốc 453 x 677)
   const buildings = [
@@ -142,73 +150,75 @@ export default function TropicalCampusSvgModel({
   return (
     <div className="relative w-full h-full flex-1 flex flex-col bg-[#070B12] overflow-hidden select-none">
       
-      {/* THANH ĐIỀU HÀNH THU PHÓNG & LỚP PHỦ TINH GỌN (ĐÃ BỎ TIÊU ĐỀ TRÙNG LẶP) */}
-      <div className="px-3 py-1.5 bg-[#0A0F17] border-b border-[#1E293B] flex items-center justify-between gap-2 text-xs font-mono">
-        <div className="flex items-center gap-2">
-          <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-          <span className="text-gray-400 text-[11px]">Khối đang chọn:</span>
-          <span className="px-2 py-0.5 bg-[#141E2D] border border-[#23354C] text-[#C5A880] font-bold text-[11px]">
-            Chung Cư {selectedBlock}
-          </span>
-        </div>
-
-        {/* Nút bật tắt lớp phủ & Thu phóng */}
-        <div className="flex items-center gap-1.5">
-          {/* Bật/Tắt Lớp phủ tương tác */}
-          <button
-            type="button"
-            onClick={() => setShowHotspots(!showHotspots)}
-            className={`px-2 py-0.5 border text-[10.5px] transition-all flex items-center gap-1 ${
-              showHotspots
-                ? 'bg-[#182638] border-[#3B82F6] text-cyan-300'
-                : 'bg-[#0E1520] border-[#222E3E] text-gray-400 hover:text-white'
-            }`}
-            title="Bật/tắt ghim định vị & viền tòa tháp"
-          >
-            <Eye className="w-3 h-3" />
-            <span className="hidden sm:inline">Lớp Phủ</span>
-          </button>
-
-          {/* Cụm nút thu phóng */}
-          <div className="flex items-center gap-0.5 bg-[#101723] border border-[#1E2B3C] p-0.5">
-            <button
-              type="button"
-              onClick={() => setZoomLevel(prev => Math.max(0.75, Number((prev - 0.15).toFixed(2))))}
-              className="p-1 hover:bg-[#1A2637] text-gray-300 hover:text-white"
-              title="Thu nhỏ"
-            >
-              <ZoomOut className="w-3.5 h-3.5" />
-            </button>
-            <button
-              type="button"
-              onClick={() => setZoomLevel(1)}
-              className="px-1.5 py-0.5 text-[#C5A880] text-[10.5px] min-w-[38px] text-center hover:bg-[#1A2637]"
-              title="100%"
-            >
-              {Math.round(zoomLevel * 100)}%
-            </button>
-            <button
-              type="button"
-              onClick={() => setZoomLevel(prev => Math.min(2.2, Number((prev + 0.15).toFixed(2))))}
-              className="p-1 hover:bg-[#1A2637] text-gray-300 hover:text-white"
-              title="Phóng to"
-            >
-              <ZoomIn className="w-3.5 h-3.5" />
-            </button>
+      {/* THANH ĐIỀU HÀNH THU PHÓNG & LỚP PHỦ TINH GỌN (ẨN KHI Ở TRONG MODAL PHÓNG TO) */}
+      {!hideHeader && (
+        <div className="px-3 py-1.5 bg-[#0A0F17] border-b border-[#1E293B] flex items-center justify-between gap-2 text-xs font-mono shrink-0">
+          <div className="flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+            <span className="text-gray-400 text-[11px]">Khối đang chọn:</span>
+            <span className="px-2 py-0.5 bg-[#141E2D] border border-[#23354C] text-[#C5A880] font-bold text-[11px]">
+              Chung Cư {selectedBlock}
+            </span>
           </div>
 
-          {onOpenZoomModal && (
+          {/* Nút bật tắt lớp phủ & Thu phóng */}
+          <div className="flex items-center gap-1.5">
+            {/* Bật/Tắt Lớp phủ tương tác */}
             <button
               type="button"
-              onClick={onOpenZoomModal}
-              className="p-1 bg-[#121A26] hover:bg-[#C5A880] hover:text-black border border-[#223247] text-gray-300 transition-all ml-0.5"
-              title="Phóng to toàn màn hình"
+              onClick={() => setShowHotspots(!showHotspots)}
+              className={`px-2 py-0.5 border text-[10.5px] transition-all flex items-center gap-1 ${
+                showHotspots
+                  ? 'bg-[#182638] border-[#3B82F6] text-cyan-300'
+                  : 'bg-[#0E1520] border-[#222E3E] text-gray-400 hover:text-white'
+              }`}
+              title="Bật/tắt ghim định vị & viền tòa tháp"
             >
-              <Maximize2 className="w-3.5 h-3.5" />
+              <Eye className="w-3 h-3" />
+              <span className="hidden sm:inline">Lớp Phủ</span>
             </button>
-          )}
+
+            {/* Cụm nút thu phóng */}
+            <div className="flex items-center gap-0.5 bg-[#101723] border border-[#1E2B3C] p-0.5">
+              <button
+                type="button"
+                onClick={() => setZoomLevel(prev => Math.max(0.75, Number((prev - 0.15).toFixed(2))))}
+                className="p-1 hover:bg-[#1A2637] text-gray-300 hover:text-white"
+                title="Thu nhỏ"
+              >
+                <ZoomOut className="w-3.5 h-3.5" />
+              </button>
+              <button
+                type="button"
+                onClick={() => setZoomLevel(1)}
+                className="px-1.5 py-0.5 text-[#C5A880] text-[10.5px] min-w-[38px] text-center hover:bg-[#1A2637]"
+                title="100%"
+              >
+                {Math.round(zoomLevel * 100)}%
+              </button>
+              <button
+                type="button"
+                onClick={() => setZoomLevel(prev => Math.min(2.2, Number((prev + 0.15).toFixed(2))))}
+                className="p-1 hover:bg-[#1A2637] text-gray-300 hover:text-white"
+                title="Phóng to"
+              >
+                <ZoomIn className="w-3.5 h-3.5" />
+              </button>
+            </div>
+
+            {onOpenZoomModal && (
+              <button
+                type="button"
+                onClick={onOpenZoomModal}
+                className="p-1 bg-[#121A26] hover:bg-[#C5A880] hover:text-black border border-[#223247] text-gray-300 transition-all ml-0.5"
+                title="Phóng to toàn màn hình"
+              >
+                <Maximize2 className="w-3.5 h-3.5" />
+              </button>
+            )}
+          </div>
         </div>
-      </div>
+      )}
 
       {/* ========================================================================= */}
       {/* KHUNG HIỂN THỊ ẢNH MẶT BẰNG CHIẾM TRỌN KHÔNG GIAN                          */}
@@ -221,19 +231,9 @@ export default function TropicalCampusSvgModel({
           style={{ transform: `scale(${zoomLevel})` }}
         >
           <svg
-            viewBox="0 15 453 315"
+            viewBox="0 0 453 330"
             className="w-full h-full max-h-full object-contain filter drop-shadow-2xl"
           >
-            <defs>
-              {/* Hiệu ứng viền vàng phát quang cho tòa nhà được chọn */}
-              <filter id="goldBlockGlow" x="-20%" y="-20%" width="140%" height="140%">
-                <feDropShadow dx="0" dy="0" stdDeviation="4" floodColor="#F59E0B" floodOpacity="0.8" />
-              </filter>
-              <filter id="badgeShadow" x="-30%" y="-30%" width="160%" height="160%">
-                <feDropShadow dx="0" dy="2" stdDeviation="3" floodColor="#000000" floodOpacity="0.85" />
-              </filter>
-            </defs>
-
             {/* 1. ẢNH GỐC BẢN VẼ MẶT BẰNG THE TROPICAL CHUẨN THIẾT KẾ CĐT */}
             <image
               href="/masterplan/the-tropical-masterplan.png"
@@ -245,111 +245,58 @@ export default function TropicalCampusSvgModel({
             />
 
             {/* 2. LỚP PHỦ TƯƠNG TÁC 4 KHỐI CHUNG CƯ (BS-7, BS-8, BS-9, BS-10) */}
-            {showHotspots && buildings.map((b) => {
+            {isHotspotsVisible && buildings.map((b) => {
               const isSelected = b.isCurrent;
 
               return (
                 <g key={`building-block-${b.code}`} className="group cursor-pointer">
-                  {/* Vùng bao viền phát sáng khi chọn tòa */}
+                  {/* Viền định vị tòa nhà - thanh mảnh, sang trọng, giữ nguyên vẹn hình vẽ kiến trúc bên dưới */}
                   <rect
                     x={b.svgX}
                     y={b.svgY}
                     width={b.svgW}
                     height={b.svgH}
-                    rx="6"
-                    fill={isSelected ? '#F59E0B' : 'transparent'}
-                    fillOpacity={isSelected ? 0.18 : 0.04}
-                    stroke={isSelected ? '#F59E0B' : '#C5A880'}
-                    strokeWidth={isSelected ? 2.5 : 1}
-                    strokeDasharray={isSelected ? 'none' : '4 3'}
-                    filter={isSelected ? 'url(#goldBlockGlow)' : undefined}
-                    className="transition-all duration-200 group-hover:stroke-[#F59E0B] group-hover:stroke-width-2 group-hover:fill-amber-500/10"
+                    rx="4"
+                    fill="transparent"
+                    stroke={isSelected ? '#F59E0B' : 'transparent'}
+                    strokeWidth={isSelected ? 1.5 : 1}
+                    className="transition-all duration-200 group-hover:stroke-amber-400 group-hover:stroke-1"
                     onClick={() => onSelectBlock(b.code)}
                   />
 
-                  {/* Vòng pulse hiệu ứng cho tòa đang quản lý */}
-                  {isSelected && (
-                    <circle
-                      cx={b.pillX}
-                      cy={b.pillY}
-                      r="14"
-                      fill="none"
-                      stroke="#F59E0B"
-                      strokeWidth="1.5"
-                      className="animate-ping"
-                      opacity="0.6"
-                    />
-                  )}
-
-                  {/* Thẻ ghim tên Chung Cư đính kèm */}
+                  {/* Thẻ ghim tên Chung Cư đính kèm - nhỏ gọn, tinh tế */}
                   <g 
                     transform={`translate(${b.pillX}, ${b.pillY})`}
                     onClick={() => onSelectBlock(b.code)}
-                    filter="url(#badgeShadow)"
+                    className="cursor-pointer"
                   >
                     <rect
-                      x="-38"
-                      y="-11"
-                      width="76"
-                      height="22"
+                      x="-20"
+                      y="-8"
+                      width="40"
+                      height="16"
                       rx="3"
-                      fill={isSelected ? '#F59E0B' : '#0B111A'}
-                      stroke={isSelected ? '#FFFFFF' : '#C5A880'}
-                      strokeWidth={isSelected ? 1.5 : 1}
-                      className="transition-all group-hover:brightness-125"
+                      fill={isSelected ? '#F59E0B' : 'rgba(10, 15, 23, 0.88)'}
+                      stroke={isSelected ? '#FFFFFF' : 'rgba(197, 168, 128, 0.45)'}
+                      strokeWidth={isSelected ? 1.2 : 0.8}
                     />
                     <text
-                      y="3.5"
-                      fill={isSelected ? '#000000' : '#FFFFFF'}
-                      fontSize="9"
+                      y="3"
+                      fill={isSelected ? '#000000' : '#E2E8F0'}
+                      fontSize="7.5"
                       fontWeight="bold"
                       fontFamily="monospace"
                       textAnchor="middle"
                     >
-                      {b.shortCode} • {b.floors}T
+                      {b.shortCode}
                     </text>
                   </g>
-
-                  {/* Nút hành động trực tiếp: Bấm xem số tầng nếu là tòa đang chọn */}
-                  {isSelected && onSelectBlockAndShowFloors && (
-                    <g
-                      transform={`translate(${b.pillX}, ${b.pillY + 16})`}
-                      className="cursor-pointer"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onSelectBlockAndShowFloors(b.code);
-                      }}
-                      filter="url(#badgeShadow)"
-                    >
-                      <rect
-                        x="-46"
-                        y="-8"
-                        width="92"
-                        height="16"
-                        rx="3"
-                        fill="#064E3B"
-                        stroke="#10B981"
-                        strokeWidth="1"
-                        className="hover:fill-emerald-800"
-                      />
-                      <text
-                        y="3"
-                        fill="#A7F3D0"
-                        fontSize="7.5"
-                        fontWeight="bold"
-                        fontFamily="monospace"
-                        textAnchor="middle"
-                      >
-                        ⚡ XEM {b.floors} TẦNG ➔
-                      </text>
-                    </g>
-                  )}
                 </g>
               );
             })}
 
             {/* 3. LỚP GHIM ĐỊNH VỊ 23 TIỆN ÍCH TRÊN MẶT BẰNG THỰC TẾ */}
-            {showHotspots && amenities.map(item => {
+            {isHotspotsVisible && amenities.map(item => {
               const pos = AMENITY_POSITIONS_453x677[item.id];
               if (!pos) return null;
 
@@ -438,17 +385,13 @@ export default function TropicalCampusSvgModel({
             })}
           </svg>
         </div>
-
-        {/* GHI CHÚ ĐIỀU HƯỚNG GÓC PHẢI DƯỚI */}
-        <div className="absolute bottom-2 right-2 px-2 py-1 bg-[#0A0F17]/85 border border-[#1E2B3C] text-[10px] font-mono text-gray-400 backdrop-blur-sm pointer-events-none hidden sm:block">
-          Nhấn tòa để chọn • Rê chuột vào số để xem tiện ích
-        </div>
       </div>
 
       {/* ========================================================================= */}
-      {/* BẢNG 23 TIỆN ÍCH THE TROPICAL KHỚP CHÍNH XÁC VỚI BẢNG CHÚ THÍCH CỦA CĐT    */}
+      {/* BẢNG 23 TIỆN ÍCH THE TROPICAL (ẨN KHI Ở TRONG MODAL PHÓNG TO)              */}
       {/* ========================================================================= */}
-      <div className="p-2.5 sm:p-3 bg-[#0A0E17] border-t border-[#1E293B] space-y-2">
+      {!hideFooter && (
+        <div className="p-2.5 sm:p-3 bg-[#0A0E17] border-t border-[#1E293B] space-y-2">
         <div className="flex flex-wrap items-center justify-between gap-1.5">
           <div className="text-xs font-mono font-bold text-white flex items-center gap-1.5">
             <Sparkles className="w-3.5 h-3.5 text-[#C5A880] shrink-0" />
@@ -580,7 +523,8 @@ export default function TropicalCampusSvgModel({
           </div>
 
         </div>
-      </div>
+        </div>
+      )}
     </div>
   );
 }

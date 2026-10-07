@@ -16,6 +16,8 @@ interface SurroundingRadarSvgModelProps {
   hoveredAmenityId: string | null;
   onHoverAmenity: (id: string | null) => void;
   onOpenZoomModal?: () => void;
+  hideHeader?: boolean;
+  showPinsOverride?: boolean;
 }
 
 export default function SurroundingRadarSvgModel({
@@ -25,10 +27,14 @@ export default function SurroundingRadarSvgModel({
   onSelectAmenity,
   hoveredAmenityId,
   onHoverAmenity,
-  onOpenZoomModal
+  onOpenZoomModal,
+  hideHeader = false,
+  showPinsOverride
 }: SurroundingRadarSvgModelProps) {
   const [zoomLevel, setZoomLevel] = useState<number>(1);
   const [showPins, setShowPins] = useState<boolean>(true);
+
+  const isPinsVisible = showPinsOverride !== undefined ? showPinsOverride : showPins;
 
   // Tọa độ định vị các đại tiện ích trên ảnh bản đồ thực tế 1024 x 512
   const PHOTO_AMENITY_COORDS: Record<string, { x: number; y: number; icon: any; color: string; label: string }> = {
@@ -45,7 +51,8 @@ export default function SurroundingRadarSvgModel({
   return (
     <div className="relative w-full h-full flex-1 flex flex-col bg-[#070B12] overflow-hidden select-none">
       {/* THANH ĐIỀU HÀNH BẢN ĐỒ TIỆN ÍCH TINH GỌN */}
-      <div className="px-3 py-1.5 bg-[#0A0F17] border-b border-[#1E293B] flex items-center justify-between gap-2 text-xs font-mono">
+      {!hideHeader && (
+        <div className="px-3 py-1.5 bg-[#0A0F17] border-b border-[#1E293B] flex items-center justify-between gap-2 text-xs font-mono shrink-0">
         <div className="flex items-center gap-2">
           <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
           <span className="text-gray-400 text-[11px]">Tiện ích:</span>
@@ -107,6 +114,7 @@ export default function SurroundingRadarSvgModel({
           )}
         </div>
       </div>
+      )}
 
       {/* VÙNG CANVAS HIỂN THỊ ẢNH BẢN ĐỒ TIỆN ÍCH THỰC TẾ CHIẾM TRỌN KHÔNG GIAN */}
       <div className="relative w-full flex-1 min-h-[380px] sm:min-h-[460px] bg-[#05080E] overflow-hidden flex items-center justify-center p-2">
@@ -141,7 +149,7 @@ export default function SurroundingRadarSvgModel({
             />
 
             {/* 2. LỚP GHIM TIỆN ÍCH TƯƠNG TÁC */}
-            {showPins && amenities.map(sur => {
+            {isPinsVisible && amenities.map(sur => {
               const coord = PHOTO_AMENITY_COORDS[sur.id];
               if (!coord) return null;
 

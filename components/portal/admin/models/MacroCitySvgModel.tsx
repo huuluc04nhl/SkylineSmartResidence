@@ -13,6 +13,8 @@ interface MacroCitySvgModelProps {
   onSelectAmenity?: (id: string | null) => void;
   onSelectTropical?: () => void;
   onOpenZoomModal?: () => void;
+  hideHeader?: boolean;
+  showPinsOverride?: boolean;
 }
 
 export default function MacroCitySvgModel({
@@ -20,12 +22,16 @@ export default function MacroCitySvgModel({
   selectedAmenityId,
   onSelectAmenity,
   onSelectTropical,
-  onOpenZoomModal
+  onOpenZoomModal,
+  hideHeader = false,
+  showPinsOverride
 }: MacroCitySvgModelProps) {
   const [zoomLevel, setZoomLevel] = useState<number>(1);
   const [hoveredDistrict, setHoveredDistrict] = useState<string | null>(null);
   const [selectedDistrict, setSelectedDistrict] = useState<string | null>('SOLARI');
   const [showOverlays, setShowOverlays] = useState<boolean>(true);
+
+  const isOverlaysVisible = showPinsOverride !== undefined ? showPinsOverride : showOverlays;
 
   // Danh mục 10 phân khu & đại tiện ích trọng điểm trên bản đồ quy hoạch 271ha (kích thước ảnh gốc 1024 x 778)
   const MACRO_LANDMARKS = [
@@ -134,70 +140,72 @@ export default function MacroCitySvgModel({
 
   return (
     <div className="relative w-full h-full flex-1 flex flex-col bg-[#070B12] overflow-hidden select-none">
-      {/* THANH ĐIỀU HÀNH THU PHÓNG & LỚP PHỦ TINH GỌN (ĐÃ BỎ TIÊU ĐỀ TRÙNG LẶP) */}
-      <div className="px-3 py-1.5 bg-[#0A0F17] border-b border-[#1E293B] flex items-center justify-between gap-2 text-xs font-mono">
-        <div className="flex items-center gap-2">
-          <span className="w-2 h-2 rounded-full bg-[#F59E0B] animate-pulse" />
-          <span className="text-gray-400 text-[11px]">Đại Đô Thị:</span>
-          <span className="px-2 py-0.5 bg-[#141E2D] border border-[#23354C] text-[#C5A880] font-bold text-[11px]">
-            271 ha • 10 Phân Khu Trọng Điểm
-          </span>
-        </div>
+      {/* THANH ĐIỀU HÀNH THU PHÓNG & LỚP PHỦ TINH GỌN (ẨN KHI Ở TRONG MODAL PHÓNG TO) */}
+      {!hideHeader && (
+        <div className="px-3 py-1.5 bg-[#0A0F17] border-b border-[#1E293B] flex items-center justify-between gap-2 text-xs font-mono shrink-0">
+          <div className="flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-[#F59E0B] animate-pulse" />
+            <span className="text-gray-400 text-[11px]">Đại Đô Thị:</span>
+            <span className="px-2 py-0.5 bg-[#141E2D] border border-[#23354C] text-[#C5A880] font-bold text-[11px]">
+              271 ha • 10 Phân Khu Trọng Điểm
+            </span>
+          </div>
 
-        {/* Nút điều khiển thu phóng & Phóng to */}
-        <div className="flex items-center gap-1.5">
-          {/* Nút bật tắt lớp phủ */}
-          <button
-            type="button"
-            onClick={() => setShowOverlays(!showOverlays)}
-            className={`px-2 py-0.5 border text-[11px] transition-all flex items-center gap-1 ${
-              showOverlays
-                ? 'bg-[#182638] border-[#3B82F6] text-cyan-300'
-                : 'bg-[#0E1520] border-[#222E3E] text-gray-400 hover:text-white'
-            }`}
-            title="Bật/tắt ghim phân khu"
-          >
-            <Eye className="w-3 h-3" />
-            <span className="hidden sm:inline">Lớp Phủ</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setZoomLevel(prev => Math.max(0.7, Number((prev - 0.15).toFixed(2))))}
-            className="p-1 bg-[#121A26] hover:bg-[#1A2637] border border-[#223247] text-gray-300 hover:text-white"
-            title="Thu nhỏ"
-          >
-            <ZoomOut className="w-3.5 h-3.5" />
-          </button>
-          <button
-            type="button"
-            onClick={() => setZoomLevel(1)}
-            className="px-2 py-0.5 bg-[#090D14] border border-[#223247] text-[#C5A880] text-[11px] min-w-[48px] text-center hover:bg-[#121A26]"
-            title="Mặc định 100%"
-          >
-            {Math.round(zoomLevel * 100)}%
-          </button>
-          <button
-            type="button"
-            onClick={() => setZoomLevel(prev => Math.min(2.0, Number((prev + 0.15).toFixed(2))))}
-            className="p-1 bg-[#121A26] hover:bg-[#1A2637] border border-[#223247] text-gray-300 hover:text-white"
-            title="Phóng to"
-          >
-            <ZoomIn className="w-3.5 h-3.5" />
-          </button>
-
-          {onOpenZoomModal && (
+          {/* Nút điều khiển thu phóng & Phóng to */}
+          <div className="flex items-center gap-1.5">
+            {/* Nút bật tắt lớp phủ */}
             <button
               type="button"
-              onClick={onOpenZoomModal}
-              className="p-1 bg-[#121A26] hover:bg-[#C5A880] hover:text-black border border-[#223247] text-gray-300 transition-all ml-0.5"
-              title="Phóng to toàn màn hình"
+              onClick={() => setShowOverlays(!showOverlays)}
+              className={`px-2 py-0.5 border text-[11px] transition-all flex items-center gap-1 ${
+                showOverlays
+                  ? 'bg-[#182638] border-[#3B82F6] text-cyan-300'
+                  : 'bg-[#0E1520] border-[#222E3E] text-gray-400 hover:text-white'
+              }`}
+              title="Bật/tắt ghim phân khu"
             >
-              <Maximize2 className="w-3.5 h-3.5" />
+              <Eye className="w-3 h-3" />
+              <span className="hidden sm:inline">Lớp Phủ</span>
             </button>
-          )}
+
+            <button
+              type="button"
+              onClick={() => setZoomLevel(prev => Math.max(0.7, Number((prev - 0.15).toFixed(2))))}
+              className="p-1 bg-[#121A26] hover:bg-[#1A2637] border border-[#223247] text-gray-300 hover:text-white"
+              title="Thu nhỏ"
+            >
+              <ZoomOut className="w-3.5 h-3.5" />
+            </button>
+            <button
+              type="button"
+              onClick={() => setZoomLevel(1)}
+              className="px-2 py-0.5 bg-[#090D14] border border-[#223247] text-[#C5A880] text-[11px] min-w-[48px] text-center hover:bg-[#121A26]"
+              title="Mặc định 100%"
+            >
+              {Math.round(zoomLevel * 100)}%
+            </button>
+            <button
+              type="button"
+              onClick={() => setZoomLevel(prev => Math.min(2.0, Number((prev + 0.15).toFixed(2))))}
+              className="p-1 bg-[#121A26] hover:bg-[#1A2637] border border-[#223247] text-gray-300 hover:text-white"
+              title="Phóng to"
+            >
+              <ZoomIn className="w-3.5 h-3.5" />
+            </button>
+
+            {onOpenZoomModal && (
+              <button
+                type="button"
+                onClick={onOpenZoomModal}
+                className="p-1 bg-[#121A26] hover:bg-[#C5A880] hover:text-black border border-[#223247] text-gray-300 transition-all ml-0.5"
+                title="Phóng to toàn màn hình"
+              >
+                <Maximize2 className="w-3.5 h-3.5" />
+              </button>
+            )}
+          </div>
         </div>
-      </div>
+      )}
 
       {/* VÙNG HIỂN THỊ ẢNH QUY HOẠCH CHIẾM TRỌN KHÔNG GIAN */}
       <div className="relative w-full flex-1 min-h-[380px] sm:min-h-[460px] bg-[#070B12] overflow-hidden flex items-center justify-center p-2">
@@ -229,7 +237,7 @@ export default function MacroCitySvgModel({
             />
 
             {/* 2. LỚP GHIM VÀ BADGE TƯƠNG TÁC CÁC PHÂN KHU TRỌNG ĐIỂM */}
-            {showOverlays && MACRO_LANDMARKS.map((lm) => {
+            {isOverlaysVisible && MACRO_LANDMARKS.map((lm) => {
               const isSelected = selectedDistrict === lm.id;
               const isHovered = hoveredDistrict === lm.id;
               const isHighlighted = isSelected || isHovered;

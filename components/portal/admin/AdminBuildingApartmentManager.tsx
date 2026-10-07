@@ -18,6 +18,7 @@ import {
   Maximize2, 
   Minimize2, 
   ZoomIn, 
+  ZoomOut, 
   Eye, 
   ChevronRight, 
   ChevronLeft,
@@ -418,6 +419,7 @@ export default function AdminBuildingApartmentManager() {
   const [masterPlanTab, setMasterPlanTab] = useState<'TROPICAL' | 'SURROUNDINGS' | 'MACRO'>('TROPICAL');
   const [isMasterPlanZoomed, setIsMasterPlanZoomed] = useState<boolean>(false);
   const [modalZoomScale, setModalZoomScale] = useState<number>(1);
+  const [modalShowPins, setModalShowPins] = useState<boolean>(true);
   const [selectedAmenityCategory, setSelectedAmenityCategory] = useState<'ALL' | 'POOL' | 'PARK' | 'SPORT' | 'ACCESS'>('ALL');
   const [selectedAmenityId, setSelectedAmenityId] = useState<string | null>(null);
   const [hoveredAmenityId, setHoveredAmenityId] = useState<string | null>(null);
@@ -3908,15 +3910,15 @@ export default function AdminBuildingApartmentManager() {
       {isMasterPlanZoomed && (() => {
         const planMeta = {
           TROPICAL: {
-            title: 'Mô Hình Quy Hoạch Phân Khu The Tropical (The Beverly Solari)',
-            desc: '4 Chung Cư BS-07, BS-08, BS-09, BS-10 & 23 Tiện Ích Kiến Trúc Nội Khu'
+            title: 'Quy Hoạch Phân Khu The Tropical',
+            desc: '4 Tòa Tháp BS-07, BS-08, BS-09, BS-10 & 23 Tiện Ích Kiến Trúc Nội Khu'
           },
           MACRO: {
-            title: 'Mô Hình Quy Hoạch Đại Đô Thị 271 ha',
-            desc: 'Vị Trí Phân Khu The Beverly Solari, Vincom Mega Mall, Công Viên 36ha & Vành Đai 3'
+            title: 'Quy Hoạch Đại Đô Thị Vinhomes Grand Park 271 ha',
+            desc: 'Tổng Thể 271 ha, Công Viên 36 ha, Vincom Mega Mall & Vành Đai 3'
           },
           SURROUNDINGS: {
-            title: 'Bản Đồ Tiện Ích Thành Phố Biển Hồ & Xung Quanh',
+            title: 'Bản Đồ Tiện Ích Thành Phố Biển Hồ',
             desc: 'Mạng Lưới 8 Đại Tiện Ích Giáo Dục, Y Tế, Mua Sắm & Giao Thông'
           }
         }[masterPlanTab] || {
@@ -3925,11 +3927,13 @@ export default function AdminBuildingApartmentManager() {
         };
 
         return (
-          <div className="fixed inset-0 z-50 bg-black/95 backdrop-blur-md flex flex-col select-none">
-            {/* Thanh điều khiển đỉnh modal */}
-            <div className="px-4 py-2.5 bg-[#0D1117] border-b border-[#233345] flex flex-wrap items-center justify-between gap-3 shrink-0">
-              <div className="flex items-center gap-2">
-                <Map className="w-4 h-4 text-[#C5A880]" />
+          <div className="fixed inset-0 z-50 bg-[#04060A]/95 backdrop-blur-md flex flex-col select-none">
+            {/* Thanh điều khiển đỉnh modal tinh giản, sang trọng */}
+            <div className="px-4 py-2.5 bg-[#090D14] border-b border-[#1E293B] flex flex-wrap items-center justify-between gap-3 shrink-0">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded bg-[#131D2B] border border-[#23354C] flex items-center justify-center text-[#C5A880]">
+                  <Map className="w-4 h-4" />
+                </div>
                 <div>
                   <h3 className="text-white font-bold text-sm tracking-wide">
                     {planMeta.title}
@@ -3941,7 +3945,7 @@ export default function AdminBuildingApartmentManager() {
               </div>
 
               {/* Chuyển tab trực tiếp trong modal */}
-              <div className="flex items-center bg-[#141E2B] p-0.5 border border-[#233345] text-xs font-mono">
+              <div className="flex items-center bg-[#101723] p-0.5 border border-[#1E2B3C] text-xs font-mono">
                 {(['TROPICAL', 'SURROUNDINGS', 'MACRO'] as const).map((tab) => (
                   <button
                     key={tab}
@@ -3950,52 +3954,68 @@ export default function AdminBuildingApartmentManager() {
                       setMasterPlanTab(tab);
                       setModalZoomScale(1);
                     }}
-                    className={`px-2.5 py-1 transition-all ${
+                    className={`px-3 py-1 transition-all ${
                       masterPlanTab === tab
                         ? 'bg-[#C5A880] text-black font-bold'
                         : 'text-gray-400 hover:text-white'
                     }`}
                   >
-                    {tab === 'TROPICAL' ? 'The Tropical (Nội Khu)' : tab === 'SURROUNDINGS' ? 'Tiện Ích Xung Quanh' : 'Đại Đô Thị'}
+                    {tab === 'TROPICAL' ? 'The Tropical (Nội Khu)' : tab === 'SURROUNDINGS' ? 'Tiện Ích Biển Hồ' : 'Đại Đô Thị (271ha)'}
                   </button>
                 ))}
               </div>
 
-              {/* Công cụ thu phóng & đóng */}
+              {/* Công cụ: Bật/Tắt Ghim, Thu phóng & Đóng */}
               <div className="flex items-center gap-2 font-mono text-xs">
+                {/* Nút bật/tắt toàn bộ ghim & chú thích để xem bản vẽ sạch */}
                 <button
                   type="button"
-                  onClick={() => setModalZoomScale(prev => Math.max(0.75, Number((prev - 0.25).toFixed(2))))}
-                  className="px-2.5 py-1 bg-[#16202C] hover:bg-[#223042] text-gray-300 hover:text-white border border-[#2B3B4E]"
-                  title="Thu nhỏ (-)"
+                  onClick={() => setModalShowPins(!modalShowPins)}
+                  className={`px-2.5 py-1 border transition-all flex items-center gap-1.5 ${
+                    modalShowPins
+                      ? 'bg-[#162538] border-[#3B82F6] text-cyan-300'
+                      : 'bg-[#101720] border-[#222E3E] text-gray-400 hover:text-white'
+                  }`}
+                  title={modalShowPins ? 'Ẩn ghim để xem bản vẽ gốc sạch' : 'Hiện ghim vị trí'}
                 >
-                  -
+                  <Eye className="w-3.5 h-3.5" />
+                  <span>{modalShowPins ? 'Ghim: BẬT' : 'Bản Vẽ Sạch'}</span>
                 </button>
-                <span className="px-2 py-1 bg-[#101720] border border-[#223042] text-white min-w-[55px] text-center">
-                  {Math.round(modalZoomScale * 100)}%
-                </span>
-                <button
-                  type="button"
-                  onClick={() => setModalZoomScale(prev => Math.min(2.5, Number((prev + 0.25).toFixed(2))))}
-                  className="px-2.5 py-1 bg-[#16202C] hover:bg-[#223042] text-gray-300 hover:text-white border border-[#2B3B4E]"
-                  title="Phóng to (+)"
-                >
-                  +
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setModalZoomScale(1)}
-                  className="px-2.5 py-1 bg-[#16202C] hover:bg-[#223042] text-gray-300 hover:text-white border border-[#2B3B4E]"
-                >
-                  100%
-                </button>
+
+                <div className="flex items-center gap-1 bg-[#101720] border border-[#223042] p-0.5">
+                  <button
+                    type="button"
+                    onClick={() => setModalZoomScale(prev => Math.max(0.7, Number((prev - 0.15).toFixed(2))))}
+                    className="p-1 hover:bg-[#1A2637] text-gray-300 hover:text-white"
+                    title="Thu nhỏ"
+                  >
+                    <ZoomOut className="w-3.5 h-3.5" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setModalZoomScale(1)}
+                    className="px-2 py-0.5 text-[#C5A880] text-[11px] min-w-[46px] text-center hover:bg-[#1A2637]"
+                    title="Mặc định 100%"
+                  >
+                    {Math.round(modalZoomScale * 100)}%
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setModalZoomScale(prev => Math.min(3.0, Number((prev + 0.15).toFixed(2))))}
+                    className="p-1 hover:bg-[#1A2637] text-gray-300 hover:text-white"
+                    title="Phóng to"
+                  >
+                    <ZoomIn className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+
                 <button
                   type="button"
                   onClick={() => {
                     setIsMasterPlanZoomed(false);
                     setModalZoomScale(1);
                   }}
-                  className="p-1.5 bg-red-950/60 hover:bg-red-900 text-red-200 border border-red-700 transition-all ml-2"
+                  className="p-1.5 bg-red-950/60 hover:bg-red-900 text-red-200 border border-red-700 transition-all ml-1"
                   title="Đóng cửa sổ"
                 >
                   <X className="w-4 h-4" />
@@ -4003,10 +4023,10 @@ export default function AdminBuildingApartmentManager() {
               </div>
             </div>
 
-            {/* Vùng hiển thị bản đồ quy hoạch thực tế toàn màn hình */}
-            <div className="flex-1 overflow-auto flex items-center justify-center p-4 bg-[#05070A]">
+            {/* Vùng hiển thị bản đồ quy hoạch thực tế toàn màn hình - chiếm trọn không gian, không bị viền đen thừa */}
+            <div className="flex-1 w-full h-full overflow-auto flex items-center justify-center p-2 sm:p-4 bg-[#030508]">
               <div 
-                className="w-full max-w-6xl transition-transform duration-200 ease-out"
+                className="w-full h-full flex items-center justify-center transition-transform duration-200 ease-out"
                 style={{
                   transform: `scale(${modalZoomScale})`,
                   transformOrigin: 'center center'
@@ -4017,14 +4037,13 @@ export default function AdminBuildingApartmentManager() {
                     amenities={THE_TROPICAL_AMENITIES}
                     selectedBlock={selectedBlock}
                     onSelectBlock={handleSwitchBlock}
-                    onSelectBlockAndShowFloors={(b) => {
-                      setIsMasterPlanZoomed(false);
-                      handleSelectBlockAndShowFloors(b);
-                    }}
                     selectedAmenityId={selectedAmenityId}
                     onSelectAmenity={setSelectedAmenityId}
                     hoveredAmenityId={hoveredAmenityId}
                     onHoverAmenity={setHoveredAmenityId}
+                    hideHeader={true}
+                    hideFooter={true}
+                    showHotspotsOverride={modalShowPins}
                   />
                 )}
                 {masterPlanTab === 'SURROUNDINGS' && (
@@ -4035,6 +4054,8 @@ export default function AdminBuildingApartmentManager() {
                     onSelectAmenity={setSelectedAmenityId}
                     hoveredAmenityId={hoveredAmenityId}
                     onHoverAmenity={setHoveredAmenityId}
+                    hideHeader={true}
+                    showPinsOverride={modalShowPins}
                   />
                 )}
                 {masterPlanTab === 'MACRO' && (
@@ -4045,18 +4066,11 @@ export default function AdminBuildingApartmentManager() {
                     onSelectTropical={() => {
                       setMasterPlanTab('TROPICAL');
                     }}
+                    hideHeader={true}
+                    showPinsOverride={modalShowPins}
                   />
                 )}
               </div>
-            </div>
-
-            {/* Ghi chú chân trang */}
-            <div className="px-4 py-2 bg-[#0D1117] border-t border-[#233345] flex items-center justify-between text-[11px] font-mono text-gray-400">
-              <span className="flex items-center gap-1.5 text-[#C5A880]">
-                <Info className="w-3.5 h-3.5" />
-                <span>Bản quyền dữ liệu quy hoạch & bản vẽ kiến trúc đô thị Skyline Apartment & Vinhomes Grand Park</span>
-              </span>
-              <span>Cuộn chuột hoặc dùng các nút +/- để phóng to từng chi tiết</span>
             </div>
           </div>
         );
