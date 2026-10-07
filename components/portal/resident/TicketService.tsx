@@ -136,9 +136,11 @@ interface TicketServiceProps {
 }
 
 export default function TicketService({ currentUser }: TicketServiceProps) {
-  const aptCode = currentUser?.apartment_code || 'CH-06';
-  const residentName = currentUser?.full_name || (currentUser as any)?.fullname || 'Trần Hữu Lực';
-  const residentPhone = currentUser?.phone || '0364967082';
+  // Lấy động 100% từ tài khoản người dùng đăng nhập qua API
+  const aptCode = currentUser?.apartment_code?.trim() || '';
+  const residentName = currentUser?.full_name || (currentUser as any)?.fullname || currentUser?.username || 'Cư dân';
+  const residentPhone = currentUser?.phone?.trim() || '';
+  const residentEmail = currentUser?.email?.trim() || '';
 
   const [tickets, setTickets] = useState<ExtendedServiceRequest[]>([]);
   const [sliderPos, setSliderPos] = useState<number>(50); // 50% for before-after slider
@@ -156,6 +158,12 @@ export default function TicketService({ currentUser }: TicketServiceProps) {
   const [urgencyLevel, setUrgencyLevel] = useState<'HIGH' | 'NORMAL'>('HIGH');
   const [preferredTime, setPreferredTime] = useState<string>('Càng sớm càng tốt (< 30 phút)');
   const [contactPhone, setContactPhone] = useState<string>(residentPhone);
+
+  useEffect(() => {
+    if (residentPhone) {
+      setContactPhone(residentPhone);
+    }
+  }, [residentPhone]);
 
   const [attachedImageBase64, setAttachedImageBase64] = useState<string>('');
   const [isUploadingImage, setIsUploadingImage] = useState(false);
@@ -291,7 +299,7 @@ export default function TicketService({ currentUser }: TicketServiceProps) {
         : content.trim();
 
       const newTicket = await createTicketAsync({
-        apt_code: aptCode,
+        apt_code: aptCode || 'Tòa Nhà',
         resident_name: residentName,
         resident_phone: contactPhone.trim() || residentPhone,
         content: fullContent,
@@ -349,7 +357,7 @@ export default function TicketService({ currentUser }: TicketServiceProps) {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#222B35] pb-4">
         <div>
           <div className="text-[10px] uppercase tracking-[0.25em] text-[#C5A880] font-semibold flex items-center gap-1.5">
-            <Wrench className="w-3.5 h-3.5" /> Dịch Vụ Cư Dân • Căn {aptCode}
+            <Wrench className="w-3.5 h-3.5" /> Dịch Vụ Cư Dân • {aptCode ? `Căn ${aptCode}` : residentName}
           </div>
           <h2 className="font-serif text-2xl text-white font-bold mt-1">
             Yêu Cầu, Hỏi Đáp & Sửa Chữa
@@ -468,7 +476,7 @@ export default function TicketService({ currentUser }: TicketServiceProps) {
         <form onSubmit={handleCreateTicket} className="p-5 bg-[#121820] border border-[#C5A880] space-y-3.5 shadow-2xl animate-fadeIn">
           <div className="flex items-center justify-between border-b border-[#222B35] pb-2.5 text-xs">
             <span className="font-serif font-bold text-white uppercase tracking-wider flex items-center gap-1.5">
-              <Plus className="w-4 h-4 text-[#C5A880]" /> Tạo Phiếu Yêu Cầu • Căn {aptCode}
+              <Plus className="w-4 h-4 text-[#C5A880]" /> Tạo Phiếu Yêu Cầu • {aptCode ? `Căn ${aptCode}` : residentName}
             </span>
             <button
               type="button"
@@ -862,7 +870,7 @@ export default function TicketService({ currentUser }: TicketServiceProps) {
       <div className="space-y-4">
         <div className="flex flex-wrap items-center justify-between gap-2 text-xs uppercase tracking-wider text-gray-400 font-semibold border-b border-[#222B35] pb-2">
           <div className="flex items-center gap-2">
-            <span>Danh Sách Yêu Cầu Căn Hộ {aptCode} ({tickets.length})</span>
+            <span>Danh Sách Yêu Cầu {aptCode ? `Căn Hộ ${aptCode}` : residentName} ({tickets.length})</span>
             <span className="px-2 py-0.5 bg-emerald-950/80 border border-emerald-500/40 text-emerald-400 text-[10px] font-medium flex items-center gap-1">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
               Kết Nối Trực Tuyến
@@ -880,7 +888,7 @@ export default function TicketService({ currentUser }: TicketServiceProps) {
 
         {tickets.length === 0 ? (
           <div className="p-8 bg-[#121820] border border-[#222B35] text-center text-gray-400 text-xs">
-            Hiện căn hộ {aptCode} chưa có yêu cầu sửa chữa nào.
+            Hiện {aptCode ? `căn hộ ${aptCode}` : 'tài khoản của bạn'} chưa có yêu cầu nào.
           </div>
         ) : (
           <div className="space-y-3">

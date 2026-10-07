@@ -133,14 +133,13 @@ export async function GET(req: Request) {
     writeServerData(data);
 
     let filtered = mergedList;
-    if (aptCode) {
-      const clean = aptCode.trim().toUpperCase();
+    if (aptCode || phone) {
+      const clean = aptCode ? aptCode.trim().toUpperCase() : '';
+      const cleanPhone = phone ? phone.trim() : '';
       filtered = filtered.filter(t => {
-        const tApt = (t.apt_code || '').trim().toUpperCase();
-        if (tApt === clean) return true;
-        if ((clean === 'CH-06' || clean === '12A05') && (tApt === 'CH-06' || tApt === '12A05')) return true;
-        if (phone && t.resident_phone && t.resident_phone.trim() === phone.trim()) return true;
-        return false;
+        const matchApt = clean && t.apt_code && t.apt_code.trim().toUpperCase() === clean;
+        const matchPhone = cleanPhone && t.resident_phone && t.resident_phone.trim() === cleanPhone;
+        return Boolean(matchApt || matchPhone);
       });
     }
 
@@ -182,10 +181,10 @@ export async function POST(req: Request) {
       const t = ticket || body;
       
       // Gọi NKS SCRMAI API với thông tin tài khoản cư dân thực tế
-      const residentFullName = (t.resident_name || body.resident_name || 'Cư dân Skyline').trim();
+      const residentFullName = (t.resident_name || body.resident_name || '').trim() || 'Cư dân Skyline';
       const residentPhoneNumber = (t.resident_phone || body.resident_phone || '').trim();
-      const residentEmail = (t.email || body.email || 'resident@skyline.vn').trim();
-      const apt = (t.apt_code || body.apt_code || '12A05').trim();
+      const residentEmail = (t.email || body.email || '').trim() || 'resident@skyline.vn';
+      const apt = (t.apt_code || body.apt_code || '').trim() || 'Tòa Nhà';
       const category = t.ai_category || body.ai_category || 'Kỹ thuật';
 
       const nksResult = await createNksTicket({

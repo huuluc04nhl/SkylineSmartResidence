@@ -279,23 +279,25 @@ export function nksTicketToServiceRequest(
   nks: NksTicket, 
   existingLocalTicket?: ExtendedServiceRequest
 ): ExtendedServiceRequest {
-  // Trích xuất mã căn hộ hoặc vị trí phát sinh sự cố từ tiêu đề, nội dung hoặc dịch vụ
+  // Trích xuất mã căn hộ hoặc vị trí phát sinh sự cố từ dữ liệu NKS API (tiêu đề, nội dung hoặc dịch vụ)
   let aptCode = '';
   const text = `${nks.subject || ''} ${nks.description || ''} ${nks.title || ''}`;
   if (existingLocalTicket?.apt_code) {
     aptCode = existingLocalTicket.apt_code;
   } else {
-    const aptMatch = text.match(/\b([A-Za-z]?\d{1,2}[A-Za-z]\d{1,2}|A\d{3,4}|B\d{3,4}|CH-\d{2})\b/i);
-    if (aptMatch) {
-      aptCode = aptMatch[1].toUpperCase();
+    const bracketMatch = text.match(/\[(?:Căn|Phòng|Apt)\s+([^\]]+)\]/i);
+    const codeMatch = text.match(/\b([A-Za-z]?\d{1,2}[A-Za-z]\d{1,2}|[A-Za-z]-\d{2,4}|CH-\d{2,4})\b/i);
+    
+    if (bracketMatch && bracketMatch[1]) {
+      aptCode = bracketMatch[1].trim().toUpperCase();
+    } else if (codeMatch && codeMatch[1]) {
+      aptCode = codeMatch[1].trim().toUpperCase();
     } else if (text.toLowerCase().includes('block 07') || text.toLowerCase().includes('block 7')) {
       aptCode = 'Block 07';
     } else if (nks.service?.toLowerCase().includes('hồ bơi') || text.toLowerCase().includes('hồ bơi')) {
       aptCode = 'Tiện ích Hồ Bơi';
     } else if (nks.service?.toLowerCase().includes('nhà hàng') || text.toLowerCase().includes('nhà hàng')) {
       aptCode = 'Khu Nhà Hàng';
-    } else if (nks.phone === '0364967082' || nks.fullname?.toLowerCase().includes('lực')) {
-      aptCode = 'CH-06';
     } else {
       aptCode = nks.service ? `Khu ${nks.service}` : 'Tòa Nhà';
     }

@@ -184,15 +184,14 @@ export function getTickets(aptCode?: string, phone?: string): ExtendedServiceReq
     }
   }
 
-  if (aptCode) {
-    const cleanCode = aptCode.trim().toUpperCase();
+  if (aptCode || phone) {
+    const cleanCode = aptCode ? aptCode.trim().toUpperCase() : '';
+    const cleanPhone = phone ? phone.trim() : '';
+
     return allTickets.filter(t => {
-      const tApt = (t.apt_code || '').trim().toUpperCase();
-      if (tApt === cleanCode) return true;
-      // Linh hoạt đồng bộ căn hộ cư dân mẫu CH-06 và 12A05
-      if ((cleanCode === 'CH-06' || cleanCode === '12A05') && (tApt === 'CH-06' || tApt === '12A05')) return true;
-      if (phone && t.resident_phone && t.resident_phone.trim() === phone.trim()) return true;
-      return false;
+      const matchApt = cleanCode && t.apt_code && t.apt_code.trim().toUpperCase() === cleanCode;
+      const matchPhone = cleanPhone && t.resident_phone && t.resident_phone.trim() === cleanPhone;
+      return Boolean(matchApt || matchPhone);
     });
   }
   return allTickets;
