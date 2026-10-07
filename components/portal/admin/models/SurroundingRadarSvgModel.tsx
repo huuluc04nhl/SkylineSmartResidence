@@ -57,18 +57,14 @@ export default function SurroundingRadarSvgModel({
   };
 
   return (
-    <div className="relative bg-[#06090F] border border-[#1E293B] rounded-none overflow-hidden select-none shadow-2xl flex flex-col">
-      {/* THANH ĐIỀU HÀNH BẢN ĐỒ TIỆN ÍCH */}
-      <div className="px-3.5 py-2 bg-[#0B111A] border-b border-[#1E293B] flex flex-wrap items-center justify-between gap-2 text-xs font-mono">
+    <div className="relative w-full h-full flex-1 flex flex-col bg-[#070B12] overflow-hidden select-none">
+      {/* THANH ĐIỀU HÀNH BẢN ĐỒ TIỆN ÍCH TINH GỌN (ĐÃ BỎ TIÊU ĐỀ TRÙNG LẶP) */}
+      <div className="px-3 py-1.5 bg-[#0A0F17] border-b border-[#1E293B] flex items-center justify-between gap-2 text-xs font-mono">
         <div className="flex items-center gap-2">
-          <div className="flex items-center gap-1.5 px-2 py-0.5 bg-[#141E2D] border border-[#23354C] text-[#C5A880]">
-            <Waves className="w-3.5 h-3.5 text-cyan-400" />
-            <span className="font-bold tracking-wider uppercase text-[11px]">
-              BẢN ĐỒ TIỆN ÍCH THÀNH PHỐ BIỂN HỒ & ĐẠI ĐÔ THỊ
-            </span>
-          </div>
-          <span className="text-gray-400 text-[11px] hidden sm:inline">
-            Tâm điểm: Phân khu The Tropical • Hệ sinh thái All-in-one
+          <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
+          <span className="text-gray-400 text-[11px]">Bán kính:</span>
+          <span className="px-2 py-0.5 bg-[#141E2D] border border-[#23354C] text-cyan-300 font-bold text-[11px]">
+            1km • 8 Đại Tiện Ích
           </span>
         </div>
 
@@ -156,8 +152,8 @@ export default function SurroundingRadarSvgModel({
         </div>
       </div>
 
-      {/* VÙNG CANVAS HIỂN THỊ ẢNH THỰC TẾ HOẶC RADAR VECTOR */}
-      <div className="relative w-full h-[460px] sm:h-[500px] md:h-[540px] bg-[#05080E] overflow-hidden flex items-center justify-center p-2">
+      {/* VÙNG CANVAS HIỂN THỊ CHIẾM TRỌN KHÔNG GIAN */}
+      <div className="relative w-full flex-1 min-h-[380px] sm:min-h-[460px] bg-[#05080E] overflow-hidden flex items-center justify-center p-2">
         
         <div 
           className="relative w-full h-full flex items-center justify-center transition-transform duration-200"

@@ -140,19 +140,15 @@ export default function TropicalCampusSvgModel({
   const colRightAmenities = filteredAmenities.slice(midIdx);
 
   return (
-    <div className="relative bg-[#06090F] border border-[#1E293B] rounded-none overflow-hidden select-none shadow-2xl flex flex-col">
+    <div className="relative w-full h-full flex-1 flex flex-col bg-[#070B12] overflow-hidden select-none">
       
-      {/* THANH ĐIỀU HÀNH MẶT BẰNG & CÁC CHẾ ĐỘ HIỂN THỊ */}
-      <div className="px-2.5 sm:px-3.5 py-2 bg-[#0B111A] border-b border-[#1E293B] flex flex-wrap items-center justify-between gap-2 text-xs font-mono">
-        <div className="flex items-center gap-1.5 sm:gap-2">
-          <div className="flex items-center gap-1.5 px-2 py-0.5 bg-[#141E2D] border border-[#23354C] text-[#C5A880]">
-            <Compass className="w-3.5 h-3.5 text-[#C5A880] shrink-0" />
-            <span className="font-bold tracking-wider uppercase text-[10.5px] sm:text-[11px]">
-              QUY HOẠCH THE TROPICAL (ẢNH MẶT BẰNG THỰC TẾ)
-            </span>
-          </div>
-          <span className="text-gray-400 text-[10.5px] hidden lg:inline">
-            4 Khối tháp BS-7, BS-8, BS-9, BS-10 & 23 tiện ích
+      {/* THANH ĐIỀU HÀNH THU PHÓNG & LỚP PHỦ TINH GỌN (ĐÃ BỎ TIÊU ĐỀ TRÙNG LẶP) */}
+      <div className="px-3 py-1.5 bg-[#0A0F17] border-b border-[#1E293B] flex items-center justify-between gap-2 text-xs font-mono">
+        <div className="flex items-center gap-2">
+          <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+          <span className="text-gray-400 text-[11px]">Khối đang chọn:</span>
+          <span className="px-2 py-0.5 bg-[#141E2D] border border-[#23354C] text-[#C5A880] font-bold text-[11px]">
+            Chung Cư {selectedBlock}
           </span>
         </div>
 
@@ -215,9 +211,9 @@ export default function TropicalCampusSvgModel({
       </div>
 
       {/* ========================================================================= */}
-      {/* KHUNG HIỂN THỊ ẢNH MẶT BẰNG QUY HOẠCH CHÍNH XÁC + LỚP PHỦ TƯƠNG TÁC        */}
+      {/* KHUNG HIỂN THỊ ẢNH MẶT BẰNG CHIẾM TRỌN KHÔNG GIAN                          */}
       {/* ========================================================================= */}
-      <div className="relative w-full h-[430px] sm:h-[490px] md:h-[530px] bg-[#070A0F] overflow-hidden flex items-center justify-center p-1 sm:p-2">
+      <div className="relative w-full flex-1 min-h-[380px] sm:min-h-[460px] bg-[#070A0F] overflow-hidden flex items-center justify-center p-1 sm:p-2">
         
         {/* Container thu phóng & di chuyển mượt mà */}
         <div 

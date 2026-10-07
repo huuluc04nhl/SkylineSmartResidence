@@ -1970,28 +1970,26 @@ export default function AdminBuildingApartmentManager() {
           {/* GÓC NHÌN 5: BẢN ĐỒ QUY HOẠCH ĐÔ THỊ & KIẾN TRÚC PHÂN KHU    */}
           {/* ----------------------------------------------------------- */}
           {buildingPerspective === 'MASTER_PLAN' && (
-            <div className="p-3 sm:p-4 bg-[#0A0E17] h-[660px] sm:h-[760px] overflow-y-auto space-y-4 no-scrollbar select-none">
+            <div className="h-[660px] sm:h-[760px] bg-[#070B12] overflow-y-auto no-scrollbar select-none flex flex-col">
               
               {/* SUB-VIEW 1: PHÂN KHU THE TROPICAL - BẢN ĐỒ MẶT BẰNG QUY HOẠCH THỰC TẾ & 23 TIỆN ÍCH */}
               {masterPlanTab === 'TROPICAL' && (
-                <div className="space-y-3.5">
-                  <TropicalCampusSvgModel
-                    amenities={THE_TROPICAL_AMENITIES}
-                    selectedBlock={selectedBlock}
-                    onSelectBlock={handleSwitchBlock}
-                    onSelectBlockAndShowFloors={handleSelectBlockAndShowFloors}
-                    selectedAmenityId={selectedAmenityId}
-                    onSelectAmenity={setSelectedAmenityId}
-                    hoveredAmenityId={hoveredAmenityId}
-                    onHoverAmenity={setHoveredAmenityId}
-                    onOpenZoomModal={() => setIsMasterPlanZoomed(true)}
-                  />
-                </div>
+                <TropicalCampusSvgModel
+                  amenities={THE_TROPICAL_AMENITIES}
+                  selectedBlock={selectedBlock}
+                  onSelectBlock={handleSwitchBlock}
+                  onSelectBlockAndShowFloors={handleSelectBlockAndShowFloors}
+                  selectedAmenityId={selectedAmenityId}
+                  onSelectAmenity={setSelectedAmenityId}
+                  hoveredAmenityId={hoveredAmenityId}
+                  onHoverAmenity={setHoveredAmenityId}
+                  onOpenZoomModal={() => setIsMasterPlanZoomed(true)}
+                />
               )}
 
               {/* SUB-VIEW 2: TIỆN ÍCH XUNG QUANH CỦA DỰ ÁN & KHU DÂN CƯ */}
               {masterPlanTab === 'SURROUNDINGS' && (
-                <div className="space-y-3.5">
+                <div className="flex-1 flex flex-col space-y-2 p-2">
                   {/* MÔ HÌNH BẢN ĐỒ TIỆN ÍCH ĐẠI ĐÔ THỊ & RADAR KHOẢNG CÁCH */}
                   <SurroundingRadarSvgModel
                     amenities={SURROUNDING_AMENITIES}
@@ -2004,7 +2002,7 @@ export default function AdminBuildingApartmentManager() {
                   />
 
                   {/* Danh sách các tiện ích xung quanh của dự án & khu dân cư (HOVER XEM TIỆN ÍCH) */}
-                  <div className="p-3 bg-[#111622] border border-[#222E3E] space-y-2.5">
+                  <div className="p-2.5 bg-[#111622] border border-[#222E3E] space-y-2">
                     <div className="flex items-center justify-between">
                       <div className="text-xs font-mono font-bold text-white flex items-center gap-1.5">
                         <Building2 className="w-3.5 h-3.5 text-[#C5A880]" />
@@ -2015,7 +2013,7 @@ export default function AdminBuildingApartmentManager() {
                       </span>
                     </div>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-[240px] overflow-y-auto no-scrollbar pr-1">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-[220px] overflow-y-auto no-scrollbar pr-1">
                       {SURROUNDING_AMENITIES.map((sur) => {
                         const isHovered = hoveredAmenityId === sur.id;
                         const isSel = selectedAmenityId === sur.id;
@@ -2067,7 +2065,7 @@ export default function AdminBuildingApartmentManager() {
 
               {/* SUB-VIEW 3: QUY HOẠCH TỔNG THỂ ĐẠI ĐÔ THỊ VINHOMES GRAND PARK */}
               {masterPlanTab === 'MACRO' && (
-                <div className="space-y-3.5">
+                <div className="flex-1 flex flex-col space-y-2 p-2">
                   {/* BẢN ĐỒ QUY HOẠCH TỔNG THỂ ĐẠI ĐÔ THỊ 271HA THỰC TẾ */}
                   <MacroCitySvgModel
                     selectedBlock={selectedBlock}
