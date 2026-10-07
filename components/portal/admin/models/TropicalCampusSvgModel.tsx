@@ -45,13 +45,12 @@ export default function TropicalCampusSvgModel({
       units: 714,
       loc: 'Mặt tiền Phố Cọ Rodeo & Vành Đai',
       badge: 'Chung Cư BS-7 (34 Tầng)',
-      // Tọa độ trên ảnh gốc 453 x 677
       svgX: 68,
       svgY: 180,
       svgW: 122,
       svgH: 105,
-      pillX: 86,
-      pillY: 292,
+      pillX: 94,
+      pillY: 298,
       isCurrent: selectedBlock === 'BS-07' || selectedBlock === 'BS-7',
     },
     {
@@ -63,7 +62,7 @@ export default function TropicalCampusSvgModel({
       loc: 'Hướng Vườn Cọ & Sân Thiền',
       badge: 'Chung Cư BS-8 (39 Tầng)',
       svgX: 68,
-      svgY: 58,
+      svgY: 55,
       svgW: 190,
       svgH: 60,
       pillX: 95,
@@ -82,8 +81,8 @@ export default function TropicalCampusSvgModel({
       svgY: 55,
       svgW: 100,
       svgH: 98,
-      pillX: 395,
-      pillY: 115,
+      pillX: 399,
+      pillY: 112,
       isCurrent: selectedBlock === 'BS-09' || selectedBlock === 'BS-9',
     },
     {
@@ -98,37 +97,37 @@ export default function TropicalCampusSvgModel({
       svgY: 172,
       svgW: 192,
       svgH: 88,
-      pillX: 405,
-      pillY: 260,
+      pillX: 398,
+      pillY: 250,
       isCurrent: selectedBlock === 'BS-10' || selectedBlock === 'BS-10',
     }
   ];
 
-  // Tọa độ các ghim tiện ích trên ảnh quy hoạch thực tế (ảnh gốc 453 x 677)
+  // Tọa độ các ghim tiện ích chuẩn khớp 100% từng pixel trên ảnh quy hoạch thực tế
   const AMENITY_POSITIONS_453x677: Record<string, { x: number; y: number }> = {
-    '01': { x: 175, y: 288 }, // Phố cọ Rodeo
-    '02': { x: 198, y: 160 }, // Bể bơi nhiệt đới
-    '03': { x: 200, y: 175 }, // Bể bơi ốc đảo
-    '04': { x: 42, y: 102 },  // Bể bơi Malibu
-    '05': { x: 203, y: 185 }, // Nhà phụ trợ bể bơi
-    '06': { x: 304, y: 163 }, // Sân chơi trẻ em
-    '07': { x: 271, y: 140 }, // Sân Gym ngoài trời
-    '08': { x: 112, y: 157 }, // Sân yoga
-    '09': { x: 211, y: 141 }, // Suối bậc cảnh quan
-    '10': { x: 230, y: 215 }, // Vườn cọ nhiệt đới Honolulu
-    '11': { x: 136, y: 230 }, // Vườn California
+    '01': { x: 172, y: 286 }, // Phố cọ Rodeo (sảnh BS-7)
+    '02': { x: 194, y: 158 }, // Bể bơi nhiệt đới
+    '03': { x: 200, y: 172 }, // Bể bơi ốc đảo
+    '04': { x: 42, y: 160 },  // Bể bơi Malibu
+    '05': { x: 201, y: 186 }, // Nhà phụ trợ bể bơi
+    '06': { x: 302, y: 164 }, // Sân chơi trẻ em
+    '07': { x: 268, y: 140 }, // Sân Gym ngoài trời
+    '08': { x: 114, y: 157 }, // Sân yoga
+    '09': { x: 214, y: 144 }, // Suối bậc cảnh quan
+    '10': { x: 230, y: 216 }, // Vườn cọ nhiệt đới Honolulu
+    '11': { x: 149, y: 188 }, // Vườn California
     '12': { x: 317, y: 180 }, // Vườn San Mario
     '13': { x: 440, y: 245 }, // Biển tên The Tropical
-    '14': { x: 245, y: 141 }, // Chòi nghỉ
-    '15': { x: 274, y: 181 }, // Giàn cảnh quan
+    '14': { x: 244, y: 142 }, // Chòi nghỉ
+    '15': { x: 272, y: 181 }, // Giàn cảnh quan
     '16': { x: 179, y: 166 }, // Ghế nghỉ Sunken
-    'Y-01': { x: 40, y: 247 }, // Sân cỏ đa năng
-    'Y-02': { x: 40, y: 274 }, // Thác nước điểm nhấn
-    'Y-03': { x: 40, y: 227 }, // Artwork điểm nhấn
-    'Y-04': { x: 42, y: 160 }, // Sân thể thao
-    'P': { x: 378, y: 268 },   // Bãi đỗ xe
-    'D': { x: 134, y: 281 },   // Lối vào sảnh Drop-off
-    'H': { x: 223, y: 261 },   // Lối xuống hầm
+    'Y-01': { x: 40, y: 252 }, // Sân cỏ đa năng
+    'Y-02': { x: 40, y: 275 }, // Thác nước điểm nhấn
+    'Y-03': { x: 41, y: 230 }, // Artwork điểm nhấn
+    'Y-04': { x: 43, y: 101 }, // Sân thể thao
+    'P': { x: 378, y: 269 },   // Bãi đỗ xe
+    'D': { x: 129, y: 284 },   // Lối vào sảnh Drop-off
+    'H': { x: 222, y: 262 },   // Lối xuống hầm
   };
 
   const filteredAmenities = amenities.filter(item => {
@@ -377,71 +376,67 @@ export default function TropicalCampusSvgModel({
                   onMouseLeave={() => onHoverAmenity(null)}
                 >
                   <title>{item.name} (#{item.displayNumber || item.id}) - {item.distance}</title>
-                  {/* Radar pulse khi chọn hoặc hover */}
-                  {isHighlighted && (
+                  {/* Hiệu ứng ghim tiện ích: khi hover/select phát sáng rực rỡ, mặc định trong suốt giữ nguyên nét vẽ gốc */}
+                  {isHighlighted ? (
+                    <>
+                      {/* Radar pulse khi chọn hoặc hover */}
+                      <circle
+                        r={isSelected ? 18 : 14}
+                        fill={isSelected ? '#F59E0B' : '#38BDF8'}
+                        opacity={isSelected ? 0.6 : 0.4}
+                        className="animate-ping"
+                      />
+
+                      {/* Vòng hào quang định vị */}
+                      <circle
+                        r="11"
+                        fill="none"
+                        stroke="#FFFFFF"
+                        strokeWidth="1.5"
+                        strokeDasharray="2 2"
+                      />
+
+                      {/* Nút ghim phát sáng nổi bật */}
+                      <circle
+                        r={9}
+                        fill={
+                          isSelected
+                            ? '#F59E0B'
+                            : isHovered
+                            ? '#C5A880'
+                            : isGold
+                            ? '#EAB308'
+                            : isSpecialCode
+                            ? '#1E293B'
+                            : '#0B111A'
+                        }
+                        stroke="#FFFFFF"
+                        strokeWidth={1.8}
+                        filter="url(#goldBlockGlow)"
+                      />
+
+                      {/* Ký hiệu / Số trên ghim */}
+                      <text
+                        y="2.8"
+                        fill={isSelected || isGold ? '#000000' : '#FFFFFF'}
+                        fontSize="7.5"
+                        fontWeight="bold"
+                        fontFamily="monospace"
+                        textAnchor="middle"
+                      >
+                        {item.displayNumber || item.id}
+                      </text>
+                    </>
+                  ) : (
+                    /* Trạng thái mặc định: vòng định vị trong suốt tinh tế khớp 100% hình gốc */
                     <circle
-                      r="16"
-                      fill={isSelected ? '#F59E0B' : '#38BDF8'}
-                      opacity={isSelected ? 0.6 : 0.4}
-                      className="animate-ping"
+                      r="8"
+                      fill="transparent"
+                      stroke="rgba(245, 158, 11, 0.35)"
+                      strokeWidth="1"
+                      className="transition-all duration-150 hover:stroke-amber-400 hover:stroke-2"
                     />
                   )}
-
-                  {/* Vòng hào quang định vị */}
-                  {isHighlighted && (
-                    <circle
-                      r="12"
-                      fill="none"
-                      stroke="#FFFFFF"
-                      strokeWidth="1.5"
-                      strokeDasharray="2 2"
-                    />
-                  )}
-
-                  {/* Nút ghim tiện ích (tương ứng với số tròn đen / vàng trên bản đồ gốc) */}
-                  <circle
-                    r={isHighlighted ? 9.5 : 7.5}
-                    fill={
-                      isSelected
-                        ? '#F59E0B'
-                        : isHovered
-                        ? '#C5A880'
-                        : isGold
-                        ? '#EAB308'
-                        : isSpecialCode
-                        ? '#1E293B'
-                        : '#000000'
-                    }
-                    stroke={
-                      isSelected
-                        ? '#FFFFFF'
-                        : isHovered
-                        ? '#FFFFFF'
-                        : isGold
-                        ? '#000000'
-                        : '#94A3B8'
-                    }
-                    strokeWidth={isHighlighted ? 1.8 : 1}
-                    className="transition-all duration-150"
-                  />
-
-                  {/* Ký hiệu / Số trên ghim */}
-                  <text
-                    y="2.5"
-                    fill={
-                      isSelected
-                        ? '#000000'
-                        : isGold
-                        ? '#000000'
-                        : '#FFFFFF'
-                    }
-                    fontSize={isHighlighted ? 7.5 : 6}
-                    fontWeight="bold"
-                    fontFamily="monospace"
-                    textAnchor="middle"
-                  >
-                    {item.displayNumber || item.id}
-                  </text>
                 </g>
               );
             })}
