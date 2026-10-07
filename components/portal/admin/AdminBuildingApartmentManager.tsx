@@ -1972,7 +1972,7 @@ export default function AdminBuildingApartmentManager() {
           {buildingPerspective === 'MASTER_PLAN' && (
             <div className="p-3 sm:p-4 bg-[#0A0E17] h-[660px] sm:h-[760px] overflow-y-auto space-y-4 no-scrollbar select-none">
               
-              {/* SUB-VIEW 1: PHÂN KHU THE TROPICAL - BẢN ĐỒ NỘI KHU 23 TIỆN ÍCH (TỰ VẼ 2.5D) */}
+              {/* SUB-VIEW 1: PHÂN KHU THE TROPICAL - BẢN ĐỒ MẶT BẰNG QUY HOẠCH THỰC TẾ & 23 TIỆN ÍCH */}
               {masterPlanTab === 'TROPICAL' && (
                 <div className="space-y-3.5">
                   <TropicalCampusSvgModel
@@ -1992,7 +1992,7 @@ export default function AdminBuildingApartmentManager() {
               {/* SUB-VIEW 2: TIỆN ÍCH XUNG QUANH CỦA DỰ ÁN & KHU DÂN CƯ */}
               {masterPlanTab === 'SURROUNDINGS' && (
                 <div className="space-y-3.5">
-                  {/* MÔ HÌNH RADAR TIỆN ÍCH ĐÔ THỊ TỰ VẼ (SELF-DRAWN RADAR VECTOR) */}
+                  {/* MÔ HÌNH BẢN ĐỒ TIỆN ÍCH ĐẠI ĐÔ THỊ & RADAR KHOẢNG CÁCH */}
                   <SurroundingRadarSvgModel
                     amenities={SURROUNDING_AMENITIES}
                     selectedBlock={selectedBlock}
@@ -2068,7 +2068,7 @@ export default function AdminBuildingApartmentManager() {
               {/* SUB-VIEW 3: QUY HOẠCH TỔNG THỂ ĐẠI ĐÔ THỊ VINHOMES GRAND PARK */}
               {masterPlanTab === 'MACRO' && (
                 <div className="space-y-3.5">
-                  {/* MÔ HÌNH QUY HOẠCH ĐẠI ĐÔ THỊ TỰ VẼ (SELF-DRAWN MACRO MODEL) */}
+                  {/* BẢN ĐỒ QUY HOẠCH TỔNG THỂ ĐẠI ĐÔ THỊ 271HA THỰC TẾ */}
                   <MacroCitySvgModel
                     selectedBlock={selectedBlock}
                     selectedAmenityId={selectedAmenityId}
@@ -4006,7 +4006,7 @@ export default function AdminBuildingApartmentManager() {
               </div>
             </div>
 
-            {/* Vùng hiển thị mô hình tự vẽ toàn màn hình */}
+            {/* Vùng hiển thị bản đồ quy hoạch thực tế toàn màn hình */}
             <div className="flex-1 overflow-auto flex items-center justify-center p-4 bg-[#05070A]">
               <div 
                 className="w-full max-w-6xl transition-transform duration-200 ease-out"
