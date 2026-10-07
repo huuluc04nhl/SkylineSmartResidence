@@ -1117,11 +1117,15 @@ export default function AdminBuildingApartmentManager() {
           {(buildingPerspective === 'BUILDING_3D_FLOOR' || buildingPerspective === '3D' || buildingPerspective === 'BUILDING_ELEVATION' || buildingPerspective === 'FLOOR_PLAN') && (() => {
             const curTone = toneConfig.GOLD_LUXURY;
 
-            // Tính bước nhảy từng tầng mở rộng toàn diện (đáy 790, đỉnh 95 -> chiều cao 695px, gấp 1.8 lần cũ)
             const floorStep = (790 - 95) / (currentTotalFloors - 1);
-            const rulerLevels = currentTotalFloors === 39 
+            const baseRulerLevels = currentTotalFloors === 39 
               ? [39, 35, 30, 25, 20, 15, 10, 5, 1] 
               : [34, 30, 25, 20, 15, 10, 5, 1];
+            // Đồng bộ thước đo: luôn luôn có mốc tầng đang chọn, nếu sát mốc khác thì thay thế mốc đó để không đè chữ
+            const rulerLevels = Array.from(new Set([
+              ...baseRulerLevels.filter(fl => Math.abs(fl - selectedFloor) > 1),
+              ...(selectedFloor > 0 ? [selectedFloor] : [])
+            ])).sort((a, b) => b - a);
 
             return (
               <div className={`relative w-full h-[660px] sm:h-[760px] ${curTone.containerBg} overflow-hidden flex flex-col select-none transition-colors duration-500`}>
@@ -1251,7 +1255,7 @@ export default function AdminBuildingApartmentManager() {
                       <g className="font-mono text-[9.5px]">
                         {/* VẠCH TẦNG SẢNH (G) */}
                         {(() => {
-                          const yPos = 845;
+                          const yPos = 785;
                           const isFloorSelected = selectedFloor === 0;
                           const rulerColor = isFloorSelected ? '#C5A880' : '#38BDF8';
                           const rulerTextColor = isFloorSelected ? '#E6CA9E' : '#7DD3FC';
@@ -1268,12 +1272,12 @@ export default function AdminBuildingApartmentManager() {
                               <line 
                                 x1="88" 
                                 y1={yPos} 
-                                x2="218" 
+                                x2="200" 
                                 y2={yPos} 
                                 stroke={rulerColor} 
                                 strokeWidth={isFloorSelected ? 2 : 1.2} 
                               />
-                              <circle cx="218" cy={yPos} r={isFloorSelected ? 4 : 3} fill={rulerColor} />
+                              <circle cx="200" cy={yPos} r={isFloorSelected ? 4 : 3} fill={rulerColor} />
                               <rect
                                 x="18"
                                 y={yPos - 9}
@@ -1293,7 +1297,9 @@ export default function AdminBuildingApartmentManager() {
                         })()}
                         {rulerLevels.map(fl => {
                           const yBase = 790 - (fl - 1) * floorStep;
-                          const yPos = Number((yBase - 30).toFixed(1));
+                          const flH = fl === currentTotalFloors ? 18 : 14;
+                          // Tâm dải tầng 3D tại vách bên trái (x = 220) nằm chính xác giữa (yBase - 40 - flH) và (yBase - 40)
+                          const yPos = Number((yBase - 40 - (flH / 2)).toFixed(1));
                           const hasOccupied = displayUnits.some(u => u.floor === fl && u.status === 'OCCUPIED');
                           const isFloorSelected = selectedFloor === fl;
                           const rulerColor = isFloorSelected ? '#C5A880' : hasOccupied ? '#10B981' : '#334155';
@@ -1314,13 +1320,13 @@ export default function AdminBuildingApartmentManager() {
                               <line 
                                 x1="88" 
                                 y1={yPos} 
-                                x2="218" 
+                                x2="220" 
                                 y2={yPos} 
                                 stroke={rulerColor} 
                                 strokeWidth={isFloorSelected || hasOccupied ? 1.8 : 1} 
                                 strokeDasharray={isFloorSelected || hasOccupied ? 'none' : '3 3'} 
                               />
-                              <circle cx="218" cy={yPos} r={isFloorSelected ? 4 : hasOccupied ? 3 : 2} fill={rulerColor} />
+                              <circle cx="220" cy={yPos} r={isFloorSelected ? 4 : hasOccupied ? 3 : 2} fill={rulerColor} />
                               
                               <rect
                                 x="22"
@@ -1696,8 +1702,8 @@ export default function AdminBuildingApartmentManager() {
                           const wallY = isPodium ? 785 : Number((curYBase - 40 - (curH / 2)).toFixed(1));
 
                           // Thẻ Callout Tầng - Tinh gọn, thanh thoát, định vị cao độ kiến trúc
-                          const cardX = 692;
-                          const cardW = 250;
+                          const cardX = 672;
+                          const cardW = 248;
                           const cardH = 90;
                           const targetCardY = Math.max(25, Math.min(780, Math.round(wallY - cardH / 2)));
                           const dockX = cardX;
