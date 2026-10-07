@@ -201,20 +201,17 @@ export async function POST(req: Request) {
 
       const newId = nksResult.success && nksResult.id ? String(nksResult.id) : (t.id || `TICK-${Math.floor(100 + Math.random() * 900)}`);
 
-      let assignedTech = undefined;
+      let suggestedTech = undefined;
       let scheduledTime = undefined;
       let aiReason = undefined;
-      let ticketStatus: 'Open' | 'In_Progress' | 'Resolved' = 'Open';
-      let aiReplyText: string | undefined = undefined;
-      let aiRepliedAt: string | undefined = undefined;
+      let matchScore = undefined;
+      let aiSuggestedReplyText: string | undefined = undefined;
 
-      // 1. Nếu là Hỏi Đáp (INQUIRY) -> AI tự động giải đáp ngay lập tức 24/7 từ Knowledge Base
+      // 1. Nếu là Hỏi Đáp (INQUIRY) -> AI soạn thảo bản thảo phản hồi gợi ý (chờ BQL xác nhận hoặc gửi)
       if (finalCategoryType === 'INQUIRY') {
-        aiReplyText = findInquiryAnswer(t.content || body.content || '');
-        aiRepliedAt = new Date().toISOString();
-        ticketStatus = 'Resolved'; // Đã có câu trả lời tức thì cho cư dân
+        aiSuggestedReplyText = findInquiryAnswer(t.content || body.content || '');
       } 
-      // 2. Nếu là Sự Cố Kỹ Thuật (REPAIR) -> AI tự động điều phối Kỹ thuật viên (KTV)
+      // 2. Nếu là Sự Cố Kỹ Thuật (REPAIR) -> AI phân tích và ĐỀ XUẤT KTV tối ưu (chờ BQL phê duyệt)
       else if (finalCategoryType === 'REPAIR') {
         if (data.technicians && data.technicians.length > 0) {
           const evalResult = evaluateBestTechnicianWithAI(
@@ -222,45 +219,39 @@ export async function POST(req: Request) {
             data.technicians,
             data.tickets
           );
-          assignedTech = evalResult.technician;
+          suggestedTech = evalResult.technician;
           scheduledTime = evalResult.scheduledTime;
           aiReason = evalResult.reason;
-          ticketStatus = 'In_Progress';
+          matchScore = evalResult.matchScore;
         }
       }
-      // 3. Nếu là Phản ánh / Góp ý (FEEDBACK) hoặc Yêu cầu (SERVICE_REQUEST) -> Chuyển trực tiếp BQL xử lý
-      else {
-        ticketStatus = 'Open';
-      }
 
+      // NGUYÊN TẮC MINH BẠCH: Mọi ticket mới tạo BẮT BUỘC khởi đầu ở trạng thái 'Open' (Chờ BQL tiếp nhận & xác nhận)
+      // AI chỉ đóng vai trò Trợ lý phân tích & đề xuất, KHÔNG tự ý đóng phiếu hay gán chính thức khi chưa qua BQL.
       const newTicket: ExtendedServiceRequest = {
         ...t,
         id: newId,
         nks_id: nksResult.id,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
-        status: ticketStatus,
+        status: 'Open', // Chờ BQL tiếp nhận & xác nhận
         ticket_type: finalCategoryType,
         ticket_type_label: finalCategoryLabel,
         handled_by: finalHandledBy,
-        ai_reply: aiReplyText,
-        ai_replied_at: aiRepliedAt,
-        assigned_technician_id: assignedTech?.id,
-        assigned_technician: assignedTech?.name,
-        assigned_technician_phone: assignedTech?.phone,
-        scheduled_time: scheduledTime,
-        auto_dispatched: finalCategoryType === 'REPAIR' && Boolean(assignedTech),
+        ai_suggested_reply: aiSuggestedReplyText,
+        // Các trường đề xuất của AI (Minh bạch trên Admin Kanban)
+        suggested_technician: suggestedTech?.name,
+        suggested_technician_id: suggestedTech?.id,
+        suggested_technician_phone: suggestedTech?.phone,
+        suggested_match_score: matchScore,
         ai_dispatch_reason: aiReason,
+        scheduled_time: scheduledTime,
+        // Chưa gán chính thức KTV cho đến khi BQL bấm Duyệt / Phân bổ
+        assigned_technician: undefined,
+        assigned_technician_id: undefined,
+        assigned_technician_phone: undefined,
+        auto_dispatched: false,
       };
-
-      // Đồng bộ thông tin phản hồi ban đầu hoặc KTV lên NKS API
-      if (nksResult.id) {
-        if (aiReplyText) {
-          await updateNksTicket({ id: nksResult.id, reply: aiReplyText }).catch(e => console.warn('Lỗi sync AI reply lên NKS:', e));
-        } else if (assignedTech?.name) {
-          await updateNksTicket({ id: nksResult.id, engineername: assignedTech.name }).catch(e => console.warn('Lỗi sync KTV lên NKS:', e));
-        }
-      }
 
       // Thêm vào danh sách local
       data.tickets = [newTicket, ...data.tickets.filter(item => item.id !== newId)];

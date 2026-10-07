@@ -58,6 +58,13 @@ export interface ExtendedServiceRequest extends Omit<ServiceRequest, 'after_imag
   rated_at?: string;
   resolved_at?: string;
 
+  // Đề xuất hỗ trợ bởi AI (Minh bạch - Chờ BQL phê duyệt)
+  suggested_technician?: string;
+  suggested_technician_id?: string;
+  suggested_technician_phone?: string;
+  suggested_match_score?: number;
+  ai_suggested_reply?: string;
+
   // Điều phối tự động bằng AI
   auto_dispatched?: boolean;
   ai_dispatch_reason?: string;
@@ -268,10 +275,9 @@ export async function createTicketAsync(payload: {
     priority_color: isUrgent ? '#DC2626' : '#D97706',
     sla_deadline: new Date(Date.now() + (isUrgent ? 45 : 120) * 60000).toISOString(),
     sla_minutes_left: isUrgent ? 45 : 120,
-    status: ticketType === 'INQUIRY' ? 'Resolved' : 'Open',
-    // Nếu là câu hỏi, AI lập tức giải đáp tự động
-    ai_reply: ticketType === 'INQUIRY' ? (classification.suggestedAiReply || findInquiryAnswer(payload.content)) : undefined,
-    ai_replied_at: ticketType === 'INQUIRY' ? new Date().toISOString() : undefined,
+    status: 'Open', // Minh bạch 100%: Luôn ở trạng thái Chờ BQL tiếp nhận / xác nhận
+    // AI chỉ đóng vai trò Trợ lý đề xuất bản thảo sơ bộ, KHÔNG tự ý đóng phiếu
+    ai_suggested_reply: ticketType === 'INQUIRY' ? (classification.suggestedAiReply || findInquiryAnswer(payload.content)) : undefined,
     before_image: payload.before_image || '',
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
@@ -344,9 +350,8 @@ export function createTicket(payload: {
     priority_color: isUrgent ? '#DC2626' : '#D97706',
     sla_deadline: new Date(Date.now() + (isUrgent ? 45 : 120) * 60000).toISOString(),
     sla_minutes_left: isUrgent ? 45 : 120,
-    status: ticketType === 'INQUIRY' ? 'Resolved' : 'Open',
-    ai_reply: ticketType === 'INQUIRY' ? (classification.suggestedAiReply || findInquiryAnswer(payload.content)) : undefined,
-    ai_replied_at: ticketType === 'INQUIRY' ? new Date().toISOString() : undefined,
+    status: 'Open', // Mặc định luôn là Chờ BQL xác nhận
+    ai_suggested_reply: ticketType === 'INQUIRY' ? (classification.suggestedAiReply || findInquiryAnswer(payload.content)) : undefined,
     before_image: payload.before_image || '',
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),

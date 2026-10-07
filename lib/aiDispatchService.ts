@@ -26,12 +26,14 @@ import {
 const AUTO_DISPATCH_SETTING_KEY = 'skyline_ai_auto_dispatch_enabled';
 
 /**
- * Kiểm tra cấu hình Tự động điều phối AI (Mặc định bật 100%)
+ * Kiểm tra cấu hình Tự động điều phối AI
+ * Mặc định TẮT (false) để đảm bảo tính minh bạch: BQL là người xem xét & bấm duyệt,
+ * tránh việc hệ thống tự ý nhảy trạng thái mà BQL không kịp kiểm tra.
  */
 export function isAutoDispatchEnabled(): boolean {
-  if (typeof window === 'undefined') return true;
+  if (typeof window === 'undefined') return false;
   const stored = localStorage.getItem(AUTO_DISPATCH_SETTING_KEY);
-  if (stored === null) return true; // Mặc định bật
+  if (stored === null) return false; // Mặc định tắt để đảm bảo minh bạch
   return stored === 'true';
 }
 
@@ -262,7 +264,13 @@ export function autoDispatchSingleTicket(ticketId: string): ExtendedServiceReque
 }
 
 /**
- * Tự động quét và xử lý toàn bộ các phiếu đang chờ:
+ * Ban Quản Lý bấm 1 chạm để PHÊ DUYỆT ĐỀ XUẤT ĐIỀU PHỐI CỦA AI:
+ * Chuyển phiếu sang 'In_Progress', gán chính thức KTV và cập nhật NKS API
+ */
+export const approveAiRecommendation = autoDispatchSingleTicket;
+
+/**
+ * Tự động quét và xử lý toàn bộ các phiếu đang chờ (Chỉ chạy khi Admin chủ động bật):
  * - Tự động trả lời các câu hỏi (INQUIRY)
  * - Tự động điều phối KTV cho các sự cố kỹ thuật (REPAIR)
  * - Giữ lại phản ánh (FEEDBACK) cho BQL giải quyết

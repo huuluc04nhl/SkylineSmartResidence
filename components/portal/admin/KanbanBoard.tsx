@@ -279,6 +279,31 @@ export default function KanbanBoard() {
     setAssigningTicket(null);
   };
 
+  // Ban Quản Lý bấm 1 chạm DUYỆT ĐỀ XUẤT ĐIỀU PHỐI KTV CỦA AI
+  const handleApproveAiRecommendation = (ticket: ExtendedServiceRequest) => {
+    let techId = ticket.suggested_technician_id;
+    if (!techId && ticket.suggested_technician) {
+      const found = technicians.find(t => t.name.toLowerCase().includes((ticket.suggested_technician || '').toLowerCase()));
+      if (found) techId = found.id;
+    }
+    if (!techId && technicians.length > 0) {
+      techId = technicians[0].id;
+    }
+
+    if (techId) {
+      const res = assignTechnicianToTicket(
+        ticket.id, 
+        techId, 
+        ticket.scheduled_time || 'Trong vòng 30 - 45 phút'
+      );
+      if (res) {
+        refreshAllData();
+        setActionSuccessMsg(`BQL đã duyệt phân công KTV ${res.assigned_technician} xử lý phiếu #${res.nks_id || res.id}!`);
+        setTimeout(() => setActionSuccessMsg(null), 4000);
+      }
+    }
+  };
+
   // Handle uploading after image
   const handleAfterFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -601,12 +626,42 @@ export default function KanbanBoard() {
                           </div>
                         )}
 
-                        <div className="pt-2 border-t border-[#222B35] flex items-center justify-between">
+                        {/* HỘP MINH BẠCH: ĐỀ XUẤT CỦA AI (Chờ BQL phê duyệt) */}
+                        {isRepair && ticket.suggested_technician && (
+                          <div className="p-2.5 bg-gradient-to-r from-purple-950/40 to-[#1A2332] border border-purple-500/40 text-[11px] space-y-1">
+                            <div className="flex items-center justify-between">
+                              <span className="text-purple-300 font-semibold flex items-center gap-1">
+                                <Sparkles className="w-3.5 h-3.5 text-purple-400" /> AI Đề Xuất KTV:
+                              </span>
+                              <span className="text-white font-bold font-mono">
+                                {ticket.suggested_technician} {ticket.suggested_match_score ? `(${ticket.suggested_match_score}%)` : ''}
+                              </span>
+                            </div>
+                            {ticket.ai_dispatch_reason && (
+                              <div className="text-gray-400 text-[10px] leading-tight line-clamp-2">
+                                Lý do: {ticket.ai_dispatch_reason}
+                              </div>
+                            )}
+                          </div>
+                        )}
+
+                        {isInquiry && ticket.ai_suggested_reply && (
+                          <div className="p-2.5 bg-sky-950/40 border border-sky-500/40 text-[11px] space-y-1">
+                            <div className="text-sky-300 font-semibold flex items-center gap-1">
+                              <Sparkles className="w-3.5 h-3.5 text-sky-400" /> AI Soạn Thảo Bản Thảo Trả Lời:
+                            </div>
+                            <div className="text-gray-300 text-[10px] line-clamp-2 italic leading-relaxed">
+                              "{ticket.ai_suggested_reply}"
+                            </div>
+                          </div>
+                        )}
+
+                        <div className="pt-2 border-t border-[#222B35] flex items-center justify-between flex-wrap gap-2">
                           <span className="text-[10px] text-gray-500 font-mono">
                             {new Date(ticket.created_at).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })}
                           </span>
 
-                          <div className="flex items-center gap-1.5">
+                          <div className="flex items-center gap-1.5 flex-wrap">
                             {isFeedback ? (
                               <button
                                 onClick={() => {
@@ -621,26 +676,51 @@ export default function KanbanBoard() {
                                 <span>BQL Phản Hồi</span>
                               </button>
                             ) : isInquiry ? (
-                              <button
-                                onClick={() => handleAiAutoAnswerInquiry(ticket)}
-                                className="px-2.5 py-1.5 bg-sky-950/70 hover:bg-sky-900 border border-sky-500/70 hover:border-sky-400 text-sky-200 text-xs font-semibold transition-colors flex items-center gap-1.5 shadow"
-                                title="AI giải đáp tự động ngay lập tức"
-                              >
-                                <Sparkles className="w-3.5 h-3.5 text-sky-400" />
-                                <span>AI Giải Đáp Ngay</span>
-                              </button>
+                              <div className="flex items-center gap-1">
+                                <button
+                                  onClick={() => {
+                                    setFeedbackReplyTicket(ticket);
+                                    setFeedbackReplyContent(ticket.ai_suggested_reply || ticket.admin_reply || generateSuggestedAdminReply(ticket.content, ticket.ai_category));
+                                    setReplyEngineerName('');
+                                  }}
+                                  className="px-2.5 py-1.5 bg-sky-950/80 hover:bg-sky-900 border border-sky-500 text-sky-200 text-xs font-semibold transition-colors flex items-center gap-1.5 shadow"
+                                  title="Duyệt bản thảo hoặc chỉnh sửa câu trả lời cho cư dân"
+                                >
+                                  <MessageSquare className="w-3.5 h-3.5 text-sky-400" />
+                                  <span>Duyệt & Gửi Phản Hồi</span>
+                                </button>
+                                <button
+                                  onClick={() => handleAiAutoAnswerInquiry(ticket)}
+                                  className="px-2 py-1.5 bg-[#161B22] hover:bg-[#1C2533] border border-[#2D3748] text-gray-400 hover:text-white text-xs transition-colors"
+                                  title="AI gửi ngay câu trả lời mẫu 24/7"
+                                >
+                                  <Sparkles className="w-3 h-3 text-sky-400" />
+                                </button>
+                              </div>
                             ) : (
-                              <button
-                                onClick={() => {
-                                  setAssigningTicket(ticket);
-                                  setSelectedTechId('KTV-01');
-                                }}
-                                className="px-2.5 py-1.5 bg-[#161B22] hover:bg-[#1C2533] border border-[#2D3748] hover:border-[#C5A880] text-gray-300 hover:text-white text-xs font-medium transition-colors flex items-center gap-1.5 shadow"
-                                title="Chỉ định hoặc thay đổi thợ KTV phụ trách"
-                              >
-                                <Users className="w-3.5 h-3.5 text-[#C5A880]" />
-                                <span>Chỉ Định KTV</span>
-                              </button>
+                              <div className="flex items-center gap-1">
+                                {ticket.suggested_technician && (
+                                  <button
+                                    onClick={() => handleApproveAiRecommendation(ticket)}
+                                    className="px-2.5 py-1.5 bg-emerald-950/80 hover:bg-emerald-900 border border-emerald-500 text-emerald-200 text-xs font-bold transition-colors flex items-center gap-1 shadow"
+                                    title="Ban Quản Lý duyệt phân công KTV theo đề xuất của AI"
+                                  >
+                                    <Check className="w-3.5 h-3.5 text-emerald-400" />
+                                    <span>Duyệt KTV ({ticket.suggested_technician.split(' ').pop()})</span>
+                                  </button>
+                                )}
+                                <button
+                                  onClick={() => {
+                                    setAssigningTicket(ticket);
+                                    setSelectedTechId(ticket.suggested_technician_id || 'KTV-01');
+                                  }}
+                                  className="px-2 py-1.5 bg-[#161B22] hover:bg-[#1C2533] border border-[#2D3748] hover:border-[#C5A880] text-gray-300 hover:text-white text-xs font-medium transition-colors flex items-center gap-1 shadow"
+                                  title="Chỉ định hoặc thay đổi thợ KTV phụ trách theo ý BQL"
+                                >
+                                  <Users className="w-3 h-3 text-[#C5A880]" />
+                                  <span>{ticket.suggested_technician ? 'Đổi KTV' : 'Chỉ Định KTV'}</span>
+                                </button>
+                              </div>
                             )}
                           </div>
                         </div>
