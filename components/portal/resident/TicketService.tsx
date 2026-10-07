@@ -345,97 +345,65 @@ export default function TicketService({ currentUser }: TicketServiceProps) {
         </button>
       </div>
 
-      {/* Thẻ Kết Quả Xử Lý Rõ Ràng Từng Luồng (AI Tự Động / KTV Phân Bổ / BQL Xác Nhận) */}
+      {/* Thẻ Kết Quả Xử Lý Tinh Gọn (AI Tự Động / KTV Phân Bổ / BQL Xác Nhận) */}
       {createdTicketResult && (
-        <div className="p-5 bg-[#121A22] border-2 border-[#C5A880] text-white shadow-2xl animate-fadeIn space-y-3.5 relative">
-          <div className="flex items-center justify-between border-b border-[#222B35] pb-3">
-            <div className="flex items-center gap-2.5">
-              {createdTicketResult.ticket_type === 'INQUIRY' ? (
-                <div className="w-8 h-8 bg-sky-500/20 border border-sky-500/60 flex items-center justify-center text-sky-400">
-                  <Sparkles className="w-4 h-4" />
-                </div>
-              ) : createdTicketResult.ticket_type === 'REPAIR' ? (
-                <div className="w-8 h-8 bg-emerald-500/20 border border-emerald-500/60 flex items-center justify-center text-emerald-400">
-                  <Wrench className="w-4 h-4" />
-                </div>
-              ) : (
-                <div className="w-8 h-8 bg-rose-500/20 border border-rose-500/60 flex items-center justify-center text-rose-400">
-                  <MessageSquare className="w-4 h-4" />
-                </div>
-              )}
-              <div>
-                <h4 className="font-serif text-sm font-bold text-white flex items-center gap-2">
-                  <span>
-                    {createdTicketResult.ticket_type === 'INQUIRY'
-                      ? '⚡ Trợ Lý AI Đã Giải Đáp Tự Động 24/7'
-                      : createdTicketResult.ticket_type === 'REPAIR'
-                        ? '🔧 Đã Phân Bổ Kỹ Thuật Viên Xử Lý'
-                        : '📋 Đã Tiếp Nhận - Chờ Ban Quản Lý Xác Nhận'}
-                  </span>
-                  <span className={`text-[10px] px-2 py-0.5 font-mono font-bold border ${
-                    createdTicketResult.ticket_type === 'INQUIRY'
-                      ? 'bg-sky-950 text-sky-300 border-sky-500/60'
-                      : createdTicketResult.ticket_type === 'REPAIR'
-                        ? 'bg-emerald-950 text-emerald-300 border-emerald-500/60'
-                        : 'bg-rose-950 text-rose-300 border-rose-500/60'
-                  }`}>
-                    {createdTicketResult.ticket_type === 'INQUIRY'
-                      ? 'AI AUTO-REPLY'
-                      : createdTicketResult.ticket_type === 'REPAIR'
-                        ? 'KTV DISPATCHED'
-                        : 'CHỜ BQL XÁC NHẬN'}
-                  </span>
-                </h4>
-                <div className="text-[11px] text-[#C5A880] font-mono mt-0.5">
-                  Mã phiếu: #{createdTicketResult.nks_id || createdTicketResult.id} • Căn {createdTicketResult.apt_code} • {createdTicketResult.ticket_type_label || createdTicketResult.ai_category}
-                </div>
-              </div>
+        <div className="p-4 bg-[#121A22] border border-[#C5A880] text-white shadow-xl animate-fadeIn space-y-2.5 relative">
+          <div className="flex items-center justify-between pb-2 border-b border-[#222B35]">
+            <div className="flex items-center gap-2">
+              <span className={`w-2.5 h-2.5 rounded-full ${
+                createdTicketResult.ticket_type === 'INQUIRY'
+                  ? 'bg-sky-400 shadow-[0_0_8px_rgba(56,189,248,0.8)]'
+                  : createdTicketResult.ticket_type === 'REPAIR'
+                    ? 'bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)]'
+                    : 'bg-rose-400 shadow-[0_0_8px_rgba(251,113,133,0.8)]'
+              }`} />
+              <span className="font-bold text-xs uppercase tracking-wider text-white">
+                {createdTicketResult.ticket_type === 'INQUIRY'
+                  ? 'Trợ Lý AI Phản Hồi 24/7'
+                  : createdTicketResult.ticket_type === 'REPAIR'
+                    ? 'Đã Phân Bổ Kỹ Thuật Viên'
+                    : 'Đã Tiếp Nhận Phiếu (Chờ BQL)'}
+              </span>
+              <span className="text-[11px] text-[#C5A880] font-mono">
+                #{createdTicketResult.nks_id || createdTicketResult.id} • Căn {createdTicketResult.apt_code}
+              </span>
             </div>
             <button
               onClick={() => setCreatedTicketResult(null)}
-              className="text-gray-400 hover:text-white text-xs px-2.5 py-1 border border-gray-700 hover:border-gray-500 transition-colors"
+              className="text-gray-400 hover:text-white text-xs px-2 py-0.5 border border-gray-700 hover:border-gray-500 transition-colors"
             >
               ✕ Đóng
             </button>
           </div>
 
-          {/* NỘI DUNG RIÊNG CHO TỪNG LUỒNG */}
+          {/* Nội dung kết quả theo luồng */}
           {createdTicketResult.ticket_type === 'INQUIRY' ? (
-            /* Luồng 1: AI tự động phản hồi ngay không qua BQL */
-            <div className="p-3.5 bg-sky-950/40 border border-sky-500/40 space-y-2">
-              <div className="text-xs font-bold text-sky-300 flex items-center justify-between">
-                <span className="flex items-center gap-1.5">
-                  <Sparkles className="w-4 h-4 text-sky-400" /> Giải Đáp Từ Trợ Lý Ảo Skyline (Tức Thì 24/7):
-                </span>
-                <span className="text-[10px] text-gray-400 font-normal">Không cần chờ Ban Quản Lý</span>
+            <div className="p-3 bg-sky-950/30 border border-sky-500/30 text-xs space-y-1.5">
+              <div className="flex items-center gap-1.5 text-sky-300 font-semibold text-[11px]">
+                <Sparkles className="w-3.5 h-3.5 text-sky-400" />
+                Câu trả lời tự động:
               </div>
               <p className="text-gray-200 text-xs whitespace-pre-line leading-relaxed">
-                {createdTicketResult.ai_reply || 'Hệ thống đã tiếp nhận câu hỏi của Cư dân và xử lý tự động.'}
+                {createdTicketResult.ai_reply || 'Hệ thống đã ghi nhận và phản hồi câu hỏi của Quý cư dân.'}
               </p>
             </div>
           ) : createdTicketResult.ticket_type === 'REPAIR' ? (
-            /* Luồng 2: Sự cố cần thiết thì phân bổ KTV */
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs bg-[#161F2B] p-3.5 border border-[#2D3A4B]">
-              <div className="space-y-1">
-                <span className="text-gray-400 text-[11px] block">Kỹ thuật viên phụ trách:</span>
-                <div className="text-white font-bold text-sm flex items-center gap-1.5">
-                  <Wrench className="w-3.5 h-3.5 text-amber-400" />
-                  <span>{createdTicketResult.assigned_technician || 'Lê Văn Kỹ Thuật'}</span>
+            <div className="flex flex-wrap items-center justify-between gap-3 p-3 bg-[#161F2B] border border-[#2D3A4B] text-xs">
+              <div className="flex items-center gap-2.5">
+                <Wrench className="w-4 h-4 text-[#C5A880] flex-shrink-0" />
+                <div>
+                  <div className="font-bold text-white text-xs flex items-center gap-2">
+                    <span>{createdTicketResult.assigned_technician || 'KTV Ca Trực Skyline'}</span>
+                    <span className="text-[10px] px-1.5 py-0.2 bg-emerald-950 text-emerald-300 border border-emerald-500/40">
+                      Có mặt trong {createdTicketResult.scheduled_time || '30 - 45 phút'}
+                    </span>
+                  </div>
+                  <div className="text-[11px] text-gray-400 mt-0.5">
+                    Chuyên môn: {createdTicketResult.ai_category || 'Cơ Điện & Nước'}
+                  </div>
                 </div>
-                <span className="text-[10px] text-gray-400">Chuyên môn: {createdTicketResult.ai_category || 'Cơ Điện & Nước'}</span>
               </div>
-
-              <div className="space-y-1">
-                <span className="text-gray-400 text-[11px] block">Thời gian dự kiến có mặt:</span>
-                <div className="text-emerald-400 font-bold font-mono text-xs flex items-center gap-1.5">
-                  <Clock className="w-3.5 h-3.5" />
-                  <span>{createdTicketResult.scheduled_time || 'Trong vòng 30 - 45 phút'}</span>
-                </div>
-                <span className="text-[10px] text-emerald-400/80">KTV đang chuẩn bị dụng cụ di chuyển</span>
-              </div>
-
-              <div className="space-y-1">
-                <span className="text-gray-400 text-[11px] block">Liên hệ KTV trực tiếp:</span>
+              <div>
                 {createdTicketResult.assigned_technician_phone ? (
                   <a
                     href={`tel:${createdTicketResult.assigned_technician_phone}`}
@@ -454,131 +422,91 @@ export default function TicketService({ currentUser }: TicketServiceProps) {
               </div>
             </div>
           ) : (
-            /* Luồng 3: Chờ BQL xác nhận & thụ lý */
-            <div className="p-3.5 bg-rose-950/30 border border-rose-500/40 text-xs space-y-2">
-              <div className="text-rose-300 font-bold flex items-center gap-1.5">
-                <Clock className="w-4 h-4 text-rose-400" />
-                Phiếu Đã Chuyển Tới Ban Quản Lý Skyline:
-              </div>
-              <p className="text-gray-300 text-[11px] leading-relaxed">
-                Nội dung góp ý / phản ánh của Quý cư dân đã được lưu vào hệ thống điều hành. Bộ phận quản lý tòa nhà sẽ trực tiếp xác minh thực tế hiện trường và gửi văn bản phản hồi chính thức trong thời gian sớm nhất.
-              </p>
-            </div>
-          )}
-
-          {createdTicketResult.ai_dispatch_reason && (
-            <div className="text-[11px] text-purple-200 bg-purple-950/50 border border-purple-500/40 p-2.5 flex items-start gap-2">
-              <Sparkles className="w-3.5 h-3.5 text-purple-400 flex-shrink-0 mt-0.5" />
-              <div>
-                <strong className="text-purple-300">Đánh giá phân bổ KTV bằng AI:</strong>{' '}
-                <span>{createdTicketResult.ai_dispatch_reason}</span>
-              </div>
+            <div className="p-3 bg-rose-950/20 border border-rose-500/30 text-xs text-gray-300 flex items-start gap-2">
+              <Clock className="w-3.5 h-3.5 text-rose-400 flex-shrink-0 mt-0.5" />
+              <span>Phiếu đã được chuyển tới Ban Quản Lý. BQL sẽ xác minh hiện trường và phản hồi trong thời gian sớm nhất.</span>
             </div>
           )}
         </div>
       )}
 
       {createdSuccessMsg && !createdTicketResult && (
-        <div className="p-3.5 bg-emerald-950/80 border border-emerald-500 text-emerald-300 text-xs flex items-center gap-2 animate-fadeIn">
+        <div className="p-3 bg-emerald-950/80 border border-emerald-500 text-emerald-300 text-xs flex items-center gap-2 animate-fadeIn">
           <CheckCircle2 className="w-4 h-4 text-emerald-400 flex-shrink-0" />
           <span>{createdSuccessMsg}</span>
         </div>
       )}
 
       {rateSuccessMsg && (
-        <div className="p-3.5 bg-emerald-950/80 border border-emerald-500 text-emerald-300 text-xs flex items-center gap-2 animate-fadeIn">
+        <div className="p-3 bg-emerald-950/80 border border-emerald-500 text-emerald-300 text-xs flex items-center gap-2 animate-fadeIn">
           <Sparkles className="w-4 h-4 text-yellow-400 flex-shrink-0" />
           <span>{rateSuccessMsg}</span>
         </div>
       )}
 
-      {/* Create Ticket Form */}
+      {/* Form Tạo Phiếu Tinh Gọn & Tối Ưu Thông Tin */}
       {showCreateForm && (
-        <form onSubmit={handleCreateTicket} className="p-6 bg-[#121820] border border-[#C5A880] space-y-4 shadow-2xl animate-fadeIn">
-          <div className="flex items-center justify-between border-b border-[#222B35] pb-2 text-xs">
+        <form onSubmit={handleCreateTicket} className="p-5 bg-[#121820] border border-[#C5A880] space-y-3.5 shadow-2xl animate-fadeIn">
+          <div className="flex items-center justify-between border-b border-[#222B35] pb-2.5 text-xs">
             <span className="font-serif font-bold text-white uppercase tracking-wider flex items-center gap-1.5">
-              <Plus className="w-4 h-4 text-[#C5A880]" /> Tạo Phiếu Mới - Căn {aptCode}
+              <Plus className="w-4 h-4 text-[#C5A880]" /> Tạo Phiếu Yêu Cầu • Căn {aptCode}
             </span>
-            <span className="text-gray-400 font-mono">
-              {ticketPurpose === 'INQUIRY' 
-                ? '⚡ AI Giải đáp tức thì < 1s' 
-                : ticketPurpose === 'FEEDBACK'
-                  ? 'Ban Quản Lý thụ lý'
-                  : 'KTV có mặt trong 15 - 45 phút'}
-            </span>
+            <button
+              type="button"
+              onClick={() => setShowCreateForm(false)}
+              className="text-gray-400 hover:text-white transition-colors"
+            >
+              ✕
+            </button>
           </div>
 
-          {/* Chọn mục đích: Sự Cố Kỹ Thuật | Hỏi Đáp Tiện Ích | Góp Ý & Phản Ánh */}
-          <div className="space-y-1.5">
-            <label className="text-xs text-gray-300 font-semibold">Loại yêu cầu bạn cần gửi:</label>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-              <button
-                type="button"
-                onClick={() => setTicketPurpose('REPAIR')}
-                className={`p-3 text-left border transition-all flex flex-col gap-1 ${
-                  ticketPurpose === 'REPAIR'
-                    ? 'bg-amber-950/50 border-amber-500 text-amber-200'
-                    : 'bg-[#161B22] border-[#2D3748] text-gray-400 hover:text-white'
-                }`}
-              >
-                <div className="font-bold text-xs flex items-center gap-1.5">
-                  <Wrench className="w-3.5 h-3.5 text-amber-400" />
-                  <span>Báo Hỏng & Sửa Chữa</span>
-                </div>
-                <div className="text-[10px] text-gray-400">
-                  Hỏng điện nước, khóa cửa, điều hòa (Auto KTV)
-                </div>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => setTicketPurpose('INQUIRY')}
-                className={`p-3 text-left border transition-all flex flex-col gap-1 ${
-                  ticketPurpose === 'INQUIRY'
-                    ? 'bg-sky-950/50 border-sky-500 text-sky-200'
-                    : 'bg-[#161B22] border-[#2D3748] text-gray-400 hover:text-white'
-                }`}
-              >
-                <div className="font-bold text-xs flex items-center gap-1.5">
-                  <Sparkles className="w-3.5 h-3.5 text-sky-400" />
-                  <span>Hỏi Đáp & Trợ Giúp</span>
-                </div>
-                <div className="text-[10px] text-gray-400">
-                  Giờ hồ bơi, gym, nội quy, gửi xe (AI trả lời 24/7)
-                </div>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => setTicketPurpose('FEEDBACK')}
-                className={`p-3 text-left border transition-all flex flex-col gap-1 ${
-                  ticketPurpose === 'FEEDBACK'
-                    ? 'bg-rose-950/50 border-rose-500 text-rose-200'
-                    : 'bg-[#161B22] border-[#2D3748] text-gray-400 hover:text-white'
-                }`}
-              >
-                <div className="font-bold text-xs flex items-center gap-1.5">
-                  <MessageSquare className="w-3.5 h-3.5 text-rose-400" />
-                  <span>Góp Ý & Phản Ánh</span>
-                </div>
-                <div className="text-[10px] text-gray-400">
-                  Vệ sinh, rác thải, tiếng ồn, dịch vụ BQL
-                </div>
-              </button>
-            </div>
+          {/* Chọn Loại Yêu Cầu: 3 Tab Tinh Gọn */}
+          <div className="grid grid-cols-3 gap-1.5 p-1 bg-[#0F141C] border border-[#222B35]">
+            <button
+              type="button"
+              onClick={() => setTicketPurpose('REPAIR')}
+              className={`py-2 px-2 text-center text-xs transition-all flex items-center justify-center gap-1.5 ${
+                ticketPurpose === 'REPAIR'
+                  ? 'bg-[#C5A880] text-[#0D1117] font-bold shadow'
+                  : 'text-gray-400 hover:text-white'
+              }`}
+            >
+              <Wrench className="w-3.5 h-3.5" /> Báo Hỏng Sửa Chữa
+            </button>
+            <button
+              type="button"
+              onClick={() => setTicketPurpose('INQUIRY')}
+              className={`py-2 px-2 text-center text-xs transition-all flex items-center justify-center gap-1.5 ${
+                ticketPurpose === 'INQUIRY'
+                  ? 'bg-sky-500 text-black font-bold shadow'
+                  : 'text-gray-400 hover:text-white'
+              }`}
+            >
+              <Sparkles className="w-3.5 h-3.5" /> Hỏi Đáp AI (24/7)
+            </button>
+            <button
+              type="button"
+              onClick={() => setTicketPurpose('FEEDBACK')}
+              className={`py-2 px-2 text-center text-xs transition-all flex items-center justify-center gap-1.5 ${
+                ticketPurpose === 'FEEDBACK'
+                  ? 'bg-rose-600 text-white font-bold shadow'
+                  : 'text-gray-400 hover:text-white'
+              }`}
+            >
+              <MessageSquare className="w-3.5 h-3.5" /> Góp Ý & Phản Ánh
+            </button>
           </div>
 
-          {/* MỤC RIÊNG CHO PHẦN BÁO HỎNG (REPAIR): MẪU SỰ CỐ NHANH 1 CHẠM */}
+          {/* Gợi Ý Nhanh 1 Chạm (Chỉ hiện khi Báo Hỏng) */}
           {ticketPurpose === 'REPAIR' && (
-            <div className="space-y-1.5 pt-1">
-              <div className="flex items-center justify-between text-xs">
-                <span className="text-gray-300 font-semibold flex items-center gap-1.5">
-                  <Zap className="w-3.5 h-3.5 text-amber-400" />
-                  Chọn nhanh sự cố thường gặp (Gợi ý 1 chạm):
+            <div className="space-y-1.5 pt-0.5">
+              <div className="text-[11px] text-gray-400 flex items-center justify-between">
+                <span className="flex items-center gap-1 text-amber-300 font-medium">
+                  <Zap className="w-3 h-3 text-amber-400" /> Gợi ý sự cố nhanh:
                 </span>
-                <span className="text-[11px] text-gray-500">Bấm để tự động điền</span>
+                <span className="text-[10px] text-gray-500">Chạm để tự điền nội dung</span>
               </div>
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+              <div className="flex flex-wrap gap-1.5">
                 {COMMON_REPAIR_PRESETS.map((p) => {
                   const isSelected = selectedPresetId === p.id;
                   return (
@@ -586,17 +514,14 @@ export default function TicketService({ currentUser }: TicketServiceProps) {
                       key={p.id}
                       type="button"
                       onClick={() => handleApplyPreset(p)}
-                      className={`p-2.5 text-left border transition-all flex items-start gap-2 ${
+                      className={`px-2.5 py-1 text-xs border transition-all flex items-center gap-1.5 ${
                         isSelected
-                          ? 'bg-amber-950/70 border-[#C5A880] text-white shadow-md'
+                          ? 'bg-amber-950/70 border-[#C5A880] text-amber-200 font-semibold shadow'
                           : 'bg-[#161B22] border-[#2D3748] text-gray-300 hover:border-gray-500 hover:text-white'
                       }`}
                     >
-                      <span className="text-base select-none">{p.icon}</span>
-                      <div className="min-w-0 flex-1">
-                        <div className="text-xs font-semibold leading-tight line-clamp-1">{p.label}</div>
-                        <div className="text-[10px] text-gray-400 mt-0.5 line-clamp-1">{p.area} • {p.category}</div>
-                      </div>
+                      <span>{p.icon}</span>
+                      <span>{p.label}</span>
                     </button>
                   );
                 })}
@@ -604,25 +529,24 @@ export default function TicketService({ currentUser }: TicketServiceProps) {
             </div>
           )}
 
-          {/* MỤC RIÊNG CHO BÁO HỎNG: CHỌN VỊ TRÍ & KHUNG GIỜ HẸN */}
+          {/* Chi Tiết Báo Hỏng: Vị Trí, Giờ Hẹn, Mức Độ & SĐT */}
           {ticketPurpose === 'REPAIR' && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
-              {/* Vị trí trong căn hộ */}
-              <div className="space-y-1.5">
-                <label className="text-xs text-gray-300 font-semibold flex items-center gap-1.5">
-                  <MapPin className="w-3.5 h-3.5 text-[#C5A880]" />
-                  Khu vực / Phòng phát sinh sự cố:
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-0.5">
+              {/* Vị trí sự cố */}
+              <div className="space-y-1">
+                <label className="text-[11px] text-gray-300 font-medium flex items-center gap-1">
+                  <MapPin className="w-3 h-3 text-[#C5A880]" /> Vị trí phòng:
                 </label>
-                <div className="flex flex-wrap gap-1.5">
+                <div className="flex flex-wrap gap-1">
                   {REPAIR_AREAS.map((a) => (
                     <button
                       key={a}
                       type="button"
                       onClick={() => setSelectedArea(a)}
-                      className={`px-2.5 py-1 text-xs border transition-colors ${
+                      className={`px-2 py-0.5 text-[11px] border transition-colors ${
                         selectedArea === a
                           ? 'bg-[#C5A880] text-[#0D1117] font-bold border-[#C5A880]'
-                          : 'bg-[#161B22] text-gray-300 border-[#2D3748] hover:border-gray-500'
+                          : 'bg-[#161B22] text-gray-400 border-[#2D3748] hover:text-white'
                       }`}
                     >
                       {a}
@@ -631,16 +555,15 @@ export default function TicketService({ currentUser }: TicketServiceProps) {
                 </div>
               </div>
 
-              {/* Khung giờ đón thợ thuận tiện */}
-              <div className="space-y-1.5">
-                <label className="text-xs text-gray-300 font-semibold flex items-center gap-1.5">
-                  <Calendar className="w-3.5 h-3.5 text-[#C5A880]" />
-                  Khung giờ đón thợ thuận tiện:
+              {/* Khung giờ đón thợ */}
+              <div className="space-y-1">
+                <label className="text-[11px] text-gray-300 font-medium flex items-center gap-1">
+                  <Calendar className="w-3 h-3 text-[#C5A880]" /> Giờ hẹn tiếp thợ:
                 </label>
                 <select
                   value={preferredTime}
                   onChange={(e) => setPreferredTime(e.target.value)}
-                  className="w-full bg-[#161B22] border border-[#2D3748] text-xs text-white p-2.5 focus:outline-none focus:border-[#C5A880]"
+                  className="w-full bg-[#161B22] border border-[#2D3748] text-xs text-white p-1.5 focus:outline-none focus:border-[#C5A880]"
                 >
                   {PREFERRED_TIME_SLOTS.map((slot) => (
                     <option key={slot} value={slot}>
@@ -649,200 +572,159 @@ export default function TicketService({ currentUser }: TicketServiceProps) {
                   ))}
                 </select>
               </div>
-            </div>
-          )}
 
-          {/* MỤC RIÊNG CHO BÁO HỎNG: MỨC ĐỘ KHẨN CẤP & SỐ ĐIỆN THOẠI ĐÓN THỢ */}
-          {ticketPurpose === 'REPAIR' && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
-              {/* Mức độ khẩn cấp */}
-              <div className="space-y-1.5">
-                <label className="text-xs text-gray-300 font-semibold flex items-center gap-1.5">
-                  <AlertTriangle className="w-3.5 h-3.5 text-amber-400" />
-                  Mức độ cấp bách:
+              {/* Mức độ cấp bách */}
+              <div className="space-y-1">
+                <label className="text-[11px] text-gray-300 font-medium flex items-center gap-1">
+                  <AlertTriangle className="w-3 h-3 text-amber-400" /> Mức độ ưu tiên:
                 </label>
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-2 gap-1.5">
                   <button
                     type="button"
                     onClick={() => setUrgencyLevel('HIGH')}
-                    className={`p-2 text-xs border text-center transition-all ${
+                    className={`py-1 text-xs border text-center transition-all ${
                       urgencyLevel === 'HIGH'
                         ? 'bg-rose-950/60 border-rose-500 text-rose-200 font-bold'
                         : 'bg-[#161B22] border-[#2D3748] text-gray-400 hover:text-white'
                     }`}
                   >
-                    🔴 Khẩn cấp (30 - 45 phút)
+                    ⚡ Khẩn cấp (&lt; 45p)
                   </button>
                   <button
                     type="button"
                     onClick={() => setUrgencyLevel('NORMAL')}
-                    className={`p-2 text-xs border text-center transition-all ${
+                    className={`py-1 text-xs border text-center transition-all ${
                       urgencyLevel === 'NORMAL'
                         ? 'bg-amber-950/60 border-amber-500 text-amber-200 font-bold'
                         : 'bg-[#161B22] border-[#2D3748] text-gray-400 hover:text-white'
                     }`}
                   >
-                    🟡 Tiêu chuẩn (Trong ngày)
+                    ⏱ Tiêu chuẩn (trong ngày)
                   </button>
                 </div>
               </div>
 
-              {/* SĐT tiếp thợ */}
-              <div className="space-y-1.5">
-                <label className="text-xs text-gray-300 font-semibold flex items-center gap-1.5">
-                  <Phone className="w-3.5 h-3.5 text-[#C5A880]" />
-                  SĐT người ở nhà tiếp thợ:
+              {/* SĐT liên hệ */}
+              <div className="space-y-1">
+                <label className="text-[11px] text-gray-300 font-medium flex items-center gap-1">
+                  <Phone className="w-3 h-3 text-[#C5A880]" /> SĐT người ở nhà:
                 </label>
                 <input
                   type="tel"
                   value={contactPhone}
                   onChange={(e) => setContactPhone(e.target.value)}
-                  placeholder="Nhập số điện thoại đón thợ..."
-                  className="w-full bg-[#161B22] border border-[#2D3748] text-xs text-white p-2.5 focus:outline-none focus:border-[#C5A880]"
+                  placeholder="Nhập SĐT tiếp thợ..."
+                  className="w-full bg-[#161B22] border border-[#2D3748] text-xs text-white p-1.5 focus:outline-none focus:border-[#C5A880]"
                 />
               </div>
             </div>
           )}
 
-          {/* Ô nhập nội dung chi tiết */}
-          <div className="space-y-1.5">
+          {/* Ô Nhập Nội Dung Chi Tiết */}
+          <div className="space-y-1">
             <label className="text-xs text-gray-300 font-medium">
               {ticketPurpose === 'INQUIRY'
-                ? 'Nội dung câu hỏi hoặc thông tin bạn cần hỗ trợ:'
+                ? 'Nội dung câu hỏi:'
                 : ticketPurpose === 'FEEDBACK'
-                  ? 'Ý kiến góp ý hoặc phản ánh chi tiết tới Ban Quản Lý:'
-                  : 'Mô tả cụ thể sự cố cần sửa chữa:'}
+                  ? 'Nội dung góp ý / phản ánh:'
+                  : 'Mô tả hiện tượng hư hỏng:'}
             </label>
             <textarea
-              rows={3}
+              rows={2}
               placeholder={
                 ticketPurpose === 'INQUIRY'
-                  ? 'VD: Hồ bơi mở cửa đến mấy giờ? Quy định đăng ký vận chuyển đồ vào sảnh ra sao?...'
+                  ? 'VD: Giờ mở cửa hồ bơi, phòng gym, đăng ký thẻ cư dân...'
                   : ticketPurpose === 'FEEDBACK'
-                    ? 'VD: Khu vực tập kết rác Block 07 chưa được dọn sạch cuối ngày, phát sinh mùi hôi...'
-                    : 'VD: Vòi nước bồn rửa chén bị rò rỉ nước liên tục xuống sàn tủ bếp, aptomat tổng bị nhảy liên tục...'
+                    ? 'VD: Vệ sinh khu vực hành lang, tiếng ồn giờ nghỉ trưa...'
+                    : 'VD: Vòi nước bồn rửa chén rò rỉ dưới gầm tủ, nhảy aptomat...'
               }
               value={content}
               onChange={(e) => handleContentChange(e.target.value)}
-              className="w-full bg-[#161B22] border border-[#2D3748] text-xs text-white p-3 focus:outline-none focus:border-[#C5A880] placeholder-gray-500"
+              className="w-full bg-[#161B22] border border-[#2D3748] text-xs text-white p-2.5 focus:outline-none focus:border-[#C5A880] placeholder-gray-500 resize-none"
               required
             />
           </div>
 
-          {/* Hộp AI Live Dispatch Insight cho Báo Hỏng */}
-          {ticketPurpose === 'REPAIR' && (
-            <div className="p-3 bg-gradient-to-r from-[#141A23] to-[#1A2332] border border-[#C5A880]/40 text-xs space-y-1.5">
-              <div className="flex items-center justify-between">
-                <span className="text-[#C5A880] font-bold flex items-center gap-1.5">
-                  <Sparkles className="w-4 h-4 text-[#C5A880]" />
-                  Trợ Lý Điều Phối Kỹ Thuật AI Skyline
-                </span>
-                <span className="px-2 py-0.5 bg-[#1C2533] border border-[#C5A880] text-[#C5A880] font-mono text-[10px] font-bold">
-                  Hạng mục: {aiDetectedCat}
-                </span>
-              </div>
-              <div className="text-gray-300 text-[11px] leading-relaxed">
-                Ngay khi gửi yêu cầu, AI sẽ tự động phân tích và gán KTV chuyên môn (
-                <strong className="text-white">
-                  {aiDetectedCat === 'Nước'
-                    ? 'Cơ Điện & Nước'
-                    : aiDetectedCat === 'Điện'
-                      ? 'Điện & Điện Lạnh'
-                      : 'Đa Năng Tòa Nhà'}
-                </strong>
-                ) có mặt tại <strong className="text-[#C5A880]">Căn {aptCode}</strong> trong vòng{' '}
-                <strong className="text-emerald-400">{urgencyLevel === 'HIGH' ? '30 - 45 phút' : '2 giờ'}</strong>, đồng thời gửi thông báo xác nhận tức thì lên hệ thống.
-              </div>
-            </div>
-          )}
-
-          {/* Đính kèm hình ảnh (Bắt buộc với sửa chữa/phản ánh, tùy chọn với hỏi đáp) */}
-          <div className="space-y-2 pt-1">
-            <label className="text-xs text-gray-300 font-medium flex items-center justify-between">
-              <span>Đính kèm hình ảnh hiện trường (Khuyên dùng):</span>
-              <span className="text-[11px] text-gray-400">Giúp KTV chuẩn bị linh kiện thay thế chuẩn xác</span>
-            </label>
-
-            <input
-              type="file"
-              ref={fileInputRef}
-              onChange={handleFileChange}
-              accept="image/*"
-              className="hidden"
-            />
-
-            <div className="flex items-center gap-3">
+          {/* Đính Kèm Ảnh & Hành Động */}
+          <div className="flex flex-wrap items-center justify-between gap-3 pt-2 border-t border-[#222B35]">
+            <div className="flex items-center gap-2">
+              <input
+                type="file"
+                ref={fileInputRef}
+                onChange={handleFileChange}
+                accept="image/*"
+                className="hidden"
+              />
               <button
                 type="button"
                 onClick={() => fileInputRef.current?.click()}
                 disabled={isUploadingImage}
-                className="px-3.5 py-2 bg-[#161B22] border border-[#2D3748] hover:border-[#C5A880] text-gray-300 hover:text-white text-xs flex items-center gap-2 transition-colors"
+                className="px-2.5 py-1.5 bg-[#161B22] border border-[#2D3748] hover:border-[#C5A880] text-gray-300 hover:text-white text-xs flex items-center gap-1.5 transition-colors"
               >
                 <Camera className="w-3.5 h-3.5 text-[#C5A880]" />
-                {isUploadingImage ? 'Đang đọc ảnh...' : attachedImageBase64 ? 'Đổi Ảnh Khác' : 'Chụp / Tải Ảnh'}
+                {isUploadingImage ? 'Đang đọc ảnh...' : attachedImageBase64 ? 'Đổi ảnh' : 'Đính kèm ảnh'}
               </button>
-
               {attachedImageBase64 && (
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1.5">
                   <img
                     src={attachedImageBase64}
                     alt="Preview"
-                    className="w-10 h-10 object-cover border border-[#C5A880]"
+                    className="w-7 h-7 object-cover border border-[#C5A880]"
                   />
-                  <span className="text-xs text-emerald-400 font-medium">Đã đính kèm ảnh ✓</span>
                   <button
                     type="button"
                     onClick={() => setAttachedImageBase64('')}
-                    className="text-gray-500 hover:text-red-400 text-xs ml-1"
+                    className="text-gray-400 hover:text-rose-400 text-xs px-1"
+                    title="Gỡ ảnh"
                   >
-                    Gỡ ảnh
+                    ✕
                   </button>
                 </div>
               )}
             </div>
-          </div>
 
-          <div className="flex justify-end gap-3 pt-3 border-t border-[#222B35]">
-            <button
-              type="button"
-              onClick={() => setShowCreateForm(false)}
-              className="px-4 py-2 bg-transparent border border-gray-700 text-xs text-gray-300 hover:text-white"
-            >
-              Hủy
-            </button>
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className={`px-5 py-2 text-xs font-bold uppercase tracking-wider transition-colors shadow-lg disabled:opacity-60 flex items-center gap-1.5 ${
-                ticketPurpose === 'INQUIRY'
-                  ? 'bg-sky-500 hover:bg-sky-400 text-black'
-                  : ticketPurpose === 'FEEDBACK'
-                    ? 'bg-rose-600 hover:bg-rose-500 text-white'
-                    : 'bg-[#C5A880] hover:bg-white text-[#0D1117]'
-              }`}
-            >
-              {isSubmitting ? (
-                <>
-                  <RefreshCw className="w-3.5 h-3.5 animate-spin" />
-                  Đang Gửi & Phân Bổ...
-                </>
-              ) : ticketPurpose === 'INQUIRY' ? (
-                <>
-                  <Sparkles className="w-3.5 h-3.5" />
-                  Hỏi Trợ Lý AI (Giải Đáp 24/7)
-                </>
-              ) : ticketPurpose === 'FEEDBACK' ? (
-                <>
-                  <Send className="w-3.5 h-3.5" />
-                  Gửi Phản Hồi Cho BQL
-                </>
-              ) : (
-                <>
-                  <Wrench className="w-3.5 h-3.5" />
-                  Gửi Yêu Cầu Sửa Chữa (Auto KTV)
-                </>
-              )}
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => setShowCreateForm(false)}
+                className="px-3.5 py-1.5 border border-gray-700 text-xs text-gray-300 hover:text-white transition-colors"
+              >
+                Hủy
+              </button>
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className={`px-4 py-1.5 text-xs font-bold uppercase tracking-wider transition-colors shadow flex items-center gap-1.5 disabled:opacity-60 ${
+                  ticketPurpose === 'INQUIRY'
+                    ? 'bg-sky-500 hover:bg-sky-400 text-black'
+                    : ticketPurpose === 'FEEDBACK'
+                      ? 'bg-rose-600 hover:bg-rose-500 text-white'
+                      : 'bg-[#C5A880] hover:bg-white text-[#0D1117]'
+                }`}
+              >
+                {isSubmitting ? (
+                  <>
+                    <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                    Đang gửi...
+                  </>
+                ) : ticketPurpose === 'INQUIRY' ? (
+                  <>
+                    <Sparkles className="w-3.5 h-3.5" />
+                    Hỏi Trợ Lý AI
+                  </>
+                ) : ticketPurpose === 'FEEDBACK' ? (
+                  <>
+                    <Send className="w-3.5 h-3.5" />
+                    Gửi Ban Quản Lý
+                  </>
+                ) : (
+                  <>
+                    <Wrench className="w-3.5 h-3.5" />
+                    Gửi Yêu Cầu Sửa Chữa
+                  </>
+                )}
+              </button>
+            </div>
           </div>
         </form>
       )}
