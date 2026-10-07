@@ -42,8 +42,7 @@ import {
   GraduationCap,
   ShoppingBag,
   Bus,
-  HeartPulse,
-  Radar
+  HeartPulse
 } from 'lucide-react';
 import { fetchNksApartments } from '@/lib/nksProjectService';
 import AssignResidentModal from '@/components/portal/admin/AssignResidentModal';
@@ -1083,10 +1082,10 @@ export default function AdminBuildingApartmentManager() {
                       ? 'bg-[#C5A880] text-black font-bold shadow'
                       : 'text-gray-400 hover:text-white'
                   }`}
-                  title="Hệ thống tiện ích xung quanh bán kính 1km"
+                  title="Hệ thống tiện ích thành phố biển hồ & xung quanh"
                 >
-                  <Radar className="w-3.5 h-3.5 shrink-0" />
-                  <span>Xung Quanh (1km)</span>
+                  <Waves className="w-3.5 h-3.5 shrink-0" />
+                  <span>Tiện Ích Biển Hồ (8)</span>
                 </button>
 
                 <button
@@ -1990,7 +1989,7 @@ export default function AdminBuildingApartmentManager() {
               {/* SUB-VIEW 2: TIỆN ÍCH XUNG QUANH CỦA DỰ ÁN & KHU DÂN CƯ */}
               {masterPlanTab === 'SURROUNDINGS' && (
                 <div className="flex-1 flex flex-col space-y-2 p-2">
-                  {/* MÔ HÌNH BẢN ĐỒ TIỆN ÍCH ĐẠI ĐÔ THỊ & RADAR KHOẢNG CÁCH */}
+                  {/* MÔ HÌNH BẢN ĐỒ TIỆN ÍCH THÀNH PHỐ BIỂN HỒ */}
                   <SurroundingRadarSvgModel
                     amenities={SURROUNDING_AMENITIES}
                     selectedBlock={selectedBlock}
@@ -3917,8 +3916,8 @@ export default function AdminBuildingApartmentManager() {
             desc: 'Vị Trí Phân Khu The Beverly Solari, Vincom Mega Mall, Công Viên 36ha & Vành Đai 3'
           },
           SURROUNDINGS: {
-            title: 'Bản Đồ Radar Tiện Ích Đô Thị & Khu Dân Cư',
-            desc: 'Mạng Lưới Tiện Ích Giáo Dục, Y Tế, Mua Sắm & Giao Thông Xung Quanh Dự Án'
+            title: 'Bản Đồ Tiện Ích Thành Phố Biển Hồ & Xung Quanh',
+            desc: 'Mạng Lưới 8 Đại Tiện Ích Giáo Dục, Y Tế, Mua Sắm & Giao Thông'
           }
         }[masterPlanTab] || {
           title: 'Mô Hình Quy Hoạch',
