@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 import { 
   getApartmentUnits, 
   getApartmentByCode, 
@@ -420,6 +421,25 @@ export default function AdminBuildingApartmentManager() {
   const [isMasterPlanZoomed, setIsMasterPlanZoomed] = useState<boolean>(false);
   const [modalZoomScale, setModalZoomScale] = useState<number>(1);
   const [modalShowPins, setModalShowPins] = useState<boolean>(true);
+  const [isClient, setIsClient] = useState<boolean>(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  // Phím tắt ESC để đóng modal phóng to
+  useEffect(() => {
+    if (!isMasterPlanZoomed) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setIsMasterPlanZoomed(false);
+        setModalZoomScale(1);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isMasterPlanZoomed]);
+
   const [selectedAmenityCategory, setSelectedAmenityCategory] = useState<'ALL' | 'POOL' | 'PARK' | 'SPORT' | 'ACCESS'>('ALL');
   const [selectedAmenityId, setSelectedAmenityId] = useState<string | null>(null);
   const [hoveredAmenityId, setHoveredAmenityId] = useState<string | null>(null);
@@ -3905,176 +3925,164 @@ export default function AdminBuildingApartmentManager() {
       })()}
 
       {/* ------------------------------------------------------------- */}
-      {/* MODAL PHÓNG TO BẢN ĐỒ QUY HOẠCH & BẢN VẼ KIẾN TRÚC TOÀN MÀN HÌNH */}
+      {/* MODAL PHÓNG TO BẢN ĐỒ QUY HOẠCH & BẢN VẼ KIẾN TRÚC TOÀN MÀN HÌNH (PORTAL TO ROOT) */}
       {/* ------------------------------------------------------------- */}
-      {isMasterPlanZoomed && (() => {
-        const planMeta = {
-          TROPICAL: {
-            title: 'Quy Hoạch Phân Khu The Tropical',
-            desc: '4 Tòa Tháp BS-07, BS-08, BS-09, BS-10 & 23 Tiện Ích Kiến Trúc Nội Khu'
-          },
-          MACRO: {
-            title: 'Quy Hoạch Đại Đô Thị Vinhomes Grand Park 271 ha',
-            desc: 'Tổng Thể 271 ha, Công Viên 36 ha, Vincom Mega Mall & Vành Đai 3'
-          },
-          SURROUNDINGS: {
-            title: 'Bản Đồ Tiện Ích Thành Phố Biển Hồ',
-            desc: 'Mạng Lưới 8 Đại Tiện Ích Giáo Dục, Y Tế, Mua Sắm & Giao Thông'
-          }
-        }[masterPlanTab] || {
-          title: 'Mô Hình Quy Hoạch',
-          desc: ''
-        };
-
-        return (
-          <div className="fixed inset-0 z-50 bg-[#04060A]/95 backdrop-blur-md flex flex-col select-none">
-            {/* Thanh điều khiển đỉnh modal tinh giản, sang trọng */}
-            <div className="px-4 py-2.5 bg-[#090D14] border-b border-[#1E293B] flex flex-wrap items-center justify-between gap-3 shrink-0">
-              <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded bg-[#131D2B] border border-[#23354C] flex items-center justify-center text-[#C5A880]">
-                  <Map className="w-4 h-4" />
-                </div>
-                <div>
-                  <h3 className="text-white font-bold text-sm tracking-wide">
-                    {planMeta.title}
-                  </h3>
-                  <div className="text-[11px] text-gray-400 font-mono">
-                    {planMeta.desc}
-                  </div>
+      {isMasterPlanZoomed && isClient && createPortal(
+        <div className="fixed inset-0 z-[99999] bg-[#04060A] flex flex-col select-none animate-fadeIn">
+          {/* Thanh điều khiển đỉnh modal tinh giản, sang trọng, chuẩn 1 dòng duy nhất */}
+          <div className="h-14 px-4 bg-[#090D15] border-b border-[#1E293B] flex items-center justify-between gap-4 shrink-0 shadow-lg">
+            {/* Trái: Tiêu đề tinh gọn */}
+            <div className="flex items-center gap-2.5 min-w-0">
+              <div className="w-8 h-8 rounded-lg bg-[#141E2D] border border-[#23354C] flex items-center justify-center text-[#C5A880] shrink-0">
+                <Map className="w-4 h-4" />
+              </div>
+              <div className="min-w-0">
+                <h3 className="text-white font-bold text-sm tracking-wide truncate">
+                  {masterPlanTab === 'TROPICAL' && 'The Tropical • Mặt Bằng Phân Khu'}
+                  {masterPlanTab === 'SURROUNDINGS' && 'Thành Phố Biển Hồ • 8 Đại Tiện Ích'}
+                  {masterPlanTab === 'MACRO' && 'Vinhomes Grand Park • Quy Hoạch 271 ha'}
+                </h3>
+                <div className="text-[11px] text-gray-400 font-mono truncate">
+                  {masterPlanTab === 'TROPICAL' && 'Bản vẽ kiến trúc 4 khối tháp & 23 tiện ích nội khu'}
+                  {masterPlanTab === 'SURROUNDINGS' && 'Bán kính 1km kết nối biển hồ & các đại tiện ích'}
+                  {masterPlanTab === 'MACRO' && 'Tổng thể 271 ha • Công viên 36 ha • Vincom Mega Mall'}
                 </div>
               </div>
+            </div>
 
-              {/* Chuyển tab trực tiếp trong modal */}
-              <div className="flex items-center bg-[#101723] p-0.5 border border-[#1E2B3C] text-xs font-mono">
-                {(['TROPICAL', 'SURROUNDINGS', 'MACRO'] as const).map((tab) => (
-                  <button
-                    key={tab}
-                    type="button"
-                    onClick={() => {
-                      setMasterPlanTab(tab);
-                      setModalZoomScale(1);
-                    }}
-                    className={`px-3 py-1 transition-all ${
-                      masterPlanTab === tab
-                        ? 'bg-[#C5A880] text-black font-bold'
-                        : 'text-gray-400 hover:text-white'
-                    }`}
-                  >
-                    {tab === 'TROPICAL' ? 'The Tropical (Nội Khu)' : tab === 'SURROUNDINGS' ? 'Tiện Ích Biển Hồ' : 'Đại Đô Thị (271ha)'}
-                  </button>
-                ))}
-              </div>
-
-              {/* Công cụ: Bật/Tắt Ghim, Thu phóng & Đóng */}
-              <div className="flex items-center gap-2 font-mono text-xs">
-                {/* Nút bật/tắt toàn bộ ghim & chú thích để xem bản vẽ sạch */}
+            {/* Giữa: Chuyển tab dạng Segmented Control bo tròn sang trọng */}
+            <div className="hidden sm:flex items-center bg-[#101723] p-1 rounded-lg border border-[#1E2B3C] text-xs font-mono">
+              {(['TROPICAL', 'SURROUNDINGS', 'MACRO'] as const).map((tab) => (
                 <button
-                  type="button"
-                  onClick={() => setModalShowPins(!modalShowPins)}
-                  className={`px-2.5 py-1 border transition-all flex items-center gap-1.5 ${
-                    modalShowPins
-                      ? 'bg-[#162538] border-[#3B82F6] text-cyan-300'
-                      : 'bg-[#101720] border-[#222E3E] text-gray-400 hover:text-white'
-                  }`}
-                  title={modalShowPins ? 'Ẩn ghim để xem bản vẽ gốc sạch' : 'Hiện ghim vị trí'}
-                >
-                  <Eye className="w-3.5 h-3.5" />
-                  <span>{modalShowPins ? 'Ghim: BẬT' : 'Bản Vẽ Sạch'}</span>
-                </button>
-
-                <div className="flex items-center gap-1 bg-[#101720] border border-[#223042] p-0.5">
-                  <button
-                    type="button"
-                    onClick={() => setModalZoomScale(prev => Math.max(0.7, Number((prev - 0.15).toFixed(2))))}
-                    className="p-1 hover:bg-[#1A2637] text-gray-300 hover:text-white"
-                    title="Thu nhỏ"
-                  >
-                    <ZoomOut className="w-3.5 h-3.5" />
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setModalZoomScale(1)}
-                    className="px-2 py-0.5 text-[#C5A880] text-[11px] min-w-[46px] text-center hover:bg-[#1A2637]"
-                    title="Mặc định 100%"
-                  >
-                    {Math.round(modalZoomScale * 100)}%
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setModalZoomScale(prev => Math.min(3.0, Number((prev + 0.15).toFixed(2))))}
-                    className="p-1 hover:bg-[#1A2637] text-gray-300 hover:text-white"
-                    title="Phóng to"
-                  >
-                    <ZoomIn className="w-3.5 h-3.5" />
-                  </button>
-                </div>
-
-                <button
+                  key={tab}
                   type="button"
                   onClick={() => {
-                    setIsMasterPlanZoomed(false);
+                    setMasterPlanTab(tab);
                     setModalZoomScale(1);
                   }}
-                  className="p-1.5 bg-red-950/60 hover:bg-red-900 text-red-200 border border-red-700 transition-all ml-1"
-                  title="Đóng cửa sổ"
+                  className={`px-3 py-1 rounded-md transition-all font-medium ${
+                    masterPlanTab === tab
+                      ? 'bg-[#C5A880] text-black font-bold shadow'
+                      : 'text-gray-400 hover:text-white'
+                  }`}
                 >
-                  <X className="w-4 h-4" />
+                  {tab === 'TROPICAL' ? 'The Tropical' : tab === 'SURROUNDINGS' ? 'Tiện Ích Biển Hồ' : 'Đại Đô Thị'}
                 </button>
-              </div>
+              ))}
             </div>
 
-            {/* Vùng hiển thị bản đồ quy hoạch thực tế toàn màn hình - chiếm trọn không gian, không bị viền đen thừa */}
-            <div className="flex-1 w-full h-full overflow-auto flex items-center justify-center p-2 sm:p-4 bg-[#030508]">
-              <div 
-                className="w-full h-full flex items-center justify-center transition-transform duration-200 ease-out"
-                style={{
-                  transform: `scale(${modalZoomScale})`,
-                  transformOrigin: 'center center'
-                }}
+            {/* Phải: Công cụ Bản vẽ sạch, Zoom & Đóng */}
+            <div className="flex items-center gap-2 shrink-0">
+              {/* Nút bật/tắt toàn bộ ghim để xem bản vẽ gốc sạch */}
+              <button
+                type="button"
+                onClick={() => setModalShowPins(!modalShowPins)}
+                className={`px-2.5 py-1.5 rounded-lg border text-xs font-mono transition-all flex items-center gap-1.5 ${
+                  modalShowPins
+                    ? 'bg-[#152538] border-[#3B82F6] text-cyan-300'
+                    : 'bg-[#101722] border-[#222E3E] text-gray-400 hover:text-white'
+                }`}
+                title={modalShowPins ? 'Ẩn ghim để xem bản vẽ gốc sạch' : 'Hiện ghim vị trí'}
               >
-                {masterPlanTab === 'TROPICAL' && (
-                  <TropicalCampusSvgModel
-                    amenities={THE_TROPICAL_AMENITIES}
-                    selectedBlock={selectedBlock}
-                    onSelectBlock={handleSwitchBlock}
-                    selectedAmenityId={selectedAmenityId}
-                    onSelectAmenity={setSelectedAmenityId}
-                    hoveredAmenityId={hoveredAmenityId}
-                    onHoverAmenity={setHoveredAmenityId}
-                    hideHeader={true}
-                    hideFooter={true}
-                    showHotspotsOverride={modalShowPins}
-                  />
-                )}
-                {masterPlanTab === 'SURROUNDINGS' && (
-                  <SurroundingRadarSvgModel
-                    amenities={SURROUNDING_AMENITIES}
-                    selectedBlock={selectedBlock}
-                    selectedAmenityId={selectedAmenityId}
-                    onSelectAmenity={setSelectedAmenityId}
-                    hoveredAmenityId={hoveredAmenityId}
-                    onHoverAmenity={setHoveredAmenityId}
-                    hideHeader={true}
-                    showPinsOverride={modalShowPins}
-                  />
-                )}
-                {masterPlanTab === 'MACRO' && (
-                  <MacroCitySvgModel
-                    selectedBlock={selectedBlock}
-                    selectedAmenityId={selectedAmenityId}
-                    onSelectAmenity={setSelectedAmenityId}
-                    onSelectTropical={() => {
-                      setMasterPlanTab('TROPICAL');
-                    }}
-                    hideHeader={true}
-                    showPinsOverride={modalShowPins}
-                  />
-                )}
+                <Eye className="w-3.5 h-3.5" />
+                <span>{modalShowPins ? 'Ghim: BẬT' : 'Bản Vẽ Sạch'}</span>
+              </button>
+
+              {/* Nhóm nút thu phóng */}
+              <div className="flex items-center bg-[#101722] border border-[#222E3E] rounded-lg p-0.5 text-xs font-mono">
+                <button
+                  type="button"
+                  onClick={() => setModalZoomScale(prev => Math.max(0.7, Number((prev - 0.15).toFixed(2))))}
+                  className="p-1 hover:bg-[#1A2637] rounded text-gray-300 hover:text-white transition-colors"
+                  title="Thu nhỏ"
+                >
+                  <ZoomOut className="w-3.5 h-3.5" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setModalZoomScale(1)}
+                  className="px-2 py-0.5 text-[#C5A880] font-bold text-[11px] min-w-[46px] text-center hover:bg-[#1A2637] rounded transition-colors"
+                  title="Đặt lại 100%"
+                >
+                  {Math.round(modalZoomScale * 100)}%
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setModalZoomScale(prev => Math.min(3.0, Number((prev + 0.15).toFixed(2))))}
+                  className="p-1 hover:bg-[#1A2637] rounded text-gray-300 hover:text-white transition-colors"
+                  title="Phóng to"
+                >
+                  <ZoomIn className="w-3.5 h-3.5" />
+                </button>
               </div>
+
+              {/* Nút đóng tinh tế */}
+              <button
+                type="button"
+                onClick={() => {
+                  setIsMasterPlanZoomed(false);
+                  setModalZoomScale(1);
+                }}
+                className="p-2 hover:bg-white/10 rounded-lg text-gray-400 hover:text-white transition-colors ml-1"
+                title="Đóng (ESC)"
+              >
+                <X className="w-4 h-4" />
+              </button>
             </div>
           </div>
-        );
-      })()}
+
+          {/* Vùng hiển thị bản đồ quy hoạch thực tế toàn màn hình - chiếm trọn không gian */}
+          <div className="flex-1 w-full h-full overflow-auto flex items-center justify-center p-2 sm:p-4 bg-[#030508]">
+            <div 
+              className="w-full h-full flex items-center justify-center transition-transform duration-200 ease-out"
+              style={{
+                transform: `scale(${modalZoomScale})`,
+                transformOrigin: 'center center'
+              }}
+            >
+              {masterPlanTab === 'TROPICAL' && (
+                <TropicalCampusSvgModel
+                  amenities={THE_TROPICAL_AMENITIES}
+                  selectedBlock={selectedBlock}
+                  onSelectBlock={handleSwitchBlock}
+                  selectedAmenityId={selectedAmenityId}
+                  onSelectAmenity={setSelectedAmenityId}
+                  hoveredAmenityId={hoveredAmenityId}
+                  onHoverAmenity={setHoveredAmenityId}
+                  hideHeader={true}
+                  hideFooter={true}
+                  showHotspotsOverride={modalShowPins}
+                />
+              )}
+              {masterPlanTab === 'SURROUNDINGS' && (
+                <SurroundingRadarSvgModel
+                  amenities={SURROUNDING_AMENITIES}
+                  selectedBlock={selectedBlock}
+                  selectedAmenityId={selectedAmenityId}
+                  onSelectAmenity={setSelectedAmenityId}
+                  hoveredAmenityId={hoveredAmenityId}
+                  onHoverAmenity={setHoveredAmenityId}
+                  hideHeader={true}
+                  showPinsOverride={modalShowPins}
+                />
+              )}
+              {masterPlanTab === 'MACRO' && (
+                <MacroCitySvgModel
+                  selectedBlock={selectedBlock}
+                  selectedAmenityId={selectedAmenityId}
+                  onSelectAmenity={setSelectedAmenityId}
+                  onSelectTropical={() => {
+                    setMasterPlanTab('TROPICAL');
+                  }}
+                  hideHeader={true}
+                  showPinsOverride={modalShowPins}
+                />
+              )}
+            </div>
+          </div>
+        </div>,
+        document.body
+      )}
 
     </div>
   );
