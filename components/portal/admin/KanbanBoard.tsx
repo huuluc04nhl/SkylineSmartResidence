@@ -460,12 +460,12 @@ export default function KanbanBoard() {
       {activeTab === 'KANBAN' && (
         <div className="space-y-6">
           {/* Category Filter Pills: Phân loại rõ ràng AI vs BQL vs KTV */}
-          <div className="flex items-center gap-2 overflow-x-auto pb-1 text-xs">
-            <span className="text-gray-400 text-[11px] font-semibold whitespace-nowrap">Bộ lọc:</span>
+          <div className="flex items-center gap-2 overflow-x-auto no-scrollbar whitespace-nowrap pb-1 text-xs">
+            <span className="text-gray-400 text-[11px] font-semibold whitespace-nowrap shrink-0">Bộ lọc:</span>
             
             <button
               onClick={() => setCategoryFilter('ALL')}
-              className={`px-3 py-1.5 font-semibold text-xs transition-all flex items-center gap-1.5 ${
+              className={`px-3 py-1.5 font-semibold text-xs transition-all flex items-center gap-1.5 shrink-0 active:scale-95 ${
                 categoryFilter === 'ALL'
                   ? 'bg-white text-[#0D1117] font-bold shadow'
                   : 'bg-[#121820] text-gray-400 hover:text-white border border-[#222B35]'
@@ -479,7 +479,7 @@ export default function KanbanBoard() {
 
             <button
               onClick={() => setCategoryFilter('REPAIR')}
-              className={`px-3 py-1.5 font-semibold text-xs transition-all flex items-center gap-1.5 ${
+              className={`px-3 py-1.5 font-semibold text-xs transition-all flex items-center gap-1.5 shrink-0 active:scale-95 ${
                 categoryFilter === 'REPAIR'
                   ? 'bg-amber-500 text-black font-bold shadow'
                   : 'bg-[#121820] text-amber-300 hover:text-white border border-[#222B35]'
@@ -494,7 +494,7 @@ export default function KanbanBoard() {
 
             <button
               onClick={() => setCategoryFilter('FEEDBACK')}
-              className={`px-3 py-1.5 font-semibold text-xs transition-all flex items-center gap-1.5 ${
+              className={`px-3 py-1.5 font-semibold text-xs transition-all flex items-center gap-1.5 shrink-0 active:scale-95 ${
                 categoryFilter === 'FEEDBACK'
                   ? 'bg-rose-500 text-white font-bold shadow'
                   : 'bg-[#121820] text-rose-300 hover:text-white border border-[#222B35]'
@@ -509,7 +509,7 @@ export default function KanbanBoard() {
 
             <button
               onClick={() => setCategoryFilter('INQUIRY')}
-              className={`px-3 py-1.5 font-semibold text-xs transition-all flex items-center gap-1.5 ${
+              className={`px-3 py-1.5 font-semibold text-xs transition-all flex items-center gap-1.5 shrink-0 active:scale-95 ${
                 categoryFilter === 'INQUIRY'
                   ? 'bg-sky-500 text-black font-bold shadow'
                   : 'bg-[#121820] text-sky-300 hover:text-white border border-[#222B35]'

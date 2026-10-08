@@ -183,8 +183,8 @@ export default function ResidentHome({ currentUser, onNavigate, onOpenVisitorMod
         </div>
 
         {/* Live Weather & Indoor Air Quality Widget */}
-        <div className="flex items-center gap-4 bg-[#0D1117]/80 border border-[#222B35] p-3 text-xs font-mono flex-shrink-0">
-          <div className="flex items-center gap-2 pr-4 border-r border-[#222B35]">
+        <div className="flex items-center justify-between sm:justify-start gap-2.5 sm:gap-4 bg-[#0D1117]/80 border border-[#222B35] p-2.5 sm:p-3 text-xs font-mono w-full md:w-auto overflow-x-auto">
+          <div className="flex items-center gap-2 pr-2.5 sm:pr-4 border-r border-[#222B35] shrink-0">
             <SunMedium className="w-5 h-5 text-amber-400" />
             <div>
               <div className="text-white font-bold text-sm">28°C</div>
@@ -192,7 +192,7 @@ export default function ResidentHome({ currentUser, onNavigate, onOpenVisitorMod
             </div>
           </div>
 
-          <div className="flex items-center gap-2 pr-4 border-r border-[#222B35]">
+          <div className="flex items-center gap-2 pr-2.5 sm:pr-4 border-r border-[#222B35] shrink-0">
             <Wind className="w-5 h-5 text-emerald-400" />
             <div>
               <div className="text-emerald-400 font-bold text-sm">AQI 32</div>
@@ -200,7 +200,7 @@ export default function ResidentHome({ currentUser, onNavigate, onOpenVisitorMod
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 shrink-0">
             <Droplets className="w-5 h-5 text-blue-400" />
             <div>
               <div className="text-white font-bold text-sm">65%</div>

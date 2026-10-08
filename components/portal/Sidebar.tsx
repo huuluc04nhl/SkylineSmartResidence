@@ -199,198 +199,206 @@ export default function Sidebar({
     }
   };
 
-  const sidebarContent = (
-    <aside 
-      className={`${
-        isCollapsed ? 'w-20' : 'w-64'
-      } transition-all duration-300 ease-in-out bg-[#0D1117] border-r border-[#222B35] text-white flex flex-col justify-between h-full select-none relative shadow-2xl`}
-    >
-      {/* ------------------------------------------------------------- */}
-      {/* HAMBURGER & HAMBURGER BỊ CẮN TOGGLE BUTTON (On Border Seam)   */}
-      {/* ------------------------------------------------------------- */}
-      <button
-        type="button"
-        onClick={onToggleCollapse}
-        className="group hidden md:flex absolute -right-3.5 top-5 z-50 w-7 h-7 rounded-full bg-[#121820] border-2 border-[#C5A880] text-[#C5A880] hover:bg-[#C5A880] hover:text-[#0D1117] shadow-[0_2px_12px_rgba(0,0,0,0.85)] items-center justify-center transition-all duration-200 cursor-pointer transform hover:scale-110"
-        title={isCollapsed ? 'Mở rộng Menu (Hamburger Bị Cắn 🍔)' : 'Thu gọn Menu (Hamburger Nguyên Vẹn 🍔)'}
-        aria-label="Toggle Sidebar Hamburger"
+  const renderSidebarInner = (isMobileMode: boolean) => {
+    const collapsed = isMobileMode ? false : isCollapsed;
+
+    return (
+      <aside 
+        className={`${
+          isMobileMode ? 'w-full' : (collapsed ? 'w-20' : 'w-64')
+        } transition-all duration-300 ease-in-out bg-[#0D1117] border-r border-[#222B35] text-white flex flex-col justify-between h-full select-none relative shadow-2xl`}
       >
-        <HamburgerBittenIcon isCollapsed={isCollapsed} />
-      </button>
+        {/* ------------------------------------------------------------- */}
+        {/* HAMBURGER & HAMBURGER BỊ CẮN TOGGLE BUTTON (Desktop only)    */}
+        {/* ------------------------------------------------------------- */}
+        {!isMobileMode && (
+          <button
+            type="button"
+            onClick={onToggleCollapse}
+            className="group hidden md:flex absolute -right-3.5 top-5 z-50 w-7 h-7 rounded-full bg-[#121820] border-2 border-[#C5A880] text-[#C5A880] hover:bg-[#C5A880] hover:text-[#0D1117] shadow-[0_2px_12px_rgba(0,0,0,0.85)] items-center justify-center transition-all duration-200 cursor-pointer transform hover:scale-110"
+            title={collapsed ? 'Mở rộng Menu (Hamburger Bị Cắn 🍔)' : 'Thu gọn Menu (Hamburger Nguyên Vẹn 🍔)'}
+            aria-label="Toggle Sidebar Hamburger"
+          >
+            <HamburgerBittenIcon isCollapsed={collapsed} />
+          </button>
+        )}
 
-      {/* ------------------------------------------------------------- */}
-      {/* TOP USER PROFILE HEADER                                       */}
-      {/* ------------------------------------------------------------- */}
-      <div className="flex-1 flex flex-col overflow-hidden">
-        <div className={`p-3.5 border-b border-[#222B35] bg-[#121820]/90 transition-all ${
-          isCollapsed ? 'flex flex-col items-center py-3' : 'flex items-center justify-between'
-        }`}>
-          {!isCollapsed ? (
-            <div className="flex items-center gap-3 overflow-hidden">
-              <div className="relative flex-shrink-0">
-                <img
-                  src={liveAvatar || getUserApiAvatar(currentUser)}
-                  alt="Avatar"
-                  onError={(e) => {
-                    e.currentTarget.src = 'https://data.nks.vn/storage/users/default.png';
-                  }}
-                  className="w-10 h-10 object-cover border border-[#C5A880]/70 rounded-none shadow-md"
-                />
-                <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-emerald-500 rounded-full border-2 border-[#0D1117]"></span>
-              </div>
-
-              <div className="overflow-hidden">
-                <div className="text-xs font-semibold text-white truncate max-w-[130px] leading-tight">
-                  {currentUser.full_name || (currentUser as any)?.fullname || 'Cư Dân SKYLINE'}
+        {/* ------------------------------------------------------------- */}
+        {/* TOP USER PROFILE HEADER                                       */}
+        {/* ------------------------------------------------------------- */}
+        <div className="flex-1 flex flex-col overflow-hidden">
+          <div className={`p-3.5 border-b border-[#222B35] bg-[#121820]/90 transition-all ${
+            collapsed ? 'flex flex-col items-center py-3' : 'flex items-center justify-between'
+          }`}>
+            {!collapsed ? (
+              <div className="flex items-center gap-3 overflow-hidden">
+                <div className="relative flex-shrink-0">
+                  <img
+                    src={liveAvatar || getUserApiAvatar(currentUser)}
+                    alt="Avatar"
+                    onError={(e) => {
+                      e.currentTarget.src = 'https://data.nks.vn/storage/users/default.png';
+                    }}
+                    className="w-10 h-10 object-cover border border-[#C5A880]/70 rounded-none shadow-md"
+                  />
+                  <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-emerald-500 rounded-full border-2 border-[#0D1117]"></span>
                 </div>
-                <div className="text-[10px] text-[#C5A880] font-mono uppercase font-bold tracking-wider mt-0.5 truncate">
-                  {role === 'ADMIN' ? 'BQL Chung Cư' : role === 'OWNER' ? `Căn ${currentUser.apartment_code || 'CH-06'} (Chủ Hộ)` : `Căn ${currentUser.apartment_code || 'CH-06'} (Người Nhà)`}
+
+                <div className="overflow-hidden">
+                  <div className="text-xs font-semibold text-white truncate max-w-[150px] leading-tight">
+                    {currentUser.full_name || (currentUser as any)?.fullname || 'Cư Dân SKYLINE'}
+                  </div>
+                  <div className="text-[10px] text-[#C5A880] font-mono uppercase font-bold tracking-wider mt-0.5 truncate">
+                    {role === 'ADMIN' ? 'BQL Chung Cư' : role === 'OWNER' ? `Căn ${currentUser.apartment_code || 'CH-06'} (Chủ Hộ)` : `Căn ${currentUser.apartment_code || 'CH-06'} (Người Nhà)`}
+                  </div>
                 </div>
               </div>
-            </div>
-          ) : (
-            <div className="relative group cursor-pointer flex flex-col items-center" onClick={onToggleCollapse}>
-              <div className="relative">
-                <img
-                  src={liveAvatar || getUserApiAvatar(currentUser)}
-                  alt="Avatar"
-                  onError={(e) => {
-                    e.currentTarget.src = 'https://data.nks.vn/storage/users/default.png';
-                  }}
-                  className="w-9 h-9 object-cover border border-[#C5A880] rounded-none shadow-md"
-                />
-                <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-emerald-500 rounded-full border-2 border-[#0D1117]"></span>
-              </div>
+            ) : (
+              <div className="relative group cursor-pointer flex flex-col items-center" onClick={onToggleCollapse}>
+                <div className="relative">
+                  <img
+                    src={liveAvatar || getUserApiAvatar(currentUser)}
+                    alt="Avatar"
+                    onError={(e) => {
+                      e.currentTarget.src = 'https://data.nks.vn/storage/users/default.png';
+                    }}
+                    className="w-9 h-9 object-cover border border-[#C5A880] rounded-none shadow-md"
+                  />
+                  <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-emerald-500 rounded-full border-2 border-[#0D1117]"></span>
+                </div>
 
-              {/* Flyout Tooltip when collapsed on Avatar */}
-              <div className="fixed left-20 top-20 ml-2 px-3 py-2 bg-[#0D1117] text-white text-xs whitespace-nowrap border border-[#C5A880] shadow-2xl z-50 pointer-events-none hidden group-hover:block animate-fadeIn rounded-none">
-                <div className="font-bold text-white">{currentUser.full_name || 'Cư Dân'}</div>
-                <div className="text-[10px] text-[#C5A880] font-mono">{role === 'ADMIN' ? 'BQL Chung Cư' : `Căn ${currentUser.apartment_code || 'CH-06'}`}</div>
+                {/* Flyout Tooltip when collapsed on Avatar */}
+                <div className="fixed left-20 top-20 ml-2 px-3 py-2 bg-[#0D1117] text-white text-xs whitespace-nowrap border border-[#C5A880] shadow-2xl z-50 pointer-events-none hidden group-hover:block animate-fadeIn rounded-none">
+                  <div className="font-bold text-white">{currentUser.full_name || 'Cư Dân'}</div>
+                  <div className="text-[10px] text-[#C5A880] font-mono">{role === 'ADMIN' ? 'BQL Chung Cư' : `Căn ${currentUser.apartment_code || 'CH-06'}`}</div>
+                </div>
               </div>
-            </div>
-          )}
+            )}
 
-          {/* Mobile Close Button */}
-          {onCloseMobile && (
-            <button
-              onClick={onCloseMobile}
-              className="md:hidden text-gray-400 hover:text-white p-1"
-            >
-              <X className="w-5 h-5" />
-            </button>
-          )}
+            {/* Mobile Close Button */}
+            {isMobileMode && onCloseMobile && (
+              <button
+                type="button"
+                onClick={onCloseMobile}
+                className="text-gray-400 hover:text-white p-1.5 bg-[#161B22] border border-gray-700 hover:border-gray-500 active:scale-95 transition-all"
+                aria-label="Đóng menu"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            )}
+          </div>
+
+          {/* ------------------------------------------------------------- */}
+          {/* NAVIGATION ITEMS LIST                                        */}
+          {/* ------------------------------------------------------------- */}
+          <nav className="flex-1 p-2 space-y-1.5 overflow-y-auto overflow-x-hidden">
+            {!collapsed && (
+              <div className="px-3 py-1.5 text-[10px] uppercase tracking-[0.2em] text-gray-400 font-semibold truncate">
+                {role === 'ADMIN' ? 'Ban Quản Lý' : 'Phân Hệ Cư Dân'}
+              </div>
+            )}
+
+            {navItems.map((item) => {
+              const Icon = item.icon;
+              const isActive = activeModule === item.id;
+
+              return (
+                <div key={item.id} className="relative group">
+                  {collapsed ? (
+                    /* Collapsed Icon-Only Button */
+                    <button
+                      type="button"
+                      onClick={() => handleItemClick(item.id)}
+                      className={`w-11 h-11 mx-auto flex items-center justify-center rounded-none transition-all relative ${
+                        isActive
+                          ? 'bg-[#C5A880]/15 text-[#C5A880] border border-[#C5A880]/70 shadow-[0_0_15px_rgba(197,168,128,0.25)]'
+                          : 'text-gray-400 hover:text-white hover:bg-[#161B22]'
+                      }`}
+                    >
+                      <Icon className={`w-5 h-5 flex-shrink-0 ${isActive ? 'text-[#C5A880]' : 'text-gray-400 group-hover:text-white'}`} />
+
+                      {/* Fixed-Position Floating Flyout Tooltip */}
+                      <div className="fixed left-20 ml-2 px-3 py-1.5 bg-[#0D1117] text-white text-xs font-semibold whitespace-nowrap border border-[#C5A880] shadow-[0_10px_25px_rgba(0,0,0,0.9)] z-50 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-150 rounded-none flex items-center gap-2">
+                        <span className={`w-1.5 h-1.5 rounded-full ${isActive ? 'bg-[#C5A880]' : 'bg-gray-500'}`}></span>
+                        <span>{item.label}</span>
+                      </div>
+                    </button>
+                  ) : (
+                    /* Expanded Button with Full Text */
+                    <button
+                      type="button"
+                      onClick={() => handleItemClick(item.id)}
+                      className={`w-full flex items-center gap-3 px-3 py-2.5 text-xs text-left transition-all border-l-2 font-medium rounded-none active:scale-[0.98] ${
+                        isActive
+                          ? 'bg-[#1C2533] border-[#C5A880] text-[#C5A880] font-bold shadow-sm'
+                          : 'border-transparent text-gray-300 hover:bg-[#161B22] hover:text-white'
+                      }`}
+                    >
+                      <Icon className={`w-4 h-4 flex-shrink-0 ${isActive ? 'text-[#C5A880]' : 'text-gray-400'}`} />
+                      <span className="truncate">{item.label}</span>
+                    </button>
+                  )}
+                </div>
+              );
+            })}
+          </nav>
         </div>
 
         {/* ------------------------------------------------------------- */}
-        {/* NAVIGATION ITEMS LIST                                        */}
+        {/* FOOTER AREA                                                   */}
         {/* ------------------------------------------------------------- */}
-        <nav className="flex-1 p-2 space-y-1.5 overflow-y-auto overflow-x-hidden">
-          {!isCollapsed && (
-            <div className="px-3 py-1.5 text-[10px] uppercase tracking-[0.2em] text-gray-400 font-semibold truncate">
-              {role === 'ADMIN' ? 'Ban Quản Lý' : 'Phân Hệ Cư Dân'}
+        <div className={`p-3 border-t border-[#222B35] bg-[#121820]/60 space-y-2 ${
+          collapsed ? 'flex flex-col items-center' : ''
+        }`}>
+          {!collapsed ? (
+            <>
+              <div className="text-[10px] text-gray-400 font-mono space-y-0.5 px-1">
+                <div className="flex items-center justify-between">
+                  <span>Trạng thái:</span>
+                  <span className="text-emerald-400 font-bold flex items-center gap-1">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                    Online FaceID
+                  </span>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                onClick={onLogout}
+                className="w-full py-2 bg-[#161B22] hover:bg-red-950/80 border border-gray-700 hover:border-red-500 text-gray-300 hover:text-red-300 text-xs font-semibold uppercase tracking-wider transition-colors flex items-center justify-center gap-2 rounded-none active:scale-95"
+              >
+                <LogOut className="w-3.5 h-3.5 text-rose-400" />
+                <span>Đăng Xuất</span>
+              </button>
+            </>
+          ) : (
+            <div className="relative group">
+              <button
+                type="button"
+                onClick={onLogout}
+                className="w-10 h-10 flex items-center justify-center rounded-none bg-[#161B22] hover:bg-red-950/80 border border-gray-800 hover:border-red-500 text-gray-400 hover:text-red-300 transition-colors"
+                title="Đăng Xuất"
+              >
+                <LogOut className="w-4 h-4 text-rose-400" />
+              </button>
+
+              {/* Logout Tooltip */}
+              <div className="fixed left-20 bottom-5 ml-2 px-2.5 py-1 bg-red-950 text-red-200 text-xs font-semibold whitespace-nowrap border border-red-600 shadow-xl z-50 pointer-events-none hidden group-hover:block animate-fadeIn rounded-none">
+                Đăng Xuất
+              </div>
             </div>
           )}
-
-          {navItems.map((item) => {
-            const Icon = item.icon;
-            const isActive = activeModule === item.id;
-
-            return (
-              <div key={item.id} className="relative group">
-                {isCollapsed ? (
-                  /* Collapsed Icon-Only Button */
-                  <button
-                    type="button"
-                    onClick={() => handleItemClick(item.id)}
-                    className={`w-11 h-11 mx-auto flex items-center justify-center rounded-none transition-all relative ${
-                      isActive
-                        ? 'bg-[#C5A880]/15 text-[#C5A880] border border-[#C5A880]/70 shadow-[0_0_15px_rgba(197,168,128,0.25)]'
-                        : 'text-gray-400 hover:text-white hover:bg-[#161B22]'
-                    }`}
-                  >
-                    <Icon className={`w-5 h-5 flex-shrink-0 ${isActive ? 'text-[#C5A880]' : 'text-gray-400 group-hover:text-white'}`} />
-
-                    {/* Fixed-Position Floating Flyout Tooltip */}
-                    <div className="fixed left-20 ml-2 px-3 py-1.5 bg-[#0D1117] text-white text-xs font-semibold whitespace-nowrap border border-[#C5A880] shadow-[0_10px_25px_rgba(0,0,0,0.9)] z-50 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-150 rounded-none flex items-center gap-2">
-                      <span className={`w-1.5 h-1.5 rounded-full ${isActive ? 'bg-[#C5A880]' : 'bg-gray-500'}`}></span>
-                      <span>{item.label}</span>
-                    </div>
-                  </button>
-                ) : (
-                  /* Expanded Button with Full Text */
-                  <button
-                    type="button"
-                    onClick={() => handleItemClick(item.id)}
-                    className={`w-full flex items-center gap-3 px-3 py-2.5 text-xs text-left transition-all border-l-2 font-medium rounded-none ${
-                      isActive
-                        ? 'bg-[#1C2533] border-[#C5A880] text-[#C5A880] font-bold shadow-sm'
-                        : 'border-transparent text-gray-300 hover:bg-[#161B22] hover:text-white'
-                    }`}
-                  >
-                    <Icon className={`w-4 h-4 flex-shrink-0 ${isActive ? 'text-[#C5A880]' : 'text-gray-400'}`} />
-                    <span className="truncate">{item.label}</span>
-                  </button>
-                )}
-              </div>
-            );
-          })}
-        </nav>
-      </div>
-
-      {/* ------------------------------------------------------------- */}
-      {/* FOOTER AREA                                                   */}
-      {/* ------------------------------------------------------------- */}
-      <div className={`p-3 border-t border-[#222B35] bg-[#121820]/60 space-y-2 ${
-        isCollapsed ? 'flex flex-col items-center' : ''
-      }`}>
-        {!isCollapsed ? (
-          <>
-            <div className="text-[10px] text-gray-400 font-mono space-y-0.5 px-1">
-              <div className="flex items-center justify-between">
-                <span>Trạng thái:</span>
-                <span className="text-emerald-400 font-bold flex items-center gap-1">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
-                  Online FaceID
-                </span>
-              </div>
-            </div>
-
-            <button
-              type="button"
-              onClick={onLogout}
-              className="w-full py-2 bg-[#161B22] hover:bg-red-950/80 border border-gray-700 hover:border-red-500 text-gray-300 hover:text-red-300 text-xs font-semibold uppercase tracking-wider transition-colors flex items-center justify-center gap-2 rounded-none"
-            >
-              <LogOut className="w-3.5 h-3.5 text-rose-400" />
-              <span>Đăng Xuất</span>
-            </button>
-          </>
-        ) : (
-          <div className="relative group">
-            <button
-              type="button"
-              onClick={onLogout}
-              className="w-10 h-10 flex items-center justify-center rounded-none bg-[#161B22] hover:bg-red-950/80 border border-gray-800 hover:border-red-500 text-gray-400 hover:text-red-300 transition-colors"
-              title="Đăng Xuất"
-            >
-              <LogOut className="w-4 h-4 text-rose-400" />
-            </button>
-
-            {/* Logout Tooltip */}
-            <div className="fixed left-20 bottom-5 ml-2 px-2.5 py-1 bg-red-950 text-red-200 text-xs font-semibold whitespace-nowrap border border-red-600 shadow-xl z-50 pointer-events-none hidden group-hover:block animate-fadeIn rounded-none">
-              Đăng Xuất
-            </div>
-          </div>
-        )}
-      </div>
-    </aside>
-  );
+        </div>
+      </aside>
+    );
+  };
 
   return (
     <>
       {/* Desktop Fixed Persistent Sidebar */}
       <div className="hidden md:block">
         <div className={`fixed top-16 left-0 bottom-0 z-30 ${isCollapsed ? 'w-20' : 'w-64'} transition-all duration-300 ease-in-out`}>
-          {sidebarContent}
+          {renderSidebarInner(false)}
         </div>
       </div>
 
@@ -402,9 +410,9 @@ export default function Sidebar({
             className="fixed inset-0 bg-black/80 backdrop-blur-sm transition-opacity"
             onClick={onCloseMobile}
           />
-          {/* Drawer */}
-          <div className="relative z-10 w-64 max-w-[80vw] h-full bg-[#0D1117] shadow-2xl">
-            {sidebarContent}
+          {/* Drawer: Always expanded on mobile with high touch ergonomics */}
+          <div className="relative z-10 w-72 sm:w-80 max-w-[85vw] h-full bg-[#0D1117] shadow-2xl flex flex-col animate-slideInLeft">
+            {renderSidebarInner(true)}
           </div>
         </div>
       )}

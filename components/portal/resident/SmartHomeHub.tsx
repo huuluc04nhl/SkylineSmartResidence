@@ -530,11 +530,11 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
       </div>
 
       {/* 3. APP SEGMENTED TABS: 3 Luồng Điều Khiển Rõ Ràng (Thống nhất Button Style) */}
-      <div className="flex items-center gap-1.5 border-b border-[#2A374A] pb-1 overflow-x-auto">
+      <div className="flex items-center gap-1.5 border-b border-[#2A374A] pb-1 overflow-x-auto no-scrollbar whitespace-nowrap">
         <button
           type="button"
           onClick={() => setActiveTab('DEVICES')}
-          className={`h-10 px-4 text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-2 border-b-2 ${
+          className={`h-10 px-3.5 sm:px-4 text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-2 border-b-2 shrink-0 active:scale-95 ${
             activeTab === 'DEVICES'
               ? 'border-[#C5A880] text-[#C5A880] bg-[#161D26]'
               : 'border-transparent text-gray-400 hover:text-white hover:bg-[#121820]'
@@ -547,7 +547,7 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
         <button
           type="button"
           onClick={() => setActiveTab('DOOR_ACCESS')}
-          className={`h-10 px-4 text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-2 border-b-2 ${
+          className={`h-10 px-3.5 sm:px-4 text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-2 border-b-2 shrink-0 active:scale-95 ${
             activeTab === 'DOOR_ACCESS'
               ? 'border-[#C5A880] text-[#C5A880] bg-[#161D26]'
               : 'border-transparent text-gray-400 hover:text-white hover:bg-[#121820]'
@@ -561,7 +561,7 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
         <button
           type="button"
           onClick={() => setActiveTab('AUTOMATION')}
-          className={`h-10 px-4 text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-2 border-b-2 ${
+          className={`h-10 px-3.5 sm:px-4 text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-2 border-b-2 shrink-0 active:scale-95 ${
             activeTab === 'AUTOMATION'
               ? 'border-[#C5A880] text-[#C5A880] bg-[#161D26]'
               : 'border-transparent text-gray-400 hover:text-white hover:bg-[#121820]'
@@ -845,7 +845,7 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
               </div>
 
               {/* Nút Lớn Điều Khiển Chốt Khóa 1-Chạm (Thống nhất CTA Button Style) */}
-              <div className="p-4 bg-[#121820] border border-[#222B35] flex items-center justify-between gap-4">
+              <div className="p-4 bg-[#121820] border border-[#222B35] flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
                 <div className="space-y-0.5">
                   <div className="text-xs font-bold text-white flex items-center gap-2">
                     <DoorClosed className="w-4 h-4 text-[#C5A880]" />
@@ -859,7 +859,7 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
                 <button
                   type="button"
                   onClick={handleToggleDoor}
-                  className={`h-10 px-5 text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-2 shadow-md active:scale-95 border ${
+                  className={`h-10 px-4 sm:px-5 text-xs font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-2 shadow-md active:scale-95 border shrink-0 w-full sm:w-auto ${
                     masterDoorLocked
                       ? 'bg-emerald-600 hover:bg-emerald-500 text-white border-emerald-400/40'
                       : 'bg-amber-600 hover:bg-amber-500 text-white border-amber-400/40 animate-pulse'
@@ -887,28 +887,28 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
                   <button
                     type="button"
                     onClick={() => handleQuickCreatePin(15, 'Giao Hàng Shipper')}
-                    className="p-2.5 bg-[#0D1117] hover:bg-[#161D26] hover:border-[#C5A880] border border-[#222B35] text-left transition-all active:scale-[0.98]"
+                    className="p-2 sm:p-2.5 bg-[#0D1117] hover:bg-[#161D26] hover:border-[#C5A880] border border-[#222B35] text-left transition-all active:scale-[0.98]"
                   >
-                    <div className="text-xs font-bold text-white">15 Phút</div>
-                    <div className="text-[9px] text-[#C5A880]">Shipper / Giao đồ</div>
+                    <div className="text-[11px] sm:text-xs font-bold text-white">15 Phút</div>
+                    <div className="text-[8.5px] sm:text-[9px] text-[#C5A880] truncate">Shipper</div>
                   </button>
 
                   <button
                     type="button"
                     onClick={() => handleQuickCreatePin(60, 'Bạn Bè Viếng Thăm')}
-                    className="p-2.5 bg-[#0D1117] hover:bg-[#161D26] hover:border-[#C5A880] border border-[#222B35] text-left transition-all active:scale-[0.98]"
+                    className="p-2 sm:p-2.5 bg-[#0D1117] hover:bg-[#161D26] hover:border-[#C5A880] border border-[#222B35] text-left transition-all active:scale-[0.98]"
                   >
-                    <div className="text-xs font-bold text-white">1 Giờ</div>
-                    <div className="text-[9px] text-cyan-400">Bạn bè ghé chơi</div>
+                    <div className="text-[11px] sm:text-xs font-bold text-white">1 Giờ</div>
+                    <div className="text-[8.5px] sm:text-[9px] text-cyan-400 truncate">Bạn bè</div>
                   </button>
 
                   <button
                     type="button"
                     onClick={() => handleQuickCreatePin(1440, 'Khách Ở Lại Qua Đêm')}
-                    className="p-2.5 bg-[#0D1117] hover:bg-[#161D26] hover:border-[#C5A880] border border-[#222B35] text-left transition-all active:scale-[0.98]"
+                    className="p-2 sm:p-2.5 bg-[#0D1117] hover:bg-[#161D26] hover:border-[#C5A880] border border-[#222B35] text-left transition-all active:scale-[0.98]"
                   >
-                    <div className="text-xs font-bold text-white">24 Giờ</div>
-                    <div className="text-[9px] text-indigo-400">Khách ở lại</div>
+                    <div className="text-[11px] sm:text-xs font-bold text-white">24 Giờ</div>
+                    <div className="text-[8.5px] sm:text-[9px] text-indigo-400 truncate">Qua đêm</div>
                   </button>
                 </div>
 

@@ -470,12 +470,12 @@ Quý cư dân có thể chọn câu hỏi gợi ý bên dưới hoặc nhập c�
       {/* 1. FLOATING LUXURY TRIGGER BUTTON (When Closed)               */}
       {/* ------------------------------------------------------------- */}
       {!isOpen && (
-        <div className="pointer-events-auto absolute bottom-6 right-6 flex items-center gap-3 transition-all duration-300">
+        <div className="pointer-events-auto absolute bottom-4 right-4 sm:bottom-6 sm:right-6 flex items-center gap-3 transition-all duration-300">
           {/* Ambient Tooltip Pill (Borderless Sharp Glass) */}
           <button
             type="button"
             onClick={onToggle}
-            className="hidden sm:flex items-center gap-2.5 px-4 py-2 bg-[#0E131B]/95 text-[#C5A880] text-xs font-medium shadow-[0_8px_30px_rgba(0,0,0,0.7)] backdrop-blur-xl rounded-none transition-all hover:bg-[#161F2C] hover:text-white group border-0"
+            className="hidden sm:flex items-center gap-2.5 px-4 py-2 bg-[#0E131B]/95 text-[#C5A880] text-xs font-medium shadow-[0_8px_30px_rgba(0,0,0,0.7)] backdrop-blur-xl rounded-none transition-all hover:bg-[#161F2C] hover:text-white group border-0 active:scale-95"
           >
             <span className="w-2 h-2 rounded-none bg-emerald-400 animate-pulse"></span>
             <span className="group-hover:text-white transition-colors">Hỏi Skyline AI 24/7</span>
@@ -489,11 +489,11 @@ Quý cư dân có thể chọn câu hỏi gợi ý bên dưới hoặc nhập c�
             type="button"
             onClick={onToggle}
             aria-label="Mở Trợ Lý Ảo Skyline AI"
-            className="group relative w-14 h-14 bg-gradient-to-br from-[#222C3A] via-[#141B24] to-[#0A0E14] text-[#C5A880] hover:text-white rounded-none flex items-center justify-center transition-all duration-300 transform hover:scale-105 shadow-[0_12px_40px_rgba(0,0,0,0.85),0_0_24px_rgba(197,168,128,0.25)] border-0"
+            className="group relative w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-br from-[#222C3A] via-[#141B24] to-[#0A0E14] text-[#C5A880] hover:text-white rounded-none flex items-center justify-center transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-[0_12px_40px_rgba(0,0,0,0.85),0_0_24px_rgba(197,168,128,0.25)] border-0"
           >
-            <Bot className="w-7 h-7 relative z-10 transition-transform group-hover:rotate-12 duration-200" />
-            <Sparkles className="w-3.5 h-3.5 text-amber-300 absolute top-2 right-2 animate-bounce" />
-            <span className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-emerald-500 rounded-none border-2 border-[#0A0E14] flex items-center justify-center">
+            <Bot className="w-6 h-6 sm:w-7 sm:h-7 relative z-10 transition-transform group-hover:rotate-12 duration-200" />
+            <Sparkles className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-amber-300 absolute top-1.5 right-1.5 sm:top-2 sm:right-2 animate-bounce" />
+            <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 sm:w-3.5 sm:h-3.5 bg-emerald-500 rounded-none border-2 border-[#0A0E14] flex items-center justify-center">
               <span className="w-1.5 h-1.5 rounded-none bg-white animate-ping"></span>
             </span>
           </button>
@@ -505,10 +505,10 @@ Quý cư dân có thể chọn câu hỏi gợi ý bên dưới hoặc nhập c�
       {/* ------------------------------------------------------------- */}
       {isOpen && (
         <div
-          className={`pointer-events-auto absolute bottom-4 right-4 sm:bottom-6 sm:right-6 bg-[#0E131B]/98 shadow-[0_25px_70px_rgba(0,0,0,0.95),0_0_50px_rgba(0,0,0,0.8)] flex flex-col overflow-hidden backdrop-blur-2xl origin-bottom-right transition-all duration-300 ease-out animate-in fade-in-0 zoom-in-95 rounded-none border-0 ${
+          className={`pointer-events-auto absolute bottom-2 right-2 sm:bottom-6 sm:right-6 bg-[#0E131B]/98 shadow-[0_25px_70px_rgba(0,0,0,0.95),0_0_50px_rgba(0,0,0,0.8)] flex flex-col overflow-hidden backdrop-blur-2xl origin-bottom-right transition-all duration-300 ease-out animate-in fade-in-0 zoom-in-95 rounded-none border-0 ${
             isExpanded
-              ? 'w-[560px] max-w-[calc(100vw-32px)] h-[720px] max-h-[88vh]'
-              : 'w-[420px] max-w-[calc(100vw-32px)] h-[580px] max-h-[82vh]'
+              ? 'w-[560px] max-w-[calc(100vw-16px)] sm:max-w-[calc(100vw-32px)] h-[min(720px,90dvh)]'
+              : 'w-[420px] max-w-[calc(100vw-16px)] sm:max-w-[calc(100vw-32px)] h-[min(600px,85dvh)]'
           }`}
         >
           {/* Top Window Header - Seamless Luxury Surface */}

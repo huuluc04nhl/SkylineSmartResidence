@@ -479,12 +479,12 @@ export default function SmartFacilityPass({ currentUser, onNavigateModule }: Sma
       {/* ============================================================= */}
       {/* 2. THANH ĐIỀU HƯỚNG 3 CHỨC NĂNG (WORKFLOW TABS)               */}
       {/* ============================================================= */}
-      <div className="flex items-center gap-2 border-b border-[#222B35] pb-2 overflow-x-auto">
+      <div className="flex items-center gap-2 border-b border-[#222B35] pb-2 overflow-x-auto no-scrollbar whitespace-nowrap">
         {/* Chức năng 1 */}
         <button
           type="button"
           onClick={() => setActiveTab('DISCOVER')}
-          className={`px-4 py-2.5 text-xs font-bold uppercase tracking-wider rounded-none transition-all flex items-center gap-2 shrink-0 ${
+          className={`px-3.5 sm:px-4 py-2.5 text-xs font-bold uppercase tracking-wider rounded-none transition-all flex items-center gap-2 shrink-0 active:scale-95 ${
             activeTab === 'DISCOVER'
               ? 'bg-[#C5A880] text-[#0D1117] shadow-lg'
               : 'bg-[#121820] text-gray-400 hover:text-white border border-[#222B35]'
@@ -498,7 +498,7 @@ export default function SmartFacilityPass({ currentUser, onNavigateModule }: Sma
         <button
           type="button"
           onClick={() => setActiveTab('BOOKING')}
-          className={`px-4 py-2.5 text-xs font-bold uppercase tracking-wider rounded-none transition-all flex items-center gap-2 shrink-0 ${
+          className={`px-3.5 sm:px-4 py-2.5 text-xs font-bold uppercase tracking-wider rounded-none transition-all flex items-center gap-2 shrink-0 active:scale-95 ${
             activeTab === 'BOOKING'
               ? 'bg-[#C5A880] text-[#0D1117] shadow-lg'
               : 'bg-[#121820] text-gray-400 hover:text-white border border-[#222B35]'
@@ -512,7 +512,7 @@ export default function SmartFacilityPass({ currentUser, onNavigateModule }: Sma
         <button
           type="button"
           onClick={() => setActiveTab('LOGS')}
-          className={`px-4 py-2.5 text-xs font-bold uppercase tracking-wider rounded-none transition-all flex items-center gap-2 shrink-0 ${
+          className={`px-3.5 sm:px-4 py-2.5 text-xs font-bold uppercase tracking-wider rounded-none transition-all flex items-center gap-2 shrink-0 active:scale-95 ${
             activeTab === 'LOGS'
               ? 'bg-[#C5A880] text-[#0D1117] shadow-lg'
               : 'bg-[#121820] text-gray-400 hover:text-white border border-[#222B35]'

@@ -1043,7 +1043,7 @@ export default function TicketService({ currentUser }: TicketServiceProps) {
 
         {/* Bộ Lọc Trạng Thái & Phân Loại Ticket */}
         {tickets.length > 0 && (
-          <div className="flex flex-wrap items-center gap-1.5 pt-0.5">
+          <div className="flex overflow-x-auto no-scrollbar items-center gap-1.5 pt-0.5 whitespace-nowrap pb-1">
             {[
               { key: 'ALL', label: `Tất Cả (${tickets.length})` },
               { key: 'REPAIR', label: `🔧 KTV Sửa Chữa (${tickets.filter(t => t.ticket_type === 'REPAIR' || (!t.ticket_type && t.status !== 'Resolved')).length})` },
@@ -1055,7 +1055,7 @@ export default function TicketService({ currentUser }: TicketServiceProps) {
                 key={tab.key}
                 type="button"
                 onClick={() => setActiveFilter(tab.key as any)}
-                className={`px-2.5 py-1 text-xs border transition-all ${
+                className={`px-2.5 py-1 text-xs border transition-all shrink-0 active:scale-95 ${
                   activeFilter === tab.key
                     ? 'bg-[#C5A880] text-[#0D1117] font-bold border-[#C5A880] shadow'
                     : 'bg-[#161B22] text-gray-400 border-[#2D3748] hover:text-white hover:border-gray-600'

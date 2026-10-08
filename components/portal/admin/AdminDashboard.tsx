@@ -396,7 +396,7 @@ export default function AdminDashboard() {
             </div>
 
             {/* Switch tầng: B2, B1, L1, 20, 30, 34 */}
-            <div className="flex items-center gap-1 bg-[#16202D] border border-[#2B394E] p-1 text-xs font-mono flex-wrap">
+            <div className="flex items-center gap-1 bg-[#16202D] border border-[#2B394E] p-1 text-xs font-mono overflow-x-auto no-scrollbar whitespace-nowrap">
               {(['B2', 'B1', 'L1', '20', '30', '34'] as const).map((fl) => {
                 const fData = FLOOR_THREAT_DATABASE[fl];
                 const isCrit = fData.threatLevel === 'CRITICAL';

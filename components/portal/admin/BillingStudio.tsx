@@ -172,10 +172,10 @@ export default function BillingStudio() {
 
       {/* Filter Toolbar */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <div className="flex items-center gap-2 flex-wrap">
+        <div className="flex items-center gap-2 overflow-x-auto no-scrollbar whitespace-nowrap pb-1">
           <button
             onClick={() => setFilterType('ALL')}
-            className={`px-3 py-1.5 text-xs font-semibold border transition-all ${
+            className={`px-3 py-1.5 text-xs font-semibold border transition-all shrink-0 active:scale-95 ${
               filterType === 'ALL'
                 ? 'bg-[#C5A880] text-[#0D1117] border-[#C5A880]'
                 : 'bg-[#161B22] border-[#2D3748] text-gray-300 hover:text-white'
@@ -186,7 +186,7 @@ export default function BillingStudio() {
 
           <button
             onClick={() => setFilterType('UNPAID')}
-            className={`px-3 py-1.5 text-xs font-semibold border transition-all ${
+            className={`px-3 py-1.5 text-xs font-semibold border transition-all shrink-0 active:scale-95 ${
               filterType === 'UNPAID'
                 ? 'bg-amber-500 text-[#0D1117] border-amber-500 font-bold'
                 : 'bg-[#161B22] border-[#2D3748] text-amber-400 hover:border-amber-400'
@@ -197,7 +197,7 @@ export default function BillingStudio() {
 
           <button
             onClick={() => setFilterType('PAID')}
-            className={`px-3 py-1.5 text-xs font-semibold border transition-all ${
+            className={`px-3 py-1.5 text-xs font-semibold border transition-all shrink-0 active:scale-95 ${
               filterType === 'PAID'
                 ? 'bg-emerald-600 text-white border-emerald-600 font-bold'
                 : 'bg-[#161B22] border-[#2D3748] text-emerald-400 hover:border-emerald-400'
@@ -208,7 +208,7 @@ export default function BillingStudio() {
 
           <button
             onClick={() => setFilterType('ANOMALY')}
-            className={`px-3 py-1.5 text-xs font-semibold border transition-all ${
+            className={`px-3 py-1.5 text-xs font-semibold border transition-all shrink-0 active:scale-95 ${
               filterType === 'ANOMALY'
                 ? 'bg-red-900 border-red-500 text-white font-bold'
                 : 'bg-[#161B22] border-[#2D3748] text-red-400 hover:border-red-400'

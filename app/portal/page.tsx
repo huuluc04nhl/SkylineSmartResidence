@@ -196,11 +196,11 @@ function PortalContent() {
 
         {/* Right Main Content Viewport with Dynamic Margin for Fixed Sidebar */}
         <main
-          className={`flex-1 min-w-0 p-4 sm:p-6 lg:p-8 overflow-y-auto overflow-x-hidden bg-[#0A0E14] text-white transition-all duration-300 ease-in-out ${
+          className={`flex-1 min-w-0 p-3 sm:p-5 lg:p-8 overflow-y-auto overflow-x-hidden bg-[#0A0E14] text-white transition-all duration-300 ease-in-out ${
             isSidebarCollapsed ? 'md:ml-20' : 'md:ml-64'
           }`}
         >
-          <div className="w-full max-w-7xl mx-auto space-y-6">
+          <div className="w-full max-w-7xl mx-auto space-y-4 sm:space-y-6">
             {/* 1. ADMIN & TECHNICIAN ROLE MODULES */}
             {(currentUser.role === 'ADMIN' || currentUser.role === 'TECHNICIAN') && (
               <>

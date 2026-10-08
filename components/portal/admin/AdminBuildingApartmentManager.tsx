@@ -786,8 +786,8 @@ export default function AdminBuildingApartmentManager() {
           {/* Cụm 1: Chọn Chung Cư & Tầng & Tìm Kiếm */}
           <div className="flex items-center gap-2 flex-wrap text-xs">
             {/* 1. CHỌN CHUNG CƯ */}
-            <div className="flex items-center gap-1 bg-[#121B27] border border-[#1E2D42] p-1">
-              <span className="text-gray-400 font-medium text-[11px] px-1.5 flex items-center gap-1">
+            <div className="flex items-center gap-1 bg-[#121B27] border border-[#1E2D42] p-1 overflow-x-auto no-scrollbar whitespace-nowrap">
+              <span className="text-gray-400 font-medium text-[11px] px-1.5 flex items-center gap-1 shrink-0">
                 <Building className="w-3.5 h-3.5 text-[#C5A880]" />
                 <span className="hidden sm:inline">Chung Cư:</span>
               </span>
@@ -803,7 +803,7 @@ export default function AdminBuildingApartmentManager() {
                     key={b.code}
                     type="button"
                     onClick={() => handleSwitchBlock(b.code as any)}
-                    className={`px-2.5 py-1 text-xs font-mono transition-all flex items-center gap-1 border ${
+                    className={`px-2.5 py-1 text-xs font-mono transition-all flex items-center gap-1 border shrink-0 active:scale-95 ${
                       isCurrent
                         ? 'bg-[#C5A880] text-black border-[#C5A880] font-bold shadow'
                         : 'bg-[#0E1521] text-gray-300 border-[#1B293C] hover:border-[#385175] hover:text-white'
@@ -819,7 +819,7 @@ export default function AdminBuildingApartmentManager() {
             </div>
 
             {/* 2. CHỌN TẦNG TINH GỌN */}
-            <div className="flex items-center gap-1 bg-[#121B27] border border-[#1E2D42] p-1">
+            <div className="flex items-center gap-1 bg-[#121B27] border border-[#1E2D42] p-1 shrink-0">
               <span className="text-gray-400 font-medium text-[11px] px-1.5 flex items-center gap-1">
                 <Layers className="w-3.5 h-3.5 text-[#C5A880]" />
                 <span className="hidden sm:inline">Tầng:</span>
@@ -860,7 +860,7 @@ export default function AdminBuildingApartmentManager() {
             </div>
 
             {/* 3. Ô TÌM NHANH CĂN HỘ */}
-            <div className="relative flex items-center">
+            <div className="relative flex items-center shrink-0">
               <Search className="w-3.5 h-3.5 text-gray-400 absolute left-2 pointer-events-none" />
               <input
                 type="text"
@@ -897,7 +897,7 @@ export default function AdminBuildingApartmentManager() {
 
           {/* Cụm 2: Bộ Lọc Trạng Thái Cư Trú Kèm Số Lượng Trực Tiếp & Làm Mới */}
           <div className="flex items-center gap-1.5 flex-wrap text-xs">
-            <div className="flex items-center gap-1 bg-[#121B27] border border-[#1E2D42] p-1">
+            <div className="flex items-center gap-1 bg-[#121B27] border border-[#1E2D42] p-1 overflow-x-auto no-scrollbar whitespace-nowrap">
               {[
                 { key: 'ALL', label: 'Tất Cả', count: totalUnitsCount, countColor: 'text-gray-300' },
                 { key: 'OCCUPIED', label: 'Đã Ở', count: occupiedCount, countColor: 'text-emerald-400' },
@@ -910,7 +910,7 @@ export default function AdminBuildingApartmentManager() {
                     key={item.key}
                     type="button"
                     onClick={() => setFloorFilterStatus(item.key as any)}
-                    className={`px-2.5 py-1 text-xs transition-all flex items-center gap-1.5 border ${
+                    className={`px-2.5 py-1 text-xs transition-all flex items-center gap-1.5 border shrink-0 active:scale-95 ${
                       isActive
                         ? 'bg-[#C5A880] text-black border-[#C5A880] font-bold shadow'
                         : 'bg-[#0E1521] text-gray-300 border-[#1B293C] hover:border-[#385175] hover:text-white'

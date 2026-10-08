@@ -117,11 +117,11 @@ export default function Topbar({
   return (
     <header className="h-16 bg-[#0D1117] border-b border-[#222B35] px-4 sm:px-6 flex items-center justify-between text-white fixed top-0 left-0 right-0 z-40 select-none shadow-md">
       {/* Left: Mobile Menu Trigger + Brand / Home Link */}
-      <div className="flex items-center gap-3 sm:gap-6">
+      <div className="flex items-center gap-2 sm:gap-6">
         {onToggleMobileSidebar && (
           <button
             onClick={onToggleMobileSidebar}
-            className="md:hidden p-2 text-gray-300 hover:text-[#C5A880] focus:outline-none"
+            className="md:hidden p-2 -ml-1 text-gray-300 hover:text-[#C5A880] focus:outline-none flex items-center justify-center active:scale-95"
             aria-label="Toggle menu"
           >
             <Menu className="w-5 h-5" />
@@ -129,7 +129,8 @@ export default function Topbar({
         )}
 
         <Link href="/" className="group flex-shrink-0">
-          <SkylineLogo variant="full" size="sm" theme="dark" />
+          <SkylineLogo variant="full" size="sm" theme="dark" className="hidden sm:inline-flex" />
+          <SkylineLogo variant="icon-only" size="sm" theme="dark" className="sm:hidden" />
         </Link>
 
         {/* Live System Time */}
@@ -215,7 +216,7 @@ export default function Topbar({
           </button>
 
           {showNotifications && (
-            <div className="absolute right-0 top-full mt-2 w-72 sm:w-80 bg-[#121820] border border-[#2D3748] p-4 shadow-2xl z-50 text-xs space-y-3">
+            <div className="absolute right-0 top-full mt-2 w-72 sm:w-80 max-w-[calc(100vw-24px)] bg-[#121820] border border-[#2D3748] p-4 shadow-2xl z-50 text-xs space-y-3">
               <div className="flex items-center justify-between border-b border-[#222B35] pb-2">
                 <span className="font-semibold text-white uppercase tracking-wider text-[11px]">Thông Báo Thời Gian Thực</span>
                 <span className="text-[10px] text-[#C5A880] font-mono">2 Mới</span>
@@ -240,7 +241,7 @@ export default function Topbar({
         <div className="relative">
           <button
             onClick={() => setShowRoleDropdown(!showRoleDropdown)}
-            className="px-2.5 sm:px-3 py-1.5 bg-[#161B22] border border-[#2D3748] hover:border-[#C5A880] text-xs flex items-center gap-2 text-gray-200 transition-colors shadow rounded-none"
+            className="px-2.5 sm:px-3 py-1.5 bg-[#161B22] border border-[#2D3748] hover:border-[#C5A880] text-xs flex items-center gap-2 text-gray-200 transition-colors shadow rounded-none active:scale-95"
           >
             <div className="w-6 h-6 rounded-none overflow-hidden border border-[#C5A880]/60 flex-shrink-0 bg-[#0E131A]">
               <img
@@ -264,7 +265,7 @@ export default function Topbar({
           </button>
 
           {showRoleDropdown && (
-            <div className="absolute right-0 top-full mt-2 w-72 bg-[#121820] border border-[#C5A880] p-3 shadow-2xl z-50 space-y-3 rounded-none animate-fadeIn">
+            <div className="absolute right-0 top-full mt-2 w-72 max-w-[calc(100vw-24px)] bg-[#121820] border border-[#C5A880] p-3 shadow-2xl z-50 space-y-3 rounded-none animate-fadeIn">
               {/* Profile Summary Header */}
               <div className="flex items-center gap-3 pb-3 border-b border-[#222B35]">
                 <div className="w-10 h-10 rounded-none overflow-hidden border border-[#C5A880] flex-shrink-0 bg-[#0E131A]">

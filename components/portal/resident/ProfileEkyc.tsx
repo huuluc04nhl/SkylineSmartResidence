@@ -541,11 +541,11 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
       </div>
 
       {/* Tab Navigation */}
-      <div className="flex flex-wrap border-b border-[#222B35] text-xs font-semibold uppercase tracking-wider gap-2">
+      <div className="flex overflow-x-auto no-scrollbar border-b border-[#222B35] text-xs font-semibold uppercase tracking-wider gap-1 sm:gap-2 whitespace-nowrap">
         <button
           type="button"
           onClick={() => setActiveTab('INFO')}
-          className={`pb-3 px-4 flex items-center gap-2 border-b-2 transition-colors ${
+          className={`pb-3 px-3 sm:px-4 flex items-center gap-2 border-b-2 transition-colors shrink-0 active:scale-95 ${
             activeTab === 'INFO'
               ? 'border-[#C5A880] text-[#C5A880] font-bold'
               : 'border-transparent text-gray-400 hover:text-gray-200'
@@ -557,19 +557,19 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
         <button
           type="button"
           onClick={() => setActiveTab('EKYC')}
-          className={`pb-3 px-4 flex items-center gap-2 border-b-2 transition-colors ${
+          className={`pb-3 px-3 sm:px-4 flex items-center gap-2 border-b-2 transition-colors shrink-0 active:scale-95 ${
             activeTab === 'EKYC'
               ? 'border-[#C5A880] text-[#C5A880] font-bold'
               : 'border-transparent text-gray-400 hover:text-gray-200'
           }`}
         >
-          <ScanFace className="w-4 h-4" /> {isOwner ? '2. Căn Cước & Nhận Diện Khuôn Mặt' : '2. Nhận Diện Khuôn Mặt (FaceID)'}
+          <ScanFace className="w-4 h-4" /> {isOwner ? '2. Căn Cước & FaceID' : '2. Nhận Diện FaceID'}
         </button>
 
         <button
           type="button"
           onClick={() => setActiveTab('PASSWORD')}
-          className={`pb-3 px-4 flex items-center gap-2 border-b-2 transition-colors ${
+          className={`pb-3 px-3 sm:px-4 flex items-center gap-2 border-b-2 transition-colors shrink-0 active:scale-95 ${
             activeTab === 'PASSWORD'
               ? 'border-[#C5A880] text-[#C5A880] font-bold'
               : 'border-transparent text-gray-400 hover:text-gray-200'
