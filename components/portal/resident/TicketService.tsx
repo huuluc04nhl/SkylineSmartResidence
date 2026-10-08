@@ -186,12 +186,8 @@ export default function TicketService({ currentUser }: TicketServiceProps) {
   const [createdTicketResult, setCreatedTicketResult] = useState<ExtendedServiceRequest | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // AI Assistant States
-  const [isPolishing, setIsPolishing] = useState(false);
-  const [polishSuccess, setPolishSuccess] = useState(false);
-  const [aiInstantFaq, setAiInstantFaq] = useState<string | null>(null);
+  // Helpdesk Filter State
   const [activeFilter, setActiveFilter] = useState<'ALL' | 'REPAIR' | 'INQUIRY' | 'FEEDBACK' | 'RESOLVED'>('ALL');
-  const [expandedSafetyTicketId, setExpandedSafetyTicketId] = useState<string | null>(null);
 
   // Rating Modal State
   const [ratingModalTicket, setRatingModalTicket] = useState<ExtendedServiceRequest | null>(null);
@@ -238,20 +234,6 @@ export default function TicketService({ currentUser }: TicketServiceProps) {
     }
   }, [showCreateForm, ticketPurpose]);
 
-  // Tự động kiểm tra FAQ khi người dùng chọn tab Hỏi Đáp
-  useEffect(() => {
-    if (ticketPurpose === 'INQUIRY' && content.trim().length > 3) {
-      const answer = findInquiryAnswer(content);
-      if (!answer.includes('Bộ phận Chăm sóc Cư dân Skyline xin thông tin')) {
-        setAiInstantFaq(answer);
-      } else {
-        setAiInstantFaq(null);
-      }
-    } else if (ticketPurpose !== 'INQUIRY') {
-      setAiInstantFaq(null);
-    }
-  }, [ticketPurpose, content]);
-
   // Chọn ticket so sánh: các phiếu đã giải quyết (Resolved) có cả 2 ảnh thật (trước & sau)
   const comparisonTickets = tickets.filter(t => t.status === 'Resolved' && t.before_image && t.after_image);
   const activeComparisonTicket = comparisonTickets.find(t => t.id === selectedComparisonTicketId) 
@@ -265,52 +247,7 @@ export default function TicketService({ currentUser }: TicketServiceProps) {
     setUrgencyLevel(preset.urgency);
   };
 
-  const getSafetyTipForContent = (text: string, cat: string) => {
-    const lower = `${cat} ${text}`.toLowerCase();
-    if (lower.includes('nước') || lower.includes('vòi') || lower.includes('rỉ') || lower.includes('nghẹt') || lower.includes('tràn') || lower.includes('bồn')) {
-      return 'Khóa ngay van cấp nước dưới bồn rửa hoặc van tổng tại hộp kỹ thuật cửa vào để chống tràn ngập sàn gỗ trong lúc chờ KTV đến.';
-    }
-    if (lower.includes('điện') || lower.includes('đèn') || lower.includes('aptomat') || lower.includes('chập') || lower.includes('mất điện')) {
-      return 'Ngắt cầu dao (aptomat) nhánh khu vực xảy ra sự cố. Không dùng tay ướt và không cắm thiết bị công suất lớn vào ổ cắm bị chập.';
-    }
-    if (lower.includes('lạnh') || lower.includes('điều hòa')) {
-      return 'Tắt máy lạnh và mở cửa sổ thông thoáng. Nếu chảy nước dàn lạnh, đặt khăn hứng để bảo vệ sàn gỗ và tường sơn.';
-    }
-    if (lower.includes('khóa') || lower.includes('cửa')) {
-      return 'Thử dùng sạc dự phòng cắm vào cổng phụ dưới đáy khóa điện tử nếu khóa báo pin yếu. KTV sẽ mang chìa khóa cơ dự phòng lên hỗ trợ.';
-    }
-    return 'Giữ nguyên hiện trạng sự cố. Đội ngũ Kỹ Thuật Tòa Nhà đã tiếp nhận và sẽ có mặt hỗ trợ Quý cư dân đúng hẹn.';
-  };
-
-  const handleAiPolish = async () => {
-    if (!content.trim() || isPolishing) return;
-    setIsPolishing(true);
-    try {
-      const res = await fetch('/api/ai/ticket-assistant', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          action: 'POLISH_DESCRIPTION',
-          content,
-          area: selectedArea,
-          category: aiDetectedCat,
-          aptCode,
-          residentName,
-        }),
-      });
-      const data = await res.json();
-      if (data.success && data.polishedContent) {
-        setContent(data.polishedContent);
-        setPolishSuccess(true);
-        setTimeout(() => setPolishSuccess(false), 4000);
-      }
-    } catch (err) {
-      console.warn('AI Polish error:', err);
-    } finally {
-      setIsPolishing(false);
-    }
-  };
-
+  // Tự động phân loại ngành nghề kỹ thuật và độ ưu tiên theo nội dung
   const handleContentChange = (text: string) => {
     setContent(text);
     setSelectedPresetId(null);
@@ -323,19 +260,6 @@ export default function TicketService({ currentUser }: TicketServiceProps) {
       setUrgencyLevel('HIGH');
     } else {
       setAiDetectedCat('Khác');
-    }
-
-    if (ticketPurpose === 'INQUIRY') {
-      if (text.trim().length > 3) {
-        const answer = findInquiryAnswer(text);
-        if (!answer.includes('Bộ phận Chăm sóc Cư dân Skyline xin thông tin')) {
-          setAiInstantFaq(answer);
-        } else {
-          setAiInstantFaq(null);
-        }
-      } else {
-        setAiInstantFaq(null);
-      }
     }
   };
 
@@ -602,7 +526,7 @@ export default function TicketService({ currentUser }: TicketServiceProps) {
                   : 'text-gray-400 hover:text-white'
               }`}
             >
-              <Sparkles className="w-3.5 h-3.5" /> Hỏi Đáp AI (24/7)
+              <HelpCircle className="w-3.5 h-3.5" /> Hỏi Đáp Dịch Vụ
             </button>
             <button
               type="button"
@@ -649,14 +573,14 @@ export default function TicketService({ currentUser }: TicketServiceProps) {
             </div>
           )}
 
-          {/* Gợi Ý Nhanh Câu Hỏi Thường Gặp (Khi Hỏi Đáp) */}
+          {/* Gợi Ý Nhanh Câu Hỏi Phổ Biến (Khi Hỏi Đáp) */}
           {ticketPurpose === 'INQUIRY' && (
             <div className="space-y-1.5 pt-0.5">
               <div className="text-[11px] text-gray-400 flex items-center justify-between">
                 <span className="flex items-center gap-1 text-sky-400 font-medium">
-                  <Sparkles className="w-3 h-3 text-sky-400" /> Chủ đề hỏi đáp thường gặp:
+                  <HelpCircle className="w-3 h-3 text-sky-400" /> Câu hỏi tra cứu phổ biến:
                 </span>
-                <span className="text-[10px] text-gray-500">Chạm để AI giải đáp tức thì</span>
+                <span className="text-[10px] text-gray-500">Chạm để tự điền câu hỏi</span>
               </div>
               <div className="flex flex-wrap gap-1.5">
                 {COMMON_INQUIRY_PRESETS.map((p) => {
@@ -667,8 +591,7 @@ export default function TicketService({ currentUser }: TicketServiceProps) {
                       type="button"
                       onClick={() => {
                         setContent(p.question);
-                        const answer = findInquiryAnswer(p.question);
-                        setAiInstantFaq(answer);
+                        setSelectedPresetId(p.id);
                       }}
                       className={`px-2.5 py-1 text-xs border transition-all flex items-center gap-1.5 ${
                         isSelected
@@ -776,45 +699,22 @@ export default function TicketService({ currentUser }: TicketServiceProps) {
             </div>
           )}
 
-          {/* Ô Nhập Nội Dung Chi Tiết Kèm Nút AI Tối Ưu */}
+          {/* Ô Nhập Nội Dung Chi Tiết */}
           <div className="space-y-1.5">
             <div className="flex items-center justify-between flex-wrap gap-1">
               <label className="text-xs text-gray-300 font-medium flex items-center gap-1.5">
                 {ticketPurpose === 'INQUIRY'
-                  ? 'Nội dung câu hỏi:'
+                  ? 'Nội dung câu hỏi / tra cứu dịch vụ:'
                   : ticketPurpose === 'FEEDBACK'
                     ? 'Nội dung góp ý / phản ánh:'
                     : 'Mô tả hiện tượng hư hỏng:'}
               </label>
 
-              {/* Nút AI Tối Ưu Mô Tả Dành Cho Phiếu Sửa Chữa */}
+              {/* Tự động phân loại ngầm của hệ thống */}
               {ticketPurpose === 'REPAIR' && content.trim() && (
-                <div className="flex items-center gap-1.5">
-                  {polishSuccess && (
-                    <span className="text-[10px] text-emerald-400 font-medium flex items-center gap-0.5 animate-fadeIn">
-                      <Check className="w-3 h-3 text-emerald-400" /> Đã tối ưu bằng AI
-                    </span>
-                  )}
-                  <button
-                    type="button"
-                    onClick={handleAiPolish}
-                    disabled={isPolishing}
-                    className="text-[11px] text-[#C5A880] hover:text-white flex items-center gap-1 px-2.5 py-0.5 bg-[#1C2533] border border-[#C5A880]/50 hover:border-[#C5A880] transition-colors"
-                    title="Nhờ AI viết lại mô tả ngắn gọn, chi tiết và chuẩn kỹ thuật"
-                  >
-                    {isPolishing ? (
-                      <>
-                        <RefreshCw className="w-3 h-3 animate-spin text-[#C5A880]" />
-                        <span>AI đang tối ưu...</span>
-                      </>
-                    ) : (
-                      <>
-                        <Wand2 className="w-3 h-3 text-[#C5A880]" />
-                        <span>✨ AI Tối Ưu Mô Tả</span>
-                      </>
-                    )}
-                  </button>
-                </div>
+                <span className="text-[10px] text-amber-300/90 font-mono bg-[#161F2B] px-2 py-0.5 border border-amber-500/30">
+                  Hạng mục: <strong>{aiDetectedCat}</strong> • Ưu tiên: <strong>{urgencyLevel === 'HIGH' ? 'Khẩn cấp (< 45p)' : 'Tiêu chuẩn'}</strong>
+                </span>
               )}
             </div>
 
@@ -822,7 +722,7 @@ export default function TicketService({ currentUser }: TicketServiceProps) {
               rows={2}
               placeholder={
                 ticketPurpose === 'INQUIRY'
-                  ? 'VD: Giờ mở cửa hồ bơi, phòng gym, đăng ký thẻ cư dân...'
+                  ? 'VD: Giờ mở cửa hồ bơi vô cực, thủ tục đăng ký bãi đỗ xe ô tô, thời gian thu gom rác...'
                   : ticketPurpose === 'FEEDBACK'
                     ? 'VD: Vệ sinh khu vực hành lang, tiếng ồn giờ nghỉ trưa...'
                     : 'VD: Vòi nước bồn rửa chén rò rỉ dưới gầm tủ, nhảy aptomat...'
@@ -832,44 +732,6 @@ export default function TicketService({ currentUser }: TicketServiceProps) {
               className="w-full bg-[#161B22] border border-[#2D3748] text-xs text-white p-2.5 focus:outline-none focus:border-[#C5A880] placeholder-gray-500 resize-none"
               required
             />
-
-            {/* AI Chẩn Đoán & Lời Khuyên An Toàn Sơ Bộ (Khi Báo Hỏng) */}
-            {ticketPurpose === 'REPAIR' && content.trim() && (
-              <div className="p-2.5 bg-[#141E28] border border-amber-500/30 text-xs space-y-1 animate-fadeIn">
-                <div className="flex items-center justify-between flex-wrap gap-1 text-[11px]">
-                  <span className="flex items-center gap-1 text-amber-300 font-semibold">
-                    <Bot className="w-3.5 h-3.5 text-amber-400" /> AI Chẩn Đoán Tức Thì:
-                  </span>
-                  <span className="text-gray-400 font-mono text-[10px]">
-                    Hạng mục: <strong className="text-white">{aiDetectedCat}</strong> • Ưu tiên: <strong className={urgencyLevel === 'HIGH' ? 'text-rose-400' : 'text-amber-300'}>{urgencyLevel === 'HIGH' ? 'Khẩn cấp (< 45p)' : 'Tiêu chuẩn'}</strong>
-                  </span>
-                </div>
-                <p className="text-gray-300 text-[11px] leading-relaxed flex items-start gap-1.5">
-                  <Lightbulb className="w-3.5 h-3.5 text-[#C5A880] shrink-0 mt-0.5" />
-                  <span>{getSafetyTipForContent(content, aiDetectedCat)}</span>
-                </p>
-              </div>
-            )}
-
-            {/* AI Tự Động Trả Lời Ngay (Khi Hỏi Đáp) */}
-            {ticketPurpose === 'INQUIRY' && aiInstantFaq && (
-              <div className="p-3 bg-sky-950/40 border border-sky-500/50 text-xs space-y-1.5 animate-fadeIn">
-                <div className="flex items-center justify-between text-[11px]">
-                  <span className="flex items-center gap-1.5 text-sky-300 font-bold">
-                    <Sparkles className="w-3.5 h-3.5 text-sky-400" /> Trợ Lý AI Trả Lời Tức Thì (24/7):
-                  </span>
-                  <span className="text-[10px] text-emerald-400 font-medium bg-emerald-950/80 px-1.5 py-0.5 border border-emerald-500/40">
-                    Độ tin cậy 99% • Tri thức chuẩn Skyline
-                  </span>
-                </div>
-                <p className="text-gray-200 text-xs leading-relaxed whitespace-pre-line">
-                  {aiInstantFaq}
-                </p>
-                <div className="text-[10px] text-gray-400 pt-0.5 border-t border-sky-500/20 flex items-center justify-between">
-                  <span>💡 Bạn có thể tham khảo ngay hoặc bấm "Hỏi Trợ Lý AI" để lưu vào lịch sử phiếu.</span>
-                </div>
-              </div>
-            )}
           </div>
 
           {/* Đính Kèm Ảnh & Hành Động */}
@@ -936,8 +798,8 @@ export default function TicketService({ currentUser }: TicketServiceProps) {
                   </>
                 ) : ticketPurpose === 'INQUIRY' ? (
                   <>
-                    <Sparkles className="w-3.5 h-3.5" />
-                    Hỏi Trợ Lý AI
+                    <Send className="w-3.5 h-3.5" />
+                    Gửi Câu Hỏi (Tự Động Phản Hồi)
                   </>
                 ) : ticketPurpose === 'FEEDBACK' ? (
                   <>
@@ -1087,13 +949,13 @@ export default function TicketService({ currentUser }: TicketServiceProps) {
           </button>
         </div>
 
-        {/* Bộ Lọc Thông Minh Phân Loại Theo AI */}
+        {/* Bộ Lọc Trạng Thái & Phân Loại Ticket */}
         {tickets.length > 0 && (
           <div className="flex flex-wrap items-center gap-1.5 pt-0.5">
             {[
               { key: 'ALL', label: `Tất Cả (${tickets.length})` },
               { key: 'REPAIR', label: `🔧 KTV Sửa Chữa (${tickets.filter(t => t.ticket_type === 'REPAIR' || (!t.ticket_type && t.status !== 'Resolved')).length})` },
-              { key: 'INQUIRY', label: `⚡ AI Đã Giải Đáp (${tickets.filter(t => t.ticket_type === 'INQUIRY').length})` },
+              { key: 'INQUIRY', label: `❓ Hỏi Đáp Dịch Vụ (${tickets.filter(t => t.ticket_type === 'INQUIRY').length})` },
               { key: 'FEEDBACK', label: `📢 Góp Ý & Phản Ánh (${tickets.filter(t => t.ticket_type === 'FEEDBACK').length})` },
               { key: 'RESOLVED', label: `✓ Đã Hoàn Tất (${tickets.filter(t => t.status === 'Resolved').length})` },
             ].map((tab) => (
@@ -1167,11 +1029,11 @@ export default function TicketService({ currentUser }: TicketServiceProps) {
                         </span>
                       ) : isInquiry ? (
                         <span className="px-2 py-0.5 bg-sky-950 text-sky-300 border border-sky-500 text-[10px] font-bold">
-                          💬 Hỏi Đáp • AI 24/7
+                          ❓ Hỏi Đáp Dịch Vụ
                         </span>
                       ) : (
                         <span className="px-1.5 py-0.5 bg-[#1C2533] border border-gray-700 text-gray-300 text-[10px] font-mono">
-                          🔧 {t.ai_category}
+                          🔧 {t.ai_category || 'Kỹ Thuật'}
                         </span>
                       )}
 
@@ -1191,7 +1053,7 @@ export default function TicketService({ currentUser }: TicketServiceProps) {
                               : 'bg-blue-950 text-blue-400 border border-blue-600'
                       }`}>
                         {isInquiry ? (
-                          t.status === 'Resolved' ? <>✓ AI Đã Giải Đáp Tức Thì</> : <>⏳ Chờ BQL Xác Nhận</>
+                          t.status === 'Resolved' ? <>✓ Đã Phản Hồi Tự Động</> : <>⏳ Chờ Tiếp Nhận</>
                         ) : isFeedback ? (
                           t.status === 'Resolved' ? <>✓ BQL Đã Phản Hồi</> : <>⏳ BQL Đang Thụ Lý</>
                         ) : (
@@ -1199,7 +1061,7 @@ export default function TicketService({ currentUser }: TicketServiceProps) {
                             ? <>✓ Đã Nghiệm Thu Xong</> 
                             : t.status === 'In_Progress' || t.status === 'Assigned'
                               ? <>⏱ KTV Đang Xử Lý</>
-                              : <>⏳ Chờ BQL Tiếp Nhận</>
+                              : <>⏳ Đang Phân Bổ KTV</>
                         )}
                       </span>
 
@@ -1231,8 +1093,8 @@ export default function TicketService({ currentUser }: TicketServiceProps) {
                           <span>KTV Phụ trách: <strong className="text-white">{t.assigned_technician}</strong></span>
                         ) : (
                           <span className="text-gray-300">
-                            KTV AI đề xuất: <strong className="text-amber-300">{t.suggested_technician}</strong>{' '}
-                            <span className="text-[10px] text-gray-400">(Chờ BQL duyệt ca trực)</span>
+                            KTV Phân bổ: <strong className="text-amber-300">{t.suggested_technician}</strong>{' '}
+                            <span className="text-[10px] text-gray-400">(Theo ca trực)</span>
                           </span>
                         )}
                       </div>
@@ -1244,50 +1106,15 @@ export default function TicketService({ currentUser }: TicketServiceProps) {
                     </div>
                   )}
 
-                  {/* HƯỚNG DẪN AN TOÀN SƠ BỘ TỪ AI TRONG LÚC CHỜ KTV */}
-                  {isRepair && t.status !== 'Resolved' && (
-                    <div className="pt-0.5">
-                      <button
-                        type="button"
-                        onClick={() => setExpandedSafetyTicketId(expandedSafetyTicketId === t.id ? null : t.id)}
-                        className="text-[11px] text-[#C5A880] hover:text-white flex items-center gap-1 transition-colors"
-                      >
-                        <Lightbulb className="w-3.5 h-3.5 text-[#C5A880]" />
-                        <span>{expandedSafetyTicketId === t.id ? 'Thu gọn khuyến nghị an toàn' : '💡 Xem hướng dẫn an toàn từ AI trong lúc chờ KTV'}</span>
-                      </button>
-                      {expandedSafetyTicketId === t.id && (
-                        <div className="mt-1.5 p-2.5 bg-[#141E28] border border-amber-500/30 text-[11px] text-gray-300 leading-relaxed animate-fadeIn flex items-start gap-1.5">
-                          <Bot className="w-3.5 h-3.5 text-amber-400 shrink-0 mt-0.5" />
-                          <span>{getSafetyTipForContent(t.content, t.ai_category || 'Khác')}</span>
-                        </div>
-                      )}
-                    </div>
-                  )}
-
-                  {/* GỢI Ý THAM KHẢO CỦA AI NẾU LÀ CÂU HỎI VÀ ĐANG CHỜ BQL */}
-                  {isInquiry && t.ai_suggested_reply && !t.admin_reply && !t.ai_reply && (
+                  {/* PHẢN HỒI TỰ ĐỘNG TỪ HỆ THỐNG NẾU LÀ CÂU HỎI */}
+                  {isInquiry && (t.ai_reply || t.ai_suggested_reply) && (
                     <div className="p-3 bg-sky-950/30 border border-sky-500/30 space-y-1">
-                      <div className="text-[11px] font-bold text-sky-300 flex items-center justify-between">
-                        <span className="flex items-center gap-1.5">
-                          <Sparkles className="w-3.5 h-3.5 text-sky-400" /> Gợi Ý Nhanh Từ Trợ Lý AI:
-                        </span>
-                        <span className="text-[10px] text-amber-400 font-normal">Đang chờ BQL xác nhận chính thức</span>
-                      </div>
-                      <p className="text-gray-300 text-xs whitespace-pre-line leading-relaxed">
-                        {t.ai_suggested_reply}
-                      </p>
-                    </div>
-                  )}
-
-                  {/* CÂU TRẢ LỜI CỦA AI NẾU ĐÃ CHÍNH THỨC GIẢI ĐÁP */}
-                  {isInquiry && t.ai_reply && (
-                    <div className="p-3 bg-sky-950/40 border border-sky-500/40 space-y-1">
                       <div className="text-[11px] font-bold text-sky-300 flex items-center gap-1.5">
-                        <Sparkles className="w-3.5 h-3.5 text-sky-400" /> 
-                        Giải Đáp Từ Trợ Lý AI Skyline (Tự Động 24/7):
+                        <CheckCircle2 className="w-3.5 h-3.5 text-sky-400" />
+                        Phản hồi tự động từ Hệ thống Skyline:
                       </div>
                       <p className="text-gray-200 text-xs whitespace-pre-line leading-relaxed">
-                        {t.ai_reply}
+                        {t.ai_reply || t.ai_suggested_reply}
                       </p>
                     </div>
                   )}
@@ -1347,8 +1174,8 @@ export default function TicketService({ currentUser }: TicketServiceProps) {
                   <div className="pt-2 border-t border-[#222B35] flex flex-wrap items-center justify-between gap-3 text-[11px]">
                     {isInquiry ? (
                       <span className="text-sky-300 font-medium flex items-center gap-1.5">
-                        <Sparkles className="w-3 h-3 text-sky-400" />
-                        Trợ lý AI tự động hỗ trợ 24/7 • Cần gặp trực tiếp: 0364 967 082
+                        <CheckCircle2 className="w-3 h-3 text-sky-400" />
+                        Phiếu được hệ thống tự động giải đáp • Hotline BQL: 1900 8899
                       </span>
                     ) : isFeedback ? (
                       <span className="text-rose-300 font-medium flex items-center gap-1.5">
