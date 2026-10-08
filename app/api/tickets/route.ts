@@ -127,6 +127,32 @@ export async function GET(req: Request) {
     // Sắp xếp theo ngày tạo mới nhất lên đầu
     mergedList.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
 
+    // Tự động nhận diện và đồng bộ KTV xuất hiện trong các vé NKS API thực tế
+    if (Array.isArray(nksTickets) && nksTickets.length > 0) {
+      if (!Array.isArray(data.technicians)) data.technicians = DEFAULT_TECHNICIANS;
+      const existingNames = new Set(data.technicians.map(t => t.name.trim().toLowerCase()));
+      nksTickets.forEach(nks => {
+        const engName = (nks.engineername || '').trim();
+        if (engName && !existingNames.has(engName.toLowerCase())) {
+          existingNames.add(engName.toLowerCase());
+          const newId = `KTV-${String(data.technicians.length + 1).padStart(2, '0')}`;
+          const isSanitation = (nks.service || '').toLowerCase().includes('vệ sinh');
+          const isCooling = (nks.service || '').toLowerCase().includes('lạnh') || (nks.service || '').toLowerCase().includes('nhà hàng');
+          data.technicians.push({
+            id: newId,
+            name: engName,
+            phone: '090' + Math.floor(1000000 + Math.random() * 9000000),
+            email: `${engName.toLowerCase().replace(/\s+/g, '')}@skyline.vn`,
+            specialty: isSanitation ? 'Vệ Sinh & Cảnh Quan Chung Cư' : isCooling ? 'Điện Lạnh & Kỹ Thuật Tòa Nhà' : 'Cơ Điện & Nước',
+            baseSalary: 8500000,
+            payPerTicket: 150000,
+            bonusPerFiveStar: 50000,
+            status: 'AVAILABLE',
+          });
+        }
+      });
+    }
+
     // Cập nhật lại kho lưu trữ server
     data.tickets = mergedList;
     data.updatedAt = new Date().toISOString();

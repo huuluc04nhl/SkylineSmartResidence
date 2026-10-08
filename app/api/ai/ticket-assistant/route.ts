@@ -310,13 +310,13 @@ Chỉ trả về nội dung đã viết lại, không giải thích thêm hay d�
       let urgency = classification.urgent ? 'HIGH' : 'NORMAL';
       let estimatedSla = classification.urgent ? '15 - 30 phút' : 'Trong vòng 45 - 60 phút';
 
-      // Gợi ý KTV phù hợp theo chuyên môn
-      let suggestedTech = 'Nguyễn Văn Hùng (Chuyên trách Điện Nước)';
+      // Gợi ý KTV phù hợp theo chuyên môn từ danh sách API
+      let suggestedTech = 'Lê Văn Kỹ Thuật (Chuyên trách Cơ Điện & Nước)';
       const lower = content.toLowerCase();
-      if (lower.includes('lạnh') || lower.includes('điều hòa') || lower.includes('thang')) {
-        suggestedTech = 'Trần Đình Trọng (Chuyên môn Điện Lạnh & Cơ Điện)';
-      } else if (lower.includes('vệ sinh') || lower.includes('rác') || lower.includes('mùi')) {
-        suggestedTech = 'Lê Thị Mai (Tổ trưởng Vệ sinh & Cảnh quan)';
+      if (lower.includes('lạnh') || lower.includes('điều hòa') || lower.includes('thang') || lower.includes('nhà hàng')) {
+        suggestedTech = 'Trần Đình Trọng (Chuyên môn Điện Lạnh & Thiết Bị Tòa Nhà)';
+      } else if (lower.includes('vệ sinh') || lower.includes('rác') || lower.includes('mùi') || lower.includes('bàn ghế')) {
+        suggestedTech = 'Hoàng (Tổ trưởng Vệ sinh & Cảnh quan)';
       }
 
       return NextResponse.json({
