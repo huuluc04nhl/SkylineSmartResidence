@@ -481,25 +481,28 @@ Quý cư dân có thể chọn câu hỏi gợi ý bên dưới hoặc nhập c�
       {/* ------------------------------------------------------------- */}
       {!isOpen && (
         <div className="pointer-events-auto fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50 flex items-center gap-2.5 transition-all duration-300">
-          {/* Ambient Tooltip Pill (Desktop/Tablet) */}
+          {/* Ambient Tooltip Pill (Desktop/Tablet) with Frosted Glass Blur & Gentle Translucency */}
           <button
             type="button"
             onClick={onToggle}
-            className="hidden sm:flex items-center gap-2.5 px-3.5 py-2 bg-[#0E131B]/95 text-[#C5A880] text-xs font-medium shadow-[0_8px_30px_rgba(0,0,0,0.7)] backdrop-blur-xl rounded-none transition-all hover:bg-[#161F2C] hover:text-white group border border-[#C5A880]/30 active:scale-95"
+            className="hidden sm:flex items-center gap-2.5 px-3.5 py-2 bg-[#0E131B]/65 hover:bg-[#141B24]/90 text-[#C5A880] hover:text-white text-xs font-medium shadow-[0_8px_32px_rgba(0,0,0,0.5),0_0_15px_rgba(197,168,128,0.12)] backdrop-blur-xl rounded-none transition-all duration-300 opacity-80 hover:opacity-100 group border border-[#C5A880]/30 hover:border-[#C5A880]/60 active:scale-95 relative overflow-hidden"
           >
-            <span className="w-2 h-2 rounded-none bg-emerald-400 animate-pulse"></span>
-            <span className="group-hover:text-white transition-colors">Hỏi Skyline AI 24/7</span>
-            <span className="px-1.5 py-0.5 bg-emerald-950/80 text-emerald-400 text-[9px] font-mono font-bold rounded-none border border-emerald-500/30">
+            {/* Subtle frosted glass ambient glow */}
+            <div className="absolute -inset-1 bg-gradient-to-r from-[#C5A880]/10 via-transparent to-[#C5A880]/10 blur-sm pointer-events-none group-hover:opacity-100 opacity-50 transition-opacity" />
+
+            <span className="w-2 h-2 rounded-none bg-emerald-400 animate-pulse relative z-10"></span>
+            <span className="transition-colors relative z-10 tracking-wide">Hỏi Skyline AI 24/7</span>
+            <span className="px-1.5 py-0.5 bg-emerald-950/60 backdrop-blur-md text-emerald-400 text-[9px] font-mono font-bold rounded-none border border-emerald-500/40 relative z-10">
               24/7
             </span>
           </button>
 
-          {/* Luxury Sharp AI Trigger Button */}
+          {/* Luxury Sharp AI Trigger Button with Frosted Glass Blur */}
           <button
             type="button"
             onClick={onToggle}
             aria-label="Mở Trợ Lý Ảo Skyline AI"
-            className="group relative w-12 h-12 sm:w-13 sm:h-13 bg-gradient-to-br from-[#222C3A] via-[#141B24] to-[#0A0E14] text-[#C5A880] hover:text-white rounded-none flex items-center justify-center transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-[0_10px_35px_rgba(0,0,0,0.85),0_0_20px_rgba(197,168,128,0.25)] border border-[#C5A880]/40"
+            className="group relative w-12 h-12 sm:w-13 sm:h-13 bg-gradient-to-br from-[#222C3A]/80 via-[#141B24]/80 to-[#0A0E14]/80 backdrop-blur-xl text-[#C5A880] hover:text-white rounded-none flex items-center justify-center transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-[0_10px_35px_rgba(0,0,0,0.7),0_0_20px_rgba(197,168,128,0.2)] border border-[#C5A880]/40 hover:border-[#C5A880]/70 opacity-90 hover:opacity-100"
           >
             <Bot className="w-5 h-5 sm:w-6 sm:h-6 relative z-10 transition-transform group-hover:rotate-12 duration-200" />
             <Sparkles className="w-3 h-3 text-amber-300 absolute top-1.5 right-1.5 animate-bounce" />
@@ -514,7 +517,7 @@ Quý cư dân có thể chọn câu hỏi gợi ý bên dưới hoặc nhập c�
       {/* 2. MINIMIZED FLOATING DOCK BAR (Compact Non-Obtrusive Pill)   */}
       {/* ------------------------------------------------------------- */}
       {isOpen && isMinimized && (
-        <div className="pointer-events-auto fixed bottom-3 right-3 left-3 sm:left-auto sm:bottom-5 sm:right-5 z-50 flex items-center justify-between gap-3 px-3 py-2 sm:px-4 sm:py-2.5 bg-[#0E131B]/95 text-white border border-[#C5A880]/40 shadow-[0_15px_40px_rgba(0,0,0,0.9)] backdrop-blur-xl rounded-none transition-all duration-300 animate-in fade-in slide-in-from-bottom-2 sm:w-auto sm:min-w-[280px] max-w-full">
+        <div className="pointer-events-auto fixed bottom-3 right-3 left-3 sm:left-auto sm:bottom-5 sm:right-5 z-50 flex items-center justify-between gap-3 px-3 py-2 sm:px-4 sm:py-2.5 bg-[#0E131B]/75 hover:bg-[#0E131B]/90 text-white border border-[#C5A880]/40 shadow-[0_15px_40px_rgba(0,0,0,0.75)] backdrop-blur-xl rounded-none transition-all duration-300 animate-in fade-in slide-in-from-bottom-2 sm:w-auto sm:min-w-[280px] max-w-full">
           <button
             type="button"
             onClick={() => setIsMinimized(false)}
