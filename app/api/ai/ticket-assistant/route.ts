@@ -2,12 +2,14 @@ import { NextRequest, NextResponse } from 'next/server';
 import { GEMINI_API_KEY } from '@/lib/geminiClient';
 import { classifyTicket, findInquiryAnswer, generateSuggestedAdminReply } from '@/lib/ticketClassification';
 
-// Mở rộng timeout route lên 30s (Next.js mặc định chỉ 10s)
-export const maxDuration = 30;
+// Mở rộng timeout route lên 60s
+export const maxDuration = 60;
 
+// Model cascading: Gemini 3.6 Flash (mới nhất & thông minh nhất) -> Gemini 3.5 Flash -> Gemini 3.5 Flash-Lite (cực nhanh)
+const GEMINI_MODELS = ['gemini-3.6-flash', 'gemini-3.5-flash', 'gemini-3.5-flash-lite'];
 
-// Timeout configuration (mặc định 8s, có thể override per-call)
-const GEMINI_TIMEOUT_MS = 8000;
+// Timeout configuration (25s per call, không bao giờ cắt giữa chừng)
+const GEMINI_TIMEOUT_MS = 25000;
 
 async function callGemini(
   prompt: string,
@@ -19,113 +21,127 @@ async function callGemini(
   }
 
   const timeoutMs = options?.timeoutMs ?? GEMINI_TIMEOUT_MS;
-  const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  let lastError: any = null;
 
-  try {
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`;
-    const payload = {
-      contents: [
-        {
-          role: 'user',
-          parts: [{ text: `${systemInstruction}\n\n${prompt}` }],
+  for (const model of GEMINI_MODELS) {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), timeoutMs);
+
+    try {
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${GEMINI_API_KEY}`;
+      const payload = {
+        contents: [
+          {
+            role: 'user',
+            parts: [{ text: `${systemInstruction}\n\n${prompt}` }],
+          },
+        ],
+        generationConfig: {
+          temperature: options?.temperature ?? 0.2,
+          maxOutputTokens: options?.maxOutputTokens ?? 600,
         },
-      ],
-      generationConfig: {
-        temperature: options?.temperature ?? 0.2,
-        maxOutputTokens: options?.maxOutputTokens ?? 600,
-      },
-    };
+      };
 
-    const res = await fetch(url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload),
-      signal: controller.signal,
-    });
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+        signal: controller.signal,
+      });
 
-    clearTimeout(timer);
+      clearTimeout(timer);
 
-    if (!res.ok) {
-      const err = await res.text();
-      throw new Error(`Gemini error: ${err}`);
+      if (!res.ok) {
+        const err = await res.text();
+        throw new Error(`Gemini ${model} error: ${err}`);
+      }
+
+      const data = await res.json();
+      const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
+      if (!text) throw new Error(`No text returned from ${model}`);
+      return text.trim();
+    } catch (err: any) {
+      clearTimeout(timer);
+      lastError = err;
+      console.warn(`Call to Gemini ${model} failed (${err.message}), trying next model...`);
     }
-
-    const data = await res.json();
-    const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
-    if (!text) throw new Error('No text returned');
-    return text.trim();
-  } catch (err) {
-    clearTimeout(timer);
-    throw err;
   }
+
+  throw lastError || new Error('All Gemini models failed');
 }
 
 /**
- * Gọi Gemini với Vision (ảnh base64 + text prompt)
+ * Gọi Gemini với Vision (ảnh base64 + text prompt) có cascading đa mô hình
  */
 async function callGeminiVision(
   base64Image: string,
   mimeType: string,
   textPrompt: string,
-  systemInstruction: string
+  systemInstruction: string,
+  timeoutMs = GEMINI_TIMEOUT_MS
 ): Promise<string> {
   if (!GEMINI_API_KEY) {
     throw new Error('GEMINI_API_KEY not configured');
   }
 
-  const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), GEMINI_TIMEOUT_MS);
-
   // Bóc bỏ data URI prefix nếu có
   const pureBase64 = base64Image.replace(/^data:image\/\w+;base64,/, '');
+  let lastError: any = null;
 
-  try {
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`;
-    const payload = {
-      contents: [
-        {
-          role: 'user',
-          parts: [
-            { text: systemInstruction },
-            {
-              inline_data: {
-                mime_type: mimeType || 'image/jpeg',
-                data: pureBase64,
+  for (const model of GEMINI_MODELS) {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), timeoutMs);
+
+    try {
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${GEMINI_API_KEY}`;
+      const payload = {
+        contents: [
+          {
+            role: 'user',
+            parts: [
+              { text: systemInstruction },
+              {
+                inline_data: {
+                  mime_type: mimeType || 'image/jpeg',
+                  data: pureBase64,
+                },
               },
-            },
-            { text: textPrompt },
-          ],
+              { text: textPrompt },
+            ],
+          },
+        ],
+        generationConfig: {
+          temperature: 0.1,
+          maxOutputTokens: 500,
         },
-      ],
-      generationConfig: {
-        temperature: 0.1,
-        maxOutputTokens: 500,
-      },
-    };
+      };
 
-    const res = await fetch(url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload),
-      signal: controller.signal,
-    });
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+        signal: controller.signal,
+      });
 
-    clearTimeout(timer);
+      clearTimeout(timer);
 
-    if (!res.ok) {
-      const err = await res.text();
-      throw new Error(`Gemini Vision error: ${err}`);
+      if (!res.ok) {
+        const err = await res.text();
+        throw new Error(`Gemini Vision ${model} error: ${err}`);
+      }
+
+      const data = await res.json();
+      const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
+      if (!text) throw new Error(`No vision text returned from ${model}`);
+      return text.trim();
+    } catch (err: any) {
+      clearTimeout(timer);
+      lastError = err;
+      console.warn(`Call to Gemini Vision ${model} failed (${err.message}), trying next model...`);
     }
-
-    const data = await res.json();
-    const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
-    if (!text) throw new Error('No vision text returned');
-    return text.trim();
-  } catch (err) {
-    clearTimeout(timer);
-    throw err;
   }
+
+  throw lastError || new Error('All Gemini Vision models failed');
 }
 
 /**
@@ -424,44 +440,17 @@ ${eng ? `\nBQL đã phân công ${eng} xử lý.` : ''}
 
 Hãy soạn thư phản hồi chính thức từ BQL, phản hồi đúng trọng tâm nội dung phản ánh trên.`;
 
-        // Dùng gemini-2.5-pro: thông minh hơn, sinh text tiếng Việt tốt hơn flash
-        const proUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-pro:generateContent?key=${GEMINI_API_KEY}`;
-        const controller = new AbortController();
-        const timer = setTimeout(() => controller.abort(), 30000);
-        let reply: string;
-        try {
-          const proRes = await fetch(proUrl, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              contents: [{ role: 'user', parts: [{ text: `${systemPrompt}\n\n${userPrompt}` }] }],
-              generationConfig: { temperature: 0.5, maxOutputTokens: 350 },
-            }),
-            signal: controller.signal,
-          });
-          clearTimeout(timer);
-          if (proRes.ok) {
-            const proData = await proRes.json();
-            const text = proData.candidates?.[0]?.content?.parts?.[0]?.text;
-            if (text && text.trim().length > 20) {
-              reply = text.trim().replace(/^"|"$/g, '');
-              return NextResponse.json({ success: true, reply, source: 'GEMINI_PRO' });
-            }
-          }
-        } catch {
-          clearTimeout(timer);
-        }
-        // Fallback về flash nếu pro bận
-        const flashReply = await callGemini(userPrompt, systemPrompt, {
-          timeoutMs: 20000,
+        // Dùng bộ mô hình Gemini 3.6/3.5 Flash: thông minh vượt trội, chuẩn mực tiếng Việt, phản hồi đầy đủ không bị timeout
+        const aiReply = await callGemini(userPrompt, systemPrompt, {
+          timeoutMs: 25000,
           temperature: 0.4,
           maxOutputTokens: 350,
         });
-        reply = flashReply;
+
         return NextResponse.json({
           success: true,
-          reply: reply.replace(/^"|"$/g, '').trim(),
-          source: 'GEMINI_FLASH_FALLBACK',
+          reply: aiReply.replace(/^"|"$/g, '').trim(),
+          source: 'GEMINI_3X_FLASH',
         });
       } catch (err) {
         console.warn('Gemini AI trả lời phản ánh bận, dùng fallback thông minh:', err);

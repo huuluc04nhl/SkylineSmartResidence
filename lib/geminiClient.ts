@@ -15,12 +15,14 @@ export const GEMINI_API_KEY =
   process.env.NEXT_PUBLIC_GEMINI_API_KEY ||
   '';
 
-const GEMINI_PRIMARY_MODEL = 'gemini-2.5-flash';
-const GEMINI_FALLBACK_MODEL = 'gemini-2.5-flash-lite';
+const GEMINI_PRIMARY_MODEL = 'gemini-3.6-flash';
+const GEMINI_FALLBACK_MODEL = 'gemini-3.5-flash';
+const GEMINI_FAST_FALLBACK_MODEL = 'gemini-3.5-flash-lite';
 
-// Timeout configuration (in milliseconds)
-const PRIMARY_TIMEOUT_MS = 7000;
-const FALLBACK_TIMEOUT_MS = 6000;
+// Timeout configuration (in milliseconds - extended so AI responses are never cut off)
+const PRIMARY_TIMEOUT_MS = 20000;
+const FALLBACK_TIMEOUT_MS = 15000;
+const FAST_TIMEOUT_MS = 10000;
 
 /**
  * Fetch wrapper with strict AbortController timeout
@@ -857,7 +859,7 @@ export async function askGeminiConcierge(
   };
 
   try {
-    // Attempt with Primary Model (gemini-2.5-flash) with 7s timeout
+    // Attempt with Primary Model (gemini-3.6-flash) with 20s timeout
     return await tryModel(GEMINI_PRIMARY_MODEL, PRIMARY_TIMEOUT_MS);
   } catch (errPrimary: any) {
     console.warn(
@@ -865,14 +867,23 @@ export async function askGeminiConcierge(
     );
 
     try {
-      // Attempt with Fallback Model (gemini-2.5-flash-lite) with 6s timeout
+      // Attempt with Fallback Model (gemini-3.5-flash) with 15s timeout
       return await tryModel(GEMINI_FALLBACK_MODEL, FALLBACK_TIMEOUT_MS);
     } catch (errFallback: any) {
       console.warn(
-        `Gemini fallback model also failed (${errFallback.message}). Switching seamlessly to Smart Project Data Engine.`
+        `Gemini fallback model ${GEMINI_FALLBACK_MODEL} failed (${errFallback.message}), trying fast model ${GEMINI_FAST_FALLBACK_MODEL}...`
       );
-      // Fallback instantly to Project Knowledge Engine with zero error to the user
-      return generateSmartProjectFallback(message, contextOrAptCode);
+
+      try {
+        // Attempt with Ultra-fast Model (gemini-3.5-flash-lite) with 10s timeout
+        return await tryModel(GEMINI_FAST_FALLBACK_MODEL, FAST_TIMEOUT_MS);
+      } catch (errFast: any) {
+        console.warn(
+          `All Gemini models failed (${errFast.message}). Switching seamlessly to Smart Project Data Engine.`
+        );
+        // Fallback instantly to Project Knowledge Engine with zero error to the user
+        return generateSmartProjectFallback(message, contextOrAptCode);
+      }
     }
   }
 }
@@ -1008,6 +1019,11 @@ LƯU Ý CỰC KỲ QUAN TRỌNG:
     return await tryModel(GEMINI_PRIMARY_MODEL);
   } catch (err) {
     console.warn(`Gemini Vision OCR with ${GEMINI_PRIMARY_MODEL} failed, falling back to ${GEMINI_FALLBACK_MODEL}:`, err);
-    return await tryModel(GEMINI_FALLBACK_MODEL);
+    try {
+      return await tryModel(GEMINI_FALLBACK_MODEL);
+    } catch (errFallback) {
+      console.warn(`Gemini Vision OCR with ${GEMINI_FALLBACK_MODEL} failed, falling back to ${GEMINI_FAST_FALLBACK_MODEL}:`, errFallback);
+      return await tryModel(GEMINI_FAST_FALLBACK_MODEL);
+    }
   }
 }
