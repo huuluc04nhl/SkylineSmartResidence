@@ -74,6 +74,40 @@ interface SmartHomeHubProps {
 
 type AppTab = 'DEVICES' | 'DOOR_ACCESS' | 'AUTOMATION';
 
+/**
+ * 🎛️ Reusable Luxury Toggle Switch Component: Thống nhất 100% kích thước & hiệu ứng
+ */
+function LuxurySwitch({
+  checked,
+  onChange,
+  activeColor = 'bg-[#C5A880]',
+  ariaLabel
+}: {
+  checked: boolean;
+  onChange: () => void;
+  activeColor?: string;
+  ariaLabel?: string;
+}) {
+  return (
+    <button
+      type="button"
+      role="switch"
+      aria-checked={checked}
+      aria-label={ariaLabel}
+      onClick={onChange}
+      className={`w-11 h-6 rounded-full transition-colors relative p-1 shrink-0 cursor-pointer focus:outline-none focus:ring-1 focus:ring-[#C5A880] ${
+        checked ? activeColor : 'bg-[#222B35]'
+      }`}
+    >
+      <div
+        className={`w-4 h-4 rounded-full bg-white transition-transform shadow-sm ${
+          checked ? 'translate-x-5' : 'translate-x-0'
+        }`}
+      />
+    </button>
+  );
+}
+
 export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
   const isOwner = currentUser.role === 'OWNER';
   const aptCode = currentUser.apartment_code || 'CH-06';
@@ -102,7 +136,6 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
   const [isMotionAlertActive, setIsMotionAlertActive] = useState(false);
   const [cameraTime, setCameraTime] = useState('');
   const [copiedPinId, setCopiedPinId] = useState<string | null>(null);
-  const [newPinDuration, setNewPinDuration] = useState<number>(15); // Mặc định 15 phút cho shipper
   const [activeLogFilter, setActiveLogFilter] = useState<'ALL' | 'FACE_ID' | 'PIN_OTP' | 'NFC_CARD'>('ALL');
 
   // Lắng nghe dữ liệu
@@ -416,7 +449,7 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
         </div>
       )}
 
-      {/* 2. QUICK SCENES BAR: 4 Ngữ Cảnh 1-Chạm Chuẩn App */}
+      {/* 2. QUICK SCENES BAR: 4 Ngữ Cảnh 1-Chạm Chuẩn App (Thống nhất Button Style) */}
       <div className="p-3.5 bg-[#121820] border border-[#222B35] shadow-lg">
         <div className="text-[10px] uppercase tracking-wider text-gray-400 font-mono mb-2 flex items-center justify-between">
           <span className="flex items-center gap-1.5 text-[#C5A880] font-bold">
@@ -430,10 +463,10 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
           <button
             type="button"
             onClick={() => handleTriggerScene('WELCOME')}
-            className={`p-2.5 border text-left transition-all flex items-center gap-2.5 ${
+            className={`p-3 border text-left transition-all flex items-center gap-2.5 active:scale-[0.98] ${
               activeScene === 'WELCOME'
-                ? 'bg-[#1C2533] border-[#C5A880] text-white ring-1 ring-[#C5A880] shadow'
-                : 'bg-[#0D1117] border-[#222B35] text-gray-300 hover:border-gray-500'
+                ? 'bg-[#1C2533] border-[#C5A880] text-white ring-1 ring-[#C5A880] shadow-md'
+                : 'bg-[#0D1117] hover:bg-[#161D26] border-[#222B35] hover:border-[#C5A880]/50 text-gray-300'
             }`}
           >
             <Sun className="w-4 h-4 text-amber-400 shrink-0" />
@@ -447,10 +480,10 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
           <button
             type="button"
             onClick={() => handleTriggerScene('SLEEP')}
-            className={`p-2.5 border text-left transition-all flex items-center gap-2.5 ${
+            className={`p-3 border text-left transition-all flex items-center gap-2.5 active:scale-[0.98] ${
               activeScene === 'SLEEP'
-                ? 'bg-[#1C2533] border-[#C5A880] text-white ring-1 ring-[#C5A880] shadow'
-                : 'bg-[#0D1117] border-[#222B35] text-gray-300 hover:border-gray-500'
+                ? 'bg-[#1C2533] border-[#C5A880] text-white ring-1 ring-[#C5A880] shadow-md'
+                : 'bg-[#0D1117] hover:bg-[#161D26] border-[#222B35] hover:border-[#C5A880]/50 text-gray-300'
             }`}
           >
             <Moon className="w-4 h-4 text-indigo-400 shrink-0" />
@@ -464,10 +497,10 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
           <button
             type="button"
             onClick={() => handleTriggerScene('AWAY')}
-            className={`p-2.5 border text-left transition-all flex items-center gap-2.5 ${
+            className={`p-3 border text-left transition-all flex items-center gap-2.5 active:scale-[0.98] ${
               activeScene === 'AWAY'
-                ? 'bg-[#1C2533] border-[#C5A880] text-white ring-1 ring-[#C5A880] shadow'
-                : 'bg-[#0D1117] border-[#222B35] text-gray-300 hover:border-gray-500'
+                ? 'bg-[#1C2533] border-[#C5A880] text-white ring-1 ring-[#C5A880] shadow-md'
+                : 'bg-[#0D1117] hover:bg-[#161D26] border-[#222B35] hover:border-[#C5A880]/50 text-gray-300'
             }`}
           >
             <Power className="w-4 h-4 text-red-400 shrink-0" />
@@ -481,10 +514,10 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
           <button
             type="button"
             onClick={() => handleTriggerScene('CINEMA')}
-            className={`p-2.5 border text-left transition-all flex items-center gap-2.5 ${
+            className={`p-3 border text-left transition-all flex items-center gap-2.5 active:scale-[0.98] ${
               activeScene === 'CINEMA'
-                ? 'bg-[#1C2533] border-[#C5A880] text-white ring-1 ring-[#C5A880] shadow'
-                : 'bg-[#0D1117] border-[#222B35] text-gray-300 hover:border-gray-500'
+                ? 'bg-[#1C2533] border-[#C5A880] text-white ring-1 ring-[#C5A880] shadow-md'
+                : 'bg-[#0D1117] hover:bg-[#161D26] border-[#222B35] hover:border-[#C5A880]/50 text-gray-300'
             }`}
           >
             <Tv className="w-4 h-4 text-purple-400 shrink-0" />
@@ -496,15 +529,15 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
         </div>
       </div>
 
-      {/* 3. APP SEGMENTED TABS: 3 Luồng Điều Khiển Rõ Ràng */}
+      {/* 3. APP SEGMENTED TABS: 3 Luồng Điều Khiển Rõ Ràng (Thống nhất Button Style) */}
       <div className="flex items-center gap-1.5 border-b border-[#2A374A] pb-1 overflow-x-auto">
         <button
           type="button"
           onClick={() => setActiveTab('DEVICES')}
-          className={`px-4 py-2.5 text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-2 border-b-2 ${
+          className={`h-10 px-4 text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-2 border-b-2 ${
             activeTab === 'DEVICES'
-              ? 'border-[#C5A880] text-white bg-[#161D26]'
-              : 'border-transparent text-gray-400 hover:text-white'
+              ? 'border-[#C5A880] text-[#C5A880] bg-[#161D26]'
+              : 'border-transparent text-gray-400 hover:text-white hover:bg-[#121820]'
           }`}
         >
           <Cpu className="w-4 h-4 text-[#C5A880]" />
@@ -514,10 +547,10 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
         <button
           type="button"
           onClick={() => setActiveTab('DOOR_ACCESS')}
-          className={`px-4 py-2.5 text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-2 border-b-2 ${
+          className={`h-10 px-4 text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-2 border-b-2 ${
             activeTab === 'DOOR_ACCESS'
-              ? 'border-[#C5A880] text-white bg-[#161D26]'
-              : 'border-transparent text-gray-400 hover:text-white'
+              ? 'border-[#C5A880] text-[#C5A880] bg-[#161D26]'
+              : 'border-transparent text-gray-400 hover:text-white hover:bg-[#121820]'
           }`}
         >
           <DoorClosed className="w-4 h-4 text-cyan-400" />
@@ -528,10 +561,10 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
         <button
           type="button"
           onClick={() => setActiveTab('AUTOMATION')}
-          className={`px-4 py-2.5 text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-2 border-b-2 ${
+          className={`h-10 px-4 text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-2 border-b-2 ${
             activeTab === 'AUTOMATION'
-              ? 'border-[#C5A880] text-white bg-[#161D26]'
-              : 'border-transparent text-gray-400 hover:text-white'
+              ? 'border-[#C5A880] text-[#C5A880] bg-[#161D26]'
+              : 'border-transparent text-gray-400 hover:text-white hover:bg-[#121820]'
           }`}
         >
           <Clock className="w-4 h-4 text-emerald-400" />
@@ -547,7 +580,7 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
       {/* ============================================================= */}
       {activeTab === 'DEVICES' && (
         <div className="space-y-4">
-          {/* Nút Toggle Bật/Tắt Chế Độ 3D Xoay Lật */}
+          {/* Nút Toggle Bật/Tắt Chế Độ 3D Xoay Lật (Thống nhất Button Style) */}
           <div className="flex items-center justify-between p-3 bg-[#121820] border border-[#222B35]">
             <div className="text-xs text-gray-300 flex items-center gap-2">
               <Layers className="w-4 h-4 text-[#C5A880]" />
@@ -557,8 +590,10 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
               <button
                 type="button"
                 onClick={() => setIs3dMode(false)}
-                className={`px-3 py-1.5 text-xs font-bold transition-all ${
-                  !is3dMode ? 'bg-[#C5A880] text-[#0D1117]' : 'bg-[#0D1117] text-gray-400 hover:text-white'
+                className={`h-8 px-3.5 text-xs font-bold transition-all flex items-center gap-1.5 active:scale-95 ${
+                  !is3dMode 
+                    ? 'bg-[#C5A880] text-[#0D1117] shadow-sm' 
+                    : 'bg-[#161D26] hover:bg-[#1C2533] border border-[#2D3A4B] text-gray-300 hover:text-white'
                 }`}
               >
                 Bảng Thẻ Nhanh
@@ -566,8 +601,10 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
               <button
                 type="button"
                 onClick={() => setIs3dMode(true)}
-                className={`px-3 py-1.5 text-xs font-bold transition-all flex items-center gap-1.5 ${
-                  is3dMode ? 'bg-[#C5A880] text-[#0D1117]' : 'bg-[#0D1117] text-gray-400 hover:text-white'
+                className={`h-8 px-3.5 text-xs font-bold transition-all flex items-center gap-1.5 active:scale-95 ${
+                  is3dMode 
+                    ? 'bg-[#C5A880] text-[#0D1117] shadow-sm' 
+                    : 'bg-[#161D26] hover:bg-[#1C2533] border border-[#2D3A4B] text-gray-300 hover:text-white'
                 }`}
               >
                 <Maximize2 className="w-3.5 h-3.5" /> Mô Hình 3D Xoay Lật
@@ -600,7 +637,7 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
             </div>
           )}
 
-          {/* Bảng Điều Khiển Nhanh Từng Phòng (Cards) */}
+          {/* Bảng Điều Khiển Nhanh Từng Phòng (Cards với LuxurySwitch thống nhất) */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* 1. PHÒNG KHÁCH */}
             <div className="p-4 bg-[#121820] border border-[#222B35] space-y-3.5">
@@ -612,56 +649,51 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
               </div>
 
               {/* Đèn Phòng Khách */}
-              <div className="flex items-center justify-between p-2.5 bg-[#0D1117] border border-[#1C2533]">
+              <div className="flex items-center justify-between p-3 bg-[#0D1117] border border-[#1C2533]">
                 <div>
                   <div className="text-xs font-bold text-white">Đèn Chùm Thông Minh</div>
                   <div className="text-[10px] text-gray-400 font-mono">Dimmable 0 - 100%</div>
                 </div>
-                <button
-                  type="button"
-                  onClick={() => handleToggleLight('livingRoom')}
-                  className={`w-12 h-6 rounded-full transition-colors relative p-0.5 ${
-                    lights.livingRoom ? 'bg-amber-500' : 'bg-gray-700'
-                  }`}
-                >
-                  <div className={`w-5 h-5 rounded-full bg-white transition-transform ${lights.livingRoom ? 'translate-x-6' : 'translate-x-0'}`} />
-                </button>
+                <LuxurySwitch
+                  checked={lights.livingRoom}
+                  onChange={() => handleToggleLight('livingRoom')}
+                  ariaLabel="Bật tắt đèn phòng khách"
+                />
               </div>
 
               {/* Điều Hòa Daikin VRV */}
-              <div className="p-2.5 bg-[#0D1117] border border-[#1C2533] space-y-2">
+              <div className="p-3 bg-[#0D1117] border border-[#1C2533] space-y-2.5">
                 <div className="flex items-center justify-between">
                   <div>
                     <div className="text-xs font-bold text-white">Điều Hòa Daikin VRV-S Multi</div>
                     <div className="text-[10px] text-sky-400 font-mono">Công nghệ lọc Ion Streamer 99%</div>
                   </div>
-                  <button
-                    type="button"
-                    onClick={handleToggleAC}
-                    className={`w-12 h-6 rounded-full transition-colors relative p-0.5 ${
-                      acPower ? 'bg-sky-500' : 'bg-gray-700'
-                    }`}
-                  >
-                    <div className={`w-5 h-5 rounded-full bg-white transition-transform ${acPower ? 'translate-x-6' : 'translate-x-0'}`} />
-                  </button>
+                  <LuxurySwitch
+                    checked={acPower}
+                    onChange={handleToggleAC}
+                    activeColor="bg-sky-500"
+                    ariaLabel="Bật tắt điều hòa Daikin"
+                  />
                 </div>
 
                 {acPower && (
                   <div className="pt-2 flex items-center justify-between border-t border-[#1C2533]">
                     <span className="text-xs text-gray-400">Nhiệt độ cài đặt:</span>
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-2.5">
                       <button
                         type="button"
                         onClick={() => handleChangeTemp(-1)}
-                        className="w-7 h-7 bg-[#1C2533] hover:bg-[#2A374A] text-white font-bold rounded flex items-center justify-center text-sm"
+                        className="w-8 h-8 bg-[#161D26] hover:bg-[#C5A880] hover:text-[#0D1117] border border-[#2D3A4B] text-gray-200 font-bold text-sm transition-all flex items-center justify-center active:scale-95 shadow-sm"
+                        title="Giảm nhiệt độ"
                       >
                         -
                       </button>
-                      <span className="font-mono text-base font-bold text-sky-400">{acTemp}°C</span>
+                      <span className="font-mono text-base font-bold text-sky-400 min-w-[50px] text-center">{acTemp}°C</span>
                       <button
                         type="button"
                         onClick={() => handleChangeTemp(1)}
-                        className="w-7 h-7 bg-[#1C2533] hover:bg-[#2A374A] text-white font-bold rounded flex items-center justify-center text-sm"
+                        className="w-8 h-8 bg-[#161D26] hover:bg-[#C5A880] hover:text-[#0D1117] border border-[#2D3A4B] text-gray-200 font-bold text-sm transition-all flex items-center justify-center active:scale-95 shadow-sm"
+                        title="Tăng nhiệt độ"
                       >
                         +
                       </button>
@@ -671,7 +703,7 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
               </div>
 
               {/* Rèm Cửa Tự Động */}
-              <div className="flex items-center justify-between p-2.5 bg-[#0D1117] border border-[#1C2533]">
+              <div className="flex items-center justify-between p-3 bg-[#0D1117] border border-[#1C2533]">
                 <div>
                   <div className="text-xs font-bold text-white">Rèm Cửa Kính Panorama</div>
                   <div className="text-[10px] text-gray-400 font-mono">
@@ -681,8 +713,10 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
                 <button
                   type="button"
                   onClick={handleToggleCurtains}
-                  className={`px-3 py-1 text-xs font-bold transition-all ${
-                    curtainsOpen ? 'bg-amber-500/20 border border-amber-500 text-amber-300' : 'bg-gray-800 text-gray-300'
+                  className={`h-8 px-3.5 font-semibold text-xs transition-all flex items-center justify-center active:scale-95 border ${
+                    curtainsOpen 
+                      ? 'bg-amber-950/60 border-amber-500/60 text-amber-300 hover:bg-amber-900' 
+                      : 'bg-[#161D26] hover:bg-[#C5A880] hover:text-[#0D1117] border-[#2D3A4B] text-gray-200'
                   }`}
                 >
                   {curtainsOpen ? 'Đóng Rèm' : 'Mở Rèm'}
@@ -700,54 +734,42 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
               </div>
 
               {/* Đèn Phòng Ngủ */}
-              <div className="flex items-center justify-between p-2.5 bg-[#0D1117] border border-[#1C2533]">
+              <div className="flex items-center justify-between p-3 bg-[#0D1117] border border-[#1C2533]">
                 <div>
                   <div className="text-xs font-bold text-white">Đèn Ngủ Ấm Áp</div>
                   <div className="text-[10px] text-gray-400 font-mono">Ánh sáng vàng 2700K dịu mắt</div>
                 </div>
-                <button
-                  type="button"
-                  onClick={() => handleToggleLight('bedroomMaster')}
-                  className={`w-12 h-6 rounded-full transition-colors relative p-0.5 ${
-                    lights.bedroomMaster ? 'bg-indigo-500' : 'bg-gray-700'
-                  }`}
-                >
-                  <div className={`w-5 h-5 rounded-full bg-white transition-transform ${lights.bedroomMaster ? 'translate-x-6' : 'translate-x-0'}`} />
-                </button>
+                <LuxurySwitch
+                  checked={lights.bedroomMaster}
+                  onChange={() => handleToggleLight('bedroomMaster')}
+                  ariaLabel="Bật tắt đèn phòng ngủ"
+                />
               </div>
 
               {/* Gian Bếp */}
-              <div className="flex items-center justify-between p-2.5 bg-[#0D1117] border border-[#1C2533]">
+              <div className="flex items-center justify-between p-3 bg-[#0D1117] border border-[#1C2533]">
                 <div>
                   <div className="text-xs font-bold text-white">Đèn Gian Bếp & Bàn Ăn</div>
                   <div className="text-[10px] text-gray-400 font-mono">Bếp Hafele cảm ứng an toàn</div>
                 </div>
-                <button
-                  type="button"
-                  onClick={() => handleToggleLight('kitchen')}
-                  className={`w-12 h-6 rounded-full transition-colors relative p-0.5 ${
-                    lights.kitchen ? 'bg-amber-500' : 'bg-gray-700'
-                  }`}
-                >
-                  <div className={`w-5 h-5 rounded-full bg-white transition-transform ${lights.kitchen ? 'translate-x-6' : 'translate-x-0'}`} />
-                </button>
+                <LuxurySwitch
+                  checked={lights.kitchen}
+                  onChange={() => handleToggleLight('kitchen')}
+                  ariaLabel="Bật tắt đèn gian bếp"
+                />
               </div>
 
               {/* Ban Công */}
-              <div className="flex items-center justify-between p-2.5 bg-[#0D1117] border border-[#1C2533]">
+              <div className="flex items-center justify-between p-3 bg-[#0D1117] border border-[#1C2533]">
                 <div>
                   <div className="text-xs font-bold text-white">Đèn Ban Công Sinh Thái</div>
                   <div className="text-[10px] text-gray-400 font-mono">View công viên The Tropical</div>
                 </div>
-                <button
-                  type="button"
-                  onClick={() => handleToggleLight('balcony')}
-                  className={`w-12 h-6 rounded-full transition-colors relative p-0.5 ${
-                    lights.balcony ? 'bg-emerald-500' : 'bg-gray-700'
-                  }`}
-                >
-                  <div className={`w-5 h-5 rounded-full bg-white transition-transform ${lights.balcony ? 'translate-x-6' : 'translate-x-0'}`} />
-                </button>
+                <LuxurySwitch
+                  checked={lights.balcony}
+                  onChange={() => handleToggleLight('balcony')}
+                  ariaLabel="Bật tắt đèn ban công"
+                />
               </div>
             </div>
           </div>
@@ -795,15 +817,15 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
                     </span>
                   </div>
 
-                  {/* 3 Nút Bấm Thao Tác Chuông Hình */}
+                  {/* Nút Thao Tác Chuông Hình (Thống nhất Button Style) */}
                   <div className="absolute bottom-2.5 inset-x-2.5 flex items-center justify-center gap-2">
                     <button
                       type="button"
                       onClick={handleToggleIntercom}
-                      className={`px-3 py-1.5 text-xs font-bold transition-all flex items-center gap-1.5 ${
+                      className={`h-8 px-3.5 text-xs font-semibold transition-all flex items-center gap-1.5 shadow-sm active:scale-95 ${
                         isIntercomActive 
                           ? 'bg-red-600 hover:bg-red-700 text-white animate-pulse' 
-                          : 'bg-[#1C2533] hover:bg-[#2A374A] text-white'
+                          : 'bg-[#161D26] hover:bg-[#C5A880] hover:text-[#0D1117] border border-[#2D3A4B] text-gray-200'
                       }`}
                     >
                       {isIntercomActive ? <MicOff className="w-3.5 h-3.5" /> : <Mic className="w-3.5 h-3.5" />}
@@ -813,16 +835,16 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
                     <button
                       type="button"
                       onClick={handleSnapshot}
-                      className="px-3 py-1.5 bg-[#1C2533] hover:bg-[#2A374A] text-white text-xs font-bold transition-all flex items-center gap-1.5"
+                      className="h-8 px-3.5 bg-[#161D26] hover:bg-[#C5A880] hover:text-[#0D1117] border border-[#2D3A4B] text-gray-200 text-xs font-semibold transition-all flex items-center gap-1.5 shadow-sm active:scale-95"
                     >
-                      <Camera className="w-3.5 h-3.5 text-amber-400" />
+                      <Camera className="w-3.5 h-3.5 text-[#C5A880]" />
                       <span>Chụp Ảnh ({snapshotCount})</span>
                     </button>
                   </div>
                 </div>
               </div>
 
-              {/* Nút Lớn Điều Khiển Chốt Khóa 1-Chạm */}
+              {/* Nút Lớn Điều Khiển Chốt Khóa 1-Chạm (Thống nhất CTA Button Style) */}
               <div className="p-4 bg-[#121820] border border-[#222B35] flex items-center justify-between gap-4">
                 <div className="space-y-0.5">
                   <div className="text-xs font-bold text-white flex items-center gap-2">
@@ -837,10 +859,10 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
                 <button
                   type="button"
                   onClick={handleToggleDoor}
-                  className={`px-5 py-2.5 text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-2 shadow-lg ${
+                  className={`h-10 px-5 text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-2 shadow-md active:scale-95 border ${
                     masterDoorLocked
-                      ? 'bg-emerald-600 hover:bg-emerald-500 text-white'
-                      : 'bg-amber-600 hover:bg-amber-500 text-white animate-pulse'
+                      ? 'bg-emerald-600 hover:bg-emerald-500 text-white border-emerald-400/40'
+                      : 'bg-amber-600 hover:bg-amber-500 text-white border-amber-400/40 animate-pulse'
                   }`}
                 >
                   {masterDoorLocked ? <Lock className="w-4 h-4" /> : <DoorOpen className="w-4 h-4" />}
@@ -860,12 +882,12 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
                   <span className="text-[9px] font-mono text-emerald-400">1-Chạm Tự Hủy</span>
                 </div>
 
-                {/* 3 Nút Chọn Nhanh Thời Lượng */}
+                {/* 3 Nút Chọn Nhanh Thời Lượng (Thống nhất Button Style) */}
                 <div className="grid grid-cols-3 gap-1.5">
                   <button
                     type="button"
                     onClick={() => handleQuickCreatePin(15, 'Giao Hàng Shipper')}
-                    className="p-2 bg-[#0D1117] hover:bg-[#1C2533] border border-[#2A374A] text-left transition-all"
+                    className="p-2.5 bg-[#0D1117] hover:bg-[#161D26] hover:border-[#C5A880] border border-[#222B35] text-left transition-all active:scale-[0.98]"
                   >
                     <div className="text-xs font-bold text-white">15 Phút</div>
                     <div className="text-[9px] text-[#C5A880]">Shipper / Giao đồ</div>
@@ -874,7 +896,7 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
                   <button
                     type="button"
                     onClick={() => handleQuickCreatePin(60, 'Bạn Bè Viếng Thăm')}
-                    className="p-2 bg-[#0D1117] hover:bg-[#1C2533] border border-[#2A374A] text-left transition-all"
+                    className="p-2.5 bg-[#0D1117] hover:bg-[#161D26] hover:border-[#C5A880] border border-[#222B35] text-left transition-all active:scale-[0.98]"
                   >
                     <div className="text-xs font-bold text-white">1 Giờ</div>
                     <div className="text-[9px] text-cyan-400">Bạn bè ghé chơi</div>
@@ -883,7 +905,7 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
                   <button
                     type="button"
                     onClick={() => handleQuickCreatePin(1440, 'Khách Ở Lại Qua Đêm')}
-                    className="p-2 bg-[#0D1117] hover:bg-[#1C2533] border border-[#2A374A] text-left transition-all"
+                    className="p-2.5 bg-[#0D1117] hover:bg-[#161D26] hover:border-[#C5A880] border border-[#222B35] text-left transition-all active:scale-[0.98]"
                   >
                     <div className="text-xs font-bold text-white">24 Giờ</div>
                     <div className="text-[9px] text-indigo-400">Khách ở lại</div>
@@ -914,7 +936,7 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
                           <button
                             type="button"
                             onClick={() => handleCopyPin(pin.pin, pin.id)}
-                            className="p-1.5 bg-[#1C2533] hover:bg-[#2A374A] text-gray-300 hover:text-white"
+                            className="w-7 h-7 bg-[#161D26] hover:bg-[#C5A880] hover:text-[#0D1117] border border-[#2D3A4B] text-gray-300 transition-all flex items-center justify-center active:scale-95 shadow-sm"
                             title="Sao chép mã gửi khách"
                           >
                             <Copy className="w-3.5 h-3.5" />
@@ -922,7 +944,7 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
                           <button
                             type="button"
                             onClick={() => handleRevokePin(pin.id)}
-                            className="p-1.5 bg-red-950/60 hover:bg-red-900 border border-red-500/40 text-red-300"
+                            className="w-7 h-7 bg-[#161D26] hover:bg-red-950 hover:border-red-500 hover:text-red-300 border border-[#2D3A4B] text-gray-400 transition-all flex items-center justify-center active:scale-95 shadow-sm"
                             title="Hủy mã ngay"
                           >
                             <Trash2 className="w-3.5 h-3.5" />
@@ -934,7 +956,7 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
                 </div>
               </div>
 
-              {/* Thẻ Cư Dân NFC Gia Đình */}
+              {/* Thẻ Cư Dân NFC Gia Đình (Thống nhất Button Style) */}
               <div className="p-4 bg-[#121820] border border-[#222B35] space-y-2.5">
                 <div className="flex items-center justify-between border-b border-[#1C2533] pb-2">
                   <h3 className="font-bold text-xs uppercase tracking-wider text-white flex items-center gap-1.5">
@@ -958,17 +980,17 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
                         <button
                           type="button"
                           onClick={() => handleSimulateTapCard(card)}
-                          className="px-2 py-1 bg-[#1C2533] hover:bg-[#C5A880] hover:text-[#0D1117] text-[#C5A880] text-[10px] font-mono transition-all"
+                          className="h-7 px-2.5 bg-[#161D26] hover:bg-[#C5A880] hover:text-[#0D1117] border border-[#2D3A4B] text-[#C5A880] font-mono text-[11px] font-semibold transition-all flex items-center justify-center active:scale-95"
                         >
                           Quẹt Thử
                         </button>
                         <button
                           type="button"
                           onClick={() => handleToggleCardLock(card.cardUid, card.holderName)}
-                          className={`px-2 py-1 text-[10px] font-mono transition-all ${
+                          className={`h-7 px-2.5 font-mono text-[11px] transition-all flex items-center justify-center active:scale-95 border ${
                             card.status === 'LOCKED' 
-                              ? 'bg-red-950 text-red-300 border border-red-500/40' 
-                              : 'bg-gray-800 text-gray-300 hover:text-white'
+                              ? 'bg-red-950/80 border-red-500 text-red-200' 
+                              : 'bg-[#161D26] hover:bg-red-950 hover:border-red-500 hover:text-red-300 border-[#2D3A4B] text-gray-300'
                           }`}
                         >
                           {card.status === 'LOCKED' ? 'Bị Khóa' : 'Tạm Khóa'}
@@ -991,15 +1013,17 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
                 </h3>
               </div>
 
-              {/* Lọc phương thức */}
+              {/* Lọc phương thức (Thống nhất Segmented Pill Style) */}
               <div className="flex items-center gap-1">
                 {(['ALL', 'FACE_ID', 'NFC_CARD', 'PIN_OTP'] as const).map(flt => (
                   <button
                     key={flt}
                     type="button"
                     onClick={() => setActiveLogFilter(flt)}
-                    className={`px-2 py-0.5 text-[9.5px] font-mono transition-all ${
-                      activeLogFilter === flt ? 'bg-[#C5A880] text-[#0D1117] font-bold' : 'text-gray-400 hover:text-white'
+                    className={`h-6 px-2.5 text-[10px] font-mono transition-all flex items-center justify-center ${
+                      activeLogFilter === flt 
+                        ? 'bg-[#C5A880] text-[#0D1117] font-bold shadow-sm' 
+                        : 'bg-[#0D1117] hover:bg-[#1C2533] border border-[#222B35] text-gray-400 hover:text-white'
                     }`}
                   >
                     {flt}
@@ -1035,7 +1059,7 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
       {/* ============================================================= */}
       {activeTab === 'AUTOMATION' && (
         <div className="space-y-4">
-          {/* Danh Sách Kịch Bản Tự Động Hóa 24/7 */}
+          {/* Danh Sách Kịch Bản Tự Động Hóa 24/7 (Sử dụng LuxurySwitch thống nhất) */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
             {automationRules.map(rule => (
               <div 
@@ -1047,15 +1071,12 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
                 <div className="space-y-1">
                   <div className="flex items-center justify-between">
                     <span className="text-xs font-bold text-white">{rule.title}</span>
-                    <button
-                      type="button"
-                      onClick={() => handleToggleRule(rule.id)}
-                      className={`w-10 h-5 rounded-full transition-colors relative p-0.5 shrink-0 ${
-                        rule.enabled ? 'bg-emerald-600' : 'bg-gray-700'
-                      }`}
-                    >
-                      <div className={`w-4 h-4 rounded-full bg-white transition-transform ${rule.enabled ? 'translate-x-5' : 'translate-x-0'}`} />
-                    </button>
+                    <LuxurySwitch
+                      checked={rule.enabled}
+                      onChange={() => handleToggleRule(rule.id)}
+                      activeColor="bg-emerald-600"
+                      ariaLabel={`Bật tắt kịch bản ${rule.title}`}
+                    />
                   </div>
                   <div className="text-[10px] text-[#C5A880] font-mono">{rule.triggerLabel}</div>
                   <p className="text-[11px] text-gray-400 line-clamp-2">{rule.description}</p>

@@ -23,7 +23,6 @@ import {
   LogOut,
   Sparkles,
   Waves,
-  BookOpen,
   X
 } from 'lucide-react';
 import { UserRole, User as UserType } from '@/lib/dataStore';
@@ -159,7 +158,6 @@ export default function Sidebar({
           { id: 'resident-profile', label: 'Hồ Sơ', shortLabel: 'Hồ Sơ', icon: UserCheck },
           { id: 'resident-family', label: 'Thành Viên', shortLabel: 'Thành Viên', icon: Users },
           { id: 'resident-smarthome', label: 'Nhà Thông Minh', shortLabel: 'Smart Home', icon: Cpu },
-          { id: 'resident-handbook', label: 'Sổ Tay Cư Dân', shortLabel: 'Sổ Tay', icon: BookOpen },
           { id: 'resident-facilities', label: 'Tiện Ích', shortLabel: 'Tiện Ích', icon: Waves },
           { id: 'resident-services', label: 'Dịch Vụ', shortLabel: 'Dịch Vụ', icon: Sparkles },
           { id: 'resident-finance', label: 'Hóa Đơn', shortLabel: 'Hóa Đơn', icon: CreditCard },
@@ -174,7 +172,6 @@ export default function Sidebar({
           { id: 'resident-profile', label: 'Hồ Sơ', shortLabel: 'Hồ Sơ', icon: UserCheck },
           { id: 'resident-family', label: 'Thành Viên', shortLabel: 'Thành Viên', icon: Users },
           { id: 'resident-smarthome', label: 'Nhà Thông Minh', shortLabel: 'Smart Home', icon: Cpu },
-          { id: 'resident-handbook', label: 'Sổ Tay Cư Dân', shortLabel: 'Sổ Tay', icon: BookOpen },
           { id: 'resident-facilities', label: 'Tiện Ích', shortLabel: 'Tiện Ích', icon: Waves },
           { id: 'resident-services', label: 'Dịch Vụ', shortLabel: 'Dịch Vụ', icon: Sparkles },
           { id: 'resident-tickets', label: 'Báo Hỏng', shortLabel: 'Báo Hỏng', icon: Wrench },
