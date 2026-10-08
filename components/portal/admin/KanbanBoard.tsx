@@ -89,23 +89,43 @@ export default function KanbanBoard() {
   const [isGeneratingAiReply, setIsGeneratingAiReply] = useState<boolean>(false);
   const feedbackReplyAdminName = 'Ban Quản Lý Chung Cư Skyline';
 
-  const handleGenerateAiAdminReply = () => {
+  const handleGenerateAiAdminReply = async () => {
     if (!feedbackReplyTicket) return;
     setIsGeneratingAiReply(true);
     try {
-      // Dùng Smart Local Engine: đọc nội dung phản ánh thực tế, nhận diện từ khóa,
-      // sinh phản hồi phù hợp ngữ cảnh — tức thì, không phụ thuộc API, không bao giờ bị cắt.
-      const draft = generateSuggestedAdminReply(
-        feedbackReplyTicket.content,
-        feedbackReplyTicket.ai_category,
-        feedbackReplyTicket.resident_name,
-        feedbackReplyTicket.apt_code,
-        replyEngineerName.trim() || undefined
-      );
-      setFeedbackReplyContent(draft);
+      const res = await fetch('/api/ai/ticket-assistant', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'GENERATE_ADMIN_REPLY',
+          content: feedbackReplyTicket.content,
+          category: feedbackReplyTicket.ai_category,
+          residentName: feedbackReplyTicket.resident_name,
+          aptCode: feedbackReplyTicket.apt_code,
+          engineerName: replyEngineerName.trim() || undefined,
+        }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.success && data.reply) {
+          setFeedbackReplyContent(data.reply);
+          return;
+        }
+      }
+    } catch (err) {
+      console.warn('AI reply API lỗi, dùng smart local fallback:', err);
     } finally {
       setIsGeneratingAiReply(false);
     }
+    // Fallback tức thì nếu API bận/timeout
+    const draft = generateSuggestedAdminReply(
+      feedbackReplyTicket.content,
+      feedbackReplyTicket.ai_category,
+      feedbackReplyTicket.resident_name,
+      feedbackReplyTicket.apt_code,
+      replyEngineerName.trim() || undefined
+    );
+    setFeedbackReplyContent(draft);
   };
 
   const [resolvingTicket, setResolvingTicket] = useState<ExtendedServiceRequest | null>(null);

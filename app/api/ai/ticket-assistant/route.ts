@@ -394,6 +394,8 @@ Trả lời cư dân lịch sự, ngắn gọn (dưới 80 từ), chính xác v�
       const resident = residentName || 'Quý cư dân';
       const apt = aptCode ? `căn hộ ${aptCode}` : 'căn hộ';
       const eng = body.engineerName ? `KTV ${body.engineerName}` : '';
+      // Chỉ lấy phần nội dung chính, bỏ metadata NKS (• Khu vực: ... • Mức độ: ...)
+      const cleanContent = (content || '').split('•')[0].trim() || content;
 
       try {
         const systemPrompt = `Bạn là Trưởng Ban Quản Lý Chung Cư Cao Cấp Skyline Smart Residence (Quận 7, TP.HCM).
@@ -417,20 +419,49 @@ Giọng văn: Lịch thiệp, ấm áp, trách nhiệm cao — chuẩn mực chu
 
         const userPrompt = `Cư dân ${resident} tại ${apt} gửi phản ánh (hạng mục: ${category || 'Phản ánh dịch vụ'}):
 
-"${content}"
+"${cleanContent}"
 ${eng ? `\nBQL đã phân công ${eng} xử lý.` : ''}
 
 Hãy soạn thư phản hồi chính thức từ BQL, phản hồi đúng trọng tâm nội dung phản ánh trên.`;
 
-        const reply = await callGemini(userPrompt, systemPrompt, {
-          timeoutMs: 25000,   // Cho đủ thời gian Gemini soạn thư hoàn chỉnh
-          temperature: 0.4,   // Sáng tạo hơn một chút để phản hồi tự nhiên
-          maxOutputTokens: 400,
+        // Dùng gemini-2.5-pro: thông minh hơn, sinh text tiếng Việt tốt hơn flash
+        const proUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-pro:generateContent?key=${GEMINI_API_KEY}`;
+        const controller = new AbortController();
+        const timer = setTimeout(() => controller.abort(), 30000);
+        let reply: string;
+        try {
+          const proRes = await fetch(proUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              contents: [{ role: 'user', parts: [{ text: `${systemPrompt}\n\n${userPrompt}` }] }],
+              generationConfig: { temperature: 0.5, maxOutputTokens: 350 },
+            }),
+            signal: controller.signal,
+          });
+          clearTimeout(timer);
+          if (proRes.ok) {
+            const proData = await proRes.json();
+            const text = proData.candidates?.[0]?.content?.parts?.[0]?.text;
+            if (text && text.trim().length > 20) {
+              reply = text.trim().replace(/^"|"$/g, '');
+              return NextResponse.json({ success: true, reply, source: 'GEMINI_PRO' });
+            }
+          }
+        } catch {
+          clearTimeout(timer);
+        }
+        // Fallback về flash nếu pro bận
+        const flashReply = await callGemini(userPrompt, systemPrompt, {
+          timeoutMs: 20000,
+          temperature: 0.4,
+          maxOutputTokens: 350,
         });
+        reply = flashReply;
         return NextResponse.json({
           success: true,
           reply: reply.replace(/^"|"$/g, '').trim(),
-          source: 'GEMINI_AI',
+          source: 'GEMINI_FLASH_FALLBACK',
         });
       } catch (err) {
         console.warn('Gemini AI trả lời phản ánh bận, dùng fallback thông minh:', err);
