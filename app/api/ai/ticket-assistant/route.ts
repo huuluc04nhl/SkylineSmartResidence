@@ -2,16 +2,25 @@ import { NextRequest, NextResponse } from 'next/server';
 import { GEMINI_API_KEY } from '@/lib/geminiClient';
 import { classifyTicket, findInquiryAnswer, generateSuggestedAdminReply } from '@/lib/ticketClassification';
 
-// Timeout configuration
+// Mở rộng timeout route lên 30s (Next.js mặc định chỉ 10s)
+export const maxDuration = 30;
+
+
+// Timeout configuration (mặc định 8s, có thể override per-call)
 const GEMINI_TIMEOUT_MS = 8000;
 
-async function callGemini(prompt: string, systemInstruction: string): Promise<string> {
+async function callGemini(
+  prompt: string,
+  systemInstruction: string,
+  options?: { timeoutMs?: number; temperature?: number; maxOutputTokens?: number }
+): Promise<string> {
   if (!GEMINI_API_KEY) {
     throw new Error('GEMINI_API_KEY not configured');
   }
 
+  const timeoutMs = options?.timeoutMs ?? GEMINI_TIMEOUT_MS;
   const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), GEMINI_TIMEOUT_MS);
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
 
   try {
     const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`;
@@ -23,8 +32,8 @@ async function callGemini(prompt: string, systemInstruction: string): Promise<st
         },
       ],
       generationConfig: {
-        temperature: 0.2,
-        maxOutputTokens: 600,
+        temperature: options?.temperature ?? 0.2,
+        maxOutputTokens: options?.maxOutputTokens ?? 600,
       },
     };
 
@@ -413,7 +422,11 @@ ${eng ? `\nBQL đã phân công ${eng} xử lý.` : ''}
 
 Hãy soạn thư phản hồi chính thức từ BQL, phản hồi đúng trọng tâm nội dung phản ánh trên.`;
 
-        const reply = await callGemini(userPrompt, systemPrompt);
+        const reply = await callGemini(userPrompt, systemPrompt, {
+          timeoutMs: 25000,   // Cho đủ thời gian Gemini soạn thư hoàn chỉnh
+          temperature: 0.4,   // Sáng tạo hơn một chút để phản hồi tự nhiên
+          maxOutputTokens: 400,
+        });
         return NextResponse.json({
           success: true,
           reply: reply.replace(/^"|"$/g, '').trim(),
