@@ -50,11 +50,11 @@ interface AiConciergePageProps {
 
 const KNOWLEDGE_CATEGORIES = [
   {
-    category: '🏢 Quy Mô Tòa Nhà & Căn Hộ',
+    category: '🏢 Quy Mô Chung Cư & Căn Hộ',
     prompts: [
-      'Quy mô các tòa tháp The Tropical và Beverly Solari',
+      'Quy mô 4 chung cư The Tropical và Beverly Solari',
       'Căn hộ CH-06 và CH-01 diện tích bao nhiêu, ở tầng mấy?',
-      'Tòa BS-07, BS-08, BS-09, BS-10 có bao nhiêu tầng?',
+      'Chung cư BS-07, BS-08, BS-09, BS-10 có bao nhiêu tầng?',
     ]
   },
   {

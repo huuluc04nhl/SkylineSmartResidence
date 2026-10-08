@@ -29,7 +29,8 @@ import {
   Crown,
   ScanFace,
   Camera,
-  AlertCircle
+  AlertCircle,
+  BookOpen
 } from 'lucide-react';
 import { getApartmentByCode } from '@/lib/apartmentStore';
 import { applyScene, getSmartHomeState, SceneType } from '@/lib/smartHomeStore';
@@ -117,17 +118,17 @@ export default function ResidentHome({ currentUser, onNavigate, onOpenVisitorMod
             Xin Chào, {userName}
           </h2>
           <div className="text-xs text-gray-300 mt-2.5 flex flex-wrap items-center gap-2">
-            {/* Căn Hộ & Nút Sổ Tay */}
+            {/* Căn Hộ & Nút Sổ Tay Cư Dân */}
             <div className="h-8 flex items-center gap-1.5 bg-[#161B22] border border-[#2D3748] px-2.5 shadow-sm">
               <span className="text-gray-400 text-[11px]">Căn:</span>
               <strong className="text-white font-mono text-xs">{aptCode}</strong>
               <button
                 type="button"
-                onClick={() => setIsAptDetailOpen(true)}
+                onClick={() => onNavigate('resident-handbook')}
                 className="ml-1 h-5 px-2 bg-[#0D1117] hover:bg-[#C5A880] hover:text-[#0D1117] text-[#C5A880] border border-[#C5A880]/50 text-[10.5px] font-semibold transition-all flex items-center gap-1 shadow-sm"
-                title="Mở sổ tay căn hộ & phối cảnh 3D"
+                title="Mở Sổ Tay Cư Dân Điện Tử"
               >
-                <Eye className="w-3 h-3" /> Sổ Tay 3D
+                <BookOpen className="w-3 h-3" /> Sổ Tay Cư Dân
               </button>
             </div>
 
@@ -448,6 +449,23 @@ export default function ResidentHome({ currentUser, onNavigate, onOpenVisitorMod
               </div>
               <p className="text-[11px] text-gray-400">
                 Dọn dẹp, giặt ủi, rửa xe và hỗ trợ kỹ thuật.
+              </p>
+            </div>
+
+            {/* Action 6: Sổ Tay & Nội Quy Cư Dân */}
+            <div
+              onClick={() => onNavigate('resident-handbook')}
+              className="p-4 bg-[#121820] border border-[#222B35] hover:border-[#C5A880] cursor-pointer transition-all space-y-2 group shadow-md"
+            >
+              <div className="w-9 h-9 bg-[#1C2533] border border-[#2D3748] flex items-center justify-center text-[#C5A880] group-hover:bg-[#C5A880] group-hover:text-[#0D1117] transition-colors">
+                <BookOpen className="w-4 h-4" />
+              </div>
+              <div className="font-serif text-sm font-bold text-white group-hover:text-[#C5A880] flex items-center justify-between">
+                <span>Sổ Tay & Nội Quy</span>
+                <ArrowRight className="w-3.5 h-3.5 text-gray-500 group-hover:text-[#C5A880]" />
+              </div>
+              <p className="text-[11px] text-gray-400">
+                Nội quy tiếng ồn, gửi xe, thú cưng & PCCC.
               </p>
             </div>
           </div>

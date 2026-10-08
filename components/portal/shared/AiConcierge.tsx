@@ -19,7 +19,7 @@ export default function AiConcierge() {
     {
       id: '1',
       sender: 'ai',
-      text: 'Kính chào Quý cư dân! Tôi là Trợ lý ảo Skyline AI Concierge 24/7 (vận hành bởi Google Gemini). Tôi sẵn sàng giải đáp thông tin 4 tòa tháp The Tropical (BS-07, BS-08, BS-09, BS-10), dịch vụ nhà hàng tầng 1, cụm hồ bơi resort, biểu phí sinh hoạt và tiếp nhận sự cố kỹ thuật!',
+      text: 'Kính chào Quý cư dân! Tôi là Trợ lý ảo Skyline AI Concierge 24/7 (vận hành bởi Google Gemini). Tôi sẵn sàng giải đáp thông tin 4 chung cư The Tropical (BS-07, BS-08, BS-09, BS-10), dịch vụ nhà hàng tầng 1, cụm hồ bơi resort, biểu phí sinh hoạt và tiếp nhận sự cố kỹ thuật!',
       time: new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }),
     },
   ]);

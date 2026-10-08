@@ -16,48 +16,32 @@ import {
   Sparkles, 
   Thermometer, 
   Wind, 
-  Activity, 
   CheckCircle2, 
   AlertTriangle,
-  Sliders,
-  Users,
-  EyeOff,
-  Box,
-  Calendar,
-  Clock,
-  Check,
-  ToggleLeft,
-  ToggleRight,
-  Video,
-  Mic,
-  MicOff,
-  Bell,
-  DoorClosed,
-  DoorOpen,
-  Copy,
-  Trash2,
-  ShieldAlert,
-  RefreshCw,
-  UserCheck,
-  ScanFace,
-  Scan,
-  Radio,
-  Camera,
-  PhoneCall,
-  PhoneOff,
-  Battery,
-  BatteryCharging,
-  Wifi,
-  History,
-  KeyRound,
-  Shield,
-  Volume2,
-  Plus,
-  Play,
+  Clock, 
+  Video, 
+  Mic, 
+  MicOff, 
+  Bell, 
+  DoorClosed, 
+  DoorOpen, 
+  Copy, 
+  Trash2, 
+  ShieldAlert, 
+  Camera, 
+  BatteryCharging, 
+  History, 
+  KeyRound, 
+  Plus, 
   CreditCard,
-  ArrowRight
+  Layers,
+  ChevronRight,
+  Maximize2,
+  Sliders,
+  Check,
+  Building
 } from 'lucide-react';
-import { User, UserRole } from '@/lib/dataStore';
+import { User } from '@/lib/dataStore';
 import { getApartmentByCode } from '@/lib/apartmentStore';
 import { 
   getSmartHomeState, 
@@ -88,23 +72,40 @@ interface SmartHomeHubProps {
   currentUser: User;
 }
 
+type AppTab = 'DEVICES' | 'DOOR_ACCESS' | 'AUTOMATION';
+
 export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
   const isOwner = currentUser.role === 'OWNER';
   const aptCode = currentUser.apartment_code || 'CH-06';
-  const aptFloor = aptCode.replace(/[^0-9]/g, '').slice(0, 2) || '12';
   const aptUnit = getApartmentByCode(aptCode);
-  const aptArea = aptUnit ? aptUnit.area : 78.5;
-  const aptType = aptUnit ? aptUnit.typeLabel : '2PN - 2WC';
+  const aptArea = aptUnit ? aptUnit.area : 42.0;
+  const aptType = aptUnit ? aptUnit.typeLabel : '1PN - 1WC';
 
-  // Smart Home State từ Storage Store
+  // State chính từ SmartHomeStore
   const [smartState, setSmartState] = useState<SmartHomeState>(() => getSmartHomeState(aptCode));
   const [automationRules, setAutomationRules] = useState<AutomationRule[]>(() => getAutomationRules(aptCode));
   const [toastMsg, setToastMsg] = useState<string | null>(null);
 
-  // Dữ liệu thực tế: Hồ sơ FaceID của cư dân hiện tại & Thẻ Cư Dân thành viên gia đình
+  // App Navigation Segment Tab
+  const [activeTab, setActiveTab] = useState<AppTab>('DEVICES');
+  const [is3dMode, setIs3dMode] = useState<boolean>(false);
+
+  // Dữ liệu Thẻ & FaceID
   const [faceProfile, setFaceProfile] = useState<EnrolledFaceProfile | null>(null);
   const [familyMembers, setFamilyMembers] = useState<any[]>([]);
+  const [residentCards, setResidentCards] = useState<CardState[]>([]);
+  const [tappingCardUid, setTappingCardUid] = useState<string | null>(null);
 
+  // Chuông hình & Khóa cửa tương tác
+  const [isIntercomActive, setIsIntercomActive] = useState(false);
+  const [snapshotCount, setSnapshotCount] = useState(0);
+  const [isMotionAlertActive, setIsMotionAlertActive] = useState(false);
+  const [cameraTime, setCameraTime] = useState('');
+  const [copiedPinId, setCopiedPinId] = useState<string | null>(null);
+  const [newPinDuration, setNewPinDuration] = useState<number>(15); // Mặc định 15 phút cho shipper
+  const [activeLogFilter, setActiveLogFilter] = useState<'ALL' | 'FACE_ID' | 'PIN_OTP' | 'NFC_CARD'>('ALL');
+
+  // Lắng nghe dữ liệu
   useEffect(() => {
     const loadRealData = () => {
       const profile = getEnrolledFaceProfile(currentUser.id) || 
@@ -120,251 +121,133 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
       }
     }).catch(() => {});
 
-    window.addEventListener('skyline_face_enrolled', loadRealData);
-    window.addEventListener('skyline_ekyc_updated', loadRealData);
-    return () => {
-      window.removeEventListener('skyline_face_enrolled', loadRealData);
-      window.removeEventListener('skyline_ekyc_updated', loadRealData);
-    };
-  }, [currentUser]);
-
-  const hasFaceEnrolled = !!(faceProfile && faceProfile.samples && Object.keys(faceProfile.samples).length > 0);
-  const faceSamplesCount = faceProfile?.samples ? Object.keys(faceProfile.samples).length : 0;
-  const isFaceApproved = faceProfile?.status === 'ACTIVE';
-  const isFacePending = faceProfile?.status === 'PENDING';
-
-  // Trạng thái tương tác chuyên biệt cho Hệ Thống Cửa Thông Minh (Smart Door)
-  const [isIntercomActive, setIsIntercomActive] = useState(false);
-  const [isScanningFace, setIsScanningFace] = useState(false);
-  const [faceScanProgress, setFaceScanProgress] = useState(0);
-  const [faceScanSuccess, setFaceScanSuccess] = useState(false);
-  const [activeLogFilter, setActiveLogFilter] = useState<'ALL' | 'FACE_ID' | 'PIN_OTP' | 'NFC_CARD' | 'AUTO_LOCK'>('ALL');
-  const [newPinLabel, setNewPinLabel] = useState('');
-  const [newPinDuration, setNewPinDuration] = useState<number>(60);
-  const [isCreatingPin, setIsCreatingPin] = useState(false);
-  const [copiedPinId, setCopiedPinId] = useState<string | null>(null);
-  const [cameraTime, setCameraTime] = useState('');
-  const [snapshotFlash, setSnapshotFlash] = useState(false);
-  const [snapshotCount, setSnapshotCount] = useState(0);
-  const [isMotionAlertActive, setIsMotionAlertActive] = useState(false);
-  const [smartDoorTab, setSmartDoorTab] = useState<'LIVE_CONTROL' | 'CREDENTIALS' | 'LOGS'>('LIVE_CONTROL');
-  
-  // Quản lý Thẻ Cư Dân NFC vật lý thực tế của căn hộ
-  const [residentCards, setResidentCards] = useState<CardState[]>([]);
-  const [tappingCardUid, setTappingCardUid] = useState<string | null>(null);
-
-  useEffect(() => {
     const defaultCards: CardState[] = [
       {
         cardUid: `NFC-SKY-${aptCode}-01`,
-        holderName: currentUser.full_name || (currentUser as any)?.fullname || (isOwner ? 'Trần Hữu Lực' : 'Cư Dân'),
+        holderName: currentUser.full_name || (currentUser as any)?.fullname || 'Trần Hữu Lực',
         role: isOwner ? 'Chủ Hộ (Master)' : 'Người Nhà',
         isOwner: true,
         status: 'ACTIVE'
-      },
-      ...familyMembers.map((mem, idx) => ({
-        cardUid: `NFC-SKY-${aptCode}-0${idx + 2}`,
-        holderName: mem.fullname || mem.full_name || mem.username || `Thành viên ${idx + 1}`,
-        role: mem.relationship || 'Người Nhà',
-        isOwner: false,
-        status: 'ACTIVE' as const
-      }))
+      }
     ];
-
-    const cards = getResidentCards(aptCode, defaultCards);
-    setResidentCards(cards);
+    setResidentCards(getResidentCards(aptCode, defaultCards));
 
     const onCardsUpdated = (e: any) => {
       if (e.detail) setResidentCards(e.detail);
     };
     window.addEventListener('skyline_cards_updated', onCardsUpdated);
-    return () => window.removeEventListener('skyline_cards_updated', onCardsUpdated);
-  }, [aptCode, currentUser, isOwner, familyMembers]);
 
-  const {
-    lights,
-    acTemp,
-    acPower,
-    curtainsOpen,
-    doorLocked: masterDoorLocked,
-    doorAjar = false,
-    doorAutoLock = true,
-    doorBatteryLevel = 94,
-    doorNightLatch = false,
-    doorAntiTamper = true,
-    guestPins = [],
-    doorAccessLogs = [],
-    mainPowerActive,
-    waterLeakSensorActive,
-    fireSensorActive,
-    activeScene
-  } = smartState;
-
-  // Cập nhật đồng hồ thời gian thực cho màn hình chuông cửa
-  useEffect(() => {
-    const updateTime = () => {
+    // Đồng hồ camera
+    const timer = setInterval(() => {
       const now = new Date();
-      setCameraTime(
-        now.toLocaleTimeString('vi-VN', { hour12: false }) + `.${Math.floor(now.getMilliseconds() / 100)}`
-      );
-    };
-    updateTime();
-    const timer = setInterval(updateTime, 100);
-    return () => clearInterval(timer);
-  }, []);
+      setCameraTime(now.toLocaleTimeString('vi-VN', { hour12: false }) + ' • 1080p HD');
+    }, 1000);
 
-  // Cơ chế Tự Động Khóa Chốt An Toàn Sau 5s (Auto-Lock 5s)
-  useEffect(() => {
-    if (!smartState.doorLocked && smartState.doorAutoLock) {
-      const timer = setTimeout(() => {
-        const updated = saveSmartHomeState(aptCode, { doorLocked: true });
-        setSmartState(updated);
-        addDoorAccessLog(aptCode, {
-          userName: 'Hệ Thống Khóa Tự Động',
-          role: 'Smart Door Auto-Lock',
-          method: 'AUTO_LOCK',
-          status: 'SUCCESS',
-          detail: 'Tự động gài chốt an toàn 3 tầng sau 5 giây mở cửa (Skyline Auto-Secure)'
-        });
-        showToast('🔒 Cửa Thông Minh đã tự động gài chốt an toàn sau 5 giây.');
-      }, 5000);
-      return () => clearTimeout(timer);
-    }
-  }, [smartState.doorLocked, smartState.doorAutoLock, aptCode]);
-
-  // Lắng nghe sự kiện đồng bộ toàn hệ thống
-  useEffect(() => {
-    const onUpdateState = (e: any) => {
-      if (e.detail) setSmartState(e.detail);
-    };
-    const onUpdateRules = (e: any) => {
-      if (e.detail) setAutomationRules(e.detail);
-    };
-    window.addEventListener('skyline_smarthome_update', onUpdateState);
-    window.addEventListener('skyline_automation_rules_update', onUpdateRules);
     return () => {
-      window.removeEventListener('skyline_smarthome_update', onUpdateState);
-      window.removeEventListener('skyline_automation_rules_update', onUpdateRules);
+      window.removeEventListener('skyline_cards_updated', onCardsUpdated);
+      clearInterval(timer);
     };
-  }, [aptCode]);
+  }, [currentUser, aptCode, isOwner]);
 
   const showToast = (msg: string) => {
     setToastMsg(msg);
     setTimeout(() => setToastMsg(null), 3500);
   };
 
-  const handleToggleLight = (room: 'livingRoom' | 'bedroomMaster' | 'kitchen' | 'balcony') => {
-    const nextLights = { ...smartState.lights, [room]: !smartState.lights[room] };
-    const updated = saveSmartHomeState(aptCode, { lights: nextLights, activeScene: 'NONE' });
-    setSmartState(updated);
-    const roomName = room === 'livingRoom' ? 'Phòng khách' : room === 'bedroomMaster' ? 'Phòng ngủ Master' : room === 'kitchen' ? 'Bếp' : 'Ban công';
-    showToast(`⚡ Đã chuyển trạng thái đèn: ${roomName} (${nextLights[room] ? 'Bật' : 'Tắt'})`);
+  const {
+    lights,
+    acPower,
+    acTemp,
+    curtainsOpen,
+    doorLocked: masterDoorLocked,
+    doorAjar,
+    waterLeakSensorActive,
+    activeScene,
+    doorBatteryLevel = 96,
+    guestPins = [],
+    doorAccessLogs = []
+  } = smartState;
+
+  // Kích hoạt Ngữ Cảnh Nhanh
+  const handleTriggerScene = (scene: SceneType) => {
+    if (scene === 'AWAY' && !isOwner) {
+      showToast('⚠️ Chỉ Chủ Hộ mới có quyền kích hoạt chế độ "Đi Vắng" (Tắt toàn bộ hệ thống điện).');
+      return;
+    }
+    const { state: nextState, message } = applyScene(aptCode, scene);
+    setSmartState(nextState);
+    showToast(message);
   };
 
+  // Toggle Đèn phòng
+  const handleToggleLight = (roomKey: keyof typeof smartState.lights) => {
+    const nextVal = !lights[roomKey];
+    const nextLights = { ...lights, [roomKey]: nextVal };
+    const updated = saveSmartHomeState(aptCode, { lights: nextLights });
+    setSmartState(updated);
+    const roomNames: Record<string, string> = {
+      livingRoom: 'Phòng Khách',
+      bedroomMaster: 'Phòng Ngủ Master',
+      kitchen: 'Gian Bếp',
+      balcony: 'Ban Công'
+    };
+    showToast(`💡 Đèn ${roomNames[roomKey] || roomKey}: ${nextVal ? 'ĐÃ BẬT' : 'ĐÃ TẮT'}`);
+  };
+
+  // Toggle Điều Hòa
+  const handleToggleAC = () => {
+    const nextAC = !acPower;
+    const updated = saveSmartHomeState(aptCode, { acPower: nextAC });
+    setSmartState(updated);
+    showToast(`❄️ Điều hòa Daikin VRV: ${nextAC ? `BẬT (${acTemp}°C)` : 'TẮT'}`);
+  };
+
+  // Tăng giảm nhiệt độ AC
+  const handleChangeTemp = (delta: number) => {
+    const nextTemp = Math.min(Math.max(acTemp + delta, 18), 30);
+    const updated = saveSmartHomeState(aptCode, { acTemp: nextTemp, acPower: true });
+    setSmartState(updated);
+    showToast(`🌡️ Nhiệt độ điều hòa: ${nextTemp}°C`);
+  };
+
+  // Toggle Rèm
+  const handleToggleCurtains = () => {
+    const nextCurtains = !curtainsOpen;
+    const updated = saveSmartHomeState(aptCode, { curtainsOpen: nextCurtains });
+    setSmartState(updated);
+    showToast(`🪟 Rèm cửa tự động: ${nextCurtains ? 'ĐANG MỞ ĐÓN SÁNG' : 'ĐANG ĐÓNG KÍN'}`);
+  };
+
+  // Toggle Khóa Cửa
   const handleToggleDoor = () => {
-    const nextLocked = !smartState.doorLocked;
+    const nextLocked = !masterDoorLocked;
     const updated = saveSmartHomeState(aptCode, { doorLocked: nextLocked });
     setSmartState(updated);
+
     addDoorAccessLog(aptCode, {
-      userName: currentUser.full_name || (isOwner ? 'Lê Văn An' : 'Cư Dân'),
+      userName: currentUser.full_name || (isOwner ? 'Trần Hữu Lực' : 'Cư Dân'),
       role: isOwner ? 'Chủ Hộ (Master)' : 'Người Nhà',
       method: 'REMOTE_APP',
       status: 'SUCCESS',
-      detail: nextLocked ? 'Khóa chốt an toàn thủ công từ Portal' : 'Mở chốt cửa an toàn thủ công từ Portal'
+      detail: nextLocked 
+        ? 'Chủ hộ bấm khóa chốt an toàn qua App Cư Dân' 
+        : 'Chủ hộ bấm mở chốt từ xa qua App Cư Dân'
     });
-    showToast(nextLocked ? '🔒 Đã khóa chốt an toàn Cửa Thông Minh.' : '🔓 Đã mở chốt Cửa Thông Minh (Sẽ tự khóa sau 5s nếu bật Auto-Lock).');
+
+    showToast(nextLocked ? '🔒 Cửa chính: ĐÃ KHÓA CHỐT AN TOÀN' : '🔓 Cửa chính: ĐÃ MỞ CHỐT TỪ XA');
   };
 
-  // Đảo trạng thái cánh cửa từ tính (Đang khép kín <-> Mở hé)
-  const handleToggleDoorAjar = () => {
-    const nextAjar = !smartState.doorAjar;
-    const updated = saveSmartHomeState(aptCode, { doorAjar: nextAjar });
-    setSmartState(updated);
-    if (nextAjar) {
-      showToast('⚠️ Cảm biến từ tính: Cánh cửa vật lý đang mở hé! Hệ thống phát chuông nhắc nhở.');
-    } else {
-      showToast('✓ Cảm biến từ tính: Cánh cửa đã khép kín 100%.');
-    }
-  };
-
-  // Bật/tắt Auto-Lock
-  const handleToggleAutoLock = () => {
-    const nextVal = !smartState.doorAutoLock;
-    const updated = saveSmartHomeState(aptCode, { doorAutoLock: nextVal });
-    setSmartState(updated);
-    showToast(nextVal ? '✓ Đã BẬT chế độ tự động khóa chốt sau 5 giây.' : '⚠️ Đã TẮT tự động khóa chốt sau 5s.');
-  };
-
-  // Bật/tắt Chốt ban đêm
-  const handleToggleNightLatch = () => {
-    const nextVal = !smartState.doorNightLatch;
-    const updated = saveSmartHomeState(aptCode, { doorNightLatch: nextVal });
-    setSmartState(updated);
-    showToast(nextVal ? '🌙 Đã kích hoạt chốt riêng tư ban đêm (Night Latch).' : '☀️ Đã mở chốt riêng tư ban đêm.');
-  };
-
-  // Bật/tắt Chống cạy phá
-  const handleToggleAntiTamper = () => {
-    const nextVal = !smartState.doorAntiTamper;
-    const updated = saveSmartHomeState(aptCode, { doorAntiTamper: nextVal });
-    setSmartState(updated);
-    showToast(nextVal ? '🛡️ Cảm biến gia tốc & rung chấn chống cạy phá: ĐANG BẢO VỆ 24/7.' : '⚠️ Đã tạm dừng cảnh báo cạy phá.');
-  };
-
-  // Mô phỏng quét FaceID 3D
-  const handleSimulateFaceScan = () => {
-    if (isScanningFace) return;
-    if (!hasFaceEnrolled) {
-      showToast(`⚠️ Cư dân ${currentUser.full_name} chưa có mẫu FaceID! Vui lòng vào trang Định Danh & e-KYC để quét 4 mẫu khuôn mặt.`);
-      return;
-    }
-    if (isFacePending) {
-      showToast(`⏳ Hồ sơ FaceID (4 mẫu quét) của cư dân ${currentUser.full_name} đang chờ Ban Quản Lý phê duyệt!`);
-      return;
-    }
-
-    setIsScanningFace(true);
-    setFaceScanSuccess(false);
-    setFaceScanProgress(20);
-
-    setTimeout(() => setFaceScanProgress(55), 350);
-    setTimeout(() => setFaceScanProgress(85), 750);
-    setTimeout(() => {
-      setFaceScanProgress(100);
-      setFaceScanSuccess(true);
-      setTimeout(() => {
-        setIsScanningFace(false);
-        setFaceScanProgress(0);
-        setFaceScanSuccess(false);
-        const updated = saveSmartHomeState(aptCode, { doorLocked: false });
-        setSmartState(updated);
-        addDoorAccessLog(aptCode, {
-          userName: currentUser.full_name || 'Cư Dân',
-          role: isOwner ? 'Chủ Hộ (Master)' : 'Người Nhà',
-          method: 'FACE_ID',
-          status: 'SUCCESS',
-          detail: `Nhận diện sinh trắc học AI camera 3D (Độ khớp 99.4%) • Cửa đã mở chốt`
-        });
-        showToast(`👤 FaceID nhận diện thành công: ${currentUser.full_name} (Độ khớp 99.4%). Đã mở chốt cửa!`);
-      }, 700);
-    }, 1100);
-  };
-
-  // Tạo mã PIN khách mới
-  const handleCreatePin = (e?: React.FormEvent) => {
-    if (e) e.preventDefault();
-    const label = newPinLabel.trim() || 'Mã Khách Tạm Thời';
+  // Tạo mã PIN khách 1-chạm (OTP)
+  const handleQuickCreatePin = (durationMinutes: number, label: string) => {
     const { state: updated, newPin } = createGuestPin(
       aptCode, 
       label, 
-      newPinDuration,
+      durationMinutes,
       currentUser.full_name || (isOwner ? 'Chủ Hộ' : 'Cư Dân'),
       isOwner ? 'Chủ Hộ (Master)' : 'Người Nhà'
     );
     setSmartState(updated);
-    setNewPinLabel('');
-    setIsCreatingPin(false);
-    showToast(`🔢 Đã tạo mã PIN khách tạm thời: [${newPin.pin}] (Hạn dùng ${newPinDuration} phút)`);
+    showToast(`🔢 Đã tạo mã OTP: [${newPin.pin}] (Hạn dùng ${durationMinutes} phút cho ${label})`);
   };
 
   // Sao chép mã PIN
@@ -373,7 +256,7 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
       navigator.clipboard.writeText(pin.replace(/\s+/g, ''));
     }
     setCopiedPinId(id);
-    showToast(`📋 Đã sao chép mã PIN khách [${pin}] vào bộ nhớ tạm.`);
+    showToast(`📋 Đã sao chép mã PIN [${pin}] vào bộ nhớ tạm.`);
     setTimeout(() => setCopiedPinId(null), 2500);
   };
 
@@ -386,1481 +269,840 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
       isOwner ? 'Chủ Hộ (Master)' : 'Người Nhà'
     );
     setSmartState(updated);
-    showToast('🗑️ Đã hủy và vô hiệu hóa mã PIN khách tạm thời.');
+    showToast('🗑️ Đã hủy mã PIN khách thành công.');
   };
 
-  // Quẹt thẻ NFC vật lý thực tế vào ổ khóa cửa chính
+  // Quẹt thẻ NFC vật lý
   const handleSimulateTapCard = (card: CardState) => {
     if (tappingCardUid) return;
     setTappingCardUid(card.cardUid);
 
     setTimeout(() => {
       setTappingCardUid(null);
-
-      // Nếu thẻ đang bị tạm khóa
       if (card.status === 'LOCKED') {
         addDoorAccessLog(aptCode, {
           userName: card.holderName,
           role: card.role,
           method: 'NFC_CARD',
           status: 'DENIED',
-          detail: `Từ chối mở cửa: Thẻ NFC (${card.cardUid} - ${card.holderName}) đang bị TẠM KHÓA an toàn • Chốt vẫn khóa`
+          detail: `Từ chối mở cửa: Thẻ NFC (${card.cardUid}) đang bị TẠM KHÓA an toàn`
         });
-        showToast(`❌ TỪ CHỐI: Thẻ NFC (${card.cardUid}) đang bị TẠM KHÓA! Không thể mở cửa.`);
+        showToast(`❌ TỪ CHỐI: Thẻ NFC (${card.cardUid}) đang bị TẠM KHÓA!`);
         return;
       }
 
-      // Thẻ hợp lệ: Mở chốt khóa
       const updated = saveSmartHomeState(aptCode, { doorLocked: false });
       setSmartState(updated);
-      const nextCards = markCardUsed(aptCode, card.cardUid);
-      setResidentCards(nextCards);
+      setResidentCards(markCardUsed(aptCode, card.cardUid));
 
       addDoorAccessLog(aptCode, {
         userName: card.holderName,
         role: card.role,
         method: 'NFC_CARD',
         status: 'SUCCESS',
-        detail: `Quẹt thẻ NFC vật lý Mifare EV3 (Mã thẻ: ${card.cardUid}, Chủ thẻ: ${card.holderName}) tại đầu đọc khóa cửa • Đã mở chốt`
+        detail: `Quẹt thẻ NFC Mifare EV3 (${card.cardUid}) tại đầu đọc khóa • Đã mở chốt`
       });
 
-      showToast(`💳 [BÍP] Thẻ NFC hợp lệ: ${card.holderName} (${card.cardUid})! Đã mở chốt khóa cửa.`);
+      showToast(`💳 [BÍP] Thẻ NFC hợp lệ: ${card.holderName} (${card.cardUid})! Đã mở cửa.`);
     }, 550);
   };
 
-  // Khóa / Mở khóa thẻ vật lý khi làm rơi hoặc tìm lại
+  // Toggle Khóa / Mở thẻ NFC
   const handleToggleCardLock = (cardUid: string, holderName: string) => {
     const updated = toggleCardStatus(aptCode, cardUid);
     setResidentCards(updated);
     const target = updated.find(c => c.cardUid === cardUid);
-    if (target?.status === 'LOCKED') {
-      showToast(`🔒 Đã TẠM KHÓA thẻ NFC (${cardUid} - ${holderName})! Thẻ này không thể mở cửa.`);
-    } else {
-      showToast(`🔓 Đã KÍCH HOẠT lại thẻ NFC (${cardUid} - ${holderName}) thành công.`);
-    }
+    showToast(target?.status === 'LOCKED' 
+      ? `🔒 Đã TẠM KHÓA thẻ NFC (${holderName})!` 
+      : `🔓 Đã KÍCH HOẠT lại thẻ NFC (${holderName}).`);
   };
 
-  // Bật/tắt đàm thoại 2 chiều với chuông cửa
+  // Bật/tắt Intercom đàm thoại
   const handleToggleIntercom = () => {
     setIsIntercomActive(prev => {
       const next = !prev;
-      if (next) {
-        showToast('🎙️ Đã kết nối đàm thoại 2 chiều với chuông hình ngoài cửa.');
-      } else {
-        showToast('🔇 Đã ngắt đàm thoại intercom với khách.');
-      }
+      showToast(next ? '🎙️ Đã bật đàm thoại 2 chiều với chuông cửa.' : '🔇 Đã ngắt đàm thoại intercom.');
       return next;
     });
   };
 
-  // Mở cửa nhanh cho khách từ màn hình camera
-  const handleDoorbellUnlockForGuest = () => {
-    const updated = saveSmartHomeState(aptCode, { doorLocked: false });
-    setSmartState(updated);
-    addDoorAccessLog(aptCode, {
-      userName: currentUser.full_name || 'Chủ Hộ',
-      role: isOwner ? 'Chủ Hộ' : 'Cư Dân',
-      method: 'REMOTE_APP',
-      status: 'SUCCESS',
-      detail: 'Mở chốt khóa từ xa qua màn hình Chuông Hình AI cho khách vào nhà'
-    });
-    showToast('🚪 Đã mở chốt khóa cửa từ xa cho khách vào nhà!');
-  };
-
-  // Chụp ảnh snapshot từ camera
-  const handleTakeSnapshot = () => {
-    setSnapshotFlash(true);
+  // Chụp ảnh snapshot
+  const handleSnapshot = () => {
     setSnapshotCount(prev => prev + 1);
-    setTimeout(() => setSnapshotFlash(false), 250);
-    addDoorAccessLog(aptCode, {
-      userName: currentUser.full_name || 'Chủ Hộ',
-      role: 'Giám Sát An Ninh',
-      method: 'REMOTE_APP',
-      status: 'SUCCESS',
-      detail: `Chụp ảnh lưu trữ chuông cửa #${snapshotCount + 1} (Góc 160° HDR sảnh căn hộ)`
-    });
-    showToast('📸 Đã lưu ảnh chụp camera chuông cửa vào nhật ký an ninh!');
+    showToast(`📸 Đã lưu ảnh khách viếng thăm #${snapshotCount + 1} vào bộ nhớ an toàn.`);
   };
 
-  const handleToggleCurtains = () => {
-    const updated = saveSmartHomeState(aptCode, { curtainsOpen: !smartState.curtainsOpen });
-    setSmartState(updated);
-    showToast(updated.curtainsOpen ? '☀️ Đang mở rèm ban công đón ánh sáng tự nhiên.' : '🌘 Đang đóng rèm ban công cách nhiệt.');
-  };
-
-  const handleToggleAC = () => {
-    const updated = saveSmartHomeState(aptCode, { acPower: !smartState.acPower });
-    setSmartState(updated);
-    showToast(updated.acPower ? `❄️ Đã bật điều hòa Daikin Inverter (${updated.acTemp}°C).` : '❄️ Đã tắt điều hòa trung tâm.');
-  };
-
-  const handleChangeTemp = (delta: number) => {
-    const nextTemp = Math.max(16, Math.min(30, smartState.acTemp + delta));
-    const updated = saveSmartHomeState(aptCode, { acTemp: nextTemp });
-    setSmartState(updated);
-    showToast(`🌡️ Đã điều chỉnh nhiệt độ điều hòa: ${nextTemp}°C`);
-  };
-
-  // Kích hoạt Ngữ Cảnh 1-Chạm
-  const handleTriggerScene = (scene: SceneType) => {
-    if (scene === 'AWAY' && !isOwner) {
-      showToast('⚠️ Chỉ Chủ Hộ mới có quyền kích hoạt chế độ "Đi Vắng" (Tắt toàn bộ hệ thống điện căn hộ).');
-      return;
-    }
-    const { state: nextState, message } = applyScene(aptCode, scene);
-    setSmartState(nextState);
-    showToast(message);
-  };
-
-  // Kích hoạt / Tạm dừng Quy Tắc Tự Động Hóa
+  // Toggle Quy tắc tự động hóa
   const handleToggleRule = (ruleId: string) => {
     const nextRules = toggleAutomationRule(aptCode, ruleId);
     setAutomationRules(nextRules);
     const target = nextRules.find(r => r.id === ruleId);
-    if (target?.enabled) {
-      showToast(`✓ Đã kích hoạt kịch bản tự động hóa: "${target.title}"`);
-    } else {
-      showToast(`⏸️ Đã tạm dừng kịch bản tự động hóa: "${target?.title}"`);
-    }
+    showToast(target?.enabled 
+      ? `✓ Đã kích hoạt: "${target.title}"` 
+      : `⏸️ Đã tạm dừng: "${target?.title}"`);
   };
 
+  // Lọc log ra vào
+  const filteredLogs = doorAccessLogs.filter(log => {
+    if (activeLogFilter === 'ALL') return true;
+    return log.method === activeLogFilter;
+  });
+
   return (
-    <div className="space-y-6 w-full animate-fadeIn select-none">
-      {/* Header & Status */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#222B35] pb-4">
+    <div className="space-y-5 w-full animate-fadeIn select-none">
+      {/* 1. APP HEADER: Thanh trạng thái căn hộ thông minh */}
+      <div className="p-4 sm:p-5 bg-gradient-to-r from-[#161F2C] via-[#121820] to-[#0D1117] border border-[#C5A880]/70 flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-xl">
         <div>
-          <div className="text-[10px] uppercase tracking-[0.25em] text-[#C5A880] font-semibold flex items-center gap-2">
-            <Cpu className="w-3.5 h-3.5" /> Nhà Thông Minh • Căn {aptCode}
+          <div className="text-[10px] uppercase tracking-[0.25em] text-[#C5A880] font-bold flex items-center gap-1.5">
+            <Cpu className="w-3.5 h-3.5 text-[#C5A880]" /> Nhà Thông Minh • App Cư Dân
           </div>
-          <h2 className="font-serif text-2xl text-white font-bold mt-1">
-            Điều Khiển Thiết Bị Căn Hộ
+          <h2 className="font-serif text-xl sm:text-2xl text-white font-bold mt-1 tracking-wide">
+            Căn Hộ {aptCode} • Chung Cư BS-07
           </h2>
+          <p className="text-xs text-gray-300 mt-1 flex flex-wrap items-center gap-2 font-mono">
+            <span>Tầng 30</span>
+            <span className="text-gray-500">•</span>
+            <span>{aptArea} m² ({aptType})</span>
+            <span className="text-gray-500">•</span>
+            <span className="text-emerald-400 font-bold flex items-center gap-1">
+              <CheckCircle2 className="w-3 h-3" /> Trực Tuyến 24/7
+            </span>
+          </p>
         </div>
 
-        {/* Role Badge Indicator */}
-        <div className="flex items-center gap-2">
-          {isOwner ? (
-            <span className="px-3 py-1 bg-emerald-950/80 border border-emerald-500 text-emerald-300 text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 rounded shadow">
-              <ShieldCheck className="w-3.5 h-3.5" /> Chủ Hộ (Toàn Quyền)
-            </span>
-          ) : (
-            <span className="px-3 py-1 bg-amber-950/80 border border-amber-500 text-amber-300 text-xs font-semibold uppercase tracking-wider flex items-center gap-1.5 rounded shadow">
-              <LockKeyhole className="w-3.5 h-3.5" /> Thành Viên Căn Hộ
-            </span>
-          )}
+        {/* 4 Chỉ số nhanh (App Status Chips) */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+          <div className="px-3 py-2 bg-[#0D1117] border border-[#222B35] flex items-center gap-2">
+            <Thermometer className="w-4 h-4 text-[#C5A880] shrink-0" />
+            <div>
+              <div className="text-[9px] uppercase text-gray-400">Nhiệt Độ</div>
+              <div className="text-xs font-mono font-bold text-white">{acTemp}.5 °C</div>
+            </div>
+          </div>
+
+          <div className="px-3 py-2 bg-[#0D1117] border border-[#222B35] flex items-center gap-2">
+            <Wind className="w-4 h-4 text-emerald-400 shrink-0" />
+            <div>
+              <div className="text-[9px] uppercase text-gray-400">Chất Lượng AQI</div>
+              <div className="text-xs font-mono font-bold text-emerald-400">18 (Tốt)</div>
+            </div>
+          </div>
+
+          <div className="px-3 py-2 bg-[#0D1117] border border-[#222B35] flex items-center gap-2">
+            <Lock className={`w-4 h-4 shrink-0 ${masterDoorLocked ? 'text-emerald-400' : 'text-amber-400 animate-pulse'}`} />
+            <div>
+              <div className="text-[9px] uppercase text-gray-400">Khóa Cửa</div>
+              <div className={`text-xs font-mono font-bold ${masterDoorLocked ? 'text-emerald-400' : 'text-amber-400'}`}>
+                {masterDoorLocked ? 'An Toàn' : 'Đang Mở'}
+              </div>
+            </div>
+          </div>
+
+          <div className="px-3 py-2 bg-[#0D1117] border border-[#222B35] flex items-center gap-2">
+            <Zap className="w-4 h-4 text-[#C5A880] shrink-0" />
+            <div>
+              <div className="text-[9px] uppercase text-gray-400">Điện Năng</div>
+              <div className="text-xs font-mono font-bold text-[#C5A880]">1.38 kW/h</div>
+            </div>
+          </div>
         </div>
       </div>
 
       {/* Toast Notification */}
       {toastMsg && (
-        <div className="p-3.5 bg-[#121E2A] border border-[#C5A880] text-[#C5A880] text-xs font-medium flex items-center gap-2 animate-fadeIn shadow-lg rounded">
+        <div className="p-3 bg-[#121E2A] border border-[#C5A880] text-[#C5A880] text-xs font-medium flex items-center gap-2 animate-fadeIn shadow-lg">
           <Sparkles className="w-4 h-4 text-[#C5A880] flex-shrink-0" />
           <span>{toastMsg}</span>
         </div>
       )}
 
-      {/* Environment IoT Metrics Strip */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        <div className="p-3.5 bg-[#121820] border border-[#222B35] flex items-center justify-between rounded">
-          <div>
-            <div className="text-[10px] uppercase tracking-wider text-gray-400">Nhiệt Độ Phòng</div>
-            <div className="text-xl font-mono font-bold text-white mt-0.5">{acTemp}.5 °C</div>
-          </div>
-          <Thermometer className="w-6 h-6 text-[#C5A880]" />
-        </div>
-
-        <div className="p-3.5 bg-[#121820] border border-[#222B35] flex items-center justify-between rounded">
-          <div>
-            <div className="text-[10px] uppercase tracking-wider text-gray-400">Độ Ẩm Không Khí</div>
-            <div className="text-xl font-mono font-bold text-blue-400 mt-0.5">58 %</div>
-          </div>
-          <Droplets className="w-6 h-6 text-blue-400" />
-        </div>
-
-        <div className="p-3.5 bg-[#121820] border border-[#222B35] flex items-center justify-between rounded">
-          <div>
-            <div className="text-[10px] uppercase tracking-wider text-gray-400">Chất Lượng AQI</div>
-            <div className="text-xl font-mono font-bold text-emerald-400 mt-0.5">18 (Trong Lành)</div>
-          </div>
-          <Wind className="w-6 h-6 text-emerald-400" />
-        </div>
-
-        <div className="p-3.5 bg-[#121820] border border-[#222B35] flex items-center justify-between rounded">
-          <div>
-            <div className="text-[10px] uppercase tracking-wider text-gray-400">Điện Năng Tức Thời</div>
-            <div className="text-xl font-mono font-bold text-[#C5A880] mt-0.5">1.38 kW/h</div>
-          </div>
-          <Zap className="w-6 h-6 text-[#C5A880]" />
-        </div>
-      </div>
-
-      {/* ------------------------------------------------------------- */}
-      {/* SƠ ĐỒ PHỐI CẢNH & MẶT BẰNG KỸ THUẬT TƯƠNG TÁC THỰC TẾ       */}
-      {/* ------------------------------------------------------------- */}
-      <div className="space-y-2">
-        <div className="flex items-center justify-between">
-          <div className="text-xs uppercase tracking-wider text-[#C5A880] font-bold flex items-center gap-1.5">
-            <Box className="w-3.5 h-3.5" /> Sơ Đồ Phối Cảnh & Mặt Bằng Kỹ Thuật Số Căn Hộ:
-          </div>
-          <span className="text-[10px] text-gray-400 font-mono">
-            * Đồng bộ 1:1 theo thời gian thực với thiết bị IoT căn hộ
+      {/* 2. QUICK SCENES BAR: 4 Ngữ Cảnh 1-Chạm Chuẩn App */}
+      <div className="p-3.5 bg-[#121820] border border-[#222B35] shadow-lg">
+        <div className="text-[10px] uppercase tracking-wider text-gray-400 font-mono mb-2 flex items-center justify-between">
+          <span className="flex items-center gap-1.5 text-[#C5A880] font-bold">
+            <Sparkles className="w-3.5 h-3.5" /> Ngữ Cảnh 1-Chạm
           </span>
+          <span>Chạm để kích hoạt tức thì</span>
         </div>
 
-        <ApartmentModel3DViewer
-          apartmentCode={aptCode}
-          apartmentType={aptType}
-          clearArea={aptArea}
-          lights={lights}
-          acPower={acPower}
-          acTemp={acTemp}
-          curtainsOpen={curtainsOpen}
-          doorLocked={masterDoorLocked}
-          doorAjar={doorAjar}
-          waterLeakActive={waterLeakSensorActive}
-          onToggleLight={handleToggleLight}
-          onToggleDoor={handleToggleDoor}
-          onToggleDoorAjar={handleToggleDoorAjar}
-          onToggleCurtains={handleToggleCurtains}
-          onToggleAC={handleToggleAC}
-          onChangeTemp={handleChangeTemp}
-          interactive={true}
-        />
-      </div>
-
-      {/* ------------------------------------------------------------- */}
-      {/* 1. THANH NGỮ CẢNH TỰ ĐỘNG HÓA 1-CHẠM (SCENE AUTOMATION)      */}
-      {/* ------------------------------------------------------------- */}
-      <div className="p-4 sm:p-5 bg-[#121820] border border-[#222B35] space-y-3 rounded shadow-xl">
-        <div className="flex items-center justify-between">
-          <div className="text-xs uppercase tracking-wider text-[#C5A880] font-bold flex items-center gap-1.5">
-            <Sparkles className="w-3.5 h-3.5" /> Ngữ Cảnh Thông Minh
-          </div>
-          <span className="text-[10px] text-gray-400 font-mono">
-            {isOwner ? '* Áp dụng tức thì cho căn hộ' : '* Áp dụng cho căn hộ'}
-          </span>
-        </div>
-
-        <div className="grid grid-cols-2 sm:grid-cols-5 gap-2.5">
-          {/* 1. VỀ NHÀ */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+          {/* Về Nhà */}
           <button
             type="button"
             onClick={() => handleTriggerScene('WELCOME')}
-            className={`p-3 border text-left transition-all rounded ${
+            className={`p-2.5 border text-left transition-all flex items-center gap-2.5 ${
               activeScene === 'WELCOME'
-                ? 'bg-[#1C2533] border-[#C5A880] text-white ring-1 ring-[#C5A880] shadow-md'
-                : 'bg-[#0D1117] border-[#222B35] text-gray-400 hover:border-gray-500 hover:text-white'
+                ? 'bg-[#1C2533] border-[#C5A880] text-white ring-1 ring-[#C5A880] shadow'
+                : 'bg-[#0D1117] border-[#222B35] text-gray-300 hover:border-gray-500'
             }`}
           >
-            <div className="flex items-center justify-between">
-              <Sun className="w-4 h-4 text-amber-400" />
-              {activeScene === 'WELCOME' && <CheckCircle2 className="w-3.5 h-3.5 text-[#C5A880]" />}
+            <Sun className="w-4 h-4 text-amber-400 shrink-0" />
+            <div className="truncate">
+              <div className="text-xs font-bold text-white">Về Nhà</div>
+              <div className="text-[10px] text-gray-400 truncate">Đèn bật, AC 24°C, mở rèm</div>
             </div>
-            <div className="font-semibold text-xs text-white mt-2">Về Nhà</div>
-            <div className="text-[10px] text-gray-400">Bật đèn, ĐH 24°C, mở rèm</div>
           </button>
 
-          {/* 2. ĐI VẮNG */}
-          <button
-            type="button"
-            onClick={() => handleTriggerScene('AWAY')}
-            className={`p-3 border text-left transition-all rounded ${
-              activeScene === 'AWAY'
-                ? 'bg-[#1C2533] border-[#C5A880] text-white ring-1 ring-[#C5A880] shadow-md'
-                : 'bg-[#0D1117] border-[#222B35] text-gray-400 hover:border-gray-500 hover:text-white'
-            }`}
-          >
-            <div className="flex items-center justify-between">
-              <Power className="w-4 h-4 text-red-400" />
-              {activeScene === 'AWAY' && <CheckCircle2 className="w-3.5 h-3.5 text-[#C5A880]" />}
-            </div>
-            <div className="font-semibold text-xs text-white mt-2">Đi Vắng</div>
-            <div className="text-[10px] text-gray-400">Tắt hết điện, khóa FaceID</div>
-          </button>
-
-          {/* 3. ĐI NGỦ */}
+          {/* Đi Ngủ */}
           <button
             type="button"
             onClick={() => handleTriggerScene('SLEEP')}
-            className={`p-3 border text-left transition-all rounded ${
+            className={`p-2.5 border text-left transition-all flex items-center gap-2.5 ${
               activeScene === 'SLEEP'
-                ? 'bg-[#1C2533] border-[#C5A880] text-white ring-1 ring-[#C5A880] shadow-md'
-                : 'bg-[#0D1117] border-[#222B35] text-gray-400 hover:border-gray-500 hover:text-white'
+                ? 'bg-[#1C2533] border-[#C5A880] text-white ring-1 ring-[#C5A880] shadow'
+                : 'bg-[#0D1117] border-[#222B35] text-gray-300 hover:border-gray-500'
             }`}
           >
-            <div className="flex items-center justify-between">
-              <Moon className="w-4 h-4 text-blue-400" />
-              {activeScene === 'SLEEP' && <CheckCircle2 className="w-3.5 h-3.5 text-[#C5A880]" />}
+            <Moon className="w-4 h-4 text-indigo-400 shrink-0" />
+            <div className="truncate">
+              <div className="text-xs font-bold text-white">Đi Ngủ</div>
+              <div className="text-[10px] text-gray-400 truncate">AC 26°C, rèm đóng, khóa an toàn</div>
             </div>
-            <div className="font-semibold text-xs text-white mt-2">Đi Ngủ</div>
-            <div className="text-[10px] text-gray-400">AC 26°C, khóa an toàn</div>
           </button>
 
-          {/* 4. XEM PHIM */}
+          {/* Đi Vắng */}
+          <button
+            type="button"
+            onClick={() => handleTriggerScene('AWAY')}
+            className={`p-2.5 border text-left transition-all flex items-center gap-2.5 ${
+              activeScene === 'AWAY'
+                ? 'bg-[#1C2533] border-[#C5A880] text-white ring-1 ring-[#C5A880] shadow'
+                : 'bg-[#0D1117] border-[#222B35] text-gray-300 hover:border-gray-500'
+            }`}
+          >
+            <Power className="w-4 h-4 text-red-400 shrink-0" />
+            <div className="truncate">
+              <div className="text-xs font-bold text-white">Đi Vắng</div>
+              <div className="text-[10px] text-gray-400 truncate">Ngắt điện, khóa cửa 2 lớp</div>
+            </div>
+          </button>
+
+          {/* Xem Phim */}
           <button
             type="button"
             onClick={() => handleTriggerScene('CINEMA')}
-            className={`p-3 border text-left transition-all rounded ${
+            className={`p-2.5 border text-left transition-all flex items-center gap-2.5 ${
               activeScene === 'CINEMA'
-                ? 'bg-[#1C2533] border-[#C5A880] text-white ring-1 ring-[#C5A880] shadow-md'
-                : 'bg-[#0D1117] border-[#222B35] text-gray-400 hover:border-gray-500 hover:text-white'
+                ? 'bg-[#1C2533] border-[#C5A880] text-white ring-1 ring-[#C5A880] shadow'
+                : 'bg-[#0D1117] border-[#222B35] text-gray-300 hover:border-gray-500'
             }`}
           >
-            <div className="flex items-center justify-between">
-              <Tv className="w-4 h-4 text-purple-400" />
-              {activeScene === 'CINEMA' && <CheckCircle2 className="w-3.5 h-3.5 text-[#C5A880]" />}
+            <Tv className="w-4 h-4 text-purple-400 shrink-0" />
+            <div className="truncate">
+              <div className="text-xs font-bold text-white">Xem Phim</div>
+              <div className="text-[10px] text-gray-400 truncate">Đèn vàng dịu, rèm đóng kín</div>
             </div>
-            <div className="font-semibold text-xs text-white mt-2">Xem Phim</div>
-            <div className="text-[10px] text-gray-400">Đóng rèm, AC 23°C, đèn 15%</div>
-          </button>
-
-          {/* 5. ĂN TỐI & TIỆC */}
-          <button
-            type="button"
-            onClick={() => handleTriggerScene('DINING')}
-            className={`p-3 border text-left transition-all rounded col-span-2 sm:col-span-1 ${
-              activeScene === 'DINING'
-                ? 'bg-[#1C2533] border-[#C5A880] text-white ring-1 ring-[#C5A880] shadow-md'
-                : 'bg-[#0D1117] border-[#222B35] text-gray-400 hover:border-gray-500 hover:text-white'
-            }`}
-          >
-            <div className="flex items-center justify-between">
-              <Sparkles className="w-4 h-4 text-emerald-400" />
-              {activeScene === 'DINING' && <CheckCircle2 className="w-3.5 h-3.5 text-[#C5A880]" />}
-            </div>
-            <div className="font-semibold text-xs text-white mt-2">Ăn Tối</div>
-            <div className="text-[10px] text-gray-400">Sáng bếp, mở rèm view phố</div>
           </button>
         </div>
       </div>
 
-      {/* ------------------------------------------------------------- */}
-      {/* 2. LẬP LỊCH & KỊCH BẢN TỰ ĐỘNG HÓA 24/7 (AUTOMATION RULES)    */}
-      {/* ------------------------------------------------------------- */}
-      <div className="p-4 sm:p-5 bg-[#121820] border border-[#222B35] space-y-4 rounded shadow-xl">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#222B35] pb-3">
-          <div>
-            <div className="text-xs uppercase tracking-wider text-[#C5A880] font-bold flex items-center gap-1.5">
-              <Clock className="w-4 h-4 text-[#C5A880]" /> Lập Lịch & Tự Động Hóa
-            </div>
-            <p className="text-[11px] text-gray-400 mt-0.5">
-              Tự động điều phối thiết bị theo khung giờ và cảm biến an toàn.
-            </p>
-          </div>
-          <span className="px-2.5 py-0.5 bg-emerald-950/80 border border-emerald-500 text-emerald-300 text-[10.5px] font-mono rounded self-start sm:self-auto">
-            {automationRules.filter(r => r.enabled).length}/{automationRules.length} Đang Bật
-          </span>
-        </div>
+      {/* 3. APP SEGMENTED TABS: 3 Luồng Điều Khiển Rõ Ràng */}
+      <div className="flex items-center gap-1.5 border-b border-[#2A374A] pb-1 overflow-x-auto">
+        <button
+          type="button"
+          onClick={() => setActiveTab('DEVICES')}
+          className={`px-4 py-2.5 text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-2 border-b-2 ${
+            activeTab === 'DEVICES'
+              ? 'border-[#C5A880] text-white bg-[#161D26]'
+              : 'border-transparent text-gray-400 hover:text-white'
+          }`}
+        >
+          <Cpu className="w-4 h-4 text-[#C5A880]" />
+          <span>Thiết Bị & Phòng</span>
+        </button>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-          {automationRules.map((rule) => {
-            const isRuleActive = rule.enabled;
-            return (
-              <div 
-                key={rule.id}
-                className={`p-3.5 border transition-all rounded flex flex-col justify-between gap-2.5 ${
-                  isRuleActive 
-                    ? 'bg-[#161D26] border-[#2D3A4B]' 
-                    : 'bg-[#0E131A] border-[#1C2533] opacity-60'
+        <button
+          type="button"
+          onClick={() => setActiveTab('DOOR_ACCESS')}
+          className={`px-4 py-2.5 text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-2 border-b-2 ${
+            activeTab === 'DOOR_ACCESS'
+              ? 'border-[#C5A880] text-white bg-[#161D26]'
+              : 'border-transparent text-gray-400 hover:text-white'
+          }`}
+        >
+          <DoorClosed className="w-4 h-4 text-cyan-400" />
+          <span>Cửa & Chuông Hình</span>
+          {!masterDoorLocked && <span className="w-2 h-2 rounded-full bg-amber-400 animate-ping ml-1" />}
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setActiveTab('AUTOMATION')}
+          className={`px-4 py-2.5 text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-2 border-b-2 ${
+            activeTab === 'AUTOMATION'
+              ? 'border-[#C5A880] text-white bg-[#161D26]'
+              : 'border-transparent text-gray-400 hover:text-white'
+          }`}
+        >
+          <Clock className="w-4 h-4 text-emerald-400" />
+          <span>Tự Động Hóa & An Toàn</span>
+          <span className="text-[10px] font-mono px-1.5 py-0.2 bg-emerald-950 text-emerald-300">
+            {automationRules.filter(r => r.enabled).length}/{automationRules.length}
+          </span>
+        </button>
+      </div>
+
+      {/* ============================================================= */}
+      {/* TAB 1: THIẾT BỊ THEO PHÒNG (DEVICES & ROOMS)                 */}
+      {/* ============================================================= */}
+      {activeTab === 'DEVICES' && (
+        <div className="space-y-4">
+          {/* Nút Toggle Bật/Tắt Chế Độ 3D Xoay Lật */}
+          <div className="flex items-center justify-between p-3 bg-[#121820] border border-[#222B35]">
+            <div className="text-xs text-gray-300 flex items-center gap-2">
+              <Layers className="w-4 h-4 text-[#C5A880]" />
+              <span>Chế độ hiển thị không gian căn hộ:</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => setIs3dMode(false)}
+                className={`px-3 py-1.5 text-xs font-bold transition-all ${
+                  !is3dMode ? 'bg-[#C5A880] text-[#0D1117]' : 'bg-[#0D1117] text-gray-400 hover:text-white'
                 }`}
               >
-                <div className="space-y-1.5">
-                  <div className="flex items-start justify-between gap-2">
-                    <div className="flex items-center gap-2">
-                      <div className={`w-7 h-7 rounded flex items-center justify-center text-xs font-bold ${
-                        rule.icon === 'sun' ? 'bg-amber-950/80 text-amber-400 border border-amber-500/40' :
-                        rule.icon === 'moon' ? 'bg-indigo-950/80 text-indigo-400 border border-indigo-500/40' :
-                        rule.icon === 'shield' ? 'bg-emerald-950/80 text-emerald-400 border border-emerald-500/40' :
-                        rule.icon === 'droplet' ? 'bg-blue-950/80 text-blue-400 border border-blue-500/40' :
-                        'bg-teal-950/80 text-teal-400 border border-teal-500/40'
-                      }`}>
-                        {rule.icon === 'sun' && <Sun className="w-3.5 h-3.5" />}
-                        {rule.icon === 'moon' && <Moon className="w-3.5 h-3.5" />}
-                        {rule.icon === 'shield' && <ShieldCheck className="w-3.5 h-3.5" />}
-                        {rule.icon === 'droplet' && <Droplets className="w-3.5 h-3.5" />}
-                        {rule.icon === 'wind' && <Wind className="w-3.5 h-3.5" />}
-                      </div>
-                      <div>
-                        <h4 className="font-semibold text-xs text-white leading-tight">{rule.title}</h4>
-                        <div className="text-[10px] text-[#C5A880] font-mono">{rule.triggerLabel}</div>
-                      </div>
-                    </div>
-
-                    {/* Toggle Switch */}
-                    <button
-                      type="button"
-                      onClick={() => handleToggleRule(rule.id)}
-                      className={`w-11 h-6 rounded-full transition-colors relative p-0.5 shrink-0 ${
-                        isRuleActive ? 'bg-emerald-600' : 'bg-gray-700'
-                      }`}
-                      title={isRuleActive ? 'Bấm để tạm dừng' : 'Bấm để kích hoạt'}
-                    >
-                      <div className={`w-5 h-5 rounded-full bg-white transition-transform ${isRuleActive ? 'translate-x-5' : 'translate-x-0'}`} />
-                    </button>
-                  </div>
-
-                  <p className="text-[11px] text-gray-300 leading-relaxed line-clamp-2">
-                    {rule.description}
-                  </p>
-                </div>
-
-                <div className="pt-2 border-t border-[#222B35] flex items-center justify-between text-[10px] font-mono text-gray-400">
-                  <span className="truncate max-w-[180px] text-gray-300">{rule.actionSummary}</span>
-                  <span className={isRuleActive ? 'text-emerald-400 font-bold' : 'text-gray-500'}>
-                    {isRuleActive ? 'BẬT' : 'TẮT'}
-                  </span>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* ============================================================= */}
-      {/* TRUNG TÂM CỬA THÔNG MINH - SINGLE UNIFIED COMMAND CENTER BOX */}
-      {/* ============================================================= */}
-      <div className="bg-[#121820] border border-[#2A374A] rounded-xl shadow-2xl overflow-hidden mt-6">
-        {/* 1. INTEGRATED BOX HEADER: Nhận diện & Trạng thái phần cứng */}
-        <div className="p-4 sm:p-5 bg-gradient-to-r from-[#161F2C] via-[#121820] to-[#161F2C] border-b border-[#2A374A] flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-          <div className="space-y-1">
-            <div className="text-[11px] uppercase tracking-[0.2em] text-[#C5A880] font-bold flex items-center gap-2">
-              <span className={`w-2.5 h-2.5 rounded-full ${masterDoorLocked ? 'bg-emerald-400 animate-pulse' : 'bg-amber-400 animate-ping'}`} />
-              <DoorClosed className="w-4 h-4 text-[#C5A880]" />
-              <span>Khóa Thông Minh</span>
-            </div>
-            <h3 className="text-lg sm:text-xl font-serif font-bold text-white flex items-center gap-2">
-              <span>Cửa Chính Căn Hộ {aptCode}</span>
-            </h3>
-            <p className="text-xs text-gray-400 flex flex-wrap items-center gap-2 font-mono">
-              <span>Khóa Skyline Smart Door</span>
-              <span className="text-gray-600">•</span>
-              <span className="text-emerald-400">Bảo mật đa tầng</span>
-              <span className="text-gray-600">•</span>
-              <span>FaceID 3D</span>
-            </p>
-          </div>
-
-          {/* Quick Hardware Status Indicators */}
-          <div className="flex flex-wrap items-center gap-2">
-            {/* Chốt Khóa */}
-            <div className={`h-8 px-3 rounded text-xs font-mono font-bold flex items-center gap-2 border ${
-              masterDoorLocked 
-                ? 'bg-emerald-950/80 text-emerald-300 border-emerald-500/40' 
-                : 'bg-amber-950/80 text-amber-300 border-amber-500/40 animate-pulse'
-            }`}>
-              {masterDoorLocked ? <Lock className="w-3.5 h-3.5" /> : <DoorOpen className="w-3.5 h-3.5" />}
-              <span>{masterDoorLocked ? 'CHỐT ĐANG KHÓA' : 'CHỐT ĐANG MỞ'}</span>
-            </div>
-
-            {/* Cảm biến cánh cửa */}
-            <div className={`h-8 px-3 rounded text-xs font-mono font-bold flex items-center gap-2 border ${
-              doorAjar 
-                ? 'bg-red-950/80 text-red-300 border-red-500/40 animate-bounce' 
-                : 'bg-[#0D1117] text-gray-300 border-[#2A374A]'
-            }`}>
-              {doorAjar ? <AlertTriangle className="w-3.5 h-3.5 text-red-400" /> : <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />}
-              <span>{doorAjar ? 'CÁNH HÉ MỞ' : 'CÁNH ĐÓNG KÍN'}</span>
-            </div>
-
-            {/* Pin Khóa */}
-            <div className="h-8 px-3 bg-[#0D1117] border border-[#2A374A] rounded text-xs flex items-center gap-1.5">
-              <BatteryCharging className="w-3.5 h-3.5 text-emerald-400" />
-              <span className="text-gray-400 text-[10px]">Pin:</span>
-              <span className="font-mono font-bold text-emerald-300 text-xs">{doorBatteryLevel}%</span>
-            </div>
-
-            {/* An ninh AI */}
-            <div className="h-8 px-3 bg-[#0D1117] border border-[#2A374A] rounded text-xs flex items-center gap-1.5">
-              <ShieldCheck className="w-3.5 h-3.5 text-[#C5A880]" />
-              <span className="font-mono font-bold text-[#C5A880] text-xs">24/7 BẢO VỆ</span>
+                Bảng Thẻ Nhanh
+              </button>
+              <button
+                type="button"
+                onClick={() => setIs3dMode(true)}
+                className={`px-3 py-1.5 text-xs font-bold transition-all flex items-center gap-1.5 ${
+                  is3dMode ? 'bg-[#C5A880] text-[#0D1117]' : 'bg-[#0D1117] text-gray-400 hover:text-white'
+                }`}
+              >
+                <Maximize2 className="w-3.5 h-3.5" /> Mô Hình 3D Xoay Lật
+              </button>
             </div>
           </div>
-        </div>
 
-        {/* 2. WORKFLOW SEGMENTED TABS: Phân định rõ từng luồng tương tác */}
-        <div className="px-4 sm:px-5 pt-3 bg-[#0D1219] border-b border-[#222B35] flex items-center justify-between gap-3 overflow-x-auto">
-          <div className="flex items-center gap-1 sm:gap-2">
-            {/* Luồng 1: Giám Sát Camera & Điều Khiển */}
-            <button
-              type="button"
-              onClick={() => setSmartDoorTab('LIVE_CONTROL')}
-              className={`px-3.5 py-2.5 text-xs font-bold uppercase tracking-wider rounded-t-lg transition-all flex items-center gap-2 border-t-2 ${
-                smartDoorTab === 'LIVE_CONTROL'
-                  ? 'bg-[#121820] text-white border-[#C5A880] shadow-md'
-                  : 'text-gray-400 hover:text-white border-transparent hover:bg-[#161D26]'
-              }`}
-            >
-              <Video className="w-4 h-4 text-[#C5A880]" />
-              <span>Camera & Khóa</span>
-              <span className="w-2 h-2 rounded-full bg-red-500 animate-ping ml-0.5" />
-            </button>
-
-            {/* Luồng 2: Quản Lý Phương Thức Ra Vào */}
-            <button
-              type="button"
-              onClick={() => setSmartDoorTab('CREDENTIALS')}
-              className={`px-3.5 py-2.5 text-xs font-bold uppercase tracking-wider rounded-t-lg transition-all flex items-center gap-2 border-t-2 ${
-                smartDoorTab === 'CREDENTIALS'
-                  ? 'bg-[#121820] text-white border-cyan-400 shadow-md'
-                  : 'text-gray-400 hover:text-white border-transparent hover:bg-[#161D26]'
-              }`}
-            >
-              <KeyRound className="w-4 h-4 text-cyan-400" />
-              <span>Phương Thức Ra Vào</span>
-              <span className={`px-1.5 py-0.2 text-[9px] font-mono rounded font-normal ${
-                isFaceApproved ? 'bg-emerald-950 text-emerald-300' : 'bg-gray-800 text-gray-400'
-              }`}>
-                {isFaceApproved ? 'FaceID Sẵn Sàng' : '3 Phương Thức'}
-              </span>
-            </button>
-
-            {/* Luồng 3: Nhật Ký Ra Vào */}
-            <button
-              type="button"
-              onClick={() => setSmartDoorTab('LOGS')}
-              className={`px-3.5 py-2.5 text-xs font-bold uppercase tracking-wider rounded-t-lg transition-all flex items-center gap-2 border-t-2 ${
-                smartDoorTab === 'LOGS'
-                  ? 'bg-[#121820] text-white border-indigo-400 shadow-md'
-                  : 'text-gray-400 hover:text-white border-transparent hover:bg-[#161D26]'
-              }`}
-            >
-              <History className="w-4 h-4 text-indigo-400" />
-              <span>Nhật Ký Ra Vào</span>
-              {doorAccessLogs.length > 0 && (
-                <span className="px-1.5 py-0.2 text-[9px] font-mono rounded bg-indigo-950 text-indigo-300 font-bold">
-                  {doorAccessLogs.length}
-                </span>
-              )}
-            </button>
-          </div>
-        </div>
-
-        {/* 3. WORKFLOW BODY: Toàn bộ nội dung tích hợp bên trong 1 Box duy nhất */}
-        <div className="p-5 sm:p-6 space-y-6">
-          {/* ========================================================= */}
-          {/* LUỒNG 1: GIÁM SÁT CAMERA & ĐIỀU KHIỂN CHỐT KHÓA TRỰC TIẾP */}
-          {/* ========================================================= */}
-          {smartDoorTab === 'LIVE_CONTROL' && (
-            <div className="space-y-5">
-
-              <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                {/* 1.1. Màn Hình Chuông Hình AI Góc Rộng (7 Cột) */}
-                <div className="lg:col-span-7 space-y-4">
-                  <div className="flex items-center justify-between pb-2 border-b border-[#222B35]/60">
-                    <div className="text-xs uppercase tracking-wider text-gray-300 font-bold flex items-center gap-2">
-                      <Video className="w-4 h-4 text-[#C5A880]" /> Chuông Hình Thông Minh AI (Video Doorbell)
-                    </div>
-                    <span className="flex items-center gap-1.5 text-[10px] text-red-400 font-mono font-bold">
-                      <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" /> LIVE 2K HDR
-                    </span>
-                  </div>
-
-                  {/* Camera Frame */}
-                  <div className={`relative aspect-[16/9] w-full bg-[#0A0E14] border-2 rounded-lg overflow-hidden flex flex-col justify-between p-3.5 transition-all select-none shadow-inner ${
-                    snapshotFlash ? 'brightness-200 duration-75' : 'duration-300'
-                  } ${isIntercomActive ? 'border-cyan-500 shadow-cyan-950/40 shadow-lg' : 'border-[#222B35]'}`}>
-                    {/* Simulated Hallway Background */}
-                    <div className="absolute inset-0 pointer-events-none opacity-40">
-                      <svg className="w-full h-full" viewBox="0 0 480 270" preserveAspectRatio="none">
-                        <polygon points="0,0 160,80 320,80 480,0" fill="#0E1624" />
-                        <polygon points="0,270 160,190 320,190 480,270" fill="#0A0F18" />
-                        <polygon points="0,0 160,80 160,190 0,270" fill="#111B2A" />
-                        <polygon points="480,0 320,80 320,190 480,270" fill="#111B2A" />
-                        <rect x="210" y="90" width="60" height="95" fill="#1B283A" stroke="#C5A880" strokeWidth="1" />
-                        <rect x="230" y="102" width="20" height="8" rx="2" fill="#C5A880" />
-                        <text x="240" y="108" fill="#0D1117" fontSize="5" fontWeight="bold" textAnchor="middle">{aptCode}</text>
-                        <circle cx="240" cy="140" r="45" stroke="#00FFFF" strokeWidth="0.5" strokeDasharray="3 3" fill="none" opacity="0.4" />
-                        <circle cx="240" cy="140" r="85" stroke="#00FFFF" strokeWidth="0.5" strokeDasharray="4 4" fill="none" opacity="0.2" />
-                      </svg>
-                    </div>
-
-                    {/* Top Screen HUD Overlay */}
-                    <div className="relative z-10 flex items-start justify-between text-[11px] font-mono text-gray-300">
-                      <div className="space-y-0.5">
-                        <div className="text-white font-bold flex items-center gap-1.5">
-                          <span className="w-2 h-2 rounded-full bg-red-500 animate-ping" />
-                          <span>CAM-01 • SẢNH CĂN HỘ {aptCode} (TẦNG {aptFloor})</span>
-                        </div>
-                        <div className="text-[10px] text-gray-400">GÓC SIÊU RỘNG 160° HDR • BAN ĐÊM HỒNG NGOẠI</div>
-                      </div>
-
-                      <div className="text-right space-y-0.5">
-                        <div className="text-emerald-400 font-bold">{cameraTime || '11:25:00.0'}</div>
-                        <div className="text-[10px] text-gray-400">AI MOTION: YÊN TĨNH</div>
-                      </div>
-                    </div>
-
-                    {/* Center HUD: AI Detection & Audio Wave Visualizer */}
-                    <div className="relative z-10 flex flex-col items-center justify-center space-y-2 pointer-events-none">
-                      {isIntercomActive && (
-                        <div className="p-2.5 bg-[#0D1117]/90 border border-cyan-500/70 rounded-lg flex items-center gap-3 animate-fadeIn shadow-lg">
-                          <div className="w-3 h-3 rounded-full bg-cyan-400 animate-pulse" />
-                          <span className="text-xs font-mono font-bold text-cyan-300">
-                            ĐANG KẾT NỐI ĐÀM THOẠI 2 CHIỀU...
-                          </span>
-                          <div className="flex items-center gap-1 h-4">
-                            <div className="w-1 bg-cyan-400 h-2 animate-bounce" />
-                            <div className="w-1 bg-cyan-400 h-4 animate-bounce" style={{ animationDelay: '0.15s' }} />
-                            <div className="w-1 bg-cyan-400 h-3 animate-bounce" style={{ animationDelay: '0.3s' }} />
-                            <div className="w-1 bg-cyan-400 h-4 animate-bounce" style={{ animationDelay: '0.2s' }} />
-                          </div>
-                        </div>
-                      )}
-
-                      <div className="w-16 h-16 border border-dashed border-cyan-500/30 rounded-lg flex items-center justify-center">
-                        <div className="w-2 h-2 rounded-full bg-cyan-400/60" />
-                      </div>
-                    </div>
-
-                    {/* Bottom Screen HUD Overlay */}
-                    <div className="relative z-10 flex items-center justify-between text-[10px] font-mono text-gray-400 bg-[#0D1117]/80 px-2 py-1 rounded border border-[#1F2937]/50 backdrop-blur-sm">
-                      <span className="text-emerald-400 flex items-center gap-1">
-                        <ShieldCheck className="w-3 h-3" /> HÌNH ẢNH BẢO MẬT RIÊNG TƯ
-                      </span>
-                      <span>ẢNH ĐÃ CHỤP: {snapshotCount}</span>
-                    </div>
-                  </div>
-
-                  {/* Camera Action Control Toolbar */}
-                  <div className="grid grid-cols-3 gap-2.5">
-                    <button
-                      type="button"
-                      onClick={handleToggleIntercom}
-                      className={`py-2.5 px-3 rounded-lg font-bold text-xs transition-all flex items-center justify-center gap-2 border ${
-                        isIntercomActive 
-                          ? 'bg-cyan-950 text-cyan-300 border-cyan-500 shadow-md shadow-cyan-900/30 ring-1 ring-cyan-500' 
-                          : 'bg-[#161D26] hover:bg-[#1F2937] text-gray-300 hover:text-white border-[#2A374A]'
-                      }`}
-                    >
-                      {isIntercomActive ? (
-                        <>
-                          <MicOff className="w-4 h-4 text-cyan-400 animate-pulse" /> Tắt Đàm Thoại
-                        </>
-                      ) : (
-                        <>
-                          <Mic className="w-4 h-4 text-cyan-400" /> Đàm Thoại
-                        </>
-                      )}
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={handleDoorbellUnlockForGuest}
-                      className="py-2.5 px-3 bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-500 hover:to-emerald-600 text-white font-bold text-xs rounded-lg transition-all flex items-center justify-center gap-2 shadow-md shadow-emerald-900/30"
-                    >
-                      <DoorOpen className="w-4 h-4" /> Mở Cửa
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={handleTakeSnapshot}
-                      className="py-2.5 px-3 bg-[#161D26] hover:bg-[#1F2937] border border-[#2A374A] text-gray-300 hover:text-white font-bold text-xs rounded-lg transition-colors flex items-center justify-center gap-2"
-                    >
-                      <Camera className="w-4 h-4 text-[#C5A880]" /> Chụp Ảnh
-                    </button>
-                  </div>
-                </div>
-
-                {/* 1.2. Bảng Điều Khiển Chốt Khóa 3 Tầng & Cảm Biến Cánh Cửa (5 Cột) */}
-                <div className="lg:col-span-5 space-y-4">
-                  <div className="flex items-center justify-between pb-2 border-b border-[#222B35]/60">
-                    <div className="text-xs uppercase tracking-wider text-gray-300 font-bold flex items-center gap-2">
-                      <Lock className="w-4 h-4 text-[#C5A880]" /> Điều Khiển Khóa & Cảm Biến
-                    </div>
-                    <span className={`px-2 py-0.5 text-[10px] font-mono font-bold uppercase rounded border ${
-                      masterDoorLocked 
-                        ? 'bg-emerald-950/80 text-emerald-300 border-emerald-500/50' 
-                        : 'bg-amber-950/80 text-amber-300 border-amber-500/50 animate-pulse'
-                    }`}>
-                      {masterDoorLocked ? 'CHỐT KHÓA' : 'CHỐT MỞ'}
-                    </span>
-                  </div>
-
-                  {/* Trực quan trạng thái chốt */}
-                  <div className="p-3.5 bg-[#0D1117] border border-[#1F2937] rounded-lg flex items-center gap-3.5">
-                    <div className={`w-14 h-14 rounded-full flex items-center justify-center shrink-0 transition-all shadow-lg ${
-                      masterDoorLocked 
-                        ? 'bg-gradient-to-br from-emerald-900 to-emerald-950 text-emerald-400 border-2 border-emerald-500 shadow-emerald-900/30' 
-                        : 'bg-gradient-to-br from-amber-600 to-red-700 text-white border-2 border-amber-400 shadow-amber-900/40 animate-pulse'
-                    }`}>
-                      {masterDoorLocked ? (
-                        <Lock className="w-7 h-7" />
-                      ) : (
-                        <DoorOpen className="w-7 h-7" />
-                      )}
-                    </div>
-
-                    <div className="space-y-0.5 flex-1">
-                      <div className="text-xs font-bold text-white">
-                        {masterDoorLocked ? 'Cửa Đã Khóa An Toàn' : 'Chốt Cửa Đang Mở'}
-                      </div>
-                      <div className="text-[10.5px] text-gray-400 leading-snug">
-                        {masterDoorLocked 
-                          ? 'Đã chốt an toàn đa tầng.'
-                          : doorAutoLock 
-                            ? 'Đang mở. Tự động khóa sau 5s.'
-                            : 'Đang mở (Chế độ thủ công).'}
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Cảm Biến Cánh Cửa Từ Tính */}
-                  <div className={`p-3 border rounded-lg transition-all flex items-center justify-between gap-2.5 ${
-                    doorAjar 
-                      ? 'bg-red-950/40 border-red-500 text-red-200 shadow-md shadow-red-950/30' 
-                      : 'bg-[#161D26] border-[#2A374A] text-gray-300'
-                  }`}>
-                    <div className="flex items-center gap-2.5">
-                      <div className={`w-7 h-7 rounded flex items-center justify-center shrink-0 font-bold ${
-                        doorAjar ? 'bg-red-900/80 text-red-300 animate-bounce' : 'bg-emerald-950/80 text-emerald-400'
-                      }`}>
-                        {doorAjar ? <AlertTriangle className="w-3.5 h-3.5" /> : <CheckCircle2 className="w-3.5 h-3.5" />}
-                      </div>
-                      <div>
-                        <div className="text-xs font-semibold text-white">
-                          {doorAjar ? 'Cảnh Báo: Cửa Đang Mở Hé' : 'Cửa Đang Đóng Kín'}
-                        </div>
-                        <div className="text-[9.5px] text-gray-400">
-                          {doorAjar ? 'Cửa chưa khép khít vào khuôn' : 'Cảm biến xác nhận khép kín'}
-                        </div>
-                      </div>
-                    </div>
-
-                    <button
-                      type="button"
-                      onClick={handleToggleDoorAjar}
-                      className="px-2.5 py-1 bg-[#222B35] hover:bg-[#2F3D4D] text-[10px] font-mono text-gray-300 hover:text-white rounded transition-colors shrink-0"
-                      title="Mô phỏng đóng hoặc mở hé cánh cửa vật lý"
-                    >
-                      {doorAjar ? 'Đóng Kín' : 'Mô Phỏng Hé'}
-                    </button>
-                  </div>
-
-                  {/* Nút bấm chính 1-chạm: MỞ / KHÓA CHỐT */}
-                  <button
-                    type="button"
-                    onClick={handleToggleDoor}
-                    className={`w-full py-3 px-4 font-bold text-xs tracking-wider uppercase rounded-lg transition-all flex items-center justify-center gap-2 shadow-lg ${
-                      masterDoorLocked 
-                        ? 'bg-gradient-to-r from-[#C5A880] to-[#E2D4BF] hover:from-[#d5b991] hover:to-white text-[#0D1117] shadow-[#C5A880]/20' 
-                        : 'bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white shadow-red-900/40'
-                    }`}
-                  >
-                    {masterDoorLocked ? (
-                      <>
-                        <DoorOpen className="w-4 h-4" /> Mở Chốt Khóa Cửa
-                      </>
-                    ) : (
-                      <>
-                        <Lock className="w-4 h-4" /> Khóa Chốt Ngay
-                      </>
-                    )}
-                  </button>
-
-                  {/* 3 Toggle Cài Đặt An Toàn */}
-                  <div className="space-y-2 pt-2 border-t border-[#222B35]">
-                    {/* Toggle 1: Tự động khóa sau 5s */}
-                    <div className="p-2 bg-[#0D1117] border border-[#222B35] rounded flex items-center justify-between">
-                      <div className="space-y-0.5">
-                        <div className="text-[11px] font-medium text-white flex items-center gap-1.5">
-                          <Clock className="w-3 h-3 text-[#C5A880]" /> Tự Động Khóa (5s)
-                        </div>
-                        <div className="text-[9.5px] text-gray-400">Tự gài chốt sau khi đóng cửa</div>
-                      </div>
-                      <button
-                        type="button"
-                        onClick={handleToggleAutoLock}
-                        className={`w-9 h-5 rounded-full transition-colors relative p-0.5 shrink-0 ${
-                          doorAutoLock ? 'bg-emerald-600' : 'bg-gray-700'
-                        }`}
-                      >
-                        <div className={`w-4 h-4 rounded-full bg-white transition-transform ${doorAutoLock ? 'translate-x-4' : 'translate-x-0'}`} />
-                      </button>
-                    </div>
-
-                    {/* Toggle 2: Chốt ban đêm */}
-                    <div className="p-2 bg-[#0D1117] border border-[#222B35] rounded flex items-center justify-between">
-                      <div className="space-y-0.5">
-                        <div className="text-[11px] font-medium text-white flex items-center gap-1.5">
-                          <Moon className="w-3 h-3 text-blue-400" /> Khóa Ban Đêm
-                        </div>
-                        <div className="text-[9.5px] text-gray-400">Chỉ mở được từ bên trong</div>
-                      </div>
-                      <button
-                        type="button"
-                        onClick={handleToggleNightLatch}
-                        className={`w-9 h-5 rounded-full transition-colors relative p-0.5 shrink-0 ${
-                          doorNightLatch ? 'bg-indigo-600' : 'bg-gray-700'
-                        }`}
-                      >
-                        <div className={`w-4 h-4 rounded-full bg-white transition-transform ${doorNightLatch ? 'translate-x-4' : 'translate-x-0'}`} />
-                      </button>
-                    </div>
-
-                    {/* Toggle 3: Còi chống cạy phá */}
-                    <div className="p-2 bg-[#0D1117] border border-[#222B35] rounded flex items-center justify-between">
-                      <div className="space-y-0.5">
-                        <div className="text-[11px] font-medium text-white flex items-center gap-1.5">
-                          <ShieldAlert className="w-3 h-3 text-red-400" /> Chống Cạy Cửa
-                        </div>
-                        <div className="text-[9.5px] text-gray-400">Báo động khi có va đập bất thường</div>
-                      </div>
-                      <button
-                        type="button"
-                        onClick={handleToggleAntiTamper}
-                        className={`w-9 h-5 rounded-full transition-colors relative p-0.5 shrink-0 ${
-                          doorAntiTamper ? 'bg-red-600' : 'bg-gray-700'
-                        }`}
-                      >
-                        <div className={`w-4 h-4 rounded-full bg-white transition-transform ${doorAntiTamper ? 'translate-x-4' : 'translate-x-0'}`} />
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Dải Gateway Chuyển Luồng Nhanh (Quick Workflow Navigator) */}
-              <div className="p-3.5 bg-[#0D1117] border border-[#222B35] rounded-lg flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
-                <div className="flex flex-wrap items-center gap-4 text-gray-300">
-                  <div className="flex items-center gap-1.5">
-                    <ScanFace className="w-3.5 h-3.5 text-cyan-400" />
-                    <span>FaceID:</span>
-                    <span className={`font-mono font-bold ${isFaceApproved ? 'text-emerald-400' : isFacePending ? 'text-amber-400' : 'text-gray-400'}`}>
-                      {isFaceApproved ? 'Đã kích hoạt' : isFacePending ? 'Chờ BQL duyệt' : 'Chưa đăng ký'}
-                    </span>
-                  </div>
-                  <span className="text-gray-700 hidden sm:inline">•</span>
-                  <div className="flex items-center gap-1.5">
-                    <KeyRound className="w-3.5 h-3.5 text-amber-400" />
-                    <span>Mã PIN Khách:</span>
-                    <span className="font-mono font-bold text-amber-300">{guestPins.length} đang hiệu lực</span>
-                  </div>
-                  <span className="text-gray-700 hidden sm:inline">•</span>
-                  <div className="flex items-center gap-1.5">
-                    <CreditCard className="w-3.5 h-3.5 text-blue-400" />
-                    <span>Thẻ NFC:</span>
-                    <span className="font-mono font-bold text-blue-300">{1 + familyMembers.length} thẻ</span>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-2 shrink-0">
-                  <button
-                    type="button"
-                    onClick={() => setSmartDoorTab('CREDENTIALS')}
-                    className="px-2.5 py-1 bg-[#161D26] hover:bg-[#222B35] border border-cyan-500/30 hover:border-cyan-500/60 text-cyan-300 rounded text-[11px] font-bold flex items-center gap-1 transition-colors"
-                  >
-                    <span>Quản Lý Phương Thức</span>
-                    <ArrowRight className="w-3 h-3" />
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setSmartDoorTab('LOGS')}
-                    className="px-2.5 py-1 bg-[#161D26] hover:bg-[#222B35] border border-indigo-500/30 hover:border-indigo-500/60 text-indigo-300 rounded text-[11px] font-bold flex items-center gap-1 transition-colors"
-                  >
-                    <span>Lịch Sử ({doorAccessLogs.length})</span>
-                    <ArrowRight className="w-3 h-3" />
-                  </button>
-                </div>
-              </div>
+          {/* Khi Bật Chế Độ 3D */}
+          {is3dMode && (
+            <div className="animate-fadeIn space-y-2">
+              <ApartmentModel3DViewer
+                apartmentCode={aptCode}
+                apartmentType={aptType}
+                clearArea={aptArea}
+                lights={lights}
+                acPower={acPower}
+                acTemp={acTemp}
+                curtainsOpen={curtainsOpen}
+                doorLocked={masterDoorLocked}
+                doorAjar={doorAjar}
+                waterLeakActive={waterLeakSensorActive}
+                onToggleLight={handleToggleLight}
+                onToggleDoor={handleToggleDoor}
+                onToggleDoorAjar={() => {}}
+                onToggleCurtains={handleToggleCurtains}
+                onToggleAC={handleToggleAC}
+                onChangeTemp={handleChangeTemp}
+                interactive={true}
+              />
             </div>
           )}
 
-          {/* ========================================================= */}
-          {/* LUỒNG 2: QUẢN LÝ PHƯƠNG THỨC XÁC THỰC RA VÀO              */}
-          {/* ========================================================= */}
-          {smartDoorTab === 'CREDENTIALS' && (
-            <div className="space-y-4">
-              <div className="flex items-center justify-between pb-2 border-b border-[#222B35]/60">
-                <div className="text-xs uppercase tracking-wider text-[#C5A880] font-bold flex items-center gap-2">
-                  <KeyRound className="w-4 h-4 text-cyan-400" /> 
-                  <span>Các Cách Mở Cửa Căn Hộ</span>
-                </div>
-                <div className="text-[11px] text-gray-400 font-mono">
-                  Bảo mật đa lớp an toàn
-                </div>
+          {/* Bảng Điều Khiển Nhanh Từng Phòng (Cards) */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* 1. PHÒNG KHÁCH */}
+            <div className="p-4 bg-[#121820] border border-[#222B35] space-y-3.5">
+              <div className="flex items-center justify-between border-b border-[#1C2533] pb-2">
+                <h3 className="font-bold text-sm text-white flex items-center gap-2">
+                  <Sun className="w-4 h-4 text-amber-400" /> Phòng Khách & Ban Công
+                </h3>
+                <span className="text-[10px] font-mono text-[#C5A880]">Khu Vực Chính</span>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {/* 2.1. Nhận Diện Khuôn Mặt */}
-                <div className="p-4 bg-[#161D26] border border-[#2A374A] rounded-lg space-y-3 flex flex-col justify-between">
-                  <div className="space-y-2.5">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <div className="w-8 h-8 rounded bg-cyan-950 border border-cyan-500/40 text-cyan-400 flex items-center justify-center shrink-0">
-                          <ScanFace className="w-4 h-4" />
-                        </div>
-                        <div className="text-xs font-bold text-white">Nhận Diện Khuôn Mặt</div>
-                      </div>
+              {/* Đèn Phòng Khách */}
+              <div className="flex items-center justify-between p-2.5 bg-[#0D1117] border border-[#1C2533]">
+                <div>
+                  <div className="text-xs font-bold text-white">Đèn Chùm Thông Minh</div>
+                  <div className="text-[10px] text-gray-400 font-mono">Dimmable 0 - 100%</div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => handleToggleLight('livingRoom')}
+                  className={`w-12 h-6 rounded-full transition-colors relative p-0.5 ${
+                    lights.livingRoom ? 'bg-amber-500' : 'bg-gray-700'
+                  }`}
+                >
+                  <div className={`w-5 h-5 rounded-full bg-white transition-transform ${lights.livingRoom ? 'translate-x-6' : 'translate-x-0'}`} />
+                </button>
+              </div>
 
-                      <span className={`px-2 py-0.5 text-[10px] font-mono rounded font-bold border ${
-                        isFaceApproved 
-                          ? 'bg-emerald-950 text-emerald-300 border-emerald-500/40'
-                          : isFacePending
-                            ? 'bg-amber-950 text-amber-300 border-amber-500/40'
-                            : 'bg-gray-800 text-gray-400 border-gray-600'
-                      }`}>
-                        {isFaceApproved ? 'ĐÃ KÍCH HOẠT' : isFacePending ? 'CHỜ DUYỆT' : 'CHƯA ĐĂNG KÝ'}
-                      </span>
-                    </div>
-
-                    <div className="text-[11px] text-gray-300 leading-relaxed">
-                      {hasFaceEnrolled 
-                        ? `${faceSamplesCount}/4 góc chụp khuôn mặt của ${currentUser.full_name} đã sẵn sàng.`
-                        : `Chưa đăng ký nhận diện khuôn mặt cho ${currentUser.full_name}. Quý cư dân vui lòng cập nhật tại mục Hồ Sơ.`}
-                    </div>
+              {/* Điều Hòa Daikin VRV */}
+              <div className="p-2.5 bg-[#0D1117] border border-[#1C2533] space-y-2">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <div className="text-xs font-bold text-white">Điều Hòa Daikin VRV-S Multi</div>
+                    <div className="text-[10px] text-sky-400 font-mono">Công nghệ lọc Ion Streamer 99%</div>
                   </div>
-
                   <button
                     type="button"
-                    onClick={handleSimulateFaceScan}
-                    disabled={isScanningFace || !isFaceApproved}
-                    className={`w-full py-2 px-3 border text-xs font-bold rounded transition-colors flex items-center justify-center gap-2 ${
-                      isFaceApproved 
-                        ? 'bg-[#0D1117] hover:bg-[#1A2332] border-cyan-500/40 text-cyan-300 hover:text-cyan-200'
-                        : 'bg-[#0D1117] border-gray-700 text-gray-500 cursor-not-allowed'
+                    onClick={handleToggleAC}
+                    className={`w-12 h-6 rounded-full transition-colors relative p-0.5 ${
+                      acPower ? 'bg-sky-500' : 'bg-gray-700'
                     }`}
                   >
-                    {isScanningFace ? (
-                      <>
-                        <RefreshCw className="w-3.5 h-3.5 animate-spin" /> Đang Quét Khuôn Mặt...
-                      </>
-                    ) : isFaceApproved ? (
-                      <>
-                        <Scan className="w-3.5 h-3.5 text-cyan-400" /> Mở Cửa Bằng Khuôn Mặt Ngay
-                      </>
-                    ) : isFacePending ? (
-                      <>
-                        <Clock className="w-3.5 h-3.5 text-amber-400" /> Hồ Sơ Đang Chờ Ban Quản Lý Duyệt
-                      </>
-                    ) : (
-                      <>
-                        <ScanFace className="w-3.5 h-3.5 text-gray-500" /> Chưa Đăng Ký Khuôn Mặt
-                      </>
-                    )}
+                    <div className={`w-5 h-5 rounded-full bg-white transition-transform ${acPower ? 'translate-x-6' : 'translate-x-0'}`} />
                   </button>
                 </div>
 
-                {/* 2.2. Mã Mở Cửa Cho Khách */}
-                <div className="p-4 bg-[#161D26] border border-[#2A374A] rounded-lg space-y-3 flex flex-col justify-between">
-                  <div className="space-y-2.5">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <div className="w-8 h-8 rounded bg-amber-950 border border-amber-500/40 text-amber-400 flex items-center justify-center shrink-0">
-                          <Clock className="w-4 h-4" />
-                        </div>
-                        <div className="text-xs font-bold text-white">Mã Mở Cửa Cho Khách</div>
-                      </div>
-
+                {acPower && (
+                  <div className="pt-2 flex items-center justify-between border-t border-[#1C2533]">
+                    <span className="text-xs text-gray-400">Nhiệt độ cài đặt:</span>
+                    <div className="flex items-center gap-3">
                       <button
                         type="button"
-                        onClick={() => setIsCreatingPin(prev => !prev)}
-                        className="px-2 py-1 bg-amber-500 hover:bg-amber-400 text-[#0D1117] text-[10px] font-bold uppercase rounded transition-colors flex items-center gap-1"
+                        onClick={() => handleChangeTemp(-1)}
+                        className="w-7 h-7 bg-[#1C2533] hover:bg-[#2A374A] text-white font-bold rounded flex items-center justify-center text-sm"
                       >
-                        <Plus className="w-3 h-3" /> {isCreatingPin ? 'Đóng' : 'Tạo Mới'}
+                        -
+                      </button>
+                      <span className="font-mono text-base font-bold text-sky-400">{acTemp}°C</span>
+                      <button
+                        type="button"
+                        onClick={() => handleChangeTemp(1)}
+                        className="w-7 h-7 bg-[#1C2533] hover:bg-[#2A374A] text-white font-bold rounded flex items-center justify-center text-sm"
+                      >
+                        +
                       </button>
                     </div>
-
-                    <div className="text-[11px] text-gray-300">
-                      Mã số tạm thời dùng 1 lần hoặc theo giờ dành cho người giao hàng, bạn bè tới thăm.
-                    </div>
                   </div>
+                )}
+              </div>
 
-                  <div className="text-[11px] font-mono text-amber-300/90">
-                    {guestPins.length > 0 ? `${guestPins.length} mã đang hiệu lực` : 'Chưa có mã nào'}
+              {/* Rèm Cửa Tự Động */}
+              <div className="flex items-center justify-between p-2.5 bg-[#0D1117] border border-[#1C2533]">
+                <div>
+                  <div className="text-xs font-bold text-white">Rèm Cửa Kính Panorama</div>
+                  <div className="text-[10px] text-gray-400 font-mono">
+                    {curtainsOpen ? 'Đang Mở 100%' : 'Đang Đóng Kín'}
                   </div>
                 </div>
+                <button
+                  type="button"
+                  onClick={handleToggleCurtains}
+                  className={`px-3 py-1 text-xs font-bold transition-all ${
+                    curtainsOpen ? 'bg-amber-500/20 border border-amber-500 text-amber-300' : 'bg-gray-800 text-gray-300'
+                  }`}
+                >
+                  {curtainsOpen ? 'Đóng Rèm' : 'Mở Rèm'}
+                </button>
+              </div>
+            </div>
 
-                {/* 2.3. Thẻ Cư Dân (Thẻ Từ) */}
-                <div className="p-4 bg-[#161D26] border border-[#2A374A] rounded-lg space-y-3 flex flex-col justify-between">
-                  <div className="space-y-2.5">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <div className="w-8 h-8 rounded bg-blue-950 border border-blue-500/40 text-blue-400 flex items-center justify-center shrink-0">
-                          <CreditCard className="w-4 h-4" />
-                        </div>
-                        <div className="text-xs font-bold text-white">Thẻ Cư Dân (Thẻ Từ)</div>
-                      </div>
+            {/* 2. PHÒNG NGỦ MASTER */}
+            <div className="p-4 bg-[#121820] border border-[#222B35] space-y-3.5">
+              <div className="flex items-center justify-between border-b border-[#1C2533] pb-2">
+                <h3 className="font-bold text-sm text-white flex items-center gap-2">
+                  <Moon className="w-4 h-4 text-indigo-400" /> Phòng Ngủ Master
+                </h3>
+                <span className="text-[10px] font-mono text-indigo-400">Không Gian Nghỉ Ngơi</span>
+              </div>
 
-                      <span className="px-2 py-0.5 bg-blue-950 text-blue-300 border border-blue-500/40 text-[10px] font-mono rounded font-bold">
-                        {residentCards.filter(c => c.status === 'ACTIVE').length}/{residentCards.length} THẺ HOẠT ĐỘNG
-                      </span>
-                    </div>
+              {/* Đèn Phòng Ngủ */}
+              <div className="flex items-center justify-between p-2.5 bg-[#0D1117] border border-[#1C2533]">
+                <div>
+                  <div className="text-xs font-bold text-white">Đèn Ngủ Ấm Áp</div>
+                  <div className="text-[10px] text-gray-400 font-mono">Ánh sáng vàng 2700K dịu mắt</div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => handleToggleLight('bedroomMaster')}
+                  className={`w-12 h-6 rounded-full transition-colors relative p-0.5 ${
+                    lights.bedroomMaster ? 'bg-indigo-500' : 'bg-gray-700'
+                  }`}
+                >
+                  <div className={`w-5 h-5 rounded-full bg-white transition-transform ${lights.bedroomMaster ? 'translate-x-6' : 'translate-x-0'}`} />
+                </button>
+              </div>
 
-                    <div className="text-[11px] text-gray-300 leading-relaxed">
-                      {familyMembers.length > 0 
-                        ? `Gồm 1 thẻ chính của Chủ hộ (${currentUser.full_name}) và ${familyMembers.length} thẻ cho người thân.`
-                        : `Gồm 1 thẻ chính của Chủ hộ (${currentUser.full_name}) chống sao chép an toàn.`}
-                    </div>
+              {/* Gian Bếp */}
+              <div className="flex items-center justify-between p-2.5 bg-[#0D1117] border border-[#1C2533]">
+                <div>
+                  <div className="text-xs font-bold text-white">Đèn Gian Bếp & Bàn Ăn</div>
+                  <div className="text-[10px] text-gray-400 font-mono">Bếp Hafele cảm ứng an toàn</div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => handleToggleLight('kitchen')}
+                  className={`w-12 h-6 rounded-full transition-colors relative p-0.5 ${
+                    lights.kitchen ? 'bg-amber-500' : 'bg-gray-700'
+                  }`}
+                >
+                  <div className={`w-5 h-5 rounded-full bg-white transition-transform ${lights.kitchen ? 'translate-x-6' : 'translate-x-0'}`} />
+                </button>
+              </div>
+
+              {/* Ban Công */}
+              <div className="flex items-center justify-between p-2.5 bg-[#0D1117] border border-[#1C2533]">
+                <div>
+                  <div className="text-xs font-bold text-white">Đèn Ban Công Sinh Thái</div>
+                  <div className="text-[10px] text-gray-400 font-mono">View công viên The Tropical</div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => handleToggleLight('balcony')}
+                  className={`w-12 h-6 rounded-full transition-colors relative p-0.5 ${
+                    lights.balcony ? 'bg-emerald-500' : 'bg-gray-700'
+                  }`}
+                >
+                  <div className={`w-5 h-5 rounded-full bg-white transition-transform ${lights.balcony ? 'translate-x-6' : 'translate-x-0'}`} />
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ============================================================= */}
+      {/* TAB 2: CỬA & CHUÔNG HÌNH THÔNG MINH (DOOR & ACCESS)           */}
+      {/* ============================================================= */}
+      {activeTab === 'DOOR_ACCESS' && (
+        <div className="space-y-4">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
+            {/* Cột Trái (7 Cột): Chuông Hình Live & Nút Mở Khóa */}
+            <div className="lg:col-span-7 space-y-4">
+              {/* Màn hình Chuông Hình Video AI */}
+              <div className="bg-[#0D1117] border border-[#222B35] p-3.5 space-y-3">
+                <div className="flex items-center justify-between">
+                  <div className="text-xs font-bold text-white flex items-center gap-2">
+                    <Video className="w-4 h-4 text-[#C5A880]" />
+                    <span>Chuông Hình Camera Ngoài Cửa</span>
+                    <span className="w-2 h-2 rounded-full bg-red-500 animate-ping" />
+                  </div>
+                  <span className="text-[10px] font-mono text-gray-400">{cameraTime}</span>
+                </div>
+
+                {/* Viewport Camera Góc Rộng Giả Lập */}
+                <div className="relative aspect-video bg-gradient-to-br from-[#121A24] via-[#0E151E] to-[#0A0E14] border border-[#2A374A] flex flex-col items-center justify-center overflow-hidden">
+                  <div className="absolute top-2.5 left-2.5 px-2 py-0.5 bg-black/70 text-[9px] font-mono text-emerald-400 border border-emerald-500/40">
+                    LIVE • SẢNH TẦNG 30 CHUNG CƯ BS-07
                   </div>
 
-                  <div className="text-[10px] text-gray-400 font-mono flex items-center justify-between">
-                    <span>Thẻ chip bảo mật cao</span>
-                    <span className="text-emerald-400 flex items-center gap-1">
-                      <Wifi className="w-3 h-3 rotate-90" /> Chạm là mở
+                  {isMotionAlertActive && (
+                    <div className="absolute top-2.5 right-2.5 px-2 py-0.5 bg-red-950/80 text-[9px] font-mono text-red-300 border border-red-500 animate-pulse">
+                      PHÁT HIỆN CHUYỂN ĐỘNG
+                    </div>
+                  )}
+
+                  {/* Minh họa người ngoài cửa */}
+                  <div className="flex flex-col items-center gap-1.5 opacity-80">
+                    <div className="w-16 h-16 rounded-full border-2 border-[#C5A880]/60 flex items-center justify-center bg-[#16202C]">
+                      <Video className="w-7 h-7 text-[#C5A880]" />
+                    </div>
+                    <span className="text-[11px] font-mono text-gray-300">
+                      {isIntercomActive ? '🎙️ Đang đàm thoại 2 chiều...' : 'Khu vực cửa chính an toàn'}
                     </span>
+                  </div>
+
+                  {/* 3 Nút Bấm Thao Tác Chuông Hình */}
+                  <div className="absolute bottom-2.5 inset-x-2.5 flex items-center justify-center gap-2">
+                    <button
+                      type="button"
+                      onClick={handleToggleIntercom}
+                      className={`px-3 py-1.5 text-xs font-bold transition-all flex items-center gap-1.5 ${
+                        isIntercomActive 
+                          ? 'bg-red-600 hover:bg-red-700 text-white animate-pulse' 
+                          : 'bg-[#1C2533] hover:bg-[#2A374A] text-white'
+                      }`}
+                    >
+                      {isIntercomActive ? <MicOff className="w-3.5 h-3.5" /> : <Mic className="w-3.5 h-3.5" />}
+                      <span>{isIntercomActive ? 'Ngắt Mic' : 'Đàm Thoại'}</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={handleSnapshot}
+                      className="px-3 py-1.5 bg-[#1C2533] hover:bg-[#2A374A] text-white text-xs font-bold transition-all flex items-center gap-1.5"
+                    >
+                      <Camera className="w-3.5 h-3.5 text-amber-400" />
+                      <span>Chụp Ảnh ({snapshotCount})</span>
+                    </button>
                   </div>
                 </div>
               </div>
 
-              {/* Form Tạo Mã PIN Mới (Nếu mở) */}
-              {isCreatingPin && (
-                <form onSubmit={handleCreatePin} className="p-4 bg-[#0D1117] border border-[#222B35] rounded-lg space-y-3 animate-fadeIn">
-                  <div className="text-xs font-bold text-amber-400 uppercase tracking-wider flex items-center gap-2">
-                    <KeyRound className="w-3.5 h-3.5" /> Thiết Lập Mã PIN Khách Tạm Thời
+              {/* Nút Lớn Điều Khiển Chốt Khóa 1-Chạm */}
+              <div className="p-4 bg-[#121820] border border-[#222B35] flex items-center justify-between gap-4">
+                <div className="space-y-0.5">
+                  <div className="text-xs font-bold text-white flex items-center gap-2">
+                    <DoorClosed className="w-4 h-4 text-[#C5A880]" />
+                    <span>Khóa Thông Minh Skyline FaceID v4.2</span>
                   </div>
+                  <div className="text-[11px] text-gray-400 font-mono">
+                    Pin khóa: <span className="text-emerald-400 font-bold">{doorBatteryLevel}%</span> • Tín hiệu: Sóng mạnh
+                  </div>
+                </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div>
-                      <label className="text-[10px] text-gray-400 uppercase font-semibold block mb-1">
-                        Ghi chú người dùng mã:
-                      </label>
-                      <input
-                        type="text"
-                        value={newPinLabel}
-                        onChange={(e) => setNewPinLabel(e.target.value)}
-                        placeholder="VD: Shipper Shopee, Bạn thân, v.v."
-                        className="w-full px-2.5 py-1.5 bg-[#161D26] border border-[#2A374A] text-white text-xs rounded focus:outline-none focus:border-[#C5A880]"
-                      />
+                <button
+                  type="button"
+                  onClick={handleToggleDoor}
+                  className={`px-5 py-2.5 text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-2 shadow-lg ${
+                    masterDoorLocked
+                      ? 'bg-emerald-600 hover:bg-emerald-500 text-white'
+                      : 'bg-amber-600 hover:bg-amber-500 text-white animate-pulse'
+                  }`}
+                >
+                  {masterDoorLocked ? <Lock className="w-4 h-4" /> : <DoorOpen className="w-4 h-4" />}
+                  <span>{masterDoorLocked ? 'Đang Khóa • Chạm Để Mở' : 'Đang Mở • Chạm Để Khóa'}</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Cột Phải (5 Cột): Mã PIN Khách Tức Thì (OTP) & Thẻ NFC */}
+            <div className="lg:col-span-5 space-y-4">
+              {/* Cấp mã PIN Khách 1-Chạm */}
+              <div className="p-4 bg-[#121820] border border-[#222B35] space-y-3">
+                <div className="flex items-center justify-between border-b border-[#1C2533] pb-2">
+                  <h3 className="font-bold text-xs uppercase tracking-wider text-white flex items-center gap-1.5">
+                    <KeyRound className="w-3.5 h-3.5 text-cyan-400" /> Cấp Mã Khách / Shipper (OTP)
+                  </h3>
+                  <span className="text-[9px] font-mono text-emerald-400">1-Chạm Tự Hủy</span>
+                </div>
+
+                {/* 3 Nút Chọn Nhanh Thời Lượng */}
+                <div className="grid grid-cols-3 gap-1.5">
+                  <button
+                    type="button"
+                    onClick={() => handleQuickCreatePin(15, 'Giao Hàng Shipper')}
+                    className="p-2 bg-[#0D1117] hover:bg-[#1C2533] border border-[#2A374A] text-left transition-all"
+                  >
+                    <div className="text-xs font-bold text-white">15 Phút</div>
+                    <div className="text-[9px] text-[#C5A880]">Shipper / Giao đồ</div>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => handleQuickCreatePin(60, 'Bạn Bè Viếng Thăm')}
+                    className="p-2 bg-[#0D1117] hover:bg-[#1C2533] border border-[#2A374A] text-left transition-all"
+                  >
+                    <div className="text-xs font-bold text-white">1 Giờ</div>
+                    <div className="text-[9px] text-cyan-400">Bạn bè ghé chơi</div>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => handleQuickCreatePin(1440, 'Khách Ở Lại Qua Đêm')}
+                    className="p-2 bg-[#0D1117] hover:bg-[#1C2533] border border-[#2A374A] text-left transition-all"
+                  >
+                    <div className="text-xs font-bold text-white">24 Giờ</div>
+                    <div className="text-[9px] text-indigo-400">Khách ở lại</div>
+                  </button>
+                </div>
+
+                {/* Danh sách mã PIN đang có hiệu lực */}
+                <div className="space-y-2 pt-1">
+                  <div className="text-[10px] text-gray-400 font-mono">Mã PIN đang hoạt động ({guestPins.length}):</div>
+                  {guestPins.length === 0 ? (
+                    <div className="p-3 text-center bg-[#0D1117] text-[11px] text-gray-500 font-mono border border-[#1C2533]">
+                      Chưa có mã PIN tạm thời nào. Bấm nút trên để tạo nhanh.
                     </div>
-
-                    <div>
-                      <label className="text-[10px] text-gray-400 uppercase font-semibold block mb-1">
-                        Thời hạn hiệu lực:
-                      </label>
-                      <div className="grid grid-cols-3 gap-1.5">
-                        <button
-                          type="button"
-                          onClick={() => setNewPinDuration(15)}
-                          className={`py-1.5 text-[10px] font-mono font-bold rounded border ${
-                            newPinDuration === 15 
-                              ? 'bg-amber-950 text-amber-300 border-amber-500' 
-                              : 'bg-[#161D26] text-gray-400 border-[#2A374A]'
-                          }`}
-                        >
-                          15 Phút
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => setNewPinDuration(60)}
-                          className={`py-1.5 text-[10px] font-mono font-bold rounded border ${
-                            newPinDuration === 60 
-                              ? 'bg-amber-950 text-amber-300 border-amber-500' 
-                              : 'bg-[#161D26] text-gray-400 border-[#2A374A]'
-                          }`}
-                        >
-                          1 Giờ
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => setNewPinDuration(1440)}
-                          className={`py-1.5 text-[10px] font-mono font-bold rounded border ${
-                            newPinDuration === 1440 
-                              ? 'bg-amber-950 text-amber-300 border-amber-500' 
-                              : 'bg-[#161D26] text-gray-400 border-[#2A374A]'
-                          }`}
-                        >
-                          24 Giờ
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="flex justify-end gap-2">
-                    <button
-                      type="button"
-                      onClick={() => setIsCreatingPin(false)}
-                      className="px-3 py-1.5 bg-[#161D26] hover:bg-[#222B35] text-gray-300 text-xs rounded transition-colors"
-                    >
-                      Hủy Bỏ
-                    </button>
-                    <button
-                      type="submit"
-                      className="px-4 py-1.5 bg-[#C5A880] hover:bg-[#d5b991] text-[#0D1117] text-xs font-bold uppercase rounded transition-colors"
-                    >
-                      Xác Nhận Tạo Mã PIN OTP
-                    </button>
-                  </div>
-                </form>
-              )}
-
-              {/* Danh Sách Mã PIN Đang Hoạt Động */}
-              {guestPins.length > 0 && (
-                <div className="space-y-2 pt-2">
-                  <div className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">
-                    Danh Sách Mã PIN Khách Đang Hiệu Lực ({guestPins.length}):
-                  </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5">
-                    {guestPins.map((item) => (
-                      <div 
-                        key={item.id}
-                        className="p-3 bg-[#0D1117] border border-[#222B35] rounded-lg flex items-center justify-between gap-2"
-                      >
-                        <div className="space-y-0.5">
-                          <div className="flex items-center gap-2">
-                            <span className="text-base font-mono font-bold text-amber-400 tracking-wider">
-                              {item.pin}
-                            </span>
-                            <span className="px-1.5 py-0.2 bg-amber-950/80 text-amber-300 border border-amber-500/40 text-[9px] font-mono rounded">
-                              OTP
-                            </span>
+                  ) : (
+                    guestPins.map(pin => (
+                      <div key={pin.id} className="p-2.5 bg-[#0D1117] border border-[#2A374A] flex items-center justify-between">
+                        <div>
+                          <div className="text-xs font-mono font-bold text-white flex items-center gap-2">
+                            <span className="text-amber-300 tracking-widest">{pin.pin}</span>
+                            <span className="text-[10px] font-sans text-gray-400">({pin.label})</span>
                           </div>
-                          <div className="text-[11px] text-gray-300 truncate max-w-[170px]">
-                            {item.label}
-                          </div>
-                          <div className="text-[9.5px] text-gray-500 font-mono">
-                            Hết hạn: {item.expiresAt}
+                          <div className="text-[9px] text-emerald-400 font-mono">
+                            Hết hạn: {new Date(pin.expiresAt).toLocaleTimeString('vi-VN', { hour12: false })}
                           </div>
                         </div>
 
-                        <div className="flex items-center gap-1">
+                        <div className="flex items-center gap-1.5">
                           <button
                             type="button"
-                            onClick={() => handleCopyPin(item.pin, item.id)}
-                            className="p-1.5 bg-[#161D26] hover:bg-[#222B35] text-gray-300 hover:text-white rounded border border-[#2A374A] transition-colors"
-                            title="Sao chép mã PIN"
+                            onClick={() => handleCopyPin(pin.pin, pin.id)}
+                            className="p-1.5 bg-[#1C2533] hover:bg-[#2A374A] text-gray-300 hover:text-white"
+                            title="Sao chép mã gửi khách"
                           >
-                            {copiedPinId === item.id ? (
-                              <Check className="w-3.5 h-3.5 text-emerald-400" />
-                            ) : (
-                              <Copy className="w-3.5 h-3.5" />
-                            )}
+                            <Copy className="w-3.5 h-3.5" />
                           </button>
                           <button
                             type="button"
-                            onClick={() => handleRevokePin(item.id)}
-                            className="p-1.5 bg-[#161D26] hover:bg-red-950 text-gray-400 hover:text-red-400 rounded border border-[#2A374A] hover:border-red-500/50 transition-colors"
-                            title="Thu hồi / Hủy mã"
+                            onClick={() => handleRevokePin(pin.id)}
+                            className="p-1.5 bg-red-950/60 hover:bg-red-900 border border-red-500/40 text-red-300"
+                            title="Hủy mã ngay"
                           >
                             <Trash2 className="w-3.5 h-3.5" />
                           </button>
                         </div>
                       </div>
-                    ))}
-                  </div>
+                    ))
+                  )}
                 </div>
-              )}
+              </div>
 
-              {/* Danh Sách Thẻ Cư Dân NFC Vật Lý Thực Tế */}
-              <div className="space-y-2.5 pt-3 border-t border-[#222B35]">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
-                  <div className="text-[11px] font-bold text-blue-400 uppercase tracking-wider flex items-center gap-2">
-                    <CreditCard className="w-4 h-4" />
-                    <span>Danh Sách Thẻ Cư Dân NFC Vật Lý ({residentCards.length} Thẻ - Chạm Để Mở Cửa):</span>
+              {/* Thẻ Cư Dân NFC Gia Đình */}
+              <div className="p-4 bg-[#121820] border border-[#222B35] space-y-2.5">
+                <div className="flex items-center justify-between border-b border-[#1C2533] pb-2">
+                  <h3 className="font-bold text-xs uppercase tracking-wider text-white flex items-center gap-1.5">
+                    <CreditCard className="w-3.5 h-3.5 text-emerald-400" /> Thẻ Cư Dân NFC Mifare EV3
+                  </h3>
+                  <span className="text-[10px] font-mono text-gray-400">{residentCards.length} Thẻ</span>
+                </div>
+
+                <div className="space-y-1.5 max-h-40 overflow-y-auto pr-1">
+                  {residentCards.map(card => (
+                    <div key={card.cardUid} className="p-2 bg-[#0D1117] border border-[#1C2533] flex items-center justify-between text-xs">
+                      <div>
+                        <div className="font-bold text-white flex items-center gap-1.5">
+                          <span>{card.holderName}</span>
+                          <span className="text-[9px] font-mono text-gray-400">({card.role})</span>
+                        </div>
+                        <div className="text-[10px] text-gray-500 font-mono">{card.cardUid}</div>
+                      </div>
+
+                      <div className="flex items-center gap-1.5">
+                        <button
+                          type="button"
+                          onClick={() => handleSimulateTapCard(card)}
+                          className="px-2 py-1 bg-[#1C2533] hover:bg-[#C5A880] hover:text-[#0D1117] text-[#C5A880] text-[10px] font-mono transition-all"
+                        >
+                          Quẹt Thử
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleToggleCardLock(card.cardUid, card.holderName)}
+                          className={`px-2 py-1 text-[10px] font-mono transition-all ${
+                            card.status === 'LOCKED' 
+                              ? 'bg-red-950 text-red-300 border border-red-500/40' 
+                              : 'bg-gray-800 text-gray-300 hover:text-white'
+                          }`}
+                        >
+                          {card.status === 'LOCKED' ? 'Bị Khóa' : 'Tạm Khóa'}
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Lịch Sử Ra Vào (Door Access Log Feed) */}
+          <div className="p-4 bg-[#121820] border border-[#222B35] space-y-3">
+            <div className="flex items-center justify-between border-b border-[#1C2533] pb-2">
+              <div className="flex items-center gap-2">
+                <History className="w-4 h-4 text-[#C5A880]" />
+                <h3 className="font-bold text-xs uppercase tracking-wider text-white">
+                  Nhật Ký Mở Cửa Căn Hộ Gần Đây
+                </h3>
+              </div>
+
+              {/* Lọc phương thức */}
+              <div className="flex items-center gap-1">
+                {(['ALL', 'FACE_ID', 'NFC_CARD', 'PIN_OTP'] as const).map(flt => (
+                  <button
+                    key={flt}
+                    type="button"
+                    onClick={() => setActiveLogFilter(flt)}
+                    className={`px-2 py-0.5 text-[9.5px] font-mono transition-all ${
+                      activeLogFilter === flt ? 'bg-[#C5A880] text-[#0D1117] font-bold' : 'text-gray-400 hover:text-white'
+                    }`}
+                  >
+                    {flt}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="space-y-1.5 max-h-48 overflow-y-auto pr-1">
+              {filteredLogs.slice(0, 8).map(log => (
+                <div key={log.id} className="p-2 bg-[#0D1117] border border-[#1C2533] flex items-center justify-between text-xs">
+                  <div className="space-y-0.5 truncate pr-2">
+                    <div className="flex items-center gap-2">
+                      <span className="font-bold text-white truncate">{log.userName}</span>
+                      <span className="text-[9px] font-mono px-1.5 py-0.2 bg-[#1C2533] text-gray-300">
+                        {log.method}
+                      </span>
+                    </div>
+                    <div className="text-[10px] text-gray-400 truncate">{log.detail}</div>
                   </div>
-                  <span className="text-[10px] text-gray-400 font-mono">
-                    * Bấm "Quẹt Thẻ Vào Khóa" để mở chốt cửa thực tế
+                  <span className="text-[10px] text-gray-500 font-mono whitespace-nowrap">
+                    {log.timestamp}
                   </span>
                 </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                  {residentCards.map((card) => {
-                    const isTapping = tappingCardUid === card.cardUid;
-                    const isActive = card.status === 'ACTIVE';
-
-                    return (
-                      <div 
-                        key={card.cardUid}
-                        className={`p-3.5 bg-[#0D1117] border rounded-lg space-y-3 transition-all ${
-                          isActive 
-                            ? 'border-[#222B35] hover:border-blue-500/50' 
-                            : 'border-red-900/60 bg-red-950/10'
-                        }`}
-                      >
-                        {/* Header của thẻ */}
-                        <div className="flex items-start justify-between gap-2">
-                          <div className="flex items-center gap-2">
-                            <div className="w-7 h-5 bg-gradient-to-tr from-amber-600 via-yellow-400 to-amber-300 rounded-none border border-amber-300 p-0.5 flex flex-col justify-between shadow-sm shrink-0">
-                              <div className="h-[1px] bg-amber-800/60 w-full" />
-                              <div className="h-[1px] bg-amber-800/60 w-full" />
-                            </div>
-                            <div>
-                              <div className="text-xs font-bold text-white flex items-center gap-1.5">
-                                <span>{card.holderName}</span>
-                                <span className="text-[9px] font-mono text-[#C5A880] font-normal">
-                                  ({card.role})
-                                </span>
-                              </div>
-                              <div className="text-[10px] font-mono text-gray-400">
-                                UID: <strong className="text-gray-200">{card.cardUid}</strong>
-                              </div>
-                            </div>
-                          </div>
-
-                          <span className={`px-2 py-0.5 text-[9px] font-mono font-bold rounded uppercase border ${
-                            isActive 
-                              ? 'bg-emerald-950 text-emerald-300 border-emerald-500/40' 
-                              : 'bg-red-950 text-red-300 border-red-500/40 animate-pulse'
-                          }`}>
-                            {isActive ? 'HOẠT ĐỘNG' : 'ĐÃ KHÓA'}
-                          </span>
-                        </div>
-
-                        {/* Thông số kỹ thuật của thẻ */}
-                        <div className="text-[10px] text-gray-400 font-mono flex items-center justify-between border-t border-[#1C2533] pt-2">
-                          <span>Chip: Mifare EV3</span>
-                          <span>{card.lastUsed ? `Dùng: ${card.lastUsed}` : 'Chưa quẹt'}</span>
-                        </div>
-
-                        {/* Thao tác: Quẹt thẻ & Khóa thẻ */}
-                        <div className="grid grid-cols-2 gap-2 pt-1">
-                          <button
-                            type="button"
-                            onClick={() => handleSimulateTapCard(card)}
-                            disabled={isTapping}
-                            className={`py-1.5 px-2 text-xs font-bold uppercase rounded transition-all flex items-center justify-center gap-1.5 shadow ${
-                              isTapping 
-                                ? 'bg-blue-600 text-white animate-pulse' 
-                                : isActive
-                                  ? 'bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-500 hover:to-blue-600 text-white shadow-blue-950/40'
-                                  : 'bg-gray-800 text-gray-400 hover:text-white'
-                            }`}
-                            title="Chạm thẻ vật lý vào đầu đọc của khóa cửa"
-                          >
-                            <Wifi className="w-3.5 h-3.5 rotate-90" />
-                            <span>{isTapping ? 'Đang Quẹt...' : 'Quẹt Thẻ Vào Khóa'}</span>
-                          </button>
-
-                          <button
-                            type="button"
-                            onClick={() => handleToggleCardLock(card.cardUid, card.holderName)}
-                            className={`py-1.5 px-2 text-xs font-mono font-semibold rounded border transition-colors flex items-center justify-center gap-1.5 ${
-                              isActive 
-                                ? 'bg-[#161D26] hover:bg-red-950/60 text-gray-300 hover:text-red-300 border-[#2A374A] hover:border-red-500/50' 
-                                : 'bg-red-950 text-red-200 border-red-500 hover:bg-emerald-950 hover:text-emerald-300 hover:border-emerald-500'
-                            }`}
-                            title={isActive ? 'Tạm khóa thẻ khi làm rơi để chống kẻ gian mở cửa' : 'Mở khóa lại thẻ sau khi tìm thấy'}
-                          >
-                            {isActive ? (
-                              <>
-                                <Lock className="w-3.5 h-3.5 text-gray-400" /> Tạm Khóa
-                              </>
-                            ) : (
-                              <>
-                                <Check className="w-3.5 h-3.5 text-emerald-400" /> Mở Khóa Thẻ
-                              </>
-                            )}
-                          </button>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
+              ))}
             </div>
-          )}
-
-          {/* ========================================================= */}
-          {/* LUỒNG 3: NHẬT KÝ RA VÀO THỜI GIAN THỰC                     */}
-          {/* ========================================================= */}
-          {smartDoorTab === 'LOGS' && (
-            <div className="space-y-4">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-2 border-b border-[#222B35]/60">
-                <div className="text-xs uppercase tracking-wider text-[#C5A880] font-bold flex items-center gap-2">
-                  <History className="w-4 h-4 text-indigo-400" /> 
-                  <span>Luồng 3: Nhật Ký Ra Vào Cửa Thời Gian Thực (Access Activity Logs)</span>
-                </div>
-
-                {/* Filter Tabs */}
-                <div className="flex items-center gap-1 overflow-x-auto pb-1 sm:pb-0">
-                  <button
-                    type="button"
-                    onClick={() => setActiveLogFilter('ALL')}
-                    className={`px-2 py-1 text-[10px] font-mono rounded font-bold transition-colors ${
-                      activeLogFilter === 'ALL' 
-                        ? 'bg-[#C5A880] text-[#0D1117]' 
-                        : 'bg-[#161D26] text-gray-400 hover:text-white'
-                    }`}
-                  >
-                    Tất Cả ({doorAccessLogs.length})
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setActiveLogFilter('FACE_ID')}
-                    className={`px-2 py-1 text-[10px] font-mono rounded font-bold transition-colors ${
-                      activeLogFilter === 'FACE_ID' 
-                        ? 'bg-cyan-600 text-white' 
-                        : 'bg-[#161D26] text-gray-400 hover:text-white'
-                    }`}
-                  >
-                    FaceID
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setActiveLogFilter('PIN_OTP')}
-                    className={`px-2 py-1 text-[10px] font-mono rounded font-bold transition-colors ${
-                      activeLogFilter === 'PIN_OTP' 
-                        ? 'bg-amber-600 text-white' 
-                        : 'bg-[#161D26] text-gray-400 hover:text-white'
-                    }`}
-                  >
-                    Mã PIN
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setActiveLogFilter('NFC_CARD')}
-                    className={`px-2 py-1 text-[10px] font-mono rounded font-bold transition-colors ${
-                      activeLogFilter === 'NFC_CARD' 
-                        ? 'bg-blue-600 text-white' 
-                        : 'bg-[#161D26] text-gray-400 hover:text-white'
-                    }`}
-                  >
-                    Thẻ NFC
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setActiveLogFilter('AUTO_LOCK')}
-                    className={`px-2 py-1 text-[10px] font-mono rounded font-bold transition-colors ${
-                      activeLogFilter === 'AUTO_LOCK' 
-                        ? 'bg-emerald-600 text-white' 
-                        : 'bg-[#161D26] text-gray-400 hover:text-white'
-                    }`}
-                  >
-                    Tự Khóa
-                  </button>
-                </div>
-              </div>
-
-              {/* Timeline Items */}
-              <div className="space-y-2.5 max-h-[360px] overflow-y-auto pr-1">
-                {doorAccessLogs.filter(item => activeLogFilter === 'ALL' || item.method === activeLogFilter).length === 0 ? (
-                  <div className="p-8 text-center bg-[#0D1117] border border-[#222B35] rounded-lg space-y-2 animate-fadeIn">
-                    <div className="w-10 h-10 rounded-full bg-[#161D26] border border-[#2A374A] flex items-center justify-center mx-auto text-gray-400">
-                      <History className="w-5 h-5 text-[#C5A880]" />
-                    </div>
-                    <div className="text-xs font-bold text-white">Chưa có nhật ký ra vào nào</div>
-                    <div className="text-[11px] text-gray-400 max-w-sm mx-auto leading-relaxed">
-                      Nhật ký sẽ tự động ghi lại mỗi khi cư dân mở chốt khóa, quét FaceID, sử dụng mã OTP khách hoặc khi hệ thống tự động khóa an toàn.
-                    </div>
-                  </div>
-                ) : (
-                  doorAccessLogs
-                    .filter(item => activeLogFilter === 'ALL' || item.method === activeLogFilter)
-                    .map((log) => {
-                    const isSuccess = log.status === 'SUCCESS';
-                    return (
-                      <div 
-                        key={log.id}
-                        className="p-3 bg-[#0D1117] border border-[#222B35] rounded-lg transition-all hover:border-[#2F3D4D] space-y-1.5"
-                      >
-                        <div className="flex items-start justify-between gap-2">
-                          <div className="flex items-center gap-2">
-                            {/* Method Icon Badge */}
-                            <div className={`w-6 h-6 rounded flex items-center justify-center shrink-0 text-xs ${
-                              log.method === 'FACE_ID' ? 'bg-cyan-950 text-cyan-400 border border-cyan-500/40' :
-                              log.method === 'PIN_OTP' ? 'bg-amber-950 text-amber-400 border border-amber-500/40' :
-                              log.method === 'NFC_CARD' ? 'bg-blue-950 text-blue-400 border border-blue-500/40' :
-                              log.method === 'AUTO_LOCK' ? 'bg-emerald-950 text-emerald-400 border border-emerald-500/40' :
-                              'bg-purple-950 text-purple-400 border border-purple-500/40'
-                            }`}>
-                              {log.method === 'FACE_ID' && <ScanFace className="w-3.5 h-3.5" />}
-                              {log.method === 'PIN_OTP' && <KeyRound className="w-3.5 h-3.5" />}
-                              {log.method === 'NFC_CARD' && <CreditCard className="w-3.5 h-3.5" />}
-                              {log.method === 'AUTO_LOCK' && <Lock className="w-3.5 h-3.5" />}
-                              {log.method === 'REMOTE_APP' && <Shield className="w-3.5 h-3.5" />}
-                            </div>
-
-                            <div>
-                              <div className="text-xs font-bold text-white flex items-center gap-1.5">
-                                <span>{log.userName}</span>
-                                <span className="text-[10px] text-gray-400 font-normal">({log.role})</span>
-                              </div>
-                              <div className="text-[9.5px] font-mono text-gray-500">
-                                {log.timestamp}
-                              </div>
-                            </div>
-                          </div>
-
-                          <span className={`px-2 py-0.5 text-[9px] font-mono font-bold rounded uppercase border ${
-                            isSuccess 
-                              ? 'bg-emerald-950 text-emerald-300 border-emerald-500/40' 
-                              : 'bg-red-950 text-red-300 border-red-500/40'
-                          }`}>
-                            {isSuccess ? '✓ THÀNH CÔNG' : '✕ TỪ CHỐI'}
-                          </span>
-                        </div>
-
-                        <p className="text-[11px] text-gray-300 pl-8 leading-relaxed">
-                          {log.detail}
-                        </p>
-                      </div>
-                    );
-                  })
-                )}
-              </div>
-            </div>
-          )}
+          </div>
         </div>
-      </div>
+      )}
 
       {/* ============================================================= */}
-      {/* 3D FACEID SCANNER HUD SIMULATION MODAL                         */}
+      {/* TAB 3: TỰ ĐỘNG HÓA & AN TOÀN (AUTOMATIONS & SAFETY)          */}
       {/* ============================================================= */}
-      {isScanningFace && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md animate-fadeIn">
-          <div className="p-6 bg-[#0E1520] border-2 border-cyan-500 rounded-xl shadow-2xl max-w-md w-full mx-4 text-center space-y-4">
-            <div className="text-xs uppercase tracking-[0.25em] text-cyan-400 font-mono font-bold flex items-center justify-center gap-2">
-              <ScanFace className="w-4 h-4 animate-spin" /> SKYLINE BIOMETRIC AI VISION SCANNER
-            </div>
-
-            {/* Target Crosshairs & 3D Laser Beam */}
-            <div className="relative w-48 h-48 mx-auto border-2 border-dashed border-cyan-500/50 rounded-full flex items-center justify-center overflow-hidden bg-cyan-950/20 shadow-lg shadow-cyan-500/20">
-              <div className="w-36 h-36 rounded-full border border-cyan-400/40 flex items-center justify-center">
-                <ScanFace className="w-20 h-20 text-cyan-300 animate-pulse" />
-              </div>
-
-              {/* Laser Scanning Beam */}
+      {activeTab === 'AUTOMATION' && (
+        <div className="space-y-4">
+          {/* Danh Sách Kịch Bản Tự Động Hóa 24/7 */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+            {automationRules.map(rule => (
               <div 
-                className="absolute inset-x-0 h-1 bg-gradient-to-r from-transparent via-cyan-400 to-transparent shadow-[0_0_15px_#22d3ee] transition-all duration-300"
-                style={{ top: `${faceScanProgress}%` }}
-              />
+                key={rule.id}
+                className={`p-3.5 border transition-all flex flex-col justify-between gap-2.5 ${
+                  rule.enabled ? 'bg-[#121820] border-[#2A374A]' : 'bg-[#0E131A] border-[#1C2533] opacity-60'
+                }`}
+              >
+                <div className="space-y-1">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-bold text-white">{rule.title}</span>
+                    <button
+                      type="button"
+                      onClick={() => handleToggleRule(rule.id)}
+                      className={`w-10 h-5 rounded-full transition-colors relative p-0.5 shrink-0 ${
+                        rule.enabled ? 'bg-emerald-600' : 'bg-gray-700'
+                      }`}
+                    >
+                      <div className={`w-4 h-4 rounded-full bg-white transition-transform ${rule.enabled ? 'translate-x-5' : 'translate-x-0'}`} />
+                    </button>
+                  </div>
+                  <div className="text-[10px] text-[#C5A880] font-mono">{rule.triggerLabel}</div>
+                  <p className="text-[11px] text-gray-400 line-clamp-2">{rule.description}</p>
+                </div>
 
-              {/* 4 Corner Markers */}
-              <div className="absolute top-2 left-2 w-4 h-4 border-t-2 border-l-2 border-cyan-400" />
-              <div className="absolute top-2 right-2 w-4 h-4 border-t-2 border-r-2 border-cyan-400" />
-              <div className="absolute bottom-2 left-2 w-4 h-4 border-b-2 border-l-2 border-cyan-400" />
-              <div className="absolute bottom-2 right-2 w-4 h-4 border-b-2 border-r-2 border-cyan-400" />
+                <div className="pt-2 border-t border-[#1C2533] flex items-center justify-between text-[10px] font-mono text-gray-400">
+                  <span className="truncate max-w-[170px]">{rule.actionSummary}</span>
+                  <span className={rule.enabled ? 'text-emerald-400 font-bold' : 'text-gray-500'}>
+                    {rule.enabled ? 'BẬT' : 'TẮT'}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Cảm Biến An Toàn & Ngắt Van Nước Tự Động */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="p-4 bg-[#121820] border border-[#222B35] space-y-2">
+              <h4 className="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-2 text-sky-400">
+                <Droplets className="w-4 h-4 text-sky-400" />
+                Cảm Biến Tràn Nước & Van Điện Từ
+              </h4>
+              <p className="text-xs text-gray-300 font-light leading-relaxed">
+                Được lắp đặt tại sàn bếp và phòng tắm căn hộ CH-06. Khi phát hiện rò rỉ nước, hệ thống tự động phát còi báo và đóng van cấp nước tổng hành lang trong 3 giây.
+              </p>
+              <div className="pt-2 flex items-center justify-between text-xs font-mono">
+                <span className="text-emerald-400 font-bold">✓ Van Nước: Đang Mở Bình Thường</span>
+                <span className="text-gray-500">Cảm biến AI 24/7</span>
+              </div>
             </div>
 
-            {/* Progress & Verification Status */}
-            <div className="space-y-2">
-              <div className="text-sm font-bold text-white">
-                {faceScanSuccess 
-                  ? '✓ XÁC THỰC THÀNH CÔNG!' 
-                  : `Đang quét nhận diện khuôn mặt 3D AI (${faceScanProgress}%)...`}
-              </div>
-              <div className="w-full bg-[#16202E] h-2 rounded-full overflow-hidden border border-[#2A374A]">
-                <div 
-                  className="h-full bg-gradient-to-r from-cyan-500 to-emerald-400 transition-all duration-300"
-                  style={{ width: `${faceScanProgress}%` }}
-                />
-              </div>
-              <div className="text-[11px] font-mono text-cyan-300">
-                {faceScanSuccess 
-                  ? `Khớp 99.4% • Cư Dân: ${currentUser.full_name || 'Lê Văn An'} (Chủ Hộ)`
-                  : 'Đối soát 4 góc quét AI (Chính diện, Nghiêng trái, Nghiêng phải, Cười)'}
+            <div className="p-4 bg-[#121820] border border-[#222B35] space-y-2">
+              <h4 className="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-2 text-amber-400">
+                <Flame className="w-4 h-4 text-amber-400" />
+                Đầu Báo Khói & Báo Cháy PCCC
+              </h4>
+              <p className="text-xs text-gray-300 font-light leading-relaxed">
+                Kết nối trực tiếp với Trung tâm Điều hành An Ninh PCCC chung cư The Tropical. Khi có báo động, còi báo tầng 30 sẽ kích hoạt và chỉ dẫn cư dân ra thang bộ thoát hiểm.
+              </p>
+              <div className="pt-2 flex items-center justify-between text-xs font-mono">
+                <span className="text-emerald-400 font-bold">✓ PCCC: Kết Nối BQL Chuẩn 100%</span>
+                <span className="text-gray-500">Thang bộ tầng 30</span>
               </div>
             </div>
           </div>
         </div>
       )}
     </div>
-  );
-}
-
-// Icon trợ giúp thẻ tín dụng / NFC nếu lucide không có sẵn CreditCardIcon
-function CreditCardIcon(props: React.SVGProps<SVGSVGElement>) {
-  return (
-    <svg 
-      {...props} 
-      viewBox="0 0 24 24" 
-      fill="none" 
-      stroke="currentColor" 
-      strokeWidth="2" 
-      strokeLinecap="round" 
-      strokeLinejoin="round"
-    >
-      <rect width="20" height="14" x="2" y="5" rx="2" />
-      <line x1="2" x2="22" y1="10" y2="10" />
-    </svg>
   );
 }

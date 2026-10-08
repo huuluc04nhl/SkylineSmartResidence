@@ -40,6 +40,7 @@ import FamilyMembers from '@/components/portal/resident/FamilyMembers';
 import VisitorQrModal from '@/components/portal/resident/VisitorQrModal';
 import AiConciergePage from '@/components/portal/resident/AiConciergePage';
 import ResidentServices from '@/components/portal/resident/ResidentServices';
+import ResidentHandbook from '@/components/portal/resident/ResidentHandbook';
 
 // Floating Luxury AI Concierge Widget
 import AiConciergeFloating from '@/components/portal/shared/AiConciergeFloating';
@@ -230,6 +231,12 @@ function PortalContent() {
                 )}
                 {activeModule === 'resident-profile' && <ProfileEkyc currentUser={currentUser} />}
                 {activeModule === 'resident-smarthome' && <SmartHomeHub currentUser={currentUser} />}
+                {activeModule === 'resident-handbook' && (
+                  <ResidentHandbook 
+                    currentUser={currentUser} 
+                    onNavigate={(modId) => handleSelectModule(modId)} 
+                  />
+                )}
                 {activeModule === 'resident-facilities' && (
                   <SmartFacilityPass 
                     currentUser={currentUser} 

@@ -263,7 +263,7 @@ export default function AiConciergeFloating({
       text: `Kính chào Quý cư dân **${residentName}** (Căn **${aptCode}** - Tòa The Tropical BS-07, Tầng 30)! 
 
 Tôi là **Trợ lý ảo Skyline**, luôn đồng hành và hỗ trợ Quý vị 24/7 tại Khu Phức Hợp The Tropical (Beverly Solari):
-* 🏢 **Tra cứu căn hộ & quy mô tòa nhà:** Thông tin 4 tòa tháp BS-07 (34 tầng), BS-08 (39 tầng), BS-09 (34 tầng), BS-10 (34 tầng).
+* 🏢 **Tra cứu căn hộ & quy mô tòa nhà:** Thông tin 4 chung cư BS-07 (34 tầng), BS-08 (39 tầng), BS-09 (34 tầng), BS-10 (34 tầng).
 * 🍽️ **Dịch vụ tiện ích 5 sao:** Giờ mở cửa Cụm Bể bơi Resort, Nhà hàng ẩm thực tầng 1, Gym 24/7 & Phòng xông hơi VIP.
 * 💳 **Hóa đơn & Biểu phí:** Tra cứu tiền điện, nước, phí quản lý & tiền gửi xe định kỳ.
 * 🛠️ **Hỗ trợ kỹ thuật NKS:** Tiếp nhận sự cố với KTV túc trực có mặt trong 15 - 60 phút.
