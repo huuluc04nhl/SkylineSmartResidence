@@ -45,7 +45,6 @@ export default function Footer() {
               <li><a href="#concept" className={`transition-colors ${isDark ? 'hover:text-[#C5A880]' : 'hover:text-[#9E8057]'}`}>Triết lý thiết kế</a></li>
               <li><a href="#floorplans" className={`transition-colors ${isDark ? 'hover:text-[#C5A880]' : 'hover:text-[#9E8057]'}`}>Mặt bằng căn hộ</a></li>
               <li><a href="#amenities" className={`transition-colors ${isDark ? 'hover:text-[#C5A880]' : 'hover:text-[#9E8057]'}`}>Tiện ích đặc quyền</a></li>
-              <li><a href="#services" className={`transition-colors ${isDark ? 'hover:text-[#C5A880]' : 'hover:text-[#9E8057]'}`}>Dịch vụ quản gia 5 sao</a></li>
               <li><a href="#smart-tech" className={`transition-colors ${isDark ? 'hover:text-[#C5A880]' : 'hover:text-[#9E8057]'}`}>Công nghệ thông minh</a></li>
             </ul>
           </div>
