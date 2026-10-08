@@ -183,7 +183,7 @@ export interface SecurityAlert {
 export interface Facility {
   id: string;
   name: string;
-  category: 'Gym' | 'BBQ' | 'Hồ bơi' | 'Sân Tennis' | 'Phòng sinh hoạt' | 'Xông hơi' | 'Khu trẻ em';
+  category: 'Gym' | 'BBQ' | 'Hồ bơi' | 'Sân Tennis' | 'Phòng sinh hoạt' | 'Xông hơi' | 'Khu trẻ em' | 'Nhà hàng' | 'Công viên' | string;
   max_quota_per_month: number;
   hero_image_url: string;
   rating_score: number; // 5.0
@@ -940,6 +940,30 @@ export const DEMO_FACILITIES: Facility[] = [
     pricing: '600.000 đ / ca (Bao gồm set bếp Weber & dọn dẹp)',
     current_occupancy: 2,
     max_capacity: 6,
+  },
+  {
+    id: 'fac-restaurant',
+    name: 'Nhà Hàng Ẩm Thực Skyline (Tầng 1 - Sảnh The Tropical BS-07)',
+    category: 'Nhà hàng',
+    max_quota_per_month: 50,
+    hero_image_url: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=800&auto=format&fit=crop&q=80',
+    rating_score: 4.9,
+    operating_hours: '06:30 - 22:30',
+    pricing: 'Phục vụ cư dân & Khách theo thực đơn (Ưu đãi 10% thẻ cư dân)',
+    current_occupancy: 22,
+    max_capacity: 80,
+  },
+  {
+    id: 'fac-resort-pool',
+    name: 'Bể Bơi Nhiệt Đới & Bể Bơi Ốc Đảo Resort (Nội Khu The Tropical)',
+    category: 'Hồ bơi',
+    max_quota_per_month: 30,
+    hero_image_url: 'https://images.unsplash.com/photo-1576013551627-0cc20b96c2a7?w=800&auto=format&fit=crop&q=80',
+    rating_score: 5.0,
+    operating_hours: '06:00 - 22:00',
+    pricing: 'Miễn phí theo Thẻ cư dân (Vào tự do FaceID / Thẻ)',
+    current_occupancy: 18,
+    max_capacity: 60,
   },
 ];
 

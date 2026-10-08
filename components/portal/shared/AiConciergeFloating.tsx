@@ -100,14 +100,17 @@ function getDynamicSuggestions(userQuestion: string, aiResponse: string): string
     combined.includes('quy mô') || 
     combined.includes('mỗi tầng') || 
     combined.includes('1 tầng') ||
-    combined.includes('tầng hầm') ||
-    combined.includes('tầng 25')
+    combined.includes('tòa') ||
+    combined.includes('block') ||
+    combined.includes('beverly solari') ||
+    combined.includes('tropical') ||
+    combined.includes('tầng hầm')
   ) {
     return [
-      '🏊 Hồ bơi vô cực nằm ở tầng mấy?',
-      '🛍️ Tầng 1 đến Tầng 4 có những tiện ích gì?',
-      '🏠 Căn hộ CH-06 diện tích bao nhiêu m²?',
-      '🧖 Tiện ích nào cần đăng ký trước?'
+      '🏢 Tòa BS-07, BS-08, BS-09, BS-10 có bao nhiêu tầng?',
+      '🏠 Căn hộ CH-06 và CH-01 diện tích bao nhiêu m²?',
+      '🍽️ Dịch vụ nhà hàng tầng 1 mở cửa lúc mấy giờ?',
+      '🏊 Cụm bể bơi nhiệt đới resort có cần đặt trước không?'
     ];
   }
 
@@ -232,10 +235,10 @@ function getDynamicSuggestions(userQuestion: string, aiResponse: string): string
 
   // Default fallback suggestions
   return [
-    '🧖 Tiện ích nào cần đăng ký trước?',
-    '🏊 Giờ mở cửa Hồ bơi & Phòng gym',
-    '💳 Hóa đơn điện nước & Phí quản lý tháng này',
-    '🏢 Chung cư có tất cả bao nhiêu tầng?'
+    '🏢 Quy mô các tòa The Tropical & Beverly Solari',
+    '🏠 Căn hộ của tôi ở tòa nào, tầng mấy, diện tích bao nhiêu?',
+    '🍽️ Dịch vụ nhà hàng, hồ bơi & vệ sinh hoạt động thế nào?',
+    '💳 Xem hóa đơn sinh hoạt tháng này'
   ];
 }
 
@@ -257,23 +260,21 @@ export default function AiConciergeFloating({
     {
       id: 'm-initial',
       sender: 'ai',
-      text: `Kính chào Quý cư dân **${residentName}** (Căn **${aptCode}**)! 
+      text: `Kính chào Quý cư dân **${residentName}** (Căn **${aptCode}** - Tòa The Tropical BS-07, Tầng 30)! 
 
-Tôi là **Trợ lý ảo Skyline**, luôn đồng hành và hỗ trợ Quý vị 24/7. 
-
-Tôi có thể giúp Quý cư dân:
-* Tra cứu biểu phí quản lý chung cư, hóa đơn điện nước & phí gửi xe.
-* Xem giờ mở cửa Hồ bơi chân mây Tầng 25, Gym 24/7 Tầng 3, phòng xông hơi VIP.
-* Tiếp nhận báo hỏng kỹ thuật với cam kết thợ có mặt hỗ trợ trong vòng 60 phút.
-* Hướng dẫn mở cửa thông minh bằng khuôn mặt, thẻ cư dân hoặc mã số cho khách.
+Tôi là **Trợ lý ảo Skyline**, luôn đồng hành và hỗ trợ Quý vị 24/7 tại Khu Phức Hợp The Tropical (Beverly Solari):
+* 🏢 **Tra cứu căn hộ & quy mô tòa nhà:** Thông tin 4 tòa tháp BS-07 (34 tầng), BS-08 (39 tầng), BS-09 (34 tầng), BS-10 (34 tầng).
+* 🍽️ **Dịch vụ tiện ích 5 sao:** Giờ mở cửa Cụm Bể bơi Resort, Nhà hàng ẩm thực tầng 1, Gym 24/7 & Phòng xông hơi VIP.
+* 💳 **Hóa đơn & Biểu phí:** Tra cứu tiền điện, nước, phí quản lý & tiền gửi xe định kỳ.
+* 🛠️ **Hỗ trợ kỹ thuật NKS:** Tiếp nhận sự cố với KTV túc trực có mặt trong 15 - 60 phút.
 
 Quý cư dân có thể chọn câu hỏi gợi ý bên dưới hoặc nhập câu hỏi trực tiếp nhé!`,
       timestamp: '08:00',
       suggestions: [
-        '🧖 Tiện ích nào cần đăng ký trước?',
-        '🏊 Giờ mở cửa Hồ bơi & Gym',
-        '💳 Xem hóa đơn sinh hoạt tháng này',
-        '🏢 Chung cư có bao nhiêu tầng?'
+        '🏢 Quy mô các tòa The Tropical & Beverly Solari',
+        '🏠 Căn hộ của tôi ở tòa nào, tầng mấy, diện tích bao nhiêu?',
+        '🍽️ Dịch vụ nhà hàng, hồ bơi & vệ sinh hoạt động thế nào?',
+        '💳 Xem hóa đơn sinh hoạt tháng này'
       ]
     },
   ]);
@@ -328,13 +329,13 @@ Quý cư dân có thể chọn câu hỏi gợi ý bên dưới hoặc nhập c�
       {
         id: 'm-initial',
         sender: 'ai',
-        text: `Đoạn hội thoại đã được làm mới! Tôi sẵn sàng lắng nghe mọi yêu cầu tra cứu từ Quý cư dân ${residentName} (Căn ${aptCode}).`,
+        text: `Đoạn hội thoại đã được làm mới! Tôi sẵn sàng lắng nghe mọi yêu cầu tra cứu từ Quý cư dân ${residentName} (Căn ${aptCode} - Tòa BS-07, Tầng 30).`,
         timestamp: new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }),
         suggestions: [
-          '🧖 Tiện ích nào cần đăng ký trước?',
-          '💳 Biểu phí quản lý & gửi xe tháng này',
-          '🏊 Giờ mở cửa Hồ bơi & Gym',
-          '🏢 Chung cư có bao nhiêu tầng?'
+          '🏢 Quy mô các tòa The Tropical & Beverly Solari',
+          '🏠 Căn hộ của tôi ở tòa nào, tầng mấy, diện tích bao nhiêu?',
+          '🍽️ Dịch vụ nhà hàng, hồ bơi & vệ sinh hoạt động thế nào?',
+          '💳 Xem hóa đơn sinh hoạt tháng này'
         ]
       }
     ]);

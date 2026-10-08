@@ -19,7 +19,7 @@ export default function AiConcierge() {
     {
       id: '1',
       sender: 'ai',
-      text: 'Kính chào Quý cư dân! Tôi là Trợ lý ảo Skyline AI Concierge 24/7 (vận hành bởi Google Gemini). Tôi sẵn sàng giải đáp mọi thắc mắc về nội quy, biểu phí, đăng ký xe, tiện ích hồ bơi/gym hoặc hệ thống khóa thông minh!',
+      text: 'Kính chào Quý cư dân! Tôi là Trợ lý ảo Skyline AI Concierge 24/7 (vận hành bởi Google Gemini). Tôi sẵn sàng giải đáp thông tin 4 tòa tháp The Tropical (BS-07, BS-08, BS-09, BS-10), dịch vụ nhà hàng tầng 1, cụm hồ bơi resort, biểu phí sinh hoạt và tiếp nhận sự cố kỹ thuật!',
       time: new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }),
     },
   ]);
@@ -37,11 +37,11 @@ export default function AiConcierge() {
   }, [messages, isTyping, isOpen]);
 
   const quickPrompts = [
-    'Biểu phí quản lý & gửi xe tháng này',
-    'Giờ mở cửa Hồ bơi & Gym',
-    'Phòng xông hơi đá muối VIP',
-    'Cách mở cửa Smart Door bằng FaceID & Thẻ NFC',
-    'Hotline Ban Quản Lý khẩn cấp',
+    'Quy mô các tòa The Tropical & Beverly Solari',
+    'Căn hộ CH-06 và CH-01 diện tích bao nhiêu, ở tầng mấy?',
+    'Dịch vụ nhà hàng & cụm hồ bơi resort mở cửa mấy giờ?',
+    'Hóa đơn điện nước & phí quản lý tháng này',
+    'Hotline Ban Quản Lý khẩn cấp 1900 8899',
   ];
 
   const handleSend = async (textToSend?: string) => {

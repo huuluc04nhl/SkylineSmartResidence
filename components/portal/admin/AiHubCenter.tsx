@@ -83,7 +83,7 @@ export default function AiHubCenter() {
       icon: Activity,
       color: 'text-emerald-400',
       action: 'Chạy Dự Báo Rung Lắc Thang Máy',
-      simResult: 'Thang máy Chung Cư Diamond: Health Score 94/100 • Khuyến nghị tra mỡ vòng bi sau 14 ngày',
+      simResult: 'Thang máy Chung Cư BS-07: Health Score 96.8/100 • Khuyến nghị bảo dưỡng định kỳ sau 20 ngày',
     },
     {
       id: '3.1.10',

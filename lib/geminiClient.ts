@@ -276,28 +276,34 @@ export function buildProjectSystemPrompt(contextOrAptCode: string | ConciergeCon
     .join('\n');
 
   return `
-Bạn là "Skyline AI Concierge" - Trợ lý số thông minh, tận tâm 24/7 của Quý cư dân tại Chung Cư Cao Cấp Skyline Smart Residence (Quận 7, TP. Hồ Chí Minh).
+Bạn là "Skyline AI Concierge" - Trợ lý số thông minh, tận tâm 24/7 của Quý cư dân tại Khu Phức Hợp Căn Hộ Cao Cấp The Tropical (Thuộc Đại Đô Thị Beverly Solari - Vận hành bởi Skyline Smart Residence, TP. Thủ Đức, TP. Hồ Chí Minh).
 
-DƯỚI ĐÂY LÀ DỮ LIỆU THỰC TẾ CHUẨN MỰC TỪ HỆ THỐNG CƠ SỞ DỮ LIỆU DỰ ÁN SKYLINE:
+DƯỚI ĐÂY LÀ DỮ LIỆU THỰC TẾ CHUẨN MỰC TỪ HỆ THỐNG CƠ SỞ DỮ LIỆU NKS SCRMAI VÀ QUY HOẠCH KIẾN TRÚC DỰ ÁN:
 
-0. QUY MÔ TỔNG THỂ DỰ ÁN & PHÂN BỔ CĂN HỘ TRÊN 1 TẦNG (25 TẦNG NỔI + 2 TẦNG HẦM):
-- Tên dự án: Chung Cư Cao Cấp Skyline Smart Residence (Khu Căn Hộ The Tropical).
-- Địa chỉ: Số 12A Nguyễn Thị Thập, Phường Tân Phú, Quận 7, TP. Hồ Chí Minh.
-- Chủ đầu tư: Skyline Group Corporation | Đơn vị quản lý vận hành: Skyline Property Management Services (Hotline: 1900 8899).
-- Quy mô: 25 tầng nổi và 2 tầng hầm (Hầm B2 và B1). Tổng cộng toàn chung cư có 240 căn hộ.
-- Chi tiết công năng và số lượng căn hộ mỗi tầng:
-  + Tầng Hầm B2 & B1 (0 căn hộ ở):
-    * Hầm B2: Bãi đỗ xe ô tô cư dân định danh RFID, trạm biến áp trung thế, phòng máy bơm PCCC & bể kỹ thuật ngầm.
-    * Hầm B1: Bãi đỗ xe máy cư dân RFID, trạm sạc xe điện thông minh, chốt bảo vệ an ninh và khu phân loại rác.
-  + Tầng 1 đến Tầng 4 (0 căn hộ ở - Khối tiện ích & dịch vụ):
-    * Tầng 1: Sảnh đón khách Grand Lobby 5 sao, quầy BQL tiếp dân, Khu Vui Chơi Trẻ Em Sky Kids Zone (07:00 - 21:00) và Shophouse thương mại.
-    * Tầng 2: Văn phòng điều hành Ban Quản Lý tòa nhà, phòng giám sát an ninh camera AI tập trung.
-    * Tầng 3: Trung Tâm Thể Hình Technogym mở cửa 24/7 & Phòng Xông Hơi Đá Muối Himalaya VIP khép kín gia đình (08:00 - 22:00).
-    * Tầng 4: Hội trường sinh hoạt cộng đồng, thư viện số cư dân, không gian Co-working và vườn treo thảo mộc.
-  + Tầng 5 đến Tầng 21 (17 tầng căn hộ tiêu chuẩn): 10 CĂN HỘ / TẦNG (Thiết kế 1PN 52m², 2PN 75-78.5m², 3PN 108-112m² đón gió sông).
-  + Tầng 22 đến Tầng 24 (3 tầng căn hộ Sky Suite tầng cao): 8 CĂN HỘ / TẦNG (Mật độ thoáng, ban công tràn viền ngắm toàn cảnh sông Sài Gòn).
-  + Tầng 25 (Tầng thượng Penthouse & Đại tiện ích): CHỈ CÓ 2 CĂN HỘ (2 căn Duplex Penthouse đặc quyền 25PH-01 & 25PH-02 diện tích ~215m²), cùng Hồ Bơi Vô Cực Chân Mây (06:00 - 22:00) và Vườn Tiệc Nướng BBQ Panoramic (17:00 - 23:00).
-  + Mô hình kiến trúc 3D quản trị: Mỗi tầng mô phỏng 2 căn đại diện đối xứng (Trục TRÁI - LEFT và Trục PHẢI - RIGHT).
+0. QUY MÔ DỰ ÁN BEVERLY SOLARI & PHÂN KHU THE TROPICAL:
+- Tên dự án: Khu Phức Hợp Căn Hộ Cao Cấp The Tropical - Phân khu trọng điểm thuộc Đại Đô Thị Beverly Solari (Vận hành thông minh bởi Skyline Smart Residence).
+- Địa chỉ: Phường Long Bình, TP. Thủ Đức, TP. Hồ Chí Minh (Khu Đô Thị Vinhomes Grand Park).
+- Chủ đầu tư: Tập đoàn Vingroup | Quản lý vận hành: Skyline Property Management Services (Hotline 24/7: 1900 8899).
+- Quy mô toàn dự án Beverly Solari: 13 tòa tháp chung cư cao cấp, quy mô khoảng 9.500 căn hộ, diện tích 8.7 ha, pháp lý sổ hồng lâu dài.
+- Phân khu The Tropical gồm 4 tòa chung cư cao tầng hiện đại (quy mô gần 3.000 căn hộ):
+  + Tòa Tropical BS-07 (Chung Cư BS-7): 34 TẦNG (714 căn hộ) - Tòa tháp cư dân Trần Hữu Lực đang sinh sống, sở hữu 2 căn hộ CH-06 (42 m², 1PN-1WC) và CH-01 (50 m², 2PN-1WC) tại Tầng 30.
+  + Tòa Tropical BS-08 (Chung Cư BS-8): 39 TẦNG (819 căn hộ) - Tòa tháp cao nhất phân khu view toàn cảnh thành phố và sông Đồng Nai.
+  + Tòa Tropical BS-09 (Chung Cư BS-9): 34 TẦNG (714 căn hộ) - View trực diện hồ bơi nhiệt đới resort.
+  + Tòa Tropical BS-10 (Chung Cư BS-10): 34 TẦNG (714 căn hộ) - Liền kề cụm thể thao Malibu và bãi đỗ xe.
+- Chi tiết công năng các tầng:
+  + Tầng Hầm B2 & B1 (2 tầng hầm liên thông các tòa tháp):
+    * Hầm B2: Bãi đỗ xe ô tô cư dân định danh thẻ từ RFID (Ô B2-A15 cho xe Mercedes), trạm biến áp, phòng máy bơm PCCC & bể kỹ thuật ngầm.
+    * Hầm B1: Bãi đỗ xe máy cư dân RFID (Khu B1-M88 cho xe Honda SH), trạm sạc xe điện thông minh, chốt an ninh kiểm soát và khu phân loại rác thải.
+  + Tầng 1 (Khối dịch vụ, sảnh đón & thương mại):
+    * Sảnh đón khách Grand Lobby 5 sao, quầy BQL tiếp dân 24/7, Nhà hàng ẩm thực Skyline, Shophouse thương mại, Khu vui chơi trẻ em Sky Kids Zone (07:00 - 21:00).
+  + Tầng 2: Văn phòng điều hành Ban Quản Lý tòa nhà, phòng giám sát an ninh camera AI tập trung.
+  + Tầng 3: Trung Tâm Thể Hình Technogym (mở cửa 24/7) & Phòng Xông Hơi Đá Muối Himalaya VIP khép kín gia đình (08:00 - 22:00).
+  + Tầng 4 đến các tầng trên (đến Tầng 34 tòa BS-07/09/10, Tầng 39 tòa BS-08): Căn hộ cư dân hiện đại (1PN từ 42-52m², 2PN từ 50-75m², 3PN từ 80-110m²).
+  + Tầng thượng & Sân mái: Hồ Bơi Vô Cực Chân Mây (06:00 - 22:00) và Vườn Tiệc Nướng BBQ Panoramic (17:00 - 23:00).
+- Hệ thống tiện ích cảnh quan nội khu The Tropical (22+ Tiện ích):
+  + Cụm Bể bơi: Bể bơi nhiệt đới Resort, Bể bơi ốc đảo Oasis, Bể bơi Malibu, Hồ bơi vô cực trên cao.
+  + Cụm Cảnh quan: Phố cọ Rodeo, Suối bậc cảnh quan, Vườn cọ nhiệt đới Honolulu, Vườn California, Vườn San Mario, Chòi nghỉ thư giãn, Giàn cảnh quan, Thác nước điểm nhấn.
+  + Cụm Thể thao: Sân Gym ngoài trời & Technogym trong nhà, Sân yoga thiền, Sân cỏ đa năng, Cụm sân thể thao Malibu.
 
 1. THÔNG TIN CĂN HỘ & CƯ DÂN ĐANG TRÒ CHUYỆN:
 - Căn hộ chính đang trao đổi: ${aptDisplayName}
@@ -344,8 +350,7 @@ B. TIỆN ÍCH SỬ DỤNG TỰ DO (MIỄN PHÍ - KHÔNG CẦN ĐẶT HẸN TRƯ
 ⚡ QUY TẮC PHẢN HỒI VỀ TIỆN ÍCH (BẮT BUỘC TUÂN THỦ):
 - Khi cư dân hỏi "tiện ích nào cần đăng ký lịch hẹn trước" hoặc "cần đặt trước tiện ích nào": CHỈ NÊU VÀ TẬP TRUNG GIẢI THÍCH 2 TIỆN ÍCH CẦN ĐẶT TRƯỚC LÀ: (1) Phòng Xông Hơi Đá Muối Himalaya VIP (Tầng 3) và (2) Vườn Tiệc Nướng BBQ Panoramic (Tầng 25). Có thể nhắc nhẹ 1 câu rằng các tiện ích còn lại (Hồ bơi, Gym, Kids Zone) được vào tự do miễn phí không cần đặt trước. TUYỆT ĐỐI KHÔNG tuôn ra toàn bộ chi tiết dài dòng của cả 5 tiện ích khi cư dân chỉ hỏi về tiện ích cần đặt trước!
 - Khi cư dân hỏi "tiện ích nào miễn phí" hoặc "vào tự do": Chỉ nêu Hồ bơi, Gym 24/7 và Kids Zone.
-- Khi cư dân hỏi chung "chung cư có những tiện ích gì" hoặc "danh sách tiện ích": Mới tóm tắt cả 5 tiện ích.
-- Tòa nhà Skyline gồm 25 tầng. Tuyệt đối KHÔNG có sân Pickleball, Tennis, rạp chiếu phim, karaoke hay sân golf 3D, KHÔNG có tầng 38.
+- Dự án The Tropical gồm 4 tòa chung cư (BS-07 34 tầng, BS-08 39 tầng, BS-09 34 tầng, BS-10 34 tầng). Cư dân sở hữu căn hộ tại Tầng 30 của tòa BS-07. Cụm thể thao ngoài trời nằm tại khu Malibu (Y-04) và sân cỏ đa năng.
 
 4b. VÉ & LỊCH ĐẶT CHỖ TIỆN ÍCH HIỆN TẠI CỦA CĂN HỘ ${targetAptCode}:
 ${bookingsStr}
@@ -372,7 +377,7 @@ NGUYÊN TẮC GIAO TIẾP VÀ DẠNG TỪ BẮT BUỘC:
 🔒 QUY TẮC BẢO VỆ CHỐNG DỮ LIỆU ẢO & TRẢ LỜI KHÔNG LIÊN QUAN (BẮT BUỘC TUÂN THỦ 100%):
 
 1. CHỐNG BỊA ĐẶT DỮ LIỆU ẢO (STRICT ANTI-HALLUCINATION):
-- Bạn CHỈ ĐƯỢC PHÉP trả lời dựa trên các dữ liệu thực tế có trong văn bản hệ thống này (về Chung Cư Cao Cấp Skyline 25 tầng, căn hộ ${targetAptCode}, cư dân ${residentName}, hóa đơn, vé, phiếu sửa chữa, xe cộ, tiện ích...).
+- Bạn CHỈ ĐƯỢC PHÉP trả lời dựa trên các dữ liệu thực tế có trong văn bản hệ thống này (về Dự án The Tropical - Beverly Solari 4 tòa BS-07 đến BS-10 từ 34 đến 39 tầng, căn hộ ${targetAptCode}, cư dân ${residentName}, hóa đơn, vé, phiếu sửa chữa, xe cộ, tiện ích...).
 - TUYỆT ĐỐI KHÔNG BỊA ĐẶT hoặc tự suy diễn bất kỳ thông tin nào không có trong dữ liệu (không được bịa thêm tiện ích khác, không bịa số tầng khác 25 tầng, không bịa tên kỹ thuật viên khác, không bịa số tiền, không bịa số phòng, không nói chung cư có sân tennis/pickleball/sân golf/karaoke).
 - Nếu cư dân hỏi thông tin KHÔNG CÓ trong cơ sở dữ liệu trên (ví dụ: hỏi thông tin căn hộ người khác, hỏi số điện thoại cá nhân không công khai, hỏi chính sách chưa ban hành):
   -> BẮT BUỘC trả lời rõ: "Dạ thưa Quý cư dân, hiện tại hệ thống dữ liệu tòa nhà chưa có thông tin chính thức về nội dung này. Quý cư dân vui lòng liên hệ trực tiếp Hotline Ban Quản Lý (1900 8899) hoặc Quầy lễ tân Grand Lobby Tầng 1 để được hỗ trợ kiểm tra trực tiếp ạ."
@@ -556,20 +561,18 @@ Quý cư dân cần tôi hỗ trợ thông tin nào về căn hộ hôm nay ạ?
 [SUGGESTIONS: Tiện ích nào cần đăng ký trước? | Xem hóa đơn sinh hoạt tháng này | Giờ mở cửa Hồ bơi & Gym | Tra cứu vé đã đặt]`;
   }
 
-  // 0c. Pickleball & Tennis Guard
-  if (text.includes('pickleball') || text.includes('tennis') || text.includes('tầng 38')) {
-    return `Dạ thưa Quý cư dân ${residentName}, Khu phức hợp Căn hộ Cao cấp Skyline gồm **25 tầng**. Hiện tại tòa nhà **KHÔNG có sân Pickleball hay sân Tennis** và **không có tầng 38**.
+  // 0c. Sports & Outdoor Facilities
+  if (text.includes('thể thao') || text.includes('sân bóng') || text.includes('pickleball') || text.includes('tennis')) {
+    return `Dạ thưa Quý cư dân ${residentName}, tại Khu phức hợp The Tropical (Beverly Solari), hệ thống rèn luyện thể thao ngoài trời và trong nhà phục vụ cư dân gồm:
 
-Skyline phục vụ Quý cư dân 5 tiện ích 5 sao đặc quyền:
-* 🏊 **Hồ bơi vô cực chân mây (Skyline Horizon Pool):** Tầng 25 (Sân thượng), mở cửa **06:00 - 22:00** hàng ngày.
-* 🏋️ **Trung tâm thể hình Technogym:** Tầng 3, mở cửa **24/7** suốt ngày đêm.
-* 🧖 **Phòng xông hơi đá muối VIP:** Tầng 3, mở cửa **08:00 - 22:00** (500.000 đ/giờ phòng riêng).
-* 🛝 **Khu vui chơi trẻ em Sky Kids:** Tầng 1 (Sảnh Thương Mại), mở cửa **07:00 - 21:00**.
-* 🍖 **Vườn tiệc nướng BBQ Panoramic:** Tầng 25 (Sân thượng), mở cửa **17:00 - 23:00** (600.000 đ/ca).
+* 🏀 **Cụm Sân Thể Thao Đa Năng Malibu (Khu Y-04 & BS-10):** Sân thể thao vận động ngoài trời, phục vụ bóng rổ, cầu lông và các hoạt động thể chất.
+* 🌿 **Sân Cỏ Đa Năng & Sân Yoga Thiền (Khu Y-01 & 08):** Không gian tập yoga, dưỡng sinh và thể thao ngoài trời thoáng mát.
+* 🏋️ **Trung Tâm Thể Hình Technogym (Tầng 3) & Sân Gym Ngoài Trời (Khu 07):** Mở cửa **24/7** suốt ngày đêm, đầy đủ máy tập cao cấp, miễn phí vào tự do bằng FaceID/Thẻ.
+* 🏊 **Cụm Bể Bơi Resort, Bể Bơi Ốc Đảo & Bể Bơi Malibu (06:00 - 22:00):** Miễn phí hoàn toàn theo thẻ cư dân.
 
-Quý cư dân chỉ cần chạm Thẻ cư dân hoặc nhìn vào camera nhận diện khuôn mặt là có thể sử dụng các tiện ích miễn phí ngay ạ!
+*(Lưu ý: Tòa BS-08 cao 39 tầng, các tòa BS-07, BS-09, BS-10 cao 34 tầng. Hiện phân khu chưa bố trí sân Pickleball chuyên biệt riêng).*
 
-[SUGGESTIONS: Tiện ích nào cần đăng ký trước? | Giờ mở cửa hồ bơi vô cực | Đặt phòng xông hơi đá muối VIP]`;
+[SUGGESTIONS: Giờ mở cửa phòng Gym Technogym | Giờ mở cửa hồ bơi nhiệt đới | Tiện ích nào cần đăng ký trước?]`;
   }
 
   // 0b. Building Architecture, Scale, Floors, Apartments count per floor
@@ -585,6 +588,14 @@ Quý cư dân chỉ cần chạm Thẻ cư dân hoặc nhìn vào camera nhận 
     text.includes('mặt bằng') || 
     text.includes('tổng số căn') ||
     text.includes('tổng số tầng') ||
+    text.includes('tòa') ||
+    text.includes('block') ||
+    text.includes('bs-07') ||
+    text.includes('bs-08') ||
+    text.includes('bs-09') ||
+    text.includes('bs-10') ||
+    text.includes('beverly solari') ||
+    text.includes('tropical') ||
     text.includes('tầng hầm') ||
     text.includes('hầm b1') ||
     text.includes('hầm b2') ||
@@ -592,36 +603,39 @@ Quý cư dân chỉ cần chạm Thẻ cư dân hoặc nhìn vào camera nhận 
     text.includes('tầng 2') ||
     text.includes('tầng 3') ||
     text.includes('tầng 4') ||
-    text.includes('tầng 5') ||
-    text.includes('tầng 12a') ||
-    text.includes('tầng 25') ||
+    text.includes('tầng 30') ||
+    text.includes('tầng 34') ||
+    text.includes('tầng 38') ||
+    text.includes('tầng 39') ||
     text.includes('địa chỉ') ||
     text.includes('chủ đầu tư')
   ) {
-    return `Dạ thưa Quý cư dân ${residentName}, theo dữ liệu kiến trúc chuẩn xác của **Chung Cư Cao Cấp Skyline Smart Residence**:
+    return `Dạ thưa Quý cư dân ${residentName}, theo dữ liệu kiến trúc chuẩn xác từ hệ thống NKS SCRMAI và quy hoạch dự án:
 
-🏢 **1. Quy mô tổng thể chung cư:**
-* **Số tầng:** **25 tầng nổi** và **2 tầng hầm** (Hầm B2 và Hầm B1).
-* **Tổng số căn hộ:** **240 căn hộ**.
-* **Chủ đầu tư:** Skyline Group Corporation | **Quản lý vận hành:** Skyline Property Management Services.
-* **Địa chỉ:** Số 12A Nguyễn Thị Thập, Phường Tân Phú, Quận 7, TP. Hồ Chí Minh.
+🏢 **1. Quy mô tổng thể Đại đô thị Beverly Solari:**
+* **Tổng số tòa tháp:** **13 tòa tháp chung cư cao cấp**.
+* **Tổng số căn hộ:** Khoảng **9.500 căn hộ**, quy mô diện tích toàn khu **8.7 ha**.
+* **Chủ đầu tư:** Tập đoàn Vingroup | **Quản lý vận hành:** Skyline Property Management Services (Hotline: 1900 8899).
+* **Địa chỉ:** Phường Long Bình, TP. Thủ Đức, TP. Hồ Chí Minh (Khu Đô Thị Vinhomes Grand Park).
 
-📐 **2. Phân bổ số lượng căn hộ trên 1 tầng:**
-* 🚗 **Tầng Hầm B2 & B1 (0 căn hộ ở):**
-  - **Hầm B2:** Bãi đỗ xe ô tô định danh RFID, trạm biến áp trung thế, phòng máy bơm PCCC & bể xử lý kỹ thuật ngầm.
-  - **Hầm B1:** Bãi đỗ xe máy cư dân RFID, trạm sạc xe điện thông minh, chốt an ninh.
-* 🛍️ **Tầng 1 đến Tầng 4 (0 căn hộ ở - Khối tiện ích 5 sao & dịch vụ):**
-  - **Tầng 1:** Sảnh Grand Lobby 5 sao, quầy BQL tiếp dân, Khu Vui Chơi Sky Kids Zone (07:00 - 21:00) & Shophouse thương mại.
-  - **Tầng 2:** Văn phòng điều hành Ban Quản Lý, phòng camera an ninh AI giám sát tập trung.
+🌴 **2. Phân khu trọng điểm The Tropical (4 Tòa Chung Cư - Gần 3.000 căn hộ):**
+* 🏢 **Tòa Tropical BS-07 (Chung Cư BS-7):** **34 tầng** (714 căn hộ) - *Tòa tháp Quý cư dân đang sinh sống tại Tầng 30 (sở hữu 2 căn hộ CH-06 diện tích 42 m² và CH-01 diện tích 50 m²)*.
+* 🏢 **Tòa Tropical BS-08 (Chung Cư BS-8):** **39 tầng** (819 căn hộ) - *Tòa tháp cao nhất phân khu với tầm nhìn toàn cảnh sông và thành phố*.
+* 🏢 **Tòa Tropical BS-09 (Chung Cư BS-9):** **34 tầng** (714 căn hộ) - *View trực diện hồ bơi nhiệt đới resort*.
+* 🏢 **Tòa Tropical BS-10 (Chung Cư BS-10):** **34 tầng** (714 căn hộ) - *Liền kề cụm thể thao Malibu và bãi đỗ xe*.
+
+📐 **3. Phân bổ công năng các tầng:**
+* 🚗 **Hầm B1 & B2 (2 tầng hầm liên thông các tòa):**
+  - **Hầm B2:** Bãi đỗ xe ô tô cư dân định danh RFID (Ô B2-A15 cho xe Mercedes), trạm biến áp, phòng máy bơm PCCC & bể xử lý ngầm.
+  - **Hầm B1:** Bãi đỗ xe máy cư dân RFID (Khu B1-M88 cho xe Honda SH), trạm sạc xe điện thông minh, chốt an ninh kiểm soát.
+* 🛍️ **Tầng 1 đến Tầng 3 (Khối dịch vụ, thương mại & tiện ích 5 sao):**
+  - **Tầng 1:** Sảnh Grand Lobby 5 sao, quầy BQL tiếp dân 24/7, Nhà hàng ẩm thực Skyline, Shophouse thương mại & Khu vui chơi trẻ em Sky Kids Zone (07:00 - 21:00).
+  - **Tầng 2:** Văn phòng điều hành Ban Quản Lý, phòng giám sát an ninh camera AI tập trung.
   - **Tầng 3:** Trung tâm thể hình Technogym (mở cửa 24/7) & Phòng xông hơi đá muối Himalaya VIP (08:00 - 22:00).
-  - **Tầng 4:** Hội trường sinh hoạt cộng đồng, thư viện số cư dân, không gian Co-working và vườn treo thảo mộc.
-* 🏠 **Tầng 5 đến Tầng 21 (17 tầng căn hộ tiêu chuẩn):** **10 CĂN HỘ / TẦNG** (Thiết kế 1PN 52m², 2PN 75-78.5m², 3PN 108-112m²).
-* 🌆 **Tầng 22 đến Tầng 24 (3 tầng căn hộ Sky Suite tầng cao):** **8 CĂN HỘ / TẦNG** (Mật độ thoáng, ban công tràn viền ngắm toàn cảnh sông Sài Gòn).
-* 👑 **Tầng 25 (Sân thượng Penthouse & Đại tiện ích):** **CHỈ CÓ 2 CĂN HỘ** (2 căn Duplex Penthouse đặc quyền 25PH-01 & 25PH-02 diện tích ~215m²), cùng Hồ Bơi Vô Cực Chân Mây (06:00 - 22:00) và Vườn Tiệc Nướng BBQ Panoramic (17:00 - 23:00).
+* 🏠 **Tầng 4 đến các tầng trên (đến Tầng 34 của tòa BS-07/09/10, Tầng 39 của tòa BS-08):** Căn hộ cư dân hiện đại (1PN từ 42m², 2PN từ 50-75m², 3PN từ 80-110m²).
+* 🏊 **Hồ bơi vô cực & Vườn BBQ:** Tầng cao view panoramic ngắm trọn cảnh quan sông và thành phố.
 
-*(Trên sơ đồ trực quan 3D của phần mềm quản trị Admin, mỗi tầng được mô phỏng đối xứng 2 căn trục Trái và Phải để thuận tiện theo dõi kỹ thuật).*
-
-[SUGGESTIONS: Tiện ích nào cần đăng ký trước? | Diện tích căn hộ CH-06 là bao nhiêu? | Hồ bơi vô cực nằm ở tầng mấy?]`;
+[SUGGESTIONS: Chi tiết căn hộ CH-06 và CH-01 của tôi | Tiện ích nào cần đăng ký trước? | Giờ mở cửa hồ bơi resort & nhà hàng tầng 1]`;
   }
 
   // 1. Inquiries about Active Bookings / Tickets (Lịch đặt, vé điện tử, mã vé)
@@ -811,19 +825,30 @@ Quý cư dân có thể vào tab **Đăng Ký Đặt Chỗ & Vé Điện Tử** 
 [SUGGESTIONS: Hồ bơi mở cửa đến mấy giờ? | Tiện ích nào cần đăng ký trước? | Phòng Gym Technogym có mở 24/7 không?]`;
   }
 
-  // 7. Inquiries about Amenities / Operating Hours / Facilities (Tổng quan tiện ích)
-  if (text.includes('tiện ích') || text.includes('hồ bơi') || text.includes('gym') || text.includes('pool') || text.includes('technogym') || text.includes('giờ mở cửa') || text.includes('dịch vụ tiện ích')) {
-    return `Dạ thưa Quý cư dân ${residentName}, danh mục **5 Tiện Ích 5 Sao** của Chung cư Skyline (25 Tầng) như sau:
+  // 7. Inquiries about Amenities / Operating Hours / Facilities (Tổng quan tiện ích & dịch vụ)
+  if (text.includes('tiện ích') || text.includes('hồ bơi') || text.includes('gym') || text.includes('pool') || text.includes('nhà hàng') || text.includes('technogym') || text.includes('giờ mở cửa') || text.includes('dịch vụ')) {
+    return `Dạ thưa Quý cư dân ${residentName}, hệ thống **Dịch Vụ & Tiện Ích 5 Sao** của Khu Phức Hợp The Tropical (Beverly Solari) như sau:
 
-* 🏊 **Hồ Bơi Vô Cực Chân Mây (Tầng 25 - Sân Thượng):** Mở cửa **06:00 - 22:00** hàng ngày, lọc ozone 28°C, miễn phí theo thẻ cư dân (vào tự do bằng FaceID/Thẻ).
-* 🏋️ **Trung Tâm Thể Hình Technogym (Tầng 3):** Mở cửa **24/7**, đầy đủ máy tập Technogym nhập khẩu, miễn phí (vào tự do bằng FaceID/Thẻ).
-* 🧖 **Phòng Xông Hơi Đá Muối Himalaya VIP (Tầng 3):** Mở cửa **08:00 - 22:00**, biểu phí **500.000 đ / giờ** (phòng riêng tư khép kín gia đình, **cần đặt trước**).
-* 🛝 **Khu Vui Chơi Trẻ Em Sky Kids Zone (Tầng 1):** Mở cửa **07:00 - 21:00** hàng ngày, miễn phí theo thẻ cư dân (vào tự do).
-* 🍖 **Vườn Tiệc Nướng BBQ Panoramic (Sân Thượng Tầng 25):** Mở cửa **17:00 - 23:00**, biểu phí **600.000 đ / ca** (**cần đặt trước theo ca**).
+🍽️ **1. Dịch Vụ Nhà Hàng (NKS Service):**
+* **Nhà Hàng Ẩm Thực Skyline (Tầng 1 - Sảnh The Tropical BS-07):** Mở cửa **06:30 - 22:30**, phục vụ ẩm thực, cà phê, tiệc gia đình, ưu đãi 10% cho thẻ cư dân.
 
-Quý cư dân chỉ cần nhìn vào camera nhận diện khuôn mặt hoặc chạm thẻ cư dân tại cổng là có thể vào tiện ích ngay ạ!
+🏊 **2. Cụm Bể Bơi & Tiện Ích Nước (NKS Service):**
+* **Cụm Bể Bơi Nhiệt Đới & Bể Bơi Ốc Đảo Resort (Nội khu The Tropical):** Mở cửa **06:00 - 22:00**, lọc ozone 28°C, kiểm tra chất lượng nước định kỳ, miễn phí vào bằng FaceID/Thẻ.
+* **Hồ Bơi Vô Cực Chân Mây:** Mở cửa **06:00 - 22:00**, view toàn cảnh trên cao, miễn phí theo thẻ cư dân.
 
-[SUGGESTIONS: Tiện ích nào cần đăng ký trước? | Bảng giá phòng xông hơi đá muối VIP | Hồ bơi có mở cửa buổi tối không?]`;
+🏋️ **3. Cụm Thể Thao & Sức Khỏe:**
+* **Trung Tâm Thể Hình Technogym (Tầng 3) & Sân Gym Ngoài Trời:** Mở cửa **24/7** suốt ngày đêm, miễn phí theo thẻ cư dân.
+* **Phòng Xông Hơi Đá Muối Himalaya VIP (Tầng 3):** Mở cửa **08:00 - 22:00**, biểu phí **500.000 đ / giờ** (phòng riêng tư khép kín gia đình, **cần đặt trước**).
+
+🍖 **4. Ẩm Thực & Giải Trí Ngoài Trời:**
+* **Vườn Tiệc Nướng BBQ Ngoài Trời:** Mở cửa **17:00 - 23:00**, biểu phí **600.000 đ / ca** (**cần đặt trước theo ca**).
+* **Khu Vui Chơi Trẻ Em Sky Kids Zone (Tầng 1):** Mở cửa **07:00 - 21:00** hàng ngày, miễn phí theo thẻ cư dân.
+
+🧹 **5. Dịch Vụ Vệ Sinh & Kỹ Thuật Tòa Nhà (NKS Service):**
+* **Dịch vụ Vệ sinh chung cư:** Thu gom và tập kết rác thải Block 07, khử khuẩn khu kỹ thuật định kỳ (KTV Hoàng phụ trách).
+* **Đội Kỹ thuật túc trực 24/7:** Cam kết có mặt trong 15 - 60 phút hỗ trợ điện, nước, điều hòa (KTV Trần Đình Trọng & Lê Văn Kỹ Thuật).
+
+[SUGGESTIONS: Tiện ích nào cần đăng ký trước? | Bảng giá phòng xông hơi VIP Tầng 3 | Giờ mở cửa nhà hàng tầng 1]`;
   }
 
   // 8. Inquiries about Sauna / Steam / Refund / Cancellation

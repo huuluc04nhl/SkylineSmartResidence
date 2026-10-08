@@ -50,11 +50,19 @@ interface AiConciergePageProps {
 
 const KNOWLEDGE_CATEGORIES = [
   {
-    category: '🏊 Tiện Ích Hồ Bơi & Phòng Gym',
+    category: '🏢 Quy Mô Tòa Nhà & Căn Hộ',
     prompts: [
-      'Hồ bơi vô cực mở cửa từ mấy giờ đến mấy giờ?',
+      'Quy mô các tòa tháp The Tropical và Beverly Solari',
+      'Căn hộ CH-06 và CH-01 diện tích bao nhiêu, ở tầng mấy?',
+      'Tòa BS-07, BS-08, BS-09, BS-10 có bao nhiêu tầng?',
+    ]
+  },
+  {
+    category: '🏊 Tiện Ích & Dịch Vụ NKS',
+    prompts: [
+      'Dịch vụ nhà hàng ẩm thực tầng 1 mở cửa lúc mấy giờ?',
+      'Giờ mở cửa cụm hồ bơi resort & hồ bơi chân mây',
       'Biểu phí phòng xông hơi đá muối VIP tầng 3',
-      'Tôi đã đặt vé tiện ích nào chưa?',
     ]
   },
   {
@@ -62,23 +70,15 @@ const KNOWLEDGE_CATEGORIES = [
     prompts: [
       'Xem hóa đơn sinh hoạt tháng này của căn hộ',
       'Chi tiết tiền điện, nước và phí quản lý',
-      'Thông tin số tài khoản chuyển khoản ngân hàng BIDV',
+      'Thông tin số tài khoản chuyển khoản ngân hàng BIDV BQL',
     ]
   },
   {
-    category: '🔧 Báo Hỏng & Hỗ Trợ Kỹ Thuật Nhanh',
+    category: '🔧 Báo Hỏng & Dịch Vụ Kỹ Thuật NKS',
     prompts: [
       'Tiến độ các phiếu hỗ trợ kỹ thuật của căn hộ',
+      'Dịch vụ vệ sinh chung cư và tập kết rác Block 07',
       'Bao lâu thì kỹ thuật viên có mặt tại căn hộ?',
-      'Quy định về thời gian thi công, khoan đục',
-    ]
-  },
-  {
-    category: '🛡️ Cửa Thông Minh & An Toàn Căn Hộ',
-    prompts: [
-      'Cách cài đặt nhận diện khuôn mặt cho người thân',
-      'Thủ tục đăng ký vé gửi xe ô tô tại tầng hầm',
-      'Cách tạo mã đón bạn bè lên chơi căn hộ',
     ]
   }
 ];
@@ -136,14 +136,17 @@ function getDynamicSuggestions(userQuestion: string, aiResponse: string): string
     combined.includes('quy mô') || 
     combined.includes('mỗi tầng') || 
     combined.includes('1 tầng') ||
-    combined.includes('tầng hầm') ||
-    combined.includes('tầng 25')
+    combined.includes('tòa') ||
+    combined.includes('block') ||
+    combined.includes('beverly solari') ||
+    combined.includes('tropical') ||
+    combined.includes('tầng hầm')
   ) {
     return [
-      '🏊 Hồ bơi vô cực nằm ở tầng mấy?',
-      '🛍️ Tầng 1 đến Tầng 4 có những tiện ích gì?',
-      '🏠 Căn hộ CH-06 diện tích bao nhiêu m²?',
-      '🧖 Tiện ích nào cần đăng ký trước?'
+      '🏢 Tòa BS-07, BS-08, BS-09, BS-10 có bao nhiêu tầng?',
+      '🏠 Căn hộ CH-06 và CH-01 diện tích bao nhiêu m²?',
+      '🍽️ Dịch vụ nhà hàng tầng 1 mở cửa lúc mấy giờ?',
+      '🏊 Cụm bể bơi nhiệt đới resort có cần đặt trước không?'
     ];
   }
 
@@ -268,10 +271,10 @@ function getDynamicSuggestions(userQuestion: string, aiResponse: string): string
 
   // Default fallback suggestions
   return [
-    '🧖 Tiện ích nào cần đăng ký trước?',
-    '🏊 Giờ mở cửa Hồ bơi & Phòng gym',
-    '💳 Hóa đơn điện nước & Phí quản lý tháng này',
-    '🏢 Chung cư có tất cả bao nhiêu tầng?'
+    '🏢 Quy mô các tòa The Tropical & Beverly Solari',
+    '🏠 Căn hộ của tôi ở tòa nào, tầng mấy, diện tích bao nhiêu?',
+    '🍽️ Dịch vụ nhà hàng, hồ bơi & vệ sinh hoạt động thế nào?',
+    '💳 Xem hóa đơn sinh hoạt tháng này'
   ];
 }
 
@@ -283,16 +286,16 @@ export default function AiConciergePage({ currentUser, onNavigateModule }: AiCon
     {
       id: 'm-0',
       sender: 'ai',
-      text: `Kính chào Quý cư dân **${residentName}** (Căn **${aptCode}**)! 
+      text: `Kính chào Quý cư dân **${residentName}** (Căn **${aptCode}** - Tòa The Tropical BS-07, Tầng 30)! 
 
-Tôi là **Trợ lý ảo Skyline**, luôn sẵn sàng hỗ trợ Quý vị tra cứu thông tin chung cư, xem lịch hoạt động của hồ bơi, phòng gym, giải đáp biểu phí sinh hoạt hoặc tiếp nhận các yêu cầu kỹ thuật khẩn cấp bất cứ lúc nào ạ!`,
+Tôi là **Trợ lý ảo Skyline**, luôn sẵn sàng hỗ trợ Quý vị tra cứu thông tin 4 tòa chung cư The Tropical (BS-07 34 tầng, BS-08 39 tầng, BS-09, BS-10), dịch vụ nhà hàng tầng 1, cụm hồ bơi nhiệt đới resort, giải đáp hóa đơn sinh hoạt và tiếp nhận hỗ trợ kỹ thuật NKS 24/7!`,
       timestamp: '08:00',
-      ragSource: 'Sổ tay hướng dẫn cư dân Skyline Smart Residence',
+      ragSource: 'Dữ liệu chuẩn NKS SCRMAI & Quy hoạch The Tropical (Beverly Solari)',
       suggestions: [
-        '🧖 Tiện ích nào cần đăng ký trước?',
-        '🏊 Giờ mở cửa Hồ bơi & Gym',
-        '💳 Hóa đơn sinh hoạt tháng này',
-        '🏢 Chung cư có bao nhiêu tầng?',
+        '🏢 Quy mô các tòa The Tropical & Beverly Solari',
+        '🏠 Căn hộ của tôi ở tòa nào, tầng mấy, diện tích bao nhiêu?',
+        '🍽️ Dịch vụ nhà hàng, hồ bơi & vệ sinh hoạt động thế nào?',
+        '💳 Xem hóa đơn sinh hoạt tháng này',
       ],
       actionButton: {
         label: 'Xem Tiện Ích',
