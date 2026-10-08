@@ -43,7 +43,7 @@ import {
   ExtendedServiceRequest 
 } from '@/lib/ticketStore';
 import { TicketCategoryType, findInquiryAnswer } from '@/lib/ticketClassification';
-import { fileToBase64 } from '@/lib/imageUtils';
+import { fileToBase64, compressImageFile } from '@/lib/imageUtils';
 
 export interface RepairPreset {
   id: string;
@@ -284,9 +284,15 @@ export default function TicketService({ currentUser }: TicketServiceProps) {
     setIsUploadingImage(true);
     setAiImageAnalysis(null);
     try {
-      const base64 = await fileToBase64(file);
+      // Tự động tối ưu dung lượng ảnh (Canvas resize + nén) để tránh lỗi bộ nhớ & phân tích tức thì
+      let base64 = '';
+      try {
+        base64 = await compressImageFile(file, 1200, 1200, 0.75);
+      } catch {
+        base64 = await fileToBase64(file);
+      }
       setAttachedImageBase64(base64);
-      setAttachedImageMime(file.type || 'image/jpeg');
+      setAttachedImageMime('image/jpeg');
 
       // Gọi AI phân tích ảnh tự động
       setIsAnalyzingImage(true);
@@ -297,7 +303,7 @@ export default function TicketService({ currentUser }: TicketServiceProps) {
           body: JSON.stringify({
             action: 'ANALYZE_IMAGE',
             imageBase64: base64,
-            imageMimeType: file.type || 'image/jpeg',
+            imageMimeType: 'image/jpeg',
             area: selectedArea,
             aptCode,
           }),
@@ -321,7 +327,7 @@ export default function TicketService({ currentUser }: TicketServiceProps) {
       }
     } catch (err) {
       console.warn('Lỗi đọc ảnh:', err);
-      alert('Không thể đọc file ảnh. Vui lòng thử lại.');
+      alert('Không thể đọc tệp hình ảnh. Quý cư dân vui lòng thử lại.');
     } finally {
       setIsUploadingImage(false);
     }
@@ -354,14 +360,15 @@ export default function TicketService({ currentUser }: TicketServiceProps) {
       }
 
       // Xây dựng nội dung đầy đủ cho kỹ thuật viên
+      const finalContactPhone = (contactPhone || residentPhone || '').trim();
       const fullContent = ticketPurpose === 'REPAIR'
-        ? `${content.trim()}${selectedArea ? `\n• Khu vực: ${selectedArea}` : ''}${urgencyLevel === 'HIGH' ? '\n• Mức độ: Khẩn cấp (Cần KTV có mặt sớm)' : ''}\n• Khung giờ hẹn: ${preferredTime}\n• SĐT liên hệ tại căn: ${contactPhone.trim() || residentPhone}`
+        ? `${content.trim()}${selectedArea ? `\n• Khu vực: ${selectedArea}` : ''}${urgencyLevel === 'HIGH' ? '\n• Mức độ: Khẩn cấp (Cần KTV có mặt sớm)' : ''}\n• Khung giờ hẹn: ${preferredTime}\n• SĐT liên hệ tại căn: ${finalContactPhone || 'Chưa cung cấp'}`
         : content.trim();
 
       const newTicket = await createTicketAsync({
         apt_code: aptCode || 'Tòa Nhà',
         resident_name: residentName,
-        resident_phone: contactPhone.trim() || residentPhone,
+        resident_phone: finalContactPhone,
         content: fullContent,
         ai_category: finalCategory,
         before_image: beforeImage,
@@ -370,32 +377,39 @@ export default function TicketService({ currentUser }: TicketServiceProps) {
       });
 
       // Hiển thị kết quả và đóng form ngay
-      setCreatedTicketResult(newTicket);
-      setTickets(prev => [newTicket, ...prev.filter(t => t.id !== newTicket.id)]);
+      if (newTicket) {
+        setCreatedTicketResult(newTicket);
+        setTickets(prev => [newTicket, ...prev.filter(t => t.id !== newTicket.id)]);
+      }
       setContent('');
       setAttachedImageBase64('');
+      setAiImageAnalysis(null);
       setSelectedPresetId(null);
       setShowCreateForm(false);
-      const ticketDisplayId = newTicket.nks_id ? `#${newTicket.nks_id}` : `#${newTicket.id}`;
+      const ticketDisplayId = newTicket?.nks_id ? `#${newTicket.nks_id}` : (newTicket?.id ? `#${newTicket.id}` : '');
       
       if (ticketPurpose === 'INQUIRY') {
-        setCreatedSuccessMsg(`⚡ Trợ lý AI đã giải đáp tức thì cho phiếu ${ticketDisplayId} (không cần chờ BQL)!`);
+        setCreatedSuccessMsg(`⚡ Câu hỏi của bạn ${ticketDisplayId} đã được giải đáp tự động!`);
       } else if (ticketPurpose === 'FEEDBACK') {
-        setCreatedSuccessMsg(`Ban Quản Lý đã tiếp nhận ý kiến ${ticketDisplayId} và đang thụ lý! (Trạng thái: Chờ BQL xác nhận)`);
+        setCreatedSuccessMsg(`Ban Quản Lý đã tiếp nhận ý kiến ${ticketDisplayId} và đang xử lý!`);
       } else {
-        const techName = newTicket.assigned_technician;
+        const techName = newTicket?.assigned_technician;
         setCreatedSuccessMsg(
           techName
-            ? `Sự cố kỹ thuật ${ticketDisplayId} đã được phân bổ cho KTV ${techName} (${newTicket.scheduled_time || 'Có mặt trong vòng 30 - 45 phút'})!`
-            : `Yêu cầu sửa chữa ${ticketDisplayId} đã được tiếp nhận và chuyển tới Đội ngũ Kỹ Thuật!`
+            ? `Yêu cầu sửa chữa ${ticketDisplayId} đã được chuyển cho kỹ thuật viên ${techName} (${newTicket?.scheduled_time || 'Sớm nhất'})!`
+            : `Yêu cầu sửa chữa ${ticketDisplayId} đã được tiếp nhận và chuyển tới đội ngũ kỹ thuật!`
         );
       }
 
       setTimeout(() => setCreatedSuccessMsg(null), 8000);
-      refreshTicketList();
+      try {
+        refreshTicketList();
+      } catch (e) {
+        console.warn('Lỗi cập nhật danh sách phiếu:', e);
+      }
     } catch (err) {
       console.error('Lỗi gửi ticket:', err);
-      alert('Có lỗi khi tạo phiếu. Phiếu đã được lưu tạm để gửi lại.');
+      alert('Hệ thống tạm thời gặp gián đoạn kết nối. Yêu cầu của bạn đã được ghi nhận trên thiết bị.');
     } finally {
       setIsSubmitting(false);
     }

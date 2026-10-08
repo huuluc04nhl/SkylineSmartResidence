@@ -156,7 +156,11 @@ export function getTechnicians(): TechnicianProfile[] {
 
 export function saveTechnicians(techs: TechnicianProfile[]): void {
   if (typeof window !== 'undefined') {
-    localStorage.setItem(TECHNICIANS_STORAGE_KEY, JSON.stringify(techs));
+    try {
+      localStorage.setItem(TECHNICIANS_STORAGE_KEY, JSON.stringify(techs));
+    } catch (e) {
+      console.warn('Lỗi lưu technicians vào bộ nhớ thiết bị:', e);
+    }
     notifyTicketsUpdated();
   }
 }
@@ -199,7 +203,22 @@ export function getTickets(aptCode?: string, phone?: string): ExtendedServiceReq
 
 export function saveTickets(tickets: ExtendedServiceRequest[]): void {
   if (typeof window !== 'undefined') {
-    localStorage.setItem(TICKETS_STORAGE_KEY, JSON.stringify(tickets));
+    try {
+      localStorage.setItem(TICKETS_STORAGE_KEY, JSON.stringify(tickets));
+    } catch (quotaErr) {
+      console.warn('Bộ nhớ thiết bị đầy (QuotaExceededError), tự động tối ưu ảnh đính kèm:', quotaErr);
+      try {
+        // Tối ưu hóa: bỏ ảnh base64 quá lớn trong các phiếu cũ để vừa vặn bộ nhớ
+        const lightweight = tickets.slice(0, 30).map(t => ({
+          ...t,
+          before_image: t.before_image && t.before_image.length > 500 ? (t.before_image.startsWith('http') ? t.before_image : '') : t.before_image,
+          after_image: t.after_image && t.after_image.length > 500 ? (t.after_image.startsWith('http') ? t.after_image : '') : t.after_image,
+        }));
+        localStorage.setItem(TICKETS_STORAGE_KEY, JSON.stringify(lightweight));
+      } catch (innerErr) {
+        console.warn('Không thể lưu tickets vào localStorage:', innerErr);
+      }
+    }
     notifyTicketsUpdated();
   }
   // Đồng bộ ngầm lên máy chủ
@@ -243,9 +262,18 @@ export async function syncTicketsWithServer(aptCode?: string, phone?: string): P
           const mergedList = Array.from(new Set(map.values()));
           mergedList.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
 
-          localStorage.setItem(TICKETS_STORAGE_KEY, JSON.stringify(mergedList));
+          try {
+            localStorage.setItem(TICKETS_STORAGE_KEY, JSON.stringify(mergedList));
+          } catch {
+            // Giảm tải nếu quota đầy
+            const trimmed = mergedList.slice(0, 30);
+            try { localStorage.setItem(TICKETS_STORAGE_KEY, JSON.stringify(trimmed)); } catch { /* ignore */ }
+          }
+
           if (Array.isArray(data.technicians) && data.technicians.length > 0) {
-            localStorage.setItem(TECHNICIANS_STORAGE_KEY, JSON.stringify(data.technicians));
+            try {
+              localStorage.setItem(TECHNICIANS_STORAGE_KEY, JSON.stringify(data.technicians));
+            } catch { /* ignore */ }
           }
           notifyTicketsUpdated();
         }
@@ -319,9 +347,13 @@ export async function createTicketAsync(payload: {
       const data = await res.json();
       if (data.success && data.ticket) {
         const saved = data.ticket as ExtendedServiceRequest;
-        const currentTickets = getTickets();
-        const updated = [saved, ...currentTickets.filter(t => t.id !== saved.id && t.id !== optimisticTicket.id)];
-        saveTickets(updated);
+        try {
+          const currentTickets = getTickets();
+          const updated = [saved, ...currentTickets.filter(t => t.id !== saved.id && t.id !== optimisticTicket.id)];
+          saveTickets(updated);
+        } catch (e) {
+          console.warn('Lỗi lưu ticket mới vào bộ nhớ thiết bị:', e);
+        }
         return saved;
       }
     }
@@ -329,10 +361,14 @@ export async function createTicketAsync(payload: {
     console.warn('Lỗi gọi API tạo phiếu NKS:', err);
   }
 
-  // Fallback nếu ngoại tuyến
-  const currentTickets = getTickets();
-  const updatedList = [optimisticTicket, ...currentTickets];
-  saveTickets(updatedList);
+  // Fallback nếu ngoại tuyến hoặc mất kết nối
+  try {
+    const currentTickets = getTickets();
+    const updatedList = [optimisticTicket, ...currentTickets];
+    saveTickets(updatedList);
+  } catch (e) {
+    console.warn('Lỗi lưu fallback ticket:', e);
+  }
   return optimisticTicket;
 }
 

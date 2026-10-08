@@ -81,7 +81,11 @@ export async function fetchNksTickets(phone?: string): Promise<NksTicket[]> {
       if (res.ok) {
         const json = await res.json();
         if (json.success && Array.isArray(json.data)) {
-          localStorage.setItem(STORAGE_KEY_NKS_TICKETS, JSON.stringify(json.data));
+          try {
+            localStorage.setItem(STORAGE_KEY_NKS_TICKETS, JSON.stringify(json.data));
+          } catch {
+            // Bộ nhớ đầy, không cần cache
+          }
           return json.data;
         }
       }

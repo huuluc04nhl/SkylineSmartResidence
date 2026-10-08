@@ -28,6 +28,71 @@ export function fileToBase64(file: File | Blob): Promise<string> {
 }
 
 /**
+ * Nén và thu nhỏ kích thước hình ảnh tự động trước khi tải lên (Canvas resize + JPEG compress)
+ * Giúp giảm dung lượng từ 5MB+ xuống khoảng 50KB - 150KB:
+ * - Ngăn ngừa lỗi tràn bộ nhớ LocalStorage (QuotaExceededError)
+ * - Tối ưu hóa tốc độ phân tích AI & gửi API nhanh hơn nhiều lần
+ */
+export function compressImageFile(
+  file: File | Blob,
+  maxWidth = 1200,
+  maxHeight = 1200,
+  quality = 0.75
+): Promise<string> {
+  return new Promise((resolve, reject) => {
+    if (!file) {
+      return reject(new Error('Tệp hình ảnh không hợp lệ.'));
+    }
+
+    if (typeof window === 'undefined') {
+      return fileToBase64(file).then(resolve).catch(reject);
+    }
+
+    const reader = new FileReader();
+    reader.onerror = (error) => reject(error);
+    reader.onload = () => {
+      const img = new Image();
+      img.onerror = () => {
+        // Fallback sang fileToBase64 nếu không load được vào thẻ Image
+        if (typeof reader.result === 'string') resolve(reader.result);
+        else reject(new Error('Không thể tải tệp hình ảnh.'));
+      };
+      img.onload = () => {
+        try {
+          let { width, height } = img;
+          if (width > maxWidth || height > maxHeight) {
+            if (width / height > maxWidth / maxHeight) {
+              height = Math.round((height * maxWidth) / width);
+              width = maxWidth;
+            } else {
+              width = Math.round((width * maxHeight) / height);
+              height = maxHeight;
+            }
+          }
+
+          const canvas = document.createElement('canvas');
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          if (!ctx) {
+            return resolve(typeof reader.result === 'string' ? reader.result : '');
+          }
+
+          ctx.drawImage(img, 0, 0, width, height);
+          const compressed = canvas.toDataURL('image/jpeg', quality);
+          resolve(compressed);
+        } catch {
+          // Fallback nếu có lỗi vẽ canvas
+          resolve(typeof reader.result === 'string' ? reader.result : '');
+        }
+      };
+      img.src = reader.result as string;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+/**
  * Chuyển đổi một URL hình ảnh (cục bộ hoặc từ xa) sang chuỗi Base64 Data URL
  */
 export async function imageUrlToBase64(url: string): Promise<string> {
