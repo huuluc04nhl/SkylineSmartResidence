@@ -3,7 +3,7 @@ import { GEMINI_API_KEY } from '@/lib/geminiClient';
 import { classifyTicket, findInquiryAnswer } from '@/lib/ticketClassification';
 
 // Timeout configuration
-const GEMINI_TIMEOUT_MS = 6000;
+const GEMINI_TIMEOUT_MS = 8000;
 
 async function callGemini(prompt: string, systemInstruction: string): Promise<string> {
   if (!GEMINI_API_KEY) {
@@ -50,6 +50,107 @@ async function callGemini(prompt: string, systemInstruction: string): Promise<st
     clearTimeout(timer);
     throw err;
   }
+}
+
+/**
+ * Gọi Gemini với Vision (ảnh base64 + text prompt)
+ */
+async function callGeminiVision(
+  base64Image: string,
+  mimeType: string,
+  textPrompt: string,
+  systemInstruction: string
+): Promise<string> {
+  if (!GEMINI_API_KEY) {
+    throw new Error('GEMINI_API_KEY not configured');
+  }
+
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), GEMINI_TIMEOUT_MS);
+
+  // Bóc bỏ data URI prefix nếu có
+  const pureBase64 = base64Image.replace(/^data:image\/\w+;base64,/, '');
+
+  try {
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`;
+    const payload = {
+      contents: [
+        {
+          role: 'user',
+          parts: [
+            { text: systemInstruction },
+            {
+              inline_data: {
+                mime_type: mimeType || 'image/jpeg',
+                data: pureBase64,
+              },
+            },
+            { text: textPrompt },
+          ],
+        },
+      ],
+      generationConfig: {
+        temperature: 0.1,
+        maxOutputTokens: 500,
+      },
+    };
+
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+      signal: controller.signal,
+    });
+
+    clearTimeout(timer);
+
+    if (!res.ok) {
+      const err = await res.text();
+      throw new Error(`Gemini Vision error: ${err}`);
+    }
+
+    const data = await res.json();
+    const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
+    if (!text) throw new Error('No vision text returned');
+    return text.trim();
+  } catch (err) {
+    clearTimeout(timer);
+    throw err;
+  }
+}
+
+/**
+ * Phân tích ảnh cục bộ (fallback khi Gemini Vision không khả dụng)
+ */
+function getLocalImageAnalysis(area?: string): {
+  severity: 'LOW' | 'MEDIUM' | 'HIGH';
+  category: string;
+  summary: string;
+  action: string;
+} {
+  const areaLower = (area || '').toLowerCase();
+  if (areaLower.includes('bếp') || areaLower.includes('rửa') || areaLower.includes('cống')) {
+    return {
+      severity: 'HIGH',
+      category: 'Nước',
+      summary: 'Ảnh ghi nhận dấu hiệu sự cố liên quan đến đường ống hoặc thiết bị cấp thoát nước tại khu vực bếp/vệ sinh.',
+      action: 'Khóa van nước cục bộ ngay để tránh tràn sàn trong khi chờ KTV.',
+    };
+  }
+  if (areaLower.includes('điện') || areaLower.includes('aptomat') || areaLower.includes('đèn')) {
+    return {
+      severity: 'HIGH',
+      category: 'Điện',
+      summary: 'Ảnh cho thấy dấu hiệu bất thường tại hệ thống điện hoặc thiết bị chiếu sáng.',
+      action: 'Ngắt aptomat nhánh tại khu vực sự cố, không bật lại thiết bị điện khi chưa có KTV kiểm tra.',
+    };
+  }
+  return {
+    severity: 'MEDIUM',
+    category: 'Khác',
+    summary: 'Hình ảnh đã được ghi nhận. Hệ thống đề xuất KTV đến kiểm tra trực tiếp để xác định mức độ và phương án xử lý.',
+    action: 'Kỹ thuật viên sẽ mang dụng cụ phù hợp để khắc phục sự cố sau khi kiểm tra hiện trường.',
+  };
 }
 
 /**
@@ -100,7 +201,63 @@ function getLocalPolishedDescription(content: string, area?: string): string {
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { action, content, area, category, aptCode, residentName } = body;
+    const { action, content, area, category, aptCode, residentName, imageBase64, imageMimeType } = body;
+
+    // ──────────────────────────────────────────────────────────────
+    // 0. ACTION: PHÂN TÍCH ẢNH SỰ CỐ (AI IMAGE ANALYSIS)
+    // ──────────────────────────────────────────────────────────────
+    if (action === 'ANALYZE_IMAGE') {
+      if (!imageBase64) {
+        return NextResponse.json({ success: false, error: 'Không có ảnh để phân tích' }, { status: 400 });
+      }
+
+      const systemPrompt = `Bạn là AI Chuyên Gia Kỹ Thuật của Chung Cư Cao Cấp Skyline Smart Residence (TP.HCM).
+Nhiệm vụ: Phân tích ảnh sự cố do cư dân tải lên và trả về đánh giá kỹ thuật ngắn gọn.
+
+Hãy xác định:
+1. MỨC ĐỘ: LOW (nhẹ, chưa cần xử lý gấp), MEDIUM (cần xử lý trong ngày), HIGH (khẩn cấp < 45 phút)
+2. HẠNG MỤC: Điện / Nước / Điều hòa / Khóa cửa / Khác
+3. TÓM TẮT: 1-2 câu mô tả những gì quan sát được trong ảnh (hiện tượng, vị trí, dấu hiệu rõ ràng)
+4. HÀNH ĐỘNG: 1 câu khuyến cáo tức thì cho cư dân trong lúc chờ KTV
+
+Trả về chính xác theo format JSON sau (không có markdown, không giải thích thêm):
+{"severity":"LOW|MEDIUM|HIGH","category":"tên hạng mục","summary":"mô tả quan sát","action":"hành động khuyến cáo"}`;
+
+      try {
+        const visionResponse = await callGeminiVision(
+          imageBase64,
+          imageMimeType || 'image/jpeg',
+          `Ảnh sự cố trong căn hộ${area ? ` khu vực ${area}` : ''}${aptCode ? ` (Căn ${aptCode})` : ''}. Phân tích và trả về JSON như hướng dẫn.`,
+          systemPrompt
+        );
+
+        let parsed: { severity: string; category: string; summary: string; action: string };
+        try {
+          const cleaned = visionResponse.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+          parsed = JSON.parse(cleaned);
+        } catch {
+          parsed = {
+            severity: visionResponse.toLowerCase().includes('khẩn') || visionResponse.toLowerCase().includes('nguy hiểm') ? 'HIGH'
+              : visionResponse.toLowerCase().includes('cần xử lý') ? 'MEDIUM' : 'LOW',
+            category: area || 'Khác',
+            summary: visionResponse.substring(0, 200),
+            action: 'Vui lòng chờ Kỹ thuật viên đến kiểm tra trực tiếp.',
+          };
+        }
+
+        return NextResponse.json({
+          success: true,
+          severity: parsed.severity as 'LOW' | 'MEDIUM' | 'HIGH',
+          category: parsed.category,
+          summary: parsed.summary,
+          action: parsed.action,
+          source: 'GEMINI_VISION_AI',
+        });
+      } catch (err) {
+        const fallback = getLocalImageAnalysis(area);
+        return NextResponse.json({ success: true, ...fallback, source: 'LOCAL_RULE_ENGINE' });
+      }
+    }
 
     if (!content || typeof content !== 'string') {
       return NextResponse.json({ success: false, error: 'Nội dung không hợp lệ' }, { status: 400 });

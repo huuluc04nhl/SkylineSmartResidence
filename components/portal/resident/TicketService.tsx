@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
 import { 
@@ -179,7 +179,16 @@ export default function TicketService({ currentUser }: TicketServiceProps) {
   }, [residentPhone]);
 
   const [attachedImageBase64, setAttachedImageBase64] = useState<string>('');
+  const [attachedImageMime, setAttachedImageMime] = useState<string>('image/jpeg');
   const [isUploadingImage, setIsUploadingImage] = useState(false);
+  const [aiImageAnalysis, setAiImageAnalysis] = useState<{
+    severity: 'LOW' | 'MEDIUM' | 'HIGH';
+    category: string;
+    summary: string;
+    action: string;
+    source: string;
+  } | null>(null);
+  const [isAnalyzingImage, setIsAnalyzingImage] = useState(false);
   const [isSyncing, setIsSyncing] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [createdSuccessMsg, setCreatedSuccessMsg] = useState<string | null>(null);
@@ -273,9 +282,43 @@ export default function TicketService({ currentUser }: TicketServiceProps) {
     }
 
     setIsUploadingImage(true);
+    setAiImageAnalysis(null);
     try {
       const base64 = await fileToBase64(file);
       setAttachedImageBase64(base64);
+      setAttachedImageMime(file.type || 'image/jpeg');
+
+      // Gọi AI phân tích ảnh tự động
+      setIsAnalyzingImage(true);
+      try {
+        const res = await fetch('/api/ai/ticket-assistant', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            action: 'ANALYZE_IMAGE',
+            imageBase64: base64,
+            imageMimeType: file.type || 'image/jpeg',
+            area: selectedArea,
+            aptCode,
+          }),
+        });
+        if (res.ok) {
+          const data = await res.json();
+          if (data.success) {
+            setAiImageAnalysis(data);
+            // Tự động cập nhật độ ưu tiên dựa vào AI
+            if (data.severity === 'HIGH') setUrgencyLevel('HIGH');
+            else if (data.severity === 'LOW') setUrgencyLevel('NORMAL');
+            // Tự động cập nhật hạng mục nếu phát hiện rõ ràng
+            if (data.category === 'Điện') setAiDetectedCat('Điện');
+            else if (data.category === 'Nước') setAiDetectedCat('Nước');
+          }
+        }
+      } catch {
+        // Im lặng nếu AI không khả dụng - không ảnh hưởng luồng chính
+      } finally {
+        setIsAnalyzingImage(false);
+      }
     } catch (err) {
       console.warn('Lỗi đọc ảnh:', err);
       alert('Không thể đọc file ảnh. Vui lòng thử lại.');
@@ -508,7 +551,7 @@ export default function TicketService({ currentUser }: TicketServiceProps) {
           <div className="grid grid-cols-3 gap-1.5 p-1 bg-[#0F141C] border border-[#222B35]">
             <button
               type="button"
-              onClick={() => setTicketPurpose('REPAIR')}
+              onClick={() => { setTicketPurpose('REPAIR'); setContent(''); setSelectedPresetId(null); setAiImageAnalysis(null); }}
               className={`py-2 px-2 text-center text-xs transition-all flex items-center justify-center gap-1.5 ${
                 ticketPurpose === 'REPAIR'
                   ? 'bg-[#C5A880] text-[#0D1117] font-bold shadow'
@@ -519,7 +562,7 @@ export default function TicketService({ currentUser }: TicketServiceProps) {
             </button>
             <button
               type="button"
-              onClick={() => setTicketPurpose('INQUIRY')}
+              onClick={() => { setTicketPurpose('INQUIRY'); setContent(''); setSelectedPresetId(null); setAiImageAnalysis(null); }}
               className={`py-2 px-2 text-center text-xs transition-all flex items-center justify-center gap-1.5 ${
                 ticketPurpose === 'INQUIRY'
                   ? 'bg-sky-500 text-black font-bold shadow'
@@ -530,7 +573,7 @@ export default function TicketService({ currentUser }: TicketServiceProps) {
             </button>
             <button
               type="button"
-              onClick={() => setTicketPurpose('FEEDBACK')}
+              onClick={() => { setTicketPurpose('FEEDBACK'); setContent(''); setSelectedPresetId(null); setAiImageAnalysis(null); }}
               className={`py-2 px-2 text-center text-xs transition-all flex items-center justify-center gap-1.5 ${
                 ticketPurpose === 'FEEDBACK'
                   ? 'bg-rose-600 text-white font-bold shadow'
@@ -747,11 +790,11 @@ export default function TicketService({ currentUser }: TicketServiceProps) {
               <button
                 type="button"
                 onClick={() => fileInputRef.current?.click()}
-                disabled={isUploadingImage}
+                disabled={isUploadingImage || isAnalyzingImage}
                 className="px-2.5 py-1.5 bg-[#161B22] border border-[#2D3748] hover:border-[#C5A880] text-gray-300 hover:text-white text-xs flex items-center gap-1.5 transition-colors"
               >
                 <Camera className="w-3.5 h-3.5 text-[#C5A880]" />
-                {isUploadingImage ? 'Đang đọc ảnh...' : attachedImageBase64 ? 'Đổi ảnh' : 'Đính kèm ảnh'}
+                {isUploadingImage ? 'Đang đọc ảnh...' : isAnalyzingImage ? 'AI đang phân tích...' : attachedImageBase64 ? 'Đổi ảnh' : 'Đính kèm ảnh'}
               </button>
               {attachedImageBase64 && (
                 <div className="flex items-center gap-1.5">
@@ -762,7 +805,7 @@ export default function TicketService({ currentUser }: TicketServiceProps) {
                   />
                   <button
                     type="button"
-                    onClick={() => setAttachedImageBase64('')}
+                    onClick={() => { setAttachedImageBase64(''); setAiImageAnalysis(null); }}
                     className="text-gray-400 hover:text-rose-400 text-xs px-1"
                     title="Gỡ ảnh"
                   >
@@ -771,6 +814,43 @@ export default function TicketService({ currentUser }: TicketServiceProps) {
                 </div>
               )}
             </div>
+
+            {/* AI phân tích ảnh - hiển thị kết quả */}
+            {isAnalyzingImage && (
+              <div className="w-full mt-2 p-2.5 bg-[#0F1824] border border-sky-500/40 flex items-center gap-2 text-xs text-sky-300 animate-pulse">
+                <Bot className="w-3.5 h-3.5 text-sky-400 flex-shrink-0" />
+                <span>AI Kỹ Thuật đang phân tích hình ảnh sự cố...</span>
+              </div>
+            )}
+            {!isAnalyzingImage && aiImageAnalysis && (
+              <div className={`w-full mt-2 p-2.5 border text-xs space-y-1 animate-fadeIn ${
+                aiImageAnalysis.severity === 'HIGH'
+                  ? 'bg-rose-950/30 border-rose-500/50'
+                  : aiImageAnalysis.severity === 'MEDIUM'
+                    ? 'bg-amber-950/30 border-amber-500/50'
+                    : 'bg-emerald-950/30 border-emerald-500/50'
+              }`}>
+                <div className="flex items-center justify-between">
+                  <span className="flex items-center gap-1.5 font-semibold">
+                    <Bot className="w-3.5 h-3.5 text-sky-400" />
+                    <span className="text-sky-300">AI Phân Tích Ảnh</span>
+                    <span className={`px-1.5 py-px text-[10px] font-bold uppercase ${
+                      aiImageAnalysis.severity === 'HIGH' ? 'bg-rose-900 text-rose-200' :
+                      aiImageAnalysis.severity === 'MEDIUM' ? 'bg-amber-900 text-amber-200' :
+                      'bg-emerald-900 text-emerald-200'
+                    }`}>
+                      {aiImageAnalysis.severity === 'HIGH' ? '⚡ Khẩn cấp' : aiImageAnalysis.severity === 'MEDIUM' ? '⏱ Cần xử lý' : '✓ Nhẹ'}
+                    </span>
+                    <span className="text-[10px] text-gray-400 font-mono">• {aiImageAnalysis.category}</span>
+                  </span>
+                </div>
+                <p className="text-gray-200 leading-relaxed">{aiImageAnalysis.summary}</p>
+                <p className="text-amber-300/90 flex items-start gap-1">
+                  <AlertCircle className="w-3 h-3 flex-shrink-0 mt-0.5" />
+                  {aiImageAnalysis.action}
+                </p>
+              </div>
+            )}
 
             <div className="flex items-center gap-2">
               <button
