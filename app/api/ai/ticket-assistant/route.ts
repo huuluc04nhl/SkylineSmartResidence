@@ -5,8 +5,14 @@ import { classifyTicket, findInquiryAnswer, generateSuggestedAdminReply } from '
 // Mở rộng timeout route lên 60s
 export const maxDuration = 60;
 
-// Model cascading: Gemini 3.6 Flash (mới nhất & thông minh nhất) -> Gemini 3.5 Flash -> Gemini 3.5 Flash-Lite (cực nhanh)
-const GEMINI_MODELS = ['gemini-3.6-flash', 'gemini-3.5-flash', 'gemini-3.5-flash-lite'];
+// Model cascading: Gemini Flash-Lite Latest (siêu tốc, ổn định) -> Gemini 2.5 Flash-Lite -> Gemini Flash Latest -> Gemini 3.6 Flash
+const GEMINI_MODELS = [
+  'gemini-flash-lite-latest',
+  'gemini-2.5-flash-lite',
+  'gemini-flash-latest',
+  'gemini-3.6-flash',
+  'gemini-3.5-flash',
+];
 
 // Timeout configuration (25s per call, không bao giờ cắt giữa chừng)
 const GEMINI_TIMEOUT_MS = 25000;
@@ -38,7 +44,7 @@ async function callGemini(
         ],
         generationConfig: {
           temperature: options?.temperature ?? 0.2,
-          maxOutputTokens: options?.maxOutputTokens ?? 600,
+          maxOutputTokens: options?.maxOutputTokens ?? 2048,
         },
       };
 
@@ -112,7 +118,7 @@ async function callGeminiVision(
         ],
         generationConfig: {
           temperature: 0.1,
-          maxOutputTokens: 500,
+          maxOutputTokens: 1024,
         },
       };
 
@@ -440,11 +446,11 @@ ${eng ? `\nBQL đã phân công ${eng} xử lý.` : ''}
 
 Hãy soạn thư phản hồi chính thức từ BQL, phản hồi đúng trọng tâm nội dung phản ánh trên.`;
 
-        // Dùng bộ mô hình Gemini 3.6/3.5 Flash: thông minh vượt trội, chuẩn mực tiếng Việt, phản hồi đầy đủ không bị timeout
+        // Dùng bộ mô hình Gemini Flash tối ưu: phản hồi tức thì, tiếng Việt tự nhiên, không bị timeout hay cắt chữ
         const aiReply = await callGemini(userPrompt, systemPrompt, {
           timeoutMs: 25000,
           temperature: 0.4,
-          maxOutputTokens: 350,
+          maxOutputTokens: 1024,
         });
 
         return NextResponse.json({

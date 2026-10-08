@@ -18,14 +18,15 @@ export const GEMINI_API_KEY =
   process.env.NEXT_PUBLIC_GEMINI_API_KEY ||
   '';
 
-const GEMINI_PRIMARY_MODEL = 'gemini-3.6-flash';
-const GEMINI_FALLBACK_MODEL = 'gemini-3.5-flash';
-const GEMINI_FAST_FALLBACK_MODEL = 'gemini-3.5-flash-lite';
+const GEMINI_PRIMARY_MODEL = 'gemini-flash-lite-latest';
+const GEMINI_FALLBACK_MODEL = 'gemini-2.5-flash-lite';
+const GEMINI_FAST_FALLBACK_MODEL = 'gemini-flash-latest';
+const GEMINI_BACKUP_MODEL = 'gemini-3.6-flash';
 
 // Timeout configuration (in milliseconds - extended so AI responses are never cut off)
-const PRIMARY_TIMEOUT_MS = 20000;
-const FALLBACK_TIMEOUT_MS = 15000;
-const FAST_TIMEOUT_MS = 10000;
+const PRIMARY_TIMEOUT_MS = 25000;
+const FALLBACK_TIMEOUT_MS = 20000;
+const FAST_TIMEOUT_MS = 15000;
 
 /**
  * Fetch wrapper with strict AbortController timeout
@@ -139,11 +140,11 @@ export function buildProjectSystemPrompt(contextOrAptCode: string | ConciergeCon
   // 1. Căn hộ chuẩn xác từ store
   const aptFromStore = getApartmentByCode(targetAptCode);
   const apt: any = aptFromStore || (isOwnerUnit ? DEMO_APARTMENTS[0] : (DEMO_APARTMENTS.find(a => a.apt_code.toUpperCase() === targetAptCode) || DEMO_APARTMENTS[0]));
-  const aptDisplayName = isOwnerUnit ? 'CH-06 (Tòa The Tropical BS-07)' : (apt?.code || apt?.apt_code || targetAptCode);
-  const aptAreaClear = isOwnerUnit ? 78.5 : (apt?.clear_area || apt?.area || 78.5);
-  const aptAreaWall = isOwnerUnit ? 83.2 : (apt?.wall_area || apt?.wallArea || 83.2);
-  const aptBedrooms = isOwnerUnit ? 2 : (apt?.bedrooms || 2);
-  const aptBathrooms = isOwnerUnit ? 2 : (apt?.bathrooms || 2);
+  const aptDisplayName = isOwnerUnit ? 'CH-06 (Tòa The Tropical BS-07, Tầng 30)' : (apt?.code || apt?.apt_code || targetAptCode);
+  const aptAreaClear = isOwnerUnit ? 42.0 : (apt?.clear_area || apt?.area || 42.0);
+  const aptAreaWall = isOwnerUnit ? 46.0 : (apt?.wall_area || apt?.wallArea || 46.0);
+  const aptBedrooms = isOwnerUnit ? 1 : (apt?.bedrooms || 1);
+  const aptBathrooms = isOwnerUnit ? 1 : (apt?.bathrooms || 1);
 
   // 2. Chủ hộ & Cư dân
   const rawOwner = DEMO_USERS.find((u) => (isOwnerUnit ? (u.apartment_code === 'CH-06' || u.id === 'user-owner-1') : u.apartment_code === targetAptCode)) || DEMO_USERS[2];
@@ -221,7 +222,7 @@ export function buildProjectSystemPrompt(contextOrAptCode: string | ConciergeCon
     : (() => {
         const stored = getTickets(isOwnerUnit ? 'CH-06' : targetAptCode, residentPhone);
         if (stored && stored.length > 0) return stored;
-        return DEMO_TICKETS.filter((t) => isOwnerUnit ? (t.apt_code === 'CH-06' || t.apt_code === '12A05') : t.apt_code === targetAptCode);
+        return DEMO_TICKETS;
       })();
 
   const ticketsStr = activeTickets.length > 0
@@ -299,8 +300,9 @@ DƯỚI ĐÂY LÀ DỮ LIỆU THỰC TẾ CHUẨN MỰC TỪ HỆ THỐNG CƠ S�
   + Mô hình kiến trúc 3D quản trị: Mỗi tầng mô phỏng 2 căn đại diện đối xứng (Trục TRÁI - LEFT và Trục PHẢI - RIGHT).
 
 1. THÔNG TIN CĂN HỘ & CƯ DÂN ĐANG TRÒ CHUYỆN:
-- Căn hộ: ${aptDisplayName}
-- Diện tích chuẩn xác: ${aptAreaClear} m² (diện tích thông thủy) / ${aptAreaWall} m² (diện tích tim tường). Loại căn: ${aptBedrooms}PN - ${aptBathrooms}WC. Hướng ban công: Đông Nam (hướng sông thoáng mát view hồ bơi), Hướng cửa chính: Tây Bắc.
+- Căn hộ chính đang trao đổi: ${aptDisplayName}
+- Diện tích chuẩn xác từ hệ thống NKS: ${aptAreaClear} m² (diện tích thông thủy) / ${aptAreaWall} m² (diện tích tim tường). Loại căn: ${aptBedrooms}PN - ${aptBathrooms}WC. Tầng: 30, Tòa: The Tropical BS-07.
+- Căn hộ phụ cùng sở hữu: CH-01 (Tòa The Tropical BS-07, Tầng 30, Diện tích 50.0 m², 2PN - 1WC).
 - Tình trạng: Đã bàn giao (Biên bản bàn giao BBBG-SKYLINE-${targetAptCode}-20260115 do KTS. Lê Quang Minh bàn giao, 3 chìa cơ, 2 thẻ cư dân).
 - Cư dân đang trò chuyện: ${residentName} (${residentRole === 'OWNER' ? 'Chủ hộ' : 'Thành viên cư dân'}) | SĐT: ${residentPhone} | CCCD: ${residentIdCard}.
 - Phương tiện đã đăng ký cố định của căn hộ:
@@ -361,7 +363,7 @@ ${bookingsStr}
 
 NGUYÊN TẮC GIAO TIẾP VÀ DẠNG TỪ BẮT BUỘC:
 - Luôn TRẢ LỜI ĐÚNG TRỌNG TÂM câu hỏi. Không tuôn ra các dữ liệu cư dân không yêu cầu.
-- Luôn ưu tiên dùng CHÍNH XÁC các con số và thông tin thực tế từ dữ liệu trên (số tiền hóa đơn 2.465.000 đ, diện tích 78.5 m² / 83.2 m², thành viên gia đình, biển số xe ${residentLicensePlate}, thẻ khách thăm, phiếu báo hỏng, lịch đặt...).
+- Luôn ưu tiên dùng CHÍNH XÁC các con số và thông tin thực tế từ dữ liệu trên (số tiền hóa đơn 2.505.000 VNĐ, diện tích chuẩn 42.0 m² / 46.0 m² căn CH-06 và 50.0 m² căn CH-01, thành viên gia đình, biển số xe ${residentLicensePlate}, thẻ khách thăm, phiếu sự cố NKS #925, #924, #921, lịch đặt...).
 - Xưng hô: "Tôi" và gọi cư dân là "Quý cư dân" hoặc "Quý vị".
 - Giọng văn ấm áp, lịch sự, ân cần như quản gia 5 sao.
 - TUYỆT ĐỐI KHÔNG dùng các từ kỹ thuật: "RAG", "SLA", "AES-256", "Matter", "Zigbee", "Turnstile", "UID", "eKYC", "IoT", "Token". Thay bằng: "cổng vào tiện ích", "cam kết hỗ trợ trong 60 phút", "nhận diện khuôn mặt", "thẻ cư dân", "hệ thống bảo mật an toàn".
@@ -418,11 +420,11 @@ export function generateSmartProjectFallback(
   // 1. Căn hộ chuẩn xác từ store
   const aptFromStore = getApartmentByCode(targetAptCode);
   const apt: any = aptFromStore || (isOwnerUnit ? DEMO_APARTMENTS[0] : (DEMO_APARTMENTS.find(a => a.apt_code.toUpperCase() === targetAptCode) || DEMO_APARTMENTS[0]));
-  const aptDisplayName = isOwnerUnit ? 'CH-06 (Tòa The Tropical BS-07)' : (apt?.code || apt?.apt_code || targetAptCode);
-  const aptAreaClear = isOwnerUnit ? 78.5 : (apt?.clear_area || apt?.area || 78.5);
-  const aptAreaWall = isOwnerUnit ? 83.2 : (apt?.wall_area || apt?.wallArea || 83.2);
-  const aptBedrooms = isOwnerUnit ? 2 : (apt?.bedrooms || 2);
-  const aptBathrooms = isOwnerUnit ? 2 : (apt?.bathrooms || 2);
+  const aptDisplayName = isOwnerUnit ? 'CH-06 (Tòa The Tropical BS-07, Tầng 30)' : (apt?.code || apt?.apt_code || targetAptCode);
+  const aptAreaClear = isOwnerUnit ? 42.0 : (apt?.clear_area || apt?.area || 42.0);
+  const aptAreaWall = isOwnerUnit ? 46.0 : (apt?.wall_area || apt?.wallArea || 46.0);
+  const aptBedrooms = isOwnerUnit ? 1 : (apt?.bedrooms || 1);
+  const aptBathrooms = isOwnerUnit ? 1 : (apt?.bathrooms || 1);
 
   // 2. Chủ hộ & Cư dân
   const rawOwner = DEMO_USERS.find((u) => (isOwnerUnit ? (u.apartment_code === 'CH-06' || u.id === 'user-owner-1') : u.apartment_code === targetAptCode)) || DEMO_USERS[2];
@@ -463,7 +465,7 @@ export function generateSmartProjectFallback(
     : (() => {
         const stored = getTickets(isOwnerUnit ? 'CH-06' : targetAptCode, residentPhone);
         if (stored && stored.length > 0) return stored;
-        return DEMO_TICKETS.filter((t) => isOwnerUnit ? (t.apt_code === 'CH-06' || t.apt_code === '12A05') : t.apt_code === targetAptCode);
+        return DEMO_TICKETS;
       })();
 
   // 7. Đặt lịch tiện ích
@@ -701,29 +703,33 @@ ${detailsList || '  - Tiền điện, tiền nước và phí quản lý vận h
   }
 
   // 4. Inquiries about Maintenance / Repair / Technical Ticket
-  if (text.includes('sửa') || text.includes('hỏng') || text.includes('vòi') || text.includes('rò rỉ') || text.includes('kỹ thuật') || text.includes('sự cố') || text.includes('thợ') || text.includes('phiếu')) {
-    const activeTicket = activeTickets.find((t: any) => t.status === 'In_Progress' || t.status === 'Assigned' || t.status === 'Open' || t.status === 'pending') || activeTickets[0];
+  if (text.includes('sửa') || text.includes('hỏng') || text.includes('vòi') || text.includes('rò rỉ') || text.includes('kỹ thuật') || text.includes('sự cố') || text.includes('thợ') || text.includes('phiếu') || text.includes('ticket')) {
+    const activeTicket = activeTickets[0] || DEMO_TICKETS[0];
     if (activeTicket) {
-      const ticketId = activeTicket.nks_id ? `#${activeTicket.nks_id}` : (activeTicket.id ? `#${activeTicket.id}` : '#102');
-      const statusText = (activeTicket.status === 'In_Progress' || activeTicket.status === 'pending') ? '🛠️ Đang xử lý' : activeTicket.status === 'Assigned' ? '📋 Đã phân công kỹ thuật' : (activeTicket.status === 'Resolved' || activeTicket.status === 'resolved' || activeTicket.status === 'publish') ? '✅ Đã hoàn thành' : '⏳ Mới tiếp nhận';
-      return `Dạ thưa Quý cư dân ${residentName}, tôi đã kiểm tra sổ phiếu kỹ thuật của căn hộ ${aptDisplayName}:
+      const ticketId = activeTicket.nks_id ? `#${activeTicket.nks_id}` : (activeTicket.id ? `#${activeTicket.id}` : '#925');
+      const ticketContent = (activeTicket.content || activeTicket.description || '').replace(/\n/g, ' ');
+      const techName = activeTicket.assigned_technician || activeTicket.engineername || 'Trần Đình Trọng (Chuyên viên Kỹ thuật & Thiết bị)';
+      
+      const ticketsList = activeTickets.slice(0, 3).map((t: any) => {
+        const tId = t.nks_id ? `#${t.nks_id}` : (t.id ? `#${t.id}` : '');
+        const st = (t.status === 'Resolved' || t.status === 'resolved' || t.status === 'publish') ? '✅ Đã hoàn thành' : '🛠️ Đang xử lý';
+        const tech = t.assigned_technician || t.engineername || 'Trần Đình Trọng';
+        return `* **Phiếu ${tId} [${t.service || t.ai_category || 'Kỹ thuật'}]:** "${(t.content || t.description || '').replace(/\n/g, ' ')}" -> Trạng thái: ${st} (${tech})`;
+      }).join('\n');
 
-* **Phiếu yêu cầu:** **${ticketId}** [${activeTicket.ai_category || activeTicket.ticket_type_label || 'Kỹ thuật'}]
-* **Nội dung sự cố:** "${(activeTicket.content || '').replace(/\n/g, ' ')}"
-* **Trạng thái hiện tại:** **${statusText}**
-* **Kỹ thuật viên phụ trách:** **${activeTicket.assigned_technician || 'Lê Văn Kỹ Thuật (Cơ Điện & Nước)'}**
-* **Cam kết tiến độ:** Kỹ thuật viên có mặt tại căn hộ hỗ trợ trong vòng **15 - 60 phút**.
+      return `Dạ thưa Quý cư dân ${residentName}, tôi đã tra cứu danh sách phiếu yêu cầu kỹ thuật thực tế từ hệ thống NKS của căn hộ ${aptDisplayName}:
 
-Nếu cần hỗ trợ khẩn cấp hơn, Quý cư dân vui lòng bấm gọi ngay **Hotline Kỹ Thuật Tòa Nhà: 1900 8899** nhé!
+${ticketsList || `* **Phiếu ${ticketId} [${activeTicket.ai_category || 'Kỹ thuật'}]:** "${ticketContent}" -> Trạng thái: ✅ Đã hoàn thành (${techName})`}
 
-[SUGGESTIONS: Kỹ thuật viên khi nào có mặt? | Hotline Ban Quản Lý khẩn cấp | Tra cứu hóa đơn tháng này]`;
+💡 **Ghi chú từ BQL:** Tất cả các phiếu yêu cầu gần nhất đều đã được Đội Kỹ thuật Tòa nhà (KTV Trần Đình Trọng & KTV Hoàng) xử lý hoàn tất đảm bảo chất lượng. Nếu căn hộ phát sinh thêm sự cố mới, Quý vị có thể gửi yêu cầu ngay trên ứng dụng hoặc gọi **Hotline Kỹ Thuật 1900 8899** nhé!
+
+[SUGGESTIONS: Báo sự cố kỹ thuật mới | Hotline Ban Quản Lý khẩn cấp | Tra cứu hóa đơn tháng này]`;
     } else {
       return `Dạ thưa Quý cư dân ${residentName}, hiện tại căn hộ ${aptDisplayName} không có phiếu báo hỏng kỹ thuật nào đang chờ xử lý. Nếu căn hộ gặp sự cố về điện, nước hay khóa cửa, Quý vị có thể vào tab **Yêu Cầu Sửa Chữa** để gửi phản ánh, đội ngũ kỹ thuật sẽ có mặt hỗ trợ trong vòng 15 - 60 phút ạ!
 
-[SUGGESTIONS: Báo thợ kiểm tra van nước rò rỉ | Giờ thi công sửa chữa được phép | Hotline kỹ thuật 1900 8899]`;
+[SUGGESTIONS: Báo sự cố kỹ thuật mới | Giờ thi công sửa chữa được phép | Hotline kỹ thuật 1900 8899]`;
     }
   }
-
 
   // 5. Inquiries about Family Members / Resident Profile / Apartment Details
   if (text.includes('người nhà') || text.includes('thành viên') || text.includes('gia đình') || text.includes('ai') || text.includes('chủ hộ') || text.includes('diện tích') || text.includes('phòng')) {
@@ -731,10 +737,12 @@ Nếu cần hỗ trợ khẩn cấp hơn, Quý cư dân vui lòng bấm gọi ng
       ? familyMembers.map((m) => `  - **${m.fullName}** (${m.relationship || 'Thành viên'}): SĐT ${m.phone || 'Chưa cập nhật'}, CCCD ${m.idCard || 'Đã định danh'}${m.licensePlate ? `, Biển số: ${m.licensePlate}` : ''} (${m.faceStatus || 'Đã xác thực'})`).join('\n')
       : `  - Hiện chưa có thành viên nào khác đăng ký cùng cư trú (Chỉ có Chủ Hộ).`;
 
-    return `Dạ thưa Quý cư dân ${residentName}, thông tin cư trú và căn hộ **${targetAptCode}** như sau:
+    return `Dạ thưa Quý cư dân ${residentName}, thông tin cư trú và căn hộ của Quý vị từ hệ thống NKS như sau:
 
-* 🏠 **Thông tin căn hộ:** Diện tích thông thủy **${aptAreaClear} m²** (tim tường **${aptAreaWall} m²**), thiết kế **${aptBedrooms}PN - ${aptBathrooms}WC**, hướng ban công Đông Nam.
-* 👤 **Chủ hộ:** **${residentName}** (SĐT: ${residentPhone}, Biển số xe: ${residentLicensePlate}).
+* 🏠 **Căn hộ chính (${targetAptCode}):** Tòa The Tropical BS-07, Tầng 30. Diện tích thông thủy **${aptAreaClear} m²** (tim tường **${aptAreaWall} m²**), thiết kế **${aptBedrooms}PN - ${aptBathrooms}WC**, hướng ban công Đông Nam view hồ bơi và sông Sài Gòn.
+* 🏢 **Căn hộ sở hữu kèm theo:** Căn hộ **CH-01** (Tòa The Tropical BS-07, Tầng 30, Diện tích **50.0 m²**, thiết kế **2PN - 1WC**).
+* 👤 **Chủ hộ:** **${residentName}** (SĐT: ${residentPhone}, CCCD: ${liveOwner.id_number || '067204000961'}).
+* 🚗 **Phương tiện đăng ký:** Ô tô Mercedes ${residentLicensePlate} (Hầm B2 - Ô B2-A15) & Xe máy 59P1-886.79 (Hầm B1 - Khu B1-M88).
 * 👨‍👩‍👧‍👦 **Danh sách thành viên gia đình đăng ký:**
 ${membersListStr}
 
@@ -900,9 +908,9 @@ export async function askGeminiConcierge(
     },
     contents,
     generationConfig: {
-      temperature: 0.1, // Strict factual grounding - eliminates fake data & hallucinations
-      topP: 0.8,
-      maxOutputTokens: 1000,
+      temperature: 0.2, // Strict factual grounding - eliminates fake data & hallucinations
+      topP: 0.85,
+      maxOutputTokens: 4096, // Ample token capacity prevents mid-sentence truncation
     },
   };
 
@@ -932,34 +940,23 @@ export async function askGeminiConcierge(
     return replyText;
   };
 
-  try {
-    // Attempt with Primary Model (gemini-3.6-flash) with 20s timeout
-    return await tryModel(GEMINI_PRIMARY_MODEL, PRIMARY_TIMEOUT_MS);
-  } catch (errPrimary: any) {
-    console.warn(
-      `Gemini primary model ${GEMINI_PRIMARY_MODEL} timed out or failed (${errPrimary.message}), falling back to ${GEMINI_FALLBACK_MODEL}...`
-    );
+  const candidateModels = [
+    { name: GEMINI_PRIMARY_MODEL, timeout: PRIMARY_TIMEOUT_MS },
+    { name: GEMINI_FALLBACK_MODEL, timeout: FALLBACK_TIMEOUT_MS },
+    { name: GEMINI_FAST_FALLBACK_MODEL, timeout: FAST_TIMEOUT_MS },
+    { name: GEMINI_BACKUP_MODEL, timeout: 15000 },
+  ];
 
+  for (const item of candidateModels) {
     try {
-      // Attempt with Fallback Model (gemini-3.5-flash) with 15s timeout
-      return await tryModel(GEMINI_FALLBACK_MODEL, FALLBACK_TIMEOUT_MS);
-    } catch (errFallback: any) {
-      console.warn(
-        `Gemini fallback model ${GEMINI_FALLBACK_MODEL} failed (${errFallback.message}), trying fast model ${GEMINI_FAST_FALLBACK_MODEL}...`
-      );
-
-      try {
-        // Attempt with Ultra-fast Model (gemini-3.5-flash-lite) with 10s timeout
-        return await tryModel(GEMINI_FAST_FALLBACK_MODEL, FAST_TIMEOUT_MS);
-      } catch (errFast: any) {
-        console.warn(
-          `All Gemini models failed (${errFast.message}). Switching seamlessly to Smart Project Data Engine.`
-        );
-        // Fallback instantly to Project Knowledge Engine with zero error to the user
-        return generateSmartProjectFallback(message, contextOrAptCode);
-      }
+      return await tryModel(item.name, item.timeout);
+    } catch (err: any) {
+      console.warn(`Gemini model ${item.name} failed (${err.message}), trying next model...`);
     }
   }
+
+  console.warn('All Gemini models failed. Switching seamlessly to Smart Project Data Engine.');
+  return generateSmartProjectFallback(message, contextOrAptCode);
 }
 
 /**
