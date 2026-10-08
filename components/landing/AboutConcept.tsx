@@ -17,7 +17,7 @@ export default function AboutConcept() {
         : 'bg-white text-gray-900 border-gray-200'
     }`}>
       {/* Background glow tinh tế */}
-      <div className="absolute top-1/4 right-0 w-96 h-96 bg-[#C5A880]/5 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute top-1/4 right-0 w-96 h-96 bg-[#C5A880]/5 rounded-none blur-3xl pointer-events-none" />
 
       <div className="max-w-7xl mx-auto px-6 relative z-10">
         {/* Section Header */}

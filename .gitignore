@@ -34,9 +34,7 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# temp IDE / agents
-.agents/
-.codex/
+# temp IDE
 .skyline_tickets.json
 
 *.traineddata

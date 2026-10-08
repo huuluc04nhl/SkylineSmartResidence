@@ -194,13 +194,13 @@ export default function Topbar({
       <div className="flex items-center gap-2 sm:gap-4">
         {/* Emergency Hotline Button */}
         <a
-          href="tel:19001088"
-          className="hidden lg:flex items-center gap-1.5 px-2.5 py-1 bg-red-950/60 border border-red-500/80 text-red-300 text-[11px] font-mono hover:bg-red-900 transition-colors"
+          href="tel:19008899"
+          className="hidden lg:flex items-center gap-1.5 px-2.5 py-1 bg-red-950/60 border border-red-500/80 text-red-300 text-[11px] font-mono hover:bg-red-900 transition-colors rounded-none"
           title="Hotline An Ninh & Khẩn Cấp 24/7"
         >
-          <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-ping"></span>
+          <span className="w-1.5 h-1.5 rounded-none bg-red-500 animate-ping"></span>
           <PhoneCall className="w-3 h-3 text-red-400" />
-          <span>1900 1088</span>
+          <span>1900 8899</span>
         </a>
 
         {/* Notification Icon */}

@@ -45,6 +45,7 @@ export default function Footer() {
               <li><a href="#concept" className={`transition-colors ${isDark ? 'hover:text-[#C5A880]' : 'hover:text-[#9E8057]'}`}>Triết lý thiết kế</a></li>
               <li><a href="#floorplans" className={`transition-colors ${isDark ? 'hover:text-[#C5A880]' : 'hover:text-[#9E8057]'}`}>Mặt bằng căn hộ</a></li>
               <li><a href="#amenities" className={`transition-colors ${isDark ? 'hover:text-[#C5A880]' : 'hover:text-[#9E8057]'}`}>Tiện ích đặc quyền</a></li>
+              <li><a href="#services" className={`transition-colors ${isDark ? 'hover:text-[#C5A880]' : 'hover:text-[#9E8057]'}`}>Dịch vụ quản gia 5 sao</a></li>
               <li><a href="#smart-tech" className={`transition-colors ${isDark ? 'hover:text-[#C5A880]' : 'hover:text-[#9E8057]'}`}>Công nghệ thông minh</a></li>
             </ul>
           </div>
@@ -74,7 +75,7 @@ export default function Footer() {
             <div className={`text-xs space-y-1.5 ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
               <div>Chung Cư BS-07, Phân khu Beverly Solari, Vinhomes Grand Park, TP. Thủ Đức, TP.HCM</div>
               <div>Hotline Tiếp Đón: <strong className={isDark ? 'text-white' : 'text-gray-900'}>0901 888 999</strong></div>
-              <div>Hotline Kỹ Thuật: <strong className={isDark ? 'text-white' : 'text-gray-900'}>1900 1088</strong></div>
+              <div>Hotline Kỹ Thuật: <strong className={isDark ? 'text-white' : 'text-gray-900'}>1900 8899</strong></div>
               <div>Email: banquanly@skyline-residence.vn</div>
             </div>
           </div>

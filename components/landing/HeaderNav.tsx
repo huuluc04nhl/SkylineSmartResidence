@@ -37,6 +37,7 @@ export default function HeaderNav({ onOpenLogin }: HeaderNavProps) {
           <a href="#concept" className={`whitespace-nowrap transition-colors ${isDark ? 'hover:text-[#C5A880]' : 'hover:text-[#9E8057]'}`}>Tổng Quan</a>
           <a href="#floorplans" className={`whitespace-nowrap transition-colors ${isDark ? 'hover:text-[#C5A880]' : 'hover:text-[#9E8057]'}`}>Mặt Bằng Căn Hộ</a>
           <a href="#amenities" className={`whitespace-nowrap transition-colors ${isDark ? 'hover:text-[#C5A880]' : 'hover:text-[#9E8057]'}`}>Tiện Ích 5 Sao</a>
+          <a href="#services" className={`whitespace-nowrap transition-colors ${isDark ? 'hover:text-[#C5A880]' : 'hover:text-[#9E8057]'}`}>Dịch Vụ 5 Sao</a>
           <a href="#smart-tech" className={`whitespace-nowrap transition-colors ${isDark ? 'hover:text-[#C5A880]' : 'hover:text-[#9E8057]'}`}>Lõi Công Nghệ AI</a>
         </nav>
 
@@ -179,6 +180,7 @@ export default function HeaderNav({ onOpenLogin }: HeaderNavProps) {
             <a href="#concept" onClick={() => setMobileMenuOpen(false)} className="py-1">Tổng Quan</a>
             <a href="#floorplans" onClick={() => setMobileMenuOpen(false)} className="py-1">Mặt Bằng Căn Hộ</a>
             <a href="#amenities" onClick={() => setMobileMenuOpen(false)} className="py-1">Tiện Ích 5 Sao</a>
+            <a href="#services" onClick={() => setMobileMenuOpen(false)} className="py-1">Dịch Vụ 5 Sao</a>
             <a href="#smart-tech" onClick={() => setMobileMenuOpen(false)} className="py-1">Lõi Công Nghệ AI</a>
           </nav>
 

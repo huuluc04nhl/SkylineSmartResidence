@@ -6,6 +6,7 @@ import HeroSection from '@/components/landing/HeroSection';
 import AboutConcept from '@/components/landing/AboutConcept';
 import FloorPlanExplorer from '@/components/landing/FloorPlanExplorer';
 import AmenitiesSection from '@/components/landing/AmenitiesSection';
+import ServicesSection from '@/components/landing/ServicesSection';
 import SmartTechSection from '@/components/landing/SmartTechSection';
 import Footer from '@/components/landing/Footer';
 import LoginModal from '@/components/landing/LoginModal';
@@ -49,7 +50,10 @@ export default function HomePage() {
         {/* 4. Luxury Amenities */}
         <AmenitiesSection />
 
-        {/* 5. Smart AI Core & Specifications */}
+        {/* 5. 5-Star Resident Concierge & NKS Technical Support */}
+        <ServicesSection />
+
+        {/* 6. Smart AI Core & 24h Telemetry */}
         <SmartTechSection />
       </main>
 

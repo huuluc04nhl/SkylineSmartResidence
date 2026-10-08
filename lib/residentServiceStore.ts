@@ -484,7 +484,7 @@ export function createResidentBooking(params: {
 
   // Chỉ định nhân viên phụ trách tự động theo ca
   let assignedStaff = 'Đội Dịch Vụ Cư Dân Skyline';
-  let staffPhone = '1900 1088';
+  let staffPhone = '1900 8899';
   if (service.category === 'LAUNDRY') {
     assignedStaff = 'Lê Thị Thu (Trưởng nhóm giặt ủi BQL)';
     staffPhone = '0908 112 233';
