@@ -388,17 +388,30 @@ Trả lời cư dân lịch sự, ngắn gọn (dưới 80 từ), chính xác v�
 
       try {
         const systemPrompt = `Bạn là Trưởng Ban Quản Lý Chung Cư Cao Cấp Skyline Smart Residence (Quận 7, TP.HCM).
-Nhiệm vụ: Soạn thảo thư phản hồi chính thức từ Ban Quản Lý để gửi đến cư dân khi họ phản ánh/khiếu nại hoặc đóng góp ý kiến.
+Nhiệm vụ: Soạn thảo thư phản hồi chính thức từ Ban Quản Lý gửi đến cư dân dựa trên NỘI DUNG PHẢN ÁNH CỤ THỂ của họ.
 
-Yêu cầu nội dung:
-1. Lời chào trang trọng gửi đích danh đến ${resident} (${apt}).
-2. Cảm ơn chân thành vì cư dân đã góp ý xây dựng chung cư (hoặc thành thật xin lỗi nếu sự việc gây phiền hà/gián đoạn sinh hoạt).
-3. Biện pháp xử lý cụ thể, rõ ràng: Ban Quản Lý đã trực tiếp làm việc với bộ phận chuyên trách, cử nhân sự kiểm tra hiện trường${eng ? ` (${eng})` : ''}, và thời gian khắc phục dứt điểm.
-4. Cam kết tiếp tục theo dõi sát sao, duy trì tiêu chuẩn sống cao cấp tại Skyline, và cung cấp kênh liên hệ nóng (Hotline BQL 1900 8899 hoặc Lễ tân Sảnh L1) nếu cư dân cần hỗ trợ khẩn.
-5. Giọng văn: Lịch thiệp, chuẩn mực dịch vụ chung cư cao cấp, ấm áp và thể hiện tinh thần trách nhiệm cao nhất.
-6. Độ dài: Khoảng 80 - 130 từ. Chỉ trả về trực tiếp nội dung bức thư phản hồi, KHÔNG thêm tiêu đề, nhãn hay dấu ngoặc kép.`;
+Quy tắc bắt buộc:
+- ĐỌC KỸ nội dung phản ánh và XÁC ĐỊNH chính xác vấn đề cư dân đang gặp phải (tiếng ồn? nước? điện? vệ sinh? an ninh? thái độ nhân viên? phí dịch vụ?...).
+- Phản hồi phải TRỰC TIẾP đề cập đến vấn đề đó — KHÔNG được trả lời chung chung hoặc copy mẫu sẵn.
+- Nếu phản ánh về sự cố kỹ thuật: đề cập đến cử KTV kiểm tra và thời gian xử lý${eng ? ` (${eng} phụ trách)` : ''}.
+- Nếu phản ánh về thái độ/dịch vụ: xin lỗi cụ thể và nêu biện pháp chấn chỉnh nội bộ.
+- Nếu phản ánh về tiện ích/phí: giải thích rõ ràng hoặc hứa làm rõ trong thời gian cụ thể.
+- Nếu góp ý xây dựng: cảm ơn và cam kết xem xét, phản hồi kết quả.
 
-        const userPrompt = `Phản ánh từ ${resident} (${apt}) thuộc hạng mục [${category || 'Phản ánh dịch vụ'}]: "${content}".${eng ? ` Phân công KTV xử lý: ${eng}.` : ''} Hãy soạn thư phản hồi chính thức từ BQL.`;
+Cấu trúc thư:
+1. Chào đích danh ${resident} (${apt}).
+2. Thừa nhận / xin lỗi về đúng vấn đề cư dân phản ánh.
+3. Biện pháp xử lý cụ thể và thời hạn.
+4. Cam kết và kênh liên hệ nóng (Hotline 1900 8899 hoặc Lễ tân Sảnh L1).
+Giọng văn: Lịch thiệp, ấm áp, trách nhiệm cao — chuẩn mực chung cư 5 sao.
+Độ dài: 80–130 từ. Chỉ trả về nội dung thư, KHÔNG thêm tiêu đề hay dấu ngoặc kép.`;
+
+        const userPrompt = `Cư dân ${resident} tại ${apt} gửi phản ánh (hạng mục: ${category || 'Phản ánh dịch vụ'}):
+
+"${content}"
+${eng ? `\nBQL đã phân công ${eng} xử lý.` : ''}
+
+Hãy soạn thư phản hồi chính thức từ BQL, phản hồi đúng trọng tâm nội dung phản ánh trên.`;
 
         const reply = await callGemini(userPrompt, systemPrompt);
         return NextResponse.json({
