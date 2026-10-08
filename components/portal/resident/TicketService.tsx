@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
 import { 
@@ -819,34 +819,32 @@ export default function TicketService({ currentUser }: TicketServiceProps) {
             {isAnalyzingImage && (
               <div className="w-full mt-2 p-2.5 bg-[#0F1824] border border-sky-500/40 flex items-center gap-2 text-xs text-sky-300 animate-pulse">
                 <Bot className="w-3.5 h-3.5 text-sky-400 flex-shrink-0" />
-                <span>AI Kỹ Thuật đang phân tích hình ảnh sự cố...</span>
+                <span>Đang xem ảnh và đưa ra nhận xét cho bạn...</span>
               </div>
             )}
             {!isAnalyzingImage && aiImageAnalysis && (
-              <div className={`w-full mt-2 p-2.5 border text-xs space-y-1 animate-fadeIn ${
+              <div className={`w-full mt-2 p-2.5 border text-xs space-y-1.5 animate-fadeIn ${
                 aiImageAnalysis.severity === 'HIGH'
                   ? 'bg-rose-950/30 border-rose-500/50'
                   : aiImageAnalysis.severity === 'MEDIUM'
                     ? 'bg-amber-950/30 border-amber-500/50'
                     : 'bg-emerald-950/30 border-emerald-500/50'
               }`}>
-                <div className="flex items-center justify-between">
-                  <span className="flex items-center gap-1.5 font-semibold">
-                    <Bot className="w-3.5 h-3.5 text-sky-400" />
-                    <span className="text-sky-300">AI Phân Tích Ảnh</span>
-                    <span className={`px-1.5 py-px text-[10px] font-bold uppercase ${
-                      aiImageAnalysis.severity === 'HIGH' ? 'bg-rose-900 text-rose-200' :
-                      aiImageAnalysis.severity === 'MEDIUM' ? 'bg-amber-900 text-amber-200' :
-                      'bg-emerald-900 text-emerald-200'
-                    }`}>
-                      {aiImageAnalysis.severity === 'HIGH' ? '⚡ Khẩn cấp' : aiImageAnalysis.severity === 'MEDIUM' ? '⏱ Cần xử lý' : '✓ Nhẹ'}
-                    </span>
-                    <span className="text-[10px] text-gray-400 font-mono">• {aiImageAnalysis.category}</span>
+                <div className="flex items-center gap-1.5 flex-wrap">
+                  <Bot className="w-3.5 h-3.5 text-sky-400" />
+                  <span className="text-sky-300 font-semibold">Nhận xét từ AI</span>
+                  <span className={`px-1.5 py-px text-[10px] font-bold ${
+                    aiImageAnalysis.severity === 'HIGH' ? 'bg-rose-900 text-rose-200' :
+                    aiImageAnalysis.severity === 'MEDIUM' ? 'bg-amber-900 text-amber-200' :
+                    'bg-emerald-900 text-emerald-200'
+                  }`}>
+                    {aiImageAnalysis.severity === 'HIGH' ? '🔴 Cần xử lý gấp' : aiImageAnalysis.severity === 'MEDIUM' ? '🟡 Nên sửa hôm nay' : '🟢 Không gấp'}
                   </span>
+                  <span className="text-[10px] text-gray-400">• {aiImageAnalysis.category}</span>
                 </div>
                 <p className="text-gray-200 leading-relaxed">{aiImageAnalysis.summary}</p>
-                <p className="text-amber-300/90 flex items-start gap-1">
-                  <AlertCircle className="w-3 h-3 flex-shrink-0 mt-0.5" />
+                <p className="text-amber-200/90 flex items-start gap-1.5">
+                  <Lightbulb className="w-3 h-3 flex-shrink-0 mt-0.5 text-amber-400" />
                   {aiImageAnalysis.action}
                 </p>
               </div>

@@ -211,17 +211,19 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ success: false, error: 'Không có ảnh để phân tích' }, { status: 400 });
       }
 
-      const systemPrompt = `Bạn là AI Chuyên Gia Kỹ Thuật của Chung Cư Cao Cấp Skyline Smart Residence (TP.HCM).
-Nhiệm vụ: Phân tích ảnh sự cố do cư dân tải lên và trả về đánh giá kỹ thuật ngắn gọn.
+      const systemPrompt = `Bạn là trợ lý thân thiện của Chung Cư Cao Cấp Skyline Smart Residence (TP.HCM).
+Nhiệm vụ: Xem ảnh sự cố mà cư dân gửi lên và đưa ra nhận xét dễ hiểu, gần gũi như người quen nói chuyện.
 
 Hãy xác định:
-1. MỨC ĐỘ: LOW (nhẹ, chưa cần xử lý gấp), MEDIUM (cần xử lý trong ngày), HIGH (khẩn cấp < 45 phút)
-2. HẠNG MỤC: Điện / Nước / Điều hòa / Khóa cửa / Khác
-3. TÓM TẮT: 1-2 câu mô tả những gì quan sát được trong ảnh (hiện tượng, vị trí, dấu hiệu rõ ràng)
-4. HÀNH ĐỘNG: 1 câu khuyến cáo tức thì cho cư dân trong lúc chờ KTV
+1. MỨC ĐỘ: LOW (chưa cần vội, sửa lúc thuận tiện), MEDIUM (nên sửa trong ngày hôm nay), HIGH (cần hỗ trợ ngay, dưới 45 phút)
+2. LOẠI SỰ CỐ: Điện / Nước / Điều hòa / Khóa cửa / Khác
+3. NHẬN XÉT: 1-2 câu mô tả đơn giản những gì nhìn thấy trong ảnh. Dùng ngôn ngữ gần gũi, dễ hiểu — KHÔNG dùng thuật ngữ kỹ thuật.
+4. GỢI Ý: 1 câu hướng dẫn thân thiện, đơn giản cho cư dân làm ngay trong lúc chờ đội hỗ trợ đến. Bắt đầu bằng "Bạn" cho gần gũi.
 
 Trả về chính xác theo format JSON sau (không có markdown, không giải thích thêm):
-{"severity":"LOW|MEDIUM|HIGH","category":"tên hạng mục","summary":"mô tả quan sát","action":"hành động khuyến cáo"}`;
+{"severity":"LOW|MEDIUM|HIGH","category":"loại sự cố","summary":"nhận xét ngắn","action":"gợi ý hành động"}`;
+
+
 
       try {
         const visionResponse = await callGeminiVision(
@@ -233,17 +235,27 @@ Trả về chính xác theo format JSON sau (không có markdown, không giải 
 
         let parsed: { severity: string; category: string; summary: string; action: string };
         try {
-          const cleaned = visionResponse.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+          // Bóc bỏ markdown fence nếu Gemini thêm vào
+          const cleaned = visionResponse
+            .replace(/```json\s*/gi, '')
+            .replace(/```\s*/g, '')
+            .trim();
           parsed = JSON.parse(cleaned);
         } catch {
+          // Nếu parse thất bại, thử trích xuất từng field bằng regex
+          const summaryMatch = visionResponse.match(/"summary"\s*:\s*"([^"]+)"/);
+          const actionMatch = visionResponse.match(/"action"\s*:\s*"([^"]+)"/);
+          const severityMatch = visionResponse.match(/"severity"\s*:\s*"(LOW|MEDIUM|HIGH)"/);
+          const categoryMatch = visionResponse.match(/"category"\s*:\s*"([^"]+)"/);
+          const lower = visionResponse.toLowerCase();
           parsed = {
-            severity: visionResponse.toLowerCase().includes('khẩn') || visionResponse.toLowerCase().includes('nguy hiểm') ? 'HIGH'
-              : visionResponse.toLowerCase().includes('cần xử lý') ? 'MEDIUM' : 'LOW',
-            category: area || 'Khác',
-            summary: visionResponse.substring(0, 200),
-            action: 'Vui lòng chờ Kỹ thuật viên đến kiểm tra trực tiếp.',
+            severity: severityMatch?.[1] || (lower.includes('khẩn') || lower.includes('nguy') ? 'HIGH' : lower.includes('nên sửa') ? 'MEDIUM' : 'LOW'),
+            category: categoryMatch?.[1] || area || 'Khác',
+            summary: summaryMatch?.[1] || 'Hệ thống đã xem ảnh và ghi nhận sự cố, đội hỗ trợ sẽ sớm liên hệ để khắc phục.',
+            action: actionMatch?.[1] || 'Bạn không cần làm gì thêm, đội hỗ trợ sẽ đến giúp bạn.',
           };
         }
+
 
         return NextResponse.json({
           success: true,
