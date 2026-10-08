@@ -90,7 +90,7 @@ interface SmartHomeHubProps {
 
 export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
   const isOwner = currentUser.role === 'OWNER';
-  const aptCode = currentUser.apartment_code || '12A05';
+  const aptCode = currentUser.apartment_code || 'CH-06';
   const aptFloor = aptCode.replace(/[^0-9]/g, '').slice(0, 2) || '12';
   const aptUnit = getApartmentByCode(aptCode);
   const aptArea = aptUnit ? aptUnit.area : 78.5;

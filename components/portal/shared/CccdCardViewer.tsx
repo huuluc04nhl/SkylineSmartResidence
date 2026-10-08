@@ -37,7 +37,7 @@ export default function CccdCardViewer({
   onClose,
   fullName,
   idCardNo,
-  apartmentCode = '12A05',
+  apartmentCode = 'CH-06',
   frontImage = '',
   backImage = '',
   idDate = '',

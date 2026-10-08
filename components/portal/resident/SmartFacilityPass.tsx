@@ -59,7 +59,7 @@ interface SmartFacilityPassProps {
 }
 
 export default function SmartFacilityPass({ currentUser, onNavigateModule }: SmartFacilityPassProps) {
-  const aptCode = currentUser.apartment_code || '12A05';
+  const aptCode = currentUser.apartment_code || 'CH-06';
   const isOwner = currentUser.role === 'OWNER';
   const userName = currentUser?.full_name || (currentUser as any)?.fullname || 'Cư Dân';
 

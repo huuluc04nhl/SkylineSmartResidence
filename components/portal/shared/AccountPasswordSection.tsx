@@ -34,7 +34,7 @@ export default function AccountPasswordSection({
   onSuccess,
   isModal = false,
 }: AccountPasswordSectionProps) {
-  const aptCode = currentUser.apartment_code || '12A05';
+  const aptCode = currentUser.apartment_code || 'CH-06';
   const isAdmin = currentUser.role === 'ADMIN';
   const isOwner = currentUser.role === 'OWNER';
 

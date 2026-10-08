@@ -244,7 +244,7 @@ export default function Sidebar({
                   {currentUser.full_name || (currentUser as any)?.fullname || 'Cư Dân SKYLINE'}
                 </div>
                 <div className="text-[10px] text-[#C5A880] font-mono uppercase font-bold tracking-wider mt-0.5 truncate">
-                  {role === 'ADMIN' ? 'BQL Chung Cư' : role === 'OWNER' ? `Căn ${currentUser.apartment_code || '12A05'} (Chủ Hộ)` : `Căn ${currentUser.apartment_code || '12A05'} (Người Nhà)`}
+                  {role === 'ADMIN' ? 'BQL Chung Cư' : role === 'OWNER' ? `Căn ${currentUser.apartment_code || 'CH-06'} (Chủ Hộ)` : `Căn ${currentUser.apartment_code || 'CH-06'} (Người Nhà)`}
                 </div>
               </div>
             </div>
@@ -265,7 +265,7 @@ export default function Sidebar({
               {/* Flyout Tooltip when collapsed on Avatar */}
               <div className="fixed left-20 top-20 ml-2 px-3 py-2 bg-[#0D1117] text-white text-xs whitespace-nowrap border border-[#C5A880] shadow-2xl z-50 pointer-events-none hidden group-hover:block animate-fadeIn rounded-none">
                 <div className="font-bold text-white">{currentUser.full_name || 'Cư Dân'}</div>
-                <div className="text-[10px] text-[#C5A880] font-mono">{role === 'ADMIN' ? 'BQL Chung Cư' : `Căn ${currentUser.apartment_code || '12A05'}`}</div>
+                <div className="text-[10px] text-[#C5A880] font-mono">{role === 'ADMIN' ? 'BQL Chung Cư' : `Căn ${currentUser.apartment_code || 'CH-06'}`}</div>
               </div>
             </div>
           )}

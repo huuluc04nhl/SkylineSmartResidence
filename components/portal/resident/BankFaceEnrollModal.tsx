@@ -462,7 +462,7 @@ export default function BankFaceEnrollModal({
       const fullProfile: EnrolledFaceProfile = {
         userId,
         fullName: fullName || 'Cư Dân Skyline',
-        apartmentCode: apartmentCode || '12A05',
+        apartmentCode: apartmentCode || 'CH-06',
         phone: phone || '',
         avatarUrl: '', // Giữ nguyên chân dung riêng của cư dân, không dùng mẫu quét ghi đè
         samples: normalizedSamples,

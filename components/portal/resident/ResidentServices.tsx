@@ -51,7 +51,7 @@ interface ResidentServicesProps {
 }
 
 export default function ResidentServices({ currentUser, onNavigateModule }: ResidentServicesProps) {
-  const aptCode = currentUser.apartment_code || '12A05';
+  const aptCode = currentUser.apartment_code || 'CH-06';
   const userName = currentUser.full_name || (currentUser as any)?.fullname || 'Cư Dân';
   const userPhone = currentUser.phone || '0901234567';
 
@@ -669,7 +669,7 @@ export default function ResidentServices({ currentUser, onNavigateModule }: Resi
                   rows={2}
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
-                  placeholder="Ví dụ: Nhận đồ tại cửa căn hộ 12A05, có veston đắt tiền cần giặt khô gấp..."
+                  placeholder="Ví dụ: Nhận đồ tại cửa căn hộ CH-06, có veston đắt tiền cần giặt khô gấp..."
                   className="w-full p-2.5 bg-[#0D1117] border border-[#2D3748] text-white focus:outline-none focus:border-[#C5A880] text-xs resize-none"
                 />
               </div>

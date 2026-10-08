@@ -36,7 +36,7 @@ export default function ResidentSmartCard({
   const [tapMessage, setTapMessage] = useState<string | null>(null);
 
   const isOwner = currentUser.role === 'OWNER';
-  const aptCode = currentUser.apartment_code || '12A05';
+  const aptCode = currentUser.apartment_code || 'CH-06';
   const idSuffix = currentUser.id_card_no 
     ? currentUser.id_card_no.slice(-4) 
     : (currentUser.phone ? currentUser.phone.slice(-4) : '8899');

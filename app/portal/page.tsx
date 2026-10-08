@@ -303,7 +303,7 @@ function PortalContent() {
       <VisitorQrModal
         isOpen={isVisitorModalOpen}
         onClose={() => setIsVisitorModalOpen(false)}
-        apartmentCode={currentUser.apartment_code || '12A05'}
+        apartmentCode={currentUser.apartment_code || 'CH-06'}
         currentUser={currentUser}
       />
     </div>

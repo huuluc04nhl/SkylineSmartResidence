@@ -27,6 +27,10 @@ import {
 } from 'lucide-react';
 import { User as UserType } from '@/lib/dataStore';
 import { getFacilityBookings } from '@/lib/facilityStore';
+import { getBills } from '@/lib/billingStore';
+import { getTickets } from '@/lib/ticketStore';
+import { getAllVisitorPasses } from '@/lib/visitorStore';
+import { getApartmentMembers } from '@/lib/userStore';
 import AiMessageFormatter from '@/components/portal/shared/AiMessageFormatter';
 
 interface AiMessage {
@@ -57,14 +61,14 @@ const KNOWLEDGE_CATEGORIES = [
     category: '💳 Hóa Đơn & Tiền Điện Nước Sinh Hoạt',
     prompts: [
       'Xem hóa đơn sinh hoạt tháng này của căn hộ',
-      'Cảnh báo lưu lượng nước ban đêm nghĩa là gì?',
-      'Hướng dẫn các hình thức thanh toán phí tiện lợi',
+      'Chi tiết tiền điện, nước và phí quản lý',
+      'Thông tin số tài khoản chuyển khoản ngân hàng BIDV',
     ]
   },
   {
     category: '🔧 Báo Hỏng & Hỗ Trợ Kỹ Thuật Nhanh',
     prompts: [
-      'Báo hỏng rò rỉ nước khẩn cấp cần thợ lên ngay',
+      'Tiến độ các phiếu hỗ trợ kỹ thuật của căn hộ',
       'Bao lâu thì kỹ thuật viên có mặt tại căn hộ?',
       'Quy định về thời gian thi công, khoan đục',
     ]
@@ -138,7 +142,7 @@ function getDynamicSuggestions(userQuestion: string, aiResponse: string): string
     return [
       '🏊 Hồ bơi vô cực nằm ở tầng mấy?',
       '🛍️ Tầng 1 đến Tầng 4 có những tiện ích gì?',
-      '🏠 Căn hộ 12A05 diện tích bao nhiêu m²?',
+      '🏠 Căn hộ CH-06 diện tích bao nhiêu m²?',
       '🧖 Tiện ích nào cần đăng ký trước?'
     ];
   }
@@ -205,10 +209,10 @@ function getDynamicSuggestions(userQuestion: string, aiResponse: string): string
     combined.includes('nợ')
   ) {
     return [
-      '💧 Tại sao tiền nước tháng này tăng cao?',
-      '🔧 Báo thợ kiểm tra van nước rò rỉ',
+      '💧 Tiền điện nước tháng này của căn hộ là bao nhiêu?',
+      '🔧 Tiến độ các phiếu sửa chữa kỹ thuật của căn hộ',
       '🚗 Biểu phí gửi xe ô tô & xe máy',
-      '💳 Hướng dẫn thanh toán quét mã QR BQL'
+      '💳 Hướng dẫn thanh toán quét mã VietQR BQL'
     ];
   }
 
@@ -225,7 +229,7 @@ function getDynamicSuggestions(userQuestion: string, aiResponse: string): string
     return [
       '⏱️ Kỹ thuật viên khi nào có mặt tại căn hộ?',
       '📞 Hotline kỹ thuật khẩn cấp 1900 8899',
-      '💧 Tra cứu cảnh báo rò rỉ nước AI',
+      '🔧 Phiếu sửa chữa của căn hộ xử lý tới đâu rồi?',
       '🔊 Giờ thi công khoan đục được phép'
     ];
   }
@@ -341,6 +345,11 @@ Tôi là **Trợ lý ảo Skyline**, luôn sẵn sàng hỗ trợ Quý vị tra 
 
     try {
       const bookings = typeof window !== 'undefined' ? getFacilityBookings(aptCode) : [];
+      const bills = typeof window !== 'undefined' ? getBills(aptCode) : [];
+      const tickets = typeof window !== 'undefined' ? getTickets(aptCode) : [];
+      const visitors = typeof window !== 'undefined' ? getAllVisitorPasses() : [];
+      const members = typeof window !== 'undefined' ? getApartmentMembers(aptCode) : [];
+
       const response = await fetch('/api/ai/concierge', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -354,6 +363,10 @@ Tôi là **Trợ lý ảo Skyline**, luôn sẵn sàng hỗ trợ Quý vị tra 
           licensePlate: currentUser?.license_plate,
           idCard: currentUser?.id_card_no,
           bookings,
+          bills,
+          tickets,
+          visitors,
+          members,
         }),
       });
 

@@ -1600,7 +1600,7 @@ export default function AdminVisitorControl() {
                     <option value="CH-01">Căn CH-01 - Tòa BS-07 (Chủ hộ: Trần Hữu Lực • 0364967082)</option>
                     <option value="CH-08">Căn CH-08 - Tòa BS-07 (Chủ hộ: 0364967081)</option>
                     <option value="10A03">Căn 10A03 (BQL Nghiệm Thu Kỹ Thuật)</option>
-                    {apartments.filter(u => u.code !== 'CH-06' && u.code !== 'CH-01' && u.code !== 'CH-08' && u.code !== '10A03' && u.code !== '12A05').slice(0, 15).map(u => (
+                    {apartments.filter(u => u.code !== 'CH-06' && u.code !== 'CH-01' && u.code !== 'CH-08' && u.code !== '10A03').slice(0, 15).map(u => (
                       <option key={u.code} value={u.code}>
                         Căn {u.code} (Tầng {u.floor})
                       </option>

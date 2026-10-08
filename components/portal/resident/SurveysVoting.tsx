@@ -46,7 +46,7 @@ interface SurveysVotingProps {
 export default function SurveysVoting({ currentUser }: SurveysVotingProps) {
   const isAdmin = currentUser?.role === 'ADMIN';
   const isOwner = currentUser?.role === 'OWNER';
-  const aptCode = currentUser?.apartment_code || '12A05';
+  const aptCode = currentUser?.apartment_code || 'CH-06';
   const userName = currentUser?.full_name || (currentUser as any)?.fullname || 'Cư Dân Skyline';
 
   const [topics, setTopics] = useState<VotingTopic[]>([]);

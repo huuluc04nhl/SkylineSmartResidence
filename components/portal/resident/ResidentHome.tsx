@@ -44,7 +44,7 @@ interface ResidentHomeProps {
 
 export default function ResidentHome({ currentUser, onNavigate, onOpenVisitorModal }: ResidentHomeProps) {
   const isOwner = currentUser.role === 'OWNER';
-  const aptCode = currentUser.apartment_code || '12A05';
+  const aptCode = currentUser.apartment_code || 'CH-06';
 
   const [activeScene, setActiveScene] = useState<SceneType>(() => getSmartHomeState(aptCode).activeScene);
   const [sceneMessage, setSceneMessage] = useState<string | null>(null);

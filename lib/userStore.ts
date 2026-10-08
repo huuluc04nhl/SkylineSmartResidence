@@ -218,7 +218,7 @@ export function getUserStore(identifier: string): StoredUser {
       phone: fromDemo.phone || fromDemo.username,
       role: fromDemo.role,
       relationship: fromDemo.relationship,
-      apartment_code: fromDemo.apartment_code || '12A05',
+      apartment_code: fromDemo.apartment_code || 'CH-06',
       id_number: fromDemo.id_card_no || '',
       id_card_no: fromDemo.id_card_no || '',
       avatar_url: fromDemo.avatar_url,
@@ -420,7 +420,7 @@ export function registerNewOwnerUser(data: {
   return newUser;
 }
 
-export const DEFAULT_12A05_MEMBERS: ApartmentMember[] = [];
+export const DEFAULT_CH06_MEMBERS: ApartmentMember[] = [];
 
 export function getApartmentMembers(aptCode: string): ApartmentMember[] {
   if (!globalScope.__NKS_FAMILY_STORE) {

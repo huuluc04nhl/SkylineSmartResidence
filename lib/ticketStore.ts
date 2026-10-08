@@ -180,7 +180,10 @@ export function getTickets(aptCode?: string, phone?: string): ExtendedServiceReq
       if (raw) {
         const parsed = JSON.parse(raw);
         if (Array.isArray(parsed)) {
-          allTickets = parsed;
+          allTickets = parsed.map(t => ({
+            ...t,
+            apt_code: (t.apt_code === '12A05' || t.apt_code === 'CH-06') ? 'CH-06' : t.apt_code
+          }));
         }
       }
     } catch {

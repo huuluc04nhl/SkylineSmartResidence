@@ -68,7 +68,7 @@ export interface AutomationRule {
 }
 
 const DEFAULT_STATE: SmartHomeState = {
-  apartmentCode: '12A05',
+  apartmentCode: 'CH-06',
   lights: {
     livingRoom: true,
     bedroomMaster: true,
@@ -159,7 +159,7 @@ const DEFAULT_RULES: AutomationRule[] = [
 const STORAGE_STATE_KEY = 'skyline_smarthome_state_';
 const STORAGE_RULES_KEY = 'skyline_smarthome_rules_';
 
-export function getSmartHomeState(aptCode: string = '12A05'): SmartHomeState {
+export function getSmartHomeState(aptCode: string = 'CH-06'): SmartHomeState {
   if (typeof window === 'undefined') return { ...DEFAULT_STATE, apartmentCode: aptCode };
   try {
     const raw = localStorage.getItem(`${STORAGE_STATE_KEY}${aptCode}`);
@@ -457,7 +457,7 @@ export function applyScene(aptCode: string, scene: SceneType): { state: SmartHom
   return { state: updated, message };
 }
 
-export function getAutomationRules(aptCode: string = '12A05'): AutomationRule[] {
+export function getAutomationRules(aptCode: string = 'CH-06'): AutomationRule[] {
   if (typeof window === 'undefined') return DEFAULT_RULES;
   try {
     const raw = localStorage.getItem(`${STORAGE_RULES_KEY}${aptCode}`);

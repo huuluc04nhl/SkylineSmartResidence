@@ -41,7 +41,7 @@ type TabType = '3D_VIEWER' | 'EQUIPMENTS' | 'HANDBOOK';
 export default function ResidentApartmentModal({
   isOpen,
   onClose,
-  apartmentCode = '12A05',
+  apartmentCode = 'CH-06',
   onNavigateToSmartHome
 }: ResidentApartmentModalProps) {
   const { currentUser } = useAuth();
@@ -455,7 +455,7 @@ export default function ResidentApartmentModal({
         {/* ============================================================= */}
         <div className="p-3 sm:p-4 bg-[#0A0E17] border-t border-[#222B35] flex items-center justify-between text-xs text-gray-400">
           <span className="font-mono text-[11px] text-gray-400">
-            Mã định danh sổ số: <strong className="text-white">SKYLINE-12A05-TITLED</strong>
+            Mã định danh sổ số: <strong className="text-white">SKYLINE-CH06-TITLED</strong>
           </span>
 
           <button

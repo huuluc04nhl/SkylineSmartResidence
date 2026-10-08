@@ -229,7 +229,7 @@ export default function Topbar({
                 </div>
                 <div className="p-2 bg-[#1C2533] border-l-2 border-[#C5A880] space-y-0.5">
                   <div className="text-[#C5A880] font-semibold text-[11px]">Hóa đơn T08 đã phát hành</div>
-                  <div className="text-gray-400 text-[10px]">Căn 12A05: 2.465.000 đ • Hạn: 30/08</div>
+                  <div className="text-gray-400 text-[10px]">Căn CH-06: 2.505.000 đ • Hạn: 30/08</div>
                 </div>
               </div>
             </div>
@@ -257,7 +257,7 @@ export default function Topbar({
                 {userName}
               </div>
               <div className="text-[9px] text-[#C5A880] font-mono uppercase font-bold tracking-wider">
-                {isAdmin ? 'Ban Quản Lý' : isOwner ? `Căn ${currentUser.apartment_code || '12A05'} (Chủ Hộ)` : `Căn ${currentUser.apartment_code || '12A05'} (Người Nhà)`}
+                {isAdmin ? 'Ban Quản Lý' : isOwner ? `Căn ${currentUser.apartment_code || 'CH-06'} (Chủ Hộ)` : `Căn ${currentUser.apartment_code || 'CH-06'} (Người Nhà)`}
               </div>
             </div>
             <ChevronDown className="w-3.5 h-3.5 text-gray-400 ml-1" />
@@ -298,7 +298,7 @@ export default function Topbar({
               <div className="space-y-1.5 text-[11px] text-gray-300 bg-[#161D26] p-2.5 rounded-none border border-[#222B35]">
                 <div className="flex justify-between">
                   <span className="text-gray-400">Vị trí:</span>
-                  <span className="font-mono font-bold text-white">{currentUser.apartment_code || (isAdmin ? 'BQL_OFFICE' : '12A05')}</span>
+                  <span className="font-mono font-bold text-white">{currentUser.apartment_code || (isAdmin ? 'BQL_OFFICE' : 'CH-06')}</span>
                 </div>
                 {currentUser.phone && (
                   <div className="flex justify-between">

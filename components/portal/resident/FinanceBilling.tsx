@@ -71,7 +71,7 @@ interface FinanceBillingProps {
 }
 
 export default function FinanceBilling({ currentUser }: FinanceBillingProps) {
-  const aptCode = currentUser?.apartment_code || '12A05';
+  const aptCode = currentUser?.apartment_code || 'CH-06';
   const residentName = currentUser?.full_name || (currentUser as any)?.fullname || 'Trần Hữu Lực';
   const residentPhone = currentUser?.phone || '0364967082';
 
@@ -2061,7 +2061,7 @@ export default function FinanceBilling({ currentUser }: FinanceBillingProps) {
 
                         <div className="p-3 bg-white border-2 border-[#005BAA] inline-block shadow-xl">
                           <img 
-                            src={`https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=00020101021238540010A00000072701240006970436011009031122330208QRIBFTTA5303704540724650005802VN5913SKYLINE_12A0562200816SKYLINE12A05T086304`} 
+                            src={`https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=00020101021238540010A00000072701240006970436011009031122330208QRIBFTTA5303704540725050005802VN5913SKYLINE_CH0662200816SKYLINECH06T086304`} 
                             alt="VNPAY-QR Code" 
                             className="w-36 h-36 object-contain mx-auto"
                           />

@@ -15,7 +15,7 @@ interface FacilityBookProps {
 }
 
 export default function FacilityBook({ currentUser }: FacilityBookProps) {
-  const aptCode = currentUser?.apartment_code || '12A05';
+  const aptCode = currentUser?.apartment_code || 'CH-06';
   const userName = currentUser?.full_name || (currentUser as any)?.fullname || 'Cư Dân';
 
   const [selectedFacility, setSelectedFacility] = useState<Facility>(DEMO_FACILITIES[0]);

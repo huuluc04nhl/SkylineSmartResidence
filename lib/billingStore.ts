@@ -83,10 +83,12 @@ export function getBills(aptCode?: string, overrideOwnerName?: string): Extended
       } else {
         const parsed = JSON.parse(raw);
         if (Array.isArray(parsed) && parsed.length > 0) {
-          // Lọc bỏ triệt để các hóa đơn ảo và làm sạch chi tiết
+          // Lọc bỏ triệt để các hóa đơn ảo, chuẩn hóa mã căn sang CH-06 và làm sạch chi tiết
           allBills = parsed
             .filter((b: ExtendedBill) => b.id !== 'bill-2026-08-08a02' && b.id !== 'bill-2026-08-18a01')
             .map((bill: ExtendedBill) => {
+              const normalizedApt = (bill.apt_code === '12A05' || bill.apt_code === 'CH-06') ? 'CH-06' : bill.apt_code;
+              const normalizedId = bill.id ? bill.id.replace('12a05', 'ch06') : bill.id;
               const cleanDetails = (bill.details || [])
                 .filter((d: any) => 
                   d.id !== 'bd-5' && d.id !== 'bd-6' && 
@@ -100,6 +102,8 @@ export function getBills(aptCode?: string, overrideOwnerName?: string): Extended
               const cleanTotal = cleanDetails.reduce((s: number, d: any) => s + (d.total_line_amount || 0), 0);
               return {
                 ...bill,
+                id: normalizedId,
+                apt_code: normalizedApt,
                 has_ai_anomaly: false,
                 total_amount: cleanTotal > 0 ? cleanTotal : bill.total_amount,
                 details: cleanDetails,

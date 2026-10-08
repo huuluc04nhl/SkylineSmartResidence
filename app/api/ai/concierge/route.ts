@@ -1,10 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { askGeminiConcierge, generateSmartProjectFallback, extractAiSuggestions } from '@/lib/geminiClient';
-import { getUserStore } from '@/lib/userStore';
+import { askGeminiConcierge, generateSmartProjectFallback, extractAiSuggestions, ConciergeContext } from '@/lib/geminiClient';
+import { getUserStore, getApartmentMembers } from '@/lib/userStore';
+import { getBills } from '@/lib/billingStore';
+import { getTickets } from '@/lib/ticketStore';
+import { getAllVisitorPasses } from '@/lib/visitorStore';
+import { getFacilityBookings } from '@/lib/facilityStore';
+
+export const maxDuration = 60;
 
 export async function POST(req: NextRequest) {
   let userMessage = '';
-  let fallbackContext: any = {
+  let fallbackContext: ConciergeContext = {
     aptCode: 'CH-06',
     userName: 'Trần Hữu Lực',
     userRole: 'OWNER',
@@ -24,7 +30,9 @@ export async function POST(req: NextRequest) {
       idCard,
       licensePlate,
       visitors,
-      tickets 
+      tickets,
+      bills,
+      members,
     } = body;
 
     userMessage = message || '';
@@ -39,17 +47,26 @@ export async function POST(req: NextRequest) {
     const targetApt = aptCode || 'CH-06';
     const dynamicUser = getUserStore(targetApt);
 
-    const context = {
+    // Dynamic resolution of actual project data if not supplied by client
+    const actualBookings = Array.isArray(bookings) ? bookings : getFacilityBookings(targetApt);
+    const actualTickets = Array.isArray(tickets) ? tickets : getTickets(targetApt);
+    const actualVisitors = Array.isArray(visitors) ? visitors : getAllVisitorPasses();
+    const actualBills = Array.isArray(bills) ? bills : getBills(targetApt);
+    const actualMembers = Array.isArray(members) ? members : getApartmentMembers(targetApt);
+
+    const context: ConciergeContext = {
       aptCode: targetApt,
       userName: userName || dynamicUser?.fullname || dynamicUser?.full_name || 'Trần Hữu Lực',
       userRole: userRole || dynamicUser?.role || 'OWNER',
-      phone: phone || dynamicUser?.phone,
-      email: email || dynamicUser?.email,
-      idCard: idCard || dynamicUser?.id_number || dynamicUser?.id_card_no,
-      licensePlate: licensePlate || dynamicUser?.license_plate,
-      bookings: Array.isArray(bookings) ? bookings : undefined,
-      tickets: Array.isArray(tickets) ? tickets : undefined,
-      visitors: Array.isArray(visitors) ? visitors : undefined,
+      phone: phone || dynamicUser?.phone || '0364967082',
+      email: email || dynamicUser?.email || 'huuluc04nhl@gmail.com',
+      idCard: idCard || dynamicUser?.id_number || dynamicUser?.id_card_no || '083204008123',
+      licensePlate: licensePlate || dynamicUser?.license_plate || '51K-889.99',
+      bookings: actualBookings,
+      tickets: actualTickets,
+      visitors: actualVisitors,
+      bills: actualBills,
+      members: actualMembers,
     };
 
     fallbackContext = context;
@@ -77,3 +94,4 @@ export async function POST(req: NextRequest) {
     });
   }
 }
+

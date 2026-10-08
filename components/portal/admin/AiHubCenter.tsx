@@ -29,9 +29,9 @@ export default function AiHubCenter() {
   const [isSimulatingModel, setIsSimulatingModel] = useState<string | null>(null);
   const [liveLog, setLiveLog] = useState<string[]>([
     '18:14:02 [AI-Vision] Giám sát 24 luồng CCTV Hầm B1 - Độ trễ: 18ms',
-    '18:14:15 [AI-Energy] Phát hiện dòng chảy đêm 2h-4h tại Căn 12A05 (+115%)',
+    '18:14:15 [AI-Energy] Giám sát công tơ điện nước toàn tòa BS-07 - Hệ số an toàn 99.8%',
     '18:14:28 [Kiểm Soát Xe] Nhận diện xe 51K-889.99 (Độ tin cậy: 99.4%) -> Mở Barrier B1',
-    '18:14:40 [Trợ Lý Ảo] Cư dân 12A05 hỏi "Giờ mở hồ bơi" -> Phản hồi 0.12s',
+    '18:14:40 [Trợ Lý Ảo] Cư dân CH-06 hỏi "Giờ mở hồ bơi" -> Phản hồi 0.12s',
   ]);
 
   const handleRunSimulation = (modelName: string, resultLog: string) => {
@@ -111,7 +111,7 @@ export default function AiHubCenter() {
       icon: Zap,
       color: 'text-yellow-400',
       action: 'Quét Đối Soát Hóa Đơn T08',
-      simResult: 'Đã quét 420 căn hộ: Phát hiện 02 căn biến động > 50% (Căn 12A05 nước +115%, Căn 08B02 điện +62%)',
+      simResult: 'Đã quét toàn bộ 34 tầng tòa BS-07: Các chỉ số điện nước nằm trong ngưỡng an toàn định mức',
     },
     {
       id: '3.1.12',
@@ -148,12 +148,12 @@ export default function AiHubCenter() {
       tech: 'Night Flow Anomaly Detector • IoT Telemetry',
       accuracy: '98.9%',
       latency: '10ms',
-      status: 'Đang cảnh báo 12A05',
+      status: 'Ổn định (Giám sát 24/7)',
       desc: 'Giám sát thói quen tiêu thụ điện nước, phát hiện rò rỉ nước ngầm khung giờ 02:00 - 04:00 sáng.',
       icon: Sparkles,
       color: 'text-amber-500',
       action: 'Kiểm Tra Dòng Chảy Ban Đêm',
-      simResult: 'Căn 12A05: Phát hiện dòng chảy liên tục 45L/giờ lúc 02:30 sáng -> Đã cảnh báo Chủ hộ',
+      simResult: 'Tòa BS-07: Không phát hiện thất thoát dòng chảy ban đêm. Hệ thống van cấp nước vận hành ổn định.',
     },
     {
       id: '3.1.15',
