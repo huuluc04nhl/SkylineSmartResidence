@@ -95,13 +95,15 @@ function LuxurySwitch({
       aria-checked={checked}
       aria-label={ariaLabel}
       onClick={onChange}
-      className={`w-11 h-6 rounded-full transition-colors relative p-1 shrink-0 cursor-pointer focus:outline-none focus:ring-1 focus:ring-[#C5A880] ${
-        checked ? activeColor : 'bg-[#222B35]'
+      className={`relative inline-flex items-center h-6 w-11 border cursor-pointer select-none transition-colors duration-200 rounded-none shrink-0 ${
+        checked ? `${activeColor} border-[#C5A880]` : 'bg-[#161D26] border-[#2D3748]'
       }`}
     >
-      <div
-        className={`w-4 h-4 rounded-full bg-white transition-transform shadow-sm ${
-          checked ? 'translate-x-5' : 'translate-x-0'
+      <span
+        className={`absolute top-[2px] bottom-[2px] w-4 flex items-center justify-center transition-all duration-200 ease-in-out rounded-none shadow-sm ${
+          checked
+            ? 'left-[22px] bg-[#0D1117] text-[#C5A880]'
+            : 'left-[2px] bg-gray-400 text-[#0D1117]'
         }`}
       />
     </button>
@@ -555,7 +557,7 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
         >
           <DoorClosed className="w-4 h-4 text-cyan-400" />
           <span>Cửa & Chuông Hình</span>
-          {!masterDoorLocked && <span className="w-2 h-2 rounded-full bg-amber-400 animate-ping ml-1" />}
+          {!masterDoorLocked && <span className="w-2 h-2 rounded-none bg-amber-400 animate-ping ml-1" />}
         </button>
 
         <button
@@ -710,17 +712,12 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
                     {curtainsOpen ? 'Đang Mở 100%' : 'Đang Đóng Kín'}
                   </div>
                 </div>
-                <button
-                  type="button"
-                  onClick={handleToggleCurtains}
-                  className={`h-8 px-3.5 font-semibold text-xs transition-all flex items-center justify-center active:scale-95 border ${
-                    curtainsOpen 
-                      ? 'bg-amber-950/60 border-amber-500/60 text-amber-300 hover:bg-amber-900' 
-                      : 'bg-[#161D26] hover:bg-[#C5A880] hover:text-[#0D1117] border-[#2D3A4B] text-gray-200'
-                  }`}
-                >
-                  {curtainsOpen ? 'Đóng Rèm' : 'Mở Rèm'}
-                </button>
+                <LuxurySwitch
+                  checked={curtainsOpen}
+                  onChange={handleToggleCurtains}
+                  activeColor="bg-amber-500"
+                  ariaLabel="Đóng mở rèm cửa kính panorama"
+                />
               </div>
             </div>
 
@@ -790,7 +787,7 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
                   <div className="text-xs font-bold text-white flex items-center gap-2">
                     <Video className="w-4 h-4 text-[#C5A880]" />
                     <span>Chuông Hình Camera Ngoài Cửa</span>
-                    <span className="w-2 h-2 rounded-full bg-red-500 animate-ping" />
+                    <span className="w-2 h-2 rounded-none bg-red-500 animate-ping" />
                   </div>
                   <span className="text-[10px] font-mono text-gray-400">{cameraTime}</span>
                 </div>
@@ -809,7 +806,7 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
 
                   {/* Minh họa người ngoài cửa */}
                   <div className="flex flex-col items-center gap-1.5 opacity-80">
-                    <div className="w-16 h-16 rounded-full border-2 border-[#C5A880]/60 flex items-center justify-center bg-[#16202C]">
+                    <div className="w-16 h-16 rounded-none border-2 border-[#C5A880]/60 flex items-center justify-center bg-[#16202C]">
                       <Video className="w-7 h-7 text-[#C5A880]" />
                     </div>
                     <span className="text-[11px] font-mono text-gray-300">

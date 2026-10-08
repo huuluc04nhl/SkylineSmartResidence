@@ -13,10 +13,16 @@
   --color-dark-border: #2D3748;
 }
 
-* {
+/* ------------------------------------------------------------- */
+/* STRICT 0px BORDER-RADIUS ARCHITECTURAL LUXURY DESIGN STANDARD */
+/* ------------------------------------------------------------- */
+*, *::before, *::after,
+button, input, select, textarea, div, span, a, p,
+section, aside, header, nav, main, dialog, table, th, td, img {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+  border-radius: 0px !important;
 }
 
 body {

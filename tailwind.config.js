@@ -8,6 +8,17 @@ module.exports = {
     './lib/**/*.{js,ts,jsx,tsx,mdx}',
   ],
   theme: {
+    borderRadius: {
+      none: '0px',
+      sm: '0px',
+      DEFAULT: '0px',
+      md: '0px',
+      lg: '0px',
+      xl: '0px',
+      '2xl': '0px',
+      '3xl': '0px',
+      full: '0px',
+    },
     extend: {
       colors: {
         hendon: {
@@ -30,13 +41,6 @@ module.exports = {
       fontFamily: {
         serif: ['var(--font-serif)', 'Playfair Display', 'Cormorant Garamond', 'Georgia', 'serif'],
         sans: ['var(--font-sans)', 'Plus Jakarta Sans', 'Inter', 'system-ui', 'sans-serif'],
-      },
-      borderRadius: {
-        none: '0px',
-        sm: '2px',
-        DEFAULT: '3px',
-        md: '4px',
-        lg: '6px',
       },
       letterSpacing: {
         architectural: '0.2em',
