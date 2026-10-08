@@ -6,7 +6,6 @@ import {
   Sparkles, 
   Send, 
   X, 
-  Minus,
   Minimize2, 
   Maximize2, 
   RefreshCw, 
@@ -21,10 +20,10 @@ import {
   PhoneCall,
   Flame,
   ChevronRight,
+  Info,
+  Minus,
   ChevronUp,
-  Eye,
-  EyeOff,
-  Info
+  ChevronDown
 } from 'lucide-react';
 import { User as UserType } from '@/lib/dataStore';
 import { getFacilityBookings } from '@/lib/facilityStore';
@@ -76,10 +75,10 @@ function getDynamicSuggestions(userQuestion: string, aiResponse: string): string
     (combined.includes('đặt trước') || combined.includes('hẹn trước') || combined.includes('đăng ký') || combined.includes('giữ chỗ') || combined.includes('tính phí'))
   ) {
     return [
-      '🧖 Bảng giá xông hơi VIP Tầng 3',
-      '🍖 Đặt tiệc BBQ panoramic Tầng 25',
-      '💳 Chính sách hủy & hoàn 100% cọc',
-      '🏊 Tiện ích nào hoàn toàn miễn phí?'
+      '🧖 Bảng giá phòng xông hơi VIP Tầng 3',
+      '🍖 Đặt tiệc nướng BBQ panoramic Tầng 25',
+      '💳 Chính sách hủy vé & hoàn tiền 100%',
+      '🏊 Các tiện ích nào hoàn toàn miễn phí?'
     ];
   }
 
@@ -90,10 +89,10 @@ function getDynamicSuggestions(userQuestion: string, aiResponse: string): string
     combined.includes('không cần đặt')
   ) {
     return [
-      '⏰ Giờ mở cửa Hồ bơi Tầng 25',
-      '🏋️ Phòng Gym Technogym 24/7',
-      '🧖 Tiện ích nào cần đăng ký trước?',
-      '🛝 Quy định khu vui chơi Sky Kids'
+      '⏰ Giờ mở cửa Hồ bơi vô cực Tầng 25',
+      '🏋️ Phòng Gym Technogym có mở 24/7 không?',
+      '🧖 Tiện ích nào cần đăng ký lịch hẹn trước?',
+      '🛝 Quy định khu vui chơi trẻ em Sky Kids'
     ];
   }
 
@@ -111,14 +110,14 @@ function getDynamicSuggestions(userQuestion: string, aiResponse: string): string
     combined.includes('tầng hầm')
   ) {
     return [
-      '🏢 Tòa BS-07, BS-08, BS-09, BS-10 bao nhiêu tầng?',
+      '🏢 Tòa BS-07, BS-08, BS-09, BS-10 có bao nhiêu tầng?',
       '🏠 Căn hộ CH-06 và CH-01 diện tích bao nhiêu m²?',
-      '🍽️ Nhà hàng tầng 1 mở cửa lúc mấy giờ?',
-      '🏊 Bể bơi resort có cần đặt trước?'
+      '🍽️ Dịch vụ nhà hàng tầng 1 mở cửa lúc mấy giờ?',
+      '🏊 Cụm bể bơi nhiệt đới resort có cần đặt trước không?'
     ];
   }
 
-  // 4. General Facilities
+  // 4. General Facilities (hồ bơi, gym, xông hơi, bbq)
   if (
     combined.includes('hồ bơi') || 
     combined.includes('pool') || 
@@ -130,10 +129,10 @@ function getDynamicSuggestions(userQuestion: string, aiResponse: string): string
     combined.includes('bbq')
   ) {
     return [
-      '🧖 Tiện ích nào cần hẹn trước?',
-      '⏰ Giờ mở cửa Hồ bơi & Gym',
-      '🍖 Bảng giá tiệc BBQ Tầng 25',
-      '🎫 Kiểm tra vé tiện ích của tôi'
+      '🧖 Tiện ích nào cần đăng ký lịch hẹn trước?',
+      '⏰ Giờ mở cửa Hồ bơi & Phòng gym',
+      '🍖 Bảng giá đặt vườn BBQ Tầng 25',
+      '🎫 Kiểm tra vé tiện ích đã đặt của tôi'
     ];
   }
 
@@ -146,7 +145,7 @@ function getDynamicSuggestions(userQuestion: string, aiResponse: string): string
     combined.includes('booking')
   ) {
     return [
-      '🔄 Cách hủy vé & hoàn tiền cọc',
+      '🔄 Hướng dẫn hủy vé & hoàn 100% tiền giữ chỗ',
       '🍖 Đặt thêm ca nướng BBQ tầng 25',
       '🎟️ Kiểm tra thẻ khách thăm hôm nay',
       '🏊 Giờ mở cửa hồ bơi chân mây'
@@ -162,10 +161,10 @@ function getDynamicSuggestions(userQuestion: string, aiResponse: string): string
     combined.includes('thẻ khách')
   ) {
     return [
-      '📱 Tạo mã QR & PIN gửi khách',
+      '📱 Cách tạo mã QR & PIN gửi cho khách',
       '🚗 Khách thăm đỗ xe ở đâu?',
-      '🚪 Mở cửa căn hộ từ xa',
-      '🔑 Tạo mã OTP mở khóa cửa'
+      '🚪 Mở cửa căn hộ từ xa qua chuông hình',
+      '🔑 Tạo mã OTP mở khóa cửa cho khách'
     ];
   }
 
@@ -180,10 +179,10 @@ function getDynamicSuggestions(userQuestion: string, aiResponse: string): string
     combined.includes('nợ')
   ) {
     return [
-      '💧 Tiền điện nước tháng này của tôi?',
-      '🔧 Tiến độ các phiếu sửa chữa',
+      '💧 Tiền điện nước tháng này của căn hộ là bao nhiêu?',
+      '🔧 Tiến độ các phiếu sửa chữa kỹ thuật của căn hộ',
       '🚗 Biểu phí gửi xe ô tô & xe máy',
-      '💳 Hướng dẫn quét mã VietQR BQL'
+      '💳 Hướng dẫn thanh toán quét mã VietQR BQL'
     ];
   }
 
@@ -198,9 +197,9 @@ function getDynamicSuggestions(userQuestion: string, aiResponse: string): string
     combined.includes('phiếu')
   ) {
     return [
-      '⏱️ KTV khi nào có mặt tại căn hộ?',
+      '⏱️ Kỹ thuật viên khi nào có mặt tại căn hộ?',
       '📞 Hotline kỹ thuật khẩn cấp 1900 8899',
-      '🔧 Phiếu sửa chữa xử lý tới đâu?',
+      '🔧 Phiếu sửa chữa của căn hộ xử lý tới đâu rồi?',
       '🔊 Giờ thi công khoan đục được phép'
     ];
   }
@@ -214,8 +213,8 @@ function getDynamicSuggestions(userQuestion: string, aiResponse: string): string
     combined.includes('chuông')
   ) {
     return [
-      '📷 Cài FaceID cho người nhà',
-      '🔑 Tạo mã tạm thời cho khách',
+      '📷 Hướng dẫn cài FaceID cho người nhà',
+      '🔑 Tạo mã số tạm thời cho khách đến chơi',
       '💳 Đăng ký hoặc báo mất thẻ cư dân',
       '🛡️ Cảnh báo chống cạy cửa thông minh'
     ];
@@ -230,8 +229,8 @@ function getDynamicSuggestions(userQuestion: string, aiResponse: string): string
     combined.includes('biển số')
   ) {
     return [
-      '➕ Cách đăng ký thêm thành viên',
-      '🚗 Vị trí đỗ xe ô tô cố định ở đâu?',
+      '➕ Cách đăng ký thêm thành viên căn hộ',
+      '🚗 Vị trí đỗ xe ô tô cố định ở hầm nào?',
       '📷 Cài đặt nhận diện khuôn mặt FaceID',
       '💳 Biểu phí gửi xe hàng tháng'
     ];
@@ -239,9 +238,9 @@ function getDynamicSuggestions(userQuestion: string, aiResponse: string): string
 
   // Default fallback suggestions
   return [
-    '🏢 Quy mô các tòa The Tropical',
-    '🏠 Thông tin căn hộ & diện tích của tôi',
-    '🍽️ Dịch vụ nhà hàng & hồ bơi',
+    '🏢 Quy mô các tòa The Tropical & Beverly Solari',
+    '🏠 Căn hộ của tôi ở tòa nào, tầng mấy, diện tích bao nhiêu?',
+    '🍽️ Dịch vụ nhà hàng, hồ bơi & vệ sinh hoạt động thế nào?',
     '💳 Xem hóa đơn sinh hoạt tháng này'
   ];
 }
@@ -255,79 +254,50 @@ export default function AiConciergeFloating({
   const aptCode = currentUser.apartment_code || 'CH-06';
   const residentName = currentUser.full_name || (currentUser as any)?.fullname || 'Trần Hữu Lực';
 
-  // Window states:
-  // - isMinimized: collapsed to sleek bottom dock bar (does NOT obscure screen)
-  // - isExpanded: expanded wide view (540px)
-  // - isPeeking: translucent peek mode (opacity-35 so background is visible)
-  const [isMinimized, setIsMinimized] = useState(false);
+  // Window view state: 'compact' (~375px) or 'expanded' (~520px), plus 'minimized' (dock bar)
   const [isExpanded, setIsExpanded] = useState(false);
-  const [isPeeking, setIsPeeking] = useState(false);
-
+  const [isMinimized, setIsMinimized] = useState(false);
   const [copiedMessageId, setCopiedMessageId] = useState<string | null>(null);
   const [showScrollBottom, setShowScrollBottom] = useState(false);
 
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: 'm-initial',
-      sender: 'ai',
-      text: `Kính chào Quý cư dân **${residentName}** (Căn **${aptCode}** - BS-07 Tầng 30)! 
-
-Tôi là **Trợ lý ảo Skyline**, túc trực 24/7 đồng hành cùng Quý cư dân tại The Tropical (Beverly Solari):
-* 🏢 **Quy mô tòa nhà:** BS-07 (34T), BS-08 (39T), BS-09 (34T), BS-10 (34T).
-* 🍽️ **Tiện ích 5 sao:** Cụm Bể bơi Resort, Nhà hàng T1, Gym 24/7 & Sauna VIP.
-* 💳 **Hóa đơn:** Tra cứu tiền điện nước, phí quản lý & tiền gửi xe.
-* 🛠️ **Hỗ trợ NKS:** Kỹ thuật viên túc trực có mặt sau 15 - 60 phút.
-
-Quý cư dân có thể chọn câu hỏi gợi ý bên dưới hoặc nhắn tin trực tiếp!`,
-      timestamp: '08:00',
-      suggestions: [
-        '🏢 Quy mô các tòa The Tropical',
-        '🏠 Thông tin căn hộ của tôi',
-        '🍽️ Dịch vụ nhà hàng & hồ bơi',
-        '💳 Xem hóa đơn sinh hoạt tháng này'
-      ]
-    },
-  ]);
-
-  const [inputText, setInputText] = useState('');
-  const [isTyping, setIsTyping] = useState(false);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
-  const scrollContainerRef = useRef<HTMLDivElement>(null);
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
-
-  // When opened from parent, ensure minimized is reset to false
   useEffect(() => {
     if (isOpen) {
       setIsMinimized(false);
     }
   }, [isOpen]);
 
-  // Auto focus input when window is open and not minimized
-  useEffect(() => {
-    if (isOpen && !isMinimized) {
-      const timer = setTimeout(() => {
-        textareaRef.current?.focus();
-      }, 150);
-      return () => clearTimeout(timer);
-    }
-  }, [isOpen, isMinimized]);
+  const [messages, setMessages] = useState<Message[]>([
+    {
+      id: 'm-initial',
+      sender: 'ai',
+      text: `Kính chào Quý cư dân **${residentName}** (Căn **${aptCode}** - Tòa The Tropical BS-07, Tầng 30)! 
 
-  // Global keyboard shortcut: Esc minimizes to dock (or closes if already minimized)
-  useEffect(() => {
-    const handleGlobalKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        if (isOpen) {
-          if (!isMinimized) {
-            setIsMinimized(true);
-          } else {
-            onToggle();
-          }
-        }
-      }
-    };
-    window.addEventListener('keydown', handleGlobalKeyDown);
-    return () => window.removeEventListener('keydown', handleGlobalKeyDown);
-  }, [isOpen, isMinimized, onToggle]);
+Tôi là **Trợ lý ảo Skyline**, luôn đồng hành và hỗ trợ Quý vị 24/7 tại Khu Phức Hợp The Tropical (Beverly Solari):
+* 🏢 **Tra cứu căn hộ & quy mô tòa nhà:** Thông tin 4 chung cư BS-07 (34 tầng), BS-08 (39 tầng), BS-09 (34 tầng), BS-10 (34 tầng).
+* 🍽️ **Dịch vụ tiện ích 5 sao:** Giờ mở cửa Cụm Bể bơi Resort, Nhà hàng ẩm thực tầng 1, Gym 24/7 & Phòng xông hơi VIP.
+* 💳 **Hóa đơn & Biểu phí:** Tra cứu tiền điện, nước, phí quản lý & tiền gửi xe định kỳ.
+* 🛠️ **Hỗ trợ kỹ thuật NKS:** Tiếp nhận sự cố với KTV túc trực có mặt trong 15 - 60 phút.
+
+Quý cư dân có thể chọn câu hỏi gợi ý bên dưới hoặc nhập câu hỏi trực tiếp nhé!`,
+      timestamp: '08:00',
+      suggestions: [
+        '🏢 Quy mô các tòa The Tropical & Beverly Solari',
+        '🏠 Căn hộ của tôi ở tòa nào, tầng mấy, diện tích bao nhiêu?',
+        '🍽️ Dịch vụ nhà hàng, hồ bơi & vệ sinh hoạt động thế nào?',
+        '💳 Xem hóa đơn sinh hoạt tháng này'
+      ]
+    },
+  ]);
+
+  // Contextual Messenger-style Quick Replies from the latest AI response
+  const latestAiMessage = [...messages].reverse().find((m) => m.sender === 'ai');
+  const latestAiSuggestions = latestAiMessage?.suggestions || [];
+
+  const [inputText, setInputText] = useState('');
+  const [isTyping, setIsTyping] = useState(false);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   // Auto scroll to bottom
   const scrollToBottom = (smooth = true) => {
@@ -344,6 +314,12 @@ Quý cư dân có thể chọn câu hỏi gợi ý bên dưới hoặc nhắn ti
     const { scrollTop, scrollHeight, clientHeight } = scrollContainerRef.current;
     const isFarFromBottom = scrollHeight - scrollTop - clientHeight > 100;
     setShowScrollBottom(isFarFromBottom);
+  };
+
+  const handleCopy = (id: string, text: string) => {
+    navigator.clipboard.writeText(text);
+    setCopiedMessageId(id);
+    setTimeout(() => setCopiedMessageId(null), 2000);
   };
 
   // Copy message text to clipboard
@@ -366,9 +342,9 @@ Quý cư dân có thể chọn câu hỏi gợi ý bên dưới hoặc nhắn ti
         text: `Đoạn hội thoại đã được làm mới! Tôi sẵn sàng lắng nghe mọi yêu cầu tra cứu từ Quý cư dân ${residentName} (Căn ${aptCode} - Tòa BS-07, Tầng 30).`,
         timestamp: new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }),
         suggestions: [
-          '🏢 Quy mô các tòa The Tropical',
-          '🏠 Thông tin căn hộ của tôi',
-          '🍽️ Dịch vụ nhà hàng & hồ bơi',
+          '🏢 Quy mô các tòa The Tropical & Beverly Solari',
+          '🏠 Căn hộ của tôi ở tòa nào, tầng mấy, diện tích bao nhiêu?',
+          '🍽️ Dịch vụ nhà hàng, hồ bơi & vệ sinh hoạt động thế nào?',
           '💳 Xem hóa đơn sinh hoạt tháng này'
         ]
       }
@@ -444,7 +420,7 @@ Quý cư dân có thể chọn câu hỏi gợi ý bên dưới hoặc nhắn ti
         suggestions = parsed.suggestions.length > 0 ? parsed.suggestions : getDynamicSuggestions(text, aiReply);
       }
 
-      // Contextual action link & smart dynamic suggestions
+      // Contextual action link & smart dynamic suggestions (Messenger style)
       let actionLink: { label: string; moduleId: string } | undefined = undefined;
       const lower = (text + ' ' + aiReply).toLowerCase();
 
@@ -453,7 +429,7 @@ Quý cư dân có thể chọn câu hỏi gợi ý bên dưới hoặc nhắn ti
       } else if (lower.includes('hóa đơn') || lower.includes('tiền') || lower.includes('nợ') || lower.includes('thanh toán') || lower.includes('phí')) {
         actionLink = { label: 'Xem & Thanh Toán Hóa Đơn', moduleId: 'resident-finance' };
       } else if (lower.includes('sửa') || lower.includes('rò rỉ') || lower.includes('hỏng') || lower.includes('ống nước') || lower.includes('sự cố') || lower.includes('kỹ thuật')) {
-        actionLink = { label: 'Yêu Cầu Sửa Chữa (KTV Có Mặt Sau 15 - 60 Phút)', moduleId: 'resident-tickets' };
+        actionLink = { label: 'Yêu Cầu Sửa Chữa (Hỗ Trợ Trong 60 Phút)', moduleId: 'resident-tickets' };
       } else if (lower.includes('faceid') || lower.includes('người nhà') || lower.includes('cửa') || lower.includes('khóa') || lower.includes('thẻ')) {
         actionLink = { label: 'Quản Lý Khóa Cửa & Thẻ Cư Dân', moduleId: 'resident-smarthome' };
       }
@@ -498,43 +474,36 @@ Quý cư dân có thể chọn câu hỏi gợi ý bên dưới hoặc nhắn ti
     }
   };
 
-  const latestMessage = messages[messages.length - 1];
-  const latestSnippet = latestMessage 
-    ? (latestMessage.sender === 'user' 
-        ? `Bạn: ${latestMessage.text}` 
-        : `AI: ${latestMessage.text.replace(/[*#_`]/g, '').trim().slice(0, 50)}...`)
-    : `Sẵn sàng hỗ trợ Căn ${aptCode}`;
-
   return (
-    <div className="pointer-events-none fixed inset-0 z-50 overflow-hidden select-none">
+    <div className="pointer-events-none fixed inset-0 z-50 select-none">
       {/* ------------------------------------------------------------- */}
-      {/* 1. FLOATING LUXURY LAUNCHER (When completely Closed)          */}
+      {/* 1. FLOATING LUXURY TRIGGER BUTTON (When Closed)               */}
       {/* ------------------------------------------------------------- */}
       {!isOpen && (
-        <div className="pointer-events-auto absolute bottom-4 right-4 sm:bottom-6 sm:right-6 flex items-center gap-3 transition-all duration-300">
-          {/* Ambient Tooltip Pill */}
+        <div className="pointer-events-auto fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50 flex items-center gap-2.5 transition-all duration-300">
+          {/* Ambient Tooltip Pill (Desktop/Tablet) */}
           <button
             type="button"
             onClick={onToggle}
-            className="hidden sm:flex items-center gap-2.5 px-4 py-2 bg-[#0E131B]/95 text-[#C5A880] text-xs font-medium shadow-[0_8px_30px_rgba(0,0,0,0.7)] backdrop-blur-xl rounded-none transition-all hover:bg-[#161F2C] hover:text-white group border border-[#C5A880]/20 active:scale-95"
+            className="hidden sm:flex items-center gap-2.5 px-3.5 py-2 bg-[#0E131B]/95 text-[#C5A880] text-xs font-medium shadow-[0_8px_30px_rgba(0,0,0,0.7)] backdrop-blur-xl rounded-none transition-all hover:bg-[#161F2C] hover:text-white group border border-[#C5A880]/30 active:scale-95"
           >
             <span className="w-2 h-2 rounded-none bg-emerald-400 animate-pulse"></span>
             <span className="group-hover:text-white transition-colors">Hỏi Skyline AI 24/7</span>
-            <span className="px-2 py-0.5 bg-emerald-950/80 text-emerald-400 text-[9px] font-mono font-bold rounded-none border border-emerald-800/40">
+            <span className="px-1.5 py-0.5 bg-emerald-950/80 text-emerald-400 text-[9px] font-mono font-bold rounded-none border border-emerald-500/30">
               24/7
             </span>
           </button>
 
-          {/* Luxury AI Trigger Button */}
+          {/* Luxury Sharp AI Trigger Button */}
           <button
             type="button"
             onClick={onToggle}
             aria-label="Mở Trợ Lý Ảo Skyline AI"
-            className="group relative w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-br from-[#222C3A] via-[#141B24] to-[#0A0E14] text-[#C5A880] hover:text-white rounded-none flex items-center justify-center transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-[0_12px_40px_rgba(0,0,0,0.85),0_0_24px_rgba(197,168,128,0.25)] border border-[#C5A880]/30"
+            className="group relative w-12 h-12 sm:w-13 sm:h-13 bg-gradient-to-br from-[#222C3A] via-[#141B24] to-[#0A0E14] text-[#C5A880] hover:text-white rounded-none flex items-center justify-center transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-[0_10px_35px_rgba(0,0,0,0.85),0_0_20px_rgba(197,168,128,0.25)] border border-[#C5A880]/40"
           >
-            <Bot className="w-6 h-6 sm:w-7 sm:h-7 relative z-10 transition-transform group-hover:rotate-12 duration-200" />
-            <Sparkles className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-amber-300 absolute top-1.5 right-1.5 sm:top-2 sm:right-2 animate-bounce" />
-            <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 sm:w-3.5 sm:h-3.5 bg-emerald-500 rounded-none border-2 border-[#0A0E14] flex items-center justify-center">
+            <Bot className="w-5 h-5 sm:w-6 sm:h-6 relative z-10 transition-transform group-hover:rotate-12 duration-200" />
+            <Sparkles className="w-3 h-3 text-amber-300 absolute top-1.5 right-1.5 animate-bounce" />
+            <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-emerald-500 rounded-none border-2 border-[#0A0E14] flex items-center justify-center">
               <span className="w-1.5 h-1.5 rounded-none bg-white animate-ping"></span>
             </span>
           </button>
@@ -542,186 +511,173 @@ Quý cư dân có thể chọn câu hỏi gợi ý bên dưới hoặc nhắn ti
       )}
 
       {/* ------------------------------------------------------------- */}
-      {/* 2. DOCKED MINI BAR (When Minimized: 0% screen obstruction)     */}
+      {/* 2. MINIMIZED FLOATING DOCK BAR (Compact Non-Obtrusive Pill)   */}
       {/* ------------------------------------------------------------- */}
       {isOpen && isMinimized && (
-        <div className="pointer-events-auto absolute bottom-3 right-3 sm:bottom-6 sm:right-6 z-50 flex items-center gap-2 animate-in fade-in slide-in-from-bottom-3 duration-200">
-          <div
+        <div className="pointer-events-auto fixed bottom-3 right-3 left-3 sm:left-auto sm:bottom-5 sm:right-5 z-50 flex items-center justify-between gap-3 px-3 py-2 sm:px-4 sm:py-2.5 bg-[#0E131B]/95 text-white border border-[#C5A880]/40 shadow-[0_15px_40px_rgba(0,0,0,0.9)] backdrop-blur-xl rounded-none transition-all duration-300 animate-in fade-in slide-in-from-bottom-2 sm:w-auto sm:min-w-[280px] max-w-full">
+          <button
+            type="button"
             onClick={() => setIsMinimized(false)}
-            role="button"
-            tabIndex={0}
-            title="Nhấn để mở lại cửa sổ chat (Esc)"
-            className="group flex items-center gap-3 px-3.5 py-2.5 bg-[#0E131B]/95 hover:bg-[#151D28] border border-[#C5A880]/40 text-white shadow-[0_12px_40px_rgba(0,0,0,0.85),0_0_20px_rgba(197,168,128,0.15)] backdrop-blur-xl rounded-none transition-all duration-200 cursor-pointer w-[calc(100vw-24px)] sm:w-[380px] select-none"
+            className="flex items-center gap-2.5 text-left flex-1 min-w-0 group"
+            title="Nhấn để mở lại cửa sổ chat"
           >
             <div className="relative flex-shrink-0">
-              <div className="w-8 h-8 rounded-none bg-gradient-to-tr from-[#C5A880]/20 to-[#C5A880]/40 flex items-center justify-center text-[#C5A880] border border-[#C5A880]/30">
-                <Bot className="w-4 h-4 group-hover:scale-110 transition-transform" />
+              <div className="w-7 h-7 bg-[#1C2533] text-[#C5A880] flex items-center justify-center rounded-none border border-[#C5A880]/30 group-hover:bg-[#C5A880] group-hover:text-[#0A0E14] transition-colors">
+                <Bot className="w-4 h-4" />
               </div>
-              <span className="absolute -bottom-0.5 -right-0.5 w-2 h-2 bg-emerald-400 rounded-none border border-[#0E131B]"></span>
+              <span className="absolute -bottom-0.5 -right-0.5 w-2 h-2 bg-emerald-400 rounded-none animate-pulse"></span>
             </div>
-
-            <div className="flex-1 min-w-0 pr-1">
-              <div className="flex items-center gap-2">
-                <span className="text-xs font-semibold text-white truncate font-serif">Skyline AI</span>
-                {isTyping ? (
-                  <span className="text-[9px] text-[#C5A880] animate-pulse font-mono font-medium">Đang trả lời...</span>
-                ) : (
-                  <span className="px-1.5 py-0.2 bg-emerald-950/80 text-emerald-400 text-[8px] font-mono font-bold uppercase rounded-none border border-emerald-800/40">
-                    Trực tuyến
-                  </span>
-                )}
+            <div className="min-w-0">
+              <div className="text-xs font-semibold text-white group-hover:text-[#C5A880] transition-colors truncate flex items-center gap-1.5">
+                <span>Skyline AI Concierge</span>
+                <span className="text-[9px] font-mono font-normal text-[#C5A880] bg-[#16202D] px-1 py-0.2 rounded-none border border-[#C5A880]/20">
+                  {aptCode}
+                </span>
               </div>
-              <p className="text-[11px] text-gray-400 truncate font-light mt-0.5">
-                {latestSnippet}
-              </p>
+              <div className="text-[10px] text-gray-400 truncate flex items-center gap-1">
+                <span className="w-1.5 h-1.5 rounded-none bg-emerald-400"></span>
+                <span>Đang trực tuyến • Nhấn mở lại</span>
+              </div>
             </div>
+          </button>
 
-            <div className="flex items-center gap-1 flex-shrink-0" onClick={(e) => e.stopPropagation()}>
-              <button
-                type="button"
-                onClick={() => setIsMinimized(false)}
-                className="p-1.5 hover:bg-white/10 text-[#C5A880] hover:text-white rounded-none transition-colors border-0"
-                title="Mở rộng chatbox"
-              >
-                <ChevronUp className="w-4 h-4" />
-              </button>
-              <button
-                type="button"
-                onClick={onToggle}
-                className="p-1.5 hover:bg-rose-500/20 text-gray-400 hover:text-rose-400 rounded-none transition-colors border-0"
-                title="Đóng hẳn"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
+          <div className="flex items-center gap-1 flex-shrink-0">
+            <button
+              type="button"
+              onClick={() => setIsMinimized(false)}
+              className="p-1.5 text-[#C5A880] hover:text-white hover:bg-white/10 rounded-none transition-colors border-0"
+              title="Mở lại cửa sổ chat"
+            >
+              <ChevronUp className="w-4 h-4" />
+            </button>
+            <button
+              type="button"
+              onClick={onToggle}
+              className="p-1.5 text-gray-400 hover:text-rose-400 hover:bg-rose-500/10 rounded-none transition-colors border-0"
+              title="Đóng hoàn toàn"
+            >
+              <X className="w-4 h-4" />
+            </button>
           </div>
         </div>
       )}
 
       {/* ------------------------------------------------------------- */}
-      {/* 3. ACTIVE CHAT WINDOW (Compact, Non-Intrusive, Peek-Capable)   */}
+      {/* 3. ACTIVE CHATBOX WINDOW (Optimized for Mobile/Tablet/Desktop) */}
       {/* ------------------------------------------------------------- */}
       {isOpen && !isMinimized && (
         <div
-          className={`pointer-events-auto absolute bottom-2 right-2 sm:bottom-6 sm:right-6 bg-[#0E131B]/95 shadow-[0_20px_60px_rgba(0,0,0,0.95),0_0_30px_rgba(197,168,128,0.12)] border border-[#C5A880]/30 flex flex-col overflow-hidden backdrop-blur-2xl origin-bottom-right transition-all duration-300 ease-out animate-in fade-in-0 zoom-in-95 rounded-none ${
-            isPeeking 
-              ? 'opacity-35 hover:opacity-100' 
-              : 'opacity-100'
-          } ${
+          className={`pointer-events-auto fixed inset-0 sm:inset-auto sm:bottom-5 sm:right-5 md:bottom-6 md:right-6 z-50 bg-[#0E131B]/98 sm:border sm:border-[#C5A880]/30 shadow-[0_25px_70px_rgba(0,0,0,0.95),0_0_50px_rgba(0,0,0,0.8)] flex flex-col overflow-hidden backdrop-blur-2xl origin-bottom-right transition-all duration-300 ease-out animate-in fade-in-0 zoom-in-95 rounded-none ${
             isExpanded
-              ? 'w-[540px] max-w-[calc(100vw-16px)] sm:max-w-[calc(100vw-32px)] h-[min(680px,88dvh)]'
-              : 'w-[375px] sm:w-[395px] max-w-[calc(100vw-16px)] sm:max-w-[calc(100vw-32px)] h-[min(510px,80dvh)]'
+              ? 'w-full h-full sm:w-[480px] md:w-[500px] lg:w-[520px] sm:h-[600px] sm:max-h-[85vh]'
+              : 'w-full h-full sm:w-[350px] md:w-[365px] lg:w-[380px] sm:h-[490px] md:h-[510px] sm:max-h-[min(540px,78vh)]'
           }`}
         >
           {/* Top Window Header */}
-          <div className="px-3.5 py-3 bg-[#141B24] border-b border-[#C5A880]/20 flex items-center justify-between text-white flex-shrink-0 rounded-none">
-            <div className="flex items-center gap-2.5">
-              <div className="relative">
-                <div className="w-9 h-9 rounded-none bg-gradient-to-tr from-[#C5A880]/20 to-[#C5A880]/35 flex items-center justify-center text-[#C5A880] border border-[#C5A880]/30 shadow-sm">
-                  <Bot className="w-4 h-4" />
+          <div className="p-3 sm:p-3.5 bg-[#141B24] flex items-center justify-between text-white flex-shrink-0 border-b border-white/5 sm:border-0 rounded-none">
+            <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
+              {/* Mobile Back / Minimize Button */}
+              <button
+                type="button"
+                onClick={() => setIsMinimized(true)}
+                className="sm:hidden p-1.5 text-gray-400 hover:text-white hover:bg-white/10 rounded-none border-0"
+                title="Thu nhỏ xuống đáy màn hình"
+              >
+                <ChevronDown className="w-5 h-5" />
+              </button>
+
+              <div className="relative flex-shrink-0">
+                <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-none bg-gradient-to-tr from-[#C5A880]/20 to-[#C5A880]/35 flex items-center justify-center text-[#C5A880] shadow-sm border border-[#C5A880]/20">
+                  <Bot className="w-4 h-4 sm:w-5 sm:h-5" />
                 </div>
-                <span className="absolute -bottom-0.5 -right-0.5 w-2 h-2 bg-emerald-400 rounded-none border border-[#141B24]"></span>
+                <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-emerald-400 rounded-none border-2 border-[#141B24]"></span>
               </div>
 
-              <div>
-                <div className="text-xs font-serif font-bold text-white flex items-center gap-1.5 leading-tight">
-                  <span>Skyline AI Concierge</span>
-                  <span className="px-1.5 py-0.2 bg-emerald-950/80 text-emerald-400 text-[8px] font-mono font-bold uppercase rounded-none border border-emerald-800/40">
+              <div className="min-w-0">
+                <div className="text-xs sm:text-sm font-serif font-bold text-white flex items-center gap-1.5 sm:gap-2 leading-tight truncate">
+                  <span className="truncate">Skyline AI Concierge</span>
+                  <span className="px-1.5 py-0.2 bg-emerald-950/80 text-emerald-400 text-[8px] sm:text-[9px] font-mono font-bold uppercase rounded-none border border-emerald-500/30 flex-shrink-0">
                     24/7
                   </span>
                 </div>
-                <div className="text-[10px] text-gray-400 font-light flex items-center gap-1.5 mt-0.5">
-                  <span className="w-1.5 h-1.5 rounded-none bg-emerald-400 animate-pulse"></span>
-                  Căn <strong className="text-white font-mono">{aptCode}</strong> • Tòa BS-07
+                <div className="text-[10px] sm:text-[11px] text-gray-400 font-light flex items-center gap-1.5 mt-0.5 truncate">
+                  <span className="w-1.5 h-1.5 rounded-none bg-emerald-400 animate-pulse flex-shrink-0"></span>
+                  <span className="truncate">Căn <strong className="text-white font-mono">{aptCode}</strong> • Tòa BS-07</span>
                 </div>
               </div>
             </div>
 
-            {/* Header Control Actions */}
-            <div className="flex items-center gap-0.5 text-gray-400">
-              {/* Peek / Translucency Mode */}
-              <button
-                type="button"
-                onClick={() => setIsPeeking(!isPeeking)}
-                className={`p-1.5 rounded-none transition-colors border-0 ${
-                  isPeeking 
-                    ? 'bg-[#C5A880]/25 text-[#C5A880]' 
-                    : 'hover:bg-white/10 text-gray-400 hover:text-white'
-                }`}
-                title={isPeeking ? 'Tắt nhìn xuyên (Hiện rõ)' : 'Nhìn xuyên (Giảm độ che khuất màn hình)'}
-              >
-                {isPeeking ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
-              </button>
-
-              {/* Minimize to dock bar */}
-              <button
-                type="button"
-                onClick={() => setIsMinimized(true)}
-                className="p-1.5 hover:bg-white/10 text-gray-400 hover:text-white rounded-none transition-colors border-0"
-                title="Thu nhỏ thành thanh dock (Esc)"
-              >
-                <Minus className="w-3.5 h-3.5" />
-              </button>
-
-              {/* Expand / Compact size */}
-              <button
-                type="button"
-                onClick={() => setIsExpanded(!isExpanded)}
-                className="hidden sm:block p-1.5 hover:bg-white/10 text-gray-400 hover:text-white rounded-none transition-colors border-0"
-                title={isExpanded ? 'Kích thước tiêu chuẩn' : 'Mở rộng cửa sổ'}
-              >
-                {isExpanded ? <Minimize2 className="w-3.5 h-3.5" /> : <Maximize2 className="w-3.5 h-3.5" />}
-              </button>
-
-              {/* Reset Conversation */}
+            {/* Header Control Buttons */}
+            <div className="flex items-center gap-0.5 sm:gap-1 text-gray-400 flex-shrink-0">
               <button
                 type="button"
                 onClick={handleResetChat}
-                className="p-1.5 hover:bg-white/10 text-gray-400 hover:text-white rounded-none transition-colors border-0"
+                className="p-1.5 sm:p-2 hover:bg-white/10 text-gray-400 hover:text-white rounded-none transition-colors border-0"
                 title="Làm mới cuộc trò chuyện"
               >
                 <RefreshCw className="w-3.5 h-3.5" />
               </button>
 
-              {/* Close */}
+              {/* Minimize button (Desktop/Tablet) */}
+              <button
+                type="button"
+                onClick={() => setIsMinimized(true)}
+                className="hidden sm:block p-1.5 sm:p-2 hover:bg-white/10 text-gray-400 hover:text-white rounded-none transition-colors border-0"
+                title="Thu nhỏ thanh dock (không che màn hình)"
+              >
+                <Minus className="w-3.5 h-3.5" />
+              </button>
+
+              {/* Expand toggle (sm+ only) */}
+              <button
+                type="button"
+                onClick={() => setIsExpanded(!isExpanded)}
+                className="hidden sm:block p-1.5 sm:p-2 hover:bg-white/10 text-gray-400 hover:text-white rounded-none transition-colors border-0"
+                title={isExpanded ? 'Thu nhỏ kích thước' : 'Mở rộng kích thước'}
+              >
+                {isExpanded ? <Minimize2 className="w-3.5 h-3.5" /> : <Maximize2 className="w-3.5 h-3.5" />}
+              </button>
+
+              {/* Close button */}
               <button
                 type="button"
                 onClick={onToggle}
-                className="p-1.5 hover:bg-rose-500/20 text-gray-400 hover:text-rose-400 rounded-none transition-colors border-0"
-                title="Đóng cửa sổ (Esc)"
+                className="p-1.5 sm:p-2 hover:bg-rose-500/20 text-gray-400 hover:text-rose-400 rounded-none transition-colors border-0"
+                title="Đóng cửa sổ chat"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
           </div>
 
-          {/* Conversation Stream */}
+          {/* Conversation Stream - Spacious & Clean (Messenger Style) */}
           <div
             ref={scrollContainerRef}
             onScroll={handleScroll}
-            className="flex-1 p-3.5 overflow-y-auto space-y-3.5 bg-[#0A0E14] text-xs relative"
+            className="flex-1 p-3 sm:p-3.5 overflow-y-auto space-y-3.5 bg-[#0A0E14] text-xs relative"
           >
+            {/* Message Bubbles */}
             {messages.map((m) => (
               <div
                 key={m.id}
-                className={`flex flex-col ${m.sender === 'user' ? 'items-end' : 'items-start'} space-y-1.5 animate-chat-bubble`}
+                className={`flex flex-col ${m.sender === 'user' ? 'items-end' : 'items-start'} space-y-1 animate-chat-bubble`}
               >
                 <div
                   className={`relative ${
                     m.sender === 'user'
-                      ? 'max-w-[85%] p-3 text-[12.5px] leading-relaxed rounded-none bg-gradient-to-r from-[#C5A880] to-[#B39366] text-[#0B0F15] font-medium shadow-md border-0'
-                      : 'max-w-[90%] p-3.5 text-[12.5px] leading-relaxed rounded-none bg-[#141B24] text-gray-200 border border-[#C5A880]/15 shadow-sm space-y-2'
+                      ? 'max-w-[85%] sm:max-w-[82%] p-3 text-xs sm:text-[13px] leading-relaxed rounded-none bg-gradient-to-r from-[#C5A880] to-[#B39366] text-[#0B0F15] font-medium shadow-md border-0'
+                      : 'max-w-[92%] sm:max-w-[88%] p-3 sm:p-3.5 text-xs sm:text-[13px] leading-relaxed rounded-none bg-[#141B24] text-gray-200 shadow-sm border border-white/5 space-y-2'
                   }`}
                 >
                   {/* Message Content */}
                   <AiMessageFormatter content={m.text} isUser={m.sender === 'user'} />
 
-                  {/* Context Action Link */}
+                  {/* Context Action Link (If Present) */}
                   {m.actionLink && (
                     <button
                       type="button"
                       onClick={() => handleActionClick(m.actionLink!.moduleId)}
-                      className="mt-2 w-full py-2 px-3 bg-gradient-to-r from-[#C5A880] to-[#B59569] hover:from-white hover:to-white text-[#0B0F15] font-bold text-[11px] uppercase tracking-wider flex items-center justify-center gap-1.5 transition-all rounded-none shadow border-0"
+                      className="mt-2 w-full py-2 px-3 bg-gradient-to-r from-[#C5A880] to-[#B59569] hover:from-white hover:to-white text-[#0B0F15] font-bold text-[11px] sm:text-xs uppercase tracking-wider flex items-center justify-center gap-1.5 transition-all rounded-none shadow border-0"
                     >
                       <Zap className="w-3 h-3" /> {m.actionLink.label} →
                     </button>
@@ -729,14 +685,14 @@ Quý cư dân có thể chọn câu hỏi gợi ý bên dưới hoặc nhắn ti
 
                   {/* Copy Button (Only for AI messages) */}
                   {m.sender === 'ai' && (
-                    <div className="pt-2 border-t border-white/5 flex items-center justify-between text-[10px] text-gray-400">
+                    <div className="pt-1.5 border-t border-white/5 flex items-center justify-between text-[10px] text-gray-400">
                       <span className="font-mono text-[9px] text-gray-500">
                         {m.timestamp} • Trợ lý Skyline
                       </span>
                       <button
                         type="button"
                         onClick={() => handleCopyMessage(m.id, m.text)}
-                        className="hover:text-white flex items-center gap-1 px-2 py-0.5 hover:bg-white/5 rounded-none transition-colors text-gray-400 border-0"
+                        className="hover:text-white flex items-center gap-1 px-1.5 py-0.5 hover:bg-white/5 rounded-none transition-colors text-gray-400 border-0"
                         title="Sao chép nội dung câu trả lời"
                       >
                         {copiedMessageId === m.id ? (
@@ -761,24 +717,24 @@ Quý cư dân có thể chọn câu hỏi gợi ý bên dưới hoặc nhắn ti
                   </span>
                 )}
 
-                {/* Horizontal Scrollable Quick Suggestions (Saves massive vertical space) */}
+                {/* Contextual Follow-up Question Suggestions */}
                 {m.suggestions && m.suggestions.length > 0 && (
-                  <div className="w-full max-w-full pt-1 animate-in fade-in duration-200">
-                    <div className="flex items-center gap-1 text-[10px] text-[#C5A880] font-medium mb-1 px-0.5">
-                      <Sparkles className="w-2.5 h-2.5 text-[#C5A880]" />
-                      <span>Gợi ý câu hỏi nhanh:</span>
+                  <div className="flex flex-col gap-1.5 pt-1 max-w-full animate-in fade-in duration-200">
+                    <div className="flex items-center gap-1.5 text-[11px] text-[#C5A880] font-medium px-0.5">
+                      <Sparkles className="w-3 h-3 text-[#C5A880] flex-shrink-0" />
+                      <span>Gợi ý câu hỏi tiếp theo:</span>
                     </div>
-                    <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5 scroll-smooth max-w-full">
+                    <div className="flex flex-wrap gap-1.5">
                       {m.suggestions.map((sug, idx) => (
                         <button
                           key={idx}
                           type="button"
                           onClick={() => handleSendMessage(sug)}
                           disabled={isTyping}
-                          className="text-[11px] px-2.5 py-1 bg-[#16202D] hover:bg-[#223042] text-gray-300 hover:text-[#C5A880] transition-all rounded-none whitespace-nowrap flex items-center gap-1.5 border border-[#C5A880]/20 hover:border-[#C5A880]/50 shadow-sm flex-shrink-0 group active:scale-95"
+                          className="text-[11px] sm:text-xs px-2.5 py-1.5 bg-[#16202D] hover:bg-[#212E40] text-gray-300 hover:text-[#C5A880] transition-all rounded-none text-left flex items-center justify-between gap-1.5 border border-[#C5A880]/20 hover:border-[#C5A880]/50 shadow-sm group active:scale-[0.98]"
                         >
-                          <span>{sug}</span>
-                          <ChevronRight className="w-2.5 h-2.5 text-[#C5A880]/70 group-hover:translate-x-0.5 transition-transform flex-shrink-0" />
+                          <span className="group-hover:translate-x-0.5 transition-transform">{sug}</span>
+                          <ChevronRight className="w-2.5 h-2.5 text-[#C5A880]/60 group-hover:text-[#C5A880] transition-colors flex-shrink-0" />
                         </button>
                       ))}
                     </div>
@@ -787,16 +743,16 @@ Quý cư dân có thể chọn câu hỏi gợi ý bên dưới hoặc nhắn ti
               </div>
             ))}
 
-            {/* AI Typing Indicator */}
+            {/* AI Waveform Typing Indicator */}
             {isTyping && (
-              <div className="flex items-center gap-2.5 p-2.5 bg-[#141B24] border border-[#C5A880]/20 rounded-none w-fit animate-chat-bubble shadow-sm">
+              <div className="flex items-center gap-2.5 p-2.5 sm:p-3 bg-[#141B24] rounded-none w-fit animate-chat-bubble shadow-sm border border-white/5">
                 <div className="flex items-center gap-1 text-[#C5A880]">
                   <span className="w-1.5 h-1.5 rounded-none bg-[#C5A880] animate-typing-dot-1"></span>
                   <span className="w-1.5 h-1.5 rounded-none bg-amber-400 animate-typing-dot-2"></span>
                   <span className="w-1.5 h-1.5 rounded-none bg-emerald-400 animate-typing-dot-3"></span>
                 </div>
-                <span className="text-[11px] text-gray-300 font-mono">
-                  Trợ lý Skyline đang tra cứu...
+                <span className="text-[11px] sm:text-xs text-gray-300 font-mono">
+                  Trợ lý Skyline đang tra cứu thông tin...
                 </span>
               </div>
             )}
@@ -809,7 +765,7 @@ Quý cư dân có thể chọn câu hỏi gợi ý bên dưới hoặc nhắn ti
             <button
               type="button"
               onClick={() => scrollToBottom()}
-              className="absolute bottom-20 right-5 z-10 px-3 py-1 bg-[#1C2533] hover:bg-[#C5A880] hover:text-[#0D1117] text-white text-[11px] font-semibold rounded-none shadow-2xl flex items-center gap-1.5 transition-all transform hover:scale-105 border border-[#C5A880]/30"
+              className="absolute bottom-20 right-4 sm:right-6 z-10 px-3 py-1.5 bg-[#1C2533] hover:bg-[#C5A880] hover:text-[#0D1117] text-white text-[11px] sm:text-xs font-semibold rounded-none shadow-2xl flex items-center gap-1.5 transition-all transform hover:scale-105 border border-[#C5A880]/30"
             >
               <ArrowDown className="w-3 h-3" />
               <span>Tin nhắn mới</span>
@@ -822,26 +778,26 @@ Quý cư dân có thể chọn câu hỏi gợi ý bên dưới hoặc nhắn ti
               e.preventDefault();
               handleSendMessage();
             }}
-            className="p-3 bg-[#0E131B] border-t border-[#C5A880]/20 flex flex-col gap-1.5 flex-shrink-0 rounded-none"
+            className="p-2.5 sm:p-3 bg-[#0E131B] flex flex-col gap-1.5 flex-shrink-0 border-t border-white/5 sm:border-0 rounded-none pb-[max(0.75rem,env(safe-area-inset-bottom))]"
           >
-            <div className="flex items-end gap-2 bg-[#141B24] border border-[#C5A880]/25 shadow-inner transition-colors p-2 pl-2.5 rounded-none focus-within:border-[#C5A880]/70">
+            <div className="flex items-end gap-2 bg-[#141B24] shadow-inner transition-colors p-1.5 sm:p-2 pl-2.5 sm:pl-3 rounded-none border border-white/5 focus-within:border-[#C5A880]/50">
               <textarea
                 ref={textareaRef}
                 rows={1}
                 value={inputText}
                 onChange={(e) => setInputText(e.target.value)}
                 onKeyDown={handleKeyDown}
-                placeholder="Nhập câu hỏi (Enter để gửi, Shift+Enter xuống dòng)..."
+                placeholder="Nhập câu hỏi (Enter để gửi)..."
                 disabled={isTyping}
-                className="flex-1 bg-transparent text-xs text-white placeholder-gray-500 focus:outline-none resize-none max-h-20 leading-relaxed scrollbar-none py-1 rounded-none"
+                className="flex-1 bg-transparent text-xs text-white placeholder-gray-500 focus:outline-none resize-none max-h-24 leading-relaxed py-1 sm:py-1.5 rounded-none"
               />
 
               {inputText.trim() && (
                 <button
                   type="button"
                   onClick={() => setInputText('')}
-                  className="text-gray-500 hover:text-white p-1 mb-0.5 border-0 rounded-none"
-                  title="Xóa nội dung nhập"
+                  className="text-gray-500 hover:text-white p-1 mb-1 border-0 rounded-none"
+                  title="Xóa chữ"
                 >
                   <X className="w-3.5 h-3.5" />
                 </button>
@@ -850,26 +806,24 @@ Quý cư dân có thể chọn câu hỏi gợi ý bên dưới hoặc nhắn ti
               <button
                 type="submit"
                 disabled={!inputText.trim() || isTyping}
-                className={`w-8 h-8 rounded-none transition-all flex items-center justify-center font-bold flex-shrink-0 border-0 ${
+                className={`w-8 h-8 sm:w-9 sm:h-9 rounded-none transition-all flex items-center justify-center font-bold flex-shrink-0 border-0 ${
                   inputText.trim() && !isTyping
-                    ? 'bg-[#C5A880] text-[#0D1117] hover:bg-white shadow transform hover:scale-105 active:scale-95'
+                    ? 'bg-[#C5A880] text-[#0D1117] hover:bg-white shadow transform active:scale-95'
                     : 'bg-[#1A222F] text-gray-500 cursor-not-allowed'
                 }`}
-                title="Gửi câu hỏi"
+                title="Gửi tin nhắn"
               >
-                <Send className="w-3.5 h-3.5" />
+                <Send className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
               </button>
             </div>
 
-            {/* Interaction Tips & Shortcuts */}
-            <div className="flex items-center justify-between text-[9.5px] text-gray-500 px-1">
-              <span className="flex items-center gap-1.5">
-                <ShieldCheck className="w-3 h-3 text-emerald-500" />
-                Bảo mật dữ liệu cư dân 100%
+            {/* Disclaimer & Shortcuts */}
+            <div className="flex items-center justify-between text-[10px] text-gray-500 px-1">
+              <span className="flex items-center gap-1.5 truncate">
+                <ShieldCheck className="w-3 h-3 text-emerald-500 flex-shrink-0" />
+                <span className="truncate">Bảo mật riêng tư • Quy chế vận hành Skyline</span>
               </span>
-              <span className="hidden sm:inline text-[9px] font-mono text-gray-500">
-                Esc: Thu nhỏ • Enter ↵ gửi
-              </span>
+              <span className="hidden sm:inline text-[9px] font-mono text-gray-500 flex-shrink-0">Enter ↵ gửi</span>
             </div>
           </form>
         </div>
