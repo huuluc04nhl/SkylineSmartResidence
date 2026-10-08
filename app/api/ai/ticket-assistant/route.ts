@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { GEMINI_API_KEY } from '@/lib/geminiClient';
-import { classifyTicket, findInquiryAnswer } from '@/lib/ticketClassification';
+import { classifyTicket, findInquiryAnswer, generateSuggestedAdminReply } from '@/lib/ticketClassification';
 
 // Timeout configuration
 const GEMINI_TIMEOUT_MS = 8000;
@@ -376,6 +376,49 @@ Trả lời cư dân lịch sự, ngắn gọn (dưới 80 từ), chính xác v�
           reply: localAnswer,
           confidence: 0.85,
           source: 'SKYLINE_KNOWLEDGE_BASE_FALLBACK',
+        });
+      }
+    }
+
+    // 4. ACTION: AI SOẠN THẢO MẪU PHẢN HỒI CHÍNH THỨC TỪ BAN QUẢN LÝ (SMART BQL OFFICIAL REPLY)
+    if (action === 'GENERATE_ADMIN_REPLY') {
+      const resident = residentName || 'Quý cư dân';
+      const apt = aptCode ? `căn hộ ${aptCode}` : 'căn hộ';
+      const eng = body.engineerName ? `KTV ${body.engineerName}` : '';
+
+      try {
+        const systemPrompt = `Bạn là Trưởng Ban Quản Lý Chung Cư Cao Cấp Skyline Smart Residence (Quận 7, TP.HCM).
+Nhiệm vụ: Soạn thảo thư phản hồi chính thức từ Ban Quản Lý để gửi đến cư dân khi họ phản ánh/khiếu nại hoặc đóng góp ý kiến.
+
+Yêu cầu nội dung:
+1. Lời chào trang trọng gửi đích danh đến ${resident} (${apt}).
+2. Cảm ơn chân thành vì cư dân đã góp ý xây dựng chung cư (hoặc thành thật xin lỗi nếu sự việc gây phiền hà/gián đoạn sinh hoạt).
+3. Biện pháp xử lý cụ thể, rõ ràng: Ban Quản Lý đã trực tiếp làm việc với bộ phận chuyên trách, cử nhân sự kiểm tra hiện trường${eng ? ` (${eng})` : ''}, và thời gian khắc phục dứt điểm.
+4. Cam kết tiếp tục theo dõi sát sao, duy trì tiêu chuẩn sống cao cấp tại Skyline, và cung cấp kênh liên hệ nóng (Hotline BQL 1900 8899 hoặc Lễ tân Sảnh L1) nếu cư dân cần hỗ trợ khẩn.
+5. Giọng văn: Lịch thiệp, chuẩn mực dịch vụ chung cư cao cấp, ấm áp và thể hiện tinh thần trách nhiệm cao nhất.
+6. Độ dài: Khoảng 80 - 130 từ. Chỉ trả về trực tiếp nội dung bức thư phản hồi, KHÔNG thêm tiêu đề, nhãn hay dấu ngoặc kép.`;
+
+        const userPrompt = `Phản ánh từ ${resident} (${apt}) thuộc hạng mục [${category || 'Phản ánh dịch vụ'}]: "${content}".${eng ? ` Phân công KTV xử lý: ${eng}.` : ''} Hãy soạn thư phản hồi chính thức từ BQL.`;
+
+        const reply = await callGemini(userPrompt, systemPrompt);
+        return NextResponse.json({
+          success: true,
+          reply: reply.replace(/^"|"$/g, '').trim(),
+          source: 'GEMINI_AI',
+        });
+      } catch (err) {
+        console.warn('Gemini AI trả lời phản ánh bận, dùng fallback thông minh:', err);
+        const fallback = generateSuggestedAdminReply(
+          content, 
+          category, 
+          residentName, 
+          aptCode, 
+          body.engineerName
+        );
+        return NextResponse.json({
+          success: true,
+          reply: fallback,
+          source: 'DYNAMIC_TEMPLATE_FALLBACK',
         });
       }
     }

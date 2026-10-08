@@ -86,7 +86,55 @@ export default function KanbanBoard() {
   const [feedbackReplyTicket, setFeedbackReplyTicket] = useState<ExtendedServiceRequest | null>(null);
   const [feedbackReplyContent, setFeedbackReplyContent] = useState<string>('');
   const [replyEngineerName, setReplyEngineerName] = useState<string>('');
+  const [isGeneratingAiReply, setIsGeneratingAiReply] = useState<boolean>(false);
   const feedbackReplyAdminName = 'Ban Quản Lý Chung Cư Skyline';
+
+  const handleGenerateAiAdminReply = async () => {
+    if (!feedbackReplyTicket) return;
+    setIsGeneratingAiReply(true);
+    try {
+      const res = await fetch('/api/ai/ticket-assistant', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'GENERATE_ADMIN_REPLY',
+          content: feedbackReplyTicket.content,
+          category: feedbackReplyTicket.ai_category,
+          residentName: feedbackReplyTicket.resident_name,
+          aptCode: feedbackReplyTicket.apt_code,
+          engineerName: replyEngineerName.trim() || undefined,
+        }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.success && data.reply) {
+          setFeedbackReplyContent(data.reply);
+          return;
+        }
+      }
+      // Fallback nếu API bận
+      const draft = generateSuggestedAdminReply(
+        feedbackReplyTicket.content,
+        feedbackReplyTicket.ai_category,
+        feedbackReplyTicket.resident_name,
+        feedbackReplyTicket.apt_code,
+        replyEngineerName.trim() || undefined
+      );
+      setFeedbackReplyContent(draft);
+    } catch (err) {
+      console.warn('Lỗi AI soạn phản hồi:', err);
+      const draft = generateSuggestedAdminReply(
+        feedbackReplyTicket.content,
+        feedbackReplyTicket.ai_category,
+        feedbackReplyTicket.resident_name,
+        feedbackReplyTicket.apt_code,
+        replyEngineerName.trim() || undefined
+      );
+      setFeedbackReplyContent(draft);
+    } finally {
+      setIsGeneratingAiReply(false);
+    }
+  };
 
   const [resolvingTicket, setResolvingTicket] = useState<ExtendedServiceRequest | null>(null);
   const [afterImageBase64, setAfterImageBase64] = useState<string>('');
@@ -1578,22 +1626,20 @@ export default function KanbanBoard() {
             </div>
 
             {/* AI Assistant Suggested Draft */}
-            <div className="flex items-center justify-between">
-              <label className="text-xs text-gray-300 font-semibold">Nội dung phản hồi cư dân:</label>
+            <div className="flex items-center justify-between gap-2">
+              <label className="text-xs text-gray-300 font-semibold flex-shrink-0">Nội dung phản hồi cư dân:</label>
               <button
                 type="button"
-                onClick={() => {
-                  const draft = generateSuggestedAdminReply(
-                    feedbackReplyTicket.content,
-                    feedbackReplyTicket.ai_category
-                  );
-                  setFeedbackReplyContent(draft);
-                }}
-                className="text-[11px] px-2.5 py-1 bg-purple-950/70 border border-purple-500/50 hover:border-purple-400 text-purple-300 flex items-center gap-1.5 transition-colors"
-                title="Sử dụng AI tạo sẵn mẫu phản hồi chuẩn mực, lịch sự và giải pháp cụ thể"
+                onClick={handleGenerateAiAdminReply}
+                disabled={isGeneratingAiReply}
+                className="text-[11px] px-2.5 py-1 bg-purple-950/70 border border-purple-500/50 hover:border-purple-400 text-purple-300 flex items-center gap-1.5 transition-colors disabled:opacity-60 disabled:cursor-not-allowed flex-shrink-0"
+                title="AI Gemini soạn thảo phản hồi thông minh, phù hợp ngữ cảnh từng yêu cầu cụ thể"
               >
-                <Sparkles className="w-3.5 h-3.5 text-purple-400" />
-                <span>AI Gợi Ý Mẫu Trả Lời</span>
+                {isGeneratingAiReply ? (
+                  <><RefreshCw className="w-3.5 h-3.5 text-purple-400 animate-spin" /><span>Đang soạn...</span></>
+                ) : (
+                  <><Sparkles className="w-3.5 h-3.5 text-purple-400" /><span>AI Soạn Thảo Thông Minh</span></>
+                )}
               </button>
             </div>
 
@@ -1609,48 +1655,44 @@ export default function KanbanBoard() {
 
               {/* Kỹ thuật viên xử lý (engineername) */}
               <div className="space-y-1.5 pt-1">
-                <div className="flex items-center justify-between">
-                  <label className="text-xs text-gray-300 font-semibold flex items-center gap-1.5">
-                    <Wrench className="w-3.5 h-3.5 text-amber-400" />
-                    <span>Kỹ thuật viên xử lý (engineername - nếu có):</span>
-                  </label>
-                  <span className="text-[10px] text-gray-500 italic">Tùy chọn</span>
-                </div>
-                <div className="flex gap-2">
-                  <input
-                    type="text"
-                    value={replyEngineerName}
-                    onChange={(e) => setReplyEngineerName(e.target.value)}
-                    placeholder="Nhập tên KTV xử lý (VD: Lê Văn Kỹ Thuật, Hoàng, Nguyễn Văn An...)"
-                    className="flex-1 bg-[#161B22] border border-[#2D3748] text-xs text-white px-3 py-2 focus:outline-none focus:border-[#C5A880]"
-                  />
+                <label className="text-xs text-gray-300 font-semibold flex items-center gap-1.5">
+                  <Wrench className="w-3.5 h-3.5 text-amber-400" />
+                  <span>KTV phụ trách</span>
+                  <span className="text-[10px] text-gray-500 font-normal italic">(tuỳ chọn)</span>
+                </label>
+                <div className="flex gap-2 items-stretch">
                   {technicians.length > 0 && (
                     <select
-                      onChange={(e) => {
-                        if (e.target.value) setReplyEngineerName(e.target.value);
-                      }}
-                      defaultValue=""
-                      className="bg-[#161B22] border border-[#2D3748] text-xs text-gray-300 px-2 py-2 focus:outline-none focus:border-[#C5A880]"
+                      value={replyEngineerName}
+                      onChange={(e) => setReplyEngineerName(e.target.value)}
+                      className="bg-[#161B22] border border-[#2D3748] text-xs text-gray-300 px-2 py-2 focus:outline-none focus:border-[#C5A880] min-w-0 w-[160px] flex-shrink-0"
                     >
-                      <option value="" disabled>-- Chọn nhanh KTV --</option>
+                      <option value="">-- Chọn KTV --</option>
                       {technicians.map(k => (
                         <option key={k.id} value={k.name}>{k.name}</option>
                       ))}
                     </select>
                   )}
+                  <input
+                    type="text"
+                    value={replyEngineerName}
+                    onChange={(e) => setReplyEngineerName(e.target.value)}
+                    placeholder="Hoặc nhập tên KTV thủ công..."
+                    className="flex-1 min-w-0 bg-[#161B22] border border-[#2D3748] text-xs text-white px-3 py-2 focus:outline-none focus:border-[#C5A880]"
+                  />
                 </div>
               </div>
 
-              <div className="flex items-center justify-between text-xs text-gray-400 pt-1">
-                <div className="flex items-center gap-2">
-                  <span>Đơn vị ký duyệt:</span>
-                  <div className="px-2.5 py-1 bg-[#161B22] border border-[#2D3748] text-white font-medium flex items-center gap-1.5 select-none">
+              <div className="flex flex-col gap-1.5 text-xs text-gray-400 pt-1">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="flex-shrink-0">Đơn vị ký duyệt:</span>
+                  <div className="px-2.5 py-1 bg-[#161B22] border border-[#2D3748] text-white font-medium flex items-center gap-1.5 select-none flex-shrink-0">
                     <ShieldCheck className="w-3.5 h-3.5 text-[#C5A880]" />
-                    <span>Ban Quản Lý Chung Cư Skyline</span>
-                    <span className="text-[10px] text-emerald-400 font-mono font-bold">(Chính thức)</span>
+                    <span className="whitespace-nowrap">Ban Quản Lý Chung Cư Skyline</span>
+                    <span className="text-[10px] text-emerald-400 font-mono font-bold whitespace-nowrap">(Chính thức)</span>
                   </div>
                 </div>
-                <span className="text-[11px] text-gray-500 italic">* Chữ ký số tự động gắn kèm văn bản</span>
+                <span className="text-[10px] text-gray-500 italic">* Chữ ký số tự động gắn kèm khi gửi văn bản</span>
               </div>
 
               <div className="flex justify-end gap-3 pt-3 border-t border-[#222B35]">

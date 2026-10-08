@@ -209,22 +209,42 @@ export function findInquiryAnswer(questionText: string): string {
 }
 
 /**
- * Sinh câu trả lời mẫu lịch sự, chuyên nghiệp từ Ban Quản Lý khi có phản ánh
+ * Sinh câu trả lời mẫu lịch sự, chuyên nghiệp từ Ban Quản Lý khi có phản ánh (Fallback thông minh)
  */
-export function generateSuggestedAdminReply(content: string, service?: string): string {
+export function generateSuggestedAdminReply(
+  content: string, 
+  service?: string,
+  residentName?: string,
+  aptCode?: string,
+  engineerName?: string
+): string {
   const text = `${service || ''} ${content || ''}`.toLowerCase();
+  const salutation = residentName ? `Kính gửi Quý cư dân ${residentName}${aptCode ? ` (Căn hộ ${aptCode})` : ''},` : 'Kính gửi Quý cư dân,';
+  const engMention = engineerName ? ` BQL đã phân công Kỹ thuật viên ${engineerName} trực tiếp đảm trách xử lý sự vụ.` : '';
 
-  if (text.includes('nhà hàng') || text.includes('bàn ghế')) {
-    return 'Ban Quản Lý chân thành cảm ơn ý kiến đóng góp của Quý cư dân. BQL đã làm việc trực tiếp với Quản lý Khu Nhà hàng và yêu cầu chấn chỉnh ngay quy trình vệ sinh bàn ghế sau mỗi ca phục vụ. Đội ngũ giám sát sẽ tăng cường kiểm tra để đảm bảo vệ sinh tốt nhất cho cư dân.';
+  if (text.includes('nhà hàng') || text.includes('bàn ghế') || text.includes('ăn uống')) {
+    return `${salutation}\n\nBan Quản Lý chân thành cảm ơn ý kiến đóng góp của Quý cư dân. BQL đã làm việc trực tiếp với Quản lý Khu Nhà hàng và yêu cầu chấn chỉnh ngay quy trình vệ sinh bàn ghế sau mỗi ca phục vụ.${engMention} Đội ngũ giám sát tòa nhà sẽ tăng cường kiểm tra để đảm bảo mỹ quan và vệ sinh an toàn thực phẩm tốt nhất cho cư dân. Trân trọng!`;
   }
 
-  if (text.includes('rác') || text.includes('block') || text.includes('vệ sinh')) {
-    return 'Ban Quản Lý đã tiếp nhận phản ánh về tình trạng rác thải. Đội vệ sinh ca trực đã được cử đến khu vực để dọn dẹp sạch sẽ và khử khuẩn. BQL cũng tăng cường nhắc nhở các căn hộ xung quanh tuân thủ đúng vị trí tập kết rác quy định.';
+  if (text.includes('rác') || text.includes('block') || text.includes('vệ sinh') || text.includes('hôi') || text.includes('sàn')) {
+    return `${salutation}\n\nBan Quản Lý đã tiếp nhận phản ánh về tình trạng vệ sinh tại khu vực. Đội dịch vụ môi trường ca trực${engineerName ? ` cùng KTV ${engineerName}` : ''} đã được điều động đến hiện trường để dọn dẹp sạch sẽ, khử khuẩn và lau rửa sàn. BQL cũng tăng cường tuần tra nhắc nhở để duy trì không gian chung luôn phong quang, sạch đẹp. Trân trọng!`;
   }
 
-  if (text.includes('tiếng ồn') || text.includes('ồn')) {
-    return 'Ban Quản Lý đã cử nhân viên bảo vệ lên tận căn hộ nhắc nhở trực tiếp, yêu cầu tuân thủ khung giờ yên tĩnh của tòa nhà sau 22:00. BQL sẽ tiếp tục theo dõi để đảm bảo không gian yên tĩnh cho Quý cư dân.';
+  if (text.includes('tiếng ồn') || text.includes('ồn') || text.includes('khoan') || text.includes('nhạc')) {
+    return `${salutation}\n\nBan Quản Lý rất lấy làm tiếc vì sự việc gây ảnh hưởng đến thời gian nghỉ ngơi của Quý cư dân. Đội An ninh tòa nhà đã lên tận nơi kiểm tra, lập biên bản nhắc nhở trực tiếp và yêu cầu chấm dứt ngay hành vi gây ồn, tuân thủ nghiêm nội quy khung giờ yên tĩnh của chung cư. BQL sẽ tiếp tục giám sát chặt chẽ. Trân trọng!`;
   }
 
-  return 'Ban Quản Lý xin ghi nhận thông tin phản ánh từ Quý cư dân. Chúng tôi đã chuyển tiếp đến bộ phận phụ trách để kiểm tra và xử lý triệt để trong thời gian sớm nhất. Xin chân thành cảm ơn sự đồng hành của Quý cư dân vì một môi trường sống văn minh tại Skyline!';
+  if (text.includes('nước') || text.includes('vòi') || text.includes('rò rỉ') || text.includes('nghẹt') || text.includes('thấm')) {
+    return `${salutation}\n\nBan Quản Lý đã ghi nhận sự cố liên quan đến hệ thống cấp thoát nước.${engMention || ' BQL đã cử kỹ thuật viên chuyên trách cơ điện nước'} liên hệ và có mặt tại căn hộ để kiểm tra áp lực, khắc phục triệt để hiện tượng rò rỉ nhằm đảm bảo sinh hoạt cho gia đình. Trân trọng!`;
+  }
+
+  if (text.includes('điện') || text.includes('đèn') || text.includes('chập') || text.includes('aptomat') || text.includes('mất điện')) {
+    return `${salutation}\n\nBan Quản Lý đã tiếp nhận yêu cầu kiểm tra hệ thống điện.${engMention || ' Kỹ thuật viên điện tòa nhà'} đã chuẩn bị vật tư kiểm tra chuyên dụng để xử lý an toàn, kiểm tra tải điện và khôi phục hoạt động ổn định nhất cho căn hộ. Trân trọng!`;
+  }
+
+  if (text.includes('thang máy') || text.includes('thang')) {
+    return `${salutation}\n\nBan Quản Lý chân thành cảm ơn phản ánh kịp thời của Quý cư dân. BQL đã phối hợp cùng đơn vị bảo trì thang máy chuyên dụng để kiểm tra thông số kỹ thuật, căn chỉnh cửa và đảm bảo thang máy vận hành êm ái, an toàn tuyệt đối. Trân trọng!`;
+  }
+
+  return `${salutation}\n\nBan Quản Lý xin ghi nhận thông tin phản ánh từ Quý cư dân.${engMention} Chúng tôi đã chuyển tiếp nội dung đến bộ phận phụ trách để xác minh hiện trường và xử lý dứt điểm trong thời gian sớm nhất. Xin chân thành cảm ơn sự đồng hành của Quý cư dân vì một môi trường sống văn minh, chất lượng tại Skyline Smart Residence!`;
 }
