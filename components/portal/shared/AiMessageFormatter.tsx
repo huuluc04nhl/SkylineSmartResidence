@@ -33,7 +33,7 @@ export default function AiMessageFormatter({ content, isUser = false }: AiMessag
                   const itemText = line.replace(/^\s*[\*\-•]\s+/, '');
                   return (
                     <li key={lIdx} className="flex items-start gap-2 text-xs">
-                      <span className="w-1.5 h-1.5 rounded-full bg-[#C5A880] mt-1.5 flex-shrink-0" />
+                      <span className="w-1.5 h-1.5 rounded-none bg-[#C5A880] mt-1.5 flex-shrink-0" />
                       <span className="flex-1">{renderFormattedText(itemText)}</span>
                     </li>
                   );
@@ -53,7 +53,7 @@ export default function AiMessageFormatter({ content, isUser = false }: AiMessag
                   const itemText = match ? match[2] : line;
                   return (
                     <li key={lIdx} className="flex items-start gap-2 text-xs">
-                      <span className="px-1.5 py-0.2 bg-[#1C2533] border border-[#C5A880]/50 text-[#C5A880] text-[9px] font-mono font-bold rounded flex-shrink-0 mt-0.5">
+                      <span className="px-1.5 py-0.2 bg-[#1C2533] border border-[#C5A880]/50 text-[#C5A880] text-[9px] font-mono font-bold rounded-none flex-shrink-0 mt-0.5">
                         {num}
                       </span>
                       <span className="flex-1">{renderFormattedText(itemText)}</span>
@@ -102,7 +102,7 @@ function renderFormattedText(text: string) {
       return (
         <code
           key={idx}
-          className="px-1.5 py-0.5 bg-[#0D1117] border border-[#2D3748] rounded text-[#C5A880] font-mono text-[10px] mx-0.5"
+          className="px-1.5 py-0.5 bg-[#0D1117] border border-[#2D3748] rounded-none text-[#C5A880] font-mono text-[10px] mx-0.5"
         >
           {codeText}
         </code>
