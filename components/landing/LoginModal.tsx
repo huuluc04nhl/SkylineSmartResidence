@@ -985,14 +985,8 @@ export default function LoginModal({ isOpen, onClose, defaultAccount = '' }: Log
                 </div>
               )}
 
-              {/* Minimalist HUD Corner Brackets */}
-              <div className="absolute top-3 left-3 w-4 h-4 border-t-2 border-l-2 border-[#C5A880]/70 pointer-events-none" />
-              <div className="absolute top-3 right-3 w-4 h-4 border-t-2 border-r-2 border-[#C5A880]/70 pointer-events-none" />
-              <div className="absolute bottom-3 left-3 w-4 h-4 border-b-2 border-l-2 border-[#C5A880]/70 pointer-events-none" />
-              <div className="absolute bottom-3 right-3 w-4 h-4 border-b-2 border-r-2 border-[#C5A880]/70 pointer-events-none" />
-
               {/* Real-time Environmental Lighting Indicator */}
-              {faceInputMode === 'CAMERA' && isCameraActive && lighting && (
+              {faceInputMode === 'CAMERA' && isCameraActive && lighting && faceScanStatus === 'IDLE' && (
                 <div className="absolute top-3 right-3 z-20 pointer-events-none flex items-center gap-1.5 px-2.5 py-1 bg-black/85 backdrop-blur border border-[#222B35] text-[10px] font-mono">
                   {lighting.status === 'TOO_DARK' ? (
                     <Moon className="w-3 h-3 text-rose-400 animate-pulse" />
@@ -1011,83 +1005,69 @@ export default function LoginModal({ isOpen, onClose, defaultAccount = '' }: Log
                 </div>
               )}
 
-              {/* Biometric Face Guide Oval */}
+              {/* Clean Biometric Face Guide Oval (Không rườm rà đường kẻ) */}
               <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10">
-                <div className={`w-36 h-48 sm:w-40 sm:h-52 border-2 border-dashed rounded-[50%] transition-all duration-300 ${
+                <div className={`w-36 h-48 sm:w-40 sm:h-52 border rounded-[50%] transition-all duration-300 ${
                   faceScanStatus === 'SUCCESS'
                     ? 'border-emerald-400 shadow-[0_0_20px_rgba(52,211,153,0.5)]'
                     : faceScanStatus === 'FAILED'
                     ? 'border-rose-400 shadow-[0_0_15px_rgba(244,63,94,0.3)]'
-                    : faceScanStatus !== 'IDLE'
-                    ? 'border-[#C5A880] shadow-[0_0_15px_rgba(197,168,128,0.4)] animate-pulse'
+                    : (faceScanStatus === 'SCANNING' || faceScanStatus === 'LIVENESS' || faceScanStatus === 'MATCHING')
+                    ? 'border-[#C5A880] shadow-[0_0_15px_rgba(197,168,128,0.35)] animate-pulse'
                     : lighting?.status === 'TOO_DARK'
-                    ? 'border-rose-500/80 shadow-[0_0_15px_rgba(244,63,94,0.3)]'
+                    ? 'border-rose-500/60'
                     : lighting?.status === 'TOO_BRIGHT'
-                    ? 'border-amber-500/80 shadow-[0_0_15px_rgba(245,158,11,0.3)]'
-                    : 'border-[#C5A880]/60 shadow-[0_0_12px_rgba(197,168,128,0.2)]'
-                }`}>
-                  <div className="absolute inset-0 flex items-center justify-center opacity-30">
-                    <div className="w-3.5 h-0.5 bg-[#C5A880]" />
-                    <div className="h-3.5 w-0.5 bg-[#C5A880] absolute" />
+                    ? 'border-amber-500/60'
+                    : 'border-[#C5A880]/35'
+                }`} />
+              </div>
+
+              {/* Minimalist Floating Status - Chỉ hiển thị khi IDLE hoặc khi có kết quả SUCCESS/FAILED, không hiển thị chồng lúc đang quét */}
+              {(faceScanStatus === 'IDLE' || faceScanStatus === 'SUCCESS' || faceScanStatus === 'FAILED') && (
+                <div className="absolute bottom-3 inset-x-4 flex justify-center pointer-events-none z-20">
+                  <div className="px-3 py-1 bg-black/85 backdrop-blur border border-white/10 rounded-none text-xs font-medium flex items-center gap-1.5 shadow-lg">
+                    {faceScanStatus === 'IDLE' && (
+                      <span className={
+                        lighting?.status === 'TOO_DARK' ? 'text-rose-300 flex items-center gap-1.5' :
+                        lighting?.status === 'TOO_BRIGHT' ? 'text-amber-300 flex items-center gap-1.5' :
+                        'text-gray-300'
+                      }>
+                        {faceInputMode === 'CAMERA' ? (
+                          lighting?.status === 'TOO_DARK' ? (
+                            <>
+                              <Moon className="w-3 h-3 text-rose-400" />
+                              <span>Ánh sáng yếu ({lighting.scorePercent}%) - Cần thêm ánh sáng</span>
+                            </>
+                          ) : lighting?.status === 'TOO_BRIGHT' ? (
+                            <>
+                              <Sun className="w-3 h-3 text-amber-400" />
+                              <span>Ánh sáng chói - Tránh ngược sáng</span>
+                            </>
+                          ) : isCameraActive ? (
+                            'Căn khuôn mặt vào khung elip'
+                          ) : (
+                            'Đang kết nối camera...'
+                          )
+                        ) : (
+                          uploadedFaceImage ? 'Ảnh đã sẵn sàng quét FaceID' : 'Chọn ảnh chân dung để quét'
+                        )}
+                      </span>
+                    )}
+                    {faceScanStatus === 'SUCCESS' && (
+                      <span className="text-emerald-400 font-semibold flex items-center gap-1.5">
+                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+                        Xác thực thành công
+                      </span>
+                    )}
+                    {faceScanStatus === 'FAILED' && (
+                      <span className="text-rose-400 font-semibold flex items-center gap-1.5">
+                        <AlertCircle className="w-3.5 h-3.5 text-rose-400" />
+                        {errorMessage || 'Không khớp dữ liệu'}
+                      </span>
+                    )}
                   </div>
                 </div>
-              </div>
-
-              {/* Dynamic Laser Scan Beam */}
-              {(faceScanStatus === 'SCANNING' || faceScanStatus === 'LIVENESS' || faceScanStatus === 'MATCHING') && (
-                <div className="absolute inset-x-0 h-0.5 bg-gradient-to-r from-transparent via-[#C5A880] to-transparent shadow-[0_0_12px_#C5A880] animate-bounce pointer-events-none z-20" />
               )}
-
-              {/* Minimalist Floating Status */}
-              <div className="absolute bottom-3 inset-x-4 flex justify-center pointer-events-none z-20">
-                <div className="px-3 py-1 bg-black/85 backdrop-blur border border-white/10 rounded-none text-xs font-medium flex items-center gap-1.5 shadow-lg">
-                  {faceScanStatus === 'IDLE' && (
-                    <span className={
-                      lighting?.status === 'TOO_DARK' ? 'text-rose-300 flex items-center gap-1.5' :
-                      lighting?.status === 'TOO_BRIGHT' ? 'text-amber-300 flex items-center gap-1.5' :
-                      'text-gray-300'
-                    }>
-                      {faceInputMode === 'CAMERA' ? (
-                        lighting?.status === 'TOO_DARK' ? (
-                          <>
-                            <Moon className="w-3 h-3 text-rose-400" />
-                            <span>Ánh sáng yếu ({lighting.scorePercent}%) - Cần thêm ánh sáng</span>
-                          </>
-                        ) : lighting?.status === 'TOO_BRIGHT' ? (
-                          <>
-                            <Sun className="w-3 h-3 text-amber-400" />
-                            <span>Ánh sáng chói - Tránh ngược sáng</span>
-                          </>
-                        ) : isCameraActive ? (
-                          'Căn khuôn mặt vào khung elip'
-                        ) : (
-                          'Đang kết nối camera...'
-                        )
-                      ) : (
-                        uploadedFaceImage ? 'Ảnh đã sẵn sàng quét FaceID' : 'Chọn ảnh chân dung để quét'
-                      )}
-                    </span>
-                  )}
-                  {(faceScanStatus === 'SCANNING' || faceScanStatus === 'LIVENESS' || faceScanStatus === 'MATCHING') && (
-                    <span className="text-[#C5A880] flex items-center gap-1.5 font-medium">
-                      <RefreshCw className="w-3 h-3 animate-spin text-[#C5A880]" />
-                      {scanStepText || 'Đang nhận diện sinh trắc học...'}
-                    </span>
-                  )}
-                  {faceScanStatus === 'SUCCESS' && (
-                    <span className="text-emerald-400 font-semibold flex items-center gap-1.5">
-                      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
-                      Xác thực thành công
-                    </span>
-                  )}
-                  {faceScanStatus === 'FAILED' && (
-                    <span className="text-rose-400 font-semibold flex items-center gap-1.5">
-                      <AlertCircle className="w-3.5 h-3.5 text-rose-400" />
-                      {errorMessage || 'Không khớp dữ liệu'}
-                    </span>
-                  )}
-                </div>
-              </div>
             </div>
 
             {/* Success Info Card */}
@@ -1117,7 +1097,7 @@ export default function LoginModal({ isOpen, onClose, defaultAccount = '' }: Log
               </div>
             )}
 
-            {/* Primary Action Button */}
+            {/* Primary Action Button - Duy nhất hiển thị vòng xoay loading tại đây */}
             <button
               type="button"
               onClick={() => {
@@ -1131,12 +1111,12 @@ export default function LoginModal({ isOpen, onClose, defaultAccount = '' }: Log
               className={`w-full py-3 text-xs uppercase tracking-widest font-bold transition-all flex items-center justify-center gap-2 rounded-none shadow-lg ${
                 faceScanStatus === 'IDLE' || faceScanStatus === 'FAILED'
                   ? 'bg-[#C5A880] hover:bg-white text-[#0D1117] active:scale-[0.99]'
-                  : 'bg-[#1C2533] border border-[#C5A880]/60 text-[#C5A880]'
+                  : 'bg-[#C5A880] text-[#0D1117] opacity-90 cursor-wait'
               }`}
             >
               {faceScanStatus === 'SCANNING' || faceScanStatus === 'LIVENESS' || faceScanStatus === 'MATCHING' ? (
                 <>
-                  <RefreshCw className="w-4 h-4 animate-spin" />
+                  <RefreshCw className="w-4 h-4 animate-spin text-[#0D1117]" />
                   <span>Đang Nhận Diện Sinh Trắc Học...</span>
                 </>
               ) : (
