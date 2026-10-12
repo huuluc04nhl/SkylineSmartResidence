@@ -212,6 +212,38 @@ export async function POST(req: Request) {
       });
     }
 
+    // 4. BQL Revokes e-KYC (Tạm khóa / Thu hồi quyền sau khi đã duyệt)
+    if (action === 'REVOKE') {
+      const { id, reason, approverName } = body;
+      const revoked = rejectEkycRequest(
+        id, 
+        reason || 'Ban Quản Lý đã tạm khóa / thu hồi quyền ra vào FaceID theo quy định vận hành.', 
+        approverName || 'Ban Quản Lý Skyline'
+      );
+      if (!revoked) {
+        return NextResponse.json({ success: false, message: 'Không tìm thấy hồ sơ e-KYC' }, { status: 404 });
+      }
+
+      try {
+        const revokedApt = (revoked.apartmentCode === '12A05' || revoked.apartmentCode === '12A5' || !revoked.apartmentCode) ? 'CH-06' : revoked.apartmentCode;
+        updateApartmentMember(revokedApt, revoked.userId, {
+          faceStatus: 'BQL Tạm Khóa / Thu Hồi Quyền',
+        });
+        updateEnrolledFaceStatus(revoked.userId, 'REVOKED');
+        if (revoked.phone) {
+          updateEnrolledFaceStatus(revoked.phone, 'REVOKED');
+        }
+      } catch (memErr) {
+        console.warn('Sync member face status on revoke error:', memErr);
+      }
+
+      return NextResponse.json({
+        success: true,
+        message: `Đã thu hồi quyền ra vào FaceID của cư dân ${revoked.fullName}.`,
+        ekyc: revoked,
+      });
+    }
+
     return NextResponse.json({ success: false, message: 'Action không hợp lệ' }, { status: 400 });
   } catch (error: any) {
     return NextResponse.json({ success: false, message: error.message }, { status: 500 });

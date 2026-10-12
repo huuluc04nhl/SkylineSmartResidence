@@ -24,7 +24,8 @@ import {
   MapPin,
   RotateCw,
   ZoomIn,
-  Users
+  Users,
+  ShieldCheck
 } from 'lucide-react';
 import { 
   getEkycRequests, 
@@ -47,6 +48,9 @@ export default function EkycApproval() {
   const [zoomImage, setZoomImage] = useState<{ url: string; title: string } | null>(null);
   const [rejectingId, setRejectingId] = useState<string | null>(null);
   const [rejectionReason, setRejectionReason] = useState<string>('Ảnh chụp CCCD bị lóa sáng/mờ nét, vui lòng chụp lại rõ nét');
+  const [revokingId, setRevokingId] = useState<string | null>(null);
+  const [revokeReason, setRevokeReason] = useState<string>('Ban Quản Lý tạm thu hồi quyền ra vào FaceID để đối soát lại hồ sơ');
+  const [justApprovedId, setJustApprovedId] = useState<string | null>(null);
   const [actionNotice, setActionNotice] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
   const [isProcessing, setIsProcessing] = useState<boolean>(false);
 
@@ -120,8 +124,10 @@ export default function EkycApproval() {
         type: 'success',
         message: apiMsg || `Đã phê duyệt hồ sơ e-KYC của ${name} & Kích hoạt quyền FaceID thành công!`
       });
-      if (inspectingRequest?.id === id) {
-        setInspectingRequest(null);
+      // Giữ modal mở và cập nhật trực tiếp sang trạng thái ĐÃ DUYỆT để BQL kiểm tra kết quả ngay
+      if (inspectingRequest?.id === id && updated) {
+        setInspectingRequest(updated);
+        setJustApprovedId(id);
       }
       setTimeout(() => setActionNotice(null), 4000);
     } finally {
@@ -165,10 +171,54 @@ export default function EkycApproval() {
         type: 'error',
         message: apiMsg || `Đã từ chối hồ sơ e-KYC: ${rejectionReason}`
       });
-      if (inspectingRequest?.id === rejectingId) {
-        setInspectingRequest(null);
+      if (inspectingRequest?.id === rejectingId && updated) {
+        setInspectingRequest(updated);
       }
       setRejectingId(null);
+      setTimeout(() => setActionNotice(null), 4000);
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  // 3. Xác Nhận Tạm Khóa / Thu Hồi Quyền Ra Vào (Đối với hồ sơ đã duyệt)
+  const handleConfirmRevoke = async () => {
+    if (!revokingId) return;
+    setIsProcessing(true);
+    try {
+      let apiMsg = '';
+      try {
+        const res = await fetch('/api/ekyc', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            action: 'REVOKE',
+            id: revokingId,
+            reason: revokeReason,
+            approverName: 'Ban Quản Lý Skyline',
+          }),
+        });
+        const data = await res.json();
+        apiMsg = data.message || '';
+      } catch (e) {
+        console.warn('API revoke error:', e);
+      }
+
+      const updated = rejectEkycRequest(revokingId, revokeReason, 'Ban Quản Lý Skyline');
+      if (updated) {
+        updateEnrolledFaceStatus(updated.userId, 'REVOKED');
+        if (updated.phone) updateEnrolledFaceStatus(updated.phone, 'REVOKED');
+      }
+
+      await refreshList();
+      setActionNotice({
+        type: 'error',
+        message: apiMsg || `Đã thu hồi quyền ra vào FaceID của hồ sơ.`
+      });
+      if (inspectingRequest?.id === revokingId && updated) {
+        setInspectingRequest(updated);
+      }
+      setRevokingId(null);
       setTimeout(() => setActionNotice(null), 4000);
     } finally {
       setIsProcessing(false);
@@ -405,10 +455,11 @@ export default function EkycApproval() {
                         onClick={() => {
                           setInspectingRequest(req);
                           setInspectingSide('FRONT');
+                          setJustApprovedId(null);
                         }}
-                        className="text-[#C5A880] hover:text-white font-bold flex items-center gap-1 underline flex-shrink-0 ml-2"
+                        className="text-[#C5A880] hover:text-white font-bold flex items-center gap-1 underline flex-shrink-0 ml-2 cursor-pointer"
                       >
-                        <Eye className="w-3 h-3" /> Kiểm Tra Chi Tiết
+                        <Eye className="w-3 h-3" /> {isApproved ? 'Xem Chứng Thư Đã Duyệt' : 'Kiểm Tra Chi Tiết'}
                       </button>
                     </div>
                   </div>
@@ -416,16 +467,31 @@ export default function EkycApproval() {
                   {/* Right: Actions & Status Badge */}
                   <div className="lg:col-span-3 flex flex-col items-end justify-center gap-2">
                     <div className="flex items-center gap-2 w-full sm:w-auto">
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setInspectingRequest(req);
-                          setInspectingSide('FRONT');
-                        }}
-                        className="px-3 py-1.5 bg-[#1C2533] hover:bg-[#2B394E] border border-gray-700 text-gray-200 text-xs font-semibold rounded-none transition-all flex items-center justify-center gap-1"
-                      >
-                        <Eye className="w-3.5 h-3.5 text-[#C5A880]" /> Kiểm Tra
-                      </button>
+                      {isApproved ? (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setInspectingRequest(req);
+                            setInspectingSide('FRONT');
+                            setJustApprovedId(null);
+                          }}
+                          className="px-3 py-1.5 bg-[#121B24] hover:bg-[#1A2634] border border-emerald-500/60 text-emerald-300 text-xs font-semibold rounded-none transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow"
+                        >
+                          <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" /> Hồ Sơ Đã Duyệt
+                        </button>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setInspectingRequest(req);
+                            setInspectingSide('FRONT');
+                            setJustApprovedId(null);
+                          }}
+                          className="px-3 py-1.5 bg-[#1C2533] hover:bg-[#2B394E] border border-gray-700 text-gray-200 text-xs font-semibold rounded-none transition-all flex items-center justify-center gap-1 cursor-pointer"
+                        >
+                          <Eye className="w-3.5 h-3.5 text-[#C5A880]" /> Kiểm Tra
+                        </button>
+                      )}
 
                       {isPending && (
                         <>
@@ -433,7 +499,7 @@ export default function EkycApproval() {
                             type="button"
                             disabled={isProcessing}
                             onClick={() => handleApprove(req.id, req.fullName)}
-                            className="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-none shadow transition-all flex items-center justify-center gap-1"
+                            className="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-none shadow transition-all flex items-center justify-center gap-1 cursor-pointer disabled:opacity-50"
                           >
                             <Check className="w-3.5 h-3.5" /> Xác Nhận
                           </button>
@@ -444,7 +510,7 @@ export default function EkycApproval() {
                               setRejectingId(req.id);
                               setRejectionReason('Ảnh chụp CCCD bị mờ/lóa sáng, vui lòng chụp lại rõ nét');
                             }}
-                            className="px-2.5 py-1.5 bg-rose-950 hover:bg-rose-900 border border-rose-500 text-rose-300 text-xs font-semibold rounded-none transition-all flex items-center justify-center gap-1"
+                            className="px-2.5 py-1.5 bg-rose-950 hover:bg-rose-900 border border-rose-500 text-rose-300 text-xs font-semibold rounded-none transition-all flex items-center justify-center gap-1 cursor-pointer disabled:opacity-50"
                           >
                             <X className="w-3.5 h-3.5" /> Báo Chụp Lại
                           </button>
@@ -453,11 +519,24 @@ export default function EkycApproval() {
                     </div>
 
                     {isApproved && (
-                      <div className="text-right space-y-0.5">
+                      <div className="text-right space-y-1">
                         <span className="px-3 py-1 bg-emerald-950 text-emerald-300 border border-emerald-500 text-xs font-bold rounded-none inline-flex items-center gap-1.5">
-                          <CheckCircle2 className="w-3.5 h-3.5" /> Đã Kích Hoạt Quyền Ra Vào
+                          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> Đã Kích Hoạt Quyền Ra Vào
                         </span>
-                        <div className="text-[10px] text-gray-400">Xác nhận bởi: {req.reviewedBy}</div>
+                        <div className="text-[10px] text-gray-400 flex items-center justify-end gap-1 font-mono">
+                          <span>Duyệt: {req.reviewedAt || '02/09/2026'}</span>
+                          <span>•</span>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setRevokingId(req.id);
+                              setRevokeReason('Ban Quản Lý tạm thu hồi quyền ra vào FaceID để đối soát lại hồ sơ.');
+                            }}
+                            className="text-rose-400 hover:text-rose-300 underline cursor-pointer"
+                          >
+                            Thu hồi
+                          </button>
+                        </div>
                       </div>
                     )}
 
@@ -489,27 +568,150 @@ export default function EkycApproval() {
             
             {/* Modal Header */}
             <div className="flex items-center justify-between border-b border-[#222B35] pb-3">
-              <div>
-                <div className="text-[10px] uppercase font-mono text-[#C5A880] font-bold flex items-center gap-1.5 flex-wrap">
-                  <Shield className="w-3.5 h-3.5" /> Hồ Sơ Căn Cước &amp; Khuôn Mặt • Căn Hộ {inspectingRequest.apartmentCode}
-                  {inspectingRequest.roleLabel.includes('Bảo lãnh') && (
-                    <span className="px-2 py-0.5 bg-purple-950/90 border border-purple-500/80 text-purple-300 font-sans text-[10px] rounded-none normal-case font-semibold flex items-center gap-1">
-                      <Users className="w-3 h-3 text-purple-400" /> Được Chủ Hộ Bảo Lãnh Kê Khai
-                    </span>
-                  )}
+              <div className="flex items-center gap-3">
+                {inspectingRequest.status === 'APPROVED' ? (
+                  <div className="w-8 h-8 bg-emerald-950/80 border border-emerald-500/80 flex items-center justify-center text-emerald-400 flex-shrink-0">
+                    <ShieldCheck className="w-4 h-4 text-emerald-400" />
+                  </div>
+                ) : inspectingRequest.status === 'REJECTED' ? (
+                  <div className="w-8 h-8 bg-rose-950/80 border border-rose-500/80 flex items-center justify-center text-rose-400 flex-shrink-0">
+                    <XCircle className="w-4 h-4 text-rose-400" />
+                  </div>
+                ) : (
+                  <div className="w-8 h-8 bg-[#161D26] border border-[#C5A880] flex items-center justify-center text-[#C5A880] flex-shrink-0">
+                    <Shield className="w-4 h-4 text-[#C5A880]" />
+                  </div>
+                )}
+                <div>
+                  <div className="text-[10px] uppercase font-mono text-[#C5A880] font-bold flex items-center gap-1.5 flex-wrap">
+                    <span>Hệ Thống Thẩm Định BQL • Căn Hộ {inspectingRequest.apartmentCode}</span>
+                    {inspectingRequest.status === 'APPROVED' && (
+                      <span className="px-2 py-0.5 bg-emerald-950 border border-emerald-500 text-emerald-300 font-mono text-[9px] font-bold uppercase rounded-none">
+                        ✓ ĐÃ KÍCH HOẠT HỆ THỐNG
+                      </span>
+                    )}
+                    {inspectingRequest.status === 'REJECTED' && (
+                      <span className="px-2 py-0.5 bg-rose-950 border border-rose-500 text-rose-300 font-mono text-[9px] font-bold uppercase rounded-none">
+                        ⚠ YÊU CẦU CẬP NHẬT
+                      </span>
+                    )}
+                    {inspectingRequest.status === 'PENDING' && (
+                      <span className="px-2 py-0.5 bg-amber-950 border border-amber-500 text-amber-300 font-mono text-[9px] font-bold uppercase rounded-none animate-pulse">
+                        ⏳ CHỜ THẨM ĐỊNH
+                      </span>
+                    )}
+                    {inspectingRequest.roleLabel.includes('Bảo lãnh') && (
+                      <span className="px-2 py-0.5 bg-purple-950/90 border border-purple-500/80 text-purple-300 font-sans text-[10px] rounded-none normal-case font-semibold flex items-center gap-1">
+                        <Users className="w-3 h-3 text-purple-400" /> Được Chủ Hộ Bảo Lãnh
+                      </span>
+                    )}
+                  </div>
+                  <h3 className="font-serif text-lg font-bold text-white mt-0.5">
+                    {inspectingRequest.status === 'APPROVED'
+                      ? `Hồ Sơ Định Danh Đã Duyệt: ${inspectingRequest.fullName}`
+                      : inspectingRequest.status === 'REJECTED'
+                      ? `Hồ Sơ Cần Cập Nhật: ${inspectingRequest.fullName}`
+                      : `Đối Chiếu Khuôn Mặt Cư Dân & Thẻ Căn Cước: ${inspectingRequest.fullName}`}
+                  </h3>
                 </div>
-                <h3 className="font-serif text-lg font-bold text-white mt-0.5">
-                  Đối Chiếu Khuôn Mặt Cư Dân &amp; Thẻ Căn Cước Công Dân
-                </h3>
               </div>
               <button
                 type="button"
                 onClick={() => setInspectingRequest(null)}
-                className="text-gray-400 hover:text-white p-1 rounded-none hover:bg-[#161B22]"
+                className="text-gray-400 hover:text-white p-1 rounded-none hover:bg-[#161B22] cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
+
+            {/* Flash Banner: Just approved successfully in this session */}
+            {justApprovedId === inspectingRequest.id && (
+              <div className="p-3 bg-emerald-950/70 border border-emerald-500/80 text-emerald-200 text-xs flex items-center justify-between gap-2 rounded-none animate-fadeIn">
+                <div className="flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-400 flex-shrink-0" />
+                  <span>
+                    <strong>Phê duyệt thành công!</strong> Đã kích hoạt sinh trắc học FaceID và nạp dữ liệu nhận diện vào Camera AI cổng Barrier và Thang máy toà nhà.
+                  </span>
+                </div>
+                <span className="text-[10px] font-mono text-emerald-400 bg-emerald-900/50 px-2 py-0.5">Thời gian thực</span>
+              </div>
+            )}
+
+            {/* Khối Chứng Thư Điện Tử Sau Khi Duyệt (Dành cho hồ sơ APPROVED) */}
+            {inspectingRequest.status === 'APPROVED' && (
+              <div className="p-4 bg-gradient-to-r from-[#121B24] via-[#14202B] to-[#121B24] border border-[#C5A880]/60 rounded-none space-y-3 shadow-xl relative overflow-hidden">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#2D3A4B] pb-2.5">
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-7 h-7 bg-[#C5A880]/15 border border-[#C5A880] flex items-center justify-center text-[#C5A880] flex-shrink-0">
+                      <ShieldCheck className="w-4 h-4 text-[#C5A880]" />
+                    </div>
+                    <div>
+                      <span className="text-[10px] font-mono uppercase tracking-wider text-[#C5A880] font-bold block">
+                        CHỨNG THƯ THẨM DUYỆT ĐIỆN TỬ • SKYLINE SMART RESIDENCE
+                      </span>
+                      <span className="text-xs font-semibold text-white">
+                        Mã Chứng Nhận: <span className="font-mono text-[#C5A880]">{inspectingRequest.id}</span>
+                      </span>
+                    </div>
+                  </div>
+                  <div className="text-left sm:text-right text-[11px] font-mono text-gray-300">
+                    <span className="text-gray-400">Duyệt lúc: </span>
+                    <strong className="text-emerald-400">{inspectingRequest.reviewedAt || '02/09/2026 15:10'}</strong>
+                    <span className="block text-[10px] text-gray-400">Bởi: {inspectingRequest.reviewedBy || 'Ban Quản Lý Skyline (Trực Ban)'}</span>
+                  </div>
+                </div>
+
+                {/* 3 Physical Access Control Pillars Active */}
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs pt-1">
+                  <div className="p-2.5 bg-[#0D131A] border border-emerald-500/40 rounded-none space-y-1">
+                    <div className="flex items-center gap-1.5 text-emerald-400 font-bold text-[11px]">
+                      <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                      Cổng Sảnh &amp; Barrier
+                    </div>
+                    <p className="text-[10.5px] text-gray-400">
+                      Camera AI tự động mở cổng khi nhận diện khuôn mặt cư dân.
+                    </p>
+                  </div>
+
+                  <div className="p-2.5 bg-[#0D131A] border border-emerald-500/40 rounded-none space-y-1">
+                    <div className="flex items-center gap-1.5 text-emerald-400 font-bold text-[11px]">
+                      <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                      Thang Máy Toà BS-07
+                    </div>
+                    <p className="text-[10.5px] text-gray-400">
+                      Tự động phân tầng căn hộ {inspectingRequest.apartmentCode} khi bước vào thang.
+                    </p>
+                  </div>
+
+                  <div className="p-2.5 bg-[#0D131A] border border-emerald-500/40 rounded-none space-y-1">
+                    <div className="flex items-center gap-1.5 text-emerald-400 font-bold text-[11px]">
+                      <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                      Tiện Ích &amp; Bãi Xe
+                    </div>
+                    <p className="text-[10.5px] text-gray-400">
+                      Xác thực thẻ cư dân điện tử và quyền đặt lịch tiện ích nội khu.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Thông báo lý do từ chối (Dành cho hồ sơ REJECTED) */}
+            {inspectingRequest.status === 'REJECTED' && (
+              <div className="p-4 bg-rose-950/60 border border-rose-500/70 rounded-none space-y-2">
+                <div className="flex items-center gap-2 text-rose-300 font-bold text-xs uppercase tracking-wider">
+                  <AlertTriangle className="w-4 h-4 text-rose-400" />
+                  Hồ Sơ Đã Bị Từ Chối / Yêu Cầu Cung Cấp Lại
+                </div>
+                <div className="text-xs text-rose-200 bg-black/40 p-2.5 border border-rose-900/60 space-y-1">
+                  <span className="text-gray-400 block text-[10px]">Lý do từ chối gửi cư dân:</span>
+                  <strong>&quot;{inspectingRequest.rejectionReason || 'Ảnh chụp CCCD không đạt tiêu chuẩn rõ nét.'}&quot;</strong>
+                </div>
+                <div className="text-[10.5px] text-gray-400 font-mono">
+                  Xử lý lúc: {inspectingRequest.reviewedAt} • Bởi: {inspectingRequest.reviewedBy}
+                </div>
+              </div>
+            )}
 
             {/* Visual Comparison: Portrait Face & 4 Angle Samples vs CCCD Photo */}
             {(() => {
@@ -766,40 +968,105 @@ export default function EkycApproval() {
             </div>
 
             {/* Modal Actions */}
-            <div className="flex items-center justify-between pt-3 border-t border-[#222B35]">
-              <div className="text-xs text-gray-400">
-                Trạng thái hiện tại: <strong className="text-white font-mono">{inspectingRequest.status}</strong>
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-3 border-t border-[#222B35]">
+              <div className="text-xs text-gray-400 flex items-center gap-2">
+                <span>Trạng thái hồ sơ:</span>
+                {inspectingRequest.status === 'APPROVED' ? (
+                  <span className="px-2.5 py-0.5 bg-emerald-950 text-emerald-300 border border-emerald-500 text-[10px] font-mono font-bold">
+                    ĐÃ KÍCH HOẠT (ACTIVE)
+                  </span>
+                ) : inspectingRequest.status === 'REJECTED' ? (
+                  <span className="px-2.5 py-0.5 bg-rose-950 text-rose-300 border border-rose-500 text-[10px] font-mono font-bold">
+                    CẦN BỔ SUNG (REJECTED)
+                  </span>
+                ) : (
+                  <span className="px-2.5 py-0.5 bg-amber-950 text-amber-300 border border-amber-500 text-[10px] font-mono font-bold animate-pulse">
+                    CHỜ DUYỆT (PENDING)
+                  </span>
+                )}
               </div>
 
-              <div className="flex items-center gap-2.5">
+              <div className="flex flex-wrap items-center gap-2.5 w-full sm:w-auto justify-end">
                 <button
                   type="button"
                   onClick={() => setInspectingRequest(null)}
-                  className="px-4 py-2 bg-[#161B22] hover:bg-[#202936] text-gray-300 text-xs font-semibold rounded-none transition-all"
+                  className="px-4 py-2 bg-[#161B22] hover:bg-[#202936] text-gray-300 hover:text-white text-xs font-semibold rounded-none transition-all cursor-pointer border border-[#2D3748]"
                 >
                   Đóng
                 </button>
 
-                <button
-                  type="button"
-                  disabled={isProcessing}
-                  onClick={() => {
-                    setRejectingId(inspectingRequest.id);
-                    setRejectionReason('Ảnh chụp CCCD bị mờ/lóa sáng, vui lòng chụp lại rõ nét');
-                  }}
-                  className="px-4 py-2 bg-rose-950 hover:bg-rose-900 border border-rose-500 text-rose-300 text-xs font-bold rounded-none transition-all flex items-center gap-1.5 shadow"
-                >
-                  <X className="w-3.5 h-3.5" /> Yêu Cầu Bổ Sung
-                </button>
+                {/* Nếu hồ sơ ĐÃ ĐƯỢC DUYỆT: Không hiện nút Xác nhận lại, cho phép Thu hồi hoặc Xuất chứng thư */}
+                {inspectingRequest.status === 'APPROVED' && (
+                  <>
+                    <button
+                      type="button"
+                      disabled={isProcessing}
+                      onClick={() => {
+                        setRevokingId(inspectingRequest.id);
+                        setRevokeReason('Ban Quản Lý tạm thu hồi quyền ra vào FaceID để đối soát lại hồ sơ.');
+                      }}
+                      className="px-4 py-2 bg-rose-950/80 hover:bg-rose-900 border border-rose-600/80 text-rose-300 hover:text-rose-100 text-xs font-semibold rounded-none transition-all flex items-center gap-1.5 cursor-pointer shadow disabled:opacity-50"
+                    >
+                      <XCircle className="w-3.5 h-3.5" /> Tạm Khóa / Thu Hồi Quyền
+                    </button>
 
-                <button
-                  type="button"
-                  disabled={isProcessing}
-                  onClick={() => handleApprove(inspectingRequest.id, inspectingRequest.fullName)}
-                  className="px-5 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-none shadow-lg transition-all flex items-center gap-1.5 active:scale-[0.99]"
-                >
-                  <Check className="w-4 h-4" /> Xác Nhận Hợp Lệ &amp; Kích Hoạt Quyền Ra Vào
-                </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        alert(`✓ CHỨNG THƯ ĐỊNH DANH ĐIỆN TỬ:\n- Cư dân: ${inspectingRequest.fullName}\n- Căn hộ: ${inspectingRequest.apartmentCode}\n- Số CCCD: ${inspectingRequest.idCardNo}\n- Tỷ lệ khớp: ${inspectingRequest.faceScore}%\n- Mã chứng nhận: ${inspectingRequest.id}\n- Trạng thái FaceID: ĐÃ KÍCH HOẠT\n- Người duyệt: ${inspectingRequest.reviewedBy || 'Ban Quản Lý Skyline'}\n- Thời gian: ${inspectingRequest.reviewedAt || '12/10/2026'}\n\nHồ sơ hợp lệ và đang hoạt động đầy đủ trên hệ thống Barrier sảnh và Thang máy toà nhà.`);
+                      }}
+                      className="px-4 py-2 bg-[#1E293B] hover:bg-[#2B394E] border border-[#C5A880] text-[#C5A880] hover:text-white text-xs font-semibold rounded-none transition-all flex items-center gap-1.5 cursor-pointer shadow"
+                    >
+                      <FileText className="w-3.5 h-3.5" /> Xuất Phiếu Thẩm Duyệt
+                    </button>
+                  </>
+                )}
+
+                {/* Nếu hồ sơ ĐANG CHỜ DUYỆT: Hiện nút Xác nhận và Yêu cầu bổ sung */}
+                {inspectingRequest.status === 'PENDING' && (
+                  <>
+                    <button
+                      type="button"
+                      disabled={isProcessing}
+                      onClick={() => {
+                        setRejectingId(inspectingRequest.id);
+                        setRejectionReason('Ảnh chụp CCCD bị mờ/lóa sáng/mất góc, vui lòng chụp lại rõ nét');
+                      }}
+                      className="px-4 py-2 bg-rose-950 hover:bg-rose-900 border border-rose-500 text-rose-300 text-xs font-bold rounded-none transition-all flex items-center gap-1.5 shadow cursor-pointer disabled:opacity-50"
+                    >
+                      <X className="w-3.5 h-3.5" /> Yêu Cầu Bổ Sung
+                    </button>
+
+                    <button
+                      type="button"
+                      disabled={isProcessing}
+                      onClick={() => handleApprove(inspectingRequest.id, inspectingRequest.fullName)}
+                      className="px-5 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-none shadow-lg transition-all flex items-center gap-1.5 active:scale-[0.99] cursor-pointer disabled:opacity-50"
+                    >
+                      {isProcessing ? (
+                        <>
+                          <RefreshCw className="w-3.5 h-3.5 animate-spin" /> Đang Xử Lý...
+                        </>
+                      ) : (
+                        <>
+                          <Check className="w-4 h-4" /> Xác Nhận Hợp Lệ &amp; Kích Hoạt Quyền Ra Vào
+                        </>
+                      )}
+                    </button>
+                  </>
+                )}
+
+                {/* Nếu hồ sơ BỊ TỪ CHỐI: Cho phép phê duyệt lại nếu cư dân đã hoàn tất giải trình */}
+                {inspectingRequest.status === 'REJECTED' && (
+                  <button
+                    type="button"
+                    disabled={isProcessing}
+                    onClick={() => handleApprove(inspectingRequest.id, inspectingRequest.fullName)}
+                    className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-none shadow transition-all flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+                  >
+                    <RotateCw className="w-3.5 h-3.5" /> Phê Duyệt Lại Hồ Sơ Này
+                  </button>
+                )}
               </div>
             </div>
 
@@ -818,7 +1085,7 @@ export default function EkycApproval() {
               <button
                 type="button"
                 onClick={() => setRejectingId(null)}
-                className="text-gray-400 hover:text-white p-1"
+                className="text-gray-400 hover:text-white p-1 cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -851,7 +1118,7 @@ export default function EkycApproval() {
               <button
                 type="button"
                 onClick={() => setRejectingId(null)}
-                className="px-4 py-2 bg-[#161B22] text-gray-300 hover:text-white text-xs rounded-none"
+                className="px-4 py-2 bg-[#161B22] text-gray-300 hover:text-white text-xs rounded-none cursor-pointer"
               >
                 Hủy
               </button>
@@ -859,9 +1126,75 @@ export default function EkycApproval() {
                 type="button"
                 disabled={isProcessing}
                 onClick={handleConfirmReject}
-                className="px-4 py-2 bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold rounded-none shadow"
+                className="px-4 py-2 bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold rounded-none shadow cursor-pointer disabled:opacity-50 flex items-center gap-1.5"
               >
+                {isProcessing ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <X className="w-3.5 h-3.5" />}
                 Xác Nhận Từ Chối
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal: Revoke Access Dialog (Tạm Khóa / Thu Hồi Quyền Sau Khi Đã Duyệt) */}
+      {revokingId && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-sm animate-fadeIn">
+          <div className="bg-[#0D1117] border border-rose-500/90 max-w-md w-full p-5 rounded-none space-y-4 shadow-2xl">
+            <div className="flex items-center justify-between border-b border-[#222B35] pb-3">
+              <h3 className="font-serif text-base font-bold text-white flex items-center gap-2 text-rose-400">
+                <AlertTriangle className="w-4 h-4 text-rose-400" /> Tạm Khóa / Thu Hồi Quyền Ra Vào FaceID
+              </h3>
+              <button
+                type="button"
+                onClick={() => setRevokingId(null)}
+                className="text-gray-400 hover:text-white p-1 cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="p-3 bg-rose-950/40 border border-rose-500/50 text-xs text-rose-200">
+              Hành động này sẽ <strong>tạm khóa hoặc hủy quyền nhận diện khuôn mặt</strong> của cư dân tại sảnh đón và thang máy toà nhà.
+            </div>
+
+            <div className="space-y-2 text-xs">
+              <label className="text-gray-300 font-medium block">Lý do thu hồi quyền:</label>
+              <select
+                value={revokeReason}
+                onChange={(e) => setRevokeReason(e.target.value)}
+                className="w-full bg-[#161B22] border border-[#2D3748] p-2.5 text-white rounded-none outline-none focus:border-rose-500"
+              >
+                <option value="Hết thời hạn hợp đồng thuê / Chuyển nơi cư trú">Hết thời hạn hợp đồng thuê / Chuyển nơi cư trú</option>
+                <option value="Ban Quản Lý tạm thu hồi quyền ra vào FaceID để đối soát lại hồ sơ">Ban Quản Lý tạm thu hồi để đối soát lại hồ sơ</option>
+                <option value="Phát hiện thông tin CCCD hoặc ảnh sinh trắc học có sai lệch">Phát hiện thông tin CCCD có sai lệch</option>
+                <option value="Vi phạm quy định vận hành an ninh toà nhà">Vi phạm quy định vận hành an ninh toà nhà</option>
+              </select>
+
+              <textarea
+                value={revokeReason}
+                onChange={(e) => setRevokeReason(e.target.value)}
+                rows={3}
+                placeholder="Ghi chú chi tiết lý do gửi cư dân..."
+                className="w-full bg-[#161B22] border border-[#2D3748] p-2.5 text-white rounded-none outline-none focus:border-rose-500 resize-none"
+              />
+            </div>
+
+            <div className="flex justify-end gap-2 pt-2 border-t border-[#222B35]">
+              <button
+                type="button"
+                onClick={() => setRevokingId(null)}
+                className="px-4 py-2 bg-[#161B22] text-gray-300 hover:text-white text-xs rounded-none cursor-pointer"
+              >
+                Hủy Bỏ
+              </button>
+              <button
+                type="button"
+                disabled={isProcessing}
+                onClick={handleConfirmRevoke}
+                className="px-5 py-2 bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs rounded-none shadow transition-all cursor-pointer disabled:opacity-50 flex items-center gap-1.5"
+              >
+                {isProcessing ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <XCircle className="w-3.5 h-3.5" />}
+                Xác Nhận Thu Hồi
               </button>
             </div>
           </div>
