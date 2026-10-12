@@ -385,12 +385,12 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
     }).catch(e => console.warn('Sync CCCD error:', e));
 
     // Switch to tab 1 (Thông tin cá nhân) so the user can review all fields
-    setActiveTab('INFO');
+    setActiveTab('EKYC');
     setIsEditingLegal(true);
 
     setEkycFeedback({
       type: 'success',
-      message: 'Đã trích xuất thông tin 2 mặt thẻ CCCD thành công! Thông tin đã được cập nhật vào hồ sơ, bạn có thể kiểm tra và bấm "Gửi Ban Quản Lý Duyệt".'
+      message: 'Đã trích xuất thông tin 2 mặt thẻ CCCD thành công! Bạn có thể kiểm tra dữ liệu, thu thập FaceID (nếu chưa có) và bấm "Gửi Ban Quản Lý Duyệt Hồ Sơ" ở cuối trang.'
     });
 
     // Display clear notice that data is auto-filled and ready to be saved
@@ -606,7 +606,7 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
               : 'border-transparent text-gray-400 hover:text-gray-200'
           }`}
         >
-          <ScanFace className="w-4 h-4" /> {isOwner ? '2. Căn Cước & FaceID' : '2. Nhận Diện FaceID'}
+          <ScanFace className="w-4 h-4" /> {isOwner ? '2. Căn Cước (CCCD) & FaceID' : '2. Nhận Diện FaceID'}
         </button>
 
         <button
@@ -711,444 +711,72 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
           )}
 
           {/* ========================================================= */}
-          {/* KHỐI 1: THÔNG TIN CĂN HỘ & PHÁP LÝ ĐỊNH DANH (BQL QUẢN LÝ) */}
+          {/* KHỐI 1: THÔNG TIN CĂN HỘ & CƯ DÂN                         */}
           {/* ========================================================= */}
           <div className="p-6 bg-[#161D26] border border-[#2D3748] rounded-none space-y-5 shadow-lg">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#222B35] pb-4">
               <div>
-                <div className="text-[10px] uppercase tracking-wider text-[#C5A880] font-bold flex items-center gap-1.5">
-                  <Building className="w-3.5 h-3.5" /> Pháp Lý & Định Danh
+                <div className="text-[10px] uppercase tracking-wider text-[#C5A880] font-bold flex items-center gap-1.5 font-mono">
+                  <Building className="w-3.5 h-3.5" /> Không Gian Cư Trú
                 </div>
                 <h3 className="font-serif text-lg font-bold text-white mt-0.5">
-                  1. Thông Tin Căn Hộ & Căn Cước Công Dân
+                  1. Thông Tin Căn Hộ & Cư Dân
                 </h3>
               </div>
-
-              {/* Status Badge */}
-              <div className="flex items-center gap-2">
-                {ekycStatus === 'VERIFIED' ? (
-                  <span className="px-3 py-1 bg-emerald-950/80 border border-emerald-500 text-emerald-300 text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 rounded-none shadow-sm">
-                    <ShieldCheck className="w-4 h-4 text-emerald-400" /> Đã Xác Thực Hồ Sơ Cư Dân
-                  </span>
-                ) : ekycStatus === 'PENDING' ? (
-                  <span className="px-3 py-1 bg-amber-950/80 border border-amber-500 text-amber-300 text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 rounded-none animate-pulse">
-                    <Clock className="w-4 h-4 text-amber-400" /> Đang Chờ Ban Quản Lý Phê Duyệt
-                  </span>
-                ) : (
-                  <span className="px-3 py-1 bg-rose-950/80 border border-rose-500 text-rose-300 text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 rounded-none">
-                    <AlertCircle className="w-4 h-4 text-rose-400" /> Chưa Xác Thực Căn Cước
-                  </span>
-                )}
-              </div>
+              <span className="px-2.5 py-1 bg-[#121820] text-[#C5A880] border border-[#263140] text-xs font-mono rounded-none">
+                Căn hộ {aptCode} • The Tropical
+              </span>
             </div>
 
-            {/* Business Logic Notice Banner */}
-            <div className={`p-4 rounded-none text-xs leading-relaxed flex items-start gap-3 border ${
-              ekycStatus === 'VERIFIED'
-                ? 'bg-[#0E1B15] border-emerald-500/40 text-emerald-200'
-                : 'bg-[#1C1A14] border-amber-500/40 text-amber-200'
-            }`}>
-              <Lock className="w-4 h-4 text-[#C5A880] mt-0.5 flex-shrink-0" />
-              <div>
-                <strong className="text-white block font-semibold mb-0.5">
-                  Quy định an ninh & an toàn cư dân chung cư Skyline:
-                </strong>
-                {ekycStatus === 'VERIFIED' ? (
-                  <span>
-                    Thông tin định danh gắn liền với Hợp đồng sở hữu căn hộ và quyền nhận diện khuôn mặt mở cửa/thang máy. Cư dân không thể tự ý chỉnh sửa để chống giả mạo hồ sơ căn hộ. Nếu cần đính chính hoặc cấp đổi thẻ CCCD mới, vui lòng bấm nút <strong>[Cập Nhật CCCD Mới]</strong> bên dưới để gửi Ban Quản Lý duyệt lại.
-                  </span>
-                ) : (
-                  <span>
-                    Hồ sơ định danh chưa được phê duyệt. Vui lòng quét thẻ CCCD thật và gửi hồ sơ để Ban Quản Lý đối chiếu, kích hoạt thẻ cư dân và quyền mở cửa cho gia đình.
-                  </span>
-                )}
-              </div>
-            </div>
-
-            {/* Legal Identity Fields Grid (Locked / Read-Only when Verified) */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
               {/* Field: Mã Căn Hộ */}
               <div className="space-y-1.5">
-                <label className="text-gray-400 flex items-center justify-between font-medium">
-                  <span className="flex items-center gap-1.5 text-gray-300">
+                <label className="text-gray-300 flex items-center justify-between font-semibold">
+                  <span className="flex items-center gap-1.5">
                     <Building className="w-3.5 h-3.5 text-[#C5A880]" /> Căn Hộ Cư Trú:
                   </span>
                   <span className="text-[10px] text-gray-500 font-mono flex items-center gap-1">
-                    <Lock className="w-2.5 h-2.5" /> Khóa cố định
+                    <Lock className="w-2.5 h-2.5" /> Cố định
                   </span>
                 </label>
-                <div className="relative">
-                  <input
-                    type="text"
-                    value={`Căn hộ ${aptCode} • Chung cư Skyline Smart Residence`}
-                    readOnly
-                    className="w-full bg-[#0D1117] border border-[#263140] p-3 text-white font-semibold rounded-none cursor-not-allowed select-all"
-                  />
-                  <Lock className="w-3.5 h-3.5 text-gray-500 absolute right-3 top-3.5" />
-                </div>
-                <div className="text-[10.5px] text-gray-500">Cố định theo hợp đồng mua bán / sở hữu căn hộ.</div>
+                <input
+                  type="text"
+                  value={`Căn hộ ${aptCode} • Chung cư Skyline Smart Residence`}
+                  readOnly
+                  className="w-full bg-[#0D1117] border border-[#263140] p-3 text-white font-semibold rounded-none cursor-not-allowed select-all"
+                />
               </div>
 
               {/* Field: Tư Cách Cư Trú */}
               <div className="space-y-1.5">
-                <label className="text-gray-400 flex items-center justify-between font-medium">
-                  <span className="flex items-center gap-1.5 text-gray-300">
+                <label className="text-gray-300 flex items-center justify-between font-semibold">
+                  <span className="flex items-center gap-1.5">
                     <Users className="w-3.5 h-3.5 text-[#C5A880]" /> Tư Cách Cư Trú:
                   </span>
-                  <span className="text-[10px] text-gray-500 font-mono flex items-center gap-1">
-                    <Lock className="w-2.5 h-2.5" /> BQL xác nhận
+                  <span className="text-[10px] text-[#C5A880] font-mono flex items-center gap-1">
+                    <ShieldCheck className="w-2.5 h-2.5" /> BQL xác nhận
                   </span>
-                </label>
-                <div className="relative">
-                  <input
-                    type="text"
-                    value={isOwner ? 'Chủ Sở Hữu Căn Hộ (Chính Chủ)' : 'Thành Viên Gia Đình (Được Bảo Lãnh)'}
-                    readOnly
-                    className="w-full bg-[#0D1117] border border-[#263140] p-3 text-[#C5A880] font-semibold rounded-none cursor-not-allowed"
-                  />
-                  <ShieldCheck className="w-3.5 h-3.5 text-[#C5A880] absolute right-3 top-3.5" />
-                </div>
-                <div className="text-[10.5px] text-gray-500">Quyền quản trị không gian sống và bảo lãnh người thân.</div>
-              </div>
-
-              {/* Field: Họ và Tên Pháp Lý */}
-              <div className="space-y-1.5">
-                <label className="text-gray-400 flex items-center justify-between font-medium">
-                  <span className="flex items-center gap-1.5 text-gray-300">
-                    <UserIcon className="w-3.5 h-3.5 text-[#C5A880]" /> Họ và Tên Pháp Lý:
-                  </span>
-                  {ekycStatus === 'VERIFIED' && !isEditingLegal && (
-                    <span className="text-[10px] text-emerald-400 font-mono flex items-center gap-1">
-                      <Lock className="w-2.5 h-2.5" /> Khớp CCCD đã duyệt
-                    </span>
-                  )}
-                </label>
-                <div className="relative">
-                  <input
-                    type="text"
-                    value={fullName}
-                    onChange={(e) => {
-                      if (ekycStatus !== 'VERIFIED' || isEditingLegal) setFullName(e.target.value);
-                    }}
-                    readOnly={ekycStatus === 'VERIFIED' && !isEditingLegal}
-                    className={`w-full p-3 font-semibold rounded-none transition-colors ${
-                      ekycStatus === 'VERIFIED' && !isEditingLegal
-                        ? 'bg-[#0D1117] border border-[#263140] text-white cursor-not-allowed'
-                        : 'bg-[#161B22] border border-[#2D3748] text-white focus:outline-none focus:border-[#C5A880]'
-                    }`}
-                  />
-                  {ekycStatus === 'VERIFIED' && !isEditingLegal && (
-                    <Lock className="w-3.5 h-3.5 text-gray-500 absolute right-3 top-3.5" />
-                  )}
-                </div>
-                <div className="text-[10.5px] text-gray-500">Tên định danh in trên Căn cước công dân.</div>
-              </div>
-
-              {/* Field: Số Căn Cước Công Dân (12 số) */}
-              <div className="space-y-1.5">
-                <label className="text-gray-400 flex items-center justify-between font-medium">
-                  <span className="flex items-center gap-1.5 text-gray-300">
-                    <CreditCard className="w-3.5 h-3.5 text-[#C5A880]" /> Số CCCD (12 Chữ Số):
-                  </span>
-                  {ekycStatus === 'VERIFIED' && !isEditingLegal && (
-                    <span className="text-[10px] text-emerald-400 font-mono flex items-center gap-1">
-                      <ShieldCheck className="w-2.5 h-2.5" /> Đã xác thực
-                    </span>
-                  )}
-                </label>
-                <div className="relative">
-                  <input
-                    type="text"
-                    value={idCardNumber}
-                    onChange={(e) => {
-                      if (ekycStatus !== 'VERIFIED' || isEditingLegal) setIdCardNumber(e.target.value);
-                    }}
-                    readOnly={ekycStatus === 'VERIFIED' && !isEditingLegal}
-                    className={`w-full p-3 font-mono font-bold rounded-none transition-colors ${
-                      ekycStatus === 'VERIFIED' && !isEditingLegal
-                        ? 'bg-[#0D1117] border border-[#263140] text-emerald-300 cursor-not-allowed tracking-wider'
-                        : 'bg-[#161B22] border border-[#2D3748] text-white focus:outline-none focus:border-[#C5A880]'
-                    }`}
-                  />
-                  {ekycStatus === 'VERIFIED' && !isEditingLegal && (
-                    <Lock className="w-3.5 h-3.5 text-gray-500 absolute right-3 top-3.5" />
-                  )}
-                </div>
-                <div className="text-[10.5px] text-gray-500">Số định danh cá nhân đã khai báo với Công an khu vực.</div>
-              </div>
-
-              {/* Field: Ngày Sinh */}
-              <div className="space-y-1.5">
-                <label className="text-gray-400 flex items-center justify-between font-medium">
-                  <span className="flex items-center gap-1.5 text-gray-300">
-                    <Calendar className="w-3.5 h-3.5 text-[#C5A880]" /> Ngày Sinh:
-                  </span>
-                  {ekycStatus === 'VERIFIED' && !isEditingLegal && (
-                    <span className="text-[10px] text-gray-500 font-mono">Đã khóa</span>
-                  )}
-                </label>
-                <input
-                  type="date"
-                  value={formatToApiDate(birthday)}
-                  onChange={(e) => {
-                    if (ekycStatus !== 'VERIFIED' || isEditingLegal) setBirthday(e.target.value);
-                  }}
-                  readOnly={ekycStatus === 'VERIFIED' && !isEditingLegal}
-                  className={`w-full p-3 font-mono rounded-none transition-colors ${
-                    ekycStatus === 'VERIFIED' && !isEditingLegal
-                      ? 'bg-[#0D1117] border border-[#263140] text-gray-300 cursor-not-allowed'
-                      : 'bg-[#161B22] border border-[#2D3748] text-white focus:outline-none focus:border-[#C5A880]'
-                  }`}
-                />
-              </div>
-
-              {/* Field: Ngày Cấp & Nơi Cấp */}
-              <div className="space-y-1.5">
-                <label className="text-gray-400 flex items-center justify-between font-medium">
-                  <span className="flex items-center gap-1.5 text-gray-300">
-                    <MapPin className="w-3.5 h-3.5 text-[#C5A880]" /> Nơi Cấp & Ngày Cấp:
-                  </span>
-                  {ekycStatus === 'VERIFIED' && !isEditingLegal && (
-                    <span className="text-[10px] text-gray-500 font-mono">Đã khóa</span>
-                  )}
                 </label>
                 <input
                   type="text"
-                  value={`${idPlace || 'Cục CS QLHC về TTXH'} ${idDate ? `• ${formatToApiDate(idDate)}` : ''}`}
-                  onChange={(e) => {
-                    if (ekycStatus !== 'VERIFIED' || isEditingLegal) setIdPlace(e.target.value);
-                  }}
-                  readOnly={ekycStatus === 'VERIFIED' && !isEditingLegal}
-                  className={`w-full p-3 rounded-none transition-colors ${
-                    ekycStatus === 'VERIFIED' && !isEditingLegal
-                      ? 'bg-[#0D1117] border border-[#263140] text-gray-300 cursor-not-allowed'
-                      : 'bg-[#161B22] border border-[#2D3748] text-white focus:outline-none focus:border-[#C5A880]'
-                  }`}
+                  value={isOwner ? 'Chủ Sở Hữu Căn Hộ (Chính Chủ)' : 'Thành Viên Gia Đình (Được Bảo Lãnh)'}
+                  readOnly
+                  className="w-full bg-[#0D1117] border border-[#263140] p-3 text-[#C5A880] font-semibold rounded-none cursor-not-allowed"
                 />
               </div>
-            </div>
 
-            {/* 2 VỊ TRÍ ẢNH THẺ CCCD (MẶT TRƯỚC & MẶT SAU) - TỰ ĐỘNG ĐIỀN KHI QUÉT */}
-            <div className="space-y-3 pt-4 border-t border-[#222B35]">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                <span className="text-gray-300 font-semibold flex items-center gap-1.5 text-xs">
-                  <CreditCard className="w-4 h-4 text-[#C5A880]" /> 2 Vị Trí Ảnh Thẻ Căn Cước Công Dân (Tự Động Điền Sau Khi Quét):
-                </span>
-                <span className="text-[11px] font-mono">
-                  {cccdImage ? (
-                    <span className="text-emerald-400 font-semibold flex items-center gap-1">
-                      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> Đã Tự Động Điền 2 Mặt Thẻ CCCD ✓
-                    </span>
-                  ) : (
-                    <span className="text-gray-400 flex items-center gap-1">
-                      <Sparkles className="w-3 h-3 text-[#C5A880]" /> Tự động điền sau khi quét thẻ
-                    </span>
-                  )}
-                </span>
-              </div>
-
-              {/* 2 Card Image Upload Slots (Front & Back) */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {/* Vị trí 1: CCCD Mặt Trước */}
-                <div className="p-3 bg-[#121820] border border-[#2D3748] rounded-none space-y-2 flex flex-col justify-between">
-                  <div className="flex items-center justify-between text-xs">
-                    <span className="font-bold text-white flex items-center gap-1.5">
-                      <span className="w-2 h-2 rounded-full bg-cyan-400"></span> Mặt Trước (Có Ảnh & 12 Số CCCD)
-                    </span>
-                    <span className="text-[10px] text-cyan-300 font-mono px-2 py-0.5 bg-cyan-950/80 border border-cyan-500/30 rounded-none">
-                      Vị Trí 1
-                    </span>
-                  </div>
-
-                  <div className="relative w-full h-44 sm:h-48 rounded-none overflow-hidden border border-gray-700 bg-[#0A0E14] flex items-center justify-center group shadow-inner">
-                    {cccdImage ? (
-                      <img
-                        src={cccdImage}
-                        alt="CCCD Mặt Trước"
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform"
-                      />
-                    ) : (
-                      <div className="flex flex-col items-center justify-center text-center p-4 space-y-1.5 text-gray-500">
-                        <CreditCard className="w-8 h-8 text-cyan-500/60" />
-                        <span className="text-xs text-gray-400 font-medium">Chưa có ảnh mặt trước thẻ CCCD</span>
-                        <span className="text-[10px] text-gray-600">Bấm &quot;Quét Thẻ Bằng Camera&quot; bên dưới</span>
-                      </div>
-                    )}
-                    <div className="absolute top-2 left-2 px-2 py-0.5 bg-black/75 backdrop-blur rounded-none text-[9.5px] font-mono text-cyan-300 border border-cyan-500/30">
-                      MẶT TRƯỚC (FRONT)
-                    </div>
-                    {cccdImage && (
-                      <div className="absolute bottom-2 right-2 px-2 py-0.5 bg-emerald-950/90 text-emerald-300 border border-emerald-500 text-[9px] font-mono font-bold rounded-none">
-                        ✓ Tự Động Đọc Từ Thẻ
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="text-[10.5px] text-gray-400 flex items-center justify-between">
-                    <span>Trạng thái: <strong className="text-gray-200">{cccdImage ? 'Đã có ảnh mặt trước' : 'Chờ quét'}</strong></span>
-                    <span className="text-gray-500 font-mono text-[10px]">Tự động trích xuất từ thẻ</span>
-                  </div>
-                </div>
-
-                {/* Vị trí 2: CCCD Mặt Sau */}
-                <div className="p-3 bg-[#121820] border border-[#2D3748] rounded-none space-y-2 flex flex-col justify-between">
-                  <div className="flex items-center justify-between text-xs">
-                    <span className="font-bold text-white flex items-center gap-1.5">
-                      <span className="w-2 h-2 rounded-full bg-purple-400"></span> Mặt Sau (Chip Điện Tử & Ngày Cấp)
-                    </span>
-                    <span className="text-[10px] text-purple-300 font-mono px-2 py-0.5 bg-purple-950/80 border border-purple-500/30 rounded-none">
-                      Vị Trí 2
-                    </span>
-                  </div>
-
-                  <div className="relative w-full h-44 sm:h-48 rounded-none overflow-hidden border border-gray-700 bg-[#0A0E14] flex items-center justify-center group shadow-inner">
-                    {cccdBackImage ? (
-                      <img
-                        src={cccdBackImage}
-                        alt="CCCD Mặt Sau"
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform"
-                      />
-                    ) : (
-                      <div className="flex flex-col items-center justify-center text-center p-4 space-y-1.5 text-gray-500">
-                        <CreditCard className="w-8 h-8 text-purple-500/60" />
-                        <span className="text-xs text-gray-400 font-medium">Chưa có ảnh mặt sau thẻ CCCD (Chip)</span>
-                        <span className="text-[10px] text-gray-600">Bấm &quot;Quét Thẻ Bằng Camera&quot; bên dưới</span>
-                      </div>
-                    )}
-                    <div className="absolute top-2 left-2 px-2 py-0.5 bg-black/75 backdrop-blur rounded-none text-[9.5px] font-mono text-purple-300 border border-purple-500/30">
-                      MẶT SAU (BACK)
-                    </div>
-                    {cccdBackImage && (
-                      <div className="absolute bottom-2 right-2 px-2 py-0.5 bg-emerald-950/90 text-emerald-300 border border-emerald-500 text-[9px] font-mono font-bold rounded-none">
-                        ✓ Tự Động Đọc Từ Thẻ
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="text-[10.5px] text-gray-400 flex items-center justify-between">
-                    <span>Trạng thái: <strong className="text-gray-200">{cccdBackImage ? 'Đã có ảnh mặt sau' : 'Chờ quét'}</strong></span>
-                    <span className="text-gray-500 font-mono text-[10px]">Tự động trích xuất từ thẻ</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Action Buttons for Legal Block */}
-            <div className="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-[#222B35]">
-              <div className="text-[11px] text-gray-400">
-                {ekycStatus === 'VERIFIED' && !isEditingLegal
-                  ? 'Hồ sơ đã được Ban Quản Lý phê duyệt chính thức.'
-                  : ekycStatus === 'PENDING'
-                  ? 'Hồ sơ đang chờ Ban Quản Lý phê duyệt.'
-                  : ekycStatus === 'REJECTED'
-                  ? 'BQL yêu cầu chỉnh sửa/chụp lại hồ sơ.'
-                  : 'Vui lòng hoàn tất thông tin và gửi Ban Quản Lý duyệt.'}
-              </div>
-
-              <div className="flex items-center gap-2.5">
-                {isOwner && (
-                  <button
-                    type="button"
-                    onClick={() => setIsCardViewerOpen(true)}
-                    className="px-3.5 py-1.5 bg-[#1C2533] hover:bg-[#2A374A] border border-gray-700 text-gray-300 hover:text-white text-xs font-semibold rounded-none flex items-center gap-1.5 transition-all"
-                  >
-                    <Eye className="w-3.5 h-3.5" /> Xem Ảnh Thẻ CCCD
-                  </button>
-                )}
-
-                {isOwner && ekycStatus === 'VERIFIED' && (
-                  <button
-                    type="button"
-                    onClick={() => setIsEditingLegal(!isEditingLegal)}
-                    className="px-3.5 py-1.5 bg-[#1C2533] hover:bg-[#2A374A] border border-[#C5A880]/60 text-[#C5A880] hover:text-white text-xs font-semibold rounded-none flex items-center gap-1.5 transition-all"
-                  >
-                    <RefreshCw className="w-3.5 h-3.5" /> {isEditingLegal ? 'Đóng Chỉnh Sửa' : 'Cập Nhật CCCD Mới'}
-                  </button>
-                )}
-
-                {isOwner && (isEditingLegal || ekycStatus !== 'VERIFIED') && (
-                  <button
-                    type="button"
-                    onClick={() => setIsOcrModalOpen(true)}
-                    className="px-3.5 py-1.5 bg-[#1E2631] hover:bg-[#2A374A] border border-[#C5A880] text-[#C5A880] hover:text-white text-xs font-semibold rounded-none flex items-center gap-1.5 transition-all shadow"
-                  >
-                    <Scan className="w-3.5 h-3.5" /> Quét Thẻ CCCD Mới
-                  </button>
-                )}
-
-                {isOwner && (ekycStatus !== 'VERIFIED' || isEditingLegal) && (
-                  <button
-                    type="button"
-                    onClick={handleSubmitEkycToBql}
-                    disabled={isScanningOcr}
-                    className="px-4 py-1.5 bg-[#C5A880] hover:bg-white text-[#0D1117] text-xs font-bold rounded-none flex items-center gap-1.5 transition-all shadow active:scale-95"
-                  >
-                    {isScanningOcr ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <ShieldCheck className="w-3.5 h-3.5" />}
-                    {ekycStatus === 'VERIFIED' ? 'Gửi Cập Nhật Cho BQL Duyệt' : ekycStatus === 'REJECTED' ? 'Gửi Lại Ban Quản Lý Duyệt' : 'Gửi Ban Quản Lý Duyệt'}
-                  </button>
-                )}
-              </div>
-            </div>
-          </div>
-
-          {/* ========================================================= */}
-          {/* KHỐI 2: THÔNG TIN LIÊN HỆ & ĐĂNG KÝ TIỆN ÍCH (CƯ DÂN TỰ CHỦ) */}
-          {/* ========================================================= */}
-          <div className="p-6 bg-[#161D26] border border-[#2D3748] rounded-none space-y-5 shadow-lg">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#222B35] pb-4">
-              <div>
-                <div className="text-[10px] uppercase tracking-wider text-[#C5A880] font-bold flex items-center gap-1.5">
-                  <Smartphone className="w-3.5 h-3.5" /> Liên Hệ & Phương Tiện
-                </div>
-                <h3 className="font-serif text-lg font-bold text-white mt-0.5">
-                  2. Thông Tin Liên Hệ & Phương Tiện
-                </h3>
-                <p className="text-xs text-gray-400 mt-0.5">
-                  Nhận thông báo hóa đơn, bưu phẩm sảnh đón và quản lý biển số xe.
-                </p>
-              </div>
-
-              <span className="px-2.5 py-1 bg-[#121820] text-gray-300 border border-[#263140] text-xs rounded-none font-mono">
-                Cập nhật tức thì
-              </span>
-            </div>
-
-            {/* Editable Fields Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-5 text-xs">
-              {/* Field: Số Điện Thoại */}
+              {/* Field: Họ và Tên */}
               <div className="space-y-1.5">
                 <label className="text-gray-300 flex items-center gap-1.5 font-semibold">
-                  <Smartphone className="w-3.5 h-3.5 text-[#C5A880]" /> Số Điện Thoại Liên Hệ (Nhận OTP):
+                  <UserIcon className="w-3.5 h-3.5 text-[#C5A880]" /> Họ và Tên:
                 </label>
                 <input
-                  type="tel"
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                  placeholder="Nhập số điện thoại..."
-                  className="w-full bg-[#161B22] border border-[#2D3748] p-3 text-white font-mono focus:outline-none focus:border-[#C5A880] transition-colors rounded-none"
+                  type="text"
+                  value={fullName}
+                  onChange={(e) => setFullName(e.target.value)}
+                  className="w-full bg-[#161B22] border border-[#2D3748] p-3 text-white font-semibold focus:outline-none focus:border-[#C5A880] transition-colors rounded-none"
                   required
                 />
-                <div className="text-[10.5px] text-gray-500">
-                  Dùng để đăng nhập, nhận mã OTP và cuộc gọi khẩn cấp từ Ban Quản Lý.
-                </div>
-              </div>
-
-              {/* Field: Email */}
-              <div className="space-y-1.5">
-                <label className="text-gray-300 flex items-center gap-1.5 font-semibold">
-                  <Mail className="w-3.5 h-3.5 text-[#C5A880]" /> Email Nhận Hóa Đơn & Thông Báo:
-                </label>
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="Nhập địa chỉ email..."
-                  className="w-full bg-[#161B22] border border-[#2D3748] p-3 text-white font-mono focus:outline-none focus:border-[#C5A880] transition-colors rounded-none"
-                  required
-                />
-                <div className="text-[10.5px] text-gray-500">
-                  Nhận hóa đơn điện, nước, phí quản lý định kỳ và văn bản từ Ban Quản Lý.
-                </div>
               </div>
 
               {/* Field: Giới Tính */}
@@ -1164,11 +792,74 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
                   <option value="1">Nam</option>
                   <option value="0">Nữ</option>
                 </select>
-                <div className="text-[10.5px] text-gray-500">Thông tin danh xưng khi gửi thông báo.</div>
+              </div>
+
+              {/* Field: Ngày Sinh */}
+              <div className="space-y-1.5 md:col-span-2">
+                <label className="text-gray-300 flex items-center gap-1.5 font-semibold">
+                  <Calendar className="w-3.5 h-3.5 text-[#C5A880]" /> Ngày Sinh:
+                </label>
+                <input
+                  type="date"
+                  value={formatToApiDate(birthday)}
+                  onChange={(e) => setBirthday(e.target.value)}
+                  className="w-full bg-[#161B22] border border-[#2D3748] p-3 font-mono text-white focus:outline-none focus:border-[#C5A880] transition-colors rounded-none"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* ========================================================= */}
+          {/* KHỐI 2: THÔNG TIN LIÊN HỆ & PHƯƠNG TIỆN                   */}
+          {/* ========================================================= */}
+          <div className="p-6 bg-[#161D26] border border-[#2D3748] rounded-none space-y-5 shadow-lg">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#222B35] pb-4">
+              <div>
+                <div className="text-[10px] uppercase tracking-wider text-[#C5A880] font-bold flex items-center gap-1.5 font-mono">
+                  <Smartphone className="w-3.5 h-3.5" /> Liên Hệ & Phương Tiện
+                </div>
+                <h3 className="font-serif text-lg font-bold text-white mt-0.5">
+                  2. Thông Tin Liên Hệ & Phương Tiện
+                </h3>
+              </div>
+              <span className="px-2.5 py-1 bg-[#121820] text-gray-300 border border-[#263140] text-xs font-mono rounded-none">
+                Cập nhật tức thì
+              </span>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5 text-xs">
+              {/* Field: Số Điện Thoại */}
+              <div className="space-y-1.5">
+                <label className="text-gray-300 flex items-center gap-1.5 font-semibold">
+                  <Smartphone className="w-3.5 h-3.5 text-[#C5A880]" /> Số Điện Thoại Liên Hệ (Nhận OTP):
+                </label>
+                <input
+                  type="tel"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  placeholder="Nhập số điện thoại..."
+                  className="w-full bg-[#161B22] border border-[#2D3748] p-3 text-white font-mono focus:outline-none focus:border-[#C5A880] transition-colors rounded-none"
+                  required
+                />
+              </div>
+
+              {/* Field: Email */}
+              <div className="space-y-1.5">
+                <label className="text-gray-300 flex items-center gap-1.5 font-semibold">
+                  <Mail className="w-3.5 h-3.5 text-[#C5A880]" /> Email Nhận Hóa Đơn & Thông Báo:
+                </label>
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="Nhập địa chỉ email..."
+                  className="w-full bg-[#161B22] border border-[#2D3748] p-3 text-white font-mono focus:outline-none focus:border-[#C5A880] transition-colors rounded-none"
+                  required
+                />
               </div>
 
               {/* Field: Tỉnh / Thành Phố */}
-              <div className="space-y-1.5">
+              <div className="space-y-1.5 md:col-span-2">
                 <label className="text-gray-300 flex items-center gap-1.5 font-semibold">
                   <Globe className="w-3.5 h-3.5 text-[#C5A880]" /> Tỉnh / Thành Phố Thường Trú:
                 </label>
@@ -1179,7 +870,6 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
                   placeholder="Nhập tỉnh thành..."
                   className="w-full bg-[#161B22] border border-[#2D3748] p-3 text-white focus:outline-none focus:border-[#C5A880] transition-colors rounded-none"
                 />
-                <div className="text-[10.5px] text-gray-500">Địa bàn thường trú của cư dân.</div>
               </div>
 
               {/* Field: Biển Số Xe */}
@@ -1188,7 +878,7 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
                   <span className="flex items-center gap-1.5">
                     <Car className="w-3.5 h-3.5 text-[#C5A880]" /> Biển Số Xe Đăng Ký (Tự Động Mở Cổng Hầm B1):
                   </span>
-                  <span className="text-[10px] text-[#C5A880] font-mono">Tự động nhận diện biển số</span>
+                  <span className="text-[10px] text-[#C5A880] font-mono">Nhận diện AI tự động</span>
                 </label>
                 <input
                   type="text"
@@ -1197,9 +887,6 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
                   className="w-full bg-[#161B22] border border-[#2D3748] p-3 text-[#C5A880] font-mono font-bold focus:outline-none focus:border-[#C5A880] transition-colors rounded-none"
                   placeholder="VD: 51K-889.99"
                 />
-                <div className="text-[10.5px] text-gray-400">
-                  Hệ thống camera AI tại cổng barie hầm B1/B2 sẽ tự động nhận diện biển số này để mở barie không cần quẹt thẻ vật lý.
-                </div>
               </div>
 
               {/* Field: Tiểu Sử / Ghi Chú Căn Hộ */}
@@ -1214,28 +901,6 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
                   placeholder="Ví dụ: Căn hộ có trẻ nhỏ, vui lòng gọi điện trước khi bấm chuông hoặc giao bưu phẩm..."
                   className="w-full bg-[#161B22] border border-[#2D3748] p-3 text-white focus:outline-none focus:border-[#C5A880] transition-colors rounded-none resize-none"
                 />
-                <div className="text-[10.5px] text-gray-500">
-                  Ghi chú nội bộ hiển thị trên phần mềm tiếp đón lễ tân và trực ban kỹ thuật.
-                </div>
-              </div>
-
-              {/* Quick Security & Password Change Card */}
-              <div className="md:col-span-2 p-4 bg-[#161D26] border border-[#222B35] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-none">
-                <div className="space-y-0.5">
-                  <div className="flex items-center gap-2 text-white font-semibold text-xs">
-                    <KeyRound className="w-3.5 h-3.5 text-[#C5A880]" /> Mật Khẩu Đăng Nhập & Bảo Mật Tài Khoản
-                  </div>
-                  <div className="text-[11px] text-gray-400">
-                    Bạn có thể cập nhật mật khẩu mới cho tài khoản cá nhân hoặc các tài khoản thành viên trực thuộc.
-                  </div>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setActiveTab('PASSWORD')}
-                  className="px-4 py-2 bg-[#1C2533] hover:bg-[#2B394E] border border-[#C5A880]/60 text-[#C5A880] hover:text-white text-xs font-bold uppercase tracking-wider rounded-none flex items-center gap-1.5 transition-colors flex-shrink-0"
-                >
-                  <Lock className="w-3.5 h-3.5" /> Đổi Mật Khẩu →
-                </button>
               </div>
             </div>
 
@@ -1248,10 +913,10 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
               <button
                 type="submit"
                 disabled={isSaving}
-                className="px-8 py-3 bg-[#C5A880] hover:bg-white text-[#0D1117] text-xs font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-2 shadow-xl rounded-none active:scale-[0.99]"
+                className="px-8 py-3 bg-[#C5A880] hover:bg-white text-[#0D1117] text-xs font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-2 shadow-xl rounded-none active:scale-[0.99] cursor-pointer"
               >
                 {isSaving ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-                {isSaving ? 'Đang Lưu Thông Tin...' : 'Lưu Thay Đổi Thông Tin Liên Hệ'}
+                {isSaving ? 'Đang Lưu Thông Tin...' : 'Lưu Thay Đổi Thông Tin Cá Nhân'}
               </button>
             </div>
           </div>
@@ -1290,116 +955,158 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
             </div>
           )}
 
-          {/* Status Box & BQL Sync Banner (Chỉ hiển thị cho Chủ Hộ khi chưa verified) */}
-          {/* Status Box & BQL Sync Banner (Hiển thị cho Chủ Hộ để quản lý và cập nhật hồ sơ) */}
-          {isOwner && (
-            <div className={`p-5 border flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-xl rounded-none ${
-              ekycStatus === 'VERIFIED'
-                ? 'bg-gradient-to-r from-[#101820] to-[#122018] border-emerald-500/80'
-                : ekycStatus === 'PENDING'
-                ? 'bg-gradient-to-r from-[#1A1810] to-[#121820] border-amber-500/80'
-                : ekycStatus === 'REJECTED'
-                ? 'bg-gradient-to-r from-[#201014] to-[#121820] border-rose-500/80'
-                : 'bg-gradient-to-r from-[#121820] to-[#161D26] border-[#C5A880]/70'
-            }`}>
-              <div className="space-y-1">
-                <div className="flex items-center gap-2 font-bold text-xs uppercase tracking-wider">
-                  {ekycStatus === 'VERIFIED' && (
-                    <span className="text-emerald-400 flex items-center gap-1.5 font-mono">
-                      <ShieldCheck className="w-4 h-4 text-emerald-400" /> Đã Xác Thực Căn Cước & Kích Hoạt Quyền Ra Vào
-                    </span>
-                  )}
-                  {ekycStatus === 'DRAFT' && (
-                    <span className="text-gray-300 flex items-center gap-1.5 font-mono">
-                      <AlertCircle className="w-4 h-4 text-[#C5A880]" /> Chưa Gửi Hồ Sơ Định Danh Cho BQL
-                    </span>
-                  )}
-                  {ekycStatus === 'PENDING' && (
-                    <span className="text-amber-400 flex items-center gap-1.5 font-mono">
-                      <Clock className="w-4 h-4 animate-pulse" /> Đang Chờ Ban Quản Lý Phê Duyệt
-                    </span>
-                  )}
-                  {ekycStatus === 'REJECTED' && (
-                    <span className="text-rose-400 flex items-center gap-1.5 font-mono">
-                      <XCircle className="w-4 h-4" /> BQL Yêu Cầu Chụp Lại / Bổ Sung Hồ Sơ
-                    </span>
-                  )}
-                </div>
+          {/* Header & Trạng Thái e-KYC Tinh Gọn */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 bg-[#161D26] border border-[#2D3748] rounded-none shadow">
+            <div>
+              <div className="text-[10px] uppercase tracking-wider text-[#C5A880] font-bold flex items-center gap-1.5 font-mono">
+                <ShieldCheck className="w-3.5 h-3.5" /> Hồ Sơ Định Danh Điện Tử • e-KYC Căn Hộ {aptCode}
+              </div>
+              <h3 className="font-serif text-lg font-bold text-white mt-0.5">
+                Căn Cước Công Dân (CCCD) & Nhận Diện Khuôn Mặt (FaceID)
+              </h3>
+              <p className="text-xs text-gray-400">
+                Dữ liệu định danh pháp lý và sinh trắc học dùng để cấp quyền mở cửa sảnh đón, thang máy và tiện ích chung cư.
+              </p>
+            </div>
 
-                <h3 className="font-serif text-lg font-bold text-white">
-                  Định Danh Khuôn Mặt (FaceID) & Thẻ Cư Dân Thông Minh
-                </h3>
+            {/* Trạng thái duyệt tổng thể */}
+            <div className="flex items-center gap-2 flex-shrink-0">
+              {ekycStatus === 'VERIFIED' ? (
+                <span className="px-3 py-1.5 bg-emerald-950/80 border border-emerald-500 text-emerald-300 text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 rounded-none shadow-sm">
+                  <ShieldCheck className="w-4 h-4 text-emerald-400" /> Đã Phê Duyệt Căn Cước & FaceID
+                </span>
+              ) : ekycStatus === 'PENDING' ? (
+                <span className="px-3 py-1.5 bg-amber-950/80 border border-amber-500 text-amber-300 text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 rounded-none animate-pulse">
+                  <Clock className="w-4 h-4 text-amber-400" /> Đang Chờ Ban Quản Lý Phê Duyệt
+                </span>
+              ) : ekycStatus === 'REJECTED' ? (
+                <span className="px-3 py-1.5 bg-rose-950/80 border border-rose-500 text-rose-300 text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 rounded-none">
+                  <XCircle className="w-4 h-4 text-rose-400" /> Yêu Cầu Cập Nhật / Chụp Lại
+                </span>
+              ) : (
+                <span className="px-3 py-1.5 bg-[#121820] border border-gray-600 text-gray-300 text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 rounded-none">
+                  <AlertCircle className="w-4 h-4 text-[#C5A880]" /> Chưa Gửi Hồ Sơ Phê Duyệt
+                </span>
+              )}
+            </div>
+          </div>
 
-                <div className="text-xs text-gray-300 max-w-2xl font-light space-y-1">
-                  {ekycStatus === 'VERIFIED' && (
-                    <p>Hồ sơ định danh và 4 mẫu FaceID của bạn đã được Ban Quản Lý phê duyệt hợp lệ. Bạn có thể bấm <strong className="text-white">&quot;Quét Lại Thẻ CCCD&quot;</strong> hoặc <strong className="text-white">&quot;Quét Lại FaceID&quot;</strong> bất cứ lúc nào khi cần cập nhật lại thông tin.</p>
-                  )}
-                  {ekycStatus === 'DRAFT' && (
-                    <p>Quý cư dân vui lòng tải lên đầy đủ ảnh 2 mặt thẻ CCCD và thu thập mẫu FaceID 4 bước, sau đó bấm nút &quot;Gửi Hồ Sơ Cho BQL Duyệt&quot; để được cấp quyền mở cửa, thang máy và sảnh đón.</p>
-                  )}
-                  {ekycStatus === 'PENDING' && (
-                    <p>Hồ sơ định danh kèm ảnh CCCD 2 mặt và mẫu FaceID đã gửi đến Ban Quản Lý lúc <strong className="text-white font-mono">{currentEkyc?.submittedAt || 'hôm nay'}</strong>. Nhân sự BQL đang thẩm định đối chiếu trước khi kích hoạt phân quyền chung cư.</p>
-                  )}
-                  {ekycStatus === 'REJECTED' && (
-                    <div className="p-2.5 bg-rose-950/70 border border-rose-500/60 text-rose-200 text-xs rounded-none space-y-0.5">
-                      <strong className="block text-rose-300">Lý do từ chối từ Ban Quản Lý:</strong>
-                      <span>&quot;{currentEkyc?.rejectionReason || 'Ảnh chụp không đạt tiêu chuẩn độ nét hoặc thiếu ảnh thẻ CCCD.'}&quot;</span>
-                    </div>
-                  )}
-                </div>
+          {/* ========================================================= */}
+          {/* KHỐI 1: THẺ CĂN CƯỚC CÔNG DÂN (CCCD 2 MẶT)                */}
+          {/* ========================================================= */}
+          <div className="p-5 bg-[#121820] border border-[#222B35] space-y-4 rounded-none shadow-lg">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#222B35] pb-3">
+              <div>
+                <span className="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-2">
+                  <CreditCard className="w-4 h-4 text-[#C5A880]" /> 1. Thẻ Căn Cước Công Dân (CCCD 2 Mặt)
+                </span>
+                <span className="text-[11px] text-gray-400 block mt-0.5">
+                  Quét camera hoặc tải lên ảnh 2 mặt để hệ thống tự động trích xuất thông tin pháp lý.
+                </span>
               </div>
 
-              <div className="flex flex-wrap items-center gap-2.5 flex-shrink-0">
+              <div className="flex items-center gap-2 flex-shrink-0">
                 <button
                   type="button"
                   onClick={() => setIsOcrModalOpen(true)}
-                  className="h-9 px-3.5 bg-[#1E2631] hover:bg-[#2A374A] border border-[#C5A880]/70 text-[#C5A880] hover:text-white text-xs font-semibold uppercase tracking-wider transition-all flex items-center gap-2 shadow rounded-none"
+                  className="h-8 px-3.5 bg-[#1E2631] hover:bg-[#C5A880] hover:text-[#0D1117] border border-[#C5A880] text-[#C5A880] text-xs font-bold uppercase tracking-wider rounded-none flex items-center gap-1.5 transition-all shadow cursor-pointer"
                 >
-                  <Scan className="w-4 h-4 text-[#C5A880]" /> Quét Lại CCCD
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => setIsBankEnrollOpen(true)}
-                  className="h-9 px-3.5 bg-[#1E2631] hover:bg-[#2A374A] border border-[#C5A880]/70 text-[#C5A880] hover:text-white text-xs font-semibold uppercase tracking-wider transition-all flex items-center gap-2 shadow rounded-none"
-                >
-                  <Camera className="w-4 h-4 text-[#C5A880]" /> Quét Lại FaceID
+                  <Scan className="w-3.5 h-3.5" /> {cccdImage ? 'Quét Lại CCCD' : 'Quét Thẻ CCCD'}
                 </button>
 
                 {cccdImage && (
                   <button
                     type="button"
                     onClick={() => setIsCardViewerOpen(true)}
-                    className="h-9 px-3.5 bg-[#161B22] hover:bg-[#1C2533] border border-gray-700 hover:border-[#C5A880] text-gray-300 hover:text-white text-xs font-semibold uppercase tracking-wider transition-all flex items-center gap-2 shadow rounded-none"
+                    className="h-8 px-3 bg-[#161B22] hover:bg-[#1C2533] border border-gray-700 text-gray-300 hover:text-white text-xs font-medium rounded-none flex items-center gap-1.5 transition-colors cursor-pointer"
                   >
-                    <Eye className="w-4 h-4 text-[#C5A880]" /> Xem Thẻ CCCD
-                  </button>
-                )}
-
-                {isOwner && ekycStatus === 'VERIFIED' && !isEditingLegal && (
-                  <button
-                    type="button"
-                    onClick={() => setIsEditingLegal(true)}
-                    className="h-9 px-3.5 bg-[#1C2533] hover:bg-[#2A374A] border border-[#C5A880]/60 text-[#C5A880] hover:text-white text-xs font-semibold uppercase tracking-wider transition-all flex items-center gap-2 shadow rounded-none"
-                  >
-                    <RefreshCw className="w-4 h-4 text-[#C5A880]" /> Cập Nhật Hồ Sơ
-                  </button>
-                )}
-
-                {(ekycStatus !== 'VERIFIED' || isEditingLegal) && (
-                  <button
-                    type="button"
-                    onClick={handleSubmitEkycToBql}
-                    disabled={isScanningOcr}
-                    className="h-9 px-5 bg-[#C5A880] hover:bg-white text-[#0D1117] text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-2 shadow-lg rounded-none active:scale-[0.99]"
-                  >
-                    {isScanningOcr ? <RefreshCw className="w-4 h-4 animate-spin" /> : <ShieldCheck className="w-4 h-4" />}
-                    {isScanningOcr ? 'Đang Gửi Hồ Sơ...' : ekycStatus === 'VERIFIED' ? 'Gửi Cập Nhật Cho BQL' : ekycStatus === 'REJECTED' ? 'Gửi Lại Ban Quản Lý Duyệt' : ekycStatus === 'PENDING' ? 'Cập Nhật / Gửi Lại Hồ Sơ' : 'Gửi Ban Quản Lý Duyệt'}
+                    <Eye className="w-3.5 h-3.5 text-[#C5A880]" /> Xem Thẻ
                   </button>
                 )}
               </div>
             </div>
-          )}
+
+            {/* Thông tin pháp lý trích xuất */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+              <div className="p-3 bg-[#161B22] border border-[#263140] space-y-1">
+                <span className="text-gray-400 block text-[11px]">Số CCCD (12 số):</span>
+                <input
+                  type="text"
+                  value={idCardNumber}
+                  onChange={(e) => setIdCardNumber(e.target.value)}
+                  placeholder="Chưa quét số CCCD"
+                  className="w-full bg-transparent text-emerald-300 font-mono font-bold focus:outline-none"
+                />
+              </div>
+
+              <div className="p-3 bg-[#161B22] border border-[#263140] space-y-1">
+                <span className="text-gray-400 block text-[11px]">Nơi Cấp & Ngày Cấp:</span>
+                <input
+                  type="text"
+                  value={`${idPlace || ''} ${idDate ? `• ${idDate}` : ''}`.trim() || 'Chưa cập nhật'}
+                  onChange={(e) => setIdPlace(e.target.value)}
+                  placeholder="Nơi cấp / ngày cấp"
+                  className="w-full bg-transparent text-gray-200 focus:outline-none"
+                />
+              </div>
+
+              <div className="p-3 bg-[#161B22] border border-[#263140] space-y-1">
+                <span className="text-gray-400 block text-[11px]">Quê Quán / Nơi Sinh:</span>
+                <input
+                  type="text"
+                  value={pob || 'Chưa cập nhật'}
+                  onChange={(e) => setPob(e.target.value)}
+                  placeholder="Quê quán"
+                  className="w-full bg-transparent text-gray-200 focus:outline-none"
+                />
+              </div>
+            </div>
+
+            {/* 2 Vị trí ảnh CCCD */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">
+              {/* Mặt trước */}
+              <div className="p-3 bg-[#0E131B] border border-[#263140] rounded-none space-y-2">
+                <div className="flex items-center justify-between text-xs">
+                  <span className="font-semibold text-white flex items-center gap-1.5">
+                    <span className="w-2 h-2 rounded-full bg-cyan-400"></span> Mặt Trước (Ảnh Chân Dung & 12 Số)
+                  </span>
+                  <span className="text-[10px] text-cyan-300 font-mono">Vị Trí 1</span>
+                </div>
+                <div className="relative w-full h-40 rounded-none overflow-hidden border border-gray-800 bg-[#0A0E14] flex items-center justify-center">
+                  {cccdImage ? (
+                    <img src={cccdImage} alt="CCCD Mặt Trước" className="w-full h-full object-cover" />
+                  ) : (
+                    <div className="flex flex-col items-center justify-center text-center p-3 text-gray-500 space-y-1">
+                      <CreditCard className="w-7 h-7 text-cyan-500/50" />
+                      <span className="text-xs text-gray-400">Chưa có ảnh mặt trước</span>
+                      <span className="text-[10px] text-gray-600">Bấm &quot;Quét Thẻ CCCD&quot; ở trên</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Mặt sau */}
+              <div className="p-3 bg-[#0E131B] border border-[#263140] rounded-none space-y-2">
+                <div className="flex items-center justify-between text-xs">
+                  <span className="font-semibold text-white flex items-center gap-1.5">
+                    <span className="w-2 h-2 rounded-full bg-amber-400"></span> Mặt Sau (Chip Điện Tử & MRZ)
+                  </span>
+                  <span className="text-[10px] text-amber-300 font-mono">Vị Trí 2</span>
+                </div>
+                <div className="relative w-full h-40 rounded-none overflow-hidden border border-gray-800 bg-[#0A0E14] flex items-center justify-center">
+                  {cccdBackImage ? (
+                    <img src={cccdBackImage} alt="CCCD Mặt Sau" className="w-full h-full object-cover" />
+                  ) : (
+                    <div className="flex flex-col items-center justify-center text-center p-3 text-gray-500 space-y-1">
+                      <CreditCard className="w-7 h-7 text-amber-500/50" />
+                      <span className="text-xs text-gray-400">Chưa có ảnh mặt sau</span>
+                      <span className="text-[10px] text-gray-600">Bấm &quot;Quét Thẻ CCCD&quot; ở trên</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
 
           {/* Thông báo hướng dẫn dành riêng cho Người Nhà tự cập nhật FaceID */}
           {!isOwner && (
@@ -1639,6 +1346,37 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
                 <span className="font-mono text-gray-400">Mã thẻ: SKY-{aptCode}-PASS</span>
               </div>
             </div>
+          </div>
+          {/* =================================================================== */}
+          {/* KHỐI DUYỆT ĐỒNG BỘ: GỬI BAN QUẢN LÝ DUYỆT CẢ CCCD VÀ FACEID CÙNG LÚC */}
+          {/* =================================================================== */}
+          <div className="p-5 bg-gradient-to-r from-[#161D26] via-[#121820] to-[#0D1117] border border-[#C5A880]/80 rounded-none flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-2xl">
+            <div className="space-y-1">
+              <div className="text-white text-xs font-bold flex items-center gap-2">
+                <ShieldCheck className="w-4 h-4 text-[#C5A880]" /> Gửi Ban Quản Lý Phê Duyệt Đồng Bộ (CCCD & FaceID)
+              </div>
+              <div className="text-[11px] text-gray-400 leading-relaxed max-w-xl">
+                Chỉ cần nhấn 1 lần, toàn bộ hồ sơ Căn cước công dân (2 mặt) và 4 góc sinh trắc học FaceID sẽ được gửi đến Ban Quản Lý để kích hoạt quyền ra vào chung cư cùng lúc mà không cần thao tác lặp lại.
+              </div>
+            </div>
+
+            <button
+              type="button"
+              onClick={handleSubmitEkycToBql}
+              disabled={isScanningOcr}
+              className="px-7 py-3 bg-[#C5A880] hover:bg-white text-[#0D1117] text-xs font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-2 shadow-xl rounded-none active:scale-[0.99] flex-shrink-0 cursor-pointer"
+            >
+              {isScanningOcr ? <RefreshCw className="w-4 h-4 animate-spin" /> : <ShieldCheck className="w-4 h-4" />}
+              {isScanningOcr
+                ? 'Đang Gửi Hồ Sơ...'
+                : ekycStatus === 'VERIFIED'
+                ? 'Gửi Cập Nhật Cho Ban Quản Lý'
+                : ekycStatus === 'REJECTED'
+                ? 'Gửi Lại Ban Quản Lý Duyệt'
+                : ekycStatus === 'PENDING'
+                ? 'Gửi Lại / Cập Nhật Hồ Sơ'
+                : 'Gửi Ban Quản Lý Duyệt Hồ Sơ'}
+            </button>
           </div>
         </div>
       )}
