@@ -446,10 +446,10 @@ export default function EkycApproval() {
                     </div>
                     <div>
                       <span className="text-gray-400 text-[10px] block">Ngày cấp:</span>
-                      <span className="font-mono text-gray-200 text-xs">{req.idDate || '18/08/2022'}</span>
+                      <span className="font-mono text-gray-200 text-xs">{req.idDate || 'Chưa cập nhật'}</span>
                     </div>
                     <div className="col-span-2 pt-1 border-t border-[#222B35] flex justify-between items-center text-[10px]">
-                      <span className="text-gray-400 truncate">Nơi cấp: {req.idPlace}</span>
+                      <span className="text-gray-400 truncate">Nơi cấp: {req.idPlace || 'Chưa cập nhật'}</span>
                       <button
                         type="button"
                         onClick={() => {
@@ -459,7 +459,7 @@ export default function EkycApproval() {
                         }}
                         className="text-[#C5A880] hover:text-white font-bold flex items-center gap-1 underline flex-shrink-0 ml-2 cursor-pointer"
                       >
-                        <Eye className="w-3 h-3" /> {isApproved ? 'Xem Chứng Thư Đã Duyệt' : 'Kiểm Tra Chi Tiết'}
+                        <Eye className="w-3 h-3" /> Kiểm Tra Chi Tiết
                       </button>
                     </div>
                   </div>
@@ -477,7 +477,7 @@ export default function EkycApproval() {
                           }}
                           className="px-3 py-1.5 bg-[#121B24] hover:bg-[#1A2634] border border-emerald-500/60 text-emerald-300 text-xs font-semibold rounded-none transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow"
                         >
-                          <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" /> Hồ Sơ Đã Duyệt
+                          <Eye className="w-3.5 h-3.5 text-emerald-400" /> Xem Chi Tiết
                         </button>
                       ) : (
                         <button
@@ -524,8 +524,8 @@ export default function EkycApproval() {
                           <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> Đã Kích Hoạt Quyền Ra Vào
                         </span>
                         <div className="text-[10px] text-gray-400 flex items-center justify-end gap-1 font-mono">
-                          <span>Duyệt: {req.reviewedAt || '02/09/2026'}</span>
-                          <span>•</span>
+                          {req.reviewedAt && <span>Duyệt: {req.reviewedAt}</span>}
+                          {req.reviewedAt && <span>•</span>}
                           <button
                             type="button"
                             onClick={() => {
@@ -607,11 +607,7 @@ export default function EkycApproval() {
                     )}
                   </div>
                   <h3 className="font-serif text-lg font-bold text-white mt-0.5">
-                    {inspectingRequest.status === 'APPROVED'
-                      ? `Hồ Sơ Định Danh Đã Duyệt: ${inspectingRequest.fullName}`
-                      : inspectingRequest.status === 'REJECTED'
-                      ? `Hồ Sơ Cần Cập Nhật: ${inspectingRequest.fullName}`
-                      : `Đối Chiếu Khuôn Mặt Cư Dân & Thẻ Căn Cước: ${inspectingRequest.fullName}`}
+                    Đối Chiếu Khuôn Mặt Cư Dân &amp; Thẻ Căn Cước: {inspectingRequest.fullName}
                   </h3>
                 </div>
               </div>
@@ -637,64 +633,7 @@ export default function EkycApproval() {
               </div>
             )}
 
-            {/* Khối Chứng Thư Điện Tử Sau Khi Duyệt (Dành cho hồ sơ APPROVED) */}
-            {inspectingRequest.status === 'APPROVED' && (
-              <div className="p-4 bg-gradient-to-r from-[#121B24] via-[#14202B] to-[#121B24] border border-[#C5A880]/60 rounded-none space-y-3 shadow-xl relative overflow-hidden">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#2D3A4B] pb-2.5">
-                  <div className="flex items-center gap-2.5">
-                    <div className="w-7 h-7 bg-[#C5A880]/15 border border-[#C5A880] flex items-center justify-center text-[#C5A880] flex-shrink-0">
-                      <ShieldCheck className="w-4 h-4 text-[#C5A880]" />
-                    </div>
-                    <div>
-                      <span className="text-[10px] font-mono uppercase tracking-wider text-[#C5A880] font-bold block">
-                        CHỨNG THƯ THẨM DUYỆT ĐIỆN TỬ • SKYLINE SMART RESIDENCE
-                      </span>
-                      <span className="text-xs font-semibold text-white">
-                        Mã Chứng Nhận: <span className="font-mono text-[#C5A880]">{inspectingRequest.id}</span>
-                      </span>
-                    </div>
-                  </div>
-                  <div className="text-left sm:text-right text-[11px] font-mono text-gray-300">
-                    <span className="text-gray-400">Duyệt lúc: </span>
-                    <strong className="text-emerald-400">{inspectingRequest.reviewedAt || '02/09/2026 15:10'}</strong>
-                    <span className="block text-[10px] text-gray-400">Bởi: {inspectingRequest.reviewedBy || 'Ban Quản Lý Skyline (Trực Ban)'}</span>
-                  </div>
-                </div>
 
-                {/* 3 Physical Access Control Pillars Active */}
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs pt-1">
-                  <div className="p-2.5 bg-[#0D131A] border border-emerald-500/40 rounded-none space-y-1">
-                    <div className="flex items-center gap-1.5 text-emerald-400 font-bold text-[11px]">
-                      <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                      Cổng Sảnh &amp; Barrier
-                    </div>
-                    <p className="text-[10.5px] text-gray-400">
-                      Camera AI tự động mở cổng khi nhận diện khuôn mặt cư dân.
-                    </p>
-                  </div>
-
-                  <div className="p-2.5 bg-[#0D131A] border border-emerald-500/40 rounded-none space-y-1">
-                    <div className="flex items-center gap-1.5 text-emerald-400 font-bold text-[11px]">
-                      <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                      Thang Máy Toà BS-07
-                    </div>
-                    <p className="text-[10.5px] text-gray-400">
-                      Tự động phân tầng căn hộ {inspectingRequest.apartmentCode} khi bước vào thang.
-                    </p>
-                  </div>
-
-                  <div className="p-2.5 bg-[#0D131A] border border-emerald-500/40 rounded-none space-y-1">
-                    <div className="flex items-center gap-1.5 text-emerald-400 font-bold text-[11px]">
-                      <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                      Tiện Ích &amp; Bãi Xe
-                    </div>
-                    <p className="text-[10.5px] text-gray-400">
-                      Xác thực thẻ cư dân điện tử và quyền đặt lịch tiện ích nội khu.
-                    </p>
-                  </div>
-                </div>
-              </div>
-            )}
 
             {/* Thông báo lý do từ chối (Dành cho hồ sơ REJECTED) */}
             {inspectingRequest.status === 'REJECTED' && (
@@ -952,12 +891,15 @@ export default function EkycApproval() {
 
                 <div>
                   <span className="text-gray-500 text-[10.5px] block">Ngày Sinh:</span>
-                  <span className="text-gray-200 font-mono">{inspectingRequest.dob || '18/08/2004'}</span>
+                  <span className="text-gray-200 font-mono">{inspectingRequest.dob || 'Chưa cập nhật'}</span>
                 </div>
 
                 <div>
                   <span className="text-gray-500 text-[10.5px] block">Ngày Cấp & Nơi Cấp:</span>
-                  <span className="text-gray-200">{inspectingRequest.idDate || '18/08/2022'} • {inspectingRequest.idPlace}</span>
+                  <span className="text-gray-200">
+                    {inspectingRequest.idDate || 'Chưa cập nhật'}
+                    {inspectingRequest.idPlace ? ` • ${inspectingRequest.idPlace}` : ''}
+                  </span>
                 </div>
 
                 <div>
@@ -995,31 +937,19 @@ export default function EkycApproval() {
                   Đóng
                 </button>
 
-                {/* Nếu hồ sơ ĐÃ ĐƯỢC DUYỆT: Không hiện nút Xác nhận lại, cho phép Thu hồi hoặc Xuất chứng thư */}
+                {/* Nếu hồ sơ ĐÃ ĐƯỢC DUYỆT: Cho phép Thu hồi quyền nếu cần */}
                 {inspectingRequest.status === 'APPROVED' && (
-                  <>
-                    <button
-                      type="button"
-                      disabled={isProcessing}
-                      onClick={() => {
-                        setRevokingId(inspectingRequest.id);
-                        setRevokeReason('Ban Quản Lý tạm thu hồi quyền ra vào FaceID để đối soát lại hồ sơ.');
-                      }}
-                      className="px-4 py-2 bg-rose-950/80 hover:bg-rose-900 border border-rose-600/80 text-rose-300 hover:text-rose-100 text-xs font-semibold rounded-none transition-all flex items-center gap-1.5 cursor-pointer shadow disabled:opacity-50"
-                    >
-                      <XCircle className="w-3.5 h-3.5" /> Tạm Khóa / Thu Hồi Quyền
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={() => {
-                        alert(`✓ CHỨNG THƯ ĐỊNH DANH ĐIỆN TỬ:\n- Cư dân: ${inspectingRequest.fullName}\n- Căn hộ: ${inspectingRequest.apartmentCode}\n- Số CCCD: ${inspectingRequest.idCardNo}\n- Tỷ lệ khớp: ${inspectingRequest.faceScore}%\n- Mã chứng nhận: ${inspectingRequest.id}\n- Trạng thái FaceID: ĐÃ KÍCH HOẠT\n- Người duyệt: ${inspectingRequest.reviewedBy || 'Ban Quản Lý Skyline'}\n- Thời gian: ${inspectingRequest.reviewedAt || '12/10/2026'}\n\nHồ sơ hợp lệ và đang hoạt động đầy đủ trên hệ thống Barrier sảnh và Thang máy toà nhà.`);
-                      }}
-                      className="px-4 py-2 bg-[#1E293B] hover:bg-[#2B394E] border border-[#C5A880] text-[#C5A880] hover:text-white text-xs font-semibold rounded-none transition-all flex items-center gap-1.5 cursor-pointer shadow"
-                    >
-                      <FileText className="w-3.5 h-3.5" /> Xuất Phiếu Thẩm Duyệt
-                    </button>
-                  </>
+                  <button
+                    type="button"
+                    disabled={isProcessing}
+                    onClick={() => {
+                      setRevokingId(inspectingRequest.id);
+                      setRevokeReason('Ban Quản Lý tạm thu hồi quyền ra vào FaceID để đối soát lại hồ sơ.');
+                    }}
+                    className="px-4 py-2 bg-rose-950/80 hover:bg-rose-900 border border-rose-600/80 text-rose-300 hover:text-rose-100 text-xs font-semibold rounded-none transition-all flex items-center gap-1.5 cursor-pointer shadow disabled:opacity-50"
+                  >
+                    <XCircle className="w-3.5 h-3.5" /> Tạm Khóa / Thu Hồi Quyền
+                  </button>
                 )}
 
                 {/* Nếu hồ sơ ĐANG CHỜ DUYỆT: Hiện nút Xác nhận và Yêu cầu bổ sung */}

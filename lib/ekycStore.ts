@@ -272,7 +272,7 @@ export function submitEkycRequest(data: {
     idPlace: data.idPlace || 'Cục Cảnh sát QLHC về TTXH',
     dob: data.dob || '',
     pob: data.pob || '',
-    faceScore: data.faceScore || Math.floor(970 + Math.random() * 25) / 10,
+    faceScore: data.faceScore !== undefined ? data.faceScore : 0,
     avatarUrl: data.avatarUrl ? data.avatarUrl.replace('data.nks.vn//', 'data.nks.vn/') : 'https://data.nks.vn/storage/users/default.png',
     idCardFrontUrl: data.idCardFrontUrl || existing?.idCardFrontUrl || '',
     idCardBackUrl: data.idCardBackUrl || existing?.idCardBackUrl || '',
