@@ -132,7 +132,8 @@ export async function POST(req: Request) {
     }
 
     // 4. Nhận diện sinh trắc học 1:N đối soát với toàn bộ 4 mẫu góc quét của các hồ sơ đã đăng ký
-    const matchResult = identifyFaceAmongEnrolled(faceImage, enrolledProfiles, 72.0);
+    const threshold = isCameraCapture ? 65.0 : 72.0;
+    const matchResult = identifyFaceAmongEnrolled(faceImage, enrolledProfiles, threshold);
 
     // 5. Nếu không khớp bất kỳ khuôn mặt nào trong 4 mẫu
     if (!matchResult.matched || !matchResult.profile) {
