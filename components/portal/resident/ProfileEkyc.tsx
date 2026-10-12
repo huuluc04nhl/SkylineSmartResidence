@@ -414,23 +414,40 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
     }, 1200);
   };
 
+  // Feedback notification for e-KYC
+  const [ekycFeedback, setEkycFeedback] = useState<{ type: 'success' | 'warning' | 'error'; message: string } | null>(null);
+
   const handleSubmitEkycToBql = async () => {
+    setEkycFeedback(null);
+
     if (!idCardNumber.trim()) {
-      alert('Vui lòng quét thẻ CCCD hoặc nhập số Căn cước công dân trước khi gửi hồ sơ duyệt!');
+      setEkycFeedback({
+        type: 'warning',
+        message: 'Vui lòng quét thẻ CCCD hoặc nhập số Căn cước công dân trước khi gửi hồ sơ duyệt.'
+      });
       return;
     }
     if (!cccdImage) {
-      alert('Vui lòng quét hoặc tải lên ảnh Mặt Trước của thẻ Căn cước công dân!');
+      setEkycFeedback({
+        type: 'warning',
+        message: 'Vui lòng quét hoặc tải lên ảnh Mặt Trước của thẻ Căn cước công dân.'
+      });
       return;
     }
     if (!cccdBackImage) {
-      alert('Vui lòng quét hoặc tải lên thêm ảnh Mặt Sau thẻ CCCD (có chip điện tử) để Ban Quản Lý có đầy đủ cơ sở thẩm định!');
+      setEkycFeedback({
+        type: 'warning',
+        message: 'Vui lòng quét hoặc tải lên ảnh Mặt Sau thẻ CCCD (có chip điện tử) để Ban Quản Lý đối chiếu.'
+      });
       return;
     }
 
     const currentAvatar = avatarUrl || currentUser.avatar_url || '';
     if (!currentAvatar && !enrolledFaceProfile) {
-      alert('Vui lòng hoàn tất tải ảnh chân dung hoặc đăng ký FaceID trước khi gửi hồ sơ duyệt!');
+      setEkycFeedback({
+        type: 'warning',
+        message: 'Vui lòng tải ảnh chân dung hoặc thu thập FaceID 4 mẫu trước khi gửi hồ sơ duyệt.'
+      });
       return;
     }
 
@@ -474,7 +491,7 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
             ...reqPayload,
           }),
         });
-        const resJson = await res.json();
+        const resJson = await res.json().catch(() => ({}));
         if (!res.ok) {
           console.warn('Server sync message:', resJson?.message);
         }
@@ -482,7 +499,10 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
         console.warn('Sync ekyc submit API error:', apiErr);
       }
 
-      alert('✨ Hồ sơ định danh kèm ảnh CCCD 2 mặt và mẫu khuôn mặt FaceID đã được gửi tới Ban Quản Lý thành công!\nBan Quản Lý sẽ tiến hành thẩm định và phê duyệt cấp quyền mở cửa, thang máy cho quý cư dân.');
+      setEkycFeedback({
+        type: 'success',
+        message: 'Hồ sơ định danh kèm ảnh CCCD 2 mặt và mẫu FaceID đã được gửi tới Ban Quản Lý thành công! Ban Quản Lý sẽ thẩm định và kích hoạt quyền ra vào sớm nhất.'
+      });
     } finally {
       setIsScanningOcr(false);
     }
@@ -1249,6 +1269,33 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
       {/* ------------------------------------------------------------- */}
       {activeTab === 'EKYC' && (
         <div className="space-y-6">
+          {/* Feedback Toast Notification */}
+          {ekycFeedback && (
+            <div className={`p-4 border text-xs font-semibold flex items-center justify-between gap-3 rounded-none animate-fadeIn shadow-xl ${
+              ekycFeedback.type === 'success'
+                ? 'bg-emerald-950/90 border-emerald-500 text-emerald-200'
+                : ekycFeedback.type === 'warning'
+                ? 'bg-amber-950/90 border-amber-500 text-amber-200'
+                : 'bg-rose-950/90 border-rose-500 text-rose-200'
+            }`}>
+              <div className="flex items-center gap-2.5">
+                {ekycFeedback.type === 'success' ? (
+                  <CheckCircle2 className="w-5 h-5 text-emerald-400 flex-shrink-0" />
+                ) : (
+                  <AlertCircle className="w-5 h-5 text-amber-400 flex-shrink-0" />
+                )}
+                <span>{ekycFeedback.message}</span>
+              </div>
+              <button
+                type="button"
+                onClick={() => setEkycFeedback(null)}
+                className="text-gray-400 hover:text-white p-1 rounded-none hover:bg-black/30"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+          )}
+
           {/* Status Box & BQL Sync Banner (Chỉ hiển thị cho Chủ Hộ khi chưa verified) */}
           {isOwner && ekycStatus !== 'VERIFIED' && (
             <div className={`p-5 border flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-xl rounded-none ${

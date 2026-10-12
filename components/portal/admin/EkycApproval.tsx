@@ -438,18 +438,18 @@ export default function EkycApproval() {
                     </div>
                   </div>
 
-                  {/* Middle: CCCD Details */}
-                  <div className="lg:col-span-5 grid grid-cols-2 gap-2 text-xs bg-[#161D26] p-3 rounded-none border border-[#222B35]">
-                    <div>
-                      <span className="text-gray-400 text-[10px] block">Số Căn Cước Công Dân:</span>
-                      <strong className="font-mono text-[#C5A880] text-sm tracking-wider">{req.idCardNo}</strong>
-                    </div>
-                    <div>
-                      <span className="text-gray-400 text-[10px] block">Ngày cấp:</span>
-                      <span className="font-mono text-gray-200 text-xs">{req.idDate || 'Chưa cập nhật'}</span>
-                    </div>
-                    <div className="col-span-2 pt-1 border-t border-[#222B35] flex justify-between items-center text-[10px]">
-                      <span className="text-gray-400 truncate">Nơi cấp: {req.idPlace || 'Chưa cập nhật'}</span>
+                  {/* Middle: CCCD Details & Quick Previews */}
+                  <div className="lg:col-span-5 flex items-center justify-between gap-3 bg-[#161D26] p-3 rounded-none border border-[#222B35]">
+                    <div className="space-y-1 min-w-0 flex-1 text-xs">
+                      <div>
+                        <span className="text-gray-400 text-[10px] block">Số Căn Cước Công Dân:</span>
+                        <strong className="font-mono text-[#C5A880] text-sm tracking-wider">{req.idCardNo}</strong>
+                      </div>
+                      <div className="flex items-center gap-2 text-[10.5px] text-gray-300">
+                        <span>Cấp: <span className="font-mono">{req.idDate || 'N/A'}</span></span>
+                        <span>•</span>
+                        <span className="truncate">{req.idPlace || 'Cục Cảnh sát QLHC'}</span>
+                      </div>
                       <button
                         type="button"
                         onClick={() => {
@@ -457,10 +457,34 @@ export default function EkycApproval() {
                           setInspectingSide('FRONT');
                           setJustApprovedId(null);
                         }}
-                        className="text-[#C5A880] hover:text-white font-bold flex items-center gap-1 underline flex-shrink-0 ml-2 cursor-pointer"
+                        className="text-[#C5A880] hover:text-white font-bold text-[10.5px] flex items-center gap-1 underline pt-0.5 cursor-pointer"
                       >
-                        <Eye className="w-3 h-3" /> Kiểm Tra Chi Tiết
+                        <Eye className="w-3 h-3" /> Kiểm Tra Đối Chiếu Chi Tiết
                       </button>
+                    </div>
+
+                    {/* CCCD Front/Back Mini Thumbnails */}
+                    <div className="flex items-center gap-1.5 flex-shrink-0">
+                      {req.idCardFrontUrl && (
+                        <div
+                          onClick={() => setZoomImage({ url: req.idCardFrontUrl!, title: `Mặt trước CCCD - ${req.fullName}` })}
+                          className="w-14 h-9 bg-black border border-gray-700 hover:border-[#C5A880] overflow-hidden cursor-pointer relative group"
+                          title="Xem mặt trước CCCD"
+                        >
+                          <img src={req.idCardFrontUrl} alt="Trước" className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
+                          <span className="absolute bottom-0 inset-x-0 bg-black/80 text-[7px] text-gray-300 text-center font-mono">Trước</span>
+                        </div>
+                      )}
+                      {req.idCardBackUrl && (
+                        <div
+                          onClick={() => setZoomImage({ url: req.idCardBackUrl!, title: `Mặt sau CCCD - ${req.fullName}` })}
+                          className="w-14 h-9 bg-black border border-gray-700 hover:border-[#C5A880] overflow-hidden cursor-pointer relative group"
+                          title="Xem mặt sau CCCD"
+                        >
+                          <img src={req.idCardBackUrl} alt="Sau" className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
+                          <span className="absolute bottom-0 inset-x-0 bg-black/80 text-[7px] text-gray-300 text-center font-mono">Sau</span>
+                        </div>
+                      )}
                     </div>
                   </div>
 
