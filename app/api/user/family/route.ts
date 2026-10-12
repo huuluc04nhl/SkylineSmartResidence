@@ -48,7 +48,8 @@ export async function GET(req: Request) {
     const localUser = userId ? getUserStore(userId) : getUserStore('user-owner-1');
     const url = new URL(req.url);
     const paramApt = url.searchParams.get('apartment') || url.searchParams.get('aptCode');
-    const aptCode = paramApt || (currentApiUser ? '12A05' : (localUser?.apartment_code || '12A05'));
+    const rawApt = paramApt || currentApiUser?.apartment_code || localUser?.apartment_code || 'CH-06';
+    const aptCode = (rawApt === '12A05' || rawApt === '12A5') ? 'CH-06' : rawApt;
     const ownerName = currentApiUser?.name || localUser?.fullname || 'Trần Hữu Lực';
     const searchQuery = url.searchParams.get('search')?.trim().toLowerCase();
 
@@ -152,7 +153,8 @@ export async function POST(req: Request) {
     const token = cookieStore.get('nks_token')?.value || '';
     const userId = extractUserIdFromToken(token);
     const currentUser = userId ? getUserStore(userId) : getUserStore('user-owner-1');
-    const aptCode = currentUser?.apartment_code || '12A05';
+    const rawApt = currentUser?.apartment_code || 'CH-06';
+    const aptCode = (rawApt === '12A05' || rawApt === '12A5') ? 'CH-06' : rawApt;
 
     const body = await req.json();
     const { 
@@ -249,7 +251,8 @@ export async function DELETE(req: Request) {
     const token = cookieStore.get('nks_token')?.value || '';
     const userId = extractUserIdFromToken(token);
     const currentUser = userId ? getUserStore(userId) : getUserStore('user-owner-1');
-    const aptCode = currentUser?.apartment_code || '12A05';
+    const rawApt = currentUser?.apartment_code || 'CH-06';
+    const aptCode = (rawApt === '12A05' || rawApt === '12A5') ? 'CH-06' : rawApt;
 
     const body = await req.json();
     const { memberId } = body;
@@ -286,7 +289,8 @@ export async function PUT(req: Request) {
     const token = cookieStore.get('nks_token')?.value || '';
     const userId = extractUserIdFromToken(token);
     const currentUser = userId ? getUserStore(userId) : getUserStore('user-owner-1');
-    const aptCode = currentUser?.apartment_code || '12A05';
+    const rawApt = currentUser?.apartment_code || 'CH-06';
+    const aptCode = (rawApt === '12A05' || rawApt === '12A5') ? 'CH-06' : rawApt;
 
     const body = await req.json();
     const { 

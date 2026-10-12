@@ -108,16 +108,28 @@ export async function POST(req: Request) {
     // Đồng bộ hồ sơ 4 mẫu quét từ client (nếu có)
     if (Array.isArray(body.clientProfiles)) {
       body.clientProfiles.forEach((cp: any) => {
-        if (cp && cp.userId && !enrolledProfiles.some(p => p.userId === cp.userId)) {
-          enrolledProfiles.push(cp);
-          try {
-            saveEnrolledFaceProfile(cp);
-          } catch (e) {
-            console.warn('Sync client profile error:', e);
+        if (cp && cp.userId) {
+          if (cp.apartmentCode === '12A05' || cp.apartmentCode === '12A5' || !cp.apartmentCode) {
+            cp.apartmentCode = 'CH-06';
+          }
+          if (!enrolledProfiles.some(p => p.userId === cp.userId)) {
+            enrolledProfiles.push(cp);
+            try {
+              saveEnrolledFaceProfile(cp);
+            } catch (e) {
+              console.warn('Sync client profile error:', e);
+            }
           }
         }
       });
     }
+
+    // Luôn chuẩn hóa toàn bộ hồ sơ đối soát sang mã căn hộ chuẩn API (CH-06)
+    enrolledProfiles.forEach(p => {
+      if (p && (p.apartmentCode === '12A05' || p.apartmentCode === '12A5' || !p.apartmentCode)) {
+        p.apartmentCode = 'CH-06';
+      }
+    });
 
     if (enrolledProfiles.length === 0) {
       return NextResponse.json(
@@ -133,6 +145,12 @@ export async function POST(req: Request) {
     // 4. Nhận diện sinh trắc học 1:N đối soát với toàn bộ 4 mẫu góc quét của các hồ sơ đã đăng ký
     const threshold = isCameraCapture ? 65.0 : 72.0;
     const matchResult = identifyFaceAmongEnrolled(faceImage, enrolledProfiles, threshold);
+
+    if (matchResult.profile) {
+      if (matchResult.profile.apartmentCode === '12A05' || matchResult.profile.apartmentCode === '12A5' || !matchResult.profile.apartmentCode) {
+        matchResult.profile.apartmentCode = 'CH-06';
+      }
+    }
 
     // 5. Nếu không khớp bất kỳ khuôn mặt nào trong 4 mẫu
     if (!matchResult.matched || !matchResult.profile) {
@@ -251,7 +269,17 @@ export async function POST(req: Request) {
         : 'OWNER';
 
       const apiFullName = remoteApiUser.name || `${remoteApiUser.lastname || ''} ${remoteApiUser.firstname || ''}`.trim() || matchResult.profile.fullName || '';
-      const apiApt = matchResult.profile.apartmentCode || remoteApiUser.apartment_code || '';
+      
+      // Phân quyền chuẩn và xác định mã căn hộ theo API chính thức
+      let apiApt = 'CH-06';
+      if (role === 'ADMIN') {
+        apiApt = 'BQL_OFFICE';
+      } else if (role === 'TECHNICIAN') {
+        apiApt = 'TECH_ROOM';
+      } else {
+        const candidateApt = remoteApiUser.apartment_code || matchResult.profile?.apartmentCode || 'CH-06';
+        apiApt = (candidateApt === '12A05' || candidateApt === '12A5' || !candidateApt) ? 'CH-06' : candidateApt;
+      }
 
       const formattedUser = {
         id: String(remoteApiUser.id || matchResult.profile.userId),
@@ -282,7 +310,7 @@ export async function POST(req: Request) {
 
       const res = NextResponse.json({
         success: true,
-        message: `Xác thực FaceID thành công từ NKS API: ${formattedUser.fullname} ${formattedUser.apartment_code ? `(${formattedUser.apartment_code})` : ''} - Mẫu khớp: ${matchResult.bestAngle || 'Chính diện'}`,
+        message: `Xác thực FaceID thành công từ NKS API: ${formattedUser.fullname} (Căn ${formattedUser.apartment_code}) - Mẫu khớp: ${matchResult.bestAngle || 'Chính diện'}`,
         matchScore: matchScore || 0,
         bestAngle: matchResult.bestAngle || 'Chính diện',
         sampleScores: matchResult.sampleScores,
@@ -328,6 +356,16 @@ export async function POST(req: Request) {
     // Cấp Token phiên đăng nhập an toàn & Cookie
     const token = `NKS_FACEID_SESSION_${matchedUserRecord.id}_${matchedUserRecord.role}_${Date.now()}`;
 
+    let fallbackApt = 'CH-06';
+    if (matchedUserRecord.role === 'ADMIN') {
+      fallbackApt = 'BQL_OFFICE';
+    } else if (matchedUserRecord.role === 'TECHNICIAN') {
+      fallbackApt = 'TECH_ROOM';
+    } else {
+      const candidateApt = matchedUserRecord.apartment_code || matchResult.profile?.apartmentCode || 'CH-06';
+      fallbackApt = (candidateApt === '12A05' || candidateApt === '12A5' || !candidateApt) ? 'CH-06' : candidateApt;
+    }
+
     const formattedUser = {
       id: matchedUserRecord.id,
       username: matchedUserRecord.username,
@@ -339,7 +377,7 @@ export async function POST(req: Request) {
       phone: matchedUserRecord.phone,
       role: matchedUserRecord.role,
       relationship: matchedUserRecord.relationship || (matchedUserRecord.role === 'OWNER' ? 'Owner' : 'Family'),
-      apartment_code: matchedUserRecord.apartment_code || matchResult.profile.apartmentCode || '',
+      apartment_code: fallbackApt,
       avatar_url: matchedUserRecord.avatar_url || matchResult.profile.avatarUrl || '',
       license_plate: matchedUserRecord.license_plate || '',
       id_number: matchedUserRecord.id_card_no || '',

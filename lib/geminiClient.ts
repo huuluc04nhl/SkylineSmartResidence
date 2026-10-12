@@ -135,7 +135,7 @@ const DEFAULT_BOOKINGS_CH06: ConciergeBookingItem[] = [
 export function buildProjectSystemPrompt(contextOrAptCode: string | ConciergeContext = 'CH-06'): string {
   const rawCode = typeof contextOrAptCode === 'string' ? contextOrAptCode : contextOrAptCode?.aptCode || 'CH-06';
   const targetAptCode = rawCode.trim().toUpperCase();
-  const isOwnerUnit = targetAptCode === 'CH-06' || targetAptCode === '12A05' || targetAptCode.endsWith('CH-06');
+  const isOwnerUnit = targetAptCode === 'CH-06' || targetAptCode === '12A05' || targetAptCode === '12A5' || targetAptCode.endsWith('CH-06');
 
   // 1. Căn hộ chuẩn xác từ store
   const aptFromStore = getApartmentByCode(targetAptCode);
@@ -420,7 +420,7 @@ export function generateSmartProjectFallback(
   const text = message.toLowerCase();
   const rawCode = typeof contextOrAptCode === 'string' ? contextOrAptCode : contextOrAptCode?.aptCode || 'CH-06';
   const targetAptCode = rawCode.trim().toUpperCase();
-  const isOwnerUnit = targetAptCode === 'CH-06' || targetAptCode === '12A05' || targetAptCode.endsWith('CH-06');
+  const isOwnerUnit = targetAptCode === 'CH-06' || targetAptCode === '12A05' || targetAptCode === '12A5' || targetAptCode.endsWith('CH-06');
 
   // 1. Căn hộ chuẩn xác từ store
   const aptFromStore = getApartmentByCode(targetAptCode);

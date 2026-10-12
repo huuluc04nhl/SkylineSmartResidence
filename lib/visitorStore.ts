@@ -174,8 +174,8 @@ export function getPassRegistry(): Map<string, GeneratedVisitorPass> {
         if (stored) {
           const raw = JSON.parse(stored);
           if (Array.isArray(raw)) {
-            // Lọc bỏ toàn bộ thẻ ảo cũ hoặc thẻ căn 12A05 cũ
-            loadedList = raw.filter((p: any) => p && !DUMMY_PASS_IDS.has(p.id) && p.apartmentCode !== '12A05');
+            // Lọc bỏ toàn bộ thẻ ảo cũ hoặc thẻ căn 12A05 / 12A5 cũ
+            loadedList = raw.filter((p: any) => p && !DUMMY_PASS_IDS.has(p.id) && p.apartmentCode !== '12A05' && p.apartmentCode !== '12A5');
             if (loadedList.length === 0) {
               loadedList = [...INITIAL_SAMPLE_PASSES];
             }
@@ -304,8 +304,8 @@ export function getGateAuditLogs(): GateAuditLog[] {
         if (stored) {
           const raw = JSON.parse(stored);
           if (Array.isArray(raw)) {
-            // Lọc bỏ toàn bộ logs ảo cũ hoặc logs gắn với căn 12A05 cũ
-            loadedLogs = raw.filter((log: any) => log && !DUMMY_LOG_IDS.has(log.id) && log.apartmentCode !== '12A05');
+            // Lọc bỏ toàn bộ logs ảo cũ hoặc logs gắn với căn 12A05 / 12A5 cũ
+            loadedLogs = raw.filter((log: any) => log && !DUMMY_LOG_IDS.has(log.id) && log.apartmentCode !== '12A05' && log.apartmentCode !== '12A5');
             if (loadedLogs.length === 0) {
               loadedLogs = [...INITIAL_SAMPLE_LOGS];
             }

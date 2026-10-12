@@ -84,7 +84,8 @@ export async function POST(req: Request) {
 
       // Synchronize apartment member face status
       try {
-        updateApartmentMember(apartmentCode || '12A05', userId || phone, {
+        const targetApt = (apartmentCode === '12A05' || apartmentCode === '12A5' || !apartmentCode) ? 'CH-06' : apartmentCode;
+        updateApartmentMember(targetApt, userId || phone, {
           faceStatus: 'Đang Chờ BQL Phê Duyệt',
           avatarUrl: avatarUrl,
           idCard: idCardNo,
@@ -121,7 +122,8 @@ export async function POST(req: Request) {
           pob: approved.pob,
           avatar_url: approved.avatarUrl,
         });
-        updateApartmentMember(approved.apartmentCode || '12A05', approved.userId, {
+        const approvedApt = (approved.apartmentCode === '12A05' || approved.apartmentCode === '12A5' || !approved.apartmentCode) ? 'CH-06' : approved.apartmentCode;
+        updateApartmentMember(approvedApt, approved.userId, {
           faceStatus: 'Đã Kích Hoạt FaceID',
           avatarUrl: approved.avatarUrl,
           idCard: approved.idCardNo,
@@ -156,7 +158,8 @@ export async function POST(req: Request) {
       }
 
       try {
-        updateApartmentMember(rejected.apartmentCode || '12A05', rejected.userId, {
+        const rejectedApt = (rejected.apartmentCode === '12A05' || rejected.apartmentCode === '12A5' || !rejected.apartmentCode) ? 'CH-06' : rejected.apartmentCode;
+        updateApartmentMember(rejectedApt, rejected.userId, {
           faceStatus: 'BQL Yêu Cầu Chụp Lại',
         });
         updateEnrolledFaceStatus(rejected.userId, 'REVOKED');

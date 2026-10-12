@@ -71,6 +71,9 @@ export function getAllEnrolledFaceProfiles(): EnrolledFaceProfile[] {
         const clientProfiles: EnrolledFaceProfile[] = JSON.parse(raw);
         if (Array.isArray(clientProfiles)) {
           clientProfiles.forEach(cp => {
+            if (cp && (cp.apartmentCode === '12A05' || cp.apartmentCode === '12A5' || !cp.apartmentCode)) {
+              cp.apartmentCode = 'CH-06';
+            }
             if (!list.some(p => p.userId === cp.userId || (cp.phone && p.phone === cp.phone))) {
               list.push(cp);
             }
@@ -81,6 +84,13 @@ export function getAllEnrolledFaceProfiles(): EnrolledFaceProfile[] {
       console.warn('Lỗi đọc LocalStorage enrolled faces:', e);
     }
   }
+
+  // Luôn chuẩn hóa mã căn hộ không bao giờ là 12A05
+  list.forEach(p => {
+    if (p && (p.apartmentCode === '12A05' || p.apartmentCode === '12A5' || !p.apartmentCode)) {
+      p.apartmentCode = 'CH-06';
+    }
+  });
 
   return list;
 }
@@ -126,6 +136,11 @@ export function getEnrolledFaceProfile(userId: string): EnrolledFaceProfile | nu
  */
 export function saveEnrolledFaceProfile(profile: EnrolledFaceProfile): void {
   if (!profile || !profile.userId) return;
+
+  // Chuẩn hóa apartmentCode không bao giờ là 12A05
+  if (profile.apartmentCode === '12A05' || profile.apartmentCode === '12A5' || !profile.apartmentCode) {
+    profile.apartmentCode = 'CH-06';
+  }
 
   // 1. Lưu vào server store và ghi ra file bền vững
   const serverStore = getServerStore();

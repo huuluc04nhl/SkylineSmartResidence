@@ -29,7 +29,7 @@ export async function POST(request: Request) {
     if (action === 'GENERATE' || action === 'CREATE') {
       const { apartmentCode, visitorName, phoneNumber, licensePlate, entryType, validHours, note } = body;
       const pass = generateVisitorPassToken({
-        apartmentCode: apartmentCode || '12A05',
+        apartmentCode: (apartmentCode === '12A05' || apartmentCode === '12A5' || !apartmentCode) ? 'CH-06' : apartmentCode,
         visitorName: visitorName || 'Khách Thăm Nhà',
         phoneNumber,
         licensePlate,

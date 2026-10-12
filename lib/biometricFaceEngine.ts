@@ -309,6 +309,9 @@ export function identifyFaceAmongEnrolled(
     };
   }
 
+  const displayApt = (!bestProfile.apartmentCode || bestProfile.apartmentCode === '12A05' || bestProfile.apartmentCode === '12A5') ? 'CH-06' : bestProfile.apartmentCode;
+  bestProfile.apartmentCode = displayApt;
+
   return {
     matched: true,
     profile: bestProfile,
@@ -316,7 +319,7 @@ export function identifyFaceAmongEnrolled(
     bestAngle: matchedAngle,
     bestAngleKey: matchedAngleKey,
     sampleScores: bestSampleScores,
-    message: `Nhận diện 4 mẫu thành công: ${bestProfile.fullName} (Căn ${bestProfile.apartmentCode}) - Khớp mẫu: ${matchedAngle}`,
+    message: `Nhận diện 4 mẫu thành công: ${bestProfile.fullName} (Căn ${displayApt}) - Khớp mẫu: ${matchedAngle}`,
   };
 }
 

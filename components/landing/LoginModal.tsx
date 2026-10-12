@@ -112,7 +112,9 @@ export default function LoginModal({ isOpen, onClose, defaultAccount = '' }: Log
   const handleRoleRedirect = (loggedUser: any) => {
     const role = loggedUser.role;
     const name = loggedUser.full_name || loggedUser.fullname || loggedUser.name || '';
-    const apt = loggedUser.apartment_code ? `Căn ${loggedUser.apartment_code}` : '';
+    const rawApt = loggedUser.apartment_code || '';
+    const cleanApt = (rawApt === '12A05' || rawApt === '12A5') ? 'CH-06' : rawApt;
+    const apt = cleanApt ? `Căn ${cleanApt}` : '';
     let roleNotice = 'Đăng nhập thành công!';
     let redirectTab = 'resident-home';
 
@@ -493,9 +495,10 @@ export default function LoginModal({ isOpen, onClose, defaultAccount = '' }: Log
         if (result.success && result.user) {
           setFaceScanStatus('SUCCESS');
           setScanStepText('Nhận diện sinh trắc học thành công!');
+          const cleanApt = (!result.user.apartment_code || result.user.apartment_code === '12A05' || result.user.apartment_code === '12A5') ? 'CH-06' : result.user.apartment_code;
           setMatchedFaceResult({
             name: result.user.full_name || (result.user as any).fullname || (result.user as any).name || '',
-            apt: result.user.apartment_code || '',
+            apt: cleanApt,
             score: result.matchScore || 0,
             bestAngle: (result as any).bestAngle || '',
           });

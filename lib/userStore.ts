@@ -426,7 +426,7 @@ export function getApartmentMembers(aptCode: string): ApartmentMember[] {
   if (!globalScope.__NKS_FAMILY_STORE) {
     globalScope.__NKS_FAMILY_STORE = {};
   }
-  const normalizedKey = (!aptCode || aptCode === 'CH-06' || aptCode === '12A05') ? 'CH-06' : aptCode.toUpperCase().trim();
+  const normalizedKey = (!aptCode || aptCode === 'CH-06' || aptCode === '12A05' || aptCode === '12A5') ? 'CH-06' : aptCode.toUpperCase().trim();
   if (!globalScope.__NKS_FAMILY_STORE[normalizedKey]) {
     globalScope.__NKS_FAMILY_STORE[normalizedKey] = [];
   }
@@ -437,7 +437,7 @@ export function addApartmentMember(aptCode: string, member: ApartmentMember): Ap
   if (!globalScope.__NKS_FAMILY_STORE) {
     globalScope.__NKS_FAMILY_STORE = {};
   }
-  const normalizedKey = (!aptCode || aptCode === 'CH-06' || aptCode === '12A05' || aptCode.endsWith('CH-06')) ? 'CH-06' : aptCode.toUpperCase().trim();
+  const normalizedKey = (!aptCode || aptCode === 'CH-06' || aptCode === '12A05' || aptCode === '12A5' || aptCode.endsWith('CH-06')) ? 'CH-06' : aptCode.toUpperCase().trim();
   const current = getApartmentMembers(normalizedKey);
   const updated = [
     ...current.filter(m => m.id !== member.id && m.phone !== member.phone),

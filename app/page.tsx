@@ -16,7 +16,7 @@ export default function HomePage() {
   const [defaultAccount, setDefaultAccount] = useState('');
 
   const handleOpenLogin = (role?: UserRole | string) => {
-    if (role === 'OWNER' || role === '12A05') {
+    if (role === 'OWNER' || role === 'CH-06') {
       setDefaultAccount('huuluc04@gmail.com');
     } else if (role === 'ADMIN') {
       setDefaultAccount('nks.manager01@gmail.com');

@@ -180,7 +180,8 @@ export async function POST(req: Request) {
 
     // Lấy thông tin user hiện tại (giữ nguyên avatar_url, không ghi đè)
     const existingUser = getUserStore(userId);
-    const targetApt = apartmentCode || existingUser?.apartment_code || '12A05';
+    const rawTargetApt = apartmentCode || existingUser?.apartment_code || 'CH-06';
+    const targetApt = (rawTargetApt === '12A05' || rawTargetApt === '12A5') ? 'CH-06' : rawTargetApt;
 
     // Xác định luồng: Nếu là Người nhà tự quét (TENANT) -> status = 'PENDING_OWNER' (chờ chủ hộ duyệt)
     // Nếu do Chủ hộ đích thân quét hoặc Chủ hộ tự làm -> status = 'PENDING' (gửi thẳng BQL)

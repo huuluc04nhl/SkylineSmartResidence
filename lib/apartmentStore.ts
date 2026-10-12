@@ -204,8 +204,8 @@ export function getApartmentByCode(code: string): ApartmentUnit | undefined {
   const exact = units.find((u) => u.code.toUpperCase() === clean);
   if (exact) return exact;
 
-  // 2. Chuyển đổi mềm (Backward Compatibility): Nếu tìm 12A05 -> trả về căn hộ thực tế CH-06 của Trần Hữu Lực
-  if (clean === '12A05') {
+  // 2. Chuyển đổi mềm (Backward Compatibility): Nếu tìm 12A05 / 12A5 -> trả về căn hộ thực tế CH-06 của Trần Hữu Lực
+  if (clean === '12A05' || clean === '12A5') {
     const ownerUnit = units.find((u) => u.code === 'CH-06' || (u.floor === 30 && u.code.includes('CH-06')));
     if (ownerUnit) return ownerUnit;
   }

@@ -58,7 +58,7 @@ function writeServerData(data: ServerStorageData) {
 }
 
 /**
- * GET /api/tickets?aptCode=12A05&phone=0364967082
+ * GET /api/tickets?aptCode=CH-06&phone=0364967082
  * Tự động đồng bộ live với NKS SCRMAI API
  */
 export async function GET(req: Request) {

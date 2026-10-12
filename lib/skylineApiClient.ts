@@ -327,7 +327,22 @@ export async function skylineFaceLogin(payload: {
   if (!clientProfiles && typeof window !== 'undefined') {
     try {
       const raw = localStorage.getItem('skyline_enrolled_faces_v1');
-      if (raw) clientProfiles = JSON.parse(raw);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed)) {
+          let hasStale = false;
+          clientProfiles = parsed.map((p: any) => {
+            if (p && (p.apartmentCode === '12A05' || p.apartmentCode === '12A5' || !p.apartmentCode)) {
+              hasStale = true;
+              return { ...p, apartmentCode: 'CH-06' };
+            }
+            return p;
+          });
+          if (hasStale) {
+            localStorage.setItem('skyline_enrolled_faces_v1', JSON.stringify(clientProfiles));
+          }
+        }
+      }
     } catch (e) {
       console.warn('Lỗi đọc client profiles:', e);
     }
