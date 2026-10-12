@@ -386,32 +386,16 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
 
     // Switch to tab 1 (Thông tin cá nhân) so the user can review all fields
     setActiveTab('INFO');
+    setIsEditingLegal(true);
+
+    setEkycFeedback({
+      type: 'success',
+      message: 'Đã trích xuất thông tin 2 mặt thẻ CCCD thành công! Thông tin đã được cập nhật vào hồ sơ, bạn có thể kiểm tra và bấm "Gửi Ban Quản Lý Duyệt".'
+    });
 
     // Display clear notice that data is auto-filled and ready to be saved
     setOcrFilledNotice(true);
     setTimeout(() => setOcrFilledNotice(false), 10000);
-  };
-
-  const handleRetakeEkyc = async () => {
-    setIsScanningOcr(true);
-    try {
-      await nksUpdateCccd({
-        number: idCardNumber,
-        date: idDate,
-        place: idPlace,
-        front: cccdImage,
-      });
-      await nksUpdateAvatar(avatarUrl);
-    } catch (err) {
-      console.warn('NKS ekyc error', err);
-    }
-
-    setTimeout(() => {
-      setIsScanningOcr(false);
-      setMatchScore(99.9);
-      setEkycStatus('VERIFIED');
-      alert('✨ Đã kích hoạt nhận diện khuôn mặt (FaceID) và phân quyền mở sảnh đón, thang máy thành công!');
-    }, 1200);
   };
 
   // Feedback notification for e-KYC
@@ -1082,6 +1066,16 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
                   </button>
                 )}
 
+                {isOwner && (isEditingLegal || ekycStatus !== 'VERIFIED') && (
+                  <button
+                    type="button"
+                    onClick={() => setIsOcrModalOpen(true)}
+                    className="px-3.5 py-1.5 bg-[#1E2631] hover:bg-[#2A374A] border border-[#C5A880] text-[#C5A880] hover:text-white text-xs font-semibold rounded-none flex items-center gap-1.5 transition-all shadow"
+                  >
+                    <Scan className="w-3.5 h-3.5" /> Quét Thẻ CCCD Mới
+                  </button>
+                )}
+
                 {isOwner && (ekycStatus !== 'VERIFIED' || isEditingLegal) && (
                   <button
                     type="button"
@@ -1090,7 +1084,7 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
                     className="px-4 py-1.5 bg-[#C5A880] hover:bg-white text-[#0D1117] text-xs font-bold rounded-none flex items-center gap-1.5 transition-all shadow active:scale-95"
                   >
                     {isScanningOcr ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <ShieldCheck className="w-3.5 h-3.5" />}
-                    {ekycStatus === 'REJECTED' ? 'Gửi Lại Ban Quản Lý Duyệt' : 'Gửi Ban Quản Lý Duyệt'}
+                    {ekycStatus === 'VERIFIED' ? 'Gửi Cập Nhật Cho BQL Duyệt' : ekycStatus === 'REJECTED' ? 'Gửi Lại Ban Quản Lý Duyệt' : 'Gửi Ban Quản Lý Duyệt'}
                   </button>
                 )}
               </div>
@@ -1297,9 +1291,12 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
           )}
 
           {/* Status Box & BQL Sync Banner (Chỉ hiển thị cho Chủ Hộ khi chưa verified) */}
-          {isOwner && ekycStatus !== 'VERIFIED' && (
+          {/* Status Box & BQL Sync Banner (Hiển thị cho Chủ Hộ để quản lý và cập nhật hồ sơ) */}
+          {isOwner && (
             <div className={`p-5 border flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-xl rounded-none ${
-              ekycStatus === 'PENDING'
+              ekycStatus === 'VERIFIED'
+                ? 'bg-gradient-to-r from-[#101820] to-[#122018] border-emerald-500/80'
+                : ekycStatus === 'PENDING'
                 ? 'bg-gradient-to-r from-[#1A1810] to-[#121820] border-amber-500/80'
                 : ekycStatus === 'REJECTED'
                 ? 'bg-gradient-to-r from-[#201014] to-[#121820] border-rose-500/80'
@@ -1307,6 +1304,11 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
             }`}>
               <div className="space-y-1">
                 <div className="flex items-center gap-2 font-bold text-xs uppercase tracking-wider">
+                  {ekycStatus === 'VERIFIED' && (
+                    <span className="text-emerald-400 flex items-center gap-1.5 font-mono">
+                      <ShieldCheck className="w-4 h-4 text-emerald-400" /> Đã Xác Thực Căn Cước & Kích Hoạt Quyền Ra Vào
+                    </span>
+                  )}
                   {ekycStatus === 'DRAFT' && (
                     <span className="text-gray-300 flex items-center gap-1.5 font-mono">
                       <AlertCircle className="w-4 h-4 text-[#C5A880]" /> Chưa Gửi Hồ Sơ Định Danh Cho BQL
@@ -1325,10 +1327,13 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
                 </div>
 
                 <h3 className="font-serif text-lg font-bold text-white">
-                  Định Danh Khuôn Mặt & Thẻ Cư Dân Thông Minh
+                  Định Danh Khuôn Mặt (FaceID) & Thẻ Cư Dân Thông Minh
                 </h3>
 
                 <div className="text-xs text-gray-300 max-w-2xl font-light space-y-1">
+                  {ekycStatus === 'VERIFIED' && (
+                    <p>Hồ sơ định danh và 4 mẫu FaceID của bạn đã được Ban Quản Lý phê duyệt hợp lệ. Bạn có thể bấm <strong className="text-white">&quot;Quét Lại Thẻ CCCD&quot;</strong> hoặc <strong className="text-white">&quot;Quét Lại FaceID&quot;</strong> bất cứ lúc nào khi cần cập nhật lại thông tin.</p>
+                  )}
                   {ekycStatus === 'DRAFT' && (
                     <p>Quý cư dân vui lòng tải lên đầy đủ ảnh 2 mặt thẻ CCCD và thu thập mẫu FaceID 4 bước, sau đó bấm nút &quot;Gửi Hồ Sơ Cho BQL Duyệt&quot; để được cấp quyền mở cửa, thang máy và sảnh đón.</p>
                   )}
@@ -1345,25 +1350,53 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
               </div>
 
               <div className="flex flex-wrap items-center gap-2.5 flex-shrink-0">
+                <button
+                  type="button"
+                  onClick={() => setIsOcrModalOpen(true)}
+                  className="h-9 px-3.5 bg-[#1E2631] hover:bg-[#2A374A] border border-[#C5A880]/70 text-[#C5A880] hover:text-white text-xs font-semibold uppercase tracking-wider transition-all flex items-center gap-2 shadow rounded-none"
+                >
+                  <Scan className="w-4 h-4 text-[#C5A880]" /> Quét Lại CCCD
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setIsBankEnrollOpen(true)}
+                  className="h-9 px-3.5 bg-[#1E2631] hover:bg-[#2A374A] border border-[#C5A880]/70 text-[#C5A880] hover:text-white text-xs font-semibold uppercase tracking-wider transition-all flex items-center gap-2 shadow rounded-none"
+                >
+                  <Camera className="w-4 h-4 text-[#C5A880]" /> Quét Lại FaceID
+                </button>
+
                 {cccdImage && (
                   <button
                     type="button"
                     onClick={() => setIsCardViewerOpen(true)}
                     className="h-9 px-3.5 bg-[#161B22] hover:bg-[#1C2533] border border-gray-700 hover:border-[#C5A880] text-gray-300 hover:text-white text-xs font-semibold uppercase tracking-wider transition-all flex items-center gap-2 shadow rounded-none"
                   >
-                    <Eye className="w-4 h-4 text-[#C5A880]" /> Xem Ảnh Thẻ CCCD
+                    <Eye className="w-4 h-4 text-[#C5A880]" /> Xem Thẻ CCCD
                   </button>
                 )}
 
-                <button
-                  type="button"
-                  onClick={handleSubmitEkycToBql}
-                  disabled={isScanningOcr}
-                  className="h-9 px-5 bg-[#C5A880] hover:bg-white text-[#0D1117] text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-2 shadow-lg rounded-none active:scale-[0.99]"
-                >
-                  {isScanningOcr ? <RefreshCw className="w-4 h-4 animate-spin" /> : <ShieldCheck className="w-4 h-4" />}
-                  {isScanningOcr ? 'Đang Gửi Hồ Sơ...' : ekycStatus === 'REJECTED' ? 'Gửi Lại Ban Quản Lý Duyệt' : ekycStatus === 'PENDING' ? 'Cập Nhật / Gửi Lại Hồ Sơ' : 'Gửi Ban Quản Lý Duyệt'}
-                </button>
+                {isOwner && ekycStatus === 'VERIFIED' && !isEditingLegal && (
+                  <button
+                    type="button"
+                    onClick={() => setIsEditingLegal(true)}
+                    className="h-9 px-3.5 bg-[#1C2533] hover:bg-[#2A374A] border border-[#C5A880]/60 text-[#C5A880] hover:text-white text-xs font-semibold uppercase tracking-wider transition-all flex items-center gap-2 shadow rounded-none"
+                  >
+                    <RefreshCw className="w-4 h-4 text-[#C5A880]" /> Cập Nhật Hồ Sơ
+                  </button>
+                )}
+
+                {(ekycStatus !== 'VERIFIED' || isEditingLegal) && (
+                  <button
+                    type="button"
+                    onClick={handleSubmitEkycToBql}
+                    disabled={isScanningOcr}
+                    className="h-9 px-5 bg-[#C5A880] hover:bg-white text-[#0D1117] text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-2 shadow-lg rounded-none active:scale-[0.99]"
+                  >
+                    {isScanningOcr ? <RefreshCw className="w-4 h-4 animate-spin" /> : <ShieldCheck className="w-4 h-4" />}
+                    {isScanningOcr ? 'Đang Gửi Hồ Sơ...' : ekycStatus === 'VERIFIED' ? 'Gửi Cập Nhật Cho BQL' : ekycStatus === 'REJECTED' ? 'Gửi Lại Ban Quản Lý Duyệt' : ekycStatus === 'PENDING' ? 'Cập Nhật / Gửi Lại Hồ Sơ' : 'Gửi Ban Quản Lý Duyệt'}
+                  </button>
+                )}
               </div>
             </div>
           )}
@@ -1701,6 +1734,11 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
         submittedByRole={currentUser.role}
         onEnrollSuccess={(profile) => {
           setEnrolledFaceProfile(profile);
+          setIsEditingLegal(true);
+          setEkycFeedback({
+            type: 'success',
+            message: 'Dữ liệu khuôn mặt FaceID 4 góc độ đã được cập nhật thành công! Vui lòng nhấn "Gửi Ban Quản Lý Duyệt Lại" để hoàn tất.',
+          });
           // TUYỆT ĐỐI KHÔNG cập nhật / ghi đè ảnh chân dung cá nhân (avatar) từ mẫu FaceID
           // Ảnh chân dung cư dân được giữ nguyên vẹn từ thẻ CCCD hoặc mục Đổi Avatar riêng biệt.
         }}
