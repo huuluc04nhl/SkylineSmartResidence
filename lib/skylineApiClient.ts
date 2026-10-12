@@ -444,6 +444,60 @@ export async function skylineGetEnrolledFaceProfile(userId: string): Promise<any
 }
 export const nksGetEnrolledFaceProfile = skylineGetEnrolledFaceProfile;
 
+export interface NksFaceIdVerifyResponse {
+  success: boolean;
+  message?: string;
+  data?: {
+    embedding?: number[];
+    cropped_face?: string;
+    metrics?: {
+      brightness: number;
+      blur_score: number;
+      liveness_score: number;
+      pose?: { yaw: number; pitch: number; roll: number };
+      bbox?: [number, number, number, number];
+    };
+  };
+}
+
+/**
+ * 13b. Xác thực sinh trắc học FaceID chính thức qua máy chủ NKS (POST https://account.nks.vn/api/nks/user/faceIdVerify)
+ * Đặc tả: NKS API Tài liệu Mục 7
+ */
+export async function skylineFaceIdVerify(accessToken: string): Promise<NksFaceIdVerifyResponse> {
+  if (!accessToken) {
+    throw new Error('Vui lòng cung cấp access_token để xác thực FaceID qua NKS.');
+  }
+
+  const formData = new FormData();
+  formData.append('access_token', accessToken);
+
+  const res = await fetch('https://account.nks.vn/api/nks/user/faceIdVerify', {
+    method: 'POST',
+    body: formData,
+  });
+
+  if (res.status === 500) {
+    throw new Error('Tài khoản chưa có dữ liệu ảnh chân dung FaceID hợp lệ trên máy chủ NKS.');
+  }
+
+  const json = await res.json().catch(() => null);
+  if (!res.ok || !json?.success) {
+    throw new Error(json?.message || `Xác thực FaceID qua NKS thất bại (Mã lỗi: ${res.status})`);
+  }
+
+  // Chuẩn hóa vector 512 chiều nếu trả về dưới dạng chuỗi phân tách bởi dấu phẩy
+  if (Array.isArray(json.data?.embedding) && typeof json.data.embedding[0] === 'string') {
+    json.data.embedding = json.data.embedding[0]
+      .split(',')
+      .map((n: string) => parseFloat(n.trim()))
+      .filter((n: number) => !isNaN(n));
+  }
+
+  return json;
+}
+export const nksFaceIdVerify = skylineFaceIdVerify;
+
 /**
  * 14. Apartment Handover & Account Provisioning API (POST /api/user/handover)
  */

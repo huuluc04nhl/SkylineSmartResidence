@@ -497,7 +497,7 @@ export default function LoginModal({ isOpen, onClose, defaultAccount = '' }: Log
     }
 
     setFaceScanStatus('SCANNING');
-    setScanStepText('Đang đối soát nhận diện khuôn mặt...');
+    setScanStepText('Đang đối soát sinh trắc học FaceID...');
 
     try {
       const result = await faceLogin({
