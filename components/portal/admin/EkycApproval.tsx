@@ -28,6 +28,7 @@ import {
 } from 'lucide-react';
 import { 
   getEkycRequests, 
+  saveEkycRequests,
   approveEkycRequest, 
   rejectEkycRequest, 
   EkycRequest 
@@ -49,8 +50,19 @@ export default function EkycApproval() {
   const [actionNotice, setActionNotice] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
   const [isProcessing, setIsProcessing] = useState<boolean>(false);
 
-  const refreshList = () => {
-    setRequests(getEkycRequests());
+  const refreshList = async () => {
+    try {
+      const res = await fetch('/api/ekyc');
+      const data = await res.json();
+      if (data.success && Array.isArray(data.requests)) {
+        setRequests(data.requests);
+        saveEkycRequests(data.requests);
+      } else {
+        setRequests(getEkycRequests());
+      }
+    } catch (e) {
+      setRequests(getEkycRequests());
+    }
 
     // Đồng bộ toàn bộ hồ sơ 4 mẫu quét từ máy chủ về để BQL trên Desktop kiểm tra được mẫu từ Mobile
     fetch('/api/user/face-enroll')
@@ -78,18 +90,10 @@ export default function EkycApproval() {
   const handleApprove = async (id: string, name: string) => {
     setIsProcessing(true);
     try {
-      // 1. Cập nhật local storage
-      const updated = approveEkycRequest(id, 'Ban Quản Lý Skyline');
-
-      if (updated) {
-        // Kích hoạt trạng thái FaceID sang ACTIVE
-        updateEnrolledFaceStatus(updated.userId, 'ACTIVE');
-        if (updated.phone) updateEnrolledFaceStatus(updated.phone, 'ACTIVE');
-      }
-
-      // 2. Gửi API đồng bộ server
+      // 1. Gửi API đồng bộ server
+      let apiMsg = '';
       try {
-        await fetch('/api/ekyc', {
+        const res = await fetch('/api/ekyc', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -98,21 +102,28 @@ export default function EkycApproval() {
             approverName: 'Ban Quản Lý Skyline',
           }),
         });
+        const data = await res.json();
+        apiMsg = data.message || '';
       } catch (e) {
         console.warn('API approve error:', e);
       }
 
+      // 2. Cập nhật local storage
+      const updated = approveEkycRequest(id, 'Ban Quản Lý Skyline');
       if (updated) {
-        refreshList();
-        setActionNotice({
-          type: 'success',
-          message: `Đã phê duyệt hồ sơ e-KYC của ${name} & Kích hoạt quyền FaceID thành công!`
-        });
-        if (inspectingRequest?.id === id) {
-          setInspectingRequest(null);
-        }
-        setTimeout(() => setActionNotice(null), 4000);
+        updateEnrolledFaceStatus(updated.userId, 'ACTIVE');
+        if (updated.phone) updateEnrolledFaceStatus(updated.phone, 'ACTIVE');
       }
+
+      await refreshList();
+      setActionNotice({
+        type: 'success',
+        message: apiMsg || `Đã phê duyệt hồ sơ e-KYC của ${name} & Kích hoạt quyền FaceID thành công!`
+      });
+      if (inspectingRequest?.id === id) {
+        setInspectingRequest(null);
+      }
+      setTimeout(() => setActionNotice(null), 4000);
     } finally {
       setIsProcessing(false);
     }
@@ -123,12 +134,10 @@ export default function EkycApproval() {
     if (!rejectingId) return;
     setIsProcessing(true);
     try {
-      // 1. Cập nhật local storage
-      const updated = rejectEkycRequest(rejectingId, rejectionReason, 'Ban Quản Lý Skyline');
-
-      // 2. Gửi API đồng bộ server
+      // 1. Gửi API đồng bộ server
+      let apiMsg = '';
       try {
-        await fetch('/api/ekyc', {
+        const res = await fetch('/api/ekyc', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -138,22 +147,29 @@ export default function EkycApproval() {
             approverName: 'Ban Quản Lý Skyline',
           }),
         });
+        const data = await res.json();
+        apiMsg = data.message || '';
       } catch (e) {
         console.warn('API reject error:', e);
       }
 
+      // 2. Cập nhật local storage
+      const updated = rejectEkycRequest(rejectingId, rejectionReason, 'Ban Quản Lý Skyline');
       if (updated) {
-        refreshList();
-        setActionNotice({
-          type: 'error',
-          message: `Đã từ chối hồ sơ e-KYC: ${rejectionReason}`
-        });
-        if (inspectingRequest?.id === rejectingId) {
-          setInspectingRequest(null);
-        }
-        setRejectingId(null);
-        setTimeout(() => setActionNotice(null), 4000);
+        updateEnrolledFaceStatus(updated.userId, 'REVOKED');
+        if (updated.phone) updateEnrolledFaceStatus(updated.phone, 'REVOKED');
       }
+
+      await refreshList();
+      setActionNotice({
+        type: 'error',
+        message: apiMsg || `Đã từ chối hồ sơ e-KYC: ${rejectionReason}`
+      });
+      if (inspectingRequest?.id === rejectingId) {
+        setInspectingRequest(null);
+      }
+      setRejectingId(null);
+      setTimeout(() => setActionNotice(null), 4000);
     } finally {
       setIsProcessing(false);
     }
@@ -597,29 +613,51 @@ export default function EkycApproval() {
                         </div>
 
                         {/* Card Image Display */}
-                        <div className="w-full h-44 sm:h-52 rounded-none overflow-hidden border border-white/20 shadow-lg bg-[#0A0E14] relative flex items-center justify-center mt-3 group cursor-pointer"
-                             onClick={() => setZoomImage({
-                               url: inspectingSide === 'FRONT' 
-                                 ? (inspectingRequest.idCardFrontUrl || 'https://images.unsplash.com/photo-1578852612716-854e527abf2e?w=800')
-                                 : (inspectingRequest.idCardBackUrl || inspectingRequest.idCardFrontUrl || 'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=800'),
-                               title: inspectingSide === 'FRONT' ? `Mặt trước CCCD - ${inspectingRequest.fullName}` : `Mặt sau CCCD - ${inspectingRequest.fullName}`
-                             })}>
-                          <img
-                            src={
-                              inspectingSide === 'FRONT'
-                                ? inspectingRequest.idCardFrontUrl || 'https://images.unsplash.com/photo-1578852612716-854e527abf2e?w=800'
-                                : inspectingRequest.idCardBackUrl || inspectingRequest.idCardFrontUrl || 'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=800'
-                            }
-                            alt="CCCD"
-                            className="w-full h-full object-cover group-hover:scale-105 transition-transform"
-                          />
-                          <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                            <ZoomIn className="w-6 h-6 text-white" />
-                          </div>
-                          <div className="absolute top-2 left-2 px-2 py-0.5 bg-black/80 backdrop-blur rounded-none text-[9.5px] font-mono text-gray-300">
-                            {inspectingSide === 'FRONT' ? 'MẶT TRƯỚC (CÓ ẢNH & SỐ ĐỊNH DANH)' : 'MẶT SAU (CHIP ĐIỆN TỬ & VÂN TAY)'}
-                          </div>
-                        </div>
+                        {(() => {
+                          const activeCardUrl = inspectingSide === 'FRONT' 
+                            ? inspectingRequest.idCardFrontUrl 
+                            : (inspectingRequest.idCardBackUrl || inspectingRequest.idCardFrontUrl);
+
+                          return (
+                            <div 
+                              className="w-full h-44 sm:h-52 rounded-none overflow-hidden border border-white/20 shadow-lg bg-[#0A0E14] relative flex items-center justify-center mt-3 group cursor-pointer"
+                              onClick={() => {
+                                if (activeCardUrl) {
+                                  setZoomImage({
+                                    url: activeCardUrl,
+                                    title: inspectingSide === 'FRONT' ? `Mặt trước CCCD - ${inspectingRequest.fullName}` : `Mặt sau CCCD - ${inspectingRequest.fullName}`
+                                  });
+                                }
+                              }}
+                            >
+                              {activeCardUrl ? (
+                                <>
+                                  <img
+                                    src={activeCardUrl}
+                                    alt="CCCD"
+                                    className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                                  />
+                                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                    <ZoomIn className="w-6 h-6 text-white" />
+                                  </div>
+                                </>
+                              ) : (
+                                <div className="p-4 text-center space-y-2">
+                                  <CreditCard className="w-10 h-10 text-[#C5A880]/60 mx-auto" />
+                                  <div className="text-xs font-semibold text-gray-300">
+                                    {inspectingSide === 'FRONT' ? 'Chưa Tải Ảnh Mặt Trước CCCD' : 'Chưa Tải Ảnh Mặt Sau CCCD'}
+                                  </div>
+                                  <div className="text-[10px] text-gray-400 font-mono">
+                                    Số CCCD: {inspectingRequest.idCardNo || 'Chưa cung cấp'}
+                                  </div>
+                                </div>
+                              )}
+                              <div className="absolute top-2 left-2 px-2 py-0.5 bg-black/80 backdrop-blur rounded-none text-[9.5px] font-mono text-gray-300">
+                                {inspectingSide === 'FRONT' ? 'MẶT TRƯỚC (CÓ ẢNH & SỐ ĐỊNH DANH)' : 'MẶT SAU (CHIP ĐIỆN TỬ & VÂN TAY)'}
+                              </div>
+                            </div>
+                          );
+                        })()}
                       </div>
 
                       {/* Dual-Side Mini Bar */}

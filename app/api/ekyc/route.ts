@@ -4,7 +4,8 @@ import {
   getEkycForUser, 
   submitEkycRequest, 
   approveEkycRequest, 
-  rejectEkycRequest 
+  rejectEkycRequest,
+  confirmEkycByOwner,
 } from '@/lib/ekycStore';
 import { updateUserStore, updateApartmentMember } from '@/lib/userStore';
 import { updateEnrolledFaceStatus } from '@/lib/faceEnrollStore';
@@ -35,7 +36,7 @@ export async function GET(req: Request) {
 
 /**
  * POST /api/nks/ekyc
- * Submits e-KYC or handles BQL approve/reject
+ * Submits e-KYC or handles BQL approve/reject/confirm
  */
 export async function POST(req: Request) {
   try {
@@ -60,14 +61,19 @@ export async function POST(req: Request) {
         idCardFrontUrl, 
         idCardBackUrl,
         faceSamples,
-        faceScore
+        faceScore,
+        isFamilyMemberSelfEnroll,
+        submittedByRole
       } = body;
+
+      const isPendingOwner = isFamilyMemberSelfEnroll || (submittedByRole === 'TENANT');
+      const targetStatus = isPendingOwner ? 'PENDING_OWNER' : 'PENDING';
 
       const newRequest = submitEkycRequest({
         userId: userId || phone,
         fullName,
         roleLabel,
-        apartmentCode,
+        apartmentCode: (apartmentCode === '12A05' || apartmentCode === '12A5' || !apartmentCode) ? 'CH-06' : apartmentCode,
         phone,
         email,
         idCardNo,
@@ -76,28 +82,57 @@ export async function POST(req: Request) {
         dob,
         pob,
         avatarUrl,
-        idCardFrontUrl,
-        idCardBackUrl,
+        idCardFrontUrl: idCardFrontUrl || '',
+        idCardBackUrl: idCardBackUrl || '',
         faceSamples,
-        faceScore: faceScore || 98.6
+        faceScore: faceScore || 99.4,
+        status: targetStatus,
       });
 
       // Synchronize apartment member face status
       try {
         const targetApt = (apartmentCode === '12A05' || apartmentCode === '12A5' || !apartmentCode) ? 'CH-06' : apartmentCode;
         updateApartmentMember(targetApt, userId || phone, {
-          faceStatus: 'Đang Chờ BQL Phê Duyệt',
+          faceStatus: isPendingOwner ? 'Chờ Chủ Hộ Xác Nhận' : 'Đang Chờ BQL Phê Duyệt',
           avatarUrl: avatarUrl,
           idCard: idCardNo,
         });
+        updateEnrolledFaceStatus(userId || phone, targetStatus);
       } catch (memErr) {
         console.warn('Sync member face status on submit error:', memErr);
       }
 
       return NextResponse.json({
         success: true,
-        message: 'Hồ sơ định danh e-KYC đã được gửi đến Ban Quản Lý thành công.',
+        message: isPendingOwner 
+          ? 'Hồ sơ định danh e-KYC đã được gửi tới Chủ Hộ để xác nhận trước khi chuyển Ban Quản Lý.'
+          : 'Hồ sơ định danh e-KYC đã được gửi đến Ban Quản Lý thẩm duyệt thành công.',
         ekyc: newRequest,
+      });
+    }
+
+    // 1b. Owner Confirms Family Member e-KYC
+    if (action === 'CONFIRM_BY_OWNER') {
+      const { userId, phone } = body;
+      const targetId = userId || phone;
+      const confirmed = confirmEkycByOwner(targetId);
+
+      if (confirmed) {
+        try {
+          updateApartmentMember(confirmed.apartmentCode, confirmed.userId, {
+            faceStatus: 'Đang Chờ BQL Phê Duyệt',
+          });
+          updateEnrolledFaceStatus(confirmed.userId, 'PENDING');
+          if (confirmed.phone) updateEnrolledFaceStatus(confirmed.phone, 'PENDING');
+        } catch (e) {
+          console.warn('Sync confirm by owner error:', e);
+        }
+      }
+
+      return NextResponse.json({
+        success: true,
+        message: 'Chủ Hộ đã xác nhận hồ sơ của thành viên và gửi tới Ban Quản Lý thành công.',
+        ekyc: confirmed,
       });
     }
 
@@ -144,7 +179,7 @@ export async function POST(req: Request) {
 
       return NextResponse.json({
         success: true,
-        message: 'Đã phê duyệt hồ sơ e-KYC và cấp quyền FaceID thành công.',
+        message: `Đã phê duyệt hồ sơ e-KYC của cư dân ${approved.fullName} & Cấp quyền FaceID thành công.`,
         ekyc: approved,
       });
     }
@@ -172,7 +207,7 @@ export async function POST(req: Request) {
 
       return NextResponse.json({
         success: true,
-        message: 'Đã từ chối hồ sơ e-KYC.',
+        message: `Đã từ chối hồ sơ e-KYC của cư dân ${rejected.fullName}.`,
         ekyc: rejected,
       });
     }

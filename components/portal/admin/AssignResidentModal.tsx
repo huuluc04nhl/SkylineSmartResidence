@@ -63,7 +63,7 @@ export default function AssignResidentModal({
   const [cccd, setCccd] = useState('');
   const [dob, setDob] = useState('15/06/1992');
   const [pob, setPob] = useState('TP. Hồ Chí Minh');
-  const [avatar, setAvatar] = useState('https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=400&h=400&fit=crop&crop=face');
+  const [avatar, setAvatar] = useState('https://data.nks.vn/storage/users/202609021654232258.jpg');
 
   // Section 2: Biên bản bàn giao kỹ thuật & chỉ số
   const todayStr = new Date().toLocaleDateString('vi-VN');
@@ -95,7 +95,7 @@ export default function AssignResidentModal({
     const defaultCccd = unit.owner?.cccd || (unit.code === 'CH-06' || unit.code === 'CH-01' ? '079204001234' : '');
     const defaultDob = unit.owner?.dob || '15/06/1992';
     const defaultPob = unit.owner?.pob || 'TP. Hồ Chí Minh';
-    const defaultAvatar = unit.owner?.avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=400&h=400&fit=crop&crop=face';
+    const defaultAvatar = unit.owner?.avatar || 'https://data.nks.vn/storage/users/202609021654232258.jpg';
 
     setName(defaultName);
     setPhone(defaultPhone);

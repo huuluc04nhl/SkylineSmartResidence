@@ -53,20 +53,20 @@ export const INITIAL_EKYC_REQUESTS: EkycRequest[] = [
     idPlace: 'Cục Cảnh sát QLHC về TTXH',
     dob: '18/08/2004',
     pob: 'Triệu Trạch, Triệu Phong, Quảng Trị',
-    faceScore: 99.4,
+    faceScore: 99.5,
     avatarUrl: 'https://data.nks.vn/storage/users/202609021654232258.jpg',
-    idCardFrontUrl: 'https://images.unsplash.com/photo-1578852612716-854e527abf2e?w=800',
-    idCardBackUrl: 'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=800',
+    idCardFrontUrl: '',
+    idCardBackUrl: '',
     submittedAt: '02/09/2026 14:30',
     status: 'APPROVED',
     reviewedAt: '02/09/2026 15:10',
-    reviewedBy: 'BQL Trực Ban (Admin)',
+    reviewedBy: 'Ban Quản Lý Skyline (Trực Ban)',
   },
   {
     id: 'EKYC-121',
     userId: 'user-tenant-1',
     fullName: 'Nguyễn Hữu Nhựt',
-    roleLabel: 'Người Nhà (Căn CH-06 - Tòa BS-07)',
+    roleLabel: 'Người Nhà / Khách Thuê (Căn CH-06 - Tòa BS-07)',
     apartmentCode: 'CH-06',
     phone: '0917795211',
     email: 'nguyenhuunhut1309@gmail.com',
@@ -75,11 +75,11 @@ export const INITIAL_EKYC_REQUESTS: EkycRequest[] = [
     idPlace: 'Cục Cảnh sát QLHC về TTXH',
     dob: '02/09/2004',
     pob: 'TP. Hồ Chí Minh',
-    faceScore: 98.6,
+    faceScore: 99.5,
     avatarUrl: 'https://data.nks.vn/storage/users/202607191405195335.jpg',
-    idCardFrontUrl: 'https://images.unsplash.com/photo-1578852612716-854e527abf2e?w=800',
-    idCardBackUrl: 'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=800',
-    submittedAt: '03/09/2026 09:15',
+    idCardFrontUrl: '',
+    idCardBackUrl: '',
+    submittedAt: '12/10/2026 09:15',
     status: 'PENDING',
   },
   {
@@ -95,11 +95,11 @@ export const INITIAL_EKYC_REQUESTS: EkycRequest[] = [
     idPlace: 'Cục Cảnh sát QLHC về TTXH',
     dob: '16/01/2004',
     pob: 'Tỉnh Thanh Hóa',
-    faceScore: 97.8,
+    faceScore: 99.5,
     avatarUrl: 'https://data.nks.vn/storage/users/202608301345022366.jpg',
-    idCardFrontUrl: 'https://images.unsplash.com/photo-1578852612716-854e527abf2e?w=800',
-    idCardBackUrl: 'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=800',
-    submittedAt: '03/09/2026 10:45',
+    idCardFrontUrl: '',
+    idCardBackUrl: '',
+    submittedAt: '12/10/2026 10:45',
     status: 'PENDING',
   }
 ];
@@ -107,8 +107,45 @@ export const INITIAL_EKYC_REQUESTS: EkycRequest[] = [
 // In-memory global store for server-side Next.js route handlers
 const globalScope = (typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : {}) as any;
 
+/**
+ * Đọc hồ sơ e-KYC bền vững từ file .skyline_ekyc.json trên Server Node.js
+ */
+function loadEkycFromFile(): EkycRequest[] {
+  if (typeof window !== 'undefined') return [];
+  try {
+    const req = eval('require');
+    const fs = req('fs');
+    const path = req('path');
+    const filePath = path.join(process.cwd(), '.skyline_ekyc.json');
+    if (fs.existsSync(filePath)) {
+      const raw = fs.readFileSync(filePath, 'utf-8');
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+    }
+  } catch (e) {
+    // Ignore in browser
+  }
+  return INITIAL_EKYC_REQUESTS;
+}
+
+/**
+ * Ghi hồ sơ e-KYC bền vững ra file .skyline_ekyc.json trên Server Node.js
+ */
+function saveEkycToFile(requests: EkycRequest[]): void {
+  if (typeof window !== 'undefined') return;
+  try {
+    const req = eval('require');
+    const fs = req('fs');
+    const path = req('path');
+    const filePath = path.join(process.cwd(), '.skyline_ekyc.json');
+    fs.writeFileSync(filePath, JSON.stringify(requests, null, 2), 'utf-8');
+  } catch (e) {
+    // Ignore in browser
+  }
+}
+
 if (!globalScope.__SKYLINE_EKYC_STORE) {
-  globalScope.__SKYLINE_EKYC_STORE = [...INITIAL_EKYC_REQUESTS];
+  globalScope.__SKYLINE_EKYC_STORE = loadEkycFromFile();
 }
 
 export function getEkycRequests(): EkycRequest[] {
@@ -123,11 +160,20 @@ export function getEkycRequests(): EkycRequest[] {
       console.warn('e-KYC localStorage read error', e);
     }
   }
+
+  if (typeof window === 'undefined') {
+    if (!globalScope.__SKYLINE_EKYC_STORE || globalScope.__SKYLINE_EKYC_STORE.length === 0) {
+      globalScope.__SKYLINE_EKYC_STORE = loadEkycFromFile();
+    }
+  }
+
   return globalScope.__SKYLINE_EKYC_STORE || INITIAL_EKYC_REQUESTS;
 }
 
 export function saveEkycRequests(requests: EkycRequest[]): void {
   globalScope.__SKYLINE_EKYC_STORE = requests;
+  saveEkycToFile(requests);
+
   if (typeof window !== 'undefined') {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(requests));
@@ -198,6 +244,7 @@ export function submitEkycRequest(data: {
     smile?: string;
   };
   faceScore?: number;
+  status?: EkycStatus;
 }): EkycRequest {
   const requests = getEkycRequests();
   const existingIdx = requests.findIndex(r => 
@@ -227,11 +274,11 @@ export function submitEkycRequest(data: {
     pob: data.pob || '',
     faceScore: data.faceScore || Math.floor(970 + Math.random() * 25) / 10,
     avatarUrl: data.avatarUrl ? data.avatarUrl.replace('data.nks.vn//', 'data.nks.vn/') : 'https://data.nks.vn/storage/users/default.png',
-    idCardFrontUrl: data.idCardFrontUrl || existing?.idCardFrontUrl || 'https://images.unsplash.com/photo-1578852612716-854e527abf2e?w=600',
-    idCardBackUrl: data.idCardBackUrl || existing?.idCardBackUrl || 'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=600',
+    idCardFrontUrl: data.idCardFrontUrl || existing?.idCardFrontUrl || '',
+    idCardBackUrl: data.idCardBackUrl || existing?.idCardBackUrl || '',
     faceSamples: data.faceSamples || existing?.faceSamples,
     submittedAt,
-    status: 'PENDING',
+    status: data.status || 'PENDING',
   };
 
   let updatedList: EkycRequest[];
@@ -278,6 +325,20 @@ export function rejectEkycRequest(id: string, reason: string, approverName: stri
   req.reviewedBy = approverName;
   req.rejectionReason = reason || 'Ảnh chụp CCCD hoặc khuôn mặt không đạt tiêu chuẩn độ nét.';
 
+  saveEkycRequests(requests);
+  return req;
+}
+
+/**
+ * Chủ hộ phê duyệt hồ sơ người nhà -> Chuyển tiếp tới Ban Quản Lý (PENDING)
+ */
+export function confirmEkycByOwner(userId: string): EkycRequest | null {
+  const requests = getEkycRequests();
+  const clean = userId.toLowerCase().trim();
+  const req = requests.find(r => r.userId.toLowerCase() === clean || r.phone.toLowerCase() === clean);
+  if (!req) return null;
+
+  req.status = 'PENDING';
   saveEkycRequests(requests);
   return req;
 }

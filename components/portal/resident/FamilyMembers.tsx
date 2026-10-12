@@ -405,14 +405,8 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
     }
     setEkycAvatarUrl(resolvedAvatar);
 
-    setEkycFrontImage(
-      existing?.idCardFrontUrl ||
-        'https://images.unsplash.com/photo-1578852612716-854e527abf2e?w=600'
-    );
-    setEkycBackImage(
-      existing?.idCardBackUrl ||
-        'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=600'
-    );
+    setEkycFrontImage(existing?.idCardFrontUrl || '');
+    setEkycBackImage(existing?.idCardBackUrl || '');
     setEkycModalError(null);
     setIsCameraActive(false);
     setShowEkycModal(true);
@@ -1503,14 +1497,19 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
                     </div>
 
                     <div className="relative w-full h-44 bg-[#0D1117] rounded-none border border-gray-700 overflow-hidden flex items-center justify-center group shadow-inner">
-                      <img
-                        src={
-                          ekycFrontImage ||
-                          'https://images.unsplash.com/photo-1578852612716-854e527abf2e?w=600'
-                        }
-                        alt="CCCD Mặt Trước"
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform"
-                      />
+                      {ekycFrontImage ? (
+                        <img
+                          src={ekycFrontImage}
+                          alt="CCCD Mặt Trước"
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                        />
+                      ) : (
+                        <div className="flex flex-col items-center justify-center text-center p-3 text-gray-500 space-y-1">
+                          <CreditCard className="w-7 h-7 text-cyan-500/60" />
+                          <span className="text-[11px] text-gray-400 font-medium">Chưa có ảnh mặt trước thẻ CCCD</span>
+                          <span className="text-[9.5px] text-gray-600">Bấm &quot;Tải Lên Mặt Trước&quot; bên dưới</span>
+                        </div>
+                      )}
                       <div className="absolute top-2 left-2 px-2 py-0.5 bg-black/75 backdrop-blur rounded-none text-[9.5px] font-mono text-cyan-300 border border-cyan-500/30">
                         VỊ TRÍ 1 • MẶT TRƯỚC
                       </div>
@@ -1552,14 +1551,19 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
                     </div>
 
                     <div className="relative w-full h-44 bg-[#0D1117] rounded-none border border-gray-700 overflow-hidden flex items-center justify-center group shadow-inner">
-                      <img
-                        src={
-                          ekycBackImage ||
-                          'https://images.unsplash.com/photo-1578852612716-854e527abf2e?w=600'
-                        }
-                        alt="CCCD Mặt Sau"
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform"
-                      />
+                      {ekycBackImage ? (
+                        <img
+                          src={ekycBackImage}
+                          alt="CCCD Mặt Sau"
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                        />
+                      ) : (
+                        <div className="flex flex-col items-center justify-center text-center p-3 text-gray-500 space-y-1">
+                          <CreditCard className="w-7 h-7 text-purple-500/60" />
+                          <span className="text-[11px] text-gray-400 font-medium">Chưa có ảnh mặt sau thẻ CCCD (Chip)</span>
+                          <span className="text-[9.5px] text-gray-600">Bấm &quot;Tải Lên Mặt Sau&quot; bên dưới</span>
+                        </div>
+                      )}
                       <div className="absolute top-2 left-2 px-2 py-0.5 bg-black/75 backdrop-blur rounded-none text-[9.5px] font-mono text-purple-300 border border-purple-500/30">
                         VỊ TRÍ 2 • MẶT SAU
                       </div>
@@ -2110,11 +2114,28 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
         const handleConfirmAndSendToBql = async () => {
           setIsConfirmingFace(true);
           try {
+            // 1. Xác nhận FaceID trong hồ sơ sinh trắc học
             await nksConfirmFamilyFaceIdByOwner(
               confirmTargetMember.id || confirmTargetMember.phone || '', 
               aptCode,
               confirmTargetMember.phone
             );
+
+            // 2. Đồng bộ trạng thái e-KYC sang PENDING trên máy chủ để BQL nhận hồ sơ thẩm duyệt ngay
+            try {
+              await fetch('/api/ekyc', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  action: 'CONFIRM_BY_OWNER',
+                  userId: confirmTargetMember.id || confirmTargetMember.phone,
+                  phone: confirmTargetMember.phone,
+                }),
+              });
+            } catch (ekycSyncErr) {
+              console.warn('Sync confirm to ekyc api error:', ekycSyncErr);
+            }
+
             setActionSuccess(`✓ Đã xác nhận bảo lãnh hồ sơ FaceID cho thành viên "${confirmTargetMember.fullName}" và gửi Ban Quản Lý phê duyệt thành công!`);
             setTimeout(() => setActionSuccess(null), 5000);
             setConfirmTargetMember(null);

@@ -56,6 +56,8 @@ import CccdCardViewer from '@/components/portal/shared/CccdCardViewer';
 import { OcrCccdResult, formatToDateInput, formatToDisplayDate, formatToApiDate } from '@/lib/ocrParser';
 import { 
   getEkycForUser, 
+  getEkycRequests,
+  saveEkycRequests,
   submitEkycRequest, 
   updateEkycCardImages, 
   EkycRequest 
@@ -163,8 +165,8 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
       if (savedBack) setCccdBackImage(savedBack);
     }
 
-    // Synchronize live e-KYC status with BQL approval center
-    const syncEkycStatus = () => {
+    // Synchronize live e-KYC status with BQL approval center (Local + Server)
+    const syncEkycStatus = async () => {
       const userRecord = getEkycForUser(userKey);
       if (userRecord) {
         setCurrentEkyc(userRecord);
@@ -174,6 +176,34 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
         if (userRecord.faceScore) setMatchScore(userRecord.faceScore);
       } else {
         setEkycStatus('DRAFT');
+      }
+
+      // Kéo dữ liệu thời gian thực từ API máy chủ để phản ánh tức thì quyết định Phê Duyệt / Từ Chối của BQL
+      try {
+        const res = await fetch(`/api/ekyc?userId=${encodeURIComponent(userKey)}`);
+        if (res.ok) {
+          const data = await res.json();
+          if (data.success && data.ekyc) {
+            const serverEkyc: EkycRequest = data.ekyc;
+            setCurrentEkyc(serverEkyc);
+            setEkycStatus(serverEkyc.status === 'APPROVED' ? 'VERIFIED' : serverEkyc.status);
+            if (serverEkyc.idCardFrontUrl) setCccdImage(serverEkyc.idCardFrontUrl);
+            if (serverEkyc.idCardBackUrl) setCccdBackImage(serverEkyc.idCardBackUrl);
+            if (serverEkyc.faceScore) setMatchScore(serverEkyc.faceScore);
+
+            // Đồng bộ bộ nhớ đệm client
+            const allReqs: EkycRequest[] = getEkycRequests();
+            const idx = allReqs.findIndex((r: EkycRequest) => r.id === serverEkyc.id || r.userId === serverEkyc.userId);
+            if (idx >= 0) {
+              allReqs[idx] = serverEkyc;
+            } else {
+              allReqs.unshift(serverEkyc);
+            }
+            saveEkycRequests(allReqs);
+          }
+        }
+      } catch (err) {
+        console.warn('Sync ekyc status from server error:', err);
       }
     };
 
@@ -195,9 +225,18 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
     syncEnrolledFace();
     window.addEventListener('skyline_faceid_enrolled', syncEnrolledFace);
 
+    const handleVisibility = () => {
+      if (document.visibilityState === 'visible') {
+        syncEkycStatus();
+        syncEnrolledFace();
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibility);
+
     return () => {
       window.removeEventListener('skyline_ekyc_updated', syncEkycStatus);
       window.removeEventListener('skyline_faceid_enrolled', syncEnrolledFace);
+      document.removeEventListener('visibilitychange', handleVisibility);
     };
   }, [currentUser]);
 
@@ -597,7 +636,7 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
             {/* Avatar with Upload Trigger */}
             <div className="relative group">
               <img
-                src={avatarUrl || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400'}
+                src={avatarUrl || currentUser.avatar_url || 'https://data.nks.vn/storage/users/default.png'}
                 alt="Avatar"
                 className="w-20 h-20 rounded-full object-cover border-2 border-[#C5A880] shadow-lg"
               />
@@ -918,11 +957,19 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
                   </div>
 
                   <div className="relative w-full h-44 sm:h-48 rounded-none overflow-hidden border border-gray-700 bg-[#0A0E14] flex items-center justify-center group shadow-inner">
-                    <img
-                      src={cccdImage || 'https://images.unsplash.com/photo-1578852612716-854e527abf2e?w=600'}
-                      alt="CCCD Mặt Trước"
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform"
-                    />
+                    {cccdImage ? (
+                      <img
+                        src={cccdImage}
+                        alt="CCCD Mặt Trước"
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                      />
+                    ) : (
+                      <div className="flex flex-col items-center justify-center text-center p-4 space-y-1.5 text-gray-500">
+                        <CreditCard className="w-8 h-8 text-cyan-500/60" />
+                        <span className="text-xs text-gray-400 font-medium">Chưa có ảnh mặt trước thẻ CCCD</span>
+                        <span className="text-[10px] text-gray-600">Bấm &quot;Quét Thẻ Bằng Camera&quot; bên dưới</span>
+                      </div>
+                    )}
                     <div className="absolute top-2 left-2 px-2 py-0.5 bg-black/75 backdrop-blur rounded-none text-[9.5px] font-mono text-cyan-300 border border-cyan-500/30">
                       MẶT TRƯỚC (FRONT)
                     </div>
@@ -951,11 +998,19 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
                   </div>
 
                   <div className="relative w-full h-44 sm:h-48 rounded-none overflow-hidden border border-gray-700 bg-[#0A0E14] flex items-center justify-center group shadow-inner">
-                    <img
-                      src={cccdBackImage || cccdImage || 'https://images.unsplash.com/photo-1578852612716-854e527abf2e?w=600'}
-                      alt="CCCD Mặt Sau"
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform"
-                    />
+                    {cccdBackImage ? (
+                      <img
+                        src={cccdBackImage}
+                        alt="CCCD Mặt Sau"
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                      />
+                    ) : (
+                      <div className="flex flex-col items-center justify-center text-center p-4 space-y-1.5 text-gray-500">
+                        <CreditCard className="w-8 h-8 text-purple-500/60" />
+                        <span className="text-xs text-gray-400 font-medium">Chưa có ảnh mặt sau thẻ CCCD (Chip)</span>
+                        <span className="text-[10px] text-gray-600">Bấm &quot;Quét Thẻ Bằng Camera&quot; bên dưới</span>
+                      </div>
+                    )}
                     <div className="absolute top-2 left-2 px-2 py-0.5 bg-black/75 backdrop-blur rounded-none text-[9.5px] font-mono text-purple-300 border border-purple-500/30">
                       MẶT SAU (BACK)
                     </div>

@@ -29,14 +29,10 @@ interface AvatarEditorModalProps {
 }
 
 const PRESET_AVATARS = [
-  'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400',
-  'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400',
-  'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400',
-  'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400',
-  'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=400',
-  'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=400',
-  'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=400',
-  'https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?w=400',
+  'https://data.nks.vn/storage/users/202609021654232258.jpg',
+  'https://data.nks.vn/storage/users/202607191405195335.jpg',
+  'https://data.nks.vn/storage/users/202608301345022366.jpg',
+  'https://data.nks.vn/storage/users/default.png',
 ];
 
 type FilterType = 'normal' | 'bright' | 'warm' | 'cool' | 'grayscale';
