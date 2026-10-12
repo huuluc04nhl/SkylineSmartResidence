@@ -213,137 +213,7 @@ export async function POST(req: Request) {
     const matchedUserId = matchResult.profile.userId;
     const matchScore = matchResult.score;
 
-    // 6. XÁC THỰC TRỰC TIẾP VỚI NKS API SERVER CHÍNH THỨC
-    const candidateLogins: string[] = [];
-
-    // Lấy thông tin đăng nhập trực tiếp từ hồ sơ FaceID đã đăng ký
-    if (matchResult.profile.email) {
-      candidateLogins.push(matchResult.profile.email.trim());
-    }
-    if (matchResult.profile.phone) {
-      candidateLogins.push(matchResult.profile.phone.trim());
-    }
-    if (matchResult.profile.account) {
-      candidateLogins.push(matchResult.profile.account.trim());
-    }
-    if (matchedUserId) {
-      candidateLogins.push(matchedUserId.trim());
-    }
-
-    const uniqueCandidates = Array.from(new Set(candidateLogins.filter(Boolean)));
-
-    let remoteApiUser: any = null;
-    let remoteAccessToken: string = '';
-
-    // Thử xác thực với remote NKS Server bằng các candidate từ hồ sơ thật
-    for (const loginUsername of uniqueCandidates) {
-      try {
-        const formData = new URLSearchParams();
-        formData.append('username', loginUsername);
-        formData.append('password', '12345678');
-        formData.append('system', 'NKS');
-        formData.append('device', 'Web Browser');
-
-        const remoteRes = await fetch('https://account.nks.vn/api/nks/user/login', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-          body: formData.toString(),
-        });
-
-        if (remoteRes.ok) {
-          const apiData = await remoteRes.json();
-          if (apiData.success && apiData.data && apiData.data.access_token) {
-            remoteApiUser = apiData.data.user || {};
-            remoteAccessToken = apiData.data.access_token;
-            break;
-          }
-        }
-      } catch (err) {
-        console.warn(`FaceID login candidate ${loginUsername} error:`, err);
-      }
-    }
-
-    // Nếu xác thực thành công qua NKS API chính thức, trả về dữ liệu User API & Token chính thức
-    if (remoteApiUser && remoteAccessToken) {
-      const uEmail = (remoteApiUser.email || '').toLowerCase();
-      const role = (uEmail.includes('manager01') || uEmail.includes('admin'))
-        ? 'ADMIN'
-        : uEmail.includes('manager02')
-        ? 'TECHNICIAN'
-        : (uEmail.includes('nhut') || uEmail.includes('cuong') || uEmail.includes('hai') || uEmail.includes('thinh'))
-        ? 'TENANT'
-        : 'OWNER';
-
-      const apiFullName = remoteApiUser.name || `${remoteApiUser.lastname || ''} ${remoteApiUser.firstname || ''}`.trim() || matchResult.profile.fullName || '';
-      
-      // Phân quyền chuẩn và xác định mã căn hộ theo API chính thức
-      let apiApt = 'CH-06';
-      if (role === 'ADMIN') {
-        apiApt = 'BQL_OFFICE';
-      } else if (role === 'TECHNICIAN') {
-        apiApt = 'TECH_ROOM';
-      } else {
-        const candidateApt = remoteApiUser.apartment_code || matchResult.profile?.apartmentCode || 'CH-06';
-        apiApt = (candidateApt === '12A05' || candidateApt === '12A5' || !candidateApt) ? 'CH-06' : candidateApt;
-      }
-
-      const formattedUser = {
-        id: String(remoteApiUser.id || matchResult.profile.userId),
-        username: remoteApiUser.email || remoteApiUser.phone || matchResult.profile.phone || matchResult.profile.email || '',
-        firstname: remoteApiUser.firstname || '',
-        lastname: remoteApiUser.lastname || '',
-        fullname: apiFullName,
-        full_name: apiFullName,
-        email: remoteApiUser.email || matchResult.profile.email || '',
-        phone: remoteApiUser.phone || matchResult.profile.phone || '',
-        role: role,
-        apartment_code: apiApt,
-        relationship: (role === 'ADMIN' || role === 'TECHNICIAN') ? 'Staff' : (role === 'OWNER' ? 'Owner' : 'Family'),
-        avatar_url: remoteApiUser.avatar ? (remoteApiUser.avatar.startsWith('http') ? remoteApiUser.avatar : `https://data.nks.vn/${remoteApiUser.avatar}`) : (matchResult.profile.avatarUrl || ''),
-        avatar: remoteApiUser.avatar ? (remoteApiUser.avatar.startsWith('http') ? remoteApiUser.avatar : `https://data.nks.vn/${remoteApiUser.avatar}`) : (matchResult.profile.avatarUrl || ''),
-        id_number: remoteApiUser.id_number || '',
-        id_card_no: remoteApiUser.id_number || '',
-        id_card_number: remoteApiUser.id_number || '',
-        id_date: formatToDateInput(remoteApiUser.id_date || remoteApiUser.formatedCccdDate || ''),
-        id_place: remoteApiUser.id_place || '',
-        province: remoteApiUser.province || '',
-        gender: remoteApiUser.gender ?? 1,
-        dob: formatToDateInput(remoteApiUser.dob || remoteApiUser.formatedDob || ''),
-        pob: remoteApiUser.pob || '',
-        cccd_front_url: remoteApiUser.cccd_front ? (remoteApiUser.cccd_front.startsWith('http') ? remoteApiUser.cccd_front : `https://data.nks.vn/${remoteApiUser.cccd_front}`) : undefined,
-        cccd_back_url: remoteApiUser.cccd_back ? (remoteApiUser.cccd_back.startsWith('http') ? remoteApiUser.cccd_back : `https://data.nks.vn/${remoteApiUser.cccd_back}`) : undefined,
-      };
-
-      const res = NextResponse.json({
-        success: true,
-        message: `Xác thực FaceID thành công từ NKS API: ${formattedUser.fullname} (Căn ${formattedUser.apartment_code}) - Mẫu khớp: ${matchResult.bestAngle || 'Chính diện'}`,
-        matchScore: matchScore || 0,
-        bestAngle: matchResult.bestAngle || 'Chính diện',
-        sampleScores: matchResult.sampleScores,
-        access_token: remoteAccessToken,
-        user: formattedUser,
-      });
-
-      res.cookies.set('nks_token', remoteAccessToken, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'lax',
-        path: '/',
-        maxAge: 60 * 60 * 24 * 30, // 30 ngày
-      });
-
-      res.cookies.set('nks_user_role', formattedUser.role, {
-        httpOnly: false,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'lax',
-        path: '/',
-        maxAge: 60 * 60 * 24 * 30,
-      });
-
-      return res;
-    }
-
-    // 7. Dự phòng cơ sở dữ liệu người dùng thật (nếu kết nối server NKS từ xa tạm gián đoạn)
+    // Lấy thông tin tài khoản người dùng khớp FaceID
     let matchedUserRecord = getUserStore(matchedUserId);
     if (!matchedUserRecord && matchResult.profile.phone) {
       matchedUserRecord = getUserStore(matchResult.profile.phone);
@@ -352,49 +222,55 @@ export async function POST(req: Request) {
       matchedUserRecord = getUserStore(matchResult.profile.email);
     }
 
-    if (!matchedUserRecord) {
-      return NextResponse.json(
-        { success: false, message: 'Tài khoản người dùng khớp FaceID không tồn tại trên hệ thống API.' },
-        { status: 404 }
-      );
-    }
+    const fallbackRole = (matchResult.profile.email?.includes('admin') || matchResult.profile.email?.includes('manager01'))
+      ? 'ADMIN'
+      : (matchResult.profile.email?.includes('technician') || matchResult.profile.email?.includes('manager02'))
+      ? 'TECHNICIAN'
+      : (matchedUserRecord?.role || 'OWNER');
 
-    // Cấp Token phiên đăng nhập an toàn & Cookie
-    const token = `NKS_FACEID_SESSION_${matchedUserRecord.id}_${matchedUserRecord.role}_${Date.now()}`;
+    const resolvedUser = matchedUserRecord || {
+      id: matchedUserId,
+      username: matchResult.profile.email || matchResult.profile.phone || matchedUserId,
+      firstname: matchResult.profile.fullName.split(' ').slice(-1)[0] || '',
+      lastname: matchResult.profile.fullName.split(' ').slice(0, -1).join(' ') || '',
+      fullname: matchResult.profile.fullName,
+      email: matchResult.profile.email || '',
+      phone: matchResult.profile.phone || '',
+      role: fallbackRole,
+      apartment_code: matchResult.profile.apartmentCode || 'CH-06',
+      avatar_url: matchResult.profile.avatarUrl || '',
+      relationship: fallbackRole === 'ADMIN' || fallbackRole === 'TECHNICIAN' ? 'Staff' : (fallbackRole === 'OWNER' ? 'Owner' : 'Family'),
+      id_card_no: '',
+      dob: '',
+      pob: '',
+    };
 
-    let fallbackApt = 'CH-06';
-    if (matchedUserRecord.role === 'ADMIN') {
-      fallbackApt = 'BQL_OFFICE';
-    } else if (matchedUserRecord.role === 'TECHNICIAN') {
-      fallbackApt = 'TECH_ROOM';
-    } else {
-      const candidateApt = matchedUserRecord.apartment_code || matchResult.profile?.apartmentCode || 'CH-06';
-      fallbackApt = (candidateApt === '12A05' || candidateApt === '12A5' || !candidateApt) ? 'CH-06' : candidateApt;
-    }
+    const token = `SKYLINE_FACEID_SESSION_${resolvedUser.id}_${resolvedUser.role}_${Date.now()}`;
+    const cleanApt = (!resolvedUser.apartment_code || resolvedUser.apartment_code === '12A05' || resolvedUser.apartment_code === '12A5') ? 'CH-06' : resolvedUser.apartment_code;
 
     const formattedUser = {
-      id: matchedUserRecord.id,
-      username: matchedUserRecord.username,
-      firstname: matchedUserRecord.firstname || matchedUserRecord.fullname.split(' ').slice(-1)[0] || '',
-      lastname: matchedUserRecord.lastname || matchedUserRecord.fullname.split(' ').slice(0, -1).join(' ') || '',
-      fullname: matchedUserRecord.fullname,
-      full_name: matchedUserRecord.fullname,
-      email: matchedUserRecord.email,
-      phone: matchedUserRecord.phone,
-      role: matchedUserRecord.role,
-      relationship: matchedUserRecord.relationship || (matchedUserRecord.role === 'OWNER' ? 'Owner' : 'Family'),
-      apartment_code: fallbackApt,
-      avatar_url: matchedUserRecord.avatar_url || matchResult.profile.avatarUrl || '',
-      license_plate: matchedUserRecord.license_plate || '',
-      id_number: matchedUserRecord.id_card_no || '',
-      id_card_no: matchedUserRecord.id_card_no || '',
-      dob: formatToDateInput(matchedUserRecord.dob),
-      pob: matchedUserRecord.pob || '',
+      id: String(resolvedUser.id),
+      username: resolvedUser.username || resolvedUser.email || resolvedUser.phone || '',
+      firstname: (resolvedUser as any).firstname || resolvedUser.fullname.split(' ').slice(-1)[0] || '',
+      lastname: (resolvedUser as any).lastname || resolvedUser.fullname.split(' ').slice(0, -1).join(' ') || '',
+      fullname: resolvedUser.fullname,
+      full_name: resolvedUser.fullname,
+      email: resolvedUser.email || '',
+      phone: resolvedUser.phone || '',
+      role: resolvedUser.role,
+      relationship: (resolvedUser as any).relationship || (resolvedUser.role === 'ADMIN' || resolvedUser.role === 'TECHNICIAN' ? 'Staff' : (resolvedUser.role === 'OWNER' ? 'Owner' : 'Family')),
+      apartment_code: cleanApt,
+      avatar_url: resolvedUser.avatar_url || matchResult.profile.avatarUrl || '',
+      avatar: resolvedUser.avatar_url || matchResult.profile.avatarUrl || '',
+      id_number: (resolvedUser as any).id_card_no || '',
+      id_card_no: (resolvedUser as any).id_card_no || '',
+      dob: formatToDateInput((resolvedUser as any).dob),
+      pob: (resolvedUser as any).pob || '',
     };
 
     const res = NextResponse.json({
       success: true,
-      message: `Nhận diện thành công: ${formattedUser.fullname} ${formattedUser.apartment_code ? `(${formattedUser.apartment_code})` : ''} - Mẫu khớp: ${matchResult.bestAngle || 'Chính diện'}`,
+      message: `Nhận diện FaceID thành công: ${formattedUser.fullname} (${formattedUser.apartment_code}) - Mẫu khớp: ${matchResult.bestAngle || 'Chính diện'}`,
       matchScore: matchScore || 0,
       bestAngle: matchResult.bestAngle || 'Chính diện',
       sampleScores: matchResult.sampleScores,
@@ -407,7 +283,15 @@ export async function POST(req: Request) {
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
       path: '/',
-      maxAge: 60 * 60 * 24 * 7,
+      maxAge: 60 * 60 * 24 * 30,
+    });
+
+    res.cookies.set('nks_user_role', formattedUser.role, {
+      httpOnly: false,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      path: '/',
+      maxAge: 60 * 60 * 24 * 30,
     });
 
     return res;

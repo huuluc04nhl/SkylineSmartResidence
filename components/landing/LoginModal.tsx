@@ -497,52 +497,40 @@ export default function LoginModal({ isOpen, onClose, defaultAccount = '' }: Log
     }
 
     setFaceScanStatus('SCANNING');
-    setScanStepText('Đang phân tích khuôn mặt & trích xuất vector đặc trưng...');
+    setScanStepText('Đang đối soát nhận diện khuôn mặt...');
 
-    setTimeout(() => {
-      setFaceScanStatus('LIVENESS');
-      setScanStepText('Xác thực độ sống (Anti-Spoofing & Liveness Check)...');
-    }, 450);
+    try {
+      const result = await faceLogin({
+        faceImage: capturedImage || undefined,
+        faceVector: extractedFaceVector || undefined,
+        isCameraCapture: isUsingCamera,
+      });
 
-    setTimeout(() => {
-      setFaceScanStatus('MATCHING');
-      setScanStepText('Đối soát sinh trắc học 1:N với cơ sở dữ liệu cư dân...');
-    }, 950);
-
-    setTimeout(async () => {
-      try {
-        const result = await faceLogin({
-          faceImage: capturedImage || undefined,
-          faceVector: extractedFaceVector || undefined,
-          isCameraCapture: isUsingCamera,
+      if (result.success && result.user) {
+        setFaceScanStatus('SUCCESS');
+        setScanStepText('Nhận diện sinh trắc học thành công!');
+        const cleanApt = (!result.user.apartment_code || result.user.apartment_code === '12A05' || result.user.apartment_code === '12A5') ? 'CH-06' : result.user.apartment_code;
+        setMatchedFaceResult({
+          name: result.user.full_name || (result.user as any).fullname || (result.user as any).name || '',
+          apt: cleanApt,
+          score: result.matchScore || 0,
+          bestAngle: (result as any).bestAngle || '',
         });
 
-        if (result.success && result.user) {
-          setFaceScanStatus('SUCCESS');
-          setScanStepText('Nhận diện sinh trắc học thành công!');
-          const cleanApt = (!result.user.apartment_code || result.user.apartment_code === '12A05' || result.user.apartment_code === '12A5') ? 'CH-06' : result.user.apartment_code;
-          setMatchedFaceResult({
-            name: result.user.full_name || (result.user as any).fullname || (result.user as any).name || '',
-            apt: cleanApt,
-            score: result.matchScore || 0,
-            bestAngle: (result as any).bestAngle || '',
-          });
-
-          setTimeout(() => {
-            stopCamera();
-            handleRoleRedirect(result.user);
-          }, 1100);
-        } else {
-          setFaceScanStatus('FAILED');
-          setScanStepText('');
-          setErrorMessage(result.message || 'Không nhận diện được khuôn mặt.');
-        }
-      } catch (err: any) {
+        setTimeout(() => {
+          stopCamera();
+          handleRoleRedirect(result.user);
+        }, 500);
+      } else {
         setFaceScanStatus('FAILED');
         setScanStepText('');
-        setErrorMessage(err?.message || 'Lỗi xác thực khuôn mặt.');
+        setErrorMessage(result.message || 'Không nhận diện được khuôn mặt.');
       }
-    }, 1500);
+    } catch (err: any) {
+      setFaceScanStatus('FAILED');
+      setScanStepText('');
+      setErrorMessage(err?.message || 'Lỗi xác thực khuôn mặt.');
+    }
   };
 
   if (!isOpen) return null;
