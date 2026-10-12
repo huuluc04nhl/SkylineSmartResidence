@@ -830,11 +830,11 @@ export default function EkycApproval() {
                         <span>Nhấp vào ảnh để phóng to toàn màn hình</span>
                         <div className="flex gap-1 font-mono text-[10px]">
                           <span className={inspectingRequest.idCardFrontUrl ? 'text-emerald-400' : 'text-amber-400'}>
-                            {inspectingRequest.idCardFrontUrl ? '✓ Mặt trước OK' : '⚠ Chưa có trước'}
+                            {inspectingRequest.idCardFrontUrl ? '✓ Mặt trước Đầy Đủ' : '⚠ Chưa Có Mặt Trước'}
                           </span>
                           <span>•</span>
                           <span className={inspectingRequest.idCardBackUrl ? 'text-emerald-400' : 'text-amber-400'}>
-                            {inspectingRequest.idCardBackUrl ? '✓ Mặt sau OK' : '⚠ Chưa có sau'}
+                            {inspectingRequest.idCardBackUrl ? '✓ Mặt Sau Đầy Đủ' : '⚠ Chưa Có Mặt Sau'}
                           </span>
                         </div>
                       </div>
@@ -939,15 +939,15 @@ export default function EkycApproval() {
                 <span>Trạng thái hồ sơ:</span>
                 {inspectingRequest.status === 'APPROVED' ? (
                   <span className="px-2.5 py-0.5 bg-emerald-950 text-emerald-300 border border-emerald-500 text-[10px] font-mono font-bold">
-                    ĐÃ KÍCH HOẠT (ACTIVE)
+                    ĐÃ KÍCH HOẠT QUYỀN RA VÀO
                   </span>
                 ) : inspectingRequest.status === 'REJECTED' ? (
                   <span className="px-2.5 py-0.5 bg-rose-950 text-rose-300 border border-rose-500 text-[10px] font-mono font-bold">
-                    CẦN BỔ SUNG (REJECTED)
+                    CẦN BỔ SUNG HỒ SƠ
                   </span>
                 ) : (
                   <span className="px-2.5 py-0.5 bg-amber-950 text-amber-300 border border-amber-500 text-[10px] font-mono font-bold animate-pulse">
-                    CHỜ DUYỆT (PENDING)
+                    ĐANG CHỜ PHÊ DUYỆT
                   </span>
                 )}
               </div>

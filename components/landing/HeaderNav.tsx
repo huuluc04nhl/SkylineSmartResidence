@@ -6,6 +6,8 @@ import { KeyRound, X, LogOut, LayoutDashboard, UserCheck, Sun, Moon } from 'luci
 import SkylineLogo from '@/components/shared/SkylineLogo';
 import { useAuth } from '@/lib/authContext';
 import { useTheme } from '@/lib/themeContext';
+import { useLanguage } from '@/lib/languageContext';
+import LanguageSwitcher from '@/components/shared/LanguageSwitcher';
 
 interface HeaderNavProps {
   onOpenLogin: () => void;
@@ -15,6 +17,7 @@ export default function HeaderNav({ onOpenLogin }: HeaderNavProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { currentUser, isAuthenticated, logout } = useAuth();
   const { theme, toggleTheme } = useTheme();
+  const { t } = useLanguage();
 
   const isDark = theme === 'dark';
 
@@ -34,14 +37,17 @@ export default function HeaderNav({ onOpenLogin }: HeaderNavProps) {
         <nav className={`hidden md:flex items-center gap-6 lg:gap-8 text-[12px] uppercase tracking-[0.18em] font-medium transition-colors whitespace-nowrap ${
           isDark ? 'text-gray-300' : 'text-gray-700'
         }`}>
-          <a href="#concept" className={`whitespace-nowrap transition-colors ${isDark ? 'hover:text-[#C5A880]' : 'hover:text-[#9E8057]'}`}>Tổng Quan</a>
-          <a href="#floorplans" className={`whitespace-nowrap transition-colors ${isDark ? 'hover:text-[#C5A880]' : 'hover:text-[#9E8057]'}`}>Mặt Bằng Căn Hộ</a>
-          <a href="#amenities" className={`whitespace-nowrap transition-colors ${isDark ? 'hover:text-[#C5A880]' : 'hover:text-[#9E8057]'}`}>Tiện Ích 5 Sao</a>
-          <a href="#smart-tech" className={`whitespace-nowrap transition-colors ${isDark ? 'hover:text-[#C5A880]' : 'hover:text-[#9E8057]'}`}>Lõi Công Nghệ AI</a>
+          <a href="#concept" className={`whitespace-nowrap transition-colors ${isDark ? 'hover:text-[#C5A880]' : 'hover:text-[#9E8057]'}`}>{t('nav.about', 'Tổng Quan')}</a>
+          <a href="#floorplans" className={`whitespace-nowrap transition-colors ${isDark ? 'hover:text-[#C5A880]' : 'hover:text-[#9E8057]'}`}>{t('nav.apartments', 'Mặt Bằng Căn Hộ')}</a>
+          <a href="#amenities" className={`whitespace-nowrap transition-colors ${isDark ? 'hover:text-[#C5A880]' : 'hover:text-[#9E8057]'}`}>{t('nav.amenities', 'Tiện Ích 5 Sao')}</a>
+          <a href="#smart-tech" className={`whitespace-nowrap transition-colors ${isDark ? 'hover:text-[#C5A880]' : 'hover:text-[#9E8057]'}`}>{t('nav.services', 'Lõi Công Nghệ AI')}</a>
         </nav>
 
         {/* Action Controls & Authentication */}
         <div className="hidden lg:flex items-center gap-3">
+          {/* Nút chuyển đổi ngôn ngữ Việt / Anh */}
+          <LanguageSwitcher />
+
           {/* CÔNG TẮC BẬT SÁNG / TỐI (TOGGLE SWITCH - KHÔNG BORDER-RADIUS) */}
           <button
             onClick={toggleTheme}

@@ -44,7 +44,7 @@ export default function ResidentSmartCard({
   const currentYear = new Date().getFullYear();
   const expiryDate = `12/${currentYear + 5}`;
   const cardHolder = (currentUser?.full_name || (currentUser as any)?.fullname || 'CƯ DÂN SKYLINE').toUpperCase();
-  const cardType = isOwner ? 'DIAMOND OWNER PASS' : 'RESIDENT FAMILY PASS';
+  const cardType = isOwner ? 'THẺ CHỦ HỘ KIM CƯƠNG' : 'THẺ CƯ DÂN GIA ĐÌNH';
 
   const handleSimulateTap = () => {
     setIsTapping(true);
@@ -139,14 +139,14 @@ export default function ResidentSmartCard({
             {/* Bottom Bar: Resident Name + Expiry + Flip Hint */}
             <div className="flex items-end justify-between border-t border-[#222B35] pt-2 relative z-10 text-[10px] font-mono">
               <div>
-                <div className="text-gray-400 text-[8px] uppercase">Chủ Thẻ / Resident</div>
+                <div className="text-gray-400 text-[8px] uppercase">Chủ Thẻ</div>
                 <div className="font-bold text-white tracking-wider text-xs truncate max-w-[170px]">
                   {cardHolder}
                 </div>
               </div>
 
               <div className="text-right">
-                <div className="text-gray-400 text-[8px] uppercase">Thời Hạn / Valid Thru</div>
+                <div className="text-gray-400 text-[8px] uppercase">Thời Hạn Sử Dụng</div>
                 <div className="text-gray-200 font-semibold">{expiryDate}</div>
               </div>
             </div>

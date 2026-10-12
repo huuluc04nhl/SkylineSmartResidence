@@ -26,9 +26,11 @@ import {
 import { UserRole, User as UserType } from '@/lib/dataStore';
 import SkylineLogo from '@/components/shared/SkylineLogo';
 import { useAuth } from '@/lib/authContext';
+import { useLanguage } from '@/lib/languageContext';
 import { getUserApiAvatar, formatApiAvatarUrl } from '@/lib/avatarHelper';
 import { nksGetUserInfo } from '@/lib/nksApiClient';
 import AccountPasswordModal from './shared/AccountPasswordModal';
+import LanguageSwitcher from '@/components/shared/LanguageSwitcher';
 
 interface TopbarProps {
   currentUser: UserType;
@@ -202,6 +204,9 @@ export default function Topbar({
           <PhoneCall className="w-3 h-3 text-red-400" />
           <span>1900 8899</span>
         </a>
+
+        {/* Chuyển đổi ngôn ngữ Việt / Anh */}
+        <LanguageSwitcher />
 
         {/* Notification Icon */}
         <div className="relative">

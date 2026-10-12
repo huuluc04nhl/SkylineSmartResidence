@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next';
 import './globals.css';
 import { AuthProvider } from '@/lib/authContext';
 import { ThemeProvider } from '@/lib/themeContext';
+import { LanguageProvider } from '@/lib/languageContext';
 
 export const viewport: Viewport = {
   width: 'device-width',
@@ -32,11 +33,13 @@ export default function RootLayout({
         />
       </head>
       <body className="min-h-screen bg-[#0A0E17] dark:bg-[#0A0E17] text-[#FAFAFA] antialiased transition-colors duration-300">
-        <ThemeProvider>
-          <AuthProvider>
-            {children}
-          </AuthProvider>
-        </ThemeProvider>
+        <LanguageProvider>
+          <ThemeProvider>
+            <AuthProvider>
+              {children}
+            </AuthProvider>
+          </ThemeProvider>
+        </LanguageProvider>
       </body>
     </html>
   );
