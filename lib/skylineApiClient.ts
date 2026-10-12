@@ -302,7 +302,7 @@ export const nksUpdateFamilyMember = skylineUpdateFamilyMember;
  */
 export async function skylineFaceLogin(payload: {
   faceImage?: string;
-  faceVector?: string;
+  faceVector?: number[] | string;
   targetUserId?: string;
   account?: string;
   isTestMode?: boolean;

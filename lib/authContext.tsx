@@ -11,7 +11,7 @@ interface AuthContextType {
   login: (roleOrUsername: UserRole | string, password?: string, isOtpAuth?: boolean) => Promise<User | null>;
   faceLogin: (payload?: { 
     faceImage?: string; 
-    faceVector?: string; 
+    faceVector?: number[] | string; 
     targetUserId?: string; 
     account?: string; 
     isTestMode?: boolean;
@@ -101,7 +101,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   // 2.1 Biometric FaceID Login via Server API (Sets HTTP-Only Cookie)
   const faceLogin = async (payload?: { 
     faceImage?: string; 
-    faceVector?: string; 
+    faceVector?: number[] | string; 
     targetUserId?: string; 
     account?: string; 
     isTestMode?: boolean;

@@ -33,7 +33,7 @@ import {
 } from 'lucide-react';
 import SkylineLogo from '@/components/shared/SkylineLogo';
 import { useAuth } from '@/lib/authContext';
-import { analyzeVideoLighting, LightingAnalysisResult } from '@/lib/biometricFaceEngine';
+import { analyzeVideoLighting, LightingAnalysisResult, extractDescriptorFromPixels } from '@/lib/biometricFaceEngine';
 
 interface LoginModalProps {
   isOpen: boolean;
@@ -435,6 +435,7 @@ export default function LoginModal({ isOpen, onClose, defaultAccount = '' }: Log
     }
 
     let capturedImage = uploadedFaceImage || null;
+    let extractedFaceVector: number[] | null = null;
 
     if (isUsingCamera) {
       if (!isCameraActive || !videoRef.current || videoRef.current.readyState < 2) {
@@ -456,9 +457,32 @@ export default function LoginModal({ isOpen, onClose, defaultAccount = '' }: Log
         if (ctx) {
           ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
           capturedImage = canvas.toDataURL('image/jpeg', 0.92);
+          const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+          extractedFaceVector = Array.from(extractDescriptorFromPixels(imgData.data, canvas.width, canvas.height));
         }
       } catch (e) {
         console.warn('Canvas frame capture error:', e);
+      }
+    } else if (capturedImage) {
+      try {
+        const img = new Image();
+        img.src = capturedImage;
+        await new Promise((res) => {
+          if (img.complete) res(true);
+          img.onload = () => res(true);
+          img.onerror = () => res(false);
+        });
+        const canvas = document.createElement('canvas');
+        canvas.width = img.naturalWidth || 640;
+        canvas.height = img.naturalHeight || 480;
+        const ctx = canvas.getContext('2d');
+        if (ctx) {
+          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+          const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+          extractedFaceVector = Array.from(extractDescriptorFromPixels(imgData.data, canvas.width, canvas.height));
+        }
+      } catch (e) {
+        console.warn('Upload image vector extract error:', e);
       }
     }
 
@@ -489,6 +513,7 @@ export default function LoginModal({ isOpen, onClose, defaultAccount = '' }: Log
       try {
         const result = await faceLogin({
           faceImage: capturedImage || undefined,
+          faceVector: extractedFaceVector || undefined,
           isCameraCapture: isUsingCamera,
         });
 

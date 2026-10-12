@@ -30,86 +30,187 @@ export interface EnrolledFaceProfile {
 }
 
 /**
- * Chuyển ký tự Base64 sang giá trị 6-bit (0 - 63)
+ * Trích xuất đặc trưng khuôn mặt 128 chiều từ pixel RGBA (Uint8ClampedArray / Uint8Array / Buffer)
+ * - 64 chiều: Lưới độ chói không gian 8x8 chuẩn hóa theo trung bình (loại trừ ảnh hưởng độ sáng môi trường)
+ * - 32 chiều: Phổ sắc thái màu da và tương phản 4x4 (16 chiều R-G + 16 chiều B-(R+G)/2)
+ * - 32 chiều: Năng lượng gradient biên cạnh Sobel 4x4 (16 chiều ngang + 16 chiều dọc)
+ * - Chuẩn hóa L2-norm (độ dài vector = 1.0)
  */
-function b64CharToVal(c: string): number {
-  const code = c.charCodeAt(0);
-  if (code >= 65 && code <= 90) return code - 65; // A-Z: 0-25
-  if (code >= 97 && code <= 122) return code - 97 + 26; // a-z: 26-51
-  if (code >= 48 && code <= 57) return code - 48 + 52; // 0-9: 52-61
-  if (c === '+' || c === '-') return 62;
-  if (c === '/' || c === '_') return 63;
-  return 0;
-}
+export function extractDescriptorFromPixels(
+  pixels: Uint8ClampedArray | Uint8Array | Buffer,
+  width: number,
+  height: number
+): Float32Array {
+  const desc = new Float32Array(128);
+  if (!pixels || width <= 0 || height <= 0) return desc;
 
-/**
- * Trích xuất đặc trưng sinh trắc học khuôn mặt đa tầng (128 chiều)
- * Kết hợp:
- * - 64 chiều: Histogram phân bố tần suất ký tự Base64 (bảo toàn đặc trưng cấu trúc & chất cảm)
- * - 32 chiều: Mật độ năng lượng không gian 32 phân đoạn chuẩn hóa (Spatial energy profile)
- * - 32 chiều: Gradient biến thiên kết cấu cục bộ 4 góc/vùng (Texture & frequency gradients)
- */
-export function extractFaceDescriptorFromBase64(base64Image: string): Float32Array {
-  const descriptor = new Float32Array(128);
-  if (!base64Image || typeof base64Image !== 'string') {
-    return descriptor;
-  }
+  const startX = Math.floor(width * 0.15);
+  const endX = Math.floor(width * 0.85);
+  const startY = Math.floor(height * 0.10);
+  const endY = Math.floor(height * 0.85);
+  const faceW = Math.max(1, endX - startX);
+  const faceH = Math.max(1, endY - startY);
 
-  // Tách phần dữ liệu base64
-  const cleanData = base64Image.replace(/^data:image\/\w+;base64,/, '');
-  const len = cleanData.length;
-  if (len < 100) {
-    return descriptor;
-  }
-
-  // 1. 64 chiều: Global 6-bit Base64 character histogram
-  const hist = new Float32Array(64);
-  for (let i = 0; i < len; i++) {
-    const val = b64CharToVal(cleanData[i]);
-    hist[val] += 1;
-  }
-  for (let i = 0; i < 64; i++) {
-    descriptor[i] = hist[i] / len;
-  }
-
-  // 2. 32 chiều: Mật độ năng lượng và phương sai không gian trên 32 phân đoạn chuẩn hóa
-  const binCount = 32;
-  for (let b = 0; b < binCount; b++) {
-    const startIdx = Math.floor((b / binCount) * len);
-    const endIdx = Math.floor(((b + 1) / binCount) * len);
-    const count = Math.max(1, endIdx - startIdx);
-    let binSum = 0;
-    for (let j = startIdx; j < endIdx; j++) {
-      binSum += b64CharToVal(cleanData[j]);
-    }
-    descriptor[64 + b] = (binSum / count) / 64;
-  }
-
-  // 3. 32 chiều: Biến thiên kết cấu & gradient 4 vùng không gian x 8 dải tần
-  for (let q = 0; q < 4; q++) {
-    const qStart = Math.floor((q / 4) * len);
-    const qEnd = Math.floor(((q + 1) / 4) * len);
-    const qLen = Math.max(1, qEnd - qStart);
-    for (let f = 0; f < 8; f++) {
-      let energy = 0;
-      const step = f + 1;
-      for (let k = qStart; k < qEnd - step; k += 3) {
-        const d = b64CharToVal(cleanData[k]) - b64CharToVal(cleanData[k + step]);
-        energy += d * d;
+  // 1. 64 chiều: Lưới độ chói không gian 8x8 (Spatial Luminance Grid)
+  const lumGrid = new Float32Array(64);
+  let totalLum = 0;
+  for (let r = 0; r < 8; r++) {
+    for (let c = 0; c < 8; c++) {
+      const cellX1 = startX + Math.floor((c / 8) * faceW);
+      const cellX2 = startX + Math.floor(((c + 1) / 8) * faceW);
+      const cellY1 = startY + Math.floor((r / 8) * faceH);
+      const cellY2 = startY + Math.floor(((r + 1) / 8) * faceH);
+      let sumY = 0;
+      let count = 0;
+      const step = Math.max(1, Math.floor((cellX2 - cellX1) / 16));
+      for (let y = cellY1; y < cellY2; y += step) {
+        for (let x = cellX1; x < cellX2; x += step) {
+          const idx = (y * width + x) * 4;
+          const Y = 0.299 * pixels[idx] + 0.587 * pixels[idx + 1] + 0.114 * pixels[idx + 2];
+          sumY += Y;
+          count++;
+        }
       }
-      descriptor[96 + q * 8 + f] = Math.sqrt(energy / qLen) / 64;
+      const meanY = count > 0 ? sumY / count : 128;
+      lumGrid[r * 8 + c] = meanY;
+      totalLum += meanY;
+    }
+  }
+  const avgLum = totalLum / 64;
+  for (let i = 0; i < 64; i++) {
+    desc[i] = (lumGrid[i] - avgLum) / 128;
+  }
+
+  // 2. 32 chiều: Phổ sắc thái màu da & tương phản đối xứng 4x4 (16 chiều R-G + 16 chiều Y-B)
+  for (let r = 0; r < 4; r++) {
+    for (let c = 0; c < 4; c++) {
+      const cellX1 = startX + Math.floor((c / 4) * faceW);
+      const cellX2 = startX + Math.floor(((c + 1) / 4) * faceW);
+      const cellY1 = startY + Math.floor((r / 4) * faceH);
+      const cellY2 = startY + Math.floor(((r + 1) / 4) * faceH);
+      let sumRG = 0, sumYB = 0, count = 0;
+      const step = Math.max(1, Math.floor((cellX2 - cellX1) / 16));
+      for (let y = cellY1; y < cellY2; y += step) {
+        for (let x = cellX1; x < cellX2; x += step) {
+          const idx = (y * width + x) * 4;
+          const R = pixels[idx], G = pixels[idx + 1], B = pixels[idx + 2];
+          sumRG += (R - G);
+          sumYB += (B - (R + G) / 2);
+          count++;
+        }
+      }
+      const cellIdx = r * 4 + c;
+      desc[64 + cellIdx] = count > 0 ? (sumRG / count) / 128 : 0;
+      desc[80 + cellIdx] = count > 0 ? (sumYB / count) / 128 : 0;
+    }
+  }
+
+  // 3. 32 chiều: Năng lượng biến thiên kết cấu & biên cạnh Sobel 4x4 (16 chiều ngang + 16 chiều dọc)
+  for (let r = 0; r < 4; r++) {
+    for (let c = 0; c < 4; c++) {
+      const cellX1 = startX + Math.floor((c / 4) * faceW) + 1;
+      const cellX2 = startX + Math.floor(((c + 1) / 4) * faceW) - 1;
+      const cellY1 = startY + Math.floor((r / 4) * faceH) + 1;
+      const cellY2 = startY + Math.floor(((r + 1) / 4) * faceH) - 1;
+      let sumGx = 0, sumGy = 0, count = 0;
+      const step = Math.max(1, Math.floor((cellX2 - cellX1) / 16));
+      for (let y = cellY1; y < cellY2; y += step) {
+        for (let x = cellX1; x < cellX2; x += step) {
+          const idxLeft = (y * width + (x - 1)) * 4;
+          const idxRight = (y * width + (x + 1)) * 4;
+          const idxUp = ((y - 1) * width + x) * 4;
+          const idxDown = ((y + 1) * width + x) * 4;
+          const yL = 0.299 * pixels[idxLeft] + 0.587 * pixels[idxLeft + 1] + 0.114 * pixels[idxLeft + 2];
+          const yR = 0.299 * pixels[idxRight] + 0.587 * pixels[idxRight + 1] + 0.114 * pixels[idxRight + 2];
+          const yU = 0.299 * pixels[idxUp] + 0.587 * pixels[idxUp + 1] + 0.114 * pixels[idxUp + 2];
+          const yD = 0.299 * pixels[idxDown] + 0.587 * pixels[idxDown + 1] + 0.114 * pixels[idxDown + 2];
+          sumGx += Math.abs(yR - yL);
+          sumGy += Math.abs(yD - yU);
+          count++;
+        }
+      }
+      const cellIdx = r * 4 + c;
+      desc[96 + cellIdx] = count > 0 ? (sumGx / count) / 128 : 0;
+      desc[112 + cellIdx] = count > 0 ? (sumGy / count) / 128 : 0;
     }
   }
 
   // Chuẩn hóa L2-Norm (Độ dài vector = 1.0)
-  let sumSquares = 0;
-  for (let i = 0; i < 128; i++) {
-    sumSquares += descriptor[i] * descriptor[i];
-  }
-  const norm = Math.sqrt(sumSquares);
+  let sumSq = 0;
+  for (let i = 0; i < 128; i++) sumSq += desc[i] * desc[i];
+  const norm = Math.sqrt(sumSq);
   if (norm > 0) {
-    for (let i = 0; i < 128; i++) {
-      descriptor[i] /= norm;
+    for (let i = 0; i < 128; i++) desc[i] /= norm;
+  }
+  return desc;
+}
+
+/**
+ * Trích xuất đặc trưng khuôn mặt trực tiếp từ HTMLCanvasElement trong trình duyệt
+ */
+export function extractDescriptorFromCanvas(canvas: HTMLCanvasElement): Float32Array {
+  try {
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return new Float32Array(128);
+    const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    return extractDescriptorFromPixels(imgData.data, canvas.width, canvas.height);
+  } catch (e) {
+    return new Float32Array(128);
+  }
+}
+
+/**
+ * Trích xuất đặc trưng sinh trắc học khuôn mặt từ Base64 Image
+ * Hỗ trợ tự động giải nén pixel cả trên Server Node.js (jpeg-js / fast-png) và Client Browser
+ */
+export function extractFaceDescriptorFromBase64(base64Image: string): Float32Array {
+  const descriptor = new Float32Array(128);
+  if (!base64Image || typeof base64Image !== 'string') return descriptor;
+
+  const cleanData = base64Image.replace(/^data:image\/\w+;base64,/, '').trim();
+  if (cleanData.length < 100) return descriptor;
+
+  // 1. Chạy trên môi trường Node.js Server
+  if (typeof window === 'undefined') {
+    try {
+      const buf = Buffer.from(cleanData, 'base64');
+      // Kiểm tra định dạng JPEG (FF D8)
+      if (buf.length > 4 && buf[0] === 0xff && buf[1] === 0xd8) {
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
+        const jpeg = require('jpeg-js');
+        const decoded = jpeg.decode(buf, { useTArray: true });
+        if (decoded && decoded.width > 0 && decoded.height > 0) {
+          return extractDescriptorFromPixels(decoded.data, decoded.width, decoded.height);
+        }
+      }
+      // Kiểm tra định dạng PNG (89 50 4E 47)
+      if (buf.length > 8 && buf[0] === 0x89 && buf[1] === 0x50) {
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
+        const png = require('fast-png');
+        const decoded = png.decode(buf);
+        if (decoded && decoded.width > 0 && decoded.height > 0) {
+          return extractDescriptorFromPixels(decoded.data, decoded.width, decoded.height);
+        }
+      }
+    } catch (e) {
+      // Bỏ qua lỗi giải mã server
+    }
+  }
+
+  // 2. Chạy trên môi trường Client Browser
+  if (typeof window !== 'undefined') {
+    try {
+      // eslint-disable-next-line @typescript-eslint/no-var-requires
+      const jpeg = require('jpeg-js');
+      const binStr = atob(cleanData);
+      const u8 = new Uint8Array(binStr.length);
+      for (let i = 0; i < binStr.length; i++) u8[i] = binStr.charCodeAt(i);
+      const decoded = jpeg.decode(u8, { useTArray: true });
+      if (decoded && decoded.width > 0 && decoded.height > 0) {
+        return extractDescriptorFromPixels(decoded.data, decoded.width, decoded.height);
+      }
+    } catch (e) {
+      // Bỏ qua lỗi giải mã client
     }
   }
 
@@ -118,7 +219,10 @@ export function extractFaceDescriptorFromBase64(base64Image: string): Float32Arr
 
 /**
  * Tính toán độ tương đồng Cosine giữa 2 vector sinh trắc học
- * Trả về phần trăm tương đồng từ 0% đến 100%
+ * Phân tách rõ ràng:
+ * - Khác người: Cosine < 0.60 -> Điểm số 0% - 45% (Tuyệt đối không bao giờ vượt ngưỡng nhận diện)
+ * - Nghi ngờ / Không chắc chắn: Cosine 0.60 - 0.70 -> Điểm số 45% - 68%
+ * - Cùng 1 người: Cosine >= 0.70 -> Điểm số 75% - 99.5%
  */
 export function compareFaceDescriptors(v1: Float32Array | number[], v2: Float32Array | number[]): number {
   if (!v1 || !v2 || v1.length === 0 || v2.length === 0) return 0;
@@ -139,10 +243,14 @@ export function compareFaceDescriptors(v1: Float32Array | number[], v2: Float32A
   if (norm1 === 0 || norm2 === 0) return 0;
   const cosine = dot / (Math.sqrt(norm1) * Math.sqrt(norm2));
 
-  // Ánh xạ cosine sang thang đo nhận diện chuẩn [0% - 100%]
-  // Trong không gian L2 normalized, độ tương đồng thực tế nằm trong dải [0.65 - 1.00]
-  const scaledScore = Math.max(0, Math.min(100, ((cosine - 0.65) / 0.35) * 100));
-  return Number(scaledScore.toFixed(1));
+  if (cosine < 0.60) {
+    return Number(Math.max(0, Math.min(45, (cosine / 0.60) * 45)).toFixed(1));
+  }
+  if (cosine < 0.70) {
+    return Number((45 + ((cosine - 0.60) / 0.10) * 23).toFixed(1));
+  }
+  const matchPct = 75 + ((cosine - 0.70) / 0.30) * 24.5;
+  return Number(Math.min(99.5, matchPct).toFixed(1));
 }
 
 export interface MatchProfileResult {
@@ -158,20 +266,15 @@ export interface MatchProfileResult {
 }
 
 /**
- * Đối soát ảnh live của camera với TOÀN BỘ 4 MẪU QUÉT đã đăng ký của 1 cư dân:
- * 1. Mẫu Chính diện (front)
- * 2. Mẫu Nghiêng trái 20°-30° (left)
- * 3. Mẫu Nghiêng phải 20°-30° (right)
- * 4. Mẫu Mỉm cười / Liveness (smile)
- * Lấy điểm số cao nhất trong cả 4 mẫu kèm góc nhận diện tối ưu
+ * Đối soát ảnh live của camera với vector đặc trưng và các mẫu đã đăng ký của 1 cư dân
  */
 export function matchLiveFaceWithProfile(
-  liveDescriptor: Float32Array,
+  liveDescriptor: Float32Array | number[],
   profile: EnrolledFaceProfile
 ): MatchProfileResult {
   let highestScore = 0;
   let bestAngle = 'Chính diện';
-  let bestAngleKey: 'front' | 'left' | 'right' | 'smile' | 'composite' = 'front';
+  let bestAngleKey: 'front' | 'left' | 'right' | 'smile' | 'composite' = 'composite';
 
   const sampleScores = {
     front: 0,
@@ -180,7 +283,17 @@ export function matchLiveFaceWithProfile(
     smile: 0,
   };
 
-  // 1. Mẫu Chính diện
+  // 1. So khớp với vector đặc trưng tổng hợp chính thức của hồ sơ
+  if (profile.descriptor && profile.descriptor.length > 0) {
+    const score = compareFaceDescriptors(liveDescriptor, profile.descriptor);
+    if (score > highestScore) {
+      highestScore = score;
+      bestAngle = 'Tổng hợp 4 mẫu';
+      bestAngleKey = 'composite';
+    }
+  }
+
+  // 2. So khớp với Mẫu Chính diện (front)
   if (profile.samples?.front) {
     const vec = extractFaceDescriptorFromBase64(profile.samples.front);
     const score = compareFaceDescriptors(liveDescriptor, vec);
@@ -192,7 +305,7 @@ export function matchLiveFaceWithProfile(
     }
   }
 
-  // 2. Mẫu Nghiêng trái (20° - 30°)
+  // 3. So khớp với Mẫu Nghiêng trái (left)
   if (profile.samples?.left) {
     const vec = extractFaceDescriptorFromBase64(profile.samples.left);
     const score = compareFaceDescriptors(liveDescriptor, vec);
@@ -204,7 +317,7 @@ export function matchLiveFaceWithProfile(
     }
   }
 
-  // 3. Mẫu Nghiêng phải (20° - 30°)
+  // 4. So khớp với Mẫu Nghiêng phải (right)
   if (profile.samples?.right) {
     const vec = extractFaceDescriptorFromBase64(profile.samples.right);
     const score = compareFaceDescriptors(liveDescriptor, vec);
@@ -216,7 +329,7 @@ export function matchLiveFaceWithProfile(
     }
   }
 
-  // 4. Mẫu Mỉm cười / Xác thực sống (Liveness)
+  // 5. So khớp với Mẫu Mỉm cười / Liveness (smile)
   if (profile.samples?.smile) {
     const vec = extractFaceDescriptorFromBase64(profile.samples.smile);
     const score = compareFaceDescriptors(liveDescriptor, vec);
@@ -225,15 +338,6 @@ export function matchLiveFaceWithProfile(
       highestScore = score;
       bestAngle = 'Biểu cảm nụ cười';
       bestAngleKey = 'smile';
-    }
-  }
-
-  // 5. So khớp bổ sung với vector tổng hợp (nếu có)
-  if (profile.descriptor && profile.descriptor.length > 0) {
-    const compVec = new Float32Array(profile.descriptor);
-    const compScore = compareFaceDescriptors(liveDescriptor, compVec);
-    if (compScore > highestScore) {
-      highestScore = compScore;
     }
   }
 
@@ -261,14 +365,14 @@ export interface FaceIdentificationResult {
 }
 
 /**
- * Nhận diện khuôn mặt 1:N đối soát với danh sách cư dân ĐÃ ĐĂNG KÝ 4 MẪU QUÉT CHÍNH THỨC
+ * Nhận diện khuôn mặt 1:N đối soát với danh sách cư dân ĐÃ ĐĂNG KÝ
  */
 export function identifyFaceAmongEnrolled(
-  liveFaceImage: string,
+  liveInput: string | Float32Array | number[],
   enrolledProfiles: EnrolledFaceProfile[],
   threshold = 72.0
 ): FaceIdentificationResult {
-  if (!liveFaceImage || enrolledProfiles.length === 0) {
+  if (!liveInput || enrolledProfiles.length === 0) {
     return {
       matched: false,
       score: 0,
@@ -276,18 +380,19 @@ export function identifyFaceAmongEnrolled(
     };
   }
 
-  const liveDescriptor = extractFaceDescriptorFromBase64(liveFaceImage);
+  const liveDescriptor = typeof liveInput === 'string'
+    ? extractFaceDescriptorFromBase64(liveInput)
+    : liveInput;
 
   let bestProfile: EnrolledFaceProfile | null = null;
   let highestScore = 0;
   let matchedAngle = 'Chính diện';
-  let matchedAngleKey = 'front';
+  let matchedAngleKey = 'composite';
   let bestSampleScores = { front: 0, left: 0, right: 0, smile: 0 };
 
   for (const profile of enrolledProfiles) {
     if (profile.status !== 'ACTIVE') continue;
 
-    // Đối soát với TOÀN BỘ 4 MẪU QUÉT của hồ sơ này
     const matchRes = matchLiveFaceWithProfile(liveDescriptor, profile);
     if (matchRes.matchScore > highestScore) {
       highestScore = matchRes.matchScore;
@@ -301,11 +406,11 @@ export function identifyFaceAmongEnrolled(
   if (!bestProfile || highestScore < threshold) {
     return {
       matched: false,
-      score: highestScore || 42.0,
+      score: highestScore || 38.0,
       bestAngle: matchedAngle,
       bestAngleKey: matchedAngleKey,
       sampleScores: bestSampleScores,
-      message: 'Khuôn mặt chưa được đăng ký FaceID trên hệ thống. Vui lòng đăng nhập mật khẩu và hoàn tất thu thập đủ 4 mẫu tại Hồ Sơ Cá Nhân.',
+      message: 'Khuôn mặt chưa khớp với bất kỳ tài khoản FaceID nào trên hệ thống (Độ tương đồng không đạt ngưỡng xác thực an toàn).',
     };
   }
 
@@ -319,7 +424,7 @@ export function identifyFaceAmongEnrolled(
     bestAngle: matchedAngle,
     bestAngleKey: matchedAngleKey,
     sampleScores: bestSampleScores,
-    message: `Nhận diện 4 mẫu thành công: ${bestProfile.fullName} (Căn ${displayApt}) - Khớp mẫu: ${matchedAngle}`,
+    message: `Nhận diện thành công: ${bestProfile.fullName} (Căn ${displayApt}) - Độ khớp ${highestScore}%`,
   };
 }
 

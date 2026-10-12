@@ -63,10 +63,10 @@ function parseImageDimensions(buf: Buffer): { width: number; height: number; typ
 export async function POST(req: Request) {
   try {
     const body = await req.json().catch(() => ({}));
-    const { faceImage, isCameraCapture } = body;
+    const { faceImage, faceVector, isCameraCapture } = body;
 
-    // 1. Kiểm tra ảnh đầu vào
-    if (!faceImage || typeof faceImage !== 'string' || faceImage.trim() === '') {
+    // 1. Kiểm tra ảnh đầu vào hoặc vector đặc trưng
+    if ((!faceImage || typeof faceImage !== 'string' || faceImage.trim() === '') && !Array.isArray(faceVector)) {
       return NextResponse.json(
         { success: false, message: 'Vui lòng cung cấp hình ảnh khuôn mặt.' },
         { status: 400 }
@@ -74,13 +74,15 @@ export async function POST(req: Request) {
     }
 
     let imageBuffer: Buffer | null = null;
-    const base64Data = faceImage.startsWith('data:image/')
-      ? faceImage.replace(/^data:image\/\w+;base64,/, '')
-      : faceImage.trim();
-    try {
-      imageBuffer = Buffer.from(base64Data, 'base64');
-    } catch {
-      imageBuffer = null;
+    if (faceImage && typeof faceImage === 'string') {
+      const base64Data = faceImage.startsWith('data:image/')
+        ? faceImage.replace(/^data:image\/\w+;base64,/, '')
+        : faceImage.trim();
+      try {
+        imageBuffer = Buffer.from(base64Data, 'base64');
+      } catch {
+        imageBuffer = null;
+      }
     }
 
     // 2. Kiểm tra chất lượng và độ rõ nét
@@ -142,9 +144,13 @@ export async function POST(req: Request) {
       );
     }
 
-    // 4. Nhận diện sinh trắc học 1:N đối soát với toàn bộ 4 mẫu góc quét của các hồ sơ đã đăng ký
-    const threshold = isCameraCapture ? 65.0 : 72.0;
-    const matchResult = identifyFaceAmongEnrolled(faceImage, enrolledProfiles, threshold);
+    // 4. Nhận diện sinh trắc học 1:N đối soát với vector pixel chuẩn hóa
+    const liveInput = (Array.isArray(faceVector) && faceVector.length === 128)
+      ? faceVector
+      : faceImage;
+
+    const threshold = isCameraCapture ? 68.0 : 72.0;
+    const matchResult = identifyFaceAmongEnrolled(liveInput, enrolledProfiles, threshold);
 
     if (matchResult.profile) {
       if (matchResult.profile.apartmentCode === '12A05' || matchResult.profile.apartmentCode === '12A5' || !matchResult.profile.apartmentCode) {
@@ -157,10 +163,10 @@ export async function POST(req: Request) {
       return NextResponse.json(
         {
           success: false,
-          matchScore: matchResult.score || 42.0,
+          matchScore: matchResult.score || 38.0,
           bestAngle: matchResult.bestAngle,
           sampleScores: matchResult.sampleScores,
-          message: matchResult.message || 'Khuôn mặt chưa được đăng ký FaceID trên hệ thống. Vui lòng đăng nhập bằng mật khẩu và hoàn tất thu thập đủ 4 mẫu tại Hồ Sơ Cá Nhân.',
+          message: matchResult.message || 'Khuôn mặt chưa được đăng ký FaceID trên hệ thống hoặc độ tương đồng không đạt chuẩn an toàn.',
         },
         { status: 401 }
       );
