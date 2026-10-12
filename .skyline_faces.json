@@ -1,8 +1,8 @@
 {
   "user-owner-1": {
     "userId": "user-owner-1",
-    "fullName": "Nguyễn Hữu Lực",
-    "apartmentCode": "12A05",
+    "fullName": "Trần Hữu Lực",
+    "apartmentCode": "CH-06",
     "phone": "0364967082",
     "avatarUrl": "https://data.nks.vn/storage/users/202609021654232258.jpg",
     "samples": {
@@ -148,8 +148,8 @@
   },
   "0364967082": {
     "userId": "user-owner-1",
-    "fullName": "Nguyễn Hữu Lực",
-    "apartmentCode": "12A05",
+    "fullName": "Trần Hữu Lực",
+    "apartmentCode": "CH-06",
     "phone": "0364967082",
     "avatarUrl": "https://data.nks.vn/storage/users/202609021654232258.jpg",
     "samples": {
@@ -296,7 +296,7 @@
   "user-tenant-1": {
     "userId": "user-tenant-1",
     "fullName": "Nguyễn Hữu Nhựt",
-    "apartmentCode": "12A05",
+    "apartmentCode": "CH-06",
     "phone": "0917795211",
     "avatarUrl": "https://data.nks.vn/storage/users/202607191405195335.jpg",
     "samples": {
@@ -443,7 +443,7 @@
   "0917795211": {
     "userId": "user-tenant-1",
     "fullName": "Nguyễn Hữu Nhựt",
-    "apartmentCode": "12A05",
+    "apartmentCode": "CH-06",
     "phone": "0917795211",
     "avatarUrl": "https://data.nks.vn/storage/users/202607191405195335.jpg",
     "samples": {
@@ -590,7 +590,7 @@
   "user-member-1": {
     "userId": "user-member-1",
     "fullName": "Nguyễn Văn Cường",
-    "apartmentCode": "12A05",
+    "apartmentCode": "CH-06",
     "phone": "0325524482",
     "avatarUrl": "https://data.nks.vn/storage/users/202608301345022366.jpg",
     "samples": {
@@ -736,7 +736,7 @@
   "0325524482": {
     "userId": "user-member-1",
     "fullName": "Nguyễn Văn Cường",
-    "apartmentCode": "12A05",
+    "apartmentCode": "CH-06",
     "phone": "0325524482",
     "avatarUrl": "https://data.nks.vn/storage/users/202608301345022366.jpg",
     "samples": {

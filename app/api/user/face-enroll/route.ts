@@ -86,7 +86,7 @@ export async function POST(req: Request) {
       existingProfile.confirmedByOwnerAt = new Date().toISOString();
       saveEnrolledFaceProfile(existingProfile);
 
-      const targetApt = apartmentCode || existingProfile.apartmentCode || '12A05';
+      const targetApt = apartmentCode || existingProfile.apartmentCode || 'CH-06';
       updateApartmentMember(targetApt, userId, {
         faceStatus: 'Đang Chờ BQL Phê Duyệt',
       });
