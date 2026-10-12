@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
 import { getUserStore, StoredUser } from '@/lib/userStore';
-import { DEMO_USERS } from '@/lib/dataStore';
 import { identifyFaceAmongEnrolled } from '@/lib/biometricFaceEngine';
 import { getAllEnrolledFaceProfiles, saveEnrolledFaceProfile } from '@/lib/faceEnrollStore';
 
@@ -193,53 +192,18 @@ export async function POST(req: Request) {
     // 6. XÁC THỰC TRỰC TIẾP VỚI NKS API SERVER CHÍNH THỨC
     const candidateLogins: string[] = [];
 
-    // Ưu tiên 1: Email đã lưu trong hồ sơ FaceID
+    // Lấy thông tin đăng nhập trực tiếp từ hồ sơ FaceID đã đăng ký
     if (matchResult.profile.email) {
       candidateLogins.push(matchResult.profile.email.trim());
     }
-
-    // Ưu tiên 2: Số điện thoại trong hồ sơ FaceID
     if (matchResult.profile.phone) {
       candidateLogins.push(matchResult.profile.phone.trim());
     }
-
-    // Ưu tiên 3: Định danh userId nếu là email hoặc định dạng số điện thoại
+    if (matchResult.profile.account) {
+      candidateLogins.push(matchResult.profile.account.trim());
+    }
     if (matchedUserId) {
-      if (matchedUserId.includes('@') || /^\d{9,11}$/.test(matchedUserId)) {
-        candidateLogins.push(matchedUserId.trim());
-      }
-    }
-
-    // Ưu tiên 4: Ánh xạ chuẩn theo tài khoản NKS API chính thức
-    // Chủ hộ (OWNER): huuluc04@gmail.com / 0364967082
-    if (
-      matchedUserId === 'user-owner-1' || 
-      matchedUserId === 'owner' || 
-      matchResult.profile.phone === '0364967082' ||
-      (matchResult.profile.fullName && (matchResult.profile.fullName.includes('Lực') || matchResult.profile.fullName.includes('Luc')))
-    ) {
-      candidateLogins.push('huuluc04@gmail.com');
-      candidateLogins.push('0364967082');
-    }
-
-    // Thành viên / Người thuê (TENANT): nguyenhuunhut1309@gmail.com / 0917795211
-    if (
-      matchedUserId === 'user-tenant-1' || 
-      matchedUserId === 'tenant' || 
-      matchResult.profile.phone === '0917795211' ||
-      (matchResult.profile.fullName && matchResult.profile.fullName.includes('Nhựt'))
-    ) {
-      candidateLogins.push('nguyenhuunhut1309@gmail.com');
-    }
-
-    // Ban Quản Lý (ADMIN): nks.manager01@gmail.com
-    if (matchedUserId === 'user-manager-1' || matchedUserId === 'admin') {
-      candidateLogins.push('nks.manager01@gmail.com');
-    }
-
-    // Kỹ thuật viên (TECHNICIAN): nks.manager02@gmail.com
-    if (matchedUserId === 'user-tech-1' || matchedUserId === 'technician') {
-      candidateLogins.push('nks.manager02@gmail.com');
+      candidateLogins.push(matchedUserId.trim());
     }
 
     const uniqueCandidates = Array.from(new Set(candidateLogins.filter(Boolean)));
@@ -247,7 +211,7 @@ export async function POST(req: Request) {
     let remoteApiUser: any = null;
     let remoteAccessToken: string = '';
 
-    // Thử xác thực với remote NKS Server bằng các candidate
+    // Thử xác thực với remote NKS Server bằng các candidate từ hồ sơ thật
     for (const loginUsername of uniqueCandidates) {
       try {
         const formData = new URLSearchParams();
@@ -286,20 +250,23 @@ export async function POST(req: Request) {
         ? 'TENANT'
         : 'OWNER';
 
+      const apiFullName = remoteApiUser.name || `${remoteApiUser.lastname || ''} ${remoteApiUser.firstname || ''}`.trim() || matchResult.profile.fullName || '';
+      const apiApt = matchResult.profile.apartmentCode || remoteApiUser.apartment_code || '';
+
       const formattedUser = {
-        id: String(remoteApiUser.id || 'usr-120'),
-        username: remoteApiUser.email || remoteApiUser.phone || matchResult.profile.phone || 'huuluc04@gmail.com',
+        id: String(remoteApiUser.id || matchResult.profile.userId),
+        username: remoteApiUser.email || remoteApiUser.phone || matchResult.profile.phone || matchResult.profile.email || '',
         firstname: remoteApiUser.firstname || '',
         lastname: remoteApiUser.lastname || '',
-        fullname: remoteApiUser.name || `${remoteApiUser.lastname || ''} ${remoteApiUser.firstname || ''}`.trim() || matchResult.profile.fullName || 'Trần Hữu Lực',
-        full_name: remoteApiUser.name || `${remoteApiUser.lastname || ''} ${remoteApiUser.firstname || ''}`.trim() || matchResult.profile.fullName || 'Trần Hữu Lực',
-        email: remoteApiUser.email || 'huuluc04@gmail.com',
-        phone: remoteApiUser.phone || matchResult.profile.phone || '0364967082',
+        fullname: apiFullName,
+        full_name: apiFullName,
+        email: remoteApiUser.email || matchResult.profile.email || '',
+        phone: remoteApiUser.phone || matchResult.profile.phone || '',
         role: role,
-        apartment_code: (role === 'ADMIN' ? 'BQL_OFFICE' : role === 'TECHNICIAN' ? 'TECH_ROOM' : (matchResult.profile.apartmentCode || '12A05')),
+        apartment_code: apiApt,
         relationship: (role === 'ADMIN' || role === 'TECHNICIAN') ? 'Staff' : (role === 'OWNER' ? 'Owner' : 'Family'),
-        avatar_url: remoteApiUser.avatar ? (remoteApiUser.avatar.startsWith('http') ? remoteApiUser.avatar : `https://data.nks.vn/${remoteApiUser.avatar}`) : matchResult.profile.avatarUrl,
-        avatar: remoteApiUser.avatar ? (remoteApiUser.avatar.startsWith('http') ? remoteApiUser.avatar : `https://data.nks.vn/${remoteApiUser.avatar}`) : matchResult.profile.avatarUrl,
+        avatar_url: remoteApiUser.avatar ? (remoteApiUser.avatar.startsWith('http') ? remoteApiUser.avatar : `https://data.nks.vn/${remoteApiUser.avatar}`) : (matchResult.profile.avatarUrl || ''),
+        avatar: remoteApiUser.avatar ? (remoteApiUser.avatar.startsWith('http') ? remoteApiUser.avatar : `https://data.nks.vn/${remoteApiUser.avatar}`) : (matchResult.profile.avatarUrl || ''),
         id_number: remoteApiUser.id_number || '',
         id_card_no: remoteApiUser.id_number || '',
         id_card_number: remoteApiUser.id_number || '',
@@ -315,8 +282,8 @@ export async function POST(req: Request) {
 
       const res = NextResponse.json({
         success: true,
-        message: `Xác thực FaceID thành công từ NKS API: ${formattedUser.fullname} (${formattedUser.apartment_code}) - Mẫu khớp: ${matchResult.bestAngle || 'Chính diện'}`,
-        matchScore: matchScore || 99.2,
+        message: `Xác thực FaceID thành công từ NKS API: ${formattedUser.fullname} ${formattedUser.apartment_code ? `(${formattedUser.apartment_code})` : ''} - Mẫu khớp: ${matchResult.bestAngle || 'Chính diện'}`,
+        matchScore: matchScore || 0,
         bestAngle: matchResult.bestAngle || 'Chính diện',
         sampleScores: matchResult.sampleScores,
         access_token: remoteAccessToken,
@@ -342,33 +309,23 @@ export async function POST(req: Request) {
       return res;
     }
 
-    // 7. Dự phòng cục bộ (Offline Mode hoặc tài khoản chưa đồng bộ server NKS)
+    // 7. Dự phòng cơ sở dữ liệu người dùng thật (nếu kết nối server NKS từ xa tạm gián đoạn)
     let matchedUserRecord = getUserStore(matchedUserId);
-    if (!matchedUserRecord) {
-      const demoMatch = DEMO_USERS.find(u => u.id === matchedUserId || u.username === matchedUserId);
-      if (demoMatch) {
-        matchedUserRecord = {
-          id: demoMatch.id,
-          username: demoMatch.username,
-          fullname: demoMatch.full_name,
-          full_name: demoMatch.full_name,
-          email: demoMatch.email || `${demoMatch.username}@skyline.vn`,
-          phone: demoMatch.phone || demoMatch.username,
-          role: demoMatch.role as any,
-          apartment_code: demoMatch.apartment_code || '12A05',
-          avatar_url: matchResult.profile.avatarUrl || demoMatch.avatar_url,
-        };
-      }
+    if (!matchedUserRecord && matchResult.profile.phone) {
+      matchedUserRecord = getUserStore(matchResult.profile.phone);
+    }
+    if (!matchedUserRecord && matchResult.profile.email) {
+      matchedUserRecord = getUserStore(matchResult.profile.email);
     }
 
     if (!matchedUserRecord) {
       return NextResponse.json(
-        { success: false, message: 'Tài khoản cư dân không tồn tại trên hệ thống.' },
+        { success: false, message: 'Tài khoản người dùng khớp FaceID không tồn tại trên hệ thống API.' },
         { status: 404 }
       );
     }
 
-    // Cấp Token phiên đăng nhập an toàn & Cookie dự phòng
+    // Cấp Token phiên đăng nhập an toàn & Cookie
     const token = `NKS_FACEID_SESSION_${matchedUserRecord.id}_${matchedUserRecord.role}_${Date.now()}`;
 
     const formattedUser = {
@@ -382,8 +339,8 @@ export async function POST(req: Request) {
       phone: matchedUserRecord.phone,
       role: matchedUserRecord.role,
       relationship: matchedUserRecord.relationship || (matchedUserRecord.role === 'OWNER' ? 'Owner' : 'Family'),
-      apartment_code: matchedUserRecord.apartment_code || '12A05',
-      avatar_url: matchedUserRecord.avatar_url,
+      apartment_code: matchedUserRecord.apartment_code || matchResult.profile.apartmentCode || '',
+      avatar_url: matchedUserRecord.avatar_url || matchResult.profile.avatarUrl || '',
       license_plate: matchedUserRecord.license_plate || '',
       id_number: matchedUserRecord.id_card_no || '',
       id_card_no: matchedUserRecord.id_card_no || '',
@@ -393,8 +350,8 @@ export async function POST(req: Request) {
 
     const res = NextResponse.json({
       success: true,
-      message: `Nhận diện thành công: ${formattedUser.fullname} (${formattedUser.apartment_code}) - Mẫu khớp: ${matchResult.bestAngle || 'Chính diện'}`,
-      matchScore: matchScore || 99.2,
+      message: `Nhận diện thành công: ${formattedUser.fullname} ${formattedUser.apartment_code ? `(${formattedUser.apartment_code})` : ''} - Mẫu khớp: ${matchResult.bestAngle || 'Chính diện'}`,
+      matchScore: matchScore || 0,
       bestAngle: matchResult.bestAngle || 'Chính diện',
       sampleScores: matchResult.sampleScores,
       access_token: token,

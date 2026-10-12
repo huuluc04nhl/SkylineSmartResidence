@@ -111,8 +111,8 @@ export default function LoginModal({ isOpen, onClose, defaultAccount = '' }: Log
   // Helper: Redirect based on role
   const handleRoleRedirect = (loggedUser: any) => {
     const role = loggedUser.role;
-    const name = loggedUser.full_name || loggedUser.fullname || loggedUser.name || 'Cư Dân';
-    const apt = loggedUser.apartment_code || '12A05';
+    const name = loggedUser.full_name || loggedUser.fullname || loggedUser.name || '';
+    const apt = loggedUser.apartment_code ? `Căn ${loggedUser.apartment_code}` : '';
     let roleNotice = 'Đăng nhập thành công!';
     let redirectTab = 'resident-home';
 
@@ -123,10 +123,10 @@ export default function LoginModal({ isOpen, onClose, defaultAccount = '' }: Log
       roleNotice = `Chào mừng Kỹ thuật viên: ${name}`;
       redirectTab = 'admin-kanban';
     } else if (role === 'OWNER') {
-      roleNotice = `Chào mừng Chủ hộ Căn ${apt}: ${name}`;
+      roleNotice = `Chào mừng Chủ hộ ${apt ? `${apt}: ` : ''}${name}`;
       redirectTab = 'resident-home';
     } else {
-      roleNotice = `Chào mừng Cư dân Căn ${apt}: ${name}`;
+      roleNotice = `Chào mừng Cư dân ${apt ? `${apt}: ` : ''}${name}`;
       redirectTab = 'resident-home';
     }
 
@@ -411,39 +411,12 @@ export default function LoginModal({ isOpen, onClose, defaultAccount = '' }: Log
     reader.readAsDataURL(file);
   };
 
-  // Helper: Quick select demo enrolled face for presentation & testing
-  const handleSelectDemoFace = async (userId: string) => {
-    setErrorMessage(null);
-    setSuccessMessage(null);
-    setFaceScanStatus('IDLE');
-
-    try {
-      const res = await fetch(`/api/user/face-enroll?userId=${encodeURIComponent(userId)}`);
-      const data = await res.json().catch(() => ({}));
-      if (data.success && data.profile && data.profile.samples?.front) {
-        const sampleImg = data.profile.samples.front;
-        setUploadedFaceImage(sampleImg);
-        setFaceInputMode('UPLOAD');
-        stopCamera();
-        // Immediately start scanning with this verified sample
-        setTimeout(() => {
-          handleStartFaceScan(sampleImg);
-        }, 150);
-      } else {
-        setErrorMessage('Không tải được mẫu khuôn mặt kiểm thử. Vui lòng quét bằng camera.');
-      }
-    } catch (e) {
-      console.warn('Load demo face error:', e);
-      setErrorMessage('Lỗi tải dữ liệu mẫu kiểm thử.');
-    }
-  };
-
   // 3. Main FaceID Biometric Scan & Recognition Execution
-  const handleStartFaceScan = async (overrideImage?: string) => {
+  const handleStartFaceScan = async () => {
     setErrorMessage(null);
     setSuccessMessage(null);
 
-    const isUsingCamera = faceInputMode === 'CAMERA' && !overrideImage;
+    const isUsingCamera = faceInputMode === 'CAMERA';
 
     // Environmental lighting check for live camera
     if (isUsingCamera && isCameraActive && lighting) {
@@ -459,7 +432,7 @@ export default function LoginModal({ isOpen, onClose, defaultAccount = '' }: Log
       }
     }
 
-    let capturedImage = overrideImage || uploadedFaceImage || null;
+    let capturedImage = uploadedFaceImage || null;
 
     if (isUsingCamera) {
       if (!isCameraActive || !videoRef.current || videoRef.current.readyState < 2) {
@@ -521,10 +494,10 @@ export default function LoginModal({ isOpen, onClose, defaultAccount = '' }: Log
           setFaceScanStatus('SUCCESS');
           setScanStepText('Nhận diện sinh trắc học thành công!');
           setMatchedFaceResult({
-            name: result.user.full_name || (result.user as any).fullname || 'Cư Dân Skyline',
-            apt: result.user.apartment_code || '12A05',
-            score: result.matchScore || 99.2,
-            bestAngle: (result as any).bestAngle || 'Chính diện (Nhìn thẳng)',
+            name: result.user.full_name || (result.user as any).fullname || (result.user as any).name || '',
+            apt: result.user.apartment_code || '',
+            score: result.matchScore || 0,
+            bestAngle: (result as any).bestAngle || '',
           });
 
           setTimeout(() => {
@@ -1176,78 +1149,6 @@ export default function LoginModal({ isOpen, onClose, defaultAccount = '' }: Log
                 </>
               )}
             </button>
-
-            {/* Quick Demo Test Profiles for Examiners / Demos */}
-            <div className="pt-2 border-t border-[#222B35]/80 space-y-2">
-              <div className="flex items-center justify-between text-[11px] text-gray-400">
-                <span className="flex items-center gap-1.5 font-medium text-gray-300">
-                  <Sparkles className="w-3 h-3 text-[#C5A880]" /> Mẫu cư dân thử nghiệm FaceID nhanh:
-                </span>
-                <span className="text-[10px] text-gray-500 font-mono">1:N Biometric</span>
-              </div>
-              <div className="grid grid-cols-3 gap-1.5">
-                <button
-                  type="button"
-                  onClick={() => handleSelectDemoFace('user-owner-1')}
-                  disabled={faceScanStatus === 'SCANNING' || faceScanStatus === 'LIVENESS' || faceScanStatus === 'MATCHING'}
-                  className="p-1.5 bg-[#121820] hover:bg-[#1C2533] border border-[#2D3748] hover:border-[#C5A880] text-left transition-all rounded-none group flex items-center gap-1.5"
-                  title="Nhận diện nhanh Chủ hộ Nguyễn Hữu Lực"
-                >
-                  <div className="w-6 h-6 rounded-none bg-[#C5A880]/20 border border-[#C5A880]/50 flex items-center justify-center text-[10px] font-bold text-[#C5A880] flex-shrink-0">
-                    Lực
-                  </div>
-                  <div className="truncate">
-                    <div className="text-[10px] font-semibold text-gray-200 group-hover:text-[#C5A880] truncate">
-                      Hữu Lực
-                    </div>
-                    <div className="text-[9px] text-gray-400 font-mono truncate">
-                      Chủ hộ 12A05
-                    </div>
-                  </div>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => handleSelectDemoFace('user-tenant-1')}
-                  disabled={faceScanStatus === 'SCANNING' || faceScanStatus === 'LIVENESS' || faceScanStatus === 'MATCHING'}
-                  className="p-1.5 bg-[#121820] hover:bg-[#1C2533] border border-[#2D3748] hover:border-[#C5A880] text-left transition-all rounded-none group flex items-center gap-1.5"
-                  title="Nhận diện nhanh Cư dân Nguyễn Hữu Nhựt"
-                >
-                  <div className="w-6 h-6 rounded-none bg-blue-500/20 border border-blue-400/50 flex items-center justify-center text-[10px] font-bold text-blue-400 flex-shrink-0">
-                    Nhựt
-                  </div>
-                  <div className="truncate">
-                    <div className="text-[10px] font-semibold text-gray-200 group-hover:text-blue-300 truncate">
-                      Hữu Nhựt
-                    </div>
-                    <div className="text-[9px] text-gray-400 font-mono truncate">
-                      Cư dân 12A05
-                    </div>
-                  </div>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => handleSelectDemoFace('user-member-1')}
-                  disabled={faceScanStatus === 'SCANNING' || faceScanStatus === 'LIVENESS' || faceScanStatus === 'MATCHING'}
-                  className="p-1.5 bg-[#121820] hover:bg-[#1C2533] border border-[#2D3748] hover:border-[#C5A880] text-left transition-all rounded-none group flex items-center gap-1.5"
-                  title="Nhận diện nhanh Cư dân Nguyễn Văn Cường"
-                >
-                  <div className="w-6 h-6 rounded-none bg-purple-500/20 border border-purple-400/50 flex items-center justify-center text-[10px] font-bold text-purple-400 flex-shrink-0">
-                    Cường
-                  </div>
-                  <div className="truncate">
-                    <div className="text-[10px] font-semibold text-gray-200 group-hover:text-purple-300 truncate">
-                      Văn Cường
-                    </div>
-                    <div className="text-[9px] text-gray-400 font-mono truncate">
-                      Cư dân 12A05
-                    </div>
-                  </div>
-                </button>
-              </div>
-            </div>
-
           </div>
         )}
 
