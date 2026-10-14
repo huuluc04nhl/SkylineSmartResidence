@@ -159,8 +159,8 @@ export default function TicketService({ currentUser }: TicketServiceProps) {
   const [sliderPos, setSliderPos] = useState<number>(50); // 50% for before-after slider
   const [selectedComparisonTicketId, setSelectedComparisonTicketId] = useState<string>('');
   
-  // Create Form State: REPAIR (Báo hỏng) | INQUIRY (Hỏi đáp) | FEEDBACK (Góp ý/Khiếu nại)
-  const [ticketPurpose, setTicketPurpose] = useState<'REPAIR' | 'INQUIRY' | 'FEEDBACK'>('REPAIR');
+  // Create Form State: REPAIR (Báo hỏng kỹ thuật) | FEEDBACK (Góp ý & Khiếu nại Ban Quản Lý)
+  const [ticketPurpose, setTicketPurpose] = useState<'REPAIR' | 'FEEDBACK'>('REPAIR');
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [content, setContent] = useState('');
   const [aiDetectedCat, setAiDetectedCat] = useState<'Điện' | 'Nước' | 'Khác'>('Nước');
@@ -196,7 +196,7 @@ export default function TicketService({ currentUser }: TicketServiceProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Helpdesk Filter State
-  const [activeFilter, setActiveFilter] = useState<'ALL' | 'REPAIR' | 'INQUIRY' | 'FEEDBACK' | 'RESOLVED'>('ALL');
+  const [activeFilter, setActiveFilter] = useState<'ALL' | 'REPAIR' | 'FEEDBACK' | 'RESOLVED'>('ALL');
 
   // Rating Modal State
   const [ratingModalTicket, setRatingModalTicket] = useState<ExtendedServiceRequest | null>(null);
@@ -272,6 +272,41 @@ export default function TicketService({ currentUser }: TicketServiceProps) {
     }
   };
 
+  const applyLocalFallbackAnalysis = (forcedArea?: string, forcedContent?: string) => {
+    const text = `${forcedArea || selectedArea} ${forcedContent || content}`.toLowerCase();
+    let cat = 'Khác';
+    let sev: 'LOW' | 'MEDIUM' | 'HIGH' = 'MEDIUM';
+    let summary = 'Hệ thống đã xem ảnh hiện trường và lập hồ sơ điều phối đến tổ kỹ thuật chuyên trách.';
+    let action = 'Giữ nguyên hiện trạng sự cố và đón KTV đến kiểm tra xử lý.';
+
+    if (text.includes('nước') || text.includes('vòi') || text.includes('rỉ') || text.includes('bếp') || text.includes('cống') || text.includes('ngập') || text.includes('bồn')) {
+      cat = 'Nước';
+      sev = 'HIGH';
+      summary = 'Phát hiện sự cố liên quan đến hệ thống cấp thoát nước hoặc vòi rửa. KTV chuyên trách Cơ Điện & Nước sẽ đến hỗ trợ.';
+      action = 'Khóa van cấp nước cục bộ dưới gầm bồn rửa ngay để tránh tràn lan sàn gỗ trong khi chờ thợ đến.';
+    } else if (text.includes('điện') || text.includes('aptomat') || text.includes('đèn') || text.includes('chập') || text.includes('ổ cắm')) {
+      cat = 'Điện';
+      sev = 'HIGH';
+      summary = 'Phát hiện dấu hiệu bất thường về nguồn điện / aptomat. KTV điện sẽ mang đồng hồ vạn năng kiểm tra an toàn.';
+      action = 'Tạm ngắt aptomat nhánh khu vực xảy ra sự cố, tuyệt đối không dùng tay ướt chạm vào thiết bị điện.';
+    } else if (text.includes('lạnh') || text.includes('điều hòa') || text.includes('máy lạnh')) {
+      cat = 'Khác';
+      sev = 'MEDIUM';
+      summary = 'Phát hiện sự cố điều hòa chảy nước hoặc làm mát kém. KTV điện lạnh sẽ kiểm tra ống xả và nạp gas.';
+      action = 'Tạm thời tắt máy lạnh và đặt khăn/chậu hứng nước để bảo vệ sàn gỗ.';
+    }
+
+    setAiImageAnalysis({
+      severity: sev,
+      category: cat,
+      summary,
+      action,
+      source: 'LOCAL_RULE_ENGINE',
+    });
+    setUrgencyLevel(sev === 'HIGH' ? 'HIGH' : 'NORMAL');
+    if (cat === 'Điện' || cat === 'Nước') setAiDetectedCat(cat as any);
+  };
+
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -284,7 +319,6 @@ export default function TicketService({ currentUser }: TicketServiceProps) {
     setIsUploadingImage(true);
     setAiImageAnalysis(null);
     try {
-      // Tự động tối ưu dung lượng ảnh (Canvas resize + nén) để tránh lỗi bộ nhớ & phân tích tức thì
       let base64 = '';
       try {
         base64 = await compressImageFile(file, 1200, 1200, 0.75);
@@ -294,34 +328,44 @@ export default function TicketService({ currentUser }: TicketServiceProps) {
       setAttachedImageBase64(base64);
       setAttachedImageMime('image/jpeg');
 
-      // Gọi AI phân tích ảnh tự động
+      // Phân tích ảnh với AbortController timeout 7s để không bao giờ bị treo
       setIsAnalyzingImage(true);
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), 7000);
+
       try {
         const res = await fetch('/api/ai/ticket-assistant', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
+          signal: controller.signal,
           body: JSON.stringify({
             action: 'ANALYZE_IMAGE',
             imageBase64: base64,
             imageMimeType: 'image/jpeg',
+            content: content.trim(),
             area: selectedArea,
             aptCode,
           }),
         });
+        clearTimeout(timer);
+
         if (res.ok) {
           const data = await res.json();
           if (data.success) {
             setAiImageAnalysis(data);
-            // Tự động cập nhật độ ưu tiên dựa vào AI
             if (data.severity === 'HIGH') setUrgencyLevel('HIGH');
             else if (data.severity === 'LOW') setUrgencyLevel('NORMAL');
-            // Tự động cập nhật hạng mục nếu phát hiện rõ ràng
             if (data.category === 'Điện') setAiDetectedCat('Điện');
             else if (data.category === 'Nước') setAiDetectedCat('Nước');
+          } else {
+            applyLocalFallbackAnalysis();
           }
+        } else {
+          applyLocalFallbackAnalysis();
         }
       } catch {
-        // Im lặng nếu AI không khả dụng - không ảnh hưởng luồng chính
+        clearTimeout(timer);
+        applyLocalFallbackAnalysis();
       } finally {
         setIsAnalyzingImage(false);
       }
@@ -348,12 +392,9 @@ export default function TicketService({ currentUser }: TicketServiceProps) {
       let finalCategory = 'Kỹ thuật';
       let typeLabel = 'Sự Cố Kỹ Thuật';
 
-      if (ticketPurpose === 'INQUIRY') {
-        finalCategory = 'Hỏi đáp';
-        typeLabel = 'Hỏi Đáp & Trợ Giúp';
-      } else if (ticketPurpose === 'FEEDBACK') {
+      if (ticketPurpose === 'FEEDBACK') {
         finalCategory = 'Phản ánh';
-        typeLabel = 'Phản Ánh & Khiếu Nại';
+        typeLabel = 'Góp Ý & Khiếu Nại';
       } else {
         finalCategory = aiDetectedCat;
         typeLabel = 'Sự Cố Kỹ Thuật';
@@ -388,10 +429,8 @@ export default function TicketService({ currentUser }: TicketServiceProps) {
       setShowCreateForm(false);
       const ticketDisplayId = newTicket?.nks_id ? `#${newTicket.nks_id}` : (newTicket?.id ? `#${newTicket.id}` : '');
       
-      if (ticketPurpose === 'INQUIRY') {
-        setCreatedSuccessMsg(`⚡ Câu hỏi của bạn ${ticketDisplayId} đã được giải đáp tự động!`);
-      } else if (ticketPurpose === 'FEEDBACK') {
-        setCreatedSuccessMsg(`Ban Quản Lý đã tiếp nhận ý kiến ${ticketDisplayId} và đang xử lý!`);
+      if (ticketPurpose === 'FEEDBACK') {
+        setCreatedSuccessMsg(`Ban Quản Lý đã tiếp nhận ý kiến / phản ánh ${ticketDisplayId} và sẽ liên hệ phản hồi Quý cư dân sớm nhất!`);
       } else {
         const techName = newTicket?.assigned_technician;
         setCreatedSuccessMsg(
@@ -561,53 +600,52 @@ export default function TicketService({ currentUser }: TicketServiceProps) {
             </button>
           </div>
 
-          {/* Chọn Loại Yêu Cầu: 3 Tab Tinh Gọn */}
-          <div className="grid grid-cols-3 gap-1.5 p-1 bg-[#0F141C] border border-[#222B35]">
+          {/* Chọn Loại Yêu Cầu: 2 Tab Tinh Gọn (REPAIR & FEEDBACK) */}
+          <div className="grid grid-cols-2 gap-2 p-1 bg-[#0F141C] border border-[#222B35]">
             <button
               type="button"
               onClick={() => { setTicketPurpose('REPAIR'); setContent(''); setSelectedPresetId(null); setAiImageAnalysis(null); }}
-              className={`py-2 px-2 text-center text-xs transition-all flex items-center justify-center gap-1.5 ${
+              className={`py-2.5 px-3 text-center text-xs transition-all flex items-center justify-center gap-2 ${
                 ticketPurpose === 'REPAIR'
                   ? 'bg-[#C5A880] text-[#0D1117] font-bold shadow'
-                  : 'text-gray-400 hover:text-white'
+                  : 'text-gray-400 hover:text-white hover:bg-[#161B22]'
               }`}
             >
-              <Wrench className="w-3.5 h-3.5" /> Báo Hỏng Sửa Chữa
-            </button>
-            <button
-              type="button"
-              onClick={() => { setTicketPurpose('INQUIRY'); setContent(''); setSelectedPresetId(null); setAiImageAnalysis(null); }}
-              className={`py-2 px-2 text-center text-xs transition-all flex items-center justify-center gap-1.5 ${
-                ticketPurpose === 'INQUIRY'
-                  ? 'bg-sky-500 text-black font-bold shadow'
-                  : 'text-gray-400 hover:text-white'
-              }`}
-            >
-              <HelpCircle className="w-3.5 h-3.5" /> Hỏi Đáp Dịch Vụ
+              <Wrench className="w-4 h-4" /> Báo Hỏng Sửa Chữa (Kỹ Thuật)
             </button>
             <button
               type="button"
               onClick={() => { setTicketPurpose('FEEDBACK'); setContent(''); setSelectedPresetId(null); setAiImageAnalysis(null); }}
-              className={`py-2 px-2 text-center text-xs transition-all flex items-center justify-center gap-1.5 ${
+              className={`py-2.5 px-3 text-center text-xs transition-all flex items-center justify-center gap-2 ${
                 ticketPurpose === 'FEEDBACK'
                   ? 'bg-rose-600 text-white font-bold shadow'
-                  : 'text-gray-400 hover:text-white'
+                  : 'text-gray-400 hover:text-white hover:bg-[#161B22]'
               }`}
             >
-              <MessageSquare className="w-3.5 h-3.5" /> Góp Ý & Phản Ánh
+              <MessageSquare className="w-4 h-4" /> Góp Ý &amp; Khiếu Nại (BQL)
             </button>
           </div>
 
-          {/* Gợi Ý Nhanh 1 Chạm (Chỉ hiện khi Báo Hỏng) */}
+          {/* Gợi ý sử dụng Trợ Lý AI riêng biệt nếu cần hỏi đáp */}
+          <div className="p-2.5 bg-[#0D1520] border border-sky-500/30 flex items-center justify-between gap-3 text-xs text-sky-200">
+            <div className="flex items-center gap-2">
+              <Bot className="w-4 h-4 text-sky-400 flex-shrink-0" />
+              <span className="text-[11px] leading-relaxed">
+                Cần giải đáp nhanh về nội quy, tiện ích hoặc quy chế tòa nhà? Quý cư dân có thể sử dụng mục <strong className="text-white underline">Trợ Lý AI</strong> trên thanh menu để nhận phản hồi tức thì 24/7.
+              </span>
+            </div>
+          </div>
+
+          {/* Gợi Ý Nhanh 1 Chạm (Chỉ hiện khi Báo Hỏng) - Căn Chỉnh Grid Đều Đặn Responsive 100% */}
           {ticketPurpose === 'REPAIR' && (
             <div className="space-y-1.5 pt-0.5">
               <div className="text-[11px] text-gray-400 flex items-center justify-between">
                 <span className="flex items-center gap-1 text-amber-300 font-medium">
-                  <Zap className="w-3 h-3 text-amber-400" /> Gợi ý sự cố nhanh:
+                  <Zap className="w-3.5 h-3.5 text-amber-400" /> Gợi ý sự cố phổ biến:
                 </span>
-                <span className="text-[10px] text-gray-500">Chạm để tự điền nội dung</span>
+                <span className="text-[10px] text-gray-500">Chạm để tự động điền</span>
               </div>
-              <div className="flex flex-wrap gap-1.5">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 w-full">
                 {COMMON_REPAIR_PRESETS.map((p) => {
                   const isSelected = selectedPresetId === p.id;
                   return (
@@ -615,14 +653,19 @@ export default function TicketService({ currentUser }: TicketServiceProps) {
                       key={p.id}
                       type="button"
                       onClick={() => handleApplyPreset(p)}
-                      className={`px-2.5 py-1 text-xs border transition-all flex items-center gap-1.5 ${
+                      className={`p-2.5 text-left border transition-all flex items-start gap-2.5 w-full rounded-none ${
                         isSelected
                           ? 'bg-amber-950/70 border-[#C5A880] text-amber-200 font-semibold shadow'
-                          : 'bg-[#161B22] border-[#2D3748] text-gray-300 hover:border-gray-500 hover:text-white'
+                          : 'bg-[#161B22] border-[#2D3748] text-gray-300 hover:border-[#C5A880]/70 hover:text-white'
                       }`}
                     >
-                      <span>{p.icon}</span>
-                      <span>{p.label}</span>
+                      <span className="text-lg flex-shrink-0 leading-none mt-0.5">{p.icon}</span>
+                      <div className="min-w-0 flex-1">
+                        <div className="text-xs font-semibold truncate text-white">{p.label}</div>
+                        <div className="text-[10px] text-gray-400 truncate mt-0.5">
+                          {p.area} • {p.urgency === 'HIGH' ? '⚡ Cần gấp' : '⏱ Tiêu chuẩn'}
+                        </div>
+                      </div>
                     </button>
                   );
                 })}
@@ -630,37 +673,39 @@ export default function TicketService({ currentUser }: TicketServiceProps) {
             </div>
           )}
 
-          {/* Gợi Ý Nhanh Câu Hỏi Phổ Biến (Khi Hỏi Đáp) */}
-          {ticketPurpose === 'INQUIRY' && (
+          {/* Gợi ý chủ đề nhanh (Khi Góp Ý & Khiếu Nại BQL) */}
+          {ticketPurpose === 'FEEDBACK' && (
             <div className="space-y-1.5 pt-0.5">
               <div className="text-[11px] text-gray-400 flex items-center justify-between">
-                <span className="flex items-center gap-1 text-sky-400 font-medium">
-                  <HelpCircle className="w-3 h-3 text-sky-400" /> Câu hỏi tra cứu phổ biến:
+                <span className="flex items-center gap-1 text-rose-300 font-medium">
+                  <MessageSquare className="w-3.5 h-3.5 text-rose-400" /> Chọn nhanh chủ đề góp ý:
                 </span>
-                <span className="text-[10px] text-gray-500">Chạm để tự điền câu hỏi</span>
+                <span className="text-[10px] text-gray-500">Chạm để chọn nội dung</span>
               </div>
-              <div className="flex flex-wrap gap-1.5">
-                {COMMON_INQUIRY_PRESETS.map((p) => {
-                  const isSelected = content === p.question;
-                  return (
-                    <button
-                      key={p.id}
-                      type="button"
-                      onClick={() => {
-                        setContent(p.question);
-                        setSelectedPresetId(p.id);
-                      }}
-                      className={`px-2.5 py-1 text-xs border transition-all flex items-center gap-1.5 ${
-                        isSelected
-                          ? 'bg-sky-950/80 border-sky-400 text-sky-200 font-semibold shadow'
-                          : 'bg-[#161B22] border-[#2D3748] text-gray-300 hover:border-sky-500 hover:text-white'
-                      }`}
-                    >
-                      <span>{p.icon}</span>
-                      <span>{p.label}</span>
-                    </button>
-                  );
-                })}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 w-full">
+                {[
+                  { icon: '🧹', title: 'Vệ sinh & Rác thải', desc: 'Hành lang hoặc khu vực chung chưa sạch' },
+                  { icon: '🔊', title: 'Tiếng ồn & Giờ giấc', desc: 'Tiếng ồn sinh hoạt trong giờ nghỉ ngơi' },
+                  { icon: '🛡️', title: 'An ninh & Trật tự', desc: 'Góp ý kiểm soát ra vào, thang máy' },
+                  { icon: '🏊', title: 'Vận hành Tiện ích', desc: 'Hồ bơi, phòng gym, khu BBQ, công viên' },
+                  { icon: '🚗', title: 'Bãi đỗ xe hầm', desc: 'Vị trí đỗ, quẹt thẻ và luồng di chuyển' },
+                  { icon: '💡', title: 'Ý kiến xây dựng khác', desc: 'Đóng góp ý kiến cải tiến dịch vụ tòa nhà' },
+                ].map((item, idx) => (
+                  <button
+                    key={idx}
+                    type="button"
+                    onClick={() => {
+                      setContent(`Góp ý về ${item.title}: `);
+                    }}
+                    className="p-2.5 text-left border border-[#2D3748] bg-[#161B22] hover:border-rose-500/70 hover:text-white transition-all flex items-start gap-2.5 w-full rounded-none"
+                  >
+                    <span className="text-lg flex-shrink-0 leading-none mt-0.5">{item.icon}</span>
+                    <div className="min-w-0 flex-1">
+                      <div className="text-xs font-semibold truncate text-white">{item.title}</div>
+                      <div className="text-[10px] text-gray-400 truncate mt-0.5">{item.desc}</div>
+                    </div>
+                  </button>
+                ))}
               </div>
             </div>
           )}
@@ -760,11 +805,9 @@ export default function TicketService({ currentUser }: TicketServiceProps) {
           <div className="space-y-1.5">
             <div className="flex items-center justify-between flex-wrap gap-1">
               <label className="text-xs text-gray-300 font-medium flex items-center gap-1.5">
-                {ticketPurpose === 'INQUIRY'
-                  ? 'Nội dung câu hỏi / tra cứu dịch vụ:'
-                  : ticketPurpose === 'FEEDBACK'
-                    ? 'Nội dung góp ý / phản ánh:'
-                    : 'Mô tả hiện tượng hư hỏng:'}
+                {ticketPurpose === 'FEEDBACK'
+                  ? 'Nội dung góp ý / phản ánh gửi Ban Quản Lý:'
+                  : 'Mô tả hiện tượng hư hỏng sự cố:'}
               </label>
 
               {/* Tự động phân loại ngầm của hệ thống */}
@@ -778,11 +821,9 @@ export default function TicketService({ currentUser }: TicketServiceProps) {
             <textarea
               rows={2}
               placeholder={
-                ticketPurpose === 'INQUIRY'
-                  ? 'VD: Giờ mở cửa hồ bơi vô cực, thủ tục đăng ký bãi đỗ xe ô tô, thời gian thu gom rác...'
-                  : ticketPurpose === 'FEEDBACK'
-                    ? 'VD: Vệ sinh khu vực hành lang, tiếng ồn giờ nghỉ trưa...'
-                    : 'VD: Vòi nước bồn rửa chén rò rỉ dưới gầm tủ, nhảy aptomat...'
+                ticketPurpose === 'FEEDBACK'
+                  ? 'VD: Phản ánh vệ sinh khu vực sảnh / hành lang, tiếng ồn giờ nghỉ ngơi, ý kiến xây dựng cảnh quan...'
+                  : 'VD: Vòi nước bồn rửa chén rò rỉ dưới gầm tủ, nhảy aptomat khi bật lò vi sóng...'
               }
               value={content}
               onChange={(e) => handleContentChange(e.target.value)}
@@ -876,22 +917,15 @@ export default function TicketService({ currentUser }: TicketServiceProps) {
                 type="submit"
                 disabled={isSubmitting}
                 className={`px-4 py-1.5 text-xs font-bold uppercase tracking-wider transition-colors shadow flex items-center gap-1.5 disabled:opacity-60 ${
-                  ticketPurpose === 'INQUIRY'
-                    ? 'bg-sky-500 hover:bg-sky-400 text-black'
-                    : ticketPurpose === 'FEEDBACK'
-                      ? 'bg-rose-600 hover:bg-rose-500 text-white'
-                      : 'bg-[#C5A880] hover:bg-white text-[#0D1117]'
+                  ticketPurpose === 'FEEDBACK'
+                    ? 'bg-rose-600 hover:bg-rose-500 text-white'
+                    : 'bg-[#C5A880] hover:bg-white text-[#0D1117]'
                 }`}
               >
                 {isSubmitting ? (
                   <>
                     <RefreshCw className="w-3.5 h-3.5 animate-spin" />
                     Đang gửi...
-                  </>
-                ) : ticketPurpose === 'INQUIRY' ? (
-                  <>
-                    <Send className="w-3.5 h-3.5" />
-                    Gửi Câu Hỏi (Tự Động Phản Hồi)
                   </>
                 ) : ticketPurpose === 'FEEDBACK' ? (
                   <>
@@ -1047,8 +1081,7 @@ export default function TicketService({ currentUser }: TicketServiceProps) {
             {[
               { key: 'ALL', label: `Tất Cả (${tickets.length})` },
               { key: 'REPAIR', label: `🔧 KTV Sửa Chữa (${tickets.filter(t => t.ticket_type === 'REPAIR' || (!t.ticket_type && t.status !== 'Resolved')).length})` },
-              { key: 'INQUIRY', label: `❓ Hỏi Đáp Dịch Vụ (${tickets.filter(t => t.ticket_type === 'INQUIRY').length})` },
-              { key: 'FEEDBACK', label: `📢 Góp Ý & Phản Ánh (${tickets.filter(t => t.ticket_type === 'FEEDBACK').length})` },
+              { key: 'FEEDBACK', label: `📢 Góp Ý & BQL (${tickets.filter(t => t.ticket_type === 'FEEDBACK' || t.ticket_type === 'INQUIRY').length})` },
               { key: 'RESOLVED', label: `✓ Đã Hoàn Tất (${tickets.filter(t => t.status === 'Resolved').length})` },
             ].map((tab) => (
               <button
@@ -1071,8 +1104,7 @@ export default function TicketService({ currentUser }: TicketServiceProps) {
           const filtered = tickets.filter(t => {
             if (activeFilter === 'ALL') return true;
             if (activeFilter === 'REPAIR') return t.ticket_type === 'REPAIR' || (!t.ticket_type && t.status !== 'Resolved');
-            if (activeFilter === 'INQUIRY') return t.ticket_type === 'INQUIRY';
-            if (activeFilter === 'FEEDBACK') return t.ticket_type === 'FEEDBACK';
+            if (activeFilter === 'FEEDBACK') return t.ticket_type === 'FEEDBACK' || t.ticket_type === 'INQUIRY';
             if (activeFilter === 'RESOLVED') return t.status === 'Resolved';
             return true;
           });
@@ -1238,25 +1270,73 @@ export default function TicketService({ currentUser }: TicketServiceProps) {
 
                   {/* ẢNH HIỆN TRƯỜNG & NGHIỆM THU */}
                   {(t.before_image || t.after_image) && (
-                    <div className="flex items-center gap-4 pt-1">
-                      {t.before_image && (
-                        <div className="flex items-center gap-1.5 text-[11px] text-gray-400">
-                          <img 
-                            src={t.before_image} 
-                            alt="Ảnh lúc báo" 
-                            className="w-10 h-10 object-cover border border-red-500/40"
-                          />
-                          <span>Ảnh hiện trường</span>
-                        </div>
-                      )}
-                      {t.after_image && (
-                        <div className="flex items-center gap-1.5 text-[11px] text-gray-400">
-                          <img 
-                            src={t.after_image} 
-                            alt="Ảnh nghiệm thu" 
-                            className="w-10 h-10 object-cover border border-emerald-500/40"
-                          />
-                          <span className="text-emerald-400 font-medium">Ảnh nghiệm thu</span>
+                    <div className="space-y-2 pt-1">
+                      <div className="flex items-center gap-4">
+                        {t.before_image && (
+                          <div className="flex items-center gap-1.5 text-[11px] text-gray-400">
+                            <img 
+                              src={t.before_image} 
+                              alt="Ảnh lúc báo" 
+                              className="w-10 h-10 object-cover border border-red-500/40 rounded-none"
+                            />
+                            <span>Ảnh hiện trường</span>
+                          </div>
+                        )}
+                        {t.after_image && (
+                          <div className="flex items-center gap-1.5 text-[11px] text-gray-400">
+                            <img 
+                              src={t.after_image} 
+                              alt="Ảnh nghiệm thu" 
+                              className="w-10 h-10 object-cover border border-emerald-500/40 rounded-none"
+                            />
+                            <span className="text-emerald-400 font-medium">Ảnh nghiệm thu</span>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* ĐÁNH GIÁ AI ĐỐI CHIẾU ẢNH KTV */}
+                      {t.ai_verification && (
+                        <div className={`p-2.5 border text-xs space-y-1.5 rounded-none ${
+                          t.ai_verification.status === 'VERIFIED'
+                            ? 'bg-emerald-950/30 border-emerald-500/40 text-emerald-200'
+                            : t.ai_verification.status === 'SUSPICIOUS'
+                              ? 'bg-rose-950/30 border-rose-500/40 text-rose-200'
+                              : 'bg-amber-950/30 border-amber-500/40 text-amber-200'
+                        }`}>
+                          <div className="flex items-center justify-between font-bold text-[11px]">
+                            <span className="flex items-center gap-1.5">
+                              {t.ai_verification.status === 'VERIFIED' ? (
+                                <>
+                                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                                  <span className="text-emerald-300">✓ AI Nghiệm Thu Đạt Chuẩn ({t.ai_verification.confidence_score}%)</span>
+                                </>
+                              ) : t.ai_verification.status === 'SUSPICIOUS' ? (
+                                <>
+                                  <AlertTriangle className="w-3.5 h-3.5 text-rose-400 shrink-0" />
+                                  <span className="text-rose-300">⚠️ AI Cảnh Báo: Ảnh Nghi Ngờ ({t.ai_verification.confidence_score}%)</span>
+                                </>
+                              ) : (
+                                <>
+                                  <AlertCircle className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+                                  <span className="text-amber-300">⏳ AI Đánh Giá: Chưa Triệt Để ({t.ai_verification.confidence_score}%)</span>
+                                </>
+                              )}
+                            </span>
+                            <span className="text-[10px] text-gray-400 font-mono">BQL Skyline Audit</span>
+                          </div>
+                          <div className="text-[11px] leading-relaxed font-medium text-gray-200">
+                            {t.ai_verification.verification_title}
+                          </div>
+                          {t.ai_verification.verification_detail && (
+                            <div className="text-[10px] text-gray-400 leading-relaxed">
+                              {t.ai_verification.verification_detail}
+                            </div>
+                          )}
+                          {t.ai_verification.risk_warning && (
+                            <div className="text-[10px] text-rose-300 font-medium bg-rose-950/60 p-1.5 border border-rose-500/30 rounded-none">
+                              Lưu ý: {t.ai_verification.risk_warning}
+                            </div>
+                          )}
                         </div>
                       )}
                     </div>

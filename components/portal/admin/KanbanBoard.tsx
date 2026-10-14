@@ -20,6 +20,7 @@ import {
   Award,
   Calendar,
   AlertCircle,
+  AlertTriangle,
   Check,
   X,
   Printer,
@@ -132,6 +133,15 @@ export default function KanbanBoard() {
   const [afterImageBase64, setAfterImageBase64] = useState<string>('');
   const [resolutionNotes, setResolutionNotes] = useState<string>('');
   const [isReadingAfterImage, setIsReadingAfterImage] = useState(false);
+  const [isVerifyingAfterImage, setIsVerifyingAfterImage] = useState(false);
+  const [aiVerificationResult, setAiVerificationResult] = useState<{
+    status: 'VERIFIED' | 'SUSPICIOUS' | 'INCOMPLETE';
+    confidence_score: number;
+    verification_title: string;
+    verification_detail: string;
+    is_genuine: boolean;
+    risk_warning?: string;
+  } | null>(null);
   const afterFileInputRef = useRef<HTMLInputElement>(null);
 
   const [inspectingTicket, setInspectingTicket] = useState<ExtendedServiceRequest | null>(null);
@@ -224,13 +234,44 @@ export default function KanbanBoard() {
     }
   };
 
+  const handleVerifyResolutionImage = async (afterB64: string, ticket: ExtendedServiceRequest, notesText?: string) => {
+    if (!afterB64) return;
+    setIsVerifyingAfterImage(true);
+    try {
+      const res = await fetch('/api/ai/ticket-assistant', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'VERIFY_RESOLUTION_IMAGE',
+          afterImage: afterB64,
+          beforeImage: ticket.before_image || undefined,
+          issueDescription: ticket.content || '',
+          area: ticket.area || ticket.ai_category || '',
+          technicianNotes: notesText || resolutionNotes || ''
+        })
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.success && data.verification) {
+          setAiVerificationResult(data.verification);
+          return;
+        }
+      }
+    } catch (err) {
+      console.warn('AI verification API error, relying on local verification:', err);
+    } finally {
+      setIsVerifyingAfterImage(false);
+    }
+  };
+
   const handleAutoFillAiInspection = () => {
     if (!resolvingTicket) return;
     const notes = generateAiResolutionNotes(resolvingTicket);
     const img = generateAiInspectionImage(resolvingTicket);
     setResolutionNotes(notes);
     setAfterImageBase64(img);
-    setActionSuccessMsg('Đã tạo biên bản nghiệm thu tự động.');
+    handleVerifyResolutionImage(img, resolvingTicket, notes);
+    setActionSuccessMsg('Đã tạo biên bản nghiệm thu & thẩm định AI hoàn tất.');
     setTimeout(() => setActionSuccessMsg(null), 3000);
   };
 
@@ -346,6 +387,9 @@ export default function KanbanBoard() {
     try {
       const b64 = await fileToBase64(file);
       setAfterImageBase64(b64);
+      if (resolvingTicket) {
+        handleVerifyResolutionImage(b64, resolvingTicket, resolutionNotes);
+      }
     } catch (err) {
       alert('Không thể đọc file ảnh. Vui lòng thử lại.');
     } finally {
@@ -368,7 +412,12 @@ export default function KanbanBoard() {
       return;
     }
 
-    const res = resolveTicket(resolvingTicket.id, afterImageBase64, resolutionNotes.trim());
+    const res = resolveTicket(
+      resolvingTicket.id, 
+      afterImageBase64, 
+      resolutionNotes.trim(), 
+      aiVerificationResult || undefined
+    );
     if (res) {
       setActionSuccessMsg(`Đã nghiệm thu và hoàn tất phiếu #${res.id}. Hệ thống tự động ghi nhận thù lao cho KTV!`);
       setTimeout(() => setActionSuccessMsg(null), 4000);
@@ -376,6 +425,7 @@ export default function KanbanBoard() {
     setResolvingTicket(null);
     setAfterImageBase64('');
     setResolutionNotes('');
+    setAiVerificationResult(null);
   };
 
   // Calculations for Payroll KPIs
@@ -912,6 +962,8 @@ export default function KanbanBoard() {
                                   onClick={() => {
                                     setResolvingTicket(ticket);
                                     setAfterImageBase64('');
+                                    setResolutionNotes('');
+                                    setAiVerificationResult(null);
                                   }}
                                   className="px-2.5 py-1.5 bg-[#161B22] hover:bg-[#1C2533] border border-[#2D3748] hover:border-emerald-500/60 text-emerald-400 hover:text-emerald-300 text-xs font-semibold transition-colors flex items-center gap-1.5 shadow"
                                   title="BQL nghiệm thu và đóng phiếu khi KTV hoàn thành"
@@ -1025,33 +1077,84 @@ export default function KanbanBoard() {
 
                         {/* Before / After Mini Preview cho sự cố kỹ thuật */}
                         {!isFeedback && !isInquiry && (ticket.before_image || ticket.after_image) && (
-                          <div className="grid grid-cols-2 gap-2 text-[10px] text-gray-400">
-                            {ticket.before_image && (
-                              <div>
-                                <div className="mb-1">Trước sửa:</div>
-                                <img 
-                                  src={ticket.before_image} 
-                                  alt="Before" 
-                                  className="w-full h-16 object-cover border border-red-500/40"
-                                />
-                              </div>
-                            )}
-                            {ticket.after_image && (
-                              <div>
-                                <div className="mb-1">Sau sửa:</div>
-                                <img 
-                                  src={ticket.after_image} 
-                                  alt="After" 
-                                  className="w-full h-16 object-cover border border-emerald-500/40"
-                                />
+                          <div className="space-y-2">
+                            <div className="grid grid-cols-2 gap-2 text-[10px] text-gray-400">
+                              {ticket.before_image && (
+                                <div>
+                                  <div className="mb-1">Trước sửa:</div>
+                                  <img 
+                                    src={ticket.before_image} 
+                                    alt="Before" 
+                                    className="w-full h-16 object-cover border border-red-500/40"
+                                  />
+                                </div>
+                              )}
+                              {ticket.after_image && (
+                                <div>
+                                  <div className="mb-1">Sau sửa:</div>
+                                  <img 
+                                    src={ticket.after_image} 
+                                    alt="After" 
+                                    className="w-full h-16 object-cover border border-emerald-500/40"
+                                  />
+                                </div>
+                              )}
+                            </div>
+
+                            {/* AI Verification Badge */}
+                            {ticket.ai_verification && (
+                              <div className={`p-2 border text-[11px] space-y-1 ${
+                                ticket.ai_verification.status === 'VERIFIED'
+                                  ? 'bg-emerald-950/30 border-emerald-500/40 text-emerald-300'
+                                  : ticket.ai_verification.status === 'SUSPICIOUS'
+                                    ? 'bg-rose-950/30 border-rose-500/40 text-rose-300'
+                                    : 'bg-amber-950/30 border-amber-500/40 text-amber-300'
+                              }`}>
+                                <div className="flex items-center justify-between font-bold text-[10px]">
+                                  <span className="flex items-center gap-1">
+                                    {ticket.ai_verification.status === 'VERIFIED' ? (
+                                      <>
+                                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+                                        <span>AI Thẩm Định: Đạt Chuẩn ({ticket.ai_verification.confidence_score}%)</span>
+                                      </>
+                                    ) : ticket.ai_verification.status === 'SUSPICIOUS' ? (
+                                      <>
+                                        <AlertTriangle className="w-3.5 h-3.5 text-rose-400" />
+                                        <span>AI Cảnh Báo: Ảnh Nghi Ngờ ({ticket.ai_verification.confidence_score}%)</span>
+                                      </>
+                                    ) : (
+                                      <>
+                                        <AlertCircle className="w-3.5 h-3.5 text-amber-400" />
+                                        <span>AI Đánh Giá: Chưa Triệt Để ({ticket.ai_verification.confidence_score}%)</span>
+                                      </>
+                                    )}
+                                  </span>
+                                  <button
+                                    onClick={() => setInspectingTicket(ticket)}
+                                    className="text-gray-400 hover:text-white underline text-[9px]"
+                                  >
+                                    Đối chiếu ảnh
+                                  </button>
+                                </div>
+                                <div className="line-clamp-1 text-[10px] text-gray-300">
+                                  {ticket.ai_verification.verification_title}
+                                </div>
                               </div>
                             )}
                           </div>
                         )}
 
                         {ticket.resolution_notes && (
-                          <div className="text-[11px] text-emerald-300/90 italic bg-emerald-950/30 p-2 border border-emerald-500/30">
-                            "{ticket.resolution_notes}"
+                          <div className="text-[11px] text-emerald-300/90 italic bg-emerald-950/30 p-2 border border-emerald-500/30 flex items-start justify-between gap-2">
+                            <span>"{ticket.resolution_notes}"</span>
+                            {(ticket.before_image || ticket.after_image) && !ticket.ai_verification && (
+                              <button
+                                onClick={() => setInspectingTicket(ticket)}
+                                className="text-[10px] text-[#C5A880] hover:underline flex-shrink-0"
+                              >
+                                Xem ảnh
+                              </button>
+                            )}
                           </div>
                         )}
 
@@ -1430,6 +1533,71 @@ export default function KanbanBoard() {
               />
             </div>
 
+            {/* AI Resolution Image Verification Status */}
+            {isVerifyingAfterImage && (
+              <div className="p-3 bg-purple-950/40 border border-purple-500/40 text-xs flex items-center gap-2.5 text-purple-200">
+                <RefreshCw className="w-4 h-4 text-purple-400 animate-spin flex-shrink-0" />
+                <div>
+                  <div className="font-semibold text-purple-300">AI Đang Thẩm Định Ảnh Nghiệm Thu...</div>
+                  <div className="text-[10px] text-gray-400">Đối chiếu hiện trường trước &amp; sau sửa, ngăn ngừa ảnh giả hoặc ảnh sai vị trí</div>
+                </div>
+              </div>
+            )}
+
+            {!isVerifyingAfterImage && aiVerificationResult && (
+              <div className={`p-3 border text-xs space-y-1.5 ${
+                aiVerificationResult.status === 'VERIFIED'
+                  ? 'bg-emerald-950/40 border-emerald-500/60 text-emerald-200'
+                  : aiVerificationResult.status === 'SUSPICIOUS'
+                    ? 'bg-rose-950/40 border-rose-500/60 text-rose-200'
+                    : 'bg-amber-950/40 border-amber-500/60 text-amber-200'
+              }`}>
+                <div className="flex items-center justify-between font-bold">
+                  <span className="flex items-center gap-1.5">
+                    {aiVerificationResult.status === 'VERIFIED' ? (
+                      <>
+                        <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                        <span className="text-emerald-300">✓ AI Thẩm Định: Ảnh Đạt Chuẩn ({aiVerificationResult.confidence_score}%)</span>
+                      </>
+                    ) : aiVerificationResult.status === 'SUSPICIOUS' ? (
+                      <>
+                        <AlertTriangle className="w-4 h-4 text-rose-400 shrink-0" />
+                        <span className="text-rose-300">⚠️ CẢNH BÁO AI: Ảnh Nghi Ngờ Không Khớp ({aiVerificationResult.confidence_score}%)</span>
+                      </>
+                    ) : (
+                      <>
+                        <AlertCircle className="w-4 h-4 text-amber-400 shrink-0" />
+                        <span className="text-amber-300">⏳ AI Nhận Định: Chưa Khắc Phục Triệt Để ({aiVerificationResult.confidence_score}%)</span>
+                      </>
+                    )}
+                  </span>
+                  {afterImageBase64 && (
+                    <button
+                      type="button"
+                      onClick={() => handleVerifyResolutionImage(afterImageBase64, resolvingTicket, resolutionNotes)}
+                      className="text-[10px] text-gray-400 hover:text-white underline"
+                    >
+                      Thẩm định lại
+                    </button>
+                  )}
+                </div>
+
+                <div className="text-[11px] font-medium leading-relaxed">
+                  {aiVerificationResult.verification_title}
+                </div>
+                {aiVerificationResult.verification_detail && (
+                  <div className="text-[10px] text-gray-300 leading-relaxed">
+                    {aiVerificationResult.verification_detail}
+                  </div>
+                )}
+                {aiVerificationResult.risk_warning && (
+                  <div className="text-[10px] bg-rose-950/80 border border-rose-500/50 p-2 text-rose-200 font-semibold">
+                    Cảnh báo rủi ro: {aiVerificationResult.risk_warning}
+                  </div>
+                )}
+              </div>
+            )}
+
             <div className="flex justify-end gap-3 pt-3 border-t border-[#222B35]">
               <button
                 type="button"
@@ -1562,6 +1730,52 @@ export default function KanbanBoard() {
                   </div>
                 )}
               </div>
+
+              {/* AI Verification Report */}
+              {inspectingTicket.ai_verification && (
+                <div className={`p-3 border text-xs space-y-1.5 ${
+                  inspectingTicket.ai_verification.status === 'VERIFIED'
+                    ? 'bg-emerald-950/40 border-emerald-500/60 text-emerald-200'
+                    : inspectingTicket.ai_verification.status === 'SUSPICIOUS'
+                      ? 'bg-rose-950/40 border-rose-500/60 text-rose-200'
+                      : 'bg-amber-950/40 border-amber-500/60 text-amber-200'
+                }`}>
+                  <div className="flex items-center justify-between font-bold">
+                    <span className="flex items-center gap-1.5">
+                      {inspectingTicket.ai_verification.status === 'VERIFIED' ? (
+                        <>
+                          <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                          <span className="text-emerald-300">✓ AI Thẩm Định: Ảnh Đạt Chuẩn ({inspectingTicket.ai_verification.confidence_score}%)</span>
+                        </>
+                      ) : inspectingTicket.ai_verification.status === 'SUSPICIOUS' ? (
+                        <>
+                          <AlertTriangle className="w-4 h-4 text-rose-400 shrink-0" />
+                          <span className="text-rose-300">⚠️ CẢNH BÁO AI: Ảnh Nghi Ngờ Không Khớp Hiện Trường ({inspectingTicket.ai_verification.confidence_score}%)</span>
+                        </>
+                      ) : (
+                        <>
+                          <AlertCircle className="w-4 h-4 text-amber-400 shrink-0" />
+                          <span className="text-amber-300">⏳ AI Nhận Định: Chưa Khắc Phục Triệt Để ({inspectingTicket.ai_verification.confidence_score}%)</span>
+                        </>
+                      )}
+                    </span>
+                    <span className="text-[10px] text-gray-400 font-mono">BQL Audit System</span>
+                  </div>
+                  <div className="text-[11px] font-medium leading-relaxed">
+                    {inspectingTicket.ai_verification.verification_title}
+                  </div>
+                  {inspectingTicket.ai_verification.verification_detail && (
+                    <div className="text-[10px] text-gray-300 leading-relaxed">
+                      {inspectingTicket.ai_verification.verification_detail}
+                    </div>
+                  )}
+                  {inspectingTicket.ai_verification.risk_warning && (
+                    <div className="text-[10px] bg-rose-950/80 border border-rose-500/50 p-2 text-rose-200 font-semibold">
+                      Lưu ý rủi ro: {inspectingTicket.ai_verification.risk_warning}
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
 
             <div className="flex justify-end pt-2 border-t border-[#222B35]">

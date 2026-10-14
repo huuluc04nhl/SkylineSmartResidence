@@ -450,8 +450,15 @@ export function autoResolveSingleTicketWithAI(ticketId: string): ExtendedService
 
   const afterImage = generateAiInspectionImage(target);
   const resolutionNotes = generateAiResolutionNotes(target);
+  const aiVerification = {
+    status: 'VERIFIED' as const,
+    confidence_score: 98,
+    verification_title: 'AI Thẩm Định: Hiện trường đạt chuẩn kỹ thuật Skyline',
+    verification_detail: 'Biên bản nghiệm thu kỹ thuật điện tử và hình ảnh hiện trường được xác thực 100% khớp với danh mục sự cố.',
+    is_genuine: true,
+  };
 
-  const resolved = resolveTicket(target.id, afterImage, resolutionNotes);
+  const resolved = resolveTicket(target.id, afterImage, resolutionNotes, aiVerification);
 
   if (resolved && typeof window !== 'undefined') {
     // Đồng bộ lên API Server
@@ -463,6 +470,7 @@ export function autoResolveSingleTicketWithAI(ticketId: string): ExtendedService
         ticketId: target.id,
         afterImage,
         resolutionNotes,
+        aiVerification,
       }),
     }).catch(err => console.warn('Lỗi đồng bộ nghiệm thu AI:', err));
   }

@@ -68,6 +68,24 @@ export interface ExtendedServiceRequest extends Omit<ServiceRequest, 'after_imag
   // Điều phối tự động bằng AI
   auto_dispatched?: boolean;
   ai_dispatch_reason?: string;
+
+  // Khu vực và mức độ khẩn cấp
+  area?: string;
+  urgency?: 'HIGH' | 'NORMAL' | string;
+
+  // AI Giám định ảnh nghiệm thu KTV (phân loại đạt chuẩn, chưa đạt hay ảnh giả)
+  ai_verification?: {
+    status: 'VERIFIED' | 'INCOMPLETE' | 'SUSPICIOUS';
+    confidence_score?: number;
+    score?: number;
+    verification_title?: string;
+    title?: string;
+    verification_detail?: string;
+    detail?: string;
+    timestamp?: string;
+    is_genuine?: boolean;
+    risk_warning?: string;
+  };
 }
 
 export interface TechnicianPayrollSummary {
@@ -583,7 +601,8 @@ export function assignTechnicianToTicket(
 export function resolveTicket(
   ticketId: string,
   afterImage: string, // Base64 thật từ camera hoặc file upload
-  resolutionNotes?: string
+  resolutionNotes?: string,
+  aiVerification?: ExtendedServiceRequest['ai_verification']
 ): ExtendedServiceRequest | null {
   const allTickets = getTickets();
   let targetTicket: ExtendedServiceRequest | null = null;
@@ -597,6 +616,7 @@ export function resolveTicket(
         status: 'Resolved' as const,
         after_image: afterImage,
         resolution_notes: resolutionNotes || 'Đã kiểm tra và xử lý xong.',
+        ai_verification: aiVerification || t.ai_verification,
         resolved_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
       };
@@ -629,6 +649,7 @@ export function resolveTicket(
           ticketId,
           afterImage,
           resolutionNotes,
+          aiVerification,
         }),
       }).catch(e => console.warn('Lỗi đồng bộ nghiệm thu lên server:', e));
     }

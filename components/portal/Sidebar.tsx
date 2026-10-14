@@ -28,6 +28,7 @@ import {
 import { UserRole, User as UserType } from '@/lib/dataStore';
 import { getUserApiAvatar, formatApiAvatarUrl } from '@/lib/avatarHelper';
 import { nksGetUserInfo } from '@/lib/nksApiClient';
+import { useLanguage } from '@/lib/languageContext';
 
 interface SidebarProps {
   currentUser: UserType;
@@ -102,6 +103,7 @@ export default function Sidebar({
   isOpenMobile = false,
   onCloseMobile
 }: SidebarProps) {
+  const { t } = useLanguage();
   const role = currentUser.role;
   const [liveAvatar, setLiveAvatar] = useState<string>(() => getUserApiAvatar(currentUser));
 
@@ -294,13 +296,14 @@ export default function Sidebar({
           <nav className="flex-1 p-2 space-y-1.5 overflow-y-auto overflow-x-hidden">
             {!collapsed && (
               <div className="px-3 py-1.5 text-[10px] uppercase tracking-[0.2em] text-gray-400 font-semibold truncate">
-                {role === 'ADMIN' ? 'Ban Quản Lý' : 'Phân Hệ Cư Dân'}
+                {role === 'ADMIN' ? t('role.admin', 'Ban Quản Lý') : t('Phân Hệ Cư Dân', 'Phân Hệ Cư Dân')}
               </div>
             )}
 
             {navItems.map((item) => {
               const Icon = item.icon;
               const isActive = activeModule === item.id;
+              const translatedLabel = t(item.label);
 
               return (
                 <div key={item.id} className="relative group">
@@ -320,7 +323,7 @@ export default function Sidebar({
                       {/* Fixed-Position Floating Flyout Tooltip */}
                       <div className="fixed left-20 ml-2 px-3 py-1.5 bg-[#0D1117] text-white text-xs font-semibold whitespace-nowrap border border-[#C5A880] shadow-[0_10px_25px_rgba(0,0,0,0.9)] z-50 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-150 rounded-none flex items-center gap-2">
                         <span className={`w-1.5 h-1.5 rounded-full ${isActive ? 'bg-[#C5A880]' : 'bg-gray-500'}`}></span>
-                        <span>{item.label}</span>
+                        <span>{translatedLabel}</span>
                       </div>
                     </button>
                   ) : (
@@ -335,7 +338,7 @@ export default function Sidebar({
                       }`}
                     >
                       <Icon className={`w-4 h-4 flex-shrink-0 ${isActive ? 'text-[#C5A880]' : 'text-gray-400'}`} />
-                      <span className="truncate">{item.label}</span>
+                      <span className="truncate">{translatedLabel}</span>
                     </button>
                   )}
                 </div>
@@ -354,7 +357,7 @@ export default function Sidebar({
             <>
               <div className="text-[10px] text-gray-400 font-mono space-y-0.5 px-1">
                 <div className="flex items-center justify-between">
-                  <span>Trạng thái:</span>
+                  <span>{t('Trạng thái:')}</span>
                   <span className="text-emerald-400 font-bold flex items-center gap-1">
                     <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
                     Online FaceID
@@ -368,7 +371,7 @@ export default function Sidebar({
                 className="w-full py-2 bg-[#161B22] hover:bg-red-950/80 border border-gray-700 hover:border-red-500 text-gray-300 hover:text-red-300 text-xs font-semibold uppercase tracking-wider transition-colors flex items-center justify-center gap-2 rounded-none active:scale-95"
               >
                 <LogOut className="w-3.5 h-3.5 text-rose-400" />
-                <span>Đăng Xuất</span>
+                <span>{t('nav.logout', 'Đăng Xuất')}</span>
               </button>
             </>
           ) : (
@@ -377,14 +380,14 @@ export default function Sidebar({
                 type="button"
                 onClick={onLogout}
                 className="w-10 h-10 flex items-center justify-center rounded-none bg-[#161B22] hover:bg-red-950/80 border border-gray-800 hover:border-red-500 text-gray-400 hover:text-red-300 transition-colors"
-                title="Đăng Xuất"
+                title={t('nav.logout', 'Đăng Xuất')}
               >
                 <LogOut className="w-4 h-4 text-rose-400" />
               </button>
 
               {/* Logout Tooltip */}
               <div className="fixed left-20 bottom-5 ml-2 px-2.5 py-1 bg-red-950 text-red-200 text-xs font-semibold whitespace-nowrap border border-red-600 shadow-xl z-50 pointer-events-none hidden group-hover:block animate-fadeIn rounded-none">
-                Đăng Xuất
+                {t('nav.logout', 'Đăng Xuất')}
               </div>
             </div>
           )}

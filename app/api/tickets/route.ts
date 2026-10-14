@@ -391,6 +391,7 @@ export async function POST(req: Request) {
             status: 'Resolved',
             after_image: afterImage,
             resolution_notes: notes,
+            ai_verification: body.aiVerification || t.ai_verification,
             resolved_at: new Date().toISOString(),
             updated_at: new Date().toISOString(),
           };

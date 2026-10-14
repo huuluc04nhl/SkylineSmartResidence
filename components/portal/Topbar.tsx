@@ -45,6 +45,7 @@ export default function Topbar({
 }: TopbarProps) {
   const router = useRouter();
   const { logout } = useAuth();
+  const { t } = useLanguage();
 
   const [searchQuery, setSearchQuery] = useState('');
   const [showSearchSuggestions, setShowSearchSuggestions] = useState(false);
@@ -148,7 +149,7 @@ export default function Topbar({
           <Search className="w-4 h-4 text-gray-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
           <input
             type="text"
-            placeholder="Tìm nhanh dịch vụ (VD: 'sửa nước', 'hóa đơn', 'hồ bơi')..."
+            placeholder={t("Tìm nhanh dịch vụ (VD: 'sửa nước', 'hóa đơn', 'hồ bơi')...")}
             value={searchQuery}
             onChange={(e) => {
               setSearchQuery(e.target.value);
@@ -158,7 +159,7 @@ export default function Topbar({
             className="w-full bg-[#161B22] border border-[#2D3748] text-xs text-white pl-10 pr-16 py-2 focus:outline-none focus:border-[#C5A880] transition-colors placeholder-gray-500"
           />
           <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[9px] font-mono text-gray-400 bg-[#222B35] px-1.5 py-0.5 border border-gray-600">
-            TÌM NHANH
+            {t('TÌM NHANH')}
           </span>
         </div>
 
@@ -167,7 +168,7 @@ export default function Topbar({
           <div className="absolute top-full left-0 right-0 mt-1 bg-[#121820] border border-[#C5A880]/60 p-2 shadow-2xl z-50">
             <div className="flex items-center justify-between px-2 py-1 text-[10px] uppercase tracking-wider text-[#C5A880] font-semibold border-b border-[#222B35]">
               <span className="flex items-center gap-1">
-                <Sparkles className="w-3 h-3" /> Gợi ý tìm kiếm
+                <Sparkles className="w-3 h-3" /> {t('Gợi ý tìm kiếm')}
               </span>
               <button
                 onClick={() => setShowSearchSuggestions(false)}
@@ -294,7 +295,7 @@ export default function Topbar({
                         ? 'bg-amber-950 text-amber-300 border-amber-600' 
                         : 'bg-blue-950 text-blue-300 border-blue-600'
                     }`}>
-                      {isAdmin ? '🛡️ Ban Quản Lý' : isOwner ? '👑 Chủ Hộ Căn Hộ' : '👤 Người Nhà Căn Hộ'}
+                      {isAdmin ? `🛡️ ${t('role.admin', 'Ban Quản Lý')}` : isOwner ? `👑 ${t('role.owner', 'Chủ Hộ Căn Hộ')}` : `👤 ${t('role.family', 'Người Nhà Căn Hộ')}`}
                     </span>
                   </div>
                 </div>
@@ -303,18 +304,18 @@ export default function Topbar({
               {/* Account Quick Details */}
               <div className="space-y-1.5 text-[11px] text-gray-300 bg-[#161D26] p-2.5 rounded-none border border-[#222B35]">
                 <div className="flex justify-between">
-                  <span className="text-gray-400">Vị trí:</span>
+                  <span className="text-gray-400">{t('Vị trí:')}</span>
                   <span className="font-mono font-bold text-white">{currentUser.apartment_code || (isAdmin ? 'BQL_OFFICE' : 'CH-06')}</span>
                 </div>
                 {currentUser.phone && (
                   <div className="flex justify-between">
-                    <span className="text-gray-400">Số điện thoại:</span>
+                    <span className="text-gray-400">{t('Số điện thoại:')}</span>
                     <span className="font-mono text-gray-200">{currentUser.phone}</span>
                   </div>
                 )}
                 {currentUser.id_card_no && (
                   <div className="flex justify-between">
-                    <span className="text-gray-400">Số CCCD:</span>
+                    <span className="text-gray-400">{t('Số CCCD:')}</span>
                     <span className="font-mono text-[#C5A880]">{currentUser.id_card_no}</span>
                   </div>
                 )}
@@ -332,7 +333,7 @@ export default function Topbar({
                     className="w-full py-2 px-2.5 bg-[#1C2533] hover:bg-[#253245] text-white text-xs font-semibold rounded-none flex items-center justify-between border border-[#2D3748] transition-colors"
                   >
                     <span className="flex items-center gap-1.5">
-                      <User className="w-3.5 h-3.5 text-[#C5A880]" /> Hồ Sơ Cá Nhân &amp; e-KYC
+                      <User className="w-3.5 h-3.5 text-[#C5A880]" /> {t('Hồ Sơ Cư Dân', 'Hồ Sơ Cá Nhân & e-KYC')}
                     </span>
                     <ArrowRight className="w-3.5 h-3.5 text-gray-400" />
                   </button>
@@ -348,9 +349,9 @@ export default function Topbar({
                   className="w-full py-2 px-2.5 bg-[#1C2533] hover:bg-[#253245] text-white text-xs font-semibold rounded-none flex items-center justify-between border border-[#2D3748] hover:border-[#C5A880] transition-colors"
                 >
                   <span className="flex items-center gap-1.5">
-                    <KeyRound className="w-3.5 h-3.5 text-[#C5A880]" /> Đổi Mật Khẩu Cá Nhân
+                    <KeyRound className="w-3.5 h-3.5 text-[#C5A880]" /> {t('Đổi Mật Khẩu', 'Đổi Mật Khẩu Cá Nhân')}
                   </span>
-                  <span className="text-[10px] text-[#C5A880] font-mono">Tự Chủ</span>
+                  <span className="text-[10px] text-[#C5A880] font-mono">24/7</span>
                 </button>
               </div>
 
@@ -362,7 +363,7 @@ export default function Topbar({
                   className="w-full p-2 text-left text-xs text-rose-400 hover:bg-rose-950/50 flex items-center gap-2 transition-colors font-semibold rounded-none"
                 >
                   <LogOut className="w-3.5 h-3.5" />
-                  Đăng Xuất Tài Khoản
+                  {t('nav.logout', 'Đăng Xuất Tài Khoản')}
                 </button>
               </div>
             </div>

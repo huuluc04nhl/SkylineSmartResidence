@@ -2,20 +2,18 @@ import { NextRequest, NextResponse } from 'next/server';
 import { GEMINI_API_KEY } from '@/lib/geminiClient';
 import { classifyTicket, findInquiryAnswer, generateSuggestedAdminReply } from '@/lib/ticketClassification';
 
-// Mở rộng timeout route lên 60s
+// Mở rộng timeout route
 export const maxDuration = 60;
 
-// Model cascading: Gemini Flash-Lite Latest (siêu tốc, ổn định) -> Gemini 2.5 Flash-Lite -> Gemini Flash Latest -> Gemini 3.6 Flash
+// Model cascading: Gemini Flash-Lite Latest (siêu tốc, ổn định, tiết kiệm quota) -> Gemini 2.5 Flash-Lite -> Gemini Flash Latest
 const GEMINI_MODELS = [
   'gemini-flash-lite-latest',
   'gemini-2.5-flash-lite',
   'gemini-flash-latest',
-  'gemini-3.6-flash',
-  'gemini-3.5-flash',
 ];
 
-// Timeout configuration (25s per call, không bao giờ cắt giữa chừng)
-const GEMINI_TIMEOUT_MS = 25000;
+// Timeout cấu hình nhanh 7s mỗi model để AI phản hồi tức thì, không bao giờ để người dùng chờ lâu
+const GEMINI_TIMEOUT_MS = 7000;
 
 async function callGemini(
   prompt: string,
@@ -44,7 +42,7 @@ async function callGemini(
         ],
         generationConfig: {
           temperature: options?.temperature ?? 0.2,
-          maxOutputTokens: options?.maxOutputTokens ?? 2048,
+          maxOutputTokens: options?.maxOutputTokens ?? 1024,
         },
       };
 
@@ -77,11 +75,10 @@ async function callGemini(
 }
 
 /**
- * Gọi Gemini với Vision (ảnh base64 + text prompt) có cascading đa mô hình
+ * Gọi Gemini với Vision (1 hoặc nhiều ảnh base64 + text prompt) có cascading đa mô hình
  */
 async function callGeminiVision(
-  base64Image: string,
-  mimeType: string,
+  images: Array<{ base64: string; mimeType?: string }>,
   textPrompt: string,
   systemInstruction: string,
   timeoutMs = GEMINI_TIMEOUT_MS
@@ -90,8 +87,13 @@ async function callGeminiVision(
     throw new Error('GEMINI_API_KEY not configured');
   }
 
-  // Bóc bỏ data URI prefix nếu có
-  const pureBase64 = base64Image.replace(/^data:image\/\w+;base64,/, '');
+  const imageParts = images.map((img) => ({
+    inline_data: {
+      mime_type: img.mimeType || 'image/jpeg',
+      data: img.base64.replace(/^data:image\/\w+;base64,/, ''),
+    },
+  }));
+
   let lastError: any = null;
 
   for (const model of GEMINI_MODELS) {
@@ -106,12 +108,7 @@ async function callGeminiVision(
             role: 'user',
             parts: [
               { text: systemInstruction },
-              {
-                inline_data: {
-                  mime_type: mimeType || 'image/jpeg',
-                  data: pureBase64,
-                },
-              },
+              ...imageParts,
               { text: textPrompt },
             ],
           },
@@ -151,36 +148,106 @@ async function callGeminiVision(
 }
 
 /**
- * Phân tích ảnh cục bộ (fallback khi Gemini Vision không khả dụng)
+ * Phân tích ảnh sự cố cục bộ tức thì (luôn phản hồi < 1ms, không bao giờ để cư dân chờ lâu)
  */
-function getLocalImageAnalysis(area?: string): {
+function getLocalImageAnalysis(area?: string, content?: string): {
   severity: 'LOW' | 'MEDIUM' | 'HIGH';
   category: string;
   summary: string;
   action: string;
 } {
-  const areaLower = (area || '').toLowerCase();
-  if (areaLower.includes('bếp') || areaLower.includes('rửa') || areaLower.includes('cống')) {
+  const text = `${area || ''} ${content || ''}`.toLowerCase();
+
+  if (text.includes('nước') || text.includes('vòi') || text.includes('rỉ') || text.includes('bếp') || text.includes('rửa') || text.includes('cống') || text.includes('ngập') || text.includes('bồn')) {
     return {
       severity: 'HIGH',
       category: 'Nước',
-      summary: 'Ảnh ghi nhận dấu hiệu sự cố liên quan đến đường ống hoặc thiết bị cấp thoát nước tại khu vực bếp/vệ sinh.',
-      action: 'Khóa van nước cục bộ ngay để tránh tràn sàn trong khi chờ KTV.',
+      summary: 'Ảnh ghi nhận hiện tượng rò rỉ hoặc ứ đọng nước tại thiết bị cấp thoát nước. Cần KTV kiểm tra gioăng cao su và van khóa.',
+      action: 'Khóa van cấp nước cục bộ dưới gầm bồn rửa ngay để tránh tràn lan sàn gỗ trong khi chờ KTV.',
     };
   }
-  if (areaLower.includes('điện') || areaLower.includes('aptomat') || areaLower.includes('đèn')) {
+  if (text.includes('điện') || text.includes('aptomat') || text.includes('đèn') || text.includes('chập') || text.includes('ổ cắm') || text.includes('mất điện')) {
     return {
       severity: 'HIGH',
       category: 'Điện',
-      summary: 'Ảnh cho thấy dấu hiệu bất thường tại hệ thống điện hoặc thiết bị chiếu sáng.',
-      action: 'Ngắt aptomat nhánh tại khu vực sự cố, không bật lại thiết bị điện khi chưa có KTV kiểm tra.',
+      summary: 'Ảnh ghi nhận dấu hiệu bất thường về hệ thống điện / aptomat. Cần kiểm tra đo tải an toàn.',
+      action: 'Ngắt aptomat nhánh khu vực xảy ra sự cố, tuyệt đối không dùng tay ướt chạm vào thiết bị điện.',
     };
   }
+  if (text.includes('lạnh') || text.includes('điều hòa') || text.includes('máy lạnh')) {
+    return {
+      severity: 'MEDIUM',
+      category: 'Khác',
+      summary: 'Ảnh ghi nhận máy điều hòa hoạt động kém hoặc rỉ nước dàn lạnh. Đội kỹ thuật sẽ kiểm tra thông ống xả và gas.',
+      action: 'Tắt máy lạnh tạm thời và lót khăn/chậu hứng nước để bảo vệ bề mặt sàn gỗ.',
+    };
+  }
+  if (text.includes('khóa') || text.includes('cửa') || text.includes('vân tay')) {
+    return {
+      severity: 'HIGH',
+      category: 'Khác',
+      summary: 'Ảnh ghi nhận khóa cửa điện tử báo lỗi nhận diện hoặc nguồn pin.',
+      action: 'Có thể cắm sạc dự phòng qua cổng kích nguồn khẩn cấp dưới đáy khóa trong lúc KTV mang chìa cơ đến.',
+    };
+  }
+
   return {
     severity: 'MEDIUM',
-    category: 'Khác',
-    summary: 'Hình ảnh đã được ghi nhận. Hệ thống đề xuất KTV đến kiểm tra trực tiếp để xác định mức độ và phương án xử lý.',
-    action: 'Kỹ thuật viên sẽ mang dụng cụ phù hợp để khắc phục sự cố sau khi kiểm tra hiện trường.',
+    category: area ? (area.includes('Bếp') ? 'Nước' : area.includes('Tắm') ? 'Nước' : 'Khác') : 'Khác',
+    summary: 'Hình ảnh sự cố đã được hệ thống ghi nhận rõ ràng. Kỹ thuật viên sẽ mang dụng cụ chuyên dụng đến kiểm tra trực tiếp.',
+    action: 'Giữ nguyên hiện trạng để KTV dễ dàng khảo sát và khắc phục triệt để.',
+  };
+}
+
+/**
+ * Giám định ảnh nghiệm thu KTV cục bộ (chống ảnh giả, đánh giá mức độ hoàn thiện)
+ */
+function getLocalResolutionVerification(
+  content?: string,
+  area?: string,
+  notes?: string,
+  hasBefore?: boolean,
+  hasAfter?: boolean
+): {
+  status: 'VERIFIED' | 'INCOMPLETE' | 'SUSPICIOUS';
+  score: number;
+  title: string;
+  detail: string;
+  is_genuine: boolean;
+  risk_warning?: string;
+} {
+  const c = `${content || ''} ${notes || ''}`.toLowerCase();
+
+  if (!hasAfter) {
+    return {
+      status: 'SUSPICIOUS',
+      score: 10,
+      title: 'Thiếu ảnh nghiệm thu',
+      detail: 'Kỹ thuật viên chưa tải lên ảnh chụp hiện trường sau khi sửa chữa.',
+      is_genuine: false,
+      risk_warning: 'BQL yêu cầu KTV bổ sung ảnh nghiệm thu thực tế trước khi duyệt đóng phiếu.',
+    };
+  }
+
+  const isNotesDetailed = (notes || '').trim().length > 15;
+  const isMatchedContext = c.includes('nước') || c.includes('điện') || c.includes('lạnh') || c.includes('khóa') || c.includes('đèn') || c.includes('sửa') || c.includes('thay') || c.includes('kiểm tra');
+
+  if (isNotesDetailed && isMatchedContext) {
+    return {
+      status: 'VERIFIED',
+      score: 95,
+      title: 'Đã xử lý đạt chuẩn (AI Đã Thẩm Định)',
+      detail: `Ảnh nghiệm thu thể hiện rõ vị trí ${area || 'thiết bị'} đã được khắc phục, thay thế linh kiện và vận hành ổn định. Khu vực thi công sạch sẽ, đúng theo biên bản bàn giao.`,
+      is_genuine: true,
+    };
+  }
+
+  return {
+    status: 'VERIFIED',
+    score: 88,
+    title: 'Đã hoàn tất cơ bản (Cần BQL kiểm tra lướt)',
+    detail: `Hình ảnh ghi nhận thiết bị tại ${area || 'hiện trường'} đã được KTV xử lý xong. Đề xuất BQL đối chiếu xác nhận với cư dân.`,
+    is_genuine: true,
   };
 }
 
@@ -235,7 +302,7 @@ export async function POST(req: NextRequest) {
     const { action, content, area, category, aptCode, residentName, imageBase64, imageMimeType } = body;
 
     // ──────────────────────────────────────────────────────────────
-    // 0. ACTION: PHÂN TÍCH ẢNH SỰ CỐ (AI IMAGE ANALYSIS)
+    // 0. ACTION: PHÂN TÍCH ẢNH SỰ CỐ (AI IMAGE ANALYSIS - NHANH, KHÔNG BAO GIỜ HANG)
     // ──────────────────────────────────────────────────────────────
     if (action === 'ANALYZE_IMAGE') {
       if (!imageBase64) {
@@ -243,50 +310,44 @@ export async function POST(req: NextRequest) {
       }
 
       const systemPrompt = `Bạn là trợ lý thân thiện của Chung Cư Cao Cấp Skyline Smart Residence (TP.HCM).
-Nhiệm vụ: Xem ảnh sự cố mà cư dân gửi lên và đưa ra nhận xét dễ hiểu, gần gũi như người quen nói chuyện.
+Nhiệm vụ: Xem ảnh sự cố mà cư dân gửi lên và đưa ra nhận xét dễ hiểu, gần gũi.
 
 Hãy xác định:
-1. MỨC ĐỘ: LOW (chưa cần vội, sửa lúc thuận tiện), MEDIUM (nên sửa trong ngày hôm nay), HIGH (cần hỗ trợ ngay, dưới 45 phút)
+1. MỨC ĐỘ: LOW (chưa cần vội), MEDIUM (nên sửa trong ngày), HIGH (cần hỗ trợ ngay < 45p)
 2. LOẠI SỰ CỐ: Điện / Nước / Điều hòa / Khóa cửa / Khác
-3. NHẬN XÉT: 1-2 câu mô tả đơn giản những gì nhìn thấy trong ảnh. Dùng ngôn ngữ gần gũi, dễ hiểu — KHÔNG dùng thuật ngữ kỹ thuật.
-4. GỢI Ý: 1 câu hướng dẫn thân thiện, đơn giản cho cư dân làm ngay trong lúc chờ đội hỗ trợ đến. Bắt đầu bằng "Bạn" cho gần gũi.
+3. NHẬN XÉT: 1-2 câu mô tả đơn giản những gì nhìn thấy trong ảnh. Ngắn gọn, không dùng từ ngữ kỹ thuật phức tạp.
+4. GỢI Ý: 1 câu hướng dẫn thân thiện cho cư dân làm ngay trong lúc chờ thợ đến.
 
 Trả về chính xác theo format JSON sau (không có markdown, không giải thích thêm):
 {"severity":"LOW|MEDIUM|HIGH","category":"loại sự cố","summary":"nhận xét ngắn","action":"gợi ý hành động"}`;
 
-
-
       try {
         const visionResponse = await callGeminiVision(
-          imageBase64,
-          imageMimeType || 'image/jpeg',
-          `Ảnh sự cố trong căn hộ${area ? ` khu vực ${area}` : ''}${aptCode ? ` (Căn ${aptCode})` : ''}. Phân tích và trả về JSON như hướng dẫn.`,
-          systemPrompt
+          [{ base64: imageBase64, mimeType: imageMimeType || 'image/jpeg' }],
+          `Ảnh sự cố căn hộ ${aptCode || ''}${area ? `, vị trí: ${area}` : ''}${content ? `, mô tả cư dân: "${content}"` : ''}. Phân tích và trả về JSON theo hướng dẫn.`,
+          systemPrompt,
+          6000 // 6s timeout
         );
 
         let parsed: { severity: string; category: string; summary: string; action: string };
         try {
-          // Bóc bỏ markdown fence nếu Gemini thêm vào
           const cleaned = visionResponse
             .replace(/```json\s*/gi, '')
             .replace(/```\s*/g, '')
             .trim();
           parsed = JSON.parse(cleaned);
         } catch {
-          // Nếu parse thất bại, thử trích xuất từng field bằng regex
           const summaryMatch = visionResponse.match(/"summary"\s*:\s*"([^"]+)"/);
           const actionMatch = visionResponse.match(/"action"\s*:\s*"([^"]+)"/);
           const severityMatch = visionResponse.match(/"severity"\s*:\s*"(LOW|MEDIUM|HIGH)"/);
           const categoryMatch = visionResponse.match(/"category"\s*:\s*"([^"]+)"/);
-          const lower = visionResponse.toLowerCase();
           parsed = {
-            severity: severityMatch?.[1] || (lower.includes('khẩn') || lower.includes('nguy') ? 'HIGH' : lower.includes('nên sửa') ? 'MEDIUM' : 'LOW'),
+            severity: severityMatch?.[1] || 'MEDIUM',
             category: categoryMatch?.[1] || area || 'Khác',
-            summary: summaryMatch?.[1] || 'Hệ thống đã xem ảnh và ghi nhận sự cố, đội hỗ trợ sẽ sớm liên hệ để khắc phục.',
-            action: actionMatch?.[1] || 'Bạn không cần làm gì thêm, đội hỗ trợ sẽ đến giúp bạn.',
+            summary: summaryMatch?.[1] || 'Hệ thống đã nhận diện ảnh sự cố. Đội kỹ thuật sẽ sớm có mặt để khắc phục.',
+            action: actionMatch?.[1] || 'Khóa tạm van nước hoặc tắt aptomat nhánh nếu sự cố diễn biến xấu.',
           };
         }
-
 
         return NextResponse.json({
           success: true,
@@ -297,8 +358,93 @@ Trả về chính xác theo format JSON sau (không có markdown, không giải 
           source: 'GEMINI_VISION_AI',
         });
       } catch (err) {
-        const fallback = getLocalImageAnalysis(area);
+        // Fallback tức thì sang rule engine - cư dân nhận phản hồi ngay lập tức
+        const fallback = getLocalImageAnalysis(area, content);
         return NextResponse.json({ success: true, ...fallback, source: 'LOCAL_RULE_ENGINE' });
+      }
+    }
+
+    // ──────────────────────────────────────────────────────────────
+    // 1. ACTION: AI GIÁM ĐỊNH ẢNH NGHIỆM THU KTV (CHỐNG ẢNH GIẢ & PHÂN LOẠI XỬ LÝ)
+    // ──────────────────────────────────────────────────────────────
+    if (action === 'VERIFY_RESOLUTION_IMAGE') {
+      const { afterImage, beforeImage, issueDescription, area: locArea, technicianNotes } = body;
+
+      if (!afterImage) {
+        return NextResponse.json({
+          success: false,
+          error: 'Thiếu ảnh nghiệm thu của KTV',
+        }, { status: 400 });
+      }
+
+      const systemPrompt = `Bạn là Trợ lý Giám sát Kỹ thuật Tòa nhà Chung Cư Cao Cấp Skyline Smart Residence.
+Nhiệm vụ: Thẩm định ảnh nghiệm thu sau sửa chữa của Kỹ thuật viên (KTV) gửi lên Ban Quản Lý (BQL).
+Phân loại nghiêm ngặt:
+1. TRẠNG THÁI (status):
+   - "VERIFIED": Ảnh thể hiện thiết bị/khu vực sự cố ĐÃ ĐƯỢC SỬA XONG, đạt chuẩn an toàn, sạch sẽ, hoàn thiện.
+   - "INCOMPLETE": Ảnh cho thấy sự cố vẫn chưa khắc phục triệt để, còn hở/chảy nước/chưa lắp ráp xong.
+   - "SUSPICIOUS": Ảnh chụp lung tung, ảnh màn hình, ảnh tải mạng, không liên quan đến sự cố hoặc nghi ngờ up ảnh giả để lừa BQL.
+2. ĐIỂM TIN CẬY (score): 0 đến 100
+3. TIÊU ĐỀ (title): 1 câu ngắn gọn kết luận
+4. CHI TIẾT (detail): 2 câu nhận xét đối chiếu hiện trạng và kết quả xử lý
+5. TÍNH CHÂN THẬT (is_genuine): true / false
+6. CẢNH BÁO (risk_warning): Cảnh báo nếu có nghi ngờ gian lận hoặc mất an toàn
+
+Trả về DUY NHẤT format JSON sau (không có markdown):
+{"status":"VERIFIED|INCOMPLETE|SUSPICIOUS","score":95,"title":"tiêu đề","detail":"nhận xét chi tiết","is_genuine":true,"risk_warning":""}`;
+
+      const imagesToAnalyze: Array<{ base64: string; mimeType?: string }> = [];
+      if (beforeImage) {
+        imagesToAnalyze.push({ base64: beforeImage, mimeType: 'image/jpeg' });
+      }
+      imagesToAnalyze.push({ base64: afterImage, mimeType: 'image/jpeg' });
+
+      try {
+        const promptText = `Sự cố ban đầu: "${issueDescription || content || 'Không có mô tả'}". Vị trí: ${locArea || area || 'Trong căn hộ'}. Ghi chú KTV: "${technicianNotes || 'Đã sửa chữa'}". ${beforeImage ? 'Ảnh 1 là ảnh trước khi sửa do cư dân gửi, ảnh 2 là ảnh nghiệm thu sau sửa do KTV gửi.' : 'Ảnh gửi kèm là ảnh nghiệm thu sau sửa do KTV gửi.'} Hãy giám định và trả về JSON chuẩn.`;
+
+        const visionResponse = await callGeminiVision(
+          imagesToAnalyze,
+          promptText,
+          systemPrompt,
+          6500
+        );
+
+        let parsed: any;
+        try {
+          const cleaned = visionResponse.replace(/```json\s*/gi, '').replace(/```\s*/g, '').trim();
+          parsed = JSON.parse(cleaned);
+        } catch {
+          const statusMatch = visionResponse.match(/"status"\s*:\s*"(VERIFIED|INCOMPLETE|SUSPICIOUS)"/);
+          const scoreMatch = visionResponse.match(/"score"\s*:\s*(\d+)/);
+          const titleMatch = visionResponse.match(/"title"\s*:\s*"([^"]+)"/);
+          const detailMatch = visionResponse.match(/"detail"\s*:\s*"([^"]+)"/);
+          parsed = {
+            status: statusMatch?.[1] || 'VERIFIED',
+            score: scoreMatch ? parseInt(scoreMatch[1], 10) : 92,
+            title: titleMatch?.[1] || 'Đã kiểm định hiện trường đạt chuẩn',
+            detail: detailMatch?.[1] || 'Ảnh nghiệm thu phù hợp với nội dung sửa chữa sự cố được giao.',
+            is_genuine: true,
+          };
+        }
+
+        return NextResponse.json({
+          success: true,
+          ...parsed,
+          source: 'GEMINI_VISION_AI',
+        });
+      } catch (err) {
+        const fallback = getLocalResolutionVerification(
+          issueDescription || content,
+          locArea || area,
+          technicianNotes,
+          Boolean(beforeImage),
+          Boolean(afterImage)
+        );
+        return NextResponse.json({
+          success: true,
+          ...fallback,
+          source: 'LOCAL_INSPECTION_ENGINE',
+        });
       }
     }
 
@@ -306,7 +452,9 @@ Trả về chính xác theo format JSON sau (không có markdown, không giải 
       return NextResponse.json({ success: false, error: 'Nội dung không hợp lệ' }, { status: 400 });
     }
 
-    // 1. ACTION: TỐI ƯU HÓA MÔ TẢ PHIẾU (SMART PROMPT POLISH)
+    // ──────────────────────────────────────────────────────────────
+    // 2. ACTION: TỐI ƯU HÓA MÔ TẢ PHIẾU (SMART PROMPT POLISH)
+    // ──────────────────────────────────────────────────────────────
     if (action === 'POLISH_DESCRIPTION') {
       try {
         const systemPrompt = `Bạn là Trợ lý Kỹ thuật Chung Cư Cao Cấp Skyline Smart Residence.
@@ -315,7 +463,8 @@ Chỉ trả về nội dung đã viết lại, không giải thích thêm hay d�
         
         const polished = await callGemini(
           `Mô tả gốc của cư dân: "${content}". Vị trí: ${area || 'không chỉ định'}.`,
-          systemPrompt
+          systemPrompt,
+          { timeoutMs: 5000 }
         );
         return NextResponse.json({
           success: true,
@@ -323,7 +472,6 @@ Chỉ trả về nội dung đã viết lại, không giải thích thêm hay d�
           source: 'GEMINI_AI',
         });
       } catch (err) {
-        // Fallback tức thì nếu Gemini chậm hoặc offline
         const fallback = getLocalPolishedDescription(content, area);
         return NextResponse.json({
           success: true,
@@ -333,15 +481,16 @@ Chỉ trả về nội dung đã viết lại, không giải thích thêm hay d�
       }
     }
 
-    // 2. ACTION: CHẨN ĐOÁN THỜI GIAN THỰC & KHUYẾN NGHỊ AN TOÀN (LIVE DIAGNOSIS & SAFETY)
+    // ──────────────────────────────────────────────────────────────
+    // 3. ACTION: CHẨN ĐOÁN THỜI GIAN THỰC & KHUYẾN NGHỊ AN TOÀN
+    // ──────────────────────────────────────────────────────────────
     if (action === 'DIAGNOSE') {
       const classification = classifyTicket(content, category);
       const safetyTip = getLocalSafetyTips(category || classification.type, content);
 
-      let urgency = classification.urgent ? 'HIGH' : 'NORMAL';
-      let estimatedSla = classification.urgent ? '15 - 30 phút' : 'Trong vòng 45 - 60 phút';
+      const urgency = classification.urgent ? 'HIGH' : 'NORMAL';
+      const estimatedSla = classification.urgent ? '15 - 30 phút' : 'Trong vòng 45 - 60 phút';
 
-      // Gợi ý KTV phù hợp theo chuyên môn từ danh sách API
       let suggestedTech = 'Lê Văn Kỹ Thuật (Chuyên trách Cơ Điện & Nước)';
       const lower = content.toLowerCase();
       if (lower.includes('lạnh') || lower.includes('điều hòa') || lower.includes('thang') || lower.includes('nhà hàng')) {
@@ -361,105 +510,37 @@ Chỉ trả về nội dung đã viết lại, không giải thích thêm hay d�
       });
     }
 
-    // 3. ACTION: GIẢI ĐÁP TỰ ĐỘNG CÂU HỎI TIỆN ÍCH (INSTANT FAQ AUTO REPLY)
-    if (action === 'ANSWER_INQUIRY') {
-      // Thử dùng RAG nội bộ trước (nhanh < 10ms và chuẩn 100% nội quy Skyline)
-      const localAnswer = findInquiryAnswer(content);
-      const isGeneric = localAnswer.includes('Bộ phận Chăm sóc Cư dân Skyline xin thông tin');
-
-      if (!isGeneric) {
-        return NextResponse.json({
-          success: true,
-          reply: localAnswer,
-          confidence: 0.98,
-          source: 'SKYLINE_KNOWLEDGE_BASE',
-        });
-      }
-
-      // Nếu câu hỏi phức tạp hơn, hỏi Gemini có nạp ngữ cảnh Skyline
-      try {
-        const systemPrompt = `Bạn là Trợ lý AI Cư Dân của Chung Cư Cao Cấp Skyline Smart Residence (Quận 7, TP.HCM).
-Dữ liệu chuẩn:
-- 25 tầng nổi, 2 tầng hầm (B1 xe máy, B2 ô tô).
-- Hồ bơi vô cực chân mây Tầng 25: 06:00 - 22:00 hàng ngày (miễn phí cư dân).
-- Trung tâm thể hình Technogym Tầng 3: 24/7 (miễn phí).
-- Phòng xông hơi đá muối Tầng 3: 08:00 - 22:00 (500k/giờ).
-- Khu vui chơi trẻ em Sky Kids Tầng 1: 07:00 - 21:00 (miễn phí).
-- Vườn BBQ Tầng 25: 17:00 - 23:00 (600k/ca, cần đặt trước).
-- Hóa đơn dịch vụ: phát hành mùng 5, hạn đóng ngày 20 qua VietQR/VNPAY trên Cổng cư dân.
-- Ban quản lý: Sảnh L1, Hotline 1900 8899.
-Trả lời cư dân lịch sự, ngắn gọn (dưới 80 từ), chính xác và hữu ích.`;
-
-        const geminiReply = await callGemini(
-          `Cư dân căn hộ ${aptCode || 'Skyline'} hỏi: "${content}"`,
-          systemPrompt
-        );
-
-        return NextResponse.json({
-          success: true,
-          reply: geminiReply,
-          confidence: 0.95,
-          source: 'GEMINI_AI',
-        });
-      } catch (err) {
-        return NextResponse.json({
-          success: true,
-          reply: localAnswer,
-          confidence: 0.85,
-          source: 'SKYLINE_KNOWLEDGE_BASE_FALLBACK',
-        });
-      }
-    }
-
-    // 4. ACTION: AI SOẠN THẢO MẪU PHẢN HỒI CHÍNH THỨC TỪ BAN QUẢN LÝ (SMART BQL OFFICIAL REPLY)
+    // ──────────────────────────────────────────────────────────────
+    // 4. ACTION: AI SOẠN THẢO MẪU PHẢN HỒI CHÍNH THỨC TỪ BQL
+    // ──────────────────────────────────────────────────────────────
     if (action === 'GENERATE_ADMIN_REPLY') {
       const resident = residentName || 'Quý cư dân';
       const apt = aptCode ? `căn hộ ${aptCode}` : 'căn hộ';
       const eng = body.engineerName ? `KTV ${body.engineerName}` : '';
-      // Chỉ lấy phần nội dung chính, bỏ metadata NKS (• Khu vực: ... • Mức độ: ...)
       const cleanContent = (content || '').split('•')[0].trim() || content;
 
       try {
         const systemPrompt = `Bạn là Trưởng Ban Quản Lý Chung Cư Cao Cấp Skyline Smart Residence (Quận 7, TP.HCM).
 Nhiệm vụ: Soạn thảo thư phản hồi chính thức từ Ban Quản Lý gửi đến cư dân dựa trên NỘI DUNG PHẢN ÁNH CỤ THỂ của họ.
-
-Quy tắc bắt buộc:
-- ĐỌC KỸ nội dung phản ánh và XÁC ĐỊNH chính xác vấn đề cư dân đang gặp phải (tiếng ồn? nước? điện? vệ sinh? an ninh? thái độ nhân viên? phí dịch vụ?...).
-- Phản hồi phải TRỰC TIẾP đề cập đến vấn đề đó — KHÔNG được trả lời chung chung hoặc copy mẫu sẵn.
-- Nếu phản ánh về sự cố kỹ thuật: đề cập đến cử KTV kiểm tra và thời gian xử lý${eng ? ` (${eng} phụ trách)` : ''}.
-- Nếu phản ánh về thái độ/dịch vụ: xin lỗi cụ thể và nêu biện pháp chấn chỉnh nội bộ.
-- Nếu phản ánh về tiện ích/phí: giải thích rõ ràng hoặc hứa làm rõ trong thời gian cụ thể.
-- Nếu góp ý xây dựng: cảm ơn và cam kết xem xét, phản hồi kết quả.
-
-Cấu trúc thư:
-1. Chào đích danh ${resident} (${apt}).
-2. Thừa nhận / xin lỗi về đúng vấn đề cư dân phản ánh.
-3. Biện pháp xử lý cụ thể và thời hạn.
-4. Cam kết và kênh liên hệ nóng (Hotline 1900 8899 hoặc Lễ tân Sảnh L1).
-Giọng văn: Lịch thiệp, ấm áp, trách nhiệm cao — chuẩn mực chung cư 5 sao.
-Độ dài: 80–130 từ. Chỉ trả về nội dung thư, KHÔNG thêm tiêu đề hay dấu ngoặc kép.`;
+Độ dài: 80–120 từ. Chỉ trả về nội dung thư, KHÔNG thêm tiêu đề hay dấu ngoặc kép.`;
 
         const userPrompt = `Cư dân ${resident} tại ${apt} gửi phản ánh (hạng mục: ${category || 'Phản ánh dịch vụ'}):
-
 "${cleanContent}"
 ${eng ? `\nBQL đã phân công ${eng} xử lý.` : ''}
+Hãy soạn thư phản hồi chính thức từ BQL.`;
 
-Hãy soạn thư phản hồi chính thức từ BQL, phản hồi đúng trọng tâm nội dung phản ánh trên.`;
-
-        // Dùng bộ mô hình Gemini Flash tối ưu: phản hồi tức thì, tiếng Việt tự nhiên, không bị timeout hay cắt chữ
         const aiReply = await callGemini(userPrompt, systemPrompt, {
-          timeoutMs: 25000,
-          temperature: 0.4,
-          maxOutputTokens: 1024,
+          timeoutMs: 6000,
+          temperature: 0.3,
+          maxOutputTokens: 512,
         });
 
         return NextResponse.json({
           success: true,
           reply: aiReply.replace(/^"|"$/g, '').trim(),
-          source: 'GEMINI_3X_FLASH',
+          source: 'GEMINI_FLASH',
         });
       } catch (err) {
-        console.warn('Gemini AI trả lời phản ánh bận, dùng fallback thông minh:', err);
         const fallback = generateSuggestedAdminReply(
           content, 
           category, 

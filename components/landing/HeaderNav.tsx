@@ -93,7 +93,7 @@ export default function HeaderNav({ onOpenLogin }: HeaderNavProps) {
                   {currentUser.full_name}
                 </div>
                 <div className="text-[10px] text-[#C5A880] font-mono uppercase font-bold">
-                  {currentUser.role === 'ADMIN' ? 'Ban Quản Lý' : `Căn ${currentUser.apartment_code || 'CH-06'} (${currentUser.role})`}
+                  {currentUser.role === 'ADMIN' ? t('role.admin', 'Ban Quản Lý') : `Căn ${currentUser.apartment_code || 'CH-06'} (${t(currentUser.role)})`}
                 </div>
               </div>
 
@@ -102,13 +102,13 @@ export default function HeaderNav({ onOpenLogin }: HeaderNavProps) {
                 className="px-3 py-1.5 bg-[#C5A880] hover:bg-white text-[#0D1117] text-[11px] uppercase tracking-wider font-bold transition-colors flex items-center gap-1.5 rounded-none"
               >
                 <LayoutDashboard className="w-3.5 h-3.5" />
-                Vào Bảng Điều Khiển
+                {t('nav.dashboard', 'Vào Bảng Điều Khiển')}
               </Link>
 
               <button
                 onClick={logout}
                 className="p-1.5 text-gray-400 hover:text-red-400 transition-colors rounded-none"
-                title="Đăng xuất"
+                title={t('nav.logout', 'Đăng xuất')}
               >
                 <LogOut className="w-4 h-4" />
               </button>
@@ -119,7 +119,7 @@ export default function HeaderNav({ onOpenLogin }: HeaderNavProps) {
               className="px-5 py-2 bg-[#C5A880] hover:bg-[#D4AF37] text-[#0D1117] text-[11px] uppercase tracking-[0.18em] transition-all flex items-center gap-2 font-bold shadow-md rounded-none cursor-pointer"
             >
               <KeyRound className="w-3.5 h-3.5" />
-              Đăng Nhập
+              {t('nav.login', 'Đăng Nhập')}
             </button>
           )}
         </div>
@@ -132,13 +132,13 @@ export default function HeaderNav({ onOpenLogin }: HeaderNavProps) {
             type="button"
             role="switch"
             aria-checked={!isDark}
-            aria-label={isDark ? 'Bật Chế độ Sáng' : 'Bật Chế độ Tối'}
+            aria-label={isDark ? t('nav.theme_light', 'Bật Chế độ Sáng') : t('nav.theme_dark', 'Bật Chế độ Tối')}
             className={`relative inline-flex items-center h-7 w-[52px] border cursor-pointer select-none transition-colors duration-200 rounded-none shrink-0 ${
               isDark
                 ? 'bg-[#121820] border-[#C5A880]/60'
                 : 'bg-slate-200 border-gray-400'
             }`}
-            title={isDark ? 'Bật Chế độ Sáng' : 'Bật Chế độ Tối'}
+            title={isDark ? t('nav.theme_light', 'Bật Chế độ Sáng') : t('nav.theme_dark', 'Bật Chế độ Tối')}
           >
             <span className="w-full flex items-center justify-between px-1.5 pointer-events-none">
               <Sun className={`w-3 h-3 ${isDark ? 'text-gray-500' : 'text-amber-500'}`} />
@@ -182,10 +182,10 @@ export default function HeaderNav({ onOpenLogin }: HeaderNavProps) {
           <nav className={`flex flex-col space-y-3 text-[13px] uppercase tracking-[0.15em] font-medium ${
             isDark ? 'text-gray-300' : 'text-gray-700'
           }`}>
-            <a href="#concept" onClick={() => setMobileMenuOpen(false)} className="py-1">Tổng Quan</a>
-            <a href="#floorplans" onClick={() => setMobileMenuOpen(false)} className="py-1">Mặt Bằng Căn Hộ</a>
-            <a href="#amenities" onClick={() => setMobileMenuOpen(false)} className="py-1">Tiện Ích 5 Sao</a>
-            <a href="#smart-tech" onClick={() => setMobileMenuOpen(false)} className="py-1">Lõi Công Nghệ AI</a>
+            <a href="#concept" onClick={() => setMobileMenuOpen(false)} className="py-1">{t('Tổng Quan')}</a>
+            <a href="#floorplans" onClick={() => setMobileMenuOpen(false)} className="py-1">{t('Mặt Bằng Căn Hộ')}</a>
+            <a href="#amenities" onClick={() => setMobileMenuOpen(false)} className="py-1">{t('Tiện Ích 5 Sao')}</a>
+            <a href="#smart-tech" onClick={() => setMobileMenuOpen(false)} className="py-1">{t('Lõi Công Nghệ AI')}</a>
           </nav>
 
           <div className={`pt-4 border-t ${isDark ? 'border-[#222B35]' : 'border-gray-200'}`}>
@@ -195,7 +195,7 @@ export default function HeaderNav({ onOpenLogin }: HeaderNavProps) {
                 onClick={() => setMobileMenuOpen(false)}
                 className="w-full py-2.5 bg-[#C5A880] text-[#0D1117] text-xs uppercase tracking-wider font-bold text-center block rounded-none"
               >
-                Vào Bảng Điều Khiển ({currentUser.role === 'ADMIN' ? 'Ban Quản Lý' : currentUser.role === 'TECHNICIAN' ? 'Kỹ Thuật' : 'Cư Dân'})
+                {t('nav.dashboard', 'Vào Bảng Điều Khiển')} ({currentUser.role === 'ADMIN' ? t('role.admin', 'Ban Quản Lý') : currentUser.role === 'TECHNICIAN' ? t('role.technician', 'Kỹ Thuật') : t('role.resident', 'Cư Dân')})
               </Link>
             ) : (
               <button
@@ -203,7 +203,7 @@ export default function HeaderNav({ onOpenLogin }: HeaderNavProps) {
                 className="w-full py-2.5 bg-[#C5A880] text-[#0D1117] text-xs uppercase tracking-wider font-bold flex items-center justify-center gap-2 rounded-none shadow-md"
               >
                 <KeyRound className="w-4 h-4" />
-                Đăng Nhập Hệ Thống
+                {t('nav.login', 'Đăng Nhập Hệ Thống')}
               </button>
             )}
           </div>
