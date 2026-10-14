@@ -196,14 +196,14 @@ export default function SmartTechSection() {
           <h2 className={`text-3xl sm:text-4xl lg:text-5xl font-serif font-bold tracking-tight ${
             isDark ? 'text-[#FAFAFA]' : 'text-[#0D1117]'
           }`}>
-            {t('Một Ngày Trải Nghiệm Chuẩn Sống Đẳng Cấp Cùng Lõi AI', 'A Day of Luxury Living Powered by AI Core')}
+            {t('Một Ngày Trải Nghiệm Chuẩn Sống Đẳng Cấp Cùng Lõi AI', 'A Day Experiencing Luxury Living with AI Core')}
           </h2>
           <p className={`text-sm sm:text-base font-light leading-relaxed ${
             isDark ? 'text-gray-300' : 'text-gray-600'
           }`}>
             {t(
               'Không chỉ là những thiết bị công nghệ rời rạc, Skyline liên kết toàn diện hạ tầng từ căn hộ thông minh đến hệ thống quản trị vận hành 4 chung cư The Tropical trong từng khoảnh khắc nhịp sống của cư dân.',
-              'Far more than disconnected smart gadgets, Skyline seamlessly unifies infrastructure from smart apartments to building operations across 4 towers of The Tropical in every moment of daily life.'
+              'Far beyond isolated gadgets, Skyline comprehensively connects infrastructure from smart apartments to the operating management system of 4 towers at The Tropical throughout residents\' daily rhythms.'
             )}
           </p>
         </div>
@@ -268,7 +268,7 @@ export default function SmartTechSection() {
                 </div>
                 <div>
                   <div className="text-[11px] font-mono uppercase tracking-widest text-[#C5A880] font-bold">
-                    {t('Khung Giờ', 'Time Slot')} {current.timeLabel} • {t(current.periodName)}
+                    {t('Khung Giờ')} {current.timeLabel} • {t(current.periodName)}
                   </div>
                   <h3 className="text-xl sm:text-2xl lg:text-3xl font-serif font-bold text-white leading-snug">
                     {t(current.headline)}
@@ -307,7 +307,7 @@ export default function SmartTechSection() {
                   <ArrowRight className="w-3.5 h-3.5" />
                 </Link>
                 <span className="text-[11px] text-gray-400 font-mono hidden sm:inline">
-                  {t('Tích hợp 4 chung cư The Tropical', 'Integrated with 4 towers of The Tropical')}
+                  {t('Tích hợp 4 chung cư The Tropical', 'Integrated across 4 towers of The Tropical')}
                 </span>
               </div>
             </div>

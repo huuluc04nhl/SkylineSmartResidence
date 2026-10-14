@@ -6,17 +6,24 @@ import { TRANSLATIONS_DATA } from './translationsData';
 export type Language = 'vi' | 'en';
 
 // =============================================================================
-// FAST LOOKUP MAPS (O(1))
+// FAST LOOKUP MAPS (O(1)) WITH NORMALIZATION
 // =============================================================================
 const VI_TO_EN_MAP = new Map<string, string>();
 const EN_TO_VI_MAP = new Map<string, string>();
+
+export function normKey(str: string): string {
+  if (!str) return '';
+  return str.replace(/\s+/g, ' ').trim().toLowerCase();
+}
 
 for (const [vi, en] of TRANSLATIONS_DATA) {
   const cleanVi = vi.trim();
   const cleanEn = en.trim();
   if (cleanVi && cleanEn) {
     VI_TO_EN_MAP.set(cleanVi.toLowerCase(), cleanEn);
+    VI_TO_EN_MAP.set(normKey(cleanVi), cleanEn);
     EN_TO_VI_MAP.set(cleanEn.toLowerCase(), cleanVi);
+    EN_TO_VI_MAP.set(normKey(cleanEn), cleanVi);
   }
 }
 
@@ -25,86 +32,57 @@ for (const [vi, en] of TRANSLATIONS_DATA) {
 // =============================================================================
 export function translateString(text: string, targetLang: Language): string {
   if (!text || typeof text !== 'string') return text;
-  
-  // Normalize HTML entities if present
-  let normalized = text;
-  if (normalized.includes('&amp;') || normalized.includes('&quot;') || normalized.includes('&lt;') || normalized.includes('&gt;')) {
-    normalized = normalized
-      .replace(/&amp;/g, '&')
-      .replace(/&quot;/g, '"')
-      .replace(/&lt;/g, '<')
-      .replace(/&gt;/g, '>');
-  }
-
-  const trimmed = normalized.trim();
+  const trimmed = text.trim();
   if (!trimmed) return text;
 
   const lower = trimmed.toLowerCase();
+  const norm = normKey(trimmed);
 
-  // 1. Direct O(1) Dictionary Lookup
-  if (targetLang === 'en' && VI_TO_EN_MAP.has(lower)) {
-    const translated = VI_TO_EN_MAP.get(lower)!;
-    return text.replace(trimmed, matchCase(trimmed, translated));
+  // 1. Direct O(1) Dictionary Lookup (exact and normalized whitespace)
+  if (targetLang === 'en') {
+    if (VI_TO_EN_MAP.has(lower)) {
+      const translated = VI_TO_EN_MAP.get(lower)!;
+      return text.replace(trimmed, matchCase(trimmed, translated));
+    }
+    if (VI_TO_EN_MAP.has(norm)) {
+      const translated = VI_TO_EN_MAP.get(norm)!;
+      return text.replace(trimmed, matchCase(trimmed, translated));
+    }
   }
-  if (targetLang === 'vi' && EN_TO_VI_MAP.has(lower)) {
-    const translated = EN_TO_VI_MAP.get(lower)!;
-    return text.replace(trimmed, matchCase(trimmed, translated));
-  }
-
-  // 2. Structural Splitters (Multi-line, Bullets, Compound Sentences)
-  // Multi-line
-  if (trimmed.includes('\n')) {
-    const lines = trimmed.split('\n');
-    const translatedLines = lines.map(line => translateString(line, targetLang));
-    return text.replace(trimmed, translatedLines.join('\n'));
-  }
-
-  // Bullet items: "Part A • Part B • Part C"
-  if (trimmed.includes(' • ')) {
-    const parts = trimmed.split(' • ');
-    const translatedParts = parts.map(part => translateString(part, targetLang));
-    return text.replace(trimmed, translatedParts.join(' • '));
+  if (targetLang === 'vi') {
+    if (EN_TO_VI_MAP.has(lower)) {
+      const translated = EN_TO_VI_MAP.get(lower)!;
+      return text.replace(trimmed, matchCase(trimmed, translated));
+    }
+    if (EN_TO_VI_MAP.has(norm)) {
+      const translated = EN_TO_VI_MAP.get(norm)!;
+      return text.replace(trimmed, matchCase(trimmed, translated));
+    }
   }
 
-  // Arrow transitions: "A → B" or "A ➔ B"
-  if (trimmed.includes(' → ')) {
-    const parts = trimmed.split(' → ');
-    const translatedParts = parts.map(part => translateString(part, targetLang));
-    return text.replace(trimmed, translatedParts.join(' → '));
-  }
-  if (trimmed.includes(' ➔ ')) {
-    const parts = trimmed.split(' ➔ ');
-    const translatedParts = parts.map(part => translateString(part, targetLang));
-    return text.replace(trimmed, translatedParts.join(' ➔ '));
-  }
-
-  // Em-dash transitions: "Header — Subheader"
-  if (trimmed.includes(' — ')) {
-    const parts = trimmed.split(' — ');
-    const translatedParts = parts.map(part => translateString(part, targetLang));
-    return text.replace(trimmed, translatedParts.join(' — '));
-  }
-
-  // Spaced slash: "Option A / Option B"
-  if (trimmed.includes(' / ')) {
-    const parts = trimmed.split(' / ');
-    const translatedParts = parts.map(part => translateString(part, targetLang));
-    return text.replace(trimmed, translatedParts.join(' / '));
-  }
-
-  // Multiple sentences: "Sentence 1. Sentence 2."
-  if (trimmed.includes('. ') && !trimmed.includes('http') && !trimmed.includes('.com')) {
-    const sentences = trimmed.split(/(?<=\.\s+)/);
-    if (sentences.length > 1) {
-      const translatedSentences = sentences.map(s => translateString(s, targetLang));
-      const combined = translatedSentences.join('');
-      if (combined !== trimmed) {
-        return text.replace(trimmed, combined);
+  // 1.5 Multi-sentence and Compound Delimiter Splitting
+  if (targetLang === 'en' && (trimmed.includes('\n') || trimmed.includes('. ') || trimmed.includes(' • ') || trimmed.includes(' | '))) {
+    const parts = trimmed.split(/(\n+|(?<=[.!?])\s+|(?:\s+[•|]\s+))/);
+    if (parts.length > 1) {
+      let anyTranslated = false;
+      const translatedParts = parts.map(part => {
+        if (/^(\n+|\s+|(?:\s+[•|]\s+))$/.test(part)) return part;
+        const sub = part.trim();
+        if (!sub) return part;
+        const transSub = translateString(sub, 'en');
+        if (transSub !== sub) {
+          anyTranslated = true;
+          return part.replace(sub, transSub);
+        }
+        return part;
+      });
+      if (anyTranslated) {
+        return text.replace(trimmed, translatedParts.join(''));
       }
     }
   }
 
-  // 3. Structural Patterns
+  // 2. Structural Patterns
   // Quotes: "...", '...'
   if ((trimmed.startsWith('"') && trimmed.endsWith('"')) || (trimmed.startsWith("'") && trimmed.endsWith("'"))) {
     const q = trimmed[0];
@@ -210,36 +188,6 @@ export function translateString(text: string, targetLang: Language): string {
       const slot = m[1];
       const rest = m[2] ? ' ' + translateString(m[2], 'en') : '';
       return text.replace(trimmed, `Slot ${slot}${rest}`.trim());
-    }
-
-    m = trimmed.match(/^Chung Cư\s+([A-Za-z0-9\.\-_]+)(.*)$/i);
-    if (m) {
-      const code = m[1];
-      const rest = m[2] ? ' ' + translateString(m[2], 'en') : '';
-      return text.replace(trimmed, `Tower ${code}${rest}`.trim());
-    }
-
-    m = trimmed.match(/^Có\s+(\d+)\s+hồ sơ FaceID cần xác nhận/i);
-    if (m) {
-      return text.replace(trimmed, `There are ${m[1]} FaceID profiles awaiting confirmation`);
-    }
-
-    m = trimmed.match(/^Có\s+(\d+)\s+yêu cầu kỹ thuật cần xử lý/i);
-    if (m) {
-      return text.replace(trimmed, `There are ${m[1]} technical tickets to resolve`);
-    }
-
-    m = trimmed.match(/^Hạn nộp đến ngày\s+(\d+)\s+hàng tháng/i);
-    if (m) {
-      return text.replace(trimmed, `Due by the ${m[1]}th of every month`);
-    }
-
-    m = trimmed.match(/^Tháng\s+(\d{2})\/(\d{4})/i);
-    if (m) {
-      const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-      const mIdx = parseInt(m[1], 10) - 1;
-      const mName = months[mIdx] || `Month ${m[1]}`;
-      return text.replace(trimmed, `${mName} ${m[2]}`);
     }
 
     // Relative Time Templates
@@ -463,8 +411,11 @@ const KEY_DICTIONARY: Record<string, Record<Language, string>> = {
         }
       }
 
-      // Save original Vietnamese text on first encounter
-      if (!originalNodesMap.current.has(node)) {
+      // Detect if currentVal is fresh Vietnamese text from dynamic React render
+      const hasVn = /[àáạảãâầấậẩẫăằắặẳẵèéẹẻẽêềếệểễìíịỉĩòóọỏõôồốộổỗơờớợởỡùúụủũưừứựửữỳýỵỷỹđ]/i.test(currentVal);
+      if (hasVn) {
+        originalNodesMap.current.set(node, currentVal);
+      } else if (!originalNodesMap.current.has(node)) {
         originalNodesMap.current.set(node, currentVal);
       }
 
@@ -479,7 +430,7 @@ const KEY_DICTIONARY: Record<string, Record<Language, string>> = {
         const original = originalNodesMap.current.get(node);
         if (original && node.nodeValue !== original) {
           node.nodeValue = original;
-        } else if (!original) {
+        } else {
           const translatedBack = translateString(currentVal, 'vi');
           if (translatedBack !== node.nodeValue) {
             node.nodeValue = translatedBack;
@@ -583,14 +534,35 @@ const KEY_DICTIONARY: Record<string, Record<Language, string>> = {
 
       clearTimeout(debounceTimer);
       debounceTimer = setTimeout(() => {
-        for (const mutation of mutations) {
-          if (mutation.type === 'characterData' && mutation.target) {
-            processTextNode(mutation.target);
-          } else if (mutation.type === 'childList') {
-            mutation.addedNodes.forEach((added) => {
-              walkAndTranslate(added);
-            });
+        if (isTranslatingRef.current) return;
+        isTranslatingRef.current = true;
+        try {
+          for (const mutation of mutations) {
+            if (mutation.type === 'characterData' && mutation.target) {
+              processTextNode(mutation.target);
+            } else if (mutation.type === 'childList') {
+              mutation.addedNodes.forEach((added) => {
+                // If it's an element or fragment, walk it
+                if (added.nodeType === Node.ELEMENT_NODE || added.nodeType === Node.DOCUMENT_FRAGMENT_NODE) {
+                  const walker = document.createTreeWalker(
+                    added,
+                    NodeFilter.SHOW_TEXT | NodeFilter.SHOW_ELEMENT,
+                    null
+                  );
+                  let curr = walker.nextNode();
+                  while (curr) {
+                    if (curr.nodeType === Node.TEXT_NODE) processTextNode(curr);
+                    else if (curr.nodeType === Node.ELEMENT_NODE) processAttributes(curr as HTMLElement);
+                    curr = walker.nextNode();
+                  }
+                } else if (added.nodeType === Node.TEXT_NODE) {
+                  processTextNode(added);
+                }
+              });
+            }
           }
+        } finally {
+          isTranslatingRef.current = false;
         }
       }, 40);
     });
