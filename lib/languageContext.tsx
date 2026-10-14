@@ -268,6 +268,40 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+// Known dot-notation and role keys
+const KEY_DICTIONARY: Record<string, Record<Language, string>> = {
+  'nav.home': { vi: 'Trang Chủ', en: 'Home' },
+  'nav.about': { vi: 'Tổng Quan', en: 'Overview' },
+  'nav.concept': { vi: 'Triết Lý Thiết Kế', en: 'Concept' },
+  'nav.apartments': { vi: 'Mặt Bằng Căn Hộ', en: 'Apartment Layout' },
+  'nav.amenities': { vi: 'Tiện Ích 5 Sao', en: '5-Star Amenities' },
+  'nav.services': { vi: 'Lõi Công Nghệ AI', en: 'AI Technology' },
+  'nav.login': { vi: 'Đăng Nhập', en: 'Sign In' },
+  'nav.logout': { vi: 'Đăng Xuất', en: 'Sign Out' },
+  'nav.portal': { vi: 'Cổng Cư Dân', en: 'Resident Portal' },
+  'nav.dashboard': { vi: 'Vào Bảng Điều Khiển', en: 'Go to Dashboard' },
+  'role.admin': { vi: 'Ban Quản Lý', en: 'Management Board' },
+  'role.owner': { vi: 'Chủ Hộ Căn Hộ', en: 'Apartment Owner' },
+  'role.tenant': { vi: 'Khách Thuê', en: 'Tenant' },
+  'role.family': { vi: 'Người Nhà Căn Hộ', en: 'Family Member' },
+  'role.technician': { vi: 'Kỹ Thuật Viên', en: 'Technician' },
+  'role.staff': { vi: 'Nhân Sự Ban Quản Lý', en: 'Staff' },
+  'role.resident': { vi: 'Cư Dân', en: 'Resident' },
+  'ADMIN': { vi: 'Ban Quản Lý', en: 'Management Board' },
+  'OWNER': { vi: 'Chủ Hộ', en: 'Owner' },
+  'TENANT': { vi: 'Khách Thuê', en: 'Tenant' },
+  'FAMILY': { vi: 'Người Nhà', en: 'Family Member' },
+  'TECHNICIAN': { vi: 'Kỹ Thuật Viên', en: 'Technician' },
+  'hero.desc_auth': {
+    vi: 'Dự án căn hộ hạng sang SKYLINE Smart Residence tại cụm 4 chung cư The Tropical (BS-07, BS-08, BS-09, BS-10) kiến tạo chuẩn sống tự động hóa hoàn chỉnh: Định danh sinh trắc học FaceID <0.5s, giám sát an ninh Vision AI và hệ thống dự báo bảo trì thông minh.',
+    en: 'Luxury apartment project SKYLINE Smart Residence at 4 towers of The Tropical (BS-07, BS-08, BS-09, BS-10) pioneers complete automated living: FaceID biometrics <0.5s, Vision AI security monitoring, and predictive maintenance.'
+  },
+  'hero.desc_unauth': {
+    vi: 'Dự án căn hộ hạng sang SKYLINE Smart Residence tại cụm 4 chung cư The Tropical (BS-07, BS-08, BS-09, BS-10) — định danh sinh trắc học FaceID, giám sát Vision AI và trợ lý ảo AI Concierge 24/7.',
+    en: 'Luxury apartment project SKYLINE Smart Residence at 4 towers of The Tropical (BS-07, BS-08, BS-09, BS-10) — biometric FaceID access, Vision AI security, and 24/7 AI Concierge.'
+  }
+};
+
   const toggleLanguage = () => {
     const next = language === 'vi' ? 'en' : 'vi';
     setLanguage(next);
@@ -277,10 +311,33 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
    * Direct translation helper in React components
    */
   const t = (keyOrText: string, fallback?: string): string => {
-    if (!keyOrText) return '';
+    if (!keyOrText) return fallback || '';
     const trimmed = keyOrText.trim();
-    const result = translateString(trimmed, language);
-    if (result !== trimmed) return result;
+
+    // 1. Direct key dictionary lookup (e.g. 'nav.dashboard', 'role.admin')
+    if (KEY_DICTIONARY[trimmed]) {
+      return KEY_DICTIONARY[trimmed][language];
+    }
+
+    // 2. Target English
+    if (language === 'en') {
+      const trans = translateString(trimmed, 'en');
+      if (trans !== trimmed) return trans;
+      if (fallback) {
+        const fbTrans = translateString(fallback.trim(), 'en');
+        return fbTrans;
+      }
+      return keyOrText;
+    }
+
+    // 3. Target Vietnamese
+    if (fallback) {
+      if (trimmed.includes('.') || trimmed.includes('_') || /^[a-z]+$/.test(trimmed)) {
+        return fallback;
+      }
+    }
+    const back = translateString(trimmed, 'vi');
+    if (back !== trimmed) return back;
     return fallback || keyOrText;
   };
 

@@ -7,7 +7,6 @@ import SkylineLogo from '@/components/shared/SkylineLogo';
 import { useAuth } from '@/lib/authContext';
 import { useTheme } from '@/lib/themeContext';
 import { useLanguage } from '@/lib/languageContext';
-import LanguageSwitcher from '@/components/shared/LanguageSwitcher';
 
 interface HeaderNavProps {
   onOpenLogin: () => void;
@@ -44,10 +43,7 @@ export default function HeaderNav({ onOpenLogin }: HeaderNavProps) {
         </nav>
 
         {/* Action Controls & Authentication */}
-        <div className="hidden lg:flex items-center gap-3">
-          {/* Nút chuyển đổi ngôn ngữ Việt / Anh */}
-          <LanguageSwitcher variant="inline" />
-
+        <div className="hidden lg:flex items-center gap-3 shrink-0">
           {/* CÔNG TẮC BẬT SÁNG / TỐI (TOGGLE SWITCH - KHÔNG BORDER-RADIUS) */}
           <button
             onClick={toggleTheme}
@@ -85,40 +81,40 @@ export default function HeaderNav({ onOpenLogin }: HeaderNavProps) {
           </button>
 
           {isAuthenticated && currentUser ? (
-            <div className={`flex items-center gap-3 p-1.5 pl-3 border rounded-none ${
+            <div className={`flex items-center gap-3 p-1.5 pl-3 border rounded-none shrink-0 whitespace-nowrap ${
               isDark ? 'bg-[#121820] border-[#C5A880]/60' : 'bg-slate-50 border-gray-300'
             }`}>
-              <div className="text-left">
+              <div className="text-left shrink-0">
                 <div className={`text-xs font-semibold truncate max-w-[130px] ${isDark ? 'text-white' : 'text-gray-900'}`}>
                   {currentUser.full_name}
                 </div>
-                <div className="text-[10px] text-[#C5A880] font-mono uppercase font-bold">
+                <div className="text-[10px] text-[#C5A880] font-mono uppercase font-bold whitespace-nowrap">
                   {currentUser.role === 'ADMIN' ? t('role.admin', 'Ban Quản Lý') : `Căn ${currentUser.apartment_code || 'CH-06'} (${t(currentUser.role)})`}
                 </div>
               </div>
 
               <Link
                 href={currentUser.role === 'ADMIN' ? '/portal?tab=admin-dashboard' : currentUser.role === 'TECHNICIAN' ? '/portal?tab=admin-kanban' : '/portal?tab=resident-home'}
-                className="px-3 py-1.5 bg-[#C5A880] hover:bg-white text-[#0D1117] text-[11px] uppercase tracking-wider font-bold transition-colors flex items-center gap-1.5 rounded-none"
+                className="px-3 py-1.5 bg-[#C5A880] hover:bg-white text-[#0D1117] text-[11px] uppercase tracking-wider font-bold transition-colors flex items-center gap-1.5 rounded-none whitespace-nowrap shrink-0"
               >
-                <LayoutDashboard className="w-3.5 h-3.5" />
+                <LayoutDashboard className="w-3.5 h-3.5 shrink-0" />
                 {t('nav.dashboard', 'Vào Bảng Điều Khiển')}
               </Link>
 
               <button
                 onClick={logout}
-                className="p-1.5 text-gray-400 hover:text-red-400 transition-colors rounded-none"
+                className="p-1.5 text-gray-400 hover:text-red-400 transition-colors rounded-none shrink-0"
                 title={t('nav.logout', 'Đăng xuất')}
               >
-                <LogOut className="w-4 h-4" />
+                <LogOut className="w-4 h-4 shrink-0" />
               </button>
             </div>
           ) : (
             <button
               onClick={onOpenLogin}
-              className="px-5 py-2 bg-[#C5A880] hover:bg-[#D4AF37] text-[#0D1117] text-[11px] uppercase tracking-[0.18em] transition-all flex items-center gap-2 font-bold shadow-md rounded-none cursor-pointer"
+              className="px-5 py-2 bg-[#C5A880] hover:bg-[#D4AF37] text-[#0D1117] text-[11px] uppercase tracking-[0.18em] transition-all flex items-center gap-2 font-bold shadow-md rounded-none cursor-pointer whitespace-nowrap shrink-0"
             >
-              <KeyRound className="w-3.5 h-3.5" />
+              <KeyRound className="w-3.5 h-3.5 shrink-0" />
               {t('nav.login', 'Đăng Nhập')}
             </button>
           )}

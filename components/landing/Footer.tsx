@@ -4,9 +4,11 @@ import React from 'react';
 import Link from 'next/link';
 import SkylineLogo from '@/components/shared/SkylineLogo';
 import { useTheme } from '@/lib/themeContext';
+import { useLanguage } from '@/lib/languageContext';
 
 export default function Footer() {
   const { theme } = useTheme();
+  const { t } = useLanguage();
   const isDark = theme === 'dark';
 
   return (
@@ -25,12 +27,12 @@ export default function Footer() {
             <p className={`text-xs font-light leading-relaxed ${
               isDark ? 'text-gray-400' : 'text-gray-600'
             }`}>
-              Dự án Chung Cư Cao Cấp Skyline & Hệ thống Quản trị Vận hành Thông minh Tự động hóa.
+              {t('Dự án Chung Cư Cao Cấp Skyline & Hệ thống Quản trị Vận hành Thông minh Tự động hóa.', 'Skyline Luxury Smart Residence & Automated Operations Management System.')}
             </p>
             <div className={`text-[11px] ${
               isDark ? 'text-gray-400' : 'text-gray-700'
             }`}>
-              Phát triển bởi: <strong className={isDark ? 'text-white' : 'text-gray-900'}>Trần Hữu Lực</strong>
+              {t('Phát triển bởi:')} <strong className={isDark ? 'text-white' : 'text-gray-900'}>Trần Hữu Lực</strong>
             </div>
           </div>
 
@@ -39,13 +41,13 @@ export default function Footer() {
             <div className={`text-xs font-semibold uppercase tracking-widest ${
               isDark ? 'text-white' : 'text-gray-900'
             }`}>
-              Khám Phá
+              {t('Khám Phá', 'Explore')}
             </div>
             <ul className="space-y-2 text-xs">
-              <li><a href="#concept" className={`transition-colors ${isDark ? 'hover:text-[#C5A880]' : 'hover:text-[#9E8057]'}`}>Triết lý thiết kế</a></li>
-              <li><a href="#floorplans" className={`transition-colors ${isDark ? 'hover:text-[#C5A880]' : 'hover:text-[#9E8057]'}`}>Mặt bằng căn hộ</a></li>
-              <li><a href="#amenities" className={`transition-colors ${isDark ? 'hover:text-[#C5A880]' : 'hover:text-[#9E8057]'}`}>Tiện ích đặc quyền</a></li>
-              <li><a href="#smart-tech" className={`transition-colors ${isDark ? 'hover:text-[#C5A880]' : 'hover:text-[#9E8057]'}`}>Công nghệ thông minh</a></li>
+              <li><a href="#concept" className={`transition-colors ${isDark ? 'hover:text-[#C5A880]' : 'hover:text-[#9E8057]'}`}>{t('Triết lý thiết kế', 'Design Philosophy')}</a></li>
+              <li><a href="#floorplans" className={`transition-colors ${isDark ? 'hover:text-[#C5A880]' : 'hover:text-[#9E8057]'}`}>{t('Mặt bằng căn hộ', 'Apartment Layouts')}</a></li>
+              <li><a href="#amenities" className={`transition-colors ${isDark ? 'hover:text-[#C5A880]' : 'hover:text-[#9E8057]'}`}>{t('Tiện ích đặc quyền', 'Exclusive Amenities')}</a></li>
+              <li><a href="#smart-tech" className={`transition-colors ${isDark ? 'hover:text-[#C5A880]' : 'hover:text-[#9E8057]'}`}>{t('Công nghệ thông minh', 'Smart Technology')}</a></li>
             </ul>
           </div>
 
@@ -54,13 +56,13 @@ export default function Footer() {
             <div className={`text-xs font-semibold uppercase tracking-widest ${
               isDark ? 'text-white' : 'text-gray-900'
             }`}>
-              Pháp Lý & An Ninh
+              {t('Pháp Lý & An Ninh', 'Legal & Security')}
             </div>
             <ul className={`space-y-2 text-xs ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
-              <li><span>Hợp đồng Mua bán (SPA)</span></li>
-              <li><span>Sổ hồng sở hữu lâu dài</span></li>
-              <li><span>Định danh e-KYC & Mã hóa 2FA</span></li>
-              <li><span>Tiêu chuẩn SLA Vận hành</span></li>
+              <li><span>{t('Hợp đồng Mua bán (SPA)', 'Sales & Purchase Agreement (SPA)')}</span></li>
+              <li><span>{t('Sổ hồng sở hữu lâu dài', 'Long-term Pink Book Ownership')}</span></li>
+              <li><span>{t('Định danh e-KYC & Mã hóa 2FA', 'e-KYC & 2FA Encryption')}</span></li>
+              <li><span>{t('Tiêu chuẩn SLA Vận hành', 'Operational SLA Standards')}</span></li>
             </ul>
           </div>
 
@@ -69,12 +71,12 @@ export default function Footer() {
             <div className={`text-xs font-semibold uppercase tracking-widest ${
               isDark ? 'text-white' : 'text-gray-900'
             }`}>
-              Liên Hệ Ban Quản Lý
+              {t('Liên Hệ Ban Quản Lý', 'Contact Management Board')}
             </div>
             <div className={`text-xs space-y-1.5 ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
-              <div>Chung Cư BS-07, Phân khu Beverly Solari, Vinhomes Grand Park, TP. Thủ Đức, TP.HCM</div>
-              <div>Hotline Tiếp Đón: <strong className={isDark ? 'text-white' : 'text-gray-900'}>0901 888 999</strong></div>
-              <div>Hotline Kỹ Thuật: <strong className={isDark ? 'text-white' : 'text-gray-900'}>1900 8899</strong></div>
+              <div>{t('Chung Cư BS-07, Phân khu Beverly Solari, Vinhomes Grand Park, TP. Thủ Đức, TP.HCM', 'BS-07 Building, The Beverly Solari, Vinhomes Grand Park, Thu Duc City, HCMC')}</div>
+              <div>{t('Hotline Tiếp Đón:')} <strong className={isDark ? 'text-white' : 'text-gray-900'}>0901 888 999</strong></div>
+              <div>{t('Hotline Kỹ Thuật:')} <strong className={isDark ? 'text-white' : 'text-gray-900'}>1900 8899</strong></div>
               <div>Email: banquanly@skyline-residence.vn</div>
             </div>
           </div>
@@ -85,8 +87,8 @@ export default function Footer() {
         }`}>
           <div>© 2026 SKYLINE Smart Residence. All rights reserved. Hendon Architectural Edition.</div>
           <div className="flex items-center gap-6">
-            <span>Bảo mật dữ liệu (Data at-rest)</span>
-            <span>Chuẩn WCAG 2.1</span>
+            <span>{t('Bảo mật dữ liệu (Data at-rest)', 'Data Security (At-rest)')}</span>
+            <span>{t('Chuẩn WCAG 2.1', 'WCAG 2.1 Standard')}</span>
             <span>Next.js 14 SPA</span>
           </div>
         </div>

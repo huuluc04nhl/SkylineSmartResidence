@@ -4,9 +4,11 @@ import React from 'react';
 import { DEMO_FACILITIES, Facility } from '@/lib/dataStore';
 import { Star, Clock, Sparkles, ArrowRight } from 'lucide-react';
 import { useTheme } from '@/lib/themeContext';
+import { useLanguage } from '@/lib/languageContext';
 
 export default function AmenitiesSection() {
   const { theme } = useTheme();
+  const { t, isEn } = useLanguage();
   const isDark = theme === 'dark';
 
   return (
@@ -27,20 +29,23 @@ export default function AmenitiesSection() {
               : 'bg-slate-100 border border-[#C5A880]/60 text-amber-800'
           }`}>
             <Sparkles className="w-3.5 h-3.5 text-[#C5A880]" />
-            <span>Đặc Quyền Nghỉ Dưỡng 5 Sao</span>
+            <span>{t('Đặc Quyền Nghỉ Dưỡng 5 Sao', '5-Star Resort Privileges')}</span>
           </div>
 
           <h2 className={`text-3xl sm:text-4xl lg:text-5xl font-serif font-bold tracking-tight ${
             isDark ? 'text-white' : 'text-gray-900'
           }`}>
-            Hệ Thống Tiện Ích Đỉnh Cao<br />
+            {t('Hệ Thống Tiện Ích Đỉnh Cao', 'Premier Amenities System')}<br />
             <span className="italic font-light text-[#C5A880]">The Tropical Beverly Solari</span>
           </h2>
 
           <p className={`text-sm sm:text-base font-light leading-relaxed max-w-2xl ${
             isDark ? 'text-gray-300' : 'text-gray-600'
           }`}>
-            Từ hồ bơi vô cực tầng chân mây đến khu BBQ panoramic — toàn bộ 8 đại tiện ích vận hành tự động 24/7, ra vào bằng FaceID sinh trắc học, không cần vé giấy.
+            {t(
+              'Từ hồ bơi vô cực tầng chân mây đến khu BBQ panoramic — toàn bộ 8 đại tiện ích vận hành tự động 24/7, ra vào bằng FaceID sinh trắc học, không cần vé giấy.',
+              'From rooftop infinity pools to panoramic BBQ zones — all 8 signature amenities operate automatically 24/7 with biometric FaceID access, ticket-free.'
+            )}
           </p>
         </div>
 
@@ -76,7 +81,7 @@ export default function AmenitiesSection() {
 
                 {/* Category badge */}
                 <div className="absolute bottom-3 left-3 px-2 py-1 text-[10px] font-mono uppercase tracking-wider rounded-none bg-black/70 backdrop-blur-sm text-gray-200 border border-white/10">
-                  {facility.category}
+                  {t(facility.category)}
                 </div>
               </div>
 
@@ -87,7 +92,7 @@ export default function AmenitiesSection() {
                     ? 'text-white group-hover:text-[#C5A880]' 
                     : 'text-gray-900 group-hover:text-[#9E8057]'
                 }`}>
-                  {facility.name}
+                  {t(facility.name)}
                 </h3>
 
                 <div className={`flex flex-col gap-1.5 text-xs border-t pt-3 ${
@@ -96,17 +101,17 @@ export default function AmenitiesSection() {
                   <div className="flex items-center justify-between">
                     <span className={`flex items-center gap-1.5 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
                       <Clock className="w-3.5 h-3.5 text-[#C5A880]" />
-                      Giờ mở cửa
+                      {t('Giờ mở cửa', 'Hours')}
                     </span>
                     <span className={`font-mono font-semibold text-[11px] ${isDark ? 'text-white' : 'text-gray-900'}`}>
-                      {facility.operating_hours}
+                      {t(facility.operating_hours)}
                     </span>
                   </div>
 
                   <div className={`text-[11px] font-light pt-1 border-t border-dashed ${
                     isDark ? 'border-gray-800 text-gray-400' : 'border-gray-100 text-gray-500'
                   }`}>
-                    <span className="text-[#C5A880] font-medium">{facility.pricing}</span>
+                    <span className="text-[#C5A880] font-medium">{t(facility.pricing)}</span>
                   </div>
                 </div>
               </div>
@@ -114,19 +119,27 @@ export default function AmenitiesSection() {
           ))}
         </div>
 
-        {/* Bottom CTA — một nút duy nhất, đơn giản */}
+        {/* Bottom CTA */}
         <div className={`mt-14 flex flex-col sm:flex-row items-center justify-between gap-5 p-6 border rounded-none ${
           isDark ? 'bg-[#0E131B] border-[#1E293B]' : 'bg-slate-50 border-gray-200'
         }`}>
           <p className={`text-sm font-light max-w-xl leading-relaxed ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
-            Cư dân 4 chung cư <strong className={isDark ? 'text-white' : 'text-gray-900'}>The Tropical (BS-07 → BS-10)</strong> được sử dụng tất cả tiện ích thông qua hạn mức thẻ cư dân thông minh và quét FaceID tự động tại cổng vào.
+            {isEn ? (
+              <>
+                Residents of 4 towers <strong className={isDark ? 'text-white' : 'text-gray-900'}>The Tropical (BS-07 → BS-10)</strong> access all facilities seamlessly via smart resident passes and automatic biometric FaceID scan.
+              </>
+            ) : (
+              <>
+                Cư dân 4 chung cư <strong className={isDark ? 'text-white' : 'text-gray-900'}>The Tropical (BS-07 → BS-10)</strong> được sử dụng tất cả tiện ích thông qua hạn mức thẻ cư dân thông minh và quét FaceID tự động tại cổng vào.
+              </>
+            )}
           </p>
 
           <a
             href="#floorplans"
             className="shrink-0 px-6 py-3 bg-[#C5A880] hover:bg-white text-[#0A0E14] font-mono text-xs uppercase tracking-widest font-bold transition-colors rounded-none shadow-lg flex items-center gap-2"
           >
-            Khám Phá Căn Hộ
+            {t('Khám Phá Căn Hộ', 'Explore Apartments')}
             <ArrowRight className="w-4 h-4" />
           </a>
         </div>
