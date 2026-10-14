@@ -4,294 +4,574 @@ import React, { createContext, useContext, useEffect, useState, useMemo, useRef 
 
 export type Language = 'vi' | 'en';
 
-// BỘ TỪ ĐIỂN DỊCH THUẬT TOÀN DIỆN CHO DỰ ÁN SKYLINE SMART RESIDENCE
-export const DICTIONARY: Record<string, { vi: string; en: string }> = {
-  // --- Điều hướng & Tiêu đề chính ---
-  'nav.home': { vi: 'Trang Chủ', en: 'Home' },
-  'nav.about': { vi: 'Giới Thiệu', en: 'About' },
-  'nav.apartments': { vi: 'Căn Hộ', en: 'Apartments' },
-  'nav.amenities': { vi: 'Tiện Ích', en: 'Amenities' },
-  'nav.services': { vi: 'Dịch Vụ', en: 'Services' },
-  'nav.login': { vi: 'Đăng Nhập', en: 'Sign In' },
-  'nav.logout': { vi: 'Đăng Xuất', en: 'Sign Out' },
-  'nav.portal': { vi: 'Cổng Thông Tin', en: 'Portal' },
-  'nav.dashboard': { vi: 'Bảng Điều Khiển', en: 'Dashboard' },
-  'nav.theme_light': { vi: 'Bật Chế độ Sáng', en: 'Switch to Light Mode' },
-  'nav.theme_dark': { vi: 'Bật Chế độ Tối', en: 'Switch to Dark Mode' },
+// =============================================================================
+// DANH SÁCH TỪ ĐIỂN SONG NGỮ (VIỆT - ANH) ĐẦY ĐỦ CHO TOÀN BỘ PROJECT SKYLINE
+// Cấu trúc: [Tiếng Việt, English, Key bổ sung (nếu có)]
+// =============================================================================
+const RAW_TRANSLATIONS: Array<[string, string, string?]> = [
+  // --- THƯƠNG HIỆU & ĐIỀU HƯỚNG ---
+  ['Chung Cư Thông Minh Skyline', 'Skyline Smart Residence', 'brand.name'],
+  ['Chuẩn Mực Sống Thượng Lưu Tích Hợp AI', 'Luxury AI-Powered Living', 'brand.slogan'],
+  ['Đường Dây Nóng Kỹ Thuật: 1900 8899', 'Technical Hotline: 1900 8899', 'brand.hotline'],
+  ['SKYLINE SMART RESIDENCE', 'SKYLINE SMART RESIDENCE'],
+  ['The Tropical Beverly Solari', 'The Tropical Beverly Solari'],
+  ['Phân Khu Beverly Solari', 'Beverly Solari Precinct'],
+  ['Tòa BS-07, Phân Khu Beverly Solari', 'Tower BS-07, Beverly Solari Precinct'],
+  ['Tòa BS-08, Phân Khu Beverly Solari', 'Tower BS-08, Beverly Solari Precinct'],
+  ['Tòa BS-09, Phân Khu Beverly Solari', 'Tower BS-09, Beverly Solari Precinct'],
+  ['Tòa BS-10, Phân Khu Beverly Solari', 'Tower BS-10, Beverly Solari Precinct'],
+  ['Trang Chủ', 'Home', 'nav.home'],
+  ['Tổng Quan', 'Overview', 'nav.about'],
+  ['Triết Lý Thiết Kế', 'Concept', 'nav.concept'],
+  ['Mặt Bằng Căn Hộ', 'Floor Plans', 'nav.apartments'],
+  ['Tiện Ích 5 Sao', '5-Star Amenities', 'nav.amenities'],
+  ['Lõi Công Nghệ AI', 'AI Technology', 'nav.services'],
+  ['Đăng Nhập', 'Sign In', 'nav.login'],
+  ['Đăng Xuất', 'Sign Out', 'nav.logout'],
+  ['Cổng Cư Dân', 'Resident Portal', 'nav.portal'],
+  ['Cổng Thông Tin', 'Resident Portal'],
+  ['Bảng Điều Khiển', 'Dashboard', 'nav.dashboard'],
+  ['Bật Chế độ Sáng', 'Switch to Light Mode', 'nav.theme_light'],
+  ['Bật Chế độ Tối', 'Switch to Dark Mode', 'nav.theme_dark'],
 
-  // --- Landing page sections ---
-  'Tổng Quan': { vi: 'Tổng Quan', en: 'Overview' },
-  'Mặt Bằng Căn Hộ': { vi: 'Mặt Bằng Căn Hộ', en: 'Floor Plans' },
-  'Tiện Ích 5 Sao': { vi: 'Tiện Ích 5 Sao', en: '5-Star Amenities' },
-  'Lõi Công Nghệ AI': { vi: 'Lõi Công Nghệ AI', en: 'AI Technology Core' },
-  'Hệ Sinh Thái Đỉnh Cao': { vi: 'Hệ Sinh Thái Đỉnh Cao', en: 'Premier Ecosystem' },
-  'Trải Nghiệm Chuẩn Sống Thượng Lưu': { vi: 'Trải Nghiệm Chuẩn Sống Thượng Lưu', en: 'Experience Luxury Living' },
-  'Xem Chi Tiết Căn Hộ': { vi: 'Xem Chi Tiết Căn Hộ', en: 'View Apartment Details' },
-  'Khám Phá Tiện Ích': { vi: 'Khám Phá Tiện Ích', en: 'Explore Amenities' },
-  'Đặt Lịch Tham Quan': { vi: 'Đặt Lịch Tham Quan', en: 'Schedule a Tour' },
-  'Liên Hệ Ngay': { vi: 'Liên Hệ Ngay', en: 'Contact Now' },
+  // --- VAI TRÒ & PHÂN QUYỀN ---
+  ['Ban Quản Lý', 'Management Board', 'role.admin'],
+  ['Chủ Hộ', 'Apartment Owner', 'role.owner'],
+  ['Khách Thuê', 'Tenant', 'role.tenant'],
+  ['Thành Viên Gia Đình', 'Family Member', 'role.family'],
+  ['Kỹ Thuật Viên', 'Technician', 'role.technician'],
+  ['Nhân Sự Ban Quản Lý', 'Staff', 'role.staff'],
+  ['Cư Dân', 'Resident', 'role.resident'],
+  ['BAN QUẢN LÝ', 'MANAGEMENT'],
+  ['CHỦ HỘ', 'OWNER'],
+  ['KHÁCH THUÊ', 'TENANT'],
+  ['CƯ DÂN', 'RESIDENT'],
+  ['KỸ THUẬT VIÊN', 'TECHNICIAN'],
+  ['Ban Quản Lý Chung Cư Skyline', 'Skyline Residence Management Board'],
+  ['Ban Quản Lý Skyline', 'Skyline Management'],
+  ['BQL Chung Cư', 'Management Board'],
+  ['Chủ Hộ Căn Hộ', 'Apartment Owner'],
+  ['Người Nhà Căn Hộ', 'Family Member'],
+  ['Phân Hệ Cư Dân', 'Resident Portal'],
 
-  // --- Phân quyền & Vai trò ---
-  'role.admin': { vi: 'Ban Quản Lý', en: 'Management Board' },
-  'role.owner': { vi: 'Chủ Hộ', en: 'Apartment Owner' },
-  'role.tenant': { vi: 'Khách Thuê', en: 'Tenant' },
-  'role.family': { vi: 'Thành Viên Gia Đình', en: 'Family Member' },
-  'role.technician': { vi: 'Kỹ Thuật Viên', en: 'Technician' },
-  'role.staff': { vi: 'Nhân Sự Ban Quản Lý', en: 'Staff' },
-  'role.resident': { vi: 'Cư Dân', en: 'Resident' },
-  'BAN QUẢN LÝ': { vi: 'BAN QUẢN LÝ', en: 'MANAGEMENT' },
-  'CHỦ HỘ': { vi: 'CHỦ HỘ', en: 'OWNER' },
-  'KHÁCH THUÊ': { vi: 'KHÁCH THUÊ', en: 'TENANT' },
-  'CƯ DÂN': { vi: 'CƯ DÂN', en: 'RESIDENT' },
-  'KỸ THUẬT VIÊN': { vi: 'KỸ THUẬT VIÊN', en: 'TECHNICIAN' },
+  // --- LANDING PAGE: HERO SECTION ---
+  ['Kiến Trúc Đương Đại Tích Hợp Lõi AI', 'Contemporary Architecture with AI Core'],
+  ['Nơi Chuẩn Mực Kiến Trúc Gặp Gỡ', 'Where Architectural Standards Meet'],
+  ['Trí Tuệ Nhân Tạo 4.0', 'Artificial Intelligence 4.0'],
+  ['Khám Phá Căn Hộ', 'Explore Apartments'],
+  ['Đặt Lịch Tham Quan', 'Schedule a Tour'],
+  ['Trải Nghiệm Chuẩn Sống Thượng Lưu', 'Experience Luxury Living'],
+  ['Hệ Sinh Thái Đỉnh Cao', 'Premier Ecosystem'],
+  ['Xem Chi Tiết Căn Hộ', 'View Apartment Details'],
+  ['Khám Phá Tiện Ích', 'Explore Amenities'],
+  ['Liên Hệ Ngay', 'Contact Now'],
+  ['Căn Hộ BS-07 - The Tropical', 'Apartment BS-07 - The Tropical'],
+  ['4.000+ Cư Dân Thượng Lưu', '4,000+ Elite Residents'],
+  ['99.8% Tỷ Lệ Hài Lòng', '99.8% Satisfaction Rate'],
+  ['24/7 AI Giám Sát', '24/7 AI Monitoring'],
 
-  // --- Sidebar Menu Tabs (Resident / Admin / Technician) ---
-  'Trang Chủ': { vi: 'Trang Chủ', en: 'Home' },
-  'Hồ Sơ': { vi: 'Hồ Sơ', en: 'Profile' },
-  'Hồ Sơ Cư Dân': { vi: 'Hồ Sơ Cư Dân', en: 'Resident Profile' },
-  'Thành Viên': { vi: 'Thành Viên', en: 'Family Members' },
-  'Nhà Thông Minh': { vi: 'Nhà Thông Minh', en: 'Smart Home' },
-  'Tiện Ích': { vi: 'Tiện Ích', en: 'Amenities' },
-  'Dịch Vụ': { vi: 'Dịch Vụ', en: 'Services' },
-  'Hóa Đơn': { vi: 'Hóa Đơn', en: 'Billing' },
-  'Hóa Đơn Tiện Ích': { vi: 'Hóa Đơn Tiện Ích', en: 'Utility Bills' },
-  'Báo Hỏng': { vi: 'Báo Hỏng', en: 'Service Tickets' },
-  'Hỗ Trợ Kỹ Thuật': { vi: 'Hỗ Trợ Kỹ Thuật', en: 'Technical Support' },
-  'Biểu Quyết': { vi: 'Biểu Quyết', en: 'Voting' },
-  'Biểu Quyết Cư Dân': { vi: 'Biểu Quyết Cư Dân', en: 'Resident Voting' },
-  'Trợ Lý AI': { vi: 'Trợ Lý AI', en: 'AI Assistant' },
-  'Căn Hộ': { vi: 'Căn Hộ', en: 'Apartments' },
-  'Xác Thực Cư Dân': { vi: 'Xác Thực Cư Dân', en: 'Resident Verification' },
-  'Khách Thăm': { vi: 'Khách Thăm', en: 'Visitors' },
-  'Khách Đến Thăm': { vi: 'Khách Đến Thăm', en: 'Visitor Passes' },
-  'Sửa Chữa': { vi: 'Sửa Chữa', en: 'Repairs & Tasks' },
-  'Thiết Bị': { vi: 'Thiết Bị', en: 'Devices' },
-  'Bãi Đỗ Xe': { vi: 'Bãi Đỗ Xe', en: 'Parking' },
-  'Khảo Sát': { vi: 'Khảo Sát', en: 'Surveys' },
-  'Thẻ Cư Dân': { vi: 'Thẻ Cư Dân', en: 'Resident Pass' },
-  'Sổ Tay Cư Dân': { vi: 'Sổ Tay Cư Dân', en: 'Resident Handbook' },
+  // --- LANDING PAGE: ABOUT & CONCEPT ---
+  ['Triết Lý Thiết Kế & Không Gian', 'Design Philosophy & Space'],
+  ['Sự Giao Thoa Giữa Nghệ Thuật Kiến Trúc Tối Giản Và Vận Hành Số Hóa', 'Intersection of Minimalist Architecture & Digital Operations'],
+  ['Quyền Tự Trị Căn Hộ', 'Apartment Autonomy'],
+  ['Chủ hộ toàn quyền cấp phát FaceID và quản lý thành viên cư trú.', 'Owners have full authority to grant FaceID and manage resident members.'],
+  ['An Ninh Đa Lớp 24/7', '24/7 Multi-Layer Security'],
+  ['Phân tầng thang máy bảo mật và camera Vision AI quét biển số xe tự động.', 'Secure elevator zoning and Vision AI cameras for automated license plate scanning.'],
 
-  // --- Topbar & Tìm kiếm & Thông báo ---
-  'TÌM NHANH': { vi: 'TÌM NHANH', en: 'QUICK SEARCH' },
-  'Tìm kiếm...': { vi: 'Tìm kiếm...', en: 'Search...' },
-  'Gợi ý tìm kiếm': { vi: 'Gợi ý tìm kiếm', en: 'Search Suggestions' },
-  'Thông Báo Thời Gian Thực': { vi: 'Thông Báo Thời Gian Thực', en: 'Real-time Notifications' },
-  'Thông Báo': { vi: 'Thông Báo', en: 'Notifications' },
-  'Đổi Mật Khẩu': { vi: 'Đổi Mật Khẩu', en: 'Change Password' },
-  'Đăng Xuất': { vi: 'Đăng Xuất', en: 'Sign Out' },
-  'Đường Dây Nóng Kỹ Thuật: 1900 8899': { vi: 'Đường Dây Nóng Kỹ Thuật: 1900 8899', en: 'Technical Hotline: 1900 8899' },
-  'Hotline An Ninh & Khẩn Cấp 24/7': { vi: 'Hotline An Ninh & Khẩn Cấp 24/7', en: '24/7 Emergency & Security Hotline' },
+  // --- LANDING PAGE: AMENITIES & FACILITIES ---
+  ['Đặc Quyền Nghỉ Dưỡng 5 Sao', '5-Star Resort Privileges'],
+  ['Hệ Thống Tiện Ích Đỉnh Cao', 'Premier Amenities System'],
+  ['Từ hồ bơi vô cực tầng chân mây đến khu BBQ panoramic — toàn bộ 8 đại tiện ích vận hành tự động 24/7, ra vào bằng FaceID sinh trắc học, không cần vé giấy.', 'From cloud-level infinity pool to panoramic BBQ area — all 8 major amenities operate automatically 24/7 with FaceID biometrics, no paper tickets needed.'],
+  ['Hồ bơi vô cực chân mây', 'Cloud Infinity Pool'],
+  ['Phòng Gym Technogym', 'Technogym Fitness Center'],
+  ['Vườn nướng BBQ ngoài trời', 'Outdoor BBQ Garden'],
+  ['Sân Tennis tiêu chuẩn', 'Championship Tennis Court'],
+  ['Phòng xông hơi Sauna VIP', 'VIP Sauna & Spa'],
+  ['Sảnh đón khách 5 sao', '5-Star Luxury Lobby'],
+  ['Khu vui chơi trẻ em', 'Kids Playground'],
+  ['Bãi đỗ xe thông minh 2 tầng hầm', '2-Level Smart Underground Parking'],
+  ['Giờ mở cửa', 'Opening Hours'],
+  ['Chi phí', 'Cost'],
+  ['Miễn phí cho cư dân', 'Complimentary for Residents'],
+  ['Đặt tiện ích', 'Book Amenity'],
 
-  // --- Trạng thái (Statuses & Badges) ---
-  'status.active': { vi: 'Đang Hoạt Động', en: 'Active' },
-  'status.pending': { vi: 'Đang Chờ Phê Duyệt', en: 'Pending Approval' },
-  'status.pending_owner': { vi: 'Chờ Chủ Hộ Xác Nhận', en: 'Pending Owner Confirmation' },
-  'status.approved': { vi: 'Đã Kích Hoạt Quyền Ra Vào', en: 'Access Granted' },
-  'status.rejected': { vi: 'Cần Cập Nhật / Chụp Lại', en: 'Resubmission Required' },
-  'status.draft': { vi: 'Bản Nháp Chưa Gửi', en: 'Draft' },
-  'status.verified': { vi: 'Đã Xác Thực Căn Cước', en: 'Identity Verified' },
+  // --- LANDING PAGE: SMART TECH & SERVICES ---
+  ['Công Nghệ Đột Phá', 'Breakthrough Technology'],
+  ['Hệ Sinh Thái Thông Minh Toàn Diện', 'Comprehensive Smart Ecosystem'],
+  ['Nhận diện khuôn mặt 3D tại mọi điểm chạm', '3D facial recognition at all touchpoints'],
+  ['Điều khiển căn hộ thông minh từ xa qua IoT', 'Remote smart home control via IoT'],
+  ['Trợ lý ảo AI Concierge giải đáp cư dân 24/7', 'AI Concierge virtual assistant for 24/7 resident inquiries'],
+  ['Hệ thống PCCC thông minh và cảm biến nhiệt tự động', 'Smart fire safety and automated thermal sensors'],
+  ['Dịch Vụ Đặc Quyền', 'Exclusive Services'],
+  ['Chuẩn Mực Phục Vụ Chu Đáo 24/7', '24/7 Thoughtful Service Standards'],
+  ['Lễ tân & CSKH 24/7', '24/7 Concierge & Reception'],
+  ['Bảo trì kỹ thuật tốc hành', 'Express Technical Maintenance'],
+  ['An ninh tuần tra 24/7', '24/7 Security Patrols'],
+  ['Dịch vụ dọn dẹp vệ sinh theo yêu cầu', 'On-demand housekeeping services'],
 
-  'Đang Hoạt Động': { vi: 'Đang Hoạt Động', en: 'Active' },
-  'Đang Chờ Phê Duyệt': { vi: 'Đang Chờ Phê Duyệt', en: 'Pending Approval' },
-  'Chờ Chủ Hộ Xác Nhận': { vi: 'Chờ Chủ Hộ Xác Nhận', en: 'Pending Owner Confirmation' },
-  'Chờ Duyệt': { vi: 'Chờ Duyệt', en: 'Pending' },
-  'Đã Duyệt': { vi: 'Đã Duyệt', en: 'Approved' },
-  'Đã Phê Duyệt': { vi: 'Đã Phê Duyệt', en: 'Approved' },
-  'Từ Chối': { vi: 'Từ Chối', en: 'Rejected' },
-  'Đã Từ Chối': { vi: 'Đã Từ Chối', en: 'Rejected' },
-  'Hoàn Thành': { vi: 'Hoàn Thành', en: 'Completed' },
-  'Đang Xử Lý': { vi: 'Đang Xử Lý', en: 'In Progress' },
-  'Đã Hủy': { vi: 'Đã Hủy', en: 'Cancelled' },
-  'Chưa Thanh Toán': { vi: 'Chưa Thanh Toán', en: 'Unpaid' },
-  'Đã Thanh Toán': { vi: 'Đã Thanh Toán', en: 'Paid' },
-  'Quá Hạn': { vi: 'Quá Hạn', en: 'Overdue' },
-  'Đã Kích Hoạt': { vi: 'Đã Kích Hoạt', en: 'Activated' },
-  'Đã Xác Thực': { vi: 'Đã Xác Thực', en: 'Verified' },
-  'Chưa Xác Thực': { vi: 'Chưa Xác Thực', en: 'Unverified' },
-  'Bản Nháp': { vi: 'Bản Nháp', en: 'Draft' },
-  'Hợp Lệ': { vi: 'Hợp Lệ', en: 'Valid' },
-  'Hết Hạn': { vi: 'Hết Hạn', en: 'Expired' },
+  // --- FOOTER LANDING ---
+  ['Bản quyền thuộc về', 'Copyright by'],
+  ['Đã đăng ký bản quyền.', 'All rights reserved.'],
+  ['Chính sách bảo mật', 'Privacy Policy'],
+  ['Điều khoản dịch vụ', 'Terms of Service'],
+  ['Quy chế quản lý tòa nhà', 'Building Management Regulations'],
 
-  // --- Thao tác & Nút bấm (Actions) ---
-  'Gửi Ban Quản Lý Duyệt': { vi: 'Gửi Ban Quản Lý Duyệt', en: 'Submit to Management' },
-  'Gửi Lại Ban Quản Lý Duyệt': { vi: 'Gửi Lại Ban Quản Lý Duyệt', en: 'Resubmit to Management' },
-  'Gửi Yêu Cầu': { vi: 'Gửi Yêu Cầu', en: 'Submit Request' },
-  'Xác Nhận & Kích Hoạt': { vi: 'Xác Nhận & Kích Hoạt', en: 'Approve & Activate' },
-  'Xác Nhận': { vi: 'Xác Nhận', en: 'Confirm' },
-  'Yêu Cầu Bổ Sung': { vi: 'Yêu Cầu Bổ Sung', en: 'Request Rescan' },
-  'Kiểm Tra Đối Chiếu': { vi: 'Kiểm Tra Đối Chiếu', en: 'Inspect & Compare' },
-  'Tạm Khóa / Thu Hồi Quyền': { vi: 'Tạm Khóa / Thu Hồi Quyền', en: 'Revoke Access' },
-  'Làm Mới': { vi: 'Làm Mới', en: 'Refresh' },
-  'Đóng': { vi: 'Đóng', en: 'Close' },
-  'Lưu Thay Đổi': { vi: 'Lưu Thay Đổi', en: 'Save Changes' },
-  'Lưu lại': { vi: 'Lưu lại', en: 'Save' },
-  'Hủy Bỏ': { vi: 'Hủy Bỏ', en: 'Cancel' },
-  'Hủy': { vi: 'Hủy', en: 'Cancel' },
-  'Quay Lại': { vi: 'Quay Lại', en: 'Go Back' },
-  'Tiếp Tục': { vi: 'Tiếp Tục', en: 'Continue' },
-  'Xem Chi Tiết': { vi: 'Xem Chi Tiết', en: 'View Details' },
-  'Chi Tiết': { vi: 'Chi Tiết', en: 'Details' },
-  'Chỉnh Sửa': { vi: 'Chỉnh Sửa', en: 'Edit' },
-  'Xóa': { vi: 'Xóa', en: 'Delete' },
-  'Thêm Mới': { vi: 'Thêm Mới', en: 'Add New' },
-  'Thêm Thành Viên': { vi: 'Thêm Thành Viên', en: 'Add Family Member' },
-  'Tạo Mã Khách': { vi: 'Tạo Mã Khách', en: 'Create Visitor Pass' },
-  'Thanh Toán Ngay': { vi: 'Thanh Toán Ngay', en: 'Pay Now' },
-  'Tải Hóa Đơn': { vi: 'Tải Hóa Đơn', en: 'Download Bill' },
-  'Tạo Yêu Cầu Mới': { vi: 'Tạo Yêu Cầu Mới', en: 'Create New Ticket' },
-  'Tham Gia Biểu Quyết': { vi: 'Tham Gia Biểu Quyết', en: 'Vote Now' },
-  'Đặt Tiện Ích': { vi: 'Đặt Tiện Ích', en: 'Book Amenity' },
-  'Bật': { vi: 'Bật', en: 'On' },
-  'Tắt': { vi: 'Tắt', en: 'Off' },
+  // --- MODAL ĐĂNG NHẬP (LOGIN MODAL) ---
+  ['Đăng Nhập Tài Khoản', 'Account Sign In'],
+  ['Chọn Vai Trò Đăng Nhập', 'Select Login Role'],
+  ['Cư Dân / Chủ Hộ', 'Resident / Owner'],
+  ['Ban Quản Lý (Admin)', 'Management Board (Admin)'],
+  ['Kỹ Thuật Viên (KTV)', 'Technician'],
+  ['Tài Khoản', 'Account'],
+  ['Tên đăng nhập / Email', 'Username / Email'],
+  ['Mật Khẩu', 'Password'],
+  ['Mật khẩu', 'Password'],
+  ['Ghi Nhớ Đăng Nhập', 'Remember Me'],
+  ['Quên Mật Khẩu?', 'Forgot Password?'],
+  ['Đăng Nhập Bằng FaceID', 'Sign In with FaceID'],
+  ['Đăng Nhập Bằng Mã OTP', 'Sign In with OTP'],
+  ['Đăng Nhập Ngay', 'Sign In Now'],
+  ['Vui lòng nhập tên đăng nhập hoặc email', 'Please enter username or email'],
+  ['Vui lòng nhập mật khẩu', 'Please enter password'],
+  ['Đổi Mật Khẩu', 'Change Password'],
+  ['Mật khẩu hiện tại', 'Current password'],
+  ['Mật khẩu mới', 'New password'],
+  ['Xác nhận mật khẩu mới', 'Confirm new password'],
+  ['Cập Nhật Mật Khẩu', 'Update Password'],
 
-  // --- Xác thực & e-KYC (FaceID & CCCD) ---
-  'Nhận Diện Khuôn Mặt (FaceID)': { vi: 'Nhận Diện Khuôn Mặt (FaceID)', en: 'FaceID Biometric Recognition' },
-  'Quét Khuôn Mặt Ngay': { vi: 'Quét Khuôn Mặt Ngay', en: 'Scan Face Now' },
-  'Chụp Lại Khuôn Mặt': { vi: 'Chụp Lại Khuôn Mặt', en: 'Rescan Face' },
-  'Xác Thực Độ Sống Người Thật': { vi: 'Xác Thực Độ Sống Người Thật', en: 'Liveness Anti-Spoofing Check' },
-  'Thu Thập Mẫu Khuôn Mặt': { vi: 'Thu Thập Mẫu Khuôn Mặt', en: 'FaceID Enrollment' },
-  'Quét Thẻ Căn Cước Công Dân': { vi: 'Quét Thẻ Căn Cước Công Dân', en: 'Scan Citizen ID Card' },
-  'Chụp Lại Căn Cước': { vi: 'Chụp Lại Căn Cước', en: 'Rescan ID Card' },
-  'Mặt Trước Thẻ CCCD': { vi: 'Mặt Trước Thẻ CCCD', en: 'Front Side ID Card' },
-  'Mặt Sau Thẻ CCCD': { vi: 'Mặt Sau Thẻ CCCD', en: 'Back Side ID Card' },
-  'Số Căn Cước Công Dân': { vi: 'Số Căn Cước Công Dân', en: 'Citizen ID Number' },
-  'Số CCCD': { vi: 'Số CCCD', en: 'Citizen ID' },
-  'Ngày Cấp': { vi: 'Ngày Cấp', en: 'Issued Date' },
-  'Nơi Cấp': { vi: 'Nơi Cấp', en: 'Issued Place' },
-  'Họ và Tên': { vi: 'Họ và Tên', en: 'Full Name' },
-  'Họ tên': { vi: 'Họ tên', en: 'Full name' },
-  'Số Điện Thoại': { vi: 'Số Điện Thoại', en: 'Phone Number' },
-  'Số điện thoại': { vi: 'Số điện thoại', en: 'Phone number' },
-  'Email': { vi: 'Email', en: 'Email' },
-  'Địa chỉ': { vi: 'Địa chỉ', en: 'Address' },
-  'Ngày Sinh': { vi: 'Ngày Sinh', en: 'Date of Birth' },
-  'Ngày sinh': { vi: 'Ngày sinh', en: 'Date of birth' },
-  'Giới Tính': { vi: 'Giới Tính', en: 'Gender' },
-  'Giới tính': { vi: 'Giới tính', en: 'Gender' },
-  'Nam': { vi: 'Nam', en: 'Male' },
-  'Nữ': { vi: 'Nữ', en: 'Female' },
-  'Quốc Tịch': { vi: 'Quốc Tịch', en: 'Nationality' },
-  'Mối Quan Hệ': { vi: 'Mối Quan Hệ', en: 'Relationship' },
-  'Chủ hộ': { vi: 'Chủ hộ', en: 'Apartment Owner' },
-  'Vợ': { vi: 'Vợ', en: 'Wife' },
-  'Chồng': { vi: 'Chồng', en: 'Husband' },
-  'Con': { vi: 'Con', en: 'Child' },
-  'Bố': { vi: 'Bố', en: 'Father' },
-  'Mẹ': { vi: 'Mẹ', en: 'Mother' },
-  'Người thuê': { vi: 'Người thuê', en: 'Tenant' },
+  // --- PORTAL SIDEBAR TABS ---
+  ['Hồ Sơ & Xác Thực', 'Profile & e-KYC'],
+  ['Hồ Sơ', 'Profile'],
+  ['Hồ Sơ Cư Dân', 'Resident Profile'],
+  ['Hồ Sơ Cá Nhân & e-KYC', 'Personal Profile & e-KYC'],
+  ['Thành Viên', 'Family Members'],
+  ['Nhà Thông Minh', 'Smart Home'],
+  ['Tiện Ích', 'Amenities'],
+  ['Dịch Vụ', 'Services'],
+  ['Hóa Đơn', 'Billing'],
+  ['Hóa Đơn & Tài Chính', 'Finance & Billing'],
+  ['Hóa Đơn Tiện Ích', 'Utility Bills'],
+  ['Báo Hỏng', 'Service Tickets'],
+  ['Báo Hỏng & Kỹ Thuật', 'Repairs & Maintenance'],
+  ['Hỗ Trợ Kỹ Thuật', 'Technical Support'],
+  ['Biểu Quyết', 'Voting'],
+  ['Biểu Quyết Cư Dân', 'Resident Voting'],
+  ['Trợ Lý AI', 'AI Assistant'],
+  ['Căn Hộ', 'Apartment'],
+  ['Xác Thực Cư Dân', 'Resident Verification'],
+  ['Khách Thăm', 'Visitors'],
+  ['Khách Đến Thăm', 'Visitor Passes'],
+  ['Sửa Chữa', 'Repairs & Tasks'],
+  ['Thiết Bị', 'Devices'],
+  ['Bãi Đỗ Xe', 'Parking'],
+  ['Khảo Sát', 'Surveys'],
+  ['Thẻ Cư Dân', 'Resident Pass'],
+  ['Sổ Tay Cư Dân', 'Resident Handbook'],
+  ['Quản Lý Căn Hộ', 'Apartment Management'],
+  ['Quản Lý Cư Dân', 'Resident Management'],
+  ['Điều Phối Kỹ Thuật', 'Technical Dispatch'],
+  ['Trung Tâm Hóa Đơn', 'Billing Studio'],
+  ['Giám Sát Thiết Bị', 'Device Health'],
+  ['Kiểm Soát Ra Vào', 'Access Control'],
 
-  // --- Căn hộ & Tòa nhà ---
-  'Mã Căn Hộ': { vi: 'Mã Căn Hộ', en: 'Apartment Code' },
-  'Số Căn Hộ': { vi: 'Số Căn Hộ', en: 'Apartment Number' },
-  'Tòa Nhà': { vi: 'Tòa Nhà', en: 'Building' },
-  'Tầng': { vi: 'Tầng', en: 'Floor' },
-  'Diện Tích': { vi: 'Diện Tích', en: 'Area' },
-  'Phòng Ngủ': { vi: 'Phòng Ngủ', en: 'Bedrooms' },
-  'Phòng Tắm': { vi: 'Phòng Tắm', en: 'Bathrooms' },
+  // --- TOPBAR & TÌM KIẾM ---
+  ['TÌM NHANH', 'QUICK SEARCH'],
+  ['Tìm kiếm...', 'Search...'],
+  ['Gợi ý tìm kiếm', 'Search Suggestions'],
+  ['Tìm nhanh dịch vụ', 'Quick search services'],
+  ['Thông Báo Thời Gian Thực', 'Real-time Notifications'],
+  ['Thông Báo', 'Notifications'],
+  ['Hotline An Ninh & Khẩn Cấp 24/7', '24/7 Emergency & Security Hotline'],
+  ['Vị trí:', 'Location:'],
+  ['Vị trí', 'Location'],
+  ['Số điện thoại:', 'Phone Number:'],
+  ['Số CCCD:', 'Citizen ID:'],
+  ['2 Mới', '2 New'],
 
-  // --- Nhà thông minh (Smart Home) ---
-  'Phòng Khách': { vi: 'Phòng Khách', en: 'Living Room' },
-  'Phòng Ngủ Master': { vi: 'Phòng Ngủ Master', en: 'Master Bedroom' },
-  'Phòng Bếp': { vi: 'Phòng Bếp', en: 'Kitchen' },
-  'Ban Công': { vi: 'Ban Công', en: 'Balcony' },
-  'Đèn Phòng Khách': { vi: 'Đèn Phòng Khách', en: 'Living Room Light' },
-  'Máy Lạnh': { vi: 'Máy Lạnh', en: 'Air Conditioner' },
-  'Rèm Cửa': { vi: 'Rèm Cửa', en: 'Smart Curtains' },
-  'Bình Nước Nóng': { vi: 'Bình Nước Nóng', en: 'Water Heater' },
-  'Khóa Cửa Điện Tử': { vi: 'Khóa Cửa Điện Tử', en: 'Smart Lock' },
-  'Cảm Biến Khói': { vi: 'Cảm Biến Khói', en: 'Smoke Sensor' },
-  'Cảm Biến Chuyển Động': { vi: 'Cảm Biến Chuyển Động', en: 'Motion Sensor' },
-  'Nhiệt Độ': { vi: 'Nhiệt Độ', en: 'Temperature' },
-  'Độ Ẩm': { vi: 'Độ Ẩm', en: 'Humidity' },
-  'Chất Lượng Không Khí': { vi: 'Chất Lượng Không Khí', en: 'Air Quality' },
+  // --- TRẠNG THÁI (STATUSES & BADGES) ---
+  ['Đang Hoạt Động', 'Active', 'status.active'],
+  ['Đang Chờ Phê Duyệt', 'Pending Approval', 'status.pending'],
+  ['Chờ Chủ Hộ Xác Nhận', 'Pending Owner Confirmation', 'status.pending_owner'],
+  ['Đã Kích Hoạt Quyền Ra Vào', 'Access Granted', 'status.approved'],
+  ['Cần Cập Nhật / Chụp Lại', 'Resubmission Required', 'status.rejected'],
+  ['Bản Nháp Chưa Gửi', 'Draft', 'status.draft'],
+  ['Đã Xác Thực Căn Cước', 'Identity Verified', 'status.verified'],
+  ['Chờ Duyệt', 'Pending'],
+  ['Đã Duyệt', 'Approved'],
+  ['Đã Phê Duyệt', 'Approved'],
+  ['Từ Chối', 'Rejected'],
+  ['Đã Từ Chối', 'Rejected'],
+  ['Hoàn Thành', 'Completed'],
+  ['Đã Hoàn Tất', 'Completed'],
+  ['Đang Xử Lý', 'In Progress'],
+  ['Đã Hủy', 'Cancelled'],
+  ['Chưa Thanh Toán', 'Unpaid'],
+  ['Đã Thanh Toán', 'Paid'],
+  ['Quá Hạn', 'Overdue'],
+  ['Đã Kích Hoạt', 'Activated'],
+  ['Đã Xác Thực', 'Verified'],
+  ['Chưa Xác Thực', 'Unverified'],
+  ['Hợp Lệ', 'Valid'],
+  ['Hết Hạn', 'Expired'],
+  ['Bản Nháp', 'Draft'],
 
-  // --- Tiện ích & Dịch vụ (Facilities) ---
-  'Hồ Bơi Vô Cực': { vi: 'Hồ Bơi Vô Cực', en: 'Infinity Pool' },
-  'Phòng Gym & Yoga': { vi: 'Phòng Gym & Yoga', en: 'Gym & Yoga' },
-  'Khu Vườn BBQ': { vi: 'Khu Vườn BBQ', en: 'BBQ Garden' },
-  'Sân Tennis': { vi: 'Sân Tennis', en: 'Tennis Court' },
-  'Khu Vui Chơi Trẻ Em': { vi: 'Khu Vui Chơi Trẻ Em', en: 'Kids Playground' },
-  'Phòng Sinh Hoạt Cộng Đồng': { vi: 'Phòng Sinh Hoạt Cộng Đồng', en: 'Community Hall' },
-  'Phòng Xông Hơi VIP': { vi: 'Phòng Xông Hơi VIP', en: 'VIP Sauna Room' },
-  'Giờ Mở Cửa': { vi: 'Giờ Mở Cửa', en: 'Opening Hours' },
-  'Đặt Chỗ Ngay': { vi: 'Đặt Chỗ Ngay', en: 'Book Now' },
-  'Số Lượng Khách': { vi: 'Số Lượng Khách', en: 'Number of Guests' },
-  'Khung Giờ': { vi: 'Khung Giờ', en: 'Time Slot' },
-  'Ngày Đặt': { vi: 'Ngày Đặt', en: 'Booking Date' },
+  // --- THAO TÁC & NÚT BẤM (ACTIONS & BUTTONS) ---
+  ['Gửi Ban Quản Lý Duyệt', 'Submit to Management'],
+  ['Gửi Lại Ban Quản Lý Duyệt', 'Resubmit to Management'],
+  ['Gửi Yêu Cầu', 'Submit Request'],
+  ['Xác Nhận & Kích Hoạt', 'Approve & Activate'],
+  ['Xác Nhận Ngay', 'Confirm Now'],
+  ['Xác Nhận', 'Confirm'],
+  ['Yêu Cầu Bổ Sung', 'Request Rescan'],
+  ['Kiểm Tra Đối Chiếu', 'Inspect & Compare'],
+  ['Tạm Khóa / Thu Hồi Quyền', 'Revoke Access'],
+  ['Làm Mới', 'Refresh'],
+  ['Cập nhật', 'Update'],
+  ['Đóng', 'Close'],
+  ['Lưu Thay Đổi', 'Save Changes'],
+  ['Lưu lại', 'Save'],
+  ['Hủy Bỏ', 'Cancel'],
+  ['Hủy', 'Cancel'],
+  ['Quay Lại', 'Go Back'],
+  ['Tiếp Tục', 'Continue'],
+  ['Xem Chi Tiết', 'View Details'],
+  ['Chi Tiết', 'Details'],
+  ['Chỉnh Sửa', 'Edit'],
+  ['Xóa', 'Delete'],
+  ['Thêm Mới', 'Add New'],
+  ['Thêm Thành Viên', 'Add Family Member'],
+  ['Tạo Mã Khách', 'Create Visitor Pass'],
+  ['Thanh Toán Ngay', 'Pay Now'],
+  ['Tải Hóa Đơn', 'Download Bill'],
+  ['Tạo Yêu Cầu Mới', 'Create New Ticket'],
+  ['Tham Gia Biểu Quyết', 'Vote Now'],
+  ['Đặt Tiện Ích', 'Book Amenity'],
+  ['Xem tất cả', 'View All'],
+  ['Bật', 'On'],
+  ['Tắt', 'Off'],
 
-  // --- Tài chính & Hóa đơn (Billing) ---
-  'Phí Quản Lý': { vi: 'Phí Quản Lý', en: 'Management Fee' },
-  'Tiền Điện': { vi: 'Tiền Điện', en: 'Electricity Bill' },
-  'Tiền Nước': { vi: 'Tiền Nước', en: 'Water Bill' },
-  'Phí Gửi Xe Ô Tô': { vi: 'Phí Gửi Xe Ô Tô', en: 'Car Parking Fee' },
-  'Phí Gửi Xe Máy': { vi: 'Phí Gửi Xe Máy', en: 'Motorbike Parking Fee' },
-  'Tổng Tiền Cần Thanh Toán': { vi: 'Tổng Tiền Cần Thanh Toán', en: 'Total Amount Due' },
-  'Tổng Thanh Toán': { vi: 'Tổng Thanh Toán', en: 'Total Payment' },
-  'Tổng Cộng': { vi: 'Tổng Cộng', en: 'Grand Total' },
-  'Hạn Thanh Toán': { vi: 'Hạn Thanh Toán', en: 'Payment Due Date' },
-  'Kỳ Thu': { vi: 'Kỳ Thu', en: 'Billing Cycle' },
-  'Mã Giao Dịch': { vi: 'Mã Giao Dịch', en: 'Transaction ID' },
-  'Phương Thức Thanh Toán': { vi: 'Phương Thức Thanh Toán', en: 'Payment Method' },
-  'Quét Mã QR VNPay': { vi: 'Quét Mã QR VNPay', en: 'Scan VNPay QR' },
-  'Chuyển Khoản Ngân Hàng': { vi: 'Chuyển Khoản Ngân Hàng', en: 'Bank Transfer' },
-  'Lịch Sử Giao Dịch': { vi: 'Lịch Sử Giao Dịch', en: 'Transaction History' },
+  // --- RESIDENT HOME (TRANG CHỦ CƯ DÂN) ---
+  ['Xin Chào,', 'Welcome,'],
+  ['Thời tiết:', 'Weather:'],
+  ['Độ ẩm:', 'Humidity:'],
+  ['Chất lượng không khí (AQI):', 'Air Quality (AQI):'],
+  ['Phím tắt nhanh', 'Quick Shortcuts'],
+  ['Thanh toán hóa đơn', 'Pay Utility Bills'],
+  ['Quét FaceID ra vào', 'FaceID Gate Access'],
+  ['Báo hỏng kỹ thuật', 'Report Maintenance'],
+  ['Tạo mã khách ra vào', 'Create Visitor Pass'],
+  ['Ngữ cảnh nhà thông minh', 'Smart Home Scenes'],
+  ['Ngữ Cảnh Nhanh:', 'Quick Scenes:'],
+  ['Về nhà', 'Welcome Home'],
+  ['Về Nhà', 'Welcome Home'],
+  ['Đi ngủ', 'Good Night'],
+  ['Đi Ngủ', 'Good Night'],
+  ['Ra ngoài', 'Leaving Home'],
+  ['Ra Ngoài', 'Leaving Home'],
+  ['Xem Phim', 'Cinema Mode'],
+  ['Ăn Tối', 'Dining Mode'],
+  ['Nắng nhẹ', 'Mild Sunshine'],
+  ['Không khí sạch', 'Clean Air'],
+  ['Độ ẩm', 'Humidity'],
+  ['e-KYC Đã Xác Thực', 'e-KYC Verified'],
+  ['FaceID Đã Kích Hoạt', 'FaceID Activated'],
+  ['FaceID: Chờ Chủ Hộ Duyệt', 'FaceID: Pending Owner'],
+  ['FaceID: Chờ BQL Phê Duyệt', 'FaceID: Pending Management'],
+  ['Quét FaceID Của Bạn', 'Scan Your FaceID'],
+  ['Tạo QR Đón Khách', 'Create Guest QR'],
+  ['Tạo mã QR cho khách quét mở sảnh và thang máy.', 'Create QR code for guests to open lobby & elevators.'],
+  ['Báo Hỏng & Sửa Chữa', 'Report Issues & Repairs'],
+  ['Gửi yêu cầu kiểm tra và sửa chữa thiết bị căn hộ.', 'Submit inspection and repair requests for apartment devices.'],
+  ['Hóa Đơn Dịch Vụ', 'Service Bills'],
+  ['Thanh toán tiền điện, nước và phí quản lý.', 'Pay electricity, water, and management fees.'],
+  ['Tiện Ích Cư Dân', 'Resident Amenities'],
+  ['Đặt lịch sử dụng hồ bơi, phòng gym và BBQ.', 'Book swimming pool, gym, and BBQ area.'],
+  ['Thẻ Cư Dân Điện Tử', 'Digital Resident Card'],
+  ['Chạm để lật thẻ • Dùng mở cổng sảnh & thang máy', 'Tap to flip card • Used for lobby & elevator access'],
+  ['Hóa đơn gần nhất', 'Recent Bills'],
+  ['Thông báo từ Ban Quản Lý', 'Announcements from Management'],
+  ['Chưa có thông báo mới', 'No new announcements'],
+  ['Bật đèn • ĐH 24°C • Mở rèm', 'Lights On • AC 24°C • Open Curtains'],
+  ['Tắt điện • Khóa cửa • Đóng rèm', 'Lights Off • Lock Door • Close Curtains'],
+  ['ĐH 26°C • Khóa cửa • Đóng rèm', 'AC 26°C • Lock Door • Close Curtains'],
+  ['ĐH 23°C • Đèn 15% • Đóng rèm', 'AC 23°C • Dim 15% • Close Curtains'],
+  ['Bật đèn bếp • View phố', 'Kitchen Lights • City View'],
 
-  // --- Báo hỏng & Kỹ thuật (Tickets) ---
-  'Tiêu Đề Sự Cố': { vi: 'Tiêu Đề Sự Cố', en: 'Issue Title' },
-  'Mô Tả Chi Tiết': { vi: 'Mô Tả Chi Tiết', en: 'Detailed Description' },
-  'Khu Vực': { vi: 'Khu Vực', en: 'Area / Location' },
-  'Mức Độ Ưu Tiên': { vi: 'Mức Độ Ưu Tiên', en: 'Priority' },
-  'Khẩn Cấp': { vi: 'Khẩn Cấp', en: 'Urgent' },
-  'Cao': { vi: 'Cao', en: 'High' },
-  'Bình Thường': { vi: 'Bình Thường', en: 'Normal' },
-  'Thấp': { vi: 'Thấp', en: 'Low' },
-  'Kỹ Thuật Phụ Trách': { vi: 'Kỹ Thuật Phụ Trách', en: 'Assigned Technician' },
-  'Thời Gian Tiếp Nhận': { vi: 'Thời Gian Tiếp Nhận', en: 'Received Time' },
+  // --- XÁC THỰC E-KYC (CCCD & FACEID) ---
+  ['Hồ Sơ Cư Dân & Định Danh Số', 'Resident Profile & Digital Identity'],
+  ['Nhận Diện Khuôn Mặt (FaceID)', 'FaceID Biometric Recognition'],
+  ['Quét Khuôn Mặt Ngay', 'Scan Face Now'],
+  ['Chụp Lại Khuôn Mặt', 'Rescan Face'],
+  ['Xác Thực Độ Sống Người Thật', 'Liveness Anti-Spoofing Check'],
+  ['Thu Thập Mẫu Khuôn Mặt', 'FaceID Enrollment'],
+  ['Quét Thẻ Căn Cước Công Dân', 'Scan Citizen ID Card'],
+  ['Chụp Lại Căn Cước', 'Rescan ID Card'],
+  ['Mặt Trước Thẻ CCCD', 'Front Side ID Card'],
+  ['Mặt Sau Thẻ CCCD', 'Back Side ID Card'],
+  ['Số Căn Cước Công Dân', 'Citizen ID Number'],
+  ['Số CCCD', 'Citizen ID'],
+  ['Ngày Cấp', 'Issued Date'],
+  ['Nơi Cấp', 'Issued Place'],
+  ['Họ và Tên', 'Full Name'],
+  ['Họ tên', 'Full name'],
+  ['Số Điện Thoại', 'Phone Number'],
+  ['Số điện thoại', 'Phone number'],
+  ['Email', 'Email'],
+  ['Địa chỉ', 'Address'],
+  ['Địa Chỉ Thường Trú', 'Permanent Address'],
+  ['Ngày Sinh', 'Date of Birth'],
+  ['Ngày sinh', 'Date of birth'],
+  ['Giới Tính', 'Gender'],
+  ['Giới tính', 'Gender'],
+  ['Nam', 'Male'],
+  ['Nữ', 'Female'],
+  ['Quốc Tịch', 'Nationality'],
+  ['Mối Quan Hệ', 'Relationship'],
+  ['Chủ hộ', 'Apartment Owner'],
+  ['Vợ', 'Wife'],
+  ['Chồng', 'Husband'],
+  ['Con', 'Child'],
+  ['Bố', 'Father'],
+  ['Mẹ', 'Mother'],
+  ['Người thuê', 'Tenant'],
 
-  // --- Khách thăm & Ra vào (Visitor) ---
-  'Tên Khách': { vi: 'Tên Khách', en: 'Guest Name' },
-  'Biển Số Xe': { vi: 'Biển Số Xe', en: 'License Plate' },
-  'Thời Gian Đến': { vi: 'Thời Gian Đến', en: 'Arrival Time' },
-  'Thời Gian Hết Hạn': { vi: 'Thời Gian Hết Hạn', en: 'Expiry Time' },
-  'Mục Đích Đến': { vi: 'Mục Đích Đến', en: 'Purpose of Visit' },
-  'Mã PIN Ra Vào': { vi: 'Mã PIN Ra Vào', en: 'Access PIN' },
-  'Mã QR Ra Vào': { vi: 'Mã QR Ra Vào', en: 'Access QR Code' },
-  'Chia Sẻ Mã Khách': { vi: 'Chia Sẻ Mã Khách', en: 'Share Guest Pass' },
+  // --- CĂN HỘ & TÒA NHÀ ---
+  ['Mã Căn Hộ', 'Apartment Code'],
+  ['Số Căn Hộ', 'Apartment Number'],
+  ['Tòa Nhà', 'Building'],
+  ['Tầng', 'Floor'],
+  ['Diện Tích', 'Area'],
+  ['Phòng Ngủ', 'Bedrooms'],
+  ['Phòng Tắm', 'Bathrooms'],
 
-  // --- Đăng nhập & Xác thực tài khoản ---
-  'Tài Khoản': { vi: 'Tài Khoản', en: 'Account' },
-  'Mật Khẩu': { vi: 'Mật Khẩu', en: 'Password' },
-  'Mật Khẩu Hiện Tại': { vi: 'Mật Khẩu Hiện Tại', en: 'Current Password' },
-  'Mật Khẩu Mới': { vi: 'Mật Khẩu Mới', en: 'New Password' },
-  'Xác Nhận Mật Khẩu Mới': { vi: 'Xác Nhận Mật Khẩu Mới', en: 'Confirm New Password' },
-  'Quên Mật Khẩu?': { vi: 'Quên Mật Khẩu?', en: 'Forgot Password?' },
-  'Ghi Nhớ Đăng Nhập': { vi: 'Ghi Nhớ Đăng Nhập', en: 'Remember Me' },
-  'Đăng Nhập Bằng FaceID': { vi: 'Đăng Nhập Bằng FaceID', en: 'Sign In with FaceID' },
-  'Đăng Nhập Bằng Mã OTP': { vi: 'Đăng Nhập Bằng Mã OTP', en: 'Sign In with OTP' },
-  'Đăng Nhập Tài Khoản': { vi: 'Đăng Nhập Tài Khoản', en: 'Account Login' },
-  'Vui lòng nhập tên đăng nhập hoặc email': { vi: 'Vui lòng nhập tên đăng nhập hoặc email', en: 'Please enter username or email' },
-  'Vui lòng nhập mật khẩu': { vi: 'Vui lòng nhập mật khẩu', en: 'Please enter password' },
+  // --- NHÀ THÔNG MINH (SMART HOME) ---
+  ['Phòng Khách', 'Living Room'],
+  ['Phòng Ngủ Master', 'Master Bedroom'],
+  ['Phòng Bếp', 'Kitchen'],
+  ['Ban Công', 'Balcony'],
+  ['Đèn Phòng Khách', 'Living Room Light'],
+  ['Máy Lạnh', 'Air Conditioner'],
+  ['Rèm Cửa', 'Smart Curtains'],
+  ['Bình Nước Nóng', 'Water Heater'],
+  ['Bật tất cả', 'Turn All On'],
+  ['Tắt tất cả', 'Turn All Off'],
 
-  // --- Chung cư & Hotline ---
-  'brand.name': { vi: 'Chung Cư Thông Minh Skyline', en: 'Skyline Smart Residence' },
-  'brand.hotline': { vi: 'Đường Dây Nóng Kỹ Thuật: 1900 8899', en: 'Technical Hotline: 1900 8899' },
-  'Chung Cư Thông Minh Skyline': { vi: 'Chung Cư Thông Minh Skyline', en: 'Skyline Smart Residence' },
-  'Tòa BS-07, Phân Khu Beverly Solari': { vi: 'Tòa BS-07, Phân Khu Beverly Solari', en: 'Tower BS-07, Beverly Solari Precinct' },
-  'Bản quyền thuộc về': { vi: 'Bản quyền thuộc về', en: 'Copyright by' },
-  'Đã đăng ký bản quyền.': { vi: 'Đã đăng ký bản quyền.', en: 'All rights reserved.' },
-};
+  // --- HÓA ĐƠN & TÀI CHÍNH (FINANCE & BILLING) ---
+  ['Hóa Đơn & Thanh Toán Tiện Ích', 'Utility Bills & Payments'],
+  ['Tổng tiền cần thanh toán', 'Total Amount Due'],
+  ['Hóa đơn tháng này', 'Current Month Bill'],
+  ['Điện Sinh Hoạt', 'Residential Electricity'],
+  ['Nước Sinh Hoạt', 'Residential Water'],
+  ['Phí Quản Lý Vận Hành', 'Building Management Fee'],
+  ['Phí Đỗ Xe & Gửi Xe', 'Parking & Vehicle Fee'],
+  ['Phí Sử Dụng Tiện Ích Đặt Trước', 'Reserved Facility Usage Fee'],
+  ['Giặt Ủi & Giặt Hấp Cao Cấp', 'Premium Laundry & Dry Cleaning'],
+  ['Giúp Việc & Dọn Dẹp Căn Hộ', 'Housekeeping & Apartment Cleaning'],
+  ['Thuê Huấn Luyện Viên PT Bơi/Gym', 'Personal Trainer (PT) Swim/Gym'],
+  ['Chăm Sóc & Rửa Xe Hầm B2', 'Car Care & Wash Basement B2'],
+  ['Phí Dịch Vụ Cư Dân', 'Resident Service Fees'],
+  ['Tiền điện', 'Electricity Fee'],
+  ['Tiền nước', 'Water Fee'],
+  ['Phí quản lý vận hành', 'Management Fee'],
+  ['Phí gửi xe ô tô', 'Car Parking Fee'],
+  ['Phí gửi xe máy', 'Motorbike Parking Fee'],
+  ['Trạng thái thanh toán', 'Payment Status'],
+  ['Thanh toán qua VietQR', 'Pay via VietQR'],
+  ['Thanh toán qua VNPay', 'Pay via VNPay'],
+  ['Quét mã QR để thanh toán nhanh', 'Scan QR code for instant payment'],
+  ['Lịch sử thanh toán', 'Payment History'],
+  ['Tải biên lai', 'Download Receipt'],
+  ['Tải hóa đơn VAT', 'Download VAT Invoice'],
 
-// Chuẩn bị danh sách phrase dịch thuật tối ưu hóa theo độ dài giảm dần
-const TRANSLATION_PAIRS: Array<{ vi: string; en: string }> = Object.values(DICTIONARY)
-  .filter((item) => item.vi && item.en && item.vi !== item.en)
+  // --- BÁO HỎNG & GÓP Ý (TICKET SERVICE) ---
+  ['Hỗ Trợ Kỹ Thuật & Tiếp Nhận Ý Kiến', 'Technical Support & Feedback'],
+  ['Báo Hỏng Kỹ Thuật', 'Technical Repair'],
+  ['Góp Ý & BQL', 'Management Feedback'],
+  ['Gợi Ý Sự Cố Nhanh', 'Quick Repair Presets'],
+  ['Khu vực', 'Area'],
+  ['Mức độ khẩn cấp', 'Urgency Level'],
+  ['Khẩn cấp', 'High Urgency'],
+  ['Bình thường', 'Normal'],
+  ['Thời gian mong muốn', 'Preferred Time Slot'],
+  ['Càng sớm càng tốt (< 30 phút)', 'As soon as possible (< 30 mins)'],
+  ['Sáng nay (08:30 - 11:30)', 'This morning (08:30 - 11:30)'],
+  ['Chiều nay (13:30 - 17:00)', 'This afternoon (13:30 - 17:00)'],
+  ['Tối nay (17:30 - 20:30)', 'This evening (17:30 - 20:30)'],
+  ['Mô tả chi tiết sự cố', 'Detailed Issue Description'],
+  ['Đính kèm ảnh hiện trường', 'Attach Site Photo'],
+  ['Gửi Yêu Cầu Sửa Chữa', 'Submit Repair Request'],
+  ['Gửi Góp Ý Đến BQL', 'Submit Feedback to Management'],
+  ['Kỹ thuật viên phụ trách', 'Assigned Technician'],
+  ['Ảnh hiện trường', 'Site Photo'],
+  ['Ảnh nghiệm thu', 'Resolution Photo'],
+  ['Chấm Điểm KTV', 'Rate Technician'],
+  ['Đánh Giá Chất Lượng Dịch Vụ Kỹ Thuật', 'Technical Service Quality Rating'],
+  ['Ban Quản Lý đang kiểm tra hiện trường & lập phương án giải quyết', 'Management is inspecting the site and formulating a solution'],
+  ['Chuyên trách: Đội ngũ CSKH & Vận hành tòa nhà', 'Handled by: Customer Care & Building Operations Team'],
+  ['Cam kết: Trong 24 giờ', 'Committed: Within 24 hours'],
+  ['Cam kết: 45 phút', 'Committed: 45 minutes'],
+  ['BQL Phản Hồi', 'Management Reply'],
+  ['Đổi KTV', 'Change Tech'],
+  ['Nghiệm Thu', 'Inspect & Resolve'],
+  ['✓ AI Nghiệm Thu Đạt Chuẩn', '✓ AI Verified: Quality Met'],
+  ['⚠️ AI Cảnh Báo: Ảnh Nghi Ngờ', '⚠️ AI Warning: Suspicious Photo'],
+  ['⏳ AI Đánh Giá: Chưa Triệt Để', '⏳ AI Assessment: Incomplete'],
+  ['AI Thẩm Định: Hiện trường đạt chuẩn kỹ thuật Skyline', 'AI Audit: Site meets Skyline engineering standards'],
+  ['Hệ thống Giám sát KTV', 'Technician Oversight System'],
+  ['BQL Skyline Audit', 'Skyline Management Audit'],
+  ['Đối chiếu ảnh', 'Compare Photos'],
+  ['Xem ảnh', 'View Photos'],
+
+  // --- KHÁCH THĂM & RA VÀO (VISITOR PASS) ---
+  ['Cấp Mã Khách Ra Vào Tòa Nhà', 'Issue Visitor Access Pass'],
+  ['Tên Khách', 'Guest Name'],
+  ['Biển Số Xe', 'License Plate'],
+  ['Thời Gian Đến', 'Arrival Time'],
+  ['Thời Gian Hết Hạn', 'Expiry Time'],
+  ['Mục Đích Đến', 'Purpose of Visit'],
+  ['Mã PIN Ra Vào', 'Access PIN'],
+  ['Mã QR Ra Vào', 'Access QR Code'],
+  ['Chia Sẻ Mã Khách', 'Share Guest Pass'],
+  ['Tạo Mã Khách Ngay', 'Create Visitor Pass Now'],
+
+  // --- BIỂU QUYẾT & KHẢO SÁT (VOTING & SURVEYS) ---
+  ['Biểu Quyết & Lấy Ý Kiến Cư Dân', 'Resident Voting & Surveys'],
+  ['Hội nghị nhà chung cư thường niên', 'Annual Apartment Owners Meeting'],
+  ['Thời gian biểu quyết', 'Voting Period'],
+  ['Tỷ lệ tham gia', 'Participation Rate'],
+  ['Tán thành', 'Approve'],
+  ['Không tán thành', 'Disapprove'],
+  ['Ý kiến khác', 'Other Opinion'],
+  ['Gửi Phiếu Biểu Quyết', 'Submit Vote'],
+
+  // --- SỔ TAY CƯ DÂN (RESIDENT HANDBOOK) ---
+  ['Sổ Tay Cư Dân Điện Tử', 'Digital Resident Handbook'],
+  ['Nội quy chung cư', 'Building Regulations'],
+  ['Quy định sử dụng thang máy', 'Elevator Guidelines'],
+  ['Hướng dẫn an toàn PCCC', 'Fire Safety Instructions'],
+  ['Quy định phân loại rác thải', 'Waste Sorting Regulations'],
+  ['Danh bạ liên hệ khẩn cấp', 'Emergency Contact Directory'],
+
+  // --- BAN QUẢN LÝ (ADMIN KANBAN & DISPATCH) ---
+  ['Bảng Điều Phối Kỹ Thuật (Kanban)', 'Technical Dispatch Kanban Board'],
+  ['Chờ Tiếp Nhận', 'Pending Dispatch'],
+  ['Đã Xử Lý Xong', 'Completed'],
+  ['AI Tự Động Phân Công', 'AI Auto-Dispatch'],
+  ['Duyệt Đề Xuất AI', 'Approve AI Recommendation'],
+  ['Phân công KTV', 'Assign Technician'],
+  ['Nghiệm Thu & Đóng Phiếu', 'Inspect & Close Ticket'],
+  ['Phản Hồi Cư Dân', 'Reply to Resident'],
+  ['Biên bản nghiệm thu kỹ thuật', 'Technical Inspection Report'],
+  ['Thù lao kỹ thuật viên', 'Technician Payroll'],
+  ['In Phiếu Chi Lương', 'Print Payroll Slip'],
+];
+
+// =============================================================================
+// XÂY DỰNG TỪ ĐIỂN VÀ ÁNH XẠ 2 CHIỀU ĐỂ KHÔNG BAO GIỜ BỊ LỖI DUPLICATE KEY
+// =============================================================================
+export const DICTIONARY: Record<string, { vi: string; en: string }> = {};
+const VI_TO_EN_MAP = new Map<string, string>();
+const EN_TO_VI_MAP = new Map<string, string>();
+
+RAW_TRANSLATIONS.forEach(([vi, en, key]) => {
+  const viClean = vi.trim();
+  const enClean = en.trim();
+
+  DICTIONARY[viClean] = { vi: viClean, en: enClean };
+  if (key) {
+    DICTIONARY[key.trim()] = { vi: viClean, en: enClean };
+  }
+
+  VI_TO_EN_MAP.set(viClean.toLowerCase(), enClean);
+  EN_TO_VI_MAP.set(enClean.toLowerCase(), viClean);
+});
+
+// Sắp xếp các cụm từ theo chiều dài giảm dần (từ dài nhất đến ngắn nhất)
+// Đảm bảo các cụm từ ghép luôn được dịch trước từ đơn
+const SORTED_VI_PHRASES: Array<{ vi: string; en: string }> = Array.from(VI_TO_EN_MAP.entries())
+  .filter(([vi]) => vi.length >= 3)
+  .map(([vi, en]) => ({ vi, en }))
   .sort((a, b) => b.vi.length - a.vi.length);
 
+const SORTED_EN_PHRASES: Array<{ vi: string; en: string }> = Array.from(EN_TO_VI_MAP.entries())
+  .filter(([en]) => en.length >= 3)
+  .map(([en, vi]) => ({ vi, en }))
+  .sort((a, b) => b.en.length - a.en.length);
+
+function escapeRegExp(str: string): string {
+  return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+/**
+ * Hàm dịch thuật an toàn 100%:
+ * 1. Khớp nguyên văn cả chuỗi (Exact match) trước tiên.
+ * 2. Nếu là câu dài: tìm và thay thế theo ranh giới từ (Word boundaries),
+ *    dùng Tokenizer trung gian để chống lặp từ hoặc cắt cụt chữ (như "Việt Nam" -> "Việt Male").
+ */
+export function translateSentence(text: string, targetLang: Language): string {
+  if (!text || !text.trim()) return text;
+  const trimmed = text.trim();
+  const lower = trimmed.toLowerCase();
+
+  // 1. Exact Match ưu tiên hàng đầu
+  if (targetLang === 'en') {
+    if (VI_TO_EN_MAP.has(lower)) {
+      const match = VI_TO_EN_MAP.get(lower)!;
+      return text.replace(trimmed, match);
+    }
+  } else {
+    if (EN_TO_VI_MAP.has(lower)) {
+      const match = EN_TO_VI_MAP.get(lower)!;
+      return text.replace(trimmed, match);
+    }
+  }
+
+  // 2. Tokenized Phrase Replacement theo ranh giới từ an toàn
+  let current = text;
+  const tokens: string[] = [];
+  let tokenIdx = 0;
+
+  const phraseList = targetLang === 'en' ? SORTED_VI_PHRASES : SORTED_EN_PHRASES;
+
+  for (const item of phraseList) {
+    const sourcePhrase = targetLang === 'en' ? item.vi : item.en;
+    const targetPhrase = targetLang === 'en' ? item.en : item.vi;
+
+    if (sourcePhrase.length < 3) continue;
+
+    if (current.toLowerCase().includes(sourcePhrase.toLowerCase())) {
+      // Dùng Regex biên từ (boundary) để tránh thay thế cụm từ nằm trong từ khác
+      const regex = new RegExp(`(^|[^a-zA-Z0-9À-ỹ])(${escapeRegExp(sourcePhrase)})([^a-zA-Z0-9À-ỹ]|$)`, 'gi');
+      if (regex.test(current)) {
+        current = current.replace(regex, (match, prefix, _matchedWord, suffix) => {
+          const token = `__SKYLINE_TOKEN_${tokenIdx}__`;
+          tokens[tokenIdx] = targetPhrase;
+          tokenIdx++;
+          return `${prefix}${token}${suffix}`;
+        });
+      }
+    }
+  }
+
+  // Giải mã Token sau khi đã duyệt toàn bộ danh sách phrase
+  for (let i = 0; i < tokenIdx; i++) {
+    current = current.split(`__SKYLINE_TOKEN_${i}__`).join(tokens[i]);
+  }
+
+  return current;
+}
+
+// =============================================================================
+// REACT CONTEXT & HOOK
+// =============================================================================
 interface LanguageContextType {
   language: Language;
   setLanguage: (lang: Language) => void;
   toggleLanguage: () => void;
   t: (keyOrText: string, fallback?: string) => string;
   isMounted: boolean;
+  isEn: boolean;
+  isVi: boolean;
 }
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
@@ -299,8 +579,8 @@ const LanguageContext = createContext<LanguageContextType | undefined>(undefined
 export function LanguageProvider({ children }: { children: React.ReactNode }) {
   const [language, setLanguageState] = useState<Language>('vi');
   const [isMounted, setIsMounted] = useState(false);
-  const originalNodesMap = useRef<WeakMap<Node, string>>(new WeakMap());
   const isTranslatingRef = useRef(false);
+  const originalNodesMap = useRef<WeakMap<Node, string>>(new WeakMap());
 
   useEffect(() => {
     setIsMounted(true);
@@ -342,119 +622,130 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
     setLanguage(next);
   };
 
-  // Hàm dịch trực tiếp theo key hoặc phrase
+  /**
+   * Hàm dịch trực tiếp theo key hoặc plain text trong React
+   */
   const t = (keyOrText: string, fallback?: string): string => {
     if (!keyOrText) return '';
     const trimmed = keyOrText.trim();
+    const lower = trimmed.toLowerCase();
 
-    // 1. Check exact key in DICTIONARY
+    // 1. Kiểm tra key trực tiếp trong DICTIONARY
     if (DICTIONARY[keyOrText] && DICTIONARY[keyOrText][language]) {
       return DICTIONARY[keyOrText][language];
     }
-
-    // 2. Check exact trimmed text in DICTIONARY
     if (DICTIONARY[trimmed] && DICTIONARY[trimmed][language]) {
       return DICTIONARY[trimmed][language];
     }
 
-    // 3. Reverse search if language is 'vi' but user passed English or vice versa
-    for (const entry of Object.values(DICTIONARY)) {
-      if (entry.vi.toLowerCase() === trimmed.toLowerCase()) {
-        return language === 'en' ? entry.en : entry.vi;
+    // 2. Tra cứu 2 chiều
+    if (language === 'en') {
+      if (VI_TO_EN_MAP.has(lower)) {
+        return VI_TO_EN_MAP.get(lower)!;
       }
-      if (entry.en.toLowerCase() === trimmed.toLowerCase()) {
-        return language === 'vi' ? entry.vi : entry.en;
+    } else {
+      if (EN_TO_VI_MAP.has(lower)) {
+        return EN_TO_VI_MAP.get(lower)!;
       }
     }
+
+    // 3. Dịch cụm từ hoặc trả fallback
+    const result = translateSentence(trimmed, language);
+    if (result !== trimmed) return result;
 
     return fallback || keyOrText;
   };
 
-  // Live non-destructive DOM translation engine
+  // ===========================================================================
+  // TỰ ĐỘNG DỊCH THUẬT TOÀN DIỆN TRÊN DOM (ĐẢM BẢO HOẠT ĐỘNG CHO TOÀN BỘ PROJECT)
+  // ===========================================================================
   useEffect(() => {
     if (typeof window === 'undefined' || !isMounted) return;
 
-    const translateTextContent = (text: string): string => {
-      const trimmed = text.trim();
-      if (!trimmed) return text;
+    let debounceTimer: any = null;
 
-      // 1. Direct match in dictionary
-      if (DICTIONARY[trimmed]) {
-        const translated = DICTIONARY[trimmed].en;
-        return text.replace(trimmed, translated);
-      }
+    const processTextNode = (node: Node) => {
+      if (!node || node.nodeType !== Node.TEXT_NODE) return;
+      const currentVal = node.nodeValue || '';
+      if (!currentVal.trim()) return;
 
-      // 2. Phrase matching from sorted phrases
-      let result = text;
-      for (const pair of TRANSLATION_PAIRS) {
-        if (result.includes(pair.vi)) {
-          result = result.split(pair.vi).join(pair.en);
-        }
-      }
-      return result;
-    };
-
-    const processNode = (node: Node) => {
-      if (!node) return;
-
-      // Skip script, style, code, pre tags
-      const parentName = node.parentElement?.tagName?.toLowerCase();
-      if (parentName === 'script' || parentName === 'style' || parentName === 'code' || parentName === 'pre') {
+      // Bỏ qua các thẻ code, script, style, pre, svg
+      const parent = node.parentElement;
+      if (!parent) return;
+      const tag = parent.tagName.toLowerCase();
+      if (tag === 'script' || tag === 'style' || tag === 'code' || tag === 'pre' || tag === 'svg') {
         return;
       }
 
-      // Process Text Node
-      if (node.nodeType === Node.TEXT_NODE) {
-        const currentVal = node.nodeValue || '';
-        if (!currentVal.trim()) return;
+      // Tránh can thiệp khi người dùng đang trực tiếp gõ vào ô nhập liệu
+      if (document.activeElement && (document.activeElement === parent || parent.contains(document.activeElement))) {
+        if (tag === 'textarea' || tag === 'input' || parent.isContentEditable) {
+          return;
+        }
+      }
 
+      // Lưu trữ giá trị gốc tiếng Việt lần đầu tiên gặp node
+      if (!originalNodesMap.current.has(node)) {
+        originalNodesMap.current.set(node, currentVal);
+      }
+
+      if (language === 'en') {
+        const baseText = originalNodesMap.current.get(node) || currentVal;
+        const translated = translateSentence(baseText, 'en');
+        if (translated !== node.nodeValue) {
+          node.nodeValue = translated;
+        }
+      } else {
+        // Khôi phục lại tiếng Việt
+        const original = originalNodesMap.current.get(node);
+        if (original && node.nodeValue !== original) {
+          node.nodeValue = original;
+        } else if (!original) {
+          const translatedBack = translateSentence(currentVal, 'vi');
+          if (translatedBack !== node.nodeValue) {
+            node.nodeValue = translatedBack;
+          }
+        }
+      }
+    };
+
+    const processAttributes = (el: HTMLElement) => {
+      if (!el || !el.getAttribute) return;
+
+      // Placeholder
+      const placeholder = el.getAttribute('placeholder');
+      if (placeholder) {
         if (language === 'en') {
-          if (!originalNodesMap.current.has(node)) {
-            originalNodesMap.current.set(node, currentVal);
+          if (!el.getAttribute('data-orig-placeholder')) {
+            el.setAttribute('data-orig-placeholder', placeholder);
           }
-          const translated = translateTextContent(currentVal);
-          if (translated !== currentVal) {
-            node.nodeValue = translated;
-          }
+          const translated = translateSentence(placeholder, 'en');
+          if (translated !== placeholder) el.setAttribute('placeholder', translated);
         } else {
-          // Restore original Vietnamese text
-          if (originalNodesMap.current.has(node)) {
-            const original = originalNodesMap.current.get(node);
-            if (original && node.nodeValue !== original) {
-              node.nodeValue = original;
-            }
+          const orig = el.getAttribute('data-orig-placeholder');
+          if (orig) el.setAttribute('placeholder', orig);
+          else {
+            const translatedBack = translateSentence(placeholder, 'vi');
+            el.setAttribute('placeholder', translatedBack);
           }
         }
       }
 
-      // Process input/button placeholder & title attributes
-      if (node.nodeType === Node.ELEMENT_NODE) {
-        const el = node as HTMLElement;
-        const placeholder = el.getAttribute('placeholder');
-        if (placeholder) {
-          if (language === 'en') {
-            if (!el.getAttribute('data-orig-placeholder')) {
-              el.setAttribute('data-orig-placeholder', placeholder);
-            }
-            const translated = translateTextContent(placeholder);
-            if (translated !== placeholder) el.setAttribute('placeholder', translated);
-          } else {
-            const orig = el.getAttribute('data-orig-placeholder');
-            if (orig) el.setAttribute('placeholder', orig);
+      // Title
+      const title = el.getAttribute('title');
+      if (title) {
+        if (language === 'en') {
+          if (!el.getAttribute('data-orig-title')) {
+            el.setAttribute('data-orig-title', title);
           }
-        }
-
-        const title = el.getAttribute('title');
-        if (title) {
-          if (language === 'en') {
-            if (!el.getAttribute('data-orig-title')) {
-              el.setAttribute('data-orig-title', title);
-            }
-            const translated = translateTextContent(title);
-            if (translated !== title) el.setAttribute('title', translated);
-          } else {
-            const orig = el.getAttribute('data-orig-title');
-            if (orig) el.setAttribute('title', orig);
+          const translated = translateSentence(title, 'en');
+          if (translated !== title) el.setAttribute('title', translated);
+        } else {
+          const orig = el.getAttribute('data-orig-title');
+          if (orig) el.setAttribute('title', orig);
+          else {
+            const translatedBack = translateSentence(title, 'vi');
+            el.setAttribute('title', translatedBack);
           }
         }
       }
@@ -473,7 +764,11 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
 
         let currentNode = walker.nextNode();
         while (currentNode) {
-          processNode(currentNode);
+          if (currentNode.nodeType === Node.TEXT_NODE) {
+            processTextNode(currentNode);
+          } else if (currentNode.nodeType === Node.ELEMENT_NODE) {
+            processAttributes(currentNode as HTMLElement);
+          }
           currentNode = walker.nextNode();
         }
       } finally {
@@ -481,22 +776,25 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
       }
     };
 
-    // Initial translation pass on current page DOM
+    // Quét toàn bộ DOM khi thay đổi ngôn ngữ
     walkAndTranslate(document.body);
 
-    // Setup MutationObserver for dynamic React components, modals, and tabs
+    // Lắng nghe các thành phần động (Modal, Tab chuyển đổi, Tooltip)
     const observer = new MutationObserver((mutations) => {
       if (isTranslatingRef.current) return;
 
-      for (const mutation of mutations) {
-        if (mutation.type === 'characterData' && mutation.target) {
-          processNode(mutation.target);
-        } else if (mutation.type === 'childList') {
-          mutation.addedNodes.forEach((added) => {
-            walkAndTranslate(added);
-          });
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(() => {
+        for (const mutation of mutations) {
+          if (mutation.type === 'characterData' && mutation.target) {
+            processTextNode(mutation.target);
+          } else if (mutation.type === 'childList') {
+            mutation.addedNodes.forEach((added) => {
+              walkAndTranslate(added);
+            });
+          }
         }
-      }
+      }, 40);
     });
 
     observer.observe(document.body, {
@@ -506,12 +804,21 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
     });
 
     return () => {
+      clearTimeout(debounceTimer);
       observer.disconnect();
     };
   }, [language, isMounted]);
 
   const value = useMemo(
-    () => ({ language, setLanguage, toggleLanguage, t, isMounted }),
+    () => ({ 
+      language, 
+      setLanguage, 
+      toggleLanguage, 
+      t, 
+      isMounted,
+      isEn: language === 'en',
+      isVi: language === 'vi'
+    }),
     [language, isMounted]
   );
 
