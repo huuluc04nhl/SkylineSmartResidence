@@ -24,11 +24,13 @@ import {
 } from 'lucide-react';
 import { useTheme } from '@/lib/themeContext';
 import { useAuth } from '@/lib/authContext';
+import { useLanguage } from '@/lib/languageContext';
 import { RESIDENT_SERVICES_CATALOG, ResidentServiceItem } from '@/lib/residentServiceStore';
 
 export default function ServicesSection() {
   const { theme } = useTheme();
   const { currentUser, isAuthenticated } = useAuth();
+  const { t, isEn } = useLanguage();
   const isDark = theme === 'dark';
 
   const [selectedServiceId, setSelectedServiceId] = useState<string>(RESIDENT_SERVICES_CATALOG[0]?.id || 'srv-cleaning');
@@ -87,17 +89,20 @@ export default function ServicesSection() {
               : 'bg-white border border-[#C5A880]/60 text-amber-800 shadow-sm'
           }`}>
             <Sparkles className="w-3.5 h-3.5 text-[#C5A880]" />
-            <span>Hệ Sinh Thái Dịch Vụ Cư Dân 5 Sao</span>
+            <span>{t('Hệ Sinh Thái Dịch Vụ Cư Dân 5 Sao', '5-Star Resident Service Ecosystem')}</span>
           </div>
           <h2 className={`text-3xl sm:text-4xl lg:text-5xl font-serif font-bold tracking-tight ${
             isDark ? 'text-white' : 'text-gray-900'
           }`}>
-            Dịch Vụ Quản Gia & Kỹ Thuật NKS Túc Trực 24/7
+            {t('Dịch Vụ Quản Gia & Kỹ Thuật NKS Túc Trực 24/7', '24/7 Butler & NKS Technical Support Services')}
           </h2>
           <p className={`text-sm sm:text-base font-light leading-relaxed ${
             isDark ? 'text-gray-300' : 'text-gray-600'
           }`}>
-            Đặc quyền chuẩn sống thảnh thơi tại 4 chung cư The Tropical (BS-07, BS-08, BS-09, BS-10). Từ dọn dẹp, giặt là, chăm sóc xe đến đội ngũ kỹ thuật NKS thường trực xử lý sự cố trong 15 phút, tất cả đều được vận hành chuẩn hóa trên ứng dụng di động.
+            {t(
+              'Đặc quyền chuẩn sống thảnh thơi tại 4 chung cư The Tropical (BS-07, BS-08, BS-09, BS-10). Từ dọn dẹp, giặt là, chăm sóc xe đến đội ngũ kỹ thuật NKS thường trực xử lý sự cố trong 15 phút, tất cả đều được vận hành chuẩn hóa trên ứng dụng di động.',
+              'Exclusive effortless living at 4 towers of The Tropical (BS-07, BS-08, BS-09, BS-10). From housekeeping, laundry, and car care to on-duty NKS technical engineers responding in 15 minutes, all standardized on the mobile portal.'
+            )}
           </p>
         </div>
 
@@ -107,7 +112,7 @@ export default function ServicesSection() {
           <div className="lg:col-span-5 space-y-2">
             <div className="text-[11px] font-mono uppercase tracking-widest text-[#C5A880] mb-3 flex items-center gap-2">
               <BadgeCheck className="w-4 h-4" />
-              <span>Danh Mục Quản Gia Cá Nhân Hóa</span>
+              <span>{t('Danh Mục Quản Gia Cá Nhân Hóa', 'Personalized Concierge Catalog')}</span>
             </div>
 
             <div className="space-y-2">
@@ -146,16 +151,16 @@ export default function ServicesSection() {
                               ? isDark ? 'text-white' : 'text-gray-900' 
                               : isDark ? 'text-gray-300' : 'text-gray-700'
                           }`}>
-                            {service.name}
+                            {t(service.name)}
                           </h4>
                           {service.badge && (
                             <span className="hidden sm:inline-block px-1.5 py-0.5 text-[9px] font-mono uppercase bg-[#C5A880]/15 text-[#C5A880] border border-[#C5A880]/30 rounded-none">
-                              {service.badge}
+                              {t(service.badge)}
                             </span>
                           )}
                         </div>
                         <p className="text-xs text-gray-400 truncate mt-0.5 font-light">
-                          {service.tagline}
+                          {t(service.tagline)}
                         </p>
                       </div>
                     </div>
@@ -183,17 +188,17 @@ export default function ServicesSection() {
                     <div>
                       <div className="flex items-center gap-2 mb-1.5">
                         <span className="text-[10px] font-mono uppercase px-2 py-0.5 bg-[#C5A880]/20 text-[#C5A880] border border-[#C5A880]/40 rounded-none">
-                          {selectedService.location}
+                          {t(selectedService.location)}
                         </span>
                         <span className="text-[10px] font-mono text-gray-400">
-                          {selectedService.operatingHours}
+                          {t(selectedService.operatingHours)}
                         </span>
                       </div>
                       <h3 className={`text-2xl font-serif font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>
-                        {selectedService.name}
+                        {t(selectedService.name)}
                       </h3>
                       <p className={`text-xs sm:text-sm mt-1.5 leading-relaxed font-light ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
-                        {selectedService.description}
+                        {t(selectedService.description)}
                       </p>
                     </div>
 
@@ -202,7 +207,7 @@ export default function ServicesSection() {
                         ⭐ {selectedService.rating.toFixed(2)}
                       </div>
                       <div className="text-[10px] font-mono uppercase text-gray-400">
-                        {selectedService.reviewCount} lượt đánh giá 5★
+                        {selectedService.reviewCount} {t('lượt đánh giá 5★', '5★ verified reviews')}
                       </div>
                     </div>
                   </div>
@@ -210,8 +215,8 @@ export default function ServicesSection() {
                   {/* Bảng giá các gói dịch vụ tiêu biểu */}
                   <div className="space-y-3">
                     <div className="text-xs font-mono uppercase tracking-wider text-gray-400 flex items-center justify-between">
-                      <span>Bảng Giá Niêm Yết & Hạng Mục</span>
-                      <span className="text-[#C5A880]">Cộng vào Hóa Đơn Tháng hoặc Trả Ngay</span>
+                      <span>{t('Bảng Giá Niêm Yết & Hạng Mục', 'Official Pricing & Packages')}</span>
+                      <span className="text-[#C5A880]">{t('Cộng vào Hóa Đơn Tháng hoặc Trả Ngay', 'Added to Monthly Bill or Pay Now')}</span>
                     </div>
 
                     <div className="space-y-2.5">
@@ -226,22 +231,22 @@ export default function ServicesSection() {
                         >
                           <div className="min-w-0">
                             <div className="font-semibold text-sm flex items-center gap-2">
-                              <span className={isDark ? 'text-white' : 'text-gray-900'}>{pkg.name}</span>
+                              <span className={isDark ? 'text-white' : 'text-gray-900'}>{t(pkg.name)}</span>
                               {pkg.estimatedDuration && (
                                 <span className="text-[10px] font-mono text-[#C5A880] flex items-center gap-1">
                                   <Clock className="w-3 h-3" />
-                                  {pkg.estimatedDuration}
+                                  {t(pkg.estimatedDuration)}
                                 </span>
                               )}
                             </div>
                             <p className="text-xs text-gray-400 mt-0.5 line-clamp-1">
-                              {pkg.description}
+                              {t(pkg.description)}
                             </p>
                           </div>
 
                           <div className="sm:text-right shrink-0">
                             <div className="font-mono font-bold text-[#C5A880] text-sm sm:text-base">
-                              {pkg.unitPrice === 0 ? 'Miễn Phí Đặt Bàn' : `${pkg.unitPrice.toLocaleString('vi-VN')} đ / ${pkg.unit}`}
+                              {pkg.unitPrice === 0 ? t('Miễn Phí Đặt Bàn', 'Free Table Reservation') : `${pkg.unitPrice.toLocaleString(isEn ? 'en-US' : 'vi-VN')} ${t('đ', 'VND')} / ${t(pkg.unit)}`}
                             </div>
                           </div>
                         </div>
@@ -254,14 +259,14 @@ export default function ServicesSection() {
                 <div className="pt-6 mt-6 border-t border-gray-700/40 flex flex-col sm:flex-row items-center justify-between gap-4">
                   <div className="text-xs text-gray-400 flex items-center gap-2">
                     <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
-                    <span>Nhân viên có hồ sơ e-KYC minh bạch, bảo hiểm trách nhiệm</span>
+                    <span>{t('Nhân viên có hồ sơ e-KYC minh bạch, bảo hiểm trách nhiệm', 'Staff with verified e-KYC background & full liability insurance')}</span>
                   </div>
 
                   <Link
                     href={servicesPortalUrl}
                     className="w-full sm:w-auto px-6 py-3 bg-[#C5A880] hover:bg-white text-[#0A0E14] font-mono text-xs uppercase tracking-widest font-bold transition-colors flex items-center justify-center gap-2 rounded-none shadow-lg cursor-pointer"
                   >
-                    <span>Đặt Lịch Trên App Resident</span>
+                    <span>{t('Đặt Lịch Trên App Resident', 'Book on Resident App')}</span>
                     <ArrowRight className="w-4 h-4" />
                   </Link>
                 </div>
@@ -284,35 +289,38 @@ export default function ServicesSection() {
             <div className="lg:col-span-8 space-y-4">
               <div className="inline-flex items-center gap-2 px-3 py-1 bg-emerald-500/10 border border-emerald-500/40 text-emerald-400 text-[11px] font-mono uppercase tracking-widest rounded-none">
                 <Zap className="w-3.5 h-3.5 fill-current" />
-                <span>Cam Kết SLA Kỹ Thuật 24/7</span>
+                <span>{t('Cam Kết SLA Kỹ Thuật 24/7', '24/7 Technical SLA Commitment')}</span>
               </div>
 
               <h3 className={`text-2xl sm:text-3xl font-serif font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>
-                Đội Ngũ Kỹ Sư NKS Thường Trực — Có Mặt Sau 15 Phút
+                {t('Đội Ngũ Kỹ Sư NKS Thường Trực — Có Mặt Sau 15 Phút', 'On-Duty NKS Engineering Team — On-Site in 15 Minutes')}
               </h3>
 
               <p className={`text-xs sm:text-sm leading-relaxed max-w-3xl font-light ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
-                Hệ thống kỹ thuật căn hộ thông minh tại 4 chung cư The Tropical được bảo bọc bởi trạm kỹ thuật NKS đặt ngay tại tầng hầm và cụm kỹ thuật BS-07. Mọi sự cố về điện sinh hoạt, rò rỉ nước ngầm, khóa cửa FaceID hay điều hòa không khí đều được tiếp nhận và xử lý cấp tốc.
+                {t(
+                  'Hệ thống kỹ thuật căn hộ thông minh tại 4 chung cư The Tropical được bảo bọc bởi trạm kỹ thuật NKS đặt ngay tại tầng hầm và cụm kỹ thuật BS-07. Mọi sự cố về điện sinh hoạt, rò rỉ nước ngầm, khóa cửa FaceID hay điều hòa không khí đều được tiếp nhận và xử lý cấp tốc.',
+                  'Smart home engineering across 4 towers of The Tropical is protected by an NKS technical station stationed in the BS-07 basement. All incidents regarding domestic electricity, underground pipe leaks, FaceID door locks, or HVAC are resolved promptly.'
+                )}
               </p>
 
               {/* 3 Trụ cột SLA */}
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-3">
                 <div className={`p-3.5 border rounded-none ${isDark ? 'bg-[#141B24] border-[#1E293B]' : 'bg-slate-50 border-gray-200'}`}>
-                  <div className="text-xl font-serif font-bold text-emerald-400">15 Phút</div>
-                  <div className="text-xs font-semibold mt-0.5">Sự Cố Khẩn Cấp</div>
-                  <div className="text-[11px] text-gray-400 mt-1 font-light">Rò rỉ ống nước, mất điện, kẹt khóa cửa thông minh.</div>
+                  <div className="text-xl font-serif font-bold text-emerald-400">{t('15 Phút', '15 Minutes')}</div>
+                  <div className="text-xs font-semibold mt-0.5">{t('Sự Cố Khẩn Cấp', 'Emergency Incidents')}</div>
+                  <div className="text-[11px] text-gray-400 mt-1 font-light">{t('Rò rỉ ống nước, mất điện, kẹt khóa cửa thông minh.', 'Water pipe leaks, power failure, smart lock jam.')}</div>
                 </div>
 
                 <div className={`p-3.5 border rounded-none ${isDark ? 'bg-[#141B24] border-[#1E293B]' : 'bg-slate-50 border-gray-200'}`}>
-                  <div className="text-xl font-serif font-bold text-[#C5A880]">60 Phút</div>
-                  <div className="text-xs font-semibold mt-0.5">Sửa Chữa Tiêu Chuẩn</div>
-                  <div className="text-[11px] text-gray-400 mt-1 font-light">Bảo dưỡng điều hòa, thay lọc nước, kiểm tra thiết bị IoT.</div>
+                  <div className="text-xl font-serif font-bold text-[#C5A880]">{t('60 Phút', '60 Minutes')}</div>
+                  <div className="text-xs font-semibold mt-0.5">{t('Sửa Chữa Tiêu Chuẩn', 'Standard Repair')}</div>
+                  <div className="text-[11px] text-gray-400 mt-1 font-light">{t('Bảo dưỡng điều hòa, thay lọc nước, kiểm tra thiết bị IoT.', 'AC maintenance, water filter replacement, IoT diagnostics.')}</div>
                 </div>
 
                 <div className={`p-3.5 border rounded-none ${isDark ? 'bg-[#141B24] border-[#1E293B]' : 'bg-slate-50 border-gray-200'}`}>
-                  <div className="text-xl font-serif font-bold text-sky-400">Minh Bạch</div>
-                  <div className="text-xs font-semibold mt-0.5">Theo Dõi Trên App</div>
-                  <div className="text-[11px] text-gray-400 mt-1 font-light">Xem ảnh trước/sau sửa chữa, ký nhận điện tử & bảo hành.</div>
+                  <div className="text-xl font-serif font-bold text-sky-400">{t('Minh Bạch', 'Transparency')}</div>
+                  <div className="text-xs font-semibold mt-0.5">{t('Theo Dõi Trên App', 'Track on App')}</div>
+                  <div className="text-[11px] text-gray-400 mt-1 font-light">{t('Xem ảnh trước/sau sửa chữa, ký nhận điện tử & bảo hành.', 'View before/after photos, electronic sign-off & warranty.')}</div>
                 </div>
               </div>
             </div>
@@ -327,13 +335,13 @@ export default function ServicesSection() {
 
               <div>
                 <div className="text-[11px] font-mono uppercase tracking-widest text-gray-400">
-                  Hotline Kỹ Thuật 24/7 (Miễn Phí)
+                  {t('Hotline Kỹ Thuật 24/7 (Miễn Phí)', '24/7 Technical Hotline (Toll-Free)')}
                 </div>
                 <div className="text-3xl font-serif font-bold text-[#C5A880] tracking-wider mt-1">
                   1900 8899
                 </div>
                 <div className="text-xs text-gray-400 mt-1">
-                  Bộ phận Kỹ thuật & Quản gia The Tropical
+                  {t('Bộ phận Kỹ thuật & Quản gia The Tropical', 'The Tropical Technical & Butler Division')}
                 </div>
               </div>
 
@@ -343,11 +351,11 @@ export default function ServicesSection() {
                   className="w-full py-3 bg-[#C5A880] hover:bg-white text-[#0A0E14] font-mono text-xs uppercase tracking-wider font-bold transition-colors flex items-center justify-center gap-2 rounded-none shadow-md cursor-pointer"
                 >
                   <Wrench className="w-4 h-4" />
-                  <span>Tạo Yêu Cầu Kỹ Thuật (Ticket)</span>
+                  <span>{t('Tạo Yêu Cầu Kỹ Thuật (Ticket)', 'Create Technical Ticket')}</span>
                 </Link>
 
                 <p className="text-[10px] text-gray-400 font-mono">
-                  Hỗ trợ cả cư dân chủ hộ và khách thuê dài hạn
+                  {t('Hỗ trợ cả cư dân chủ hộ và khách thuê dài hạn', 'Support for both resident owners and long-term tenants')}
                 </p>
               </div>
             </div>

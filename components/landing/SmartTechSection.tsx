@@ -24,6 +24,7 @@ import {
 } from 'lucide-react';
 import { useTheme } from '@/lib/themeContext';
 import { useAuth } from '@/lib/authContext';
+import { useLanguage } from '@/lib/languageContext';
 
 interface DayMilestone {
   id: string;
@@ -48,6 +49,7 @@ interface DayMilestone {
 export default function SmartTechSection() {
   const { theme } = useTheme();
   const { currentUser, isAuthenticated } = useAuth();
+  const { t, isEn } = useLanguage();
   const isDark = theme === 'dark';
 
   const [activeSlot, setActiveSlot] = useState<string>('morning');
@@ -189,18 +191,20 @@ export default function SmartTechSection() {
               : 'bg-white border border-[#C5A880]/60 text-amber-800 shadow-sm'
           }`}>
             <Sparkles className="w-3.5 h-3.5 text-[#C5A880]" />
-            <span>Chu Trình Tự Động Hóa 24/7</span>
+            <span>{t('Chu Trình Tự Động Hóa 24/7', '24/7 Automation Cycle')}</span>
           </div>
           <h2 className={`text-3xl sm:text-4xl lg:text-5xl font-serif font-bold tracking-tight ${
             isDark ? 'text-[#FAFAFA]' : 'text-[#0D1117]'
           }`}>
-            Một Ngày Trải Nghiệm Chuẩn Sống Đẳng Cấp Cùng Lõi AI
+            {t('Một Ngày Trải Nghiệm Chuẩn Sống Đẳng Cấp Cùng Lõi AI', 'A Day of Luxury Living Powered by AI Core')}
           </h2>
           <p className={`text-sm sm:text-base font-light leading-relaxed ${
             isDark ? 'text-gray-300' : 'text-gray-600'
           }`}>
-            Không chỉ là những thiết bị công nghệ rời rạc, Skyline liên kết toàn diện hạ tầng từ căn hộ thông minh đến hệ thống quản trị 
-            vận hành 4 chung cư The Tropical trong từng khoảnh khắc nhịp sống của cư dân.
+            {t(
+              'Không chỉ là những thiết bị công nghệ rời rạc, Skyline liên kết toàn diện hạ tầng từ căn hộ thông minh đến hệ thống quản trị vận hành 4 chung cư The Tropical trong từng khoảnh khắc nhịp sống của cư dân.',
+              'Far more than disconnected smart gadgets, Skyline seamlessly unifies infrastructure from smart apartments to building operations across 4 towers of The Tropical in every moment of daily life.'
+            )}
           </p>
         </div>
 
@@ -238,7 +242,7 @@ export default function SmartTechSection() {
                   <div className={`text-xs sm:text-sm font-serif font-bold truncate ${
                     isActive ? 'text-white' : 'text-gray-300'
                   }`}>
-                    {m.periodName}
+                    {t(m.periodName)}
                   </div>
                   <div className="text-[11px] text-gray-500 font-light truncate mt-0.5">
                     {m.timeLabel}
@@ -264,16 +268,16 @@ export default function SmartTechSection() {
                 </div>
                 <div>
                   <div className="text-[11px] font-mono uppercase tracking-widest text-[#C5A880] font-bold">
-                    Khung Giờ {current.timeLabel} • {current.periodName}
+                    {t('Khung Giờ', 'Time Slot')} {current.timeLabel} • {t(current.periodName)}
                   </div>
                   <h3 className="text-xl sm:text-2xl lg:text-3xl font-serif font-bold text-white leading-snug">
-                    {current.headline}
+                    {t(current.headline)}
                   </h3>
                 </div>
               </div>
 
               <p className="text-sm sm:text-base text-gray-300 font-light leading-relaxed">
-                {current.story}
+                {t(current.story)}
               </p>
 
               {/* Technical Spec Metrics */}
@@ -284,10 +288,10 @@ export default function SmartTechSection() {
                     className="p-3 bg-[#141B24] border border-white/5 rounded-none space-y-1"
                   >
                     <div className="text-[10px] text-gray-400 uppercase font-mono tracking-wider">
-                      {spec.label}
+                      {t(spec.label)}
                     </div>
                     <div className="text-sm sm:text-base font-serif font-bold text-[#C5A880]">
-                      {spec.value}
+                      {t(spec.value)}
                     </div>
                   </div>
                 ))}
@@ -299,11 +303,11 @@ export default function SmartTechSection() {
                   href={handlePortalRedirect(current.portalTab)}
                   className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#C5A880] hover:bg-white text-[#0A0E14] text-xs uppercase font-bold tracking-wider transition-all rounded-none shadow hover:shadow-lg active:scale-95"
                 >
-                  <span>{current.actionText}</span>
+                  <span>{t(current.actionText)}</span>
                   <ArrowRight className="w-3.5 h-3.5" />
                 </Link>
                 <span className="text-[11px] text-gray-400 font-mono hidden sm:inline">
-                  Tích hợp 4 chung cư The Tropical
+                  {t('Tích hợp 4 chung cư The Tropical', 'Integrated with 4 towers of The Tropical')}
                 </span>
               </div>
             </div>
@@ -318,20 +322,20 @@ export default function SmartTechSection() {
                 <div className="flex items-center justify-between border-b border-white/10 pb-3">
                   <div>
                     <div className="text-[9px] font-mono font-bold uppercase tracking-widest text-[#C5A880]">
-                      {current.visualWidget.badge}
+                      {t(current.visualWidget.badge)}
                     </div>
                     <div className="text-sm font-serif font-bold text-white mt-0.5">
-                      {current.visualWidget.title}
+                      {t(current.visualWidget.title)}
                     </div>
                   </div>
                   <div className="flex items-center gap-1.5 px-2 py-0.5 bg-emerald-950/80 border border-emerald-500/40 text-emerald-400 text-[10px] font-mono font-bold rounded-none">
                     <span className="w-1.5 h-1.5 bg-emerald-400 rounded-none animate-pulse"></span>
-                    <span>TRỰC TUYẾN</span>
+                    <span>{t('TRỰC TUYẾN', 'ONLINE')}</span>
                   </div>
                 </div>
 
                 <div className="text-xs text-gray-400 font-light">
-                  {current.visualWidget.subtitle}
+                  {t(current.visualWidget.subtitle)}
                 </div>
 
                 {/* Detail Status Rows */}
@@ -344,7 +348,7 @@ export default function SmartTechSection() {
                         className="flex items-start gap-2.5 p-3 bg-[#0E131B] border border-white/5 rounded-none text-xs text-gray-300"
                       >
                         <ItemIcon className="w-4 h-4 text-[#C5A880] flex-shrink-0 mt-0.5" />
-                        <span className="leading-relaxed">{item.text}</span>
+                        <span className="leading-relaxed">{t(item.text)}</span>
                       </div>
                     );
                   })}
@@ -354,9 +358,9 @@ export default function SmartTechSection() {
                 <div className="pt-2 border-t border-white/5 flex items-center justify-between text-[10px] text-gray-400 font-mono">
                   <span className="flex items-center gap-1">
                     <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
-                    Mã hóa bảo mật 256-bit
+                    {t('Mã hóa bảo mật 256-bit', '256-bit Encrypted')}
                   </span>
-                  <span>Lõi AI Skyline 4.0</span>
+                  <span>{t('Lõi AI Skyline 4.0', 'Skyline AI 4.0 Core')}</span>
                 </div>
               </div>
             </div>

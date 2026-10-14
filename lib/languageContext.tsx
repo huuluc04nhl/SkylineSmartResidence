@@ -25,7 +25,18 @@ for (const [vi, en] of TRANSLATIONS_DATA) {
 // =============================================================================
 export function translateString(text: string, targetLang: Language): string {
   if (!text || typeof text !== 'string') return text;
-  const trimmed = text.trim();
+  
+  // Normalize HTML entities if present
+  let normalized = text;
+  if (normalized.includes('&amp;') || normalized.includes('&quot;') || normalized.includes('&lt;') || normalized.includes('&gt;')) {
+    normalized = normalized
+      .replace(/&amp;/g, '&')
+      .replace(/&quot;/g, '"')
+      .replace(/&lt;/g, '<')
+      .replace(/&gt;/g, '>');
+  }
+
+  const trimmed = normalized.trim();
   if (!trimmed) return text;
 
   const lower = trimmed.toLowerCase();
@@ -40,7 +51,60 @@ export function translateString(text: string, targetLang: Language): string {
     return text.replace(trimmed, matchCase(trimmed, translated));
   }
 
-  // 2. Structural Patterns
+  // 2. Structural Splitters (Multi-line, Bullets, Compound Sentences)
+  // Multi-line
+  if (trimmed.includes('\n')) {
+    const lines = trimmed.split('\n');
+    const translatedLines = lines.map(line => translateString(line, targetLang));
+    return text.replace(trimmed, translatedLines.join('\n'));
+  }
+
+  // Bullet items: "Part A • Part B • Part C"
+  if (trimmed.includes(' • ')) {
+    const parts = trimmed.split(' • ');
+    const translatedParts = parts.map(part => translateString(part, targetLang));
+    return text.replace(trimmed, translatedParts.join(' • '));
+  }
+
+  // Arrow transitions: "A → B" or "A ➔ B"
+  if (trimmed.includes(' → ')) {
+    const parts = trimmed.split(' → ');
+    const translatedParts = parts.map(part => translateString(part, targetLang));
+    return text.replace(trimmed, translatedParts.join(' → '));
+  }
+  if (trimmed.includes(' ➔ ')) {
+    const parts = trimmed.split(' ➔ ');
+    const translatedParts = parts.map(part => translateString(part, targetLang));
+    return text.replace(trimmed, translatedParts.join(' ➔ '));
+  }
+
+  // Em-dash transitions: "Header — Subheader"
+  if (trimmed.includes(' — ')) {
+    const parts = trimmed.split(' — ');
+    const translatedParts = parts.map(part => translateString(part, targetLang));
+    return text.replace(trimmed, translatedParts.join(' — '));
+  }
+
+  // Spaced slash: "Option A / Option B"
+  if (trimmed.includes(' / ')) {
+    const parts = trimmed.split(' / ');
+    const translatedParts = parts.map(part => translateString(part, targetLang));
+    return text.replace(trimmed, translatedParts.join(' / '));
+  }
+
+  // Multiple sentences: "Sentence 1. Sentence 2."
+  if (trimmed.includes('. ') && !trimmed.includes('http') && !trimmed.includes('.com')) {
+    const sentences = trimmed.split(/(?<=\.\s+)/);
+    if (sentences.length > 1) {
+      const translatedSentences = sentences.map(s => translateString(s, targetLang));
+      const combined = translatedSentences.join('');
+      if (combined !== trimmed) {
+        return text.replace(trimmed, combined);
+      }
+    }
+  }
+
+  // 3. Structural Patterns
   // Quotes: "...", '...'
   if ((trimmed.startsWith('"') && trimmed.endsWith('"')) || (trimmed.startsWith("'") && trimmed.endsWith("'"))) {
     const q = trimmed[0];
@@ -146,6 +210,36 @@ export function translateString(text: string, targetLang: Language): string {
       const slot = m[1];
       const rest = m[2] ? ' ' + translateString(m[2], 'en') : '';
       return text.replace(trimmed, `Slot ${slot}${rest}`.trim());
+    }
+
+    m = trimmed.match(/^Chung Cư\s+([A-Za-z0-9\.\-_]+)(.*)$/i);
+    if (m) {
+      const code = m[1];
+      const rest = m[2] ? ' ' + translateString(m[2], 'en') : '';
+      return text.replace(trimmed, `Tower ${code}${rest}`.trim());
+    }
+
+    m = trimmed.match(/^Có\s+(\d+)\s+hồ sơ FaceID cần xác nhận/i);
+    if (m) {
+      return text.replace(trimmed, `There are ${m[1]} FaceID profiles awaiting confirmation`);
+    }
+
+    m = trimmed.match(/^Có\s+(\d+)\s+yêu cầu kỹ thuật cần xử lý/i);
+    if (m) {
+      return text.replace(trimmed, `There are ${m[1]} technical tickets to resolve`);
+    }
+
+    m = trimmed.match(/^Hạn nộp đến ngày\s+(\d+)\s+hàng tháng/i);
+    if (m) {
+      return text.replace(trimmed, `Due by the ${m[1]}th of every month`);
+    }
+
+    m = trimmed.match(/^Tháng\s+(\d{2})\/(\d{4})/i);
+    if (m) {
+      const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+      const mIdx = parseInt(m[1], 10) - 1;
+      const mName = months[mIdx] || `Month ${m[1]}`;
+      return text.replace(trimmed, `${mName} ${m[2]}`);
     }
 
     // Relative Time Templates
