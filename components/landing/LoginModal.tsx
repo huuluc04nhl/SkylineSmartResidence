@@ -543,7 +543,7 @@ export default function LoginModal({ isOpen, onClose, defaultAccount = '' }: Log
         
         {/* Language Switcher */}
         <div className="absolute top-4 left-4 z-10">
-          <LanguageSwitcher showIcon={false} />
+          <LanguageSwitcher variant="inline" />
         </div>
 
         {/* Close Button */}

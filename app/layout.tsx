@@ -3,6 +3,7 @@ import './globals.css';
 import { AuthProvider } from '@/lib/authContext';
 import { ThemeProvider } from '@/lib/themeContext';
 import { LanguageProvider } from '@/lib/languageContext';
+import LanguageSwitcher from '@/components/shared/LanguageSwitcher';
 
 export const viewport: Viewport = {
   width: 'device-width',
@@ -37,6 +38,7 @@ export default function RootLayout({
           <ThemeProvider>
             <AuthProvider>
               {children}
+              <LanguageSwitcher variant="floating" />
             </AuthProvider>
           </ThemeProvider>
         </LanguageProvider>

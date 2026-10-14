@@ -105,8 +105,8 @@ export function translateString(text: string, targetLang: Language): string {
 
   // 3. Domain Templates (EN)
   if (targetLang === 'en') {
-    // Apartments & Towers: "Căn hộ BS-07.08 Tòa BS-07"
-    let m = trimmed.match(/^Căn hộ\s+([A-Za-z0-9\.\-_]+)(.*)$/i);
+    // Apartments & Towers: "Căn BS-07", "Căn hộ BS-07.08 Tòa BS-07"
+    let m = trimmed.match(/^(?:Căn hộ|Căn)\s+([A-Za-z0-9\.\-_]+)(.*)$/i);
     if (m) {
       const code = m[1];
       const rest = m[2] ? ' ' + translateString(m[2], 'en') : '';
@@ -132,6 +132,20 @@ export function translateString(text: string, targetLang: Language): string {
       const room = m[1];
       const rest = m[2] ? ' ' + translateString(m[2], 'en') : '';
       return text.replace(trimmed, `Room ${room}${rest}`.trim());
+    }
+
+    m = trimmed.match(/^Khu\s+([A-Za-z0-9\.\-_]+)(.*)$/i);
+    if (m) {
+      const zone = m[1];
+      const rest = m[2] ? ' ' + translateString(m[2], 'en') : '';
+      return text.replace(trimmed, `Zone ${zone}${rest}`.trim());
+    }
+
+    m = trimmed.match(/^Ô\s+([A-Za-z0-9\.\-_]+)(.*)$/i);
+    if (m) {
+      const slot = m[1];
+      const rest = m[2] ? ' ' + translateString(m[2], 'en') : '';
+      return text.replace(trimmed, `Slot ${slot}${rest}`.trim());
     }
 
     // Relative Time Templates

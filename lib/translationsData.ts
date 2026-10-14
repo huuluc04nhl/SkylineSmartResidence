@@ -1,6 +1,6 @@
 /**
  * SKYLINE SMART RESIDENCE — COMPREHENSIVE BILINGUAL TRANSLATION DATA
- * Auto-generated & curated for 100% project-wide UI coverage.
+ * Complete project-wide UI & domain vocabulary coverage.
  */
 
 export const TRANSLATIONS_DATA: Array<[string, string]> = [
@@ -61,6 +61,10 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
     "Drag the horizontal slider to compare the before and after construction quality by the technician"
   ],
   [
+    "Bố trí tại phòng khách và 2 phòng ngủ, kết nối trực tiếp với trung tâm PCCC chung cư.",
+    "Located in the living room and 2 bedrooms, directly connected to the apartment fire safety center."
+  ],
+  [
     "18:14:15 [AI-Energy] Giám sát công tơ điện nước toàn tòa BS-07 - Hệ số an toàn 99.8%",
     "18:14:15 [AI-Energy] Monitoring all utility meters in building BS-07 - Safety factor 99.8%"
   ],
@@ -69,20 +73,52 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
     "18:14:28 [Vehicle Control] Vehicle 51K-889.99 identified (Confidence: 99.4%) -> Open Barrier B1"
   ],
   [
+    "Chung Cư BS-07, Phân khu Beverly Solari, Vinhomes Grand Park, TP. Thủ Đức, TP.HCM",
+    "Apartment BS-07, Beverly Solari Subdivision, Vinhomes Grand Park, Thu Duc City, HCMC"
+  ],
+  [
+    "Ghi chú chi tiết về trang thiết bị nội thất, tầm view hoặc các lưu ý bảo dưỡng...",
+    "Detailed notes regarding interior furnishings, view, or maintenance considerations..."
+  ],
+  [
+    "Dữ liệu được bảo mật an toàn và chỉ dùng nội bộ phục vụ an ninh cư dân chung cư.",
+    "Data is securely protected and used solely internally for resident security within the apartment building."
+  ],
+  [
     "Tổng Lương = Lương Cứng + (Số ca sửa × Tiền công) + (Số ca 5⭐ × Thưởng 50.000đ)",
     "Total Salary = Base Pay + (Completed Shifts × Shift Pay) + (5⭐ Shifts × 50,000 VND Bonus)"
+  ],
+  [
+    "Cho phép đăng nhập trực tiếp bằng camera trên trang chủ mà không cần mật khẩu.",
+    "Enable direct login via camera on the homepage without a password."
   ],
   [
     "AI Gemini soạn thảo phản hồi thông minh, phù hợp ngữ cảnh từng yêu cầu cụ thể",
     "AI Gemini drafts smart, context-aware responses for each specific request"
   ],
   [
+    "Ghi chú về dự toán kinh phí, thông số kỹ thuật, hồ sơ báo giá cạnh tranh...",
+    "Notes on cost estimates, technical specifications, competitive quotes..."
+  ],
+  [
+    "Ban Quản Lý đang xác minh và kiểm tra hiện trường để gửi văn bản phản hồi.",
+    "The Management Board is verifying and inspecting the site to provide a written response."
+  ],
+  [
     "Phân tầng thang máy bảo mật và camera Vision AI quét biển số xe tự động.",
     "Secure elevator zoning and Vision AI cameras for automated license plate scanning."
   ],
   [
+    "Chỉ hiển thị bản gốc ảnh chụp thật do cư dân cung cấp khi đăng ký e-KYC.",
+    "Displays only original, unedited photos provided by residents during e-KYC registration."
+  ],
+  [
     "18:14:40 [Trợ Lý Ảo] Cư dân CH-06 hỏi \"Giờ mở hồ bơi\" -> Phản hồi 0.12s",
     "18:14:40 [Virtual Assistant] Resident CH-06 asks \"Pool opening hours\" -> Response 0.12s"
+  ],
+  [
+    "Hồ sơ gửi từ cư dân sẽ tự động xuất hiện tại đây theo thời gian thực.",
+    "Resident submissions will appear here automatically in real-time."
   ],
   [
     "Hiện chưa có thành viên nào khác đăng ký cùng cư trú (Chỉ có Chủ Hộ",
@@ -105,8 +141,20 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
     "Management is inspecting the site and formulating a solution"
   ],
   [
+    "Bản đồ quy hoạch phân khu The Tropical và tiện ích nội/ngoại khu",
+    "The Tropical Zone Master Plan and Internal/External Amenities"
+  ],
+  [
     "Chủ hộ toàn quyền cấp phát FaceID và quản lý thành viên cư trú.",
     "Owners have full authority to grant FaceID and manage resident members."
+  ],
+  [
+    "(08:00 - 20:00). Minh bạch hồ sơ pháp lý, không qua trung gian.",
+    "(08:00 - 20:00). Transparent Legal Documentation, No Intermediaries."
+  ],
+  [
+    "Chế độ xem sơ đồ. Đăng nhập trang quản lý để điều khiển căn hộ.",
+    "Map view mode. Log in to the management page to control the apartment."
   ],
   [
     "08:00 - 20:00). Minh bạch hồ sơ pháp lý, không qua trung gian",
@@ -117,8 +165,28 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
     ", 21% higher than July due to hot weather. Set the air conditioner to"
   ],
   [
+    "2. Ngân hàng phê duyệt, trừ tiền & cấp mã chuẩn chi VNPAY...",
+    "2. Bank approves, deducts funds & issues VNPAY authorization code..."
+  ],
+  [
+    "3. Gửi gói tin IPN gạch nợ sang hệ thống Chung cư Skyline...",
+    "3. Send IPN payment reconciliation to Skyline Residence system..."
+  ],
+  [
+    "Chọn hoặc nhập lý do cần bổ sung (Gửi thông báo tới cư dân):",
+    "Select or enter additional reason (Send notification to residents):"
+  ],
+  [
+    "Mô hình 3D thống kê số tầng và xem mặt bằng căn hộ trực quan",
+    "Interactive 3D model displaying floor statistics and floor plans"
+  ],
+  [
     "API từ xa gặp sự cố, tự động lưu hồ sơ vào bộ nhớ hệ thống",
     "Remote API Encountered an Issue, Automatically Saving Logs to System Memory"
+  ],
+  [
+    "Chòi Nghỉ Cabana Ven Hồ Bơi Resort BS-09 • Miễn Phí Cư Dân",
+    "Cabana Lounge by Resort Pool BS-09 • Free for Residents"
   ],
   [
     "2. Ngân hàng phê duyệt, trừ tiền & cấp mã chuẩn chi VNPAY",
@@ -133,8 +201,44 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
     "3. Send IPN debt settlement message to Skyline Apartment system"
   ],
   [
+    "Bảo dưỡng điều hòa, thay lọc nước, kiểm tra thiết bị IoT.",
+    "AC maintenance, water filter replacement, IoT device inspection."
+  ],
+  [
+    "Căn CH-01 - Tòa BS-07 (Chủ hộ: Trần Hữu Lực • 0364967082)",
+    "Unit CH-01 - Building BS-07 (Head of Household: Trần Hữu Lực • 0364967082)"
+  ],
+  [
+    "Căn CH-06 - Tòa BS-07 (Chủ hộ: Trần Hữu Lực • 0364967082)",
+    "Unit CH-06 - Building BS-07 (Head of Household: Trần Hữu Lực • 0364967082)"
+  ],
+  [
+    "Dữ liệu đối soát trực tiếp từ CSDL Căn Hộ Chung Cư BS-07.",
+    "Data directly reconciled from BS-07 Apartment Building Database."
+  ],
+  [
+    "Hệ thống khóa thông minh &amp; xác thực danh tính FaceID",
+    "Smart Lock &amp; FaceID Identity Verification System"
+  ],
+  [
+    "Chưa có phiếu sửa chữa nào được nghiệm thu kèm hình ảnh",
+    "No repair tickets approved with images yet"
+  ],
+  [
     "Đã kích hoạt quyền mở cửa sảnh & thang máy bằng FaceID",
     "Lobby & elevator FaceID access activated"
+  ],
+  [
+    "1. Gửi yêu cầu xác thực sang Ngân hàng Quốc Dân NCB...",
+    "1. Send authentication request to NCB..."
+  ],
+  [
+    "Kéo chuột để di chuyển • Lăn chuột để phóng to/thu nhỏ",
+    "Drag to move • Scroll to zoom"
+  ],
+  [
+    "Cập nhật danh sách yêu cầu thực tế mới nhất từ cư dân",
+    "Retrieve latest resident requests"
   ],
   [
     "AI Thẩm Định: Hiện trường đạt chuẩn kỹ thuật Skyline",
@@ -153,8 +257,28 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
     "Awaiting Management review and technician assignment"
   ],
   [
+    "DANH SÁCH 10 TÂM ĐIỂM ĐẠI ĐÔ THỊ VINHOMES GRAND PARK",
+    "TOP 10 HIGHLIGHTS OF VINHOMES GRAND PARK MEGALOPOLIS"
+  ],
+  [
+    "Hình ảnh nhận diện trên ứng dụng và hệ thống an ninh",
+    "Identification Photo for App & Security System"
+  ],
+  [
+    "Không có khách thăm nào phù hợp với bộ lọc hiện tại.",
+    "No visitors match the current filter."
+  ],
+  [
     "1. Gửi yêu cầu xác thực sang Ngân hàng Quốc Dân NCB",
     "1. Send authentication request to National Citizen Bank (NCB)"
+  ],
+  [
+    "Ban Quản Lý duyệt phân công KTV theo đề xuất của AI",
+    "Management Board approves Technician assignment based on AI's recommendation"
+  ],
+  [
+    "Chỉ định hoặc thay đổi thợ KTV phụ trách theo ý BQL",
+    "Assign or change the responsible technician as per Management's discretion"
   ],
   [
     "Hệ thống PCCC thông minh và cảm biến nhiệt tự động",
@@ -177,6 +301,34 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
     "600,000 VND / party session (Weber grill set & post-party cleanup)"
   ],
   [
+    "Chứa ảnh chân dung, 12 số CCCD, Họ tên, Ngày sinh",
+    "Includes portrait photo, 12-digit Citizen ID, Full Name, Date of Birth"
+  ],
+  [
+    "Căn hộ chưa đăng ký phương tiện đậu tại tầng hầm.",
+    "Unit has no registered vehicle for basement parking."
+  ],
+  [
+    "Gửi phản hồi ghi chú cho cư dân hoặc cập nhật KTV",
+    "Send feedback notes to residents or update technicians."
+  ],
+  [
+    "Nhận cảnh báo tức thì khi có khói hoặc rò rỉ nước",
+    "Instant alerts upon smoke or water leak detection"
+  ],
+  [
+    "Bật / Tắt thước đo kích thước khi chạm vào phòng",
+    "Toggle Size Ruler on/off when tapping room"
+  ],
+  [
+    "Chưa có dịch vụ đời sống phát sinh trong kỳ này.",
+    "No lifestyle services incurred this period."
+  ],
+  [
+    "Hệ thống tiện ích thành phố biển hồ & xung quanh",
+    "Lagoon City Amenities & Surrounding Areas"
+  ],
+  [
     "Chạm để lật thẻ • Dùng mở cổng sảnh & thang máy",
     "Tap to flip card • Used for lobby & elevator access"
   ],
@@ -187,6 +339,10 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
   [
     "BQL nghiệm thu và đóng phiếu khi KTV hoàn thành",
     "Management Board Verifies and Closes Ticket Upon Technician Completion"
+  ],
+  [
+    "Khuyến nghị từ 12 - 16 ký tự để bảo mật tối ưu.",
+    "Recommended 12 - 16 characters for optimal security."
   ],
   [
     "Tạo mã QR cho khách quét mở sảnh và thang máy.",
@@ -205,6 +361,18 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
     "AI has updated the resolution for residents"
   ],
   [
+    "Chính sách hoàn tiền khi có việc bận đột xuất:",
+    "Refund Policy for Unforeseen Circumstances:"
+  ],
+  [
+    "DANH SÁCH 8 ĐẠI TIỆN ÍCH XUNG QUANH KHU DÂN CƯ",
+    "LIST OF 8 MAJOR AMENITIES NEAR THE RESIDENTIAL AREA"
+  ],
+  [
+    "Hết thời hạn hợp đồng thuê / Chuyển nơi cư trú",
+    "Lease Expiration / Relocation"
+  ],
+  [
     "Chuyên trách: Đội ngũ CSKH & Vận hành tòa nhà",
     "Handled by: Customer Care & Building Operations Team"
   ],
@@ -215,6 +383,38 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
   [
     "Ảnh chụp cận cảnh thiết bị sau khi hoàn thành",
     "Close-up photo of device upon completion"
+  ],
+  [
+    "Ban Quản Lý tạm thu hồi để đối soát lại hồ sơ",
+    "Management Board temporarily recalls for document reconciliation"
+  ],
+  [
+    "Chứa Chip điện tử, Ngày cấp, Nơi cấp & Mã MRZ",
+    "Includes Electronic Chip, Issue Date, Place of Issue & MRZ Code"
+  ],
+  [
+    "Dữ Liệu Cảm Biến IoT Trực Tuyến (Telemetrics)",
+    "Real-time IoT Sensor Data (Telemetrics)"
+  ],
+  [
+    "(Vietcombank, BIDV, Techcombank, MB...) hoặc",
+    "(Vietcombank, BIDV, Techcombank, MB...) or"
+  ],
+  [
+    "Ban Quản Lý Chung Cư Skyline Smart Residence",
+    "Skyline Smart Residence Management Board"
+  ],
+  [
+    "Hỏi bất kỳ quy định nào của chung cư (ví dụ:",
+    "Ask about any apartment regulation (e.g.:"
+  ],
+  [
+    "Không hoàn tiền do tiện ích đã khóa giữ chỗ.",
+    "No refund; amenity is reserved."
+  ],
+  [
+    "Kết hợp chữ in hoa (A-Z) và chữ thường (a-z)",
+    "Combine uppercase (A-Z) and lowercase (a-z)"
   ],
   [
     "Trợ lý ảo AI Concierge giải đáp cư dân 24/7",
@@ -235,6 +435,14 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
   [
     "Quét mã tại sảnh để mở cửa và gọi thang máy",
     "Scan code at lobby to open door and call elevator"
+  ],
+  [
+    "Bảo mật riêng tư • Quy chế vận hành Skyline",
+    "Privacy Policy • Skyline Operating Regulations"
+  ],
+  [
+    "Dữ liệu NKS SCRMAI • Chung Cư BS-07 Tầng 30",
+    "NKS SCRMAI Data • BS-07 Apartment Building, 30th Floor"
   ],
   [
     "Điều khiển căn hộ thông minh từ xa qua IoT",
@@ -269,6 +477,34 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
     "Includes base salary + shift pay + 5⭐ bonus"
   ],
   [
+    "Bạn có chắc chắn muốn xóa vĩnh viễn căn hộ",
+    "Are you sure you want to permanently delete this apartment?"
+  ],
+  [
+    "Bấm &quot;Tải Lên Mặt Trước&quot; bên dưới",
+    "Tap \"Upload Front Side\" below"
+  ],
+  [
+    "Căn CH-08 - Tòa BS-07 (Chủ hộ: 0364967081)",
+    "Unit CH-08 - Building BS-07 (Head of Household: 0364967081)"
+  ],
+  [
+    "Giữ & Kéo để căn chỉnh • Lăn chuột để Zoom",
+    "Hold & Drag to Adjust • Scroll to Zoom"
+  ],
+  [
+    "Khôi phục kích thước chuẩn vừa khung (Fit)",
+    "Restore Standard Fit (Fit)"
+  ],
+  [
+    "Mỗi căn hộ được tạo tối đa 5 mã khách/ngày",
+    "Each apartment can generate up to 5 visitor passes/day"
+  ],
+  [
+    "Sự hài lòng của Quý cư dân là ưu tiên số 1",
+    "Resident satisfaction is our #1 priority"
+  ],
+  [
     "Chữ ký số tự động gắn kèm khi gửi văn bản",
     "Digital signature automatically attached when submitting"
   ],
@@ -293,8 +529,40 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
     "Use mobile banking app or VNPAY wallet"
   ],
   [
+    "Bấm &quot;Tải Lên Mặt Sau&quot; bên dưới",
+    "Tap \"Upload Back Side\" below"
+  ],
+  [
+    "Giám sát sơ đồ MEP, điện nước &amp; PCCC",
+    "Monitor MEP, Utilities &amp; Fire Protection Diagrams"
+  ],
+  [
+    "Gym, Bể bơi, Sân Malibu: Miễn phí Cư Dân",
+    "Gym, Swimming Pool, Malibu Court: Free for Residents"
+  ],
+  [
+    "Hoàn thiện liền tường cao cấp (Bếp & WC)",
+    "Premium Built-in Furnishings (Kitchen & Bath)"
+  ],
+  [
     "BQL tiếp nhận và bố trí nhân sự phục vụ",
     "Management Board Receives and Arranges Service Personnel"
+  ],
+  [
+    "Can thiệp đổi KTV khác khi có phát sinh",
+    "Request Another Technician if Issues Arise"
+  ],
+  [
+    "Danh sách toàn bộ căn hộ dạng bảng lưới",
+    "All Apartments (Grid View)"
+  ],
+  [
+    "Dịch vụ đặt sẽ tự động cập nhật vào đây",
+    "Booked services will be updated here automatically."
+  ],
+  [
+    "Thời gian phản hồi cam kết dưới 15 phút",
+    "Guaranteed response time under 15 minutes"
   ],
   [
     "Vui lòng nhập tên đăng nhập hoặc email",
@@ -317,6 +585,10 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
     "System automatically clears debt in 30 seconds"
   ],
   [
+    "Hoàn thiện cao cấp Full nội thất 5 sao",
+    "Premium Full 5-Star Furnishings"
+  ],
+  [
     "Chuẩn Mực Sống Thượng Lưu Tích Hợp AI",
     "Luxury AI-Powered Living"
   ],
@@ -327,6 +599,22 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
   [
     "Bầu Ban Quản Trị Tòa Nhà Nhiệm Kỳ Mới",
     "Elect Building Management Committee"
+  ],
+  [
+    "BAN QUẢN LÝ SKYLINE RESIDENCE (VNPAY)",
+    "SKYLINE RESIDENCE MANAGEMENT BOARD (VNPAY)"
+  ],
+  [
+    "Bấm chọn khối Chung Cư để xem số tầng",
+    "Tap to Select Apartment Block to View Floors"
+  ],
+  [
+    "Chọn Kỹ Thuật Viên Phụ Trách Trực Ca:",
+    "Select On-Duty Technician:"
+  ],
+  [
+    "Gọi kỹ sư trực tầng 30 chung cư BS-07",
+    "Call On-Duty Engineer (BS-07 Apt, 30th Floor)"
   ],
   [
     "Dịch vụ dọn dẹp vệ sinh theo yêu cầu",
@@ -343,6 +631,38 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
   [
     "Nâng Cấp Hệ Thống Camera AI Tầng Hầm",
     "Upgrade Basement AI Camera System"
+  ],
+  [
+    "20:00 - 22:00 (Phục hồi thể lực đêm)",
+    "20:00 - 22:00 (Evening Restoration)"
+  ],
+  [
+    "Bấm &quot;Quét Thẻ CCCD&quot; ở trên",
+    "Tap \"Scan CCCD Card\" above"
+  ],
+  [
+    "Bật/tắt ghim định vị & viền tòa tháp",
+    "Toggle Location Pin & Tower Outline"
+  ],
+  [
+    "Cộng vào Hóa Đơn Tháng hoặc Trả Ngay",
+    "Add to Monthly Bill or Pay Now"
+  ],
+  [
+    "Danh sách đơn đặt dịch vụ của Căn hộ",
+    "Apartment Service Order List"
+  ],
+  [
+    "Ghi chú chi tiết lý do gửi cư dân...",
+    "Detailed notes on reason for sending to resident..."
+  ],
+  [
+    "Giá Cho Thuê Tham Chiếu (VNĐ/tháng):",
+    "Reference Rental Price (VND/month):"
+  ],
+  [
+    "Mã Thiết Bị IoT (Electric Meter ID):",
+    "IoT Device ID (Electric Meter ID):"
   ],
   [
     "Kiến Trúc Đương Đại Tích Hợp Lõi AI",
@@ -367,6 +687,38 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
   [
     "Góp ý & Phản ánh chất lượng dịch vụ",
     "Service Quality Feedback & Comments"
+  ],
+  [
+    "AI Đang Thẩm Định Ảnh Nghiệm Thu...",
+    "AI is Evaluating Acceptance Photos..."
+  ],
+  [
+    "Chưa có ảnh mặt sau thẻ CCCD (Chip)",
+    "Citizen ID card (Chip) rear photo not provided"
+  ],
+  [
+    "Căn 10A03 (BQL Nghiệm Thu Kỹ Thuật)",
+    "Unit 10A03 (Management Technical Acceptance)"
+  ],
+  [
+    "Căn CH-06: 2.505.000 đ • Hạn: 30/08",
+    "Unit CH-06: 2,505,000 VND • Due: 30/08"
+  ],
+  [
+    "Dịch Vụ Phòng Riêng Tư Gia Đình VIP",
+    "VIP Family Private Room Services"
+  ],
+  [
+    "Hủy Lịch & Hoàn Tiền (Bận Đột Xuất)",
+    "Cancel & Refund (Unexpected Unavailability)"
+  ],
+  [
+    "Khóa Thông Minh Skyline FaceID v4.2",
+    "Skyline Smart Lock FaceID v4.2"
+  ],
+  [
+    "Mở cửa tự động khi FaceID nhận diện",
+    "Automatic door unlock upon FaceID recognition"
   ],
   [
     "Đường Dây Nóng Kỹ Thuật: 1900 8899",
@@ -419,6 +771,34 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
   [
     "Cảm ơn bạn đã thanh toán đúng hạn!",
     "Thank you for paying on time!"
+  ],
+  [
+    "06:00 - 08:00 (Sáng sớm bình minh)",
+    "06:00 - 08:00 (Sunrise Hours)"
+  ],
+  [
+    "08:00 - 10:00 (Buổi sáng thư giãn)",
+    "08:00 - 10:00 (Leisurely Morning)"
+  ],
+  [
+    "18:00 - 20:00 (Buổi tối - Giờ đẹp)",
+    "18:00 - 20:00 (Evening - Prime Hours)"
+  ],
+  [
+    "Chế độ hiển thị không gian căn hộ:",
+    "Apartment layout display mode:"
+  ],
+  [
+    "Chỉ Số Khởi Điểm Nghiệm Thu (kWh):",
+    "Acceptance Baseline Reading (kWh):"
+  ],
+  [
+    "CỔNG VNPAY - BQL SKYLINE RESIDENCE",
+    "VNPAY GATEWAY - SKYLINE RESIDENCE MANAGEMENT BOARD"
+  ],
+  [
+    "Cổng dịch vụ số Skyline Web Portal",
+    "Skyline Web Portal Digital Services"
   ],
   [
     "Trải Nghiệm Chuẩn Sống Thượng Lưu",
@@ -481,6 +861,38 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
     "All bills have been settled"
   ],
   [
+    "CỔNG XÁC THỰC GIAO DỊCH 3D-SECURE",
+    "3D-SECURE TRANSACTION AUTHENTICATION GATEWAY"
+  ],
+  [
+    "Danh mục thiết bị bàn giao căn hộ",
+    "Apartment Handover Equipment List"
+  ],
+  [
+    "Hotline Ban Quản Lý: 0364 967 082",
+    "Management Hotline: 0364 967 082"
+  ],
+  [
+    "Hệ Sinh Thái Dịch Vụ Cư Dân 5 Sao",
+    "5-Star Resident Service Ecosystem"
+  ],
+  [
+    "Mật khẩu hiện tại không chính xác",
+    "Current password is incorrect"
+  ],
+  [
+    "Mã Thiết Bị IoT (Water Meter ID):",
+    "IoT Device ID (Water Meter ID):"
+  ],
+  [
+    "Phục vụ cư dân bằng cả sự tận tâm",
+    "Serving residents with utmost dedication"
+  ],
+  [
+    "Vận hành thông minh chuẩn quốc tế",
+    "International Standard Smart Operations"
+  ],
+  [
     "Bảng Điều Phối Kỹ Thuật (Kanban)",
     "Technical Dispatch Kanban Board"
   ],
@@ -515,6 +927,50 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
   [
     "Miễn phí cho cư dân The Tropical",
     "Complimentary for The Tropical residents"
+  ],
+  [
+    "4 Giờ (Thăm gia đình tiêu chuẩn)",
+    "4 Hours (Standard Family Visit)"
+  ],
+  [
+    "Chưa có lượt ra vào tiện ích nào",
+    "No amenity access recorded yet"
+  ],
+  [
+    "Căn Hộ Trống (Sẵn sàng bàn giao)",
+    "Vacant Apartment (Ready for Handover)"
+  ],
+  [
+    "Cổng Thanh Toán Trực Tuyến 24/7:",
+    "24/7 Online Payment Gateway:"
+  ],
+  [
+    "Ghi Chú Kỹ Thuật / Mô Tả Căn Hộ:",
+    "Technical Notes / Apartment Description:"
+  ],
+  [
+    "KHÔNG GIAN KIẾN TRÚC & CẢNH QUAN",
+    "ARCHITECTURAL & LANDSCAPE SPACES"
+  ],
+  [
+    "Kiểm Tra Mã QR &amp; Tra Cứu PIN",
+    "Verify QR Code & Look Up PIN"
+  ],
+  [
+    "Mật khẩu phải có ít nhất 8 ký tự",
+    "Password must be at least 8 characters"
+  ],
+  [
+    "Mobile Banking của 35+ ngân hàng",
+    "Mobile banking of 35+ banks"
+  ],
+  [
+    "MÃ PIN BÀN PHÍM CỬA / THANG MÁY:",
+    "DOOR / ELEVATOR KEYPAD PIN:"
+  ],
+  [
+    "Quy trình nghiệm thu chuẩn 5 sao",
+    "5-Star Standard Inspection Protocol"
   ],
   [
     "Bãi đỗ xe thông minh 2 tầng hầm",
@@ -555,6 +1011,38 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
   [
     "Bảng Tính Thù Lao Kỹ Thuật Viên",
     "Technician Payroll Table"
+  ],
+  [
+    "10:00 - 12:00 (Trưa thanh tịnh)",
+    "10:00 - 12:00 (Serene Midday)"
+  ],
+  [
+    "Bấm vào khu vực để xem chi tiết",
+    "Tap on the Area to View Details"
+  ],
+  [
+    "Chưa cung cấp đủ 2 mặt thẻ CCCD",
+    "Both sides of Citizen ID card not provided"
+  ],
+  [
+    "Hồ Sơ Căn Hộ • Chung Cư Skyline",
+    "Unit Profile • Skyline Residence"
+  ],
+  [
+    "Không tìm thấy hồ sơ cư dân nào",
+    "No resident profiles found"
+  ],
+  [
+    "Không tìm thấy kết quả phù hợp.",
+    "No matching results found."
+  ],
+  [
+    "Minh bạch 100% không dữ liệu ảo",
+    "100% transparent without simulated data"
+  ],
+  [
+    "Nền tảng vận hành chung cư số 1",
+    "No. 1 Smart Residence Operating Platform"
   ],
   [
     "Nơi Chuẩn Mực Kiến Trúc Gặp Gỡ",
@@ -637,6 +1125,54 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
     "Amenity info provided"
   ],
   [
+    "&lt; 0.5 giây (Mở cửa tức thì)",
+    "Instant Access (< 0.5s)"
+  ],
+  [
+    "(50% bù đắp chi phí chuẩn bị).",
+    "(50% compensation for preparation costs)."
+  ],
+  [
+    "Bảo mật dữ liệu (Data at-rest)",
+    "Data Security (Data at-rest)"
+  ],
+  [
+    "Chưa có ảnh mặt trước thẻ CCCD",
+    "Citizen ID card front photo not provided"
+  ],
+  [
+    "Công nghệ lọc Ion Streamer 99%",
+    "99% Ion Streamer Filtration Technology"
+  ],
+  [
+    "Cấp bách (Cảnh báo rung/nhiệt)",
+    "Critical (Vibration/Heat Alert)"
+  ],
+  [
+    "Ghi Chú Kỹ Thuật Khi Bàn Giao:",
+    "Technical Notes at Handover:"
+  ],
+  [
+    "Ghi chú hiện trạng nghiệm thu:",
+    "Acceptance Status Notes:"
+  ],
+  [
+    "Lên Tầng 1 xem mặt bằng căn hộ",
+    "Go to Floor 1 to view apartment plans"
+  ],
+  [
+    "Lõi Trí Tuệ Nhân Tạo (AI Core)",
+    "Artificial Intelligence Core (AI Core)"
+  ],
+  [
+    "Lịch công tác / đi xa đột xuất",
+    "Business trip / sudden travel"
+  ],
+  [
+    "Đang kết nối camera an ninh...",
+    "Connecting security cameras..."
+  ],
+  [
     "ĐH 26°C • Khóa cửa • Đóng rèm",
     "AC 26°C • Lock Door • Close Curtains"
   ],
@@ -687,6 +1223,54 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
   [
     "Đang xử lý yêu cầu của bạn...",
     "Processing your request..."
+  ],
+  [
+    "14:00 - 16:00 (Đầu giờ chiều)",
+    "14:00 - 16:00 (Early Afternoon)"
+  ],
+  [
+    "Bàn giao thô (Tự do thiết kế)",
+    "Bare-shell Handover (Custom Design)"
+  ],
+  [
+    "Bấm để tải lên Mặt Trước CCCD",
+    "Tap to Upload Front of CCCD"
+  ],
+  [
+    "Chế Độ Kỹ Thuật Viên Vận Hành",
+    "Operations Technician Mode"
+  ],
+  [
+    "Chứa ít nhất một chữ số (0-9)",
+    "Must contain at least one digit (0-9)"
+  ],
+  [
+    "CỔNG THANH TOÁN VNPAY SANDBOX",
+    "VNPAY SANDBOX PAYMENT GATEWAY"
+  ],
+  [
+    "Danh Mục Quản Gia Cá Nhân Hóa",
+    "Personalized Butler Service Menu"
+  ],
+  [
+    "Gọi ngay tổng đài Ban Quản Lý",
+    "Call Management Hotline Now"
+  ],
+  [
+    "Hoặc nhập tên KTV thủ công...",
+    "Or enter technician's name manually..."
+  ],
+  [
+    "Hướng Cửa Chính (Phong Thủy):",
+    "Main Door Direction (Feng Shui):"
+  ],
+  [
+    "KHỐI CHUNG CƯ TRONG PHÂN KHU:",
+    "APARTMENT BLOCKS IN SUBDIVISION:"
+  ],
+  [
+    "Xác thực sinh trắc học FaceID",
+    "FaceID Biometric Verification"
   ],
   [
     "Ban Quản Lý Chung Cư Skyline",
@@ -747,6 +1331,30 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
   [
     "Đã gửi ban quản lý phê duyệt",
     "Submitted for Management Board approval"
+  ],
+  [
+    "Bảng Giá Niêm Yết & Hạng Mục",
+    "Official Price List & Categories"
+  ],
+  [
+    "Chuông Hình Camera Ngoài Cửa",
+    "Doorbell Camera"
+  ],
+  [
+    "Cục Cảnh sát QLHC về TTXH...",
+    "Police Department for Administrative Management of Social Order..."
+  ],
+  [
+    "Mật khẩu xác nhận không khớp",
+    "Passwords do not match"
+  ],
+  [
+    "Mã thẻ còn thời hạn hiệu lực",
+    "Card code remains valid"
+  ],
+  [
+    "Độ chính xác nhận diện 99.8%",
+    "99.8% Recognition Accuracy"
   ],
   [
     "Chung Cư Thông Minh Skyline",
@@ -817,6 +1425,50 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
     "1. Monthly base salary:"
   ],
   [
+    "8 Giờ (Làm việc / Sửa chữa)",
+    "8 Hours (Work / Maintenance)"
+  ],
+  [
+    "Biên bản bàn giao kỹ thuật:",
+    "Technical Handover Report:"
+  ],
+  [
+    "Bảng Việc Kỹ Thuật (Kanban)",
+    "Technical Kanban Board"
+  ],
+  [
+    "Bấm để tải lên Mặt Sau CCCD",
+    "Tap to Upload Back of CCCD"
+  ],
+  [
+    "Chưa Có Đơn Đặt Dịch Vụ Nào",
+    "No Service Bookings Yet"
+  ],
+  [
+    "Chỉ Số Nước Khởi Điểm (m³):",
+    "Initial Water Meter Reading (m³):"
+  ],
+  [
+    "Hỗ Trợ Kỹ Thuật & Điện Nước",
+    "Technical & Utilities Support"
+  ],
+  [
+    "Khung Giờ Phục Vụ / Đón Đồ:",
+    "Service / Collection Hours:"
+  ],
+  [
+    "Thang máy phân tầng an ninh",
+    "Zoned security elevators"
+  ],
+  [
+    "Thẻ cư dân vật lý & điện tử",
+    "Physical & Digital Resident Cards"
+  ],
+  [
+    "Đang cập nhật trạng thái...",
+    "Updating status..."
+  ],
+  [
     "Đặc Quyền Nghỉ Dưỡng 5 Sao",
     "5-Star Resort Privileges"
   ],
@@ -883,6 +1535,70 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
   [
     "Hỏi Đáp Tiện Ích (AI 24/7)",
     "Amenity Q&A (AI 24/7)"
+  ],
+  [
+    "16:00 - 18:00 (Buổi chiều)",
+    "16:00 - 18:00 (Afternoon)"
+  ],
+  [
+    "Bận việc gia đình đột xuất",
+    "Unexpected Family Emergency"
+  ],
+  [
+    "Bếp Hafele cảm ứng an toàn",
+    "Safe Hafele Induction Cooktop"
+  ],
+  [
+    "Bộ Mẫu Thu Thập 4 Góc Mặt:",
+    "4-Angle Face Capture Templates:"
+  ],
+  [
+    "Chu Trình Tự Động Hóa 24/7",
+    "24/7 Automated Workflow"
+  ],
+  [
+    "Chuông Hình Video Intercom",
+    "Video Intercom"
+  ],
+  [
+    "Chữ ký điện tử BQL SKYLINE",
+    "SKYLINE Management E-Signature"
+  ],
+  [
+    "Căn Hộ Đang Sở Hữu Của Bạn",
+    "Your Owned Units"
+  ],
+  [
+    "Diện Tích Thông Thủy (m²):",
+    "Carpet Area (m²):"
+  ],
+  [
+    "Duyệt 4 mẫu FaceID gửi BQL",
+    "Approve 4 FaceID samples for Management Board"
+  ],
+  [
+    "Ghi nhận khách rời tòa nhà",
+    "Log Guest Departure"
+  ],
+  [
+    "HÀNH LANG TRUNG TÂM (1.8m)",
+    "CENTRAL CORRIDOR (1.8m)"
+  ],
+  [
+    "Lịch sử thanh toán hóa đơn",
+    "Bill Payment History"
+  ],
+  [
+    "Một bước tới hồ bơi vô cực",
+    "One step to infinity pool"
+  ],
+  [
+    "Phòng Gym & Yoga Technogym",
+    "Technogym Fitness & Yoga Center"
+  ],
+  [
+    "Đạt chuẩn chất lượng 5 sao",
+    "5-Star Quality Standard Met"
   ],
   [
     "Vườn nướng BBQ ngoài trời",
@@ -967,6 +1683,70 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
   [
     "Cẩm Nang & Nội Quy Cư Dân",
     "Resident Handbook & Regulations"
+  ],
+  [
+    "16:00 - 18:00 (Hoàng hôn)",
+    "16:00 - 18:00 (Sunset)"
+  ],
+  [
+    "Cam Kết SLA Kỹ Thuật 24/7",
+    "24/7 Technical SLA Commitment"
+  ],
+  [
+    "Chạm để kích hoạt tức thì",
+    "Tap to activate instantly"
+  ],
+  [
+    "Chỉnh sửa & Cắt ảnh tự do",
+    "Edit & Crop Photo Freely"
+  ],
+  [
+    "Chỉnh sửa thông số căn hộ",
+    "Edit Apartment Details"
+  ],
+  [
+    "Chọn Ngân Hàng Phát Hành:",
+    "Select Issuing Bank:"
+  ],
+  [
+    "Chủ Hộ (Chính chủ căn hộ)",
+    "Head of Household (Primary Owner)"
+  ],
+  [
+    "Diện Tích Tim Tường (m²):",
+    "Built-up Area (m²):"
+  ],
+  [
+    "Doanh Thu Phí BQL Thu Về:",
+    "Collected Management Fee Revenue:"
+  ],
+  [
+    "Hòm Thư Từng Căn T1 - T34",
+    "Unit Mailboxes T1-T34"
+  ],
+  [
+    "Ký tự đặc biệt (!@#$%^&*)",
+    "Special Characters (!@#$%^&*)"
+  ],
+  [
+    "Lý do từ chối gửi cư dân:",
+    "Rejection reason sent to resident:"
+  ],
+  [
+    "Lịch Đặt Tiện Ích Của Bạn",
+    "Your Amenity Bookings"
+  ],
+  [
+    "Lễ Tân & Dịch Vụ Tiện Ích",
+    "Reception & Amenity Services"
+  ],
+  [
+    "Mã chuẩn chi / Giao dịch:",
+    "Authorization / Transaction Code:"
+  ],
+  [
+    "Tiện ích đặc quyền cư dân",
+    "Exclusive Resident Amenities"
   ],
   [
     "4.000+ Cư Dân Thượng Lưu",
@@ -1071,6 +1851,90 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
   [
     "1. Số Căn cước công dân:",
     "1. Citizen ID Number:"
+  ],
+  [
+    "06:00 - 08:00 (Sáng sớm)",
+    "06:00 - 08:00 (Early Morning)"
+  ],
+  [
+    "20:00 - 22:00 (Đêm muộn)",
+    "20:00 - 22:00 (Late Evening)"
+  ],
+  [
+    "Camera Tiếp Tân Đang Tắt",
+    "Reception Camera is Off"
+  ],
+  [
+    "Chung cư BS-07 (Tầng 30)",
+    "Apartment BS-07 (30th Floor)"
+  ],
+  [
+    "Chế Độ Quản Trị Chung Cư",
+    "Apartment Management Mode"
+  ],
+  [
+    "Chỉ Số Bàn Giao Ban Đầu:",
+    "Initial Handover Reading:"
+  ],
+  [
+    "Cảm Biến Khói Thông Minh",
+    "Smart Smoke Sensor"
+  ],
+  [
+    "Cận giờ (trong 30 phút):",
+    "Upcoming (within 30 mins):"
+  ],
+  [
+    "Dạng thẻ hồ sơ trực quan",
+    "Visual Profile Card View"
+  ],
+  [
+    "Giá Cho Thuê Tham Chiếu:",
+    "Reference Rental Price:"
+  ],
+  [
+    "Gợi ý câu hỏi tiếp theo:",
+    "Suggested Next Questions:"
+  ],
+  [
+    "Hóa đơn T08 đã phát hành",
+    "Invoice T08 Issued"
+  ],
+  [
+    "HỘP KỸ THUẬT ĐIỆN - NƯỚC",
+    "ELECTRICAL & PLUMBING UTILITY CABINET"
+  ],
+  [
+    "Kỳ Phí Quản Lý & Dịch Vụ",
+    "Management & Service Fee Period"
+  ],
+  [
+    "Lương cứng cơ bản tháng:",
+    "Monthly base salary:"
+  ],
+  [
+    "Số lượng người tham gia:",
+    "Number of participants:"
+  ],
+  [
+    "Rà soát hệ thống an ninh",
+    "Review security system"
+  ],
+  [
+    "Tòa BS-07 - The Tropical",
+    "Tower BS-07 - The Tropical"
+  ],
+  [
+    "Tòa BS-08 - The Tropical",
+    "Tower BS-08 - The Tropical"
+  ],
+  [
+    "Tòa BS-09 - The Tropical",
+    "Tower BS-09 - The Tropical"
+  ],
+  [
+    "Tòa BS-10 - The Tropical",
+    "Tower BS-10 - The Tropical"
   ],
   [
     "Phân Khu Beverly Solari",
@@ -1217,6 +2081,86 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
     "Beneficiary Account:"
   ],
   [
+    "2 Giờ (Giao nhận nhanh)",
+    "2 Hours (Expedited Handover)"
+  ],
+  [
+    "Bếp mở + Ban công riêng",
+    "Open Kitchen + Private Balcony"
+  ],
+  [
+    "Chưa Có Khách Được Quét",
+    "No Guests Scanned Yet"
+  ],
+  [
+    "Giám Sát Lưu Lượng Nước",
+    "Water Flow Monitoring"
+  ],
+  [
+    "Gửi Phản Hồi Cho Cư Dân",
+    "Send Feedback to Resident"
+  ],
+  [
+    "Không áp dụng hoàn tiền",
+    "No Refund Applicable"
+  ],
+  [
+    "Kỹ Thuật: 028 7300 9988",
+    "Technician: 028 7300 9988"
+  ],
+  [
+    "Loại Hình Căn Hộ Chuẩn:",
+    "Standard Apartment Type:"
+  ],
+  [
+    "Làm mới cuộc trò chuyện",
+    "Refresh Conversation"
+  ],
+  [
+    "Mặt Bằng Tầng Điển Hình",
+    "Typical Floor Plan"
+  ],
+  [
+    "Phân công kỹ thuật viên",
+    "Assign technician"
+  ],
+  [
+    "Phân khu Beverly Solari",
+    "Beverly Solari Precinct"
+  ],
+  [
+    "Phản hồi từ Ban Quản Lý",
+    "Response from Management"
+  ],
+  [
+    "Đăng xuất khỏi hệ thống",
+    "Sign out of system"
+  ],
+  [
+    "Mã Vé Điện Tử Check-in:",
+    "Check-in Electronic Pass:"
+  ],
+  [
+    "Mã số KTV / Chuyên môn:",
+    "Technician ID / Specialization:"
+  ],
+  [
+    "Mở rộng không gian sống",
+    "Expand living space"
+  ],
+  [
+    "Nơi cuộc sống thăng hoa",
+    "Where exquisite living flourishes"
+  ],
+  [
+    "Trung tâm hỗ trợ cư dân",
+    "Resident Support Center"
+  ],
+  [
+    "Đã nghiệm thu đạt chuẩn",
+    "Inspection standard met"
+  ],
+  [
     "Hồ bơi vô cực chân mây",
     "Cloud Infinity Pool"
   ],
@@ -1315,6 +2259,54 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
   [
     "Nội dung chuyển khoản:",
     "Transfer Memo:"
+  ],
+  [
+    "Biển Số Xe (tùy chọn):",
+    "License Plate (Optional):"
+  ],
+  [
+    "Chuyển sang Tiếng Việt",
+    "Switch to Vietnamese"
+  ],
+  [
+    "Chìa Khóa Cơ & Thẻ Từ:",
+    "Mechanical Key & Access Card:"
+  ],
+  [
+    "Chưa Tạo Thẻ Đón Khách",
+    "Guest Pass Not Created Yet"
+  ],
+  [
+    "Chưa có vé đặt chỗ nào",
+    "No reservations made yet"
+  ],
+  [
+    "Căn Hộ Hiện Đang Trống",
+    "Apartment Currently Vacant"
+  ],
+  [
+    "Hợp đồng Mua bán (SPA)",
+    "Sale and Purchase Agreement (SPA)"
+  ],
+  [
+    "Khách đang thăm căn hộ",
+    "Guest currently visiting apartment"
+  ],
+  [
+    "Làm mới đoạn hội thoại",
+    "Reset Chat Conversation"
+  ],
+  [
+    "Nhận thông báo qua SMS",
+    "Receive SMS notifications"
+  ],
+  [
+    "Phòng Khách & Ban Công",
+    "Living Room & Balcony"
+  ],
+  [
+    "Đã gửi yêu cầu đến KTV",
+    "Request forwarded to technician"
   ],
   [
     "Hệ Sinh Thái Đỉnh Cao",
@@ -1465,6 +2457,122 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
     "Scan code to pay"
   ],
   [
+    "('Càng sớm càng tốt (",
+    "As soon as possible ("
+  ],
+  [
+    "Biểu Quyết Thành Công",
+    "Vote Successful"
+  ],
+  [
+    "Bình thường (Định kỳ)",
+    "Normal (Scheduled)"
+  ],
+  [
+    "Bảng Giá Gói Dịch Vụ:",
+    "Service Package Pricing:"
+  ],
+  [
+    "Bật/tắt ghim phân khu",
+    "Toggle Zone Pin"
+  ],
+  [
+    "Chưa có ảnh mặt trước",
+    "No front photo"
+  ],
+  [
+    "Chạm thẻ vào máy quét",
+    "Tap card on scanner"
+  ],
+  [
+    "Chạm để chọn nội dung",
+    "Tap to select content"
+  ],
+  [
+    "Cổng Quét Mã VNPAY-QR",
+    "VNPAY-QR Scan Gateway"
+  ],
+  [
+    "Diện tích thông thủy:",
+    "Carpet area:"
+  ],
+  [
+    "Giao Dịch Thành Công!",
+    "Transaction Successful!"
+  ],
+  [
+    "Giá Bán CĐT (Tỷ VNĐ):",
+    "Developer Selling Price (Billion VND):"
+  ],
+  [
+    "Gộp Vào Hóa Đơn Tháng",
+    "Add to Monthly Bill"
+  ],
+  [
+    "Hình Thức Thanh Toán:",
+    "Payment Method:"
+  ],
+  [
+    "Hướng Ban Công Chính:",
+    "Main Balcony Direction:"
+  ],
+  [
+    "Khuôn Viên & Tiện Ích",
+    "Grounds & Amenities"
+  ],
+  [
+    "Không Gian Đang Chọn:",
+    "Selected Space:"
+  ],
+  [
+    "Lên Tầng 1 (Căn Hộ) ➔",
+    "Go to Floor 1 (Apartments) ➔"
+  ],
+  [
+    "Lịch Đặt Chỗ Tiện Ích",
+    "Amenity Reservation Schedule"
+  ],
+  [
+    "Phân khu The Tropical",
+    "The Tropical Precinct"
+  ],
+  [
+    "Văn phòng Ban Quản Lý",
+    "Management Board Office"
+  ],
+  [
+    "Lần bảo trì gần nhất:",
+    "Last maintenance:"
+  ],
+  [
+    "Nâng tầng trải nghiệm",
+    "Elevate your living experience"
+  ],
+  [
+    "Nhập thông tin cư dân",
+    "Enter resident information"
+  ],
+  [
+    "Sẵn sàng phục vụ 24/7",
+    "Ready to serve 24/7"
+  ],
+  [
+    "Số hotline tiếp nhận:",
+    "Hotline receiving line:"
+  ],
+  [
+    "Tổng chi phí dịch vụ:",
+    "Total Service Cost:"
+  ],
+  [
+    "Trợ lý ảo hỗ trợ 24/7",
+    "24/7 Virtual Assistant Support"
+  ],
+  [
+    "Tự động hóa toàn diện",
+    "Comprehensive Automation"
+  ],
+  [
     "Trí Tuệ Nhân Tạo 4.0",
     "Artificial Intelligence 4.0"
   ],
@@ -1603,6 +2711,110 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
   [
     "Ngân hàng thụ hưởng:",
     "Beneficiary Bank:"
+  ],
+  [
+    "Bật/tắt ghim định vị",
+    "Toggle Location Pin"
+  ],
+  [
+    "Cao (Khuyến nghị AI)",
+    "High (AI Recommendation)"
+  ],
+  [
+    "Chi phí đặt giữ chỗ:",
+    "Reservation Fee:"
+  ],
+  [
+    "Chiếu Sáng Tự Nhiên:",
+    "Natural Lighting:"
+  ],
+  [
+    "Chạm để tự động điền",
+    "Tap to autofill"
+  ],
+  [
+    "Click để copy số thẻ",
+    "Click to copy card number"
+  ],
+  [
+    "Công nghệ thông minh",
+    "Smart Technology"
+  ],
+  [
+    "Cư dân &amp; Quản lý",
+    "Residents & Management"
+  ],
+  [
+    "Diện Tích Thông Thủy",
+    "Carpet Area"
+  ],
+  [
+    "Diện tích tim tường:",
+    "Built-up area:"
+  ],
+  [
+    "HÀNH LANG BẮC (1.8m)",
+    "NORTH CORRIDOR (1.8m)"
+  ],
+  [
+    "HÀNH LANG NAM (1.8m)",
+    "SOUTH CORRIDOR (1.8m)"
+  ],
+  [
+    "HÀNH LANG TÂY (1.8m)",
+    "WEST CORRIDOR (1.8m)"
+  ],
+  [
+    "Hướng Ban Công / Cửa",
+    "Balcony / Door Direction"
+  ],
+  [
+    "Hạn Chót Biểu Quyết:",
+    "Voting Deadline:"
+  ],
+  [
+    "Hợp đồng mua bán SPA",
+    "Sale and Purchase Agreement (SPA)"
+  ],
+  [
+    "Khách Thuê / Lưu Trú",
+    "Tenant / Occupant"
+  ],
+  [
+    "Không Gian Nghỉ Ngơi",
+    "Relaxation Area"
+  ],
+  [
+    "Kỹ sư tầng trực tiếp",
+    "Direct Floor Engineer"
+  ],
+  [
+    "Lý do thu hồi quyền:",
+    "Reason for revoking access:"
+  ],
+  [
+    "Lưu & Điền Vào Hồ Sơ",
+    "Save & Auto-fill Profile"
+  ],
+  [
+    "Lịch sử đặt tiện ích",
+    "Booking History"
+  ],
+  [
+    "Lần bảo trì gần nhất",
+    "Last maintenance"
+  ],
+  [
+    "Mã PIN 6 Số Tra Cứu:",
+    "6-Digit Lookup PIN:"
+  ],
+  [
+    "Mức độ nghiêm trọng:",
+    "Severity level:"
+  ],
+  [
+    "Xuất hóa đơn điện tử",
+    "Export E-Invoice"
   ],
   [
     "Thành Viên Gia Đình",
@@ -1789,12 +3001,112 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
     "Work / Repair"
   ],
   [
+    "24 Giờ (Trong ngày)",
+    "24 Hours (Same Day)"
+  ],
+  [
+    "Ban Công Sinh Thái:",
+    "Eco-Balcony:"
+  ],
+  [
+    "Bấm để xem chi tiết",
+    "Tap to View Details"
+  ],
+  [
+    "CHÌA KHÓA & THẺ TỪ:",
+    "KEYS & ACCESS CARDS:"
+  ],
+  [
+    "Chìa khóa & thẻ từ:",
+    "Key & Access Card:"
+  ],
+  [
+    "Chưa có ảnh mặt sau",
+    "No rear photo"
+  ],
+  [
+    "Chọn kỳ thanh toán:",
+    "Select Billing Period:"
+  ],
+  [
+    "Chờ Bàn Giao Cư Dân",
+    "Awaiting Resident Handover"
+  ],
+  [
+    "Doanh Thu Sàn Tầng:",
+    "Floor Revenue:"
+  ],
+  [
+    "Dòng Xe / Nhãn Hiệu",
+    "Vehicle Model / Brand"
+  ],
+  [
+    "Hiệu lực BQL 2026 ✓",
+    "Management Valid Until 2026 ✓"
+  ],
+  [
+    "Hotline BQL nội bộ:",
+    "Internal Management Hotline:"
+  ],
+  [
+    "Hotline Ban Quản Lý",
+    "Management Hotline"
+  ],
+  [
+    "Hạn mức thanh toán:",
+    "Payment Limit:"
+  ],
+  [
+    "Hỏi Skyline AI 24/7",
+    "Ask Skyline AI 24/7"
+  ],
+  [
+    "Khách Thăm Chung Cư",
+    "Building Visitor"
+  ],
+  [
+    "Kiểm Soát Thẻ Khách",
+    "Guest Card Management"
+  ],
+  [
+    "Nhận diện khuôn mặt",
+    "Facial Recognition"
+  ],
+  [
+    "Nội dung thông báo:",
+    "Announcement content:"
+  ],
+  [
+    "Phản ánh chất lượng",
+    "Quality Feedback"
+  ],
+  [
+    "Phản hồi của cư dân",
+    "Resident Feedback"
+  ],
+  [
+    "Thời gian thi công:",
+    "Construction Hours:"
+  ],
+  [
+    "Xác nhận thanh toán",
+    "Confirm payment"
+  ],
+  [
+    "Phòng họp cộng đồng",
+    "Community Meeting Room"
+  ],
+  [
+    "Xem ảnh hiện trường",
+    "View Site Photo"
+  ],
+  [
     "Đặt Lịch Tham Quan",
     "Schedule a Tour"
   ],
   [
     "Lễ tân & CSKH 24/7",
-    "24/7 Concierge & Reception"
+    "24/7 Reception & Customer Service"
   ],
   [
     "Bản quyền thuộc về",
@@ -1975,6 +3287,102 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
   [
     "Xuất Báo Cáo Excel",
     "Export Excel Report"
+  ],
+  [
+    "12 số định danh...",
+    "12-digit identification number..."
+  ],
+  [
+    "1900 8899 (Phím 1)",
+    "1900 8899 (Press 1)"
+  ],
+  [
+    "2 Giờ (Tiếp khách)",
+    "2 Hours (Guest Visit)"
+  ],
+  [
+    "8 Giờ (Trong ngày)",
+    "8 Hours (Same Day)"
+  ],
+  [
+    "Biên bản bàn giao:",
+    "Handover Report:"
+  ],
+  [
+    "Biển số nhận diện:",
+    "Identification Plate Number:"
+  ],
+  [
+    "Bảo Hiểm Chung Cư:",
+    "Apartment Insurance:"
+  ],
+  [
+    "Căn Hộ Đã Tham Gia",
+    "Participating Apartments"
+  ],
+  [
+    "Doanh Thu Phí BQL:",
+    "Management Fee Revenue:"
+  ],
+  [
+    "Dạng bảng chi tiết",
+    "Detailed Table View"
+  ],
+  [
+    "Giá Thuê Ước Tính:",
+    "Estimated Rental Price:"
+  ],
+  [
+    "Hệ thống kỹ thuật:",
+    "Technical System:"
+  ],
+  [
+    "Họ Tên Khách Thăm:",
+    "Visitor's Name:"
+  ],
+  [
+    "Logia & Giặt Phơi:",
+    "Loggia & Laundry:"
+  ],
+  [
+    "Loại Hình Pháp Lý:",
+    "Legal Ownership Type:"
+  ],
+  [
+    "Lõi AI Skyline 4.0",
+    "Skyline AI 4.0 Core"
+  ],
+  [
+    "Lịch sử biểu quyết",
+    "Voting History"
+  ],
+  [
+    "Lối Vào Sảnh Chính",
+    "Main Lobby Entrance"
+  ],
+  [
+    "Lối vào sảnh chính",
+    "Main Lobby Entrance"
+  ],
+  [
+    "Nhập số điện thoại",
+    "Enter phone number"
+  ],
+  [
+    "Nhân viên kỹ thuật",
+    "Technical technician"
+  ],
+  [
+    "Quản lý khách thăm",
+    "Visitor Management"
+  ],
+  [
+    "Thông báo hệ thống",
+    "System Notification"
+  ],
+  [
+    "Tiếp tục đăng nhập",
+    "Continue Login"
   ],
   [
     "Triết Lý Thiết Kế",
@@ -2185,6 +3593,178 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
     "All statuses"
   ],
   [
+    "1 Giờ (Gặp nhanh)",
+    "1 Hour (Quick Meeting)"
+  ],
+  [
+    "Biểu phí áp dụng:",
+    "Applicable Fee Schedule:"
+  ],
+  [
+    "Bảng Kê Chi Tiết:",
+    "Detailed Statement:"
+  ],
+  [
+    "Chi Tiết Ghi Nhận",
+    "Logged Details"
+  ],
+  [
+    "Chu kỳ kiểm định:",
+    "Inspection Cycle:"
+  ],
+  [
+    "Chưa lập biên bản",
+    "No report created yet"
+  ],
+  [
+    "Chưa quét số CCCD",
+    "Citizen ID number not scanned yet"
+  ],
+  [
+    "Chọn Gói Dịch Vụ:",
+    "Select Service Package:"
+  ],
+  [
+    "Chọn Tầng (1-25):",
+    "Select Floor (1-25):"
+  ],
+  [
+    "Click để copy tên",
+    "Click to copy name"
+  ],
+  [
+    "Click để sao chép",
+    "Click to copy"
+  ],
+  [
+    "Căn Hộ & Vai Trò:",
+    "Apartment & Role:"
+  ],
+  [
+    "Căn Lớn Penthouse",
+    "Penthouse Unit"
+  ],
+  [
+    "Căn hộ thụ hưởng:",
+    "Beneficiary Apartment:"
+  ],
+  [
+    "Cửa & Chuông Hình",
+    "Door & Video Intercom"
+  ],
+  [
+    "Giám Sát Vận Hành",
+    "Operations Monitoring"
+  ],
+  [
+    "Hotline Kỹ Thuật:",
+    "Technical Hotline:"
+  ],
+  [
+    "Hotline Tiếp Đón:",
+    "Concierge Hotline:"
+  ],
+  [
+    "Hạn Mức BBQ Tháng",
+    "Monthly BBQ Limit"
+  ],
+  [
+    "Hạng Mục Cao Nhất",
+    "Highest Category"
+  ],
+  [
+    "Khách Thuê Căn Hộ",
+    "Apartment Tenant"
+  ],
+  [
+    "Kỳ: Tháng 08/2026",
+    "Period: August 2026"
+  ],
+  [
+    "Lễ Tân / Sảnh Đón",
+    "Reception / Welcome Lobby"
+  ],
+  [
+    "Lễ tân / Tiếp đón",
+    "Concierge / Reception"
+  ],
+  [
+    "Lịch đặt tiện ích",
+    "Amenity Bookings"
+  ],
+  [
+    "Mặt Bằng Tổng Thể",
+    "Master Floor Plan"
+  ],
+  [
+    "Mã OTP gửi về SĐT",
+    "OTP sent to phone number"
+  ],
+  [
+    "Mã OTP không đúng",
+    "Incorrect OTP code"
+  ],
+  [
+    "Nhân sự phụ trách",
+    "Assigned staff"
+  ],
+  [
+    "Phí Quản Lý Tháng",
+    "Monthly Management Fee"
+  ],
+  [
+    "Phụ phí phát sinh",
+    "Incidental surcharge"
+  ],
+  [
+    "Quy định thú cưng",
+    "Pet Regulations"
+  ],
+  [
+    "Quy định thi công",
+    "Renovation Regulations"
+  ],
+  [
+    "Sao chép liên kết",
+    "Copy link"
+  ],
+  [
+    "Thông tin cá nhân",
+    "Personal Info"
+  ],
+  [
+    "Thông tin liên hệ",
+    "Contact Info"
+  ],
+  [
+    "Thời hạn hợp đồng",
+    "Contract Term"
+  ],
+  [
+    "Thời tiết hôm nay",
+    "Today Weather"
+  ],
+  [
+    "Tiếp nhận yêu cầu",
+    "Receive Request"
+  ],
+  [
+    "Xác nhận hoàn tất",
+    "Confirm completion"
+  ],
+  [
+    "Đăng ký khuôn mặt",
+    "Face Registration"
+  ],
+  [
+    "Mã PIN Nhập Cổng:",
+    "Gate Access PIN:"
+  ],
+  [
+    "Số tiền bằng chữ:",
+    "Amount in words:"
+  ],
+  [
     "Lõi Công Nghệ AI",
     "AI Technology"
   ],
@@ -2311,6 +3891,178 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
   [
     "Tính Lại Thù Lao",
     "Recalculate Payroll"
+  ],
+  [
+    "24 Giờ (Cả ngày)",
+    "24 Hours (Full Day)"
+  ],
+  [
+    "4 Giờ (Nửa ngày)",
+    "4 Hours (Half Day)"
+  ],
+  [
+    "Bàn giao chuẩn ✓",
+    "Standard Handover ✓"
+  ],
+  [
+    "Bảo mật hệ thống",
+    "System Security"
+  ],
+  [
+    "Bầu Ban Quản Trị",
+    "Elect Management Board"
+  ],
+  [
+    "Chân Dung FaceID",
+    "FaceID Profile"
+  ],
+  [
+    "Chính Thức BQL ✓",
+    "Official Management ✓"
+  ],
+  [
+    "Chỉ số khi nhận:",
+    "Initial Reading:"
+  ],
+  [
+    "Chủ Hộ Bảo Lãnh:",
+    "Guarantor Head of Household:"
+  ],
+  [
+    "Cán Bộ Bàn Giao:",
+    "Handover Officer:"
+  ],
+  [
+    "CĂN HỘ & VỊ TRÍ:",
+    "APARTMENT & LOCATION:"
+  ],
+  [
+    "Căn Hộ Điểm Đến:",
+    "Destination Apartment:"
+  ],
+  [
+    "Căn Hộ Định Danh",
+    "Registered Apartment"
+  ],
+  [
+    "Cảm biến AI 24/7",
+    "24/7 AI Sensor"
+  ],
+  [
+    "Cổng thanh toán:",
+    "Payment Gateway:"
+  ],
+  [
+    "Danh Sách Căn Hộ",
+    "Apartment List"
+  ],
+  [
+    "Doanh Thu Đã Thu",
+    "Revenue Collected"
+  ],
+  [
+    "Email / Mật Khẩu",
+    "Email / Password"
+  ],
+  [
+    "Ghi Chú Kỹ Thuật",
+    "Technical Notes"
+  ],
+  [
+    "Hạn nộp định kỳ:",
+    "Recurring Payment Deadline:"
+  ],
+  [
+    "Hồ sơ e-KYC CCCD",
+    "e-KYC Citizen ID Profile"
+  ],
+  [
+    "Lễ tân đón khách",
+    "Guest Reception Desk"
+  ],
+  [
+    "Lịch sử phản ánh",
+    "Feedback History"
+  ],
+  [
+    "Lịch đặt của tôi",
+    "My Bookings"
+  ],
+  [
+    "Ngày thanh toán:",
+    "Payment Date:"
+  ],
+  [
+    "Nhập nội dung...",
+    "Type content..."
+  ],
+  [
+    "Nhập tìm kiếm...",
+    "Type to search..."
+  ],
+  [
+    "Nhân viên bảo vệ",
+    "Security guard"
+  ],
+  [
+    "Nhân viên lễ tân",
+    "Receptionist"
+  ],
+  [
+    "Nhận diện FaceID",
+    "FaceID Recognition"
+  ],
+  [
+    "Phí Dịch Vụ Khác",
+    "Other Service Fees"
+  ],
+  [
+    "Quản lý tiện ích",
+    "Amenity Management"
+  ],
+  [
+    "Quản lý kỹ thuật",
+    "Technical Management"
+  ],
+  [
+    "Sổ tay hướng dẫn",
+    "Guidance Handbook"
+  ],
+  [
+    "Tải tệp đính kèm",
+    "Download attachment"
+  ],
+  [
+    "Thông tin căn hộ",
+    "Apartment Info"
+  ],
+  [
+    "Thông tin thẻ xe",
+    "Vehicle Card Info"
+  ],
+  [
+    "Tổng thanh toán:",
+    "Total payment:"
+  ],
+  [
+    "Xác nhận đặt chỗ",
+    "Confirm booking"
+  ],
+  [
+    "Lật Sang Mặt Sau",
+    "Flip to Back"
+  ],
+  [
+    "Lật Về Mặt Trước",
+    "Flip to Front"
+  ],
+  [
+    "Mã Biên Bản BQL:",
+    "Management Record ID:"
+  ],
+  [
+    "Quyền lợi cư dân",
+    "Resident Privileges"
   ],
   [
     "Mặt Bằng Căn Hộ",
@@ -2529,6 +4281,122 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
     "Lock Payroll"
   ],
   [
+    "Bàn Giao Căn Hộ",
+    "Apartment Handover"
+  ],
+  [
+    "Bấm chuyển khối",
+    "Tap to Switch Block"
+  ],
+  [
+    "CHỈ SỐ BAN ĐẦU:",
+    "INITIAL READINGS:"
+  ],
+  [
+    "Chủ Hộ Bảo Lãnh",
+    "Guarantor Head of Household"
+  ],
+  [
+    "Căn Hộ & Chủ Hộ",
+    "Apartment & Head of Household"
+  ],
+  [
+    "Hướng Ban Công:",
+    "Balcony Direction:"
+  ],
+  [
+    "Khối đang chọn:",
+    "Selected Block:"
+  ],
+  [
+    "Làm mới dữ liệu",
+    "Refresh Data"
+  ],
+  [
+    "Lịch sử dịch vụ",
+    "Service History"
+  ],
+  [
+    "Lịch sử hóa đơn",
+    "Invoice History"
+  ],
+  [
+    "Lịch sử sử dụng",
+    "Usage History"
+  ],
+  [
+    "Mặt bằng căn hộ",
+    "Apartment Layout"
+  ],
+  [
+    "Mã QR Mời Khách",
+    "Guest Invitation QR"
+  ],
+  [
+    "Mô tả chi tiết:",
+    "Detailed description:"
+  ],
+  [
+    "Người đại diện:",
+    "Representative:"
+  ],
+  [
+    "Nội quy tòa nhà",
+    "Building Regulations"
+  ],
+  [
+    "Nơi thường trú:",
+    "Permanent residence:"
+  ],
+  [
+    "Phòng Vệ Sinh 1",
+    "Bathroom 1"
+  ],
+  [
+    "Phòng Vệ Sinh 2",
+    "Bathroom 2"
+  ],
+  [
+    "Phòng sinh hoạt",
+    "Community room"
+  ],
+  [
+    "Phí Gửi Xe Ô Tô",
+    "Car Parking Fee"
+  ],
+  [
+    "Quy định ra vào",
+    "Access Regulations"
+  ],
+  [
+    "Quản lý hóa đơn",
+    "Billing Management"
+  ],
+  [
+    "Số lượng xe máy",
+    "Number of motorcycles"
+  ],
+  [
+    "Sự cố thang máy",
+    "Elevator Incident"
+  ],
+  [
+    "Tổng diện tích:",
+    "Total area:"
+  ],
+  [
+    "Đăng ký thẻ mới",
+    "Register New Card"
+  ],
+  [
+    "Đồng bộ dữ liệu",
+    "Sync data"
+  ],
+  [
+    "Độ ẩm không khí",
+    "Air humidity"
+  ],
+  [
     "Tiện Ích 5 Sao",
     "5-Star Amenities"
   ],
@@ -2734,7 +4602,7 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
   ],
   [
     "Mức độ ưu tiên",
-    "Priority"
+    "Priority level"
   ],
   [
     "Độ tin cậy AI:",
@@ -2767,6 +4635,198 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
   [
     "Tên tài khoản:",
     "Account Name:"
+  ],
+  [
+    "-- Chọn KTV --",
+    "-- Select Technician --"
+  ],
+  [
+    "CCCD Mặt Trước",
+    "CCCD Front Side"
+  ],
+  [
+    "Chip & Vân tay",
+    "Chip & Fingerprint"
+  ],
+  [
+    "Chuẩn WCAG 2.1",
+    "WCAG 2.1 Standard"
+  ],
+  [
+    "Chất Lượng AQI",
+    "Air Quality (AQI)"
+  ],
+  [
+    "Cấu Trúc Phòng",
+    "Room Configuration"
+  ],
+  [
+    "Diện Tích Sảnh",
+    "Lobby Area"
+  ],
+  [
+    "Dòng Tải 3 Pha",
+    "3-Phase Load"
+  ],
+  [
+    "Dịch Vụ Căn Hộ",
+    "Apartment Services"
+  ],
+  [
+    "Hướng Ban Công",
+    "Balcony Direction"
+  ],
+  [
+    "KTV Phụ trách:",
+    "Responsible Technician:"
+  ],
+  [
+    "KTV phụ trách:",
+    "Responsible Technician:"
+  ],
+  [
+    "Khung giờ đặt:",
+    "Reserved Time Slot:"
+  ],
+  [
+    "Khách Vãng Lai",
+    "Walk-in Visitor"
+  ],
+  [
+    "Kỳ thanh toán:",
+    "Billing Period:"
+  ],
+  [
+    "Lưu Căn Hộ Mới",
+    "Save New Apartment"
+  ],
+  [
+    "Lối thoát hiểm",
+    "Emergency Exit"
+  ],
+  [
+    "Lấy mẫu FaceID",
+    "Capture FaceID Sample"
+  ],
+  [
+    "Lọc theo tháng",
+    "Filter by month"
+  ],
+  [
+    "Mã Bảo Mật OTP",
+    "OTP Security Code"
+  ],
+  [
+    "Mã Khách Thăm:",
+    "Visitor Code:"
+  ],
+  [
+    "Mã QR Vào Cổng",
+    "Gate Access QR"
+  ],
+  [
+    "Mã PIN mở khóa",
+    "Unlock PIN code"
+  ],
+  [
+    "Mã thẻ xe RFID",
+    "RFID Parking Card Code"
+  ],
+  [
+    "Ngày kết thúc:",
+    "End Date:"
+  ],
+  [
+    "Nhập họ và tên",
+    "Enter full name"
+  ],
+  [
+    "Nhập mã căn hộ",
+    "Enter apartment code"
+  ],
+  [
+    "Nước sinh hoạt",
+    "Domestic tap water"
+  ],
+  [
+    "Phòng Bếp & Ăn",
+    "Kitchen & Dining"
+  ],
+  [
+    "Phòng xông hơi",
+    "Sauna room"
+  ],
+  [
+    "Phí Nước Tháng",
+    "Monthly Water Fee"
+  ],
+  [
+    "Phí Điện Tháng",
+    "Monthly Electricity Fee"
+  ],
+  [
+    "Phí Gửi Xe Máy",
+    "Motorcycle Parking Fee"
+  ],
+  [
+    "Quy định chung",
+    "General Regulations"
+  ],
+  [
+    "Quản lý cư dân",
+    "Resident Management"
+  ],
+  [
+    "Quản lý căn hộ",
+    "Apartment Management"
+  ],
+  [
+    "Quản lý thẻ xe",
+    "Vehicle Card Management"
+  ],
+  [
+    "Sao chép mã QR",
+    "Copy QR code"
+  ],
+  [
+    "Sự cố khẩn cấp",
+    "Emergency Incident"
+  ],
+  [
+    "Tên khách thăm",
+    "Visitor name"
+  ],
+  [
+    "Thông báo khẩn",
+    "Emergency Notice"
+  ],
+  [
+    "Thực hiện ngay",
+    "Execute now"
+  ],
+  [
+    "Tổng số cư dân",
+    "Total residents"
+  ],
+  [
+    "Tổng số căn hộ",
+    "Total apartments"
+  ],
+  [
+    "Trợ lý ảo 24/7",
+    "24/7 Virtual Assistant"
+  ],
+  [
+    "Đăng ký cư trú",
+    "Residence Registration"
+  ],
+  [
+    "Lật Mặt Thẻ 3D",
+    "Flip 3D Card"
+  ],
+  [
+    "Xem sơ đồ tầng",
+    "View Floor Plan"
   ],
   [
     "Kỹ Thuật Viên",
@@ -2959,6 +5019,134 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
   [
     "Mã chuẩn chi:",
     "Approval Code:"
+  ],
+  [
+    "Chụp Mẫu Ngay",
+    "Capture Photo Now"
+  ],
+  [
+    "Cấp Thẻ Khách",
+    "Issue Guest Card"
+  ],
+  [
+    "Giảm nhiệt độ",
+    "Decrease Temperature"
+  ],
+  [
+    "Hiệu Lực Ngay",
+    "Effective Immediately"
+  ],
+  [
+    "Hiệu lực OTP:",
+    "OTP Validity:"
+  ],
+  [
+    "Hủy thẻ khách",
+    "Invalidate Guest Card"
+  ],
+  [
+    "KTV phụ trách",
+    "Responsible Technician"
+  ],
+  [
+    "Khu Vực Chính",
+    "Main Area"
+  ],
+  [
+    "Lõi Thang Máy",
+    "Elevator Core"
+  ],
+  [
+    "Lý do từ BQL:",
+    "Reason from Management:"
+  ],
+  [
+    "Lọc theo tầng",
+    "Filter by floor"
+  ],
+  [
+    "Mặt Bằng Tầng",
+    "Floor Plan"
+  ],
+  [
+    "Mật khẩu mới:",
+    "New password:"
+  ],
+  [
+    "Ngày hết hạn:",
+    "Expiry Date:"
+  ],
+  [
+    "Ngày bắt đầu:",
+    "Start Date:"
+  ],
+  [
+    "Nhập mật khẩu",
+    "Enter password"
+  ],
+  [
+    "Quyền sử dụng",
+    "Usage Right"
+  ],
+  [
+    "Quên mật khẩu",
+    "Forgot password"
+  ],
+  [
+    "Số lượng ô tô",
+    "Number of cars"
+  ],
+  [
+    "Tạo tài khoản",
+    "Create account"
+  ],
+  [
+    "Tạo phiếu mới",
+    "Create new ticket"
+  ],
+  [
+    "Tên đăng nhập",
+    "Username"
+  ],
+  [
+    "Thông báo mới",
+    "New Announcement"
+  ],
+  [
+    "Tổng chi phí:",
+    "Total cost:"
+  ],
+  [
+    "Trước khi sửa",
+    "Before repair"
+  ],
+  [
+    "Chưa hài lòng",
+    "Unsatisfied"
+  ],
+  [
+    "Vị trí đỗ xe:",
+    "Parking slot:"
+  ],
+  [
+    "Xóa tài khoản",
+    "Delete account"
+  ],
+  [
+    "Đang xử lý...",
+    "Processing..."
+  ],
+  [
+    "Đang kiểm tra",
+    "Checking"
+  ],
+  [
+    "Đang sửa chữa",
+    "Repairing"
+  ],
+  [
+    "Điện dân dụng",
+    "Domestic Electrical"
   ],
   [
     "BQL Chung Cư",
@@ -3165,6 +5353,150 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
     "Transaction Code"
   ],
   [
+    "Bàn Kỹ Thuật",
+    "Technical Support Desk"
+  ],
+  [
+    "Báo Kỹ Thuật",
+    "Report Technical Issue"
+  ],
+  [
+    "Bấm chọn căn",
+    "Tap to Select Unit"
+  ],
+  [
+    "CCCD Mặt Sau",
+    "CCCD Back Side"
+  ],
+  [
+    "Chia Sẻ Khác",
+    "Other Sharing Options"
+  ],
+  [
+    "Chuyển Tầng:",
+    "Switch Floor:"
+  ],
+  [
+    "Cùng Cư Trú:",
+    "Co-Resident:"
+  ],
+  [
+    "CĂN HỘ TRỐNG",
+    "VACANT APARTMENT"
+  ],
+  [
+    "Cơ Cấu Phòng",
+    "Room Layout"
+  ],
+  [
+    "Cổng L1 & B1",
+    "Gate L1 & B1"
+  ],
+  [
+    "Duyệt FaceID",
+    "Approve FaceID"
+  ],
+  [
+    "Giá Niêm Yết",
+    "Listed Price"
+  ],
+  [
+    "Họ và tên...",
+    "Full name..."
+  ],
+  [
+    "Khung Giờ Mở",
+    "Opening Hours"
+  ],
+  [
+    "Ký tự (!@#$)",
+    "Characters (!@#$)"
+  ],
+  [
+    "Lịch sử dùng",
+    "Usage History"
+  ],
+  [
+    "Lối vào sảnh",
+    "Lobby Entrance"
+  ],
+  [
+    "Lương cơ bản",
+    "Base salary"
+  ],
+  [
+    "Lọc danh mục",
+    "Filter category"
+  ],
+  [
+    "Mã QR mở cửa",
+    "Door Unlock QR Code"
+  ],
+  [
+    "Mã hợp đồng:",
+    "Contract Code:"
+  ],
+  [
+    "Mô tả sự cố:",
+    "Issue description:"
+  ],
+  [
+    "Nhập số CCCD",
+    "Enter Citizen ID"
+  ],
+  [
+    "Quyền sở hữu",
+    "Ownership Right"
+  ],
+  [
+    "Sắp xếp theo",
+    "Sort by"
+  ],
+  [
+    "Số phòng ngủ",
+    "Bedrooms count"
+  ],
+  [
+    "Số phòng tắm",
+    "Bathrooms count"
+  ],
+  [
+    "Sửa chữa nhỏ",
+    "Minor repairs"
+  ],
+  [
+    "Sửa chữa lớn",
+    "Major repairs"
+  ],
+  [
+    "Tại khu vực:",
+    "In area:"
+  ],
+  [
+    "Tên tiện ích",
+    "Amenity name"
+  ],
+  [
+    "Tên thiết bị",
+    "Device name"
+  ],
+  [
+    "Xác nhận gửi",
+    "Confirm submission"
+  ],
+  [
+    "Lễ Tân & BQL",
+    "Reception & Management"
+  ],
+  [
+    "Mã biên bản:",
+    "Report Code:"
+  ],
+  [
+    "Mã thiết bị:",
+    "Device Code:"
+  ],
+  [
     "Cổng Cư Dân",
     "Resident Portal"
   ],
@@ -3335,6 +5667,158 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
   [
     "Xem ảnh gốc",
     "View original photo"
+  ],
+  [
+    "Chưa FaceID",
+    "FaceID Not Set Up"
+  ],
+  [
+    "Chưa có SĐT",
+    "No Phone Number"
+  ],
+  [
+    "Chủ sở hữu:",
+    "Owner:"
+  ],
+  [
+    "Căn Của Bạn",
+    "Your Unit"
+  ],
+  [
+    "Enter ↵ gửi",
+    "Enter ↵ to Send"
+  ],
+  [
+    "Gửi câu hỏi",
+    "Submit Question"
+  ],
+  [
+    "Hóa Đơn Căn",
+    "Unit Invoice"
+  ],
+  [
+    "Hóa đơn kỳ:",
+    "Billing Period:"
+  ],
+  [
+    "Hủy mã ngay",
+    "Cancel Code Now"
+  ],
+  [
+    "Khoảng Cách",
+    "Distance"
+  ],
+  [
+    "Khối lượng:",
+    "Quantity:"
+  ],
+  [
+    "Kỳ thu phí:",
+    "Collection Period:"
+  ],
+  [
+    "Loại Căn Hộ",
+    "Apartment Type"
+  ],
+  [
+    "Lối ra sảnh",
+    "Lobby Exit"
+  ],
+  [
+    "Lương cứng:",
+    "Base salary:"
+  ],
+  [
+    "Mật khẩu cũ",
+    "Old password"
+  ],
+  [
+    "Mã PIN 6 số",
+    "6-digit PIN code"
+  ],
+  [
+    "Mã số thuế:",
+    "Tax Code:"
+  ],
+  [
+    "Mô tả ngắn:",
+    "Short description:"
+  ],
+  [
+    "Mở Cửa Sảnh",
+    "Unlock Lobby Door"
+  ],
+  [
+    "Người nhận:",
+    "Recipient:"
+  ],
+  [
+    "Nhập mã OTP",
+    "Enter OTP code"
+  ],
+  [
+    "Phòng Ngủ 1",
+    "Bedroom 1"
+  ],
+  [
+    "Phòng Ngủ 2",
+    "Bedroom 2"
+  ],
+  [
+    "Phòng Ngủ 3",
+    "Bedroom 3"
+  ],
+  [
+    "Quét FaceID",
+    "Scan FaceID"
+  ],
+  [
+    "So sánh ảnh",
+    "Compare photos"
+  ],
+  [
+    "Tại căn hộ:",
+    "At apartment:"
+  ],
+  [
+    "Sau khi sửa",
+    "After repair"
+  ],
+  [
+    "Tầng hầm B1",
+    "Basement B1"
+  ],
+  [
+    "Tầng hầm B2",
+    "Basement B2"
+  ],
+  [
+    "Tầng thượng",
+    "Rooftop Floor"
+  ],
+  [
+    "Vận hành số",
+    "Digital Operations"
+  ],
+  [
+    "Đã xác nhận",
+    "Confirmed"
+  ],
+  [
+    "Đóng cửa sổ",
+    "Close window"
+  ],
+  [
+    "Mã Vé & PIN",
+    "Pass Code & PIN"
+  ],
+  [
+    "Mã yêu cầu:",
+    "Request Code:"
+  ],
+  [
+    "Nhập mã PIN",
+    "Enter PIN code"
   ],
   [
     "Khách Thuê",
@@ -3513,6 +5997,78 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
     "Period Closed"
   ],
   [
+    "Chủ Sở Hữu",
+    "Owner"
+  ],
+  [
+    "In Báo Cáo",
+    "Print Report"
+  ],
+  [
+    "Lương cứng",
+    "Base salary"
+  ],
+  [
+    "Mã Căn Hộ:",
+    "Apartment Code:"
+  ],
+  [
+    "Mã tòa nhà",
+    "Building Code"
+  ],
+  [
+    "Ngày sinh:",
+    "Birth Date:"
+  ],
+  [
+    "Người gửi:",
+    "Sender:"
+  ],
+  [
+    "Nhập email",
+    "Enter email"
+  ],
+  [
+    "Quét mã QR",
+    "Scan QR Code"
+  ],
+  [
+    "Sự cố điện",
+    "Electrical Incident"
+  ],
+  [
+    "Sự cố nước",
+    "Plumbing Incident"
+  ],
+  [
+    "Sự cố mạng",
+    "Network Incident"
+  ],
+  [
+    "Tạo mã mới",
+    "Generate new code"
+  ],
+  [
+    "Tiền điện:",
+    "Electricity fee:"
+  ],
+  [
+    "Tiền nước:",
+    "Water fee:"
+  ],
+  [
+    "Sân tennis",
+    "Tennis court"
+  ],
+  [
+    "Xử lý ngay",
+    "Handle immediately"
+  ],
+  [
+    "Đăng ký xe",
+    "Vehicle Registration"
+  ],
+  [
     "Trang Chủ",
     "Home"
   ],
@@ -3670,7 +6226,7 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
   ],
   [
     "Ngày gửi:",
-    "Sent Date:"
+    "Submission Date:"
   ],
   [
     "Địa điểm:",
@@ -3703,6 +6259,178 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
   [
     "Thưởng 5⭐",
     "5⭐ Bonus"
+  ],
+  [
+    "Biểu phí:",
+    "Fee Schedule:"
+  ],
+  [
+    "Chiều Cao",
+    "Height"
+  ],
+  [
+    "Chung Cư:",
+    "Apartment:"
+  ],
+  [
+    "Chuẩn 2PN",
+    "2-Bedroom Standard"
+  ],
+  [
+    "Chính Bắc",
+    "North"
+  ],
+  [
+    "Chính Nam",
+    "South"
+  ],
+  [
+    "Chờ bầu →",
+    "Pending Vote →"
+  ],
+  [
+    "Căn Trống",
+    "Vacant Units"
+  ],
+  [
+    "Góc: +25°",
+    "Angle: +25°"
+  ],
+  [
+    "Góc: -25°",
+    "Angle: -25°"
+  ],
+  [
+    "HIỆU LỰC:",
+    "VALIDITY:"
+  ],
+  [
+    "Hiển thị:",
+    "Display:"
+  ],
+  [
+    "Hành Động",
+    "Action"
+  ],
+  [
+    "Hạn chót:",
+    "Deadline:"
+  ],
+  [
+    "Hạng mục:",
+    "Category:"
+  ],
+  [
+    "Khuôn mặt",
+    "Face"
+  ],
+  [
+    "Khởi tạo:",
+    "Created:"
+  ],
+  [
+    "Mặt trước",
+    "Front side"
+  ],
+  [
+    "Mật khẩu:",
+    "Password:"
+  ],
+  [
+    "Mã Phiếu:",
+    "Ticket Code:"
+  ],
+  [
+    "Mã căn hộ",
+    "Apartment Code"
+  ],
+  [
+    "Ngày cấp:",
+    "Issue Date:"
+  ],
+  [
+    "Nơi sinh:",
+    "Place of birth:"
+  ],
+  [
+    "Nước nóng",
+    "Hot water"
+  ],
+  [
+    "Nước lạnh",
+    "Cold water"
+  ],
+  [
+    "Phòng gym",
+    "Fitness gym"
+  ],
+  [
+    "Quét CCCD",
+    "Scan Citizen ID"
+  ],
+  [
+    "Số căn hộ",
+    "Apartments count"
+  ],
+  [
+    "Tại sảnh:",
+    "At lobby:"
+  ],
+  [
+    "Tại tầng:",
+    "At floor:"
+  ],
+  [
+    "Thực hiện",
+    "Perform"
+  ],
+  [
+    "Thực lĩnh",
+    "Net Payout"
+  ],
+  [
+    "Tiền phí:",
+    "Fee amount:"
+  ],
+  [
+    "Tuyệt vời",
+    "Excellent"
+  ],
+  [
+    "Tòa BS-07",
+    "Tower BS-07"
+  ],
+  [
+    "Tòa BS-08",
+    "Tower BS-08"
+  ],
+  [
+    "Tòa BS-09",
+    "Tower BS-09"
+  ],
+  [
+    "Tòa BS-10",
+    "Tower BS-10"
+  ],
+  [
+    "Tầng trệt",
+    "Ground Floor"
+  ],
+  [
+    "Xóa phiếu",
+    "Delete ticket"
+  ],
+  [
+    "Đang đóng",
+    "Closing"
+  ],
+  [
+    "Điểm danh",
+    "Attendance"
+  ],
+  [
+    "Minh Bạch",
+    "Transparent"
   ],
   [
     "Mật Khẩu",
@@ -3933,6 +6661,110 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
     "Actions"
   ],
   [
+    "18 (Tốt)",
+    "18 (Excellent)"
+  ],
+  [
+    "Bảo Mật:",
+    "Security:"
+  ],
+  [
+    "Chưa Thu",
+    "Uncollected"
+  ],
+  [
+    "Chưa đến",
+    "Not yet arrived"
+  ],
+  [
+    "Chủ thẻ:",
+    "Cardholder:"
+  ],
+  [
+    "Dòng xe:",
+    "Vehicle Model:"
+  ],
+  [
+    "Giảm 1°C",
+    "Decrease 1°C"
+  ],
+  [
+    "Gửi Zalo",
+    "Send via Zalo"
+  ],
+  [
+    "Hoàn trả",
+    "Refund"
+  ],
+  [
+    "Hoàn tất",
+    "Complete"
+  ],
+  [
+    "Hạn nộp:",
+    "Due Date:"
+  ],
+  [
+    "Hạng Mục",
+    "Category"
+  ],
+  [
+    "Hợp lệ ✓",
+    "Valid ✓"
+  ],
+  [
+    "Khóa Cửa",
+    "Door Lock"
+  ],
+  [
+    "Loại Phí",
+    "Fee Type"
+  ],
+  [
+    "Lấp Đầy:",
+    "Occupancy:"
+  ],
+  [
+    "Lấp đầy:",
+    "Occupancy:"
+  ],
+  [
+    "Mặt bằng",
+    "Floor plan"
+  ],
+  [
+    "Mới nhất",
+    "Newest"
+  ],
+  [
+    "Nơi cấp:",
+    "Place of issue:"
+  ],
+  [
+    "Rút tiền",
+    "Withdraw"
+  ],
+  [
+    "Rời khỏi",
+    "Leave"
+  ],
+  [
+    "Hài lòng",
+    "Satisfied"
+  ],
+  [
+    "Tạm được",
+    "Acceptable"
+  ],
+  [
+    "Vào cổng",
+    "Gate Entry"
+  ],
+  [
+    "Vườn BBQ",
+    "BBQ Garden"
+  ],
+  [
     "Chi phí",
     "Cost"
   ],
@@ -4113,6 +6945,86 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
     "Filters:"
   ],
   [
+    "Bàn BQL",
+    "Management Desk"
+  ],
+  [
+    "Bố / Mẹ",
+    "Father / Mother"
+  ],
+  [
+    "Chờ BQL",
+    "Pending Management Approval"
+  ],
+  [
+    "Chủ Thẻ",
+    "Cardholder"
+  ],
+  [
+    "Con Cái",
+    "Children"
+  ],
+  [
+    "Căn phụ",
+    "Ancillary Unit"
+  ],
+  [
+    "Ghi Chú",
+    "Notes"
+  ],
+  [
+    "Kết Quả",
+    "Results"
+  ],
+  [
+    "Lưu Ảnh",
+    "Save Photo"
+  ],
+  [
+    "Mặt sau",
+    "Back side"
+  ],
+  [
+    "Mở khóa",
+    "Unlock"
+  ],
+  [
+    "Mở rộng",
+    "Expand"
+  ],
+  [
+    "Rà soát",
+    "Review"
+  ],
+  [
+    "Số tầng",
+    "Floors count"
+  ],
+  [
+    "Ra cổng",
+    "Gate Exit"
+  ],
+  [
+    "Đã nhận",
+    "Received"
+  ],
+  [
+    "Đã xong",
+    "Done"
+  ],
+  [
+    "Đang mở",
+    "Opening"
+  ],
+  [
+    "Lớp Phủ",
+    "Overlay Layer"
+  ],
+  [
+    "Mã Căn:",
+    "Apartment Code:"
+  ],
+  [
     "Chủ Hộ",
     "Apartment Owner"
   ],
@@ -4225,6 +7137,70 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
     "All"
   ],
   [
+    "Bạn bè",
+    "Friends"
+  ],
+  [
+    "Bố Trí",
+    "Layout"
+  ],
+  [
+    "Gỡ ảnh",
+    "Remove Photo"
+  ],
+  [
+    "HIỂM 1",
+    "DANGER 1"
+  ],
+  [
+    "HIỂM 2",
+    "DANGER 2"
+  ],
+  [
+    "Hỏi AI",
+    "Ask AI"
+  ],
+  [
+    "Khách:",
+    "Guest:"
+  ],
+  [
+    "Kỳ Thu",
+    "Billing Cycle"
+  ],
+  [
+    "Kỳ đầu",
+    "Initial Period"
+  ],
+  [
+    "Mã PIN",
+    "PIN Code"
+  ],
+  [
+    "Mở cửa",
+    "Open door"
+  ],
+  [
+    "Tải về",
+    "Download"
+  ],
+  [
+    "Hồ bơi",
+    "Swimming pool"
+  ],
+  [
+    "Đã gửi",
+    "Sent"
+  ],
+  [
+    "Mã Căn",
+    "Apartment Code"
+  ],
+  [
+    "Mã GD:",
+    "Trans ID:"
+  ],
+  [
     "Hồ Sơ",
     "Profile"
   ],
@@ -4249,6 +7225,14 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
     "Floor:"
   ],
   [
+    "Chốt:",
+    "Finalize:"
+  ],
+  [
+    "Khách",
+    "Guest"
+  ],
+  [
     "Đóng",
     "Close"
   ],
@@ -4263,6 +7247,14 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
   [
     "Thấp",
     "Low"
+  ],
+  [
+    "Căn:",
+    "Unit:"
+  ],
+  [
+    "Cấp:",
+    "Level:"
   ],
   [
     "Hủy",
@@ -4299,6 +7291,14 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
   [
     "Lọc",
     "Filter"
+  ],
+  [
+    "Căn",
+    "Unit"
+  ],
+  [
+    "Gửi",
+    "Send"
   ],
   [
     "Nữ",

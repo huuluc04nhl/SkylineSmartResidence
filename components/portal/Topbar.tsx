@@ -30,7 +30,6 @@ import { useLanguage } from '@/lib/languageContext';
 import { getUserApiAvatar, formatApiAvatarUrl } from '@/lib/avatarHelper';
 import { nksGetUserInfo } from '@/lib/nksApiClient';
 import AccountPasswordModal from './shared/AccountPasswordModal';
-import LanguageSwitcher from '@/components/shared/LanguageSwitcher';
 
 interface TopbarProps {
   currentUser: UserType;
@@ -118,9 +117,9 @@ export default function Topbar({
   const userName = currentUser.full_name || (currentUser as any)?.fullname || 'Cư Dân';
 
   return (
-    <header className="h-16 bg-[#0D1117] border-b border-[#222B35] px-4 sm:px-6 flex items-center justify-between text-white fixed top-0 left-0 right-0 z-40 select-none shadow-md">
+    <header className="h-16 bg-[#0D1117] border-b border-[#222B35] px-3 sm:px-6 flex items-center justify-between text-white fixed top-0 left-0 right-0 z-40 select-none shadow-md">
       {/* Left: Mobile Menu Trigger + Brand / Home Link */}
-      <div className="flex items-center gap-2 sm:gap-6">
+      <div className="flex items-center gap-2 sm:gap-4 flex-shrink-0">
         {onToggleMobileSidebar && (
           <button
             onClick={onToggleMobileSidebar}
@@ -144,7 +143,7 @@ export default function Topbar({
       </div>
 
       {/* Center: Module Smart Search */}
-      <div className="relative max-w-xs md:max-w-md w-full hidden sm:block mx-4">
+      <div className="relative flex-1 max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg hidden sm:block mx-2 sm:mx-6">
         <div className="relative">
           <Search className="w-4 h-4 text-gray-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
           <input
@@ -194,20 +193,17 @@ export default function Topbar({
       </div>
 
       {/* Right: Hotline Alert, Notifications & User Badge */}
-      <div className="flex items-center gap-2 sm:gap-4">
+      <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
         {/* Emergency Hotline Button */}
         <a
           href="tel:19008899"
-          className="hidden lg:flex items-center gap-1.5 px-2.5 py-1 bg-red-950/60 border border-red-500/80 text-red-300 text-[11px] font-mono hover:bg-red-900 transition-colors rounded-none"
+          className="hidden lg:flex items-center gap-1.5 px-2.5 py-1 bg-red-950/60 border border-red-500/80 text-red-300 text-[11px] font-mono hover:bg-red-900 transition-colors rounded-none flex-shrink-0"
           title="Hotline An Ninh & Khẩn Cấp 24/7"
         >
           <span className="w-1.5 h-1.5 rounded-none bg-red-500 animate-ping"></span>
           <PhoneCall className="w-3 h-3 text-red-400" />
           <span>1900 8899</span>
         </a>
-
-        {/* Chuyển đổi ngôn ngữ Việt / Anh */}
-        <LanguageSwitcher />
 
         {/* Notification Icon */}
         <div className="relative">

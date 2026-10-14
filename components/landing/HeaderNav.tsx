@@ -46,7 +46,7 @@ export default function HeaderNav({ onOpenLogin }: HeaderNavProps) {
         {/* Action Controls & Authentication */}
         <div className="hidden lg:flex items-center gap-3">
           {/* Nút chuyển đổi ngôn ngữ Việt / Anh */}
-          <LanguageSwitcher />
+          <LanguageSwitcher variant="inline" />
 
           {/* CÔNG TẮC BẬT SÁNG / TỐI (TOGGLE SWITCH - KHÔNG BORDER-RADIUS) */}
           <button
