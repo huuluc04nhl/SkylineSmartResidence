@@ -1,7 +1,7 @@
 /**
  * SKYLINE SMART RESIDENCE — MASTER TRANSLATION DICTIONARY
  * Automatically synchronized & curated for luxury real estate & smart living.
- * Total bilingual pairs: 4934
+ * Total bilingual pairs: 4681
  */
 
 export const TRANSLATIONS_DATA: Array<[string, string]> = [
@@ -102,10 +102,6 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
     "Chủ nuôi có trách nhiệm mang theo túi vệ sinh và dọn dẹp ngay lập tức nếu thú cưng phóng uế tại các đường dạo bộ công viên nội Zone The Tropical."
   ],
   [
-    "Nếu thú cưng gây tiếng sủa liên tục ảnh hưởng giấc ngủ của hàng xóm, BQL sẽ gửi biên bản nhắc nhở lần 1 và áp dụng chế tài theo Nội quy chung cư",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 37 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
     "Đặt trong hộp kỹ thuật cạnh cửa chính bên ngoài hành lang tầng 12. Khi có sự cố rò rỉ, hệ thống AI sẽ tự động đóng van điện từ trong 3 giây.",
     "Đặt trong hộp kỹ thuật cạnh cửa chính bên ngoài hành lang Floor 12. Khi có incident rò rỉ, hệ thống AI sẽ tự động đóng van điện từ trong 3 secs."
   ],
@@ -132,10 +128,6 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
   [
     "Tủ Aptomat Tổng (RCBO): Nằm ở sảnh đón cửa căn hộ CH-06. Được trang bị thiết bị đóng cắt tự động chống giật, chống sét lan truyền.",
     "Tủ Aptomat Tổng (RCBO): Nằm ở sảnh đón cửa Unit CH-06. Được trang bị device / appliance đóng cắt tự động chống giật, chống sét lan truyền."
-  ],
-  [
-    "Quyền truy cập Camera bị từ chối trên trình duyệt. Vui lòng bấm vào biểu tượng ổ khóa cạnh URL để Cấp quyền Camera (Allow) và bấm",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 50 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
   ],
   [
     ":1). Thẻ Căn cước công dân phải là ảnh chụp ngang bao gồm đủ 4 góc thẻ (tỷ lệ chuẩn ~1.58:1). Không được sử dụng ảnh selfie dọc!",
@@ -170,10 +162,6 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
     "Sensor rò rỉ nước AI: Kết nối với van điện từ smart, tự động ngắt nguồn cấp nước trong 3 secs khi phát hiện tràn nước."
   ],
   [
-    "'Ban Quản Lý tạm thu hồi quyền ra vào FaceID để đối soát lại hồ sơ');\n  const [justApprovedId, setJustApprovedId] = useState",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 58 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
     "Khám phá từng không gian sống với góc nhìn kiến trúc 3D trực quan, đầy đủ thông số diện tích và tiện nghi bàn giao cao cấp.",
     "Explore each living space with intuitive 3D architectural perspective, comprehensive dimensions, and premium handover amenities."
   ],
@@ -186,16 +174,8 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
     "Không gian tiếp khách sang trọng chuẩn resort nhiệt đới, trang bị air conditioner trung tâm, wifi tốc độ cao và bàn ghế thư giãn."
   ],
   [
-    "Vòi nước nóng lạnh tại bồn rửa chén bị hỏng gioăng cao su, nước rỉ liên tục xuống sàn tủ bếp, đã khóa tạm van nhưng vẫn rỉ",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 29 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
     "Vườn nướng BBQ The Tropical: Cần đặt trước qua App Cư Dân ít nhất 06 tiếng để BQL chuẩn bị bàn nướng và công tác vệ sinh.",
     "Vườn nướng BBQ The Tropical: Cần đặt trước qua App resident ít nhất 06 tiếng để BQL chuẩn bị bàn nướng và công tác vệ sinh."
-  ],
-  [
-    "Thao tác này sẽ giải phóng trạng thái cư trú của căn hộ, gỡ bỏ thông tin cư dân hiện tại và chuyển mã căn sang trạng thái",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 34 MINUTES 01 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
   ],
   [
     "Lối ram dốc 2 chiều rộng 7m dẫn xuống hầm B1 (xe máy & sạc xe điện) và hầm B2 (ô tô), barrier tự động nhận diện biển số.",
@@ -204,10 +184,6 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
   [
     "Quyền truy cập Camera bị từ chối trên trình duyệt. Bạn có thể bấm vào ổ khóa cạnh URL để Cấp quyền Camera (Allow) và bấm",
     "Camera access is denied on the browser. You can click the padlock next to the URL to Authorize Camera (Allow) and press"
-  ],
-  [
-    "Hệ thống tự động đọc và điền nhanh thông tin từ 2 mặt thẻ Căn cước công dân của Quý cư dân một cách chuẩn xác và an toàn",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 49 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
   ],
   [
     "Camera đang bị ứng dụng khác (Zoom, Teams, Meet...) chiếm dụng. Vui lòng tắt các ứng dụng đó rồi bấm \"Thử Lại Camera\".",
@@ -222,10 +198,6 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
     "Giant Eagle Iconic Art Square with Landscape Waterfalls and Light Show Fountains"
   ],
   [
-    "Hệ thống đèn downlight âm trần bị nhấp nháy liên tục và 2 bóng không sáng, cần kiểm tra chấn lưu (driver) và thay bóng",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 29 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
     "Hệ thống xe buýt điện thông minh kết nối xuyên suốt nội khu, tuyến D4 kết nối trực tiếp trung tâm Quận 1 & Bến Thành.",
     "Hệ thống xe buýt điện smart kết nối xuyên suốt nội khu, tuyến D4 kết nối trực tiếp trung tâm Quận 1 & Bến Thành."
   ],
@@ -238,20 +210,12 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
     "focus on sharp shapes, open space ratio and full of natural light and cool river breeze"
   ],
   [
-    "Đoạn hội thoại đã được làm mới! Tôi sẵn sàng lắng nghe mọi yêu cầu tra cứu từ Quý cư dân  (Căn  - Tòa BS-07, Tầng 30)",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 24 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
     "Xe máy cư dân: Honda SH 160i (Biển số: 59P1-886.79, Vị trí đỗ: Khu B1-M88 tại Tầng Hầm B1, Thẻ xe RFID: RFID-CH06-02",
     "Resident's Motorcycle: Honda SH 160i (License Plate: 59P1-886.79, Parking Spot: Area B1-M88 on Basement B1, RFID Card: RFID-CH06-02"
   ],
   [
     "Tiếp nhận ý kiến cư dân, cấp thẻ ra vào, đăng ký gửi xe hầm B1-B2, hỗ trợ thủ tục bàn giao căn hộ và hồ sơ thi công.",
     "Tiếp nhận ý kiến resident, cấp thẻ ra vào, đăng ký gửi xe basement-B2, hỗ trợ thủ tục handover Unit và hồ sơ thi công."
-  ],
-  [
-    "Đã trích xuất thông tin 2 mặt thẻ CCCD thành công! Bạn có thể kiểm tra dữ liệu, thu thập FaceID (nếu chưa có) và bấm",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 41 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
   ],
   [
     "Ô tô Chủ hộ: Mercedes C300 AMG (Biển số: 51K-889.99, Vị trí đỗ: Ô B2-A15 tại Tầng Hầm B2, Thẻ xe RFID: RFID-CH06-01",
@@ -266,10 +230,6 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
     "Bước 1: Báo trước với Lễ tân sảnh Tower BS-07 hoặc qua hotline BQL 1900 8899 ít nhất 2 hours trước khi xe tải đến."
   ],
   [
-    "Kiểm tra và đối chiếu căn cước công dân với khuôn mặt cư dân trước khi kích hoạt quyền ra vào thang máy và sảnh đón",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 58 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
     "Phát hiện sự cố liên quan đến hệ thống cấp thoát nước hoặc vòi rửa. KTV chuyên trách Cơ Điện & Nước sẽ đến hỗ trợ.",
     "Phát hiện incident liên quan đến hệ thống cấp thoát nước hoặc vòi rửa. KTV chuyên trách Cơ Điện & Nước sẽ đến hỗ trợ."
   ],
@@ -278,7 +238,7 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
     "Gas R32 tiết kiệm điện 65%, công nghệ lọc ion Streamer diệt 99% vi khuẩn, điều khiển temperature độc lập từng phòng."
   ],
   [
-    "1. Quý khách vui lòng xuất trình mã QR này tại Bàn Lễ Tân / Chốt An Ninh Chung Cư để làm thủ tục vào chung cư.\\\n",
+    "1. Quý khách vui lòng xuất trình mã QR này tại Bàn Lễ Tân / Chốt An Ninh Chung Cư để làm thủ tục vào chung cư.\\",
     "1. Please present this QR code at the Reception Desk / Apartment Security Checkpoint for entry procedures."
   ],
   [
@@ -290,20 +250,12 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
     "Dàn lạnh air conditioner chảy nước nhỏ giọt xuống sàn gỗ và độ lạnh kém, cần KTV kiểm tra thông ống xả và kiểm tra gas."
   ],
   [
-    "1. Quý khách vui lòng xuất trình mã QR này tại Bàn Lễ Tân / Chốt An Ninh Chung Cư để làm thủ tục vào chung cư.\\n",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 27 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
     "Hòm thư bưu điện riêng cho từng căn hộ (T1 đến T34) và hệ thống tủ gửi đồ thông minh mở bằng mã QR hoặc mã OTP.",
     "Hòm thư bưu điện riêng cho từng Unit hộ (T1 đến T34) và hệ thống tủ gửi đồ smart mở bằng QR code hoặc mã OTP."
   ],
   [
     "Không thể kết nối đến máy chủ AI. Quý cư dân vui lòng kiểm tra kết nối mạng hoặc liên hệ Hotline BQL 1900 8899.",
     "Không thể kết nối đến máy chủ AI. Quý resident vui lòng kiểm tra kết nối mạng hoặc liên hệ Hotline BQL 1900 8899."
-  ],
-  [
-    "Camera đang bị ứng dụng khác (Zoom, Teams, Google Meet...) chiếm dụng. Vui lòng tắt các ứng dụng đó rồi thử lại",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 50 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
   ],
   [
     "Quy định giờ yên tĩnh sinh hoạt, lịch thi công khoan đục sửa chữa và chế tài xử lý vi phạm tiếng ồn chung cư.",
@@ -314,14 +266,6 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
     "Wonders of Southeast Asia's largest 36-hectare riverside park with natural white sand beach, 15 theme parks in a row"
   ],
   [
-    "'Ảnh chụp CCCD bị lóa sáng/mờ nét, vui lòng chụp lại rõ nét');\n  const [revokingId, setRevokingId] = useState",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 58 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Ảnh tải lên là ảnh dọc (tỷ lệ :1). Thẻ CCCD phải là ảnh chụp ngang bao gồm đủ 4 góc thẻ (tỷ lệ chuẩn ~1.58:1)",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 49 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
     "Hệ sinh thái giáo dục chuẩn Cambridge từ mầm non đến THPT, hệ thống xe buýt trường đón trả an toàn tại sảnh.",
     "Hệ sinh thái giáo dục chuẩn Cambridge từ mầm non đến THPT, hệ thống xe buýt trường đón trả safety tại sảnh."
   ],
@@ -330,28 +274,12 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
     "Chấm điểm sức khỏe device / appliance (Health Score 0-100) và phát hiện rung lắc bạc đạn Thang máy trước khi chết máy."
   ],
   [
-    "Dữ liệu định danh pháp lý và sinh trắc học dùng để cấp quyền mở cửa sảnh đón, thang máy và tiện ích chung cư",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 40 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Kính Low-E cản nhiệt 95%, cản tia UV 99%, cách âm 45dB triệt tiêu tiếng ồn đô thị, khung nhôm cầu cách nhiệt",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 38 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
     "Vị trí tủ điện Aptomat tổng, van khóa nước sạch hành lang, kịch bản ứng phó khi có chuông báo cháy tòa nhà.",
     "Vị trí tủ điện Aptomat tổng, van khóa nước sạch hành lang, kịch bản ứng phó khi có chuông báo cháy Tower nhà."
   ],
   [
     "Không gian sinh hoạt trung tâm kết nối trực tiếp ban công, bàn ăn, đèn âm trần và điều hòa Daikin Inverter.",
     "Không gian sinh hoạt trung tâm kết nối trực tiếp ban công, bàn ăn, đèn âm trần và air conditioner Daikin Inverter."
-  ],
-  [
-    "Khung giờ cho phép chuyển đồ nặng cồng kềnh, quy định bọc lót chống trầy và thủ tục đặt lịch thang máy hàng",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 37 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Mã QR dùng để khách quét qua sảnh lễ tân và thang máy lên căn hộ. Hàng shipper vui lòng gửi tại sảnh lễ tân",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 26 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
   ],
   [
     "Quy chuẩn đăng ký thú nuôi với BQL, bắt buộc xích và rọ mõm nơi công cộng, di chuyển bằng thang hàng PCCC.",
@@ -368,10 +296,6 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
   [
     "Trung tâm thương mại theo mô hình Life-Design Mall lớn nhất miền Nam với 5 tầng quy tụ hơn 140 thương hiệu",
     "The largest Life-Design Mall in the South with 5 floors gathering more than 140 brands"
-  ],
-  [
-    "Đã kích hoạt sinh trắc học FaceID và nạp dữ liệu nhận diện vào Camera AI cổng Barrier và Thang máy toà nhà",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 57 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
   ],
   [
     "Khóa thông minh FaceID, Đèn phòng khách, Điều hòa Daikin Inverter 24°C, Rèm cửa tự động, Cảm biến nước AI",
@@ -396,18 +320,6 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
   [
     "Bến đỗ du thuyền sang trọng bên dòng sông Tắc và sông Đồng Nai lộng gió, điểm check-in hoàng hôn thơ mộng",
     "Luxury marina on the windswept Tac River and Dong Nai River, romantic sunset check-in point"
-  ],
-  [
-    "Không thể kết nối đến máy chủ AI. Quý cư dân vui lòng kiểm tra kết nối hoặc liên hệ Hotline BQL 1900 8899",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 51 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Hỗ trợ tra cứu quy định chung cư, phân tích rò rỉ hóa đơn, đặt lịch tiện ích và giải đáp thắc mắc cho Căn",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 51 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Hãy điền thông tin bên trái để đăng ký Phòng xông hơi VIP hoặc Vườn tiệc nướng BBQ Panoramic cho gia đình",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 33 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
   ],
   [
     "được sử dụng tất cả tiện ích thông qua hạn mức thẻ cư dân thông minh và quét FaceID tự động tại cổng vào",
@@ -454,10 +366,6 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
     "Ống thoát sàn Room tắm thoát nước rất chậm và ứ đọng, có nguy cơ tràn nước ra ngoài sàn khi tắm giặt."
   ],
   [
-    "Giao dịch qua Cổng VNPAY Sandbox thành công! Mã chuẩn chi: # () • Số tiền: ${paidAmount.toLocaleString",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 45 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
     "Tự động đọc biển số xe ô tô tốc độ cao, đóng/mở barrier hầm B1 và quản lý sức chứa bãi đỗ thông minh.",
     "Tự động đọc biển số xe car tốc độ cao, đóng/mở barrier basement và management sức chứa bãi đỗ smart."
   ],
@@ -490,14 +398,6 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
     "The camera is being occupied by other applications (Zoom, Teams, Meet...). Please deactivate those apps and press"
   ],
   [
-    "Buổi trưa (12:00 - 13:30): Khung giờ nghỉ trưa của người già và trẻ nhỏ, nghiêm cấm mọi tiếng ồn lớn",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 37 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Không thể kết nối đến máy chủ AI. Quý cư dân vui lòng thử lại hoặc liên hệ Hotline BQL **1900 8899**",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 24 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
     "Cụm 4 tòa BS-7, BS-8, BS-9, BS-10 đang được quản lý. Sở hữu phố cọ Rodeo & bể bơi resort nhiệt đới.",
     "Cụm 4 Tower BS-7, BS-8, BS-9, BS-10 đang được management. Sở hữu phố cọ Rodeo & bể bơi resort nhiệt đới."
   ],
@@ -516,22 +416,6 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
   [
     "Biểu tượng kinh tế tài chính thế hệ mới với công nghệ IoT & FaceID, quy tụ các tập đoàn đa quốc gia",
     "New generation economic and financial icon with IoT & FaceID technology, bringing together multinational corporations"
-  ],
-  [
-    "Khai phá dữ liệu tổng thể và xuất khuyến nghị bằng văn bản (VD: Đề xuất mở thêm slot BBQ cuối tuần)",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 34 MINUTES 02 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Gõ câu hỏi bất kỳ, Trợ lý AI sẽ trích dẫn điều khoản chính xác theo quy chuẩn chung cư The Tropical",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 36 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "2. Nhân viên lễ tân sẽ xác thực thông tin bảo lãnh của chủ hộ và hướng dẫn Quý khách lên căn hộ .\\n",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 26 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Bạn có thể tự đặt mật khẩu mới hoặc sử dụng tính năng tạo mật khẩu ngẫu nhiên an toàn ngay bên dưới",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 25 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
   ],
   [
     "Hiểu ngữ nghĩa tự nhiên (VD: \"nhà bị rỉ nước\" -> tự động trỏ đến tạo Ticket sửa chữa ưu tiên cao).",
@@ -574,18 +458,6 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
     "Bảo dưỡng dự Room theo khuyến nghị AI: Unit chỉnh thông số kỹ thuật và tra dầu bôi trơn hệ thống"
   ],
   [
-    "Đã phân tích 15 bài thảo luận: 88% Tích cực, 08% Trung tính, 04% Góp ý • 0 bài vi phạm quy chuẩn",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 34 MINUTES 02 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Chỉ số điện hoặc nước tăng đột biến so với tháng trước. Vui lòng đối soát trước khi gửi nhắc phí",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 34 MINUTES 00 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Kỳ quan công viên 36ha với bãi cát trắng tự nhiên, công viên ánh sáng nghệ thuật và hồ sinh thái",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 54 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
     "2. Nhân viên lễ tân sẽ xác thực thông tin bảo lãnh của chủ hộ và hướng dẫn Quý khách lên căn hộ",
     "2. staff lễ tân sẽ verification thông tin sponsorship của owner và hướng dẫn Quý khách lên Unit hộ"
   ],
@@ -594,36 +466,8 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
     "Ban công rộng rãi đón gió, lan can kính cường lực safety, hệ thống rèm che tự động smart."
   ],
   [
-    "THÔNG TIN THẺ CĂN CƯỚC EXTRACTED]:\\nSố CCCD: \\nHọ tên: \\nNgày sinh: \\nGiới tính: ${d.gender ===",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 49 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
     "Trải nghiệm không gian sống xanh nhiệt đới, cụm hồ bơi resort và hạ tầng vận hành AI hiện đại.",
     "Experience lush tropical living, resort pool complex, and modern AI infrastructure."
-  ],
-  [
-    "Độ phân giải ảnh quá thấp (xpx). Yêu cầu tối thiểu 400x250px để hệ thống tự động đọc thông tin",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 49 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Sau khi cập nhật thành công, mật khẩu mới của bạn sẽ có hiệu lực đồng bộ trên toàn bộ nền tảng",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 25 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Giám sát thói quen tiêu thụ điện nước, phát hiện rò rỉ nước ngầm khung giờ 02:00 - 04:00 sáng",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 34 MINUTES 02 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Buổi tối & Đêm (sau 17:00 đến 08:00 sáng): Tuyệt đối không thực hiện khoan cắt, đục phá tường",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 37 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Âm thanh TV, dàn loa nghe nhạc, karaoke tại gia phải giữ ở mức vừa phải, dưới 55 dB sau 21:00",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 37 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Khóa van cấp nước cục bộ dưới gầm bồn rửa ngay để tránh tràn lan sàn gỗ trong khi chờ thợ đến",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 29 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
   ],
   [
     "Chữ ký số bảo mật VNPAY (Checksum) không hợp lệ. Giao dịch đã bị từ chối để đảm bảo an toàn.",
@@ -658,22 +502,6 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
     "Nằm ở sảnh đón cửa vào, phía sau tủ giày âm tường. Aptomat chống giật tự ngắt RCBO safety."
   ],
   [
-    "Vui lòng không đóng trình duyệt hoặc tải lại trang trong khi hệ thống kết nối với ngân hàng",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 41 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Trang phục: Bắt buộc mặc đồ bơi chuyên dụng; trẻ em dưới 12 tuổi phải có người lớn giám sát",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 37 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Cần giải đáp nhanh về nội quy, tiện ích hoặc quy chế tòa nhà? Quý cư dân có thể sử dụng mục",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 28 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Trung tâm thương mại Life-Design Mall lớn nhất miền Nam quy tụ hơn 140 thương hiệu quốc tế",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 54 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
     "AI tự động tra cứu nội quy và phản hồi tức thì 24/7 cho cư dân mà không cần thông qua BQL",
     "AI automatically looks up regulations and provides instant 24/7 responses to residents without needing to go through the Management Board."
   ],
@@ -684,10 +512,6 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
   [
     "Đã quét toàn bộ 34 tầng tòa BS-07: Các chỉ số điện nước nằm trong ngưỡng an toàn định mức",
     "Đã quét toàn bộ 34 tầng Tower BS-07: Các chỉ số điện nước nằm trong ngưỡng safety định mức"
-  ],
-  [
-    "Base64 theo đặc tả NKS)\n  const handleFileUploadCurrentStep = async (e: React.ChangeEvent",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 50 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
   ],
   [
     "Tổ hợp khách sạn 5 sao cao cấp phục vụ chuyên gia quốc tế và du khách nghỉ dưỡng ven hồ.",
@@ -706,14 +530,6 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
     "Đoạn hội thoại đã được làm mới! Tôi sẵn sàng lắng nghe mọi yêu cầu tra cứu từ Quý resident"
   ],
   [
-    "Ghi nhận tự động theo thời gian thực các lượt xác thực và đón tiếp khách thăm của cư dân",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 34 MINUTES 03 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "'Cục Cảnh sát QLHC về TTXH');\n  const [ekycLicensePlate, setEkycLicensePlate] = useState",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 48 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
     "Camera đang chuẩn bị khung hình. Vui lòng đợi trong giây lát hoặc bấm \"Bật lại Camera\".",
     "Camera is preparing video feed. Please wait a moment or click \"Restart Camera\"."
   ],
@@ -724,14 +540,6 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
   [
     "Xác nhận xóa sạch toàn bộ dữ liệu khách và nhật ký thử nghiệm để bắt đầu mới hoàn toàn?",
     "Confirm to wipe all guest data and test logs to start fresh?"
-  ],
-  [
-    "Bước 2: Dùng khăn ướt che mũi miệng, cúi thấp người men theo đèn chỉ dẫn EXIT hành lang",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 37 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Ban Quản Lý đã tiếp nhận ý kiến / phản ánh  và sẽ liên hệ phản hồi Quý cư dân sớm nhất!",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 29 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
   ],
   [
     "Kéo thanh trượt ngang để đối chiếu chất lượng thi công trước và sau của kỹ thuật viên.",
@@ -756,10 +564,6 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
   [
     "Bước 3: Đơn vị vận chuyển trải thảm bọc lót hành lang từ cửa thang máy đến cửa căn hộ.",
     "Bước 3: Đơn vị vận chuyển trải thảm bọc lót hành lang từ cửa thang máy đến cửa Unit hộ."
-  ],
-  [
-    "Không nuôi các giống chó săn, chó chiến đấu hung dữ (Pitbull, Doberman, Rottweiler...)",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 37 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
   ],
   [
     "Kéo thanh trượt ngang để đối chiếu chất lượng thi công trước và sau của kỹ thuật viên",
@@ -790,14 +594,6 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
     "Zone bếp nấu đảo bếp hoàn thiện đá hoa cương, vị trí bếp từ đôi và sensor rò rỉ gas."
   ],
   [
-    "Ảnh chụp thẻ CCCD quá mờ hoặc dung lượng quá nhỏ (dưới 15KB). Vui lòng tải ảnh rõ nét",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 49 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Đội ngũ kỹ sư chung cư túc trực thường trực, hỗ trợ xử lý kỹ thuật trong vòng 10 phút",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 38 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
     "18:14:15 [AI-Energy] Giám sát công tơ điện nước toàn tòa BS-07 - Hệ số an toàn 99.8%",
     "18:14:15 [AI-Energy] Monitoring all utility meters in building BS-07 - Safety factor 99.8%"
   ],
@@ -826,10 +622,6 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
     "Support screenshot of Zalo, Messenger invitation letter or invitation card photo file sent by the head of household"
   ],
   [
-    "Mỉm cười tự nhiên hoặc chớp mắt nhẹ để chứng thực người thật, chống giả mạo ảnh tĩnh",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 50 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
     "Bệnh viện đa khoa quốc tế tiêu chuẩn JCI, cấp cứu 24/7 và dịch vụ y tế chuẩn 5 sao.",
     "Bệnh viện đa khoa quốc tế standard JCI, cấp cứu 24/7 và dịch vụ y tế chuẩn 5 sao."
   ],
@@ -840,18 +632,6 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
   [
     "Phòng vệ sinh chung hoàn thiện buồng tắm kính đứng, lavabo và quạt hút gió âm trần.",
     "Room vệ sinh chung hoàn thiện buồng tắm kính đứng, lavabo và quạt hút gió âm trần."
-  ],
-  [
-    "Quét camera hoặc tải lên ảnh 2 mặt để hệ thống tự động trích xuất thông tin pháp lý",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 40 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Hệ thống đã xem ảnh hiện trường và lập hồ sơ điều phối đến tổ kỹ thuật chuyên trách",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 29 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Yêu cầu sửa chữa  đã được chuyển cho kỹ thuật viên  (${newTicket?.scheduled_time ||",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 29 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
   ],
   [
     "định danh sinh trắc học FaceID, giám sát Vision AI và trợ lý ảo AI Concierge 24/7.",
@@ -914,14 +694,6 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
     "Mô tả bối cảnh, lý do cần lấy ý kiến biểu quyết và phạm vi tác động đến resident..."
   ],
   [
-    "Đã đồng bộ thời gian thực  trạm cảm biến. Toàn bộ thiết bị đang hoạt động ổn định",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 59 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Khi chuông báo cháy reo: Dùng thang bộ thoát hiểm, TUYỆT ĐỐI KHÔNG DÙNG THANG MÁY",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 37 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
     "Dữ liệu được bảo mật an toàn và chỉ dùng nội bộ phục vụ an ninh cư dân chung cư.",
     "Data is securely protected and used solely internally for resident security within the apartment building."
   ],
@@ -946,18 +718,6 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
     "Motorbike: 120.000 VNĐ / xe / tháng (Định mức tối đa: 02 motorbike cho Unit 1PN - 2PN)."
   ],
   [
-    "Đối chiếu hiện trường trước &amp; sau sửa, ngăn ngừa ảnh giả hoặc ảnh sai vị trí",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 55 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Toàn bộ phương tiện chính thức được cấp quyền ra vào hầm B1 và B2 Chung Cư BS-07",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 53 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Thanh toán bằng thẻ nội địa NCB, Vietcombank, BIDV... qua xác thực 3D-Secure OTP",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 42 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
     "Tổng Lương = Lương Cứng + (Số ca sửa × Tiền công) + (Số ca 5⭐ × Thưởng 50.000đ)",
     "Total Salary = Base Pay + (Completed Shifts × Shift Pay) + (5⭐ Shifts × 50,000 VND Bonus)"
   ],
@@ -972,26 +732,6 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
   [
     "Vào cửa: Tự động nhận diện khuôn mặt FaceID cư dân tại cổng soát vé thông minh.",
     "Vào cửa: Tự động recognition facial FaceID resident tại cổng soát vé smart."
-  ],
-  [
-    "Vui lòng kiểm tra lại ảnh thẻ CCCD hoặc yêu cầu cư dân nộp lại chân dung rõ nét",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 57 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Bấm vào bất kỳ câu hỏi nào dưới đây để AI tự động tra cứu trong sổ tay vận hành",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 51 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Tệp tải lên không phải là định dạng hình ảnh hợp lệ (chấp nhận JPEG, PNG, WEBP)",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 49 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Thành viên đã quét đủ 4 mẫu FaceID. Vui lòng kiểm tra và duyệt để BQL kích hoạt",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 47 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Vui lòng tải ảnh chân dung hoặc thu thập FaceID 4 mẫu trước khi gửi hồ sơ duyệt",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 41 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
   ],
   [
     "Cho phép đăng nhập trực tiếp bằng camera trên trang chủ mà không cần mật khẩu.",
@@ -1014,40 +754,12 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
     "Room ngủ phụ hoàn thiện sàn gỗ tự nhiên, cửa sổ đón gió và ánh sáng tự nhiên."
   ],
   [
-    "'Vừa cập nhật');\r\n  const [apiLiveApartments, setApiLiveApartments] = useState",
-    "'Just updated');\r\n  const [apiLiveApartments, setApiLiveApartments] = useState"
-  ],
-  [
     "Bật camera để quét trực tiếp mã QR trên điện thoại của khách thăm khi đến sảnh",
     "Turn on the camera to scan the QR code directly on the visitor's phone upon arrival in the lobby"
   ],
   [
-    "VD: Vòi nước bồn rửa chén rò rỉ dưới gầm tủ, nhảy aptomat khi bật lò vi sóng..",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 28 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Mật khẩu mới phải có độ dài tối thiểu 6 ký tự (khuyến nghị từ 8 ký tự trở lên)",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 25 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
     "AI Gemini soạn thảo phản hồi thông minh, phù hợp ngữ cảnh từng yêu cầu cụ thể",
     "AI Gemini drafts smart, context-aware responses for each specific request"
-  ],
-  [
-    "Đã nghiệm thu và hoàn tất phiếu #. Hệ thống tự động ghi nhận thù lao cho KTV!",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 56 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "'Vợ / Chồng');\n  const [directLicensePlate, setDirectLicensePlate] = useState",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 48 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Thanh toán tiền mặt cho nhân viên hoặc quét QR tại chỗ khi nghiệm thu dịch vụ",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 35 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Lấy ý kiến biểu quyết về bảo trì, nâng cấp cơ sở vật chất và nội quy chung cư",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 30 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
   ],
   [
     "Không thể ghi nhận hình ảnh từ Camera. Vui lòng thử lại hoặc chọn \"Tải Ảnh\".",
@@ -1060,10 +772,6 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
   [
     "Sofa cong nghệ thuật, bàn trà đôi mặt đá và hệ thống đèn LED âm trần dịu mắt",
     "Art curved sofa, double stone coffee table and led ceiling light system to soothe eyes"
-  ],
-  [
-    "Dữ liệu khuôn mặt FaceID 4 góc độ đã được cập nhật thành công! Vui lòng nhấn",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 39 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
   ],
   [
     "Ghi chú về dự toán kinh phí, thông số kỹ thuật, hồ sơ báo giá cạnh tranh...",
@@ -1098,22 +806,6 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
     "Inter-regional transport arteries & smart electric bus network"
   ],
   [
-    "Tự do xoay, phóng to, kéo căn chỉnh khuôn mặt chuẩn nhận diện e-KYC Skyline",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 51 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Tốc độ lưu thông tối đa trong tầng hầm: 10 km/h. Bắt buộc bật đèn chiếu gần",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 37 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Đặt dịch vụ tận phòng: dọn dẹp, giặt ủi, rửa xe, giao đồ ăn và trị liệu spa",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 36 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Mỗi căn hộ tương ứng với 01 lá phiếu hợp lệ có tính pháp lý theo Luật Nhà Ở",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 30 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
     "Ban Quản Lý đang xác minh và kiểm tra hiện trường để gửi văn bản phản hồi.",
     "The Management Board is verifying and inspecting the site to provide a written response."
   ],
@@ -1134,36 +826,12 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
     "White sand landscape lake, artificial beach and 15 continuous theme parks"
   ],
   [
-    "Không thể kích hoạt webcam laptop. Vui lòng thử lại hoặc tải ảnh trực tiếp",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 50 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Khuôn mặt đã được phân tích đầy đủ các góc nhìn trắc diện và xác thực sống",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 49 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "QUY TẮC SỐNG CÒN: TUYỆT ĐỐI KHÔNG SỬ DỤNG THANG MÁY KHI CÓ CHUÔNG BÁO CHÁY",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 37 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Toàn quyền thay đổi mật khẩu và sử dụng trình tạo mật khẩu tự động an toàn",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 25 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
     "Theo dõi và xử lý sự cố thiết bị căn hộ toàn khu 4 chung cư The Tropical.",
     "Monitor and resolve appliance incidents across all 4 towers of The Tropical."
   ],
   [
     "Hồ bơi nhiệt đới resort: Mở cửa 6:00 - 21:00 hàng ngày (Nhận diện FaceID)",
     "Hồ bơi nhiệt đới resort: Mở cửa 6:00 - 21:00 hàng ngày (recognition FaceID)"
-  ],
-  [
-    "Hồ sơ sẽ được chuyển tới Bàn Thẩm Định e-KYC của Ban Quản Lý ngay lập tức",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 46 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Dữ liệu ghi nhận tự động theo thời gian thực khi cư dân qua cổng tiện ích",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 32 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
   ],
   [
     "Phân tầng thang máy bảo mật và camera Vision AI quét biển số xe tự động.",
@@ -1206,26 +874,6 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
     "Click on the markers on the left map to see the widget details"
   ],
   [
-    "Siết ốc bu lông chân đế, bổ sung mỡ bôi trơn bạc đạn, kiểm tra dây curoa",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 58 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "VD: Đã thay gioăng cao su van xả, kiểm tra áp lực nước 2.5 bar ổn định..",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 55 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Không thể mở camera. Vui lòng cấp quyền truy cập máy ảnh cho trình duyệt",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 51 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Ảnh bị cắt xén quá dài (tỷ lệ :1). Vui lòng chụp trọn vẹn 4 góc thẻ CCCD",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 49 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Không thể trích xuất dữ liệu từ ảnh. Vui lòng thử tải lên ảnh rõ nét hơn",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 49 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
     "18:14:40 [Trợ Lý Ảo] Cư dân CH-06 hỏi \"Giờ mở hồ bơi\" -> Phản hồi 0.12s",
     "18:14:40 [Virtual Assistant] Resident CH-06 asks \"Pool opening hours\" -> Response 0.12s"
   ],
@@ -1244,18 +892,6 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
   [
     "Trung tâm thương mại lớn nhất miền Nam, cách The Tropical 2 phút dạo bộ",
     "The largest commercial center in the South, 2 minutes walk from The Tropical"
-  ],
-  [
-    "Kiến trúc xanh 3D độc đáo nằm dọc trục đại lộ mua sắm Manhattan sầm uất",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 54 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Vui lòng tải lên đầy đủ cả Mặt Trước và Mặt Sau của CCCD trước khi quét",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 49 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "'Vợ / Chồng');\n  const [newLicensePlate, setNewLicensePlate] = useState",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 48 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
   ],
   [
     "Ban công kính tràn viền kết nối trực tiếp phòng khách đón trọn gió mát",
@@ -1284,10 +920,6 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
   [
     "Trần cao 6.5m, vách kính chịu lực ngắm bầu trời và toàn cảnh thành phố",
     "6.5m high ceiling, glass wall to watch the sky and panorama of the city"
-  ],
-  [
-    "CẤM TUYỆT ĐỐI khoan đục vào Thứ 7, Chủ Nhật & Nghỉ trưa (12:00 - 13:30",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 37 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
   ],
   [
     "Hồ sơ gửi từ cư dân sẽ tự động xuất hiện tại đây theo thời gian thực.",
@@ -1322,10 +954,6 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
     "Delete all sample /junk data to work with real data"
   ],
   [
-    "✨ Chạm vào từng phòng để xem kích thước thực tế & điều khiển thiết bị",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 38 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
     "Hệ thống thang máy riêng bảo mật sinh trắc học FaceID tầng Penthouse",
     "Private elevator system with Penthouse biometric FaceID security"
   ],
@@ -1356,18 +984,6 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
   [
     "Thiết kế thông tầng Duplex trần cao 6.5m với đèn chùm pha lê cao cấp",
     "Design of 6.5m high ceiling duplex floor with high-end crystal chandeliers"
-  ],
-  [
-    "Đặt thành công mã #! Nhân viên phụ trách sẽ liên hệ xác nhận giờ hẹn",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 36 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Không thể cập nhật mật khẩu. Vui lòng kiểm tra lại mật khẩu hiện tại",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 25 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Xác thực quyền sở hữu tài khoản trước khi thực hiện đổi mật khẩu mới",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 25 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
   ],
   [
     "Hiện chưa có thành viên nào khác đăng ký cùng cư trú (Chỉ có Chủ Hộ",
@@ -1404,14 +1020,6 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
   [
     "View triệu đô Panorama 360° ôm trọn sông Đồng Nai và toàn thành phố",
     "Panorama 360° view embracing Dong Nai River and the whole city"
-  ],
-  [
-    "Đặt thành công mã #! Chi phí ${newBooking.totalPrice.toLocaleString",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 36 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Yêu cầu sửa chữa  đã được tiếp nhận và chuyển tới đội ngũ kỹ thuật!",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 29 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
   ],
   [
     "Sự Giao Thoa Giữa Nghệ Thuật Kiến Trúc Tối Giản Và Vận Hành Số Hóa",
@@ -1462,22 +1070,6 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
     "Optimal 2-bedroom design fills every corner with natural light"
   ],
   [
-    "Đã phê duyệt hồ sơ e-KYC của  & Kích hoạt quyền FaceID thành công!",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 58 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "'TP. Hồ Chí Minh');\n  const [ekycIdDate, setEkycIdDate] = useState",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 48 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "✓ Đã thu thập đủ 4 mẫu FaceID cho ! Hồ sơ đang chờ Chủ Hộ xác nhận",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 45 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "\\n• Khung giờ hẹn: \\n• SĐT liên hệ tại căn: ${finalContactPhone ||",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 29 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
     "18:14:02 [AI-Vision] Giám sát 24 luồng CCTV Hầm B1 - Độ trễ: 18ms",
     "18:14:02 [AI-Vision] Monitoring 24 CCTV streams B1 Basement - Latency: 18ms"
   ],
@@ -1518,22 +1110,6 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
     "Getting image from Camera failed. Please try again or select"
   ],
   [
-    "Đạt Tiêu Chuẩn Xác Thực &amp; Đủ Điều Kiện Kích Hoạt Quyền Ra Vào",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 57 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Dữ liệu chuẩn NKS SCRMAI & Quy hoạch The Tropical (Beverly Solari",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 51 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Đã xảy ra lỗi trong quá trình tiếp nhận dữ liệu phản hồi từ VNPAY",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 45 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Chỉ được khoan đục: Thứ 2 đến Thứ 6 (8:00 - 11:30 & 13:30 - 17:00",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 37 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
     "Ban Quản Lý đang kiểm tra hiện trường & lập phương án giải quyết",
     "Management is inspecting the site and formulating a solution"
   ],
@@ -1566,22 +1142,6 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
     "Staff an ninh sẽ verification thông tin và hướng dẫn lên Unit hộ."
   ],
   [
-    "Tệp tải lên không phải là ảnh hợp lệ (chấp nhận JPEG, PNG, WEBP)",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 48 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "✓ Đã hủy phân quyền cư trú & thu hồi quyền FaceID của thành viên",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 47 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Nhấn lưu để đồng bộ thông tin liên hệ và biển số xe ngay lập tức",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 40 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "🎉 BÍP! Cổng kiểm soát  đã mở tự động (0.28s). Xin chào cư dân !",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 34 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
     "Chủ hộ toàn quyền cấp phát FaceID và quản lý thành viên cư trú.",
     "Owners have full authority to grant FaceID and manage resident members."
   ],
@@ -1608,34 +1168,6 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
   [
     "Vui lòng chọn một căn hộ trên mô hình để xem thông tin chi tiết",
     "Please select an apartment on the model to view the details"
-  ],
-  [
-    "Vui lòng chọn hoặc tra cứu một tài khoản hợp lệ từ hệ thống API",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 47 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "vào Căn hộ ! Bạn có thể tiến hành quét FaceID và chụp CCCD ngay",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 47 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Quét mã trực tiếp qua 35+ ứng dụng Mobile Banking hoặc Ví VNPAY",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 42 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Xác thực thành công bằng  tại cổng kiểm soát  () • Cổng mở 0.3s",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 34 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Vui lòng chọn một cuộc biểu quyết bên danh sách để xem chi tiết",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 30 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Thời gian thu gom rác tại các tầng và quy định vứt rác thế nào?",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 29 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "'Gian bếp');\n  const [urgencyLevel, setUrgencyLevel] = useState",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 29 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
   ],
   [
     "Bếp từ âm Hafele, mặt đá cao cấp và khu giặt sấy thông thoáng.",
@@ -1670,30 +1202,6 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
     "Please allow the Camera permission on the browser if required"
   ],
   [
-    "có thể sử dụng ngay thông tin sau để đăng nhập vào Cổng Cư Dân",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 34 MINUTES 00 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Ảnh chụp CCCD bị mờ/lóa sáng/mất góc, vui lòng chụp lại rõ nét",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 56 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Tủ Aptomat RCBO chống giật: Phía sau tủ giày âm tường sảnh vào",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 37 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Trợ Lý AI Skyline Concierge • Giải Đáp Nội Quy & Sổ Tay Cư Dân",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 36 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Không tìm thấy cuộc biểu quyết nào phù hợp với bộ lọc hiện tại",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 30 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Vui lòng điền thông tin khách thăm ở biểu mẫu bên trái và nhấn",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 26 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
     "08:00 - 20:00). Minh bạch hồ sơ pháp lý, không qua trung gian",
     "08:00 - 20:00). Transparent legal records, no intermediaries"
   ],
@@ -1720,22 +1228,6 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
   [
     "Số điện thoại chưa tồn tại trong cơ sở dữ liệu cư dân tòa nhà",
     "Phone number does not exist in building resident database"
-  ],
-  [
-    "Nhập nội dung phản hồi, xin lỗi hoặc giải pháp xử lý từ BQL..",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 54 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Không có tài khoản chờ thêm. Bạn có thể tra cứu hoặc nhập mới",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 46 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Đã xác nhận thanh toán giữ chỗ ${depositAmount.toLocaleString",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 33 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Phiếu được hệ thống tự động giải đáp • Hotline BQL: 1900 8899",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 27 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
   ],
   [
     "2. Ngân hàng phê duyệt, trừ tiền & cấp mã chuẩn chi VNPAY...",
@@ -1798,26 +1290,6 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
     "Automatic security controls • Skyline resident information security"
   ],
   [
-    "Tự động sinh biên bản kỹ thuật &amp; ảnh kiểm định đạt chuẩn",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 55 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Vui lòng thu thập đầy đủ cả 4 mẫu góc mặt trước khi xác nhận",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 50 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Độ phân giải ảnh quá thấp (xpx). Yêu cầu tối thiểu 400x250px",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 49 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Vé đã được lưu vào hệ thống kiểm soát ra vào của Ban Quản Lý",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 48 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "* Cổng thanh toán Sandbox bên ngoài (`sandbox.vnpayment.vn`)",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 42 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
     "Khu thay đồ, tắm tráng & quầy cứu hộ vận hành chuyên nghiệp",
     "Zone thay đồ, tắm tráng & quầy cứu hộ vận hành chuyên nghiệp"
   ],
@@ -1858,14 +1330,6 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
     "Bắt buộc đăng ký thú cưng với BQL và tiêm Room dại định kỳ"
   ],
   [
-    "'Vợ / Chồng');\n  const [ekycPhone, setEkycPhone] = useState",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 48 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "xác nhận bảo lãnh trước khi Ban Quản Lý phê duyệt kích hoạt",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 39 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
     "API từ xa gặp sự cố, tự động lưu hồ sơ vào bộ nhớ hệ thống",
     "Remote API Encountered an Issue, Automatically Saving Logs to System Memory"
   ],
@@ -1899,31 +1363,11 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
   ],
   [
     "Tìm nhanh dịch vụ (VD: 'sửa nước', 'hóa đơn', 'hồ bơi')...",
-    "Tìm nhanh dịch vụ (VD: 'sửa nước', 'invoice', 'hồ bơi')..."
+    "Quick search (e.g. 'plumbing', 'bill', 'pool')..."
   ],
   [
     "Tủ rượu âm tường, bếp đảo đá tự nhiên và bàn ăn sang trọng",
     "Acoustic wine cabinet, natural stone island stove and luxurious dining table"
-  ],
-  [
-    "Không tìm thấy phương tiện nào phù hợp với bộ lọc tìm kiếm",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 53 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Trình duyệt của bạn không hỗ trợ truy cập Camera trực tiếp",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 50 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Không thể chụp hình từ video. Vui lòng kiểm tra lại camera",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 50 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "} đ đã được tự động ghi nhận vào Hóa Đơn tháng này của Căn",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 36 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Chạm thẻ hoặc nhận diện FaceID để mở cổng sảnh & thang máy",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 35 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
   ],
   [
     "2. Ngân hàng phê duyệt, trừ tiền & cấp mã chuẩn chi VNPAY",
@@ -1976,50 +1420,6 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
   [
     "Nhấp trực tiếp vào tầng để mở mặt bằng tương ứng bên phải",
     "Click directly on the floor to open the corresponding floor on the right"
-  ],
-  [
-    "Đo điện trở tiếp địa rò & thử tải chuyển mạch tự động ATS",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 58 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Chọn một ảnh mẫu chuẩn phong cách Skyline Smart Residence",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 51 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Kiểm duyệt chất lượng dữ liệu: Đạt Chuẩn Ngân Hàng (99.4%",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 49 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "✨ Đã quét xong Mặt Trước! Đang tự động lật sang Mặt Sau..",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 49 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "⚠️ Hãy tải lên đủ cả Mặt Trước và Mặt Sau trước khi quét!",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 48 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Chụp thẳng mặt, rõ nét, không đeo kính râm hay khẩu trang",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 46 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Giao dịch thanh toán VNPAY không hoàn tất (Mã lỗi: ${c ||",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 45 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Gạch nợ qua Ví điện tử MoMo thành công cho Căn . Mã GD: #",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 45 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Thông tin cá nhân, căn cước công dân và bảo mật tài khoản",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 41 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Camera AI quét biển số tự động mở barie không cần dừng xe",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 37 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "✨ [SKYLINE SMART RESIDENCE] THƯ MỜI ĐÓN KHÁCH ĐIỆN TỬ ✨\\n",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 27 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
   ],
   [
     "Hệ thống khóa thông minh &amp; xác thực danh tính FaceID",
@@ -2086,18 +1486,6 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
     "24/7 Reception • Management Board • Elevator Lobby • Tunnel B1 - B2"
   ],
   [
-    "lên Ban Quản Lý thành công! Hồ sơ đang chờ BQL thẩm định",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 47 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Quẹt thẻ NFC Mifare EV3 () tại đầu đọc khóa • Đã mở chốt",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 32 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Quý khách cũng có thể đọc mã PIN  cho lễ tân nếu cần).\\n",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 26 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
     "Chưa có phiếu sửa chữa nào được nghiệm thu kèm hình ảnh",
     "No repair tickets approved with images yet"
   ],
@@ -2112,22 +1500,6 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
   [
     "Mở Cửa Sảnh Đón, Thang Máy Tầng 12, Đăng Nhập Tài Khoản",
     "Mở Cửa Sảnh Đón, Thang Máy Floor 12, Đăng Nhập Tài Khoản"
-  ],
-  [
-    "Đã xuất Lệnh Bảo Trì Kỹ Thuật cho hệ thống  ra file PDF",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 59 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Xác Thực Căn Cước Công Dân &amp; Kích Hoạt Quyền Ra Vào",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 58 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Vui lòng nhập số điện thoại hợp lệ (tối thiểu 9 chữ số)",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 47 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "} VNĐ. Hóa đơn căn  đã được tự động gạch nợ thành công!",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 45 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
   ],
   [
     "Đã kích hoạt quyền mở cửa sảnh & thang máy bằng FaceID",
@@ -2178,76 +1550,8 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
     "Card code is invalid or does not exist in the system!"
   ],
   [
-    "Phối cảnh phòng khách, phòng ngủ Master, bếp, ban công",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 34 MINUTES 02 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "VD: Phường Long Thạnh Mỹ, TP. Thủ Đức, TP. Hồ Chí Minh",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 34 MINUTES 01 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Hệ thống sẽ cập nhật thông tin chủ hộ vào hồ sơ căn hộ",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 34 MINUTES 00 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Ảnh chụp CCCD bị mờ/lóa sáng, vui lòng chụp lại rõ nét",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 57 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Cần Kiểm Tra: Ảnh Khuôn Mặt Chưa Khớp Hoặc Thẻ CCCD Mờ",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 57 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Bảng Đối Chiếu Thông Tin Khai Báo &amp; Trích Xuất Thẻ",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 57 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Nhấp vào biểu tượng dấu X hoặc bên ngoài khung để đóng",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 56 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Bảng Lương & Thù Lao Kỹ Thuật Viên Chung Cư (Tháng Này",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 55 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Nhấn The Beverly Solari để mở 23 tiện ích The Tropical",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 54 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Thông tin số tài khoản chuyển khoản ngân hàng BIDV BQL",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 53 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "🏊 Cụm bể bơi nhiệt đới resort có cần đặt trước không?",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 52 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Bao gồm an ninh 24/7, vệ sinh sảnh, hồ bơi & thang máy",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 44 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Căn Cước Công Dân (CCCD) & Nhận Diện Khuôn Mặt (FaceID",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 40 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Đăng ký với Đội An Ninh / BQL trước tối thiểu 02 tiếng",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 37 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Buổi chiều: 13:30 - 16:30 (Tránh giờ cao điểm tan tầm)",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 37 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Chưa có mã PIN tạm thời nào. Bấm nút trên để tạo nhanh",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 31 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Chuyên viên CSKH & Ban Quản Lý chịu trách nhiệm thụ lý",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 27 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
     "Cập nhật danh sách yêu cầu thực tế mới nhất từ cư dân",
-    "Retrieve latest resident requests"
+    "Update latest requests from residents"
   ],
   [
     "Không tìm thấy thiết bị webcam trên máy tính của bạn.",
@@ -2288,14 +1592,6 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
   [
     "🏛️ ĐẠI SẢNH CHÀO ĐÓN & DỊCH VỤ CƯ DÂN (TẦNG SẢNH / G",
     "WELCOME 🏛️ HALL & RESIDENT SERVICES (LOBBY FLOOR/ G"
-  ],
-  [
-    "✨ Đã đọc thông tin mặt trước! Đang đối soát mặt sau..",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 49 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Mật khẩu xác nhận không khớp với mật khẩu mới đã nhập",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 25 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
   ],
   [
     "AI Thẩm Định: Hiện trường đạt chuẩn kỹ thuật Skyline",
@@ -2370,18 +1666,6 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
     "Overall 271 ha • 36 ha Park • Vincom Mega Mall"
   ],
   [
-    "Đã Tải Đủ 2 Mặt — Sẵn sàng tự động đọc thông tin thẻ",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 48 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Gạch nợ tự động thành công cho Căn . Mã chuẩn chi: #",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 45 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Dịch vụ nhà hàng & cụm hồ bơi resort mở cửa mấy giờ?",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 25 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
     "1. Gửi yêu cầu xác thực sang Ngân hàng Quốc Dân NCB",
     "1. Send authentication request to National Citizen Bank (NCB)"
   ],
@@ -2419,47 +1703,11 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
   ],
   [
     "Mặt Bằng 3D Minh Bạch • Chung Cư BS-07 The Tropical",
-    "Transparent 3D Premises • Apartment BS-07 The Tropical"
+    "Transparent 3D Layout • BS-07 Tower The Tropical"
   ],
   [
     "Đã trích xuất biên lai phiếu thu căn hộ  thành công",
     "Successfully extracted apartment receipt receipt"
-  ],
-  [
-    "Đã nghiệm thu phiếu #${res.nks_id || res.id.replace",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 56 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "\\nQuê quán: \\nNơi thường trú: \\nNgày cấp: \\nNơi cấp",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 49 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "✓ Đã thu thập đủ 4 mẫu FaceID chuẩn ngân hàng cho !",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 45 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Thông Tin Thẻ Thử Nghiệm Sandbox Được VNPAY Cấp Sẵn",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 42 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "* Quẹt thẻ hoặc nhìn vào camera nhận diện để mở cửa",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 33 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Từ chối mở cửa: Thẻ NFC () đang bị TẠM KHÓA an toàn",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 32 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "📸 Đã lưu ảnh khách viếng thăm # vào bộ nhớ an toàn",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 32 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Mật khẩu mới không được trùng với mật khẩu hiện tại",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 25 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Nhập mật khẩu mới hoặc bấm [Tạo Mật Khẩu Tự Động]..",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 25 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
   ],
   [
     "Hệ thống PCCC thông minh và cảm biến nhiệt tự động",
@@ -2508,22 +1756,6 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
   [
     "Bản vẽ kiến trúc 4 khối tháp & 23 tiện ích nội khu",
     "Architectural drawing of 4 tower blocks & 23 internal utilities"
-  ],
-  [
-    "! Toàn bộ thông tin đã được tự động điền vào hồ sơ",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 48 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "✓ Đã xác nhận bảo lãnh hồ sơ FaceID cho thành viên",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 45 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Bước 2/2: Quét Mã VNPAY-QR Bằng Ứng Dụng Ngân Hàng",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 42 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Khung giờ: 8:30 - 11:30 & 13:30 - 16:30 (T2 đến T7",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 37 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
   ],
   [
     "Gửi yêu cầu kiểm tra và sửa chữa thiết bị căn hộ.",
@@ -2580,34 +1812,6 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
   [
     "Rò rỉ ống nước, mất điện, kẹt khóa cửa thông minh",
     "Water pipe leaks, power outages, smart door lock jams"
-  ],
-  [
-    "Danh Sách Phương Tiện Đăng Ký Đậu Tầng Hầm (B1/B2",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 34 MINUTES 01 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Không thể cập nhật ảnh đại diện. Vui lòng thử lại",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 51 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Số CCCD không hợp lệ (yêu cầu từ 9 đến 12 chữ số)",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 48 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Vui lòng nhập số điện thoại liên hệ của người nhà",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 47 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Bước 2/3: Chọn Ngân Hàng & Nhập Thông Tin Thẻ ATM",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 42 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Ứng Dụng Mobile Banking - Xác Nhận Chuyển Tiền QR",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 41 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "VIP VISITOR SMART PASS • HỆ THỐNG AN NINH TỰ ĐỘNG",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 26 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
   ],
   [
     "Bật / Tắt thước đo kích thước khi chạm vào phòng",
@@ -2680,34 +1884,6 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
   [
     "đã tồn tại trong hệ thống. Vui lòng chọn mã khác",
     "already exists in the system. Please select another code"
-  ],
-  [
-    "Chỉnh Sửa & Tùy Biến Ảnh Đại Diện (Avatar Studio",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 51 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Tải bảng tính CSV chi tiết từng hạng mục chi phí",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 44 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Hệ thống đã nhận phản hồi IPN từ cổng thanh toán",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 43 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Gửi Ban Quản Lý Phê Duyệt Đồng Bộ (CCCD & FaceID",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 39 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Bạn có chắc chắn muốn hủy đơn dịch vụ này không?",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 36 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Quẹt thẻ cư dân () tại đầu đọc sảnh • Cổng đã mở",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 35 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Tùy chỉnh độ dài và các bộ ký tự sinh ngẫu nhiên",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 25 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
   ],
   [
     "Chạm để lật thẻ • Dùng mở cổng sảnh & thang máy",
@@ -2786,46 +1962,6 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
     "Building Management • Reception & Hospitality Department"
   ],
   [
-    "Camera Quét Biển Số Làn Vào LPR-01 (Cổng Hầm B1",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 53 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Sổ tay hướng dẫn cư dân Skyline Smart Residence",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 51 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Hóa đơn căn  kỳ ${currentBill?.billing_month ||",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 45 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Giặt ủi, Giúp việc theo giờ, PT Gym/Bơi, Rửa xe",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 44 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Hệ thống phát hiện dòng chảy liên tục khung giờ",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 44 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "✨ Đã trích xuất thông tin từ CCCD vào biểu mẫu!",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 41 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Sổ Tay Cư Dân Điện Tử • 4 Chung Cư The Tropical",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 37 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Vui lòng cung cấp ít nhất 2 phương án bình chọn",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 30 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Tóm Tắt Báo Cáo Kỹ Thuật / Tài Chính (Tùy chọn)",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 29 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Thẻ Mời Khách Căn Hộ  - Skyline Smart Residence",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 26 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
     "Tạo mã QR cho khách quét mở sảnh và thang máy.",
     "Generate QR code for guests to unlock lobby and elevator."
   ],
@@ -2874,48 +2010,12 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
     "Trừ vào invoice sinh hoạt tháng tới của Unit hộ"
   ],
   [
-    "📍 Địa chỉ: Chung cư Skyline Smart Residence\\\n",
-    "📍 Địa chỉ: Tower Skyline Smart Residence\\\n"
+    "📍 Địa chỉ: Chung cư Skyline Smart Residence\\",
+    "📍 Địa chỉ: Tower Skyline Smart Residence\\"
   ],
   [
     "Căn hộ  ( • m²) tầm view  tại Chung Cư Skyline",
     "Apartment  ( • m²) view  at Skyline Apartment"
-  ],
-  [
-    "Vui lòng nhập số thẻ CCCD hợp lệ (9 đến 12 số)",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 34 MINUTES 01 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "AI đã hoàn tất giải đáp thông tin cho phiếu #!",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 56 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Giờ mở cửa cụm hồ bơi resort & hồ bơi chân mây",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 53 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Đang quét Chip điện tử và Ngày cấp ở Mặt Sau..",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 49 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Chụp đủ 4 góc thẻ, không lóa sáng hoặc mất góc",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 46 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Căn hộ hiện chưa có hóa đơn nào được phát hành",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 43 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Mở Trình Xác Nhận Trên Ứng Dụng Mobile Banking",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 42 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Giờ yên tĩnh: 22:00 đêm đến 06:00 sáng hôm sau",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 37 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "📍 Địa chỉ: Chung cư Skyline Smart Residence\\n",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 27 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
   ],
   [
     "Chuyên trách: Đội ngũ CSKH & Vận hành tòa nhà",
@@ -2972,66 +2072,6 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
   [
     "Nhập Nhanh Mã PIN (6 số) Hoặc Mã Vé Thẻ Khách",
     "Quickly Enter Your Pin (6 Digits) Or Guest Card Ticket Number"
-  ],
-  [
-    "Chưa phát sinh bảng kê hóa đơn cho căn hộ này",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 34 MINUTES 01 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Không thể lưu thông tin. Vui lòng thử lại sau",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 34 MINUTES 01 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Thẻ sử dụng thang máy và các tiện ích tòa nhà",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 34 MINUTES 00 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Yêu Cầu Hỗ Trợ Kỹ Thuật (Hỗ Trợ Trong 60 Phút",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 51 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "} • Đơn giá: {item.unit_price?.toLocaleString",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 44 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Chưa Kích Hoạt FaceID • Cần Thu Thập Đủ 4 Mẫu",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 39 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Đường Dây Nóng Kỹ Thuật & Dịch Vụ Cư Dân 24/7",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 38 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Khung Giờ Cấm Khoan Đục & Gây Tiếng Động Mạnh",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 37 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Bận việc gia đình đột xuất không thể tham gia",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 33 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Lịch công tác / đi xa phát sinh ngoài dự kiến",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 32 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Thay đổi kế hoạch khác cùng bạn bè/người thân",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 32 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "trên thanh menu để nhận phản hồi tức thì 24/7",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 28 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Hệ thống bảo mật 100% không lưu hồ sơ cá nhân",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 26 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Tài Khoản Tự Chủ • Quyền Đổi Mật Khẩu Cá Nhân",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 25 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "✨ Chạm vào phòng để xem kích thước Dài × Rộng",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 24 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
   ],
   [
     "(Vietcombank, BIDV, Techcombank, MB...) hoặc",
@@ -3134,58 +2174,6 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
     "Authentication successful! Guest:  • Destination: Apartment"
   ],
   [
-    "✓ Đã thu hồi căn hộ  về trạng thái Căn Trống",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 34 MINUTES 02 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Chưa ghi nhận lịch sử bảo trì cho căn hộ này",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 34 MINUTES 01 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Xác Nhận Hợp Lệ &amp; Kích Hoạt Quyền Ra Vào",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 56 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "của cư dân tại sảnh đón và thang máy toà nhà",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 56 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Đã gửi phản hồi và cập nhật KTV cho phiếu #!",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 56 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Vui lòng chọn tệp hình ảnh hợp lệ (JPG, PNG)",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 56 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "🔄 Hướng dẫn hủy vé & hoàn 100% tiền giữ chỗ",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 52 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Lỗi khi gửi dữ liệu FaceID. Vui lòng thử lại",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 50 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "2. Ảnh Chân Dung FaceID & CCCD 2 Mặt Gửi BQL",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 46 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Quyền FaceID sảnh và thang máy sẽ bị thu hồi",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 45 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "VD: Cần thêm khăn nhung, tinh dầu sả chanh..",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 33 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "VD: Cần 2 bếp nướng Weber, dụng cụ kẹp BBQ..",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 33 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Độ dài từ 8 ký tự trở lên (tối thiểu 6 ký tự",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 25 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
     "Trợ lý ảo AI Concierge giải đáp cư dân 24/7",
     "AI Concierge virtual assistant for 24/7 resident inquiries"
   ],
@@ -3266,10 +2254,6 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
     "The breakthrough of the project is the integration of a"
   ],
   [
-    "Chủ Hộ Căn ${currentUser?.apartment_code ||",
-    "Apartment Owner ${currentUser?.apartment_code ||"
-  ],
-  [
     "Hỗ trợ định dạng ảnh rõ nét (JPG, PNG, WebP",
     "Supports clear image formats (JPG, PNG, WebP"
   ],
@@ -3280,58 +2264,6 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
   [
     "Bệnh Viện Đa Khoa Quốc Tế Vinmec Grand Park",
     "Vinmec Grand Park International General Hospital"
-  ],
-  [
-    "Nhật Ký Kiểm Tra Kỹ Thuật & Bảo Trì Định Kỳ",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 34 MINUTES 01 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Đã gửi nhắc phí tới  căn hộ chưa thanh toán",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 34 MINUTES 00 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "* Chữ ký số tự động gắn kèm khi gửi văn bản",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 54 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "🧖 Tiện ích nào cần đăng ký lịch hẹn trước?",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 52 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Trợ lý Skyline đang tra cứu Sổ tay Cư dân..",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 51 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "✓ Đã gửi hồ sơ e-KYC & FaceID của người nhà",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 47 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Vui lòng kiểm tra lại thông tin và nhấn nút",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 41 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Biển Số Xe Đăng Ký (Tự Động Mở Cổng Hầm B1)",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 40 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Khung Giờ & Điều Kiện Sử Dụng Hồ Bơi Resort",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 37 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Dọn dẹp, giặt ủi, rửa xe và hỗ trợ kỹ thuật",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 36 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "⚠️ Chỉ Chủ Hộ mới có quyền kích hoạt chế độ",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 32 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "🎙️ Đã bật đàm thoại 2 chiều với chuông cửa",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 32 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Hình Ảnh Đối Chiếu Trước & Sau Khi Sửa Chữa",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 28 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
   ],
   [
     "Điều khiển căn hộ thông minh từ xa qua IoT",
@@ -3470,46 +2402,6 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
     "View: River View & Open Panorama"
   ],
   [
-    "Hồ Sơ Đã Bị Từ Chối / Yêu Cầu Cung Cấp Lại",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 57 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "BQL đã duyệt phân công KTV  xử lý phiếu #!",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 56 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Trợ Lý Ảo Thông Minh • Phục Vụ Cư Dân 24/7",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 51 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Diện tích thông thủy 73.2 m² x 10.000 đ/m²",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 45 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Lỗi kết nối máy chủ khi cập nhật thông tin",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 41 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Căn hộ  • Chung cư Skyline Smart Residence",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 40 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Đã Được Ban Quản Lý Kích Hoạt Quyền FaceID",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 39 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Hạ Tầng Mạng FTTH Cáp Quang & Wi-Fi 6 Mesh",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 38 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Cư dân hỏi về nội quy hoặc sổ tay chung cư",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 37 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Đã sao chép thư mời! Đang mở Zalo để gửi..",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 26 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
     "Chữ ký số tự động gắn kèm khi gửi văn bản",
     "Digital signature automatically attached when submitting"
   ],
@@ -3606,54 +2498,6 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
     "Residence status: Legal • e-KYC approved"
   ],
   [
-    "Mốc bắt đầu tính tiền điện tháng đầu tiên",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 34 MINUTES 00 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Vi phạm quy định vận hành an ninh toà nhà",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 56 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Vui lòng nhập đầy đủ họ và tên người thân",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 47 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Định mức bậc thang giá điện sinh hoạt EVN",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 45 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Bước 1: Chọn Phương Thức Thanh Toán VNPAY",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 42 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Đã Được BQL Phê Duyệt & Kích Hoạt 4/4 Mẫu",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 39 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Đã Lưu 4 Mẫu • Chờ Chủ Hộ Căn Hộ Xác Nhận",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 39 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Đang Chờ Ban Quản Lý Đối Soát & Phê Duyệt",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 39 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Đông Nam (Đón gió mát & view sông Sài Gòn",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 38 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Nội quy tiếng ồn, gửi xe, thú cưng & PCCC",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 36 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Đang xem ảnh và đưa ra nhận xét cho bạn..",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 28 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Chủ hộ bảo lãnh: ${activePass.hostName ||",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 26 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
     "Nhận diện khuôn mặt 3D tại mọi điểm chạm",
     "3D facial recognition at all touchpoints"
   ],
@@ -3748,94 +2592,6 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
   [
     "Đóng chi tiết tiện ích, quay về chung cư",
     "Close the utility details, return to the apartment building"
-  ],
-  [
-    "Dùng làm tài khoản đăng nhập Cổng Cư Dân",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 34 MINUTES 01 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Khóa cửa chính, khóa phòng, khóa hòm thư",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 34 MINUTES 00 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Ghi chú & tình trạng căn hộ khi bàn giao",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 34 MINUTES 00 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Tài Khoản Đăng Nhập Cổng Cư Dân Sẵn Sàng",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 34 MINUTES 00 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Không thể tạo file PDF. Vui lòng thử lại",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 59 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Đã thu hồi quyền ra vào FaceID của hồ sơ",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 58 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Không thể đọc file ảnh. Vui lòng thử lại",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 56 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Lumière Boulevard & Masteri Centre Point",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 54 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "🔑 Tạo mã số tạm thời cho khách đến chơi",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 51 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Vui lòng nhập đầy đủ họ và tên người nhà",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 47 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "đã quét 4 mẫu FaceID • Chờ duyệt gửi BQL",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 47 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "và gửi Ban Quản Lý phê duyệt thành công!",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 45 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Gói Fiber 300Mbps chuyên biệt Smart Home",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 44 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Hệ thống cấp thoát nước ổn định (6.2 Bar",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 38 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Hệ Kính Hộp 3 Lớp Low-E Cách Âm Chống UV",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 38 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Hôm nay thứ 7 có được khoan tường không?",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 36 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "🎉 Đặt chỗ thành công! Mã vé điện tử: []",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 34 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "🔢 Đã tạo mã OTP: [] (Hạn dùng  phút cho",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 32 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "⏳ Thời hạn hiệu lực: Đến  ngày  ( giờ)\\n",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 27 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Đã sao chép thư mời! Đang mở Messenger..",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 26 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Tải ảnh thẻ mời VIP định dạng PNG về máy",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 26 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Mô phỏng đóng hoặc hé mở cánh cửa vật lý",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 23 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
   ],
   [
     "BQL tiếp nhận và bố trí nhân sự phục vụ",
@@ -3946,66 +2702,6 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
     "Pickup card issued successfully! Pin"
   ],
   [
-    "Kích hoạt tài khoản Cổng Cư Dân tự động",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 34 MINUTES 00 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "🏊 Các tiện ích nào hoàn toàn miễn phí?",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 52 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Hỏi Đáp Trực Tuyến Cùng Skyline AI 24/7",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 51 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Xã/Phường, Quận/Huyện, Tỉnh/Thành phố..",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 48 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Chụp rõ chip điện tử, mã QR và ngày cấp",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 46 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Chưa có mẫu ảnh quét của thành viên này",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 45 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Hóa đơn căn  đã được gạch nợ thành công",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 44 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Khung Giờ Cho Phép Vận Chuyển Hàng Nặng",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 37 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Bận đột xuất không thể sắp xếp tham gia",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 34 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "🎉 Cổng  đã mở tự động cho cư dân Căn !",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 32 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "📋 Đã sao chép mã PIN [] vào bộ nhớ tạm",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 32 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "❌ TỪ CHỐI: Thẻ NFC () đang bị TẠM KHÓA!",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 32 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "💳 [BÍP] Thẻ NFC hợp lệ:  ()! Đã mở cửa",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 32 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Điểm đến: Căn hộ  •  • Chung cư Skyline",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 26 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Trợ lý Skyline đang tra cứu thông tin..",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 24 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
     "Vui lòng nhập tên đăng nhập hoặc email",
     "Please enter username or email"
   ],
@@ -4100,98 +2796,6 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
   [
     "Vinhomes Grand Park • Quy Hoạch 271 ha",
     "Vinhomes Grand Park • Planning 271 ha"
-  ],
-  [
-    "Quản Lý Cư Dân • Căn Hộ Đang Sinh Sống",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 34 MINUTES 01 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Cảnh Báo Tiêu Thụ Bất Thường (&gt; 50%",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 34 MINUTES 00 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Nhấp vào ảnh để phóng to toàn màn hình",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 57 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Ảnh chân dung chưa trùng khớp ảnh CCCD",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 56 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Chưa cung cấp đủ 2 mặt thẻ CCCD hợp lệ",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 56 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Tạm Khóa / Thu Hồi Quyền Ra Vào FaceID",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 56 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Không còn phiếu nào đang chờ tiếp nhận",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 56 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Đại Công Viên 36ha & Biển Hồ Cát Trắng",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 54 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "🎫 Kiểm tra vé tiện ích đã đặt của tôi",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 52 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "✨ Đã đọc thông tin CCCD thành công cho",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 48 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Người Nhà (Căn ) - Bảo lãnh bởi Chủ Hộ",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 47 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Lỗi kết nối khi tra cứu API người dùng",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 47 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "vào Căn hộ  theo hồ sơ API thành công!",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 47 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "mục định kỳ +  dịch vụ (Đã gồm 10% VAT",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 43 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Vui lòng nhập số thẻ ngân hàng hợp lệ!",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 42 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Xác Nhận Chuyển Tiền Bằng FaceID / PIN",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 41 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Không gian tĩnh lặng, thảm tập outdoor",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 34 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Lịch đặt đã được thanh lý theo quy chế",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 33 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Khởi Tạo Cuộc Biểu Quyết Toàn Chung Cư",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 29 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "🏠 Chủ hộ bảo lãnh: ${pass.hostName ||",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 27 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "VD: 0912 345 678 (Dùng liên hệ khi cần",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 26 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Yêu Cầu Sửa Chữa (Hỗ Trợ Trong 60 Phút",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 24 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Thu nhỏ thanh dock (không che màn hình",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 24 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
   ],
   [
     "Chuẩn Mực Sống Thượng Lưu Tích Hợp AI",
@@ -4312,90 +2916,6 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
   [
     "Đã đón tiếp và mời khách [] lên Căn !",
     "Hosted and invited [] guests to the Unit !"
-  ],
-  [
-    "18:14:40 [Trợ Lý Ảo] Cư dân CH-06 hỏi",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 34 MINUTES 03 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Thị Giác Máy Tính (Vision AI & FaceID",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 34 MINUTES 02 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Chưa đăng ký thêm thành viên gia đình",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 34 MINUTES 01 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "SKYLINE SMART RESIDENCE • BAN QUẢN LÝ",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 34 MINUTES 00 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Nội dung chỉ đạo & Checklist kỹ thuật",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 58 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Không có phiếu nào đang chờ tiếp nhận",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 56 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "💳 Chính sách hủy vé & hoàn tiền 100%",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 52 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "📷 Hướng dẫn cài FaceID cho người nhà",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 51 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Đã xảy ra lỗi khi gửi ảnh lên máy chủ",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 51 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Hoàn Tất Thu Thập 4 Mẫu Sinh Trắc Học",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 49 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Đang tự động đọc thông tin trên thẻ..",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 49 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Không tìm thấy tài khoản nào khớp với",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 47 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Cáp Quang Internet VNPT Fiber 300Mbps",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 45 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Tự Cập Nhật Dữ Liệu Khuôn Mặt (FaceID",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 39 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Nội Quy Tiếng Ồn Sinh Hoạt & Âm Thanh",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 37 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Tìm nhanh nội quy hoặc thủ tục (ví dụ",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 37 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Cụm Phía Tây (Cạnh Sân Thể Thao BS-10",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 35 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Sân Thể Thao Malibu (Tennis & Bóng Rổ",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 35 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Sức khỏe không đảm bảo, cần nghỉ ngơi",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 32 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Vui lòng nhập tiêu đề cuộc biểu quyết",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 30 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Thu gọn Menu (Hamburger Nguyên Vẹn 🍔",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 23 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
   ],
   [
     "Dịch vụ dọn dẹp vệ sinh theo yêu cầu",
@@ -4520,62 +3040,6 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
   [
     "Áp lực 2.8 bar, không ghi nhận rò rỉ",
     "Pressure 2.8 bar, no leakage recorded"
-  ],
-  [
-    "Học Máy Dự Báo (Predictive & Anomaly",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 34 MINUTES 02 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Mốc bắt đầu tính tiền nước sinh hoạt",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 34 MINUTES 00 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "xử lý bảo trì cho thiết bị  vào ngày",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 59 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Ảnh chụp CCCD bị mờ/lóa sáng/mất góc",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 56 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Phát hiện thông tin CCCD có sai lệch",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 56 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Đối Soát Cư Dân & Trạng Thái Barrier",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 53 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Thêm thành viên vào danh sách căn hộ",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 46 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Gợi Ý AI Tối Ưu Năng Lượng & Chi Phí",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 43 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "VNPAY Đang Tiến Hành Xử Lý Giao Dịch",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 41 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Thông Tin Cá Nhân & Định Danh Cư Dân",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 41 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "1. Thẻ Căn Cước Công Dân (CCCD 2 Mặt",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 40 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Trung Tâm Phân Khu (Giữa BS-08/BS-09",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 35 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "🪟 Rèm cửa tự động: ${nextCurtains ?",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 32 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Phản hồi tự động từ Hệ thống Skyline",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 27 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
   ],
   [
     "Kiến Trúc Đương Đại Tích Hợp Lõi AI",
@@ -4714,10 +3178,6 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
     "See M&E Monitoring & Equipment"
   ],
   [
-    "Căn ${currentUser.apartment_code ||",
-    "Apartment ${currentUser.apartment_code ||"
-  ],
-  [
     "Chào mừng Quản trị viên Ban Quản Lý",
     "Welcome Management Admin"
   ],
@@ -4736,74 +3196,6 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
   [
     "Hành lang lối thoát hiểm (Cột B1-08",
     "Exit corridor (Column B1-08"
-  ],
-  [
-    "Lịch Sử Đón Tiếp Khách Thăm Tòa Nhà",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 34 MINUTES 03 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "* Cần đính kèm ảnh chụp sau khi sửa",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 55 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Bệnh Viện Quốc Tế Vinmec Grand Park",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 54 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "🔊 Giờ thi công khoan đục được phép",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 52 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Lỗi chuyển đổi hình ảnh sang Base64",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 50 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Thanh phân bổ tỷ trọng tổng chi phí",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 43 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Đã Quét 4 Mẫu • Chờ Chủ Hộ Xác Nhận",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 39 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Thẻ Cư Dân Đã Kích Hoạt (Chạm Là Mở",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 39 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Eurowindow / Kính Saint-Gobain Pháp",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 38 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Vị Trí Van Khóa Nước & Tủ Điện Tổng",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 38 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Quy Chuẩn Sử Dụng Căn Hộ & Ban Công",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 38 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Không đồng ý, giữ nguyên hiện trạng",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 30 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Không có phiếu nào trong bộ lọc này",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 27 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "⭐⭐⭐⭐⭐ Xuất sắc (+50.000đ thưởng KTV",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 27 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Thời hạn hiệu lực: Đến  ngày  ( giờ",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 26 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Không thể lưu ảnh, vui lòng thử lại",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 26 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Ảnh chụp thật CCCD ${activeSide ===",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 23 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
   ],
   [
     "Đường Dây Nóng Kỹ Thuật: 1900 8899",
@@ -4970,10 +3362,6 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
     "Room riêng tư VIP • 500.000 đ/giờ"
   ],
   [
-    "❄️ Điều hòa Daikin VRV: ${nextAC ?",
-    "❄️ air conditioner Daikin VRV: ${nextAC ?"
-  ],
-  [
     "🔒 Cửa chính: ĐÃ KHÓA CHỐT AN TOÀN",
     "🔒 Cửa chính: ĐÃ KHÓA CHỐT safety"
   ],
@@ -5008,118 +3396,6 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
   [
     "Đón Tiếp &amp; Kiểm Tra Khách Thăm",
     "Welcoming & Checking in with Visitors"
-  ],
-  [
-    "Không tìm thấy bản ghi nhật ký nào",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 34 MINUTES 03 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Truy xuất thành công Sổ tay cư dân",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 34 MINUTES 03 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Xử Lý Ngôn Ngữ Tự Nhiên (NLP & RAG",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 34 MINUTES 02 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Chủ Sở Hữu / Chủ Hộ Đang Sinh Sống",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 34 MINUTES 02 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Phí trông giữ phương tiện tầng hầm",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 34 MINUTES 01 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "VD: Trần Hữu Lực, Nguyễn Văn Nam..",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 34 MINUTES 01 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Không tìm thấy hóa đơn nào phù hợp",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 59 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Giải đáp tự động từ Trợ Lý AI 24/7",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 55 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Phản Hồi Chính Thức Từ Ban Quản Lý",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 54 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "🔧 Báo Hỏng & Dịch Vụ Kỹ Thuật NKS",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 53 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Hoàn tất quét đọc thông tin 2 mặt!",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 49 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Thông Tin Đọc Được Từ Thẻ Căn Cước",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 48 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Tiện Ích Cao Cấp • Dành Cho Cư Dân",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 48 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "đã được tự động gạch nợ thành công",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 45 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Đã hoàn tất thanh toán hóa đơn này",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 43 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Tổng Chi Tiêu Tích Lũy (T05 - T08)",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 43 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Gửi Yêu Cầu Thanh Toán Đến Ví MoMo",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 41 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "2. Thông Tin Liên Hệ & Phương Tiện",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 40 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Bếp Từ Đôi & Hút Mùi Cảm Ứng Âm Tủ",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 38 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Quy Định Vận Chuyển & Dắt Thú Cưng",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 37 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Trả lời chính thức từ AI Concierge",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 36 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Ghi chú yêu cầu phục vụ (tùy chọn)",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 33 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Yêu Cầu Hoàn Tiền Khi Bận Đột Xuất",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 32 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "LIVE • SẢNH TẦNG 30 CHUNG CƯ BS-07",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 31 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Đồng ý thông qua phương án đề xuất",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 30 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Căn Cứ & Báo Cáo Kỹ Thuật Đính Kèm",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 30 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Ban Quản Trị • Khởi Tạo Biểu Quyết",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 30 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Sao chép lời mời và mở Zalo để gửi",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 26 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
   ],
   [
     "Trải Nghiệm Chuẩn Sống Thượng Lưu",
@@ -5300,54 +3576,6 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
   [
     "PIN 849201 (Căn CH-06 - Tòa BS-07",
     "BATTERY 849201 (Unit CH-06 - Building BS-07"
-  ],
-  [
-    "Bàn Giao Chìa Khóa Cho Chủ Hộ Mới",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 34 MINUTES 01 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Dùng để xác thực danh tính cư dân",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 34 MINUTES 01 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Yêu Cầu Cư Dân Cập Nhật Lại Hồ Sơ",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 56 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Mặt Sau • Chip Điện Tử & Ngày Cấp",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 48 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Bắt Đầu Đọc Thông Tin Thẻ Tự Động",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 48 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Cảnh Báo Tiêu Thụ Nước Bất Thường",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 44 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Kohler & TOTO Neorest / Mỹ - Nhật",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 38 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Tủ điện âm tường & trần thạch cao",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 38 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Tiếng Ồn & Giờ Khoan Đục Thi Công",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 37 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Sân Tennis ATP + Sân Bóng Rổ FIBA",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 35 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Góp ý kiểm soát ra vào, thang máy",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 28 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Mở rộng Menu (Hamburger Bị Cắn 🍔",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 23 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
   ],
   [
     "Bảng Điều Phối Kỹ Thuật (Kanban)",
@@ -5574,96 +3802,12 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
     "Automatically activates the radiator fan"
   ],
   [
-    "Cấp Thẻ Đón Khách Nhanh Tại Quầy",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 34 MINUTES 03 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Bàn Giao Căn Hộ • Đón Cư Dân Mới",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 34 MINUTES 01 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Nhân viên BQL phụ trách bàn giao",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 34 MINUTES 00 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "🟢 Đã Có Người Ở (Đang sinh sống",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 58 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Đã phân công KTV  xử lý phiếu #!",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 56 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Mặt tiền Phố Cọ Rodeo & Vành Đai",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 53 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "8 Đại Tiện Ích Thành Phố Biển Hồ",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 53 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Kiểm Tra Nhanh Nhận Diện Biển Số",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 53 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Sảnh • Thang máy T12 • Hầm B1/B2",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 47 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "trên điện thoại, chọn biểu tượng",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 41 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Số Điện Thoại Liên Hệ (Nhận OTP)",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 40 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Mặt Trước (Ảnh Chân Dung & 12 Số",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 39 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Skyline SmartSec / Nhập khẩu Đức",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 39 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Nội Quy Tiện Ích & Hồ Bơi Resort",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 37 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Cạnh BS-07 (Liền kề Phố Cọ Rodeo",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 35 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Xác Nhận Đặt Giữ Chỗ & Tạo Vé QR",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 33 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Chọn cách mở cửa để vào tiện ích",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 32 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Cảm Biến Tràn Nước & Van Điện Từ",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 31 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Vui lòng nhập họ tên khách thăm!",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 27 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Sao chép lời mời và mở Messenger",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 26 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Nhập mật khẩu hiện tại của bạn..",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 25 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
     "Bãi đỗ xe thông minh 2 tầng hầm",
     "2-Level Smart Underground Parking"
   ],
   [
     "Hotline An Ninh & Khẩn Cấp 24/7",
-    "24/7 Emergency & Security Hotline"
+    "24/7 Security & Emergency Hotline"
   ],
   [
     "Thuê Huấn Luyện Viên PT Bơi/Gym",
@@ -5904,90 +4048,6 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
   [
     "Thao tác tiếp đón tại chốt trực",
     "Hosting at the checkpoint"
-  ],
-  [
-    "Quét Khói Lửa & Liveness FaceID",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 34 MINUTES 02 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Kiểm Duyệt Nội Dung & Sentiment",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 34 MINUTES 02 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Quản Lý Năng Lượng & Rò Rỉ Nước",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 34 MINUTES 02 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Hoàn Tất Quét Chẩn Đoán BMS IoT",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 59 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Điểm sức khỏe AI (Health Score)",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 59 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "MẶT SAU (CHIP ĐIỆN TỬ & VÂN TAY",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 57 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Trợ Lý AI Kiểm Định Hiện Trường",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 55 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "271 ha • 10 Phân Khu Trọng Điểm",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 54 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Cụm Thể Thao Malibu & Bãi Đỗ Xe",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 53 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Quyền Hạn Kích Hoạt Sau Khi Lưu",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 49 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Miễn phí theo hạn mức sinh hoạt",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 48 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Lỗi khi gửi hồ sơ e-KYC lên BQL",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 47 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "được gửi tới điện thoại của bạn",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 42 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Cổng Thanh Toán Ví Điện Tử MoMo",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 41 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Đã Gửi BQL • Đang Chờ Phê Duyệt",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 39 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Suối Bậc Thang & Thác Cảnh Quan",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 34 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Cụm Malibu Phía Tây (Cạnh BS-10",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 34 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "VD: Mượn vợt tennis, bóng tập..",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 33 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Ý kiến nhận xét thêm (Tùy chọn)",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 27 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Đã sao chép liên kết đón khách!",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 26 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Hồ Sơ Ảnh Chụp CCCD Thật (e-KYC",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 23 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
   ],
   [
     "Nơi Chuẩn Mực Kiến Trúc Gặp Gỡ",
@@ -6274,146 +4334,6 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
     "Visitor data refreshed!"
   ],
   [
-    "Chạy Dự Báo Rung Lắc Thang Máy",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 34 MINUTES 02 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Hồ Sơ Biên Bản Bàn Giao Căn Hộ",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 34 MINUTES 01 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Email nhận thông báo & hóa đơn",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 34 MINUTES 01 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Số CCCD không trùng khớp hồ sơ",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 56 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Trung Tâm Xử Lý Yêu Cầu Cư Dân",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 56 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Tổng Quỹ Lương & Thù Lao Tháng",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 55 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Bến Du Thuyền Manhattan Island",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 54 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Quy mô: 271 ha • 44.000 căn hộ",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 54 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "TÍN HIỆU BMS: RÀO CHẮN ĐANG HẠ",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 53 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Số CCCD / Định Danh (12 số): *",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 46 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Tổng ${totalKwh.toLocaleString",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 45 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Xác Nhận Trừ Tiền & Thanh Toán",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 42 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Lưu Thay Đổi Thông Tin Liên Hệ",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 41 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "ở cuối biểu mẫu để lưu dữ liệu",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 40 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Email Nhận Hóa Đơn & Thông Báo",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 40 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Ghi Chú Căn Hộ & Lưu Ý Cho BQL",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 40 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Lưu Thay Đổi Thông Tin Cá Nhân",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 40 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Đã Phê Duyệt Căn Cước & FaceID",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 40 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Đang Chờ Ban Quản Lý Phê Duyệt",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 40 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Ban công sinh thái & PN Master",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 38 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Cổng Sảnh Chung Cư & Thang Máy",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 35 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Đăng Ký Khung Giờ (Tab Đặt Chỗ",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 34 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Hệ thống tưới nhỏ giọt tự động",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 34 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Trung Tâm Phân Khu (Ven Hồ Bơi",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 34 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Vườn Tiệc Nướng BBQ Sân Thượng",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 34 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Phương thức thanh toán giữ chỗ",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 33 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Vé này đã được hủy và thanh lý",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 33 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "🔓 Cửa chính: ĐÃ MỞ CHỐT TỪ XA",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 32 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "🔓 Đã KÍCH HOẠT lại thẻ NFC ()",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 32 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "✓ Bạn đã bỏ phiếu cho cuộc này",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 30 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "để xuất thẻ QR bảo mật thực tế",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 26 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Đổi Mật Khẩu Tài Khoản Cá Nhân",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 26 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Sinh lại chuỗi ngẫu nhiên khác",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 25 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Tiêu Chuẩn Bảo Mật Khuyến Nghị",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 25 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Độ tin cậy: 96% • Vừa ghi nhận",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 23 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
     "ĐH 26°C • Khóa cửa • Đóng rèm",
     "AC 26°C • Lock door • Close curtains"
   ],
@@ -6600,158 +4520,6 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
   [
     "Vui lòng nhập tên khách thăm!",
     "Please enter visitor name!"
-  ],
-  [
-    "Test Phân Loại Ý Định (Intent",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 34 MINUTES 02 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "sẵn sàng bàn giao cho chủ mới",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 34 MINUTES 01 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Địa chỉ thường trú / Quê quán",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 34 MINUTES 01 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Tiếp: Chìa Khóa & Điện Nước →",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 34 MINUTES 00 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Hoàn Tất Bàn Giao & Cấp Quyền",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 34 MINUTES 00 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "ĐÃ KÍCH HOẠT TÀI KHOẢN CƯ DÂN",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 34 MINUTES 00 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Tên đăng nhập (Số điện thoại)",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 34 MINUTES 00 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Cáp Quang Internet Tốc Độ Cao",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 59 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Cập Nhật Thông Tin Không Gian",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 58 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Xác Thực Cư Dân • Ban Quản Lý",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 58 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "AI Soạn Thảo Bản Thảo Trả Lời",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 55 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Không có phiếu nào đang xử lý",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 55 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Bấm để xem vị trí trên bản đồ",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 53 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Camera LPR: Nhận diện tự động",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 53 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "TÍN HIỆU BMS: MỞ CỔNG TỰ ĐỘNG",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 53 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "🏊 Giờ mở cửa hồ bơi chân mây",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 52 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Quản Lý Khóa Cửa & Thẻ Cư Dân",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 51 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Bảo Mật & Thông Tin Chính Xác",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 51 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Sao chép nội dung câu trả lời",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 51 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Xem Trước Kết Quả Chuẩn e-KYC",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 50 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "MẶT TRƯỚC]:\\n\\n\\n[MẶT SAU]:\\n",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 49 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Quét Căn Cước Công Dân (2 Mặt",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 49 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Mặt Trước • Căn Cước Công Dân",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 48 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Lỗi khi xác nhận hồ sơ FaceID",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 45 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Tổng ${totalM3.toLocaleString",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 45 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Chi Tiết Định Mức & Tiêu Dùng",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 43 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Thẻ ATM & Tài Khoản Ngân Hàng",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 42 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Mở Trang sandbox.vnpayment.vn",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 42 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Số Điện Thoại Đăng Ký Ví MoMo",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 41 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Daikin VRV-S Multi / Nhật Bản",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 38 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Diện Tích Thông Thủy: 78.5 m²",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 38 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Giữa BS-07 & BS-08 (Trung Tâm",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 34 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "🔇 Đã ngắt đàm thoại intercom",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 32 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Nhật Ký Mở Cửa Căn Hộ Gần Đây",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 31 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Trợ lý thông minh căn hộ 24/7",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 24 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Đang trực tuyến • Nhấn mở lại",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 24 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Nhập câu hỏi (Enter để gửi)..",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 24 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Kiểm tra bất thường điện nước",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 23 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
   ],
   [
     "Ban Quản Lý Chung Cư Skyline",
@@ -6952,154 +4720,6 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
   [
     "Cổng An Ninh Kiểm Soát Chính",
     "Main Control Security Gate"
-  ],
-  [
-    "VD: 51G-123.45 hoặc để trống",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 34 MINUTES 03 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Quét Biển Số Tự Động Mở Cổng",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 34 MINUTES 02 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Thông Tin Đối Soát Giao Dịch",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 59 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Kế toán duyệt / Chuyển khoản",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 59 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Ví Điện Tử MoMo (QR / Trừ ví",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 59 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "AI Dự Báo Ngày Cần Bảo Dưỡng",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 59 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Bạn có chắc muốn xóa phiếu ?",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 56 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "AI đã phân công  phiếu sự cố",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 56 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "View Trực Diện Hồ Bơi Resort",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 53 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "• Ô ${matchedVehicle.slot ||",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 53 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Danh Mục Tri Thức Thường Gặp",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 51 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "4 Góc Nhận Diện Cần Thu Thập",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 49 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Tự Động Nhận Diện Thông Minh",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 49 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Tài khoản BQL đã duyệt trước",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 46 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Tiến Trình Chi Phí Sinh Hoạt",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 43 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Mức tiêu thụ điện tháng 8 là",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 43 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "và chọn tính năng quét mã QR",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 42 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "1. Thông Tin Căn Hộ & Cư Dân",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 40 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Sinh Trắc Học FaceID (4 Bước",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 39 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Bắt Đầu Quét Mặt 4 Bước Ngay",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 39 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Kết nối liên tục 100% Online",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 38 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Quy Trình Đăng Ký Vận Chuyển",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 37 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Thẻ Chip Điện Tử Bảo Mật Cao",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 35 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Cạnh BS-09 (Phía Đông Hồ Bơi",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 35 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Đặt Sân Giữ Chỗ (Tab Đặt Chỗ",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 35 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Vào Tự Do (Trẻ Em & Gia Đình",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 34 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Liền Kề BS-07 (Trục Phía Tây",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 34 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Shophouse & Cà phê nhiệt đới",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 34 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Đăng Ký Đặt Chỗ Tiện Ích VIP",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 33 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "🎙️ Đang đàm thoại 2 chiều..",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 31 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Đầu Báo Khói & Báo Cháy PCCC",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 30 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Nhảy Aptomat tổng / Mất điện",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 29 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Nghẹt cống thoát sàn nhà tắm",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 29 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Lỗi cập nhật danh sách phiếu",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 29 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Nghiệm Thu Hình Ảnh Kỹ Thuật",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 28 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Đã mở menu chia sẻ hệ thống!",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 26 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "báo cáo bất thường điện nước",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 23 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
   ],
   [
     "Chung Cư Thông Minh Skyline",
@@ -7323,11 +4943,11 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
   ],
   [
     "Báo sửa chữa đường ống nước",
-    "Báo repair đường ống nước"
+    "Report Plumbing Repair"
   ],
   [
     "Hóa đơn điện nước tháng này",
-    "Invoice điện nước tháng này"
+    "Utility Bills This Month"
   ],
   [
     "Vui lòng nhập số điện thoại",
@@ -7372,150 +4992,6 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
   [
     "Thử nhanh với khách thực tế",
     "Quick test with real guests"
-  ],
-  [
-    "Hiểu ngữ nghĩa tự nhiên (VD",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 34 MINUTES 03 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "← Quay Lại Thông Tin Cư Dân",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 34 MINUTES 00 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Sức Khỏe Thiết Bị & Bảo Trì",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 59 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Kiểm Tra Đối Chiếu Chi Tiết",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 58 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Chưa Tải Ảnh Mặt Trước CCCD",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 57 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Chính diện • Góc nhìn thẳng",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 50 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Biển Số Xe Đăng Ký (Nếu có)",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 46 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Dùng Mẫu Ảnh FaceID Đã Quét",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 46 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "để gửi BQL kích hoạt FaceID",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 45 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Thống Kê Chi Tiêu & Dịch Vụ",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 44 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "mục định kỳ (Đã gồm 10% VAT",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 43 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Cổng VNPAY (ATM / Visa / QR",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 43 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Tỷ Trọng Dịch Vụ & Tiện Ích",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 43 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Tên In Trên Thẻ (Không Dấu)",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 42 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Tỉnh / Thành Phố Thường Trú",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 40 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Yêu Cầu Cập Nhật / Chụp Lại",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 40 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Mặt Sau (Chip Điện Tử & MRZ",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 39 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Cẩm Nang & Nội Quy Chung Cư",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 37 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Sân Yoga Ngoài Trời & Thiền",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 35 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Bóng cọ tự nhiên thoáng mát",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 34 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "View Panorama 360° toàn khu",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 34 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Sân Cỏ Đa Năng Y-01 (Malibu",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 34 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Hệ thống thoát nước tự động",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 34 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Nhà Thông Minh • App Cư Dân",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 32 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Ánh sáng vàng 2700K dịu mắt",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 31 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "View công viên The Tropical",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 31 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Cấp Mã Khách / Shipper (OTP",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 31 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Toàn bộ chiến dịch chung cư",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 30 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Cuộc biểu quyết đã kết thúc",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 30 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Rò rỉ vòi nước bồn rửa chén",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 29 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Nghẹt cống / Thoát sàn trào",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 29 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Yêu Cầu, Hỏi Đáp & Sửa Chữa",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 29 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Đã Tiếp Nhận Phiếu (Chờ BQL",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 28 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Báo Hỏng Sửa Chữa (Kỹ Thuật",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 28 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Xác nhận lại mật khẩu mới..",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 25 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Camera AI] Khói mỏng Hầm B1",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 23 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
   ],
   [
     "Đặc Quyền Nghỉ Dưỡng 5 Sao",
@@ -7767,7 +5243,7 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
   ],
   [
     "Sơ Đồ Không Gian 3D Căn Hộ",
-    "3D Apartment Space Map"
+    "3D Apartment Space Layout"
   ],
   [
     "Đặt Lịch Trên App Resident",
@@ -7808,166 +5284,6 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
   [
     "Xác Nhận Khách Rời Tòa Nhà",
     "Confirmation of Visitors Leaving the Building"
-  ],
-  [
-    "Thẻ Khách Thăm Kỹ Thuật Số",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 34 MINUTES 03 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Kiểm Tra Dòng Chảy Ban Đêm",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 34 MINUTES 02 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Thu Hồi / Cư Dân Chuyển Đi",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 34 MINUTES 02 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Hạ Tầng Kỹ Thuật • BMS IoT",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 59 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Lập Phiếu Bảo Trì Dự Phòng",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 58 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Đã nghiệm thu  phiếu sự cố",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 56 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Đang Khắc Phục Hiện Trường",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 55 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Khách Sạn Quốc Tế Vinpearl",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 54 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "🚗 Khách thăm đỗ xe ở đâu?",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 52 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "BƯỚC 2: QUAY NHẸ SANG TRÁI",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 50 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Góc nghiêng trái 20° - 30°",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 50 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "BƯỚC 3: QUAY NHẸ SANG PHẢI",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 50 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Góc nghiêng phải 20° - 30°",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 50 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Đặt Chỗ Tiện Ích Đặc Quyền",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 48 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Dịch vụ đời sống phát sinh",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 44 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Ưu Đãi Cáp Quang & Dịch Vụ",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 43 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Đang tải thông tin hồ sơ..",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 41 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Thẻ Cư Dân Điện Tử Skyline",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 39 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Báo Hỏng & Hỗ Trợ Kỹ Thuật",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 37 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Thú cưng đi thang máy nào?",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 36 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Yêu Cầu Đặc Biệt / Ghi Chú",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 35 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "✓ Đã mở Cổng & Thang máy T",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 35 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Nhận Diện Khuôn Mặt Cư Dân",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 35 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Máy tập đa năng ngoài trời",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 35 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Cụm Malibu Phía Tây (BS-10",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 35 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Cây xanh bóng mát tự nhiên",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 34 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Hệ thống thác nước tự động",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 34 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Tự do ngắm cảnh & chụp ảnh",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 34 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Chòi riêng tư, view hồ bơi",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 34 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Mái lá tự nhiên chống nắng",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 34 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Vào Cửa Tiện Ích (Check-in",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 33 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Đang Mở Cửa Vào Tiện Ích..",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 32 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Tắt toàn bộ hệ thống điện)",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 32 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "🔒 Đã TẠM KHÓA thẻ NFC ()!",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 32 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Đèn vàng dịu, rèm đóng kín",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 31 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Tỷ Lệ Cử Tri Toàn Chung Cư",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 30 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Góp Ý &amp; Khiếu Nại (BQL",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 28 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Biểu Mẫu Thay Đổi Mật Khẩu",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 25 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Nhấn để mở lại cửa sổ chat",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 24 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Thu nhỏ xuống đáy màn hình",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 24 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
   ],
   [
     "Vườn nướng BBQ ngoài trời",
@@ -8239,7 +5555,7 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
   ],
   [
     "Bản đồ an ninh & cảnh báo",
-    "Bản đồ an ninh & warning"
+    "Security Map & Alerts"
   ],
   [
     "Phòng Tắm & WC Tiêu Chuẩn",
@@ -8268,142 +5584,6 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
   [
     "Đón tiếp và mời khách vào",
     "Hosting and inviting guests in"
-  ],
-  [
-    "Tạo & Kích Hoạt Thẻ Khách",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 34 MINUTES 03 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Trí Tuệ Nhân Tạo • AI Hub",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 34 MINUTES 02 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Số CCCD / Hộ chiếu (12 số",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 34 MINUTES 01 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Số thẻ thang máy / thẻ từ",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 34 MINUTES 00 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "sẽ chuyển sang trạng thái",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 34 MINUTES 00 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Lỗi đồng bộ face profiles",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 58 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Chưa Tải Ảnh Mặt Sau CCCD",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 57 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Đã phân công  cho phiếu #",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 56 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "AI Tự Động Phân Công 24/7",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 56 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Tổng Ca Sửa Đã Nghiệm Thu",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 55 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Quảng Trường & VinWonders",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 53 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Hướng Vườn Cọ & Sân Thiền",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 53 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "🏊 Tiện Ích & Dịch Vụ NKS",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 53 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Mở Thẻ & Đăng Ký Tiện Ích",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 51 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "BƯỚC 4: MỈM CƯỜI TỰ NHIÊN",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 50 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Cục Cảnh sát QLHC về TTXH",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 49 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Đang quét Mặt Trước (%)..",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 49 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Mối Quan Hệ Với Chủ Hộ: *",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 47 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Nơi Thường Trú / Quê Quán",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 46 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Thông Báo Giao Dịch VNPAY",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 44 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Điền tự động OTP kiểm thử",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 42 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Đã Kích Hoạt Chính Thức ✓",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 39 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Bosch Series 8 / CHLB Đức",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 38 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Quy định phơi đồ ban công",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 36 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Phong cách Bờ Tây nước Mỹ",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 35 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Cảnh quan cây xanh Bờ Tây",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 34 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Không Gian Xanh Công Cộng",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 34 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "1. Chọn tiện ích muốn đặt",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 33 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Quét vé tại cổng tiện ích",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 33 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Lý do hủy lịch (tùy chọn)",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 32 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "🌡️ Nhiệt độ điều hòa: °C",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 32 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Thẻ Cư Dân NFC Mifare EV3",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 31 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Hiện Trạng Lúc Cư Dân Báo",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 27 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "🏢 Điểm đến: Căn hộ  - \\n",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 27 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
   ],
   [
     "4.000+ Cư Dân Thượng Lưu",
@@ -8710,14 +5890,6 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
     "30th Floor • Apartment BS-07"
   ],
   [
-    "Chào mừng Cư dân ${apt ?",
-    "Welcome Resident ${apt ?"
-  ],
-  [
-    "Chào mừng Chủ hộ ${apt ?",
-    "Welcome Head of Household ${apt ?"
-  ],
-  [
     "Hỗ trợ Locker: 1900.2244",
     "Locker Support: 1900.2244"
   ],
@@ -8748,122 +5920,6 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
   [
     "Trạm Kiểm Soát Hầm Xe B1",
     "B1 Vehicle Tunnel Control Station"
-  ],
-  [
-    "Tạo Khuyến Nghị Vận Hành",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 34 MINUTES 02 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Sau khi hoàn tất, căn hộ",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 34 MINUTES 00 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "✓ Đã Sao Chép Thông Tin!",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 34 MINUTES 00 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Cổng VNPAY (Thẻ ATM / QR",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 59 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Chưa có phiếu hoàn thành",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 55 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Chụp / Chọn Ảnh Sửa Xong",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 55 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "TỔNG THỰC LĨNH THÁNG NÀY",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 54 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Xem & Thanh Toán Hóa Đơn",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 51 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Hệ Thống Trực Tuyến 24/7",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 51 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Đang Đọc Thông Tin Thẻ..",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 48 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Họ và Tên (Theo CCCD): *",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 47 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Số Điện Thoại Liên Hệ: *",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 46 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Chưa Gửi Hồ Sơ Phê Duyệt",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 40 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Gửi Lại / Cập Nhật Hồ Sơ",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 39 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Đặt Lịch Dịch Vụ Skyline",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 35 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Bể Bơi Malibu California",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 35 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Vào Tự Do (Không cần thẻ",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 35 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Vườn California & Dạo Bộ",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 34 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Đăng Ký Đặt Lịch Giữ Chỗ",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 33 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Xác Nhận Hủy & Hoàn Tiền",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 32 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Đèn bật, AC 24°C, mở rèm",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 31 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Đang tiếp nhận phiếu bầu",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 30 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Rò rỉ vòi nước / Bồn rửa",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 29 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Chập điện / Nhảy Aptomat",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 29 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Cháy đèn / Đèn chập chờn",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 29 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "⏱ Tiêu chuẩn (trong ngày",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 28 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "📲 HƯỚNG DẪN TIẾP ĐÓN:\\n",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 27 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Đang Cập Nhật Mật Khẩu..",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 25 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Tự Động Đồng Bộ Hệ Thống",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 25 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
   ],
   [
     "Phân khu Beverly Solari",
@@ -9207,7 +6263,7 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
   ],
   [
     "Thiết bị nhà thông minh",
-    "Device / appliance nhà smart"
+    "Smart Home Devices"
   ],
   [
     "Phòng Ngủ Số 3 / Studio",
@@ -9240,130 +6296,6 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
   [
     "Đang quét mã QR khách..",
     "Scanning guest QR code.."
-  ],
-  [
-    "Chạy Test Truy Xuất RAG",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 34 MINUTES 03 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Mô Tả Tiện Ích Bàn Giao",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 34 MINUTES 02 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Xác Nhận Thu Hồi Căn Hộ",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 34 MINUTES 01 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Xuất Hồ Sơ Kỹ Thuật PDF",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 58 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "✓ ĐÃ KÍCH HOẠT HỆ THỐNG",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 57 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Ảnh Chân Dung Nhận Diện",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 57 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Phê Duyệt Lại Hồ Sơ Này",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 56 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Xóa phiếu khỏi hệ thống",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 55 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Chưa có ca nào hoàn tất",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 55 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Ảnh hiện trường lúc báo",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 54 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Sức Chứa Xe Máy (Hầm B1",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 53 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Đang quét Mặt Sau (%)..",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 49 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "1. Thông Tin Người Thân",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 47 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Xác nhận xóa thành viên",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 45 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Cáp Quang Internet VNPT",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 44 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Biến Động Qua Các Tháng",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 43 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Điền nhanh thẻ test NCB",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 42 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Đã Tiếp Nhận & Xác Nhận",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 36 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Bể Bơi Nhiệt Đới Resort",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 35 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Vào Tự Do (NFC / FaceID",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 35 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Chòi Nghỉ Cabana Ven Hồ",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 34 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Ven Hồ Bơi Resort BS-09",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 34 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Tổng Số Cuộc Biểu Quyết",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 30 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Các Phương Án Bình Chọn",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 30 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Tiêu Đề Cuộc Biểu Quyết",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 29 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Trợ Lý AI Phản Hồi 24/7",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 28 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Chọn nhanh chủ đề góp ý",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 28 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "KÍNH GỬI QUÝ KHÁCH THĂM",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 26 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "VD: Anh Minh, Chị Lan..",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 26 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Sao Chép Link Đón Khách",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 26 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Mở Trợ Lý Ảo Skyline AI",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 24 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
   ],
   [
     "Hồ Bơi Vô Cực Chân Mây",
@@ -9668,138 +6600,6 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
   [
     "TRUNG TÂM VẬN HÀNH BMS",
     "Operation Center"
-  ],
-  [
-    "Ổn định (Giám sát 24/7",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 34 MINUTES 02 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Trung Tâm Điều Hành AI",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 34 MINUTES 02 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Đang Chạy Mô Hình AI..",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 34 MINUTES 02 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Sổ Cái Thu Phí Dịch Vụ",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 34 MINUTES 00 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Ngày dự kiến thực hiện",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 58 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Đã từ chối hồ sơ e-KYC",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 58 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Phóng to toàn màn hình",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 54 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Biển Hồ & Hồ Ngọc Trai",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 54 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Cắt & Lưu Ảnh Đại Diện",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 50 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Tải ảnh góc này từ máy",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 49 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Đang Lưu & Gửi Hồ Sơ..",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 49 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Chọn Lại Ảnh Mặt Trước",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 48 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Đang Chờ BQL Phê Duyệt",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 47 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Hồ Sơ e-KYC Người Thân",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 47 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Độ khớp AI: 98.6% (Đạt",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 46 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "ẢNH CHÂN DUNG • FACEID",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 46 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Phí vận hành & vệ sinh",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 44 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Số Thẻ Ngân Hàng (ATM)",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 42 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Ngày Phát Hành (MM/YY)",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 42 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Nhận Diện Đã Kích Hoạt",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 41 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Tùy Chỉnh & Đổi Avatar",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 41 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Van Cấp Nước Sạch Tổng",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 38 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Chó • Mèo Có Kiểm Soát",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 37 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Đặt Lịch Tiện Ích Ngay",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 37 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Đặt Lịch Dịch Vụ Nhanh",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 36 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Âm thanh suối tự nhiên",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 34 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Số tiếng đặt phòng VIP",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 33 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Số tiền đã đặt giữ chỗ",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 32 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Thay đổi kế hoạch khác",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 32 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Đèn Ban Công Sinh Thái",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 31 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Đang Khóa • Chạm Để Mở",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 31 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Đang Mở • Chạm Để Khóa",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 31 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Đang Khóa Chốt (Bấm Mở",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 23 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
   ],
   [
     "Hệ Sinh Thái Đỉnh Cao",
@@ -10159,7 +6959,7 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
   ],
   [
     "Thẻ cư dân & tiện ích",
-    "Thẻ resident & tiện ích"
+    "Resident Pass & Amenities"
   ],
   [
     "Phòng Khách Trung Tâm",
@@ -10204,162 +7004,6 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
   [
     "Mời Khách Vào Tòa Nhà",
     "Invite guests to enter the building"
-  ],
-  [
-    "9/9 Mô Hình Hoạt Động",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 34 MINUTES 02 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "5. Lịch Sử Kỹ Thuật (",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 34 MINUTES 02 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Định Giá Bất Động Sản",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 34 MINUTES 02 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Thẻ Căn Cước Công Dân",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 57 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Xác Nhận & Báo Cư Dân",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 55 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Bến Thuyền & Thể Thao",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 53 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "BÃI ĐỖ XE HẦM B1 & B2",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 53 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Kiểm Soát Phương Tiện",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 53 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Sức Chứa Ô Tô (Hầm B2",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 53 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "CHƯA ĐĂNG KÝ VÉ THÁNG",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 53 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Bộ Sưu Tập Cư Dân VIP",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 51 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Người Nhà Tự Cập Nhật",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 50 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Xác Nhận Đặt Tiện Ích",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 48 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "THANH TOÁN THÀNH CÔNG",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 44 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Tiếp tục điền thẻ NCB",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 42 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Tiếp Tục Xác Thực OTP",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 42 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Điền OTP Test (123456",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 42 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Trừ Ví MoMo Trực Tiếp",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 41 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Nhập 6 số (VD: 686868",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 41 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Thành phố Hồ Chí Minh",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 41 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Liên Hệ & Phương Tiện",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 40 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Sẵn sàng sử dụng 220V",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 38 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Quy Chế Nuôi Thú Cưng",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 37 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Khám Phá Dịch Vụ Ngay",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 36 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Phố Cọ Rodeo & Dạo Bộ",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 34 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "} đ ( tiếng phòng VIP",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 34 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Quẹt Vé Vào Cổng Ngay",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 33 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Đèn Gian Bếp & Bàn Ăn",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 31 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "PHÁT HIỆN CHUYỂN ĐỘNG",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 31 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Sao chép mã gửi khách",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 31 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Tìm kiếm biểu quyết..",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 30 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Đã Khóa Sổ Biểu Quyết",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 30 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "✓ Đã Phản Hồi Tự Động",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 27 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "🔑 MÃ PIN TRA CỨU: \\n",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 27 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "THẺ ĐÓN KHÁCH ĐIỆN TỬ",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 26 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Nhập Lại Mật Khẩu Mới",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 25 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Mở Thẻ & Đặt Tiện Ích",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 24 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "điều khiển smart home",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 23 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Tìm nhanh dịch vụ (VD",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 23 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
   ],
   [
     "Trí Tuệ Nhân Tạo 4.0",
@@ -10434,8 +7078,8 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
     "Management Board Requests Retake Photo"
   ],
   [
-    "Kiểm Soát Khách Thăm",
-    "Visitor Control"
+    "Kiểm soát khách thăm",
+    "Visitor Access Control"
   ],
   [
     "Gợi ý thao tác nhanh",
@@ -10530,7 +7174,7 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
     "Residents & Management"
   ],
   [
-    "Diện Tích Thông Thủy",
+    "Diện tích thông thủy",
     "Carpet Area"
   ],
   [
@@ -10790,10 +7434,6 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
     "Radius: 50m - 750m"
   ],
   [
-    "Căn : ${isOccupied ?",
-    "Unit : ${isOccupied ?"
-  ],
-  [
     "Năng Lượng & Chi Phí",
     "Energy & Cost"
   ],
@@ -10812,210 +7452,6 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
   [
     "Thông Tin Khách Thăm",
     "Customer Infomation"
-  ],
-  [
-    "3. Xe Cộ & Thẻ Hầm (",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 34 MINUTES 02 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Xác Nhận Đã Thu Tiền",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 34 MINUTES 01 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Số điện ban đầu (kWh",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 34 MINUTES 00 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Đang lưu thông tin..",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 34 MINUTES 00 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Lưu Thông Tin Cư Dân",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 34 MINUTES 00 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Đã duyệt gạch nợ Căn",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 34 MINUTES 00 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Năm đưa vào vận hành",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 59 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Tổng Hồ Sơ Tiếp Nhận",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 58 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Được Chủ Hộ Bảo Lãnh",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 57 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "CHÂN DUNG CHÍNH DIỆN",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 57 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "💬 Hỏi Đáp • AI 24/7",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 55 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Tổng Lương Thực Nhận",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 55 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Đếm Ngược 3s Tự Động",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 49 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Trạng thái: Hợp Lệ ✓",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 49 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Chọn Lại Ảnh Mặt Sau",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 48 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "✓ Đã thêm thành viên",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 47 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "gửi BQL duyệt FaceID",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 47 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "VỊ TRÍ 1 • MẶT TRƯỚC",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 46 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Nhập SĐT hoặc CCCD..",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 46 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Biển Số Xe (tùy chọn",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 46 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "} kWh (TB  kWh/tháng",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 45 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Biến động bất thường",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 44 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Tổng Cộng Thanh Toán",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 44 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Nhập mã xác thực gồm",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 42 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "1. Thông Tin Cá Nhân",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 41 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Chưa cập nhật họ tên",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 41 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Nhập số điện thoại..",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 40 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Nhập địa chỉ email..",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 40 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Quét Mẫu FaceID Ngay",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 39 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Đang Mở Đón Ánh Sáng",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 38 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Hỗ trợ kỹ thuật 24/7",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 38 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Tủ Aptomat Điện Tổng",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 38 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Dịch Vụ Theo Yêu Cầu",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 36 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Di Chuyển Thông Minh",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 36 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Không Gian Công Cộng",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 34 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Tự do ra vào cả ngày",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 34 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Đăng Ký Theo Ca Tiệc",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 34 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "3. Số người tham gia",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 33 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "💡 Đèn : ${nextVal ?",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 32 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Bật tắt đèn gian bếp",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 31 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Bật tắt đèn ban công",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 31 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Phát Hành Biểu Quyết",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 29 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Gợi ý sự cố phổ biến",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 28 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "⚡ Khẩn cấp (&lt; 45p",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 28 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "📞 Số điện thoại: \\n",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 27 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Trân trọng đón tiếp!",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 26 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Chia Sẻ Mã Đến Khách",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 26 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Tạo Mật Khẩu Tự Động",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 25 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Trợ lý ảo Skyline AI",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 25 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Phối Cảnh Không Gian",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 24 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Đổi Mật Khẩu Cá Nhân",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 23 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
   ],
   [
     "Thành Viên Gia Đình",
@@ -11614,158 +8050,6 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
     "BATTERY 652190 (Wait On"
   ],
   [
-    "Biển Số Xe (Nếu có)",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 34 MINUTES 03 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "e-KYC Đã Xác Thực ✓",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 34 MINUTES 02 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "BAN QUẢN LÝ LƯU TRỮ",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 34 MINUTES 01 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Số nước ban đầu (m³",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 34 MINUTES 00 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Tài Chính • Kế Toán",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 34 MINUTES 00 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Đã Phát Hành Xong ✓",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 34 MINUTES 00 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Trạng thái hiện tại",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 59 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "⚠ Chưa Có Mặt Trước",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 57 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Đội Ngũ KTV Trực Ca",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 55 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Xác Nhận Nghiệm Thu",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 54 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Tháp Biểu Tượng 45T",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 53 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Không thể mở camera",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 48 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "VD: Nguyễn Hữu Nhựt",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 47 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Người Thân Gia Đình",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 45 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Tự động đóng sau 7s",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 44 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Hạn chót thanh toán",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 44 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Quê Quán / Nơi Sinh",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 39 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Đang Đóng Chắn Sáng",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 38 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Loại Căn: 2PN - 2WC",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 38 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Danh Mục Dịch Vụ (7",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 36 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Giúp Việc & Dọn Dẹp",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 36 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Quá giờ hẹn bắt đầu",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 33 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Mở Cửa Vào Tiện Ích",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 32 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Mô Hình 3D Xoay Lật",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 31 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Tín hiệu: Sóng mạnh",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 31 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Khách Ở Lại Qua Đêm",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 31 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Tạo Cuộc Biểu Quyết",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 30 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Mọi Loại Biểu Quyết",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 30 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "● Đang Mở Tiếp Nhận",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 30 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Xác Nhận Biểu Quyết",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 30 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Câu trả lời tự động",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 28 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "KTV Ca Trực Skyline",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 28 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Nhập SĐT tiếp thợ..",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 28 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "AI đang phân tích..",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 28 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "chưa có yêu cầu nào",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 27 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "📢 Góp Ý & Phản Ánh",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 27 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Khám Phá Từng Phòng",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 24 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Đăng Xuất Tài Khoản",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 23 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
     "Đặt Lịch Tham Quan",
     "Schedule a Tour"
   ],
@@ -11807,7 +8091,7 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
   ],
   [
     "Thẻ Cư Dân Điện Tử",
-    "Digital Resident Card"
+    "Digital Resident Pass"
   ],
   [
     "Chụp Lại Khuôn Mặt",
@@ -12270,226 +8554,6 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
     "Enable Camera Scan Code"
   ],
   [
-    "Thời Gian Hiệu Lực",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 34 MINUTES 03 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Đổi Thành Chưa Nộp",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 34 MINUTES 01 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Số lượng chìa khóa",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 34 MINUTES 00 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Thời gian ghi nhận",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 59 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Duyệt Gạch Nợ Ngay",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 59 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Đã phân công kỹ sư",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 59 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Xác Nhận Lưu Phiếu",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 58 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Xem mặt trước CCCD",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 58 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "⚠ YÊU CẦU CẬP NHẬT",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 57 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "✓ Mặt trước Đầy Đủ",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 57 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Ngày Cấp & Nơi Cấp",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 57 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Quản Lý & Vận Hành",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 56 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "📢 BQL Đang Thụ Lý",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 55 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Chọn File Ảnh Khác",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 51 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Phóng To / Thu Nhỏ",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 50 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Kết Nối Lại Camera",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 50 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "VỊ TRÍ 2 • MẶT SAU",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 46 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "VD: Nguyễn Thị Mai",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 46 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Xác Nhận & Gửi BQL",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 45 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "} m³ (TB  m³/tháng",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 45 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Đơn vị quản lý thu",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 44 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Ngày 05 hàng tháng",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 43 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Đã bao gồm 10% VAT",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 43 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Trạng thái gạch nợ",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 43 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Nơi Cấp & Ngày Cấp",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 40 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Nơi cấp / ngày cấp",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 40 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Ban Công Sinh Thái",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 38 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Trực 24/7 đối soát",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 38 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Mã định danh sổ số",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 38 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "BQL Duyệt Ban Hành",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 36 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Xem Hóa Đơn Ngay →",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 36 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Nhà Hàng & Suất Ăn",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 36 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "* Yêu cầu đặc biệt",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 36 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "📡 Đang chạm thẻ..",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 35 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Ozone xử lý • 29°C",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 35 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Sân Gym Ngoài Trời",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 35 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Hoàn toàn miễn phí",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 35 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Người đại diện đặt",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 33 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Đã quét vé vào cửa",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 33 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Tiện Ích & Dịch Vụ",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 30 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Lựa Chọn Của Bạn ✓",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 30 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Cập Nhật Lại Phiếu",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 30 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "🟡 Nên sửa hôm nay",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 28 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Sau Khi Sửa Xong ✓",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 28 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Hiện trạng lúc báo",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 27 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Kết Nối Trực Tuyến",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 27 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "⏳ Đang Phân Bổ KTV",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 27 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Đã sao chép mã PIN",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 26 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Người Dùng Skyline",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 25 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Mã Hóa NKS 256-bit",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 25 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Mở lại cửa sổ chat",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 24 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Mở rộng kích thước",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 24 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Thu nhỏ kích thước",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 24 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Sảnh Đón & Cửa Vào",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 24 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Kích thước thực tế",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 23 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
     "Triết Lý Thiết Kế",
     "Concept"
   ],
@@ -12894,8 +8958,8 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
     "Confirm Sponsorship"
   ],
   [
-    "Trạng thái FaceID",
-    "FaceID Status"
+    "Trạng Thái FaceID",
+    "FaceID Biometric Status"
   ],
   [
     "Họ tên khách thăm",
@@ -13074,222 +9138,6 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
     "Welcoming New Turns"
   ],
   [
-    "VD: Nguyễn Văn An",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 34 MINUTES 03 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Độ tin cậy: 98.6%",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 34 MINUTES 02 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Tổng Cộng Cần Thu",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 34 MINUTES 01 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Ngày nộp gần nhất",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 34 MINUTES 01 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Miễn phí bảo hành",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 34 MINUTES 01 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Mật khẩu mặc định",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 34 MINUTES 00 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Đã Gửi Nhắc Phí ✓",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 34 MINUTES 00 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Tiêu Thụ Tăng Vọt",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 59 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Đang Chờ Xác Thực",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 58 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Cục Cảnh sát QLHC",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 58 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "⚠ Chưa Có Mặt Sau",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 57 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "CẦN BỔ SUNG HỒ SƠ",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 56 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "📢 Phản Ánh • BQL",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 56 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Nội dung phản ánh",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 54 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Đặt Lại Căn Chỉnh",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 51 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Đổi Ảnh Mặt Trước",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 48 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "trên hệ thống API",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 47 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "+ Thêm thành viên",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 47 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "✓ Đã Có Chân Dung",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 46 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "✓ Đã Tự Động Điền",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 46 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Tải Lên Mặt Trước",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 46 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Người Nhà Đã Chọn",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 46 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Chỉ Số / Số Lượng",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 44 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Cố định / Định kỳ",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 44 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Thống Kê Chi Tiêu",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 44 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Tổng Chi Năm 2026",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 43 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Đủ số dư khả dụng",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 41 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Quét Thẻ Căn Cước",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 41 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Thành Viên Căn Hộ",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 41 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Không Gian Cư Trú",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 40 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Nhập tỉnh thành..",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 40 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Chưa Thu Thập Mẫu",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 39 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Thiết Kế Nội Thất",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 38 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Bảng Tin Chung Cư",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 36 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Thuê PT Bơi & Gym",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 36 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Xác Nhận Đặt Lịch",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 35 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Giao Hàng Shipper",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 31 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Bạn Bè Viếng Thăm",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 31 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Đang Mở Bình Chọn",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 30 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Ban công / Lô gia",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 29 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Góp Ý & Khiếu Nại",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 29 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "❓ Hỏi Đáp Dịch Vụ",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 27 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "⏳ BQL Đang Thụ Lý",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 27 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "✓ BQL Đã Phản Hồi",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 27 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "🚗 Biển số xe: \\n",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 27 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Đang Tạo Mã Mới..",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 26 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Ban Công & Lô Gia",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 24 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Diện tích sử dụng",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 23 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Tắt Đèn PN Master",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 23 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Bật Đèn PN Master",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 23 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Đóng Rèm Ban Công",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 23 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Đang Mở (Bấm Khóa",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 23 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Tải Ảnh Chụp Thật",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 23 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "nhà bị rò rỉ nước",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 23 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
     "Lõi Công Nghệ AI",
     "AI Technology"
   ],
@@ -13326,7 +9174,7 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
     "Back Side ID Card"
   ],
   [
-    "Phòng Ngủ Master",
+    "Phòng ngủ master",
     "Master Bedroom"
   ],
   [
@@ -13590,7 +9438,7 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
     "Resident Privileges"
   ],
   [
-    "Ban Công View Hồ",
+    "Ban công view hồ",
     "Lake View Balcony"
   ],
   [
@@ -13752,202 +9600,6 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
   [
     "Xem Thẻ &amp; QR",
     "View Cards & QR"
-  ],
-  [
-    "Ghi Chú Tiếp Đón",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 34 MINUTES 03 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Nhật Ký Xử Lý AI",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 34 MINUTES 02 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Họ và tên chủ hộ",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 34 MINUTES 01 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "In Biên Bản (PDF",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 34 MINUTES 00 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Đang Chẩn Đoán..",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 59 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Ngưỡng &lt; 65°C",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 59 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Điểm Sức Khỏe AI",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 58 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Xem mặt sau CCCD",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 57 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Cần Cập Nhật Lại",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 57 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "✓ Mặt Sau Đầy Đủ",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 57 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Trạng thái hồ sơ",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 57 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Hành động này sẽ",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 56 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "1. Chờ Tiếp Nhận",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 56 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "3. Đã Xử Lý Xong",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 55 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Phản ánh dịch vụ",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 54 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Bệnh Viện Vinmec",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 54 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Trạm VinBus Xanh",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 53 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Cảnh Quan & Vườn",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 53 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Nhập câu hỏi (VD",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 51 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Chụp Bằng Camera",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 51 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "4. Xác Thực Sống",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 49 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "MẶT TRƯỚC (Front",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 48 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Yêu Cầu Chụp Lại",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 47 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Kết Quả Tìm Thấy",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 46 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Hạng Mục Dịch Vụ",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 44 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Trung Bình Tháng",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 43 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Số tiền trích nợ",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 42 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Quay Lại Sửa Thẻ",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 42 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Cập nhật tức thì",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 40 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Đang Gửi Hồ Sơ..",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 39 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Sảnh Đón Cửa Vào",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 38 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Nghiêm Ngặt 100%",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 37 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Sổ Tay & Nội Quy",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 36 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Thời Hạn Sử Dụng",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 35 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Tiện Ích Nội Khu",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 33 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Giữ Lại Lịch Đặt",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 32 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Bật tắt kịch bản",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 31 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Quy Chế Chung Cư",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 30 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Giờ hẹn tiếp thợ",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 28 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "🔴 Cần xử lý gấp",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 28 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Hiện ${aptCode ?",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 27 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "⭐⭐ Cần cải thiện",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 27 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "⭐ Không hài lòng",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 27 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Lưu Mật Khẩu Mới",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 25 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Đóng cửa sổ chat",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 24 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Tắt Đèn Ban Công",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 23 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Bật Đèn Ban Công",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 23 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Cánh: Đang Hé Mở",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 23 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Hamburger Bị Cắn",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 23 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
   ],
   [
     "Mặt bằng căn hộ",
@@ -14408,210 +10060,6 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
   [
     "Tổng Khách Thăm",
     "Total Visitors"
-  ],
-  [
-    "✓ ĐÃ NGHIỆM THU",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 34 MINUTES 01 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "TP. Hồ Chí Minh",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 34 MINUTES 01 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "VAI TRÒ: CHỦ HỘ",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 34 MINUTES 00 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Đang Xuất PDF..",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 58 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "⏳ CHỜ THẨM ĐỊNH",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 57 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Đơn vị ký duyệt",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 54 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "PHONG CÁCH NHẬT",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 54 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Thẻ RFID / Ô đỗ",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 53 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "tiền nước rò rỉ",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 51 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Tải Ảnh Góc Này",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 50 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "2. Nghiêng Trái",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 49 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "3. Nghiêng Phải",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 49 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Quét Lại Từ Đầu",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 49 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Đổi Ảnh Mặt Sau",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 48 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Quản Trị Căn Hộ",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 47 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Tải Lên Mặt Sau",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 46 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "4 Góc Khuôn Mặt",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 45 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Thành Tiền (VNĐ",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 44 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Ví Điện Tử MoMo",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 43 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Bảng Kê Dịch Vụ",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 43 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Hoàn Tất & Đóng",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 42 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Tài khoản nguồn",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 41 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Quét Mã MoMo QR",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 41 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "3. Đổi Mật Khẩu",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 41 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Số CCCD (12 số)",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 40 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Quét Mẫu FaceID",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 39 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Chờ BQL Duyệt ⏳",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 39 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Hướng Cửa Chính",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 38 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Đội Dịch Vụ BQL",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 36 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Chuẩn Resort 5★",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 35 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Ozone lọc 3 cấp",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 35 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Trời thoáng mát",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 35 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Mật độ hiện tại",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 33 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Nhìn vào camera",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 32 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Trực Tuyến 24/7",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 32 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Ngữ Cảnh 1-Chạm",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 32 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Đóng Biểu Quyết",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 30 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Gửi Yêu Cầu Mới",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 28 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "SĐT người ở nhà",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 28 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Gửi Ban Quản Lý",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 28 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "⏳ Chờ Tiếp Nhận",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 27 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "⭐ (Xem Đánh Giá",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 27 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "👤 Kính gửi: \\n",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 27 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Mã QR Đón Khách",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 26 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Nhấn để lưu ảnh",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 26 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Độ Dài Mật Khẩu",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 25 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "✓ Khớp mật khẩu",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 25 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Tách Khối Phòng",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 24 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Mở Rèm Ban Công",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 23 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Cánh: Đóng Khít",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 23 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "quẹt thẻ hồ bơi",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 23 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
   ],
   [
     "Tiện Ích 5 Sao",
@@ -15146,170 +10594,6 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
     "Cash receipt"
   ],
   [
-    "Độ khớp: 99.2%",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 34 MINUTES 03 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Tổng Tiền (VNĐ",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 59 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Thông Thủy (m²",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 58 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "khỏi hệ thống?",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 58 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Xóa Căn Hộ Này",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 58 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Đã Kích Hoạt (",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 58 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Mặt trước CCCD",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 58 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Thời gian thực",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 57 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "AI Đề Xuất KTV",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 55 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Đang di chuyển",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 55 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "In Phiếu Lương",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 55 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Đang nạp ảnh..",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 55 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "TÂM ĐIỂM DỰ ÁN",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 54 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Hạ Tầng & Sảnh",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 53 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "bao nhiêu tầng",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 52 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Tải Ảnh Từ Máy",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 51 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Xoay & Lật Ảnh",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 50 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Bộ Lọc Màu Sắc",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 50 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Đang đếm (s)..",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 50 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Cơ Cấu Chi Phí",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 43 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Số tiền chuyển",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 41 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Người Nhà (Căn",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 41 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Chưa Gửi Hồ Sơ",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 41 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Tư Cách Cư Trú",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 40 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Quét Lại 4 Mẫu",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 39 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Đang tra cứu..",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 36 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Chăm Sóc Xe B2",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 36 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Vào Tự Do 24/7",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 35 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "✓ Đã kích hoạt",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 32 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "⏸️ Đã tạm dừng",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 32 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Bảng Thẻ Nhanh",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 31 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Ý kiến Cải tạo",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 30 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Thêm Phương Án",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 29 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Lỗi gửi ticket",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 29 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Cơ Điện & Nước",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 28 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Đang đọc ảnh..",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 28 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Nhận xét từ AI",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 28 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Khách Thăm Nhà",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 26 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Đóng hoàn toàn",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 24 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Tắt Đèn Bếp Ăn",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 23 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Bật Đèn Bếp Ăn",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 23 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
     "Kỹ thuật viên",
     "Technician"
   ],
@@ -15786,170 +11070,6 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
     "Unspecified"
   ],
   [
-    "QUÉT XÁC THỰC",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 34 MINUTES 03 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Mời Khách Vào",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 34 MINUTES 03 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Chưa cập nhật",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 34 MINUTES 01 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Ngày bàn giao",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 34 MINUTES 01 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Kế Toán Duyệt",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 59 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Duyệt Gạch Nợ",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 59 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Lỗi Xuất File",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 59 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Chẩn Đoán IoT",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 59 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Điểm sức khỏe",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 58 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Tim Tường (m²",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 58 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Cần Bổ Sung (",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 58 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Chưa cung cấp",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 57 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "2. Đang Xử Lý",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 55 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Chưa chỉ định",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 55 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Thẩm định lại",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 55 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Mặc định 100%",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 54 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Bể Bơi & Chòi",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 53 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "không cần đặt",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 52 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "bao nhiêu căn",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 52 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Khởi Động Lại",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 51 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Đang hiển thị",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 48 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "MẶT SAU (Back",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 48 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Chưa Quét Mặt",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 47 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Ngày Cấp CCCD",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 46 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Gửi BQL Duyệt",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 46 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Đang cập nhật",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 45 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "NCB (Quốc Dân",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 42 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Thẻ giao dịch",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 42 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Căn Hộ Cư Trú",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 40 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Quét Lại CCCD",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 40 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Quét Thẻ CCCD",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 40 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Tốc độ mở cửa",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 39 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Quyền áp dụng",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 39 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Giặt Ủi & Hấp",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 36 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Thời gian hẹn",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 36 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Mở cổng 0.28s",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 33 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "✓ ĐÃ CHECK-IN",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 33 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Đang Đóng Kín",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 31 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Đèn Ngủ Ấm Áp",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 31 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Thước Đo: Bật",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 24 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Thước Đo: Tắt",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 24 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
     "BQL Chung Cư",
     "Management Board"
   ],
@@ -16418,230 +11538,6 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
     "Walking / Taxi"
   ],
   [
-    "Mời Vào Ngay",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 34 MINUTES 03 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Khách Rời Đi",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 34 MINUTES 03 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Độ chính xác",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 34 MINUTES 02 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Độ trễ xử lý",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 34 MINUTES 02 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Mã định danh",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 34 MINUTES 01 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "để đăng nhập",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 34 MINUTES 00 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Gửi Nhắc Phí",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 34 MINUTES 00 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Đã Ghi Thu ✓",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 59 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Tại quầy BQL",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 59 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Độ Rung Động",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 59 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Định mức 25A",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 59 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Vận hành tốt",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 58 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Tải File PDF",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 58 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Xác Nhận Xóa",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 58 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Mặt sau CCCD",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 57 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Báo Chụp Lại",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 57 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Đã xóa phiếu",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 56 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Chỉ Định KTV",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 55 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Nội dung báo",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 55 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Sân Thể Thao",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 53 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Xem Tiện Ích",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 51 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "sửa ống nước",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 51 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Chụp Ảnh Này",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 51 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Mỉm Cười Nhé",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 50 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Độ rõ: 99.6%",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 49 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Chọn Tệp Ảnh",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 48 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Đơn Giá (VNĐ",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 44 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "tổng chi phí",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 43 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "SĐT nhận OTP",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 42 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Tài khoản ví",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 41 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "ở cuối trang",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 41 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "BQL xác nhận",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 40 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Xem Thẻ CCCD",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 39 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Đang Mở Khóa",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 38 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Đang Bật (°C",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 38 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Đang Tắt Chờ",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 38 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Xóa tìm kiếm",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 36 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Đang Phục Vụ",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 36 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Ngày Phục Vụ",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 35 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Quẹt Thẻ NFC",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 35 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "CỔNG TỰ ĐỘNG",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 33 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "CẦN ĐẶT LỊCH",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 33 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "tiền giữ chỗ",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 33 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Đang Mở 100%",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 31 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Vị trí phòng",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 28 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Đính kèm ảnh",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 28 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "🟢 Không gấp",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 28 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "⭐⭐⭐⭐ Rất tốt",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 27 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Gửi Đánh Giá",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 27 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "QR Mời Khách",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 26 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Sẵn sàng gửi",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 26 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Đã Chép Link",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 26 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Xóa Nhập Lại",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 25 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Tin nhắn mới",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 24 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Phối Cảnh 3D",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 24 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "BẾP & BÀN ĂN",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 24 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
     "Cổng Cư Dân",
     "Resident Portal"
   ],
@@ -17078,130 +11974,6 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
     "Real Residents"
   ],
   [
-    "VÀO TÒA NHÀ",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 34 MINUTES 03 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "RỜI TÒA NHÀ",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 34 MINUTES 03 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Xem Lý Lịch",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 59 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Đang Xuất..",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 58 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Hiện trường",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 54 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Đang soạn..",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 54 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Vị Trí Ô Đỗ",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 53 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Hồ Chí Minh",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 49 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Phương Tiện",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 47 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Đang Thêm..",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 46 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Đơn Vị Tính",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 44 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "So kỳ trước",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 43 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Khuyên Dùng",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 42 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Số thẻ test",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 42 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Mở ứng dụng",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 42 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "← Đổi mã QR",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 41 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "để hoàn tất",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 39 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Đóng Sổ Tay",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 38 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Đặt Gói Này",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 36 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Hủy Đơn Này",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 36 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Đang Quẹt..",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 35 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "2. Ngày đặt",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 33 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Đã Kết Thúc",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 30 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Giờ gom rác",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 29 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Lỗi đọc ảnh",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 29 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "KTV Phân bổ",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 27 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Ảnh lúc báo",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 27 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Phiếu xử lý",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 27 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Thường (a-z",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 25 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "✕ Chưa khớp",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 25 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Mặt Bằng 2D",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 24 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
     "KHÁCH THUÊ",
     "TENANT"
   ],
@@ -17455,7 +12227,7 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
   ],
   [
     "Chủ Hộ Căn",
-    "Owner Căn"
+    "Apartment Owner"
   ],
   [
     ")\\\nChủ hộ:",
@@ -17522,122 +12294,6 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
     "Registered Vehicle"
   ],
   [
-    "Thông thủy",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 34 MINUTES 02 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Đóng Hồ Sơ",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 34 MINUTES 01 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "In Hóa Đơn",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 59 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Trái (-25°",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 57 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Chính diện",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 57 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Phải (+25°",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 57 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "THANG BỘ 1",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 54 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "THANG BỘ 2",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 54 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "THƯƠNG MẠI",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 54 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "NGHỈ DƯỠNG",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 54 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "THƯỢNG LƯU",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 54 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Cách BS-07",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 53 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Đang Lưu..",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 50 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Đã Tải Lên",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 48 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Chưa e-KYC",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 47 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Duyệt Ngay",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 47 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Mặt có ảnh",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 46 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Đang Gửi..",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 46 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Đang Xóa..",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 45 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "1 chưa nộp",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 44 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Cổng VNPAY",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 42 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Quét Nhanh",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 42 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Ngày / OTP",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 42 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "← Quay lại",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 42 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Môi trường",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 33 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Đã giữ chỗ",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 33 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Cửa ra vào",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 29 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Xoay 90 độ",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 23 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "(Người Nhà",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 23 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
     "Trang Chủ",
     "Home"
   ],
@@ -17646,11 +12302,11 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
     "Overview"
   ],
   [
-    "Đăng Nhập",
+    "Đăng nhập",
     "Sign In"
   ],
   [
-    "Đăng Xuất",
+    "Đăng xuất",
     "Sign Out"
   ],
   [
@@ -17670,7 +12326,7 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
     "QUICK SEARCH"
   ],
   [
-    "Thông Báo",
+    "Thông báo",
     "Notifications"
   ],
   [
@@ -18030,144 +12686,8 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
     "Visitors"
   ],
   [
-    "Công thức",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 55 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Đang Rảnh",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 55 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Xem Phiếu",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 55 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "CẢNH QUAN",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 54 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "TÀI CHÍNH",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 54 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Phân Loại",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 53 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "đặt trước",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 53 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "hẹn trước",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 52 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
     "người nhà",
     "Family Member"
-  ],
-  [
-    "Lật Ngang",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 50 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Tươi Sáng",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 50 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Trắng Đen",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 50 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Quay Trái",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 50 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Quay Phải",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 50 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Khung giờ",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 48 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Kích Hoạt",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 48 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Nhân Khẩu",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 47 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Cần duyệt",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 47 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Đã FaceID",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 47 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "4/4 Mẫu ✓",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 47 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Chụp Ngay",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 46 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Đã Chọn ✓",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 46 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "thuộc căn",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 45 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Xóa Quyền",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 45 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Sản Lượng",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 43 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Ngân hàng",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 42 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Quảng Trị",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 39 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "chuyển đồ",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 37 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Phân Tầng",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 35 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Điện Năng",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 32 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Đàm Thoại",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 31 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Phương án",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 29 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "⚡ Cần gấp",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 28 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Chưa nhập",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 25 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Đóng menu",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 23 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
   ],
   [
     "Mật khẩu",
@@ -18538,194 +13058,6 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
     "ENTER PIN"
   ],
   [
-    "Vãng lai",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 34 MINUTES 03 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Không có",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 34 MINUTES 03 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Thời Hạn",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 34 MINUTES 03 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Cấp bách",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 59 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Kiểm Tra",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 57 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Nội dung",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 55 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "SÔI ĐỘNG",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 54 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Quét Thử",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 53 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "tính phí",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 52 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "miễn phí",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 52 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "mỗi tầng",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 52 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "tầng hầm",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 52 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "xông hơi",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 52 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "lịch đặt",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 52 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Tự Nhiên",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 50 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Chụp Lại",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 49 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Nhập Mới",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 46 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Quét Lại",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 45 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "xe/tháng",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 44 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Chưa đặt",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 44 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Ngày Lập",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 44 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Xuất CSV",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 44 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Số lượng",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 44 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Đã Nộp ✓",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 43 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Tổng Chi",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 43 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Tỷ Trọng",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 43 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Thẻ Test",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 42 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Ví VNPAY",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 42 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Vị Trí 1",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 39 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Vị Trí 2",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 39 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Mỉm cười",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 39 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "thú cưng",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 37 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "van nước",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 36 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Gian Bếp",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 32 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Ngắt Mic",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 31 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Pin khóa",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 31 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Quẹt Thử",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 31 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Tạm Khóa",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 31 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "mất điện",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 29 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Phản ánh",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 29 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Góp ý về",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 28 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Chép PIN",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 26 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Khá mạnh",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 25 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Tùy Chọn",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 25 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "ống nước",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 24 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "⚠️ HÉ MỞ",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 24 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Tăng 1°C",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 23 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
     "Chi phí",
     "Cost"
   ],
@@ -19038,122 +13370,6 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
     "Today"
   ],
   [
-    "Hủy Thẻ",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 34 MINUTES 03 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Chờ Thu",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 59 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Thu hồi",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 57 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Mẫu góc",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 57 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "đăng ký",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 52 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "giữ chỗ",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 52 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "biển số",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 51 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Đã chép",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 51 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Đã chọn",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 46 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Vai trò",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 46 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Quan hệ",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 45 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Ổn định",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 44 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Cố định",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 44 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Số tiền",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 44 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Chờ Nộp",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 43 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Đơn Giá",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 43 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Định Kỳ",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 43 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Ví MoMo",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 41 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Quét Mã",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 41 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Đã Hiểu",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 40 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Xem Thẻ",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 40 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Lật Thẻ",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 35 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Đi Vắng",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 31 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Qua đêm",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 31 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Bị Khóa",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 31 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Tiến độ",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 30 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Số (0-9",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 25 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Xóa chữ",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 24 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "(Chủ Hộ",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 23 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
     "Chủ hộ",
     "Apartment Owner"
   ],
@@ -19338,70 +13554,6 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
     "QR Tab"
   ],
   [
-    "Đã Thu",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 34 MINUTES 00 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "quy mô",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 52 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "đã đặt",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 52 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "chuông",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 51 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Mát Mẻ",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 50 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Hà Nội",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 49 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "+ Chọn",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 46 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Chỉ số",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 44 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "} đ (%",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 43 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Chu kỳ",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 43 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "gửi xe",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 37 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "} đ ()",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 33 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Đã bầu",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 30 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Mở Lại",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 30 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "✕ Đóng",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 28 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Chế độ",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 24 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
     "Hồ Sơ",
     "Profile"
   ],
@@ -19466,50 +13618,6 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
     "STANDARD"
   ],
   [
-    "Tự do",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 34 MINUTES 01 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Trước",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 57 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "mã vé",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 52 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "rò rỉ",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 52 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "phiếu",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 52 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Ấm Áp",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 50 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "người",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 47 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Đã có",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 46 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "tháng",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 44 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "TIẾNG",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 33 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "ổ cắm",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 29 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
     "Đóng",
     "Close"
   ],
@@ -19548,58 +13656,6 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
   [
     "đ/th",
     "vND/month"
-  ],
-  [
-    "Tiện",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 55 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "thăm",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 52 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "tiền",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 52 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "nước",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 52 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "điện",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 52 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "hỏng",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 52 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "khóa",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 52 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "lượt",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 44 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Khác",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 29 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "chập",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 29 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "lạnh",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 29 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "SẢNH",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 24 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "→ Mở",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 23 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
   ],
   [
     "Hủy",
@@ -19658,66 +13714,6 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
     "Edit"
   ],
   [
-    "} đ",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 34 MINUTES 01 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "SĐT",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 58 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "VNĐ",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 55 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "tòa",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 52 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "phí",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 52 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "thợ",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 52 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "cửa",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 52 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "thẻ",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 51 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Chờ",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 48 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "đơn",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 44 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "gói",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 44 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "vòi",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 29 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "đèn",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 29 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "Yếu",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 25 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
-    "RÈM",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 24 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
-  ],
-  [
     "Nữ",
     "Female"
   ],
@@ -19738,7 +13734,4999 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
     "Proportion"
   ],
   [
-    "kỳ",
-    "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 33 MINUTES 43 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
+    "(Chính thức)",
+    "(Chính thức)"
+  ],
+  [
+    "(Chưa có)",
+    "(Chưa có)"
+  ],
+  [
+    "(Theo ca trực)",
+    "(Theo ca trực)"
+  ],
+  [
+    "(tuỳ chọn)",
+    "(tuỳ chọn)"
+  ],
+  [
+    "* Chữ ký số tự động gắn kèm khi gửi văn bản",
+    "* Chữ ký số tự động gắn kèm khi gửi văn bản"
+  ],
+  [
+    "* Cần đính kèm ảnh chụp sau khi sửa.",
+    "* Cần đính kèm ảnh chụp sau khi sửa."
+  ],
+  [
+    "* Không có yêu cầu đặc biệt.",
+    "* Không có yêu cầu đặc biệt."
+  ],
+  [
+    "+ Chọn",
+    "+ Chọn"
+  ],
+  [
+    "00:00 - 24:00 (Mở cửa cả ngày)",
+    "00:00 - 24:00 (Mở cửa cả ngày)"
+  ],
+  [
+    "028.7300.8888 (Nhánh 1)",
+    "028.7300.8888 (Nhánh 1)"
+  ],
+  [
+    "028.7300.8888 (Nhánh 2)",
+    "028.7300.8888 (Nhánh 2)"
+  ],
+  [
+    "028.7300.8888 (Nhánh 3)",
+    "028.7300.8888 (Nhánh 3)"
+  ],
+  [
+    "08:00 - 21:00 (Đặt trước)",
+    "08:00 - 21:00 (Đặt trước)"
+  ],
+  [
+    "09:00 - 21:00 (Theo giờ đặt)",
+    "09:00 - 21:00 (Theo giờ đặt)"
+  ],
+  [
+    "0m (Vị trí hiện tại)",
+    "0m (Vị trí hiện tại)"
+  ],
+  [
+    "18:00 - 20:00 (Buổi tối)",
+    "18:00 - 20:00 (Buổi tối)"
+  ],
+  [
+    "1PN • 42m² (View Hồ Bơi)",
+    "1PN • 42m² (View Swimming Pool)"
+  ],
+  [
+    "30% (Vừa)",
+    "30% (Vừa)"
+  ],
+  [
+    "600.000 đ / ca tiệc (Set bếp Weber & dọn sau tiệc)",
+    "600.000 đ / ca tiệc (Set bếp Weber & dọn sau tiệc)"
+  ],
+  [
+    "AI reply API lỗi, dùng smart local fallback:",
+    "AI reply API lỗi, dùng smart local fallback:"
+  ],
+  [
+    "AI đang phân tích...",
+    "AI đang phân tích..."
+  ],
+  [
+    "AI đã cập nhật câu trả lời giải đáp cho cư dân.",
+    "AI đã cập nhật câu trả lời giải đáp cho Residents."
+  ],
+  [
+    "AI đề xuất bảo dưỡng:",
+    "AI đề xuất bảo dưỡng:"
+  ],
+  [
+    "BARRIER ĐANG MỞ (XE QUA)",
+    "BARRIER OPENING (VEHICLE ACCESS)"
+  ],
+  [
+    "BQL yêu cầu KTV bổ sung ảnh nghiệm thu thực tế trước khi duyệt đóng phiếu.",
+    "Management requests technician to attach actual proof photo before ticket closure approval."
+  ],
+  [
+    "Ban Công & Lô Gia",
+    "Balcony & Loggia"
+  ],
+  [
+    "Ban Công Sinh Thái",
+    "Ecological Balcony"
+  ],
+  [
+    "Ban Quản Lý đã tạm khóa / thu hồi quyền ra vào FaceID theo quy định vận hành.",
+    "Management has temporarily suspended FaceID access per building regulations."
+  ],
+  [
+    "Ban công / Lô gia",
+    "Balcony / Loggia"
+  ],
+  [
+    "Ban công sinh thái & PN Master",
+    "Eco Balcony & Master Bedroom"
+  ],
+  [
+    "Bao gồm an ninh 24/7, vệ sinh sảnh, hồ bơi & thang máy",
+    "Includes 24/7 security, lobby cleaning, swimming pool & elevator"
+  ],
+  [
+    "Biển Hồ & Hồ Ngọc Trai",
+    "Ocean Crystal Lake & Pearl Lake"
+  ],
+  [
+    "Biển tên",
+    "Signboard Name"
+  ],
+  [
+    "Biểu tượng kinh tế tài chính thế hệ mới với công nghệ IoT & FaceID, quy tụ các tập đoàn đa quốc gia.",
+    "Biểu tượng kinh tế tài chính thế hệ mới với công nghệ IoT & FaceID, quy tụ các tập đoàn đa quốc gia."
+  ],
+  [
+    "Bosch Series 8 / CHLB Đức",
+    "Bosch Series 8 / CHLB Đức"
+  ],
+  [
+    "Buổi chiều: 13:30 - 16:30 (Tránh giờ cao điểm tan tầm).",
+    "Buổi chiều: 13:30 - 16:30 (Tránh giờ cao điểm tan tầm)."
+  ],
+  [
+    "Buổi trưa (12:00 - 13:30): Khung giờ nghỉ trưa của người già và trẻ nhỏ, nghiêm cấm mọi tiếng ồn lớn.",
+    "Buổi trưa (12:00 - 13:30): Khung giờ nghỉ trưa của người già và trẻ nhỏ, nghiêm cấm mọi tiếng ồn lớn."
+  ],
+  [
+    "Buổi tối & Đêm (sau 17:00 đến 08:00 sáng): Tuyệt đối không thực hiện khoan cắt, đục phá tường.",
+    "Buổi tối & Đêm (sau 17:00 đến 08:00 sáng): Tuyệt đối không thực hiện khoan cắt, đục phá tường."
+  ],
+  [
+    "Báo Hỏng & Hỗ Trợ Kỹ Thuật",
+    "Report Issue & Technical Support"
+  ],
+  [
+    "Bãi đỗ xe hầm",
+    "Basement Parking"
+  ],
+  [
+    "Bóng cọ tự nhiên thoáng mát",
+    "Natural refreshing palm shade"
+  ],
+  [
+    "BƯỚC 2: QUAY NHẸ SANG TRÁI",
+    "STEP 2: TURN HEAD SLIGHTLY LEFT"
+  ],
+  [
+    "BƯỚC 3: QUAY NHẸ SANG PHẢI",
+    "STEP 3: TURN HEAD SLIGHTLY RIGHT"
+  ],
+  [
+    "BƯỚC 4: MỈM CƯỜI TỰ NHIÊN",
+    "STEP 4: SMILE NATURALLY"
+  ],
+  [
+    "Bước 2: Dùng khăn ướt che mũi miệng, cúi thấp người men theo đèn chỉ dẫn EXIT hành lang.",
+    "Step 2: Dùng khăn ướt che mũi miệng, cúi thấp người men theo đèn chỉ dẫn EXIT hành lang."
+  ],
+  [
+    "Bạn Bè Viếng Thăm",
+    "Bạn Bè Viếng Thăm"
+  ],
+  [
+    "Bạn có chắc chắn muốn hủy đơn dịch vụ này không?",
+    "Bạn có chắc chắn muốn hủy đơn dịch vụ này không?"
+  ],
+  [
+    "Bảo trì kỹ thuật",
+    "Maintenance kỹ thuật"
+  ],
+  [
+    "Bận việc gia đình đột xuất không thể tham gia",
+    "Bận việc gia đình đột xuất không thể tham gia"
+  ],
+  [
+    "Bận đột xuất không thể sắp xếp tham gia",
+    "Bận đột xuất không thể sắp xếp tham gia"
+  ],
+  [
+    "Bật lại Camera",
+    "Bật lại Camera"
+  ],
+  [
+    "Bật tắt đèn ban công",
+    "Bật tắt đèn ban công"
+  ],
+  [
+    "Bật tắt đèn gian bếp",
+    "Bật tắt đèn gian bếp"
+  ],
+  [
+    "Bật Đèn Ban Công",
+    "Bật Đèn Ban Công"
+  ],
+  [
+    "Bật Đèn Bếp Ăn",
+    "Bật Đèn Bếp Ăn"
+  ],
+  [
+    "Bật Đèn PN Master",
+    "Bật Đèn PN Master"
+  ],
+  [
+    "Bắt Đầu Đọc Thông Tin Thẻ Tự Động",
+    "Bắt Đầu Đọc Thông Tin Thẻ Tự Động"
+  ],
+  [
+    "Bến Du Thuyền Manhattan Island",
+    "Bến Du Thuyền Manhattan Island"
+  ],
+  [
+    "Bến Thuyền & Thể Thao",
+    "Bến Thuyền & Thể Thao"
+  ],
+  [
+    "Bến đỗ du thuyền sang trọng bên dòng sông Tắc và sông Đồng Nai lộng gió, điểm check-in hoàng hôn thơ mộng.",
+    "Bến đỗ du thuyền sang trọng bên dòng sông Tắc và sông Đồng Nai lộng gió, điểm check-in hoàng hôn thơ mộng."
+  ],
+  [
+    "Bếp Từ Đôi & Hút Mùi Cảm Ứng Âm Tủ",
+    "Bếp Từ Đôi & Hút Mùi Cảm Ứng Âm Tủ"
+  ],
+  [
+    "Bể Bơi & Chòi",
+    "Bể Bơi & Chòi"
+  ],
+  [
+    "Bể Bơi Malibu California",
+    "Bể Bơi Malibu California"
+  ],
+  [
+    "Bể Bơi Nhiệt Đới Resort",
+    "Bể Bơi Nhiệt Đới Resort"
+  ],
+  [
+    "Bể bơi Malibu",
+    "Bể bơi Malibu"
+  ],
+  [
+    "Bể bơi Malibu chuẩn phong cách resort miền nhiệt đới California",
+    "Bể bơi Malibu chuẩn phong cách resort miền nhiệt đới California"
+  ],
+  [
+    "Bể bơi nhiệt đới",
+    "Bể bơi nhiệt đới"
+  ],
+  [
+    "Bể bơi ốc đảo",
+    "Bể bơi ốc đảo"
+  ],
+  [
+    "Bệnh Viện Quốc Tế Vinmec Grand Park",
+    "Bệnh Viện Quốc Tế Vinmec Grand Park"
+  ],
+  [
+    "Bệnh Viện Vinmec",
+    "Bệnh Viện Vinmec"
+  ],
+  [
+    "Bị Khóa",
+    "Bị Khóa"
+  ],
+  [
+    "CHƯA ĐĂNG KÝ VÉ THÁNG",
+    "CHƯA Register / Book VÉ THÁNG"
+  ],
+  [
+    "Camera AI quét biển số tự động mở barie không cần dừng xe",
+    "Camera AI quét biển số tự động mở barie không cần dừng xe"
+  ],
+  [
+    "Camera đang bị ứng dụng khác (Zoom, Teams, Google Meet...) chiếm dụng. Vui lòng tắt các ứng dụng đó rồi thử lại.",
+    "Camera đang bị ứng dụng khác (Zoom, Teams, Google Meet...) chiếm dụng. Please tắt các ứng dụng đó rồi thử lại."
+  ],
+  [
+    "Chi phí:",
+    "Chi phí:"
+  ],
+  [
+    "Chung Cư Điểm Nhấn (39 Tầng)",
+    "Apartment Building Điểm Nhấn (39 Tầng)"
+  ],
+  [
+    "Chuẩn Resort 5★",
+    "Chuẩn Resort 5★"
+  ],
+  [
+    "Cháy đèn / Đèn chập chờn",
+    "Cháy đèn / Đèn chập chờn"
+  ],
+  [
+    "Chính diện",
+    "Chính diện"
+  ],
+  [
+    "Chính diện • Góc nhìn thẳng",
+    "Chính diện • Góc nhìn thẳng"
+  ],
+  [
+    "Chòi Nghỉ Cabana Ven Hồ",
+    "Chòi Nghỉ Cabana Ven Hồ"
+  ],
+  [
+    "Chòi nghỉ",
+    "Chòi nghỉ"
+  ],
+  [
+    "Chòi riêng tư, view hồ bơi",
+    "Chòi riêng tư, view Swimming Pool"
+  ],
+  [
+    "Chó • Mèo Có Kiểm Soát",
+    "Chó • Mèo Có Kiểm Soát"
+  ],
+  [
+    "Chưa Thu Thập Mẫu",
+    "Chưa Thu Thập Mẫu"
+  ],
+  [
+    "Chưa Tải Ảnh Mặt Sau CCCD",
+    "Chưa Tải Ảnh Mặt Sau Citizen ID"
+  ],
+  [
+    "Chưa Tải Ảnh Mặt Trước CCCD",
+    "Chưa Tải Ảnh Mặt Trước Citizen ID"
+  ],
+  [
+    "Chưa chỉ định",
+    "Chưa chỉ định"
+  ],
+  [
+    "Chưa cung cấp",
+    "Chưa cung cấp"
+  ],
+  [
+    "Chưa cung cấp đủ 2 mặt thẻ CCCD hợp lệ",
+    "Chưa cung cấp đủ 2 mặt thẻ Citizen ID hợp lệ"
+  ],
+  [
+    "Chưa có ca nào hoàn tất",
+    "Chưa có ca nào hoàn tất"
+  ],
+  [
+    "Chưa có tài khoản nào hoàn tất thu thập đủ 4 mẫu FaceID trên hệ thống. Vui lòng đăng nhập bằng mật khẩu và vào mục Hồ Sơ Cá Nhân để đăng ký quét mặt.",
+    "Chưa có tài khoản nào hoàn tất thu thập đủ 4 mẫu FaceID trên hệ thống. Please đăng nhập bằng mật khẩu và vào mục Hồ Sơ Cá Nhân để Register / Book quét mặt."
+  ],
+  [
+    "Chưa cập nhật",
+    "Chưa cập nhật"
+  ],
+  [
+    "Chưa cập nhật họ tên",
+    "Chưa cập nhật họ tên"
+  ],
+  [
+    "Chưa nhập",
+    "Chưa nhập"
+  ],
+  [
+    "Chưa đăng nhập",
+    "Chưa đăng nhập"
+  ],
+  [
+    "Chưa đăng nhập (No Token)",
+    "Chưa đăng nhập (No Token)"
+  ],
+  [
+    "Chưa đặt",
+    "Chưa đặt"
+  ],
+  [
+    "Chạy Dự Báo Rung Lắc Thang Máy",
+    "Chạy Dự Báo Rung Lắc Elevator"
+  ],
+  [
+    "Chạy Test Truy Xuất RAG",
+    "Chạy Test Truy Xuất RAG"
+  ],
+  [
+    "Chẩn Đoán IoT",
+    "Chẩn Đoán IoT"
+  ],
+  [
+    "Chập điện / Nhảy Aptomat",
+    "Chập điện / Nhảy Aptomat"
+  ],
+  [
+    "Chỉ Số / Số Lượng",
+    "Chỉ Số / Số Lượng"
+  ],
+  [
+    "Chỉ Định KTV",
+    "Chỉ Định Technician"
+  ],
+  [
+    "Chỉ được khoan đục: Thứ 2 đến Thứ 6 (8:00 - 11:30 & 13:30 - 17:00)",
+    "Chỉ được khoan đục: Thứ 2 đến Thứ 6 (8:00 - 11:30 & 13:30 - 17:00)"
+  ],
+  [
+    "Chọn Tệp Ảnh",
+    "Chọn Tệp Ảnh"
+  ],
+  [
+    "Chọn ngày sử dụng:",
+    "Chọn ngày sử dụng:"
+  ],
+  [
+    "Chờ",
+    "Chờ"
+  ],
+  [
+    "Chờ BQL Duyệt ⏳",
+    "Chờ Management Board Duyệt ⏳"
+  ],
+  [
+    "Chờ Nộp",
+    "Chờ Nộp"
+  ],
+  [
+    "Chờ Thu",
+    "Chờ Thu"
+  ],
+  [
+    "Chụp / Chọn Ảnh Sửa Xong",
+    "Chụp / Chọn Ảnh Sửa Xong"
+  ],
+  [
+    "Chụp Lại",
+    "Chụp Lại"
+  ],
+  [
+    "Chủ Hộ đã xác nhận hồ sơ của thành viên và gửi tới Ban Quản Lý thành công.",
+    "Apartment Owner đã Confirm hồ sơ của thành viên và gửi tới Management Board Successfully."
+  ],
+  [
+    "Cách BS-07:",
+    "Cách BS-07:"
+  ],
+  [
+    "Cách BS-7: ~40m",
+    "Cách BS-7: ~40m"
+  ],
+  [
+    "Cách BS-7: ~50m",
+    "Cách BS-7: ~50m"
+  ],
+  [
+    "Cách BS-7: ~60m",
+    "Cách BS-7: ~60m"
+  ],
+  [
+    "Cách BS-7: ~65m",
+    "Cách BS-7: ~65m"
+  ],
+  [
+    "Cách BS-7: ~75m",
+    "Cách BS-7: ~75m"
+  ],
+  [
+    "Cách BS-7: ~85m",
+    "Cách BS-7: ~85m"
+  ],
+  [
+    "Cánh Bắc",
+    "Cánh Bắc"
+  ],
+  [
+    "Cánh Bắc (5)",
+    "Cánh Bắc (5)"
+  ],
+  [
+    "Cánh Nam",
+    "Cánh Nam"
+  ],
+  [
+    "Cánh Nam (5)",
+    "Cánh Nam (5)"
+  ],
+  [
+    "Cánh Tây",
+    "Cánh Tây"
+  ],
+  [
+    "Cánh Tây (11)",
+    "Cánh Tây (11)"
+  ],
+  [
+    "Cánh: Đang Hé Mở",
+    "Cánh: Đang Hé Mở"
+  ],
+  [
+    "Cánh: Đóng Khít",
+    "Cánh: Đóng Khít"
+  ],
+  [
+    "Cáp Quang Internet Tốc Độ Cao",
+    "Cáp Quang Internet Tốc Độ Cao"
+  ],
+  [
+    "Cáp Quang Internet VNPT",
+    "Cáp Quang Internet VNPT"
+  ],
+  [
+    "Cáp Quang Internet VNPT Fiber 300Mbps",
+    "Cáp Quang Internet VNPT Fiber 300Mbps"
+  ],
+  [
+    "Cây xanh bóng mát tự nhiên",
+    "Cây xanh bóng mát tự nhiên"
+  ],
+  [
+    "Có thể cắm sạc dự phòng qua cổng kích nguồn khẩn cấp dưới đáy khóa trong lúc KTV mang chìa cơ đến.",
+    "Có thể cắm sạc dự phòng qua cổng kích nguồn khẩn cấp dưới đáy khóa trong lúc Technician mang chìa cơ đến."
+  ],
+  [
+    "Công Viên Cầu Vồng 36ha",
+    "Công Viên Cầu Vồng 36ha"
+  ],
+  [
+    "Căn Hộ Thực Tế",
+    "Actual Apartment"
+  ],
+  [
+    "Cơ Điện & Nước",
+    "Cơ Điện & Nước"
+  ],
+  [
+    "Cạnh BS-07 (Liền kề Phố Cọ Rodeo)",
+    "Cạnh BS-07 (Liền kề Phố Cọ Rodeo)"
+  ],
+  [
+    "Cạnh BS-09 (Phía Đông Hồ Bơi)",
+    "Cạnh BS-09 (Phía Đông Swimming Pool)"
+  ],
+  [
+    "Cạnh bể bơi Malibu",
+    "Cạnh bể bơi Malibu"
+  ],
+  [
+    "Cạnh bể bơi nhiệt đới",
+    "Cạnh bể bơi nhiệt đới"
+  ],
+  [
+    "CẢNH QUAN",
+    "CẢNH QUAN"
+  ],
+  [
+    "Cảnh Quan & Vườn",
+    "Cảnh Quan & Vườn"
+  ],
+  [
+    "Cảnh báo: Sai mã kiểm tra chữ ký VNPAY (Checksum mismatch)",
+    "Warning / Alert: Sai mã kiểm tra chữ ký VNPAY (Checksum mismatch)"
+  ],
+  [
+    "Cảnh quan cây xanh Bờ Tây",
+    "Cảnh quan cây xanh Bờ Tây"
+  ],
+  [
+    "CẤM TUYỆT ĐỐI khoan đục vào Thứ 7, Chủ Nhật & Nghỉ trưa (12:00 - 13:30)",
+    "CẤM TUYỆT ĐỐI khoan đục vào Thứ 7, Chủ Nhật & Nghỉ trưa (12:00 - 13:30)"
+  ],
+  [
+    "Cấp bách",
+    "Cấp bách"
+  ],
+  [
+    "CẦN ĐẶT LỊCH",
+    "CẦN ĐẶT LỊCH"
+  ],
+  [
+    "Cập Nhật Lại Phiếu",
+    "Cập Nhật Lại Phiếu"
+  ],
+  [
+    "Cập nhật căn cước công dân 2 mặt e-KYC NKS thành công",
+    "Cập nhật Citizen ID Card 2 mặt e-KYC NKS Successfully"
+  ],
+  [
+    "Cập nhật mật khẩu thành công qua hệ thống API.",
+    "Cập nhật mật khẩu Successfully qua hệ thống API."
+  ],
+  [
+    "Cập nhật thông tin thành viên NKS thành công",
+    "Cập nhật thông tin thành viên NKS Successfully"
+  ],
+  [
+    "Cập nhật thông tin thành viên thành công.",
+    "Cập nhật thông tin thành viên Successfully."
+  ],
+  [
+    "Cập nhật ảnh đại diện NKS API thành công",
+    "Cập nhật ảnh đại diện NKS API Successfully"
+  ],
+  [
+    "Cắt & Lưu Ảnh Đại Diện",
+    "Cắt & Lưu Ảnh Đại Diện"
+  ],
+  [
+    "Cố định",
+    "Cố định"
+  ],
+  [
+    "Cố định / Định kỳ",
+    "Cố định / Định kỳ"
+  ],
+  [
+    "CỔNG TỰ ĐỘNG",
+    "CỔNG TỰ ĐỘNG"
+  ],
+  [
+    "Cổng Sảnh Chung Cư & Thang Máy",
+    "Cổng Sảnh Apartment Building & Elevator"
+  ],
+  [
+    "Cổng VNPAY (Thẻ ATM / QR)",
+    "Cổng VNPAY (Thẻ ATM / QR)"
+  ],
+  [
+    "Cổng đón phân khu",
+    "Cổng đón Zone"
+  ],
+  [
+    "Cục Cảnh sát QLHC",
+    "Cục Cảnh sát QLHC"
+  ],
+  [
+    "Cục Cảnh sát QLHC về TTXH",
+    "Cục Cảnh sát QLHC về TTXH"
+  ],
+  [
+    "Cụm Malibu Phía Tây (BS-10)",
+    "Cụm Malibu Phía Tây (BS-10)"
+  ],
+  [
+    "Cụm Malibu Phía Tây (Cạnh BS-10)",
+    "Cụm Malibu Phía Tây (Cạnh BS-10)"
+  ],
+  [
+    "Cụm Phía Tây (Cạnh Sân Thể Thao BS-10)",
+    "Cụm Phía Tây (Cạnh Sân Thể Thao BS-10)"
+  ],
+  [
+    "Cụm Thể Thao Malibu & Bãi Đỗ Xe",
+    "Cụm Thể Thao Malibu & Bãi Đỗ Xe"
+  ],
+  [
+    "Cụm hồ bơi phong cách resort nhiệt đới trung tâm phân khu",
+    "Cụm Swimming Pool phong cách resort nhiệt đới trung tâm Zone"
+  ],
+  [
+    "Cụm phía Tây phân khu",
+    "Cụm phía Tây Zone"
+  ],
+  [
+    "Cửa ra vào",
+    "Cửa ra vào"
+  ],
+  [
+    "Daikin VRV-S Multi / Nhật Bản",
+    "Daikin VRV-S Multi / Nhật Bản"
+  ],
+  [
+    "Diện tích thông thủy 73.2 m² x 10.000 đ/m²",
+    "Diện tích thông thủy 73.2 m² x 10.000 đ/m²"
+  ],
+  [
+    "Dịch vụ nhà hàng & cụm hồ bơi resort mở cửa mấy giờ?",
+    "Dịch vụ nhà hàng & cụm Swimming Pool resort mở cửa mấy giờ?"
+  ],
+  [
+    "Dịch vụ đời sống phát sinh",
+    "Dịch vụ đời sống phát sinh"
+  ],
+  [
+    "Dữ liệu chuẩn NKS SCRMAI & Quy hoạch The Tropical (Beverly Solari)",
+    "Dữ liệu chuẩn NKS SCRMAI & Quy hoạch The Tropical (Beverly Solari)"
+  ],
+  [
+    "Dữ liệu tài khoản API không hợp lệ (thiếu họ tên hoặc số điện thoại).",
+    "Dữ liệu tài khoản API không hợp lệ (thiếu họ tên hoặc số điện thoại)."
+  ],
+  [
+    "Dự án Chung Cư Cao Cấp Skyline & Hệ thống Quản trị Vận hành Thông minh Tự động hóa.",
+    "Dự án Apartment Building Cao Cấp Skyline & Hệ thống Quản trị Vận hành Thông minh Tự động hóa."
+  ],
+  [
+    "Eurowindow / Kính Saint-Gobain Pháp",
+    "Eurowindow / Kính Saint-Gobain Pháp"
+  ],
+  [
+    "Ghế nghỉ Sunken",
+    "Ghế nghỉ Sunken"
+  ],
+  [
+    "Gian bếp",
+    "Gian bếp"
+  ],
+  [
+    "Giao Hàng Shipper",
+    "Giao Hàng Shipper"
+  ],
+  [
+    "Giàn cảnh quan",
+    "Giàn cảnh quan"
+  ],
+  [
+    "Giám sát thói quen tiêu thụ điện nước, phát hiện rò rỉ nước ngầm khung giờ 02:00 - 04:00 sáng.",
+    "Giám sát thói quen tiêu thụ điện nước, phát hiện rò rỉ nước ngầm khung giờ 02:00 - 04:00 sáng."
+  ],
+  [
+    "Giặt ủi, Giúp việc theo giờ, PT Gym/Bơi, Rửa xe",
+    "Giặt ủi, Giúp việc theo giờ, PT Gym/Bơi, Rửa xe"
+  ],
+  [
+    "Giờ gom rác",
+    "Giờ gom rác"
+  ],
+  [
+    "Giờ mở cửa cụm hồ bơi resort & hồ bơi chân mây",
+    "Giờ mở cửa cụm Swimming Pool resort & Swimming Pool chân mây"
+  ],
+  [
+    "Giờ mở cửa hồ bơi",
+    "Giờ mở cửa Swimming Pool"
+  ],
+  [
+    "Giờ mở hồ bơi",
+    "Giờ mở Swimming Pool"
+  ],
+  [
+    "Giờ yên tĩnh: 22:00 đêm đến 06:00 sáng hôm sau",
+    "Giờ yên tĩnh: 22:00 đêm đến 06:00 sáng hôm sau"
+  ],
+  [
+    "Giữ nguyên hiện trạng để KTV dễ dàng khảo sát và khắc phục triệt để.",
+    "Giữ nguyên hiện trạng để Technician dễ dàng khảo sát và khắc phục triệt để."
+  ],
+  [
+    "Giữa BS-07 & BS-08 (Trung Tâm)",
+    "Giữa BS-07 & BS-08 (Trung Tâm)"
+  ],
+  [
+    "Góc nghiêng phải 20° - 30°",
+    "Góc nghiêng phải 20° - 30°"
+  ],
+  [
+    "Góc nghiêng trái 20° - 30°",
+    "Góc nghiêng trái 20° - 30°"
+  ],
+  [
+    "Gói Fiber 300Mbps chuyên biệt Smart Home",
+    "Gói Fiber 300Mbps chuyên biệt Smart Home"
+  ],
+  [
+    "Góp Ý & Khiếu Nại",
+    "Góp Ý & Khiếu Nại"
+  ],
+  [
+    "Góp ý kiểm soát ra vào, thang máy",
+    "Góp ý kiểm soát ra vào, Elevator"
+  ],
+  [
+    "Gợi ý câu hỏi:",
+    "Gợi ý câu hỏi:"
+  ],
+  [
+    "Gửi Ban Quản Lý Duyệt Lại",
+    "Gửi Management Board Duyệt Lại"
+  ],
+  [
+    "Gửi Lại / Cập Nhật Hồ Sơ",
+    "Gửi Lại / Cập Nhật Hồ Sơ"
+  ],
+  [
+    "Gửi Nhắc Phí",
+    "Gửi Nhắc Phí"
+  ],
+  [
+    "Gửi xe & Biển số",
+    "Gửi xe & Biển số"
+  ],
+  [
+    "Hamburger Bị Cắn",
+    "Hamburger Bị Cắn"
+  ],
+  [
+    "hiện trường",
+    "hiện trường"
+  ],
+  [
+    "Hiện trạng lúc báo",
+    "Hiện trạng lúc báo"
+  ],
+  [
+    "Hotline Kỹ Thuật 24/7 (Miễn Phí)",
+    "Hotline Kỹ Thuật 24/7 (Miễn Phí)"
+  ],
+  [
+    "Hoàn Tất Quét Chẩn Đoán BMS IoT",
+    "Hoàn Tất Quét Chẩn Đoán BMS IoT"
+  ],
+  [
+    "Hoàn toàn miễn phí",
+    "Hoàn toàn miễn phí"
+  ],
+  [
+    "Hoàn tất quét đọc thông tin 2 mặt!",
+    "Hoàn tất quét đọc thông tin 2 mặt!"
+  ],
+  [
+    "Hoàng (Tổ trưởng Vệ sinh & Cảnh quan)",
+    "Hoàng (Tổ trưởng Vệ sinh & Cảnh quan)"
+  ],
+  [
+    "Hà Nội",
+    "Hà Nội"
+  ],
+  [
+    "Hành lang lối thoát hiểm (Cột B1-08)",
+    "Hành lang lối thoát hiểm (Cột B1-08)"
+  ],
+  [
+    "Hành động không hợp lệ",
+    "Hành động không hợp lệ"
+  ],
+  [
+    "Hành động không hợp lệ.",
+    "Hành động không hợp lệ."
+  ],
+  [
+    "Hình ảnh sự cố đã được hệ thống ghi nhận rõ ràng. Kỹ thuật viên sẽ mang dụng cụ chuyên dụng đến kiểm tra trực tiếp.",
+    "Hình ảnh sự cố đã được hệ thống ghi nhận rõ ràng. Technician sẽ mang dụng cụ chuyên dụng đến kiểm tra trực tiếp."
+  ],
+  [
+    "Hóa đơn này đã được thanh toán hoàn tất trước đó.",
+    "Bill / Invoice này đã được Payment hoàn tất trước đó."
+  ],
+  [
+    "Hôm nay thứ 7 có được khoan tường không?",
+    "Hôm nay thứ 7 có được khoan tường không?"
+  ],
+  [
+    "Hướng Vườn Cọ & Sân Thiền",
+    "Hướng Vườn Cọ & Sân Thiền"
+  ],
+  [
+    "Hạ Tầng & Sảnh",
+    "Hạ Tầng & Sảnh"
+  ],
+  [
+    "Hạ Tầng Mạng FTTH Cáp Quang & Wi-Fi 6 Mesh",
+    "Hạ Tầng Mạng FTTH Cáp Quang & Wi-Fi 6 Mesh"
+  ],
+  [
+    "Hạng Mục Dịch Vụ",
+    "Hạng Mục Dịch Vụ"
+  ],
+  [
+    "Hệ Kính Hộp 3 Lớp Low-E Cách Âm Chống UV",
+    "Hệ Kính Hộp 3 Lớp Low-E Cách Âm Chống UV"
+  ],
+  [
+    "Hệ thống cấp thoát nước ổn định (6.2 Bar)",
+    "Hệ thống cấp thoát nước ổn định (6.2 Bar)"
+  ],
+  [
+    "Hệ thống thoát nước tự động",
+    "Hệ thống thoát nước tự động"
+  ],
+  [
+    "Hệ thống thác nước tự động",
+    "Hệ thống thác nước tự động"
+  ],
+  [
+    "Hệ thống tưới nhỏ giọt tự động",
+    "Hệ thống tưới nhỏ giọt tự động"
+  ],
+  [
+    "Hệ thống đã nhận diện ảnh sự cố. Đội kỹ thuật sẽ sớm có mặt để khắc phục.",
+    "Hệ thống đã nhận diện ảnh sự cố. Đội kỹ thuật sẽ sớm có mặt để khắc phục."
+  ],
+  [
+    "Hệ thống đã xem ảnh hiện trường và lập hồ sơ điều phối đến tổ kỹ thuật chuyên trách.",
+    "Hệ thống đã xem ảnh hiện trường và lập hồ sơ điều phối đến tổ kỹ thuật chuyên trách."
+  ],
+  [
+    "Hệ thống đèn downlight âm trần bị nhấp nháy liên tục và 2 bóng không sáng, cần kiểm tra chấn lưu (driver) và thay bóng.",
+    "Hệ thống đèn downlight âm trần bị nhấp nháy liên tục và 2 bóng không sáng, cần kiểm tra chấn lưu (driver) và thay bóng."
+  ],
+  [
+    "Hỏi bất kỳ quy định nào của chung cư (ví dụ: 'Giờ mở cửa hồ bơi', 'Quy định phơi đồ ban công')...",
+    "Hỏi bất kỳ Regulations nào của Apartment Building (ví dụ: 'Giờ mở cửa Swimming Pool', 'Regulations phơi đồ ban công')..."
+  ],
+  [
+    "Hồ Bơi Nhiệt Đới & Sông Đồng Nai",
+    "Swimming Pool Nhiệt Đới & Sông Đồng Nai"
+  ],
+  [
+    "Hồ Chí Minh",
+    "Hồ Chí Minh"
+  ],
+  [
+    "Hồ bơi mở cửa 06:00 - 21:00",
+    "Swimming Pool mở cửa 06:00 - 21:00"
+  ],
+  [
+    "Hồ bơi vô cực",
+    "Swimming Pool vô cực"
+  ],
+  [
+    "Hồ bơi vô cực mở cửa lúc mấy giờ và quy định sử dụng ra sao?",
+    "Swimming Pool vô cực mở cửa lúc mấy giờ và Regulations sử dụng ra sao?"
+  ],
+  [
+    "Hồ sơ định danh e-KYC đã được gửi tới Chủ Hộ để xác nhận trước khi chuyển Ban Quản Lý.",
+    "Hồ sơ định danh e-KYC đã được gửi tới Apartment Owner để Confirm trước khi chuyển Management Board."
+  ],
+  [
+    "Hồ sơ định danh e-KYC đã được gửi đến Ban Quản Lý thẩm duyệt thành công.",
+    "Hồ sơ định danh e-KYC đã được gửi đến Management Board thẩm duyệt Successfully."
+  ],
+  [
+    "Hỗ trợ kỹ thuật 24/7",
+    "Hỗ trợ kỹ thuật 24/7"
+  ],
+  [
+    "Intent: \"REPORT_LEAKAGE\" -> Gán Module \"resident-tickets\" (Độ tin cậy: 98.6%)",
+    "Intent: \"REPORT_LEAKAGE\" -> Gán Module \"resident-tickets\" (Độ tin cậy: 98.6%)"
+  ],
+  [
+    "KTV Ca Trực Skyline",
+    "Technician Ca Trực Skyline"
+  ],
+  [
+    "Khai phá dữ liệu tổng thể và xuất khuyến nghị bằng văn bản (VD: Đề xuất mở thêm slot BBQ cuối tuần).",
+    "Khai phá dữ liệu tổng thể và xuất khuyến nghị bằng văn bản (VD: Đề xuất mở thêm slot BBQ cuối tuần)."
+  ],
+  [
+    "Khi chuông báo cháy reo: Dùng thang bộ thoát hiểm, TUYỆT ĐỐI KHÔNG DÙNG THANG MÁY",
+    "Khi chuông báo cháy reo: Dùng thang bộ thoát hiểm, TUYỆT ĐỐI KHÔNG DÙNG Elevator"
+  ],
+  [
+    "Khung Giờ & Điều Kiện Sử Dụng Hồ Bơi Resort",
+    "Khung Giờ & Điều Kiện Sử Dụng Swimming Pool Resort"
+  ],
+  [
+    "Khung Giờ Cho Phép Vận Chuyển Hàng Nặng",
+    "Khung Giờ Cho Phép Vận Chuyển Hàng Nặng"
+  ],
+  [
+    "Khung Giờ Cấm Khoan Đục & Gây Tiếng Động Mạnh",
+    "Khung Giờ Cấm Khoan Đục & Gây Tiếng Động Mạnh"
+  ],
+  [
+    "Khung giờ cho phép chuyển đồ nặng cồng kềnh, quy định bọc lót chống trầy và thủ tục đặt lịch thang máy hàng.",
+    "Khung giờ cho phép chuyển đồ nặng cồng kềnh, Regulations bọc lót chống trầy và thủ tục đặt lịch Elevator hàng."
+  ],
+  [
+    "Khung giờ: 8:30 - 11:30 & 13:30 - 16:30 (T2 đến T7)",
+    "Khung giờ: 8:30 - 11:30 & 13:30 - 16:30 (T2 đến T7)"
+  ],
+  [
+    "Khuôn mặt chưa được đăng ký FaceID trên hệ thống hoặc độ tương đồng không đạt chuẩn an toàn.",
+    "Khuôn mặt chưa được Register / Book FaceID trên hệ thống hoặc độ tương đồng không đạt chuẩn an toàn."
+  ],
+  [
+    "Khá mạnh",
+    "Khá mạnh"
+  ],
+  [
+    "Khác",
+    "Khác"
+  ],
+  [
+    "Khách Sạn Quốc Tế Vinpearl",
+    "Khách Sạn Quốc Tế Vinpearl"
+  ],
+  [
+    "Khách Thăm Nhà",
+    "Visitor Nhà"
+  ],
+  [
+    "Khách Thăm:",
+    "Visitor:"
+  ],
+  [
+    "Khách Ở Lại Qua Đêm",
+    "Khách Ở Lại Qua Đêm"
+  ],
+  [
+    "Khám Phá Từng Phòng",
+    "Explore Từng Phòng"
+  ],
+  [
+    "Khóa tạm van nước hoặc tắt aptomat nhánh nếu sự cố diễn biến xấu.",
+    "Khóa tạm van nước hoặc tắt aptomat nhánh nếu sự cố diễn biến xấu."
+  ],
+  [
+    "Khóa van cấp nước cục bộ dưới gầm bồn rửa ngay để tránh tràn lan sàn gỗ trong khi chờ KTV.",
+    "Khóa van cấp nước cục bộ dưới gầm bồn rửa ngay để tránh tràn lan sàn gỗ trong khi chờ Technician."
+  ],
+  [
+    "Khóa van cấp nước cục bộ dưới gầm bồn rửa ngay để tránh tràn lan sàn gỗ trong khi chờ thợ đến.",
+    "Khóa van cấp nước cục bộ dưới gầm bồn rửa ngay để tránh tràn lan sàn gỗ trong khi chờ thợ đến."
+  ],
+  [
+    "Không Gian Công Cộng",
+    "Không Gian Công Cộng"
+  ],
+  [
+    "Không Gian Xanh Công Cộng",
+    "Không Gian Xanh Công Cộng"
+  ],
+  [
+    "Không còn phiếu nào đang chờ tiếp nhận.",
+    "Không còn phiếu nào đang chờ tiếp nhận."
+  ],
+  [
+    "Không có",
+    "Không có"
+  ],
+  [
+    "Không có mô tả",
+    "Không có mô tả"
+  ],
+  [
+    "Không có phiếu nào trong bộ lọc này.",
+    "Không có phiếu nào trong bộ lọc này."
+  ],
+  [
+    "Không có ảnh để phân tích",
+    "Không có ảnh để phân tích"
+  ],
+  [
+    "Không gian tĩnh lặng râm mát rèn luyện thể chất & tái tạo năng lượng",
+    "Không gian tĩnh lặng râm mát rèn luyện thể chất & tái tạo năng lượng"
+  ],
+  [
+    "Không gian tĩnh lặng, thảm tập outdoor",
+    "Không gian tĩnh lặng, thảm tập outdoor"
+  ],
+  [
+    "Không nuôi các giống chó săn, chó chiến đấu hung dữ (Pitbull, Doberman, Rottweiler...).",
+    "Không nuôi các giống chó săn, chó chiến đấu hung dữ (Pitbull, Doberman, Rottweiler...)."
+  ],
+  [
+    "Không thể chụp hình từ video. Vui lòng kiểm tra lại camera.",
+    "Không thể chụp hình từ video. Please kiểm tra lại camera."
+  ],
+  [
+    "Không thể cập nhật mật khẩu. Vui lòng kiểm tra lại mật khẩu hiện tại.",
+    "Không thể cập nhật mật khẩu. Please kiểm tra lại mật khẩu hiện tại."
+  ],
+  [
+    "Không thể cập nhật ảnh đại diện. Vui lòng thử lại.",
+    "Không thể cập nhật ảnh đại diện. Please thử lại."
+  ],
+  [
+    "Không thể kích hoạt webcam laptop. Vui lòng thử lại hoặc tải ảnh trực tiếp.",
+    "Không thể kích hoạt webcam laptop. Please thử lại hoặc tải ảnh trực tiếp."
+  ],
+  [
+    "Không thể kết nối NKS API, sử dụng dữ liệu lưu cục bộ:",
+    "Không thể kết nối NKS API, sử dụng dữ liệu lưu cục bộ:"
+  ],
+  [
+    "Không thể kết nối đến máy chủ AI. Quý cư dân vui lòng kiểm tra kết nối hoặc liên hệ Hotline BQL 1900 8899.",
+    "Không thể kết nối đến máy chủ AI. Quý Residents Please kiểm tra kết nối hoặc liên hệ Hotline Management Board 1900 8899."
+  ],
+  [
+    "Không thể kết nối đến máy chủ AI. Quý cư dân vui lòng thử lại hoặc liên hệ Hotline BQL **1900 8899**.",
+    "Không thể kết nối đến máy chủ AI. Quý Residents Please thử lại hoặc liên hệ Hotline Management Board **1900 8899**."
+  ],
+  [
+    "Không thể lưu thông tin. Vui lòng thử lại sau.",
+    "Không thể lưu thông tin. Please thử lại sau."
+  ],
+  [
+    "Không thể lưu ảnh, vui lòng thử lại.",
+    "Không thể lưu ảnh, Please thử lại."
+  ],
+  [
+    "Không thể mở camera. Vui lòng cấp quyền truy cập máy ảnh cho trình duyệt.",
+    "Không thể mở camera. Please cấp quyền truy cập máy ảnh cho trình duyệt."
+  ],
+  [
+    "Không thể mở camera:",
+    "Không thể mở camera:"
+  ],
+  [
+    "Không thể nhận diện thẻ CCCD qua Gemini Vision.",
+    "Không thể nhận diện thẻ Citizen ID qua Gemini Vision."
+  ],
+  [
+    "Không thể trích xuất dữ liệu từ ảnh. Vui lòng thử tải lên ảnh rõ nét hơn.",
+    "Không thể trích xuất dữ liệu từ ảnh. Please thử tải lên ảnh rõ nét hơn."
+  ],
+  [
+    "Không thể tạo file PDF. Vui lòng thử lại.",
+    "Không thể tạo file PDF. Please thử lại."
+  ],
+  [
+    "Không thể đọc file ảnh. Vui lòng thử lại.",
+    "Không thể đọc file ảnh. Please thử lại."
+  ],
+  [
+    "Không tìm thấy hồ sơ e-KYC",
+    "Không tìm thấy hồ sơ e-KYC"
+  ],
+  [
+    "Không tìm thấy hồ sơ mẫu FaceID cần xác nhận.",
+    "Không tìm thấy hồ sơ mẫu FaceID cần Confirm."
+  ],
+  [
+    "Không tìm thấy kỹ thuật viên.",
+    "Không tìm thấy Technician."
+  ],
+  [
+    "Không tìm thấy phiếu yêu cầu.",
+    "Không tìm thấy phiếu yêu cầu."
+  ],
+  [
+    "Không xác định",
+    "Không xác định"
+  ],
+  [
+    "Không đồng ý, giữ nguyên hiện trạng",
+    "Không đồng ý, giữ nguyên hiện trạng"
+  ],
+  [
+    "Khẩn cấp (< 45p)",
+    "Khẩn cấp (< 45p)"
+  ],
+  [
+    "Kiến trúc xanh 3D độc đáo nằm dọc trục đại lộ mua sắm Manhattan sầm uất.",
+    "Kiến trúc xanh 3D độc đáo nằm dọc trục đại lộ mua sắm Manhattan sầm uất."
+  ],
+  [
+    "Kiểm Duyệt Nội Dung & Sentiment",
+    "Kiểm Duyệt Nội Dung & Sentiment"
+  ],
+  [
+    "Kiểm Tra Dòng Chảy Ban Đêm",
+    "Kiểm Tra Dòng Chảy Ban Đêm"
+  ],
+  [
+    "Kiểm tra bất thường điện nước",
+    "Inspect Utility Anomalies"
+  ],
+  [
+    "Kohler & TOTO Neorest / Mỹ - Nhật",
+    "Kohler & TOTO Neorest / Mỹ - Nhật"
+  ],
+  [
+    "KÍNH GỬI QUÝ KHÁCH THĂM:",
+    "KÍNH GỬI QUÝ Visitor:"
+  ],
+  [
+    "Kích Hoạt",
+    "Kích Hoạt"
+  ],
+  [
+    "Kính Low-E cản nhiệt 95%, cản tia UV 99%, cách âm 45dB triệt tiêu tiếng ồn đô thị, khung nhôm cầu cách nhiệt.",
+    "Kính Low-E cản nhiệt 95%, cản tia UV 99%, cách âm 45dB triệt tiêu tiếng ồn đô thị, khung nhôm cầu cách nhiệt."
+  ],
+  [
+    "Kế toán duyệt / Chuyển khoản",
+    "Kế toán duyệt / Chuyển khoản"
+  ],
+  [
+    "Kết nối liên tục 100% Online",
+    "Kết nối liên tục 100% Online"
+  ],
+  [
+    "Kỳ quan công viên 36ha ven sông lớn nhất Đông Nam Á với bãi cát trắng tự nhiên, 15 công viên chủ đề liên hoàn.",
+    "Kỳ quan công viên 36ha ven sông lớn nhất Đông Nam Á với bãi cát trắng tự nhiên, 15 công viên chủ đề liên hoàn."
+  ],
+  [
+    "Kỳ quan công viên 36ha với bãi cát trắng tự nhiên, công viên ánh sáng nghệ thuật và hồ sinh thái.",
+    "Kỳ quan công viên 36ha với bãi cát trắng tự nhiên, công viên ánh sáng nghệ thuật và hồ sinh thái."
+  ],
+  [
+    "Kỹ thuật viên chưa tải lên ảnh chụp hiện trường sau khi sửa chữa.",
+    "Technician chưa tải lên ảnh chụp hiện trường sau khi Repair."
+  ],
+  [
+    "Liền Kề BS-07 (Trục Phía Tây)",
+    "Liền Kề BS-07 (Trục Phía Tây)"
+  ],
+  [
+    "Liền kề BS-7",
+    "Liền kề BS-7"
+  ],
+  [
+    "Lumière Boulevard & Masteri Centre Point",
+    "Lumière Boulevard & Masteri Centre Point"
+  ],
+  [
+    "Lê Văn Kỹ Thuật (Chuyên trách Cơ Điện & Nước)",
+    "Lê Văn Kỹ Thuật (Chuyên trách Cơ Điện & Nước)"
+  ],
+  [
+    "Lưu Thay Đổi Thông Tin Cá Nhân",
+    "Save Changes Thông Tin Cá Nhân"
+  ],
+  [
+    "Lịch công tác / đi xa phát sinh ngoài dự kiến",
+    "Lịch công tác / đi xa phát sinh ngoài dự kiến"
+  ],
+  [
+    "Lịch đặt đã được thanh lý theo quy chế.",
+    "Lịch đặt đã được thanh lý theo quy chế."
+  ],
+  [
+    "Lọc:",
+    "Lọc:"
+  ],
+  [
+    "Lối vào sảnh (Drop off)",
+    "Lối vào sảnh (Drop off)"
+  ],
+  [
+    "Lối xe xuống hầm trung tâm",
+    "Lối xe xuống hầm trung tâm"
+  ],
+  [
+    "Lối xuống hầm",
+    "Lối xuống hầm"
+  ],
+  [
+    "Lỗi API AI Ticket Assistant:",
+    "Lỗi API AI Ticket Assistant:"
+  ],
+  [
+    "Lỗi API face-enroll:",
+    "Lỗi API face-enroll:"
+  ],
+  [
+    "Lỗi GET /api/tickets:",
+    "Lỗi GET /api/tickets:"
+  ],
+  [
+    "Lỗi GET face-enroll:",
+    "Lỗi GET face-enroll:"
+  ],
+  [
+    "Lỗi IPN VNPAY:",
+    "Lỗi IPN VNPAY:"
+  ],
+  [
+    "Lỗi Xuất File",
+    "Lỗi Xuất File"
+  ],
+  [
+    "Lỗi chuyển đổi hình ảnh sang Base64:",
+    "Lỗi chuyển đổi hình ảnh sang Base64:"
+  ],
+  [
+    "Lỗi cập nhật CCCD NKS từ máy chủ.",
+    "Lỗi cập nhật Citizen ID NKS từ máy chủ."
+  ],
+  [
+    "Lỗi cập nhật NKS User Info từ máy chủ.",
+    "Lỗi cập nhật NKS User Info từ máy chủ."
+  ],
+  [
+    "Lỗi cập nhật danh sách phiếu:",
+    "Lỗi cập nhật danh sách phiếu:"
+  ],
+  [
+    "Lỗi cập nhật ảnh đại diện NKS",
+    "Lỗi cập nhật ảnh đại diện NKS"
+  ],
+  [
+    "Lỗi ghi file .skyline_tickets.json:",
+    "Lỗi ghi file .skyline_tickets.json:"
+  ],
+  [
+    "Lỗi gửi ticket:",
+    "Lỗi gửi ticket:"
+  ],
+  [
+    "Lỗi hệ thống khi lưu trữ mẫu FaceID.",
+    "Lỗi hệ thống khi lưu trữ mẫu FaceID."
+  ],
+  [
+    "Lỗi khi cập nhật thông tin thành viên.",
+    "Lỗi khi cập nhật thông tin thành viên."
+  ],
+  [
+    "Lỗi khi gửi dữ liệu FaceID. Vui lòng thử lại.",
+    "Lỗi khi gửi dữ liệu FaceID. Please thử lại."
+  ],
+  [
+    "Lỗi khi gửi hồ sơ e-KYC lên BQL.",
+    "Lỗi khi gửi hồ sơ e-KYC lên Management Board."
+  ],
+  [
+    "Lỗi khi xác nhận hồ sơ FaceID.",
+    "Lỗi khi Confirm hồ sơ FaceID."
+  ],
+  [
+    "Lỗi khi xử lý thêm thành viên qua API.",
+    "Lỗi khi xử lý thêm thành viên qua API."
+  ],
+  [
+    "Lỗi khởi tạo thanh toán VNPAY:",
+    "Lỗi khởi tạo Payment VNPAY:"
+  ],
+  [
+    "Lỗi kết nối API",
+    "Lỗi kết nối API"
+  ],
+  [
+    "Lỗi kết nối khi tra cứu API người dùng.",
+    "Lỗi kết nối khi tra cứu API người dùng."
+  ],
+  [
+    "Lỗi kết nối máy chủ khi cập nhật thông tin.",
+    "Lỗi kết nối máy chủ khi cập nhật thông tin."
+  ],
+  [
+    "Lỗi máy chủ khi cập nhật mật khẩu qua API:",
+    "Lỗi máy chủ khi cập nhật mật khẩu qua API:"
+  ],
+  [
+    "Lỗi máy chủ khi xử lý cấp tài khoản bàn giao:",
+    "Lỗi máy chủ khi xử lý cấp tài khoản Handover:"
+  ],
+  [
+    "Lỗi máy chủ xác thực khuôn mặt.",
+    "Lỗi máy chủ xác thực khuôn mặt."
+  ],
+  [
+    "Lỗi máy chủ xử lý đăng nhập:",
+    "Lỗi máy chủ xử lý đăng nhập:"
+  ],
+  [
+    "Lỗi sync AI reply lên NKS:",
+    "Lỗi sync AI reply lên NKS:"
+  ],
+  [
+    "Lỗi sync KTV lên NKS:",
+    "Lỗi sync Technician lên NKS:"
+  ],
+  [
+    "Lỗi tạo liên kết thanh toán VNPAY.",
+    "Lỗi tạo liên kết Payment VNPAY."
+  ],
+  [
+    "Lỗi tải danh sách hóa đơn.",
+    "Lỗi tải danh sách Bill / Invoice."
+  ],
+  [
+    "Lỗi tải danh sách phiếu.",
+    "Lỗi tải danh sách phiếu."
+  ],
+  [
+    "Lỗi tải danh sách thành viên gia đình từ API.",
+    "Lỗi tải danh sách thành viên gia đình từ API."
+  ],
+  [
+    "Lỗi tải thông tin FaceID.",
+    "Lỗi tải thông tin FaceID."
+  ],
+  [
+    "Lỗi xác thực người dùng từ API",
+    "Lỗi xác thực người dùng từ API"
+  ],
+  [
+    "Lỗi xóa thành viên gia đình.",
+    "Lỗi xóa thành viên gia đình."
+  ],
+  [
+    "Lỗi xử lý AI",
+    "Lỗi xử lý AI"
+  ],
+  [
+    "Lỗi xử lý VNPAY Return URL:",
+    "Lỗi xử lý VNPAY Return URL:"
+  ],
+  [
+    "Lỗi xử lý hóa đơn.",
+    "Lỗi xử lý Bill / Invoice."
+  ],
+  [
+    "Lỗi xử lý phiếu.",
+    "Lỗi xử lý phiếu."
+  ],
+  [
+    "Lỗi đọc file .skyline_tickets.json:",
+    "Lỗi đọc file .skyline_tickets.json:"
+  ],
+  [
+    "Lỗi đọc ảnh:",
+    "Lỗi đọc ảnh:"
+  ],
+  [
+    "Lỗi đồng bộ face profiles:",
+    "Lỗi đồng bộ face profiles:"
+  ],
+  [
+    "Miễn phí bảo hành",
+    "Miễn phí bảo hành"
+  ],
+  [
+    "Miễn phí theo hạn mức sinh hoạt",
+    "Miễn phí theo hạn mức sinh hoạt"
+  ],
+  [
+    "Mái lá tự nhiên chống nắng",
+    "Mái lá tự nhiên chống nắng"
+  ],
+  [
+    "Mát Mẻ",
+    "Mát Mẻ"
+  ],
+  [
+    "Máy chủ API không phản hồi dữ liệu hợp lệ.",
+    "Máy chủ API không phản hồi dữ liệu hợp lệ."
+  ],
+  [
+    "Máy chủ API không phản hồi kết quả đổi mật khẩu.",
+    "Máy chủ API không phản hồi kết quả đổi mật khẩu."
+  ],
+  [
+    "Máy tập đa năng ngoài trời",
+    "Máy tập đa năng ngoài trời"
+  ],
+  [
+    "Mã QR đón khách được tạo thành công và có hiệu lực ngay lập tức.",
+    "QR Code đón khách được tạo Successfully và có hiệu lực ngay lập tức."
+  ],
+  [
+    "Mô phỏng đóng hoặc hé mở cánh cửa vật lý",
+    "Mô phỏng đóng hoặc hé mở cánh cửa vật lý"
+  ],
+  [
+    "Môi trường đang quá tối để nhận diện. Vui lòng bật đèn hoặc di chuyển đến nơi có ánh sáng tốt hơn.",
+    "Môi trường đang quá tối để nhận diện. Please bật đèn hoặc di chuyển đến nơi có ánh sáng tốt hơn."
+  ],
+  [
+    "Môi trường:",
+    "Môi trường:"
+  ],
+  [
+    "Mật khẩu hiện tại không chính xác hoặc không hợp lệ theo API.",
+    "Mật khẩu hiện tại không chính xác hoặc không hợp lệ theo API."
+  ],
+  [
+    "Mật khẩu mặc định:",
+    "Mật khẩu mặc định:"
+  ],
+  [
+    "Mật khẩu mới không được trùng với mật khẩu hiện tại.",
+    "Mật khẩu mới không được trùng với mật khẩu hiện tại."
+  ],
+  [
+    "Mật khẩu mới phải có độ dài tối thiểu 6 ký tự (khuyến nghị từ 8 ký tự trở lên).",
+    "Mật khẩu mới phải có độ dài tối thiểu 6 ký tự (khuyến nghị từ 8 ký tự trở lên)."
+  ],
+  [
+    "Mật khẩu mới phải có độ dài tối thiểu 6 ký tự.",
+    "Mật khẩu mới phải có độ dài tối thiểu 6 ký tự."
+  ],
+  [
+    "Mật khẩu xác nhận không khớp với mật khẩu mới đã nhập.",
+    "Mật khẩu Confirm không khớp với mật khẩu mới đã nhập."
+  ],
+  [
+    "Mật khẩu xác nhận không khớp với mật khẩu mới.",
+    "Mật khẩu Confirm không khớp với mật khẩu mới."
+  ],
+  [
+    "Mật độ hiện tại:",
+    "Mật độ hiện tại:"
+  ],
+  [
+    "MẶT SAU (Back)",
+    "MẶT SAU (Back)"
+  ],
+  [
+    "MẶT SAU (CHIP ĐIỆN TỬ & VÂN TAY)",
+    "MẶT SAU (CHIP ĐIỆN TỬ & VÂN TAY)"
+  ],
+  [
+    "MẶT TRƯỚC (Front)",
+    "MẶT TRƯỚC (Front)"
+  ],
+  [
+    "Mặc định 100%",
+    "Mặc định 100%"
+  ],
+  [
+    "Mặt Bằng 2D",
+    "Mặt Bằng 2D"
+  ],
+  [
+    "Mặt có ảnh",
+    "Mặt có ảnh"
+  ],
+  [
+    "Mặt tiền Phố Cọ Rodeo & Vành Đai",
+    "Mặt tiền Phố Cọ Rodeo & Vành Đai"
+  ],
+  [
+    "Mặt trước CCCD",
+    "Mặt trước Citizen ID"
+  ],
+  [
+    "Mỉm cười",
+    "Mỉm cười"
+  ],
+  [
+    "Mỉm cười tự nhiên hoặc chớp mắt nhẹ để chứng thực người thật, chống giả mạo ảnh tĩnh.",
+    "Mỉm cười tự nhiên hoặc chớp mắt nhẹ để chứng thực người thật, chống giả mạo ảnh tĩnh."
+  ],
+  [
+    "Mọi Loại Biểu Quyết",
+    "Mọi Loại Biểu Quyết"
+  ],
+  [
+    "Mối Quan Hệ:",
+    "Mối Quan Hệ:"
+  ],
+  [
+    "Mở Cửa Vào Tiện Ích",
+    "Mở Cửa Vào Tiện Ích"
+  ],
+  [
+    "Mở Lại",
+    "Mở Lại"
+  ],
+  [
+    "Mở Rèm Ban Công",
+    "Mở Rèm Ban Công"
+  ],
+  [
+    "Mở Thẻ & Đăng Ký Tiện Ích",
+    "Mở Thẻ & Register / Book Tiện Ích"
+  ],
+  [
+    "Mở Thẻ & Đặt Tiện Ích",
+    "Mở Thẻ & Đặt Tiện Ích"
+  ],
+  [
+    "Mở Trang sandbox.vnpayment.vn",
+    "Mở Trang sandbox.vnpayment.vn"
+  ],
+  [
+    "Mở Trình Xác Nhận Trên Ứng Dụng Mobile Banking",
+    "Mở Trình Confirm Trên Ứng Dụng Mobile Banking"
+  ],
+  [
+    "Mở Trợ Lý Ảo Skyline AI",
+    "Mở Trợ Lý Ảo Skyline AI"
+  ],
+  [
+    "Mở cổng 0.28s",
+    "Mở cổng 0.28s"
+  ],
+  [
+    "Mở cửa sinh trắc học FaceID < 0.5s và phân tích camera phát hiện đám cháy, người ngã, xâm nhập trái phép.",
+    "Mở cửa sinh trắc học FaceID < 0.5s và phân tích camera phát hiện đám cháy, người ngã, xâm nhập trái phép."
+  ],
+  [
+    "Mở lại cửa sổ chat",
+    "Mở lại cửa sổ chat"
+  ],
+  [
+    "Mở rộng Menu (Hamburger Bị Cắn 🍔)",
+    "Mở rộng Menu (Hamburger Bị Cắn 🍔)"
+  ],
+  [
+    "Mở rộng kích thước",
+    "Mở rộng kích thước"
+  ],
+  [
+    "NCB (Quốc Dân)",
+    "NCB (Quốc Dân)"
+  ],
+  [
+    "NGHỈ DƯỠNG",
+    "NGHỈ DƯỠNG"
+  ],
+  [
+    "Nghiêm Ngặt 100%",
+    "Nghiêm Ngặt 100%"
+  ],
+  [
+    "Nghẹt cống / Thoát sàn trào",
+    "Nghẹt cống / Thoát sàn trào"
+  ],
+  [
+    "Nghẹt cống thoát sàn nhà tắm",
+    "Nghẹt cống thoát sàn nhà tắm"
+  ],
+  [
+    "Ngày / OTP:",
+    "Ngày / OTP:"
+  ],
+  [
+    "Ngày 05 hàng tháng",
+    "Ngày 05 hàng tháng"
+  ],
+  [
+    "Ngày Cấp & Nơi Cấp:",
+    "Ngày Cấp & Nơi Cấp:"
+  ],
+  [
+    "Ngày Lập",
+    "Ngày Lập"
+  ],
+  [
+    "Ngày Phát Hành (MM/YY):",
+    "Ngày Phát Hành (MM/YY):"
+  ],
+  [
+    "Ngày Phục Vụ:",
+    "Ngày Phục Vụ:"
+  ],
+  [
+    "Ngày dự kiến thực hiện:",
+    "Ngày dự kiến thực hiện:"
+  ],
+  [
+    "Ngày nộp gần nhất:",
+    "Ngày nộp gần nhất:"
+  ],
+  [
+    "Ngân hàng:",
+    "Ngân hàng:"
+  ],
+  [
+    "Người Dùng Skyline",
+    "Người Dùng Skyline"
+  ],
+  [
+    "Người Nhà (Đã Chủ Hộ Xác Nhận)",
+    "Family Member (Đã Apartment Owner Confirm)"
+  ],
+  [
+    "Người Nhà Đã Chọn:",
+    "Family Member Đã Chọn:"
+  ],
+  [
+    "Người Thân Gia Đình",
+    "Người Thân Gia Đình"
+  ],
+  [
+    "Ngưỡng &lt; 65°C",
+    "Ngưỡng &lt; 65°C"
+  ],
+  [
+    "Ngắt Mic",
+    "Ngắt Mic"
+  ],
+  [
+    "Ngắt aptomat nhánh khu vực xảy ra sự cố, tuyệt đối không dùng tay ướt chạm vào thiết bị điện.",
+    "Ngắt aptomat nhánh khu vực xảy ra sự cố, tuyệt đối không dùng tay ướt chạm vào thiết bị điện."
+  ],
+  [
+    "Nhà phụ trợ bể bơi",
+    "Nhà phụ trợ bể bơi"
+  ],
+  [
+    "Nhân Khẩu",
+    "Nhân Khẩu"
+  ],
+  [
+    "Nhìn vào camera",
+    "Nhìn vào camera"
+  ],
+  [
+    "Nhảy Aptomat tổng / Mất điện",
+    "Nhảy Aptomat tổng / Mất điện"
+  ],
+  [
+    "Nhấn để lưu ảnh",
+    "Nhấn để lưu ảnh"
+  ],
+  [
+    "Nhấn để mở lại cửa sổ chat",
+    "Nhấn để mở lại cửa sổ chat"
+  ],
+  [
+    "Nhấp vào các điểm đánh dấu trên bản đồ bên trái để xem chi tiết tiện ích.",
+    "Nhấp vào các điểm đánh dấu trên bản đồ bên trái để View Details tiện ích."
+  ],
+  [
+    "Nhấp vào ảnh để phóng to toàn màn hình",
+    "Nhấp vào ảnh để phóng to toàn màn hình"
+  ],
+  [
+    "Nhận diện mở cửa tức thì < 0.2s.",
+    "Nhận diện mở cửa tức thì < 0.2s."
+  ],
+  [
+    "Nhận xét từ AI",
+    "Nhận xét từ AI"
+  ],
+  [
+    "Nhập 6 chữ số OTP...",
+    "Nhập 6 chữ số OTP..."
+  ],
+  [
+    "Nhập 6 số (VD: 686868)",
+    "Nhập 6 số (VD: 686868)"
+  ],
+  [
+    "Nhập Lại Mật Khẩu Mới",
+    "Nhập Lại Mật Khẩu Mới"
+  ],
+  [
+    "Nhập Mới",
+    "Nhập Mới"
+  ],
+  [
+    "Nhập SĐT hoặc CCCD...",
+    "Nhập SĐT hoặc Citizen ID..."
+  ],
+  [
+    "Nhập SĐT tiếp thợ...",
+    "Nhập SĐT tiếp thợ..."
+  ],
+  [
+    "Nhập câu hỏi (Enter để gửi)...",
+    "Nhập câu hỏi (Enter để gửi)..."
+  ],
+  [
+    "Nhập câu hỏi (VD: 'hồ bơi', 'tiền nước rò rỉ', 'sửa ống nước', 'faceid')...",
+    "Nhập câu hỏi (VD: 'Swimming Pool', 'Water Bill rò rỉ', 'sửa ống nước', 'faceid')..."
+  ],
+  [
+    "Nhập email tài khoản (VD: huuluc04@gmail.com)...",
+    "Nhập email tài khoản (VD: huuluc04@gmail.com)..."
+  ],
+  [
+    "Nhập mật khẩu hiện tại của bạn...",
+    "Nhập mật khẩu hiện tại của bạn..."
+  ],
+  [
+    "Nhập mật khẩu mới hoặc bấm [Tạo Mật Khẩu Tự Động]...",
+    "Nhập mật khẩu mới hoặc bấm [Tạo Mật Khẩu Tự Động]..."
+  ],
+  [
+    "Nhập mật khẩu...",
+    "Nhập mật khẩu..."
+  ],
+  [
+    "Nhập nội dung phản hồi, xin lỗi hoặc giải pháp xử lý từ BQL...",
+    "Nhập nội dung phản hồi, xin lỗi hoặc giải pháp xử lý từ Management Board..."
+  ],
+  [
+    "Nhập số điện thoại (VD: 0364967082)",
+    "Nhập số điện thoại (VD: 0364967082)"
+  ],
+  [
+    "Nhập số điện thoại...",
+    "Nhập số điện thoại..."
+  ],
+  [
+    "Nhập tỉnh thành...",
+    "Nhập tỉnh thành..."
+  ],
+  [
+    "Nhập địa chỉ email...",
+    "Nhập địa chỉ email..."
+  ],
+  [
+    "Năm đưa vào vận hành:",
+    "Năm đưa vào vận hành:"
+  ],
+  [
+    "Nơi Cấp & Ngày Cấp:",
+    "Nơi Cấp & Ngày Cấp:"
+  ],
+  [
+    "Nơi cấp / ngày cấp",
+    "Nơi cấp / ngày cấp"
+  ],
+  [
+    "nước",
+    "nước"
+  ],
+  [
+    "Nước Tiêu Thụ:",
+    "Nước Tiêu Thụ:"
+  ],
+  [
+    "Nếu thú cưng gây tiếng sủa liên tục ảnh hưởng giấc ngủ của hàng xóm, BQL sẽ gửi biên bản nhắc nhở lần 1 và áp dụng chế tài theo Nội quy chung cư.",
+    "Nếu thú cưng gây tiếng sủa liên tục ảnh hưởng giấc ngủ của hàng xóm, Management Board sẽ gửi biên bản nhắc nhở lần 1 và áp dụng chế tài theo Building Rules Apartment Building."
+  ],
+  [
+    "Nội Quy Tiếng Ồn Sinh Hoạt & Âm Thanh",
+    "Building Rules Tiếng Ồn Sinh Hoạt & Âm Thanh"
+  ],
+  [
+    "Nội Quy Tiện Ích & Hồ Bơi Resort",
+    "Building Rules Tiện Ích & Swimming Pool Resort"
+  ],
+  [
+    "Nội dung báo:",
+    "Nội dung báo:"
+  ],
+  [
+    "Nội dung chỉ đạo & Checklist kỹ thuật:",
+    "Nội dung chỉ đạo & Checklist kỹ thuật:"
+  ],
+  [
+    "Nội dung không hợp lệ",
+    "Nội dung không hợp lệ"
+  ],
+  [
+    "Nội dung phản ánh:",
+    "Nội dung phản ánh:"
+  ],
+  [
+    "Nội dung:",
+    "Nội dung:"
+  ],
+  [
+    "Ozone lọc 3 cấp",
+    "Ozone lọc 3 cấp"
+  ],
+  [
+    "Ozone xử lý • 29°C",
+    "Ozone xử lý • 29°C"
+  ],
+  [
+    "PHONG CÁCH NHẬT",
+    "PHONG CÁCH NHẬT"
+  ],
+  [
+    "Phiên làm việc hết hạn",
+    "Phiên làm việc hết hạn"
+  ],
+  [
+    "Phiên đăng nhập không hợp lệ hoặc đã hết hạn.",
+    "Phiên đăng nhập không hợp lệ hoặc đã hết hạn."
+  ],
+  [
+    "Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại để đổi mật khẩu.",
+    "Phiên đăng nhập đã hết hạn. Please đăng nhập lại để đổi mật khẩu."
+  ],
+  [
+    "Phiếu xử lý:",
+    "Phiếu xử lý:"
+  ],
+  [
+    "Phong cách Bờ Tây nước Mỹ",
+    "Phong cách Bờ Tây nước Mỹ"
+  ],
+  [
+    "Phát hiện thông tin CCCD có sai lệch",
+    "Phát hiện thông tin Citizen ID có sai lệch"
+  ],
+  [
+    "Phát triển bởi:",
+    "Phát triển bởi:"
+  ],
+  [
+    "Phân Loại",
+    "Phân Loại"
+  ],
+  [
+    "Phân Tầng:",
+    "Phân Tầng:"
+  ],
+  [
+    "Phí trông giữ phương tiện tầng hầm",
+    "Phí trông giữ phương tiện Basement"
+  ],
+  [
+    "Phí vận hành & vệ sinh",
+    "Phí vận hành & vệ sinh"
+  ],
+  [
+    "Phòng ngủ lớn tiện nghi cho người thân, giường Queen và tủ âm.",
+    "Phòng ngủ lớn tiện nghi cho người thân, giường Queen và tủ âm."
+  ],
+  [
+    "Phòng ngủ master có góc thay đồ walk-in closet và view ngắm hoàng hôn.",
+    "Phòng ngủ master có góc thay đồ walk-in closet và view ngắm hoàng hôn."
+  ],
+  [
+    "Phòng ngủ thứ 2 tầng trên có ban công lửng nhìn xuống phòng khách.",
+    "Phòng ngủ thứ 2 tầng trên có ban công lửng nhìn xuống phòng khách."
+  ],
+  [
+    "Phòng ngủ tổng thống, bồn tắm nằm đá cẩm thạch ngắm trọn sao trời.",
+    "Phòng ngủ tổng thống, bồn tắm nằm đá cẩm thạch ngắm trọn sao trời."
+  ],
+  [
+    "Phóng to toàn màn hình",
+    "Phóng to toàn màn hình"
+  ],
+  [
+    "Phương Tiện",
+    "Phương Tiện"
+  ],
+  [
+    "Phải (+25°)",
+    "Phải (+25°)"
+  ],
+  [
+    "Phản ánh",
+    "Phản ánh"
+  ],
+  [
+    "Phản ánh dịch vụ",
+    "Phản ánh dịch vụ"
+  ],
+  [
+    "Phố Cọ Rodeo & Dạo Bộ",
+    "Phố Cọ Rodeo & Dạo Bộ"
+  ],
+  [
+    "Phố cọ Rodeo",
+    "Phố cọ Rodeo"
+  ],
+  [
+    "Phối Cảnh 3D",
+    "Phối Cảnh 3D"
+  ],
+  [
+    "Phối Cảnh Không Gian",
+    "Phối Cảnh Không Gian"
+  ],
+  [
+    "QR Mời Khách",
+    "QR Mời Khách"
+  ],
+  [
+    "QUY TẮC SỐNG CÒN: TUYỆT ĐỐI KHÔNG SỬ DỤNG THANG MÁY KHI CÓ CHUÔNG BÁO CHÁY.",
+    "QUY TẮC SỐNG CÒN: TUYỆT ĐỐI KHÔNG SỬ DỤNG Elevator KHI CÓ CHUÔNG BÁO CHÁY."
+  ],
+  [
+    "Qua đêm",
+    "Qua đêm"
+  ],
+  [
+    "Quan hệ:",
+    "Quan hệ:"
+  ],
+  [
+    "Quay phải",
+    "Quay phải"
+  ],
+  [
+    "Quay trái",
+    "Quay trái"
+  ],
+  [
+    "Quy Chế Chung Cư",
+    "Quy Chế Apartment Building"
+  ],
+  [
+    "Quy Chế Nuôi Thú Cưng",
+    "Quy Chế Nuôi Thú Cưng"
+  ],
+  [
+    "Quy Trình Đăng Ký Vận Chuyển",
+    "Quy Trình Register / Book Vận Chuyển"
+  ],
+  [
+    "Quy trình thu thập sinh trắc học yêu cầu đầy đủ 4 mẫu góc mặt: Nhìn thẳng, Nghiêng trái, Nghiêng phải và Xác thực sống (Liveness).",
+    "Quy trình thu thập sinh trắc học yêu cầu đầy đủ 4 mẫu góc mặt: Nhìn thẳng, Nghiêng trái, Nghiêng phải và Xác thực sống (Liveness)."
+  ],
+  [
+    "Quy Định Vận Chuyển & Dắt Thú Cưng",
+    "Regulations Vận Chuyển & Dắt Thú Cưng"
+  ],
+  [
+    "Quy định Phân quyền Cư dân Tòa nhà:",
+    "Regulations Phân quyền Residents Building:"
+  ],
+  [
+    "Quy định phơi đồ ban công",
+    "Regulations phơi đồ ban công"
+  ],
+  [
+    "Quyền truy cập Camera bị từ chối trên trình duyệt. Bạn có thể bấm vào ổ khóa cạnh URL để Cấp quyền Camera (Allow) và bấm \"Thử Lại Camera\".",
+    "Quyền truy cập Camera bị từ chối trên trình duyệt. Bạn có thể bấm vào ổ khóa cạnh URL để Cấp quyền Camera (Allow) và bấm \"Thử Lại Camera\"."
+  ],
+  [
+    "Quyền truy cập Camera bị từ chối trên trình duyệt. Vui lòng bấm vào biểu tượng ổ khóa cạnh URL để Cấp quyền Camera (Allow) và bấm \"Thử Lại\".",
+    "Quyền truy cập Camera bị từ chối trên trình duyệt. Please bấm vào biểu tượng ổ khóa cạnh URL để Cấp quyền Camera (Allow) và bấm \"Thử Lại\"."
+  ],
+  [
+    "Quyền áp dụng:",
+    "Quyền áp dụng:"
+  ],
+  [
+    "Quá giờ hẹn bắt đầu:",
+    "Quá giờ hẹn bắt đầu:"
+  ],
+  [
+    "Quét Biển Số Tự Động Mở Cổng",
+    "Quét Biển Số Tự Động Mở Cổng"
+  ],
+  [
+    "Quét Khói Lửa & Liveness FaceID",
+    "Quét Khói Lửa & Liveness FaceID"
+  ],
+  [
+    "Quét Lại 4 Mẫu",
+    "Quét Lại 4 Mẫu"
+  ],
+  [
+    "Quét Lại CCCD",
+    "Quét Lại Citizen ID"
+  ],
+  [
+    "Quét Lại Từ Đầu",
+    "Quét Lại Từ Đầu"
+  ],
+  [
+    "Quét Mã",
+    "Quét Mã"
+  ],
+  [
+    "Quét Mẫu FaceID",
+    "Quét Mẫu FaceID"
+  ],
+  [
+    "Quét Mẫu FaceID Ngay",
+    "Quét Mẫu FaceID Ngay"
+  ],
+  [
+    "Quét Thẻ CCCD",
+    "Quét Thẻ Citizen ID"
+  ],
+  [
+    "Quê Quán / Nơi Sinh:",
+    "Quê Quán / Nơi Sinh:"
+  ],
+  [
+    "Quý cư dân",
+    "Quý Residents"
+  ],
+  [
+    "Quản Lý Khóa Cửa & Thẻ Cư Dân",
+    "Quản Lý Khóa Cửa & Thẻ Residents"
+  ],
+  [
+    "Quảng Trường & VinWonders",
+    "Quảng Trường & VinWonders"
+  ],
+  [
+    "Quảng Trị",
+    "Quảng Trị"
+  ],
+  [
+    "Quảng trường nghệ thuật biểu tượng chim đại bàng khổng lồ với thác nước cảnh quan và đài phun nước trình diễn ánh sáng.",
+    "Quảng trường nghệ thuật biểu tượng chim đại bàng khổng lồ với thác nước cảnh quan và đài phun nước trình diễn ánh sáng."
+  ],
+  [
+    "Quẹt Thẻ NFC",
+    "Quẹt Thẻ NFC"
+  ],
+  [
+    "RÈM",
+    "RÈM"
+  ],
+  [
+    "Rò rỉ vòi nước / Bồn rửa",
+    "Rò rỉ vòi nước / Bồn rửa"
+  ],
+  [
+    "Rò rỉ vòi nước bồn rửa chén",
+    "Rò rỉ vòi nước bồn rửa chén"
+  ],
+  [
+    "Rò rỉ ống nước, mất điện, kẹt khóa cửa thông minh.",
+    "Rò rỉ ống nước, mất điện, kẹt khóa cửa thông minh."
+  ],
+  [
+    "Sao Chép Link Đón Khách",
+    "Sao Chép Link Đón Khách"
+  ],
+  [
+    "Sao chép lời mời và mở Messenger",
+    "Sao chép lời mời và mở Messenger"
+  ],
+  [
+    "Sao chép lời mời và mở Zalo để gửi",
+    "Sao chép lời mời và mở Zalo để gửi"
+  ],
+  [
+    "Sao chép mã gửi khách",
+    "Sao chép mã gửi khách"
+  ],
+  [
+    "Sao chép nội dung câu trả lời",
+    "Sao chép nội dung câu trả lời"
+  ],
+  [
+    "Shophouse & Cà phê nhiệt đới",
+    "Shophouse & Cà phê nhiệt đới"
+  ],
+  [
+    "Sinh lại chuỗi ngẫu nhiên khác",
+    "Sinh lại chuỗi ngẫu nhiên khác"
+  ],
+  [
+    "Siết ốc bu lông chân đế, bổ sung mỡ bôi trơn bạc đạn, kiểm tra dây curoa.",
+    "Siết ốc bu lông chân đế, bổ sung mỡ bôi trơn bạc đạn, kiểm tra dây curoa."
+  ],
+  [
+    "Skyline SmartSec / Nhập khẩu Đức",
+    "Skyline SmartSec / Nhập khẩu Đức"
+  ],
+  [
+    "So kỳ trước:",
+    "So kỳ trước:"
+  ],
+  [
+    "Sofa cong nghệ thuật, bàn trà đôi mặt đá và hệ thống đèn LED âm trần dịu mắt.",
+    "Sofa cong nghệ thuật, bàn trà đôi mặt đá và hệ thống đèn LED âm trần dịu mắt."
+  ],
+  [
+    "Sofa góc hiện đại, sàn gỗ công nghiệp cao cấp chống nước.",
+    "Sofa góc hiện đại, sàn gỗ công nghiệp cao cấp chống nước."
+  ],
+  [
+    "Studio Hiện Đại",
+    "Studio Hiện Đại"
+  ],
+  [
+    "Studio Nhỏ Gọn",
+    "Studio Nhỏ Gọn"
+  ],
+  [
+    "Studio Tiện Nghi",
+    "Studio Tiện Nghi"
+  ],
+  [
+    "Suất Sinh Lời Cho Thuê:",
+    "Suất Sinh Lời Cho Thuê:"
+  ],
+  [
+    "Suối Bậc Thang & Thác Cảnh Quan",
+    "Suối Bậc Thang & Thác Cảnh Quan"
+  ],
+  [
+    "Suối bậc cảnh quan",
+    "Suối bậc cảnh quan"
+  ],
+  [
+    "SÔI ĐỘNG",
+    "SÔI ĐỘNG"
+  ],
+  [
+    "Sân Cỏ Đa Năng Y-01 (Malibu)",
+    "Sân Cỏ Đa Năng Y-01 (Malibu)"
+  ],
+  [
+    "Sân Gym ngoài trời",
+    "Sân Gym ngoài trời"
+  ],
+  [
+    "Sân Tennis ATP + Sân Bóng Rổ FIBA",
+    "Sân Tennis ATP + Sân Bóng Rổ FIBA"
+  ],
+  [
+    "Sân thể thao",
+    "Sân thể thao"
+  ],
+  [
+    "Sân Thể Thao Malibu (Tennis & Bóng Rổ)",
+    "Sân Thể Thao Malibu (Tennis & Bóng Rổ)"
+  ],
+  [
+    "Sân Yoga Ngoài Trời & Thiền",
+    "Sân Yoga Ngoài Trời & Thiền"
+  ],
+  [
+    "Sân cỏ đa năng",
+    "Sân cỏ đa năng"
+  ],
+  [
+    "Sân yoga",
+    "Sân yoga"
+  ],
+  [
+    "SĐT nhận OTP:",
+    "SĐT nhận OTP:"
+  ],
+  [
+    "SĐT:",
+    "SĐT:"
+  ],
+  [
+    "SẢNH",
+    "SẢNH"
+  ],
+  [
+    "Sảnh (G)",
+    "Sảnh (G)"
+  ],
+  [
+    "SẢNH CHỜ THANG MÁY (2.4m)",
+    "SẢNH CHỜ Elevator (2.4m)"
+  ],
+  [
+    "Sản Lượng",
+    "Sản Lượng"
+  ],
+  [
+    "Sảnh chính chung cư",
+    "Sảnh chính Apartment Building"
+  ],
+  [
+    "Sảnh Đón & Cửa Vào",
+    "Reception Lobby & Cửa Vào"
+  ],
+  [
+    "Sảnh Đón Cửa Vào",
+    "Reception Lobby Cửa Vào"
+  ],
+  [
+    "Sảnh đón trả khách có mái che trang trọng tại từng chung cư",
+    "Reception Lobby trả khách có mái che trang trọng tại từng Apartment Building"
+  ],
+  [
+    "Sẵn sàng gửi",
+    "Sẵn sàng gửi"
+  ],
+  [
+    "Sẵn sàng sử dụng 220V",
+    "Sẵn sàng sử dụng 220V"
+  ],
+  [
+    "Số (0-9)",
+    "Số (0-9)"
+  ],
+  [
+    "Số CCCD (12 số):",
+    "Số Citizen ID (12 số):"
+  ],
+  [
+    "Số CCCD không hợp lệ (yêu cầu từ 9 đến 12 chữ số).",
+    "Số Citizen ID không hợp lệ (yêu cầu từ 9 đến 12 chữ số)."
+  ],
+  [
+    "Số CCCD không trùng khớp hồ sơ",
+    "Số Citizen ID không trùng khớp hồ sơ"
+  ],
+  [
+    "Số Chìa Khóa Cơ:",
+    "Số Chìa Khóa Cơ:"
+  ],
+  [
+    "Số Thẻ Ngân Hàng (ATM):",
+    "Số Thẻ Ngân Hàng (ATM):"
+  ],
+  [
+    "Số Thẻ Thang Máy Phân Tầng:",
+    "Số Thẻ Elevator Phân Tầng:"
+  ],
+  [
+    "Số lượng:",
+    "Số lượng:"
+  ],
+  [
+    "Số thẻ test:",
+    "Số thẻ test:"
+  ],
+  [
+    "Số tiền chuyển:",
+    "Số tiền chuyển:"
+  ],
+  [
+    "Số tiền trích nợ:",
+    "Số tiền trích nợ:"
+  ],
+  [
+    "Số tiền:",
+    "Số tiền:"
+  ],
+  [
+    "Số Điện Thoại Đăng Ký Ví MoMo:",
+    "Số Điện Thoại Register / Book Ví MoMo:"
+  ],
+  [
+    "Số điện thoại chưa tồn tại trong cơ sở dữ liệu cư dân tòa nhà.",
+    "Số điện thoại chưa tồn tại trong cơ sở dữ liệu Residents Building."
+  ],
+  [
+    "Sổ Tay & Nội Quy",
+    "Sổ Tay & Building Rules"
+  ],
+  [
+    "Sổ tay hướng dẫn cư dân Skyline Smart Residence",
+    "Sổ tay hướng dẫn Residents Skyline Smart Residence"
+  ],
+  [
+    "Sớm nhất",
+    "Sớm nhất"
+  ],
+  [
+    "Sức khỏe không đảm bảo, cần nghỉ ngơi",
+    "Sức khỏe không đảm bảo, cần nghỉ ngơi"
+  ],
+  [
+    "Sự việc:",
+    "Sự việc:"
+  ],
+  [
+    "THANG BỘ 1",
+    "THANG BỘ 1"
+  ],
+  [
+    "THANG BỘ 2",
+    "THANG BỘ 2"
+  ],
+  [
+    "THƯƠNG MẠI",
+    "THƯƠNG MẠI"
+  ],
+  [
+    "THƯỢNG LƯU",
+    "THƯỢNG LƯU"
+  ],
+  [
+    "THẺ ĐÓN KHÁCH ĐIỆN TỬ",
+    "THẺ ĐÓN KHÁCH ĐIỆN TỬ"
+  ],
+  [
+    "TP. Hồ Chí Minh",
+    "TP. Hồ Chí Minh"
+  ],
+  [
+    "Test Phân Loại Ý Định (Intent)",
+    "Test Phân Loại Ý Định (Intent)"
+  ],
+  [
+    "Thanh phân bổ tỷ trọng tổng chi phí:",
+    "Thanh phân bổ tỷ trọng tổng chi phí:"
+  ],
+  [
+    "Thay đổi kế hoạch khác",
+    "Thay đổi kế hoạch khác"
+  ],
+  [
+    "Thay đổi kế hoạch khác cùng bạn bè/người thân",
+    "Thay đổi kế hoạch khác cùng bạn bè/người thân"
+  ],
+  [
+    "Thiết Kế Nội Thất:",
+    "Thiết Kế Nội Thất:"
+  ],
+  [
+    "Thiếu ID thành viên cần cập nhật.",
+    "Thiếu ID thành viên cần cập nhật."
+  ],
+  [
+    "Thiếu ID thành viên cần hủy liên kết.",
+    "Thiếu ID thành viên cần hủy liên kết."
+  ],
+  [
+    "Thiếu mã hóa đơn billId.",
+    "Thiếu mã Bill / Invoice billId."
+  ],
+  [
+    "Thiếu thông tin định danh người dùng (userId).",
+    "Thiếu thông tin định danh người dùng (userId)."
+  ],
+  [
+    "Thiếu ảnh mặt trước thẻ CCCD.",
+    "Thiếu ảnh mặt trước thẻ Citizen ID."
+  ],
+  [
+    "Thiếu ảnh nghiệm thu",
+    "Thiếu ảnh Acceptance Verification"
+  ],
+  [
+    "Thiếu ảnh nghiệm thu của KTV",
+    "Thiếu ảnh Acceptance Verification của Technician"
+  ],
+  [
+    "Thu gọn Menu (Hamburger Nguyên Vẹn 🍔)",
+    "Thu gọn Menu (Hamburger Nguyên Vẹn 🍔)"
+  ],
+  [
+    "Thu nhỏ kích thước",
+    "Thu nhỏ kích thước"
+  ],
+  [
+    "Thu nhỏ thanh dock (không che màn hình)",
+    "Thu nhỏ thanh dock (không che màn hình)"
+  ],
+  [
+    "Thu nhỏ xuống đáy màn hình",
+    "Thu nhỏ xuống đáy màn hình"
+  ],
+  [
+    "Thu thập 4 mẫu FaceID thành công! Hồ sơ đã được chuyển đến Ban Quản Lý để thẩm định và phê duyệt.",
+    "Thu thập 4 mẫu FaceID Successfully! Hồ sơ đã được chuyển đến Management Board để thẩm định và phê duyệt."
+  ],
+  [
+    "Thành Tiền (VNĐ)",
+    "Thành Tiền (VNĐ)"
+  ],
+  [
+    "Thành phố Hồ Chí Minh",
+    "Thành phố Hồ Chí Minh"
+  ],
+  [
+    "Thác nước trang trí tạo âm thanh róc rách thư giãn tinh thần",
+    "Thác nước trang trí tạo âm thanh róc rách thư giãn tinh thần"
+  ],
+  [
+    "Thác nước điểm nhấn",
+    "Thác nước điểm nhấn"
+  ],
+  [
+    "Tháp Biểu Tượng 45T",
+    "Tháp Biểu Tượng 45T"
+  ],
+  [
+    "Thông Báo Giao Dịch VNPAY",
+    "Thông Báo Giao Dịch VNPAY"
+  ],
+  [
+    "Thông Thủy (m²)",
+    "Thông Thủy (m²)"
+  ],
+  [
+    "Thông tin số tài khoản chuyển khoản ngân hàng BIDV BQL",
+    "Thông tin số tài khoản chuyển khoản ngân hàng BIDV Management Board"
+  ],
+  [
+    "Thú cưng đi thang máy nào?",
+    "Thú cưng đi Elevator nào?"
+  ],
+  [
+    "Thước Đo: Bật",
+    "Thước Đo: Bật"
+  ],
+  [
+    "Thước Đo: Tắt",
+    "Thước Đo: Tắt"
+  ],
+  [
+    "Thường (a-z)",
+    "Thường (a-z)"
+  ],
+  [
+    "Thảm cỏ mở rộng tổ chức sự kiện cộng đồng & dã ngoại gia đình ngoài trời",
+    "Thảm cỏ mở rộng tổ chức sự kiện cộng đồng & dã ngoại gia đình ngoài trời"
+  ],
+  [
+    "Thẻ ATM & Tài Khoản Ngân Hàng",
+    "Thẻ ATM & Tài Khoản Ngân Hàng"
+  ],
+  [
+    "Thẻ Chip Điện Tử Bảo Mật Cao",
+    "Thẻ Chip Điện Tử Bảo Mật Cao"
+  ],
+  [
+    "Thẻ RFID / Ô đỗ:",
+    "Thẻ RFID / Ô đỗ:"
+  ],
+  [
+    "Thẻ Test",
+    "Thẻ Test"
+  ],
+  [
+    "Thẻ giao dịch:",
+    "Thẻ giao dịch:"
+  ],
+  [
+    "Thẻ/Tài khoản của quý khách chưa đăng ký dịch vụ InternetBanking.",
+    "Thẻ/Tài khoản của quý khách chưa Register / Book dịch vụ InternetBanking."
+  ],
+  [
+    "Thẻ/Tài khoản của quý khách đang bị khóa.",
+    "Thẻ/Tài khoản của quý khách đang bị khóa."
+  ],
+  [
+    "Thống Kê Chi Tiêu",
+    "Thống Kê Chi Tiêu"
+  ],
+  [
+    "Thống Kê Chi Tiêu & Dịch Vụ",
+    "Thống Kê Chi Tiêu & Dịch Vụ"
+  ],
+  [
+    "Thời Hạn Hiệu Lực Thẻ:",
+    "Thời Hạn Hiệu Lực Thẻ:"
+  ],
+  [
+    "Thời Hạn Sử Dụng",
+    "Thời Hạn Sử Dụng"
+  ],
+  [
+    "Thời Hạn:",
+    "Thời Hạn:"
+  ],
+  [
+    "Thời gian ghi nhận:",
+    "Thời gian ghi nhận:"
+  ],
+  [
+    "Thời gian hẹn:",
+    "Thời gian hẹn:"
+  ],
+  [
+    "Thời gian thu gom rác tại các tầng và quy định vứt rác thế nào?",
+    "Thời gian thu gom rác tại các tầng và Regulations vứt rác thế nào?"
+  ],
+  [
+    "Thời gian thực",
+    "Thời gian thực"
+  ],
+  [
+    "Thử nhanh với khách thực tế:",
+    "Thử nhanh với khách thực tế:"
+  ],
+  [
+    "Tim Tường (m²)",
+    "Tim Tường (m²)"
+  ],
+  [
+    "Tin nhắn không được để trống.",
+    "Tin nhắn không được để trống."
+  ],
+  [
+    "Tin nhắn mới",
+    "Tin nhắn mới"
+  ],
+  [
+    "Tiêu Đề Cuộc Biểu Quyết:",
+    "Tiêu Đề Cuộc Biểu Quyết:"
+  ],
+  [
+    "Tiến độ:",
+    "Tiến độ:"
+  ],
+  [
+    "Tiếng Ồn & Giờ Khoan Đục Thi Công",
+    "Tiếng Ồn & Giờ Khoan Đục Thi Công"
+  ],
+  [
+    "Tiếng ồn & Giờ giấc",
+    "Tiếng ồn & Giờ giấc"
+  ],
+  [
+    "Tiếng ồn sinh hoạt trong giờ nghỉ ngơi",
+    "Tiếng ồn sinh hoạt trong giờ nghỉ ngơi"
+  ],
+  [
+    "Tiếp tục điền thẻ NCB",
+    "Tiếp tục điền thẻ NCB"
+  ],
+  [
+    "Tiểu cảnh hoa cỏ & đường dạo dưỡng sinh cho người cao tuổi",
+    "Tiểu cảnh hoa cỏ & đường dạo dưỡng sinh cho người cao tuổi"
+  ],
+  [
+    "Tiện",
+    "Tiện"
+  ],
+  [
+    "Tiện Ích & Dịch Vụ",
+    "Tiện Ích & Dịch Vụ"
+  ],
+  [
+    "Tiện Ích Biển Hồ (8)",
+    "Tiện Ích Biển Hồ (8)"
+  ],
+  [
+    "Tiện Ích Nội Khu",
+    "Tiện Ích Nội Khu"
+  ],
+  [
+    "Tiện ích đặc quyền",
+    "Tiện ích đặc quyền"
+  ],
+  [
+    "Tiện ích:",
+    "Tiện ích:"
+  ],
+  [
+    "Toàn bộ chiến dịch chung cư",
+    "Toàn bộ chiến dịch Apartment Building"
+  ],
+  [
+    "Trang phục: Bắt buộc mặc đồ bơi chuyên dụng; trẻ em dưới 12 tuổi phải có người lớn giám sát.",
+    "Trang phục: Bắt buộc mặc đồ bơi chuyên dụng; trẻ em dưới 12 tuổi phải có người lớn giám sát."
+  ],
+  [
+    "trong căn hộ",
+    "trong Apartment"
+  ],
+  [
+    "Trong vòng 45 - 60 phút",
+    "Trong vòng 45 - 60 phút"
+  ],
+  [
+    "Trung Bình Tháng",
+    "Trung Bình Tháng"
+  ],
+  [
+    "Trung Tâm Phân Khu (Giữa BS-08/BS-09)",
+    "Trung Tâm Zone (Giữa BS-08/BS-09)"
+  ],
+  [
+    "Trung Tâm Phân Khu (Ven Hồ Bơi)",
+    "Trung Tâm Zone (Ven Swimming Pool)"
+  ],
+  [
+    "Trung tâm thương mại Life-Design Mall lớn nhất miền Nam quy tụ hơn 140 thương hiệu quốc tế.",
+    "Trung tâm thương mại Life-Design Mall lớn nhất miền Nam quy tụ hơn 140 thương hiệu quốc tế."
+  ],
+  [
+    "Trung tâm thương mại theo mô hình Life-Design Mall lớn nhất miền Nam với 5 tầng quy tụ hơn 140 thương hiệu.",
+    "Trung tâm thương mại theo mô hình Life-Design Mall lớn nhất miền Nam với 5 tầng quy tụ hơn 140 thương hiệu."
+  ],
+  [
+    "Trái (-25°)",
+    "Trái (-25°)"
+  ],
+  [
+    "Trân trọng đón tiếp!",
+    "Trân trọng đón tiếp!"
+  ],
+  [
+    "Trình duyệt của bạn không hỗ trợ truy cập Camera trực tiếp.",
+    "Trình duyệt của bạn không hỗ trợ truy cập Camera trực tiếp."
+  ],
+  [
+    "Trình duyệt không hỗ trợ truy cập Camera trực tiếp.",
+    "Trình duyệt không hỗ trợ truy cập Camera trực tiếp."
+  ],
+  [
+    "Trước",
+    "Trước"
+  ],
+  [
+    "Trạm VinBus Xanh",
+    "Trạm VinBus Xanh"
+  ],
+  [
+    "Trạng Thái Khởi Tạo:",
+    "Trạng Thái Khởi Tạo:"
+  ],
+  [
+    "Trạng thái gạch nợ:",
+    "Trạng thái gạch nợ:"
+  ],
+  [
+    "Trạng thái hiện tại:",
+    "Trạng thái hiện tại:"
+  ],
+  [
+    "Trạng thái hồ sơ:",
+    "Trạng thái hồ sơ:"
+  ],
+  [
+    "Trần cao 6.5m, vách kính chịu lực ngắm bầu trời và toàn cảnh thành phố.",
+    "Trần cao 6.5m, vách kính chịu lực ngắm bầu trời và toàn cảnh thành phố."
+  ],
+  [
+    "Trần Đình Trọng",
+    "Trần Đình Trọng"
+  ],
+  [
+    "Trần Đình Trọng (Chuyên môn Điện Lạnh & Thiết Bị Tòa Nhà)",
+    "Trần Đình Trọng (Chuyên môn Điện Lạnh & Thiết Bị Building)"
+  ],
+  [
+    "Trắng Đen",
+    "Trắng Đen"
+  ],
+  [
+    "Trời thoáng mát",
+    "Trời thoáng mát"
+  ],
+  [
+    "Trợ Lý AI Kiểm Định Hiện Trường",
+    "Trợ Lý AI Kiểm Định Hiện Trường"
+  ],
+  [
+    "Trợ Lý AI Phản Hồi 24/7",
+    "Trợ Lý AI Phản Hồi 24/7"
+  ],
+  [
+    "Trợ lý ảo Skyline AI",
+    "Trợ lý ảo Skyline AI"
+  ],
+  [
+    "Trực 24/7 đối soát",
+    "Trực 24/7 đối soát"
+  ],
+  [
+    "Tuyến phố thương mại shophouse & dạo bộ rợp bóng cọ nhiệt đới",
+    "Tuyến phố thương mại shophouse & dạo bộ rợp bóng cọ nhiệt đới"
+  ],
+  [
+    "TÀI CHÍNH",
+    "TÀI CHÍNH"
+  ],
+  [
+    "TÂM ĐIỂM DỰ ÁN",
+    "TÂM ĐIỂM DỰ ÁN"
+  ],
+  [
+    "TÍN HIỆU BMS: MỞ CỔNG TỰ ĐỘNG",
+    "TÍN HIỆU BMS: MỞ CỔNG TỰ ĐỘNG"
+  ],
+  [
+    "TÍN HIỆU BMS: RÀO CHẮN ĐANG HẠ",
+    "TÍN HIỆU BMS: RÀO CHẮN ĐANG HẠ"
+  ],
+  [
+    "Tài khoản hoặc mật khẩu không chính xác trên hệ thống API.",
+    "Tài khoản hoặc mật khẩu không chính xác trên hệ thống API."
+  ],
+  [
+    "Tài khoản hoặc mật khẩu không chính xác. Vui lòng kiểm tra lại.",
+    "Tài khoản hoặc mật khẩu không chính xác. Please kiểm tra lại."
+  ],
+  [
+    "Tài khoản nguồn:",
+    "Tài khoản nguồn:"
+  ],
+  [
+    "Tài khoản ví:",
+    "Tài khoản ví:"
+  ],
+  [
+    "Tài khoản đã vượt quá hạn mức giao dịch trong ngày.",
+    "Tài khoản đã vượt Overdue mức giao dịch trong ngày."
+  ],
+  [
+    "Tác phẩm điêu khắc nghệ thuật biểu tượng phong cách nhiệt đới",
+    "Tác phẩm điêu khắc nghệ thuật biểu tượng phong cách nhiệt đới"
+  ],
+  [
+    "Tách Khối Phòng",
+    "Tách Khối Phòng"
+  ],
+  [
+    "Tây Bắc (View công viên nội khu)",
+    "Tây Bắc (View công viên nội khu)"
+  ],
+  [
+    "Tây Nam (Ấm áp, view thành phố)",
+    "Tây Nam (Ấm áp, view thành phố)"
+  ],
+  [
+    "Tên In Trên Thẻ (Không Dấu):",
+    "Tên In Trên Thẻ (Không Dấu):"
+  ],
+  [
+    "Tên đăng nhập (Số điện thoại):",
+    "Tên đăng nhập (Số điện thoại):"
+  ],
+  [
+    "Tìm kiếm biểu quyết...",
+    "Tìm kiếm biểu quyết..."
+  ],
+  [
+    "Tìm mã căn (vd: 06, CH-01)...",
+    "Tìm mã căn (vd: 06, CH-01)..."
+  ],
+  [
+    "Tìm nhanh nội quy hoặc thủ tục (ví dụ: 'khoan đục', 'thú cưng', 'gửi xe', 'chuyển đồ', 'van nước')...",
+    "Tìm nhanh Building Rules hoặc thủ tục (ví dụ: 'khoan đục', 'thú cưng', 'gửi xe', 'chuyển đồ', 'van nước')..."
+  ],
+  [
+    "Tóm Tắt Báo Cáo Kỹ Thuật / Tài Chính (Tùy chọn):",
+    "Tóm Tắt Báo Cáo Kỹ Thuật / Tài Chính (Tùy chọn):"
+  ],
+  [
+    "Tùy Chọn",
+    "Tùy Chọn"
+  ],
+  [
+    "Tùy chỉnh độ dài và các bộ ký tự sinh ngẫu nhiên",
+    "Tùy chỉnh độ dài và các bộ ký tự sinh ngẫu nhiên"
+  ],
+  [
+    "Tăng 1°C",
+    "Tăng 1°C"
+  ],
+  [
+    "Tươi Sáng",
+    "Tươi Sáng"
+  ],
+  [
+    "Tại quầy BQL",
+    "Tại quầy Management Board"
+  ],
+  [
+    "Tạm Khóa",
+    "Tạm Khóa"
+  ],
+  [
+    "Tạo Khuyến Nghị Vận Hành",
+    "Tạo Khuyến Nghị Vận Hành"
+  ],
+  [
+    "Tạo Yêu Cầu Kỹ Thuật (Ticket)",
+    "Tạo Technical Request (Ticket)"
+  ],
+  [
+    "Tải File PDF",
+    "Tải File PDF"
+  ],
+  [
+    "Tải bảng tính CSV chi tiết từng hạng mục chi phí",
+    "Tải bảng tính CSV chi tiết từng hạng mục chi phí"
+  ],
+  [
+    "Tải Ảnh Chụp Thật",
+    "Tải Ảnh Chụp Thật"
+  ],
+  [
+    "Tải ảnh thẻ mời VIP định dạng PNG về máy",
+    "Tải ảnh thẻ mời VIP định dạng PNG về máy"
+  ],
+  [
+    "Tất Cả (21)",
+    "Tất Cả (21)"
+  ],
+  [
+    "Tầng Sảnh (G)",
+    "Tầng Sảnh (G)"
+  ],
+  [
+    "Tầm Nhìn (View):",
+    "Tầm Nhìn (View):"
+  ],
+  [
+    "Tầng 30 • Chung Cư BS-07 (The Tropical) • Cư dân:",
+    "Tầng 30 • Apartment Building BS-07 (The Tropical) • Residents:"
+  ],
+  [
+    "Tầng Cao (21+)",
+    "Tầng Cao (21+)"
+  ],
+  [
+    "Tầng Thấp (1-10)",
+    "Tầng Thấp (1-10)"
+  ],
+  [
+    "Tầng Trung (11-20)",
+    "Tầng Trung (11-20)"
+  ],
+  [
+    "Tắm",
+    "Tắm"
+  ],
+  [
+    "Tắt máy lạnh tạm thời và lót khăn/chậu hứng nước để bảo vệ bề mặt sàn gỗ.",
+    "Tắt máy lạnh tạm thời và lót khăn/chậu hứng nước để bảo vệ bề mặt sàn gỗ."
+  ],
+  [
+    "Tắt Đèn Ban Công",
+    "Tắt Đèn Ban Công"
+  ],
+  [
+    "Tắt Đèn Bếp Ăn",
+    "Tắt Đèn Bếp Ăn"
+  ],
+  [
+    "Tắt Đèn PN Master",
+    "Tắt Đèn PN Master"
+  ],
+  [
+    "Tệp tải lên không phải là định dạng hình ảnh hợp lệ (chấp nhận JPEG, PNG, WEBP).",
+    "Tệp tải lên không phải là định dạng hình ảnh hợp lệ (chấp nhận JPEG, PNG, WEBP)."
+  ],
+  [
+    "Tệp tải lên không phải là ảnh hợp lệ (chấp nhận JPEG, PNG, WEBP).",
+    "Tệp tải lên không phải là ảnh hợp lệ (chấp nhận JPEG, PNG, WEBP)."
+  ],
+  [
+    "Tốc độ lưu thông tối đa trong tầng hầm: 10 km/h. Bắt buộc bật đèn chiếu gần.",
+    "Tốc độ lưu thông tối đa trong Basement: 10 km/h. Bắt buộc bật đèn chiếu gần."
+  ],
+  [
+    "Tốc độ mở cửa:",
+    "Tốc độ mở cửa:"
+  ],
+  [
+    "TỔNG THỰC LĨNH THÁNG NÀY:",
+    "TỔNG THỰC LĨNH THÁNG NÀY:"
+  ],
+  [
+    "Tổng Chi",
+    "Tổng Chi"
+  ],
+  [
+    "Tổng Chi Năm 2026",
+    "Tổng Chi Năm 2026"
+  ],
+  [
+    "Tổng Cộng Cần Thu",
+    "Tổng Cộng Cần Thu"
+  ],
+  [
+    "Tổng Hồ Sơ Tiếp Nhận",
+    "Tổng Hồ Sơ Tiếp Nhận"
+  ],
+  [
+    "Tổng Lương Thực Nhận",
+    "Tổng Lương Thực Nhận"
+  ],
+  [
+    "Tổng Số Cuộc Biểu Quyết",
+    "Tổng Số Cuộc Biểu Quyết"
+  ],
+  [
+    "Tổng Tiền (VNĐ)",
+    "Tổng Tiền (VNĐ)"
+  ],
+  [
+    "Tủ Aptomat RCBO chống giật: Phía sau tủ giày âm tường sảnh vào",
+    "Tủ Aptomat RCBO chống giật: Phía sau tủ giày âm tường sảnh vào"
+  ],
+  [
+    "Tủ Aptomat Điện Tổng:",
+    "Tủ Aptomat Điện Tổng:"
+  ],
+  [
+    "Tủ rượu âm tường, bếp đảo đá tự nhiên và bàn ăn sang trọng.",
+    "Tủ rượu âm tường, bếp đảo đá tự nhiên và bàn ăn sang trọng."
+  ],
+  [
+    "Tủ điện âm tường & trần thạch cao",
+    "Tủ điện âm tường & trần thạch cao"
+  ],
+  [
+    "Tự Nhiên",
+    "Tự Nhiên"
+  ],
+  [
+    "tự do",
+    "tự do"
+  ],
+  [
+    "Tự do ngắm cảnh & chụp ảnh",
+    "Tự do ngắm cảnh & chụp ảnh"
+  ],
+  [
+    "Tự do ra vào cả ngày",
+    "Tự do ra vào cả ngày"
+  ],
+  [
+    "Tự động kích hoạt quạt tản nhiệt.",
+    "Tự động kích hoạt quạt tản nhiệt."
+  ],
+  [
+    "Tự động sinh biên bản kỹ thuật &amp; ảnh kiểm định đạt chuẩn",
+    "Tự động sinh biên bản kỹ thuật &amp; ảnh kiểm định đạt chuẩn"
+  ],
+  [
+    "Tự động đóng sau 7s",
+    "Tự động đóng sau 7s"
+  ],
+  [
+    "Tỷ Lệ Cử Tri Toàn Chung Cư",
+    "Tỷ Lệ Cử Tri Toàn Apartment Building"
+  ],
+  [
+    "Tỷ Trọng",
+    "Tỷ Trọng"
+  ],
+  [
+    "VD: 0912 345 678 (Dùng liên hệ khi cần)",
+    "VD: 0912 345 678 (Dùng liên hệ khi cần)"
+  ],
+  [
+    "VD: 51G-123.45 hoặc để trống",
+    "VD: 51G-123.45 hoặc để trống"
+  ],
+  [
+    "VD: 849201 hoặc SKY-PASS-...",
+    "VD: 849201 hoặc SKY-PASS-..."
+  ],
+  [
+    "VD: Anh Minh, Chị Lan...",
+    "VD: Anh Minh, Chị Lan..."
+  ],
+  [
+    "VD: Cần 2 bếp nướng Weber, dụng cụ kẹp BBQ...",
+    "VD: Cần 2 bếp nướng Weber, dụng cụ kẹp BBQ..."
+  ],
+  [
+    "VD: Cần thêm khăn nhung, tinh dầu sả chanh...",
+    "VD: Cần thêm khăn nhung, tinh dầu sả chanh..."
+  ],
+  [
+    "VD: Mượn vợt tennis, bóng tập...",
+    "VD: Mượn vợt tennis, bóng tập..."
+  ],
+  [
+    "VD: Nguyễn Hữu Nhựt",
+    "VD: Nguyễn Hữu Nhựt"
+  ],
+  [
+    "VD: Nguyễn Thị Mai",
+    "VD: Nguyễn Thị Mai"
+  ],
+  [
+    "VD: Nguyễn Văn An",
+    "VD: Nguyễn Văn An"
+  ],
+  [
+    "VD: Phường Long Thạnh Mỹ, TP. Thủ Đức, TP. Hồ Chí Minh",
+    "VD: Phường Long Thạnh Mỹ, TP. Thủ Đức, TP. Hồ Chí Minh"
+  ],
+  [
+    "VD: Trần Hữu Lực, Nguyễn Văn Nam...",
+    "VD: Trần Hữu Lực, Nguyễn Văn Nam..."
+  ],
+  [
+    "VD: View Sông Sài Gòn, Landmark 81...",
+    "VD: View Sông Sài Gòn, Landmark 81..."
+  ],
+  [
+    "VD: Vòi nước bồn rửa chén rò rỉ dưới gầm tủ, nhảy aptomat khi bật lò vi sóng...",
+    "VD: Vòi nước bồn rửa chén rò rỉ dưới gầm tủ, nhảy aptomat khi bật lò vi sóng..."
+  ],
+  [
+    "VD: Đã thay gioăng cao su van xả, kiểm tra áp lực nước 2.5 bar ổn định...",
+    "VD: Đã thay gioăng cao su van xả, kiểm tra áp lực nước 2.5 bar ổn định..."
+  ],
+  [
+    "VIP VISITOR SMART PASS • HỆ THỐNG AN NINH TỰ ĐỘNG",
+    "VIP VISITOR SMART PASS • HỆ THỐNG AN NINH TỰ ĐỘNG"
+  ],
+  [
+    "VNĐ",
+    "VNĐ"
+  ],
+  [
+    "Van Cấp Nước Sạch Tổng:",
+    "Van Cấp Nước Sạch Tổng:"
+  ],
+  [
+    "Ven Hồ Bơi Resort BS-09",
+    "Ven Swimming Pool Resort BS-09"
+  ],
+  [
+    "Ven hồ bơi resort",
+    "Ven Swimming Pool resort"
+  ],
+  [
+    "Ven hồ cảnh quan",
+    "Ven hồ cảnh quan"
+  ],
+  [
+    "Vi phạm quy định vận hành an ninh toà nhà",
+    "Vi phạm Regulations vận hành an ninh toà nhà"
+  ],
+  [
+    "View Panorama 360° toàn khu",
+    "View Panorama 360° toàn khu"
+  ],
+  [
+    "View Trực Diện Hồ Bơi Resort",
+    "View Trực Diện Swimming Pool Resort"
+  ],
+  [
+    "View công viên The Tropical",
+    "View công viên The Tropical"
+  ],
+  [
+    "Vui lòng chọn hoặc tra cứu một tài khoản hợp lệ từ hệ thống API.",
+    "Please chọn hoặc tra cứu một tài khoản hợp lệ từ hệ thống API."
+  ],
+  [
+    "Vui lòng chọn tài khoản hợp lệ từ hệ thống API.",
+    "Please chọn tài khoản hợp lệ từ hệ thống API."
+  ],
+  [
+    "Vui lòng chọn tệp hình ảnh hợp lệ (JPG, PNG).",
+    "Please chọn tệp hình ảnh hợp lệ (JPG, PNG)."
+  ],
+  [
+    "Vui lòng chọn tệp hình ảnh hợp lệ (JPG, PNG, WebP).",
+    "Please chọn tệp hình ảnh hợp lệ (JPG, PNG, WebP)."
+  ],
+  [
+    "Vui lòng chọn ảnh chân dung để quét.",
+    "Please chọn ảnh chân dung để quét."
+  ],
+  [
+    "Vui lòng cung cấp hình ảnh khuôn mặt.",
+    "Please cung cấp hình ảnh khuôn mặt."
+  ],
+  [
+    "Vui lòng cung cấp họ tên chủ hộ / người tiếp nhận.",
+    "Please cung cấp họ tên Apartment Owner / người tiếp nhận."
+  ],
+  [
+    "Vui lòng cung cấp mã căn hộ cần bàn giao.",
+    "Please cung cấp mã Apartment cần Handover."
+  ],
+  [
+    "Vui lòng cung cấp số thẻ CCCD hợp lệ (9 đến 12 số).",
+    "Please cung cấp số thẻ Citizen ID hợp lệ (9 đến 12 số)."
+  ],
+  [
+    "Vui lòng cung cấp số điện thoại hoặc email đăng nhập.",
+    "Please cung cấp số điện thoại hoặc email đăng nhập."
+  ],
+  [
+    "Vui lòng cung cấp số điện thoại làm tài khoản đăng nhập.",
+    "Please cung cấp số điện thoại làm tài khoản đăng nhập."
+  ],
+  [
+    "Vui lòng cung cấp ít nhất 2 phương án bình chọn.",
+    "Please cung cấp ít nhất 2 phương án bình chọn."
+  ],
+  [
+    "Vui lòng kiểm tra lại thông tin và nhấn nút",
+    "Please kiểm tra lại thông tin và nhấn nút"
+  ],
+  [
+    "Vui lòng nhập Email hoặc Tên tài khoản.",
+    "Please nhập Email hoặc Tên tài khoản."
+  ],
+  [
+    "Vui lòng nhập họ tên khách thăm!",
+    "Please nhập họ tên Visitor!"
+  ],
+  [
+    "Vui lòng nhập mật khẩu hiện tại để xác thực tài khoản.",
+    "Please nhập mật khẩu hiện tại để xác thực tài khoản."
+  ],
+  [
+    "Vui lòng nhập mật khẩu tài khoản để đăng nhập.",
+    "Please nhập mật khẩu tài khoản để đăng nhập."
+  ],
+  [
+    "Vui lòng nhập mật khẩu tài khoản.",
+    "Please nhập mật khẩu tài khoản."
+  ],
+  [
+    "Vui lòng nhập số thẻ CCCD hợp lệ (9 đến 12 số).",
+    "Please nhập số thẻ Citizen ID hợp lệ (9 đến 12 số)."
+  ],
+  [
+    "Vui lòng nhập số thẻ ngân hàng hợp lệ!",
+    "Please nhập số thẻ ngân hàng hợp lệ!"
+  ],
+  [
+    "Vui lòng nhập số điện thoại hợp lệ (tối thiểu 9 chữ số).",
+    "Please nhập số điện thoại hợp lệ (tối thiểu 9 chữ số)."
+  ],
+  [
+    "Vui lòng nhập số điện thoại liên hệ của người nhà.",
+    "Please nhập số điện thoại liên hệ của Family Member."
+  ],
+  [
+    "Vui lòng nhập số điện thoại.",
+    "Please nhập số điện thoại."
+  ],
+  [
+    "Vui lòng nhập tiêu đề cuộc biểu quyết.",
+    "Please nhập tiêu đề cuộc biểu quyết."
+  ],
+  [
+    "Vui lòng nhập đầy đủ họ và tên người nhà.",
+    "Please nhập đầy đủ họ và tên Family Member."
+  ],
+  [
+    "Vui lòng nhập đầy đủ họ và tên người thân.",
+    "Please nhập đầy đủ họ và tên người thân."
+  ],
+  [
+    "Vui lòng nhập đủ 6 chữ số mã OTP.",
+    "Please nhập đủ 6 chữ số mã OTP."
+  ],
+  [
+    "Vui lòng thu thập đầy đủ cả 4 mẫu góc mặt trước khi xác nhận.",
+    "Please thu thập đầy đủ cả 4 mẫu góc mặt trước khi Confirm."
+  ],
+  [
+    "Vui lòng tải lên đầy đủ cả Mặt Trước và Mặt Sau của CCCD trước khi quét.",
+    "Please tải lên đầy đủ cả Mặt Trước và Mặt Sau của Citizen ID trước khi quét."
+  ],
+  [
+    "Vui lòng tải ảnh chân dung hoặc thu thập FaceID 4 mẫu trước khi gửi hồ sơ duyệt.",
+    "Please tải ảnh chân dung hoặc thu thập FaceID 4 mẫu trước khi gửi hồ sơ duyệt."
+  ],
+  [
+    "Vào Cửa Tiện Ích (Check-in)",
+    "Vào Cửa Tiện Ích (Check-in)"
+  ],
+  [
+    "Vào Tự Do (Không cần thẻ)",
+    "Vào Tự Do (Không cần thẻ)"
+  ],
+  [
+    "Vào Tự Do (NFC / FaceID)",
+    "Vào Tự Do (NFC / FaceID)"
+  ],
+  [
+    "Vào Tự Do (Trẻ Em & Gia Đình)",
+    "Vào Tự Do (Trẻ Em & Gia Đình)"
+  ],
+  [
+    "Vào Tự Do 24/7",
+    "Vào Tự Do 24/7"
+  ],
+  [
+    "Vách kính cường lực, lavabo sứ Kohler và hệ thống sen tắm âm tường.",
+    "Vách kính cường lực, lavabo sứ Kohler và hệ thống sen tắm âm tường."
+  ],
+  [
+    "Vách kính tắm đứng, sen tắm âm tường Kohler và lavabo mặt đá.",
+    "Vách kính tắm đứng, sen tắm âm tường Kohler và lavabo mặt đá."
+  ],
+  [
+    "Vãng lai",
+    "Vãng lai"
+  ],
+  [
+    "Vé lượt",
+    "Vé lượt"
+  ],
+  [
+    "Vé này đã được hủy và thanh lý",
+    "Vé này đã được hủy và thanh lý"
+  ],
+  [
+    "Ví MoMo",
+    "Ví MoMo"
+  ],
+  [
+    "Ví VNPAY",
+    "Ví VNPAY"
+  ],
+  [
+    "Ví Điện Tử MoMo (QR / Trừ ví)",
+    "Ví Điện Tử MoMo (QR / Trừ ví)"
+  ],
+  [
+    "Vòi nước nóng lạnh tại bồn rửa chén bị hỏng gioăng cao su, nước rỉ liên tục xuống sàn tủ bếp, đã khóa tạm van nhưng vẫn rỉ.",
+    "Vòi nước nóng lạnh tại bồn rửa chén bị hỏng gioăng cao su, nước rỉ liên tục xuống sàn tủ bếp, đã khóa tạm van nhưng vẫn rỉ."
+  ],
+  [
+    "Vườn California",
+    "Vườn California"
+  ],
+  [
+    "Vườn California & Dạo Bộ",
+    "Vườn California & Dạo Bộ"
+  ],
+  [
+    "Vườn San Mario",
+    "Vườn San Mario"
+  ],
+  [
+    "Vườn Tiệc Nướng BBQ Sân Thượng",
+    "Vườn Tiệc Nướng BBQ Sân Thượng"
+  ],
+  [
+    "Vườn cọ nhiệt đới Honolulu",
+    "Vườn cọ nhiệt đới Honolulu"
+  ],
+  [
+    "Vườn tiệc BBQ",
+    "Vườn tiệc BBQ"
+  ],
+  [
+    "Vận hành Tiện ích",
+    "Vận hành Tiện ích"
+  ],
+  [
+    "Vận hành tốt",
+    "Vận hành tốt"
+  ],
+  [
+    "Vệ Sinh & Cảnh Quan Chung Cư",
+    "Vệ Sinh & Cảnh Quan Apartment Building"
+  ],
+  [
+    "Vệ sinh & Rác thải",
+    "Vệ sinh & Rác thải"
+  ],
+  [
+    "Vị Trí 1",
+    "Vị Trí 1"
+  ],
+  [
+    "Vị Trí 2",
+    "Vị Trí 2"
+  ],
+  [
+    "Vị Trí Ô Đỗ",
+    "Vị Trí Ô Đỗ"
+  ],
+  [
+    "Vị trí đỗ, quẹt thẻ và luồng di chuyển",
+    "Vị trí đỗ, quẹt thẻ và luồng di chuyển"
+  ],
+  [
+    "Vừa cập nhật",
+    "Vừa cập nhật"
+  ],
+  [
+    "Website Quản lý Chung cư Cao cấp Tích hợp AI Tự động hóa Vận hành & Trải nghiệm Cư dân Thượng lưu",
+    "Website Quản lý Apartment Building Cao cấp Tích hợp AI Tự động hóa Vận hành & Trải nghiệm Residents Thượng lưu"
+  ],
+  [
+    "Xe Đăng Ký Gửi Hầm:",
+    "Xe Register / Book Gửi Hầm:"
+  ],
+  [
+    "Xem & Thanh Toán Hóa Đơn",
+    "Xem & Payment Bill / Invoice"
+  ],
+  [
+    "Xem Lý Lịch",
+    "Xem Lý Lịch"
+  ],
+  [
+    "Xem Tiện Ích",
+    "Xem Tiện Ích"
+  ],
+  [
+    "Xem mặt sau CCCD",
+    "Xem mặt sau Citizen ID"
+  ],
+  [
+    "Xem mặt trước CCCD",
+    "Xem mặt trước Citizen ID"
+  ],
+  [
+    "Xem phiếu:",
+    "Xem phiếu:"
+  ],
+  [
+    "Xem ảnh trước/sau sửa chữa, ký nhận điện tử & bảo hành.",
+    "Xem ảnh trước/sau Repair, ký nhận điện tử & bảo hành."
+  ],
+  [
+    "Xoay 90 độ",
+    "Xoay 90 độ"
+  ],
+  [
+    "Xuất CSV",
+    "Xuất CSV"
+  ],
+  [
+    "Xuất Hồ Sơ Kỹ Thuật PDF",
+    "Xuất Hồ Sơ Kỹ Thuật PDF"
+  ],
+  [
+    "Xác Nhận Biểu Quyết",
+    "Confirm Biểu Quyết"
+  ],
+  [
+    "Xác Nhận Chuyển Tiền Bằng FaceID / PIN",
+    "Confirm Chuyển Tiền Bằng FaceID / PIN"
+  ],
+  [
+    "Xác Nhận Hủy & Hoàn Tiền",
+    "Confirm Hủy & Hoàn Tiền"
+  ],
+  [
+    "Xác Nhận Đã Thu Tiền",
+    "Confirm Đã Thu Tiền"
+  ],
+  [
+    "Xác Nhận Đặt Giữ Chỗ & Tạo Vé QR",
+    "Confirm Đặt Giữ Chỗ & Tạo Vé QR"
+  ],
+  [
+    "Xác nhận lại mật khẩu mới...",
+    "Confirm lại mật khẩu mới..."
+  ],
+  [
+    "Xác nhận:",
+    "Confirm:"
+  ],
+  [
+    "Xã/Phường, Quận/Huyện, Tỉnh/Thành phố...",
+    "Xã/Phường, Quận/Huyện, Tỉnh/Thành phố..."
+  ],
+  [
+    "Xóa chữ",
+    "Xóa chữ"
+  ],
+  [
+    "Xóa phiếu khỏi hệ thống",
+    "Xóa phiếu khỏi hệ thống"
+  ],
+  [
+    "Xử lý:",
+    "Xử lý:"
+  ],
+  [
+    "Yêu Cầu Hoàn Tiền Khi Bận Đột Xuất",
+    "Yêu Cầu Hoàn Tiền Khi Bận Đột Xuất"
+  ],
+  [
+    "Yêu Cầu Hỗ Trợ Kỹ Thuật (Hỗ Trợ Trong 60 Phút)",
+    "Yêu Cầu Hỗ Trợ Kỹ Thuật (Hỗ Trợ Trong 60 Phút)"
+  ],
+  [
+    "Yêu Cầu Sửa Chữa (Hỗ Trợ Trong 60 Phút)",
+    "Yêu Cầu Repair (Hỗ Trợ Trong 60 Phút)"
+  ],
+  [
+    "Yêu Cầu Đăng Nhập",
+    "Yêu Cầu Đăng Nhập"
+  ],
+  [
+    "Yêu Cầu Đặc Biệt / Ghi Chú:",
+    "Yêu Cầu Đặc Biệt / Ghi Chú:"
+  ],
+  [
+    "Yếu",
+    "Yếu"
+  ],
+  [
+    "[Lưu Thay Đổi Thông Tin Liên Hệ]",
+    "[Save Changes Thông Tin Liên Hệ]"
+  ],
+  [
+    "bao nhiêu căn",
+    "bao nhiêu căn"
+  ],
+  [
+    "bao nhiêu tầng",
+    "bao nhiêu tầng"
+  ],
+  [
+    "biển số",
+    "biển số"
+  ],
+  [
+    "bàn ghế",
+    "bàn ghế"
+  ],
+  [
+    "báo cáo bất thường điện nước",
+    "báo cáo bất thường điện nước"
+  ],
+  [
+    "bồn",
+    "bồn"
+  ],
+  [
+    "bồn cầu",
+    "bồn cầu"
+  ],
+  [
+    "chuyển đồ",
+    "chuyển đồ"
+  ],
+  [
+    "chuông",
+    "chuông"
+  ],
+  [
+    "chảy nước",
+    "chảy nước"
+  ],
+  [
+    "chập",
+    "chập"
+  ],
+  [
+    "cống",
+    "cống"
+  ],
+  [
+    "cửa",
+    "cửa"
+  ],
+  [
+    "giữ chỗ",
+    "giữ chỗ"
+  ],
+  [
+    "gói",
+    "gói"
+  ],
+  [
+    "gợi ý hành động",
+    "gợi ý hành động"
+  ],
+  [
+    "gửi BQL duyệt FaceID.",
+    "gửi Management Board duyệt FaceID."
+  ],
+  [
+    "gửi xe",
+    "gửi xe"
+  ],
+  [
+    "hẹn trước",
+    "hẹn trước"
+  ],
+  [
+    "hỏng",
+    "hỏng"
+  ],
+  [
+    "khoan đục",
+    "khoan đục"
+  ],
+  [
+    "khóa",
+    "khóa"
+  ],
+  [
+    "khói",
+    "khói"
+  ],
+  [
+    "không chỉ định",
+    "không chỉ định"
+  ],
+  [
+    "không cần đặt",
+    "không cần đặt"
+  ],
+  [
+    "không mát",
+    "không mát"
+  ],
+  [
+    "khỏi hệ thống?",
+    "khỏi hệ thống?"
+  ],
+  [
+    "kiểm tra",
+    "kiểm tra"
+  ],
+  [
+    "loại sự cố",
+    "loại sự cố"
+  ],
+  [
+    "lượt",
+    "lượt"
+  ],
+  [
+    "lượt đánh giá 5★",
+    "lượt đánh giá 5★"
+  ],
+  [
+    "lạnh",
+    "lạnh"
+  ],
+  [
+    "lần",
+    "lần"
+  ],
+  [
+    "lịch đặt",
+    "lịch đặt"
+  ],
+  [
+    "miễn phí",
+    "miễn phí"
+  ],
+  [
+    "mã vé",
+    "mã vé"
+  ],
+  [
+    "mùi",
+    "mùi"
+  ],
+  [
+    "mất điện",
+    "mất điện"
+  ],
+  [
+    "mật mã",
+    "mật mã"
+  ],
+  [
+    "mỗi tầng",
+    "mỗi tầng"
+  ],
+  [
+    "nghẹt",
+    "nghẹt"
+  ],
+  [
+    "người",
+    "người"
+  ],
+  [
+    "ngập",
+    "ngập"
+  ],
+  [
+    "nhà bị rò rỉ nước",
+    "nhà bị rò rỉ nước"
+  ],
+  [
+    "nhà bị rỉ nước",
+    "nhà bị rỉ nước"
+  ],
+  [
+    "nhà hàng",
+    "nhà hàng"
+  ],
+  [
+    "nhận xét chi tiết",
+    "nhận xét chi tiết"
+  ],
+  [
+    "nhận xét ngắn",
+    "nhận xét ngắn"
+  ],
+  [
+    "nợ",
+    "nợ"
+  ],
+  [
+    "phiếu",
+    "phiếu"
+  ],
+  [
+    "phí",
+    "phí"
+  ],
+  [
+    "quy mô",
+    "quy mô"
+  ],
+  [
+    "quẹt thẻ hồ bơi",
+    "quẹt thẻ Swimming Pool"
+  ],
+  [
+    "rác",
+    "rác"
+  ],
+  [
+    "rò rỉ",
+    "rò rỉ"
+  ],
+  [
+    "rỉ",
+    "rỉ"
+  ],
+  [
+    "rửa",
+    "rửa"
+  ],
+  [
+    "sẽ chuyển sang trạng thái",
+    "sẽ chuyển sang trạng thái"
+  ],
+  [
+    "sửa nước",
+    "sửa nước"
+  ],
+  [
+    "sửa ống nước",
+    "sửa ống nước"
+  ],
+  [
+    "thuộc căn",
+    "thuộc căn"
+  ],
+  [
+    "thuộc độc quyền của Chủ hộ (Owner)",
+    "thuộc độc quyền của Apartment Owner (Owner)"
+  ],
+  [
+    "tháng",
+    "tháng"
+  ],
+  [
+    "thú cưng",
+    "thú cưng"
+  ],
+  [
+    "thăm",
+    "thăm"
+  ],
+  [
+    "thẻ",
+    "thẻ"
+  ],
+  [
+    "thợ",
+    "thợ"
+  ],
+  [
+    "tiêu đề",
+    "tiêu đề"
+  ],
+  [
+    "tiền",
+    "tiền"
+  ],
+  [
+    "tiền giữ chỗ.",
+    "tiền giữ chỗ."
+  ],
+  [
+    "tiền nước rò rỉ",
+    "Water Bill rò rỉ"
+  ],
+  [
+    "tràn",
+    "tràn"
+  ],
+  [
+    "trên điện thoại, chọn biểu tượng",
+    "trên điện thoại, chọn biểu tượng"
+  ],
+  [
+    "tài khoản của bạn",
+    "tài khoản của bạn"
+  ],
+  [
+    "tính phí",
+    "tính phí"
+  ],
+  [
+    "tòa",
+    "tòa"
+  ],
+  [
+    "tầng hầm",
+    "Basement"
+  ],
+  [
+    "tắc",
+    "tắc"
+  ],
+  [
+    "tổng chi phí",
+    "tổng chi phí"
+  ],
+  [
+    "van nước",
+    "van nước"
+  ],
+  [
+    "vân tay",
+    "vân tay"
+  ],
+  [
+    "vé",
+    "vé"
+  ],
+  [
+    "vòi",
+    "vòi"
+  ],
+  [
+    "vệ sinh",
+    "vệ sinh"
+  ],
+  [
+    "xe/tháng",
+    "xe/tháng"
+  ],
+  [
+    "xông hơi",
+    "xông hơi"
+  ],
+  [
+    "Ánh sáng vàng 2700K dịu mắt",
+    "Ánh sáng vàng 2700K dịu mắt"
+  ],
+  [
+    "Áp lực 2.8 bar, không ghi nhận rò rỉ.",
+    "Áp lực 2.8 bar, không ghi nhận rò rỉ."
+  ],
+  [
+    "Áp lực 6.2 bar, bể nước đạt 94% dung tích.",
+    "Áp lực 6.2 bar, bể nước đạt 94% dung tích."
+  ],
+  [
+    "Âm thanh TV, dàn loa nghe nhạc, karaoke tại gia phải giữ ở mức vừa phải, dưới 55 dB sau 21:00.",
+    "Âm thanh TV, dàn loa nghe nhạc, karaoke tại gia phải giữ ở mức vừa phải, dưới 55 dB sau 21:00."
+  ],
+  [
+    "Âm thanh suối tự nhiên",
+    "Âm thanh suối tự nhiên"
+  ],
+  [
+    "Ý kiến Cải tạo",
+    "Ý kiến Cải tạo"
+  ],
+  [
+    "Ý kiến nhận xét thêm (Tùy chọn):",
+    "Ý kiến nhận xét thêm (Tùy chọn):"
+  ],
+  [
+    "Ý kiến xây dựng khác",
+    "Ý kiến xây dựng khác"
+  ],
+  [
+    "ĐANG MỞ ĐÓN SÁNG",
+    "ĐANG MỞ ĐÓN SÁNG"
+  ],
+  [
+    "Đang Đóng Kín",
+    "Đang Đóng Kín"
+  ],
+  [
+    "Đang Chạy Mô Hình AI...",
+    "Đang Chạy Mô Hình AI..."
+  ],
+  [
+    "Đang Chẩn Đoán...",
+    "Đang Chẩn Đoán..."
+  ],
+  [
+    "Đang Chờ BQL Phê Duyệt",
+    "Đang Chờ Management Board Phê Duyệt"
+  ],
+  [
+    "Đang Gửi Hồ Sơ...",
+    "Đang Gửi Hồ Sơ..."
+  ],
+  [
+    "Đang Khóa Chốt (Bấm Mở)",
+    "Đang Khóa Chốt (Bấm Mở)"
+  ],
+  [
+    "Đang Khóa • Chạm Để Mở",
+    "Đang Khóa • Chạm Để Mở"
+  ],
+  [
+    "Đang Lưu Thông Tin...",
+    "Đang Lưu Thông Tin..."
+  ],
+  [
+    "Đang Lưu...",
+    "Đang Lưu..."
+  ],
+  [
+    "Đang Mở (Bấm Khóa)",
+    "Đang Mở (Bấm Khóa)"
+  ],
+  [
+    "Đang Mở 100%",
+    "Đang Mở 100%"
+  ],
+  [
+    "Đang Mở Bình Chọn",
+    "Đang Mở Bình Chọn"
+  ],
+  [
+    "Đang Mở Cửa Vào Tiện Ích...",
+    "Đang Mở Cửa Vào Tiện Ích..."
+  ],
+  [
+    "Đang Mở Khóa",
+    "Đang Mở Khóa"
+  ],
+  [
+    "Đang Mở Đón Ánh Sáng",
+    "Đang Mở Đón Ánh Sáng"
+  ],
+  [
+    "Đang Mở • Chạm Để Khóa",
+    "Đang Mở • Chạm Để Khóa"
+  ],
+  [
+    "Đang Nhận Diện Sinh Trắc Học...",
+    "Đang Nhận Diện Sinh Trắc Học..."
+  ],
+  [
+    "Đang Phục Vụ",
+    "Đang Phục Vụ"
+  ],
+  [
+    "Đang Quẹt...",
+    "Đang Quẹt..."
+  ],
+  [
+    "Đang Rảnh",
+    "Đang Rảnh"
+  ],
+  [
+    "Đang Tắt Chờ",
+    "Đang Tắt Chờ"
+  ],
+  [
+    "Đang Xuất PDF...",
+    "Đang Xuất PDF..."
+  ],
+  [
+    "Đang Xuất...",
+    "Đang Xuất..."
+  ],
+  [
+    "Đang chiếu:",
+    "Đang chiếu:"
+  ],
+  [
+    "Đang chuyển tiếp đến trung tâm điều hành...",
+    "Đang chuyển tiếp đến trung tâm điều hành..."
+  ],
+  [
+    "Đang chọn:",
+    "Đang chọn:"
+  ],
+  [
+    "Đang cập nhật",
+    "Đang cập nhật"
+  ],
+  [
+    "Đang cập nhật...",
+    "Updating..."
+  ],
+  [
+    "Đang di chuyển",
+    "Đang di chuyển"
+  ],
+  [
+    "Đang hiển thị:",
+    "Đang hiển thị:"
+  ],
+  [
+    "Đang kết nối camera...",
+    "Đang kết nối camera..."
+  ],
+  [
+    "Đang nạp ảnh...",
+    "Đang nạp ảnh..."
+  ],
+  [
+    "Đang quét Chip điện tử và Ngày cấp ở Mặt Sau...",
+    "Đang quét Chip điện tử và Ngày cấp ở Mặt Sau..."
+  ],
+  [
+    "Đang soạn...",
+    "Đang soạn..."
+  ],
+  [
+    "Đang tiếp nhận phiếu bầu",
+    "Đang tiếp nhận phiếu bầu"
+  ],
+  [
+    "Đang tra cứu...",
+    "Đang tra cứu..."
+  ],
+  [
+    "Đang trực tuyến • Nhấn mở lại",
+    "Đang trực tuyến • Nhấn mở lại"
+  ],
+  [
+    "Đang tải thông tin hồ sơ...",
+    "Đang tải thông tin hồ sơ..."
+  ],
+  [
+    "Đang tự động đọc thông tin trên thẻ...",
+    "Đang tự động đọc thông tin trên thẻ..."
+  ],
+  [
+    "Đang xem ảnh và đưa ra nhận xét cho bạn...",
+    "Đang xem ảnh và đưa ra nhận xét cho bạn..."
+  ],
+  [
+    "Đang Đóng Chắn Sáng",
+    "Đang Đóng Chắn Sáng"
+  ],
+  [
+    "Đang Đọc Thông Tin Thẻ...",
+    "Đang Đọc Thông Tin Thẻ..."
+  ],
+  [
+    "Đang Đối Chiếu Thông Tin...",
+    "Đang Đối Chiếu Thông Tin..."
+  ],
+  [
+    "Đang đọc ảnh...",
+    "Đang đọc ảnh..."
+  ],
+  [
+    "Đang đối soát sinh trắc học FaceID...",
+    "Đang đối soát sinh trắc học FaceID..."
+  ],
+  [
+    "Đi Vắng",
+    "Đi Vắng"
+  ],
+  [
+    "Điền tự động OTP kiểm thử",
+    "Điền tự động OTP kiểm thử"
+  ],
+  [
+    "Điểm Sức Khỏe AI",
+    "Điểm Sức Khỏe AI"
+  ],
+  [
+    "Điểm nhấn kiến trúc biểu tượng chụp ảnh check-in sống ảo",
+    "Điểm nhấn kiến trúc biểu tượng chụp ảnh check-in sống ảo"
+  ],
+  [
+    "Điểm sức khỏe:",
+    "Điểm sức khỏe:"
+  ],
+  [
+    "điện",
+    "điện"
+  ],
+  [
+    "Điện Lạnh & Kỹ Thuật Tòa Nhà",
+    "Điện Lạnh & Kỹ Thuật Building"
+  ],
+  [
+    "Điện Năng",
+    "Điện Năng"
+  ],
+  [
+    "Điện Tiêu Thụ:",
+    "Điện Tiêu Thụ:"
+  ],
+  [
+    "Đo điện trở tiếp địa rò & thử tải chuyển mạch tự động ATS.",
+    "Đo điện trở tiếp địa rò & thử tải chuyển mạch tự động ATS."
+  ],
+  [
+    "ĐÃ BẬT",
+    "ĐÃ BẬT"
+  ],
+  [
+    "ĐÃ TẮT",
+    "ĐÃ TẮT"
+  ],
+  [
+    "Đàm Thoại",
+    "Đàm Thoại"
+  ],
+  [
+    "Đã",
+    "Đã"
+  ],
+  [
+    "Đã Chép Link",
+    "Đã Chép Link"
+  ],
+  [
+    "Đã Chọn ✓",
+    "Đã Chọn ✓"
+  ],
+  [
+    "Đã FaceID",
+    "Đã FaceID"
+  ],
+  [
+    "Đã Gửi Nhắc Phí ✓",
+    "Đã Gửi Nhắc Phí ✓"
+  ],
+  [
+    "Đã Khóa Sổ Biểu Quyết",
+    "Đã Khóa Sổ Biểu Quyết"
+  ],
+  [
+    "Đã Kích Hoạt Chính Thức ✓",
+    "Đã Kích Hoạt Chính Thức ✓"
+  ],
+  [
+    "Đã Kích Hoạt FaceID",
+    "FaceID Active"
+  ],
+  [
+    "Đã Nộp ✓",
+    "Đã Nộp ✓"
+  ],
+  [
+    "Đã Phát Hành Xong ✓",
+    "Đã Phát Hành Xong ✓"
+  ],
+  [
+    "Đã Thu",
+    "Đã Thu"
+  ],
+  [
+    "Đã Tiếp Nhận & Xác Nhận",
+    "Đã Tiếp Nhận & Confirm"
+  ],
+  [
+    "Đã Tiếp Nhận Phiếu (Chờ BQL)",
+    "Đã Tiếp Nhận Phiếu (Chờ Management Board)"
+  ],
+  [
+    "Đã bao gồm 10% VAT",
+    "Đã bao gồm 10% VAT"
+  ],
+  [
+    "Đã bầu:",
+    "Đã bầu:"
+  ],
+  [
+    "Đã chép",
+    "Đã chép"
+  ],
+  [
+    "Đã chọn",
+    "Đã chọn"
+  ],
+  [
+    "Đã có",
+    "Đã có"
+  ],
+  [
+    "Đã cập nhật trực tiếp lên NKS API thành công",
+    "Đã cập nhật trực tiếp lên NKS API Successfully"
+  ],
+  [
+    "Đã cập nhật vé lên hệ thống NKS SCRMAI thành công.",
+    "Đã cập nhật vé lên hệ thống NKS SCRMAI Successfully."
+  ],
+  [
+    "Đã dọn dẹp sạch sẽ toàn bộ dữ liệu khách thăm.",
+    "Đã dọn dẹp sạch sẽ toàn bộ dữ liệu Visitor."
+  ],
+  [
+    "Đã ghi nhận đánh giá của cư dân.",
+    "Đã ghi nhận đánh giá của Residents."
+  ],
+  [
+    "Đã gửi phản hồi chính thức từ Ban Quản Lý tới cư dân.",
+    "Đã gửi phản hồi chính thức từ Management Board tới Residents."
+  ],
+  [
+    "Đã hoàn tất cơ bản (Cần BQL kiểm tra lướt)",
+    "Đã hoàn tất cơ bản (Cần Management Board kiểm tra lướt)"
+  ],
+  [
+    "Đã hủy liên kết tài khoản thành viên khỏi căn hộ.",
+    "Cancelled liên kết tài khoản thành viên khỏi Apartment."
+  ],
+  [
+    "Đã kiểm định hiện trường đạt chuẩn",
+    "Đã kiểm định hiện trường đạt chuẩn"
+  ],
+  [
+    "Đã mở menu chia sẻ hệ thống!",
+    "Đã mở menu chia sẻ hệ thống!"
+  ],
+  [
+    "Đã nghiệm thu kỹ thuật bàn giao căn hộ, bàn giao chìa khóa cơ và cấp thẻ từ cư dân.",
+    "Đã Acceptance Verification kỹ thuật Handover Apartment, Handover chìa khóa cơ và cấp thẻ từ Residents."
+  ],
+  [
+    "Đã nghiệm thu và đóng phiếu thành công.",
+    "Đã Acceptance Verification và đóng phiếu Successfully."
+  ],
+  [
+    "Đã phát hành toàn bộ hóa đơn.",
+    "Đã phát hành toàn bộ Bill / Invoice."
+  ],
+  [
+    "Đã phân tích 15 bài thảo luận: 88% Tích cực, 08% Trung tính, 04% Góp ý • 0 bài vi phạm quy chuẩn",
+    "Đã phân tích 15 bài thảo luận: 88% Tích cực, 08% Trung tính, 04% Góp ý • 0 bài vi phạm quy chuẩn"
+  ],
+  [
+    "Đã sao chép liên kết đón khách!",
+    "Đã sao chép liên kết đón khách!"
+  ],
+  [
+    "Đã sao chép thư mời! Đang mở Messenger...",
+    "Đã sao chép thư mời! Đang mở Messenger..."
+  ],
+  [
+    "Đã sao chép thư mời! Đang mở Zalo để gửi...",
+    "Đã sao chép thư mời! Đang mở Zalo để gửi..."
+  ],
+  [
+    "Đã sửa chữa",
+    "Đã Repair"
+  ],
+  [
+    "Đã sửa chữa và bàn giao xong.",
+    "Đã Repair và Handover xong."
+  ],
+  [
+    "Đã thu hồi quyền ra vào FaceID của hồ sơ.",
+    "Đã thu hồi quyền ra vào FaceID của hồ sơ."
+  ],
+  [
+    "Đã thu thập 4 mẫu FaceID thành công! Hồ sơ đang chờ Chủ Hộ căn hộ xác nhận trước khi chuyển tới Ban Quản Lý.",
+    "Đã thu thập 4 mẫu FaceID Successfully! Hồ sơ đang chờ Apartment Owner Apartment Confirm trước khi chuyển tới Management Board."
+  ],
+  [
+    "Đã xóa phiếu thành công.",
+    "Đã xóa phiếu Successfully."
+  ],
+  [
+    "Đã xảy ra lỗi khi gửi ảnh lên máy chủ.",
+    "Đã xảy ra lỗi khi gửi ảnh lên máy chủ."
+  ],
+  [
+    "Đã xảy ra lỗi trong quá trình tiếp nhận dữ liệu phản hồi từ VNPAY.",
+    "Đã xảy ra lỗi trong quá trình tiếp nhận dữ liệu phản hồi từ VNPAY."
+  ],
+  [
+    "Đã xử lý đạt chuẩn (AI Đã Thẩm Định)",
+    "Đã xử lý đạt chuẩn (AI Đã Thẩm Định)"
+  ],
+  [
+    "Đèn Ban Công Sinh Thái",
+    "Đèn Ban Công Sinh Thái"
+  ],
+  [
+    "Đèn Gian Bếp & Bàn Ăn",
+    "Đèn Gian Bếp & Bàn Ăn"
+  ],
+  [
+    "Đèn Ngủ Ấm Áp",
+    "Đèn Ngủ Ấm Áp"
+  ],
+  [
+    "Đèn bật, AC 24°C, mở rèm",
+    "Đèn bật, AC 24°C, mở rèm"
+  ],
+  [
+    "Đèn vàng dịu, rèm đóng kín",
+    "Đèn vàng dịu, rèm đóng kín"
+  ],
+  [
+    "Đính kèm ảnh",
+    "Đính kèm ảnh"
+  ],
+  [
+    "Đóng (ESC)",
+    "Đóng (ESC)"
+  ],
+  [
+    "Đóng Biểu Quyết",
+    "Đóng Biểu Quyết"
+  ],
+  [
+    "Đóng Rèm Ban Công",
+    "Đóng Rèm Ban Công"
+  ],
+  [
+    "Đóng [✕]",
+    "Đóng [✕]"
+  ],
+  [
+    "Đóng cửa sổ chat",
+    "Đóng cửa sổ chat"
+  ],
+  [
+    "Đóng hoàn toàn",
+    "Đóng hoàn toàn"
+  ],
+  [
+    "Đóng menu",
+    "Đóng menu"
+  ],
+  [
+    "Đông Bắc (Nắng sớm dịu mát)",
+    "Đông Bắc (Nắng sớm dịu mát)"
+  ],
+  [
+    "Đông Nam (Đón gió mát & view sông Sài Gòn)",
+    "Đông Nam (Đón gió mát & view sông Sài Gòn)"
+  ],
+  [
+    "Đông Nam (Đón gió mát, view sông)",
+    "Đông Nam (Đón gió mát, view sông)"
+  ],
+  [
+    "Đăng Ký Khung Giờ (Tab Đặt Chỗ)",
+    "Register / Book Khung Giờ (Tab Đặt Chỗ)"
+  ],
+  [
+    "Đăng Ký Theo Ca Tiệc",
+    "Register / Book Theo Ca Tiệc"
+  ],
+  [
+    "Đăng Ký Đặt Lịch Giữ Chỗ",
+    "Register / Book Đặt Lịch Giữ Chỗ"
+  ],
+  [
+    "Đăng Xuất Tài Khoản",
+    "Đăng Xuất Tài Khoản"
+  ],
+  [
+    "Đăng ký với Đội An Ninh / BQL trước tối thiểu 02 tiếng",
+    "Register / Book với Đội An Ninh / Management Board trước tối thiểu 02 tiếng"
+  ],
+  [
+    "Đăng nhập thành công từ API",
+    "Đăng nhập Successfully từ API"
+  ],
+  [
+    "Đăng xuất thành công",
+    "Đăng xuất Successfully"
+  ],
+  [
+    "Đơn Giá",
+    "Đơn Giá"
+  ],
+  [
+    "Đơn Giá (VNĐ)",
+    "Đơn Giá (VNĐ)"
+  ],
+  [
+    "Đơn Vị Tính",
+    "Đơn Vị Tính"
+  ],
+  [
+    "Đơn vị ký duyệt:",
+    "Đơn vị ký duyệt:"
+  ],
+  [
+    "Đại Công Viên 36ha & Biển Hồ Cát Trắng",
+    "Đại Công Viên 36ha & Biển Hồ Cát Trắng"
+  ],
+  [
+    "Đại cảnh quan công viên cọ xanh ngát trung tâm The Tropical",
+    "Đại cảnh quan công viên cọ xanh ngát trung tâm The Tropical"
+  ],
+  [
+    "Đại Đô Thị (271ha)",
+    "Đại Đô Thị (271ha)"
+  ],
+  [
+    "Đại Đô Thị:",
+    "Đại Đô Thị:"
+  ],
+  [
+    "Đặt Lịch Tiện Ích Ngay",
+    "Đặt Lịch Tiện Ích Ngay"
+  ],
+  [
+    "Đặt Sân Giữ Chỗ (Tab Đặt Chỗ)",
+    "Đặt Sân Giữ Chỗ (Tab Đặt Chỗ)"
+  ],
+  [
+    "Đếm Ngược 3s Tự Động",
+    "Đếm Ngược 3s Tự Động"
+  ],
+  [
+    "Đề xuất: Nhu cầu Gym tăng 30% vào 18h-20h -> Bật chế độ làm mát tăng cường và thêm HLV ca tối",
+    "Đề xuất: Nhu cầu Gym tăng 30% vào 18h-20h -> Bật chế độ làm mát tăng cường và thêm HLV ca tối"
+  ],
+  [
+    "Định Giá Bất Động Sản",
+    "Định Giá Bất Động Sản"
+  ],
+  [
+    "Định Kỳ",
+    "Định Kỳ"
+  ],
+  [
+    "Định mức 25A",
+    "Định mức 25A"
+  ],
+  [
+    "Định mức bậc thang giá điện sinh hoạt EVN",
+    "Định mức bậc thang giá điện sinh hoạt EVN"
+  ],
+  [
+    "Đối chiếu hiện trường trước &amp; sau sửa, ngăn ngừa ảnh giả hoặc ảnh sai vị trí",
+    "Đối chiếu hiện trường trước &amp; sau sửa, ngăn ngừa ảnh giả hoặc ảnh sai vị trí"
+  ],
+  [
+    "Đồng ý thông qua phương án đề xuất",
+    "Đồng ý thông qua phương án đề xuất"
+  ],
+  [
+    "Đổi Mật Khẩu Cá Nhân",
+    "Đổi Mật Khẩu Cá Nhân"
+  ],
+  [
+    "Đổi Thành Chưa Nộp",
+    "Đổi Thành Chưa Nộp"
+  ],
+  [
+    "Đổi Ảnh Mặt Sau",
+    "Đổi Ảnh Mặt Sau"
+  ],
+  [
+    "Đổi Ảnh Mặt Trước",
+    "Đổi Ảnh Mặt Trước"
+  ],
+  [
+    "Độ Rung Động",
+    "Độ Rung Động"
+  ],
+  [
+    "Độ chính xác:",
+    "Độ chính xác:"
+  ],
+  [
+    "Độ dài từ 8 ký tự trở lên (tối thiểu 6 ký tự)",
+    "Độ dài từ 8 ký tự trở lên (tối thiểu 6 ký tự)"
+  ],
+  [
+    "Độ phân giải ảnh quá thấp (yêu cầu tối thiểu 150x150px).",
+    "Độ phân giải ảnh quá thấp (yêu cầu tối thiểu 150x150px)."
+  ],
+  [
+    "Độ rõ: 99.6%",
+    "Độ rõ: 99.6%"
+  ],
+  [
+    "Độ tin cậy: 96% • Vừa ghi nhận",
+    "Độ tin cậy: 96% • Vừa ghi nhận"
+  ],
+  [
+    "Độ trễ xử lý:",
+    "Độ trễ xử lý:"
+  ],
+  [
+    "Đội Dịch Vụ BQL",
+    "Đội Dịch Vụ Management Board"
+  ],
+  [
+    "Động cơ kéo rèm chịu tải 50kg, độ ồn < 25dB, tự động đóng khi trời nắng gắt và mở lúc bình minh.",
+    "Động cơ kéo rèm chịu tải 50kg, độ ồn < 25dB, tự động đóng khi trời nắng gắt và mở lúc bình minh."
+  ],
+  [
+    "Đủ số dư khả dụng",
+    "Đủ số dư khả dụng"
+  ],
+  [
+    "điều khiển smart home",
+    "điều khiển smart home"
+  ],
+  [
+    "đã đặt",
+    "đã đặt"
+  ],
+  [
+    "đèn",
+    "đèn"
+  ],
+  [
+    "đăng ký",
+    "Register / Book"
+  ],
+  [
+    "đặt trước",
+    "đặt trước"
+  ],
+  [
+    "để gửi BQL kích hoạt FaceID.",
+    "để gửi Management Board kích hoạt FaceID."
+  ],
+  [
+    "Ưu Đãi Cáp Quang & Dịch Vụ",
+    "Ưu Đãi Cáp Quang & Dịch Vụ"
+  ],
+  [
+    "Ảnh 1 là ảnh trước khi sửa do cư dân gửi, ảnh 2 là ảnh nghiệm thu sau sửa do KTV gửi.",
+    "Ảnh 1 là ảnh trước khi sửa do Residents gửi, ảnh 2 là ảnh Acceptance Verification sau sửa do Technician gửi."
+  ],
+  [
+    "Ảnh chân dung chưa trùng khớp ảnh CCCD",
+    "Ảnh chân dung chưa trùng khớp ảnh Citizen ID"
+  ],
+  [
+    "Ảnh chụp CCCD bị lóa sáng/mờ nét, vui lòng chụp lại rõ nét",
+    "Ảnh chụp Citizen ID bị lóa sáng/mờ nét, Please chụp lại rõ nét"
+  ],
+  [
+    "Ảnh chụp CCCD bị mờ/lóa sáng, vui lòng chụp lại rõ nét",
+    "Ảnh chụp Citizen ID bị mờ/lóa sáng, Please chụp lại rõ nét"
+  ],
+  [
+    "Ảnh chụp CCCD bị mờ/lóa sáng/mất góc",
+    "Ảnh chụp Citizen ID bị mờ/lóa sáng/mất góc"
+  ],
+  [
+    "Ảnh chụp CCCD bị mờ/lóa sáng/mất góc, vui lòng chụp lại rõ nét",
+    "Ảnh chụp Citizen ID bị mờ/lóa sáng/mất góc, Please chụp lại rõ nét"
+  ],
+  [
+    "Ảnh chụp thẻ CCCD quá mờ hoặc dung lượng quá nhỏ (dưới 15KB). Vui lòng tải ảnh rõ nét.",
+    "Ảnh chụp thẻ Citizen ID quá mờ hoặc dung lượng quá nhỏ (dưới 15KB). Please tải ảnh rõ nét."
+  ],
+  [
+    "Ảnh ghi nhận dấu hiệu bất thường về hệ thống điện / aptomat. Cần kiểm tra đo tải an toàn.",
+    "Ảnh ghi nhận dấu hiệu bất thường về hệ thống điện / aptomat. Cần kiểm tra đo tải an toàn."
+  ],
+  [
+    "Ảnh ghi nhận hiện tượng rò rỉ hoặc ứ đọng nước tại thiết bị cấp thoát nước. Cần KTV kiểm tra gioăng cao su và van khóa.",
+    "Ảnh ghi nhận hiện tượng rò rỉ hoặc ứ đọng nước tại thiết bị cấp thoát nước. Cần Technician kiểm tra gioăng cao su và van khóa."
+  ],
+  [
+    "Ảnh ghi nhận khóa cửa điện tử báo lỗi nhận diện hoặc nguồn pin.",
+    "Ảnh ghi nhận khóa cửa điện tử báo lỗi nhận diện hoặc nguồn pin."
+  ],
+  [
+    "Ảnh ghi nhận máy điều hòa hoạt động kém hoặc rỉ nước dàn lạnh. Đội kỹ thuật sẽ kiểm tra thông ống xả và gas.",
+    "Ảnh ghi nhận máy điều hòa hoạt động kém hoặc rỉ nước dàn lạnh. Đội kỹ thuật sẽ kiểm tra thông ống xả và gas."
+  ],
+  [
+    "Ảnh gửi kèm là ảnh nghiệm thu sau sửa do KTV gửi.",
+    "Ảnh gửi kèm là ảnh Acceptance Verification sau sửa do Technician gửi."
+  ],
+  [
+    "Ảnh hiện trường lúc báo:",
+    "Ảnh hiện trường lúc báo:"
+  ],
+  [
+    "Ảnh khuôn mặt quá mờ hoặc dung lượng quá nhỏ.",
+    "Ảnh khuôn mặt quá mờ hoặc dung lượng quá nhỏ."
+  ],
+  [
+    "Ảnh lúc báo",
+    "Ảnh lúc báo"
+  ],
+  [
+    "Ảnh nghiệm thu phù hợp với nội dung sửa chữa sự cố được giao.",
+    "Ảnh Acceptance Verification phù hợp với nội dung Repair sự cố được giao."
+  ],
+  [
+    "Ấm Áp",
+    "Ấm Áp"
+  ],
+  [
+    "ống nước",
+    "ống nước"
+  ],
+  [
+    "Ổn định",
+    "Ổn định"
+  ],
+  [
+    "Ổn định (Giám sát 24/7)",
+    "Ổn định (Giám sát 24/7)"
+  ],
+  [
+    "ổ cắm",
+    "ổ cắm"
+  ],
+  [
+    "ở cuối biểu mẫu để lưu dữ liệu.",
+    "ở cuối biểu mẫu để lưu dữ liệu."
+  ],
+  [
+    "Ứng Dụng Mobile Banking - Xác Nhận Chuyển Tiền QR",
+    "Ứng Dụng Mobile Banking - Confirm Chuyển Tiền QR"
+  ],
+  [
+    "• Biển số:",
+    "• Biển số:"
+  ],
+  [
+    "• Căn",
+    "• Căn"
+  ],
+  [
+    "• Căn:",
+    "• Căn:"
+  ],
+  [
+    "• Hướng Ban Công:",
+    "• Hướng Ban Công:"
+  ],
+  [
+    "• Họ tên:",
+    "• Họ tên:"
+  ],
+  [
+    "• Khung giờ:",
+    "• Khung giờ:"
+  ],
+  [
+    "• Kích thước thực tế:",
+    "• Kích thước thực tế:"
+  ],
+  [
+    "• Ngày:",
+    "• Ngày:"
+  ],
+  [
+    "• SĐT:",
+    "• SĐT:"
+  ],
+  [
+    "• Vai trò:",
+    "• Vai trò:"
+  ],
+  [
+    "→ Mở",
+    "→ Mở"
+  ],
+  [
+    "⏳ BQL Đang Thụ Lý",
+    "⏳ Management Board Đang Thụ Lý"
+  ],
+  [
+    "⏳ Chờ Tiếp Nhận",
+    "⏳ Chờ Tiếp Nhận"
+  ],
+  [
+    "⏳ Đang Phân Bổ KTV",
+    "⏳ Đang Phân Bổ Technician"
+  ],
+  [
+    "● Đang Mở Tiếp Nhận",
+    "● Đang Mở Tiếp Nhận"
+  ],
+  [
+    "⚠ Chưa Có Mặt Sau",
+    "⚠ Chưa Có Mặt Sau"
+  ],
+  [
+    "⚠ Chưa Có Mặt Trước",
+    "⚠ Chưa Có Mặt Trước"
+  ],
+  [
+    "⚠️ HÉ MỞ",
+    "⚠️ HÉ MỞ"
+  ],
+  [
+    "⚡ Cần gấp",
+    "⚡ Cần gấp"
+  ],
+  [
+    "✓ BQL Đã Phản Hồi",
+    "✓ Management Board Đã Phản Hồi"
+  ],
+  [
+    "✓ Bạn đã bỏ phiếu cho cuộc này",
+    "✓ Bạn đã bỏ phiếu cho cuộc này"
+  ],
+  [
+    "✓ Khớp mật khẩu",
+    "✓ Khớp mật khẩu"
+  ],
+  [
+    "✓ Mặt Sau Đầy Đủ",
+    "✓ Mặt Sau Đầy Đủ"
+  ],
+  [
+    "✓ Mặt trước Đầy Đủ",
+    "✓ Mặt trước Đầy Đủ"
+  ],
+  [
+    "✓ ĐÃ CHECK-IN",
+    "✓ ĐÃ CHECK-IN"
+  ],
+  [
+    "✓ Đã Phản Hồi Tự Động",
+    "✓ Đã Phản Hồi Tự Động"
+  ],
+  [
+    "✓ Đã Sao Chép Thông Tin!",
+    "✓ Đã Sao Chép Thông Tin!"
+  ],
+  [
+    "✓ Đã mở Cổng & Thang máy T",
+    "✓ Đã mở Cổng & Elevator T"
+  ],
+  [
+    "✕ Chưa khớp",
+    "✕ Chưa khớp"
+  ],
+  [
+    "✨ Chạm vào phòng để xem kích thước Dài × Rộng",
+    "✨ Chạm vào phòng để xem kích thước Dài × Rộng"
+  ],
+  [
+    "✨ Đã quét xong Mặt Trước! Đang tự động lật sang Mặt Sau...",
+    "✨ Đã quét xong Mặt Trước! Đang tự động lật sang Mặt Sau..."
+  ],
+  [
+    "✨ Đã trích xuất thông tin từ CCCD vào biểu mẫu!",
+    "✨ Đã trích xuất thông tin từ Citizen ID vào biểu mẫu!"
+  ],
+  [
+    "✨ Đã đọc thông tin mặt trước! Đang đối soát mặt sau...",
+    "✨ Đã đọc thông tin mặt trước! Đang đối soát mặt sau..."
+  ],
+  [
+    "❄️ Hướng dẫn sơ bộ từ AI: Tắt máy lạnh và mở cửa sổ thông thoáng. Nếu chảy nước dàn lạnh, đặt khăn hoặc chậu hứng để bảo vệ sàn gỗ và tường sơn.",
+    "❄️ Hướng dẫn sơ bộ từ AI: Tắt máy lạnh và mở cửa sổ thông thoáng. Nếu chảy nước dàn lạnh, đặt khăn hoặc chậu hứng để bảo vệ sàn gỗ và tường sơn."
+  ],
+  [
+    "⭐ Không hài lòng",
+    "⭐ Không hài lòng"
+  ],
+  [
+    "⭐⭐ Cần cải thiện",
+    "⭐⭐ Cần cải thiện"
+  ],
+  [
+    "⭐⭐⭐⭐ Rất tốt",
+    "⭐⭐⭐⭐ Rất tốt"
+  ],
+  [
+    "⭐⭐⭐⭐⭐ Xuất sắc (+50.000đ thưởng KTV)",
+    "⭐⭐⭐⭐⭐ Xuất sắc (+50.000đ thưởng Technician)"
+  ],
+  [
+    "🎙️ Đang đàm thoại 2 chiều...",
+    "🎙️ Đang đàm thoại 2 chiều..."
+  ],
+  [
+    "🎙️ Đã bật đàm thoại 2 chiều với chuông cửa.",
+    "🎙️ Đã bật đàm thoại 2 chiều với chuông cửa."
+  ],
+  [
+    "🎫 Kiểm tra vé tiện ích đã đặt của tôi",
+    "🎫 Kiểm tra vé tiện ích đã đặt của tôi"
+  ],
+  [
+    "🏊 Các tiện ích nào hoàn toàn miễn phí?",
+    "🏊 Các tiện ích nào hoàn toàn miễn phí?"
+  ],
+  [
+    "🏊 Cụm bể bơi nhiệt đới resort có cần đặt trước không?",
+    "🏊 Cụm bể bơi nhiệt đới resort có cần đặt trước không?"
+  ],
+  [
+    "🏊 Giờ mở cửa hồ bơi chân mây",
+    "🏊 Giờ mở cửa Swimming Pool chân mây"
+  ],
+  [
+    "🏊 Tiện Ích & Dịch Vụ NKS",
+    "🏊 Tiện Ích & Dịch Vụ NKS"
+  ],
+  [
+    "💡 Lời khuyên sơ bộ từ AI: Khóa ngay van cấp nước dưới bồn rửa hoặc van tổng tại hộp kỹ thuật cửa vào để chống tràn ngập sàn gỗ trong lúc chờ KTV đến kiểm tra.",
+    "💡 Lời khuyên sơ bộ từ AI: Khóa ngay van cấp nước dưới bồn rửa hoặc van tổng tại hộp kỹ thuật cửa vào để chống tràn ngập sàn gỗ trong lúc chờ Technician đến kiểm tra."
+  ],
+  [
+    "💳 Chính sách hủy vé & hoàn tiền 100%",
+    "💳 Chính sách hủy vé & hoàn tiền 100%"
+  ],
+  [
+    "📡 Đang chạm thẻ...",
+    "📡 Đang chạm thẻ..."
+  ],
+  [
+    "📷 Hướng dẫn cài FaceID cho người nhà",
+    "📷 Hướng dẫn cài FaceID cho Family Member"
+  ],
+  [
+    "🔄 Hướng dẫn hủy vé & hoàn 100% tiền giữ chỗ",
+    "🔄 Hướng dẫn hủy vé & hoàn 100% tiền giữ chỗ"
+  ],
+  [
+    "🔇 Đã ngắt đàm thoại intercom.",
+    "🔇 Đã ngắt đàm thoại intercom."
+  ],
+  [
+    "🔊 Giờ thi công khoan đục được phép",
+    "🔊 Giờ thi công khoan đục được phép"
+  ],
+  [
+    "🔑 Hướng dẫn sơ bộ từ AI: Thử cắm sạc dự phòng qua cổng Micro-USB/Type-C dưới đáy khóa điện tử nếu khóa hết pin. KTV hỗ trợ sẽ mang chìa cơ dự phòng đến.",
+    "🔑 Hướng dẫn sơ bộ từ AI: Thử cắm sạc dự phòng qua cổng Micro-USB/Type-C dưới đáy khóa điện tử nếu khóa hết pin. Technician hỗ trợ sẽ mang chìa cơ dự phòng đến."
+  ],
+  [
+    "🔑 Tạo mã số tạm thời cho khách đến chơi",
+    "🔑 Tạo mã số tạm thời cho khách đến chơi"
+  ],
+  [
+    "🔓 Cửa chính: ĐÃ MỞ CHỐT TỪ XA",
+    "🔓 Cửa chính: ĐÃ MỞ CHỐT TỪ XA"
+  ],
+  [
+    "🔧 Báo Hỏng & Dịch Vụ Kỹ Thuật NKS",
+    "🔧 Báo Hỏng & Dịch Vụ Kỹ Thuật NKS"
+  ],
+  [
+    "🔴 Cần xử lý gấp",
+    "🔴 Cần xử lý gấp"
+  ],
+  [
+    "🚗 Khách thăm đỗ xe ở đâu?",
+    "🚗 Visitor đỗ xe ở đâu?"
+  ],
+  [
+    "🛠️ Hướng dẫn sơ bộ từ AI: Giữ nguyên hiện trạng để KTV dễ dàng xác định nguyên nhân. Yêu cầu của Quý cư dân đã được tiếp nhận và phân bổ chuyên viên xử lý.",
+    "🛠️ Hướng dẫn sơ bộ từ AI: Giữ nguyên hiện trạng để Technician dễ dàng xác định nguyên nhân. Yêu cầu của Quý Residents đã được tiếp nhận và phân bổ chuyên viên xử lý."
+  ],
+  [
+    "🟡 Nên sửa hôm nay",
+    "🟡 Nên sửa hôm nay"
+  ],
+  [
+    "🟢 Không gấp",
+    "🟢 Không gấp"
+  ],
+  [
+    "🟢 Đã Có Người Ở (Đang sinh sống)",
+    "🟢 Đã Có Người Ở (Đang sinh sống)"
+  ],
+  [
+    "🧖 Tiện ích nào cần đăng ký lịch hẹn trước?",
+    "🧖 Tiện ích nào cần Register / Book lịch hẹn trước?"
+  ],
+  [
+    "Trung Tâm Xử Lý Yêu Cầu Cư Dân",
+    "Resident Request Management Center"
+  ],
+  [
+    "Quản Lý & Vận Hành",
+    "Management & Operations"
+  ],
+  [
+    "Thù Lao & KPI",
+    "Payroll & KPIs"
+  ],
+  [
+    "Bảng Việc Kỹ Thuật",
+    "Technician Work Orders"
+  ],
+  [
+    "Bảng Việc Kỹ Thuật (NKS SCRMAI)",
+    "NKS SCRMAI Technical Work Order"
+  ],
+  [
+    "Tổng quan vận hành thông minh",
+    "Smart Operations Overview"
+  ],
+  [
+    "Hóa đơn & tiện ích",
+    "Billing & Utilities"
+  ],
+  [
+    "Quản lý cư dân & căn hộ",
+    "Residents & Apartments Management"
+  ],
+  [
+    "Cảnh báo & an ninh",
+    "Alerts & Security Monitoring"
+  ],
+  [
+    "Bãi đỗ xe thông minh",
+    "Smart Parking Management"
+  ],
+  [
+    "Khảo sát & Ý kiến",
+    "Surveys & Resident Feedback"
+  ],
+  [
+    "Cài đặt tài khoản",
+    "Account Settings"
+  ],
+  [
+    "Không gian sống tiện nghi, an toàn tuyệt đối cùng hệ sinh thái thông minh.",
+    "Comfortable, absolutely secure living with a smart ecosystem."
+  ],
+  [
+    "Báo Hỏng Sửa Chữa",
+    "Report Maintenance Issue"
+  ],
+  [
+    "Hóa Đơn Căn Hộ",
+    "Apartment Utility Bill"
+  ],
+  [
+    "Đăng Ký Tiện Ích",
+    "Facility Reservation"
+  ],
+  [
+    "Kịch Bản Nhà Thông Minh",
+    "Smart Home Scenarios"
+  ],
+  [
+    "Trợ Lý Ảo AI Concierge",
+    "AI Concierge Virtual Assistant"
+  ],
+  [
+    "Bảng Tin Cư Dân",
+    "Resident Community Board"
+  ],
+  [
+    "Chưa Đăng Ký FaceID",
+    "FaceID Not Enrolled"
+  ],
+  [
+    "Đang Chờ Kích Hoạt",
+    "Pending Activation"
+  ],
+  [
+    "Đăng Nhập Cư Dân & Quản Lý",
+    "Resident & Management Sign In"
+  ],
+  [
+    "Thông tin diện tích, mặt bằng bóc mái 3D và hiện trạng kỹ thuật được hiển thị minh bạch. Click trực tiếp vào các phòng trên mô hình để xem công năng chi tiết.",
+    "Floor area, 3D roof cutaway layout, and technical status are transparently displayed. Click directly on rooms to view detailed functions."
+  ],
+  [
+    "1 Phòng Ngủ (Standard)",
+    "1-Bedroom (Standard)"
+  ],
+  [
+    "2 Phòng Ngủ (Corner Suite)",
+    "2-Bedroom (Corner Suite)"
+  ],
+  [
+    "3 Phòng Ngủ (Panoramic Penthouse)",
+    "3-Bedroom (Panoramic Penthouse)"
+  ],
+  [
+    "Duplex Thông Tầng (Presidential)",
+    "Duplex Penthouse (Presidential)"
+  ],
+  [
+    "Diện tích tim tường",
+    "Built-up Area"
+  ],
+  [
+    "Phòng khách & bếp",
+    "Living Room & Kitchen"
+  ],
+  [
+    "Nhịp Sống Thông Minh 24/7",
+    "24/7 Smart Living Rhythm"
+  ],
+  [
+    "Trải Nghiệm Một Ngày Sống Tại Cụm 4 Chung Cư The Tropical",
+    "Experience a Day at The 4 Towers of The Tropical"
+  ],
+  [
+    "Bình Minh Thông Minh",
+    "Smart Dawn"
+  ],
+  [
+    "Trưa Năng Động",
+    "Dynamic Midday"
+  ],
+  [
+    "Hoàng Hôn Thư Giãn",
+    "Relaxing Sunset"
+  ],
+  [
+    "Đêm An Yên",
+    "Peaceful Night"
+  ],
+  [
+    "Đặt Bàn & Giữ Chỗ Tiện Ích",
+    "Reserve Table & Book Facility"
+  ],
+  [
+    "Kích Hoạt Kịch Bản An Ninh Đêm",
+    "Activate Night Security Scenario"
+  ],
+  [
+    "Mở Khóa FaceID Cửa Sảnh",
+    "Lobby Door FaceID Unlock"
+  ],
+  [
+    "Tự động nhận diện cư dân qua camera AI <0.5s",
+    "Automatically identifies resident via Vision AI in <0.5s"
+  ],
+  [
+    "Hệ thống barrier nhận diện biển số xe tự động",
+    "Barrier gate scans license plate automatically"
+  ],
+  [
+    "Tự động điều chỉnh rèm cửa và điều hòa thông minh",
+    "Automated smart curtain and AC climate regulation"
+  ],
+  [
+    "Đèn tự động tắt và khóa chốt an toàn chống cạy",
+    "Lights turn off and anti-tamper deadbolt activates"
+  ],
+  [
+    "Camera nhiệt tầm soát nguy cơ cháy nổ 24/7",
+    "Thermal camera monitors fire & smoke risks 24/7"
   ]
 ];

@@ -49,7 +49,7 @@ interface DayMilestone {
 export default function SmartTechSection() {
   const { theme } = useTheme();
   const { currentUser, isAuthenticated } = useAuth();
-  const { t, isEn } = useLanguage();
+  const { t, isEn, language } = useLanguage();
   const isDark = theme === 'dark';
 
   const [activeSlot, setActiveSlot] = useState<string>('morning');
@@ -176,7 +176,7 @@ export default function SmartTechSection() {
   };
 
   return (
-    <section id="smart-tech" className={`py-20 sm:py-24 border-b scroll-mt-20 relative overflow-hidden transition-colors duration-300 ${
+    <section id="smart-tech" key={language} className={`py-20 sm:py-24 border-b scroll-mt-20 relative overflow-hidden transition-colors duration-300 ${
       isDark ? 'bg-[#0A0E14] text-white border-[#1E293B]' : 'bg-[#F8FAFC] text-gray-900 border-gray-200'
     }`}>
       {/* Background Subtle Gradient */}
@@ -191,20 +191,18 @@ export default function SmartTechSection() {
               : 'bg-white border border-[#C5A880]/60 text-amber-800 shadow-sm'
           }`}>
             <Sparkles className="w-3.5 h-3.5 text-[#C5A880]" />
-            <span>{t('Chu Trình Tự Động Hóa 24/7', '24/7 Automation Cycle')}</span>
+            <span>Chu Trình Tự Động Hóa 24/7</span>
           </div>
           <h2 className={`text-3xl sm:text-4xl lg:text-5xl font-serif font-bold tracking-tight ${
             isDark ? 'text-[#FAFAFA]' : 'text-[#0D1117]'
           }`}>
-            {t('Một Ngày Trải Nghiệm Chuẩn Sống Đẳng Cấp Cùng Lõi AI', 'A Day Experiencing Luxury Living with AI Core')}
+            Một Ngày Trải Nghiệm Chuẩn Sống Đẳng Cấp Cùng Lõi AI
           </h2>
           <p className={`text-sm sm:text-base font-light leading-relaxed ${
             isDark ? 'text-gray-300' : 'text-gray-600'
           }`}>
-            {t(
-              'Không chỉ là những thiết bị công nghệ rời rạc, Skyline liên kết toàn diện hạ tầng từ căn hộ thông minh đến hệ thống quản trị vận hành 4 chung cư The Tropical trong từng khoảnh khắc nhịp sống của cư dân.',
-              'Far beyond isolated gadgets, Skyline comprehensively connects infrastructure from smart apartments to the operating management system of 4 towers at The Tropical throughout residents\' daily rhythms.'
-            )}
+            Không chỉ là những thiết bị công nghệ rời rạc, Skyline liên kết toàn diện hạ tầng từ căn hộ thông minh đến hệ thống quản trị 
+            vận hành 4 chung cư The Tropical trong từng khoảnh khắc nhịp sống của cư dân.
           </p>
         </div>
 
@@ -242,7 +240,7 @@ export default function SmartTechSection() {
                   <div className={`text-xs sm:text-sm font-serif font-bold truncate ${
                     isActive ? 'text-white' : 'text-gray-300'
                   }`}>
-                    {t(m.periodName)}
+                    {m.periodName}
                   </div>
                   <div className="text-[11px] text-gray-500 font-light truncate mt-0.5">
                     {m.timeLabel}
@@ -268,16 +266,16 @@ export default function SmartTechSection() {
                 </div>
                 <div>
                   <div className="text-[11px] font-mono uppercase tracking-widest text-[#C5A880] font-bold">
-                    {t('Khung Giờ')} {current.timeLabel} • {t(current.periodName)}
+                    Khung Giờ {current.timeLabel} • {current.periodName}
                   </div>
                   <h3 className="text-xl sm:text-2xl lg:text-3xl font-serif font-bold text-white leading-snug">
-                    {t(current.headline)}
+                    {current.headline}
                   </h3>
                 </div>
               </div>
 
               <p className="text-sm sm:text-base text-gray-300 font-light leading-relaxed">
-                {t(current.story)}
+                {current.story}
               </p>
 
               {/* Technical Spec Metrics */}
@@ -288,10 +286,10 @@ export default function SmartTechSection() {
                     className="p-3 bg-[#141B24] border border-white/5 rounded-none space-y-1"
                   >
                     <div className="text-[10px] text-gray-400 uppercase font-mono tracking-wider">
-                      {t(spec.label)}
+                      {spec.label}
                     </div>
                     <div className="text-sm sm:text-base font-serif font-bold text-[#C5A880]">
-                      {t(spec.value)}
+                      {spec.value}
                     </div>
                   </div>
                 ))}
@@ -303,11 +301,11 @@ export default function SmartTechSection() {
                   href={handlePortalRedirect(current.portalTab)}
                   className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#C5A880] hover:bg-white text-[#0A0E14] text-xs uppercase font-bold tracking-wider transition-all rounded-none shadow hover:shadow-lg active:scale-95"
                 >
-                  <span>{t(current.actionText)}</span>
+                  <span>{current.actionText}</span>
                   <ArrowRight className="w-3.5 h-3.5" />
                 </Link>
                 <span className="text-[11px] text-gray-400 font-mono hidden sm:inline">
-                  {t('Tích hợp 4 chung cư The Tropical', 'Integrated across 4 towers of The Tropical')}
+                  Tích hợp 4 chung cư The Tropical
                 </span>
               </div>
             </div>
@@ -322,20 +320,20 @@ export default function SmartTechSection() {
                 <div className="flex items-center justify-between border-b border-white/10 pb-3">
                   <div>
                     <div className="text-[9px] font-mono font-bold uppercase tracking-widest text-[#C5A880]">
-                      {t(current.visualWidget.badge)}
+                      {current.visualWidget.badge}
                     </div>
                     <div className="text-sm font-serif font-bold text-white mt-0.5">
-                      {t(current.visualWidget.title)}
+                      {current.visualWidget.title}
                     </div>
                   </div>
                   <div className="flex items-center gap-1.5 px-2 py-0.5 bg-emerald-950/80 border border-emerald-500/40 text-emerald-400 text-[10px] font-mono font-bold rounded-none">
                     <span className="w-1.5 h-1.5 bg-emerald-400 rounded-none animate-pulse"></span>
-                    <span>{t('TRỰC TUYẾN', 'ONLINE')}</span>
+                    <span>TRỰC TUYẾN</span>
                   </div>
                 </div>
 
                 <div className="text-xs text-gray-400 font-light">
-                  {t(current.visualWidget.subtitle)}
+                  {current.visualWidget.subtitle}
                 </div>
 
                 {/* Detail Status Rows */}
@@ -348,7 +346,7 @@ export default function SmartTechSection() {
                         className="flex items-start gap-2.5 p-3 bg-[#0E131B] border border-white/5 rounded-none text-xs text-gray-300"
                       >
                         <ItemIcon className="w-4 h-4 text-[#C5A880] flex-shrink-0 mt-0.5" />
-                        <span className="leading-relaxed">{t(item.text)}</span>
+                        <span className="leading-relaxed">{item.text}</span>
                       </div>
                     );
                   })}
@@ -358,9 +356,9 @@ export default function SmartTechSection() {
                 <div className="pt-2 border-t border-white/5 flex items-center justify-between text-[10px] text-gray-400 font-mono">
                   <span className="flex items-center gap-1">
                     <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
-                    {t('Mã hóa bảo mật 256-bit', '256-bit Encrypted')}
+                    Mã hóa bảo mật 256-bit
                   </span>
-                  <span>{t('Lõi AI Skyline 4.0', 'Skyline AI 4.0 Core')}</span>
+                  <span>Lõi AI Skyline 4.0</span>
                 </div>
               </div>
             </div>

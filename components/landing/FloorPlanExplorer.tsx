@@ -389,7 +389,7 @@ function getUserAptCategory(code?: string): ApartmentCategory | null {
 export default function FloorPlanExplorer({ onOpenLogin }: FloorPlanExplorerProps) {
   const { theme } = useTheme();
   const { currentUser, isAuthenticated } = useAuth();
-  const { t, isEn } = useLanguage();
+  const { t, isEn, language } = useLanguage();
   const isDark = theme === 'dark';
 
   const [selectedCategory, setSelectedCategory] = useState<ApartmentCategory>('1PN');
@@ -432,7 +432,7 @@ export default function FloorPlanExplorer({ onOpenLogin }: FloorPlanExplorerProp
   };
 
   return (
-    <section id="floorplans" className={`py-12 sm:py-20 border-b scroll-mt-20 relative overflow-hidden select-none transition-colors duration-300 ${
+    <section id="floorplans" key={language} className={`py-12 sm:py-20 border-b scroll-mt-20 relative overflow-hidden select-none transition-colors duration-300 ${
       isDark 
         ? 'bg-[#0A0E17] text-white border-[#1E293B]' 
         : 'bg-[#F8FAFC] text-gray-900 border-gray-200'
@@ -455,20 +455,17 @@ export default function FloorPlanExplorer({ onOpenLogin }: FloorPlanExplorerProp
                 : 'bg-white border border-[#C5A880]/60 text-amber-800 shadow-sm'
             }`}>
               <Box className="w-3.5 h-3.5 text-[#C5A880]" />
-              <span>{t('Mặt Bằng 3D Minh Bạch • Chung Cư BS-07 The Tropical', 'Transparent 3D Layout • BS-07 Tower The Tropical')}</span>
+              <span>Mặt Bằng 3D Minh Bạch • Chung Cư BS-07 The Tropical</span>
             </div>
             <h2 className={`text-2xl sm:text-3xl lg:text-4xl font-serif font-bold tracking-tight ${
               isDark ? 'text-white' : 'text-[#0D1117]'
             }`}>
-              {t('Sơ Đồ Không Gian 3D Căn Hộ', '3D Interactive Apartment Floor Plans')}
+              Sơ Đồ Không Gian 3D Căn Hộ
             </h2>
             <p className={`text-xs sm:text-sm font-light leading-relaxed ${
               isDark ? 'text-gray-300' : 'text-gray-600'
             }`}>
-              {t(
-                'Thông tin diện tích, mặt bằng bóc mái 3D và hiện trạng kỹ thuật được hiển thị minh bạch. Click trực tiếp vào các phòng trên mô hình để xem công năng chi tiết.',
-                'Floor areas, cutaway 3D layouts, and engineering specifications displayed with full transparency. Click on rooms to explore detailed functions.'
-              )}
+              Thông tin diện tích, mặt bằng bóc mái 3D và hiện trạng kỹ thuật được hiển thị minh bạch. Click trực tiếp vào các phòng trên mô hình để xem công năng chi tiết.
             </p>
           </div>
 
@@ -482,7 +479,7 @@ export default function FloorPlanExplorer({ onOpenLogin }: FloorPlanExplorerProp
                   className="px-4 py-2.5 bg-[#C5A880] hover:bg-[#D4AF37] text-[#0A0E17] font-bold text-xs tracking-wider uppercase rounded-none transition-all shadow-md flex items-center gap-2 cursor-pointer"
                 >
                   <LogIn className="w-3.5 h-3.5" />
-                  <span>{t('Đăng Nhập Cư Dân & Quản Lý', 'Resident & Management Sign In')}</span>
+                  <span>Đăng Nhập Cư Dân &amp; Quản Lý</span>
                 </button>
                 <a
                   href="tel:0364967082"
@@ -508,10 +505,10 @@ export default function FloorPlanExplorer({ onOpenLogin }: FloorPlanExplorerProp
                   </div>
                   <div className="text-[10px] text-[#C5A880] font-mono uppercase font-bold">
                     {isAdmin 
-                      ? t('Ban Quản Lý Chung Cư') 
+                      ? 'Ban Quản Lý Chung Cư' 
                       : isTechnician 
-                        ? t('Kỹ Thuật Viên Vận Hành') 
-                        : `${t('Chủ Hộ Căn')} ${currentUser?.apartment_code || 'CH-06'}`}
+                        ? 'Kỹ Thuật Viên Vận Hành' 
+                        : `Chủ Hộ Căn ${currentUser?.apartment_code || 'CH-06'}`}
                   </div>
                 </div>
 
@@ -520,7 +517,7 @@ export default function FloorPlanExplorer({ onOpenLogin }: FloorPlanExplorerProp
                   className="px-4 py-2.5 bg-[#C5A880] hover:bg-[#D4AF37] text-[#0A0E17] font-bold text-xs tracking-wider uppercase rounded-none transition-all shadow-md flex items-center gap-2"
                 >
                   <Sparkles className="w-3.5 h-3.5" />
-                  <span>{t('Vào Bảng Điều Khiển')}</span>
+                  <span>Vào Bảng Điều Khiển</span>
                 </Link>
               </div>
             )}
@@ -555,14 +552,14 @@ export default function FloorPlanExplorer({ onOpenLogin }: FloorPlanExplorerProp
                 {isThisUserApt && (
                   <div className="absolute -top-2.5 right-3 bg-[#C5A880] text-[#0A0E17] text-[9.5px] font-mono font-bold px-2 py-0.5 uppercase tracking-wider shadow-md flex items-center gap-1 z-20">
                     <Crown className="w-2.5 h-2.5" />
-                    <span>{t('Căn Của Bạn')}</span>
+                    <span>Căn Của Bạn</span>
                   </div>
                 )}
 
                 <div>
                   <div className="flex items-center justify-between gap-1 mb-1">
                     <span className={`font-mono text-xs font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>
-                      {t('Căn')} {apt.code}
+                      Căn {apt.code}
                     </span>
                     <span className={`text-[9.5px] px-1.5 py-0.5 rounded-none font-mono font-semibold border ${
                       cat === 'DUPLEX' ? 'bg-rose-500/20 text-rose-400 border-rose-500/40' :
@@ -570,22 +567,22 @@ export default function FloorPlanExplorer({ onOpenLogin }: FloorPlanExplorerProp
                       cat === '2PN' ? 'bg-amber-500/20 text-amber-500 border-amber-500/40' :
                       'bg-sky-500/20 text-sky-400 border-sky-500/40'
                     }`}>
-                      {cat === 'DUPLEX' ? t('2 Tầng Thông Suốt') : `${apt.bedrooms} ${t('PN')} • ${apt.bathrooms} ${t('WC')}`}
+                      {cat === 'DUPLEX' ? '2 Tầng Thông Suốt' : `${apt.bedrooms} PN • ${apt.bathrooms} WC`}
                     </span>
                   </div>
                   <div className={`font-serif text-sm font-bold mt-0.5 ${
                     isSelected ? 'text-[#C5A880]' : isDark ? 'text-gray-200' : 'text-gray-800'
                   }`}>
-                    {t(apt.name)} ({apt.area} m²)
+                    {apt.name} ({apt.area} m²)
                   </div>
                 </div>
 
                 <div className={`mt-2 pt-2 border-t flex items-center justify-between text-[11px] font-mono ${
                   isDark ? 'border-[#1E293B] text-gray-400' : 'border-gray-100 text-gray-500'
                 }`}>
-                  <span>{cat === 'DUPLEX' ? t('Trần cao 6.5m') : `${apt.wallArea} ${t('m² tim tường')}`}</span>
+                  <span>{cat === 'DUPLEX' ? 'Trần cao 6.5m' : `${apt.wallArea} m² tim tường`}</span>
                   <span className={`font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`}>
-                    {isThisUserApt ? t('Đang Cư Trú') : `${apt.priceBillion.toFixed(2)} ${t('Tỷ')}`}
+                    {isThisUserApt ? 'Đang Cư Trú' : `${apt.priceBillion.toFixed(2)} Tỷ`}
                   </span>
                 </div>
               </button>
@@ -611,14 +608,14 @@ export default function FloorPlanExplorer({ onOpenLogin }: FloorPlanExplorerProp
                 isDark ? 'text-gray-300' : 'text-gray-700'
               }`}>
                 <span className="w-2 h-2 rounded-full bg-[#C5A880] animate-pulse" />
-                <span className="truncate">{t(currentApartment.subtitle)}</span>
+                <span className="truncate">{currentApartment.subtitle}</span>
               </div>
               <div className={`text-[10px] font-mono px-2.5 py-0.5 rounded-none shrink-0 border ${
                 isDark 
                   ? 'text-[#C5A880] bg-[#070A10] border-[#1E293B]' 
                   : 'text-amber-800 bg-white border-gray-200 shadow-sm'
               }`}>
-                {t('Click nhãn phòng để xem chi tiết')}
+                Click nhãn phòng để xem chi tiết
               </div>
             </div>
 
@@ -636,13 +633,13 @@ export default function FloorPlanExplorer({ onOpenLogin }: FloorPlanExplorerProp
               {/* Hướng ban công góc trên bên trái */}
               <div className="absolute top-3 left-3 bg-[#0A0E17]/90 border border-[#1E293B] px-3 py-1.5 rounded-none text-xs font-mono text-gray-300 flex items-center gap-2 backdrop-blur-md z-10 shadow-lg">
                 <Compass className="w-4 h-4 text-[#C5A880]" />
-                <span>{t('Ban công:')} <strong className="text-emerald-400">{t(currentApartment.direction)}</strong></span>
+                <span>Ban công: <strong className="text-emerald-400">{currentApartment.direction}</strong></span>
               </div>
 
               {/* Trạng thái căn hộ góc trên bên phải */}
               <div className="absolute top-3 right-3 bg-[#0A0E17]/90 border border-emerald-500/50 px-3 py-1.5 rounded-none text-xs font-mono text-emerald-300 flex items-center gap-1.5 backdrop-blur-md z-10 shadow-lg">
                 <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
-                <span>{isUserOwnsThisApt ? t('Căn Hộ Của Bạn') : t(currentApartment.statusLabel)}</span>
+                <span>{isUserOwnsThisApt ? 'Căn Hộ Của Bạn' : currentApartment.statusLabel}</span>
               </div>
 
               {/* NHÃN PHÒNG TRÊN PHỐI CẢNH */}
@@ -668,7 +665,7 @@ export default function FloorPlanExplorer({ onOpenLogin }: FloorPlanExplorerProp
                       }`}
                     />
                     <span className="whitespace-nowrap drop-shadow font-medium">
-                      {t(spot.label)}
+                      {spot.label}
                     </span>
                   </button>
                 );
@@ -677,11 +674,11 @@ export default function FloorPlanExplorer({ onOpenLogin }: FloorPlanExplorerProp
               {/* Thẻ chú thích hướng nhìn góc dưới */}
               <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between gap-2 text-xs">
                 <div className="bg-[#0A0E17]/90 border border-[#C5A880]/60 px-3 py-1.5 rounded-none backdrop-blur-md">
-                  <span className="text-[10px] font-mono uppercase text-[#C5A880] font-semibold block">{t('Tầm nhìn thực tế:')}</span>
-                  <span className="text-white font-medium">{t(currentApartment.viewDesc)}</span>
+                  <span className="text-[10px] font-mono uppercase text-[#C5A880] font-semibold block">Tầm nhìn thực tế:</span>
+                  <span className="text-white font-medium">{currentApartment.viewDesc}</span>
                 </div>
                 <div className="bg-[#0A0E17]/90 border border-gray-700 px-3 py-1.5 rounded-none backdrop-blur-md text-gray-300 font-mono text-xs hidden sm:block">
-                  {t('Mặt bằng bóc mái 3D')}
+                  Mặt bằng bóc mái 3D
                 </div>
               </div>
             </div>
@@ -698,19 +695,19 @@ export default function FloorPlanExplorer({ onOpenLogin }: FloorPlanExplorerProp
                   <div className={`font-bold font-serif text-sm flex items-center gap-2 ${
                     isDark ? 'text-white' : 'text-gray-900'
                   }`}>
-                    <span>{t(activeRoom.name)}</span>
+                    <span>{activeRoom.name}</span>
                     <span className="text-[#C5A880] font-mono text-xs font-semibold">({activeRoom.area})</span>
                   </div>
                   <div className={`text-[11px] font-light truncate mt-0.5 ${
                     isDark ? 'text-gray-300' : 'text-gray-600'
                   }`}>
-                    {t(activeRoom.desc)}
+                    {activeRoom.desc}
                   </div>
                 </div>
               </div>
 
               <div className="text-[10px] font-mono text-emerald-400 shrink-0 bg-emerald-950/60 border border-emerald-500/40 px-2 py-1 rounded-none">
-                {t('✓ Đang Xem Chi Tiết')}
+                ✓ Đang Xem Chi Tiết
               </div>
             </div>
           </div>
@@ -731,16 +728,16 @@ export default function FloorPlanExplorer({ onOpenLogin }: FloorPlanExplorerProp
                     </div>
                     <div>
                       <div className="text-xs font-bold text-[#C5A880] uppercase tracking-wider flex items-center gap-1.5">
-                        <span>{t('Căn Hộ Đang Sở Hữu Của Bạn')}</span>
+                        <span>Căn Hộ Đang Sở Hữu Của Bạn</span>
                         <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
                       </div>
                       <div className={`text-[11px] mt-0.5 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
-                        {t('Chủ Hộ:')} <strong>{currentUser?.full_name}</strong> • {t('Tầng 30 • Chung Cư BS-07')}
+                        Chủ Hộ: <strong>{currentUser?.full_name}</strong> • Tầng 30 • Chung Cư BS-07
                       </div>
                     </div>
                   </div>
                   <span className="text-[10px] font-mono px-2 py-0.5 bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 shrink-0 font-semibold">
-                    {t('ĐÃ BÀN GIAO')}
+                    ĐÃ BÀN GIAO
                   </span>
                 </div>
               )}
@@ -748,9 +745,9 @@ export default function FloorPlanExplorer({ onOpenLogin }: FloorPlanExplorerProp
               {isOwnerOrResident && !isUserOwnsThisApt && (
                 <div className="p-3 bg-blue-500/10 border-l-4 border-l-blue-500 border border-blue-500/30 flex items-center justify-between gap-3">
                   <div className="text-xs">
-                    <div className="text-blue-400 font-bold uppercase tracking-wider">{t('Mặt Bằng Dòng Căn Khác')}</div>
+                    <div className="text-blue-400 font-bold uppercase tracking-wider">Mặt Bằng Dòng Căn Khác</div>
                     <div className={`text-[11px] mt-0.5 ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
-                      {t('Căn hộ của bạn là')} <strong>{t('Căn')} {currentUser?.apartment_code || 'CH-06'}</strong> ({userAptCategory}).
+                      Căn hộ của bạn là <strong>Căn {currentUser?.apartment_code || 'CH-06'}</strong> ({userAptCategory}).
                     </div>
                   </div>
                   {userAptCategory && (
@@ -759,7 +756,7 @@ export default function FloorPlanExplorer({ onOpenLogin }: FloorPlanExplorerProp
                       onClick={() => handleSelectCategory(userAptCategory)}
                       className="px-2.5 py-1 bg-[#C5A880] hover:bg-[#D4AF37] text-[#0A0E17] font-bold text-[10px] uppercase font-mono shrink-0 cursor-pointer shadow-sm"
                     >
-                      {t('Về Căn Của Tôi →')}
+                      Về Căn Của Tôi →
                     </button>
                   )}
                 </div>
@@ -770,12 +767,12 @@ export default function FloorPlanExplorer({ onOpenLogin }: FloorPlanExplorerProp
                   <div className="flex items-center gap-2">
                     <Building className="w-4 h-4 text-blue-400 shrink-0" />
                     <div className="text-xs">
-                      <span className="font-bold text-blue-400 block uppercase">{t('Chế Độ Quản Trị Chung Cư')}</span>
-                      <span className="text-[11px] text-gray-300">{t('Dữ liệu NKS SCRMAI • Chung Cư BS-07 Tầng 30')}</span>
+                      <span className="font-bold text-blue-400 block uppercase">Chế Độ Quản Trị Chung Cư</span>
+                      <span className="text-[11px] text-gray-300">Dữ liệu NKS SCRMAI • Chung Cư BS-07 Tầng 30</span>
                     </div>
                   </div>
                   <span className="text-[10px] font-mono px-2 py-0.5 bg-blue-500/20 text-blue-300 border border-blue-500/40">
-                    {t('QUẢN TRỊ VIÊN')}
+                    QUẢN TRỊ VIÊN
                   </span>
                 </div>
               )}
@@ -785,8 +782,8 @@ export default function FloorPlanExplorer({ onOpenLogin }: FloorPlanExplorerProp
                   <div className="flex items-center gap-2">
                     <Wrench className="w-4 h-4 text-amber-400 shrink-0" />
                     <div className="text-xs">
-                      <span className="font-bold text-amber-400 block uppercase">{t('Chế Độ Kỹ Thuật Viên Vận Hành')}</span>
-                      <span className="text-[11px] text-gray-300">{t('Giám sát sơ đồ MEP, điện nước & PCCC')}</span>
+                      <span className="font-bold text-amber-400 block uppercase">Chế Độ Kỹ Thuật Viên Vận Hành</span>
+                      <span className="text-[11px] text-gray-300">Giám sát sơ đồ MEP, điện nước &amp; PCCC</span>
                     </div>
                   </div>
                 </div>
@@ -798,27 +795,27 @@ export default function FloorPlanExplorer({ onOpenLogin }: FloorPlanExplorerProp
               }`}>
                 <div>
                   <div className="text-[10px] font-mono uppercase tracking-widest text-[#C5A880] font-semibold">
-                    {t(currentApartment.name)}
+                    {currentApartment.name}
                   </div>
                   <h3 className={`font-serif text-2xl sm:text-3xl font-bold mt-0.5 ${
                     isDark ? 'text-white' : 'text-gray-900'
                   }`}>
-                    {t('Căn Hộ')} {currentApartment.code}
+                    Căn Hộ {currentApartment.code}
                   </h3>
                   <div className={`text-xs mt-0.5 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
-                    {t(currentApartment.floorText)}
+                    {currentApartment.floorText}
                   </div>
                 </div>
 
                 <div className="text-right shrink-0">
                   <div className="text-[10px] font-mono uppercase tracking-widest text-gray-400">
-                    {isUserOwnsThisApt ? t('Hồ Sơ Căn Hộ') : isAdmin ? t('Trạng Thái Căn') : t('Giá Tham Chiếu')}
+                    {isUserOwnsThisApt ? 'Hồ Sơ Căn Hộ' : isAdmin ? 'Trạng Thái Căn' : 'Giá Tham Chiếu'}
                   </div>
                   <div className="font-mono text-xl sm:text-2xl font-bold text-[#C5A880] mt-0.5">
-                    {isUserOwnsThisApt ? t('Sổ Hồng Riêng') : isAdmin ? t('Đã Kích Hoạt') : `${currentApartment.priceBillion.toFixed(2)} ${t('Tỷ')}`}
+                    {isUserOwnsThisApt ? 'Sổ Hồng Riêng' : isAdmin ? 'Đã Kích Hoạt' : `${currentApartment.priceBillion.toFixed(2)} Tỷ`}
                   </div>
                   <div className="text-[10px] text-gray-400 font-mono">
-                    {isUserOwnsThisApt ? t('Sở Hữu Lâu Dài') : `~ ${(currentApartment.priceBillion * 1000 / currentApartment.area).toFixed(1)} ${t('tr/m²')}`}
+                    {isUserOwnsThisApt ? 'Sở Hữu Lâu Dài' : `~ ${(currentApartment.priceBillion * 1000 / currentApartment.area).toFixed(1)} tr/m²`}
                   </div>
                 </div>
               </div>
@@ -828,50 +825,50 @@ export default function FloorPlanExplorer({ onOpenLogin }: FloorPlanExplorerProp
                 <div className={`p-3 rounded-none ${
                   isDark ? 'bg-[#121824] border border-[#1E293B]' : 'bg-slate-50 border border-gray-200'
                 }`}>
-                  <div className="text-[10px] text-gray-400 font-mono uppercase">{t('Diện Tích Thông Thủy')}</div>
+                  <div className="text-[10px] text-gray-400 font-mono uppercase">Diện Tích Thông Thủy</div>
                   <div className={`font-mono text-base sm:text-lg font-bold mt-0.5 ${
                     isDark ? 'text-white' : 'text-gray-900'
                   }`}>
                     {currentApartment.area} m²
                   </div>
-                  <div className="text-[10px] text-gray-400 mt-0.5">{t('Tim tường:')} {currentApartment.wallArea} m²</div>
+                  <div className="text-[10px] text-gray-400 mt-0.5">Tim tường: {currentApartment.wallArea} m²</div>
                 </div>
 
                 <div className={`p-3 rounded-none ${
                   isDark ? 'bg-[#121824] border border-[#1E293B]' : 'bg-slate-50 border border-gray-200'
                 }`}>
-                  <div className="text-[10px] text-gray-400 font-mono uppercase">{t('Hướng Ban Công')}</div>
+                  <div className="text-[10px] text-gray-400 font-mono uppercase">Hướng Ban Công</div>
                   <div className="font-mono text-base sm:text-lg font-bold text-emerald-500 mt-0.5">
-                    {t(currentApartment.direction)}
+                    {currentApartment.direction}
                   </div>
-                  <div className="text-[10px] text-gray-400 mt-0.5">{t('Đón gió mát tự nhiên')}</div>
+                  <div className="text-[10px] text-gray-400 mt-0.5">Đón gió mát tự nhiên</div>
                 </div>
 
                 <div className={`p-3 rounded-none ${
                   isDark ? 'bg-[#121824] border border-[#1E293B]' : 'bg-slate-50 border border-gray-200'
                 }`}>
-                  <div className="text-[10px] text-gray-400 font-mono uppercase">{t('Cơ Cấu Phòng')}</div>
+                  <div className="text-[10px] text-gray-400 font-mono uppercase">Cơ Cấu Phòng</div>
                   <div className={`font-mono text-base sm:text-lg font-bold mt-0.5 ${
                     isDark ? 'text-white' : 'text-gray-900'
                   }`}>
-                    {currentApartment.bedrooms} {t('PN')} • {currentApartment.bathrooms} {t('WC')}
+                    {currentApartment.bedrooms} PN • {currentApartment.bathrooms} WC
                   </div>
                   <div className="text-[10px] text-gray-400 mt-0.5">
-                    {currentApartment.category === 'DUPLEX' ? t('2 Tầng Thông Suốt') : t('Ban công & logia riêng')}
+                    {currentApartment.category === 'DUPLEX' ? '2 Tầng Thông Suốt' : 'Ban công & logia riêng'}
                   </div>
                 </div>
 
                 <div className={`p-3 rounded-none ${
                   isDark ? 'bg-[#121824] border border-[#1E293B]' : 'bg-slate-50 border border-gray-200'
                 }`}>
-                  <div className="text-[10px] text-gray-400 font-mono uppercase">{t('Pháp Lý & Vận Hành')}</div>
+                  <div className="text-[10px] text-gray-400 font-mono uppercase">Pháp Lý &amp; Vận Hành</div>
                   <div className={`font-mono text-base sm:text-lg font-bold mt-0.5 ${
                     isDark ? 'text-white' : 'text-gray-900'
                   }`}>
-                    {t('Sổ Hồng Lâu Dài')}
+                    Sổ Hồng Lâu Dài
                   </div>
                   <div className="text-[10px] text-[#C5A880] mt-0.5 font-medium">
-                    {isUserOwnsThisApt ? t('Phí QL: 12.500 đ/m²') : t(currentApartment.statusLabel)}
+                    {isUserOwnsThisApt ? 'Phí QL: 12.500 đ/m²' : currentApartment.statusLabel}
                   </div>
                 </div>
               </div>
@@ -879,13 +876,13 @@ export default function FloorPlanExplorer({ onOpenLogin }: FloorPlanExplorerProp
               {/* TIÊU CHUẨN KHÔNG GIAN BÀN GIAO */}
               <div className={`space-y-2 pt-2 border-t ${isDark ? 'border-[#1E293B]' : 'border-gray-200'}`}>
                 <div className="text-[10.5px] font-mono uppercase text-gray-400 tracking-wider">
-                  {t('Đặc Trưng Kiến Trúc & Công Nghệ')}
+                  Đặc Trưng Kiến Trúc &amp; Công Nghệ
                 </div>
                 <ul className={`space-y-2 text-xs font-light ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
                   {currentApartment.features.map((feat, idx) => (
                     <li key={idx} className="flex items-start gap-2">
                       <Check className="w-3.5 h-3.5 text-[#C5A880] shrink-0 mt-0.5" />
-                      <span className="leading-relaxed">{t(feat)}</span>
+                      <span className="leading-relaxed">{feat}</span>
                     </li>
                   ))}
                 </ul>
@@ -904,7 +901,7 @@ export default function FloorPlanExplorer({ onOpenLogin }: FloorPlanExplorerProp
                     className="w-full py-3.5 bg-[#C5A880] hover:bg-[#D4AF37] text-[#0A0E17] font-bold text-xs tracking-wider uppercase rounded-none transition-all shadow-lg flex items-center justify-center gap-2"
                   >
                     <Home className="w-4 h-4" />
-                    <span>{t('Vào Bảng Điều Khiển Căn Hộ Của Bạn')}</span>
+                    <span>Vào Bảng Điều Khiển Căn Hộ Của Bạn</span>
                   </Link>
 
                   <div className="grid grid-cols-3 gap-2">
@@ -915,7 +912,7 @@ export default function FloorPlanExplorer({ onOpenLogin }: FloorPlanExplorerProp
                       }`}
                     >
                       <CreditCard className="w-3.5 h-3.5 text-[#C5A880]" />
-                      <span>{t('Hóa Đơn Căn')}</span>
+                      <span>Hóa Đơn Căn</span>
                     </Link>
                     <Link
                       href="/portal?tab=resident-home&action=visitor"
@@ -924,7 +921,7 @@ export default function FloorPlanExplorer({ onOpenLogin }: FloorPlanExplorerProp
                       }`}
                     >
                       <UserPlus className="w-3.5 h-3.5 text-[#C5A880]" />
-                      <span>{t('Cấp Thẻ Khách')}</span>
+                      <span>Cấp Thẻ Khách</span>
                     </Link>
                     <Link
                       href="/portal?tab=resident-tickets"
@@ -933,7 +930,7 @@ export default function FloorPlanExplorer({ onOpenLogin }: FloorPlanExplorerProp
                       }`}
                     >
                       <Wrench className="w-3.5 h-3.5 text-[#C5A880]" />
-                      <span>{t('Báo Kỹ Thuật')}</span>
+                      <span>Báo Kỹ Thuật</span>
                     </Link>
                   </div>
                 </div>
@@ -949,7 +946,7 @@ export default function FloorPlanExplorer({ onOpenLogin }: FloorPlanExplorerProp
                       className="w-full py-3 bg-[#C5A880] hover:bg-[#D4AF37] text-[#0A0E17] font-bold text-xs tracking-wider uppercase rounded-none transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer"
                     >
                       <Crown className="w-4 h-4" />
-                      <span>{t('Quay Về Căn Hộ Của Tôi')} ({currentUser?.apartment_code || 'CH-06'})</span>
+                      <span>Quay Về Căn Hộ Của Tôi ({currentUser?.apartment_code || 'CH-06'})</span>
                     </button>
                   )}
                   <Link
@@ -961,7 +958,7 @@ export default function FloorPlanExplorer({ onOpenLogin }: FloorPlanExplorerProp
                     }`}
                   >
                     <Home className="w-3.5 h-3.5 text-[#C5A880]" />
-                    <span>{t('Vào Bảng Điều Khiển Căn Hộ Của Bạn')}</span>
+                    <span>Vào Bảng Điều Khiển Căn Hộ Của Bạn</span>
                   </Link>
                 </div>
               )}
@@ -974,7 +971,7 @@ export default function FloorPlanExplorer({ onOpenLogin }: FloorPlanExplorerProp
                     className="w-full py-3.5 bg-[#C5A880] hover:bg-[#D4AF37] text-[#0A0E17] font-bold text-xs tracking-wider uppercase rounded-none transition-all shadow-lg flex items-center justify-center gap-2"
                   >
                     <Building className="w-4 h-4" />
-                    <span>{t('Quản Trị Căn Hộ & Cư Dân')}</span>
+                    <span>Quản Trị Căn Hộ &amp; Cư Dân</span>
                   </Link>
 
                   <div className="grid grid-cols-2 gap-2">
@@ -985,7 +982,7 @@ export default function FloorPlanExplorer({ onOpenLogin }: FloorPlanExplorerProp
                       }`}
                     >
                       <UserCheck className="w-3.5 h-3.5 text-[#C5A880]" />
-                      <span>{t('Kiểm Soát Thẻ Khách')}</span>
+                      <span>Kiểm Soát Thẻ Khách</span>
                     </Link>
                     <Link
                       href="/portal?tab=admin-billing"
@@ -994,7 +991,7 @@ export default function FloorPlanExplorer({ onOpenLogin }: FloorPlanExplorerProp
                       }`}
                     >
                       <CreditCard className="w-3.5 h-3.5 text-[#C5A880]" />
-                      <span>{t('Thu Phí & Hóa Đơn')}</span>
+                      <span>Thu Phí &amp; Hóa Đơn</span>
                     </Link>
                   </div>
                 </div>
@@ -1008,7 +1005,7 @@ export default function FloorPlanExplorer({ onOpenLogin }: FloorPlanExplorerProp
                     className="w-full py-3.5 bg-[#C5A880] hover:bg-[#D4AF37] text-[#0A0E17] font-bold text-xs tracking-wider uppercase rounded-none transition-all shadow-lg flex items-center justify-center gap-2"
                   >
                     <Wrench className="w-4 h-4" />
-                    <span>{t('Bảng Việc Kỹ Thuật (Kanban)')}</span>
+                    <span>Bảng Việc Kỹ Thuật (Kanban)</span>
                   </Link>
                   <Link
                     href="/portal?tab=admin-devices"
@@ -1019,7 +1016,7 @@ export default function FloorPlanExplorer({ onOpenLogin }: FloorPlanExplorerProp
                     }`}
                   >
                     <Layers className="w-3.5 h-3.5 text-[#C5A880]" />
-                    <span>{t('Xem Giám Sát Cơ Điện & Thiết Bị')}</span>
+                    <span>Xem Giám Sát Cơ Điện &amp; Thiết Bị</span>
                   </Link>
                 </div>
               )}
@@ -1039,7 +1036,7 @@ export default function FloorPlanExplorer({ onOpenLogin }: FloorPlanExplorerProp
                     className="w-full py-3.5 bg-[#C5A880] hover:bg-[#D4AF37] text-[#0A0E17] font-bold text-xs tracking-wider uppercase rounded-none transition-all shadow-lg flex items-center justify-center gap-2 cursor-pointer"
                   >
                     <LogIn className="w-4 h-4" />
-                    <span>{t('Đăng Nhập Cư Dân & Quản Lý')}</span>
+                    <span>Đăng Nhập Cư Dân &amp; Quản Lý</span>
                   </button>
 
                   <a
@@ -1051,14 +1048,14 @@ export default function FloorPlanExplorer({ onOpenLogin }: FloorPlanExplorerProp
                     }`}
                   >
                     <Phone className="w-3.5 h-3.5 text-[#C5A880]" />
-                    <span>{t('Hotline Ban Quản Lý: 0364 967 082')}</span>
+                    <span>Hotline Ban Quản Lý: 0364 967 082</span>
                   </a>
 
                   <div className={`p-2.5 border rounded-none text-[11px] leading-relaxed flex items-start gap-2 ${
                     isDark ? 'bg-[#0A0E17] border-[#1E293B] text-gray-400' : 'bg-slate-50 border-gray-200 text-gray-600'
                   }`}>
                     <Info className="w-4 h-4 text-[#C5A880] shrink-0 mt-0.5" />
-                    <span>{t('Tiếp đón trực tiếp tại')} <strong>{t('Sảnh The Tropical • Chung Cư BS-07')}</strong> (08:00 - 20:00). {t('Minh bạch hồ sơ pháp lý, không qua trung gian.')}</span>
+                    <span>Tiếp đón trực tiếp tại <strong>Sảnh The Tropical • Chung Cư BS-07</strong> (08:00 - 20:00). Minh bạch hồ sơ pháp lý, không qua trung gian.</span>
                   </div>
                 </div>
               )}

@@ -6,24 +6,17 @@ import { TRANSLATIONS_DATA } from './translationsData';
 export type Language = 'vi' | 'en';
 
 // =============================================================================
-// FAST LOOKUP MAPS (O(1)) WITH NORMALIZATION
+// FAST LOOKUP MAPS (O(1))
 // =============================================================================
 const VI_TO_EN_MAP = new Map<string, string>();
 const EN_TO_VI_MAP = new Map<string, string>();
-
-export function normKey(str: string): string {
-  if (!str) return '';
-  return str.replace(/\s+/g, ' ').trim().toLowerCase();
-}
 
 for (const [vi, en] of TRANSLATIONS_DATA) {
   const cleanVi = vi.trim();
   const cleanEn = en.trim();
   if (cleanVi && cleanEn) {
     VI_TO_EN_MAP.set(cleanVi.toLowerCase(), cleanEn);
-    VI_TO_EN_MAP.set(normKey(cleanVi), cleanEn);
     EN_TO_VI_MAP.set(cleanEn.toLowerCase(), cleanVi);
-    EN_TO_VI_MAP.set(normKey(cleanEn), cleanVi);
   }
 }
 
@@ -36,48 +29,30 @@ export function translateString(text: string, targetLang: Language): string {
   if (!trimmed) return text;
 
   const lower = trimmed.toLowerCase();
-  const norm = normKey(trimmed);
 
-  // 1. Direct O(1) Dictionary Lookup (exact and normalized whitespace)
-  if (targetLang === 'en') {
-    if (VI_TO_EN_MAP.has(lower)) {
-      const translated = VI_TO_EN_MAP.get(lower)!;
-      return text.replace(trimmed, matchCase(trimmed, translated));
-    }
-    if (VI_TO_EN_MAP.has(norm)) {
-      const translated = VI_TO_EN_MAP.get(norm)!;
-      return text.replace(trimmed, matchCase(trimmed, translated));
-    }
+  // 1. Direct O(1) Dictionary Lookup
+  if (targetLang === 'en' && VI_TO_EN_MAP.has(lower)) {
+    const translated = VI_TO_EN_MAP.get(lower)!;
+    return text.replace(trimmed, () => matchCase(trimmed, translated));
   }
-  if (targetLang === 'vi') {
-    if (EN_TO_VI_MAP.has(lower)) {
-      const translated = EN_TO_VI_MAP.get(lower)!;
-      return text.replace(trimmed, matchCase(trimmed, translated));
-    }
-    if (EN_TO_VI_MAP.has(norm)) {
-      const translated = EN_TO_VI_MAP.get(norm)!;
-      return text.replace(trimmed, matchCase(trimmed, translated));
-    }
+  if (targetLang === 'vi' && EN_TO_VI_MAP.has(lower)) {
+    const translated = EN_TO_VI_MAP.get(lower)!;
+    return text.replace(trimmed, () => matchCase(trimmed, translated));
   }
 
-  // 1.5 Multi-sentence and Compound Delimiter Splitting
-  if (targetLang === 'en' && (trimmed.includes('\n') || trimmed.includes('. ') || trimmed.includes(' • ') || trimmed.includes(' | '))) {
-    const parts = trimmed.split(/(\n+|(?<=[.!?])\s+|(?:\s+[•|]\s+))/);
-    if (parts.length > 1) {
-      let anyTranslated = false;
-      const translatedParts = parts.map(part => {
-        if (/^(\n+|\s+|(?:\s+[•|]\s+))$/.test(part)) return part;
-        const sub = part.trim();
-        if (!sub) return part;
-        const transSub = translateString(sub, 'en');
-        if (transSub !== sub) {
-          anyTranslated = true;
-          return part.replace(sub, transSub);
-        }
-        return part;
+  // 1b. Multi-part Delimiters: " • ", " | ", " - ", "\n"
+  for (const sep of [' • ', ' | ', ' - ', '\n']) {
+    if (trimmed.includes(sep)) {
+      const parts = trimmed.split(sep);
+      let changed = false;
+      const translatedParts = parts.map(p => {
+        const trans = translateString(p, targetLang);
+        if (trans !== p) changed = true;
+        return trans;
       });
-      if (anyTranslated) {
-        return text.replace(trimmed, translatedParts.join(''));
+      if (changed) {
+        const combined = translatedParts.join(sep);
+        return text.replace(trimmed, () => combined);
       }
     }
   }
@@ -411,30 +386,22 @@ const KEY_DICTIONARY: Record<string, Record<Language, string>> = {
         }
       }
 
-      // Detect if currentVal is fresh Vietnamese text from dynamic React render
-      const hasVn = /[àáạảãâầấậẩẫăằắặẳẵèéẹẻẽêềếệểễìíịỉĩòóọỏõôồốộổỗơờớợởỡùúụủũưừứựửữỳýỵỷỹđ]/i.test(currentVal);
-      if (hasVn) {
-        originalNodesMap.current.set(node, currentVal);
-      } else if (!originalNodesMap.current.has(node)) {
+      // Save original Vietnamese text on first encounter
+      if (!originalNodesMap.current.has(node)) {
         originalNodesMap.current.set(node, currentVal);
       }
 
+      const baseText = originalNodesMap.current.get(node) || currentVal;
+
       if (language === 'en') {
-        const baseText = originalNodesMap.current.get(node) || currentVal;
         const translated = translateString(baseText, 'en');
         if (translated !== node.nodeValue) {
           node.nodeValue = translated;
         }
       } else {
         // Restore pristine Vietnamese
-        const original = originalNodesMap.current.get(node);
-        if (original && node.nodeValue !== original) {
-          node.nodeValue = original;
-        } else {
-          const translatedBack = translateString(currentVal, 'vi');
-          if (translatedBack !== node.nodeValue) {
-            node.nodeValue = translatedBack;
-          }
+        if (baseText !== node.nodeValue) {
+          node.nodeValue = baseText;
         }
       }
     };
@@ -534,35 +501,14 @@ const KEY_DICTIONARY: Record<string, Record<Language, string>> = {
 
       clearTimeout(debounceTimer);
       debounceTimer = setTimeout(() => {
-        if (isTranslatingRef.current) return;
-        isTranslatingRef.current = true;
-        try {
-          for (const mutation of mutations) {
-            if (mutation.type === 'characterData' && mutation.target) {
-              processTextNode(mutation.target);
-            } else if (mutation.type === 'childList') {
-              mutation.addedNodes.forEach((added) => {
-                // If it's an element or fragment, walk it
-                if (added.nodeType === Node.ELEMENT_NODE || added.nodeType === Node.DOCUMENT_FRAGMENT_NODE) {
-                  const walker = document.createTreeWalker(
-                    added,
-                    NodeFilter.SHOW_TEXT | NodeFilter.SHOW_ELEMENT,
-                    null
-                  );
-                  let curr = walker.nextNode();
-                  while (curr) {
-                    if (curr.nodeType === Node.TEXT_NODE) processTextNode(curr);
-                    else if (curr.nodeType === Node.ELEMENT_NODE) processAttributes(curr as HTMLElement);
-                    curr = walker.nextNode();
-                  }
-                } else if (added.nodeType === Node.TEXT_NODE) {
-                  processTextNode(added);
-                }
-              });
-            }
+        for (const mutation of mutations) {
+          if (mutation.type === 'characterData' && mutation.target) {
+            processTextNode(mutation.target);
+          } else if (mutation.type === 'childList') {
+            mutation.addedNodes.forEach((added) => {
+              walkAndTranslate(added);
+            });
           }
-        } finally {
-          isTranslatingRef.current = false;
         }
       }, 40);
     });
