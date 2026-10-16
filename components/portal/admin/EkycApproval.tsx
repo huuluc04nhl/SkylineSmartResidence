@@ -598,7 +598,7 @@ export default function EkycApproval() {
       {/* ============================================================= */}
       {inspectingRequest && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-sm animate-fadeIn">
-          <div className="bg-[#0D1117] border border-[#C5A880]/70 max-w-3xl w-full p-6 rounded-none space-y-5 shadow-2xl overflow-y-auto max-h-[92vh]">
+          <div className="bg-[#0D1117] border border-[#C5A880]/70 max-w-4xl w-full p-5 sm:p-6 rounded-none space-y-5 shadow-2xl overflow-y-auto max-h-[92vh]">
             
             {/* Modal Header */}
             <div className="flex items-center justify-between border-b border-[#222B35] pb-3">
@@ -904,74 +904,79 @@ export default function EkycApproval() {
             {/* Legal Information Verification Table */}
             <div className="p-4 bg-[#161D26] border border-[#2D3748] rounded-none space-y-3 text-xs">
               <div className="text-gray-300 font-bold flex items-center gap-1.5 border-b border-[#222B35] pb-2">
-                <FileText className="w-3.5 h-3.5 text-[#C5A880]" /> Bảng Đối Chiếu Thông Tin Khai Báo &amp; Trích Xuất Thẻ:
+                <FileText className="w-3.5 h-3.5 text-[#C5A880]" />
+                <span>{t('Bảng Đối Chiếu Thông Tin Khai Báo & Trích Xuất Thẻ:')}</span>
               </div>
 
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                 <div>
-                  <span className="text-gray-500 text-[10.5px] block">Họ và Tên:</span>
+                  <span className="text-gray-500 text-[10.5px] block">{t('Họ và Tên:')}</span>
                   <strong className="text-white text-sm">{inspectingRequest.fullName}</strong>
                 </div>
 
                 <div>
-                  <span className="text-gray-500 text-[10.5px] block">Số Căn Cước Công Dân:</span>
+                  <span className="text-gray-500 text-[10.5px] block">{t('Số Căn Cước Công Dân:')}</span>
                   <strong className="text-[#C5A880] font-mono text-sm tracking-wider">{inspectingRequest.idCardNo}</strong>
                 </div>
 
                 <div>
-                  <span className="text-gray-500 text-[10.5px] block">Căn Hộ & Vai Trò:</span>
+                  <span className="text-gray-500 text-[10.5px] block">{t('Căn Hộ & Vai Trò:')}</span>
                   <strong className="text-white font-mono">Căn {inspectingRequest.apartmentCode}</strong> ({inspectingRequest.roleLabel})
                 </div>
 
                 <div>
-                  <span className="text-gray-500 text-[10.5px] block">Ngày Sinh:</span>
-                  <span className="text-gray-200 font-mono">{inspectingRequest.dob || 'Chưa cập nhật'}</span>
+                  <span className="text-gray-500 text-[10.5px] block">{t('Ngày Sinh:')}</span>
+                  <span className="text-gray-200 font-mono">{inspectingRequest.dob || t('Chưa cập nhật')}</span>
                 </div>
 
                 <div>
-                  <span className="text-gray-500 text-[10.5px] block">Ngày Cấp & Nơi Cấp:</span>
+                  <span className="text-gray-500 text-[10.5px] block">{t('Ngày Cấp & Nơi Cấp:')}</span>
                   <span className="text-gray-200">
-                    {inspectingRequest.idDate || 'Chưa cập nhật'}
+                    {inspectingRequest.idDate || t('Chưa cập nhật')}
                     {inspectingRequest.idPlace ? ` • ${inspectingRequest.idPlace}` : ''}
                   </span>
                 </div>
 
                 <div>
-                  <span className="text-gray-500 text-[10.5px] block">Số Điện Thoại:</span>
+                  <span className="text-gray-500 text-[10.5px] block">{t('Số Điện Thoại:')}</span>
                   <span className="text-gray-200 font-mono">{inspectingRequest.phone}</span>
                 </div>
               </div>
             </div>
 
             {/* Modal Actions */}
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-3 border-t border-[#222B35]">
-              <div className="text-xs text-gray-400 flex items-center gap-2">
-                <span>Trạng thái hồ sơ:</span>
+            <div className="pt-4 border-t border-[#222B35] flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
+              {/* Left: Status */}
+              <div className="flex items-center gap-2.5 text-xs text-gray-400 flex-shrink-0">
+                <span className="whitespace-nowrap font-medium">{t('Trạng thái hồ sơ:')}</span>
                 {inspectingRequest.status === 'APPROVED' ? (
-                  <span className="px-2.5 py-0.5 bg-emerald-950 text-emerald-300 border border-emerald-500 text-[10px] font-mono font-bold">
-                    ĐÃ KÍCH HOẠT QUYỀN RA VÀO
+                  <span className="h-8 px-3 bg-emerald-950 text-emerald-300 border border-emerald-500 text-[10.5px] font-mono font-bold whitespace-nowrap inline-flex items-center gap-1.5 rounded-none">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 flex-shrink-0" />
+                    {t('ĐÃ KÍCH HOẠT QUYỀN RA VÀO')}
                   </span>
                 ) : inspectingRequest.status === 'REJECTED' ? (
-                  <span className="px-2.5 py-0.5 bg-rose-950 text-rose-300 border border-rose-500 text-[10px] font-mono font-bold">
-                    CẦN BỔ SUNG HỒ SƠ
+                  <span className="h-8 px-3 bg-rose-950 text-rose-300 border border-rose-500 text-[10.5px] font-mono font-bold whitespace-nowrap inline-flex items-center gap-1.5 rounded-none">
+                    <XCircle className="w-3.5 h-3.5 text-rose-400 flex-shrink-0" />
+                    {t('CẦN BỔ SUNG HỒ SƠ')}
                   </span>
                 ) : (
-                  <span className="px-2.5 py-0.5 bg-amber-950 text-amber-300 border border-amber-500 text-[10px] font-mono font-bold animate-pulse">
-                    ĐANG CHỜ PHÊ DUYỆT
+                  <span className="h-8 px-3 bg-amber-950 text-amber-300 border border-amber-500 text-[10.5px] font-mono font-bold whitespace-nowrap inline-flex items-center gap-1.5 rounded-none animate-pulse">
+                    <Clock className="w-3.5 h-3.5 text-amber-400 flex-shrink-0" />
+                    {t('ĐANG CHỜ PHÊ DUYỆT')}
                   </span>
                 )}
               </div>
 
-              <div className="flex flex-wrap items-center gap-2.5 w-full sm:w-auto justify-end">
+              {/* Right: Actions */}
+              <div className="flex items-center justify-end gap-2 flex-wrap sm:flex-nowrap">
                 <button
                   type="button"
                   onClick={() => setInspectingRequest(null)}
-                  className="px-4 py-2 bg-[#161B22] hover:bg-[#202936] text-gray-300 hover:text-white text-xs font-semibold rounded-none transition-all cursor-pointer border border-[#2D3748]"
+                  className="h-8 px-4 bg-[#161B22] hover:bg-[#202936] text-gray-300 hover:text-white text-xs font-semibold rounded-none transition-all cursor-pointer border border-[#2D3748] whitespace-nowrap flex items-center justify-center"
                 >
-                  Đóng
+                  {t('Đóng')}
                 </button>
 
-                {/* Nếu hồ sơ ĐÃ ĐƯỢC DUYỆT: Cho phép Thu hồi quyền nếu cần */}
                 {inspectingRequest.status === 'APPROVED' && (
                   <button
                     type="button"
@@ -980,13 +985,13 @@ export default function EkycApproval() {
                       setRevokingId(inspectingRequest.id);
                       setRevokeReason('Ban Quản Lý tạm thu hồi quyền ra vào FaceID để đối soát lại hồ sơ.');
                     }}
-                    className="px-4 py-2 bg-rose-950/80 hover:bg-rose-900 border border-rose-600/80 text-rose-300 hover:text-rose-100 text-xs font-semibold rounded-none transition-all flex items-center gap-1.5 cursor-pointer shadow disabled:opacity-50"
+                    className="h-8 px-4 bg-rose-950/80 hover:bg-rose-900 border border-rose-600/80 text-rose-300 hover:text-rose-100 text-xs font-semibold rounded-none transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow disabled:opacity-50 whitespace-nowrap"
                   >
-                    <XCircle className="w-3.5 h-3.5" /> Tạm Khóa / Thu Hồi Quyền
+                    <XCircle className="w-3.5 h-3.5 text-rose-400" />
+                    <span>{t('Tạm Khóa / Thu Hồi')}</span>
                   </button>
                 )}
 
-                {/* Nếu hồ sơ ĐANG CHỜ DUYỆT: Hiện nút Xác nhận và Yêu cầu bổ sung */}
                 {inspectingRequest.status === 'PENDING' && (
                   <>
                     <button
@@ -996,39 +1001,42 @@ export default function EkycApproval() {
                         setRejectingId(inspectingRequest.id);
                         setRejectionReason('Ảnh chụp CCCD bị mờ/lóa sáng/mất góc, vui lòng chụp lại rõ nét');
                       }}
-                      className="px-4 py-2 bg-rose-950 hover:bg-rose-900 border border-rose-500 text-rose-300 text-xs font-bold rounded-none transition-all flex items-center gap-1.5 shadow cursor-pointer disabled:opacity-50"
+                      className="h-8 px-3.5 bg-rose-950 hover:bg-rose-900 border border-rose-500 text-rose-300 text-xs font-bold rounded-none transition-all flex items-center justify-center gap-1.5 shadow cursor-pointer disabled:opacity-50 whitespace-nowrap"
                     >
-                      <X className="w-3.5 h-3.5" /> Yêu Cầu Bổ Sung
+                      <X className="w-3.5 h-3.5 text-rose-400" />
+                      <span>{t('Yêu Cầu Bổ Sung')}</span>
                     </button>
 
                     <button
                       type="button"
                       disabled={isProcessing}
                       onClick={() => handleApprove(inspectingRequest.id, inspectingRequest.fullName)}
-                      className="px-5 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-none shadow-lg transition-all flex items-center gap-1.5 active:scale-[0.99] cursor-pointer disabled:opacity-50"
+                      className="h-8 px-4 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-none shadow-lg transition-all flex items-center justify-center gap-1.5 active:scale-[0.99] cursor-pointer disabled:opacity-50 whitespace-nowrap"
                     >
                       {isProcessing ? (
                         <>
-                          <RefreshCw className="w-3.5 h-3.5 animate-spin" /> Đang Xử Lý...
+                          <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                          <span>{t('Đang Xử Lý...')}</span>
                         </>
                       ) : (
                         <>
-                          <Check className="w-4 h-4" /> Xác Nhận Hợp Lệ &amp; Kích Hoạt Quyền Ra Vào
+                          <Check className="w-3.5 h-3.5" />
+                          <span>{t('Xác Nhận & Kích Hoạt Quyền Ra Vào')}</span>
                         </>
                       )}
                     </button>
                   </>
                 )}
 
-                {/* Nếu hồ sơ BỊ TỪ CHỐI: Cho phép phê duyệt lại nếu cư dân đã hoàn tất giải trình */}
                 {inspectingRequest.status === 'REJECTED' && (
                   <button
                     type="button"
                     disabled={isProcessing}
                     onClick={() => handleApprove(inspectingRequest.id, inspectingRequest.fullName)}
-                    className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-none shadow transition-all flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+                    className="h-8 px-4 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-none shadow transition-all flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-50 whitespace-nowrap"
                   >
-                    <RotateCw className="w-3.5 h-3.5" /> Phê Duyệt Lại Hồ Sơ Này
+                    <RotateCw className="w-3.5 h-3.5" />
+                    <span>{t('Phê Duyệt Lại Hồ Sơ')}</span>
                   </button>
                 )}
               </div>
