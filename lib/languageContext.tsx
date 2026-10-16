@@ -545,24 +545,21 @@ const KEY_DICTIONARY: Record<string, Record<Language, string>> = {
 
     // 2. Target English
     if (language === 'en') {
+      if (fallback && !fallback.includes('.') && fallback !== trimmed) {
+        return fallback;
+      }
       const trans = translateString(trimmed, 'en');
       if (trans !== trimmed) return trans;
-      if (fallback) {
-        const fbTrans = translateString(fallback.trim(), 'en');
-        return fbTrans;
-      }
-      return keyOrText;
+      return fallback || keyOrText;
     }
 
     // 3. Target Vietnamese
-    if (fallback) {
-      if (trimmed.includes('.') || trimmed.includes('_') || /^[a-z]+$/.test(trimmed)) {
-        return fallback;
-      }
+    if (trimmed.includes('.') || trimmed.includes('_') || /^[a-z]+$/.test(trimmed)) {
+      return fallback || keyOrText;
     }
-    const back = translateString(trimmed, 'vi');
-    if (back !== trimmed) return back;
-    return fallback || keyOrText;
+
+    const viTrans = translateString(trimmed, 'vi');
+    return viTrans || keyOrText;
   };
 
   // ===========================================================================
@@ -734,9 +731,8 @@ const KEY_DICTIONARY: Record<string, Record<Language, string>> = {
             if (language === 'vi') {
               originalNodesMap.current.set(target, newText);
             } else {
-              if (!originalNodesMap.current.has(target)) {
-                originalNodesMap.current.set(target, newText);
-              }
+              const viBaseline = translateString(newText, 'vi');
+              originalNodesMap.current.set(target, viBaseline);
               processTextNode(target);
             }
           }
