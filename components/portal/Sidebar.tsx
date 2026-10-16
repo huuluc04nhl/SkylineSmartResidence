@@ -246,11 +246,11 @@ export default function Sidebar({
                   <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-emerald-500 rounded-full border-2 border-[#0D1117]"></span>
                 </div>
 
-                <div className="overflow-hidden">
-                  <div className="text-xs font-semibold text-white truncate max-w-[150px] leading-tight">
+                <div className="overflow-hidden min-w-0">
+                  <div className="text-xs font-semibold text-white truncate max-w-[170px] leading-tight" title={currentUser.full_name || (currentUser as any)?.fullname || 'Cư Dân SKYLINE'}>
                     {currentUser.full_name || (currentUser as any)?.fullname || 'Cư Dân SKYLINE'}
                   </div>
-                  <div className="text-[10px] text-[#C5A880] font-mono uppercase font-bold tracking-wider mt-0.5 truncate">
+                  <div className="text-[10px] text-[#C5A880] font-mono uppercase font-bold tracking-wider mt-0.5 truncate" title={role === 'ADMIN' ? t('role.admin', 'Ban Quản Lý') : role === 'OWNER' ? `${t('Căn')} ${currentUser.apartment_code || 'CH-06'} (${t('role.owner', 'Chủ Hộ')})` : `${t('Căn')} ${currentUser.apartment_code || 'CH-06'} (${t('role.family', 'Người Nhà')})`}>
                     {role === 'ADMIN' ? t('role.admin', 'Ban Quản Lý') : role === 'OWNER' ? `${t('Căn')} ${currentUser.apartment_code || 'CH-06'} (${t('role.owner', 'Chủ Hộ')})` : `${t('Căn')} ${currentUser.apartment_code || 'CH-06'} (${t('role.family', 'Người Nhà')})`}
                   </div>
                 </div>
@@ -338,7 +338,7 @@ export default function Sidebar({
                       }`}
                     >
                       <Icon className={`w-4 h-4 flex-shrink-0 ${isActive ? 'text-[#C5A880]' : 'text-gray-400'}`} />
-                      <span className="truncate">{translatedLabel}</span>
+                      <span className="truncate" title={translatedLabel}>{translatedLabel}</span>
                     </button>
                   )}
                 </div>

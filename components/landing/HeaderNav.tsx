@@ -33,7 +33,7 @@ export default function HeaderNav({ onOpenLogin }: HeaderNavProps) {
         </Link>
 
         {/* Desktop Menu */}
-        <nav className={`hidden md:flex items-center gap-3.5 lg:gap-8 text-[11px] lg:text-[12px] uppercase tracking-[0.10em] lg:tracking-[0.18em] font-medium transition-colors whitespace-nowrap ${
+        <nav className={`hidden lg:flex items-center gap-5 xl:gap-8 text-[11px] xl:text-[12px] uppercase tracking-[0.14em] xl:tracking-[0.18em] font-medium transition-colors whitespace-nowrap ${
           isDark ? 'text-gray-300' : 'text-gray-700'
         }`}>
           <a href="#concept" className={`whitespace-nowrap transition-colors ${isDark ? 'hover:text-[#C5A880]' : 'hover:text-[#9E8057]'}`}>{t('nav.about', 'Tổng Quan')}</a>
@@ -121,7 +121,7 @@ export default function HeaderNav({ onOpenLogin }: HeaderNavProps) {
         </div>
 
         {/* Mobile controls: Theme toggle switch + menu trigger */}
-        <div className="flex items-center gap-2 md:hidden">
+        <div className="flex items-center gap-2 lg:hidden">
           {/* Mobile Theme Toggle Switch (Không border-radius) */}
           <button
             onClick={toggleTheme}
@@ -172,7 +172,7 @@ export default function HeaderNav({ onOpenLogin }: HeaderNavProps) {
 
       {/* Mobile Drawer */}
       {mobileMenuOpen && (
-        <div className={`md:hidden border-b px-6 py-6 space-y-4 transition-colors ${
+        <div className={`lg:hidden border-b px-6 py-6 space-y-4 transition-colors ${
           isDark ? 'bg-[#0D1117] border-[#222B35]' : 'bg-white border-gray-200 shadow-xl'
         }`}>
           <nav className={`flex flex-col space-y-3 text-[13px] uppercase tracking-[0.15em] font-medium ${

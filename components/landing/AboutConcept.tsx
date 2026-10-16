@@ -119,10 +119,10 @@ export default function AboutConcept() {
                 <div className="text-[10px] font-mono uppercase tracking-[0.2em] text-[#C5A880] font-semibold">
                   {isAuthenticated && currentUser ? `${t('Căn Hộ Thực Tế', 'Actual Apartment')} ${currentUser.apartment_code || 'CH-06'}` : t('Căn Hộ Mẫu Thực Tế', 'Model Apartment')}
                 </div>
-                <div className={`text-sm font-serif mt-1 font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                <div className={`text-sm font-serif mt-1 font-bold break-words leading-snug ${isDark ? 'text-white' : 'text-gray-900'}`}>
                   {t('Căn Hộ Tiêu Chuẩn • Ban Công View Hồ & Công Viên', 'Standard Apartment • Balcony with Lake & Park View')}
                 </div>
-                <div className={`text-xs font-light mt-0.5 ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
+                <div className={`text-xs font-light mt-1 break-words leading-relaxed ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
                   {isAuthenticated && currentUser 
                     ? `${t('Tầng 30 • Chung Cư BS-07 (The Tropical) • Cư dân:', 'Floor 30 • BS-07 Tower (The Tropical) • Resident:')} ${currentUser.full_name}`
                     : t('Tầng 30 • Chung Cư BS-07 (The Tropical) • Tiêu Chuẩn Bàn Giao Cao Cấp', 'Floor 30 • BS-07 Tower (The Tropical) • Luxury Handover Standards')}

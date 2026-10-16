@@ -98,12 +98,12 @@ export default function AmenitiesSection() {
                 <div className={`flex flex-col gap-1.5 text-xs border-t pt-3 ${
                   isDark ? 'border-[#1E293B]' : 'border-gray-100'
                 }`}>
-                  <div className="flex items-center justify-between">
-                    <span className={`flex items-center gap-1.5 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
+                  <div className="flex items-center justify-between gap-2">
+                    <span className={`flex items-center gap-1.5 shrink-0 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
                       <Clock className="w-3.5 h-3.5 text-[#C5A880]" />
                       {t('Giờ mở cửa', 'Hours')}
                     </span>
-                    <span className={`font-mono font-semibold text-[11px] ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                    <span className={`font-mono font-semibold text-[11px] text-right truncate ${isDark ? 'text-white' : 'text-gray-900'}`}>
                       {t(facility.operating_hours)}
                     </span>
                   </div>

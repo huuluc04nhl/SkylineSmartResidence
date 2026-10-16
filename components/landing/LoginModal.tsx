@@ -540,7 +540,7 @@ export default function LoginModal({ isOpen, onClose, defaultAccount = '' }: Log
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md animate-fadeIn">
-      <div key={language} className="relative w-full max-w-md bg-[#0D1117] border border-[#C5A880]/80 p-6 sm:p-7 shadow-2xl text-white space-y-4 select-none rounded-none">
+      <div key={language} className="relative w-full max-w-md bg-[#0D1117] border border-[#C5A880]/80 p-5 sm:p-7 shadow-2xl text-white space-y-4 select-none rounded-none max-h-[92vh] overflow-y-auto">
         
         {/* Language Switcher */}
         <div className="absolute top-4 left-4 z-10">
@@ -580,14 +580,14 @@ export default function LoginModal({ isOpen, onClose, defaultAccount = '' }: Log
               setSuccessMessage(null); 
               stopCamera();
             }}
-            className={`py-2 px-1 text-center font-medium transition-all rounded-none flex flex-col items-center gap-1 ${
+            className={`py-2 px-1 text-center font-medium transition-all rounded-none flex flex-col items-center justify-center gap-1 min-w-0 ${
               authMethod === 'CREDENTIALS'
                 ? 'bg-[#C5A880] text-[#0D1117] font-bold shadow'
                 : 'text-gray-400 hover:text-white hover:bg-[#1A2330]'
             }`}
           >
-            <Mail className="w-3.5 h-3.5" />
-            <span className="text-[10px] sm:text-[11px]">Email / Mật Khẩu</span>
+            <Mail className="w-3.5 h-3.5 shrink-0" />
+            <span className="text-[10px] sm:text-[11px] leading-tight text-center break-words min-w-0">Email / Mật Khẩu</span>
           </button>
 
           <button
@@ -598,14 +598,14 @@ export default function LoginModal({ isOpen, onClose, defaultAccount = '' }: Log
               setSuccessMessage(null); 
               stopCamera();
             }}
-            className={`py-2 px-1 text-center font-medium transition-all rounded-none flex flex-col items-center gap-1 ${
+            className={`py-2 px-1 text-center font-medium transition-all rounded-none flex flex-col items-center justify-center gap-1 min-w-0 ${
               authMethod === 'PHONE_OTP'
                 ? 'bg-[#C5A880] text-[#0D1117] font-bold shadow'
                 : 'text-gray-400 hover:text-white hover:bg-[#1A2330]'
             }`}
           >
-            <Smartphone className="w-3.5 h-3.5" />
-            <span className="text-[10px] sm:text-[11px]">SĐT & Mã OTP</span>
+            <Smartphone className="w-3.5 h-3.5 shrink-0" />
+            <span className="text-[10px] sm:text-[11px] leading-tight text-center break-words min-w-0">SĐT & Mã OTP</span>
           </button>
 
           <button
@@ -617,14 +617,14 @@ export default function LoginModal({ isOpen, onClose, defaultAccount = '' }: Log
               setFaceScanStatus('IDLE');
               setFaceInputMode('CAMERA');
             }}
-            className={`py-2 px-1 text-center font-medium transition-all rounded-none flex flex-col items-center gap-1 relative ${
+            className={`py-2 px-1 text-center font-medium transition-all rounded-none flex flex-col items-center justify-center gap-1 relative min-w-0 ${
               authMethod === 'FACE_ID'
                 ? 'bg-[#C5A880] text-[#0D1117] font-bold shadow'
                 : 'text-gray-400 hover:text-white hover:bg-[#1A2330]'
             }`}
           >
-            <ScanFace className="w-3.5 h-3.5" />
-            <span className="text-[10px] sm:text-[11px]">FaceID AI</span>
+            <ScanFace className="w-3.5 h-3.5 shrink-0" />
+            <span className="text-[10px] sm:text-[11px] leading-tight text-center break-words min-w-0">FaceID AI</span>
             <span className="absolute top-1 right-1 w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
           </button>
         </div>

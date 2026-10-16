@@ -288,7 +288,7 @@ export default function Topbar({
                   <div className="font-bold text-white text-xs truncate">{userName}</div>
                   <div className="text-[10px] text-gray-400 truncate">{currentUser.email || currentUser.username}</div>
                   <div className="mt-1">
-                    <span className={`px-2 py-0.5 text-[9px] font-bold uppercase rounded border ${
+                    <span className={`px-2 py-0.5 text-[9px] font-bold uppercase rounded-none border ${
                       isAdmin 
                         ? 'bg-purple-950 text-purple-300 border-purple-600' 
                         : isOwner 

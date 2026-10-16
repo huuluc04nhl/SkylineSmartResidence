@@ -104,27 +104,27 @@ export default function HeroSection({ onOpenLogin }: HeroSectionProps) {
               <div className={`grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-5 pt-6 sm:pt-8 border-t ${
                 isDark ? 'border-[#222B35]' : 'border-gray-200'
               }`}>
-                <div>
+                <div className="min-w-0">
                   <div className="text-xl sm:text-2xl font-serif text-[#C5A880] font-bold">34 - 39 {t('Tầng', 'Floors')}</div>
-                  <div className={`text-[11px] uppercase tracking-wider mt-1 ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+                  <div className={`text-[11px] uppercase tracking-wider mt-1 break-words leading-tight ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
                     {t('4 Chung Cư (BS-07 đến BS-10)', '4 Towers (BS-07 ~ BS-10)')}
                   </div>
                 </div>
-                <div>
+                <div className="min-w-0">
                   <div className="text-xl sm:text-2xl font-serif text-[#C5A880] font-bold">&lt; 0.5s</div>
-                  <div className={`text-[11px] uppercase tracking-wider mt-1 ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+                  <div className={`text-[11px] uppercase tracking-wider mt-1 break-words leading-tight ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
                     {t('Tốc Độ Mở Cửa & Cổng Xe', 'Door & Gate FaceID Speed')}
                   </div>
                 </div>
-                <div>
+                <div className="min-w-0">
                   <div className="text-xl sm:text-2xl font-serif text-[#C5A880] font-bold">15 {t('Module', 'Modules')}</div>
-                  <div className={`text-[11px] uppercase tracking-wider mt-1 ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+                  <div className={`text-[11px] uppercase tracking-wider mt-1 break-words leading-tight ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
                     {t('Hệ Thống Vận Hành AI', 'AI Operating System')}
                   </div>
                 </div>
-                <div>
+                <div className="min-w-0">
                   <div className="text-xl sm:text-2xl font-serif text-[#C5A880] font-bold">100%</div>
-                  <div className={`text-[11px] uppercase tracking-wider mt-1 ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+                  <div className={`text-[11px] uppercase tracking-wider mt-1 break-words leading-tight ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
                     {t('Sổ Hồng & SPA Minh Bạch', 'Pink Book & SPA Transparency')}
                   </div>
                 </div>
@@ -248,27 +248,27 @@ export default function HeroSection({ onOpenLogin }: HeroSectionProps) {
               <div className={`grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6 pt-6 sm:pt-8 border-t ${
                 isDark ? 'border-[#222B35]' : 'border-gray-200'
               }`}>
-                <div>
+                <div className="min-w-0">
                   <div className="text-xl sm:text-2xl font-serif text-[#C5A880] font-bold">34 - 39 {t('Tầng', 'Floors')}</div>
-                  <div className={`text-[11px] uppercase tracking-wider mt-1 ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+                  <div className={`text-[11px] uppercase tracking-wider mt-1 break-words leading-tight ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
                     {t('4 Chung Cư (BS-07 đến BS-10)', '4 Towers (BS-07 ~ BS-10)')}
                   </div>
                 </div>
-                <div>
+                <div className="min-w-0">
                   <div className="text-xl sm:text-2xl font-serif text-[#C5A880] font-bold">&lt; 0.5s</div>
-                  <div className={`text-[11px] uppercase tracking-wider mt-1 ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+                  <div className={`text-[11px] uppercase tracking-wider mt-1 break-words leading-tight ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
                     {t('Tốc Độ Mở Cửa & Cổng Xe', 'Door & Gate FaceID Speed')}
                   </div>
                 </div>
-                <div>
+                <div className="min-w-0">
                   <div className="text-xl sm:text-2xl font-serif text-[#C5A880] font-bold">15 {t('Module', 'Modules')}</div>
-                  <div className={`text-[11px] uppercase tracking-wider mt-1 ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+                  <div className={`text-[11px] uppercase tracking-wider mt-1 break-words leading-tight ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
                     {t('Hệ Thống Vận Hành AI', 'AI Operating System')}
                   </div>
                 </div>
-                <div>
+                <div className="min-w-0">
                   <div className="text-xl sm:text-2xl font-serif text-[#C5A880] font-bold">100%</div>
-                  <div className={`text-[11px] uppercase tracking-wider mt-1 ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+                  <div className={`text-[11px] uppercase tracking-wider mt-1 break-words leading-tight ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
                     {t('Sổ Hồng & SPA Minh Bạch', 'Pink Book & SPA Transparency')}
                   </div>
                 </div>

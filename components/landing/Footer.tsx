@@ -86,7 +86,7 @@ export default function Footer() {
           isDark ? 'text-gray-600' : 'text-gray-500'
         }`}>
           <div>© 2026 SKYLINE Smart Residence. All rights reserved. Hendon Architectural Edition.</div>
-          <div className="flex items-center gap-6">
+          <div className="flex flex-wrap items-center gap-3 sm:gap-6 justify-center sm:justify-end text-[11px] sm:text-xs">
             <span>{t('Bảo mật dữ liệu (Data at-rest)', 'Data Security (At-rest)')}</span>
             <span>{t('Chuẩn WCAG 2.1', 'WCAG 2.1 Standard')}</span>
             <span>Next.js 14 SPA</span>

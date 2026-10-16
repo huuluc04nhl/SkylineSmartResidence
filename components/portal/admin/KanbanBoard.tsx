@@ -609,7 +609,7 @@ export default function KanbanBoard() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Column 1: Chờ tiếp nhận */}
             <div className="bg-[#121820] border border-[#222B35] flex flex-col justify-between shadow-xl">
-              <div className="p-3.5 border-b border-[#222B35] flex items-center justify-between bg-[#161B22]">
+              <div className="p-3.5 border-b border-[#222B35] flex flex-wrap items-center justify-between gap-2 bg-[#161B22]">
                 <div className="flex items-center gap-2">
                   <span className="w-2.5 h-2.5 bg-blue-500"></span>
                   <span className="text-xs uppercase tracking-wider font-semibold text-gray-200">
@@ -802,7 +802,7 @@ export default function KanbanBoard() {
 
             {/* Column 2: Đang xử lý */}
             <div className="bg-[#121820] border border-[#222B35] flex flex-col justify-between shadow-xl">
-              <div className="p-3.5 border-b border-[#222B35] flex items-center justify-between bg-[#161B22]">
+              <div className="p-3.5 border-b border-[#222B35] flex flex-wrap items-center justify-between gap-2 bg-[#161B22]">
                 <div className="flex items-center gap-2">
                   <span className="w-2.5 h-2.5 bg-amber-500 rounded-none animate-pulse"></span>
                   <span className="text-xs uppercase tracking-wider font-semibold text-gray-200">
@@ -984,7 +984,7 @@ export default function KanbanBoard() {
 
             {/* Column 3: Đã nghiệm thu / Đã đóng */}
             <div className="bg-[#121820] border border-[#222B35] flex flex-col justify-between shadow-xl">
-              <div className="p-3.5 border-b border-[#222B35] flex items-center justify-between bg-[#161B22]">
+              <div className="p-3.5 border-b border-[#222B35] flex flex-wrap items-center justify-between gap-2 bg-[#161B22]">
                 <div className="flex items-center gap-2">
                   <span className="w-2.5 h-2.5 bg-emerald-500 rounded-none"></span>
                   <span className="text-xs uppercase tracking-wider font-semibold text-gray-200">
