@@ -19742,7 +19742,7 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
   ],
   [
     "Báo Chụp Lại",
-    "Report Reshoot"
+    "Retake"
   ],
   [
     "phương tiện)",

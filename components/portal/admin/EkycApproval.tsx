@@ -441,14 +441,14 @@ export default function EkycApproval() {
                   </div>
 
                   {/* Middle: CCCD Details & Quick Previews */}
-                  <div className="lg:col-span-5 flex items-center justify-between gap-3 bg-[#161D26] p-3 rounded-none border border-[#222B35]">
+                  <div className="lg:col-span-4 flex items-center justify-between gap-3 bg-[#161D26] p-3 rounded-none border border-[#222B35]">
                     <div className="space-y-1 min-w-0 flex-1 text-xs">
                       <div>
-                        <span className="text-gray-400 text-[10px] block">Số Căn Cước Công Dân:</span>
+                        <span className="text-gray-400 text-[10px] block">{t('Số Căn Cước Công Dân:')}</span>
                         <strong className="font-mono text-[#C5A880] text-sm tracking-wider">{req.idCardNo}</strong>
                       </div>
                       <div className="flex items-center gap-2 text-[10.5px] text-gray-300">
-                        <span>Cấp: <span className="font-mono">{req.idDate || 'N/A'}</span></span>
+                        <span>{t('Cấp')}: <span className="font-mono">{req.idDate || 'N/A'}</span></span>
                         <span>•</span>
                         <span className="truncate">{req.idPlace || 'Cục Cảnh sát QLHC'}</span>
                       </div>
@@ -461,7 +461,7 @@ export default function EkycApproval() {
                         }}
                         className="text-[#C5A880] hover:text-white font-bold text-[10.5px] flex items-center gap-1 underline pt-0.5 cursor-pointer"
                       >
-                        <Eye className="w-3 h-3" /> Kiểm Tra Đối Chiếu Chi Tiết
+                        <Eye className="w-3 h-3" /> {t('Kiểm Tra Đối Chiếu Chi Tiết')}
                       </button>
                     </div>
 
@@ -469,31 +469,31 @@ export default function EkycApproval() {
                     <div className="flex items-center gap-1.5 flex-shrink-0">
                       {req.idCardFrontUrl && (
                         <div
-                          onClick={() => setZoomImage({ url: req.idCardFrontUrl!, title: `Mặt trước CCCD - ${req.fullName}` })}
+                          onClick={() => setZoomImage({ url: req.idCardFrontUrl!, title: `${t('Mặt trước CCCD')} - ${req.fullName}` })}
                           className="w-14 h-9 bg-black border border-gray-700 hover:border-[#C5A880] overflow-hidden cursor-pointer relative group"
-                          title="Xem mặt trước CCCD"
+                          title={t('Xem mặt trước CCCD')}
                         >
                           <img src={req.idCardFrontUrl} alt="Trước" className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
-                          <span className="absolute bottom-0 inset-x-0 bg-black/80 text-[7px] text-gray-300 text-center font-mono">Trước</span>
+                          <span className="absolute bottom-0 inset-x-0 bg-black/80 text-[7px] text-gray-300 text-center font-mono">{t('Trước')}</span>
                         </div>
                       )}
                       {req.idCardBackUrl && (
                         <div
-                          onClick={() => setZoomImage({ url: req.idCardBackUrl!, title: `Mặt sau CCCD - ${req.fullName}` })}
+                          onClick={() => setZoomImage({ url: req.idCardBackUrl!, title: `${t('Mặt sau CCCD')} - ${req.fullName}` })}
                           className="w-14 h-9 bg-black border border-gray-700 hover:border-[#C5A880] overflow-hidden cursor-pointer relative group"
-                          title="Xem mặt sau CCCD"
+                          title={t('Xem mặt sau CCCD')}
                         >
                           <img src={req.idCardBackUrl} alt="Sau" className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
-                          <span className="absolute bottom-0 inset-x-0 bg-black/80 text-[7px] text-gray-300 text-center font-mono">Sau</span>
+                          <span className="absolute bottom-0 inset-x-0 bg-black/80 text-[7px] text-gray-300 text-center font-mono">{t('Sau')}</span>
                         </div>
                       )}
                     </div>
                   </div>
 
                   {/* Right: Actions & Status Badge */}
-                  <div className="lg:col-span-3 flex flex-col items-stretch sm:items-end justify-center gap-2">
+                  <div className="lg:col-span-4 flex flex-col items-stretch sm:items-end justify-center gap-2">
                     {isApproved ? (
-                      <div className="flex flex-col items-stretch sm:items-end gap-1.5 w-full sm:w-44">
+                      <div className="flex flex-col items-stretch sm:items-end gap-1.5 w-full sm:w-64">
                         <button
                           type="button"
                           onClick={() => {
@@ -528,31 +528,34 @@ export default function EkycApproval() {
                         </div>
                       </div>
                     ) : (
-                      <div className="flex items-center justify-end gap-2 w-full sm:w-auto">
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setInspectingRequest(req);
-                            setInspectingSide('FRONT');
-                            setJustApprovedId(null);
-                          }}
-                          className="h-8 px-3 bg-[#1C2533] hover:bg-[#2B394E] border border-gray-700 text-gray-200 text-xs font-semibold rounded-none transition-all flex items-center justify-center gap-1 cursor-pointer whitespace-nowrap"
-                        >
-                          <Eye className="w-3.5 h-3.5 text-[#C5A880]" />
-                          <span>{t('Kiểm Tra')}</span>
-                        </button>
-
+                      <div className="w-full sm:w-64">
                         {isPending && (
-                          <>
+                          <div className="grid grid-cols-3 gap-1.5 w-full">
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setInspectingRequest(req);
+                                setInspectingSide('FRONT');
+                                setJustApprovedId(null);
+                              }}
+                              className="h-8 px-1 bg-[#1C2533] hover:bg-[#2B394E] border border-gray-700 text-gray-200 text-[11px] font-semibold rounded-none transition-all flex items-center justify-center gap-1 cursor-pointer whitespace-nowrap"
+                              title={t('Kiểm Tra')}
+                            >
+                              <Eye className="w-3 h-3 text-[#C5A880] flex-shrink-0" />
+                              <span>{t('Kiểm Tra')}</span>
+                            </button>
+
                             <button
                               type="button"
                               disabled={isProcessing}
                               onClick={() => handleApprove(req.id, req.fullName)}
-                              className="h-8 px-3.5 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-none shadow transition-all flex items-center justify-center gap-1 cursor-pointer disabled:opacity-50 whitespace-nowrap"
+                              className="h-8 px-1 bg-emerald-600 hover:bg-emerald-500 text-white text-[11px] font-bold rounded-none shadow transition-all flex items-center justify-center gap-1 cursor-pointer disabled:opacity-50 whitespace-nowrap"
+                              title={t('Xác Nhận')}
                             >
-                              <Check className="w-3.5 h-3.5" />
+                              <Check className="w-3 h-3 flex-shrink-0" />
                               <span>{t('Xác Nhận')}</span>
                             </button>
+
                             <button
                               type="button"
                               disabled={isProcessing}
@@ -560,23 +563,24 @@ export default function EkycApproval() {
                                 setRejectingId(req.id);
                                 setRejectionReason('Ảnh chụp CCCD bị mờ/lóa sáng, vui lòng chụp lại rõ nét');
                               }}
-                              className="h-8 px-2.5 bg-rose-950 hover:bg-rose-900 border border-rose-500 text-rose-300 text-xs font-semibold rounded-none transition-all flex items-center justify-center gap-1 cursor-pointer disabled:opacity-50 whitespace-nowrap"
+                              className="h-8 px-1 bg-rose-950 hover:bg-rose-900 border border-rose-500 text-rose-300 text-[11px] font-semibold rounded-none transition-all flex items-center justify-center gap-1 cursor-pointer disabled:opacity-50 whitespace-nowrap"
+                              title={t('Báo Chụp Lại')}
                             >
-                              <X className="w-3.5 h-3.5" />
+                              <X className="w-3 h-3 flex-shrink-0" />
                               <span>{t('Báo Chụp Lại')}</span>
                             </button>
-                          </>
+                          </div>
                         )}
                       </div>
                     )}
 
                     {isRejected && (
-                      <div className="text-right space-y-0.5">
-                        <span className="h-8 px-3 bg-rose-950 text-rose-300 border border-rose-500 text-xs font-bold rounded-none inline-flex items-center gap-1.5 whitespace-nowrap">
-                          <XCircle className="w-3.5 h-3.5" /> {t('Cần Cập Nhật Lại')}
+                      <div className="w-full sm:w-64 text-right space-y-1">
+                        <span className="w-full h-8 px-3 bg-rose-950 text-rose-300 border border-rose-500 text-xs font-bold rounded-none flex items-center justify-center gap-1.5 whitespace-nowrap">
+                          <XCircle className="w-3.5 h-3.5 text-rose-400" /> {t('Cần Cập Nhật Lại')}
                         </span>
-                        <div className="text-[10px] text-rose-400 max-w-[180px] truncate" title={req.rejectionReason}>
-                          Lý do: {req.rejectionReason}
+                        <div className="text-[10px] text-rose-400 truncate" title={req.rejectionReason}>
+                          {t('Lý do:')} {req.rejectionReason}
                         </div>
                       </div>
                     )}

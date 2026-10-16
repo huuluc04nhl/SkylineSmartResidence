@@ -245,7 +245,7 @@ export default function BillingStudio() {
               <th className="p-3.5 text-right">{t('Phí Quản Lý', 'Mgmt Fee')}</th>
               <th className="p-3.5 text-right">{t('Phí Dịch Vụ', 'Service Fee')}</th>
               <th className="p-3.5 text-right">{t('Tổng Tiền (VNĐ)', 'Total (VND)')}</th>
-              <th className="p-3.5 text-center">{t('Trạng Thái', 'Status')}</th>
+              <th className="p-3.5 text-center whitespace-nowrap">{t('Trạng Thái', 'Status')}</th>
               <th className="p-3.5 text-center">{t('Ghi Chú', 'Notes')}</th>
               <th className="p-3.5 text-right whitespace-nowrap">{t('Thao Tác', 'Action')}</th>
             </tr>
@@ -305,9 +305,9 @@ export default function BillingStudio() {
                     <td className="p-3.5 text-right font-mono font-bold text-[#C5A880] text-sm">
                       {bill.total_amount.toLocaleString('vi-VN')} đ
                     </td>
-                    <td className="p-3.5 text-center">
+                    <td className="p-3.5 text-center whitespace-nowrap">
                       <div className="flex flex-col items-center gap-1">
-                        <span className={`px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider ${
+                        <span className={`inline-flex items-center justify-center min-w-[125px] h-6 px-3 text-[10px] font-bold uppercase tracking-wider rounded-none whitespace-nowrap ${
                           isPaid
                             ? 'bg-emerald-950 text-emerald-300 border border-emerald-500'
                             : 'bg-amber-950 text-amber-300 border border-amber-500'
@@ -317,17 +317,17 @@ export default function BillingStudio() {
                         {isPaid && bill.payment_method && (
                           <div className="flex items-center gap-1 mt-0.5">
                             {bill.payment_method === 'VNPAY' && (
-                              <span className="px-1.5 py-0.5 bg-blue-950 text-blue-300 border border-blue-500/60 rounded text-[9px] font-bold font-mono">
+                              <span className="px-1.5 py-0.5 bg-blue-950 text-blue-300 border border-blue-500/60 rounded-none text-[9px] font-bold font-mono">
                                 VNPAY
                               </span>
                             )}
                             {bill.payment_method === 'MOMO' && (
-                              <span className="px-1.5 py-0.5 bg-[#4A002E] text-pink-300 border border-pink-500/60 rounded text-[9px] font-bold font-mono">
+                              <span className="px-1.5 py-0.5 bg-[#4A002E] text-pink-300 border border-pink-500/60 rounded-none text-[9px] font-bold font-mono">
                                 MoMo
                               </span>
                             )}
                             {bill.payment_method === 'BANK_TRANSFER' && (
-                              <span className="px-1.5 py-0.5 bg-teal-950 text-teal-300 border border-teal-500/60 rounded text-[9px] font-bold font-mono">
+                              <span className="px-1.5 py-0.5 bg-teal-950 text-teal-300 border border-teal-500/60 rounded-none text-[9px] font-bold font-mono">
                                 {t('Kế Toán Duyệt', 'Admin Approved')}
                               </span>
                             )}
