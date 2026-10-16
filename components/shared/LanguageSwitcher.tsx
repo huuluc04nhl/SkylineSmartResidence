@@ -58,40 +58,36 @@ export default function LanguageSwitcher({
     return (
       <aside 
         aria-label="Language selector"
-        className={`fixed bottom-5 left-5 sm:bottom-6 sm:left-6 z-40 flex items-center gap-1 p-1 bg-[#0E131B]/90 backdrop-blur-xl border border-[#C5A880]/40 shadow-[0_10px_35px_rgba(0,0,0,0.8),0_0_15px_rgba(197,168,128,0.15)] rounded-none transition-all duration-300 hover:border-[#C5A880] ${className}`}
+        className={`fixed bottom-5 left-5 sm:bottom-6 sm:left-6 z-40 flex items-center gap-1.5 p-1.5 bg-[#0E131B]/95 backdrop-blur-xl border border-[#C5A880]/40 shadow-[0_10px_35px_rgba(0,0,0,0.85),0_0_15px_rgba(197,168,128,0.15)] rounded-none transition-all duration-300 hover:border-[#C5A880] ${className}`}
       >
         {/* Tiếng Việt */}
         <button
           type="button"
           onClick={() => setLanguage('vi')}
-          className={`flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-mono font-bold transition-all rounded-none cursor-pointer active:scale-95 ${
+          className={`p-1.5 sm:p-2 transition-all rounded-none cursor-pointer active:scale-95 flex items-center justify-center ${
             language === 'vi'
-              ? 'bg-[#1C2533] text-[#C5A880] border border-[#C5A880] shadow-sm'
-              : 'text-gray-400 hover:text-white hover:bg-[#141B24] border border-transparent'
+              ? 'bg-[#1C2533] border border-[#C5A880] shadow-[0_0_12px_rgba(197,168,128,0.25)] opacity-100'
+              : 'opacity-50 hover:opacity-100 hover:bg-[#141B24] border border-transparent'
           }`}
-          title="Tiếng Việt (VI)"
+          title="Tiếng Việt"
           aria-label="Chuyển sang Tiếng Việt"
         >
-          <FlagVietnam className="w-4 h-2.5 sm:w-5 sm:h-3.5" />
-          <span className="text-[11px] tracking-wider">VI</span>
+          <FlagVietnam className="w-5 h-3.5 sm:w-6 sm:h-4" />
         </button>
-
-        <span className="text-gray-600 text-[11px]">|</span>
 
         {/* English */}
         <button
           type="button"
           onClick={() => setLanguage('en')}
-          className={`flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-mono font-bold transition-all rounded-none cursor-pointer active:scale-95 ${
+          className={`p-1.5 sm:p-2 transition-all rounded-none cursor-pointer active:scale-95 flex items-center justify-center ${
             language === 'en'
-              ? 'bg-[#1C2533] text-[#C5A880] border border-[#C5A880] shadow-sm'
-              : 'text-gray-400 hover:text-white hover:bg-[#141B24] border border-transparent'
+              ? 'bg-[#1C2533] border border-[#C5A880] shadow-[0_0_12px_rgba(197,168,128,0.25)] opacity-100'
+              : 'opacity-50 hover:opacity-100 hover:bg-[#141B24] border border-transparent'
           }`}
-          title="English (EN)"
+          title="English"
           aria-label="Switch to English"
         >
-          <FlagUK className="w-4 h-2.5 sm:w-5 sm:h-3.5" />
-          <span className="text-[11px] tracking-wider">EN</span>
+          <FlagUK className="w-5 h-3.5 sm:w-6 sm:h-4" />
         </button>
       </aside>
     );
@@ -103,31 +99,29 @@ export default function LanguageSwitcher({
       <button
         type="button"
         onClick={() => setLanguage('vi')}
-        className={`flex items-center gap-1.5 px-2 py-1 text-[11px] font-bold font-mono transition-all rounded-none cursor-pointer ${
+        className={`p-1 sm:p-1.5 transition-all rounded-none cursor-pointer flex items-center justify-center ${
           language === 'vi'
-            ? 'bg-[#C5A880] text-[#0A0E14] shadow'
-            : 'text-gray-400 hover:text-white hover:bg-[#161D26]'
+            ? 'bg-[#1C2533] border border-[#C5A880] shadow-sm opacity-100'
+            : 'opacity-50 hover:opacity-100 hover:bg-[#161D26] border border-transparent'
         }`}
         title="Tiếng Việt"
+        aria-label="Tiếng Việt"
       >
-        <FlagVietnam className="w-3.5 h-2.5" />
-        <span>VI</span>
+        <FlagVietnam className="w-4 h-2.5 sm:w-5 sm:h-3.5" />
       </button>
-
-      <span className="text-gray-600 text-[10px]">|</span>
 
       <button
         type="button"
         onClick={() => setLanguage('en')}
-        className={`flex items-center gap-1.5 px-2 py-1 text-[11px] font-bold font-mono transition-all rounded-none cursor-pointer ${
+        className={`p-1 sm:p-1.5 transition-all rounded-none cursor-pointer flex items-center justify-center ${
           language === 'en'
-            ? 'bg-[#C5A880] text-[#0A0E14] shadow'
-            : 'text-gray-400 hover:text-white hover:bg-[#161D26]'
+            ? 'bg-[#1C2533] border border-[#C5A880] shadow-sm opacity-100'
+            : 'opacity-50 hover:opacity-100 hover:bg-[#161D26] border border-transparent'
         }`}
         title="English"
+        aria-label="English"
       >
-        <FlagUK className="w-3.5 h-2.5" />
-        <span>EN</span>
+        <FlagUK className="w-4 h-2.5 sm:w-5 sm:h-3.5" />
       </button>
     </div>
   );
