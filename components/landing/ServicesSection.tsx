@@ -214,7 +214,7 @@ export default function ServicesSection() {
 
                   {/* Bảng giá các gói dịch vụ tiêu biểu */}
                   <div className="space-y-3">
-                    <div className="text-xs font-mono uppercase tracking-wider text-gray-400 flex items-center justify-between">
+                    <div className="text-xs font-mono uppercase tracking-wider text-gray-400 flex flex-col sm:flex-row sm:items-center justify-between gap-1 sm:gap-4">
                       <span>{t('Bảng Giá Niêm Yết & Hạng Mục', 'Official Pricing & Packages')}</span>
                       <span className="text-[#C5A880]">{t('Cộng vào Hóa Đơn Tháng hoặc Trả Ngay', 'Added to Monthly Bill or Pay Now')}</span>
                     </div>

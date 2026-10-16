@@ -226,7 +226,7 @@ export default function SmartTechSection() {
                 key={m.id}
                 type="button"
                 onClick={() => setActiveSlot(m.id)}
-                className={`p-3.5 sm:p-4 text-left transition-all duration-300 rounded-none border flex flex-col justify-between group cursor-pointer ${
+                className={`p-3 sm:p-4 text-left transition-all duration-300 rounded-none border flex flex-col justify-between group cursor-pointer min-h-[110px] sm:min-h-[120px] ${
                   isActive
                     ? 'bg-[#141B24] border-[#C5A880] shadow-[0_10px_25px_rgba(0,0,0,0.6)] text-white'
                     : isDark
@@ -242,17 +242,17 @@ export default function SmartTechSection() {
                   }`}>
                     {m.timeSlot}
                   </span>
-                  <Icon className={`w-4 h-4 transition-colors ${
+                  <Icon className={`w-4 h-4 transition-colors shrink-0 ${
                     isActive ? 'text-[#C5A880]' : 'text-gray-500 group-hover:text-[#C5A880]'
                   }`} />
                 </div>
-                <div>
-                  <div className={`text-xs sm:text-sm font-serif font-bold truncate ${
+                <div className="w-full">
+                  <div className={`text-xs sm:text-sm font-serif font-bold line-clamp-2 min-h-[2.4rem] leading-snug break-words ${
                     isActive ? 'text-white' : 'text-gray-300'
                   }`}>
                     {m.periodName}
                   </div>
-                  <div className="text-[11px] text-gray-500 font-light truncate mt-0.5">
+                  <div className="text-[11px] text-gray-500 font-light truncate mt-1">
                     {m.timeLabel}
                   </div>
                 </div>
@@ -273,15 +273,15 @@ export default function SmartTechSection() {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
             {/* Left: Narrative & Specifications */}
             <div className="lg:col-span-7 space-y-6">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-[#16202D] border border-[#C5A880]/40 flex items-center justify-center text-[#C5A880] rounded-none shadow">
+              <div className="flex items-start sm:items-center gap-3">
+                <div className="w-10 h-10 bg-[#16202D] border border-[#C5A880]/40 flex items-center justify-center text-[#C5A880] rounded-none shadow shrink-0 mt-0.5 sm:mt-0">
                   <CurrentIcon className="w-5 h-5" />
                 </div>
-                <div>
-                  <div className="text-[11px] font-mono uppercase tracking-widest text-[#C5A880] font-bold">
+                <div className="min-w-0 flex-1">
+                  <div className="text-[11px] font-mono uppercase tracking-widest text-[#C5A880] font-bold break-words leading-tight mb-1">
                     {t('Khung Giờ', 'Timeslot')} {current.timeLabel} • {current.periodName}
                   </div>
-                  <h3 className="text-xl sm:text-2xl lg:text-3xl font-serif font-bold text-white leading-snug">
+                  <h3 className="text-xl sm:text-2xl lg:text-3xl font-serif font-bold text-white leading-snug break-words">
                     {current.headline}
                   </h3>
                 </div>
@@ -296,12 +296,12 @@ export default function SmartTechSection() {
                 {current.techSpecs.map((spec, sIdx) => (
                   <div 
                     key={sIdx}
-                    className="p-3 bg-[#141B24] border border-white/5 rounded-none space-y-1"
+                    className="p-3 bg-[#141B24] border border-white/5 rounded-none space-y-1 min-w-0"
                   >
-                    <div className="text-[10px] text-gray-400 uppercase font-mono tracking-wider">
+                    <div className="text-[10px] text-gray-400 uppercase font-mono tracking-wider break-words">
                       {spec.label}
                     </div>
-                    <div className="text-sm sm:text-base font-serif font-bold text-[#C5A880]">
+                    <div className="text-sm sm:text-base font-serif font-bold text-[#C5A880] break-words">
                       {spec.value}
                     </div>
                   </div>
@@ -309,43 +309,43 @@ export default function SmartTechSection() {
               </div>
 
               {/* CTA Link */}
-              <div className="pt-2 flex items-center gap-4">
+              <div className="pt-2 flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
                 <Link
                   href={handlePortalRedirect(current.portalTab)}
-                  className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#C5A880] hover:bg-white text-[#0A0E14] text-xs uppercase font-bold tracking-wider transition-all rounded-none shadow hover:shadow-lg active:scale-95"
+                  className="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-[#C5A880] hover:bg-white text-[#0A0E14] text-xs uppercase font-bold tracking-wider transition-all rounded-none shadow hover:shadow-lg active:scale-95 text-center shrink-0"
                 >
                   <span>{current.actionText}</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
+                  <ArrowRight className="w-3.5 h-3.5 shrink-0" />
                 </Link>
-                <span className="text-[11px] text-gray-400 font-mono hidden sm:inline">
+                <span className="text-[11px] text-gray-400 font-mono">
                   {t('Tích hợp 4 chung cư The Tropical', 'Integrated across 4 towers of The Tropical')}
                 </span>
               </div>
             </div>
 
             {/* Right: High-Tech Telemetry Mockup Frame */}
-            <div className="lg:col-span-5">
+            <div className="lg:col-span-5 w-full">
               <div className="border border-[#C5A880]/35 bg-[#141B24] p-5 sm:p-6 rounded-none shadow-2xl space-y-5 relative overflow-hidden">
                 {/* Ambient glow */}
                 <div className="absolute top-0 right-0 w-32 h-32 bg-[#C5A880]/10 rounded-none blur-2xl pointer-events-none" />
 
                 {/* Widget Header */}
-                <div className="flex items-center justify-between border-b border-white/10 pb-3">
-                  <div>
-                    <div className="text-[9px] font-mono font-bold uppercase tracking-widest text-[#C5A880]">
+                <div className="flex items-start justify-between gap-3 border-b border-white/10 pb-3">
+                  <div className="min-w-0 flex-1">
+                    <div className="text-[9px] font-mono font-bold uppercase tracking-widest text-[#C5A880] break-words">
                       {current.visualWidget.badge}
                     </div>
-                    <div className="text-sm font-serif font-bold text-white mt-0.5">
+                    <div className="text-sm font-serif font-bold text-white mt-0.5 break-words">
                       {current.visualWidget.title}
                     </div>
                   </div>
-                  <div className="flex items-center gap-1.5 px-2 py-0.5 bg-emerald-950/80 border border-emerald-500/40 text-emerald-400 text-[10px] font-mono font-bold rounded-none">
+                  <div className="flex items-center gap-1.5 px-2 py-0.5 bg-emerald-950/80 border border-emerald-500/40 text-emerald-400 text-[10px] font-mono font-bold rounded-none shrink-0">
                     <span className="w-1.5 h-1.5 bg-emerald-400 rounded-none animate-pulse"></span>
                     <span>{t('TRỰC TUYẾN', 'ONLINE')}</span>
                   </div>
                 </div>
 
-                <div className="text-xs text-gray-400 font-light">
+                <div className="text-xs text-gray-400 font-light break-words">
                   {current.visualWidget.subtitle}
                 </div>
 
@@ -356,19 +356,19 @@ export default function SmartTechSection() {
                     return (
                       <div 
                         key={dIdx}
-                        className="flex items-start gap-2.5 p-3 bg-[#0E131B] border border-white/5 rounded-none text-xs text-gray-300"
+                        className="flex items-start gap-2.5 p-3 bg-[#0E131B] border border-white/5 rounded-none text-xs text-gray-300 min-w-0"
                       >
                         <ItemIcon className="w-4 h-4 text-[#C5A880] flex-shrink-0 mt-0.5" />
-                        <span className="leading-relaxed">{item.text}</span>
+                        <span className="leading-relaxed break-words min-w-0 flex-1">{item.text}</span>
                       </div>
                     );
                   })}
                 </div>
 
                 {/* Footer Security Badge */}
-                <div className="pt-2 border-t border-white/5 flex items-center justify-between text-[10px] text-gray-400 font-mono">
+                <div className="pt-2 border-t border-white/5 flex flex-wrap items-center justify-between gap-2 text-[10px] text-gray-400 font-mono">
                   <span className="flex items-center gap-1">
-                    <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+                    <ShieldCheck className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
                     {t('Mã hóa bảo mật 256-bit', '256-bit Secure Encryption')}
                   </span>
                   <span>{t('Lõi AI Skyline 4.0', 'Skyline AI 4.0 Core')}</span>

@@ -33,7 +33,7 @@ export default function HeaderNav({ onOpenLogin }: HeaderNavProps) {
         </Link>
 
         {/* Desktop Menu */}
-        <nav className={`hidden md:flex items-center gap-6 lg:gap-8 text-[12px] uppercase tracking-[0.18em] font-medium transition-colors whitespace-nowrap ${
+        <nav className={`hidden md:flex items-center gap-3.5 lg:gap-8 text-[11px] lg:text-[12px] uppercase tracking-[0.10em] lg:tracking-[0.18em] font-medium transition-colors whitespace-nowrap ${
           isDark ? 'text-gray-300' : 'text-gray-700'
         }`}>
           <a href="#concept" className={`whitespace-nowrap transition-colors ${isDark ? 'hover:text-[#C5A880]' : 'hover:text-[#9E8057]'}`}>{t('nav.about', 'Tổng Quan')}</a>
