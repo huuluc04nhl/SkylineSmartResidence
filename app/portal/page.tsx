@@ -50,7 +50,7 @@ function PortalContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { currentUser, isLoading, login, logout } = useAuth();
-  const { language } = useLanguage();
+  const { language, t } = useLanguage();
 
   const [activeModule, setActiveModule] = useState<string>('resident-home');
   const [isVisitorModalOpen, setIsVisitorModalOpen] = useState(false);
@@ -110,7 +110,7 @@ function PortalContent() {
         <div className="text-center space-y-3">
           <RefreshCw className="w-8 h-8 text-[#C5A880] animate-spin mx-auto" />
           <div className="font-serif text-lg tracking-wider text-[#C5A880]">
-            Đang Đồng Bộ Dữ Liệu Căn Hộ...
+            {t('Đang Đồng Bộ Dữ Liệu Căn Hộ...')}
           </div>
         </div>
       </div>
@@ -126,9 +126,9 @@ function PortalContent() {
             <Lock className="w-7 h-7" />
           </div>
           <div className="space-y-2">
-            <h2 className="font-serif text-2xl font-bold">Yêu Cầu Đăng Nhập</h2>
+            <h2 className="font-serif text-2xl font-bold">{t('Yêu Cầu Đăng Nhập')}</h2>
             <p className="text-xs text-gray-400">
-              Vui lòng đăng nhập tài khoản Cư Dân hoặc Ban Quản Lý để truy cập hệ thống SKYLINE.
+              {t('Vui lòng đăng nhập tài khoản Cư Dân hoặc Ban Quản Lý để truy cập hệ thống SKYLINE.')}
             </p>
           </div>
           <div className="space-y-3 pt-2">
@@ -136,13 +136,13 @@ function PortalContent() {
               onClick={() => setIsLoginModalOpen(true)}
               className="w-full py-3 bg-[#C5A880] hover:bg-white text-[#0D1117] font-bold text-xs uppercase tracking-wider transition-colors shadow-lg"
             >
-              Đăng Nhập Tài Khoản (Email / SĐT)
+              {t('Đăng Nhập Tài Khoản (Email / SĐT)')}
             </button>
             <button
               onClick={() => router.push('/')}
               className="w-full py-2 text-gray-400 hover:text-white text-xs flex items-center justify-center gap-1"
             >
-              <ArrowLeft className="w-3.5 h-3.5" /> Quay Lại Trang Chủ
+              <ArrowLeft className="w-3.5 h-3.5" /> {t('Quay Lại Trang Chủ')}
             </button>
           </div>
         </div>
@@ -274,24 +274,24 @@ function PortalContent() {
                   <div className="p-10 bg-[#121820] border border-[#C5A880]/80 text-center space-y-4 max-w-2xl mx-auto my-12 shadow-2xl animate-fadeIn">
                     <ShieldAlert className="w-12 h-12 text-[#C5A880] mx-auto" />
                     <h3 className="font-serif text-xl font-bold text-white">
-                      Tính Năng Dành Riêng Cho Chủ Hộ Đứng Tên
+                      {t('Tính Năng Dành Riêng Cho Chủ Hộ Đứng Tên')}
                     </h3>
                     <div className="p-4 bg-[#161B22] border border-[#222B35] text-xs text-gray-300 space-y-2 text-left">
                       <p>
-                        <strong>Quy định Phân quyền Cư dân Tòa nhà:</strong>
+                        <strong>{t('Quy định Phân quyền Cư dân Tòa nhà:')}</strong>
                       </p>
                       <p className="text-gray-400">
-                        • Quyền Tài chính (Hóa đơn, thanh toán), Quyền Tự trị (Thêm/xóa thành viên) và Quyền Biểu quyết pháp lý (Bầu BQT, Đóng quỹ) <strong>thuộc độc quyền của Chủ hộ (Owner)</strong>.
+                        • {t('Quyền Tài chính (Hóa đơn, thanh toán), Quyền Tự trị (Thêm/xóa thành viên) và Quyền Biểu quyết pháp lý (Bầu BQT, Đóng quỹ) thuộc độc quyền của Chủ hộ (Owner).', 'Financial Rights (Billing, Payments), Governance (Add/Remove members), and Voting Rights belong exclusively to the Apartment Owner.')}
                       </p>
                       <p className="text-gray-400">
-                        • Tài khoản Người nhà / Thành viên gia đình được cấp quyền sinh hoạt tiện ích (Mã QR ra vào, FaceID, Smart Home phòng riêng, Quẹt thẻ tiện ích Sky Pool/Gym, Báo hỏng, Chatbot AI).
+                        • {t('Tài khoản Người nhà / Thành viên gia đình được cấp quyền sinh hoạt tiện ích (Mã QR ra vào, FaceID, Smart Home phòng riêng, Quẹt thẻ tiện ích Sky Pool/Gym, Báo hỏng, Chatbot AI).', 'Family member accounts are granted amenity privileges (Entry QR pass, FaceID, Smart Home private room control, Sky Pool/Gym pass, Maintenance tickets, AI Chatbot).')}
                       </p>
                     </div>
                     <button
                       onClick={() => setActiveModule('resident-home')}
                       className="px-6 py-2.5 bg-[#C5A880] text-[#0D1117] text-xs font-bold uppercase tracking-wider hover:bg-white transition-colors shadow-lg"
                     >
-                      Quay Lại Trang Chủ Cư Dân
+                      {t('Quay Lại Trang Chủ Cư Dân')}
                     </button>
                   </div>
                 )}
@@ -321,13 +321,14 @@ function PortalContent() {
 }
 
 export default function PortalPage() {
+  const { t } = useLanguage();
   return (
     <Suspense fallback={
       <div className="min-h-screen bg-[#0A0E14] flex items-center justify-center text-white">
         <div className="text-center space-y-3">
           <RefreshCw className="w-8 h-8 text-[#C5A880] animate-spin mx-auto" />
           <div className="font-serif text-lg tracking-wider text-[#C5A880]">
-            Đang Đồng Bộ Dữ Liệu...
+            {t('Đang Đồng Bộ Dữ Liệu...')}
           </div>
         </div>
       </div>

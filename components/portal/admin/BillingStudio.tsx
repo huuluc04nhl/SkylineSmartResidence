@@ -24,8 +24,10 @@ import {
   SKYLINE_BANK_INFO,
   ExtendedBill 
 } from '@/lib/billingStore';
+import { useLanguage } from '@/lib/languageContext';
 
 export default function BillingStudio() {
+  const { t, isEn, language } = useLanguage();
   const [bills, setBills] = useState<ExtendedBill[]>([]);
   const [filterType, setFilterType] = useState<'ALL' | 'UNPAID' | 'PAID' | 'ANOMALY'>('ALL');
   const [searchApt, setSearchApt] = useState('');
@@ -92,10 +94,10 @@ export default function BillingStudio() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#222B35] pb-4">
         <div>
           <div className="text-[10px] uppercase tracking-[0.25em] text-[#C5A880] font-semibold flex items-center gap-1.5">
-            <Building className="w-3.5 h-3.5" /> Tài Chính • Kế Toán
+            <Building className="w-3.5 h-3.5" /> {t('Tài Chính • Kế Toán', 'Finance • Accounting')}
           </div>
           <h2 className="font-serif text-2xl text-white font-bold mt-1">
-            Sổ Cái Thu Phí Dịch Vụ
+            {t('Sổ Cái Thu Phí Dịch Vụ', 'Service Fee Ledger')}
           </h2>
         </div>
 
@@ -104,7 +106,7 @@ export default function BillingStudio() {
             onClick={handlePublishAll}
             className="px-4 py-2 bg-[#C5A880] text-[#0D1117] text-xs font-bold uppercase tracking-wider hover:bg-white transition-colors shadow"
           >
-            {isPublishedAll ? 'Đã Phát Hành Xong ✓' : 'Phát Hành Hóa Đơn'}
+            {isPublishedAll ? t('Đã Phát Hành Xong ✓', 'Issued Successfully ✓') : t('Phát Hành Hóa Đơn', 'Issue Invoices')}
           </button>
 
           <button
@@ -112,7 +114,7 @@ export default function BillingStudio() {
             className="px-4 py-2 bg-[#1C2533] border border-[#2D3748] hover:border-[#C5A880] text-gray-200 text-xs font-semibold uppercase tracking-wider transition-colors flex items-center gap-1.5"
           >
             <Send className="w-3.5 h-3.5 text-[#C5A880]" />
-            {reminderSent ? 'Đã Gửi Nhắc Phí ✓' : 'Gửi Nhắc Phí'}
+            {reminderSent ? t('Đã Gửi Nhắc Phí ✓', 'Reminders Sent ✓') : t('Gửi Nhắc Phí', 'Send Reminders')}
           </button>
         </div>
       </div>
@@ -127,44 +129,44 @@ export default function BillingStudio() {
       {/* KPI Summary Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div className="p-4 bg-[#121820] border border-[#222B35] space-y-1">
-          <div className="text-xs text-gray-400">Tổng Hóa Đơn</div>
+          <div className="text-xs text-gray-400">{t('Tổng Hóa Đơn', 'Total Invoices')}</div>
           <div className="text-2xl font-bold font-mono text-white mt-1">
-            {bills.length} <span className="text-xs text-gray-400 font-normal">căn hộ</span>
+            {bills.length} <span className="text-xs text-gray-400 font-normal">{t('căn hộ', 'units')}</span>
           </div>
-          <div className="text-[11px] text-gray-400">Kỳ: Tháng 08/2026</div>
+          <div className="text-[11px] text-gray-400">{t('Kỳ: Tháng 08/2026', 'Period: August 2026')}</div>
         </div>
 
         <div className="p-4 bg-[#121820] border border-emerald-500/30 space-y-1">
-          <div className="text-xs text-gray-400">Đã Thu</div>
+          <div className="text-xs text-gray-400">{t('Đã Thu', 'Collected')}</div>
           <div className="text-2xl font-bold font-mono text-emerald-400 mt-1">
             {totalRevenue.toLocaleString('vi-VN')} <span className="text-xs text-gray-400 font-normal">đ</span>
           </div>
           <div className="text-[11px] text-emerald-400 font-mono">
-            {bills.filter(b => b.status === 'Paid').length} / {bills.length} căn hộ đã nộp
+            {bills.filter(b => b.status === 'Paid').length} / {bills.length} {t('căn hộ đã nộp', 'units paid')}
           </div>
         </div>
 
         <div className="p-4 bg-[#121820] border border-amber-500/30 space-y-1">
-          <div className="text-xs text-gray-400">Chưa Thu</div>
+          <div className="text-xs text-gray-400">{t('Chưa Thu', 'Outstanding')}</div>
           <div className="text-2xl font-bold font-mono text-amber-400 mt-1">
             {totalUnpaid.toLocaleString('vi-VN')} <span className="text-xs text-gray-400 font-normal">đ</span>
           </div>
           <div className="text-[11px] text-amber-400 font-mono">
-            {bills.filter(b => b.status === 'Unpaid').length} căn hộ chưa nộp
+            {bills.filter(b => b.status === 'Unpaid').length} {t('căn hộ chưa nộp', 'units unpaid')}
           </div>
         </div>
       </div>
 
-      {/* Anomaly Alert Banner: Chỉ hiển thị khi thực sự có căn hộ ghi nhận biến động bất thường */}
+      {/* Anomaly Alert Banner */}
       {bills.some(b => b.has_ai_anomaly) && (
         <div className="p-4 bg-red-950/40 border border-red-500/60 flex items-start gap-3 animate-fadeIn">
           <AlertTriangle className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
           <div className="space-y-1 text-xs">
             <div className="text-red-300 font-bold uppercase tracking-wider">
-              Cảnh Báo Tiêu Thụ Bất Thường (&gt; 50%)
+              {t('Cảnh Báo Tiêu Thụ Bất Thường (> 50%)', 'Consumption Surge Alert (> 50%)')}
             </div>
             <p className="text-gray-300 leading-relaxed">
-              Chỉ số điện hoặc nước tăng đột biến so với tháng trước. Vui lòng đối soát trước khi gửi nhắc phí.
+              {t('Chỉ số điện hoặc nước tăng đột biến so với tháng trước. Vui lòng đối soát trước khi gửi nhắc phí.', 'Electricity or water consumption spiked significantly compared to last month. Please verify before sending payment reminders.')}
             </p>
           </div>
         </div>
@@ -181,7 +183,7 @@ export default function BillingStudio() {
                 : 'bg-[#161B22] border-[#2D3748] text-gray-300 hover:text-white'
             }`}
           >
-            Tất Cả ({bills.length})
+            {t('Tất Cả', 'All')} ({bills.length})
           </button>
 
           <button
@@ -192,7 +194,7 @@ export default function BillingStudio() {
                 : 'bg-[#161B22] border-[#2D3748] text-amber-400 hover:border-amber-400'
             }`}
           >
-            Chờ Thanh Toán ({bills.filter(b => b.status === 'Unpaid').length})
+            {t('Chờ Thanh Toán', 'Unpaid')} ({bills.filter(b => b.status === 'Unpaid').length})
           </button>
 
           <button
@@ -203,7 +205,7 @@ export default function BillingStudio() {
                 : 'bg-[#161B22] border-[#2D3748] text-emerald-400 hover:border-emerald-400'
             }`}
           >
-            Đã Thanh Toán ({bills.filter(b => b.status === 'Paid').length})
+            {t('Đã Thanh Toán', 'Paid')} ({bills.filter(b => b.status === 'Paid').length})
           </button>
 
           <button
@@ -214,14 +216,14 @@ export default function BillingStudio() {
                 : 'bg-[#161B22] border-[#2D3748] text-red-400 hover:border-red-400'
             }`}
           >
-            Biến Động Bất Thường ({bills.filter(b => b.has_ai_anomaly).length})
+            {t('Biến Động Bất Thường', 'Anomalies')} ({bills.filter(b => b.has_ai_anomaly).length})
           </button>
         </div>
 
         <div className="relative w-full sm:w-64">
           <input
             type="text"
-            placeholder="Tìm theo mã căn, tên chủ hộ..."
+            placeholder={t('Tìm theo mã căn, tên chủ hộ...', 'Search by unit code, owner name...')}
             value={searchApt}
             onChange={(e) => setSearchApt(e.target.value)}
             className="w-full bg-[#161B22] border border-[#2D3748] text-xs text-white px-3 py-1.5 pr-8 focus:outline-none focus:border-[#C5A880]"
@@ -235,17 +237,17 @@ export default function BillingStudio() {
         <table className="w-full text-left text-xs text-gray-300">
           <thead className="bg-[#161B22] text-[#C5A880] uppercase tracking-wider font-semibold border-b border-[#222B35] text-[11px]">
             <tr>
-              <th className="p-3.5">Mã Căn</th>
-              <th className="p-3.5">Chủ Hộ</th>
-              <th className="p-3.5">Kỳ Thu</th>
-              <th className="p-3.5 text-right">Tiền Điện</th>
-              <th className="p-3.5 text-right">Tiền Nước</th>
-              <th className="p-3.5 text-right">Phí Quản Lý</th>
-              <th className="p-3.5 text-right">Phí Dịch Vụ</th>
-              <th className="p-3.5 text-right">Tổng Tiền (VNĐ)</th>
-              <th className="p-3.5 text-center">Trạng Thái</th>
-              <th className="p-3.5 text-center">Ghi Chú</th>
-              <th className="p-3.5 text-right">Thao Tác</th>
+              <th className="p-3.5">{t('Mã Căn', 'Unit')}</th>
+              <th className="p-3.5">{t('Chủ Hộ', 'Owner')}</th>
+              <th className="p-3.5">{t('Kỳ Thu', 'Period')}</th>
+              <th className="p-3.5 text-right">{t('Tiền Điện', 'Electricity')}</th>
+              <th className="p-3.5 text-right">{t('Tiền Nước', 'Water')}</th>
+              <th className="p-3.5 text-right">{t('Phí Quản Lý', 'Mgmt Fee')}</th>
+              <th className="p-3.5 text-right">{t('Phí Dịch Vụ', 'Service Fee')}</th>
+              <th className="p-3.5 text-right">{t('Tổng Tiền (VNĐ)', 'Total (VND)')}</th>
+              <th className="p-3.5 text-center">{t('Trạng Thái', 'Status')}</th>
+              <th className="p-3.5 text-center">{t('Ghi Chú', 'Notes')}</th>
+              <th className="p-3.5 text-right">{t('Thao Tác', 'Action')}</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-[#222B35]">
@@ -310,7 +312,7 @@ export default function BillingStudio() {
                             ? 'bg-emerald-950 text-emerald-300 border border-emerald-500'
                             : 'bg-amber-950 text-amber-300 border border-amber-500'
                         }`}>
-                          {isPaid ? 'Đã Thanh Toán ✓' : 'Chờ Thu'}
+                          {isPaid ? t('Đã Thanh Toán ✓', 'Paid ✓') : t('Chờ Thu', 'Pending')}
                         </span>
                         {isPaid && bill.payment_method && (
                           <div className="flex items-center gap-1 mt-0.5">
@@ -326,7 +328,7 @@ export default function BillingStudio() {
                             )}
                             {bill.payment_method === 'BANK_TRANSFER' && (
                               <span className="px-1.5 py-0.5 bg-teal-950 text-teal-300 border border-teal-500/60 rounded text-[9px] font-bold font-mono">
-                                Kế Toán Duyệt
+                                {t('Kế Toán Duyệt', 'Admin Approved')}
                               </span>
                             )}
                             {bill.transaction_ref && (
@@ -341,11 +343,11 @@ export default function BillingStudio() {
                     <td className="p-3.5 text-center">
                       {hasAnomaly ? (
                         <span className="px-2 py-0.5 bg-red-900/60 border border-red-500 text-red-300 font-semibold text-[10px] uppercase">
-                          Tiêu Thụ Tăng Vọt
+                          {t('Tiêu Thụ Tăng Vọt', 'Surge Alert')}
                         </span>
                       ) : (
                         <span className="text-[11px] text-gray-500">
-                          Bình thường
+                          {t('Bình thường', 'Normal')}
                         </span>
                       )}
                     </td>
@@ -354,7 +356,7 @@ export default function BillingStudio() {
                         onClick={() => setSelectedDetailBill(bill)}
                         className="px-2.5 py-1 bg-[#1C2533] border border-gray-600 text-[11px] text-gray-200 hover:border-[#C5A880] transition-colors"
                       >
-                        Chi Tiết
+                        {t('Chi Tiết', 'Details')}
                       </button>
 
                       {!isPaid ? (
@@ -362,11 +364,11 @@ export default function BillingStudio() {
                           onClick={() => handleConfirmPaid(bill.id, bill.apt_code)}
                           className="px-2.5 py-1 bg-emerald-700 hover:bg-emerald-600 text-white text-[11px] font-bold transition-colors shadow"
                         >
-                          Duyệt Gạch Nợ
+                          {t('Duyệt Gạch Nợ', 'Approve Payment')}
                         </button>
                       ) : (
                         <span className="text-emerald-400 text-[11px] font-mono font-medium">
-                          Đã Ghi Thu ✓
+                          {t('Đã Ghi Thu ✓', 'Recorded ✓')}
                         </span>
                       )}
                     </td>

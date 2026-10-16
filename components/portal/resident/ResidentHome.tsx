@@ -36,6 +36,7 @@ import { getApartmentByCode } from '@/lib/apartmentStore';
 import { applyScene, getSmartHomeState, SceneType } from '@/lib/smartHomeStore';
 import ResidentApartmentModal from './ResidentApartmentModal';
 import { getEnrolledFaceProfile, getAllEnrolledFaceProfiles } from '@/lib/faceEnrollStore';
+import { useLanguage } from '@/lib/languageContext';
 
 interface ResidentHomeProps {
   currentUser: UserType;
@@ -44,6 +45,7 @@ interface ResidentHomeProps {
 }
 
 export default function ResidentHome({ currentUser, onNavigate, onOpenVisitorModal }: ResidentHomeProps) {
+  const { t, isEn } = useLanguage();
   const isOwner = currentUser.role === 'OWNER';
   const aptCode = currentUser.apartment_code || 'CH-06';
 
@@ -112,37 +114,37 @@ export default function ResidentHome({ currentUser, onNavigate, onOpenVisitorMod
       <div className="p-5 sm:p-6 bg-gradient-to-r from-[#161D26] via-[#121820] to-[#0D1117] border border-[#C5A880]/70 flex flex-col md:flex-row md:items-center justify-between gap-5 shadow-2xl">
         <div>
           <div className="text-[10px] uppercase tracking-wider text-[#C5A880] font-bold flex items-center gap-1.5">
-            <Sparkles className="w-3.5 h-3.5" /> Cư Dân • Căn {aptCode}
+            <Sparkles className="w-3.5 h-3.5" /> {t('Cư Dân')} • {t('Căn')} {aptCode}
           </div>
           <h2 className="font-serif text-2xl sm:text-3xl text-white font-bold mt-1 tracking-wide">
-            Xin Chào, {userName}
+            {t('Xin Chào')}, {userName}
           </h2>
           <div className="text-xs text-gray-300 mt-2.5 flex flex-wrap items-center gap-2">
             {/* Căn Hộ & Nút Sổ Tay Cư Dân */}
             <div className="h-8 flex items-center gap-1.5 bg-[#161B22] border border-[#2D3748] px-2.5 shadow-sm">
-              <span className="text-gray-400 text-[11px]">Căn:</span>
+              <span className="text-gray-400 text-[11px]">{t('Căn:')}</span>
               <strong className="text-white font-mono text-xs">{aptCode}</strong>
               <button
                 type="button"
                 onClick={() => onNavigate('resident-handbook')}
                 className="ml-1 h-5 px-2 bg-[#0D1117] hover:bg-[#C5A880] hover:text-[#0D1117] text-[#C5A880] border border-[#C5A880]/50 text-[10.5px] font-semibold transition-all flex items-center gap-1 shadow-sm"
-                title="Mở Sổ Tay Cư Dân Điện Tử"
+                title={t('Mở Sổ Tay Cư Dân Điện Tử')}
               >
-                <BookOpen className="w-3 h-3" /> Sổ Tay Cư Dân
+                <BookOpen className="w-3 h-3" /> {t('Sổ Tay Cư Dân')}
               </button>
             </div>
 
             {/* Vai Trò */}
             <div className="h-8 flex items-center gap-1.5 px-2.5 bg-[#C5A880]/15 border border-[#C5A880]/50 text-[#C5A880] text-[11px] font-semibold shadow-sm">
               <Crown className="w-3.5 h-3.5 text-[#C5A880]" />
-              <span>{isOwner ? 'Chủ Hộ' : 'Thành Viên'}</span>
+              <span>{isOwner ? t('role.owner', 'Chủ Hộ') : t('role.family', 'Thành Viên')}</span>
             </div>
 
             {/* Trạng Thái e-KYC (Chủ Hộ) */}
             {isOwner && (
               <div className="h-8 flex items-center gap-1.5 px-2.5 bg-emerald-950/60 border border-emerald-500/40 text-emerald-300 text-[11px] font-mono font-medium shadow-sm">
                 <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
-                <span>e-KYC Đã Xác Thực</span>
+                <span>{t('e-KYC Đã Xác Thực')}</span>
               </div>
             )}
 
@@ -152,19 +154,19 @@ export default function ResidentHome({ currentUser, onNavigate, onOpenVisitorMod
                 {userFaceStatus === 'ACTIVE' && (
                   <div className="h-8 flex items-center gap-1.5 px-2.5 bg-emerald-950/60 border border-emerald-500/40 text-emerald-300 text-[11px] font-mono font-medium shadow-sm">
                     <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
-                    <span>FaceID Đã Kích Hoạt</span>
+                    <span>{t('FaceID Đã Kích Hoạt')}</span>
                   </div>
                 )}
                 {userFaceStatus === 'PENDING_OWNER' && (
                   <div className="h-8 flex items-center gap-1.5 px-2.5 bg-amber-950/60 border border-amber-500/40 text-amber-300 text-[11px] font-mono font-medium shadow-sm animate-pulse">
                     <Clock className="w-3.5 h-3.5 text-amber-400" />
-                    <span>FaceID: Chờ Chủ Hộ Duyệt</span>
+                    <span>{t('FaceID: Chờ Chủ Hộ Duyệt')}</span>
                   </div>
                 )}
                 {userFaceStatus === 'PENDING' && (
                   <div className="h-8 flex items-center gap-1.5 px-2.5 bg-cyan-950/60 border border-cyan-500/40 text-cyan-300 text-[11px] font-mono font-medium shadow-sm animate-pulse">
                     <Clock className="w-3.5 h-3.5 text-cyan-400" />
-                    <span>FaceID: Chờ BQL Phê Duyệt</span>
+                    <span>{t('FaceID: Chờ BQL Phê Duyệt')}</span>
                   </div>
                 )}
                 {userFaceStatus === 'NONE' && (
@@ -174,7 +176,7 @@ export default function ResidentHome({ currentUser, onNavigate, onOpenVisitorMod
                     className="h-8 flex items-center gap-1.5 px-2.5 bg-[#C5A880] hover:bg-white text-[#0D1117] text-[11px] font-bold shadow-sm transition-all cursor-pointer"
                   >
                     <Camera className="w-3.5 h-3.5" />
-                    <span>Quét FaceID Của Bạn</span>
+                    <span>{t('Quét FaceID Của Bạn')}</span>
                   </button>
                 )}
               </>
@@ -188,7 +190,7 @@ export default function ResidentHome({ currentUser, onNavigate, onOpenVisitorMod
             <SunMedium className="w-5 h-5 text-amber-400" />
             <div>
               <div className="text-white font-bold text-sm">28°C</div>
-              <div className="text-[10px] text-gray-400">Nắng nhẹ</div>
+              <div className="text-[10px] text-gray-400">{t('Nắng nhẹ')}</div>
             </div>
           </div>
 
@@ -196,7 +198,7 @@ export default function ResidentHome({ currentUser, onNavigate, onOpenVisitorMod
             <Wind className="w-5 h-5 text-emerald-400" />
             <div>
               <div className="text-emerald-400 font-bold text-sm">AQI 32</div>
-              <div className="text-[10px] text-gray-400">Không khí sạch</div>
+              <div className="text-[10px] text-gray-400">{t('Không khí sạch')}</div>
             </div>
           </div>
 
@@ -204,7 +206,7 @@ export default function ResidentHome({ currentUser, onNavigate, onOpenVisitorMod
             <Droplets className="w-5 h-5 text-blue-400" />
             <div>
               <div className="text-white font-bold text-sm">65%</div>
-              <div className="text-[10px] text-gray-400">Độ ẩm</div>
+              <div className="text-[10px] text-gray-400">{t('Độ ẩm')}</div>
             </div>
           </div>
         </div>
@@ -219,10 +221,10 @@ export default function ResidentHome({ currentUser, onNavigate, onOpenVisitorMod
             </div>
             <div>
               <div className="text-xs font-bold uppercase tracking-wider text-amber-300">
-                Có {pendingConfirmCount} hồ sơ FaceID cần xác nhận
+                {isEn ? `${pendingConfirmCount} FaceID profiles awaiting confirmation` : `Có ${pendingConfirmCount} hồ sơ FaceID cần xác nhận`}
               </div>
               <p className="text-xs text-gray-300 mt-0.5">
-                Người nhà đã quét FaceID. Vui lòng xác nhận bảo lãnh để gửi BQL duyệt.
+                {t('Người nhà đã quét FaceID. Vui lòng xác nhận bảo lãnh để gửi BQL duyệt.')}
               </p>
             </div>
           </div>
@@ -232,7 +234,7 @@ export default function ResidentHome({ currentUser, onNavigate, onOpenVisitorMod
             onClick={() => onNavigate('resident-family')}
             className="px-4 py-2 bg-[#C5A880] hover:bg-white text-[#0D1117] text-xs font-bold uppercase tracking-wider transition-all shadow-lg flex-shrink-0 cursor-pointer active:scale-95 flex items-center gap-1.5"
           >
-            <ShieldCheck className="w-4 h-4" /> Xác Nhận Ngay
+            <ShieldCheck className="w-4 h-4" /> {t('Xác Nhận Ngay')}
           </button>
         </div>
       )}
@@ -241,11 +243,11 @@ export default function ResidentHome({ currentUser, onNavigate, onOpenVisitorMod
       <div className="p-4 bg-[#121820] border border-[#222B35] space-y-2.5 shadow-lg">
         <div className="flex items-center justify-between">
           <span className="text-[11px] uppercase tracking-wider text-[#C5A880] font-bold flex items-center gap-1.5">
-            <Home className="w-3.5 h-3.5" /> Ngữ Cảnh Nhanh:
+            <Home className="w-3.5 h-3.5" /> {t('Ngữ Cảnh Nhanh:')}
           </span>
           {sceneMessage && (
             <span className="text-xs font-mono text-emerald-400 animate-fadeIn">
-              {sceneMessage}
+              {t(sceneMessage)}
             </span>
           )}
         </div>
@@ -262,9 +264,9 @@ export default function ResidentHome({ currentUser, onNavigate, onOpenVisitorMod
           >
             <div>
               <div className="font-bold text-[11px] text-white flex items-center gap-1.5">
-                <SunMedium className="w-3.5 h-3.5 text-amber-400" /> Về Nhà
+                <SunMedium className="w-3.5 h-3.5 text-amber-400" /> {t('Về Nhà')}
               </div>
-              <div className="text-[10px] text-gray-400">Bật đèn • ĐH 24°C • Mở rèm</div>
+              <div className="text-[10px] text-gray-400">{t('Bật đèn • ĐH 24°C • Mở rèm')}</div>
             </div>
             {activeScene === 'WELCOME' && <span className="w-2 h-2 rounded-full bg-[#C5A880]"></span>}
           </button>
@@ -280,9 +282,9 @@ export default function ResidentHome({ currentUser, onNavigate, onOpenVisitorMod
           >
             <div>
               <div className="font-bold text-[11px] text-white flex items-center gap-1.5">
-                <Home className="w-3.5 h-3.5 text-blue-400" /> Ra Ngoài
+                <Home className="w-3.5 h-3.5 text-blue-400" /> {t('Ra Ngoài')}
               </div>
-              <div className="text-[10px] text-gray-400">Tắt điện • Khóa cửa • Đóng rèm</div>
+              <div className="text-[10px] text-gray-400">{t('Tắt điện • Khóa cửa • Đóng rèm')}</div>
             </div>
             {activeScene === 'AWAY' && <span className="w-2 h-2 rounded-full bg-[#C5A880]"></span>}
           </button>
@@ -298,9 +300,9 @@ export default function ResidentHome({ currentUser, onNavigate, onOpenVisitorMod
           >
             <div>
               <div className="font-bold text-[11px] text-white flex items-center gap-1.5">
-                <Moon className="w-3.5 h-3.5 text-indigo-400" /> Đi Ngủ
+                <Moon className="w-3.5 h-3.5 text-indigo-400" /> {t('Đi Ngủ')}
               </div>
-              <div className="text-[10px] text-gray-400">ĐH 26°C • Khóa cửa • Đóng rèm</div>
+              <div className="text-[10px] text-gray-400">{t('ĐH 26°C • Khóa cửa • Đóng rèm')}</div>
             </div>
             {activeScene === 'SLEEP' && <span className="w-2 h-2 rounded-full bg-[#C5A880]"></span>}
           </button>
@@ -316,9 +318,9 @@ export default function ResidentHome({ currentUser, onNavigate, onOpenVisitorMod
           >
             <div>
               <div className="font-bold text-[11px] text-white flex items-center gap-1.5">
-                <Tv className="w-3.5 h-3.5 text-rose-400" /> Xem Phim
+                <Tv className="w-3.5 h-3.5 text-rose-400" /> {t('Xem Phim')}
               </div>
-              <div className="text-[10px] text-gray-400">ĐH 23°C • Đèn 15% • Đóng rèm</div>
+              <div className="text-[10px] text-gray-400">{t('ĐH 23°C • Đèn 15% • Đóng rèm')}</div>
             </div>
             {activeScene === 'CINEMA' && <span className="w-2 h-2 rounded-full bg-[#C5A880]"></span>}
           </button>
@@ -334,9 +336,9 @@ export default function ResidentHome({ currentUser, onNavigate, onOpenVisitorMod
           >
             <div>
               <div className="font-bold text-[11px] text-white flex items-center gap-1.5">
-                <Sparkles className="w-3.5 h-3.5 text-emerald-400" /> Ăn Tối
+                <Sparkles className="w-3.5 h-3.5 text-emerald-400" /> {t('Ăn Tối')}
               </div>
-              <div className="text-[10px] text-gray-400">Bật đèn bếp • View phố</div>
+              <div className="text-[10px] text-gray-400">{t('Bật đèn bếp • View phố')}</div>
             </div>
             {activeScene === 'DINING' && <span className="w-2 h-2 rounded-full bg-[#C5A880]"></span>}
           </button>
@@ -350,10 +352,10 @@ export default function ResidentHome({ currentUser, onNavigate, onOpenVisitorMod
           <div className="lg:col-span-5 bg-[#121820] border border-[#222B35] p-5 space-y-4 shadow-2xl">
             <div className="border-b border-[#222B35] pb-2 text-left">
               <div className="text-[10px] uppercase tracking-[0.2em] text-[#C5A880] font-bold">
-                Thẻ Cư Dân Điện Tử
+                {t('Thẻ Cư Dân Điện Tử')}
               </div>
               <p className="text-xs text-gray-400">
-                Chạm để lật thẻ • Dùng mở cổng sảnh & thang máy
+                {t('Chạm để lật thẻ • Dùng mở cổng sảnh & thang máy')}
               </p>
             </div>
 
@@ -374,11 +376,11 @@ export default function ResidentHome({ currentUser, onNavigate, onOpenVisitorMod
                 <Users className="w-4 h-4" />
               </div>
               <div className="font-serif text-sm font-bold text-white group-hover:text-[#C5A880] flex items-center justify-between">
-                <span>Tạo QR Đón Khách</span>
+                <span>{t('Tạo QR Đón Khách')}</span>
                 <ArrowRight className="w-3.5 h-3.5 text-gray-500 group-hover:text-[#C5A880]" />
               </div>
               <p className="text-[11px] text-gray-400">
-                Tạo mã QR cho khách quét mở sảnh và thang máy.
+                {t('Tạo mã QR cho khách quét mở sảnh và thang máy.')}
               </p>
             </div>
 
@@ -391,11 +393,11 @@ export default function ResidentHome({ currentUser, onNavigate, onOpenVisitorMod
                 <Wrench className="w-4 h-4" />
               </div>
               <div className="font-serif text-sm font-bold text-white group-hover:text-amber-400 flex items-center justify-between">
-                <span>Báo Hỏng & Sửa Chữa</span>
+                <span>{t('Báo Hỏng & Sửa Chữa')}</span>
                 <ArrowRight className="w-3.5 h-3.5 text-gray-500 group-hover:text-amber-400" />
               </div>
               <p className="text-[11px] text-gray-400">
-                Gửi yêu cầu kiểm tra và sửa chữa thiết bị căn hộ.
+                {t('Gửi yêu cầu kiểm tra và sửa chữa thiết bị căn hộ.')}
               </p>
             </div>
 
@@ -409,11 +411,11 @@ export default function ResidentHome({ currentUser, onNavigate, onOpenVisitorMod
                   <CreditCard className="w-4 h-4" />
                 </div>
                 <div className="font-serif text-sm font-bold text-white group-hover:text-emerald-400 flex items-center justify-between">
-                  <span>Hóa Đơn Dịch Vụ</span>
-                  <span className="text-[10px] font-mono bg-emerald-950 text-emerald-300 px-1.5 py-0.5 border border-emerald-500">2.465.000 đ</span>
+                  <span>{t('Hóa Đơn Dịch Vụ')}</span>
+                  <span className="text-[10px] font-mono bg-emerald-950 text-emerald-300 px-1.5 py-0.5 border border-emerald-500">{isEn ? '2,465,000 VND' : '2.465.000 đ'}</span>
                 </div>
                 <p className="text-[11px] text-gray-400">
-                  Thanh toán tiền điện, nước và phí quản lý.
+                  {t('Thanh toán tiền điện, nước và phí quản lý.')}
                 </p>
               </div>
             )}
@@ -427,11 +429,11 @@ export default function ResidentHome({ currentUser, onNavigate, onOpenVisitorMod
                 <CalendarCheck className="w-4 h-4" />
               </div>
               <div className="font-serif text-sm font-bold text-white group-hover:text-blue-400 flex items-center justify-between">
-                <span>Tiện Ích Cư Dân</span>
+                <span>{t('Tiện Ích Cư Dân')}</span>
                 <ArrowRight className="w-3.5 h-3.5 text-gray-500 group-hover:text-blue-400" />
               </div>
               <p className="text-[11px] text-gray-400">
-                Đặt lịch hồ bơi, phòng gym, sân BBQ.
+                {t('Đặt lịch hồ bơi, phòng gym, sân BBQ.')}
               </p>
             </div>
 
@@ -444,11 +446,11 @@ export default function ResidentHome({ currentUser, onNavigate, onOpenVisitorMod
                 <Sparkles className="w-4 h-4" />
               </div>
               <div className="font-serif text-sm font-bold text-white group-hover:text-amber-400 flex items-center justify-between">
-                <span>Dịch Vụ Căn Hộ</span>
+                <span>{t('Dịch Vụ Căn Hộ')}</span>
                 <ArrowRight className="w-3.5 h-3.5 text-gray-500 group-hover:text-amber-400" />
               </div>
               <p className="text-[11px] text-gray-400">
-                Dọn dẹp, giặt ủi, rửa xe và hỗ trợ kỹ thuật.
+                {t('Dọn dẹp, giặt ủi, rửa xe và hỗ trợ kỹ thuật.')}
               </p>
             </div>
 
@@ -461,11 +463,11 @@ export default function ResidentHome({ currentUser, onNavigate, onOpenVisitorMod
                 <BookOpen className="w-4 h-4" />
               </div>
               <div className="font-serif text-sm font-bold text-white group-hover:text-[#C5A880] flex items-center justify-between">
-                <span>Sổ Tay & Nội Quy</span>
+                <span>{t('Sổ Tay & Nội Quy')}</span>
                 <ArrowRight className="w-3.5 h-3.5 text-gray-500 group-hover:text-[#C5A880]" />
               </div>
               <p className="text-[11px] text-gray-400">
-                Nội quy tiếng ồn, gửi xe, thú cưng & PCCC.
+                {t('Nội quy tiếng ồn, gửi xe, thú cưng & PCCC.')}
               </p>
             </div>
           </div>
@@ -474,20 +476,20 @@ export default function ResidentHome({ currentUser, onNavigate, onOpenVisitorMod
           <div className="bg-[#121820] border border-[#222B35] p-5 space-y-4">
             <div className="flex items-center justify-between border-b border-[#222B35] pb-3">
               <span className="text-xs uppercase tracking-wider text-[#C5A880] font-semibold flex items-center gap-2">
-                <Building className="w-4 h-4" /> Bảng Tin Chung Cư
+                <Building className="w-4 h-4" /> {t('Bảng Tin Chung Cư')}
               </span>
-              <span className="text-[10px] text-emerald-400 font-mono">Chính Thức BQL ✓</span>
+              <span className="text-[10px] text-emerald-400 font-mono">{t('Chính Thức BQL ✓')}</span>
             </div>
 
             <div className="space-y-3">
               {DEMO_COMMUNITY_POSTS.map((post) => (
                 <div key={post.id} className="p-3.5 bg-[#161B22] border border-[#222B35] space-y-1.5 text-xs">
                   <div className="flex items-center justify-between">
-                    <span className="font-bold text-white text-xs">{post.author_name}</span>
-                    <span className="text-[10px] text-gray-400 font-mono">{post.created_at}</span>
+                    <span className="font-bold text-white text-xs">{t(post.author_name)}</span>
+                    <span className="text-[10px] text-gray-400 font-mono">{t(post.created_at)}</span>
                   </div>
-                  <h4 className="font-semibold text-gray-200">{post.title}</h4>
-                  <p className="text-gray-400 text-[11px] font-light leading-relaxed">{post.content}</p>
+                  <h4 className="font-semibold text-gray-200">{t(post.title)}</h4>
+                  <p className="text-gray-400 text-[11px] font-light leading-relaxed">{t(post.content)}</p>
                 </div>
               ))}
             </div>

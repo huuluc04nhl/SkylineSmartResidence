@@ -1,7 +1,7 @@
 /**
  * SKYLINE SMART RESIDENCE — MASTER TRANSLATION DICTIONARY
  * Automatically synchronized & curated for luxury real estate & smart living.
- * Total bilingual pairs: 4681
+ * Total bilingual pairs: 4826
  */
 
 export const TRANSLATIONS_DATA: Array<[string, string]> = [
@@ -11,7 +11,7 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
   ],
   [
     "Rèm tự động mở góc 45° đón ánh nắng tự nhiên. Điều hòa trung tâm chuyển chế độ lọc khí tươi Fresh Air. Khi cư dân bước xuống sảnh chung cư BS-07, camera Vision AI định danh khuôn mặt <0.5s để mở cửa sảnh và hệ thống barrier hầm đỗ xe tự động quét biển số xe mà không cần hạ kính.",
-    "Curtains open 45° automatically to welcome natural sunlight. Central AC shifts to Fresh Air purification. As residents enter the BS-07 lobby, Vision AI cameras identify faces in <0.5s to unlock doors, and basement barriers scan license plates hands-free."
+    "Curtains open 45° automatically to welcome natural sunlight. Central AC shifts to Fresh Air filtration. As residents enter the Tower BS-07 lobby, Vision AI cameras identify faces in <0.5s to unlock doors, and basement barriers scan license plates hands-free."
   ],
   [
     "Khi bạn bè hoặc đối tác đến thăm, chủ hộ chủ động cấp mã QR khách thăm hoặc mã PIN tạm thời có hiệu lực 24 giờ. Khi khách bấm chuông hình thông minh Doorbell tại sảnh chung cư, video trực tiếp lập tức truyền về điện thoại để chủ hộ mở cửa sảnh và thang máy đón khách từ xa.",
@@ -27,7 +27,7 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
   ],
   [
     "Giữa ngày bận rộn, cư dân dễ dàng đặt bàn tại nhà hàng ẩm thực tầng 1 hoặc giữ chỗ ca nướng BBQ chân mây & phòng xông hơi VIP tầng tiện ích. Trợ lý ảo Skyline AI Concierge 24/7 tự động kiểm tra hạn mức quota căn hộ, xuất mã vé QR và xác nhận lịch tức thì.",
-    "Amid a busy day, residents effortlessly reserve tables at the 1st floor restaurant or book rooftop BBQ sessions & VIP saunas. Skyline AI Concierge 24/7 automatically checks unit quotas, generates QR passes, and confirms bookings instantly."
+    "During a busy day, residents can effortlessly book dining tables at 1st-floor restaurants or reserve Sky BBQ grill slots & VIP sauna rooms on amenity floors. Skyline AI Concierge 24/7 automatically verifies apartment quota, generates QR ticket passes, and confirms reservations instantaneously."
   ],
   [
     "Đặc quyền chuẩn sống thảnh thơi tại 4 chung cư The Tropical (BS-07, BS-08, BS-09, BS-10). Từ dọn dẹp, giặt là, chăm sóc xe đến đội ngũ kỹ thuật NKS thường trực xử lý sự cố trong 15 phút, tất cả đều được vận hành chuẩn hóa trên ứng dụng di động.",
@@ -1155,7 +1155,7 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
   ],
   [
     "Căn hộ tiêu chuẩn 1PN - 1WC bàn giao thực tế tại Chung Cư BS-07",
-    "Standard 1BR - 1BA apartment actual handover at BS-07 Tower"
+    "Standard 1BR - 1BA unit actual handover at Tower BS-07"
   ],
   [
     "Kéo thả thẻ sự cố để cập nhật tiến độ xử lý và phân công kỹ sư.",
@@ -1247,7 +1247,7 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
   ],
   [
     "Căn hộ thực tế cư dân • Chung Cư BS-07 phân khu The Tropical",
-    "Resident actual apartment • BS-07 Tower, The Tropical zone"
+    "Actual resident unit • Tower BS-07 The Tropical subdivision"
   ],
   [
     "View trực diện công viên nội khu & hồ cảnh quan The Tropical",
@@ -1703,7 +1703,7 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
   ],
   [
     "Mặt Bằng 3D Minh Bạch • Chung Cư BS-07 The Tropical",
-    "Transparent 3D Layout • BS-07 Tower The Tropical"
+    "Transparent 3D Floor Plans • BS-07 The Tropical Tower"
   ],
   [
     "Đã trích xuất biên lai phiếu thu căn hộ  thành công",
@@ -1935,7 +1935,7 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
   ],
   [
     "Tầng cao The Tropical • Phân khu Beverly Solari",
-    "The Tropical High Floor • Beverly Solari Division"
+    "High Floor The Tropical • Beverly Solari Zone"
   ],
   [
     "Đại Công Viên Ven Sông 36ha & Biển Hồ Cát Trắng",
@@ -2199,7 +2199,7 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
   ],
   [
     "Dữ liệu NKS SCRMAI • Chung Cư BS-07 Tầng 30",
-    "NKS SCRMAI Data • BS-07 Apartment Building, 30th Floor"
+    "NKS SCRMAI Data • Tower BS-07 Floor 30"
   ],
   [
     "FaceID Cư Dân: Nhận diện thành công (99.8%)",
@@ -2527,7 +2527,7 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
   ],
   [
     "Thang máy đón sẵn: Sảnh Tầng 1 → Tầng 30",
-    "Elevator dispatched: Floor 1 Lobby → Floor 30"
+    "Elevator Dispatched: Lobby Floor 1 → Floor 30"
   ],
   [
     "Trung Tâm Chỉ Huy & Giám Sát Tự Động Hóa",
@@ -2623,7 +2623,7 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
   ],
   [
     "Tầng 30 • Chung Cư BS-07 (The Tropical)",
-    "Floor 30 • BS-07 Tower (The Tropical)"
+    "Floor 30 • Tower BS-07 (The Tropical)"
   ],
   [
     "Tầng 15 • Chung Cư BS-08 (The Tropical)",
@@ -2783,7 +2783,7 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
   ],
   [
     "Tầng 34 (Đỉnh Chung Cư) • The Tropical",
-    "34th Floor (Top of the Apartment) • The Tropical"
+    "Floor 34 (Rooftop) • The Tropical"
   ],
   [
     "Vui lòng nhập Email hoặc Tên tài khoản",
@@ -5239,7 +5239,7 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
   ],
   [
     "Phòng Ngủ Hoàng Gia Tầng 2",
-    "Royal Bedroom 2nd Floor"
+    "Level 2 Royal Master Suite"
   ],
   [
     "Sơ Đồ Không Gian 3D Căn Hộ",
@@ -18647,7 +18647,7 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
   ],
   [
     "Thông tin diện tích, mặt bằng bóc mái 3D và hiện trạng kỹ thuật được hiển thị minh bạch. Click trực tiếp vào các phòng trên mô hình để xem công năng chi tiết.",
-    "Floor area, 3D roof cutaway layout, and technical status are transparently displayed. Click directly on rooms to view detailed functions."
+    "Area dimensions, 3D cutaway floor plans and technical specs are transparently showcased. Click directly on rooms in the model to explore detailed functionality."
   ],
   [
     "1 Phòng Ngủ (Standard)",
@@ -18728,8 +18728,7 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
   [
     "Camera nhiệt tầm soát nguy cơ cháy nổ 24/7",
     "Thermal camera monitors fire & smoke risks 24/7"
-  ]
-,
+  ],
   [
     "Đang trống",
     "Vacant"
@@ -19173,5 +19172,141 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
   [
     "Lỗi gọi API xóa ticket:",
     "Error calling delete ticket API:"
+  ],
+  [
+    "Chính Đông",
+    "East"
+  ],
+  [
+    "Chính Tây",
+    "West"
+  ],
+  [
+    "Đặc Trưng Kiến Trúc & Công Nghệ",
+    "Architectural Features & Technology"
+  ],
+  [
+    "Đang Xem Chi Tiết",
+    "Viewing Details"
+  ],
+  [
+    "Tim tường:",
+    "Gross Area:"
+  ],
+  [
+    "tim tường",
+    "Gross Area"
+  ],
+  [
+    "thông thủy",
+    "Net Usable Area"
+  ],
+  [
+    "Bản Đồ Căn Hộ Tương Tác",
+    "Interactive Floor Plan Explorer"
+  ],
+  [
+    "Không chỉ là những thiết bị công nghệ rời rạc, Skyline liên kết toàn diện hạ tầng từ căn hộ thông minh đến hệ thống quản trị vận hành 4 chung cư The Tropical trong từng khoảnh khắc nhịp sống của cư dân.",
+    "Beyond isolated smart gadgets, Skyline seamlessly integrates infrastructure from smart apartments to the 4-tower management system of The Tropical throughout every resident moment."
+  ],
+  [
+    "99.8% Vision AI",
+    "99.8% Vision AI"
+  ],
+  [
+    "Video Call HD 1080P",
+    "HD 1080P Video Call"
+  ],
+  [
+    "Auto Morning Scene",
+    "Auto Morning Scene"
+  ],
+  [
+    "Giám sát sơ đồ MEP, điện nước & PCCC",
+    "Monitor MEP diagrams, utilities & fire safety"
+  ],
+  [
+    "Đã Kích Hoạt",
+    "Activated"
+  ],
+  [
+    "Diện Tích Thông Thủy",
+    "Net Usable Area"
+  ],
+  [
+    "Sổ Hồng Lâu Dài",
+    "Perpetual Title Deed"
+  ],
+  [
+    "Tiếp đón trực tiếp tại Sảnh The Tropical • Chung Cư BS-07 (08:00 - 20:00). Minh bạch hồ sơ pháp lý, không qua trung gian.",
+    "Welcome in person at The Tropical Lobby • Tower BS-07 (08:00 - 20:00). Transparent legal records, no intermediaries."
+  ],
+  [
+    "Ban Công View Hồ",
+    "Lake View Balcony"
+  ],
+  [
+    "Phòng Ngủ Master",
+    "Master Bedroom"
+  ],
+  [
+    "Master Presidential Suite",
+    "Master Presidential Suite"
+  ],
+  [
+    "Master Suite",
+    "Master Suite"
+  ],
+  [
+    "Đang Đồng Bộ Dữ Liệu...",
+    "Syncing Data..."
+  ],
+  [
+    "Vui lòng đăng nhập tài khoản Cư Dân hoặc Ban Quản Lý để truy cập hệ thống SKYLINE.",
+    "Please log in with a Resident or Management account to access SKYLINE."
+  ],
+  [
+    "Đăng Nhập Tài Khoản (Email / SĐT)",
+    "Sign In Account (Email / Phone)"
+  ],
+  [
+    "Quay Lại Trang Chủ",
+    "Back to Home"
+  ],
+  [
+    "Tính Năng Dành Riêng Cho Chủ Hộ Đứng Tên",
+    "Feature Reserved for Registered Apartment Owners"
+  ],
+  [
+    "Quay Lại Trang Chủ Cư Dân",
+    "Back to Resident Home"
+  ],
+  [
+    "Chờ tiếp nhận",
+    "Pending Assignment"
+  ],
+  [
+    "Chờ nghiệm thu",
+    "Awaiting Inspection"
+  ],
+  [
+    "Đã hoàn thành",
+    "Completed"
+  ],
+  [
+    "Đã đóng",
+    "Closed"
+  ],
+  [
+    "Cần xử lý gấp",
+    "Urgent Action Needed"
+  ],
+  [
+    "Khẩn cấp",
+    "Emergency"
+  ],
+  [
+    "Trung bình",
+    "Medium"
   ]
 ];

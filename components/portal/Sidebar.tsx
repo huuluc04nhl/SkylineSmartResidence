@@ -296,7 +296,7 @@ export default function Sidebar({
           <nav className="flex-1 p-2 space-y-1.5 overflow-y-auto overflow-x-hidden">
             {!collapsed && (
               <div className="px-3 py-1.5 text-[10px] uppercase tracking-[0.2em] text-gray-400 font-semibold truncate">
-                {role === 'ADMIN' ? t('role.admin', 'Ban Quản Lý') : t('Phân Hệ Cư Dân', 'Phân Hệ Cư Dân')}
+                {role === 'ADMIN' ? t('role.admin', 'Management Board') : t('Phân Hệ Cư Dân', 'Resident Portal')}
               </div>
             )}
 

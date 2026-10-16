@@ -241,6 +241,38 @@ export function translateString(text: string, targetLang: Language): string {
       return preserveWhitespace(text, `${m[1]} VND`);
     }
 
+    // Prices in Billion: "2.31 Tỷ", "Từ 3.2 Tỷ"
+    m = trimmed.match(/^(Từ\s+)?([0-9\.,]+)\s*Tỷ$/i);
+    if (m) {
+      const prefix = m[1] ? 'From ' : '';
+      return preserveWhitespace(text, `${prefix}${m[2]} Billion VND`);
+    }
+
+    // Price per m²: "~ 55.0 tr/m²", "55.0 tr/m²"
+    m = trimmed.match(/^([~≈]\s*)?([0-9\.,]+)\s*tr\/m²$/i);
+    if (m) {
+      const prefix = m[1] || '';
+      return preserveWhitespace(text, `${prefix}${m[2]}M VND/m²`);
+    }
+
+    // Unit Areas: "54.8 m² tim tường", "Tim tường: 54.8 m²"
+    m = trimmed.match(/^([0-9\.,]+)\s*m²\s*tim tường$/i);
+    if (m) return preserveWhitespace(text, `${m[1]} m² Gross Built Area`);
+
+    m = trimmed.match(/^Tim tường:\s*([0-9\.,]+)\s*m²$/i);
+    if (m) return preserveWhitespace(text, `Gross Area: ${m[1]} m²`);
+
+    m = trimmed.match(/^([0-9\.,]+)\s*m²\s*thông thủy$/i);
+    if (m) return preserveWhitespace(text, `${m[1]} m² Net Usable Area`);
+
+    // Management fee: "Phí QL: 12.500 đ/m²"
+    m = trimmed.match(/^Phí QL:\s*([0-9\.,]+)\s*(?:đ|VND)\/m²$/i);
+    if (m) return preserveWhitespace(text, `Management Fee: ${m[1]} VND/m²`);
+
+    // Room configurations: "1 PN • 1 WC", "2 PN • 1 WC"
+    m = trimmed.match(/^(\d+)\s*PN\s*•\s*(\d+)\s*WC$/i);
+    if (m) return preserveWhitespace(text, `${m[1]} Bed • ${m[2]} Bath`);
+
     // Month & Year: "Tháng 08/2026" -> "August 2026"
     m = trimmed.match(/^Tháng\s+(\d{1,2})\/(\d{4})$/i);
     if (m) {
@@ -346,6 +378,38 @@ export function translateString(text: string, targetLang: Language): string {
       }
     }
 
+    // Reverse Prices in Billion
+    m = trimmed.match(/^(From\s+)?([0-9\.,]+)\s*Billion\s*VND$/i);
+    if (m) {
+      const prefix = m[1] ? 'Từ ' : '';
+      return preserveWhitespace(text, `${prefix}${m[2]} Tỷ`);
+    }
+
+    // Reverse Price per m²
+    m = trimmed.match(/^([~≈]\s*)?([0-9\.,]+)\s*M\s*VND\/m²$/i);
+    if (m) {
+      const prefix = m[1] || '';
+      return preserveWhitespace(text, `${prefix}${m[2]} tr/m²`);
+    }
+
+    // Reverse Unit Areas
+    m = trimmed.match(/^([0-9\.,]+)\s*m²\s*Gross\s*(?:Built\s*)?Area$/i);
+    if (m) return preserveWhitespace(text, `${m[1]} m² tim tường`);
+
+    m = trimmed.match(/^Gross\s*Area:\s*([0-9\.,]+)\s*m²$/i);
+    if (m) return preserveWhitespace(text, `Tim tường: ${m[1]} m²`);
+
+    m = trimmed.match(/^([0-9\.,]+)\s*m²\s*Net\s*(?:Usable\s*)?Area$/i);
+    if (m) return preserveWhitespace(text, `${m[1]} m² thông thủy`);
+
+    // Reverse Management Fee
+    m = trimmed.match(/^Management\s*Fee:\s*([0-9\.,]+)\s*VND\/m²$/i);
+    if (m) return preserveWhitespace(text, `Phí QL: ${m[1]} đ/m²`);
+
+    // Reverse Room configuration
+    m = trimmed.match(/^(\d+)\s*Bed\s*•\s*(\d+)\s*Bath$/i);
+    if (m) return preserveWhitespace(text, `${m[1]} PN • ${m[2]} WC`);
+
     m = trimmed.match(/^([0-9\.,]+)\s*VND$/i);
     if (m) {
       return preserveWhitespace(text, `${m[1]} đ`);
@@ -380,7 +444,15 @@ interface LanguageContextType {
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
 export function LanguageProvider({ children }: { children: React.ReactNode }) {
-  const [language, setLanguageState] = useState<Language>('vi');
+  const [language, setLanguageState] = useState<Language>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const saved = localStorage.getItem('skyline_language') as Language | null;
+        if (saved === 'en' || saved === 'vi') return saved;
+      } catch {}
+    }
+    return 'vi';
+  });
   const [isMounted, setIsMounted] = useState(false);
   const isTranslatingRef = useRef(false);
   const originalNodesMap = useRef<WeakMap<Node, string>>(new WeakMap());
@@ -523,8 +595,7 @@ const KEY_DICTIONARY: Record<string, Record<Language, string>> = {
 
       // Save baseline in originalNodesMap on first encounter
       if (!originalNodesMap.current.has(node)) {
-        const viSource = translateString(currentVal, 'vi');
-        originalNodesMap.current.set(node, viSource);
+        originalNodesMap.current.set(node, currentVal);
       }
 
       const baseText = originalNodesMap.current.get(node) || currentVal;
@@ -536,7 +607,7 @@ const KEY_DICTIONARY: Record<string, Record<Language, string>> = {
         }
       } else {
         // Restore pristine Vietnamese
-        const viText = translateString(baseText, 'vi');
+        const viText = originalNodesMap.current.has(node) ? originalNodesMap.current.get(node)! : translateString(baseText, 'vi');
         if (viText !== node.nodeValue) {
           node.nodeValue = viText;
         }
@@ -611,7 +682,7 @@ const KEY_DICTIONARY: Record<string, Record<Language, string>> = {
     };
 
     const walkAndTranslate = (root: Node) => {
-      if (isTranslatingRef.current) return;
+      if (isTranslatingRef.current || !root) return;
       isTranslatingRef.current = true;
 
       try {
@@ -635,34 +706,61 @@ const KEY_DICTIONARY: Record<string, Record<Language, string>> = {
       }
     };
 
-    // Scan DOM upon language switch
+    // Scan DOM upon language switch or mount
     walkAndTranslate(document.body);
+    // Scheduled backup walks for async hydrated data & route/tab transitions
+    const backupTimer1 = setTimeout(() => walkAndTranslate(document.body), 100);
+    const backupTimer2 = setTimeout(() => walkAndTranslate(document.body), 350);
+    const backupTimer3 = setTimeout(() => walkAndTranslate(document.body), 800);
 
     // Dynamic Observer for Modals, Tabs, Tooltips, Accordions
+    const pendingNodes = new Set<Node>();
+
+    const processPendingQueue = () => {
+      if (isTranslatingRef.current) {
+        debounceTimer = setTimeout(processPendingQueue, 25);
+        return;
+      }
+      if (pendingNodes.size === 0) return;
+
+      const nodesToProcess = Array.from(pendingNodes);
+      pendingNodes.clear();
+
+      for (const target of nodesToProcess) {
+        if (!target.isConnected) continue;
+        if (target.nodeType === Node.TEXT_NODE) {
+          const newText = (target as Text).nodeValue || '';
+          if (newText.trim()) {
+            if (language === 'vi') {
+              originalNodesMap.current.set(target, newText);
+            } else {
+              if (!originalNodesMap.current.has(target)) {
+                originalNodesMap.current.set(target, newText);
+              }
+              processTextNode(target);
+            }
+          }
+        } else if (target.nodeType === Node.ELEMENT_NODE) {
+          walkAndTranslate(target);
+        }
+      }
+    };
+
     const observer = new MutationObserver((mutations) => {
       if (isTranslatingRef.current) return;
 
-      clearTimeout(debounceTimer);
-      debounceTimer = setTimeout(() => {
-        for (const mutation of mutations) {
-          if (mutation.type === 'characterData' && mutation.target) {
-            const newText = (mutation.target as Text).nodeValue || '';
-            if (newText.trim()) {
-              if (language === 'vi') {
-                originalNodesMap.current.set(mutation.target, newText);
-              } else {
-                const viEquiv = translateString(newText, 'vi');
-                originalNodesMap.current.set(mutation.target, viEquiv);
-                processTextNode(mutation.target);
-              }
-            }
-          } else if (mutation.type === 'childList') {
-            mutation.addedNodes.forEach((added) => {
-              walkAndTranslate(added);
-            });
-          }
+      for (const mutation of mutations) {
+        if (mutation.type === 'characterData' && mutation.target) {
+          pendingNodes.add(mutation.target);
+        } else if (mutation.type === 'childList') {
+          mutation.addedNodes.forEach((added) => {
+            pendingNodes.add(added);
+          });
         }
-      }, 40);
+      }
+
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(processPendingQueue, 20);
     });
 
     observer.observe(document.body, {
@@ -673,6 +771,9 @@ const KEY_DICTIONARY: Record<string, Record<Language, string>> = {
 
     return () => {
       clearTimeout(debounceTimer);
+      clearTimeout(backupTimer1);
+      clearTimeout(backupTimer2);
+      clearTimeout(backupTimer3);
       observer.disconnect();
     };
   }, [language, isMounted]);

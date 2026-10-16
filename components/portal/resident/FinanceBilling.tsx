@@ -54,6 +54,7 @@ import {
   ExtendedBill 
 } from '@/lib/billingStore';
 import { exportInvoicePdf } from '@/lib/pdfExport';
+import { useLanguage } from '@/lib/languageContext';
 const VNPAY_NCB_TEST_CARD = {
   bank: 'NCB',
   cardNumber: '9704198526191432198',
@@ -71,6 +72,7 @@ interface FinanceBillingProps {
 }
 
 export default function FinanceBilling({ currentUser }: FinanceBillingProps) {
+  const { t, isEn, language } = useLanguage();
   const aptCode = currentUser?.apartment_code || 'CH-06';
   const residentName = currentUser?.full_name || (currentUser as any)?.fullname || 'Trần Hữu Lực';
   const residentPhone = currentUser?.phone || '0364967082';
@@ -748,12 +750,12 @@ export default function FinanceBilling({ currentUser }: FinanceBillingProps) {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#222B35] pb-4">
         <div>
           <div className="text-[10px] uppercase tracking-[0.25em] text-[#C5A880] font-semibold flex items-center gap-1.5">
-            <Shield className="w-3.5 h-3.5" /> Tài Chính • Căn {aptCode}
+            <Shield className="w-3.5 h-3.5" /> {t('Tài Chính • Căn', 'Finance • Unit')} {aptCode}
           </div>
           <h2 className="font-serif text-2xl text-white font-bold mt-1">
             {activeTab === 'BILLING' 
-              ? 'Hóa Đơn & Thanh Toán' 
-              : 'Thống Kê Chi Tiêu & Dịch Vụ'}
+              ? t('Hóa Đơn & Thanh Toán', 'Invoices & Payments') 
+              : t('Thống Kê Chi Tiêu & Dịch Vụ', 'Spending & Services Analytics')}
           </h2>
         </div>
 
@@ -768,7 +770,7 @@ export default function FinanceBilling({ currentUser }: FinanceBillingProps) {
                   }}
                   className="px-4 py-2 bg-[#C5A880] hover:bg-white text-[#0D1117] text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 shadow"
                 >
-                  <CreditCard className="w-4 h-4" /> Thanh Toán
+                  <CreditCard className="w-4 h-4" /> {t('Thanh Toán', 'Pay Bill')}
                 </button>
               )}
 

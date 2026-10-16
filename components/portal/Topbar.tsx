@@ -30,6 +30,7 @@ import { useLanguage } from '@/lib/languageContext';
 import { getUserApiAvatar, formatApiAvatarUrl } from '@/lib/avatarHelper';
 import { nksGetUserInfo } from '@/lib/nksApiClient';
 import AccountPasswordModal from './shared/AccountPasswordModal';
+import LanguageSwitcher from '@/components/shared/LanguageSwitcher';
 
 interface TopbarProps {
   currentUser: UserType;
@@ -192,25 +193,28 @@ export default function Topbar({
         )}
       </div>
 
-      {/* Right: Hotline Alert, Notifications & User Badge */}
+      {/* Right: Hotline Alert, Language Switcher, Notifications & User Badge */}
       <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
         {/* Emergency Hotline Button */}
         <a
           href="tel:19008899"
           className="hidden lg:flex items-center gap-1.5 px-2.5 py-1 bg-red-950/60 border border-red-500/80 text-red-300 text-[11px] font-mono hover:bg-red-900 transition-colors rounded-none flex-shrink-0"
-          title="Hotline An Ninh & Khẩn Cấp 24/7"
+          title={t('Hotline An Ninh & Khẩn Cấp 24/7')}
         >
           <span className="w-1.5 h-1.5 rounded-none bg-red-500 animate-ping"></span>
           <PhoneCall className="w-3 h-3 text-red-400" />
           <span>1900 8899</span>
         </a>
 
+        {/* Inline Language Switcher inside Topbar */}
+        <LanguageSwitcher variant="inline" className="hidden sm:inline-flex" />
+
         {/* Notification Icon */}
         <div className="relative">
           <button
             onClick={() => setShowNotifications(!showNotifications)}
             className="p-2 text-gray-400 hover:text-[#C5A880] relative transition-colors"
-            aria-label="Thông báo"
+            aria-label={t('Thông báo')}
           >
             <Bell className="w-4 h-4" />
             <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full animate-ping"></span>
@@ -220,19 +224,19 @@ export default function Topbar({
           {showNotifications && (
             <div className="absolute right-0 top-full mt-2 w-72 sm:w-80 max-w-[calc(100vw-24px)] bg-[#121820] border border-[#2D3748] p-4 shadow-2xl z-50 text-xs space-y-3">
               <div className="flex items-center justify-between border-b border-[#222B35] pb-2">
-                <span className="font-semibold text-white uppercase tracking-wider text-[11px]">Thông Báo Thời Gian Thực</span>
-                <span className="text-[10px] text-[#C5A880] font-mono">2 Mới</span>
+                <span className="font-semibold text-white uppercase tracking-wider text-[11px]">{t('Thông Báo Thời Gian Thực')}</span>
+                <span className="text-[10px] text-[#C5A880] font-mono">{t('2 Mới')}</span>
               </div>
               <div className="space-y-2">
                 <div className="p-2 bg-[#1C2533] border-l-2 border-red-500 space-y-0.5">
                   <div className="text-red-400 font-semibold text-[11px] flex items-center gap-1">
-                    <Flame className="w-3 h-3" /> [Camera AI] Khói mỏng Hầm B1
+                    <Flame className="w-3 h-3" /> {t('[Camera AI] Khói mỏng Hầm B1')}
                   </div>
-                  <div className="text-gray-400 text-[10px]">Độ tin cậy: 96% • Vừa ghi nhận</div>
+                  <div className="text-gray-400 text-[10px]">{t('Độ tin cậy: 96% • Vừa ghi nhận')}</div>
                 </div>
                 <div className="p-2 bg-[#1C2533] border-l-2 border-[#C5A880] space-y-0.5">
-                  <div className="text-[#C5A880] font-semibold text-[11px]">Hóa đơn T08 đã phát hành</div>
-                  <div className="text-gray-400 text-[10px]">Căn CH-06: 2.505.000 đ • Hạn: 30/08</div>
+                  <div className="text-[#C5A880] font-semibold text-[11px]">{t('Hóa đơn T08 đã phát hành')}</div>
+                  <div className="text-gray-400 text-[10px]">{t('Căn CH-06: 2.505.000 đ • Hạn: 30/08')}</div>
                 </div>
               </div>
             </div>
@@ -260,7 +264,7 @@ export default function Topbar({
                 {userName}
               </div>
               <div className="text-[9px] text-[#C5A880] font-mono uppercase font-bold tracking-wider">
-                {isAdmin ? 'Ban Quản Lý' : isOwner ? `Căn ${currentUser.apartment_code || 'CH-06'} (Chủ Hộ)` : `Căn ${currentUser.apartment_code || 'CH-06'} (Người Nhà)`}
+                {isAdmin ? t('role.admin', 'Ban Quản Lý') : isOwner ? `${t('Căn')} ${currentUser.apartment_code || 'CH-06'} (${t('role.owner', 'Chủ Hộ')})` : `${t('Căn')} ${currentUser.apartment_code || 'CH-06'} (${t('role.family', 'Người Nhà')})`}
               </div>
             </div>
             <ChevronDown className="w-3.5 h-3.5 text-gray-400 ml-1" />

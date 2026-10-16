@@ -44,6 +44,7 @@ import {
 } from '@/lib/ticketStore';
 import { TicketCategoryType, findInquiryAnswer } from '@/lib/ticketClassification';
 import { fileToBase64, compressImageFile } from '@/lib/imageUtils';
+import { useLanguage } from '@/lib/languageContext';
 
 export interface RepairPreset {
   id: string;
@@ -149,6 +150,7 @@ interface TicketServiceProps {
 }
 
 export default function TicketService({ currentUser }: TicketServiceProps) {
+  const { t, isEn, language } = useLanguage();
   // Lấy động 100% từ tài khoản người dùng đăng nhập qua API
   const aptCode = currentUser?.apartment_code?.trim() || '';
   const residentName = currentUser?.full_name || (currentUser as any)?.fullname || currentUser?.username || 'Cư dân';
@@ -470,10 +472,10 @@ export default function TicketService({ currentUser }: TicketServiceProps) {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#222B35] pb-4">
         <div>
           <div className="text-[10px] uppercase tracking-[0.25em] text-[#C5A880] font-semibold flex items-center gap-1.5">
-            <Wrench className="w-3.5 h-3.5" /> Dịch Vụ Cư Dân • {aptCode ? `Căn ${aptCode}` : residentName}
+            <Wrench className="w-3.5 h-3.5" /> {t('Dịch Vụ Cư Dân', 'Resident Services')} • {aptCode ? `${t('Căn', 'Unit')} ${aptCode}` : residentName}
           </div>
           <h2 className="font-serif text-2xl text-white font-bold mt-1">
-            Yêu Cầu, Hỏi Đáp & Sửa Chữa
+            {t('Yêu Cầu, Hỏi Đáp & Sửa Chữa', 'Requests, Inquiries & Maintenance')}
           </h2>
         </div>
 
@@ -481,7 +483,7 @@ export default function TicketService({ currentUser }: TicketServiceProps) {
           onClick={() => setShowCreateForm(!showCreateForm)}
           className="px-4 py-2 bg-[#C5A880] hover:bg-white text-[#0D1117] text-xs font-bold uppercase tracking-wider transition-colors flex items-center gap-1.5 shadow-lg"
         >
-          <Plus className="w-4 h-4" /> Gửi Yêu Cầu Mới
+          <Plus className="w-4 h-4" /> {t('Gửi Yêu Cầu Mới', 'Submit New Request')}
         </button>
       </div>
 

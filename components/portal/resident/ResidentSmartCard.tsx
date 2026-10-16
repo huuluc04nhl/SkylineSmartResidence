@@ -17,7 +17,7 @@ import {
 } from 'lucide-react';
 import SkylineLogo from '@/components/shared/SkylineLogo';
 import { User } from '@/lib/dataStore';
-
+import { useLanguage } from '@/lib/languageContext';
 import { addFacilityCheckinLog } from '@/lib/facilityStore';
 
 interface ResidentSmartCardProps {
@@ -31,6 +31,7 @@ export default function ResidentSmartCard({
   onTapSuccess,
   className = '' 
 }: ResidentSmartCardProps) {
+  const { t, isEn } = useLanguage();
   const [isFlipped, setIsFlipped] = useState(false);
   const [isTapping, setIsTapping] = useState(false);
   const [tapMessage, setTapMessage] = useState<string | null>(null);
@@ -43,16 +44,16 @@ export default function ResidentSmartCard({
   const cardNumber = `8492 • ${aptCode} • ${idSuffix} • ${isOwner ? 'MSTR' : 'MBR'}`;
   const currentYear = new Date().getFullYear();
   const expiryDate = `12/${currentYear + 5}`;
-  const cardHolder = (currentUser?.full_name || (currentUser as any)?.fullname || 'CƯ DÂN SKYLINE').toUpperCase();
-  const cardType = isOwner ? 'THẺ CHỦ HỘ KIM CƯƠNG' : 'THẺ CƯ DÂN GIA ĐÌNH';
+  const cardHolder = (currentUser?.full_name || (currentUser as any)?.fullname || t('CƯ DÂN SKYLINE')).toUpperCase();
+  const cardType = isOwner ? t('THẺ CHỦ HỘ KIM CƯƠNG', 'DIAMOND OWNER PASS') : t('THẺ CƯ DÂN GIA ĐÌNH', 'FAMILY RESIDENT PASS');
 
   const handleSimulateTap = () => {
     setIsTapping(true);
-    setTapMessage('📡 Đang chạm thẻ...');
+    setTapMessage(t('📡 Đang chạm thẻ...', '📡 Tapping card...'));
 
     setTimeout(() => {
       setIsTapping(false);
-      setTapMessage('✓ Đã mở Cổng & Thang máy T' + aptCode.slice(0, 2) + ' (0.28s)');
+      setTapMessage(isEn ? `✓ Access Granted: Gate & Elevator T${aptCode.slice(0, 2)} (0.28s)` : `✓ Đã mở Cổng & Thang máy T${aptCode.slice(0, 2)} (0.28s)`);
       
       // Ghi nhận nhật ký thực tế vào facilityStore
       addFacilityCheckinLog(aptCode, {
@@ -124,9 +125,9 @@ export default function ResidentSmartCard({
               </div>
 
               <div className="text-right">
-                <div className="text-[9px] text-gray-400 font-mono uppercase">Căn Hộ Định Danh</div>
+                <div className="text-[9px] text-gray-400 font-mono uppercase">{t('Căn Hộ Định Danh')}</div>
                 <div className="font-serif text-lg sm:text-xl font-bold text-white tracking-wider">
-                  Căn {aptCode}
+                  {t('Căn')} {aptCode}
                 </div>
               </div>
             </div>
@@ -139,14 +140,14 @@ export default function ResidentSmartCard({
             {/* Bottom Bar: Resident Name + Expiry + Flip Hint */}
             <div className="flex items-end justify-between border-t border-[#222B35] pt-2 relative z-10 text-[10px] font-mono">
               <div>
-                <div className="text-gray-400 text-[8px] uppercase">Chủ Thẻ</div>
+                <div className="text-gray-400 text-[8px] uppercase">{t('Chủ Thẻ')}</div>
                 <div className="font-bold text-white tracking-wider text-xs truncate max-w-[170px]">
                   {cardHolder}
                 </div>
               </div>
 
               <div className="text-right">
-                <div className="text-gray-400 text-[8px] uppercase">Thời Hạn Sử Dụng</div>
+                <div className="text-gray-400 text-[8px] uppercase">{t('Thời Hạn Sử Dụng')}</div>
                 <div className="text-gray-200 font-semibold">{expiryDate}</div>
               </div>
             </div>
@@ -173,17 +174,17 @@ export default function ResidentSmartCard({
 
                 <div className="space-y-1 text-[10px] text-gray-300 font-mono flex-1">
                   <div className="text-[#C5A880] font-bold uppercase text-[11px]">
-                    Nhận Diện Khuôn Mặt Cư Dân
+                    {t('Nhận Diện Khuôn Mặt Cư Dân')}
                   </div>
-                  <div>Phân Tầng: <strong>Tầng 12 & Sky Pool T25</strong></div>
-                  <div>Bảo Mật: <strong>Thẻ Chip Điện Tử Bảo Mật Cao</strong></div>
-                  <div>Hotline BQL 24/7: <strong>1900 8899 66</strong></div>
+                  <div>{t('Phân Tầng:')} <strong>{t('Tầng 12 & Sky Pool T25')}</strong></div>
+                  <div>{t('Bảo Mật:')} <strong>{t('Thẻ Chip Điện Tử Bảo Mật Cao')}</strong></div>
+                  <div>{t('Hotline BQL 24/7:')} <strong>1900 8899 66</strong></div>
                 </div>
               </div>
 
               {/* Digital Signature & Terms */}
               <div className="border-t border-[#222B35] pt-2 flex items-center justify-between text-[9px] text-gray-400 font-mono">
-                <span>Chữ ký điện tử BQL SKYLINE</span>
+                <span>{t('Chữ ký điện tử BQL SKYLINE')}</span>
                 <span className="text-[#C5A880] font-bold">VERIFIED VIP PASS</span>
               </div>
             </div>
@@ -201,7 +202,7 @@ export default function ResidentSmartCard({
             className="flex-1 py-2 bg-[#121820] hover:bg-[#1C2533] border border-[#222B35] hover:border-[#C5A880] text-gray-300 hover:text-white text-xs font-semibold uppercase tracking-wider transition-colors flex items-center justify-center gap-1.5"
           >
             <RotateCw className="w-3.5 h-3.5 text-[#C5A880]" />
-            Lật Thẻ
+            {t('Lật Thẻ')}
           </button>
 
           {/* Button 2: Quẹt Thẻ NFC */}
@@ -212,7 +213,7 @@ export default function ResidentSmartCard({
             className="flex-1 py-2 bg-[#C5A880] hover:bg-white text-[#0D1117] text-xs font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-1.5 shadow-lg"
           >
             <Wifi className="w-3.5 h-3.5 rotate-90" />
-            {isTapping ? 'Đang Quẹt...' : 'Quẹt Thẻ NFC'}
+            {isTapping ? t('Đang Quẹt...') : t('Quẹt Thẻ NFC')}
           </button>
         </div>
 
@@ -225,7 +226,7 @@ export default function ResidentSmartCard({
         )}
 
         <div className="text-center text-[10px] text-gray-400 font-light">
-          Chạm thẻ hoặc nhận diện FaceID để mở cổng sảnh & thang máy.
+          {t('Chạm thẻ hoặc nhận diện FaceID để mở cổng sảnh & thang máy.')}
         </div>
       </div>
     </div>

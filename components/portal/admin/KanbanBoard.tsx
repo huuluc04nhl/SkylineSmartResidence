@@ -65,8 +65,10 @@ import {
   classifyTicket 
 } from '@/lib/ticketClassification';
 import { fileToBase64 } from '@/lib/imageUtils';
+import { useLanguage } from '@/lib/languageContext';
 
 export default function KanbanBoard() {
+  const { t, isEn, language } = useLanguage();
   const [activeTab, setActiveTab] = useState<'KANBAN' | 'PAYROLL'>('KANBAN');
   const [tickets, setTickets] = useState<ExtendedServiceRequest[]>([]);
   const [technicians, setTechnicians] = useState<TechnicianProfile[]>([]);
@@ -438,24 +440,24 @@ export default function KanbanBoard() {
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-[#222B35] pb-4">
         <div>
           <div className="text-[10px] uppercase tracking-[0.25em] text-[#C5A880] font-semibold flex items-center gap-1.5">
-            <Wrench className="w-3.5 h-3.5" /> Quản Lý & Vận Hành
+            <Wrench className="w-3.5 h-3.5" /> {t('Quản Lý & Vận Hành', 'Operations & Management')}
           </div>
           <h2 className="font-serif text-2xl text-white font-bold mt-1">
-            Trung Tâm Xử Lý Yêu Cầu Cư Dân
+            {t('Trung Tâm Xử Lý Yêu Cầu Cư Dân', 'Resident Service Request Center')}
           </h2>
         </div>
 
-        {/* Unified Static Toolbar (Never wraps or jumps between ticket states) */}
+        {/* Unified Static Toolbar */}
         <div className="flex items-center gap-2.5 flex-wrap sm:flex-nowrap">
           {/* Nút Làm Mới Dữ Liệu */}
           <button
             onClick={handleSyncNks}
             disabled={isSyncing}
             className="px-3 py-1.5 bg-[#121820] hover:bg-[#161B22] border border-[#222B35] hover:border-[#C5A880]/50 text-xs font-semibold text-gray-300 hover:text-white flex items-center gap-1.5 transition-colors disabled:opacity-50"
-            title="Cập nhật danh sách yêu cầu thực tế mới nhất từ cư dân"
+            title={t('Cập nhật danh sách yêu cầu thực tế mới nhất từ cư dân', 'Refresh latest resident service requests')}
           >
             <RefreshCw className={`w-3.5 h-3.5 text-[#C5A880] ${isSyncing ? 'animate-spin' : ''}`} />
-            <span>{isSyncing ? 'Đang cập nhật...' : 'Làm mới'}</span>
+            <span>{isSyncing ? t('Đang cập nhật...', 'Updating...') : t('Làm mới', 'Refresh')}</span>
           </button>
 
           {/* Tab Switcher: KANBAN vs PAYROLL */}
@@ -469,7 +471,7 @@ export default function KanbanBoard() {
               }`}
             >
               <Wrench className="w-3.5 h-3.5" />
-              <span>Yêu Cầu & Sự Cố</span>
+              <span>{t('Yêu Cầu & Sự Cố', 'Requests & Incidents')}</span>
               <span className={`text-[10px] px-1.5 py-0.2 font-mono font-bold ${
                 activeTab === 'KANBAN' ? 'bg-[#0D1117]/20 text-[#0D1117]' : 'bg-[#161B22] text-gray-400'
               }`}>
@@ -486,7 +488,7 @@ export default function KanbanBoard() {
               }`}
             >
               <Award className="w-3.5 h-3.5" />
-              <span>KTV & Thù Lao</span>
+              <span>{t('KTV & Thù Lao', 'Technicians & Payroll')}</span>
               <span className={`text-[10px] px-1.5 py-0.2 font-mono font-bold ${
                 activeTab === 'PAYROLL' ? 'bg-[#0D1117]/20 text-[#0D1117]' : 'bg-[#161B22] text-gray-400'
               }`}>
@@ -504,14 +506,12 @@ export default function KanbanBoard() {
         </div>
       )}
 
-      {/* ========================================================================= */}
-      {/* TAB 1: KANBAN BOARD (3 COLUMNS)                                          */}
-      {/* ========================================================================= */}
+      {/* TAB 1: KANBAN BOARD */}
       {activeTab === 'KANBAN' && (
         <div className="space-y-6">
-          {/* Category Filter Pills: Phân loại rõ ràng AI vs BQL vs KTV */}
+          {/* Category Filter Pills */}
           <div className="flex items-center gap-2 overflow-x-auto no-scrollbar whitespace-nowrap pb-1 text-xs">
-            <span className="text-gray-400 text-[11px] font-semibold whitespace-nowrap shrink-0">Bộ lọc:</span>
+            <span className="text-gray-400 text-[11px] font-semibold whitespace-nowrap shrink-0">{t('Bộ lọc:', 'Filters:')}</span>
             
             <button
               onClick={() => setCategoryFilter('ALL')}
@@ -521,7 +521,7 @@ export default function KanbanBoard() {
                   : 'bg-[#121820] text-gray-400 hover:text-white border border-[#222B35]'
               }`}
             >
-              <span>Tất Cả</span>
+              <span>{t('Tất Cả', 'All')}</span>
               <span className="text-[10px] px-1.5 py-0.2 bg-black/20 font-mono font-bold">
                 {tickets.length}
               </span>
@@ -536,7 +536,7 @@ export default function KanbanBoard() {
               }`}
             >
               <Wrench className="w-3.5 h-3.5" />
-              <span>Sự Cố Kỹ Thuật (KTV)</span>
+              <span>{t('Sự Cố Kỹ Thuật (KTV)', 'Technical Issue (Technician)')}</span>
               <span className="text-[10px] px-1.5 py-0.2 bg-black/20 font-mono font-bold">
                 {repairCount}
               </span>
@@ -551,7 +551,7 @@ export default function KanbanBoard() {
               }`}
             >
               <MessageSquare className="w-3.5 h-3.5" />
-              <span>Phản Ánh Cư Dân (BQL)</span>
+              <span>{t('Phản Ánh Cư Dân (BQL)', 'Resident Feedback (Management)')}</span>
               <span className="text-[10px] px-1.5 py-0.2 bg-black/20 font-mono font-bold">
                 {feedbackCount}
               </span>
@@ -566,7 +566,7 @@ export default function KanbanBoard() {
               }`}
             >
               <Sparkles className="w-3.5 h-3.5" />
-              <span>Hỏi Đáp Tiện Ích (AI 24/7)</span>
+              <span>{t('Hỏi Đáp Tiện Ích (AI 24/7)', 'Amenity Q&A (AI 24/7)')}</span>
               <span className="text-[10px] px-1.5 py-0.2 bg-black/20 font-mono font-bold">
                 {inquiryCount}
               </span>
@@ -576,7 +576,7 @@ export default function KanbanBoard() {
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div className="p-4 bg-[#121820] border border-blue-500/40 flex items-center justify-between">
               <div>
-                <div className="text-gray-400 text-xs">Chờ Tiếp Nhận</div>
+                <div className="text-gray-400 text-xs">{t('Chờ Tiếp Nhận', 'Pending Assignment')}</div>
                 <div className="text-2xl font-bold font-mono text-blue-400 mt-0.5">{openTickets.length}</div>
               </div>
               <div className="w-9 h-9 bg-blue-500/10 border border-blue-500/30 flex items-center justify-center text-blue-400">
@@ -586,7 +586,7 @@ export default function KanbanBoard() {
 
             <div className="p-4 bg-[#121820] border border-amber-500/40 flex items-center justify-between">
               <div>
-                <div className="text-gray-400 text-xs">KTV Đang Xử Lý</div>
+                <div className="text-gray-400 text-xs">{t('KTV Đang Xử Lý', 'In Progress')}</div>
                 <div className="text-2xl font-bold font-mono text-amber-400 mt-0.5">{inProgressTickets.length}</div>
               </div>
               <div className="w-9 h-9 bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400">
@@ -596,7 +596,7 @@ export default function KanbanBoard() {
 
             <div className="p-4 bg-[#121820] border border-emerald-500/40 flex items-center justify-between">
               <div>
-                <div className="text-gray-400 text-xs">Đã Nghiệm Thu Xong</div>
+                <div className="text-gray-400 text-xs">{t('Đã Nghiệm Thu Xong', 'Audited & Closed')}</div>
                 <div className="text-2xl font-bold font-mono text-emerald-400 mt-0.5">{resolvedTickets.length}</div>
               </div>
               <div className="w-9 h-9 bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
@@ -613,7 +613,7 @@ export default function KanbanBoard() {
                 <div className="flex items-center gap-2">
                   <span className="w-2.5 h-2.5 bg-blue-500"></span>
                   <span className="text-xs uppercase tracking-wider font-semibold text-gray-200">
-                    1. Chờ Tiếp Nhận
+                    {t('1. Chờ Tiếp Nhận', '1. Pending Assignment')}
                   </span>
                   <span className="px-1.5 py-0.5 bg-blue-950/80 border border-blue-500/40 text-blue-300 font-mono text-[10px] font-bold">
                     {openTickets.length}
@@ -622,7 +622,7 @@ export default function KanbanBoard() {
 
                 <span className="text-[10px] font-mono text-purple-300 bg-purple-950/60 border border-purple-500/40 px-2 py-0.5 flex items-center gap-1.5">
                   <span className="w-1.5 h-1.5 bg-purple-400 rounded-full animate-ping"></span>
-                  AI Tự Động Phân Công 24/7
+                  {t('AI Tự Động Phân Công 24/7', 'AI Auto-Dispatch 24/7')}
                 </span>
               </div>
 
@@ -806,7 +806,7 @@ export default function KanbanBoard() {
                 <div className="flex items-center gap-2">
                   <span className="w-2.5 h-2.5 bg-amber-500 rounded-none animate-pulse"></span>
                   <span className="text-xs uppercase tracking-wider font-semibold text-gray-200">
-                    2. Đang Xử Lý
+                    {t('2. Đang Xử Lý', '2. In Progress')}
                   </span>
                   <span className="px-1.5 py-0.5 bg-amber-950/80 border border-amber-500/40 text-amber-300 font-mono text-[10px] font-bold">
                     {inProgressTickets.length}
@@ -815,7 +815,7 @@ export default function KanbanBoard() {
 
                 <span className="text-[10px] font-mono text-amber-300 bg-amber-950/60 border border-amber-500/40 px-2 py-0.5 flex items-center gap-1.5">
                   <span className="w-1.5 h-1.5 bg-amber-400 rounded-full animate-pulse"></span>
-                  Đang Khắc Phục Hiện Trường
+                  {t('Đang Khắc Phục Hiện Trường', 'On-Site Repair in Progress')}
                 </span>
               </div>
 
@@ -988,7 +988,7 @@ export default function KanbanBoard() {
                 <div className="flex items-center gap-2">
                   <span className="w-2.5 h-2.5 bg-emerald-500 rounded-none"></span>
                   <span className="text-xs uppercase tracking-wider font-semibold text-gray-200">
-                    3. Đã Xử Lý Xong
+                    {t('3. Đã Xử Lý Xong', '3. Audited & Closed')}
                   </span>
                   <span className="px-1.5 py-0.5 bg-emerald-950/80 border border-emerald-500/40 text-emerald-300 font-mono text-[10px] font-bold">
                     {resolvedTickets.length}
@@ -996,7 +996,7 @@ export default function KanbanBoard() {
                 </div>
                 <span className="text-[10px] font-mono text-emerald-300 bg-emerald-950/60 border border-emerald-500/40 px-2 py-0.5 flex items-center gap-1.5">
                   <CheckCircle2 className="w-3 h-3 text-emerald-400" />
-                  Hoàn Tất
+                  {t('Hoàn Tất', 'Completed')}
                 </span>
               </div>
 
