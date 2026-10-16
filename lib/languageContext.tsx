@@ -121,6 +121,13 @@ export const KEY_DICTIONARY: Record<string, Record<Language, string>> = {
   'Lê Văn Kỹ Thuật': { vi: 'Lê Văn Kỹ Thuật', en: 'Le Van Ky Thuat' },
   'Trần Quốc Bảo': { vi: 'Trần Quốc Bảo', en: 'Tran Quoc Bao' },
   'Phạm Minh Tuấn': { vi: 'Phạm Minh Tuấn', en: 'Pham Minh Tuan' },
+  'Tiếp: Chìa Khóa & Điện Nước →': { vi: 'Tiếp: Chìa Khóa & Điện Nước →', en: 'Next: Keys & Utilities →' },
+  'Lumière Boulevard & Masteri Centre Point': { vi: 'Lumière Boulevard & Masteri Centre Point', en: 'Lumiere Boulevard & Masteri Centre Point' },
+  'Đang Chờ Ban Quản Lý Đối Soát & Phê Duyệt': { vi: 'Đang Chờ Ban Quản Lý Đối Soát & Phê Duyệt', en: 'Pending Management Verification & Approval' },
+  'Để nhận diện khuôn mặt chính thức khi đăng nhập (không còn là bản mẫu thử nghiệm), hệ thống Skyline yêu cầu thu thập toàn vẹn 4 góc chụp theo chuẩn e-KYC ngân hàng:': { vi: 'Để nhận diện khuôn mặt chính thức khi đăng nhập (không còn là bản mẫu thử nghiệm), hệ thống Skyline yêu cầu thu thập toàn vẹn 4 góc chụp theo chuẩn e-KYC ngân hàng:', en: 'For official FaceID login recognition, Skyline requires 4 comprehensive camera angles meeting banking e-KYC standards:' },
+  'Gõ câu hỏi bất kỳ, Trợ lý AI sẽ trích dẫn điều khoản chính xác theo quy chuẩn chung cư The Tropical.': { vi: 'Gõ câu hỏi bất kỳ, Trợ lý AI sẽ trích dẫn điều khoản chính xác theo quy chuẩn chung cư The Tropical.', en: 'Ask any question and the AI Assistant will quote the exact regulations according to The Tropical building standards.' },
+  '1. Chọn tiện ích muốn đặt:': { vi: '1. Chọn tiện ích muốn đặt:', en: '1. Select amenity to book:' },
+  'Chưa có mã PIN tạm thời nào. Bấm nút trên để tạo nhanh.': { vi: 'Chưa có mã PIN tạm thời nào. Bấm nút trên để tạo nhanh.', en: 'No temporary PIN yet. Click the button above to generate one quickly.' },
   'hero.desc_auth': {
     vi: 'Dự án căn hộ hạng sang SKYLINE Smart Residence tại cụm 4 chung cư The Tropical (BS-07, BS-08, BS-09, BS-10) kiến tạo chuẩn sống tự động hóa hoàn chỉnh: Định danh sinh trắc học FaceID <0.5s, giám sát an ninh Vision AI và hệ thống dự báo bảo trì thông minh.',
     en: 'Luxury apartment project SKYLINE Smart Residence at 4 towers of The Tropical (BS-07, BS-08, BS-09, BS-10) pioneers complete automated living: FaceID biometrics <0.5s, Vision AI security monitoring, and predictive maintenance.'
@@ -903,11 +910,21 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
       characterData: true,
     });
 
+    const handleTabOrRouteTransition = () => {
+      setTimeout(() => walkAndTranslate(document.body), 60);
+      setTimeout(() => walkAndTranslate(document.body), 250);
+    };
+
+    window.addEventListener('popstate', handleTabOrRouteTransition);
+    document.addEventListener('click', handleTabOrRouteTransition, { passive: true });
+
     return () => {
       clearTimeout(debounceTimer);
       clearTimeout(backupTimer1);
       clearTimeout(backupTimer2);
       clearTimeout(backupTimer3);
+      window.removeEventListener('popstate', handleTabOrRouteTransition);
+      document.removeEventListener('click', handleTabOrRouteTransition);
       observer.disconnect();
     };
   }, [language, isMounted]);
