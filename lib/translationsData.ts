@@ -20538,7 +20538,7 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
   ],
   [
     "Nghiệm Thu",
-    "Inspect & Resolve"
+    "Resolve"
   ],
   [
     "Biển Số Xe",

@@ -45,7 +45,7 @@ export const KEY_DICTIONARY: Record<string, Record<Language, string>> = {
   'căn hộ đã nộp': { vi: 'căn hộ đã nộp', en: 'paid apartments' },
   'căn hộ chưa nộp': { vi: 'căn hộ chưa nộp', en: 'unpaid apartments' },
   'Đã Ghi Thu ✓': { vi: 'Đã Ghi Thu ✓', en: 'Payment Recorded ✓' },
-  'Duyệt Gạch Nợ': { vi: 'Duyệt Gạch Nợ', en: 'Approve Debt Clearance' },
+  'Duyệt Gạch Nợ': { vi: 'Duyệt Gạch Nợ', en: 'Approve Payment' },
   'Kế Toán Duyệt': { vi: 'Kế Toán Duyệt', en: 'Accounting Approval' },
   'Tiêu Thụ Tăng Vọt': { vi: 'Tiêu Thụ Tăng Vọt', en: 'Surge in Consumption' },
   'Biến Động Bất Thường': { vi: 'Biến Động Bất Thường', en: 'Abnormal Fluctuation' },
@@ -203,6 +203,21 @@ export const KEY_DICTIONARY: Record<string, Record<Language, string>> = {
   'KHỚP': { vi: 'KHỚP', en: 'MATCH' },
   'Mẫu': { vi: 'Mẫu', en: 'Sample' },
   'Căn': { vi: 'Căn', en: 'Unit' },
+  'Nghiệm Thu': { vi: 'Nghiệm Thu', en: 'Resolve' },
+  'Đổi KTV': { vi: 'Đổi KTV', en: 'Change Tech' },
+  'Phản Hồi': { vi: 'Phản Hồi', en: 'Feedback' },
+  'BQL Phản Hồi': { vi: 'BQL Phản Hồi', en: 'Management Reply' },
+  'Xem Chi Tiết': { vi: 'Xem Chi Tiết', en: 'View Details' },
+  'Đã Kích Hoạt Quyền Ra Vào': { vi: 'Đã Kích Hoạt Quyền Ra Vào', en: 'Access Granted' },
+  'Cam kết:': { vi: 'Cam kết:', en: 'SLA:' },
+  'Trong 24 giờ': { vi: 'Trong 24 giờ', en: 'Within 24h' },
+  '45 phút': { vi: '45 phút', en: '45 mins' },
+  'Duyệt KTV': { vi: 'Duyệt KTV', en: 'Approve Tech' },
+  'Chỉ Định KTV': { vi: 'Chỉ Định KTV', en: 'Assign Tech' },
+  'AI Tự Động Phân Công:': { vi: 'AI Tự Động Phân Công:', en: 'AI Auto Dispatch:' },
+  'Đúng chuyên môn Điện Lạnh & Kỹ Thuật Tòa Nhà': { vi: 'Đúng chuyên môn Điện Lạnh & Kỹ Thuật Tòa Nhà', en: 'Qualified in HVAC & Building Engineering' },
+  'Đúng chuyên môn Điện Lạnh &amp; Kỹ Thuật Tòa Nhà': { vi: 'Đúng chuyên môn Điện Lạnh & Kỹ Thuật Tòa Nhà', en: 'Qualified in HVAC & Building Engineering' },
+  'Đang rảnh trực ban': { vi: 'Đang rảnh trực ban', en: 'On Duty (Available)' },
   'Thu hồi': { vi: 'Thu hồi', en: 'Recall' },
   'hero.desc_auth': {
     vi: 'Dự án căn hộ hạng sang SKYLINE Smart Residence tại cụm 4 chung cư The Tropical (BS-07, BS-08, BS-09, BS-10) kiến tạo chuẩn sống tự động hóa hoàn chỉnh: Định danh sinh trắc học FaceID <0.5s, giám sát an ninh Vision AI và hệ thống dự báo bảo trì thông minh.',
@@ -456,6 +471,14 @@ export function translateString(text: string, targetLang: Language): string {
     if (m) {
       const base = translateString(m[1].trim(), 'en');
       return preserveWhitespace(text, `${base} (${m[2]})`);
+    }
+
+    // AI Auto Dispatch reasoning: "AI chọn Trần Văn Kỹ Thuật: Đúng chuyên môn..."
+    m = trimmed.match(/^AI chọn\s+([^:]+):\s*(.*)$/i);
+    if (m) {
+      const techName = m[1].trim();
+      const reasonRest = translateString(m[2].trim(), 'en');
+      return preserveWhitespace(text, `AI selected ${techName}: ${reasonRest}`);
     }
 
     // Common prefixes: "Danh sách...", "Lịch sử...", "Chi tiết...", "Quản lý..."

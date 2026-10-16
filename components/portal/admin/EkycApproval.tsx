@@ -36,8 +36,10 @@ import {
 } from '@/lib/ekycStore';
 import { validateCccdCard, verifyFaceWithCccd } from '@/lib/ekycValidator';
 import { getEnrolledFaceProfile, updateEnrolledFaceStatus, saveEnrolledFaceProfile } from '@/lib/faceEnrollStore';
+import { useLanguage } from '@/lib/languageContext';
 
 export default function EkycApproval() {
+  const { t, language } = useLanguage();
   const [requests, setRequests] = useState<EkycRequest[]>([]);
   const [filterStatus, setFilterStatus] = useState<string>('ALL');
   const [searchQuery, setSearchQuery] = useState<string>('');
@@ -489,9 +491,9 @@ export default function EkycApproval() {
                   </div>
 
                   {/* Right: Actions & Status Badge */}
-                  <div className="lg:col-span-3 flex flex-col items-end justify-center gap-2">
-                    <div className="flex items-center gap-2 w-full sm:w-auto">
-                      {isApproved ? (
+                  <div className="lg:col-span-3 flex flex-col items-stretch sm:items-end justify-center gap-2">
+                    {isApproved ? (
+                      <div className="flex flex-col items-stretch sm:items-end gap-1.5 w-full sm:w-44">
                         <button
                           type="button"
                           onClick={() => {
@@ -499,56 +501,19 @@ export default function EkycApproval() {
                             setInspectingSide('FRONT');
                             setJustApprovedId(null);
                           }}
-                          className="px-3 py-1.5 bg-[#121B24] hover:bg-[#1A2634] border border-emerald-500/60 text-emerald-300 text-xs font-semibold rounded-none transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow"
+                          className="w-full h-8 px-3 bg-[#121B24] hover:bg-[#1A2634] border border-emerald-500/60 text-emerald-300 text-xs font-semibold rounded-none transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow whitespace-nowrap"
                         >
-                          <Eye className="w-3.5 h-3.5 text-emerald-400" /> Xem Chi Tiết
+                          <Eye className="w-3.5 h-3.5 text-emerald-400" />
+                          <span>{t('Xem Chi Tiết')}</span>
                         </button>
-                      ) : (
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setInspectingRequest(req);
-                            setInspectingSide('FRONT');
-                            setJustApprovedId(null);
-                          }}
-                          className="px-3 py-1.5 bg-[#1C2533] hover:bg-[#2B394E] border border-gray-700 text-gray-200 text-xs font-semibold rounded-none transition-all flex items-center justify-center gap-1 cursor-pointer"
-                        >
-                          <Eye className="w-3.5 h-3.5 text-[#C5A880]" /> Kiểm Tra
-                        </button>
-                      )}
 
-                      {isPending && (
-                        <>
-                          <button
-                            type="button"
-                            disabled={isProcessing}
-                            onClick={() => handleApprove(req.id, req.fullName)}
-                            className="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-none shadow transition-all flex items-center justify-center gap-1 cursor-pointer disabled:opacity-50"
-                          >
-                            <Check className="w-3.5 h-3.5" /> Xác Nhận
-                          </button>
-                          <button
-                            type="button"
-                            disabled={isProcessing}
-                            onClick={() => {
-                              setRejectingId(req.id);
-                              setRejectionReason('Ảnh chụp CCCD bị mờ/lóa sáng, vui lòng chụp lại rõ nét');
-                            }}
-                            className="px-2.5 py-1.5 bg-rose-950 hover:bg-rose-900 border border-rose-500 text-rose-300 text-xs font-semibold rounded-none transition-all flex items-center justify-center gap-1 cursor-pointer disabled:opacity-50"
-                          >
-                            <X className="w-3.5 h-3.5" /> Báo Chụp Lại
-                          </button>
-                        </>
-                      )}
-                    </div>
+                        <div className="w-full h-8 px-3 bg-emerald-950/80 text-emerald-300 border border-emerald-500 text-xs font-bold rounded-none flex items-center justify-center gap-1.5 whitespace-nowrap shadow-sm">
+                          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+                          <span>{t('Đã Kích Hoạt Quyền Ra Vào')}</span>
+                        </div>
 
-                    {isApproved && (
-                      <div className="text-right space-y-1">
-                        <span className="px-3 py-1 bg-emerald-950 text-emerald-300 border border-emerald-500 text-xs font-bold rounded-none inline-flex items-center gap-1.5">
-                          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> Đã Kích Hoạt Quyền Ra Vào
-                        </span>
-                        <div className="text-[10px] text-gray-400 flex items-center justify-end gap-1 font-mono">
-                          {req.reviewedAt && <span>Duyệt: {req.reviewedAt}</span>}
+                        <div className="text-[10px] text-gray-400 flex items-center justify-center sm:justify-end gap-1 font-mono w-full pt-0.5">
+                          {req.reviewedAt && <span>{t('Duyệt')}: {req.reviewedAt}</span>}
                           {req.reviewedAt && <span>•</span>}
                           <button
                             type="button"
@@ -558,16 +523,57 @@ export default function EkycApproval() {
                             }}
                             className="text-rose-400 hover:text-rose-300 underline cursor-pointer"
                           >
-                            Thu hồi
+                            {t('Thu hồi')}
                           </button>
                         </div>
+                      </div>
+                    ) : (
+                      <div className="flex items-center justify-end gap-2 w-full sm:w-auto">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setInspectingRequest(req);
+                            setInspectingSide('FRONT');
+                            setJustApprovedId(null);
+                          }}
+                          className="h-8 px-3 bg-[#1C2533] hover:bg-[#2B394E] border border-gray-700 text-gray-200 text-xs font-semibold rounded-none transition-all flex items-center justify-center gap-1 cursor-pointer whitespace-nowrap"
+                        >
+                          <Eye className="w-3.5 h-3.5 text-[#C5A880]" />
+                          <span>{t('Kiểm Tra')}</span>
+                        </button>
+
+                        {isPending && (
+                          <>
+                            <button
+                              type="button"
+                              disabled={isProcessing}
+                              onClick={() => handleApprove(req.id, req.fullName)}
+                              className="h-8 px-3.5 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-none shadow transition-all flex items-center justify-center gap-1 cursor-pointer disabled:opacity-50 whitespace-nowrap"
+                            >
+                              <Check className="w-3.5 h-3.5" />
+                              <span>{t('Xác Nhận')}</span>
+                            </button>
+                            <button
+                              type="button"
+                              disabled={isProcessing}
+                              onClick={() => {
+                                setRejectingId(req.id);
+                                setRejectionReason('Ảnh chụp CCCD bị mờ/lóa sáng, vui lòng chụp lại rõ nét');
+                              }}
+                              className="h-8 px-2.5 bg-rose-950 hover:bg-rose-900 border border-rose-500 text-rose-300 text-xs font-semibold rounded-none transition-all flex items-center justify-center gap-1 cursor-pointer disabled:opacity-50 whitespace-nowrap"
+                            >
+                              <X className="w-3.5 h-3.5" />
+                              <span>{t('Báo Chụp Lại')}</span>
+                            </button>
+                          </>
+                        )}
                       </div>
                     )}
 
                     {isRejected && (
                       <div className="text-right space-y-0.5">
-                        <span className="px-3 py-1 bg-rose-950 text-rose-300 border border-rose-500 text-xs font-bold rounded-none inline-flex items-center gap-1.5">
-                          <XCircle className="w-3.5 h-3.5" /> Cần Cập Nhật Lại
+                        <span className="h-8 px-3 bg-rose-950 text-rose-300 border border-rose-500 text-xs font-bold rounded-none inline-flex items-center gap-1.5 whitespace-nowrap">
+                          <XCircle className="w-3.5 h-3.5" /> {t('Cần Cập Nhật Lại')}
                         </span>
                         <div className="text-[10px] text-rose-400 max-w-[180px] truncate" title={req.rejectionReason}>
                           Lý do: {req.rejectionReason}

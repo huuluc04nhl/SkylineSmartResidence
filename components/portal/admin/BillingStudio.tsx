@@ -247,7 +247,7 @@ export default function BillingStudio() {
               <th className="p-3.5 text-right">{t('Tổng Tiền (VNĐ)', 'Total (VND)')}</th>
               <th className="p-3.5 text-center">{t('Trạng Thái', 'Status')}</th>
               <th className="p-3.5 text-center">{t('Ghi Chú', 'Notes')}</th>
-              <th className="p-3.5 text-right">{t('Thao Tác', 'Action')}</th>
+              <th className="p-3.5 text-right whitespace-nowrap">{t('Thao Tác', 'Action')}</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-[#222B35]">
@@ -351,26 +351,28 @@ export default function BillingStudio() {
                         </span>
                       )}
                     </td>
-                    <td className="p-3.5 text-right space-x-2">
-                      <button 
-                        onClick={() => setSelectedDetailBill(bill)}
-                        className="px-2.5 py-1 bg-[#1C2533] border border-gray-600 text-[11px] text-gray-200 hover:border-[#C5A880] transition-colors"
-                      >
-                        {t('Chi Tiết', 'Details')}
-                      </button>
-
-                      {!isPaid ? (
+                    <td className="p-3.5 text-right whitespace-nowrap">
+                      <div className="inline-flex items-center justify-end gap-1.5">
                         <button 
-                          onClick={() => handleConfirmPaid(bill.id, bill.apt_code)}
-                          className="px-2.5 py-1 bg-emerald-700 hover:bg-emerald-600 text-white text-[11px] font-bold transition-colors shadow"
+                          onClick={() => setSelectedDetailBill(bill)}
+                          className="h-7 px-2.5 bg-[#1C2533] border border-gray-600 hover:border-[#C5A880] text-[11px] text-gray-200 transition-colors whitespace-nowrap shadow-sm flex items-center justify-center rounded-none"
                         >
-                          {t('Duyệt Gạch Nợ', 'Approve Payment')}
+                          {t('Chi Tiết', 'Details')}
                         </button>
-                      ) : (
-                        <span className="text-emerald-400 text-[11px] font-mono font-medium">
-                          {t('Đã Ghi Thu ✓', 'Recorded ✓')}
-                        </span>
-                      )}
+
+                        {!isPaid ? (
+                          <button 
+                            onClick={() => handleConfirmPaid(bill.id, bill.apt_code)}
+                            className="h-7 px-2.5 bg-emerald-700 hover:bg-emerald-600 text-white text-[11px] font-bold transition-colors shadow whitespace-nowrap flex items-center justify-center rounded-none"
+                          >
+                            {t('Duyệt Gạch Nợ', 'Approve Payment')}
+                          </button>
+                        ) : (
+                          <span className="h-7 px-2 text-emerald-400 text-[11px] font-mono font-medium inline-flex items-center justify-center bg-emerald-950/60 border border-emerald-500/40 rounded-none whitespace-nowrap">
+                            {t('Đã Ghi Thu ✓', 'Recorded ✓')}
+                          </span>
+                        )}
+                      </div>
                     </td>
                   </tr>
                 );

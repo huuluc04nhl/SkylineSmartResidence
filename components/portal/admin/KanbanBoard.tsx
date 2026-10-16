@@ -767,15 +767,15 @@ export default function KanbanBoard() {
                                 <span>Duyệt & Gửi Phản Hồi</span>
                               </button>
                             ) : (
-                              <div className="flex items-center gap-1">
+                              <div className="flex items-center gap-1.5">
                                 {ticket.suggested_technician && (
                                   <button
                                     onClick={() => handleApproveAiRecommendation(ticket)}
-                                    className="px-2.5 py-1.5 bg-emerald-950/80 hover:bg-emerald-900 border border-emerald-500 text-emerald-200 text-xs font-bold transition-colors flex items-center gap-1 shadow"
-                                    title="Ban Quản Lý duyệt phân công KTV theo đề xuất của AI"
+                                    className="h-8 px-2 bg-emerald-950/80 hover:bg-emerald-900 border border-emerald-500 text-emerald-200 text-xs font-bold rounded-none transition-colors flex items-center gap-1 shadow whitespace-nowrap"
+                                    title={t('Ban Quản Lý duyệt phân công KTV theo đề xuất của AI')}
                                   >
-                                    <Check className="w-3.5 h-3.5 text-emerald-400" />
-                                    <span>Duyệt KTV ({ticket.suggested_technician.split(' ').pop()})</span>
+                                    <Check className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                                    <span>{t('Duyệt KTV')} ({ticket.suggested_technician.split(' ').pop()})</span>
                                   </button>
                                 )}
                                 <button
@@ -783,11 +783,11 @@ export default function KanbanBoard() {
                                     setAssigningTicket(ticket);
                                     setSelectedTechId(ticket.suggested_technician_id || 'KTV-01');
                                   }}
-                                  className="px-2 py-1.5 bg-[#161B22] hover:bg-[#1C2533] border border-[#2D3748] hover:border-[#C5A880] text-gray-300 hover:text-white text-xs font-medium transition-colors flex items-center gap-1 shadow"
-                                  title="Chỉ định hoặc thay đổi thợ KTV phụ trách theo ý BQL"
+                                  className="h-8 px-2 bg-[#161B22] hover:bg-[#1C2533] border border-[#2D3748] hover:border-[#C5A880] text-gray-300 hover:text-white text-xs font-medium rounded-none transition-colors flex items-center gap-1 shadow whitespace-nowrap"
+                                  title={t('Chỉ định hoặc thay đổi thợ KTV phụ trách theo ý BQL')}
                                 >
-                                  <Users className="w-3 h-3 text-[#C5A880]" />
-                                  <span>{ticket.suggested_technician ? 'Đổi KTV' : 'Chỉ Định KTV'}</span>
+                                  <Users className="w-3 h-3 text-[#C5A880] shrink-0" />
+                                  <span>{ticket.suggested_technician ? t('Đổi KTV') : t('Chỉ Định KTV')}</span>
                                 </button>
                               </div>
                             )}
@@ -910,18 +910,24 @@ export default function KanbanBoard() {
                           <div className="p-2 bg-purple-950/40 border border-purple-500/30 text-[11px] text-purple-200 flex items-start gap-1.5">
                             <Sparkles className="w-3.5 h-3.5 text-purple-400 flex-shrink-0 mt-0.5" />
                             <div>
-                              <span className="font-semibold text-purple-300">AI Tự Động Phân Công:</span>{' '}
-                              <span>{ticket.ai_dispatch_reason}</span>
+                              <span className="font-semibold text-purple-300">{t('AI Tự Động Phân Công:')}</span>{' '}
+                              <span>{t(ticket.ai_dispatch_reason)}</span>
                             </div>
                           </div>
                         )}
 
-                        <div className="pt-2 border-t border-[#222B35] flex items-center justify-between">
-                          <span className="text-[10px] text-amber-400 font-mono flex items-center gap-1">
-                            <Clock className="w-3 h-3" /> Cam kết: {isFeedback ? 'Trong 24 giờ' : '45 phút'}
-                          </span>
+                        <div className="pt-2.5 border-t border-[#222B35] space-y-2">
+                          <div className="flex items-center justify-between text-[11px] text-amber-400 font-mono">
+                            <span className="flex items-center gap-1.5">
+                              <Clock className="w-3.5 h-3.5" />
+                              <span>{t('Cam kết:')} {isFeedback ? t('Trong 24 giờ') : t('45 phút')}</span>
+                            </span>
+                            <span className="text-[10px] text-gray-500 font-mono">
+                              #{ticket.id}
+                            </span>
+                          </div>
 
-                          <div className="flex items-center gap-1.5">
+                          <div className="grid grid-cols-3 gap-1.5 w-full">
                             {isFeedback ? (
                               <button
                                 onClick={() => {
@@ -929,10 +935,10 @@ export default function KanbanBoard() {
                                   setFeedbackReplyContent(ticket.admin_reply || generateSuggestedAdminReply(ticket.content, ticket.ai_category));
                                   setReplyEngineerName(ticket.assigned_technician || '');
                                 }}
-                                className="px-2.5 py-1.5 bg-rose-600 hover:bg-rose-500 text-white text-xs font-semibold transition-colors flex items-center gap-1.5 shadow"
+                                className="col-span-3 h-8 px-2.5 bg-rose-600 hover:bg-rose-500 text-white text-xs font-semibold rounded-none transition-colors flex items-center justify-center gap-1.5 shadow"
                               >
                                 <Send className="w-3 h-3" />
-                                <span>BQL Phản Hồi</span>
+                                <span>{t('BQL Phản Hồi')}</span>
                               </button>
                             ) : (
                               <>
@@ -941,10 +947,11 @@ export default function KanbanBoard() {
                                     setAssigningTicket(ticket);
                                     setSelectedTechId(ticket.assigned_technician_id || 'KTV-01');
                                   }}
-                                  className="px-2.5 py-1.5 bg-[#161B22] hover:bg-[#1C2533] text-gray-400 hover:text-white border border-[#2D3748] text-xs transition-colors"
-                                  title="Can thiệp đổi KTV khác khi có phát sinh"
+                                  className="h-8 px-1.5 bg-[#161B22] hover:bg-[#1C2533] text-gray-300 hover:text-white border border-[#2D3748] text-xs font-medium rounded-none transition-colors flex items-center justify-center gap-1 whitespace-nowrap shadow-sm"
+                                  title={t('Can thiệp đổi KTV khác khi có phát sinh')}
                                 >
-                                  Đổi KTV
+                                  <Users className="w-3 h-3 text-[#C5A880] shrink-0" />
+                                  <span className="truncate">{t('Đổi KTV')}</span>
                                 </button>
                                 <button
                                   onClick={() => {
@@ -952,11 +959,11 @@ export default function KanbanBoard() {
                                     setFeedbackReplyContent(ticket.admin_reply || generateSuggestedAdminReply(ticket.content, ticket.ai_category));
                                     setReplyEngineerName(ticket.assigned_technician || '');
                                   }}
-                                  className="px-2.5 py-1.5 bg-[#161B22] hover:bg-[#1C2533] border border-[#2D3748] hover:border-rose-500/60 text-rose-300 hover:text-rose-200 text-xs font-medium transition-colors flex items-center gap-1 shadow"
-                                  title="Gửi phản hồi ghi chú cho cư dân hoặc cập nhật KTV"
+                                  className="h-8 px-1.5 bg-[#161B22] hover:bg-[#1C2533] border border-[#2D3748] hover:border-rose-500/60 text-rose-300 hover:text-rose-200 text-xs font-medium rounded-none transition-colors flex items-center justify-center gap-1 shadow-sm whitespace-nowrap"
+                                  title={t('Gửi phản hồi ghi chú cho cư dân hoặc cập nhật KTV')}
                                 >
-                                  <MessageSquare className="w-3 h-3 text-rose-400" />
-                                  <span>Phản Hồi</span>
+                                  <MessageSquare className="w-3 h-3 text-rose-400 shrink-0" />
+                                  <span className="truncate">{t('Phản Hồi')}</span>
                                 </button>
                                 <button
                                   onClick={() => {
@@ -965,11 +972,11 @@ export default function KanbanBoard() {
                                     setResolutionNotes('');
                                     setAiVerificationResult(null);
                                   }}
-                                  className="px-2.5 py-1.5 bg-[#161B22] hover:bg-[#1C2533] border border-[#2D3748] hover:border-emerald-500/60 text-emerald-400 hover:text-emerald-300 text-xs font-semibold transition-colors flex items-center gap-1.5 shadow"
-                                  title="BQL nghiệm thu và đóng phiếu khi KTV hoàn thành"
+                                  className="h-8 px-1.5 bg-[#161B22] hover:bg-[#1C2533] border border-emerald-500/60 hover:border-emerald-400 text-emerald-400 hover:text-emerald-300 text-xs font-semibold rounded-none transition-colors flex items-center justify-center gap-1 shadow-sm whitespace-nowrap"
+                                  title={t('BQL nghiệm thu và đóng phiếu khi KTV hoàn thành')}
                                 >
-                                  <Check className="w-3.5 h-3.5" />
-                                  <span>Nghiệm Thu</span>
+                                  <Check className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                                  <span className="truncate">{t('Nghiệm Thu')}</span>
                                 </button>
                               </>
                             )}
