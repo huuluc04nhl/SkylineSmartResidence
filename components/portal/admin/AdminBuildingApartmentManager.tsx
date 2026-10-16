@@ -1724,10 +1724,10 @@ export default function AdminBuildingApartmentManager() {
                           const wallX = isPodium ? 680 : 658;
                           const wallY = isPodium ? 785 : Number((curYBase - 40 - (curH / 2)).toFixed(1));
 
-                          // Thẻ Callout Tầng - Tinh gọn, thanh thoát, định vị cao độ kiến trúc
-                          const cardX = 672;
-                          const cardW = 248;
-                          const cardH = 90;
+                          // Thẻ Callout Tầng - Tinh gọn, thanh thoát, định vị cao độ kiến trúc (Không tràn khung)
+                          const cardX = 664;
+                          const cardW = 296;
+                          const cardH = 92;
                           const targetCardY = Math.max(25, Math.min(780, Math.round(wallY - cardH / 2)));
                           const dockX = cardX;
                           const dockY = Math.max(targetCardY + 18, Math.min(targetCardY + cardH - 18, wallY));
@@ -1789,7 +1789,7 @@ export default function AdminBuildingApartmentManager() {
                               <circle cx={wallX} cy={wallY} r="3" fill={themeNeon} />
                               <circle cx={dockX} cy={dockY} r="3.5" fill={themeBorder} />
 
-                              {/* Thẻ Callout Tầng Tinh Gọn - Tránh trùng lặp với mặt bằng bên phải */}
+                              {/* Thẻ Callout Tầng Tinh Gọn - Zero Border-Radius Luxury */}
                               <g className="anim-callout-card">
                                 <rect
                                   x={cardX}
@@ -1800,7 +1800,6 @@ export default function AdminBuildingApartmentManager() {
                                   fillOpacity="0.96"
                                   stroke={themeBorder}
                                   strokeWidth="1.6"
-                                  rx="4"
                                   filter="url(#unitGlow)"
                                 />
 
@@ -1808,19 +1807,18 @@ export default function AdminBuildingApartmentManager() {
                                 <rect
                                   x={cardX}
                                   y={targetCardY}
-                                  width="4"
+                                  width="3.5"
                                   height={cardH}
                                   fill="#C5A880"
-                                  rx="2"
                                 />
 
                                 {/* Dòng 1: Tiêu đề tầng & Phân khu kiến trúc */}
-                                <circle cx={cardX + 16} cy={targetCardY + 20} r="3.5" fill={themeNeon} />
+                                <circle cx={cardX + 16} cy={targetCardY + 20} r="3" fill={themeNeon} />
                                 <text
-                                  x={cardX + 25}
+                                  x={cardX + 24}
                                   y={targetCardY + 24}
                                   fill="#FFFFFF"
-                                  fontSize="12.5"
+                                  fontSize="12"
                                   fontWeight="900"
                                   fontFamily="monospace"
                                 >
@@ -1828,10 +1826,10 @@ export default function AdminBuildingApartmentManager() {
                                 </text>
 
                                 <text
-                                  x={cardX + (isPodium ? 122 : 94)}
+                                  x={cardX + (isPodium ? 122 : 92)}
                                   y={targetCardY + 24}
                                   fill="#C5A880"
-                                  fontSize="10"
+                                  fontSize="9.5"
                                   fontWeight="bold"
                                   fontFamily="monospace"
                                 >
@@ -1840,33 +1838,42 @@ export default function AdminBuildingApartmentManager() {
 
                                 {/* Huy hiệu tỷ lệ ở ngắn gọn góc phải */}
                                 <rect
-                                  x={cardX + cardW - 84}
+                                  x={cardX + cardW - 86}
                                   y={targetCardY + 11}
-                                  width="74"
+                                  width="78"
                                   height="18"
-                                  fill="#162232"
+                                  fill="#141E2B"
                                   stroke="#26374D"
-                                  rx="3"
                                 />
                                 <text
                                   x={cardX + cardW - 47}
-                                  y={targetCardY + 23}
+                                  y={targetCardY + 23.5}
                                   fill={hasOcc ? '#34D399' : '#94A3B8'}
-                                  fontSize="9.5"
+                                  fontSize="9"
                                   fontWeight="bold"
                                   textAnchor="middle"
                                   fontFamily="monospace"
                                 >
-                                  {isPodium ? 'SẢNH ĐÓN' : `Ở: ${occCount}/21 CĂN`}
+                                  {isPodium ? 'SẢNH ĐÓN' : `ĐÃ Ở: ${occCount}/21`}
                                 </text>
+
+                                {/* Đường kẻ phân cách sang trọng */}
+                                <line
+                                  x1={cardX + 14}
+                                  y1={targetCardY + 36}
+                                  x2={cardX + cardW - 14}
+                                  y2={targetCardY + 36}
+                                  stroke="#1C2737"
+                                  strokeWidth="0.8"
+                                />
 
                                 {/* Dòng 2: Cao độ tĩnh không & Trục giao thông đứng */}
                                 <text
                                   x={cardX + 16}
-                                  y={targetCardY + 48}
+                                  y={targetCardY + 53}
                                   fill="#94A3B8"
-                                  fontSize="10"
-                                  fontFamily="monospace"
+                                  fontSize="9.5"
+                                  fontFamily="sans-serif"
                                 >
                                   Cao độ: <tspan fill="#F1F5F9" fontWeight="bold">{elevationM}</tspan>  •  {elevatorAccess}
                                 </text>
@@ -1874,9 +1881,9 @@ export default function AdminBuildingApartmentManager() {
                                 {/* Dòng 3: Tầm nhìn kiến trúc & Hướng cảnh quan */}
                                 <text
                                   x={cardX + 16}
-                                  y={targetCardY + 70}
+                                  y={targetCardY + 73}
                                   fill="#CBD5E1"
-                                  fontSize="10"
+                                  fontSize="9.5"
                                   fontFamily="sans-serif"
                                 >
                                   {viewOrientation}
@@ -1894,7 +1901,7 @@ export default function AdminBuildingApartmentManager() {
                             const hStats = floorStatsList.find(f => f.floor === hoveredFloor);
                             return (
                               <g>
-                                <rect x="660" y="16" width="285" height="42" fill="#0D1117" fillOpacity="0.96" stroke={curTone.borderBuilding} strokeWidth="1.2" rx="3" />
+                                <rect x="660" y="16" width="285" height="42" fill="#0D1117" fillOpacity="0.96" stroke={curTone.borderBuilding} strokeWidth="1.2" />
                                 <text x="674" y="33" fill={curTone.titleColor} fontSize="9.5" fontWeight="bold" fontFamily="monospace">
                                   {hoveredFloor === 1 ? 'XEM NHANH: TẦNG 1 (ĐẠI SẢNH ĐÓN)' : `XEM NHANH: TẦNG ${hoveredFloor} (21 CĂN HỘ)`}
                                 </text>

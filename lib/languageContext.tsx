@@ -237,6 +237,87 @@ export const KEY_DICTIONARY: Record<string, Record<Language, string>> = {
   'Đúng chuyên môn Điện Lạnh &amp; Kỹ Thuật Tòa Nhà': { vi: 'Đúng chuyên môn Điện Lạnh & Kỹ Thuật Tòa Nhà', en: 'Qualified in HVAC & Building Engineering' },
   'Đang rảnh trực ban': { vi: 'Đang rảnh trực ban', en: 'On Duty (Available)' },
   'Thu hồi': { vi: 'Thu hồi', en: 'Recall' },
+  '21 Căn hộ • 6 Thang máy khách • 2 Thang thoát hiểm': { vi: '21 Căn hộ • 6 Thang máy khách • 2 Thang thoát hiểm', en: '21 Apartments • 6 Passenger Lifts • 2 Emergency Exits' },
+  'Sơ Đồ BIM 3 Cánh': { vi: 'Sơ Đồ BIM 3 Cánh', en: '3-Wing BIM Model' },
+  'Bản Vẽ Thiết Kế': { vi: 'Bản Vẽ Thiết Kế', en: 'Architectural Blueprint' },
+  'Tất Cả (21)': { vi: 'Tất Cả (21)', en: 'All (21)' },
+  'Cánh Bắc (5)': { vi: 'Cánh Bắc (5)', en: 'North Wing (5)' },
+  'Cánh Nam (5)': { vi: 'Cánh Nam (5)', en: 'South Wing (5)' },
+  'Cánh Tây (11)': { vi: 'Cánh Tây (11)', en: 'West Wing (11)' },
+  'Cánh Bắc': { vi: 'Cánh Bắc', en: 'North Wing' },
+  'Cánh Nam': { vi: 'Cánh Nam', en: 'South Wing' },
+  'Cánh Tây': { vi: 'Cánh Tây', en: 'West Wing' },
+  'Doanh Thu Sàn Tầng:': { vi: 'Doanh Thu Sàn Tầng:', en: 'Floor Revenue:' },
+  'Lấp Đầy:': { vi: 'Lấp Đầy:', en: 'Occupancy:' },
+  'Lấp đầy:': { vi: 'Lấp đầy:', en: 'Occupancy:' },
+  'LÕI THANG MÁY & SẢNH CHỜ TẦNG': { vi: 'LÕI THANG MÁY & SẢNH CHỜ TẦNG', en: 'ELEVATOR CORE & FLOOR LOBBY' },
+  'THANG PCCC & HÀNG': { vi: 'THANG PCCC & HÀNG', en: 'FIRE & SERVICE ELEVATOR' },
+  'Phòng đệm áp suất': { vi: 'Phòng đệm áp suất', en: 'Pressurized Antechamber' },
+  'THOÁT HIỂM 1': { vi: 'THOÁT HIỂM 1', en: 'FIRE EXIT 1' },
+  'THOÁT HIỂM 2': { vi: 'THOÁT HIỂM 2', en: 'FIRE EXIT 2' },
+  'SẢNH CHỜ THANG MÁY (2.4m)': { vi: 'SẢNH CHỜ THANG MÁY (2.4m)', en: 'ELEVATOR LOBBY (2.4m)' },
+  'PHÒNG RÁC HÚT CHÂN KHÔNG': { vi: 'PHÒNG RÁC HÚT CHÂN KHÔNG', en: 'VACUUM REFUSE ROOM' },
+  'HỘP KỸ THUẬT ĐIỆN - NƯỚC': { vi: 'HỘP KỸ THUẬT ĐIỆN - NƯỚC', en: 'MEP TECHNICAL RISER' },
+  'HÀNH LANG TÂY (1.8m)': { vi: 'HÀNH LANG TÂY (1.8m)', en: 'WEST CORRIDOR (1.8m)' },
+  'HÀNH LANG BẮC (1.8m)': { vi: 'HÀNH LANG BẮC (1.8m)', en: 'NORTH CORRIDOR (1.8m)' },
+  'HÀNH LANG NAM (1.8m)': { vi: 'HÀNH LANG NAM (1.8m)', en: 'SOUTH CORRIDOR (1.8m)' },
+  'BỐ TRÍ MẶT BẰNG KHÔNG GIAN': { vi: 'BỐ TRÍ MẶT BẰNG KHÔNG GIAN', en: 'SPACE LAYOUT & CONFIGURATION' },
+  'Phòng Khách & Bếp:': { vi: 'Phòng Khách & Bếp:', en: 'Living Room & Kitchen:' },
+  'Phòng Ngủ Master:': { vi: 'Phòng Ngủ Master:', en: 'Master Bedroom:' },
+  'Phòng Ngủ Phụ & WC:': { vi: 'Phòng Ngủ Phụ & WC:', en: 'Secondary Bedroom & WC:' },
+  'Logia & Giặt Phơi:': { vi: 'Logia & Giặt Phơi:', en: 'Loggia & Laundry:' },
+  'Hướng Ban Công:': { vi: 'Hướng Ban Công:', en: 'Balcony Facing:' },
+  'Tầm Nhìn (View):': { vi: 'Tầm Nhìn (View):', en: 'View Orientation:' },
+  'Chiếu Sáng Tự Nhiên:': { vi: 'Chiếu Sáng Tự Nhiên:', en: 'Natural Daylight:' },
+  'TIÊU THỤ NĂNG LƯỢNG & DOANH THU CĂN': { vi: 'TIÊU THỤ NĂNG LƯỢNG & DOANH THU CĂN', en: 'ENERGY CONSUMPTION & UNIT REVENUE' },
+  'Doanh Thu Phí BQL Thu Về:': { vi: 'Doanh Thu Phí BQL Thu Về:', en: 'Management Fee Revenue:' },
+  'Giá Cho Thuê Tham Chiếu:': { vi: 'Giá Cho Thuê Tham Chiếu:', en: 'Reference Rental Price:' },
+  'Suất Sinh Lời Cho Thuê:': { vi: 'Suất Sinh Lời Cho Thuê:', en: 'Rental Yield:' },
+  'Xem Hóa Đơn & Tiêu Thụ': { vi: 'Xem Hóa Đơn & Tiêu Thụ', en: 'View Invoices & Consumption' },
+  'Hồ Sơ Căn': { vi: 'Hồ Sơ Căn', en: 'Unit Profile' },
+  'ĐÃ CÓ CƯ DÂN': { vi: 'ĐÃ CÓ CƯ DÂN', en: 'OCCUPIED' },
+  'CÓ CƯ DÂN': { vi: 'CÓ CƯ DÂN', en: 'OCCUPIED' },
+  'NHÀ TRỐNG': { vi: 'NHÀ TRỐNG', en: 'VACANT' },
+  'Đang chọn': { vi: 'Đang chọn', en: 'Selected' },
+  'Căn phụ': { vi: 'Căn phụ', en: 'Secondary unit' },
+  '1. Phối Cảnh & Thông Số': { vi: '1. Phối Cảnh & Thông Số', en: '1. 3D View & Specs' },
+  '2. Cư Dân & Nhân Khẩu': { vi: '2. Cư Dân & Nhân Khẩu', en: '2. Residents & Occupants' },
+  '3. Xe Cộ & Thẻ Hầm': { vi: '3. Xe Cộ & Thẻ Hầm', en: '3. Vehicles & Parking Passes' },
+  '4. Phí Quản Lý & Hóa Đơn': { vi: '4. Phí Quản Lý & Hóa Đơn', en: '4. Management Fees & Invoices' },
+  '5. Lịch Sử Kỹ Thuật': { vi: '5. Lịch Sử Kỹ Thuật', en: '5. Technical & Maintenance History' },
+  'Hồ Sơ Căn Hộ • Chung Cư Skyline': { vi: 'Hồ Sơ Căn Hộ • Chung Cư Skyline', en: 'Apartment Profile • Skyline Residence' },
+  'Phối Cảnh Không Gian Nội Thất Căn Hộ': { vi: 'Phối Cảnh Không Gian Nội Thất Căn Hộ', en: 'Apartment Interior 3D Perspective' },
+  'Phối cảnh phòng khách, phòng ngủ Master, bếp, ban công': { vi: 'Phối cảnh phòng khách, phòng ngủ Master, bếp, ban công', en: 'Perspective of living room, master bedroom, kitchen, balcony' },
+  'KHỞI TẠO KHÔNG GIAN BQL • CHUNG CƯ SKYLINE': { vi: 'KHỞI TẠO KHÔNG GIAN BQL • CHUNG CƯ SKYLINE', en: 'CREATE MANAGEMENT SPACE • SKYLINE RESIDENCE' },
+  'The Tropical • Mặt Bằng Phân Khu': { vi: 'The Tropical • Mặt Bằng Phân Khu', en: 'The Tropical • Zone Master Plan' },
+  'Thành Phố Biển Hồ • 8 Đại Tiện Ích': { vi: 'Thành Phố Biển Hồ • 8 Đại Tiện Ích', en: 'Lake City • 8 Grand Amenities' },
+  'Vinhomes Grand Park • Quy Hoạch 271 ha': { vi: 'Vinhomes Grand Park • Quy Hoạch 271 ha', en: 'Vinhomes Grand Park • 271 ha Master Plan' },
+  'Bản vẽ kiến trúc 4 khối tháp & 23 tiện ích nội khu': { vi: 'Bản vẽ kiến trúc 4 khối tháp & 23 tiện ích nội khu', en: 'Architectural drawings of 4 towers & 23 internal amenities' },
+  'Bán kính 1km kết nối biển hồ & các đại tiện ích': { vi: 'Bán kính 1km kết nối biển hồ & các đại tiện ích', en: '1km radius connecting to the lake & grand amenities' },
+  'Tổng thể 271 ha • Công viên 36 ha • Vincom Mega Mall': { vi: 'Tổng thể 271 ha • Công viên 36 ha • Vincom Mega Mall', en: 'Overall 271 ha • 36 ha Park • Vincom Mega Mall' },
+  'Ghim: BẬT': { vi: 'Ghim: BẬT', en: 'Pins: ON' },
+  'Bản Vẽ Sạch': { vi: 'Bản Vẽ Sạch', en: 'Clean Blueprint' },
+  'Đặt lại 100%': { vi: 'Đặt lại 100%', en: 'Reset 100%' },
+  'Tiện Ích Biển Hồ': { vi: 'Tiện Ích Biển Hồ', en: 'Lake Amenities' },
+  'Đại Đô Thị': { vi: 'Đại Đô Thị', en: 'Mega City' },
+  'SẢNH ĐÓN': { vi: 'SẢNH ĐÓN', en: 'MAIN LOBBY' },
+  'SẢNH TRỆT / G': { vi: 'SẢNH TRỆT / G', en: 'GROUND LOBBY / G' },
+  'PHÂN KHU TẦNG CAO': { vi: 'PHÂN KHU TẦNG CAO', en: 'HIGH FLOOR ZONE' },
+  'PHÂN KHU TẦNG TRUNG': { vi: 'PHÂN KHU TẦNG TRUNG', en: 'MID FLOOR ZONE' },
+  'KHỐI ĐẾ THƯƠNG MẠI': { vi: 'KHỐI ĐẾ THƯƠNG MẠI', en: 'COMMERCIAL PODIUM' },
+  'PHÂN KHU TẦNG THẤP': { vi: 'PHÂN KHU TẦNG THẤP', en: 'LOW FLOOR ZONE' },
+  'Trục thang máy sảnh': { vi: 'Trục thang máy sảnh', en: 'Lobby elevator core' },
+  '4 Thang khách + 1 Thang PCCC': { vi: '4 Thang khách + 1 Thang PCCC', en: '4 Passenger Lifts + 1 Fire Safety Lift' },
+  'Sảnh đón tiếp tân & Kiểm soát FaceID': { vi: 'Sảnh đón tiếp tân & Kiểm soát FaceID', en: 'Reception lobby & FaceID control' },
+  'Tầm nhìn: View Sông & Panorama thoáng đãng': { vi: 'Tầm nhìn: View Sông & Panorama thoáng đãng', en: 'View: River View & Open Panorama' },
+  'Tầm nhìn: View Toàn cảnh nội khu & Hồ bơi': { vi: 'Tầm nhìn: View Toàn cảnh nội khu & Hồ bơi', en: 'View: Internal Amenities & Pool View' },
+  'Tầm nhìn: View Mảng xanh & Tiện ích tầng thấp': { vi: 'Tầm nhìn: View Mảng xanh & Tiện ích tầng thấp', en: 'View: Greenery & Low-level Amenities' },
+  'ĐÃ Ở': { vi: 'ĐÃ Ở', en: 'OCCUPIED' },
+  'Ở': { vi: 'Ở', en: 'Occupied' },
+  'Chuyển Tầng:': { vi: 'Chuyển Tầng:', en: 'Change Floor:' },
+  'Chuyển Tầng': { vi: 'Chuyển Tầng', en: 'Change Floor' },
+  'Đóng [✕]': { vi: 'Đóng [✕]', en: 'Close [✕]' },
+  'Đóng': { vi: 'Đóng', en: 'Close' },
   'hero.desc_auth': {
     vi: 'Dự án căn hộ hạng sang SKYLINE Smart Residence tại cụm 4 chung cư The Tropical (BS-07, BS-08, BS-09, BS-10) kiến tạo chuẩn sống tự động hóa hoàn chỉnh: Định danh sinh trắc học FaceID <0.5s, giám sát an ninh Vision AI và hệ thống dự báo bảo trì thông minh.',
     en: 'Luxury apartment project SKYLINE Smart Residence at 4 towers of The Tropical (BS-07, BS-08, BS-09, BS-10) pioneers complete automated living: FaceID biometrics <0.5s, Vision AI security monitoring, and predictive maintenance.'
@@ -497,6 +578,39 @@ export function translateString(text: string, targetLang: Language): string {
       const techName = m[1].trim();
       const reasonRest = translateString(m[2].trim(), 'en');
       return preserveWhitespace(text, `AI selected ${techName}: ${reasonRest}`);
+    }
+
+    // Dynamic pattern for floor occupancy: "ĐÃ Ở: 3/21", "Ở: 3/21 CĂN", "Ở: 3/21"
+    m = trimmed.match(/^(?:ĐÃ Ở|Ở):\s*(\d+\/\d+)(?:\s*CĂN)?$/i);
+    if (m) {
+      return preserveWhitespace(text, targetLang === 'en' ? `OCCUPIED: ${m[1]}` : `ĐÃ Ở: ${m[1]}`);
+    }
+
+    // Dynamic pattern for "Mặt Bằng Tầng 30" -> "Floor 30 Floorplan"
+    m = trimmed.match(/^Mặt Bằng Tầng\s+(\d+|[A-Z0-9]+)(.*)$/i);
+    if (m && targetLang === 'en') {
+      const fl = m[1];
+      const rest = m[2] ? ' ' + translateString(m[2].trim(), 'en') : '';
+      return preserveWhitespace(text, `Floor ${fl} Floorplan${rest}`.trim());
+    }
+
+    // Dynamic pattern for "LÕI THANG MÁY & SẢNH CHỜ TẦNG 30"
+    m = trimmed.match(/^LÕI THANG MÁY & SẢNH CHỜ TẦNG\s+(\d+|[A-Z0-9]+)$/i);
+    if (m && targetLang === 'en') {
+      return preserveWhitespace(text, `ELEVATOR CORE & FLOOR ${m[1]} LOBBY`);
+    }
+
+    // Dynamic pattern for "CHI TIẾT MỞ RỘNG • TẦNG 30"
+    m = trimmed.match(/^CHI TIẾT MỞ RỘNG • TẦNG\s+(\d+|[A-Z0-9]+)$/i);
+    if (m && targetLang === 'en') {
+      return preserveWhitespace(text, `EXPANDED DETAILS • FLOOR ${m[1]}`);
+    }
+
+    // Dynamic pattern for "XEM NHANH: TẦNG X (...)"
+    m = trimmed.match(/^XEM NHANH:\s*TẦNG\s+(\d+)\s*\((.*)\)$/i);
+    if (m && targetLang === 'en') {
+      const desc = translateString(m[2], 'en');
+      return preserveWhitespace(text, `QUICK VIEW: FLOOR ${m[1]} (${desc})`);
     }
 
     // Common prefixes: "Danh sách...", "Lịch sử...", "Chi tiết...", "Quản lý..."
