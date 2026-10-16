@@ -240,11 +240,30 @@ export function translateString(text: string, targetLang: Language): string {
     if (m) {
       return preserveWhitespace(text, `${m[1]} VND`);
     }
+
+    // Month & Year: "Tháng 08/2026" -> "August 2026"
+    m = trimmed.match(/^Tháng\s+(\d{1,2})\/(\d{4})$/i);
+    if (m) {
+      const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+      const monthIdx = parseInt(m[1], 10) - 1;
+      if (monthIdx >= 0 && monthIdx < 12) {
+        return preserveWhitespace(text, `${monthNames[monthIdx]} ${m[2]}`);
+      }
+      return preserveWhitespace(text, `Month ${m[1]}/${m[2]}`);
+    }
   }
 
   // 4. Reverse Domain Templates (VI)
   if (targetLang === 'vi') {
-    let m = trimmed.match(/^Apartment\s+([A-Za-z0-9\.\-_]+)(.*)$/i);
+    // Month & Year: "August 2026" -> "Tháng 08/2026"
+    let m = trimmed.match(/^(January|February|March|April|May|June|July|August|September|October|November|December)\s+(\d{4})$/i);
+    if (m) {
+      const monthNames = ['january', 'february', 'march', 'april', 'may', 'june', 'july', 'august', 'september', 'october', 'november', 'december'];
+      const monthIdx = monthNames.indexOf(m[1].toLowerCase()) + 1;
+      const padMonth = monthIdx < 10 ? `0${monthIdx}` : `${monthIdx}`;
+      return preserveWhitespace(text, `Tháng ${padMonth}/${m[2]}`);
+    }
+    m = trimmed.match(/^Apartment\s+([A-Za-z0-9\.\-_]+)(.*)$/i);
     if (m) {
       const code = m[1];
       const rest = m[2] ? ' ' + translateString(m[2], 'vi') : '';

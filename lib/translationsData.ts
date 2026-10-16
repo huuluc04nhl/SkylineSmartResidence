@@ -18729,4 +18729,449 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
     "Camera nhiệt tầm soát nguy cơ cháy nổ 24/7",
     "Thermal camera monitors fire & smoke risks 24/7"
   ]
+,
+  [
+    "Đang trống",
+    "Vacant"
+  ],
+  [
+    "Đang bảo trì",
+    "Under Maintenance"
+  ],
+  [
+    "giờ",
+    "hours"
+  ],
+  [
+    "buổi",
+    "session"
+  ],
+  [
+    "bộ",
+    "set"
+  ],
+  [
+    "Thang máy",
+    "Elevator"
+  ],
+  [
+    "Máy bơm",
+    "Water Pump"
+  ],
+  [
+    "Hệ thống PCCC",
+    "Fire Protection System"
+  ],
+  [
+    "Trạm biến áp",
+    "Electrical Substation"
+  ],
+  [
+    "Thông gió & Hút khói",
+    "Ventilation & Smoke Extraction"
+  ],
+  [
+    "Hoạt động tốt",
+    "Operating Normally"
+  ],
+  [
+    "Cần kiểm tra",
+    "Inspection Needed"
+  ],
+  [
+    "Cảnh báo hỏng",
+    "Failure Warning"
+  ],
+  [
+    "Chờ đến",
+    "Awaiting Arrival"
+  ],
+  [
+    "Đã check-in",
+    "Checked In"
+  ],
+  [
+    "Khu trẻ em",
+    "Kids Playground"
+  ],
+  [
+    "Công viên",
+    "Park & Garden"
+  ],
+  [
+    "Điều hòa Daikin Inverter",
+    "Daikin Inverter AC"
+  ],
+  [
+    "Khóa cửa thông minh FaceID",
+    "Smart FaceID Door Lock"
+  ],
+  [
+    "Rèm cửa tự động",
+    "Automatic Curtains"
+  ],
+  [
+    "Cảm biến rò rỉ nước AI",
+    "AI Water Leak Sensor"
+  ],
+  [
+    "Tháng 08/2026",
+    "August 2026"
+  ],
+  [
+    "Tháng 07/2026",
+    "July 2026"
+  ],
+  [
+    "Tháng 06/2026",
+    "June 2026"
+  ],
+  [
+    "Tháng 05/2026",
+    "May 2026"
+  ],
+  [
+    "Nhà hàng - Vệ sinh bàn ghế nhà hàng tầng 1 sau sự kiện tiệc tối.",
+    "Restaurant - Clean 1st floor restaurant tables and chairs after evening banquet."
+  ],
+  [
+    "Hồ bơi - Kiểm tra chất lượng nước hồ bơi định kỳ và bảo dưỡng hệ thống lọc.",
+    "Pool - Regular pool water quality inspection and filtration system maintenance."
+  ],
+  [
+    "Đội Kỹ Thuật Skyline",
+    "Skyline Technical Team"
+  ],
+  [
+    "Vệ sinh Block 07 - Tập kết rác thải Block 07 và phun khử khuẩn khu kỹ thuật.",
+    "Sanitation Block 07 - Collect Block 07 waste and disinfect technical area."
+  ],
+  [
+    "Cụm Thang Máy Tốc Độ Cao Otis BS-07 (Thang 01 & 02)",
+    "Otis BS-07 High-Speed Elevator Group (Elevators 01 & 02)"
+  ],
+  [
+    "Trục Lõi Tòa BS-07 (Tầng B2 -> Tầng 34)",
+    "Core Shaft Tower BS-07 (Floors B2 -> 34)"
+  ],
+  [
+    "Thang Chuyên Dụng Cứu Hỏa & Vận Chuyển Hàng Otis (Thang 03)",
+    "Otis Firefighter & Freight Elevator (Elevator 03)"
+  ],
+  [
+    "Trục Buồng Thang PCCC BS-07 (Tầng B2 -> Tầng 34)",
+    "Firefighter Elevator Shaft BS-07 (Floors B2 -> 34)"
+  ],
+  [
+    "Cụm Máy Bơm Tăng Áp PCCC Grundfos & Bể Ngầm 800m³",
+    "Grundfos Fire Booster Pump Group & 800m³ Underground Tank"
+  ],
+  [
+    "Trạm Bơm Kỹ Thuật Hầm B2",
+    "Basement B2 Technical Pump Station"
+  ],
+  [
+    "Trạm Biến Áp Trung Thế 1500kVA & Máy Phát Cummins 1000kVA",
+    "1500kVA Medium Voltage Substation & 1000kVA Cummins Generator"
+  ],
+  [
+    "Phòng Máy Phát Điện Dự Phòng Hầm B1",
+    "Basement B1 Backup Generator Room"
+  ],
+  [
+    "Hệ Thống Quạt Tăng Áp Cầu Thang & Hút Khói Hành Lang Systemair",
+    "Systemair Staircase Pressurization & Corridor Smoke Exhaust System"
+  ],
+  [
+    "Tầng Kỹ Thuật Mái & Trục Kỹ Thuật BS-07",
+    "Rooftop Technical Floor & BS-07 Technical Shaft"
+  ],
+  [
+    "Cổng Barrier Tự Động & Camera AI Quét Biển Số LPR Hầm Xe",
+    "Automatic Barrier & Basement LPR AI License Plate Recognition Camera"
+  ],
+  [
+    "Cổng Kiểm Soát Ra Vào Hầm B1 & B2",
+    "Access Control Gate Basements B1 & B2"
+  ],
+  [
+    "Camera AI phát hiện khói mỏng bất thường",
+    "AI Camera detected abnormal thin smoke"
+  ],
+  [
+    "Hầm B1 - Khu đỗ xe Ô tô ô số 42-45",
+    "Basement B1 - Car Parking Area Slots 42-45"
+  ],
+  [
+    "Tập trung đông người ngoài khung giờ quy định",
+    "Crowd gathering outside permitted hours"
+  ],
+  [
+    "Sảnh chính Tòa A (Tầng 1)",
+    "Main Lobby Tower A (1st Floor)"
+  ],
+  [
+    "Hồ Bơi Vô Cực Chân Mây (Skyline Horizon Pool - Tầng Chân Mây)",
+    "Skyline Horizon Pool (Rooftop Cloud Floor)"
+  ],
+  [
+    "Miễn phí theo Thẻ cư dân (20 lượt/tháng)",
+    "Free with Resident Card (20 passes/month)"
+  ],
+  [
+    "Bể Bơi Nhiệt Đới & Ốc Đảo Resort (Nội Khu The Tropical)",
+    "Tropical Pool & Resort Oasis (The Tropical Inner Court)"
+  ],
+  [
+    "Miễn phí theo Thẻ cư dân (Vào tự do FaceID / Thẻ)",
+    "Free with Resident Card (Open Access FaceID / Card)"
+  ],
+  [
+    "Trung Tâm Thể Hình Technogym (Fitness & Yoga - Tầng 3)",
+    "Technogym Fitness Center (Fitness & Yoga - 3rd Floor)"
+  ],
+  [
+    "Cụm Sân Thể Thao Đa Năng (Pickleball & Tennis - Công Viên Nội Khu)",
+    "Multi-Sport Courts (Pickleball & Tennis - Inner Park)"
+  ],
+  [
+    "Miễn phí theo Thẻ cư dân (Đặt lịch trước 2 giờ)",
+    "Free with Resident Card (Book 2 hours in advance)"
+  ],
+  [
+    "Phòng Xông Hơi Đá Muối Himalaya (Private VIP - Tầng 3)",
+    "Himalayan Pink Salt Sauna (Private VIP - 3rd Floor)"
+  ],
+  [
+    "500.000 đ / giờ (Phòng gia đình VIP)",
+    "500,000 VND / hour (VIP Family Room)"
+  ],
+  [
+    "Vườn Tiệc Nướng BBQ Panoramic (Sân Thượng Chân Mây)",
+    "Panoramic BBQ Garden (Cloud Rooftop)"
+  ],
+  [
+    "600.000 đ / ca (Bao gồm set bếp Weber & dọn dẹp)",
+    "600,000 VND / slot (Includes Weber grill set & cleaning)"
+  ],
+  [
+    "Nhà Hàng Ẩm Thực Skyline (Tầng 1 - Sảnh The Tropical BS-07)",
+    "Skyline Gourmet Restaurant (Floor 1 - The Tropical BS-07 Lobby)"
+  ],
+  [
+    "Phục vụ cư dân & Khách theo thực đơn (Ưu đãi 10% thẻ cư dân)",
+    "Serving residents & guests à la carte (10% resident discount)"
+  ],
+  [
+    "Khu Vui Chơi Trẻ Em Sky Kids Zone (Tầng 1 - Sảnh Chung Cư BS-07)",
+    "Sky Kids Zone Playground (Floor 1 - BS-07 Lobby)"
+  ],
+  [
+    "Miễn phí theo Thẻ cư dân (Có người lớn đi kèm)",
+    "Free with Resident Card (Adult accompaniment required)"
+  ],
+  [
+    "Thông báo lịch bảo dưỡng định kỳ hệ thống thang máy Chung Cư BS-08",
+    "Notice: Routine maintenance schedule for BS-08 elevator system"
+  ],
+  [
+    "Ban Quản lý xin thông báo kế hoạch kiểm tra kỹ thuật định kỳ thang máy số 02 vào ngày 28/08/2026 từ 09:00 - 11:30. Kính mong Quý cư dân sử dụng thang số 01 và 03 trong thời gian trên.",
+    "The Management Board announces routine technical inspection of elevator No. 02 on August 28, 2026 from 09:00 to 11:30. Residents please use elevators 01 and 03 during this window."
+  ],
+  [
+    "Thông báo BQL",
+    "Management Notice"
+  ],
+  [
+    "Trao đổi lại bộ bàn ghế đọc sách ban công bằng gỗ sồi còn mới 95%",
+    "Transferring 95% new oak balcony reading table and chair set"
+  ],
+  [
+    "Gia đình mình vừa thay đổi nội thất nên muốn nhượng lại bộ bàn ghế ban công gọn nhẹ cho bác nào có nhu cầu, có thể qua xem trực tiếp tại căn CH-06.",
+    "Our family recently renovated and would like to pass on this compact balcony table set. Welcome to inspect in person at Apt CH-06."
+  ],
+  [
+    "Rao vặt",
+    "Classifieds"
+  ],
+  [
+    "Nội thất",
+    "Furniture"
+  ],
+  [
+    "Cộng đồng",
+    "Community"
+  ],
+  [
+    "Biểu quyết Thông qua Phương án Nâng cấp Hệ thống Kiểm soát Xe Thông minh Tự Động Hầm B2",
+    "Vote: Approval of Basement B2 Automatic Smart Parking System Upgrade"
+  ],
+  [
+    "Chiến dịch lấy ý kiến hợp pháp của các Chủ sở hữu căn hộ về việc trích Quỹ Bảo trì để nâng cấp camera đọc biển số tự động tốc độ cao.",
+    "Official resident opinion poll on allocating Maintenance Fund for high-speed license plate recognition cameras."
+  ],
+  [
+    "Đồng ý phương án nâng cấp (Dự toán 150 triệu)",
+    "Agree with upgrade plan (Budget 150 million VND)"
+  ],
+  [
+    "Đa Năng",
+    "Multi-Purpose"
+  ],
+  [
+    "Sửa Chữa Kỹ Thuật",
+    "Technical Repairs"
+  ],
+  [
+    "Hỏi Đáp & Hỗ Trợ",
+    "Q&A & Support"
+  ],
+  [
+    "Phản Ánh & Góp Ý",
+    "Feedback & Suggestions"
+  ],
+  [
+    "Yêu Cầu Dịch Vụ",
+    "Service Requests"
+  ],
+  [
+    "Đã kiểm tra và xử lý xong.",
+    "Inspected and completed."
+  ],
+  [
+    "Cư dân hài lòng với dịch vụ.",
+    "Resident satisfied with service."
+  ],
+  [
+    "Hoàn Tiền 100% (Hủy Trước Giờ Hẹn > 30 Phút)",
+    "100% Refund (Cancel > 30 Mins Before Booking)"
+  ],
+  [
+    "Quý cư dân báo hủy sớm trước giờ hẹn ít nhất 30 phút, hệ thống tự động hoàn lại 100% số tiền đã đặt giữ chỗ vào hóa đơn sinh hoạt tháng tới.",
+    "Cancellations made at least 30 minutes in advance receive an automatic 100% deposit credit on the next utility bill."
+  ],
+  [
+    "Hỗ Trợ Hoàn Tiền 50% (Hủy Sát Giờ Hẹn < 30 Phút)",
+    "50% Refund Support (Cancel < 30 Mins Before Booking)"
+  ],
+  [
+    "Quý cư dân yêu cầu hủy trong vòng nửa giờ sát giờ hẹn. Ban Quản Lý hỗ trợ hoàn lại 50% số tiền giữ chỗ; 50% còn lại dùng để bù đắp chi phí gia nhiệt lò đá muối & tinh dầu đã chuẩn bị sẵn.",
+    "Cancellations within 30 minutes of booking receive a 50% refund; the remainder covers pre-heating and essential oil preparation."
+  ],
+  [
+    "Không Hoàn Trả (Đã Quá Khung Giờ Đặt Chỗ)",
+    "Non-Refundable (Session Window Passed)"
+  ],
+  [
+    "Khung giờ phòng riêng tư đã bắt đầu hoặc kết thúc, hệ thống đã khóa phòng riêng phục vụ căn hộ của Quý cư dân nên không thể áp dụng hoàn trả.",
+    "The private session has started or ended and the room was reserved for your apartment, so no refund can be granted."
+  ],
+  [
+    "Mã vé không tồn tại trên hệ thống.",
+    "Ticket code does not exist in the system."
+  ],
+  [
+    "Vé này đã bị hủy trước đó.",
+    "This pass was previously cancelled."
+  ],
+  [
+    "Vé đã được check-in trước đó. Cổng barrier mở tự động.",
+    "Pass was already checked in. Automatic barrier opening."
+  ],
+  [
+    "Không tìm thấy thông tin lịch đặt này.",
+    "Booking information not found."
+  ],
+  [
+    "Đã hủy lịch đặt chỗ. Do quá giờ hẹn bắt đầu nên không áp dụng hoàn tiền theo quy chế.",
+    "Booking cancelled. No refund applies as scheduled start time has passed."
+  ],
+  [
+    "Khách Thăm Căn Hộ",
+    "Apartment Visitor"
+  ],
+  [
+    "Khách đối tác công việc lên căn CH-06 (Tòa BS-07)",
+    "Business guest visiting Apt CH-06 (Tower BS-07)"
+  ],
+  [
+    "Bạn bè đến thăm gia đình",
+    "Friends visiting family"
+  ],
+  [
+    "Mời khách vào tòa nhà lên Căn CH-06 (Tòa BS-07) qua Sảnh Tiếp Tân Tầng 1",
+    "Guest invited to Tower BS-07 Apt CH-06 via 1st Floor Reception"
+  ],
+  [
+    "Chủ hộ tạo mã đón khách [Phạm Minh Tuấn] thời hạn 4 giờ",
+    "Owner created guest pass [Pham Minh Tuan] valid for 4 hours"
+  ],
+  [
+    "Sảnh Lễ Tân / Chốt An Ninh",
+    "Reception Desk / Security Checkpoint"
+  ],
+  [
+    "CHƯA NHẬN DIỆN ĐƯỢC MÃ QR",
+    "QR CODE NOT DETECTED YET"
+  ],
+  [
+    "Vui lòng đưa mã QR vào vùng quét của camera hoặc tải ảnh mã lên.",
+    "Please bring QR code into camera frame or upload image."
+  ],
+  [
+    "MÃ ĐÓN KHÁCH ĐÃ HẾT HẠN",
+    "VISITOR PASS HAS EXPIRED"
+  ],
+  [
+    "THÔNG TIN HỢP LỆ • MỜI KHÁCH VÀO TÒA NHÀ",
+    "VALID INFORMATION • WELCOME TO THE BUILDING"
+  ],
+  [
+    "MÃ QR KHÔNG TỒN TẠI HOẶC KHÔNG HỢP LỆ",
+    "QR CODE DOES NOT EXIST OR IS INVALID"
+  ],
+  [
+    "Mã quét không thuộc hệ thống Skyline Smart Residence hoặc đã bị chỉnh sửa sai lệch.",
+    "Scanned code does not belong to Skyline Smart Residence or has been tampered with."
+  ],
+  [
+    "đã tồn tại trong hệ thống. Vui lòng chọn mã khác.",
+    "already exists in system. Please choose another code."
+  ],
+  [
+    "hoặc",
+    "or"
+  ],
+  [
+    "khớp với",
+    "matches"
+  ],
+  [
+    "Đã phân công kỹ sư",
+    "Assigned engineer"
+  ],
+  [
+    "Liền kề BS-07",
+    "Adjacent to BS-07"
+  ],
+  [
+    "Lỗi lưu tickets vào localStorage:",
+    "Error saving tickets to localStorage:"
+  ],
+  [
+    "Lỗi đồng bộ tickets lên server:",
+    "Error syncing tickets to server:"
+  ],
+  [
+    "Lỗi gọi API tạo phiếu NKS:",
+    "Error calling NKS ticket creation API:"
+  ],
+  [
+    "Lỗi gọi API cập nhật ticket:",
+    "Error calling update ticket API:"
+  ],
+  [
+    "Lỗi gọi API xóa ticket:",
+    "Error calling delete ticket API:"
+  ]
 ];
