@@ -609,20 +609,20 @@ export default function KanbanBoard() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Column 1: Chờ tiếp nhận */}
             <div className="bg-[#121820] border border-[#222B35] flex flex-col justify-between shadow-xl">
-              <div className="p-3.5 border-b border-[#222B35] flex flex-wrap items-center justify-between gap-2 bg-[#161B22]">
-                <div className="flex items-center gap-2">
-                  <span className="w-2.5 h-2.5 bg-blue-500"></span>
-                  <span className="text-xs uppercase tracking-wider font-semibold text-gray-200">
+              <div className="p-3.5 border-b border-[#222B35] flex items-center justify-between bg-[#161B22]">
+                <div className="flex items-center gap-2 min-w-0">
+                  <span className="w-2.5 h-2.5 bg-blue-500 shrink-0"></span>
+                  <span className="text-xs uppercase tracking-wider font-semibold text-gray-200 whitespace-nowrap">
                     {t('1. Chờ Tiếp Nhận', '1. Pending Assignment')}
                   </span>
-                  <span className="px-1.5 py-0.5 bg-blue-950/80 border border-blue-500/40 text-blue-300 font-mono text-[10px] font-bold">
+                  <span className="px-1.5 py-0.5 bg-blue-950/80 border border-blue-500/40 text-blue-300 font-mono text-[10px] font-bold shrink-0">
                     {openTickets.length}
                   </span>
                 </div>
 
-                <span className="text-[10px] font-mono text-purple-300 bg-purple-950/60 border border-purple-500/40 px-2 py-0.5 flex items-center gap-1.5">
-                  <span className="w-1.5 h-1.5 bg-purple-400 rounded-full animate-ping"></span>
-                  {t('AI Tự Động Phân Công 24/7', 'AI Auto-Dispatch 24/7')}
+                <span className="text-[10px] font-mono text-purple-300 bg-purple-950/60 border border-purple-500/40 px-2 py-0.5 flex items-center gap-1.5 shrink-0 whitespace-nowrap">
+                  <span className="w-1.5 h-1.5 bg-purple-400 rounded-full animate-ping shrink-0"></span>
+                  <span>{t('AI Phân Công 24/7', 'AI Auto-Dispatch 24/7')}</span>
                 </span>
               </div>
 
@@ -802,20 +802,20 @@ export default function KanbanBoard() {
 
             {/* Column 2: Đang xử lý */}
             <div className="bg-[#121820] border border-[#222B35] flex flex-col justify-between shadow-xl">
-              <div className="p-3.5 border-b border-[#222B35] flex flex-wrap items-center justify-between gap-2 bg-[#161B22]">
-                <div className="flex items-center gap-2">
-                  <span className="w-2.5 h-2.5 bg-amber-500 rounded-none animate-pulse"></span>
-                  <span className="text-xs uppercase tracking-wider font-semibold text-gray-200">
+              <div className="p-3.5 border-b border-[#222B35] flex items-center justify-between bg-[#161B22]">
+                <div className="flex items-center gap-2 min-w-0">
+                  <span className="w-2.5 h-2.5 bg-amber-500 rounded-none animate-pulse shrink-0"></span>
+                  <span className="text-xs uppercase tracking-wider font-semibold text-gray-200 whitespace-nowrap">
                     {t('2. Đang Xử Lý', '2. In Progress')}
                   </span>
-                  <span className="px-1.5 py-0.5 bg-amber-950/80 border border-amber-500/40 text-amber-300 font-mono text-[10px] font-bold">
+                  <span className="px-1.5 py-0.5 bg-amber-950/80 border border-amber-500/40 text-amber-300 font-mono text-[10px] font-bold shrink-0">
                     {inProgressTickets.length}
                   </span>
                 </div>
 
-                <span className="text-[10px] font-mono text-amber-300 bg-amber-950/60 border border-amber-500/40 px-2 py-0.5 flex items-center gap-1.5">
-                  <span className="w-1.5 h-1.5 bg-amber-400 rounded-full animate-pulse"></span>
-                  {t('Đang Khắc Phục Hiện Trường', 'On-Site Repair in Progress')}
+                <span className="text-[10px] font-mono text-amber-300 bg-amber-950/60 border border-amber-500/40 px-2 py-0.5 flex items-center gap-1.5 shrink-0 whitespace-nowrap">
+                  <span className="w-1.5 h-1.5 bg-amber-400 rounded-full animate-pulse shrink-0"></span>
+                  <span>{t('Hiện Trường', 'On-Site')}</span>
                 </span>
               </div>
 
@@ -984,19 +984,19 @@ export default function KanbanBoard() {
 
             {/* Column 3: Đã nghiệm thu / Đã đóng */}
             <div className="bg-[#121820] border border-[#222B35] flex flex-col justify-between shadow-xl">
-              <div className="p-3.5 border-b border-[#222B35] flex flex-wrap items-center justify-between gap-2 bg-[#161B22]">
-                <div className="flex items-center gap-2">
-                  <span className="w-2.5 h-2.5 bg-emerald-500 rounded-none"></span>
-                  <span className="text-xs uppercase tracking-wider font-semibold text-gray-200">
+              <div className="p-3.5 border-b border-[#222B35] flex items-center justify-between bg-[#161B22]">
+                <div className="flex items-center gap-2 min-w-0">
+                  <span className="w-2.5 h-2.5 bg-emerald-500 rounded-none shrink-0"></span>
+                  <span className="text-xs uppercase tracking-wider font-semibold text-gray-200 whitespace-nowrap">
                     {t('3. Đã Xử Lý Xong', '3. Audited & Closed')}
                   </span>
-                  <span className="px-1.5 py-0.5 bg-emerald-950/80 border border-emerald-500/40 text-emerald-300 font-mono text-[10px] font-bold">
+                  <span className="px-1.5 py-0.5 bg-emerald-950/80 border border-emerald-500/40 text-emerald-300 font-mono text-[10px] font-bold shrink-0">
                     {resolvedTickets.length}
                   </span>
                 </div>
-                <span className="text-[10px] font-mono text-emerald-300 bg-emerald-950/60 border border-emerald-500/40 px-2 py-0.5 flex items-center gap-1.5">
-                  <CheckCircle2 className="w-3 h-3 text-emerald-400" />
-                  {t('Hoàn Tất', 'Completed')}
+                <span className="text-[10px] font-mono text-emerald-300 bg-emerald-950/60 border border-emerald-500/40 px-2 py-0.5 flex items-center gap-1.5 shrink-0 whitespace-nowrap">
+                  <CheckCircle2 className="w-3 h-3 text-emerald-400 shrink-0" />
+                  <span>{t('Hoàn Tất', 'Completed')}</span>
                 </span>
               </div>
 

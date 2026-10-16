@@ -309,7 +309,7 @@ export default function SmartTechSection() {
               </div>
 
               {/* CTA Link */}
-              <div className="pt-2 flex flex-wrap items-center gap-3 sm:gap-4">
+              <div className="pt-2 flex items-center gap-4">
                 <Link
                   href={handlePortalRedirect(current.portalTab)}
                   className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#C5A880] hover:bg-white text-[#0A0E14] text-xs uppercase font-bold tracking-wider transition-all rounded-none shadow hover:shadow-lg active:scale-95 whitespace-nowrap"
@@ -317,7 +317,7 @@ export default function SmartTechSection() {
                   <span>{current.actionText}</span>
                   <ArrowRight className="w-3.5 h-3.5" />
                 </Link>
-                <span className="text-[11px] text-gray-400 font-mono">
+                <span className="text-[11px] text-gray-400 font-mono hidden sm:inline">
                   {t('Tích hợp 4 chung cư The Tropical', 'Integrated across 4 towers of The Tropical')}
                 </span>
               </div>
@@ -330,7 +330,7 @@ export default function SmartTechSection() {
                 <div className="absolute top-0 right-0 w-32 h-32 bg-[#C5A880]/10 rounded-none blur-2xl pointer-events-none" />
 
                 {/* Widget Header */}
-                <div className="flex flex-wrap items-center justify-between gap-2 border-b border-white/10 pb-3">
+                <div className="flex items-center justify-between border-b border-white/10 pb-3">
                   <div>
                     <div className="text-[9px] font-mono font-bold uppercase tracking-widest text-[#C5A880]">
                       {current.visualWidget.badge}
@@ -366,7 +366,7 @@ export default function SmartTechSection() {
                 </div>
 
                 {/* Footer Security Badge */}
-                <div className="pt-2 border-t border-white/5 flex flex-wrap items-center justify-between gap-2 text-[10px] text-gray-400 font-mono">
+                <div className="pt-2 border-t border-white/5 flex items-center justify-between text-[10px] text-gray-400 font-mono">
                   <span className="flex items-center gap-1">
                     <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
                     {t('Mã hóa bảo mật 256-bit', '256-bit Secure Encryption')}
