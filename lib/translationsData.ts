@@ -2882,7 +2882,7 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
   ],
   [
     "Xác Thực Căn Cước Công Dân &amp; Kích Hoạt Quyền Ra Vào",
-    "Verify Citizen ID & Activate Access Rights"
+    "Citizen ID Verification & Access Rights Activation"
   ],
   [
     "Bảng Đối Chiếu Thông Tin Khai Báo &amp; Trích Xuất Thẻ:",
@@ -3315,6 +3315,10 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
   [
     "* Quẹt thẻ hoặc nhìn vào camera nhận diện để mở cửa",
     "* Swipe card or look at the recognition camera to open the door"
+  ],
+  [
+    "Xác Thực Căn Cước Công Dân & Kích Hoạt Quyền Ra Vào",
+    "Citizen ID Verification & Access Rights Activation"
   ],
   [
     "Hệ thống PCCC thông minh và cảm biến nhiệt tự động",
@@ -5881,6 +5885,10 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
     "Activated Resident Card (Tap to Open)"
   ],
   [
+    "Chào mừng Quản trị viên Ban Quản Lý:",
+    "Welcome Management Administrator:"
+  ],
+  [
     "Kiến Trúc Đương Đại Tích Hợp Lõi AI",
     "Contemporary Architecture with AI Core"
   ],
@@ -6286,7 +6294,7 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
   ],
   [
     "Đón Tiếp &amp; Kiểm Tra Khách Thăm",
-    "Welcoming & Checking in with Visitors"
+    "Visitor Reception & Security Check"
   ],
   [
     "Hầm B1 - Khu đỗ xe Ô tô ô số 42-45",
@@ -6878,7 +6886,7 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
   ],
   [
     "Kiểm Tra Mã QR &amp; Tra Cứu PIN",
-    "Verify QR Code & Look Up PIN"
+    "Verify QR Code & Search PIN"
   ],
   [
     "Mật khẩu phải có ít nhất 8 ký tự",
@@ -7782,7 +7790,7 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
   ],
   [
     "Đang Đồng Bộ Dữ Liệu Căn Hộ...",
-    "Synchronizing Apartment Data..."
+    "Syncing Apartment Data..."
   ],
   [
     "Sân Vườn & Hồ Jacuzzi Chân Mây",
@@ -8103,6 +8111,10 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
   [
     "Tiêu Chuẩn Bảo Mật Khuyến Nghị",
     "Recommended Security Standard"
+  ],
+  [
+    "Đón Tiếp & Kiểm Tra Khách Thăm",
+    "Visitor Reception & Security Check"
   ],
   [
     "ĐH 26°C • Khóa cửa • Đóng rèm",
@@ -8907,6 +8919,10 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
   [
     "Nghiệm Thu Hình Ảnh Kỹ Thuật",
     "Technical Photo Acceptance"
+  ],
+  [
+    "Kiểm Tra Mã QR & Tra Cứu PIN",
+    "Verify QR Code & Search PIN"
   ],
   [
     "Chung Cư Thông Minh Skyline",
@@ -9851,6 +9867,10 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
   [
     "Biểu Mẫu Thay Đổi Mật Khẩu",
     "Password Change Form"
+  ],
+  [
+    "Đang Xác Thực Tài Khoản...",
+    "Authenticating Account..."
   ],
   [
     "Vườn nướng BBQ ngoài trời",
@@ -10863,6 +10883,10 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
   [
     "Tự Động Đồng Bộ Hệ Thống",
     "Automatic System Synchronization"
+  ],
+  [
+    "Chào mừng Kỹ thuật viên:",
+    "Welcome Technician:"
   ],
   [
     "Phân khu Beverly Solari",
@@ -12246,7 +12270,7 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
   ],
   [
     "Đăng nhập thành công!",
-    "Successfully logged in!"
+    "Login Successful!"
   ],
   [
     "Đang kết nối camera..",
@@ -12607,6 +12631,10 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
   [
     "Chia Sẻ Mã Đến Khách:",
     "Share Code with Guest:"
+  ],
+  [
+    "Đăng Nhập Thành Công!",
+    "Login Successful!"
   ],
   [
     "Trí Tuệ Nhân Tạo 4.0",
@@ -14530,7 +14558,7 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
   ],
   [
     "Đang Trong Tòa Nhà",
-    "In Building"
+    "Currently Inside"
   ],
   [
     "🟡 Chờ Khách Đến (",
@@ -16234,7 +16262,7 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
   ],
   [
     "Cấp Thẻ Tại Quầy",
-    "Issuing Cards at the Counter"
+    "Issue Pass at Counter"
   ],
   [
     "Xem Thẻ &amp; QR",
@@ -16619,6 +16647,18 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
   [
     "Chưa Có Ảnh Chụp",
     "No Photo Uploaded"
+  ],
+  [
+    "Làm Sạch Dữ Liệu",
+    "Clear Data"
+  ],
+  [
+    "Chào mừng Chủ hộ",
+    "Welcome Apartment Owner"
+  ],
+  [
+    "Chào mừng Cư dân",
+    "Welcome Resident"
   ],
   [
     "Mặt bằng căn hộ",
@@ -18201,6 +18241,10 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
     "Add Option"
   ],
   [
+    "Đang Kích Hoạt",
+    "Access Granted"
+  ],
+  [
     "Kỹ thuật viên",
     "Technician"
   ],
@@ -19370,7 +19414,7 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
   ],
   [
     "Đang Ở Trong",
-    "are in your"
+    "Currently Inside"
   ],
   [
     "Không có SĐT",
@@ -19402,7 +19446,7 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
   ],
   [
     "Đã Kích Hoạt",
-    "Activated"
+    "Access Granted"
   ],
   [
     "Master Suite",
@@ -19767,6 +19811,10 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
   [
     "BẾP & BÀN ĂN",
     "KITCHEN & DINING"
+  ],
+  [
+    "Chờ Xác Thực",
+    "Awaiting Verification"
   ],
   [
     "Cổng Cư Dân",
@@ -20429,6 +20477,10 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
     "(Acceptance"
   ],
   [
+    "Cần Bổ Sung",
+    "Resubmission Required"
+  ],
+  [
     "KHÁCH THUÊ",
     "TENANT"
   ],
@@ -20987,6 +21039,10 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
   [
     "Cư Dân Căn",
     "Resident Apt"
+  ],
+  [
+    "Xem Thẻ QR",
+    "View QR Pass"
   ],
   [
     "Trang Chủ",
@@ -22977,6 +23033,10 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
     "Mode:"
   ],
   [
+    "Quá Hạn",
+    "Overdue"
+  ],
+  [
     "Chủ hộ",
     "Apartment Owner"
   ],
@@ -23158,7 +23218,7 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
   ],
   [
     "Thẻ QR",
-    "QR Tab"
+    "QR Pass"
   ],
   [
     "Đã Hủy",
@@ -23326,7 +23386,7 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
   ],
   [
     "Chốt:",
-    "Finalize:"
+    "Checkpoint:"
   ],
   [
     "Khách",
@@ -23530,7 +23590,7 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
   ],
   [
     "Cấp:",
-    "Level:"
+    "Issued:"
   ],
   [
     "Ô Tô",
@@ -23751,6 +23811,10 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
   [
     "Hạn:",
     "Deadline:"
+  ],
+  [
+    "Chốt",
+    "Checkpoint"
   ],
   [
     "Hủy",
@@ -23987,6 +24051,10 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
   [
     "Vé)",
     "Ticket)"
+  ],
+  [
+    "Cấp",
+    "Issued"
   ],
   [
     "Nữ",

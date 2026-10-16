@@ -16,7 +16,7 @@ export interface ExtendedBill extends Bill {
   bank_code?: string;
 }
 
-const BILLS_STORAGE_KEY = 'skyline_bills_v4';
+const BILLS_STORAGE_KEY = 'skyline_bills_v5';
 
 // Cấu hình tài khoản ngân hàng Ban Quản Lý Tòa Nhà Skyline (BIDV)
 export const SKYLINE_BANK_INFO = {
@@ -75,6 +75,7 @@ export function getBills(aptCode?: string, overrideOwnerName?: string): Extended
       localStorage.removeItem('skyline_bills_v1');
       localStorage.removeItem('skyline_bills_v2');
       localStorage.removeItem('skyline_bills_v3');
+      localStorage.removeItem('skyline_bills_v4');
 
       const raw = localStorage.getItem(BILLS_STORAGE_KEY);
       if (!raw) {
@@ -85,7 +86,14 @@ export function getBills(aptCode?: string, overrideOwnerName?: string): Extended
         if (Array.isArray(parsed) && parsed.length > 0) {
           // Lọc bỏ triệt để các hóa đơn ảo, chuẩn hóa mã căn sang CH-06 và làm sạch chi tiết
           allBills = parsed
-            .filter((b: ExtendedBill) => b.id !== 'bill-2026-08-08a02' && b.id !== 'bill-2026-08-18a01')
+            .filter((b: ExtendedBill) => 
+              b.id !== 'bill-2026-08-08a02' && 
+              b.id !== 'bill-2026-08-18a01' &&
+              b.id !== 'bill-2026-06-ch06' &&
+              b.id !== 'bill-2026-05-ch06' &&
+              b.id !== 'bill-2026-06-12a05' &&
+              b.id !== 'bill-2026-05-12a05'
+            )
             .map((bill: ExtendedBill) => {
               const normalizedApt = (bill.apt_code === '12A05' || bill.apt_code === 'CH-06') ? 'CH-06' : bill.apt_code;
               const normalizedId = bill.id ? bill.id.replace('12a05', 'ch06') : bill.id;
@@ -117,8 +125,10 @@ export function getBills(aptCode?: string, overrideOwnerName?: string): Extended
               allBills.push(initBill);
             }
           }
+          localStorage.setItem(BILLS_STORAGE_KEY, JSON.stringify(allBills));
         } else {
           allBills = INITIAL_BILLS;
+          localStorage.setItem(BILLS_STORAGE_KEY, JSON.stringify(INITIAL_BILLS));
         }
       }
     } catch {

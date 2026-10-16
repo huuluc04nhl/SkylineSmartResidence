@@ -117,21 +117,21 @@ export default function LoginModal({ isOpen, onClose, defaultAccount = '' }: Log
     const name = loggedUser.full_name || loggedUser.fullname || loggedUser.name || '';
     const rawApt = loggedUser.apartment_code || '';
     const cleanApt = (rawApt === '12A05' || rawApt === '12A5') ? 'CH-06' : rawApt;
-    const apt = cleanApt ? `Căn ${cleanApt}` : '';
-    let roleNotice = 'Đăng nhập thành công!';
+    const apt = cleanApt ? `${t('Căn')} ${cleanApt}` : '';
+    let roleNotice = t('Đăng nhập thành công!');
     let redirectTab = 'resident-home';
 
     if (role === 'ADMIN') {
-      roleNotice = `Chào mừng Quản trị viên Ban Quản Lý: ${name}`;
+      roleNotice = `${t('Chào mừng Quản trị viên Ban Quản Lý')}: ${name}`;
       redirectTab = 'admin-dashboard';
     } else if (role === 'TECHNICIAN') {
-      roleNotice = `Chào mừng Kỹ thuật viên: ${name}`;
+      roleNotice = `${t('Chào mừng Kỹ thuật viên')}: ${name}`;
       redirectTab = 'admin-kanban';
     } else if (role === 'OWNER') {
-      roleNotice = `Chào mừng Chủ hộ ${apt ? `${apt}: ` : ''}${name}`;
+      roleNotice = `${t('Chào mừng Chủ hộ')} ${apt ? `${apt}: ` : ''}${name}`;
       redirectTab = 'resident-home';
     } else {
-      roleNotice = `Chào mừng Cư dân ${apt ? `${apt}: ` : ''}${name}`;
+      roleNotice = `${t('Chào mừng Cư dân')} ${apt ? `${apt}: ` : ''}${name}`;
       redirectTab = 'resident-home';
     }
 
@@ -563,10 +563,10 @@ export default function LoginModal({ isOpen, onClose, defaultAccount = '' }: Log
         <div className="text-center space-y-1 border-b border-[#222B35] pb-3">
           <SkylineLogo variant="stacked" size="md" theme="dark" className="mx-auto" />
           <h3 className="font-serif text-lg text-white font-bold tracking-wide">
-            Cổng SKYLINE Smart Residence
+            {t('Cổng SKYLINE Smart Residence')}
           </h3>
           <p className="text-[11px] text-gray-400 font-light">
-            Cổng đăng nhập hệ thống dành cho Cư Dân & Ban Quản Lý
+            {t('Cổng đăng nhập hệ thống dành cho Cư Dân & Ban Quản Lý')}
           </p>
         </div>
 
@@ -587,7 +587,7 @@ export default function LoginModal({ isOpen, onClose, defaultAccount = '' }: Log
             }`}
           >
             <Mail className="w-3.5 h-3.5 shrink-0" />
-            <span className="text-[10px] sm:text-[11px] leading-tight text-center break-words min-w-0">Email / Mật Khẩu</span>
+            <span className="text-[10px] sm:text-[11px] leading-tight text-center break-words min-w-0">{t('Email / Mật Khẩu')}</span>
           </button>
 
           <button
@@ -605,7 +605,7 @@ export default function LoginModal({ isOpen, onClose, defaultAccount = '' }: Log
             }`}
           >
             <Smartphone className="w-3.5 h-3.5 shrink-0" />
-            <span className="text-[10px] sm:text-[11px] leading-tight text-center break-words min-w-0">SĐT & Mã OTP</span>
+            <span className="text-[10px] sm:text-[11px] leading-tight text-center break-words min-w-0">{t('SĐT & Mã OTP')}</span>
           </button>
 
           <button
@@ -624,7 +624,7 @@ export default function LoginModal({ isOpen, onClose, defaultAccount = '' }: Log
             }`}
           >
             <ScanFace className="w-3.5 h-3.5 shrink-0" />
-            <span className="text-[10px] sm:text-[11px] leading-tight text-center break-words min-w-0">FaceID AI</span>
+            <span className="text-[10px] sm:text-[11px] leading-tight text-center break-words min-w-0">{t('FaceID AI')}</span>
             <span className="absolute top-1 right-1 w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
           </button>
         </div>
@@ -670,15 +670,15 @@ export default function LoginModal({ isOpen, onClose, defaultAccount = '' }: Log
             <div className="space-y-1">
               <label className="text-gray-300 text-[11px] flex items-center justify-between font-medium">
                 <span className="flex items-center gap-1.5">
-                  <Mail className="w-3.5 h-3.5 text-[#C5A880]" /> Email / Tài Khoản:
+                  <Mail className="w-3.5 h-3.5 text-[#C5A880]" /> {t('Email / Tài Khoản:')}
                 </span>
-                <span className="text-[10px] text-gray-400 font-mono">Cư dân &amp; Quản lý</span>
+                <span className="text-[10px] text-gray-400 font-mono">{t('Cư dân & Quản lý')}</span>
               </label>
               <input
                 type="text"
                 value={account}
                 onChange={(e) => setAccount(e.target.value)}
-                placeholder="Nhập email tài khoản (VD: huuluc04@gmail.com)..."
+                placeholder={t('Nhập email tài khoản (VD: huuluc04@gmail.com)...')}
                 className="w-full bg-[#161B22] border border-[#2D3748] p-2.5 text-white text-xs font-mono rounded-none focus:outline-none focus:border-[#C5A880] transition-colors"
                 required
               />
@@ -687,16 +687,16 @@ export default function LoginModal({ isOpen, onClose, defaultAccount = '' }: Log
             <div className="space-y-1">
               <label className="text-gray-300 text-[11px] flex items-center justify-between font-medium">
                 <span className="flex items-center gap-1.5">
-                  <Lock className="w-3.5 h-3.5 text-[#C5A880]" /> Mật Khẩu:
+                  <Lock className="w-3.5 h-3.5 text-[#C5A880]" /> {t('Mật Khẩu:')}
                 </span>
-                <span className="text-[10px] text-gray-400 font-mono">Bảo mật hệ thống</span>
+                <span className="text-[10px] text-gray-400 font-mono">{t('Bảo mật hệ thống')}</span>
               </label>
               <div className="relative">
                 <input
                   type={showPassword ? 'text' : 'password'}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Nhập mật khẩu..."
+                  placeholder={t('Nhập mật khẩu...')}
                   className="w-full bg-[#161B22] border border-[#2D3748] p-2.5 pr-10 text-white text-xs rounded-none focus:outline-none focus:border-[#C5A880] transition-colors"
                   required
                 />
@@ -721,11 +721,11 @@ export default function LoginModal({ isOpen, onClose, defaultAccount = '' }: Log
             >
               {isSubmitting ? (
                 <>
-                  <RefreshCw className="w-4 h-4 animate-spin" /> Đang Xác Thực Tài Khoản...
+                  <RefreshCw className="w-4 h-4 animate-spin" /> {t('Đang Xác Thực Tài Khoản...')}
                 </>
               ) : (
                 <>
-                  <CheckCircle2 className="w-4 h-4" /> Đăng Nhập Hệ Thống
+                  <CheckCircle2 className="w-4 h-4" /> {t('Đăng Nhập Hệ Thống')}
                 </>
               )}
             </button>
@@ -740,16 +740,16 @@ export default function LoginModal({ isOpen, onClose, defaultAccount = '' }: Log
             <div className="space-y-1">
               <label className="text-gray-300 flex items-center justify-between text-[11px] font-medium">
                 <span className="flex items-center gap-1.5">
-                  <Smartphone className="w-3.5 h-3.5 text-[#C5A880]" /> Số Điện Thoại Cư Dân:
+                  <Smartphone className="w-3.5 h-3.5 text-[#C5A880]" /> {t('Số Điện Thoại Cư Dân:')}
                 </span>
-                <span className="text-[10px] text-gray-400 font-mono">Đã đăng ký</span>
+                <span className="text-[10px] text-gray-400 font-mono">{t('Đã đăng ký')}</span>
               </label>
               <div className="flex gap-2">
                 <input
                   type="tel"
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
-                  placeholder="Nhập số điện thoại (VD: 0364967082)"
+                  placeholder={t('Nhập số điện thoại (VD: 0364967082)')}
                   className="flex-1 bg-[#161B22] border border-[#2D3748] p-2.5 text-white text-xs font-mono rounded-none focus:outline-none focus:border-[#C5A880]"
                   required
                 />
@@ -769,7 +769,7 @@ export default function LoginModal({ isOpen, onClose, defaultAccount = '' }: Log
                       {countdown}s
                     </>
                   ) : (
-                    'Gửi Mã OTP'
+                    t('Gửi Mã OTP')
                   )}
                 </button>
               </div>
@@ -780,21 +780,21 @@ export default function LoginModal({ isOpen, onClose, defaultAccount = '' }: Log
               <div className="p-3 bg-[#121E2A] border border-[#C5A880]/70 rounded-none text-xs space-y-1.5 animate-fadeIn">
                 <div className="flex items-center justify-between text-[#C5A880] font-bold">
                   <span className="flex items-center gap-1.5">
-                    <Sparkles className="w-3.5 h-3.5" /> Mã OTP gửi tới {phone}:
+                    <Sparkles className="w-3.5 h-3.5" /> {t('Mã OTP gửi tới')} {phone}:
                   </span>
                   <span className="font-mono bg-[#C5A880] text-[#0D1117] px-2 py-0.5 text-xs font-bold rounded-none">
                     {generatedOtp}
                   </span>
                 </div>
                 <div className="text-[11px] text-gray-400">
-                  Mã OTP có hiệu lực trong 60 giây.
+                  {t('Mã OTP có hiệu lực trong 60 giây.')}
                 </div>
                 <button
                   type="button"
                   onClick={() => setOtpCode(generatedOtp)}
                   className="text-[10px] text-[#C5A880] underline hover:text-white font-semibold"
                 >
-                  Bấm để tự động điền mã: {generatedOtp}
+                  {t('Bấm để tự động điền mã')}: {generatedOtp}
                 </button>
               </div>
             )}
@@ -803,14 +803,14 @@ export default function LoginModal({ isOpen, onClose, defaultAccount = '' }: Log
             <form onSubmit={handleVerifyOtp} className="space-y-3">
               <div className="space-y-1">
                 <label className="text-gray-300 text-[11px] flex items-center gap-1.5 font-medium">
-                  <Lock className="w-3.5 h-3.5 text-[#C5A880]" /> Nhập mã OTP 6 chữ số:
+                  <Lock className="w-3.5 h-3.5 text-[#C5A880]" /> {t('Nhập mã OTP 6 chữ số:')}
                 </label>
                 <input
                   type="text"
                   maxLength={6}
                   value={otpCode}
                   onChange={(e) => setOtpCode(e.target.value)}
-                  placeholder="Nhập 6 chữ số OTP..."
+                  placeholder="------"
                   className="w-full bg-[#161B22] border border-[#2D3748] p-2.5 text-center text-lg font-mono tracking-[0.35em] text-[#C5A880] rounded-none focus:outline-none focus:border-[#C5A880]"
                   required
                 />
@@ -825,8 +825,15 @@ export default function LoginModal({ isOpen, onClose, defaultAccount = '' }: Log
                     : 'bg-gray-800 text-gray-500 cursor-not-allowed border border-gray-700'
                 }`}
               >
-                {isSubmitting ? <RefreshCw className="w-4 h-4 animate-spin" /> : <CheckCircle2 className="w-4 h-4" />}
-                Xác Thực OTP & Đăng Nhập
+                {isSubmitting ? (
+                  <>
+                    <RefreshCw className="w-4 h-4 animate-spin" /> {t('Đang Xác Thực OTP...')}
+                  </>
+                ) : (
+                  <>
+                    <CheckCircle2 className="w-4 h-4" /> {t('Xác Thực OTP & Đăng Nhập')}
+                  </>
+                )}
               </button>
             </form>
           </div>
@@ -867,7 +874,7 @@ export default function LoginModal({ isOpen, onClose, defaultAccount = '' }: Log
                 }`}
               >
                 {deviceType === 'MOBILE' ? <Smartphone className="w-3.5 h-3.5" /> : <Camera className="w-3.5 h-3.5" />}
-                <span>Camera {deviceType === 'MOBILE' ? 'Điện thoại' : 'Laptop'}</span>
+                <span>{t('Camera')} {deviceType === 'MOBILE' ? t('Điện thoại') : t('Laptop')}</span>
                 {isCameraActive && (
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
                 )}
@@ -891,7 +898,7 @@ export default function LoginModal({ isOpen, onClose, defaultAccount = '' }: Log
                 }`}
               >
                 <Upload className="w-3.5 h-3.5" />
-                <span>Tải Ảnh Chân Dung</span>
+                <span>{t('Tải Ảnh Chân Dung')}</span>
               </button>
             </div>
 
@@ -933,10 +940,10 @@ export default function LoginModal({ isOpen, onClose, defaultAccount = '' }: Log
                         <Camera className="w-6 h-6 animate-pulse" />
                       </div>
                       <div className="text-xs text-gray-300 font-medium">
-                        Đang kết nối Camera {deviceType === 'MOBILE' ? 'điện thoại' : 'laptop'}...
+                        {t('Đang kết nối Camera')} {deviceType === 'MOBILE' ? t('điện thoại') : t('laptop')}...
                       </div>
                       <div className="text-[11px] text-gray-500">
-                        Vui lòng cho phép quyền Camera trên trình duyệt nếu có yêu cầu
+                        {t('Vui lòng cho phép quyền Camera trên trình duyệt nếu có yêu cầu')}
                       </div>
                     </div>
                   )}
@@ -956,7 +963,7 @@ export default function LoginModal({ isOpen, onClose, defaultAccount = '' }: Log
                           onClick={startCamera}
                           className="px-3 py-1.5 bg-[#C5A880] text-[#0D1117] text-xs font-bold rounded-none hover:bg-white transition-all flex items-center gap-1.5"
                         >
-                          <RefreshCw className="w-3.5 h-3.5" /> Thử lại Camera
+                          <RefreshCw className="w-3.5 h-3.5" /> {t('Thử lại Camera')}
                         </button>
                         <button
                           type="button"
@@ -966,7 +973,7 @@ export default function LoginModal({ isOpen, onClose, defaultAccount = '' }: Log
                           }}
                           className="px-3 py-1.5 bg-[#161B22] border border-[#2D3748] text-gray-300 text-xs font-medium rounded-none hover:text-white transition-all flex items-center gap-1.5"
                         >
-                          <Upload className="w-3.5 h-3.5 text-[#C5A880]" /> Tải Ảnh
+                          <Upload className="w-3.5 h-3.5 text-[#C5A880]" /> {t('Tải Ảnh')}
                         </button>
                       </div>
                     </div>
@@ -985,7 +992,7 @@ export default function LoginModal({ isOpen, onClose, defaultAccount = '' }: Log
                     onClick={() => fileUploadInputRef.current?.click()}
                     className="absolute top-3 right-3 px-2.5 py-1 bg-black/75 hover:bg-black text-[11px] text-[#C5A880] rounded-none border border-white/20 backdrop-blur transition-all flex items-center gap-1.5"
                   >
-                    <RefreshCw className="w-3 h-3" /> Đổi ảnh
+                    <RefreshCw className="w-3 h-3" /> {t('Đổi ảnh')}
                   </button>
                 </div>
               ) : (
@@ -998,10 +1005,10 @@ export default function LoginModal({ isOpen, onClose, defaultAccount = '' }: Log
                     <Upload className="w-6 h-6" />
                   </div>
                   <div className="text-xs font-medium text-gray-300">
-                    Bấm vào đây để chọn ảnh khuôn mặt
+                    {t('Bấm vào đây để chọn ảnh khuôn mặt')}
                   </div>
                   <div className="text-[11px] text-gray-500">
-                    Hỗ trợ định dạng ảnh rõ nét (JPG, PNG, WebP)
+                    {t('Hỗ trợ định dạng ảnh rõ nét (JPG, PNG, WebP)')}
                   </div>
                 </div>
               )}
@@ -1057,33 +1064,33 @@ export default function LoginModal({ isOpen, onClose, defaultAccount = '' }: Log
                           lighting?.status === 'TOO_DARK' ? (
                             <>
                               <Moon className="w-3 h-3 text-rose-400" />
-                              <span>Ánh sáng yếu ({lighting.scorePercent}%) - Cần thêm ánh sáng</span>
+                              <span>{t('Ánh sáng yếu')} ({lighting.scorePercent}%) - {t('Cần thêm ánh sáng')}</span>
                             </>
                           ) : lighting?.status === 'TOO_BRIGHT' ? (
                             <>
                               <Sun className="w-3 h-3 text-amber-400" />
-                              <span>Ánh sáng chói - Tránh ngược sáng</span>
+                              <span>{t('Ánh sáng chói - Tránh ngược sáng')}</span>
                             </>
                           ) : isCameraActive ? (
-                            'Căn khuôn mặt vào khung elip'
+                            t('Căn khuôn mặt vào khung elip')
                           ) : (
-                            'Đang kết nối camera...'
+                            t('Đang kết nối camera...')
                           )
                         ) : (
-                          uploadedFaceImage ? 'Ảnh đã sẵn sàng quét FaceID' : 'Chọn ảnh chân dung để quét'
+                          uploadedFaceImage ? t('Ảnh đã sẵn sàng quét FaceID') : t('Chọn ảnh chân dung để quét')
                         )}
                       </span>
                     )}
                     {faceScanStatus === 'SUCCESS' && (
                       <span className="text-emerald-400 font-semibold flex items-center gap-1.5">
                         <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
-                        Xác thực thành công
+                        {t('Xác thực thành công')}
                       </span>
                     )}
                     {faceScanStatus === 'FAILED' && (
                       <span className="text-rose-400 font-semibold flex items-center gap-1.5">
                         <AlertCircle className="w-3.5 h-3.5 text-rose-400" />
-                        {errorMessage || 'Không khớp dữ liệu'}
+                        {errorMessage ? t(errorMessage) : t('Không khớp dữ liệu')}
                       </span>
                     )}
                   </div>
@@ -1103,17 +1110,17 @@ export default function LoginModal({ isOpen, onClose, defaultAccount = '' }: Log
                       {matchedFaceResult.name}
                     </div>
                     <div className="text-[11px] text-gray-400 flex items-center gap-1.5 flex-wrap">
-                      <span>Căn hộ: <span className="text-emerald-300 font-mono font-semibold">{matchedFaceResult.apt}</span></span>
+                      <span>{t('Căn hộ')}: <span className="text-emerald-300 font-mono font-semibold">{matchedFaceResult.apt}</span></span>
                       {matchedFaceResult.bestAngle && (
                         <span className="text-[10px] px-1.5 py-0.5 bg-[#C5A880]/20 text-[#D8BC95] border border-[#C5A880]/30 font-medium">
-                          Mẫu: {matchedFaceResult.bestAngle}
+                          {t('Mẫu')}: {matchedFaceResult.bestAngle}
                         </span>
                       )}
                     </div>
                   </div>
                 </div>
                 <div className="px-2 py-0.5 bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 rounded-none text-[10px] font-mono font-bold">
-                  {matchedFaceResult.score}% KHỚP
+                  {matchedFaceResult.score}% {t('KHỚP')}
                 </div>
               </div>
             )}
@@ -1138,17 +1145,17 @@ export default function LoginModal({ isOpen, onClose, defaultAccount = '' }: Log
               {faceScanStatus === 'SCANNING' || faceScanStatus === 'LIVENESS' || faceScanStatus === 'MATCHING' ? (
                 <>
                   <RefreshCw className="w-4 h-4 animate-spin text-[#0D1117]" />
-                  <span>Đang Nhận Diện Sinh Trắc Học...</span>
+                  <span>{t('Đang Nhận Diện Sinh Trắc Học...')}</span>
                 </>
               ) : (
                 <>
                   <ScanFace className="w-4 h-4" />
                   <span>
                     {faceInputMode === 'UPLOAD' && !uploadedFaceImage
-                      ? 'Chọn Ảnh Để Quét FaceID'
+                      ? t('Chọn Ảnh Để Quét FaceID')
                       : faceScanStatus === 'FAILED'
-                      ? 'Quét Lại Khuôn Mặt'
-                      : 'Bắt Đầu Quét FaceID'}
+                      ? t('Quét Lại Khuôn Mặt')
+                      : t('Bắt Đầu Quét FaceID')}
                   </span>
                 </>
               )}
