@@ -6,6 +6,83 @@ import { TRANSLATIONS_DATA } from './translationsData';
 export type Language = 'vi' | 'en';
 
 // =============================================================================
+// CORE KEY DICTIONARY & GLOSSARY
+// =============================================================================
+export const KEY_DICTIONARY: Record<string, Record<Language, string>> = {
+  'nav.home': { vi: 'Trang Chủ', en: 'Home' },
+  'nav.about': { vi: 'Tổng Quan', en: 'Overview' },
+  'nav.concept': { vi: 'Triết Lý Thiết Kế', en: 'Concept' },
+  'nav.apartments': { vi: 'Mặt Bằng Căn Hộ', en: 'Apartment Layout' },
+  'nav.amenities': { vi: 'Tiện Ích 5 Sao', en: '5-Star Amenities' },
+  'nav.services': { vi: 'Lõi Công Nghệ AI', en: 'AI Technology' },
+  'nav.login': { vi: 'Đăng Nhập', en: 'Sign In' },
+  'nav.logout': { vi: 'Đăng Xuất', en: 'Sign Out' },
+  'nav.portal': { vi: 'Cổng Cư Dân', en: 'Resident Portal' },
+  'nav.dashboard': { vi: 'Vào Bảng Điều Khiển', en: 'Go to Dashboard' },
+  'role.admin': { vi: 'Ban Quản Lý', en: 'Management Board' },
+  'role.owner': { vi: 'Chủ Hộ Căn Hộ', en: 'Apartment Owner' },
+  'role.tenant': { vi: 'Khách Thuê', en: 'Tenant' },
+  'role.family': { vi: 'Người Nhà Căn Hộ', en: 'Family Member' },
+  'role.technician': { vi: 'Kỹ Thuật Viên', en: 'Technician' },
+  'role.staff': { vi: 'Nhân Sự Ban Quản Lý', en: 'Staff' },
+  'role.resident': { vi: 'Cư Dân', en: 'Resident' },
+  'ADMIN': { vi: 'Ban Quản Lý', en: 'Management Board' },
+  'OWNER': { vi: 'Chủ Hộ', en: 'Apartment Owner' },
+  'TENANT': { vi: 'Khách Thuê', en: 'Tenant' },
+  'FAMILY': { vi: 'Người Nhà', en: 'Family Member' },
+  'TECHNICIAN': { vi: 'Kỹ Thuật Viên', en: 'Technician' },
+  'Chủ Hộ': { vi: 'Chủ Hộ', en: 'Apartment Owner' },
+  'Người Nhà': { vi: 'Người Nhà', en: 'Family Member' },
+  'Khách Thuê': { vi: 'Khách Thuê', en: 'Tenant' },
+  'Ban Quản Lý': { vi: 'Ban Quản Lý', en: 'Management Board' },
+  'Kỹ Thuật Viên': { vi: 'Kỹ Thuật Viên', en: 'Technician' },
+  'Căn Trống': { vi: 'Căn Trống', en: 'Vacant' },
+  'Đã Ở': { vi: 'Đã Ở', en: 'Occupied' },
+  'Bảo Trì': { vi: 'Bảo Trì', en: 'Maintenance' },
+  'Tài Chính • Kế Toán': { vi: 'Tài Chính • Kế Toán', en: 'Finance & Accounting' },
+  'Tài Chính • Căn': { vi: 'Tài Chính • Căn', en: 'Finance • Apartment' },
+  'Sổ Cái Thu Phí Dịch Vụ': { vi: 'Sổ Cái Thu Phí Dịch Vụ', en: 'Service Fee Ledger' },
+  'căn hộ đã nộp': { vi: 'căn hộ đã nộp', en: 'paid apartments' },
+  'căn hộ chưa nộp': { vi: 'căn hộ chưa nộp', en: 'unpaid apartments' },
+  'Đã Ghi Thu ✓': { vi: 'Đã Ghi Thu ✓', en: 'Payment Recorded ✓' },
+  'Duyệt Gạch Nợ': { vi: 'Duyệt Gạch Nợ', en: 'Approve Debt Clearance' },
+  'Kế Toán Duyệt': { vi: 'Kế Toán Duyệt', en: 'Accounting Approval' },
+  'Tiêu Thụ Tăng Vọt': { vi: 'Tiêu Thụ Tăng Vọt', en: 'Surge in Consumption' },
+  'Biến Động Bất Thường': { vi: 'Biến Động Bất Thường', en: 'Abnormal Fluctuation' },
+  'Cảnh Báo Tiêu Thụ Bất Thường (> 50%)': { vi: 'Cảnh Báo Tiêu Thụ Bất Thường (> 50%)', en: 'Abnormal Consumption Alert (> 50%)' },
+  '1. Chờ Tiếp Nhận': { vi: '1. Chờ Tiếp Nhận', en: '1. Pending Assignment' },
+  '2. Đang Xử Lý': { vi: '2. Đang Xử Lý', en: '2. In Progress' },
+  '3. Đã Xử Lý Xong': { vi: '3. Đã Xử Lý Xong', en: '3. Completed' },
+  'AI Phân Công 24/7': { vi: 'AI Phân Công 24/7', en: '24/7 AI Dispatch' },
+  'Bảng Tin Chung Cư': { vi: 'Bảng Tin Chung Cư', en: 'Community Bulletin Board' },
+  'Nhận Diện Khuôn Mặt Cư Dân': { vi: 'Nhận Diện Khuôn Mặt Cư Dân', en: 'Resident FaceID Recognition' },
+  'Lật Thẻ': { vi: 'Lật Thẻ', en: 'Flip Card' },
+  'Xin Chào': { vi: 'Xin Chào', en: 'Welcome' },
+  'Tòa văn phòng': { vi: 'Tòa văn phòng', en: 'Office Tower' },
+  'Tòa chung cư': { vi: 'Tòa chung cư', en: 'Residential Tower' },
+  'Tòa tháp': { vi: 'Tòa tháp', en: 'Tower' },
+  'Tòa nhà BS-07': { vi: 'Tòa nhà BS-07', en: 'Tower BS-07' },
+  'Tòa The Tropical': { vi: 'Tòa The Tropical', en: 'The Tropical Tower' },
+  'Phòng kỹ thuật': { vi: 'Phòng kỹ thuật', en: 'Technical Room' },
+  'Phòng sinh hoạt': { vi: 'Phòng sinh hoạt', en: 'Community Lounge' },
+  'Khu sinh hoạt': { vi: 'Khu sinh hoạt', en: 'Community Lounge' },
+  'Khu vui chơi': { vi: 'Khu vui chơi', en: 'Playground Area' },
+  'Khu thương mại': { vi: 'Khu thương mại', en: 'Commercial Center' },
+  'Ô đỗ xe': { vi: 'Ô đỗ xe', en: 'Parking Slot' },
+  'Chưa có dữ liệu': { vi: 'Chưa có dữ liệu', en: 'No Data Available' },
+  'Lịch sử ra vào': { vi: 'Lịch sử ra vào', en: 'Access Control History' },
+  'Danh sách cư dân': { vi: 'Danh sách cư dân', en: 'Resident List' },
+  'hero.desc_auth': {
+    vi: 'Dự án căn hộ hạng sang SKYLINE Smart Residence tại cụm 4 chung cư The Tropical (BS-07, BS-08, BS-09, BS-10) kiến tạo chuẩn sống tự động hóa hoàn chỉnh: Định danh sinh trắc học FaceID <0.5s, giám sát an ninh Vision AI và hệ thống dự báo bảo trì thông minh.',
+    en: 'Luxury apartment project SKYLINE Smart Residence at 4 towers of The Tropical (BS-07, BS-08, BS-09, BS-10) pioneers complete automated living: FaceID biometrics <0.5s, Vision AI security monitoring, and predictive maintenance.'
+  },
+  'hero.desc_unauth': {
+    vi: 'Dự án căn hộ hạng sang SKYLINE Smart Residence tại cụm 4 chung cư The Tropical (BS-07, BS-08, BS-09, BS-10) — định danh sinh trắc học FaceID, giám sát Vision AI và trợ lý ảo AI Concierge 24/7.',
+    en: 'Luxury apartment project SKYLINE Smart Residence at 4 towers of The Tropical (BS-07, BS-08, BS-09, BS-10) — biometric FaceID access, Vision AI security, and 24/7 AI Concierge.'
+  }
+};
+
+// =============================================================================
 // FAST LOOKUP MAPS (O(1))
 // =============================================================================
 const VI_TO_EN_MAP = new Map<string, string>();
@@ -14,6 +91,16 @@ const EN_TO_VI_MAP = new Map<string, string>();
 for (const [vi, en] of TRANSLATIONS_DATA) {
   const cleanVi = vi.trim();
   const cleanEn = en.trim();
+  if (cleanVi && cleanEn) {
+    VI_TO_EN_MAP.set(cleanVi.toLowerCase(), cleanEn);
+    EN_TO_VI_MAP.set(cleanEn.toLowerCase(), cleanVi);
+  }
+}
+
+// Index KEY_DICTIONARY into lookup maps with highest priority
+for (const [key, obj] of Object.entries(KEY_DICTIONARY)) {
+  const cleanVi = obj.vi?.trim();
+  const cleanEn = obj.en?.trim();
   if (cleanVi && cleanEn) {
     VI_TO_EN_MAP.set(cleanVi.toLowerCase(), cleanEn);
     EN_TO_VI_MAP.set(cleanEn.toLowerCase(), cleanVi);
@@ -60,7 +147,10 @@ export function translateString(text: string, targetLang: Language): string {
         if (trans !== p) changed = true;
         return trans;
       });
-      if (changed) {
+      // CRITICAL: Prevent hybrid half-Vietnamese half-English outputs
+      const vnCharRegex = /[àáạảãâầấậẩẫăằắặẳẵèéẹẻẽêềếệểễìíịỉĩòóọỏõôồốộổỗơờớợởỡùúụủũưừứựửữỳýỵỷỹđ]/i;
+      const hasRemainingVn = targetLang === 'en' && translatedParts.some(p => vnCharRegex.test(p));
+      if (changed && !hasRemainingVn) {
         return preserveWhitespace(text, translatedParts.join(sep));
       }
     }
@@ -76,7 +166,9 @@ export function translateString(text: string, targetLang: Language): string {
         if (trans !== s) anyChanged = true;
         return trans;
       });
-      if (anyChanged) {
+      const vnCharRegex = /[àáạảãâầấậẩẫăằắặẳẵèéẹẻẽêềếệểễìíịỉĩòóọỏõôồốộổỗơờớợởỡùúụủũưừứựửữỳýỵỷỹđ]/i;
+      const hasRemainingVn = targetLang === 'en' && transSentences.some(s => vnCharRegex.test(s));
+      if (anyChanged && !hasRemainingVn) {
         return preserveWhitespace(text, transSentences.join(' '));
       }
     }
@@ -109,9 +201,26 @@ export function translateString(text: string, targetLang: Language): string {
     return preserveWhitespace(text, `${prefix}${trans}`);
   }
 
-  // Parentheses: "(Chính thức)", "(Chưa có)"
+  // Parentheses: "(Chính thức)", "(Chưa có)", "(Chủ Hộ)"
   if (trimmed.startsWith('(') && trimmed.endsWith(')')) {
-    const inner = trimmed.slice(1, -1);
+    const inner = trimmed.slice(1, -1).trim();
+    const parenMap: Record<string, string> = {
+      'chủ hộ': 'Owner',
+      'người nhà': 'Family Member',
+      'khách thuê': 'Tenant',
+      'cư dân': 'Resident',
+      'ban quản lý': 'Management Board',
+      'kỹ thuật viên': 'Technician',
+      'chính thức': 'Official',
+      'tạm thời': 'Temporary',
+      'chưa có': 'None',
+      'đang ở': 'Occupied',
+      'đã ở': 'Occupied',
+      'căn trống': 'Vacant'
+    };
+    if (targetLang === 'en' && parenMap[inner.toLowerCase()]) {
+      return preserveWhitespace(text, `(${parenMap[inner.toLowerCase()]})`);
+    }
     const trans = translateString(inner, targetLang);
     return preserveWhitespace(text, `(${trans})`);
   }
@@ -147,46 +256,46 @@ export function translateString(text: string, targetLang: Language): string {
 
   // 3. Domain Templates (EN)
   if (targetLang === 'en') {
-    // Apartments & Towers: "Căn BS-07", "Căn hộ BS-07.08 Tòa BS-07"
+    // Apartments: "Căn BS-07", "Căn hộ BS-07.08", "Căn CH-06 (Chủ Hộ)"
     let m = trimmed.match(/^(?:Căn hộ|Căn)\s+([A-Za-z0-9\.\-_]+)(.*)$/i);
-    if (m) {
+    if (m && (/\d/.test(m[1]) || /^[A-Z]{1,3}-\d+/i.test(m[1]))) {
       const code = m[1];
-      const rest = m[2] ? ' ' + translateString(m[2], 'en') : '';
+      const rest = m[2] ? ' ' + translateString(m[2].trim(), 'en') : '';
       return preserveWhitespace(text, `Apartment ${code}${rest}`.trim());
     }
 
     m = trimmed.match(/^Tòa\s+([A-Za-z0-9\.\-_]+)(.*)$/i);
-    if (m) {
+    if (m && (/\d/.test(m[1]) || /^[A-D]$/i.test(m[1]) || /^(?:The\s+Tropical|Tropical|Sapphire|Diamond|Ruby)$/i.test(m[1] + m[2]))) {
       const code = m[1];
-      const rest = m[2] ? ' ' + translateString(m[2], 'en') : '';
+      const rest = m[2] ? ' ' + translateString(m[2].trim(), 'en') : '';
       return preserveWhitespace(text, `Tower ${code}${rest}`.trim());
     }
 
-    m = trimmed.match(/^Tầng\s+(\d+)(.*)$/i);
-    if (m) {
+    m = trimmed.match(/^Tầng\s+(\d+|[A-Z0-9]+)(.*)$/i);
+    if (m && (/\d/.test(m[1]) || /^(?:G|B1|B2|B3|M|L)$/i.test(m[1]))) {
       const fl = m[1];
-      const rest = m[2] ? ' ' + translateString(m[2], 'en') : '';
+      const rest = m[2] ? ' ' + translateString(m[2].trim(), 'en') : '';
       return preserveWhitespace(text, `Floor ${fl}${rest}`.trim());
     }
 
     m = trimmed.match(/^Phòng\s+([A-Za-z0-9\.\-_]+)(.*)$/i);
-    if (m) {
+    if (m && /\d/.test(m[1])) {
       const room = m[1];
-      const rest = m[2] ? ' ' + translateString(m[2], 'en') : '';
+      const rest = m[2] ? ' ' + translateString(m[2].trim(), 'en') : '';
       return preserveWhitespace(text, `Room ${room}${rest}`.trim());
     }
 
     m = trimmed.match(/^Khu\s+([A-Za-z0-9\.\-_]+)(.*)$/i);
-    if (m) {
+    if (m && (/^[A-Z0-9]$/i.test(m[1]) || /^\d+$/.test(m[1]))) {
       const zone = m[1];
-      const rest = m[2] ? ' ' + translateString(m[2], 'en') : '';
+      const rest = m[2] ? ' ' + translateString(m[2].trim(), 'en') : '';
       return preserveWhitespace(text, `Zone ${zone}${rest}`.trim());
     }
 
     m = trimmed.match(/^Ô\s+([A-Za-z0-9\.\-_]+)(.*)$/i);
-    if (m) {
+    if (m && (/\d/.test(m[1]) || /^[A-Z]-\d+/i.test(m[1]))) {
       const slot = m[1];
-      const rest = m[2] ? ' ' + translateString(m[2], 'en') : '';
+      const rest = m[2] ? ' ' + translateString(m[2].trim(), 'en') : '';
       return preserveWhitespace(text, `Slot ${slot}${rest}`.trim());
     }
 
@@ -231,7 +340,10 @@ export function translateString(text: string, targetLang: Language): string {
       if (trimmed.startsWith(pVi + ' ')) {
         const rest = trimmed.slice(pVi.length + 1).trim();
         const transRest = translateString(rest, 'en');
-        return preserveWhitespace(text, `${pEn} ${transRest}`);
+        const vnCharRegex = /[àáạảãâầấậẩẫăằắặẳẵèéẹẻẽêềếệểễìíịỉĩòóọỏõôồốộổỗơờớợởỡùúụủũưừứựửữỳýỵỷỹđ]/i;
+        if (transRest !== rest && !vnCharRegex.test(transRest)) {
+          return preserveWhitespace(text, `${pEn} ${transRest}`);
+        }
       }
     }
 
@@ -374,7 +486,9 @@ export function translateString(text: string, targetLang: Language): string {
       if (trimmed.startsWith(pEn + ' ')) {
         const rest = trimmed.slice(pEn.length + 1).trim();
         const transRest = translateString(rest, 'vi');
-        return preserveWhitespace(text, `${pVi} ${transRest}`);
+        if (transRest !== rest) {
+          return preserveWhitespace(text, `${pVi} ${transRest}`);
+        }
       }
     }
 
@@ -421,9 +535,16 @@ export function translateString(text: string, targetLang: Language): string {
 
 function matchCase(source: string, target: string): string {
   if (!source || !target) return target;
-  if (source === source.toUpperCase() && source.length > 1) return target.toUpperCase();
-  if (source[0] === source[0].toUpperCase()) {
-    return target.charAt(0).toUpperCase() + target.slice(1);
+  if (source === source.toUpperCase() && /[a-zA-ZÀ-ỹ]/.test(source) && source.length > 1) {
+    return target.toUpperCase();
+  }
+  const firstLetterMatch = source.match(/[a-zA-ZÀ-ỹ]/);
+  if (firstLetterMatch && firstLetterMatch[0] === firstLetterMatch[0].toUpperCase()) {
+    const targetLetterMatch = target.match(/[a-zA-Z]/);
+    if (targetLetterMatch && targetLetterMatch.index !== undefined) {
+      const idx = targetLetterMatch.index;
+      return target.slice(0, idx) + target.charAt(idx).toUpperCase() + target.slice(idx + 1);
+    }
   }
   return target;
 }
@@ -492,39 +613,7 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-// Known dot-notation and role keys
-const KEY_DICTIONARY: Record<string, Record<Language, string>> = {
-  'nav.home': { vi: 'Trang Chủ', en: 'Home' },
-  'nav.about': { vi: 'Tổng Quan', en: 'Overview' },
-  'nav.concept': { vi: 'Triết Lý Thiết Kế', en: 'Concept' },
-  'nav.apartments': { vi: 'Mặt Bằng Căn Hộ', en: 'Apartment Layout' },
-  'nav.amenities': { vi: 'Tiện Ích 5 Sao', en: '5-Star Amenities' },
-  'nav.services': { vi: 'Lõi Công Nghệ AI', en: 'AI Technology' },
-  'nav.login': { vi: 'Đăng Nhập', en: 'Sign In' },
-  'nav.logout': { vi: 'Đăng Xuất', en: 'Sign Out' },
-  'nav.portal': { vi: 'Cổng Cư Dân', en: 'Resident Portal' },
-  'nav.dashboard': { vi: 'Vào Bảng Điều Khiển', en: 'Go to Dashboard' },
-  'role.admin': { vi: 'Ban Quản Lý', en: 'Management Board' },
-  'role.owner': { vi: 'Chủ Hộ Căn Hộ', en: 'Apartment Owner' },
-  'role.tenant': { vi: 'Khách Thuê', en: 'Tenant' },
-  'role.family': { vi: 'Người Nhà Căn Hộ', en: 'Family Member' },
-  'role.technician': { vi: 'Kỹ Thuật Viên', en: 'Technician' },
-  'role.staff': { vi: 'Nhân Sự Ban Quản Lý', en: 'Staff' },
-  'role.resident': { vi: 'Cư Dân', en: 'Resident' },
-  'ADMIN': { vi: 'Ban Quản Lý', en: 'Management Board' },
-  'OWNER': { vi: 'Chủ Hộ', en: 'Owner' },
-  'TENANT': { vi: 'Khách Thuê', en: 'Tenant' },
-  'FAMILY': { vi: 'Người Nhà', en: 'Family Member' },
-  'TECHNICIAN': { vi: 'Kỹ Thuật Viên', en: 'Technician' },
-  'hero.desc_auth': {
-    vi: 'Dự án căn hộ hạng sang SKYLINE Smart Residence tại cụm 4 chung cư The Tropical (BS-07, BS-08, BS-09, BS-10) kiến tạo chuẩn sống tự động hóa hoàn chỉnh: Định danh sinh trắc học FaceID <0.5s, giám sát an ninh Vision AI và hệ thống dự báo bảo trì thông minh.',
-    en: 'Luxury apartment project SKYLINE Smart Residence at 4 towers of The Tropical (BS-07, BS-08, BS-09, BS-10) pioneers complete automated living: FaceID biometrics <0.5s, Vision AI security monitoring, and predictive maintenance.'
-  },
-  'hero.desc_unauth': {
-    vi: 'Dự án căn hộ hạng sang SKYLINE Smart Residence tại cụm 4 chung cư The Tropical (BS-07, BS-08, BS-09, BS-10) — định danh sinh trắc học FaceID, giám sát Vision AI và trợ lý ảo AI Concierge 24/7.',
-    en: 'Luxury apartment project SKYLINE Smart Residence at 4 towers of The Tropical (BS-07, BS-08, BS-09, BS-10) — biometric FaceID access, Vision AI security, and 24/7 AI Concierge.'
-  }
-};
+
 
   const toggleLanguage = () => {
     const next = language === 'vi' ? 'en' : 'vi';

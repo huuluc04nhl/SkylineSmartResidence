@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { usePathname } from 'next/navigation';
 import { useLanguage } from '@/lib/languageContext';
 
 interface LanguageSwitcherProps {
@@ -50,9 +51,11 @@ export default function LanguageSwitcher({
   className = '', 
   variant = 'floating' 
 }: LanguageSwitcherProps) {
+  const pathname = usePathname();
   const { language, setLanguage, isMounted } = useLanguage();
 
   if (!isMounted) return null;
+  if (variant === 'floating' && pathname?.startsWith('/portal')) return null;
 
   if (variant === 'floating') {
     return (

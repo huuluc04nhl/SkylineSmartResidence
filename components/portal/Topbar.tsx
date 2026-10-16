@@ -207,7 +207,7 @@ export default function Topbar({
         </a>
 
         {/* Inline Language Switcher inside Topbar */}
-        <LanguageSwitcher variant="inline" className="hidden sm:inline-flex" />
+        <LanguageSwitcher variant="inline" className="inline-flex" />
 
         {/* Notification Icon */}
         <div className="relative">
