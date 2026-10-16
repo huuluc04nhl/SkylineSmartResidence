@@ -780,45 +780,47 @@ export default function AdminBuildingApartmentManager() {
       {/* ============================================================= */}
       {/* BỘ LỌC TINH GỌN BQL: CHUNG CƯ • TẦNG • TÌM KIẾM • TRẠNG THÁI   */}
       {/* ============================================================= */}
-      <div className="bg-[#0B121D] border border-[#1E2D42] p-2.5 shadow-lg">
+      {/* ============================================================= */}
+      {/* BỘ LỌC TINH GỌN BQL: CHUNG CƯ • TẦNG • TÌM KIẾM • TRẠNG THÁI   */}
+      {/* ============================================================= */}
+      <div className="bg-[#0B121D] border border-[#1E2D42] p-2.5 shadow-lg space-y-2.5">
+        {/* HÀNG 1: CHỌN CHUNG CƯ (TRÁI) & CHỌN TẦNG + NÚT ĐỒNG BỘ (PHẢI) */}
         <div className="flex flex-wrap items-center justify-between gap-2.5">
-          
-          {/* Cụm 1: Chọn Chung Cư & Tầng & Tìm Kiếm */}
-          <div className="flex items-center gap-2 flex-wrap text-xs">
-            {/* 1. CHỌN CHUNG CƯ */}
-            <div className="flex items-center gap-1 bg-[#121B27] border border-[#1E2D42] p-1 overflow-x-auto no-scrollbar whitespace-nowrap">
-              <span className="text-gray-400 font-medium text-[11px] px-1.5 flex items-center gap-1 shrink-0">
-                <Building className="w-3.5 h-3.5 text-[#C5A880]" />
-                <span className="hidden sm:inline">Chung Cư:</span>
-              </span>
-              {[
-                { code: 'BS-07', name: 'BS-07', floors: 34 },
-                { code: 'BS-08', name: 'BS-08', floors: 39 },
-                { code: 'BS-09', name: 'BS-09', floors: 34 },
-                { code: 'BS-10', name: 'BS-10', floors: 34 },
-              ].map(b => {
-                const isCurrent = selectedBlock === b.code;
-                return (
-                  <button
-                    key={b.code}
-                    type="button"
-                    onClick={() => handleSwitchBlock(b.code as any)}
-                    className={`px-2.5 py-1 text-xs font-mono transition-all flex items-center gap-1 border shrink-0 active:scale-95 ${
-                      isCurrent
-                        ? 'bg-[#C5A880] text-black border-[#C5A880] font-bold shadow'
-                        : 'bg-[#0E1521] text-gray-300 border-[#1B293C] hover:border-[#385175] hover:text-white'
-                    }`}
-                  >
-                    <span>{b.name}</span>
-                    <span className={`text-[9.5px] px-1 ${isCurrent ? 'bg-black/20 text-black font-bold' : 'bg-[#152132] text-cyan-300'}`}>
-                      {b.floors}T
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
+          {/* 1. CHỌN CHUNG CƯ */}
+          <div className="flex items-center gap-1 bg-[#121B27] border border-[#1E2D42] p-1 overflow-x-auto no-scrollbar whitespace-nowrap">
+            <span className="text-gray-400 font-medium text-[11px] px-1.5 flex items-center gap-1 shrink-0">
+              <Building className="w-3.5 h-3.5 text-[#C5A880]" />
+              <span className="hidden sm:inline">Chung Cư:</span>
+            </span>
+            {[
+              { code: 'BS-07', name: 'BS-07', floors: 34 },
+              { code: 'BS-08', name: 'BS-08', floors: 39 },
+              { code: 'BS-09', name: 'BS-09', floors: 34 },
+              { code: 'BS-10', name: 'BS-10', floors: 34 },
+            ].map(b => {
+              const isCurrent = selectedBlock === b.code;
+              return (
+                <button
+                  key={b.code}
+                  type="button"
+                  onClick={() => handleSwitchBlock(b.code as any)}
+                  className={`px-2.5 py-1 text-xs font-mono transition-all flex items-center gap-1 border shrink-0 active:scale-95 ${
+                    isCurrent
+                      ? 'bg-[#C5A880] text-black border-[#C5A880] font-bold shadow'
+                      : 'bg-[#0E1521] text-gray-300 border-[#1B293C] hover:border-[#385175] hover:text-white'
+                  }`}
+                >
+                  <span>{b.name}</span>
+                  <span className={`text-[9.5px] px-1 ${isCurrent ? 'bg-black/20 text-black font-bold' : 'bg-[#152132] text-cyan-300'}`}>
+                    {b.floors}T
+                  </span>
+                </button>
+              );
+            })}
+          </div>
 
-            {/* 2. CHỌN TẦNG TINH GỌN */}
+          {/* 2. CHỌN TẦNG TINH GỌN & NÚT ĐỒNG BỘ BQL */}
+          <div className="flex items-center gap-2 shrink-0">
             <div className="flex items-center gap-1 bg-[#121B27] border border-[#1E2D42] p-1 shrink-0">
               <span className="text-gray-400 font-medium text-[11px] px-1.5 flex items-center gap-1">
                 <Layers className="w-3.5 h-3.5 text-[#C5A880]" />
@@ -859,86 +861,86 @@ export default function AdminBuildingApartmentManager() {
               </button>
             </div>
 
-            {/* 3. Ô TÌM NHANH CĂN HỘ */}
-            <div className="relative flex items-center shrink-0">
-              <Search className="w-3.5 h-3.5 text-gray-400 absolute left-2 pointer-events-none" />
-              <input
-                type="text"
-                placeholder="Tìm mã căn (vd: 06, CH-01)..."
-                value={unitSearchQuery}
-                onChange={(e) => {
-                  const val = e.target.value;
-                  setUnitSearchQuery(val);
-                  if (val.trim()) {
-                    const clean = val.trim().toLowerCase();
-                    const match = floorUnits.find(u => u.code.toLowerCase().includes(clean)) 
-                                || displayUnits.find(u => u.code.toLowerCase().includes(clean));
-                    if (match) {
-                      setSelectedAptCode(match.code);
-                      if (match.floor && match.floor !== selectedFloor) {
-                        setSelectedFloor(match.floor);
-                      }
-                    }
-                  }
-                }}
-                className="pl-7 pr-6 py-1 bg-[#121B27] border border-[#1E2D42] text-white text-xs placeholder-gray-500 outline-none focus:border-[#C5A880] w-36 sm:w-44 transition-all font-mono"
-              />
-              {unitSearchQuery && (
-                <button
-                  type="button"
-                  onClick={() => setUnitSearchQuery('')}
-                  className="absolute right-2 text-gray-400 hover:text-white text-xs"
-                >
-                  ✕
-                </button>
-              )}
-            </div>
-          </div>
-
-          {/* Cụm 2: Bộ Lọc Trạng Thái Cư Trú Kèm Số Lượng Trực Tiếp & Làm Mới */}
-          <div className="flex items-center gap-1.5 flex-wrap text-xs">
-            <div className="flex items-center gap-1 bg-[#121B27] border border-[#1E2D42] p-1 overflow-x-auto no-scrollbar whitespace-nowrap">
-              {[
-                { key: 'ALL', label: 'Tất Cả', count: totalUnitsCount, countColor: 'text-gray-300' },
-                { key: 'OCCUPIED', label: 'Đã Ở', count: occupiedCount, countColor: 'text-emerald-400' },
-                { key: 'VACANT', label: 'Căn Trống', count: vacantCount, countColor: 'text-amber-400' },
-                { key: 'MAINTENANCE', label: 'Bảo Trì', count: maintenanceCount, countColor: 'text-blue-400' },
-              ].map(item => {
-                const isActive = floorFilterStatus === item.key;
-                return (
-                  <button
-                    key={item.key}
-                    type="button"
-                    onClick={() => setFloorFilterStatus(item.key as any)}
-                    className={`px-2.5 py-1 text-xs transition-all flex items-center gap-1.5 border shrink-0 active:scale-95 ${
-                      isActive
-                        ? 'bg-[#C5A880] text-black border-[#C5A880] font-bold shadow'
-                        : 'bg-[#0E1521] text-gray-300 border-[#1B293C] hover:border-[#385175] hover:text-white'
-                    }`}
-                  >
-                    <span>{item.label}</span>
-                    <span className={`text-[10px] font-mono px-1 py-0.2 ${
-                      isActive ? 'bg-black/20 text-black font-bold' : `${item.countColor} bg-[#152132]`
-                    }`}>
-                      {item.count}
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
-
             {/* Nút Đồng bộ dữ liệu BQL */}
             <button
               type="button"
               onClick={() => syncLiveApartmentsFromApi(selectedBlock)}
               disabled={isSyncingApi}
-              className="p-1.5 bg-[#121B27] hover:bg-[#1A2536] text-gray-300 hover:text-white border border-[#1E2D42] transition-colors disabled:opacity-50"
+              className="p-1.5 bg-[#121B27] hover:bg-[#1A2536] text-gray-300 hover:text-white border border-[#1E2D42] transition-colors disabled:opacity-50 shrink-0"
               title="Đồng bộ dữ liệu cư dân mới nhất"
             >
               <RefreshCw className={`w-3.5 h-3.5 text-[#C5A880] ${isSyncingApi ? 'animate-spin' : ''}`} />
             </button>
           </div>
+        </div>
 
+        {/* HÀNG 2: BỘ LỌC TRẠNG THÁI (TRÁI) & Ô TÌM NHANH MỞ RỘNG TOÀN BỘ KHOẢNG TRỐNG (PHẢI) */}
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5 pt-1.5 border-t border-[#162233]">
+          {/* Cụm bộ lọc trạng thái */}
+          <div className="flex items-center gap-1 bg-[#121B27] border border-[#1E2D42] p-1 overflow-x-auto no-scrollbar whitespace-nowrap shrink-0">
+            {[
+              { key: 'ALL', label: 'Tất Cả', count: totalUnitsCount, countColor: 'text-gray-300' },
+              { key: 'OCCUPIED', label: 'Đã Ở', count: occupiedCount, countColor: 'text-emerald-400' },
+              { key: 'VACANT', label: 'Căn Trống', count: vacantCount, countColor: 'text-amber-400' },
+              { key: 'MAINTENANCE', label: 'Bảo Trì', count: maintenanceCount, countColor: 'text-blue-400' },
+            ].map(item => {
+              const isActive = floorFilterStatus === item.key;
+              return (
+                <button
+                  key={item.key}
+                  type="button"
+                  onClick={() => setFloorFilterStatus(item.key as any)}
+                  className={`px-2.5 py-1 text-xs transition-all flex items-center gap-1.5 border shrink-0 active:scale-95 ${
+                    isActive
+                      ? 'bg-[#C5A880] text-black border-[#C5A880] font-bold shadow'
+                      : 'bg-[#0E1521] text-gray-300 border-[#1B293C] hover:border-[#385175] hover:text-white'
+                  }`}
+                >
+                  <span>{item.label}</span>
+                  <span className={`text-[10px] font-mono px-1 py-0.2 ${
+                    isActive ? 'bg-black/20 text-black font-bold' : `${item.countColor} bg-[#152132]`
+                  }`}>
+                    {item.count}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Ô TÌM NHANH CĂN HỘ - DÙNG FLEX-1 LẤP TRỌN TOÀN BỘ KHOẢNG TRỐNG BÊN PHẢI */}
+          <div className="relative flex-1 min-w-[200px] flex items-center">
+            <Search className="w-3.5 h-3.5 text-gray-400 absolute left-3 pointer-events-none" />
+            <input
+              type="text"
+              placeholder="Tìm nhanh mã căn hộ (VD: 06, CH-01, BS-07-30.06)..."
+              value={unitSearchQuery}
+              onChange={(e) => {
+                const val = e.target.value;
+                setUnitSearchQuery(val);
+                if (val.trim()) {
+                  const clean = val.trim().toLowerCase();
+                  const match = floorUnits.find(u => u.code.toLowerCase().includes(clean)) 
+                              || displayUnits.find(u => u.code.toLowerCase().includes(clean));
+                  if (match) {
+                    setSelectedAptCode(match.code);
+                    if (match.floor && match.floor !== selectedFloor) {
+                      setSelectedFloor(match.floor);
+                    }
+                  }
+                }
+              }}
+              className="w-full pl-8 pr-7 py-1.5 bg-[#121B27] border border-[#1E2D42] text-white text-xs placeholder-gray-500 outline-none focus:border-[#C5A880] transition-all font-mono"
+            />
+            {unitSearchQuery && (
+              <button
+                type="button"
+                onClick={() => setUnitSearchQuery('')}
+                className="absolute right-2.5 text-gray-400 hover:text-white text-xs"
+              >
+                ✕
+              </button>
+            )}
+          </div>
         </div>
       </div>
 

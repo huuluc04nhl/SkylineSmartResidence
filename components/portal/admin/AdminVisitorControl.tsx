@@ -465,23 +465,23 @@ export default function AdminVisitorControl() {
       {/* ============================================================= */}
       {/* 1. HEADER & CHỐT KIỂM SOÁT TIẾP ĐÓN                           */}
       {/* ============================================================= */}
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-[#222B35] pb-4">
-        <div>
+      <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-4 border-b border-[#222B35] pb-4">
+        <div className="min-w-0 flex-1 pr-2">
           <div className="text-[10px] uppercase tracking-[0.25em] text-[#C5A880] font-semibold flex items-center gap-1.5">
             <ShieldCheck className="w-3.5 h-3.5 text-[#C5A880]" /> Ban Quản Lý Tòa Nhà • Bộ Phận Lễ Tân & Tiếp Đón
           </div>
           <h2 className="font-serif text-2xl text-white font-bold mt-1">
             Đón Tiếp &amp; Kiểm Tra Khách Thăm
           </h2>
-          <p className="text-xs text-gray-400 mt-0.5">
+          <p className="text-xs text-gray-400 mt-0.5 max-w-2xl">
             Xác thực thông tin khách thăm theo bảo lãnh của cư dân. Tiếp đón thuận tiện qua mã QR, mã PIN hoặc cấp thẻ trực tiếp tại quầy lễ tân.
           </p>
         </div>
 
-        {/* Nút hành động nhanh trên Header */}
-        <div className="flex flex-wrap items-center gap-2.5">
+        {/* Nút hành động nhanh trên Header - KHÔNG WRAP ĐỂ KHÔNG BỊ RỚT NÚT LÀM MỚI */}
+        <div className="flex items-center gap-2.5 shrink-0">
           {/* Checkpoint selector */}
-          <div className="flex items-center gap-2 bg-[#121820] border border-[#2D3748] px-3 py-1.5 text-xs">
+          <div className="flex items-center gap-2 bg-[#121820] border border-[#2D3748] px-3 py-1.5 text-xs shrink-0">
             <span className="text-gray-400 font-medium">Chốt:</span>
             <select
               value={selectedCheckpoint}
@@ -507,7 +507,7 @@ export default function AdminVisitorControl() {
           <button
             type="button"
             onClick={() => setIsQuickPassModalOpen(true)}
-            className="px-3.5 py-2 bg-[#C5A880] hover:bg-white text-[#0D1117] text-xs font-bold rounded-none shadow flex items-center gap-1.5 transition-all cursor-pointer"
+            className="px-3.5 py-2 bg-[#C5A880] hover:bg-white text-[#0D1117] text-xs font-bold rounded-none shadow flex items-center gap-1.5 transition-all cursor-pointer whitespace-nowrap shrink-0"
           >
             <Plus className="w-3.5 h-3.5" /> Cấp Thẻ Tại Quầy
           </button>
@@ -519,7 +519,7 @@ export default function AdminVisitorControl() {
               refreshData();
               showFeedback('Đã làm mới dữ liệu khách thăm!');
             }}
-            className="p-2 bg-[#121820] hover:bg-[#1C2533] text-gray-300 hover:text-[#C5A880] border border-[#2D3748] rounded-none transition-colors cursor-pointer"
+            className="p-2 bg-[#121820] hover:bg-[#1C2533] text-gray-300 hover:text-[#C5A880] border border-[#2D3748] rounded-none transition-colors cursor-pointer shrink-0"
             title="Làm mới dữ liệu"
           >
             <RefreshCw className="w-3.5 h-3.5" />
