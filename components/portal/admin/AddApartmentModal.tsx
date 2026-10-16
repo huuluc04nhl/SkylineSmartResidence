@@ -28,6 +28,7 @@ import {
   ApartmentStatus, 
   addApartmentUnit 
 } from '@/lib/apartmentStore';
+import { useLanguage } from '@/lib/languageContext';
 
 interface AddApartmentModalProps {
   isOpen: boolean;
@@ -42,6 +43,7 @@ export default function AddApartmentModal({
   onClose,
   onSuccess
 }: AddApartmentModalProps) {
+  const { t } = useLanguage();
   // Tab điều hướng form
   const [activeTab, setActiveTab] = useState<TabType>('ARCHITECTURE');
 
@@ -262,7 +264,7 @@ export default function AddApartmentModal({
             }`}
           >
             <Home className="w-3.5 h-3.5" />
-            <span>1. Kiến Trúc & Vị Trí</span>
+            <span>{t('1. Kiến Trúc & Vị Trí')}</span>
           </button>
 
           <button
@@ -275,7 +277,7 @@ export default function AddApartmentModal({
             }`}
           >
             <Zap className="w-3.5 h-3.5 text-amber-400" />
-            <span>2. Hạ Tầng IoT & PCCC</span>
+            <span>{t('2. Hạ Tầng IoT & PCCC')}</span>
           </button>
 
           <button
@@ -288,7 +290,7 @@ export default function AddApartmentModal({
             }`}
           >
             <Coins className="w-3.5 h-3.5 text-emerald-400" />
-            <span>3. Tài Chính & Pháp Lý</span>
+            <span>{t('3. Tài Chính & Pháp Lý')}</span>
           </button>
         </div>
 

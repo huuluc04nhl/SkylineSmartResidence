@@ -33,6 +33,7 @@ import {
   Droplets
 } from 'lucide-react';
 import { useAuth } from '@/lib/authContext';
+import { useLanguage } from '@/lib/languageContext';
 import { 
   ApartmentUnit, 
   updateApartmentBillingStatus, 
@@ -59,6 +60,7 @@ export default function ApartmentDetailModal({
   onAssignResident,
   onRefresh
 }: ApartmentDetailModalProps) {
+  const { t } = useLanguage();
   const { currentUser } = useAuth();
   const isAdmin = currentUser?.role === 'ADMIN';
 
@@ -161,11 +163,11 @@ export default function ApartmentDetailModal({
         {/* ============================================================= */}
         <div className="flex items-center gap-1 px-4 sm:px-5 bg-[#0F141C] border-b border-[#222B35] overflow-x-auto text-xs font-mono select-none">
           {[
-            { id: 'OVERVIEW_3D', label: '1. Phối Cảnh & Thông Số', icon: Maximize2 },
-            { id: 'RESIDENT_MEMBERS', label: `2. Cư Dân & Nhân Khẩu (${unit.membersCount})`, icon: Users },
-            { id: 'VEHICLES', label: `3. Xe Cộ & Thẻ Hầm (${unit.vehicles?.length || 0})`, icon: Car },
-            { id: 'BILLING', label: '4. Phí Quản Lý & Hóa Đơn', icon: CreditCard },
-            { id: 'MAINTENANCE', label: `5. Lịch Sử Kỹ Thuật (${unit.maintenanceHistory?.length || 0})`, icon: Wrench }
+            { id: 'OVERVIEW_3D', label: t('1. Phối Cảnh & Thông Số'), icon: Maximize2 },
+            { id: 'RESIDENT_MEMBERS', label: `${t('2. Cư Dân & Nhân Khẩu')} (${unit.membersCount})`, icon: Users },
+            { id: 'VEHICLES', label: `${t('3. Xe Cộ & Thẻ Hầm')} (${unit.vehicles?.length || 0})`, icon: Car },
+            { id: 'BILLING', label: t('4. Phí Quản Lý & Hóa Đơn'), icon: CreditCard },
+            { id: 'MAINTENANCE', label: `${t('5. Lịch Sử Kỹ Thuật')} (${unit.maintenanceHistory?.length || 0})`, icon: Wrench }
           ].map(tab => {
             const Icon = tab.icon;
             const isActive = activeTab === tab.id;

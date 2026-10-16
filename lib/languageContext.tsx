@@ -281,10 +281,49 @@ export const KEY_DICTIONARY: Record<string, Record<Language, string>> = {
   'Đang chọn': { vi: 'Đang chọn', en: 'Selected' },
   'Căn phụ': { vi: 'Căn phụ', en: 'Secondary unit' },
   '1. Phối Cảnh & Thông Số': { vi: '1. Phối Cảnh & Thông Số', en: '1. 3D View & Specs' },
+  'Phối Cảnh & Thông Số': { vi: 'Phối Cảnh & Thông Số', en: '3D View & Specs' },
   '2. Cư Dân & Nhân Khẩu': { vi: '2. Cư Dân & Nhân Khẩu', en: '2. Residents & Occupants' },
+  'Cư Dân & Nhân Khẩu': { vi: 'Cư Dân & Nhân Khẩu', en: 'Residents & Occupants' },
   '3. Xe Cộ & Thẻ Hầm': { vi: '3. Xe Cộ & Thẻ Hầm', en: '3. Vehicles & Parking Passes' },
+  'Xe Cộ & Thẻ Hầm': { vi: 'Xe Cộ & Thẻ Hầm', en: 'Vehicles & Parking Passes' },
   '4. Phí Quản Lý & Hóa Đơn': { vi: '4. Phí Quản Lý & Hóa Đơn', en: '4. Management Fees & Invoices' },
+  'Phí Quản Lý & Hóa Đơn': { vi: 'Phí Quản Lý & Hóa Đơn', en: 'Management Fees & Invoices' },
   '5. Lịch Sử Kỹ Thuật': { vi: '5. Lịch Sử Kỹ Thuật', en: '5. Technical & Maintenance History' },
+  'Lịch Sử Kỹ Thuật': { vi: 'Lịch Sử Kỹ Thuật', en: 'Technical & Maintenance History' },
+  '1. Kiến Trúc & Vị Trí': { vi: '1. Kiến Trúc & Vị Trí', en: '1. Architecture & Location' },
+  'Kiến Trúc & Vị Trí': { vi: 'Kiến Trúc & Vị Trí', en: 'Architecture & Location' },
+  '2. Hạ Tầng IoT & PCCC': { vi: '2. Hạ Tầng IoT & PCCC', en: '2. IoT & Fire Safety' },
+  'Hạ Tầng IoT & PCCC': { vi: 'Hạ Tầng IoT & PCCC', en: 'IoT & Fire Safety' },
+  '3. Tài Chính & Pháp Lý': { vi: '3. Tài Chính & Pháp Lý', en: '3. Finance & Legal' },
+  'Tài Chính & Pháp Lý': { vi: 'Tài Chính & Pháp Lý', en: 'Finance & Legal' },
+  '1. Thông Tin Chủ Hộ & Cư Dân': { vi: '1. Thông Tin Chủ Hộ & Cư Dân', en: '1. Owner & Resident Info' },
+  'Thông Tin Chủ Hộ & Cư Dân': { vi: 'Thông Tin Chủ Hộ & Cư Dân', en: 'Owner & Resident Info' },
+  '1. Thông Tin Chủ Hộ Nhận Nhà': { vi: '1. Thông Tin Chủ Hộ Nhận Nhà', en: '1. New Owner Handover Info' },
+  'Thông Tin Chủ Hộ Nhận Nhà': { vi: 'Thông Tin Chủ Hộ Nhận Nhà', en: 'New Owner Handover Info' },
+  '2. Bàn Giao Chìa Khóa & Điện Nước': { vi: '2. Bàn Giao Chìa Khóa & Điện Nước', en: '2. Keys & Utilities Handover' },
+  'Bàn Giao Chìa Khóa & Điện Nước': { vi: 'Bàn Giao Chìa Khóa & Điện Nước', en: 'Keys & Utilities Handover' },
+  '1. Phối Cảnh & Mặt Bằng': { vi: '1. Phối Cảnh & Mặt Bằng', en: '1. 3D Model & Floor Plan' },
+  'Phối Cảnh & Mặt Bằng': { vi: 'Phối Cảnh & Mặt Bằng', en: '3D Model & Floor Plan' },
+  '2. Thiết Bị Bàn Giao': { vi: '2. Thiết Bị Bàn Giao', en: '2. Handover Equipment' },
+  'Thiết Bị Bàn Giao': { vi: 'Thiết Bị Bàn Giao', en: 'Handover Equipment' },
+  '3. Cẩm Nang & Hotline': { vi: '3. Cẩm Nang & Hotline', en: '3. Handbook & Hotline' },
+  'Cẩm Nang & Hotline': { vi: 'Cẩm Nang & Hotline', en: 'Handbook & Hotline' },
+  'Tải Ảnh Từ Máy': { vi: 'Tải Ảnh Từ Máy', en: 'Upload From Device' },
+  'Chụp Bằng Camera': { vi: 'Chụp Bằng Camera', en: 'Take Photo With Camera' },
+  'Bộ Sưu Tập Cư Dân VIP': { vi: 'Bộ Sưu Tập Cư Dân VIP', en: 'VIP Resident Presets' },
+  'Có Sẵn': { vi: 'Có Sẵn', en: 'Available' },
+  'Tra Cứu': { vi: 'Tra Cứu', en: 'Search' },
+  'Nhập Mới': { vi: 'Nhập Mới', en: 'New Entry' },
+  'Tất Cả': { vi: 'Tất Cả', en: 'All' },
+  'Quẹt Thẻ Cư Dân': { vi: 'Quẹt Thẻ Cư Dân', en: 'Swipe Resident Card' },
+  'Chạm thẻ vào máy quét': { vi: 'Chạm thẻ vào máy quét', en: 'Tap card on reader' },
+  'Nhìn vào camera': { vi: 'Nhìn vào camera', en: 'Look into camera' },
+  'Cổng Vào Tiện Ích:': { vi: 'Cổng Vào Tiện Ích:', en: 'Facility Turnstile Gate:' },
+  'Chọn cách mở cửa để vào tiện ích:': { vi: 'Chọn cách mở cửa để vào tiện ích:', en: 'Choose method to unlock turnstile:' },
+  'Thẻ cư dân chính của căn hộ': { vi: 'Thẻ cư dân chính của căn hộ', en: 'Primary resident card of the unit' },
+  'Khuôn mặt cư dân đã kích hoạt': { vi: 'Khuôn mặt cư dân đã kích hoạt', en: 'Resident face already activated' },
+  'Đang Mở Cửa Vào Tiện Ích...': { vi: 'Đang Mở Cửa Vào Tiện Ích...', en: 'Opening Facility Turnstile...' },
+  'Mở Cửa Vào Tiện Ích': { vi: 'Mở Cửa Vào Tiện Ích', en: 'Open Facility Turnstile' },
   'Hồ Sơ Căn Hộ • Chung Cư Skyline': { vi: 'Hồ Sơ Căn Hộ • Chung Cư Skyline', en: 'Apartment Profile • Skyline Residence' },
   'Phối Cảnh Không Gian Nội Thất Căn Hộ': { vi: 'Phối Cảnh Không Gian Nội Thất Căn Hộ', en: 'Apartment Interior 3D Perspective' },
   'Phối cảnh phòng khách, phòng ngủ Master, bếp, ban công': { vi: 'Phối cảnh phòng khách, phòng ngủ Master, bếp, ban công', en: 'Perspective of living room, master bedroom, kitchen, balcony' },
@@ -435,6 +474,17 @@ export function translateString(text: string, targetLang: Language): string {
       const inner = trimmed.slice(b.length);
       const trans = translateString(inner, targetLang);
       return preserveWhitespace(text, `${b}${trans}`);
+    }
+  }
+
+  // Trailing count in parentheses: "Cư Dân & Nhân Khẩu (1)", "Xe Cộ & Thẻ Hầm (0)", "Có Sẵn (3)", "Tất Cả (21)"
+  const trailingCount = trimmed.match(/^(.+?)\s*(\(\d+\))$/);
+  if (trailingCount) {
+    const mainPhrase = trailingCount[1].trim();
+    const countPart = trailingCount[2];
+    const transMain = translateString(mainPhrase, targetLang);
+    if (transMain !== mainPhrase) {
+      return preserveWhitespace(text, `${transMain} ${countPart}`);
     }
   }
 
