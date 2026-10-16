@@ -10,8 +10,10 @@ import SmartTechSection from '@/components/landing/SmartTechSection';
 import Footer from '@/components/landing/Footer';
 import LoginModal from '@/components/landing/LoginModal';
 import { UserRole } from '@/lib/dataStore';
+import { useLanguage } from '@/lib/languageContext';
 
 export default function HomePage() {
+  const { language } = useLanguage();
   const [isLoginOpen, setIsLoginOpen] = useState(false);
   const [defaultAccount, setDefaultAccount] = useState('');
 
@@ -31,7 +33,7 @@ export default function HomePage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0A0E17] flex flex-col justify-between">
+    <div key={language} className="min-h-screen bg-[#0A0E17] flex flex-col justify-between">
       {/* Navigation */}
       <HeaderNav onOpenLogin={handleOpenLogin} />
 

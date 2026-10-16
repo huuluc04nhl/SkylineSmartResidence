@@ -48,6 +48,7 @@ type AuthMethod = 'CREDENTIALS' | 'PHONE_OTP' | 'FACE_ID';
 export default function LoginModal({ isOpen, onClose, defaultAccount = '' }: LoginModalProps) {
   const router = useRouter();
   const { login, faceLogin } = useAuth();
+  const { t, language } = useLanguage();
 
   const [authMethod, setAuthMethod] = useState<AuthMethod>('CREDENTIALS');
   
@@ -539,7 +540,7 @@ export default function LoginModal({ isOpen, onClose, defaultAccount = '' }: Log
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md animate-fadeIn">
-      <div className="relative w-full max-w-md bg-[#0D1117] border border-[#C5A880]/80 p-6 sm:p-7 shadow-2xl text-white space-y-4 select-none rounded-none">
+      <div key={language} className="relative w-full max-w-md bg-[#0D1117] border border-[#C5A880]/80 p-6 sm:p-7 shadow-2xl text-white space-y-4 select-none rounded-none">
         
         {/* Language Switcher */}
         <div className="absolute top-4 left-4 z-10">

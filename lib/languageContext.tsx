@@ -21,6 +21,16 @@ for (const [vi, en] of TRANSLATIONS_DATA) {
 }
 
 // =============================================================================
+// SAFE WHITESPACE & CHARACTER PRESERVATION HELPER
+// =============================================================================
+function preserveWhitespace(original: string, translated: string): string {
+  if (!original) return translated;
+  const match = original.match(/^(\s*)([\s\S]*?)(\s*)$/);
+  if (!match) return translated;
+  return match[1] + translated + match[3];
+}
+
+// =============================================================================
 // STRUCTURAL & PATTERN TRANSLATION ENGINE
 // =============================================================================
 export function translateString(text: string, targetLang: Language): string {
@@ -33,11 +43,11 @@ export function translateString(text: string, targetLang: Language): string {
   // 1. Direct O(1) Dictionary Lookup
   if (targetLang === 'en' && VI_TO_EN_MAP.has(lower)) {
     const translated = VI_TO_EN_MAP.get(lower)!;
-    return text.replace(trimmed, () => matchCase(trimmed, translated));
+    return preserveWhitespace(text, matchCase(trimmed, translated));
   }
   if (targetLang === 'vi' && EN_TO_VI_MAP.has(lower)) {
     const translated = EN_TO_VI_MAP.get(lower)!;
-    return text.replace(trimmed, () => matchCase(trimmed, translated));
+    return preserveWhitespace(text, matchCase(trimmed, translated));
   }
 
   // 1b. Multi-part Delimiters: " • ", " | ", " - ", "\n"
@@ -51,8 +61,23 @@ export function translateString(text: string, targetLang: Language): string {
         return trans;
       });
       if (changed) {
-        const combined = translatedParts.join(sep);
-        return text.replace(trimmed, () => combined);
+        return preserveWhitespace(text, translatedParts.join(sep));
+      }
+    }
+  }
+
+  // 1c. Multi-Sentence Paragraphs (period + space)
+  if (trimmed.includes('. ') && !trimmed.match(/^\d+\.\s/)) {
+    const sentences = trimmed.split(/(?<=\.)\s+/);
+    if (sentences.length > 1) {
+      let anyChanged = false;
+      const transSentences = sentences.map(s => {
+        const trans = translateString(s, targetLang);
+        if (trans !== s) anyChanged = true;
+        return trans;
+      });
+      if (anyChanged) {
+        return preserveWhitespace(text, transSentences.join(' '));
       }
     }
   }
@@ -63,7 +88,7 @@ export function translateString(text: string, targetLang: Language): string {
     const q = trimmed[0];
     const inner = trimmed.slice(1, -1);
     const trans = translateString(inner, targetLang);
-    return text.replace(trimmed, `${q}${trans}${q}`);
+    return preserveWhitespace(text, `${q}${trans}${q}`);
   }
 
   // Bullets & List markers: "* ", "- ", "+ ", "• "
@@ -71,7 +96,7 @@ export function translateString(text: string, targetLang: Language): string {
     if (trimmed.startsWith(b)) {
       const inner = trimmed.slice(b.length);
       const trans = translateString(inner, targetLang);
-      return text.replace(trimmed, `${b}${trans}`);
+      return preserveWhitespace(text, `${b}${trans}`);
     }
   }
 
@@ -81,14 +106,14 @@ export function translateString(text: string, targetLang: Language): string {
     const prefix = numPrefix[1];
     const rest = numPrefix[2];
     const trans = translateString(rest, targetLang);
-    return text.replace(trimmed, `${prefix}${trans}`);
+    return preserveWhitespace(text, `${prefix}${trans}`);
   }
 
   // Parentheses: "(Chính thức)", "(Chưa có)"
   if (trimmed.startsWith('(') && trimmed.endsWith(')')) {
     const inner = trimmed.slice(1, -1);
     const trans = translateString(inner, targetLang);
-    return text.replace(trimmed, `(${trans})`);
+    return preserveWhitespace(text, `(${trans})`);
   }
 
   // Time slot: "06:00 - 08:00 (Sáng sớm bình minh)"
@@ -96,7 +121,7 @@ export function translateString(text: string, targetLang: Language): string {
   if (timeSlot) {
     const timeRange = timeSlot[1];
     const desc = translateString(timeSlot[2], targetLang);
-    return text.replace(trimmed, `${timeRange} (${desc})`);
+    return preserveWhitespace(text, `${timeRange} (${desc})`);
   }
 
   // Duration: "1 Giờ (Gặp nhanh)", "24 Giờ (Cả ngày)"
@@ -104,7 +129,7 @@ export function translateString(text: string, targetLang: Language): string {
   if (duration && targetLang === 'en') {
     const hours = duration[1];
     const desc = translateString(duration[2], targetLang);
-    return text.replace(trimmed, `${hours} ${parseInt(hours) === 1 ? 'Hour' : 'Hours'} (${desc})`);
+    return preserveWhitespace(text, `${hours} ${parseInt(hours) === 1 ? 'Hour' : 'Hours'} (${desc})`);
   }
 
   // Key-Value with colon: "Trạng thái: Đang xử lý"
@@ -116,7 +141,7 @@ export function translateString(text: string, targetLang: Language): string {
       const transLabel = translateString(label, targetLang);
       const transVal = val.length > 0 ? translateString(val, targetLang) : '';
       const combined = val.length > 0 ? `${transLabel}: ${transVal}` : `${transLabel}:`;
-      return text.replace(trimmed, combined);
+      return preserveWhitespace(text, combined);
     }
   }
 
@@ -127,69 +152,69 @@ export function translateString(text: string, targetLang: Language): string {
     if (m) {
       const code = m[1];
       const rest = m[2] ? ' ' + translateString(m[2], 'en') : '';
-      return text.replace(trimmed, `Apartment ${code}${rest}`.trim());
+      return preserveWhitespace(text, `Apartment ${code}${rest}`.trim());
     }
 
     m = trimmed.match(/^Tòa\s+([A-Za-z0-9\.\-_]+)(.*)$/i);
     if (m) {
       const code = m[1];
       const rest = m[2] ? ' ' + translateString(m[2], 'en') : '';
-      return text.replace(trimmed, `Tower ${code}${rest}`.trim());
+      return preserveWhitespace(text, `Tower ${code}${rest}`.trim());
     }
 
     m = trimmed.match(/^Tầng\s+(\d+)(.*)$/i);
     if (m) {
       const fl = m[1];
       const rest = m[2] ? ' ' + translateString(m[2], 'en') : '';
-      return text.replace(trimmed, `Floor ${fl}${rest}`.trim());
+      return preserveWhitespace(text, `Floor ${fl}${rest}`.trim());
     }
 
     m = trimmed.match(/^Phòng\s+([A-Za-z0-9\.\-_]+)(.*)$/i);
     if (m) {
       const room = m[1];
       const rest = m[2] ? ' ' + translateString(m[2], 'en') : '';
-      return text.replace(trimmed, `Room ${room}${rest}`.trim());
+      return preserveWhitespace(text, `Room ${room}${rest}`.trim());
     }
 
     m = trimmed.match(/^Khu\s+([A-Za-z0-9\.\-_]+)(.*)$/i);
     if (m) {
       const zone = m[1];
       const rest = m[2] ? ' ' + translateString(m[2], 'en') : '';
-      return text.replace(trimmed, `Zone ${zone}${rest}`.trim());
+      return preserveWhitespace(text, `Zone ${zone}${rest}`.trim());
     }
 
     m = trimmed.match(/^Ô\s+([A-Za-z0-9\.\-_]+)(.*)$/i);
     if (m) {
       const slot = m[1];
       const rest = m[2] ? ' ' + translateString(m[2], 'en') : '';
-      return text.replace(trimmed, `Slot ${slot}${rest}`.trim());
+      return preserveWhitespace(text, `Slot ${slot}${rest}`.trim());
     }
 
     // Relative Time Templates
     m = trimmed.match(/^(\d+)\s+ngày trước$/i);
-    if (m) return text.replace(trimmed, `${m[1]} ${parseInt(m[1]) === 1 ? 'day ago' : 'days ago'}`);
+    if (m) return preserveWhitespace(text, `${m[1]} ${parseInt(m[1]) === 1 ? 'day ago' : 'days ago'}`);
 
     m = trimmed.match(/^(\d+)\s+giờ trước$/i);
-    if (m) return text.replace(trimmed, `${m[1]} ${parseInt(m[1]) === 1 ? 'hour ago' : 'hours ago'}`);
+    if (m) return preserveWhitespace(text, `${m[1]} ${parseInt(m[1]) === 1 ? 'hour ago' : 'hours ago'}`);
 
     m = trimmed.match(/^(\d+)\s+phút trước$/i);
-    if (m) return text.replace(trimmed, `${m[1]} ${parseInt(m[1]) === 1 ? 'minute ago' : 'minutes ago'}`);
+    if (m) return preserveWhitespace(text, `${m[1]} ${parseInt(m[1]) === 1 ? 'minute ago' : 'minutes ago'}`);
 
     // Counters: "2 người", "4 phòng ngủ", "2 phòng tắm"
     m = trimmed.match(/^(\d+)\s+người$/i);
-    if (m) return text.replace(trimmed, `${m[1]} ${parseInt(m[1]) === 1 ? 'person' : 'people'}`);
+    if (m) return preserveWhitespace(text, `${m[1]} ${parseInt(m[1]) === 1 ? 'person' : 'people'}`);
 
     m = trimmed.match(/^(\d+)\s+phòng ngủ$/i);
-    if (m) return text.replace(trimmed, `${m[1]} ${parseInt(m[1]) === 1 ? 'bedroom' : 'bedrooms'}`);
+    if (m) return preserveWhitespace(text, `${m[1]} ${parseInt(m[1]) === 1 ? 'bedroom' : 'bedrooms'}`);
 
     m = trimmed.match(/^(\d+)\s+phòng tắm$/i);
-    if (m) return text.replace(trimmed, `${m[1]} ${parseInt(m[1]) === 1 ? 'bathroom' : 'bathrooms'}`);
+    if (m) return preserveWhitespace(text, `${m[1]} ${parseInt(m[1]) === 1 ? 'bathroom' : 'bathrooms'}`);
 
     // Status chips with counter: "Tất cả (12)", "Đang xử lý (3)"
     m = trimmed.match(/^([^\(\)]+)\s*\(([0-9]+)\)$/);
     if (m) {
       const base = translateString(m[1].trim(), 'en');
-      return text.replace(trimmed, `${base} (${m[2]})`);
+      return preserveWhitespace(text, `${base} (${m[2]})`);
     }
 
     // Common prefixes: "Danh sách...", "Lịch sử...", "Chi tiết...", "Quản lý..."
@@ -206,14 +231,105 @@ export function translateString(text: string, targetLang: Language): string {
       if (trimmed.startsWith(pVi + ' ')) {
         const rest = trimmed.slice(pVi.length + 1).trim();
         const transRest = translateString(rest, 'en');
-        return text.replace(trimmed, `${pEn} ${transRest}`);
+        return preserveWhitespace(text, `${pEn} ${transRest}`);
       }
     }
 
     // Currencies: "1.500.000 đ" -> "1,500,000 VND"
     m = trimmed.match(/^([0-9\.,]+)\s*(đ|VNĐ|vnd)$/i);
     if (m) {
-      return text.replace(trimmed, `${m[1]} VND`);
+      return preserveWhitespace(text, `${m[1]} VND`);
+    }
+  }
+
+  // 4. Reverse Domain Templates (VI)
+  if (targetLang === 'vi') {
+    let m = trimmed.match(/^Apartment\s+([A-Za-z0-9\.\-_]+)(.*)$/i);
+    if (m) {
+      const code = m[1];
+      const rest = m[2] ? ' ' + translateString(m[2], 'vi') : '';
+      return preserveWhitespace(text, `Căn hộ ${code}${rest}`.trim());
+    }
+
+    m = trimmed.match(/^Tower\s+([A-Za-z0-9\.\-_]+)(.*)$/i);
+    if (m) {
+      const code = m[1];
+      const rest = m[2] ? ' ' + translateString(m[2], 'vi') : '';
+      return preserveWhitespace(text, `Tòa ${code}${rest}`.trim());
+    }
+
+    m = trimmed.match(/^Floor\s+(\d+)(.*)$/i);
+    if (m) {
+      const fl = m[1];
+      const rest = m[2] ? ' ' + translateString(m[2], 'vi') : '';
+      return preserveWhitespace(text, `Tầng ${fl}${rest}`.trim());
+    }
+
+    m = trimmed.match(/^Room\s+([A-Za-z0-9\.\-_]+)(.*)$/i);
+    if (m) {
+      const room = m[1];
+      const rest = m[2] ? ' ' + translateString(m[2], 'vi') : '';
+      return preserveWhitespace(text, `Phòng ${room}${rest}`.trim());
+    }
+
+    m = trimmed.match(/^Zone\s+([A-Za-z0-9\.\-_]+)(.*)$/i);
+    if (m) {
+      const zone = m[1];
+      const rest = m[2] ? ' ' + translateString(m[2], 'vi') : '';
+      return preserveWhitespace(text, `Khu ${zone}${rest}`.trim());
+    }
+
+    m = trimmed.match(/^Slot\s+([A-Za-z0-9\.\-_]+)(.*)$/i);
+    if (m) {
+      const slot = m[1];
+      const rest = m[2] ? ' ' + translateString(m[2], 'vi') : '';
+      return preserveWhitespace(text, `Ô ${slot}${rest}`.trim());
+    }
+
+    m = trimmed.match(/^(\d+)\s+days?\s+ago$/i);
+    if (m) return preserveWhitespace(text, `${m[1]} ngày trước`);
+
+    m = trimmed.match(/^(\d+)\s+hours?\s+ago$/i);
+    if (m) return preserveWhitespace(text, `${m[1]} giờ trước`);
+
+    m = trimmed.match(/^(\d+)\s+minutes?\s+ago$/i);
+    if (m) return preserveWhitespace(text, `${m[1]} phút trước`);
+
+    m = trimmed.match(/^(\d+)\s+(?:people|person)$/i);
+    if (m) return preserveWhitespace(text, `${m[1]} người`);
+
+    m = trimmed.match(/^(\d+)\s+bedrooms?$/i);
+    if (m) return preserveWhitespace(text, `${m[1]} phòng ngủ`);
+
+    m = trimmed.match(/^(\d+)\s+bathrooms?$/i);
+    if (m) return preserveWhitespace(text, `${m[1]} phòng tắm`);
+
+    // Status chips with counter: "All (12)", "Pending (3)"
+    m = trimmed.match(/^([^\(\)]+)\s*\(([0-9]+)\)$/);
+    if (m) {
+      const base = translateString(m[1].trim(), 'vi');
+      return preserveWhitespace(text, `${base} (${m[2]})`);
+    }
+
+    const reversePrefixMap: Array<[string, string]> = [
+      ['List of', 'Danh sách'],
+      ['History of', 'Lịch sử'],
+      ['Details of', 'Chi tiết'],
+      ['Management of', 'Quản lý'],
+      ['Information of', 'Thông tin'],
+      ['No', 'Không có']
+    ];
+    for (const [pEn, pVi] of reversePrefixMap) {
+      if (trimmed.startsWith(pEn + ' ')) {
+        const rest = trimmed.slice(pEn.length + 1).trim();
+        const transRest = translateString(rest, 'vi');
+        return preserveWhitespace(text, `${pVi} ${transRest}`);
+      }
+    }
+
+    m = trimmed.match(/^([0-9\.,]+)\s*VND$/i);
+    if (m) {
+      return preserveWhitespace(text, `${m[1]} đ`);
     }
   }
 
@@ -386,9 +502,10 @@ const KEY_DICTIONARY: Record<string, Record<Language, string>> = {
         }
       }
 
-      // Save original Vietnamese text on first encounter
+      // Save baseline in originalNodesMap on first encounter
       if (!originalNodesMap.current.has(node)) {
-        originalNodesMap.current.set(node, currentVal);
+        const viSource = translateString(currentVal, 'vi');
+        originalNodesMap.current.set(node, viSource);
       }
 
       const baseText = originalNodesMap.current.get(node) || currentVal;
@@ -400,8 +517,9 @@ const KEY_DICTIONARY: Record<string, Record<Language, string>> = {
         }
       } else {
         // Restore pristine Vietnamese
-        if (baseText !== node.nodeValue) {
-          node.nodeValue = baseText;
+        const viText = translateString(baseText, 'vi');
+        if (viText !== node.nodeValue) {
+          node.nodeValue = viText;
         }
       }
     };
@@ -414,9 +532,11 @@ const KEY_DICTIONARY: Record<string, Record<Language, string>> = {
       if (placeholder) {
         if (language === 'en') {
           if (!el.getAttribute('data-orig-placeholder')) {
-            el.setAttribute('data-orig-placeholder', placeholder);
+            const viPlaceholder = translateString(placeholder, 'vi');
+            el.setAttribute('data-orig-placeholder', viPlaceholder);
           }
-          const translated = translateString(placeholder, 'en');
+          const basePlaceholder = el.getAttribute('data-orig-placeholder') || placeholder;
+          const translated = translateString(basePlaceholder, 'en');
           if (translated !== placeholder) el.setAttribute('placeholder', translated);
         } else {
           const orig = el.getAttribute('data-orig-placeholder');
@@ -433,9 +553,11 @@ const KEY_DICTIONARY: Record<string, Record<Language, string>> = {
       if (title) {
         if (language === 'en') {
           if (!el.getAttribute('data-orig-title')) {
-            el.setAttribute('data-orig-title', title);
+            const viTitle = translateString(title, 'vi');
+            el.setAttribute('data-orig-title', viTitle);
           }
-          const translated = translateString(title, 'en');
+          const baseTitle = el.getAttribute('data-orig-title') || title;
+          const translated = translateString(baseTitle, 'en');
           if (translated !== title) el.setAttribute('title', translated);
         } else {
           const orig = el.getAttribute('data-orig-title');
@@ -452,9 +574,11 @@ const KEY_DICTIONARY: Record<string, Record<Language, string>> = {
       if (ariaLabel) {
         if (language === 'en') {
           if (!el.getAttribute('data-orig-aria')) {
-            el.setAttribute('data-orig-aria', ariaLabel);
+            const viAria = translateString(ariaLabel, 'vi');
+            el.setAttribute('data-orig-aria', viAria);
           }
-          const translated = translateString(ariaLabel, 'en');
+          const baseAria = el.getAttribute('data-orig-aria') || ariaLabel;
+          const translated = translateString(baseAria, 'en');
           if (translated !== ariaLabel) el.setAttribute('aria-label', translated);
         } else {
           const orig = el.getAttribute('data-orig-aria');
@@ -503,7 +627,16 @@ const KEY_DICTIONARY: Record<string, Record<Language, string>> = {
       debounceTimer = setTimeout(() => {
         for (const mutation of mutations) {
           if (mutation.type === 'characterData' && mutation.target) {
-            processTextNode(mutation.target);
+            const newText = (mutation.target as Text).nodeValue || '';
+            if (newText.trim()) {
+              if (language === 'vi') {
+                originalNodesMap.current.set(mutation.target, newText);
+              } else {
+                const viEquiv = translateString(newText, 'vi');
+                originalNodesMap.current.set(mutation.target, viEquiv);
+                processTextNode(mutation.target);
+              }
+            }
           } else if (mutation.type === 'childList') {
             mutation.addedNodes.forEach((added) => {
               walkAndTranslate(added);

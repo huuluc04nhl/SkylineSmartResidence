@@ -174,7 +174,7 @@ function PortalContent() {
   };
 
   return (
-    <div className="min-h-screen w-full bg-[#0A0E14] flex flex-col select-none overflow-x-hidden">
+    <div key={language} className="min-h-screen w-full bg-[#0A0E14] flex flex-col select-none overflow-x-hidden">
       {/* Topbar Header (Fixed Top) */}
       <Topbar
         currentUser={currentUser}
