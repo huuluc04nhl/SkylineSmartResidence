@@ -413,6 +413,27 @@ export async function POST(req: Request) {
       return NextResponse.json({ success: true, message: 'Đã nghiệm thu và đóng phiếu thành công.' });
     }
 
+    // 4.1 BQL từ chối nghiệm thu khi ảnh không đạt chuẩn
+    if (action === 'REJECT_RESOLUTION' && body.ticketId) {
+      data.tickets = data.tickets.map(t => {
+        if (t.id === body.ticketId || String(t.nks_id) === String(body.ticketId)) {
+          return {
+            ...t,
+            status: 'In_Progress',
+            rework_reason: (body.reason || 'Ảnh không đạt chuẩn').trim(),
+            rework_count: (t.rework_count || 0) + 1,
+            after_image: undefined,
+            ai_verification: undefined,
+            updated_at: new Date().toISOString(),
+          };
+        }
+        return t;
+      });
+      data.updatedAt = new Date().toISOString();
+      writeServerData(data);
+      return NextResponse.json({ success: true, message: 'Đã từ chối nghiệm thu và yêu cầu KTV làm lại.' });
+    }
+
     // 5. Cư dân chấm điểm 5 sao
     if (action === 'RATE' && body.ticketId && typeof rating === 'number') {
       data.tickets = data.tickets.map(t => {

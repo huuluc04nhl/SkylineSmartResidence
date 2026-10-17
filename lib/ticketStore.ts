@@ -87,6 +87,10 @@ export interface ExtendedServiceRequest extends Omit<ServiceRequest, 'after_imag
     is_genuine?: boolean;
     risk_warning?: string;
   };
+
+  // Trạng thái từ chối nghiệm thu & yêu cầu KTV làm lại
+  rework_reason?: string;
+  rework_count?: number;
 }
 
 export interface TechnicianPayrollSummary {
@@ -712,6 +716,52 @@ export function resolveTicket(
           aiVerification,
         }),
       }).catch(e => console.warn('Lỗi đồng bộ nghiệm thu lên server:', e));
+    }
+  }
+
+  return targetTicket;
+}
+
+/**
+ * Ban Quản Lý từ chối nghiệm thu khi ảnh KTV không đạt chuẩn (ảnh giả, chưa xử lý xong)
+ * Trả vé về trạng thái In_Progress yêu cầu KTV làm lại / chụp lại ảnh hiện trường
+ */
+export function rejectTicketResolution(
+  ticketId: string,
+  reason: string
+): ExtendedServiceRequest | null {
+  const allTickets = getTickets();
+  let targetTicket: ExtendedServiceRequest | null = null;
+
+  const updatedTickets = allTickets.map(t => {
+    if (t.id === ticketId || String(t.nks_id) === ticketId) {
+      targetTicket = {
+        ...t,
+        status: 'In_Progress' as const,
+        rework_reason: reason.trim() || 'Ảnh nghiệm thu không đạt chuẩn kỹ thuật, yêu cầu kiểm tra và chụp lại.',
+        rework_count: (t.rework_count || 0) + 1,
+        after_image: undefined,
+        ai_verification: undefined,
+        updated_at: new Date().toISOString(),
+      };
+      return targetTicket;
+    }
+    return t;
+  });
+
+  if (targetTicket) {
+    saveTickets(updatedTickets);
+
+    if (typeof window !== 'undefined') {
+      fetch('/api/tickets', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'REJECT_RESOLUTION',
+          ticketId,
+          reason,
+        }),
+      }).catch(e => console.warn('Lỗi đồng bộ từ chối nghiệm thu lên server:', e));
     }
   }
 

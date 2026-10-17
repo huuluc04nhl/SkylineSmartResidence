@@ -49,6 +49,7 @@ import {
   createTicketAsync,
   assignTechnicianToTicket, 
   resolveTicket, 
+  rejectTicketResolution,
   adminRespondToTicket,
   aiAnswerTicket,
   getTechnicianPayroll, 
@@ -155,6 +156,7 @@ export default function KanbanBoard() {
   const [resolutionNotes, setResolutionNotes] = useState<string>('');
   const [isReadingAfterImage, setIsReadingAfterImage] = useState(false);
   const [isVerifyingAfterImage, setIsVerifyingAfterImage] = useState(false);
+  const [allowOverrideVerification, setAllowOverrideVerification] = useState(false);
   const [aiVerificationResult, setAiVerificationResult] = useState<{
     status: 'VERIFIED' | 'SUSPICIOUS' | 'INCOMPLETE';
     confidence_score: number;
@@ -523,6 +525,12 @@ export default function KanbanBoard() {
       return;
     }
 
+    const isProblematic = aiVerificationResult && (aiVerificationResult.status === 'SUSPICIOUS' || aiVerificationResult.status === 'INCOMPLETE');
+    if (isProblematic && !allowOverrideVerification) {
+      alert('AI cảnh báo chất lượng ảnh hoặc kết quả sửa chữa chưa đạt chuẩn! Vui lòng chọn "Từ Chối & Yêu Cầu Sửa Lại" hoặc tích chọn duyệt ngoại lệ nếu đã thẩm định thực tế.');
+      return;
+    }
+
     const res = resolveTicket(
       resolvingTicket.id, 
       afterImageBase64, 
@@ -537,6 +545,22 @@ export default function KanbanBoard() {
     setAfterImageBase64('');
     setResolutionNotes('');
     setAiVerificationResult(null);
+    setAllowOverrideVerification(false);
+  };
+
+  // Handle rejecting ticket resolution (send back to technician for rework)
+  const handleRejectResolution = () => {
+    if (!resolvingTicket) return;
+    const defaultReason = aiVerificationResult?.risk_warning || aiVerificationResult?.verification_detail || 'Ảnh nghiệm thu không đạt chuẩn kỹ thuật, yêu cầu kiểm tra và xử lý lại.';
+    rejectTicketResolution(resolvingTicket.id, defaultReason);
+    refreshAllData();
+    setActionSuccessMsg(`Đã từ chối nghiệm thu #${resolvingTicket.nks_id || resolvingTicket.id}. Yêu cầu KTV khắc phục lại!`);
+    setTimeout(() => setActionSuccessMsg(null), 4000);
+    setResolvingTicket(null);
+    setAfterImageBase64('');
+    setResolutionNotes('');
+    setAiVerificationResult(null);
+    setAllowOverrideVerification(false);
   };
 
   // Calculations for Payroll KPIs
@@ -1009,6 +1033,17 @@ export default function KanbanBoard() {
                           {ticket.content}
                         </p>
 
+                        {/* Rework Reason Alert (if previously rejected) */}
+                        {ticket.rework_reason && (
+                          <div className="text-[11px] text-rose-300 bg-rose-950/50 border border-rose-500/40 p-1.5 flex items-start gap-1.5 leading-relaxed rounded-none">
+                            <AlertTriangle className="w-3.5 h-3.5 text-rose-400 shrink-0 mt-0.5" />
+                            <div>
+                              <span className="font-semibold text-rose-400">{t('Yêu Cầu Làm Lại:')} </span>
+                              <span>{ticket.rework_reason}</span>
+                            </div>
+                          </div>
+                        )}
+
                         {/* Operational Status (Clean Line, Zero Boxes) */}
                         {isFeedback ? (
                           <div className="flex items-center gap-1.5 text-[11px] text-gray-400 pt-0.5">
@@ -1057,6 +1092,7 @@ export default function KanbanBoard() {
                                     setAfterImageBase64('');
                                     setResolutionNotes('');
                                     setAiVerificationResult(null);
+                                    setAllowOverrideVerification(false);
                                   }}
                                   className="h-7 px-2.5 bg-[#10B981]/20 hover:bg-[#10B981]/30 border border-[#10B981]/50 text-[#10B981] text-xs font-medium rounded-none transition-colors flex items-center gap-1"
                                   title={t('BQL nghiệm thu và ghi nhận hồ sơ kỹ thuật')}
@@ -2006,20 +2042,69 @@ export default function KanbanBoard() {
               </div>
             )}
 
-            <div className="flex justify-end gap-3 pt-3 border-t border-[#222B35]">
-              <button
-                type="button"
-                onClick={() => setResolvingTicket(null)}
-                className="px-4 py-2 border border-gray-700 text-xs text-gray-300"
-              >
-                Hủy
-              </button>
-              <button
-                type="submit"
-                className="px-5 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold uppercase tracking-wider transition-colors shadow-lg"
-              >
-                Xác Nhận Nghiệm Thu
-              </button>
+            {/* AI Warning & Manual Override option if suspicious/incomplete */}
+            {aiVerificationResult && (aiVerificationResult.status === 'SUSPICIOUS' || aiVerificationResult.status === 'INCOMPLETE') && (
+              <div className="bg-[#141B24] border border-rose-500/40 p-3 space-y-2 rounded-none">
+                <div className="text-xs font-semibold text-rose-300 flex items-center gap-1.5">
+                  <AlertTriangle className="w-4 h-4 text-rose-400 shrink-0" />
+                  <span>Chất lượng ảnh nghiệm thu chưa đạt chuẩn</span>
+                </div>
+                <p className="text-[11px] text-gray-400 leading-relaxed">
+                  Hệ thống tạm khóa nghiệm thu để tránh gian lận hoặc hoàn tất sai sót. BQL nên bấm <strong className="text-rose-300">Từ Chối & Yêu Cầu Sửa Lại</strong> để chuyển ticket về trạng thái đang làm và yêu cầu KTV xử lý lại hiện trường.
+                </p>
+                <label className="flex items-center gap-2 cursor-pointer pt-1 text-xs text-amber-300/90 hover:text-amber-200 select-none">
+                  <input
+                    type="checkbox"
+                    checked={allowOverrideVerification}
+                    onChange={(e) => setAllowOverrideVerification(e.target.checked)}
+                    className="rounded-none bg-[#0E131B] border-gray-600 text-[#C5A880] focus:ring-0 w-3.5 h-3.5"
+                  />
+                  <span>Tôi đã kiểm tra thực tế tại căn hộ và chịu trách nhiệm duyệt ngoại lệ</span>
+                </label>
+              </div>
+            )}
+
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-3 border-t border-[#222B35]">
+              <div>
+                {aiVerificationResult && (aiVerificationResult.status === 'SUSPICIOUS' || aiVerificationResult.status === 'INCOMPLETE') && (
+                  <button
+                    type="button"
+                    onClick={handleRejectResolution}
+                    className="px-3.5 py-2 bg-rose-950/80 hover:bg-rose-900 border border-rose-500/60 text-rose-200 text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 rounded-none transition-colors shadow-lg"
+                  >
+                    <X className="w-3.5 h-3.5 text-rose-400" />
+                    <span>Từ Chối & Yêu Cầu Sửa Lại</span>
+                  </button>
+                )}
+              </div>
+
+              <div className="flex items-center justify-end gap-3">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setResolvingTicket(null);
+                    setAllowOverrideVerification(false);
+                  }}
+                  className="px-4 py-2 border border-gray-700 text-xs text-gray-300 hover:text-white rounded-none"
+                >
+                  Hủy
+                </button>
+                <button
+                  type="submit"
+                  disabled={Boolean(
+                    isVerifyingAfterImage ||
+                    !afterImageBase64 ||
+                    (aiVerificationResult && (aiVerificationResult.status === 'SUSPICIOUS' || aiVerificationResult.status === 'INCOMPLETE') && !allowOverrideVerification)
+                  )}
+                  className={`px-5 py-2 text-white text-xs font-bold uppercase tracking-wider rounded-none transition-colors shadow-lg ${
+                    (aiVerificationResult && (aiVerificationResult.status === 'SUSPICIOUS' || aiVerificationResult.status === 'INCOMPLETE') && !allowOverrideVerification) || isVerifyingAfterImage || !afterImageBase64
+                      ? 'bg-emerald-950/40 border border-emerald-800/40 text-emerald-400/40 cursor-not-allowed'
+                      : 'bg-emerald-600 hover:bg-emerald-500 text-white'
+                  }`}
+                >
+                  Xác Nhận Nghiệm Thu
+                </button>
+              </div>
             </div>
           </form>
         </div>
