@@ -618,30 +618,30 @@ export default function EkycApproval() {
                 )}
                 <div>
                   <div className="text-[10px] uppercase font-mono text-[#C5A880] font-bold flex items-center gap-1.5 flex-wrap">
-                    <span>Hệ Thống Thẩm Định BQL • Căn Hộ {inspectingRequest.apartmentCode}</span>
+                    <span>{t('Hệ Thống Thẩm Định BQL • Căn Hộ')} {inspectingRequest.apartmentCode}</span>
                     {inspectingRequest.status === 'APPROVED' && (
                       <span className="px-2 py-0.5 bg-emerald-950 border border-emerald-500 text-emerald-300 font-mono text-[9px] font-bold uppercase rounded-none">
-                        ✓ ĐÃ KÍCH HOẠT HỆ THỐNG
+                        {t('✓ ĐÃ KÍCH HOẠT HỆ THỐNG')}
                       </span>
                     )}
                     {inspectingRequest.status === 'REJECTED' && (
                       <span className="px-2 py-0.5 bg-rose-950 border border-rose-500 text-rose-300 font-mono text-[9px] font-bold uppercase rounded-none">
-                        ⚠ YÊU CẦU CẬP NHẬT
+                        {t('⚠ YÊU CẦU CẬP NHẬT')}
                       </span>
                     )}
                     {inspectingRequest.status === 'PENDING' && (
                       <span className="px-2 py-0.5 bg-amber-950 border border-amber-500 text-amber-300 font-mono text-[9px] font-bold uppercase rounded-none animate-pulse">
-                        ⏳ CHỜ THẨM ĐỊNH
+                        {t('⏳ CHỜ THẨM ĐỊNH')}
                       </span>
                     )}
                     {inspectingRequest.roleLabel.includes('Bảo lãnh') && (
                       <span className="px-2 py-0.5 bg-purple-950/90 border border-purple-500/80 text-purple-300 font-sans text-[10px] rounded-none normal-case font-semibold flex items-center gap-1">
-                        <Users className="w-3 h-3 text-purple-400" /> Được Chủ Hộ Bảo Lãnh
+                        <Users className="w-3 h-3 text-purple-400" /> {t('Được Chủ Hộ Bảo Lãnh')}
                       </span>
                     )}
                   </div>
                   <h3 className="font-serif text-lg font-bold text-white mt-0.5">
-                    Đối Chiếu Khuôn Mặt Cư Dân &amp; Thẻ Căn Cước: {inspectingRequest.fullName}
+                    {t('Đối Chiếu Khuôn Mặt Cư Dân & Thẻ Căn Cước:')} {inspectingRequest.fullName}
                   </h3>
                 </div>
               </div>
@@ -660,28 +660,26 @@ export default function EkycApproval() {
                 <div className="flex items-center gap-2">
                   <CheckCircle2 className="w-4 h-4 text-emerald-400 flex-shrink-0" />
                   <span>
-                    <strong>Phê duyệt thành công!</strong> Đã kích hoạt sinh trắc học FaceID và nạp dữ liệu nhận diện vào Camera AI cổng Barrier và Thang máy toà nhà.
+                    <strong>{t('Phê duyệt thành công!')}</strong> {t('Đã kích hoạt sinh trắc học FaceID và nạp dữ liệu nhận diện vào Camera AI cổng Barrier và Thang máy toà nhà.')}
                   </span>
                 </div>
-                <span className="text-[10px] font-mono text-emerald-400 bg-emerald-900/50 px-2 py-0.5">Thời gian thực</span>
+                <span className="text-[10px] font-mono text-emerald-400 bg-emerald-900/50 px-2 py-0.5">{t('Thời gian thực')}</span>
               </div>
             )}
-
-
 
             {/* Thông báo lý do từ chối (Dành cho hồ sơ REJECTED) */}
             {inspectingRequest.status === 'REJECTED' && (
               <div className="p-4 bg-rose-950/60 border border-rose-500/70 rounded-none space-y-2">
                 <div className="flex items-center gap-2 text-rose-300 font-bold text-xs uppercase tracking-wider">
                   <AlertTriangle className="w-4 h-4 text-rose-400" />
-                  Hồ Sơ Đã Bị Từ Chối / Yêu Cầu Cung Cấp Lại
+                  {t('Hồ Sơ Đã Bị Từ Chối / Yêu Cầu Cung Cấp Lại')}
                 </div>
                 <div className="text-xs text-rose-200 bg-black/40 p-2.5 border border-rose-900/60 space-y-1">
-                  <span className="text-gray-400 block text-[10px]">Lý do từ chối gửi cư dân:</span>
-                  <strong>&quot;{inspectingRequest.rejectionReason || 'Ảnh chụp CCCD không đạt tiêu chuẩn rõ nét.'}&quot;</strong>
+                  <span className="text-gray-400 block text-[10px]">{t('Lý do từ chối gửi cư dân:')}</span>
+                  <strong>&quot;{inspectingRequest.rejectionReason || t('Ảnh chụp CCCD không đạt tiêu chuẩn rõ nét.')}&quot;</strong>
                 </div>
                 <div className="text-[10.5px] text-gray-400 font-mono">
-                  Xử lý lúc: {inspectingRequest.reviewedAt} • Bởi: {inspectingRequest.reviewedBy}
+                  {t('Xử lý lúc:')} {inspectingRequest.reviewedAt} • {t('Bởi:')} {inspectingRequest.reviewedBy}
                 </div>
               </div>
             )}
@@ -698,15 +696,15 @@ export default function EkycApproval() {
                     <div className="p-4 bg-[#161D26] border border-[#2D3748] rounded-none space-y-3 text-center">
                       <div className="flex items-center justify-between text-xs text-gray-300 font-semibold border-b border-[#222B35] pb-2">
                         <span className="flex items-center gap-1.5">
-                          <Camera className="w-3.5 h-3.5 text-[#C5A880]" /> Ảnh Chân Dung Nhận Diện:
+                          <Camera className="w-3.5 h-3.5 text-[#C5A880]" /> {t('Ảnh Chân Dung Nhận Diện:')}
                         </span>
                         <span className="px-2 py-0.5 bg-emerald-950 text-emerald-400 border border-emerald-500/50 rounded-none font-mono text-[10px]">
-                          Độ Trùng Khớp: {inspectingRequest.faceScore}%
+                          {t('Độ Trùng Khớp:')} {inspectingRequest.faceScore}%
                         </span>
                       </div>
                       
                       <div className="w-36 h-44 sm:w-40 sm:h-48 mx-auto rounded-none overflow-hidden border-2 border-[#C5A880] shadow-lg bg-[#0A0E14] relative group cursor-pointer"
-                           onClick={() => setZoomImage({ url: inspectingRequest.avatarUrl || samples?.front || '', title: `Chân dung FaceID - ${inspectingRequest.fullName}` })}>
+                           onClick={() => setZoomImage({ url: inspectingRequest.avatarUrl || samples?.front || '', title: `${t('Chân dung FaceID')} - ${inspectingRequest.fullName}` })}>
                         <img
                           src={inspectingRequest.avatarUrl || samples?.front || 'https://data.nks.vn/storage/users/default.png'}
                           alt="FaceID Portrait"
@@ -716,7 +714,7 @@ export default function EkycApproval() {
                           <ZoomIn className="w-6 h-6 text-white" />
                         </div>
                         <div className="absolute bottom-2 inset-x-2 bg-black/70 backdrop-blur text-[9px] font-mono text-[#C5A880] py-0.5 rounded-none">
-                          CHÂN DUNG CHÍNH DIỆN
+                          {t('CHÂN DUNG CHÍNH DIỆN')}
                         </div>
                       </div>
 
@@ -724,23 +722,23 @@ export default function EkycApproval() {
                       {samples && (
                         <div className="space-y-1.5 pt-2 border-t border-[#222B35]">
                           <div className="text-[10px] uppercase font-bold text-[#C5A880] tracking-wider flex items-center justify-between">
-                            <span>Bộ Mẫu Thu Thập 4 Góc Mặt:</span>
-                            <span className="text-emerald-400 font-mono text-[9px]">Liveness 100%</span>
+                            <span>{t('Bộ Mẫu Thu Thập 4 Góc Mặt:')}</span>
+                            <span className="text-emerald-400 font-mono text-[9px]">{t('Liveness 100%')}</span>
                           </div>
                           <div className="grid grid-cols-4 gap-1.5">
                             {[
-                              { label: 'Chính diện', img: samples.front },
-                              { label: 'Trái (-25°)', img: samples.left },
-                              { label: 'Phải (+25°)', img: samples.right },
-                              { label: 'Xác thực', img: samples.smile },
+                              { label: t('Chính diện'), img: samples.front },
+                              { label: t('Trái (-25°)'), img: samples.left },
+                              { label: t('Phải (+25°)'), img: samples.right },
+                              { label: t('Xác thực'), img: samples.smile },
                             ].map((s, idx) => (
                               <div key={idx} 
-                                   onClick={() => s.img && setZoomImage({ url: s.img, title: `Mẫu góc ${s.label} - ${inspectingRequest.fullName}` })}
+                                   onClick={() => s.img && setZoomImage({ url: s.img, title: `${s.label} - ${inspectingRequest.fullName}` })}
                                    className="border border-[#263140] bg-black aspect-square overflow-hidden relative group cursor-pointer">
                                 {s.img ? (
                                   <img src={s.img} alt={s.label} className="w-full h-full object-cover" />
                                 ) : (
-                                  <div className="w-full h-full flex items-center justify-center text-[8px] text-gray-500">Chưa có</div>
+                                  <div className="w-full h-full flex items-center justify-center text-[8px] text-gray-500">{t('Chưa có')}</div>
                                 )}
                                 <div className="absolute bottom-0 inset-x-0 bg-black/80 text-[8px] text-gray-300 py-0.5 truncate">
                                   {s.label}
@@ -752,7 +750,7 @@ export default function EkycApproval() {
                       )}
 
                       <div className="text-[11px] text-gray-400">
-                        {samples ? 'Dữ liệu nhận diện khuôn mặt đã sẵn sàng kích hoạt quyền ra vào sảnh & thang máy' : 'Ảnh chân dung chụp trực tiếp từ thiết bị'}
+                        {samples ? t('Dữ liệu nhận diện khuôn mặt đã sẵn sàng kích hoạt quyền ra vào sảnh & thang máy') : t('Ảnh chân dung chụp trực tiếp từ thiết bị')}
                       </div>
                     </div>
 
@@ -761,7 +759,7 @@ export default function EkycApproval() {
                       <div>
                         <div className="flex items-center justify-between text-xs text-gray-300 font-semibold border-b border-[#222B35] pb-2">
                           <span className="flex items-center gap-1.5">
-                            <CreditCard className="w-3.5 h-3.5 text-[#C5A880]" /> Thẻ Căn Cước Công Dân:
+                            <CreditCard className="w-3.5 h-3.5 text-[#C5A880]" /> {t('Thẻ Căn Cước Công Dân:')}
                           </span>
                           
                           {/* Side Switcher */}
@@ -773,7 +771,7 @@ export default function EkycApproval() {
                                 inspectingSide === 'FRONT' ? 'bg-[#C5A880] text-[#0D1117]' : 'text-gray-400 hover:text-white'
                               }`}
                             >
-                              Mặt Trước
+                              {t('Mặt Trước')}
                             </button>
                             <button
                               type="button"
@@ -782,7 +780,7 @@ export default function EkycApproval() {
                                 inspectingSide === 'BACK' ? 'bg-[#C5A880] text-[#0D1117]' : 'text-gray-400 hover:text-white'
                               }`}
                             >
-                              Mặt Sau
+                              {t('Mặt Sau')}
                             </button>
                           </div>
                         </div>
@@ -800,7 +798,7 @@ export default function EkycApproval() {
                                 if (activeCardUrl) {
                                   setZoomImage({
                                     url: activeCardUrl,
-                                    title: inspectingSide === 'FRONT' ? `Mặt trước CCCD - ${inspectingRequest.fullName}` : `Mặt sau CCCD - ${inspectingRequest.fullName}`
+                                    title: inspectingSide === 'FRONT' ? `${t('Mặt trước CCCD')} - ${inspectingRequest.fullName}` : `${t('Mặt sau CCCD')} - ${inspectingRequest.fullName}`
                                   });
                                 }
                               }}
@@ -820,15 +818,15 @@ export default function EkycApproval() {
                                 <div className="p-4 text-center space-y-2">
                                   <CreditCard className="w-10 h-10 text-[#C5A880]/60 mx-auto" />
                                   <div className="text-xs font-semibold text-gray-300">
-                                    {inspectingSide === 'FRONT' ? 'Chưa Tải Ảnh Mặt Trước CCCD' : 'Chưa Tải Ảnh Mặt Sau CCCD'}
+                                    {inspectingSide === 'FRONT' ? t('Chưa Tải Ảnh Mặt Trước CCCD') : t('Chưa Tải Ảnh Mặt Sau CCCD')}
                                   </div>
                                   <div className="text-[10px] text-gray-400 font-mono">
-                                    Số CCCD: {inspectingRequest.idCardNo || 'Chưa cung cấp'}
+                                    {t('Số CCCD:')} {inspectingRequest.idCardNo || t('Chưa cung cấp')}
                                   </div>
                                 </div>
                               )}
                               <div className="absolute top-2 left-2 px-2 py-0.5 bg-black/80 backdrop-blur rounded-none text-[9.5px] font-mono text-gray-300">
-                                {inspectingSide === 'FRONT' ? 'MẶT TRƯỚC (CÓ ẢNH & SỐ ĐỊNH DANH)' : 'MẶT SAU (CHIP ĐIỆN TỬ & VÂN TAY)'}
+                                {inspectingSide === 'FRONT' ? t('MẶT TRƯỚC (CÓ ẢNH & SỐ ĐỊNH DANH)') : t('MẶT SAU (CHIP ĐIỆN TỬ & VÂN TAY)')}
                               </div>
                             </div>
                           );
@@ -837,14 +835,14 @@ export default function EkycApproval() {
 
                       {/* Dual-Side Mini Bar */}
                       <div className="pt-2 border-t border-[#222B35] flex items-center justify-between text-[11px] text-gray-400">
-                        <span>Nhấp vào ảnh để phóng to toàn màn hình</span>
+                        <span>{t('Nhấp vào ảnh để phóng to toàn màn hình')}</span>
                         <div className="flex gap-1 font-mono text-[10px]">
                           <span className={inspectingRequest.idCardFrontUrl ? 'text-emerald-400' : 'text-amber-400'}>
-                            {inspectingRequest.idCardFrontUrl ? '✓ Mặt trước Đầy Đủ' : '⚠ Chưa Có Mặt Trước'}
+                            {inspectingRequest.idCardFrontUrl ? t('✓ Mặt trước Đầy Đủ') : t('⚠ Chưa Có Mặt Trước')}
                           </span>
                           <span>•</span>
                           <span className={inspectingRequest.idCardBackUrl ? 'text-emerald-400' : 'text-amber-400'}>
-                            {inspectingRequest.idCardBackUrl ? '✓ Mặt Sau Đầy Đủ' : '⚠ Chưa Có Mặt Sau'}
+                            {inspectingRequest.idCardBackUrl ? t('✓ Mặt Sau Đầy Đủ') : t('⚠ Chưa Có Mặt Sau')}
                           </span>
                         </div>
                       </div>
@@ -872,19 +870,19 @@ export default function EkycApproval() {
                       {isEligible ? (
                         <span className="text-emerald-400 flex items-center gap-1.5">
                           <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                          Đạt Tiêu Chuẩn Xác Thực &amp; Đủ Điều Kiện Kích Hoạt Quyền Ra Vào
+                          {t('Đạt Tiêu Chuẩn Xác Thực & Đủ Điều Kiện Kích Hoạt Quyền Ra Vào')}
                         </span>
                       ) : (
                         <span className="text-rose-400 flex items-center gap-1.5">
                           <AlertTriangle className="w-4 h-4 text-rose-400" />
-                          Cần Kiểm Tra: Ảnh Khuôn Mặt Chưa Khớp Hoặc Thẻ CCCD Mờ
+                          {t('Cần Kiểm Tra: Ảnh Khuôn Mặt Chưa Khớp Hoặc Thẻ CCCD Mờ')}
                         </span>
                       )}
                     </div>
                     <p className="text-[11.5px] text-gray-300">
                       {isEligible
-                        ? `Ảnh khuôn mặt trùng khớp với chân dung trên CCCD (${displayScore.toFixed(1)}% ≥ 85%). Thẻ CCCD hợp lệ nằm ngang (tỷ lệ ${card.aspectRatio ? card.aspectRatio.toFixed(2) + ':1' : 'chuẩn'}).`
-                        : `${bio.reason}. Vui lòng kiểm tra lại ảnh thẻ CCCD hoặc yêu cầu cư dân nộp lại chân dung rõ nét.`}
+                        ? `${t('Ảnh khuôn mặt trùng khớp với chân dung trên CCCD')} (${displayScore.toFixed(1)}% ≥ 85%). ${t('Thẻ CCCD hợp lệ')}.`
+                        : `${bio.reason}. ${t('Vui lòng kiểm tra lại ảnh thẻ CCCD hoặc yêu cầu cư dân nộp lại chân dung rõ nét.')}`}
                     </p>
                   </div>
 
@@ -894,7 +892,7 @@ export default function EkycApproval() {
                         ? 'bg-emerald-950 text-emerald-300 border-emerald-500/80'
                         : 'bg-rose-950 text-rose-300 border-rose-500/80'
                     }`}>
-                      Độ Khớp: {displayScore.toFixed(1)}%
+                      {t('Độ Khớp:')} {displayScore.toFixed(1)}%
                     </div>
                   </div>
                 </div>
@@ -1052,7 +1050,7 @@ export default function EkycApproval() {
           <div className="bg-[#0D1117] border border-rose-500/80 max-w-md w-full p-5 rounded-none space-y-4 shadow-2xl">
             <div className="flex items-center justify-between border-b border-[#222B35] pb-3">
               <h3 className="font-serif text-base font-bold text-white flex items-center gap-2 text-rose-400">
-                <AlertTriangle className="w-4 h-4" /> Yêu Cầu Cư Dân Cập Nhật Lại Hồ Sơ
+                <AlertTriangle className="w-4 h-4" /> {t('Yêu Cầu Cư Dân Cập Nhật Lại Hồ Sơ')}
               </h3>
               <button
                 type="button"
@@ -1064,24 +1062,24 @@ export default function EkycApproval() {
             </div>
 
             <div className="space-y-2 text-xs">
-              <label className="text-gray-300 font-medium block">Chọn hoặc nhập lý do cần bổ sung (Gửi thông báo tới cư dân):</label>
+              <label className="text-gray-300 font-medium block">{t('Chọn hoặc nhập lý do cần bổ sung (Gửi thông báo tới cư dân):')}</label>
               <select
                 value={rejectionReason}
                 onChange={(e) => setRejectionReason(e.target.value)}
                 className="w-full bg-[#161B22] border border-[#2D3748] p-2.5 text-white rounded-none outline-none focus:border-rose-500"
               >
-                <option value="Ảnh chụp CCCD bị mờ/lóa sáng/mất góc, vui lòng chụp lại rõ nét">Ảnh chụp CCCD bị mờ/lóa sáng/mất góc</option>
-                <option value="Số CCCD hoặc thông tin không trùng khớp với hồ sơ đăng ký căn hộ">Số CCCD không trùng khớp hồ sơ</option>
-                <option value="Ảnh chân dung khuôn mặt chưa trùng khớp với ảnh trên thẻ CCCD">Ảnh chân dung chưa trùng khớp ảnh CCCD</option>
-                <option value="Chưa cung cấp đủ 2 mặt thẻ CCCD hợp lệ">Chưa cung cấp đủ 2 mặt thẻ CCCD</option>
-                <option value="Thẻ CCCD đã hết hạn sử dụng theo quy định pháp luật">Thẻ CCCD đã hết hạn sử dụng</option>
+                <option value="Ảnh chụp CCCD bị mờ/lóa sáng/mất góc, vui lòng chụp lại rõ nét">{t('Ảnh chụp CCCD bị mờ/lóa sáng/mất góc')}</option>
+                <option value="Số CCCD hoặc thông tin không trùng khớp với hồ sơ đăng ký căn hộ">{t('Số CCCD không trùng khớp hồ sơ')}</option>
+                <option value="Ảnh chân dung khuôn mặt chưa trùng khớp với ảnh trên thẻ CCCD">{t('Ảnh chân dung chưa trùng khớp ảnh CCCD')}</option>
+                <option value="Chưa cung cấp đủ 2 mặt thẻ CCCD hợp lệ">{t('Chưa cung cấp đủ 2 mặt thẻ CCCD')}</option>
+                <option value="Thẻ CCCD đã hết hạn sử dụng theo quy định pháp luật">{t('Thẻ CCCD đã hết hạn sử dụng')}</option>
               </select>
 
               <textarea
                 value={rejectionReason}
                 onChange={(e) => setRejectionReason(e.target.value)}
                 rows={3}
-                placeholder="Ghi chú chi tiết lý do gửi cư dân..."
+                placeholder={t('Ghi chú chi tiết lý do gửi cư dân...')}
                 className="w-full bg-[#161B22] border border-[#2D3748] p-2.5 text-white rounded-none outline-none focus:border-rose-500 resize-none"
               />
             </div>
@@ -1092,7 +1090,7 @@ export default function EkycApproval() {
                 onClick={() => setRejectingId(null)}
                 className="px-4 py-2 bg-[#161B22] text-gray-300 hover:text-white text-xs rounded-none cursor-pointer"
               >
-                Hủy
+                {t('Hủy')}
               </button>
               <button
                 type="button"
@@ -1101,7 +1099,7 @@ export default function EkycApproval() {
                 className="px-4 py-2 bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold rounded-none shadow cursor-pointer disabled:opacity-50 flex items-center gap-1.5"
               >
                 {isProcessing ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <X className="w-3.5 h-3.5" />}
-                Xác Nhận Từ Chối
+                {t('Xác Nhận Từ Chối')}
               </button>
             </div>
           </div>
@@ -1114,7 +1112,7 @@ export default function EkycApproval() {
           <div className="bg-[#0D1117] border border-rose-500/90 max-w-md w-full p-5 rounded-none space-y-4 shadow-2xl">
             <div className="flex items-center justify-between border-b border-[#222B35] pb-3">
               <h3 className="font-serif text-base font-bold text-white flex items-center gap-2 text-rose-400">
-                <AlertTriangle className="w-4 h-4 text-rose-400" /> Tạm Khóa / Thu Hồi Quyền Ra Vào FaceID
+                <AlertTriangle className="w-4 h-4 text-rose-400" /> {t('Tạm Khóa / Thu Hồi Quyền Ra Vào FaceID')}
               </h3>
               <button
                 type="button"
@@ -1126,27 +1124,27 @@ export default function EkycApproval() {
             </div>
 
             <div className="p-3 bg-rose-950/40 border border-rose-500/50 text-xs text-rose-200">
-              Hành động này sẽ <strong>tạm khóa hoặc hủy quyền nhận diện khuôn mặt</strong> của cư dân tại sảnh đón và thang máy toà nhà.
+              {t('Hành động này sẽ tạm khóa hoặc hủy quyền nhận diện khuôn mặt của cư dân tại sảnh đón và thang máy toà nhà.')}
             </div>
 
             <div className="space-y-2 text-xs">
-              <label className="text-gray-300 font-medium block">Lý do thu hồi quyền:</label>
+              <label className="text-gray-300 font-medium block">{t('Lý do thu hồi quyền:')}</label>
               <select
                 value={revokeReason}
                 onChange={(e) => setRevokeReason(e.target.value)}
                 className="w-full bg-[#161B22] border border-[#2D3748] p-2.5 text-white rounded-none outline-none focus:border-rose-500"
               >
-                <option value="Hết thời hạn hợp đồng thuê / Chuyển nơi cư trú">Hết thời hạn hợp đồng thuê / Chuyển nơi cư trú</option>
-                <option value="Ban Quản Lý tạm thu hồi quyền ra vào FaceID để đối soát lại hồ sơ">Ban Quản Lý tạm thu hồi để đối soát lại hồ sơ</option>
-                <option value="Phát hiện thông tin CCCD hoặc ảnh sinh trắc học có sai lệch">Phát hiện thông tin CCCD có sai lệch</option>
-                <option value="Vi phạm quy định vận hành an ninh toà nhà">Vi phạm quy định vận hành an ninh toà nhà</option>
+                <option value="Hết thời hạn hợp đồng thuê / Chuyển nơi cư trú">{t('Hết thời hạn hợp đồng thuê / Chuyển nơi cư trú')}</option>
+                <option value="Ban Quản Lý tạm thu hồi quyền ra vào FaceID để đối soát lại hồ sơ">{t('Ban Quản Lý tạm thu hồi để đối soát lại hồ sơ')}</option>
+                <option value="Phát hiện thông tin CCCD hoặc ảnh sinh trắc học có sai lệch">{t('Phát hiện thông tin CCCD có sai lệch')}</option>
+                <option value="Vi phạm quy định vận hành an ninh toà nhà">{t('Vi phạm quy định vận hành an ninh toà nhà')}</option>
               </select>
 
               <textarea
                 value={revokeReason}
                 onChange={(e) => setRevokeReason(e.target.value)}
                 rows={3}
-                placeholder="Ghi chú chi tiết lý do gửi cư dân..."
+                placeholder={t('Ghi chú chi tiết lý do gửi cư dân...')}
                 className="w-full bg-[#161B22] border border-[#2D3748] p-2.5 text-white rounded-none outline-none focus:border-rose-500 resize-none"
               />
             </div>
@@ -1157,7 +1155,7 @@ export default function EkycApproval() {
                 onClick={() => setRevokingId(null)}
                 className="px-4 py-2 bg-[#161B22] text-gray-300 hover:text-white text-xs rounded-none cursor-pointer"
               >
-                Hủy Bỏ
+                {t('Hủy Bỏ')}
               </button>
               <button
                 type="button"
@@ -1166,7 +1164,7 @@ export default function EkycApproval() {
                 className="px-5 py-2 bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs rounded-none shadow transition-all cursor-pointer disabled:opacity-50 flex items-center gap-1.5"
               >
                 {isProcessing ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <XCircle className="w-3.5 h-3.5" />}
-                Xác Nhận Thu Hồi
+                {t('Xác Nhận Thu Hồi')}
               </button>
             </div>
           </div>

@@ -33,6 +33,7 @@ import {
   canvasToBase64,
   normalizeBiometricSamplesToBase64
 } from '@/lib/imageUtils';
+import { useLanguage } from '@/lib/languageContext';
 
 interface BankFaceEnrollModalProps {
   isOpen: boolean;
@@ -110,6 +111,7 @@ export default function BankFaceEnrollModal({
   submittedByRole,
   onEnrollSuccess,
 }: BankFaceEnrollModalProps) {
+  const { t } = useLanguage();
   const [currentStepIndex, setCurrentStepIndex] = useState<number>(0);
   const [isReviewMode, setIsReviewMode] = useState<boolean>(false);
 
@@ -516,14 +518,14 @@ export default function BankFaceEnrollModal({
             </div>
             <div>
               <div className="text-[10px] font-mono uppercase tracking-widest text-[#C5A880] font-bold">
-                Skyline Biometrics Engine • e-KYC Bank Grade
+                {t('Skyline Biometrics Engine • e-KYC Bank Grade')}
               </div>
               <h3 className="text-sm font-serif font-bold text-white tracking-wide flex items-center gap-2">
-                <span>Thu Thập Sinh Trắc Học FaceID 4 Bước:</span>
+                <span>{t('Thu Thập Sinh Trắc Học FaceID 4 Bước:')}</span>
                 <span className="text-[#C5A880] underline underline-offset-2">{fullName}</span>
                 {isFamilyMemberSelfEnroll && (
                   <span className="text-[10px] bg-purple-950/80 border border-purple-500/80 text-purple-300 font-sans px-1.5 py-0.5">
-                    Người Nhà Tự Cập Nhật
+                    {t('Người Nhà Tự Cập Nhật')}
                   </span>
                 )}
               </h3>
@@ -566,10 +568,10 @@ export default function BankFaceEnrollModal({
             <div className="w-full max-w-md space-y-2">
               <div className="flex items-center justify-between text-xs">
                 <span className="font-bold text-[#C5A880] flex items-center gap-1.5 font-mono">
-                  <span>{currentStep.icon}</span> {currentStep.title}
+                  <span>{currentStep.icon}</span> {t(currentStep.title)}
                 </span>
                 <span className="font-mono text-gray-400 text-[11px]">
-                  Bước {currentStep.stepNumber} / 4 ({currentStep.progressPercent}%)
+                  {t('Bước')} {currentStep.stepNumber} / 4 ({currentStep.progressPercent}%)
                 </span>
               </div>
 
@@ -582,7 +584,7 @@ export default function BankFaceEnrollModal({
               </div>
 
               <div className="text-center text-[11.5px] text-gray-300 font-medium pt-1">
-                {currentStep.guideText}
+                {t(currentStep.guideText)}
               </div>
 
               {/* Real-time Environmental Lighting Meter */}
@@ -601,7 +603,7 @@ export default function BankFaceEnrollModal({
                         lighting.status === 'TOO_BRIGHT' ? 'text-amber-400 font-bold' :
                           'text-emerald-400 font-bold'
                     }>
-                      {lighting.label}
+                      {t(lighting.label)}
                     </span>
                   </div>
 
@@ -648,7 +650,7 @@ export default function BankFaceEnrollModal({
                 <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-4 space-y-3 bg-[#0D1117] text-gray-400 z-10">
                   <Camera className="w-10 h-10 text-[#C5A880] animate-bounce" />
                   <div className="text-xs max-w-xs leading-relaxed">
-                    {cameraError || 'Đang kết nối camera...'}
+                    {cameraError || t('Đang kết nối camera...')}
                   </div>
                   <div className="flex flex-col gap-2 pt-1 w-full max-w-[200px]">
                     <button
@@ -656,10 +658,10 @@ export default function BankFaceEnrollModal({
                       onClick={() => startCamera()}
                       className="px-3 py-1.5 bg-[#C5A880] hover:bg-white text-[#0D1117] text-xs font-bold uppercase tracking-wider transition-colors shadow"
                     >
-                      Kết Nối Lại Camera
+                      {t('Kết Nối Lại Camera')}
                     </button>
                     <label className="px-3 py-1.5 bg-[#161B22] hover:bg-[#202936] text-gray-300 hover:text-white border border-[#2D3748] text-[11px] font-semibold text-center cursor-pointer transition-colors">
-                      Tải Ảnh Góc Này
+                      {t('Tải Ảnh Góc Này')}
                       <input
                         type="file"
                         accept="image/*"
@@ -702,19 +704,19 @@ export default function BankFaceEnrollModal({
                   {/* Pose-Specific Directional Icon Cue */}
                   {currentStep.key === 'LEFT' && (
                     <div className="absolute -left-6 top-1/2 -translate-y-1/2 px-2 py-1 bg-amber-500/90 text-[#0D1117] text-[10px] font-bold uppercase tracking-wider font-mono shadow-lg animate-bounce flex items-center gap-1">
-                      <ArrowLeft className="w-3 h-3" /> Quay Trái
+                      <ArrowLeft className="w-3 h-3" /> {t('Quay Trái')}
                     </div>
                   )}
 
                   {currentStep.key === 'RIGHT' && (
                     <div className="absolute -right-6 top-1/2 -translate-y-1/2 px-2 py-1 bg-amber-500/90 text-[#0D1117] text-[10px] font-bold uppercase tracking-wider font-mono shadow-lg animate-bounce flex items-center gap-1">
-                      Quay Phải <ArrowRight className="w-3 h-3" />
+                      {t('Quay Phải')} <ArrowRight className="w-3 h-3" />
                     </div>
                   )}
 
                   {currentStep.key === 'SMILE' && (
                     <div className="absolute bottom-6 px-3 py-1 bg-emerald-500/90 text-[#0D1117] text-[10px] font-bold uppercase tracking-wider font-mono shadow-lg animate-pulse flex items-center gap-1">
-                      <Smile className="w-3.5 h-3.5" /> Mỉm Cười Nhé
+                      <Smile className="w-3.5 h-3.5" /> {t('Mỉm Cười Nhé')}
                     </div>
                   )}
 
@@ -735,7 +737,7 @@ export default function BankFaceEnrollModal({
                       : 'bg-amber-950/90 border-amber-600/80 text-amber-200'
                     }`}>
                     {lighting.status === 'TOO_DARK' ? <Moon className="w-3 h-3 shrink-0 text-rose-400" /> : <Sun className="w-3 h-3 shrink-0 text-amber-400" />}
-                    <span className="truncate max-w-[230px]">{lighting.message}</span>
+                    <span className="truncate max-w-[230px]">{t(lighting.message)}</span>
                   </div>
                 </div>
               )}
@@ -743,14 +745,14 @@ export default function BankFaceEnrollModal({
               {/* Top Status Pill */}
               <div className="absolute top-3 inset-x-0 flex justify-center pointer-events-none">
                 <span className="px-3 py-1 bg-black/75 backdrop-blur border border-[#C5A880]/50 text-[10.5px] font-mono text-[#C5A880] uppercase tracking-wider flex items-center gap-1.5">
-                  <Sparkles className="w-3 h-3" /> {currentStep.subtitle}
+                  <Sparkles className="w-3 h-3" /> {t(currentStep.subtitle)}
                 </span>
               </div>
 
               {/* Bottom Target Identification Badge */}
               <div className="absolute bottom-3 inset-x-0 flex justify-center pointer-events-none">
                 <span className="px-3 py-0.5 bg-black/80 backdrop-blur text-[10px] font-mono text-gray-300">
-                  {fullName} • Căn {apartmentCode}
+                  {fullName} • {t('Căn')} {apartmentCode}
                 </span>
               </div>
             </div>
@@ -766,7 +768,7 @@ export default function BankFaceEnrollModal({
                 className="w-full sm:w-1/2 py-2.5 px-4 bg-[#161B22] hover:bg-[#202936] text-gray-200 hover:text-white border border-[#2D3748] text-xs font-semibold rounded-none transition-all flex items-center justify-center gap-2 disabled:opacity-50"
               >
                 <span>⏱️</span>
-                <span>{countdown !== null ? `Đang đếm (${countdown}s)...` : 'Đếm Ngược 3s Tự Động'}</span>
+                <span>{countdown !== null ? `${t('Đang đếm')} (${countdown}s)...` : t('Đếm Ngược 3s Tự Động')}</span>
               </button>
 
               <button
@@ -776,7 +778,7 @@ export default function BankFaceEnrollModal({
                 className="w-full sm:w-1/2 py-2.5 px-4 bg-[#C5A880] hover:bg-white text-[#0D1117] text-xs font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-2 shadow-xl rounded-none active:scale-[0.99] disabled:opacity-50"
               >
                 <Camera className="w-4 h-4" />
-                <span>Chụp Mẫu Ngay</span>
+                <span>{t('Chụp Mẫu Ngay')}</span>
               </button>
             </div>
 
@@ -787,11 +789,11 @@ export default function BankFaceEnrollModal({
                 onClick={() => startCamera()}
                 className="hover:text-[#C5A880] flex items-center gap-1 transition-colors"
               >
-                <RefreshCw className="w-3 h-3" /> Kết nối lại camera
+                <RefreshCw className="w-3 h-3" /> {t('Kết nối lại camera')}
               </button>
 
               <label className="hover:text-[#C5A880] flex items-center gap-1 cursor-pointer transition-colors">
-                <Upload className="w-3 h-3" /> Tải ảnh góc này từ máy
+                <Upload className="w-3 h-3" /> {t('Tải ảnh góc này từ máy')}
                 <input
                   type="file"
                   accept="image/*"
@@ -806,7 +808,7 @@ export default function BankFaceEnrollModal({
             {/* --------------------------------------------------------- */}
             <div className="w-full max-w-md pt-3 border-t border-[#222B35]">
               <div className="text-[10px] font-mono uppercase tracking-wider text-gray-400 mb-2">
-                4 Góc Nhận Diện Cần Thu Thập:
+                {t('4 Góc Nhận Diện Cần Thu Thập:')}
               </div>
 
               <div className="grid grid-cols-4 gap-2 text-center">
@@ -820,7 +822,7 @@ export default function BankFaceEnrollModal({
                         : 'border-[#222B35] bg-[#161B22] text-gray-500'
                     }`}
                 >
-                  <div className="text-[9px] font-bold uppercase">1. Thẳng</div>
+                  <div className="text-[9px] font-bold uppercase">1. {t('Thẳng')}</div>
                   {samples.front ? (
                     <div className="w-8 h-8 mx-auto mt-1 border border-emerald-500 overflow-hidden">
                       <img src={samples.front} alt="Front" className="w-full h-full object-cover" />
@@ -840,7 +842,7 @@ export default function BankFaceEnrollModal({
                         : 'border-[#222B35] bg-[#161B22] text-gray-500'
                     }`}
                 >
-                  <div className="text-[9px] font-bold uppercase">2. Trái</div>
+                  <div className="text-[9px] font-bold uppercase">2. {t('Trái')}</div>
                   {samples.left ? (
                     <div className="w-8 h-8 mx-auto mt-1 border border-emerald-500 overflow-hidden">
                       <img src={samples.left} alt="Left" className="w-full h-full object-cover" />
@@ -860,7 +862,7 @@ export default function BankFaceEnrollModal({
                         : 'border-[#222B35] bg-[#161B22] text-gray-500'
                     }`}
                 >
-                  <div className="text-[9px] font-bold uppercase">3. Phải</div>
+                  <div className="text-[9px] font-bold uppercase">3. {t('Phải')}</div>
                   {samples.right ? (
                     <div className="w-8 h-8 mx-auto mt-1 border border-emerald-500 overflow-hidden">
                       <img src={samples.right} alt="Right" className="w-full h-full object-cover" />
@@ -880,7 +882,7 @@ export default function BankFaceEnrollModal({
                         : 'border-[#222B35] bg-[#161B22] text-gray-500'
                     }`}
                 >
-                  <div className="text-[9px] font-bold uppercase">4. Cười</div>
+                  <div className="text-[9px] font-bold uppercase">4. {t('Cười')}</div>
                   {samples.smile ? (
                     <div className="w-8 h-8 mx-auto mt-1 border border-emerald-500 overflow-hidden">
                       <img src={samples.smile} alt="Smile" className="w-full h-full object-cover" />
@@ -902,18 +904,18 @@ export default function BankFaceEnrollModal({
             <div className="p-4 bg-[#121820] border border-[#C5A880] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-lg">
               <div className="space-y-1">
                 <div className="flex items-center gap-2 text-emerald-400 text-xs font-bold uppercase font-mono">
-                  <ShieldCheck className="w-4 h-4 text-emerald-400" /> Hoàn Tất Thu Thập 4 Mẫu Sinh Trắc Học
+                  <ShieldCheck className="w-4 h-4 text-emerald-400" /> {t('Hoàn Tất Thu Thập 4 Mẫu Sinh Trắc Học')}
                 </div>
                 <div className="text-sm font-serif font-bold text-white">
-                  Kiểm duyệt chất lượng dữ liệu: Đạt Chuẩn Ngân Hàng (99.4%)
+                  {t('Kiểm duyệt chất lượng dữ liệu: Đạt Chuẩn Ngân Hàng (99.4%)')}
                 </div>
                 <div className="text-xs text-gray-400">
-                  Khuôn mặt đã được phân tích đầy đủ các góc nhìn trắc diện và xác thực sống.
+                  {t('Khuôn mặt đã được phân tích đầy đủ các góc nhìn trắc diện và xác thực sống.')}
                 </div>
               </div>
 
               <span className="px-3 py-1 bg-emerald-950/90 border border-emerald-500 text-emerald-300 text-xs font-mono font-bold">
-                Trạng thái: Hợp Lệ ✓
+                {t('Trạng thái: Hợp Lệ ✓')}
               </span>
             </div>
 
@@ -922,7 +924,7 @@ export default function BankFaceEnrollModal({
               {/* Sample 1: Front */}
               <div className="p-2.5 bg-[#161B22] border border-[#2D3748] space-y-2 text-center">
                 <div className="text-[10px] font-bold text-[#C5A880] uppercase font-mono">
-                  1. Chính Diện
+                  1. {t('Chính Diện')}
                 </div>
                 <div className="w-full h-32 bg-black border border-gray-700 overflow-hidden relative group">
                   {samples.front && (
@@ -933,16 +935,16 @@ export default function BankFaceEnrollModal({
                     onClick={() => handleRetakeStep(0)}
                     className="absolute inset-0 bg-black/70 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-[10px] text-white font-bold"
                   >
-                    Chụp Lại
+                    {t('Chụp Lại')}
                   </button>
                 </div>
-                <div className="text-[9.5px] text-emerald-400 font-mono">Độ rõ: 99.6%</div>
+                <div className="text-[9.5px] text-emerald-400 font-mono">{t('Độ rõ:')} 99.6%</div>
               </div>
 
               {/* Sample 2: Left */}
               <div className="p-2.5 bg-[#161B22] border border-[#2D3748] space-y-2 text-center">
                 <div className="text-[10px] font-bold text-[#C5A880] uppercase font-mono">
-                  2. Nghiêng Trái
+                  2. {t('Nghiêng Trái')}
                 </div>
                 <div className="w-full h-32 bg-black border border-gray-700 overflow-hidden relative group">
                   {samples.left && (
@@ -953,16 +955,16 @@ export default function BankFaceEnrollModal({
                     onClick={() => handleRetakeStep(1)}
                     className="absolute inset-0 bg-black/70 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-[10px] text-white font-bold"
                   >
-                    Chụp Lại
+                    {t('Chụp Lại')}
                   </button>
                 </div>
-                <div className="text-[9.5px] text-emerald-400 font-mono">Góc: -25°</div>
+                <div className="text-[9.5px] text-emerald-400 font-mono">{t('Góc:')} -25°</div>
               </div>
 
               {/* Sample 3: Right */}
               <div className="p-2.5 bg-[#161B22] border border-[#2D3748] space-y-2 text-center">
                 <div className="text-[10px] font-bold text-[#C5A880] uppercase font-mono">
-                  3. Nghiêng Phải
+                  3. {t('Nghiêng Phải')}
                 </div>
                 <div className="w-full h-32 bg-black border border-gray-700 overflow-hidden relative group">
                   {samples.right && (
@@ -973,16 +975,16 @@ export default function BankFaceEnrollModal({
                     onClick={() => handleRetakeStep(2)}
                     className="absolute inset-0 bg-black/70 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-[10px] text-white font-bold"
                   >
-                    Chụp Lại
+                    {t('Chụp Lại')}
                   </button>
                 </div>
-                <div className="text-[9.5px] text-emerald-400 font-mono">Góc: +25°</div>
+                <div className="text-[9.5px] text-emerald-400 font-mono">{t('Góc:')} +25°</div>
               </div>
 
               {/* Sample 4: Smile / Liveness */}
               <div className="p-2.5 bg-[#161B22] border border-[#2D3748] space-y-2 text-center">
                 <div className="text-[10px] font-bold text-[#C5A880] uppercase font-mono">
-                  4. Xác Thực Sống
+                  4. {t('Xác Thực Sống')}
                 </div>
                 <div className="w-full h-32 bg-black border border-gray-700 overflow-hidden relative group">
                   {samples.smile && (
@@ -993,7 +995,7 @@ export default function BankFaceEnrollModal({
                     onClick={() => handleRetakeStep(3)}
                     className="absolute inset-0 bg-black/70 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-[10px] text-white font-bold"
                   >
-                    Chụp Lại
+                    {t('Chụp Lại')}
                   </button>
                 </div>
                 <div className="text-[9.5px] text-emerald-400 font-mono">Liveness: 100%</div>
@@ -1003,12 +1005,12 @@ export default function BankFaceEnrollModal({
             {/* Privacy & System Sync Note */}
             <div className="p-4 bg-[#121820] border border-[#222B35] space-y-2 text-xs text-gray-300">
               <div className="flex items-center gap-2 font-bold text-[#C5A880]">
-                <Lock className="w-3.5 h-3.5" /> Quyền Hạn Kích Hoạt Sau Khi Lưu:
+                <Lock className="w-3.5 h-3.5" /> {t('Quyền Hạn Kích Hoạt Sau Khi Lưu:')}
               </div>
               <ul className="space-y-1 text-gray-400 pl-4 list-disc text-[11px]">
-                <li>Cho phép đăng nhập trực tiếp bằng camera trên trang chủ mà không cần mật khẩu.</li>
-                <li>Tự động nhận diện mở cổng hầm gửi xe và cửa sảnh đón tầng trệt (Chung Cư Skyline).</li>
-                <li>Dữ liệu được bảo mật an toàn và chỉ dùng nội bộ phục vụ an ninh cư dân chung cư.</li>
+                <li>{t('Cho phép đăng nhập trực tiếp bằng camera trên trang chủ mà không cần mật khẩu.')}</li>
+                <li>{t('Tự động nhận diện mở cổng hầm gửi xe và cửa sảnh đón tầng trệt (Chung Cư Skyline).')}</li>
+                <li>{t('Dữ liệu được bảo mật an toàn và chỉ dùng nội bộ phục vụ an ninh cư dân chung cư.')}</li>
               </ul>
             </div>
 
@@ -1021,7 +1023,7 @@ export default function BankFaceEnrollModal({
                 className="w-full sm:w-auto px-5 py-2.5 bg-[#161B22] hover:bg-[#202936] text-gray-300 hover:text-white border border-[#2D3748] text-xs font-semibold transition-colors flex items-center justify-center gap-2"
               >
                 <RefreshCw className="w-3.5 h-3.5" />
-                <span>Quét Lại Từ Đầu</span>
+                <span>{t('Quét Lại Từ Đầu')}</span>
               </button>
 
               <button
@@ -1032,21 +1034,21 @@ export default function BankFaceEnrollModal({
               >
                 {isSubmitting ? (
                   <>
-                    <RefreshCw className="w-4 h-4 animate-spin" /> Đang Lưu & Gửi Hồ Sơ...
+                    <RefreshCw className="w-4 h-4 animate-spin" /> {t('Đang Lưu & Gửi Hồ Sơ...')}
                   </>
                 ) : submitSuccess ? (
                   <>
                     <Check className="w-4 h-4 text-emerald-950" />
                     {isFamilyMemberSelfEnroll
-                      ? 'Đã Gửi Mẫu Cho Chủ Hộ Xác Nhận Thành Công!'
-                      : 'Đã Chuyển Tới Ban Quản Lý Phê Duyệt!'}
+                      ? t('Đã Gửi Mẫu Cho Chủ Hộ Xác Nhận Thành Công!')
+                      : t('Đã Chuyển Tới Ban Quản Lý Phê Duyệt!')}
                   </>
                 ) : (
                   <>
                     <ShieldCheck className="w-4 h-4" />
                     {isFamilyMemberSelfEnroll
-                      ? 'Lưu 4 Mẫu & Gửi Chủ Hộ Xác Nhận'
-                      : 'Gửi 4 Mẫu Cho Ban Quản Lý Phê Duyệt'}
+                      ? t('Lưu 4 Mẫu & Gửi Chủ Hộ Xác Nhận')
+                      : t('Gửi 4 Mẫu Cho Ban Quản Lý Phê Duyệt')}
                   </>
                 )}
               </button>

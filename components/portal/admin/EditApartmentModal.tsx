@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { useLanguage } from '@/lib/languageContext';
 import { 
   X, 
   Building, 
@@ -31,6 +32,7 @@ export default function EditApartmentModal({
   unit,
   onSuccess
 }: EditApartmentModalProps) {
+  const { t } = useLanguage();
   const [area, setArea] = useState<number>(78.5);
   const [wallArea, setWallArea] = useState<number>(83.2);
   const [type, setType] = useState<ApartmentType>('2PN');
@@ -120,16 +122,16 @@ export default function EditApartmentModal({
         <div className="flex items-start justify-between border-b border-[#222B35] pb-3">
           <div>
             <div className="text-[10.5px] uppercase tracking-widest text-[#C5A880] font-mono font-semibold">
-              Cập Nhật Thông Tin Không Gian
+              {t('Cập Nhật Thông Tin Không Gian', 'Update Space & Specifications')}
             </div>
             <h3 className="font-serif text-xl font-bold text-white mt-0.5 flex items-center gap-2">
-              <span>Chỉnh Sửa Căn Hộ {unit.code}</span>
+              <span>{t('Chỉnh Sửa Căn Hộ', 'Edit Apartment')} {unit.code}</span>
               <span className="text-xs px-2 py-0.5 bg-[#161B22] border border-[#2D3748] text-gray-300 font-sans">
                 {unit.towerName}
               </span>
             </h3>
           </div>
-          <button type="button" onClick={onClose} className="text-gray-400 hover:text-white p-1">
+          <button type="button" onClick={onClose} className="text-gray-400 hover:text-white p-1" title={t('Đóng', 'Close')}>
             <X className="w-5 h-5" />
           </button>
         </div>
@@ -144,38 +146,38 @@ export default function EditApartmentModal({
         <form onSubmit={handleSubmit} className="space-y-4 text-xs">
           {/* Trạng thái căn hộ */}
           <div>
-            <label className="block text-gray-300 font-semibold mb-1">Trạng Thái Căn Hộ</label>
+            <label className="block text-gray-300 font-semibold mb-1">{t('Trạng Thái Căn Hộ', 'Apartment Status')}</label>
             <select
               value={status}
               onChange={(e) => setStatus(e.target.value as any)}
               className="w-full bg-[#161B22] border border-[#2D3748] px-3 py-2 text-white font-semibold rounded-none focus:outline-none focus:border-[#C5A880]"
             >
-              <option value="OCCUPIED">🟢 Đã Có Người Ở (Đang sinh sống)</option>
-              <option value="VACANT">🟡 Nhà Trống (Sẵn sàng bàn giao)</option>
-              <option value="MAINTENANCE">🔵 Đang Sửa Chữa / Nghiệm Thu</option>
-              <option value="HANDOVER_PENDING">🟣 Chờ Bàn Giao</option>
+              <option value="OCCUPIED">🟢 {t('Đã Có Người Ở (Đang sinh sống)', 'Occupied (Resident living)')}</option>
+              <option value="VACANT">🟡 {t('Nhà Trống (Sẵn sàng bàn giao)', 'Vacant (Ready for handover)')}</option>
+              <option value="MAINTENANCE">🔵 {t('Đang Sửa Chữa / Nghiệm Thu', 'Under Maintenance / Inspection')}</option>
+              <option value="HANDOVER_PENDING">🟣 {t('Chờ Bàn Giao', 'Pending Handover')}</option>
             </select>
           </div>
 
           {/* Phân loại căn hộ */}
           <div>
-            <label className="block text-gray-300 font-semibold mb-1">Loại Căn Hộ</label>
+            <label className="block text-gray-300 font-semibold mb-1">{t('Loại Căn Hộ', 'Apartment Type')}</label>
             <select
               value={type}
               onChange={(e) => setType(e.target.value as any)}
               className="w-full bg-[#161B22] border border-[#2D3748] px-3 py-2 text-white rounded-none focus:outline-none focus:border-[#C5A880]"
             >
-              <option value="1PN">1 Phòng Ngủ - 1WC</option>
-              <option value="2PN">2 Phòng Ngủ - 2WC</option>
-              <option value="3PN">3 Phòng Ngủ - 3WC</option>
-              <option value="DUPLEX_PENTHOUSE">Căn Lớn Penthouse</option>
+              <option value="1PN">1 {t('Phòng Ngủ - 1WC', 'Bedroom - 1 Bathroom')}</option>
+              <option value="2PN">2 {t('Phòng Ngủ - 2WC', 'Bedrooms - 2 Bathrooms')}</option>
+              <option value="3PN">3 {t('Phòng Ngủ - 3WC', 'Bedrooms - 3 Bathrooms')}</option>
+              <option value="DUPLEX_PENTHOUSE">{t('Căn Lớn Penthouse', '5-Star Duplex Penthouse')}</option>
             </select>
           </div>
 
           {/* Diện tích & Số phòng */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
             <div>
-              <label className="block text-gray-300 font-semibold mb-1">Thông Thủy (m²)</label>
+              <label className="block text-gray-300 font-semibold mb-1">{t('Thông Thủy (m²)', 'Net Usable (m²)')}</label>
               <input
                 type="number"
                 step="0.1"
@@ -187,7 +189,7 @@ export default function EditApartmentModal({
             </div>
 
             <div>
-              <label className="block text-gray-300 font-semibold mb-1">Tim Tường (m²)</label>
+              <label className="block text-gray-300 font-semibold mb-1">{t('Tim Tường (m²)', 'Gross Area (m²)')}</label>
               <input
                 type="number"
                 step="0.1"
@@ -198,7 +200,7 @@ export default function EditApartmentModal({
             </div>
 
             <div>
-              <label className="block text-gray-300 font-semibold mb-1">Phòng Ngủ</label>
+              <label className="block text-gray-300 font-semibold mb-1">{t('Phòng Ngủ', 'Bedrooms')}</label>
               <input
                 type="number"
                 min="1"
@@ -210,7 +212,7 @@ export default function EditApartmentModal({
             </div>
 
             <div>
-              <label className="block text-gray-300 font-semibold mb-1">Phòng Tắm</label>
+              <label className="block text-gray-300 font-semibold mb-1">{t('Phòng Tắm', 'Bathrooms')}</label>
               <input
                 type="number"
                 min="1"
@@ -225,7 +227,7 @@ export default function EditApartmentModal({
           {/* Hướng & Giá */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className="block text-gray-300 font-semibold mb-1">Hướng Ban Công</label>
+              <label className="block text-gray-300 font-semibold mb-1">{t('Hướng Ban Công', 'Balcony Facing')}</label>
               <input
                 type="text"
                 value={direction}
@@ -235,7 +237,7 @@ export default function EditApartmentModal({
             </div>
 
             <div>
-              <label className="block text-gray-300 font-semibold mb-1">Định Giá Căn Hộ (Tỷ VNĐ)</label>
+              <label className="block text-gray-300 font-semibold mb-1">{t('Định Giá Căn Hộ (Tỷ VNĐ)', 'Valuation (Billion VND)')}</label>
               <input
                 type="number"
                 step="0.05"
@@ -249,7 +251,7 @@ export default function EditApartmentModal({
 
           {/* Mô tả */}
           <div>
-            <label className="block text-gray-300 font-semibold mb-1">Ghi Chú Kỹ Thuật</label>
+            <label className="block text-gray-300 font-semibold mb-1">{t('Ghi Chú Kỹ Thuật', 'Technical Notes & Description')}</label>
             <textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
@@ -261,21 +263,21 @@ export default function EditApartmentModal({
           {/* Xóa căn hộ */}
           {isDeleting ? (
             <div className="p-3 bg-rose-950/90 border border-rose-600 text-rose-200 text-xs space-y-2">
-              <div>Bạn có chắc chắn muốn xóa vĩnh viễn căn hộ <strong>{unit.code}</strong> khỏi hệ thống?</div>
+              <div>{t('Bạn có chắc chắn muốn xóa vĩnh viễn căn hộ', 'Are you sure you want to permanently delete unit')} <strong>{unit.code}</strong> {t('khỏi hệ thống?', 'from system?')}</div>
               <div className="flex items-center gap-2">
                 <button
                   type="button"
                   onClick={handleDelete}
                   className="px-3 py-1 bg-rose-600 text-white font-bold uppercase text-[11px]"
                 >
-                  Xác Nhận Xóa
+                  {t('Xác Nhận Xóa', 'Confirm Delete')}
                 </button>
                 <button
                   type="button"
                   onClick={() => setIsDeleting(false)}
                   className="px-2.5 py-1 bg-black/50 text-gray-300 border border-gray-600 text-[11px]"
                 >
-                  Hủy
+                  {t('Hủy', 'Cancel')}
                 </button>
               </div>
             </div>
@@ -286,7 +288,7 @@ export default function EditApartmentModal({
                 onClick={() => setIsDeleting(true)}
                 className="text-rose-400 hover:text-rose-300 text-xs flex items-center gap-1 font-semibold"
               >
-                <Trash2 className="w-3.5 h-3.5" /> Xóa Căn Hộ Này
+                <Trash2 className="w-3.5 h-3.5" /> {t('Xóa Căn Hộ Này', 'Delete This Unit')}
               </button>
             </div>
           )}
@@ -298,13 +300,13 @@ export default function EditApartmentModal({
               onClick={onClose}
               className="px-4 py-2 bg-[#161B22] hover:bg-[#202936] text-gray-300 hover:text-white border border-[#2D3748] font-semibold transition-colors"
             >
-              Hủy
+              {t('Hủy', 'Cancel')}
             </button>
             <button
               type="submit"
               className="px-5 py-2 bg-[#C5A880] hover:bg-white text-[#0D1117] font-bold uppercase tracking-wider transition-colors shadow flex items-center gap-1.5"
             >
-              <Save className="w-4 h-4" /> Lưu Thay Đổi
+              <Save className="w-4 h-4" /> {t('Lưu Thay Đổi', 'Save Changes')}
             </button>
           </div>
         </form>

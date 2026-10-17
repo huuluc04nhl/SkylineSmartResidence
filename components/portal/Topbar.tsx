@@ -45,7 +45,7 @@ export default function Topbar({
 }: TopbarProps) {
   const router = useRouter();
   const { logout } = useAuth();
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
 
   const [searchQuery, setSearchQuery] = useState('');
   const [showSearchSuggestions, setShowSearchSuggestions] = useState(false);
@@ -54,6 +54,22 @@ export default function Topbar({
   const [currentTime, setCurrentTime] = useState<string>('');
   const [liveAvatar, setLiveAvatar] = useState<string>(() => getUserApiAvatar(currentUser));
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
+
+  // Dynamic live clock running every second
+  useEffect(() => {
+    const updateClock = () => {
+      const now = new Date();
+      const locale = language === 'en' ? 'en-US' : 'vi-VN';
+      const timeStr = now.toLocaleTimeString(locale, { hour12: false });
+      const day = String(now.getDate()).padStart(2, '0');
+      const month = String(now.getMonth() + 1).padStart(2, '0');
+      const year = now.getFullYear();
+      setCurrentTime(`${timeStr} • ${day}/${month}/${year}`);
+    };
+    updateClock();
+    const timer = setInterval(updateClock, 1000);
+    return () => clearInterval(timer);
+  }, [language]);
 
   useEffect(() => {
     // 1. Initial sync from currentUser
@@ -88,12 +104,12 @@ export default function Topbar({
 
   // Semantic search suggestions
   const semanticSuggestions = [
-    { query: 'nhà bị rò rỉ nước', action: 'resident-tickets', label: 'Báo sửa chữa đường ống nước' },
-    { query: 'hóa đơn tháng 8', action: 'resident-finance', label: 'Hóa đơn điện nước tháng này' },
-    { query: 'quẹt thẻ hồ bơi', action: 'resident-facilities', label: 'Thẻ cư dân & tiện ích' },
-    { query: 'điều khiển smart home', action: 'resident-smarthome', label: 'Thiết bị nhà thông minh' },
-    { query: 'cảnh báo camera khói lửa', action: 'admin-dashboard', label: 'Bản đồ an ninh & cảnh báo' },
-    { query: 'báo cáo bất thường điện nước', action: 'admin-billing', label: 'Kiểm tra bất thường điện nước' },
+    { query: t('nhà bị rò rỉ nước'), action: 'resident-tickets', label: t('Báo sửa chữa đường ống nước') },
+    { query: t('hóa đơn tháng 8'), action: 'resident-finance', label: t('Hóa đơn điện nước tháng này') },
+    { query: t('quẹt thẻ hồ bơi'), action: 'resident-facilities', label: t('Thẻ cư dân & tiện ích') },
+    { query: t('điều khiển smart home'), action: 'resident-smarthome', label: t('Thiết bị nhà thông minh') },
+    { query: t('cảnh báo camera khói lửa'), action: 'admin-dashboard', label: t('Bản đồ an ninh & cảnh báo') },
+    { query: t('báo cáo bất thường điện nước'), action: 'admin-billing', label: t('Kiểm tra bất thường điện nước') },
   ];
 
   const filteredSuggestions = searchQuery.trim() === ''
@@ -139,7 +155,7 @@ export default function Topbar({
         {/* Live System Time */}
         <div className="hidden xl:flex items-center gap-2 text-[11px] text-gray-400 font-mono pl-4 border-l border-[#222B35]">
           <Clock className="w-3.5 h-3.5 text-[#C5A880]" />
-          <span>{currentTime || '08:30:00 • 28/08/2026'}</span>
+          <span>{currentTime || '--:--:-- • --/--/----'}</span>
         </div>
       </div>
 
@@ -185,7 +201,7 @@ export default function Topbar({
                   className="p-2 hover:bg-[#1E2631] cursor-pointer text-xs flex items-center justify-between text-gray-200 hover:text-[#C5A880] transition-colors"
                 >
                   <span className="truncate">{item.label}</span>
-                  <span className="text-[10px] text-gray-500 font-mono ml-2 flex-shrink-0">→ Mở</span>
+                  <span className="text-[10px] text-gray-500 font-mono ml-2 flex-shrink-0">{t('→ Mở')}</span>
                 </div>
               ))}
             </div>
