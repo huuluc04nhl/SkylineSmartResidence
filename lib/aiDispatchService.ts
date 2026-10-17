@@ -419,23 +419,23 @@ export function generateAiResolutionNotes(ticket: ExtendedServiceRequest): strin
   const cat = ticket.ai_category || 'Khác';
   const text = (ticket.content || '').toLowerCase();
 
-  if (cat === 'Nước' || text.includes('nước') || text.includes('vòi') || text.includes('bồn') || text.includes('rò rỉ')) {
-    return 'AI Nghiệm Thu: KTV đã kiểm tra toàn diện cụm cấp xả nước, thay thế gioăng cao su chịu nhiệt và siết ren chuyên dụng. Thử nén áp lực thủy tĩnh 2.5 bar trong 15 phút đạt chuẩn không rò rỉ, hệ thống thoát nước thông suốt.';
+  if (cat === 'Nước' || text.includes('nước') || text.includes('vòi') || text.includes('bồn') || text.includes('rò rỉ') || text.includes('ống')) {
+    return 'KTV đã kiểm tra toàn diện cụm cấp xả nước, thay thế gioăng cao su chịu nhiệt và siết ren chuyên dụng. Thử nén áp lực thủy tĩnh 2.5 bar trong 15 phút đạt chuẩn không rò rỉ, hệ thống thoát nước thông suốt.';
   }
 
-  if (cat === 'Điện' || text.includes('điện') || text.includes('đèn') || text.includes('chập') || text.includes('aptomat')) {
-    return 'AI Nghiệm Thu: KTV đã đo tải điện pha, thay thế aptomat tự ngắt Schneider chống quá tải, bọc ghen cách điện chống cháy. Điện áp 220V ổn định, dây tiếp địa đạt chuẩn an toàn 100%.';
+  if (cat === 'Điện' || text.includes('điện') || text.includes('đèn') || text.includes('chập') || text.includes('aptomat') || text.includes('ổ cắm')) {
+    return 'KTV đã đo tải điện pha, thay thế aptomat tự ngắt Schneider chống quá tải, bọc ghen cách điện chống cháy. Điện áp 220V ổn định, dây tiếp địa đạt chuẩn an toàn 100%.';
   }
 
-  if (text.includes('lạnh') || text.includes('điều hòa') || text.includes('thang máy') || text.includes('quạt')) {
-    return 'AI Nghiệm Thu: KTV đã vệ sinh lưới lọc và dàn trao đổi nhiệt, bổ sung áp suất gas R410A đạt mức định mức 120 PSI, đo dòng máy nén 4.2A ổn định. Nhiệt độ cửa gió đạt 17.5°C, vận hành êm ái.';
+  if (text.includes('lạnh') || text.includes('điều hòa') || text.includes('thang máy') || text.includes('quạt') || text.includes('thông gió')) {
+    return 'KTV đã vệ sinh lưới lọc và dàn trao đổi nhiệt, bổ sung áp suất gas R410A đạt định mức 120 PSI, đo dòng máy nén 4.2A ổn định. Nhiệt độ cửa gió đạt 17.5°C, vận hành êm ái.';
   }
 
-  if (cat === 'Vệ sinh' || text.includes('rác') || text.includes('vệ sinh') || text.includes('mùi')) {
-    return 'AI Nghiệm Thu: Đã tổng vệ sinh toàn diện hiện trường, thu gom rác thải đúng quy định, xịt dung dịch nano sinh học khử mùi và lau khử khuẩn bề mặt. Hiện trạng sạch bóng, thông thoáng.';
+  if (cat === 'Vệ sinh' || text.includes('rác') || text.includes('vệ sinh') || text.includes('mùi') || text.includes('bẩn')) {
+    return 'Đã tổng vệ sinh toàn diện hiện trường, thu gom rác thải đúng quy định, xịt dung dịch nano sinh học khử mùi và lau khử khuẩn bề mặt. Hiện trạng sạch bóng, thông thoáng.';
   }
 
-  return 'AI Nghiệm Thu: KTV đã kiểm tra xử lý toàn diện sự cố, căn chỉnh linh kiện và kiểm tra vận hành thử tải. Hiện trường an toàn, thiết bị hoạt động bình thường và đã bàn giao cư dân.';
+  return 'KTV đã kiểm tra xử lý toàn diện sự cố tại căn hộ, thay mới linh kiện hao mòn và kiểm tra vận hành thử tải. Hiện trường an toàn, thiết bị hoạt động ổn định và đã bàn giao cư dân.';
 }
 
 /**

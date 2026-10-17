@@ -295,15 +295,12 @@ export default function KanbanBoard() {
     }
   };
 
-  const handleAutoFillAiInspection = () => {
-    if (!resolvingTicket) return;
-    const notes = generateAiResolutionNotes(resolvingTicket);
-    const img = generateAiInspectionImage(resolvingTicket);
-    setResolutionNotes(notes);
-    setAfterImageBase64(img);
-    handleVerifyResolutionImage(img, resolvingTicket, notes);
-    setActionSuccessMsg('Đã tạo biên bản nghiệm thu & thẩm định AI hoàn tất.');
-    setTimeout(() => setActionSuccessMsg(null), 3000);
+  const handleOpenResolveModal = (ticket: ExtendedServiceRequest) => {
+    setResolvingTicket(ticket);
+    setAfterImageBase64('');
+    setResolutionNotes(generateAiResolutionNotes(ticket));
+    setAiVerificationResult(null);
+    setAllowOverrideVerification(false);
   };
 
   useEffect(() => {
@@ -1087,13 +1084,7 @@ export default function KanbanBoard() {
                             ) : (
                               <>
                                 <button
-                                  onClick={() => {
-                                    setResolvingTicket(ticket);
-                                    setAfterImageBase64('');
-                                    setResolutionNotes('');
-                                    setAiVerificationResult(null);
-                                    setAllowOverrideVerification(false);
-                                  }}
+                                  onClick={() => handleOpenResolveModal(ticket)}
                                   className="h-7 px-2.5 bg-[#10B981]/20 hover:bg-[#10B981]/30 border border-[#10B981]/50 text-[#10B981] text-xs font-medium rounded-none transition-colors flex items-center gap-1"
                                   title={t('BQL nghiệm thu và ghi nhận hồ sơ kỹ thuật')}
                                 >
@@ -1429,12 +1420,7 @@ export default function KanbanBoard() {
                                 {(ticket.status === 'In_Progress' || ticket.status === 'Assigned') && (
                                   <>
                                     <button
-                                      onClick={() => {
-                                        setResolvingTicket(ticket);
-                                        setAfterImageBase64('');
-                                        setResolutionNotes('');
-                                        setAiVerificationResult(null);
-                                      }}
+                                      onClick={() => handleOpenResolveModal(ticket)}
                                       className="h-6 px-2 bg-[#10B981]/20 hover:bg-[#10B981]/30 border border-[#10B981]/50 text-[#10B981] text-[11px] font-medium rounded-none transition-colors"
                                       title={t('BQL nghiệm thu')}
                                     >
@@ -1920,24 +1906,6 @@ export default function KanbanBoard() {
                 </div>
               </div>
 
-              {/* AI Assistant Quick Fill */}
-              <div className="p-2.5 bg-emerald-950/30 border border-emerald-500/30 flex items-center justify-between gap-2 rounded-none">
-                <div className="flex items-center gap-2 min-w-0">
-                  <Sparkles className="w-4 h-4 text-emerald-400 shrink-0" />
-                  <div className="min-w-0">
-                    <div className="text-xs text-white font-semibold truncate">Trợ Lý AI Kiểm Định Hiện Trường</div>
-                    <div className="text-[10px] text-gray-400 truncate">Sinh biên bản kỹ thuật &amp; ảnh kiểm định đạt chuẩn</div>
-                  </div>
-                </div>
-                <button
-                  type="button"
-                  onClick={handleAutoFillAiInspection}
-                  className="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-500 text-white text-[11px] font-bold uppercase tracking-wider transition-all flex items-center gap-1 shadow shrink-0 rounded-none"
-                >
-                  AI Điền Sẵn
-                </button>
-              </div>
-
               {/* Upload After Image */}
               <div className="space-y-1.5">
                 <label className="text-xs text-gray-300 font-semibold flex items-center justify-between">
@@ -1979,15 +1947,20 @@ export default function KanbanBoard() {
                 </div>
               </div>
 
-              {/* Resolution Notes */}
+              {/* Resolution Notes with AI recognition badge */}
               <div className="space-y-1">
-                <label className="text-xs text-gray-300 font-semibold">Ghi Chú Kỹ Thuật:</label>
+                <div className="flex items-center justify-between">
+                  <label className="text-xs text-gray-300 font-semibold">Ghi Chú Kỹ Thuật Khi Bàn Giao:</label>
+                  <span className="text-[10px] text-[#C5A880] font-mono flex items-center gap-1">
+                    <Sparkles className="w-3 h-3 text-[#C5A880]" /> Đã tự động nhận diện
+                  </span>
+                </div>
                 <textarea
-                  rows={2}
+                  rows={3}
                   value={resolutionNotes}
                   onChange={(e) => setResolutionNotes(e.target.value)}
                   placeholder="VD: Đã thay gioăng cao su van xả, kiểm tra áp lực nước 2.5 bar ổn định..."
-                  className="w-full bg-[#161B22] border border-[#2D3748] text-xs text-white p-2 focus:outline-none focus:border-[#C5A880] rounded-none resize-none"
+                  className="w-full bg-[#161B22] border border-[#2D3748] text-xs text-white p-2.5 focus:outline-none focus:border-[#C5A880] rounded-none resize-none leading-relaxed"
                   required
                 />
               </div>
