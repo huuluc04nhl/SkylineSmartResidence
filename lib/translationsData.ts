@@ -3913,6 +3913,10 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
     "No invoice statement has been generated for this apartment yet."
   ],
   [
+    "Đối Chiếu Khuôn Mặt Cư Dân & Thẻ Căn Cước:",
+    "Resident Facial & ID Card Matching:"
+  ],
+  [
     "Đối Chiếu Khuôn Mặt Cư Dân &amp; Thẻ Căn Cước:",
     "Resident Facial &amp; ID Card Matching:"
   ],

@@ -512,6 +512,98 @@ export const KEY_DICTIONARY: Record<string, Record<Language, string>> = {
   'Ghi Chú Kỹ Thuật': { vi: 'Ghi Chú Kỹ Thuật', en: 'Technical Notes & Description' },
   'Xóa Căn Hộ Này': { vi: 'Xóa Căn Hộ Này', en: 'Delete This Unit' },
   'Lưu Thay Đổi': { vi: 'Lưu Thay Đổi', en: 'Save Changes' },
+  // e-KYC Verification & Appraisal Modal
+  'Đối Chiếu Khuôn Mặt Cư Dân & Thẻ Căn Cước:': { vi: 'Đối Chiếu Khuôn Mặt Cư Dân & Thẻ Căn Cước:', en: 'Resident Facial & ID Card Matching:' },
+  'Đối Chiếu Khuôn Mặt Cư Dân &amp; Thẻ Căn Cước:': { vi: 'Đối Chiếu Khuôn Mặt Cư Dân & Thẻ Căn Cước:', en: 'Resident Facial & ID Card Matching:' },
+  'Đối Chiếu Khuôn Mặt Cư Dân & Thẻ Căn Cước': { vi: 'Đối Chiếu Khuôn Mặt Cư Dân & Thẻ Căn Cước', en: 'Resident Facial & ID Card Matching' },
+  'Đối Chiếu Khuôn Mặt Cư Dân &amp; Thẻ Căn Cước': { vi: 'Đối Chiếu Khuôn Mặt Cư Dân & Thẻ Căn Cước', en: 'Resident Facial & ID Card Matching' },
+  'Hệ Thống Thẩm Định BQL • Căn Hộ': { vi: 'Hệ Thống Thẩm Định BQL • Căn Hộ', en: 'Management System Appraisal • Apartment' },
+  '✓ ĐÃ KÍCH HOẠT HỆ THỐNG': { vi: '✓ ĐÃ KÍCH HOẠT HỆ THỐNG', en: '✓ SYSTEM ACTIVATED' },
+  '⚠ YÊU CẦU CẬP NHẬT': { vi: '⚠ YÊU CẦU CẬP NHẬT', en: '⚠ UPDATE REQUIRED' },
+  '⏳ CHỜ THẨM ĐỊNH': { vi: '⏳ CHỜ THẨM ĐỊNH', en: '⏳ PENDING APPRAISAL' },
+  'Được Chủ Hộ Bảo Lãnh': { vi: 'Được Chủ Hộ Bảo Lãnh', en: 'Owner Sponsored' },
+  'Phê duyệt thành công!': { vi: 'Phê duyệt thành công!', en: 'Approval Successful!' },
+  'Đã kích hoạt sinh trắc học FaceID và nạp dữ liệu nhận diện vào Camera AI cổng Barrier và Thang máy toà nhà.': { vi: 'Đã kích hoạt sinh trắc học FaceID và nạp dữ liệu nhận diện vào Camera AI cổng Barrier và Thang máy toà nhà.', en: 'FaceID biometrics activated and recognition data loaded to AI barrier gate and building elevators.' },
+  'Thời gian thực': { vi: 'Thời gian thực', en: 'Real-time' },
+  'Hồ Sơ Đã Bị Từ Chối / Yêu Cầu Cung Cấp Lại': { vi: 'Hồ Sơ Đã Bị Từ Chối / Yêu Cầu Cung Cấp Lại', en: 'Dossier Rejected / Resubmission Required' },
+  'Lý do từ chối gửi cư dân:': { vi: 'Lý do từ chối gửi cư dân:', en: 'Rejection reason sent to resident:' },
+  'Ảnh chụp CCCD không đạt tiêu chuẩn rõ nét.': { vi: 'Ảnh chụp CCCD không đạt tiêu chuẩn rõ nét.', en: 'Citizen ID photo does not meet clarity standards.' },
+  'Xử lý lúc:': { vi: 'Xử lý lúc:', en: 'Processed at:' },
+  'Bởi:': { vi: 'Bởi:', en: 'By:' },
+  'Ảnh Chân Dung Nhận Diện:': { vi: 'Ảnh Chân Dung Nhận Diện:', en: 'Facial Portrait Photo:' },
+  'Độ Trùng Khớp:': { vi: 'Độ Trùng Khớp:', en: 'Match Rate:' },
+  'CHÂN DUNG CHÍNH DIỆN': { vi: 'CHÂN DUNG CHÍNH DIỆN', en: 'FRONT FACIAL PORTRAIT' },
+  'Bộ Mẫu Thu Thập 4 Góc Mặt:': { vi: 'Bộ Mẫu Thu Thập 4 Góc Mặt:', en: '4-Angle Face Enrollment Set:' },
+  'Liveness 100%': { vi: 'Liveness 100%', en: 'Liveness 100%' },
+  'Chính diện': { vi: 'Chính diện', en: 'Front' },
+  'Trái (-25°)': { vi: 'Trái (-25°)', en: 'Left (-25°)' },
+  'Phải (+25°)': { vi: 'Phải (+25°)', en: 'Right (+25°)' },
+  'Chưa có': { vi: 'Chưa có', en: 'None' },
+  'Dữ liệu nhận diện khuôn mặt đã sẵn sàng kích hoạt quyền ra vào sảnh & thang máy': { vi: 'Dữ liệu nhận diện khuôn mặt đã sẵn sàng kích hoạt quyền ra vào sảnh & thang máy', en: 'Face biometric data ready to activate lobby & elevator access' },
+  'Ảnh chân dung chụp trực tiếp từ thiết bị': { vi: 'Ảnh chân dung chụp trực tiếp từ thiết bị', en: 'Portrait photo captured directly from device' },
+  'Thẻ Căn Cước Công Dân:': { vi: 'Thẻ Căn Cước Công Dân:', en: 'Citizen ID Card:' },
+  'Mặt trước CCCD': { vi: 'Mặt trước CCCD', en: 'Citizen ID Front' },
+  'Mặt sau CCCD': { vi: 'Mặt sau CCCD', en: 'Citizen ID Back' },
+  'Chưa Tải Ảnh Mặt Trước CCCD': { vi: 'Chưa Tải Ảnh Mặt Trước CCCD', en: 'Front ID Photo Not Uploaded' },
+  'Chưa Tải Ảnh Mặt Sau CCCD': { vi: 'Chưa Tải Ảnh Mặt Sau CCCD', en: 'Back ID Photo Not Uploaded' },
+  'Số CCCD:': { vi: 'Số CCCD:', en: 'Citizen ID No:' },
+  'Chưa cung cấp': { vi: 'Chưa cung cấp', en: 'Not provided' },
+  'MẶT TRƯỚC (CÓ ẢNH & SỐ ĐỊNH DANH)': { vi: 'MẶT TRƯỚC (CÓ ẢNH & SỐ ĐỊNH DANH)', en: 'FRONT (PHOTO & CITIZEN ID NO)' },
+  'MẶT TRƯỚC (CÓ ẢNH &amp; SỐ ĐỊNH DANH)': { vi: 'MẶT TRƯỚC (CÓ ẢNH & SỐ ĐỊNH DANH)', en: 'FRONT (PHOTO & CITIZEN ID NO)' },
+  'MẶT SAU (CHIP ĐIỆN TỬ & VÂN TAY)': { vi: 'MẶT SAU (CHIP ĐIỆN TỬ & VÂN TAY)', en: 'BACK (CHIP & FINGERPRINT)' },
+  'MẶT SAU (CHIP ĐIỆN TỬ &amp; VÂN TAY)': { vi: 'MẶT SAU (CHIP ĐIỆN TỬ & VÂN TAY)', en: 'BACK (CHIP & FINGERPRINT)' },
+  'Nhấp vào ảnh để phóng to toàn màn hình': { vi: 'Nhấp vào ảnh để phóng to toàn màn hình', en: 'Click image to expand fullscreen' },
+  '✓ Mặt trước Đầy Đủ': { vi: '✓ Mặt trước Đầy Đủ', en: '✓ Front Complete' },
+  '⚠ Chưa Có Mặt Trước': { vi: '⚠ Chưa Có Mặt Trước', en: '⚠ Front Missing' },
+  '✓ Mặt Sau Đầy Đủ': { vi: '✓ Mặt Sau Đầy Đủ', en: '✓ Back Complete' },
+  '⚠ Chưa Có Mặt Sau': { vi: '⚠ Chưa Có Mặt Sau', en: '⚠ Back Missing' },
+  'Đạt Tiêu Chuẩn Xác Thực & Đủ Điều Kiện Kích Hoạt Quyền Ra Vào': { vi: 'Đạt Tiêu Chuẩn Xác Thực & Đủ Điều Kiện Kích Hoạt Quyền Ra Vào', en: 'Verification Standard Met & Eligible for Access Activation' },
+  'Đạt Tiêu Chuẩn Xác Thực &amp; Đủ Điều Kiện Kích Hoạt Quyền Ra Vào': { vi: 'Đạt Tiêu Chuẩn Xác Thực & Đủ Điều Kiện Kích Hoạt Quyền Ra Vào', en: 'Verification Standard Met & Eligible for Access Activation' },
+  'Cần Kiểm Tra: Ảnh Khuôn Mặt Chưa Khớp Hoặc Thẻ CCCD Mờ': { vi: 'Cần Kiểm Tra: Ảnh Khuôn Mặt Chưa Khớp Hoặc Thẻ CCCD Mờ', en: 'Needs Review: Face Mismatch or Blurry ID' },
+  'Ảnh khuôn mặt trùng khớp với chân dung trên CCCD': { vi: 'Ảnh khuôn mặt trùng khớp với chân dung trên CCCD', en: 'Face portrait matches Citizen ID photo' },
+  'Thẻ CCCD hợp lệ': { vi: 'Thẻ CCCD hợp lệ', en: 'Valid Citizen ID card' },
+  'Vui lòng kiểm tra lại ảnh thẻ CCCD hoặc yêu cầu cư dân nộp lại chân dung rõ nét.': { vi: 'Vui lòng kiểm tra lại ảnh thẻ CCCD hoặc yêu cầu cư dân nộp lại chân dung rõ nét.', en: 'Please review ID card photo or request resident to resubmit a sharp portrait.' },
+  'Độ Khớp:': { vi: 'Độ Khớp:', en: 'Match Rate:' },
+  'Bảng Đối Chiếu Thông Tin Khai Báo & Trích Xuất Thẻ:': { vi: 'Bảng Đối Chiếu Thông Tin Khai Báo & Trích Xuất Thẻ:', en: 'Declared Info & ID Extraction Comparison:' },
+  'Bảng Đối Chiếu Thông Tin Khai Báo &amp; Trích Xuất Thẻ:': { vi: 'Bảng Đối Chiếu Thông Tin Khai Báo & Trích Xuất Thẻ:', en: 'Declared Info & ID Extraction Comparison:' },
+  'Căn Hộ &amp; Vai Trò:': { vi: 'Căn Hộ & Vai Trò:', en: 'Apartment & Role:' },
+  'Ngày Cấp &amp; Nơi Cấp:': { vi: 'Ngày Cấp & Nơi Cấp:', en: 'Issue Date & Place:' },
+  'Xác Nhận &amp; Kích Hoạt Quyền Ra Vào': { vi: 'Xác Nhận & Kích Hoạt Quyền Ra Vào', en: 'Confirm & Activate Access' },
+  'Yêu Cầu Cư Dân Cập Nhật Lại Hồ Sơ': { vi: 'Yêu Cầu Cư Dân Cập Nhật Lại Hồ Sơ', en: 'Request Resident to Update Dossier' },
+  'Chọn hoặc nhập lý do cần bổ sung (Gửi thông báo tới cư dân):': { vi: 'Chọn hoặc nhập lý do cần bổ sung (Gửi thông báo tới cư dân):', en: 'Select or enter reason for update (Sent to resident):' },
+  'Ảnh chụp CCCD bị mờ/lóa sáng/mất góc': { vi: 'Ảnh chụp CCCD bị mờ/lóa sáng/mất góc', en: 'ID photo is blurry/glared/cropped' },
+  'Số CCCD không trùng khớp hồ sơ': { vi: 'Số CCCD không trùng khớp hồ sơ', en: 'ID number does not match registration' },
+  'Ảnh chân dung chưa trùng khớp ảnh CCCD': { vi: 'Ảnh chân dung chưa trùng khớp ảnh CCCD', en: 'Portrait does not match ID card photo' },
+  'Chưa cung cấp đủ 2 mặt thẻ CCCD': { vi: 'Chưa cung cấp đủ 2 mặt thẻ CCCD', en: 'Missing one or both sides of ID card' },
+  'Thẻ CCCD đã hết hạn sử dụng': { vi: 'Thẻ CCCD đã hết hạn sử dụng', en: 'Citizen ID card has expired' },
+  'Ghi chú chi tiết lý do gửi cư dân...': { vi: 'Ghi chú chi tiết lý do gửi cư dân...', en: 'Detailed notes sent to resident...' },
+  'Xác Nhận Từ Chối': { vi: 'Xác Nhận Từ Chối', en: 'Confirm Rejection' },
+  'Tạm Khóa / Thu Hồi Quyền Ra Vào FaceID': { vi: 'Tạm Khóa / Thu Hồi Quyền Ra Vào FaceID', en: 'Suspend / Revoke FaceID Access' },
+  'Hành động này sẽ tạm khóa hoặc hủy quyền nhận diện khuôn mặt của cư dân tại sảnh đón và thang máy toà nhà.': { vi: 'Hành động này sẽ tạm khóa hoặc hủy quyền nhận diện khuôn mặt của cư dân tại sảnh đón và thang máy toà nhà.', en: 'This action will suspend or revoke resident facial recognition access at lobby and building elevators.' },
+  'Lý do thu hồi quyền:': { vi: 'Lý do thu hồi quyền:', en: 'Revocation reason:' },
+  'Hết thời hạn hợp đồng thuê / Chuyển nơi cư trú': { vi: 'Hết thời hạn hợp đồng thuê / Chuyển nơi cư trú', en: 'Lease expired / Relocated' },
+  'Ban Quản Lý tạm thu hồi để đối soát lại hồ sơ': { vi: 'Ban Quản Lý tạm thu hồi để đối soát lại hồ sơ', en: 'Management temporary suspension for auditing' },
+  'Phát hiện thông tin CCCD có sai lệch': { vi: 'Phát hiện thông tin CCCD có sai lệch', en: 'Discrepancy detected in ID information' },
+  'Vi phạm quy định vận hành an ninh toà nhà': { vi: 'Vi phạm quy định vận hành an ninh toà nhà', en: 'Violation of building security regulations' },
+  'Xác Nhận Thu Hồi': { vi: 'Xác Nhận Thu Hồi', en: 'Confirm Revocation' },
+  'Xác Thực Cư Dân • Ban Quản Lý': { vi: 'Xác Thực Cư Dân • Ban Quản Lý', en: 'Resident Verification • Management' },
+  'Kiểm tra và đối chiếu căn cước công dân với khuôn mặt cư dân trước khi kích hoạt quyền ra vào thang máy và sảnh đón.': { vi: 'Kiểm tra và đối chiếu căn cước công dân với khuôn mặt cư dân trước khi kích hoạt quyền ra vào thang máy và sảnh đón.', en: 'Inspect and match citizen ID card against resident facial portrait before activating lift and lobby access.' },
+  'Làm Mới': { vi: 'Làm Mới', en: 'Refresh' },
+  'Tổng Hồ Sơ Tiếp Nhận': { vi: 'Tổng Hồ Sơ Tiếp Nhận', en: 'Total Received Profiles' },
+  'Đang Chờ Xác Thực': { vi: 'Đang Chờ Xác Thực', en: 'Pending Verification' },
+  'Cần Cập Nhật / Chụp Lại': { vi: 'Cần Cập Nhật / Chụp Lại', en: 'Needs Update / Reshot' },
+  'Tìm theo Căn hộ (CH-06), Tên, CCCD...': { vi: 'Tìm theo Căn hộ (CH-06), Tên, CCCD...', en: 'Search by Apartment (CH-06), Name, ID...' },
+  'Không tìm thấy hồ sơ cư dân nào': { vi: 'Không tìm thấy hồ sơ cư dân nào', en: 'No resident profiles found' },
+  'Hồ sơ gửi từ cư dân sẽ tự động xuất hiện tại đây theo thời gian thực.': { vi: 'Hồ sơ gửi từ cư dân sẽ tự động xuất hiện tại đây theo thời gian thực.', en: 'Resident submissions will appear here automatically in real time.' },
+  'Kiểm Tra Đối Chiếu Chi Tiết': { vi: 'Kiểm Tra Đối Chiếu Chi Tiết', en: 'Detailed Verification Inspection' },
+  'Xem mặt trước CCCD': { vi: 'Xem mặt trước CCCD', en: 'View ID Front' },
+  'Xem mặt sau CCCD': { vi: 'Xem mặt sau CCCD', en: 'View ID Back' },
+  'Trước': { vi: 'Trước', en: 'Front' },
+  'Sau': { vi: 'Sau', en: 'Back' },
+  'Cần Cập Nhật Lại': { vi: 'Cần Cập Nhật Lại', en: 'Needs Resubmission' },
+  'Nộp lúc:': { vi: 'Nộp lúc:', en: 'Submitted at:' },
+  'SĐT:': { vi: 'SĐT:', en: 'Phone:' },
+  'Căn Hộ:': { vi: 'Căn Hộ:', en: 'Apartment:' },
   'hero.desc_auth': {
     vi: 'Dự án căn hộ hạng sang SKYLINE Smart Residence tại cụm 4 chung cư The Tropical (BS-07, BS-08, BS-09, BS-10) kiến tạo chuẩn sống tự động hóa hoàn chỉnh: Định danh sinh trắc học FaceID <0.5s, giám sát an ninh Vision AI và hệ thống dự báo bảo trì thông minh.',
     en: 'Luxury apartment project SKYLINE Smart Residence at 4 towers of The Tropical (BS-07, BS-08, BS-09, BS-10) pioneers complete automated living: FaceID biometrics <0.5s, Vision AI security monitoring, and predictive maintenance.'
@@ -534,6 +626,18 @@ for (const [vi, en] of TRANSLATIONS_DATA) {
   if (cleanVi && cleanEn) {
     VI_TO_EN_MAP.set(cleanVi.toLowerCase(), cleanEn);
     EN_TO_VI_MAP.set(cleanEn.toLowerCase(), cleanVi);
+    if (cleanVi.includes('&amp;')) {
+      const uVi = cleanVi.replace(/&amp;/g, '&');
+      const uEn = cleanEn.replace(/&amp;/g, '&');
+      VI_TO_EN_MAP.set(uVi.toLowerCase(), uEn);
+      EN_TO_VI_MAP.set(uEn.toLowerCase(), uVi);
+    }
+    if (cleanVi.includes('&') && !cleanVi.includes('&amp;')) {
+      const aVi = cleanVi.replace(/&/g, '&amp;');
+      const aEn = cleanEn.replace(/&/g, '&amp;');
+      VI_TO_EN_MAP.set(aVi.toLowerCase(), aEn);
+      EN_TO_VI_MAP.set(aEn.toLowerCase(), aVi);
+    }
   }
 }
 
@@ -544,6 +648,14 @@ for (const [key, obj] of Object.entries(KEY_DICTIONARY)) {
   if (cleanVi && cleanEn) {
     VI_TO_EN_MAP.set(cleanVi.toLowerCase(), cleanEn);
     EN_TO_VI_MAP.set(cleanEn.toLowerCase(), cleanVi);
+    if (cleanVi.includes('&amp;')) {
+      VI_TO_EN_MAP.set(cleanVi.replace(/&amp;/g, '&').toLowerCase(), cleanEn.replace(/&amp;/g, '&'));
+      EN_TO_VI_MAP.set(cleanEn.replace(/&amp;/g, '&').toLowerCase(), cleanVi.replace(/&amp;/g, '&'));
+    }
+    if (cleanVi.includes('&') && !cleanVi.includes('&amp;')) {
+      VI_TO_EN_MAP.set(cleanVi.replace(/&/g, '&amp;').toLowerCase(), cleanEn.replace(/&/g, '&amp;'));
+      EN_TO_VI_MAP.set(cleanEn.replace(/&/g, '&amp;').toLowerCase(), cleanVi.replace(/&/g, '&amp;'));
+    }
   }
 }
 
@@ -1122,6 +1234,21 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
     // 1. Direct key dictionary lookup (e.g. 'nav.dashboard', 'role.admin')
     if (KEY_DICTIONARY[trimmed]) {
       return KEY_DICTIONARY[trimmed][language];
+    }
+    if (trimmed.includes('&') && KEY_DICTIONARY[trimmed.replace(/&/g, '&amp;')]) {
+      return KEY_DICTIONARY[trimmed.replace(/&/g, '&amp;')][language];
+    }
+    if (trimmed.includes('&amp;') && KEY_DICTIONARY[trimmed.replace(/&amp;/g, '&')]) {
+      return KEY_DICTIONARY[trimmed.replace(/&amp;/g, '&')][language];
+    }
+    if (trimmed.endsWith(':')) {
+      const withoutColon = trimmed.slice(0, -1).trim();
+      if (KEY_DICTIONARY[withoutColon]) {
+        return KEY_DICTIONARY[withoutColon][language] + ':';
+      }
+    } else if (KEY_DICTIONARY[trimmed + ':']) {
+      const withColon = KEY_DICTIONARY[trimmed + ':'][language];
+      return withColon.endsWith(':') ? withColon.slice(0, -1).trim() : withColon;
     }
 
     // 2. Target English
