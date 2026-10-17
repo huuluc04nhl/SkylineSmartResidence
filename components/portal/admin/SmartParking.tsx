@@ -32,7 +32,6 @@ import {
   ApartmentVehicle,
   ApartmentUnit 
 } from '@/lib/apartmentStore';
-import { DEMO_USERS } from '@/lib/dataStore';
 import { useLanguage } from '@/lib/languageContext';
 
 interface RegisteredVehicleWithUnit extends ApartmentVehicle {
@@ -562,9 +561,8 @@ export default function SmartParking() {
           <button
             type="button"
             onClick={() => {
-              const defaultUnit = apartments.find(a => a.code === 'CH-06') || 
+              const defaultUnit = apartments.find(a => a.code === regAptCode) || 
                                   apartments.find(a => a.vehicles && a.vehicles.length > 0) || 
-                                  apartments.find(a => a.owner?.name) || 
                                   apartments[0];
               if (defaultUnit) {
                 handleApartmentSelect(defaultUnit.code);

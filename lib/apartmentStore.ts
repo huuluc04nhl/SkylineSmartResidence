@@ -116,7 +116,7 @@ export const INITIAL_APARTMENTS: ApartmentUnit[] = generateNksBlockUnits(
 );
 
 export function getApartmentStorageKey(blockCode: string = 'BS-07'): string {
-  return `nks_apartments_${blockCode}_v19`;
+  return `nks_apartments_${blockCode}_v20`;
 }
 
 /**
@@ -150,7 +150,7 @@ export function getApartmentUnits(blockCode: string = 'BS-07'): ApartmentUnit[] 
       } catch (e) {}
     });
 
-    ['v10', 'v11', 'v12', 'v13', 'v14', 'v15', 'v16', 'v17', 'v18'].forEach(ver => {
+    ['v10', 'v11', 'v12', 'v13', 'v14', 'v15', 'v16', 'v17', 'v18', 'v19'].forEach(ver => {
       ['BS-07', 'BS-08', 'BS-09', 'BS-10'].forEach(b => {
         try { localStorage.removeItem(`nks_apartments_${b}_${ver}`); } catch (e) {}
       });
