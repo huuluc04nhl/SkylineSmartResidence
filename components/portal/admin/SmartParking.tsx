@@ -3,27 +3,21 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { 
   Car, 
-  ShieldCheck, 
-  AlertTriangle, 
-  Camera, 
-  Check, 
-  RefreshCw, 
-  Search, 
   Bike, 
+  Search, 
+  Plus, 
+  Trash2, 
+  LayoutGrid, 
   CreditCard,
   Building,
   UserCheck,
   CheckCircle2,
-  XCircle,
-  Plus,
-  Trash2,
-  History,
-  Lock,
-  Unlock,
-  Radio,
+  X,
+  Layers,
   ArrowRight,
-  Filter,
-  Play
+  ShieldCheck,
+  Hash,
+  Sparkles
 } from 'lucide-react';
 import { 
   getApartmentUnits, 
@@ -40,34 +34,17 @@ interface RegisteredVehicleWithUnit extends ApartmentVehicle {
   floor: number;
 }
 
-interface LprLogEntry {
-  id: string;
-  timestamp: string;
-  lane: 'INBOUND_01' | 'OUTBOUND_02';
-  plate: string;
-  vehicleType: 'CAR' | 'MOTORBIKE';
-  aptCode?: string;
-  ownerName?: string;
-  result: 'MATCHED' | 'UNREGISTERED';
-  barrierAction: 'OPENED' | 'DENIED' | 'MANUAL_OVERRIDE';
-}
-
-const LPR_LOGS_STORAGE_KEY = 'skyline_parking_lpr_logs_v1';
-
 export default function SmartParking() {
   const { isEn } = useLanguage();
 
   // Apartment Data & Registered Vehicles
   const [apartments, setApartments] = useState<ApartmentUnit[]>([]);
-  const [activeTab, setActiveTab] = useState<'REGISTRY' | 'LOGS'>('REGISTRY');
-  const [activeLane, setActiveLane] = useState<'INBOUND_01' | 'OUTBOUND_02'>('INBOUND_01');
-
-  // Scanner & Barrier State
-  const [barrierOpen, setBarrierOpen] = useState(false);
-  const [manualOverride, setManualOverride] = useState(false);
   const [searchPlate, setSearchPlate] = useState('');
   const [typeFilter, setTypeFilter] = useState<'ALL' | 'CAR' | 'MOTORBIKE'>('ALL');
-  const [customScanPlate, setCustomScanPlate] = useState('');
+  const [selectedFloorMap, setSelectedFloorMap] = useState<'B2_CAR' | 'B1_MOTO'>('B2_CAR');
+
+  // Selected Slot for detail panel
+  const [selectedSlotCode, setSelectedSlotCode] = useState<string | null>(null);
 
   // Modal State for New Vehicle Registration
   const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
@@ -75,18 +52,11 @@ export default function SmartParking() {
   const [regType, setRegType] = useState<'CAR' | 'MOTORBIKE'>('CAR');
   const [regPlate, setRegPlate] = useState('');
   const [regBrand, setRegBrand] = useState('');
+  const [regCustomSlot, setRegCustomSlot] = useState('');
   const [regFormError, setRegFormError] = useState('');
   const [regSuccessMsg, setRegSuccessMsg] = useState('');
 
-  // Initial Real State: No fake plates by default
-  const [lastScannedPlate, setLastScannedPlate] = useState('');
-  const [matchedVehicle, setMatchedVehicle] = useState<RegisteredVehicleWithUnit | null>(null);
-  const [scanResult, setScanResult] = useState<'IDLE' | 'MATCHED' | 'UNREGISTERED'>('IDLE');
-
-  // Real LPR Logs loaded from storage
-  const [lprLogs, setLprLogs] = useState<LprLogEntry[]>([]);
-
-  // Initial load: Fetch real apartments and real logs
+  // Initial load
   useEffect(() => {
     try {
       const data = getApartmentUnits();
@@ -96,18 +66,6 @@ export default function SmartParking() {
       }
     } catch {
       setApartments([]);
-    }
-
-    try {
-      const storedLogs = localStorage.getItem(LPR_LOGS_STORAGE_KEY);
-      if (storedLogs) {
-        const parsed = JSON.parse(storedLogs);
-        if (Array.isArray(parsed)) {
-          setLprLogs(parsed);
-        }
-      }
-    } catch (e) {
-      console.warn('Error reading LPR logs storage:', e);
     }
   }, []);
 
@@ -128,109 +86,61 @@ export default function SmartParking() {
     return list;
   }, [apartments, isEn]);
 
-  // Real Infrastructure capacity specs for Chung Cư BS-07 (The Tropical)
+  // Operational Specs for Basement B1 & B2
   const MAX_CAR_SLOTS = 120; // Hầm B2
   const MAX_MOTO_SLOTS = 350; // Hầm B1
+  const CAR_MONTHLY_FEE = 1200000;
+  const MOTO_MONTHLY_FEE = 120000;
+
   const registeredCars = registeredVehicles.filter(v => v.type === 'CAR').length;
   const registeredMotos = registeredVehicles.filter(v => v.type === 'MOTORBIKE').length;
 
   const carOccupancyPct = Math.min(100, Math.round((registeredCars / MAX_CAR_SLOTS) * 100));
   const motoOccupancyPct = Math.min(100, Math.round((registeredMotos / MAX_MOTO_SLOTS) * 100));
 
-  // Handler: Real LPR Camera OCR Scan Simulation
-  const handleSimulateScan = (plateNumber: string) => {
-    if (!plateNumber.trim()) return;
+  const totalMonthlyRevenue = (registeredCars * CAR_MONTHLY_FEE) + (registeredMotos * MOTO_MONTHLY_FEE);
 
-    const formattedPlate = plateNumber.trim().toUpperCase();
-    const cleanPlate = formattedPlate.replace(/[-.\s]/g, '');
+  // Generate Matrix of Slots for Visual Inspection
+  // Basement B2: Zone A (VIP: B2-A01 to B2-A16) & Zone B (Standard: B2-B01 to B2-B16)
+  const b2Slots = useMemo(() => {
+    const slots = [];
+    // Zone A
+    for (let i = 1; i <= 16; i++) {
+      const code = `B2-A${String(i).padStart(2, '0')}`;
+      const assigned = registeredVehicles.find(v => v.type === 'CAR' && v.slot === code);
+      slots.push({ code, zone: 'Zone A (VIP)', type: 'CAR' as const, assigned });
+    }
+    // Zone B
+    for (let i = 1; i <= 16; i++) {
+      const code = `B2-B${String(i).padStart(2, '0')}`;
+      const assigned = registeredVehicles.find(v => v.type === 'CAR' && v.slot === code);
+      slots.push({ code, zone: 'Zone B (Tiêu chuẩn)', type: 'CAR' as const, assigned });
+    }
+    return slots;
+  }, [registeredVehicles]);
 
-    const found = registeredVehicles.find(v => 
-      v.plate.toUpperCase().replace(/[-.\s]/g, '') === cleanPlate
-    );
-
-    setLastScannedPlate(formattedPlate);
-
-    const now = new Date();
-    const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')} ${String(now.getDate()).padStart(2, '0')}/${String(now.getMonth() + 1).padStart(2, '0')}`;
-
-    if (found) {
-      setMatchedVehicle(found);
-      setScanResult('MATCHED');
-      setBarrierOpen(true);
-
-      const newLog: LprLogEntry = {
-        id: `LOG-${Date.now().toString().slice(-4)}`,
-        timestamp: timeStr,
-        lane: activeLane,
-        plate: formattedPlate,
-        vehicleType: found.type === 'CAR' ? 'CAR' : 'MOTORBIKE',
-        aptCode: found.aptCode,
-        ownerName: found.ownerName,
-        result: 'MATCHED',
-        barrierAction: 'OPENED',
-      };
-
-      setLprLogs(prev => {
-        const updated = [newLog, ...prev.slice(0, 49)];
-        try {
-          localStorage.setItem(LPR_LOGS_STORAGE_KEY, JSON.stringify(updated));
-        } catch {}
-        return updated;
-      });
-
-      setTimeout(() => {
-        if (!manualOverride) {
-          setBarrierOpen(false);
-        }
-      }, 4000);
-    } else {
-      setMatchedVehicle(null);
-      setScanResult('UNREGISTERED');
-      setBarrierOpen(false);
-
-      const newLog: LprLogEntry = {
-        id: `LOG-${Date.now().toString().slice(-4)}`,
-        timestamp: timeStr,
-        lane: activeLane,
-        plate: formattedPlate,
-        vehicleType: formattedPlate.includes('F') || formattedPlate.includes('M') ? 'MOTORBIKE' : 'CAR',
-        result: 'UNREGISTERED',
-        barrierAction: 'DENIED',
-      };
-
-      setLprLogs(prev => {
-        const updated = [newLog, ...prev.slice(0, 49)];
-        try {
-          localStorage.setItem(LPR_LOGS_STORAGE_KEY, JSON.stringify(updated));
-        } catch {}
-        return updated;
+  // Basement B1: Zone M1 (B1-M01 to B1-M18) & Zone M2 (B1-M19 to B1-M36)
+  const b1Slots = useMemo(() => {
+    const slots = [];
+    for (let i = 1; i <= 32; i++) {
+      const code = `B1-M${String(i).padStart(2, '0')}`;
+      const assigned = registeredVehicles.find(v => v.type === 'MOTORBIKE' && v.slot === code);
+      slots.push({ 
+        code, 
+        zone: i <= 16 ? 'Zone M1 (Khu Vực 1)' : 'Zone M2 (Khu Vực 2)', 
+        type: 'MOTORBIKE' as const, 
+        assigned 
       });
     }
-  };
+    return slots;
+  }, [registeredVehicles]);
 
-  // Clear all recorded LPR logs
-  const handleClearLogs = () => {
-    const confirmMsg = isEn 
-      ? 'Are you sure you want to clear all real-time LPR audit logs?' 
-      : 'Bạn có chắc chắn muốn xóa toàn bộ lịch sử quét LPR thời gian thực?';
-    if (!window.confirm(confirmMsg)) return;
-
-    setLprLogs([]);
-    try {
-      localStorage.removeItem(LPR_LOGS_STORAGE_KEY);
-    } catch {}
-  };
-
-  // Toggle Manual BMS Override
-  const handleToggleManualOverride = () => {
-    if (manualOverride) {
-      setManualOverride(false);
-      setBarrierOpen(false);
-    } else {
-      setManualOverride(true);
-      setBarrierOpen(true);
-    }
-  };
+  // Selected slot detail
+  const currentSlotDetail = useMemo(() => {
+    if (!selectedSlotCode) return null;
+    const allSlots = [...b2Slots, ...b1Slots];
+    return allSlots.find(s => s.code === selectedSlotCode) || null;
+  }, [selectedSlotCode, b2Slots, b1Slots]);
 
   // Handler: Register New Vehicle
   const handleRegisterVehicle = (e: React.FormEvent) => {
@@ -256,10 +166,14 @@ export default function SmartParking() {
       return;
     }
 
-    // Auto-generate slot & RFID
-    const prefixSlot = regType === 'CAR' ? 'B2-A' : 'B1-M';
-    const randomSlotNum = Math.floor(Math.random() * 80) + 1;
-    const generatedSlot = `${prefixSlot}${String(randomSlotNum).padStart(2, '0')}`;
+    // Determine slot
+    let slotCode = regCustomSlot.trim();
+    if (!slotCode) {
+      const prefixSlot = regType === 'CAR' ? 'B2-A' : 'B1-M';
+      const randomSlotNum = Math.floor(Math.random() * 16) + 1;
+      slotCode = `${prefixSlot}${String(randomSlotNum).padStart(2, '0')}`;
+    }
+
     const generatedCardNo = `RFID-${regAptCode}-${Math.floor(1000 + Math.random() * 9000)}`;
 
     const newVehicle: ApartmentVehicle = {
@@ -268,7 +182,7 @@ export default function SmartParking() {
       plate: regPlate.trim().toUpperCase(),
       brand: regBrand.trim() || (regType === 'CAR' ? 'Sedan / SUV' : 'Xe máy'),
       cardNo: generatedCardNo,
-      slot: generatedSlot,
+      slot: slotCode,
     };
 
     const ok = addApartmentVehicle(regAptCode, newVehicle);
@@ -277,15 +191,16 @@ export default function SmartParking() {
       setApartments(refreshed);
       setRegSuccessMsg(
         isEn
-          ? `Vehicle ${newVehicle.plate} successfully assigned to Unit ${regAptCode} (Slot ${generatedSlot})`
-          : `Đã cấp thẻ thành công xe ${newVehicle.plate} cho Căn ${regAptCode} (Ô ${generatedSlot})`
+          ? `Vehicle ${newVehicle.plate} successfully registered to Unit ${regAptCode} (Slot ${slotCode})`
+          : `Đã cấp thẻ thành công xe ${newVehicle.plate} cho Căn ${regAptCode} (Ô ${slotCode})`
       );
       setRegPlate('');
       setRegBrand('');
+      setRegCustomSlot('');
       setTimeout(() => {
         setIsRegisterModalOpen(false);
         setRegSuccessMsg('');
-      }, 1500);
+      }, 1400);
     } else {
       setRegFormError(isEn ? 'Failed to save vehicle. Check apartment code.' : 'Lỗi khi lưu phương tiện. Kiểm tra lại mã căn.');
     }
@@ -302,12 +217,8 @@ export default function SmartParking() {
     if (ok) {
       const refreshed = getApartmentUnits();
       setApartments(refreshed);
-      // Reset scanner if current plate was revoked
-      if (lastScannedPlate === plate) {
-        setLastScannedPlate('');
-        setMatchedVehicle(null);
-        setScanResult('IDLE');
-        setBarrierOpen(false);
+      if (selectedSlotCode && currentSlotDetail?.assigned?.id === vehicleId) {
+        setSelectedSlotCode(null);
       }
     }
   };
@@ -321,7 +232,9 @@ export default function SmartParking() {
         v.plate.toLowerCase().includes(q) ||
         v.aptCode.toLowerCase().includes(q) ||
         v.ownerName.toLowerCase().includes(q) ||
-        (v.brand && v.brand.toLowerCase().includes(q))
+        (v.brand && v.brand.toLowerCase().includes(q)) ||
+        (v.cardNo && v.cardNo.toLowerCase().includes(q)) ||
+        (v.slot && v.slot.toLowerCase().includes(q))
       );
     }
     return true;
@@ -333,77 +246,79 @@ export default function SmartParking() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#222B35] pb-4">
         <div>
           <div className="text-[10px] uppercase tracking-[0.25em] text-[#C5A880] font-semibold flex items-center gap-2">
-            <Radio className="w-3 h-3 text-emerald-400 animate-pulse" />
-            {isEn ? 'SMART PARKING AUTOMATION • BASEMENT B1 & B2' : 'BÃI ĐỖ XE THÔNG MINH HẦM B1 & B2 • TÒA NHÀ THE TROPICAL'}
+            <Building className="w-3.5 h-3.5 text-[#C5A880]" />
+            {isEn ? 'PARKING & INFRASTRUCTURE MANAGEMENT • BASEMENT B1 & B2' : 'HỆ THỐNG QUẢN LÝ BÃI ĐỖ XE & ĐỊNH DANH Ô ĐỖ • TÒA NHÀ THE TROPICAL'}
           </div>
           <h2 className="font-serif text-xl sm:text-2xl text-white font-bold mt-1">
-            {isEn ? 'Vehicle Access & AI LPR Surveillance' : 'Hệ Thống Kiểm Soát & Giám Sát Phương Tiện'}
+            {isEn ? 'Parking Facility & Resident Vehicle Oversight' : 'Quản Lý Bãi Đỗ Xe & Cấp Phát Thẻ Cư Dân'}
           </h2>
         </div>
 
         <div className="flex items-center gap-3">
-          <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 bg-[#121820] border border-[#222B35] text-[11px] font-mono text-emerald-400">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping"></span>
-            LPR-01 & 02: ONLINE
-          </div>
           <button
             type="button"
-            onClick={() => setIsRegisterModalOpen(true)}
+            onClick={() => {
+              setRegCustomSlot('');
+              setIsRegisterModalOpen(true);
+            }}
             className="px-4 py-2 bg-[#C5A880] hover:bg-[#E2C9A5] text-[#0A0E14] text-xs font-semibold uppercase tracking-wider flex items-center gap-1.5 transition-colors rounded-none"
           >
             <Plus className="w-3.5 h-3.5" />
-            {isEn ? 'Register New Vehicle' : 'Cấp Thẻ & Đăng Ký Xe'}
+            {isEn ? 'Register New Vehicle' : 'Cấp Thẻ & Đăng Ký Xe Mới'}
           </button>
         </div>
       </div>
 
-      {/* 2. Infrastructure Capacity Gauges (Basement B1 & B2) */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {/* Car Capacity (Basement B2) */}
-        <div className="p-4 bg-[#121820] border border-[#222B35] space-y-3">
-          <div className="flex items-center justify-between text-xs">
-            <span className="text-gray-200 font-semibold uppercase tracking-wider flex items-center gap-2">
+      {/* 2. Top Telemetry KPI Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {/* KPI 1: Car Slots (Basement B2) */}
+        <div className="p-4 bg-[#121820] border border-[#222B35] space-y-2.5">
+          <div className="flex items-center justify-between text-xs text-gray-400">
+            <span className="uppercase tracking-wider font-semibold flex items-center gap-1.5 text-gray-300">
               <Car className="w-4 h-4 text-[#C5A880]" />
-              {isEn ? 'Car Capacity (Basement B2 - VIP Zone)' : 'Sức Chứa Ô Tô (Hầm B2 - Phân Khu A/B)'}
+              {isEn ? 'Car Slots (B2)' : 'Ô Đỗ Ô Tô (Hầm B2)'}
             </span>
-            <span className="font-mono text-xs font-bold text-white bg-[#161B22] px-2 py-0.5 border border-[#2D3748]">
-              {registeredCars} / {MAX_CAR_SLOTS} {isEn ? 'Slots' : 'Chỗ'} ({carOccupancyPct}%)
+            <span className="font-mono text-emerald-400 font-bold">{carOccupancyPct}%</span>
+          </div>
+          <div className="flex items-baseline justify-between">
+            <div className="font-mono text-xl font-bold text-white">
+              {registeredCars} <span className="text-xs text-gray-500 font-normal">/ {MAX_CAR_SLOTS} ô</span>
+            </div>
+            <span className="text-[11px] font-mono text-gray-400">
+              {isEn ? 'Free:' : 'Còn trống:'} <strong className="text-white">{MAX_CAR_SLOTS - registeredCars}</strong>
             </span>
           </div>
-
-          <div className="w-full h-2.5 bg-[#0A0E14] border border-[#222B35] overflow-hidden">
+          <div className="w-full h-1.5 bg-[#0A0E14] border border-[#222B35] overflow-hidden">
             <div
               className={`h-full transition-all duration-500 ${
                 carOccupancyPct >= 90 ? 'bg-rose-500' : carOccupancyPct >= 70 ? 'bg-amber-500' : 'bg-emerald-500'
               }`}
-              style={{ width: `${Math.max(registeredCars > 0 ? 4 : 0, carOccupancyPct)}%` }}
+              style={{ width: `${Math.max(registeredCars > 0 ? 5 : 0, carOccupancyPct)}%` }}
             />
           </div>
-
-          <div className="flex justify-between items-center text-[11px] text-gray-400 font-mono">
-            <span className="text-emerald-400 flex items-center gap-1">
-              ● {isEn ? `Registered: ${registeredCars} slots` : `Đã cấp ô đỗ cố định: ${registeredCars} xe`}
-            </span>
-            <span className="text-gray-300">
-              {isEn ? `Available: ${MAX_CAR_SLOTS - registeredCars}` : `Còn trống: ${MAX_CAR_SLOTS - registeredCars} ô`}
-            </span>
-            <span className="text-[#C5A880] font-semibold">1.200.000 đ/{isEn ? 'mo' : 'tháng'}</span>
+          <div className="text-[10px] text-gray-500 font-mono">
+            {isEn ? 'Fee: 1,200,000 VND / slot / month' : 'Định mức: 1.200.000 đ/tháng/ô'}
           </div>
         </div>
 
-        {/* Motorbike Capacity (Basement B1) */}
-        <div className="p-4 bg-[#121820] border border-[#222B35] space-y-3">
-          <div className="flex items-center justify-between text-xs">
-            <span className="text-gray-200 font-semibold uppercase tracking-wider flex items-center gap-2">
+        {/* KPI 2: Motorbike Slots (Basement B1) */}
+        <div className="p-4 bg-[#121820] border border-[#222B35] space-y-2.5">
+          <div className="flex items-center justify-between text-xs text-gray-400">
+            <span className="uppercase tracking-wider font-semibold flex items-center gap-1.5 text-gray-300">
               <Bike className="w-4 h-4 text-cyan-400" />
-              {isEn ? 'Motorbike Capacity (Basement B1 - Zone M)' : 'Sức Chứa Xe Máy (Hầm B1 - Khu M1/M2)'}
+              {isEn ? 'Bikes (B1)' : 'Xe Máy (Hầm B1)'}
             </span>
-            <span className="font-mono text-xs font-bold text-white bg-[#161B22] px-2 py-0.5 border border-[#2D3748]">
-              {registeredMotos} / {MAX_MOTO_SLOTS} {isEn ? 'Slots' : 'Xe'} ({motoOccupancyPct}%)
+            <span className="font-mono text-cyan-400 font-bold">{motoOccupancyPct}%</span>
+          </div>
+          <div className="flex items-baseline justify-between">
+            <div className="font-mono text-xl font-bold text-white">
+              {registeredMotos} <span className="text-xs text-gray-500 font-normal">/ {MAX_MOTO_SLOTS} xe</span>
+            </div>
+            <span className="text-[11px] font-mono text-gray-400">
+              {isEn ? 'Free:' : 'Còn nhận:'} <strong className="text-white">{MAX_MOTO_SLOTS - registeredMotos}</strong>
             </span>
           </div>
-
-          <div className="w-full h-2.5 bg-[#0A0E14] border border-[#222B35] overflow-hidden">
+          <div className="w-full h-1.5 bg-[#0A0E14] border border-[#222B35] overflow-hidden">
             <div
               className={`h-full transition-all duration-500 ${
                 motoOccupancyPct >= 90 ? 'bg-rose-500' : 'bg-cyan-500'
@@ -411,561 +326,463 @@ export default function SmartParking() {
               style={{ width: `${Math.max(registeredMotos > 0 ? 4 : 0, motoOccupancyPct)}%` }}
             />
           </div>
+          <div className="text-[10px] text-gray-500 font-mono">
+            {isEn ? 'Fee: 120,000 VND / bike / month' : 'Định mức: 120.000 đ/tháng/xe'}
+          </div>
+        </div>
 
-          <div className="flex justify-between items-center text-[11px] text-gray-400 font-mono">
-            <span className="text-cyan-400 flex items-center gap-1">
-              ● {isEn ? `Issued RFID: ${registeredMotos}` : `Đã cấp thẻ RFID: ${registeredMotos} xe`}
+        {/* KPI 3: Monthly Projected Revenue */}
+        <div className="p-4 bg-[#121820] border border-[#222B35] space-y-2.5">
+          <div className="flex items-center justify-between text-xs text-gray-400">
+            <span className="uppercase tracking-wider font-semibold flex items-center gap-1.5 text-gray-300">
+              <CreditCard className="w-4 h-4 text-[#C5A880]" />
+              {isEn ? 'Projected Revenue' : 'Dự Thu Phí Gửi Xe'}
             </span>
-            <span className="text-gray-300">
-              {isEn ? `Available: ${MAX_MOTO_SLOTS - registeredMotos}` : `Còn nhận tối đa: ${MAX_MOTO_SLOTS - registeredMotos} xe`}
+            <span className="text-[10px] font-mono text-[#C5A880]">THÁNG NÀY</span>
+          </div>
+          <div className="font-mono text-xl font-bold text-[#C5A880]">
+            {totalMonthlyRevenue.toLocaleString('vi-VN')} <span className="text-xs text-gray-400 font-normal">VNĐ</span>
+          </div>
+          <div className="text-[11px] text-gray-400 font-mono flex items-center gap-1">
+            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+            {isEn ? 'Billed via apartment ledger' : 'Ghi nợ tự động vào hóa đơn căn'}
+          </div>
+          <div className="text-[10px] text-gray-500 font-mono">
+            {isEn ? 'Auto-synchronized with VNPay' : 'Đồng bộ hóa đơn VNPay hàng tháng'}
+          </div>
+        </div>
+
+        {/* KPI 4: Active RFID Passes */}
+        <div className="p-4 bg-[#121820] border border-[#222B35] space-y-2.5">
+          <div className="flex items-center justify-between text-xs text-gray-400">
+            <span className="uppercase tracking-wider font-semibold flex items-center gap-1.5 text-gray-300">
+              <ShieldCheck className="w-4 h-4 text-emerald-400" />
+              {isEn ? 'Active RFID Passes' : 'Thẻ RFID Đã Kích Hoạt'}
             </span>
-            <span className="text-cyan-300 font-semibold">120.000 đ/{isEn ? 'mo' : 'tháng'}</span>
+            <span className="text-[10px] font-mono text-emerald-400">ACTIVE</span>
+          </div>
+          <div className="font-mono text-xl font-bold text-white">
+            {registeredCars + registeredMotos} <span className="text-xs text-gray-500 font-normal">thẻ xe</span>
+          </div>
+          <div className="text-[11px] text-gray-400 font-mono flex items-center gap-1">
+            <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
+            {isEn ? '100% Verified Resident Quota' : '100% Căn hộ cư dân hợp lệ'}
+          </div>
+          <div className="text-[10px] text-gray-500 font-mono">
+            {isEn ? 'Max 1 car & 2 bikes / unit' : 'Chuẩn: Tối đa 1 ô tô & 2 xe máy / căn'}
           </div>
         </div>
       </div>
 
-      {/* 3. AI LPR Terminal & BMS Barrier HUD */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        {/* Left (7 cols): Camera Feed & Dynamic Scanner */}
-        <div className="lg:col-span-7 bg-[#121820] border border-[#222B35] p-5 space-y-4">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#222B35] pb-3 text-xs">
-            <div className="flex items-center gap-2 font-mono">
-              <button
-                type="button"
-                onClick={() => setActiveLane('INBOUND_01')}
-                className={`px-2.5 py-1 text-xs uppercase font-semibold transition-colors ${
-                  activeLane === 'INBOUND_01'
-                    ? 'bg-[#C5A880] text-black'
-                    : 'bg-[#161B22] text-gray-400 hover:text-white border border-[#2D3748]'
-                }`}
-              >
-                {isEn ? 'Inbound Lane 01' : 'Làn Vào LPR-01'}
-              </button>
-              <button
-                type="button"
-                onClick={() => setActiveLane('OUTBOUND_02')}
-                className={`px-2.5 py-1 text-xs uppercase font-semibold transition-colors ${
-                  activeLane === 'OUTBOUND_02'
-                    ? 'bg-[#C5A880] text-black'
-                    : 'bg-[#161B22] text-gray-400 hover:text-white border border-[#2D3748]'
-                }`}
-              >
-                {isEn ? 'Outbound Lane 02' : 'Làn Ra LPR-02'}
-              </button>
-            </div>
-            <span className="font-mono text-gray-400 text-[11px] flex items-center gap-1.5">
-              <Camera className="w-3.5 h-3.5 text-emerald-400" />
-              1080P 60FPS • AI OCR CORE V4.2
-            </span>
-          </div>
-
-          {/* Camera Viewport */}
-          <div className="relative h-60 bg-black border border-gray-800 flex items-center justify-center overflow-hidden">
-            <img
-              src="https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=800&auto=format&fit=crop&q=80"
-              alt="Car Entry Surveillance"
-              className="w-full h-full object-cover opacity-50"
-            />
-
-            {/* Corner HUD Reticles */}
-            <div className="absolute top-3 left-3 w-4 h-4 border-t-2 border-l-2 border-[#C5A880]/80"></div>
-            <div className="absolute top-3 right-3 w-4 h-4 border-t-2 border-r-2 border-[#C5A880]/80"></div>
-            <div className="absolute bottom-3 left-3 w-4 h-4 border-b-2 border-l-2 border-[#C5A880]/80"></div>
-            <div className="absolute bottom-3 right-3 w-4 h-4 border-b-2 border-r-2 border-[#C5A880]/80"></div>
-
-            {/* Top Lane Watermark */}
-            <div className="absolute top-3 inset-x-8 flex justify-between items-center text-[10px] font-mono text-gray-300 bg-black/60 px-3 py-1 border border-gray-800 backdrop-blur-sm">
-              <span className="text-[#C5A880] font-bold">
-                {activeLane === 'INBOUND_01' ? 'GATE 01 - CỔNG BẮC (VÀO)' : 'GATE 02 - CỔNG NAM (RA)'}
-              </span>
-              <span className="text-emerald-400">IR SENSOR ACTIVE</span>
-            </div>
-
-            {/* AI Bounding Box Overlay */}
-            {scanResult === 'IDLE' ? (
-              <div className="absolute inset-x-6 bottom-4 border p-2.5 bg-black/85 backdrop-blur-md flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-gray-700">
-                <div className="flex items-center gap-3">
-                  <div className="font-mono text-xs sm:text-sm font-bold tracking-widest px-2 py-0.5 border text-gray-400 border-gray-700 bg-gray-900/60">
-                    [ {isEn ? 'SENSOR STANDBY' : 'CHỜ XE TIẾN VÀO'} ]
-                  </div>
-                  <div className="text-[11px] font-mono text-gray-400">
-                    {isEn ? 'Induction loop ready • Enter plate to test' : 'Vòng lặp từ tính sẵn sàng • Quét biển số bên dưới'}
-                  </div>
-                </div>
-                <span className="text-[10px] font-mono px-2 py-1 uppercase font-semibold border text-gray-400 bg-gray-900 border-gray-700">
-                  STANDBY
-                </span>
-              </div>
-            ) : (
-              <div className={`absolute inset-x-6 bottom-4 border-2 p-2.5 bg-black/85 backdrop-blur-md flex flex-col sm:flex-row sm:items-center justify-between gap-2 ${
-                scanResult === 'MATCHED' ? 'border-emerald-500 shadow-[0_0_15px_rgba(16,185,129,0.3)]' : 'border-rose-500 shadow-[0_0_15px_rgba(244,63,94,0.3)]'
-              }`}>
-                <div className="flex items-center gap-3">
-                  <div className={`font-mono text-lg font-bold tracking-widest px-2 py-0.5 border ${
-                    scanResult === 'MATCHED' 
-                      ? 'text-emerald-400 border-emerald-500/40 bg-emerald-950/40' 
-                      : 'text-rose-400 border-rose-500/40 bg-rose-950/40'
-                  }`}>
-                    [ {lastScannedPlate} ]
-                  </div>
-                  <div className="text-[11px] font-mono text-gray-300">
-                    {matchedVehicle 
-                      ? `${matchedVehicle.brand || 'Vehicle'} • Căn ${matchedVehicle.aptCode}` 
-                      : (isEn ? 'Unregistered Guest' : 'Xe Vãng Lai Chưa Đăng Ký')}
-                  </div>
-                </div>
-
-                <span className={`text-[10px] font-mono px-2 py-1 uppercase font-semibold border ${
-                  scanResult === 'MATCHED'
-                    ? 'text-emerald-300 bg-emerald-950/70 border-emerald-500'
-                    : 'text-rose-300 bg-rose-950/70 border-rose-500'
-                }`}>
-                  {scanResult === 'MATCHED' ? (isEn ? 'VERIFIED MATCH' : 'HỢP LỆ • CƯ DÂN') : (isEn ? 'UNREGISTERED' : 'CHƯA ĐĂNG KÝ')}
-                </span>
-              </div>
-            )}
-          </div>
-
-          {/* Dynamic License Plate Scanner Bar */}
-          <div className="space-y-3 pt-1">
-            <form 
-              onSubmit={(e) => {
-                e.preventDefault();
-                if (customScanPlate.trim()) {
-                  handleSimulateScan(customScanPlate);
-                  setCustomScanPlate('');
-                }
-              }}
-              className="flex gap-2"
-            >
-              <div className="relative flex-1">
-                <Camera className="w-3.5 h-3.5 text-gray-400 absolute left-2.5 top-1/2 -translate-y-1/2" />
-                <input
-                  type="text"
-                  placeholder={isEn ? "Enter license plate to scan (e.g. 51K-889.99)..." : "Nhập biển số xe bất kỳ để quét kiểm tra..."}
-                  value={customScanPlate}
-                  onChange={(e) => setCustomScanPlate(e.target.value.toUpperCase())}
-                  className="w-full pl-8 pr-3 py-2 bg-[#161B22] border border-[#2D3748] text-xs font-mono font-bold text-white uppercase focus:outline-none focus:border-[#C5A880] rounded-none tracking-wider"
-                />
-              </div>
-              <button
-                type="submit"
-                disabled={!customScanPlate.trim()}
-                className="px-4 py-2 bg-[#C5A880] hover:bg-[#E2C9A5] disabled:bg-gray-800 disabled:text-gray-500 text-black text-xs font-semibold uppercase tracking-wider font-mono transition-colors rounded-none flex items-center gap-1.5"
-              >
-                <Play className="w-3 h-3 fill-current" />
-                {isEn ? "Scan Plate" : "Quét Ngay"}
-              </button>
-            </form>
-
-            {/* Quick Simulation Buttons from REAL Registered Vehicles */}
-            <div className="space-y-1.5">
-              <div className="text-[11px] text-gray-400 font-semibold uppercase tracking-wider flex items-center justify-between">
-                <span>{isEn ? 'Quick Scan Registered Resident Vehicles:' : 'Xe Cư Dân Thực Tế Trong Tòa Nhà:'}</span>
-                <span className="text-[#C5A880] text-[10px] font-mono">{registeredVehicles.length} {isEn ? 'registered' : 'phương tiện'}</span>
-              </div>
-
-              {registeredVehicles.length > 0 ? (
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                  {registeredVehicles.slice(0, 4).map((v) => (
-                    <button
-                      key={v.id}
-                      type="button"
-                      onClick={() => handleSimulateScan(v.plate)}
-                      className="p-2 bg-[#161B22] border border-[#2D3748] hover:border-[#C5A880] text-left transition-all group rounded-none"
-                    >
-                      <div className="text-[11px] font-mono font-bold text-[#C5A880] group-hover:text-white">
-                        {v.plate}
-                      </div>
-                      <div className="text-[10px] text-gray-400 truncate mt-0.5">
-                        Căn {v.aptCode} • {v.type === 'CAR' ? 'Ô tô' : 'Xe máy'}
-                      </div>
-                    </button>
-                  ))}
-                </div>
-              ) : (
-                <div className="p-3 bg-[#161B22] border border-[#222B35] text-gray-400 text-xs font-mono flex items-center justify-between">
-                  <span>{isEn ? 'No vehicles registered in building yet.' : 'Chưa có phương tiện nào đăng ký trong tòa nhà.'}</span>
-                  <button
-                    type="button"
-                    onClick={() => setIsRegisterModalOpen(true)}
-                    className="text-[#C5A880] hover:underline font-semibold"
-                  >
-                    + {isEn ? 'Register Now' : 'Đăng Ký Ngay'}
-                  </button>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-
-        {/* Right (5 cols): Barrier Control & BMS Match HUD */}
-        <div className="lg:col-span-5 bg-[#121820] border border-[#222B35] p-5 space-y-4 flex flex-col justify-between">
-          <div className="space-y-4">
-            <div className="flex items-center justify-between border-b border-[#222B35] pb-3 text-xs uppercase tracking-wider text-[#C5A880] font-semibold">
-              <span>{isEn ? 'BMS Telemetry & Barrier State' : 'Đối Soát Căn Hộ & Cần Barrier'}</span>
-              <span className="font-mono text-emerald-400 text-[11px]">SLA &lt; 0.4s</span>
-            </div>
-
-            {/* Resident & Slot Match Card */}
-            <div className="p-3.5 bg-[#161B22] border border-[#222B35] space-y-2.5 text-xs">
-              <div className="flex justify-between items-center">
-                <span className="text-gray-400">{isEn ? 'License Plate:' : 'Biển số nhận diện:'}</span>
-                <span className="font-mono font-bold text-white bg-[#0A0E14] px-2 py-0.5 border border-gray-700">
-                  {lastScannedPlate || '---'}
-                </span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-gray-400">{isEn ? 'Resident / Unit:' : 'Chủ xe & Căn hộ:'}</span>
-                <span className="text-gray-200 font-semibold truncate max-w-[200px]">
-                  {scanResult === 'IDLE' 
-                    ? '---' 
-                    : matchedVehicle 
-                    ? `${matchedVehicle.ownerName} (Căn ${matchedVehicle.aptCode})` 
-                    : (isEn ? 'Guest (Ticket required)' : 'Khách Vãng Lai (Vé lượt)')}
-                </span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-gray-400">{isEn ? 'Vehicle Spec:' : 'Dòng xe & Nhãn hiệu:'}</span>
-                <span className="text-gray-300 font-mono">
-                  {scanResult === 'IDLE' 
-                    ? '---' 
-                    : matchedVehicle 
-                    ? `${matchedVehicle.type === 'CAR' ? 'Ô tô' : 'Xe máy'} • ${matchedVehicle.brand || '---'}` 
-                    : (isEn ? 'Unregistered' : 'Chưa định danh')}
-                </span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-gray-400">{isEn ? 'RFID Card & Slot:' : 'Mã thẻ & Vị trí đỗ:'}</span>
-                <span className="text-[#C5A880] font-mono font-bold">
-                  {scanResult === 'IDLE' 
-                    ? '---' 
-                    : matchedVehicle 
-                    ? `${matchedVehicle.cardNo} • Ô ${matchedVehicle.slot || 'B2-A01'}` 
-                    : 'VÉ LƯỢT BMS'}
-                </span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-gray-400">{isEn ? 'Monthly Billing:' : 'Phí đỗ tháng:'}</span>
-                <span className={`font-mono text-[11px] font-semibold ${
-                  scanResult === 'IDLE' 
-                    ? 'text-gray-500' 
-                    : matchedVehicle 
-                    ? 'text-emerald-400' 
-                    : 'text-amber-400'
-                }`}>
-                  {scanResult === 'IDLE' 
-                    ? '---' 
-                    : matchedVehicle 
-                    ? (isEn ? 'PAID / ACTIVE ✓' : 'ĐÃ ĐÓNG ĐẦY ĐỦ ✓') 
-                    : (isEn ? 'GUEST HOURLY' : 'TÍNH THEO GIỜ')}
-                </span>
-              </div>
-            </div>
-
-            {/* Barrier Visual Indicator Box */}
-            <div 
-              className={`p-4 border text-center space-y-1.5 transition-all duration-300 ${
-                barrierOpen 
-                  ? 'bg-emerald-950/40 border-emerald-500 shadow-[0_0_20px_rgba(16,185,129,0.25)]' 
-                  : 'bg-[#161F2E]/60 border-gray-700'
-              }`}
-            >
-              <div className="text-[10px] uppercase tracking-widest text-gray-400 font-mono flex items-center justify-center gap-1.5">
-                {barrierOpen ? <Unlock className="w-3.5 h-3.5 text-emerald-400" /> : <Lock className="w-3.5 h-3.5 text-gray-400" />}
-                {barrierOpen ? 'TÍN HIỆU BMS: CẦN BARRIER ĐANG MỞ' : 'TÍN HIỆU BMS: RÀO CHẮN ĐANG HẠ (ĐÓNG)'}
-              </div>
-              <div className={`font-serif text-lg sm:text-xl font-bold tracking-wide ${
-                barrierOpen ? 'text-emerald-400' : 'text-gray-300'
-              }`}>
-                {barrierOpen ? (isEn ? 'BARRIER OPEN — PASS' : 'BARRIER ĐANG MỞ — MỜI QUA') : (isEn ? 'BARRIER CLOSED' : 'BARRIER ĐANG ĐÓNG')}
-              </div>
-              {manualOverride && (
-                <div className="text-[10px] font-mono text-amber-400 font-bold uppercase tracking-wider">
-                  ⚠️ {isEn ? 'MANUAL BMS OVERRIDE ACTIVE' : 'CHẾ ĐỘ MỞ KHẨN CẤP ĐANG BẬT'}
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* Manual Control Actions */}
-          <div className="pt-3 border-t border-[#222B35] space-y-2">
-            <button
-              type="button"
-              onClick={handleToggleManualOverride}
-              className={`w-full py-2 px-3 text-xs font-semibold font-mono uppercase tracking-wider border transition-colors flex items-center justify-center gap-2 rounded-none ${
-                manualOverride
-                  ? 'bg-rose-950 border-rose-500 text-rose-300 hover:bg-rose-900'
-                  : 'bg-[#161B22] border-[#C5A880]/50 text-[#C5A880] hover:bg-[#C5A880] hover:text-black'
-              }`}
-            >
-              {manualOverride ? (
-                <>
-                  <Lock className="w-3.5 h-3.5" />
-                  {isEn ? 'Cancel Override (Close Barrier)' : 'Hủy Can Thiệp (Hạ Cần Barrier)'}
-                </>
-              ) : (
-                <>
-                  <Unlock className="w-3.5 h-3.5" />
-                  {isEn ? 'Manual BMS Override (Open Gate)' : 'Mở Barrier Khẩn Cấp (BMS Override)'}
-                </>
-              )}
-            </button>
-            <div className="text-[10px] text-gray-500 text-center font-mono">
-              {isEn ? 'Direct relay control via IoT Modbus TCP Gateway' : 'Điều khiển rơ-le trực tiếp qua cổng IoT Modbus TCP Gateway'}
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* 4. Tab Navigation: Registered Vehicles vs LPR Event Logs */}
+      {/* 3. Interactive Parking Matrix & Slot Map */}
       <div className="bg-[#121820] border border-[#222B35] p-5 space-y-4">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#222B35] pb-3">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#222B35] pb-3">
+          <div>
+            <div className="text-[10px] uppercase tracking-wider text-[#C5A880] font-semibold flex items-center gap-1.5">
+              <LayoutGrid className="w-3.5 h-3.5" />
+              {isEn ? 'INTERACTIVE SLOT ALLOCATION MATRIX' : 'SƠ ĐỒ PHÂN BỔ Ô ĐỖ TRỰC QUAN'}
+            </div>
+            <h3 className="font-serif text-base sm:text-lg font-bold text-white mt-0.5">
+              {isEn ? 'Basement Floor Map & Spatial Coordinates' : 'Bản Đồ Không Gian Tầng Hầm B1 & B2'}
+            </h3>
+          </div>
+
           <div className="flex items-center gap-2">
             <button
               type="button"
-              onClick={() => setActiveTab('REGISTRY')}
-              className={`px-3.5 py-1.5 text-xs font-semibold uppercase tracking-wider font-mono flex items-center gap-2 transition-colors rounded-none ${
-                activeTab === 'REGISTRY'
+              onClick={() => setSelectedFloorMap('B2_CAR')}
+              className={`px-3 py-1.5 text-xs font-mono font-semibold uppercase tracking-wider transition-colors rounded-none flex items-center gap-1.5 ${
+                selectedFloorMap === 'B2_CAR'
                   ? 'bg-[#C5A880] text-black font-bold'
                   : 'bg-[#161B22] text-gray-400 hover:text-white border border-[#2D3748]'
               }`}
             >
               <Car className="w-3.5 h-3.5" />
-              {isEn ? `Resident Vehicles (${filteredVehicles.length})` : `Danh Sách Xe Cư Dân (${filteredVehicles.length})`}
+              {isEn ? 'Basement B2: Cars' : 'Hầm B2: Ô Tô (VIP & Std)'}
             </button>
             <button
               type="button"
-              onClick={() => setActiveTab('LOGS')}
-              className={`px-3.5 py-1.5 text-xs font-semibold uppercase tracking-wider font-mono flex items-center gap-2 transition-colors rounded-none ${
-                activeTab === 'LOGS'
+              onClick={() => setSelectedFloorMap('B1_MOTO')}
+              className={`px-3 py-1.5 text-xs font-mono font-semibold uppercase tracking-wider transition-colors rounded-none flex items-center gap-1.5 ${
+                selectedFloorMap === 'B1_MOTO'
                   ? 'bg-[#C5A880] text-black font-bold'
                   : 'bg-[#161B22] text-gray-400 hover:text-white border border-[#2D3748]'
               }`}
             >
-              <History className="w-3.5 h-3.5" />
-              {isEn ? `LPR Event Logs (${lprLogs.length})` : `Nhật Ký Quét LPR (${lprLogs.length})`}
+              <Bike className="w-3.5 h-3.5" />
+              {isEn ? 'Basement B1: Bikes' : 'Hầm B1: Xe Máy (M1/M2)'}
             </button>
           </div>
-
-          {activeTab === 'REGISTRY' ? (
-            <div className="flex items-center gap-2 flex-wrap">
-              <div className="relative">
-                <Search className="w-3.5 h-3.5 text-gray-400 absolute left-2.5 top-1/2 -translate-y-1/2" />
-                <input
-                  type="text"
-                  placeholder={isEn ? 'Search plate, unit, owner...' : 'Tìm biển số, căn hộ, chủ xe...'}
-                  value={searchPlate}
-                  onChange={(e) => setSearchPlate(e.target.value)}
-                  className="pl-8 pr-3 py-1.5 bg-[#161B22] border border-[#2D3748] text-xs text-white placeholder-gray-500 focus:outline-none focus:border-[#C5A880] w-48 sm:w-60 rounded-none"
-                />
-              </div>
-
-              <div className="flex items-center border border-[#2D3748] bg-[#161B22] p-0.5 text-xs font-mono">
-                <button
-                  type="button"
-                  onClick={() => setTypeFilter('ALL')}
-                  className={`px-2.5 py-1 ${typeFilter === 'ALL' ? 'bg-[#C5A880] text-black font-bold' : 'text-gray-400 hover:text-white'}`}
-                >
-                  {isEn ? 'All' : 'Tất cả'}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setTypeFilter('CAR')}
-                  className={`px-2.5 py-1 ${typeFilter === 'CAR' ? 'bg-[#C5A880] text-black font-bold' : 'text-gray-400 hover:text-white'}`}
-                >
-                  {isEn ? 'Cars' : 'Ô tô'}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setTypeFilter('MOTORBIKE')}
-                  className={`px-2.5 py-1 ${typeFilter === 'MOTORBIKE' ? 'bg-[#C5A880] text-black font-bold' : 'text-gray-400 hover:text-white'}`}
-                >
-                  {isEn ? 'Bikes' : 'Xe máy'}
-                </button>
-              </div>
-            </div>
-          ) : (
-            lprLogs.length > 0 && (
-              <button
-                type="button"
-                onClick={handleClearLogs}
-                className="px-3 py-1 bg-rose-950/30 border border-rose-500/40 hover:border-rose-400 text-rose-300 text-xs font-mono flex items-center gap-1.5 transition-colors rounded-none"
-              >
-                <Trash2 className="w-3 h-3" />
-                {isEn ? 'Clear Logs' : 'Xóa Nhật Ký'}
-              </button>
-            )
-          )}
         </div>
 
-        {/* Tab 1 Content: Resident Vehicles Registry */}
-        {activeTab === 'REGISTRY' && (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs border border-[#222B35]">
-              <thead className="bg-[#161B22] text-gray-400 font-semibold uppercase tracking-wider text-[10px] border-b border-[#222B35]">
-                <tr>
-                  <th className="p-3">{isEn ? 'Plate Number' : 'Biển Số Xe'}</th>
-                  <th className="p-3">{isEn ? 'Type' : 'Phân Loại'}</th>
-                  <th className="p-3">{isEn ? 'Model / Brand' : 'Dòng Xe / Nhãn Hiệu'}</th>
-                  <th className="p-3">{isEn ? 'Unit' : 'Căn Hộ'}</th>
-                  <th className="p-3">{isEn ? 'Owner' : 'Chủ Sở Hữu'}</th>
-                  <th className="p-3">{isEn ? 'RFID Card ID' : 'Mã Thẻ RFID'}</th>
-                  <th className="p-3">{isEn ? 'Slot' : 'Vị Trí Ô Đỗ'}</th>
-                  <th className="p-3 text-right">{isEn ? 'Actions' : 'Thao Tác'}</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-[#1C2533]">
-                {filteredVehicles.length === 0 ? (
-                  <tr>
-                    <td colSpan={8} className="p-8 text-center text-gray-500 font-mono space-y-2">
-                      <Car className="w-8 h-8 text-gray-600 mx-auto" />
-                      <div>
-                        {searchPlate.trim() 
-                          ? (isEn ? 'No vehicles match your search query.' : 'Không tìm thấy phương tiện nào phù hợp với từ khóa tìm kiếm.')
-                          : (isEn ? 'No vehicles registered in the building yet. Click "+ Register New Vehicle" to add.' : 'Chưa có phương tiện nào được cấp quyền trong tòa nhà. Hãy nhấn "+ Cấp Thẻ & Đăng Ký Xe" để đăng ký.')}
-                      </div>
-                    </td>
-                  </tr>
-                ) : (
-                  filteredVehicles.map((veh) => (
-                    <tr key={veh.id} className="hover:bg-[#161F2E]/60 transition-colors">
-                      <td className="p-3 font-mono font-bold text-[#C5A880]">
-                        {veh.plate}
-                      </td>
-                      <td className="p-3">
-                        <span className={`px-2 py-0.5 text-[10px] font-semibold uppercase font-mono ${
-                          veh.type === 'CAR'
-                            ? 'bg-amber-950/60 text-amber-300 border border-amber-500/40'
-                            : 'bg-cyan-950/60 text-cyan-300 border border-cyan-500/40'
-                        }`}>
-                          {veh.type === 'CAR' ? (isEn ? 'CAR' : 'Ô Tô') : (isEn ? 'MOTO' : 'Xe Máy')}
-                        </span>
-                      </td>
-                      <td className="p-3 text-gray-300">
-                        {veh.brand || '---'}
-                      </td>
-                      <td className="p-3 font-mono font-semibold text-white">
-                        {isEn ? `Unit ${veh.aptCode} (Fl ${veh.floor})` : `Căn ${veh.aptCode} (Tầng ${veh.floor})`}
-                      </td>
-                      <td className="p-3 text-gray-300">
-                        {veh.ownerName}
-                      </td>
-                      <td className="p-3 font-mono text-gray-400">
-                        {veh.cardNo || `RFID-${veh.aptCode}`}
-                      </td>
-                      <td className="p-3 font-mono text-[#C5A880]">
-                        {veh.slot || (veh.type === 'CAR' ? 'B2-A' : 'B1-M')}
-                      </td>
-                      <td className="p-3 text-right">
-                        <div className="flex items-center justify-end gap-1.5">
-                          <button
-                            type="button"
-                            onClick={() => handleSimulateScan(veh.plate)}
-                            className="px-2.5 py-1 bg-[#1C2533] hover:bg-[#C5A880] hover:text-black text-gray-300 border border-gray-700 text-[11px] font-semibold transition-all rounded-none"
-                            title={isEn ? 'Test LPR Scan' : 'Quét Thử Biển Số'}
-                          >
-                            {isEn ? 'Test' : 'Quét Thử'}
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => handleRevokeVehicle(veh.aptCode, veh.id, veh.plate)}
-                            className="p-1 text-gray-400 hover:text-rose-400 hover:bg-rose-950/40 border border-transparent hover:border-rose-500/50 transition-colors rounded-none"
-                            title={isEn ? 'Revoke Vehicle' : 'Thu Hồi / Xóa Thẻ Xe'}
-                          >
-                            <Trash2 className="w-3.5 h-3.5" />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
+        {/* Legend */}
+        <div className="flex items-center gap-4 text-xs font-mono text-gray-400 flex-wrap pt-1">
+          <div className="flex items-center gap-1.5">
+            <span className="w-3 h-3 bg-[#1C2533] border border-[#C5A880]"></span>
+            <span className="text-white">{isEn ? 'Occupied (Allocated)' : 'Đã cấp cố định'}</span>
           </div>
-        )}
+          <div className="flex items-center gap-1.5">
+            <span className="w-3 h-3 bg-[#161B22] border border-[#2D3748]"></span>
+            <span>{isEn ? 'Available (Empty)' : 'Còn trống / Khả dụng'}</span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <span className="w-3 h-3 bg-[#C5A880] border border-white"></span>
+            <span className="text-[#C5A880] font-semibold">{isEn ? 'Selected Slot' : 'Ô đang chọn'}</span>
+          </div>
+          <div className="text-[11px] text-gray-500 ml-auto hidden md:block">
+            {isEn ? 'Click any slot to inspect or assign vehicle' : 'Nhấp vào bất kỳ ô nào để xem chi tiết hoặc gán xe'}
+          </div>
+        </div>
 
-        {/* Tab 2 Content: Real-time LPR Event Logs */}
-        {activeTab === 'LOGS' && (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs border border-[#222B35]">
-              <thead className="bg-[#161B22] text-gray-400 font-semibold uppercase tracking-wider text-[10px] border-b border-[#222B35]">
+        {/* Slot Grid Container */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 pt-2">
+          {/* Grid Layout (8 cols on lg) */}
+          <div className="lg:col-span-8 bg-[#0E131B] border border-[#222B35] p-4">
+            <div className="text-[11px] font-mono text-gray-400 mb-3 flex justify-between items-center border-b border-[#222B35] pb-2">
+              <span className="text-gray-300 font-semibold uppercase">
+                {selectedFloorMap === 'B2_CAR' ? 'SƠ ĐỒ HẦM B2 (32 Ô ĐỖ ĐẠI DIỆN)' : 'SƠ ĐỒ HẦM B1 (32 Ô ĐỖ ĐẠI DIỆN)'}
+              </span>
+              <span className="text-[#C5A880]">
+                {selectedFloorMap === 'B2_CAR' 
+                  ? `${registeredCars} / 32 ô đang có xe` 
+                  : `${registeredMotos} / 32 ô đang có xe`}
+              </span>
+            </div>
+
+            <div className="grid grid-cols-4 sm:grid-cols-8 gap-2.5">
+              {(selectedFloorMap === 'B2_CAR' ? b2Slots : b1Slots).map((slot) => {
+                const isSelected = selectedSlotCode === slot.code;
+                const isOccupied = !!slot.assigned;
+
+                return (
+                  <button
+                    key={slot.code}
+                    type="button"
+                    onClick={() => setSelectedSlotCode(slot.code)}
+                    className={`p-2 border text-center transition-all flex flex-col justify-between h-20 rounded-none relative group ${
+                      isSelected
+                        ? 'bg-[#C5A880]/20 border-[#C5A880] shadow-[0_0_12px_rgba(197,168,128,0.25)]'
+                        : isOccupied
+                        ? 'bg-[#1C2533] border-[#C5A880]/60 hover:border-[#C5A880]'
+                        : 'bg-[#121820] border-[#2D3748] hover:border-gray-500 opacity-70 hover:opacity-100'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between w-full text-[10px] font-mono">
+                      <span className={`font-bold ${isSelected ? 'text-[#C5A880]' : isOccupied ? 'text-white' : 'text-gray-400'}`}>
+                        {slot.code}
+                      </span>
+                      {isOccupied && (
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                      )}
+                    </div>
+
+                    <div className="my-auto">
+                      {isOccupied ? (
+                        <div>
+                          <div className="text-[10px] font-mono font-bold text-[#C5A880] truncate">
+                            {slot.assigned?.plate}
+                          </div>
+                          <div className="text-[9px] text-gray-400 font-mono truncate">
+                            Căn {slot.assigned?.aptCode}
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="text-[10px] text-gray-500 font-mono uppercase tracking-wider">
+                          TRỐNG
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="text-[9px] text-gray-500 font-mono truncate">
+                      {slot.code.includes('A') ? 'VIP' : slot.code.includes('B') ? 'STD' : 'MOTO'}
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Slot Detail Inspector Panel (4 cols on lg) */}
+          <div className="lg:col-span-4 bg-[#0E131B] border border-[#222B35] p-4 flex flex-col justify-between">
+            {currentSlotDetail ? (
+              <div className="space-y-4">
+                <div className="flex items-center justify-between border-b border-[#222B35] pb-2">
+                  <div className="text-xs uppercase tracking-wider font-semibold text-[#C5A880] flex items-center gap-1.5">
+                    <Hash className="w-3.5 h-3.5" />
+                    {isEn ? 'Slot Inspector' : 'Chi Tiết Ô Đỗ Đang Chọn'}
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setSelectedSlotCode(null)}
+                    className="text-gray-400 hover:text-white text-xs p-1"
+                  >
+                    ✕
+                  </button>
+                </div>
+
+                <div className="p-3 bg-[#121820] border border-[#222B35] space-y-2">
+                  <div className="flex justify-between items-center text-xs">
+                    <span className="text-gray-400">Mã Vị Trí:</span>
+                    <span className="font-mono font-bold text-white text-sm bg-[#161B22] px-2 py-0.5 border border-gray-700">
+                      {currentSlotDetail.code}
+                    </span>
+                  </div>
+                  <div className="flex justify-between items-center text-xs">
+                    <span className="text-gray-400">Khu Vực Phân Bổ:</span>
+                    <span className="font-mono text-gray-300 text-xs">
+                      {currentSlotDetail.zone}
+                    </span>
+                  </div>
+                  <div className="flex justify-between items-center text-xs">
+                    <span className="text-gray-400">Trạng Thái:</span>
+                    <span className={`font-mono text-xs font-semibold px-2 py-0.5 border ${
+                      currentSlotDetail.assigned
+                        ? 'bg-emerald-950/40 text-emerald-300 border-emerald-500/50'
+                        : 'bg-gray-900 text-gray-400 border-gray-700'
+                    }`}>
+                      {currentSlotDetail.assigned ? 'ĐÃ ĐƯỢC CẤP' : 'CÒN TRỐNG'}
+                    </span>
+                  </div>
+                </div>
+
+                {currentSlotDetail.assigned ? (
+                  <div className="p-3.5 bg-[#161B22] border border-[#222B35] space-y-2.5 text-xs">
+                    <div className="text-[11px] font-semibold text-gray-300 uppercase tracking-wider border-b border-[#222B35] pb-1.5">
+                      Thông Tin Phương Tiện Cư Dân
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-gray-400">Biển số:</span>
+                      <span className="font-mono font-bold text-[#C5A880] text-sm">
+                        {currentSlotDetail.assigned.plate}
+                      </span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-gray-400">Chủ sở hữu:</span>
+                      <span className="text-white font-semibold">
+                        {currentSlotDetail.assigned.ownerName}
+                      </span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-gray-400">Căn hộ:</span>
+                      <span className="text-gray-200 font-mono">
+                        Căn {currentSlotDetail.assigned.aptCode} (Tầng {currentSlotDetail.assigned.floor})
+                      </span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-gray-400">Dòng xe:</span>
+                      <span className="text-gray-300 font-mono">
+                        {currentSlotDetail.assigned.brand || '---'}
+                      </span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-gray-400">Mã thẻ RFID:</span>
+                      <span className="text-gray-300 font-mono">
+                        {currentSlotDetail.assigned.cardNo}
+                      </span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-gray-400">Mức cước:</span>
+                      <span className="text-emerald-400 font-mono font-semibold">
+                        {currentSlotDetail.type === 'CAR' ? '1.200.000 đ/tháng' : '120.000 đ/tháng'}
+                      </span>
+                    </div>
+
+                    <div className="pt-2">
+                      <button
+                        type="button"
+                        onClick={() => handleRevokeVehicle(
+                          currentSlotDetail.assigned!.aptCode, 
+                          currentSlotDetail.assigned!.id, 
+                          currentSlotDetail.assigned!.plate
+                        )}
+                        className="w-full py-1.5 px-3 bg-rose-950/40 hover:bg-rose-900 border border-rose-500/50 text-rose-300 text-xs font-mono font-semibold transition-colors rounded-none flex items-center justify-center gap-1.5"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                        {isEn ? 'Revoke Slot Allocation' : 'Thu Hồi / Giải Phóng Ô Này'}
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="p-4 bg-[#121820] border border-[#222B35] text-center space-y-3">
+                    <div className="text-xs text-gray-400">
+                      Ô đỗ này hiện đang trống và sẵn sàng tiếp nhận phương tiện mới của cư dân.
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setRegCustomSlot(currentSlotDetail.code);
+                        setRegType(currentSlotDetail.type);
+                        setIsRegisterModalOpen(true);
+                      }}
+                      className="w-full py-2 bg-[#C5A880] hover:bg-[#E2C9A5] text-black text-xs font-semibold uppercase tracking-wider transition-colors rounded-none flex items-center justify-center gap-1.5"
+                    >
+                      <Plus className="w-3.5 h-3.5" />
+                      {isEn ? `Assign Unit to ${currentSlotDetail.code}` : `Cấp Xe Vào Ô ${currentSlotDetail.code}`}
+                    </button>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div className="h-full flex flex-col items-center justify-center p-6 text-center space-y-2 text-gray-500">
+                <LayoutGrid className="w-8 h-8 text-gray-600" />
+                <div className="text-xs font-mono">
+                  {isEn ? 'Select a slot on the left matrix to inspect details.' : 'Nhấp vào một ô trên ma trận bên trái để xem chi tiết.'}
+                </div>
+              </div>
+            )}
+
+            <div className="text-[10px] text-gray-500 font-mono text-center pt-3 border-t border-[#222B35] mt-4">
+              {isEn ? 'Real-time allocation linked directly to unit master store' : 'Dữ liệu phân bổ liên kết trực tiếp với CSDL căn hộ'}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* 4. Resident Vehicles Registry Table */}
+      <div className="bg-[#121820] border border-[#222B35] p-5 space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#222B35] pb-3">
+          <div>
+            <h3 className="font-serif text-lg font-bold text-white flex items-center gap-2">
+              <Car className="w-4 h-4 text-[#C5A880]" />
+              {isEn ? `Resident Vehicle Registry (${filteredVehicles.length})` : `Danh Sách Phương Tiện Đã Cấp Thẻ (${filteredVehicles.length} xe)`}
+            </h3>
+            <p className="text-xs text-gray-400 mt-0.5">
+              {isEn 
+                ? 'Official resident vehicles approved for basement parking access' 
+                : 'Toàn bộ phương tiện chính thức được cấp quyền sử dụng hầm B1 và B2'}
+            </p>
+          </div>
+
+          <div className="flex items-center gap-2 flex-wrap">
+            <div className="relative">
+              <Search className="w-3.5 h-3.5 text-gray-400 absolute left-2.5 top-1/2 -translate-y-1/2" />
+              <input
+                type="text"
+                placeholder={isEn ? 'Search plate, unit, owner...' : 'Tìm biển số, căn hộ, chủ xe...'}
+                value={searchPlate}
+                onChange={(e) => setSearchPlate(e.target.value)}
+                className="pl-8 pr-3 py-1.5 bg-[#161B22] border border-[#2D3748] text-xs text-white placeholder-gray-500 focus:outline-none focus:border-[#C5A880] w-48 sm:w-60 rounded-none"
+              />
+            </div>
+
+            <div className="flex items-center border border-[#2D3748] bg-[#161B22] p-0.5 text-xs font-mono">
+              <button
+                type="button"
+                onClick={() => setTypeFilter('ALL')}
+                className={`px-2.5 py-1 ${typeFilter === 'ALL' ? 'bg-[#C5A880] text-black font-bold' : 'text-gray-400 hover:text-white'}`}
+              >
+                {isEn ? 'All' : 'Tất cả'}
+              </button>
+              <button
+                type="button"
+                onClick={() => setTypeFilter('CAR')}
+                className={`px-2.5 py-1 ${typeFilter === 'CAR' ? 'bg-[#C5A880] text-black font-bold' : 'text-gray-400 hover:text-white'}`}
+              >
+                {isEn ? 'Cars' : 'Ô tô'}
+              </button>
+              <button
+                type="button"
+                onClick={() => setTypeFilter('MOTORBIKE')}
+                className={`px-2.5 py-1 ${typeFilter === 'MOTORBIKE' ? 'bg-[#C5A880] text-black font-bold' : 'text-gray-400 hover:text-white'}`}
+              >
+                {isEn ? 'Bikes' : 'Xe máy'}
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Table Content */}
+        <div className="overflow-x-auto">
+          <table className="w-full text-left text-xs border border-[#222B35]">
+            <thead className="bg-[#161B22] text-gray-400 font-semibold uppercase tracking-wider text-[10px] border-b border-[#222B35]">
+              <tr>
+                <th className="p-3">{isEn ? 'Plate Number' : 'Biển Số Xe'}</th>
+                <th className="p-3">{isEn ? 'Classification' : 'Phân Loại'}</th>
+                <th className="p-3">{isEn ? 'Brand / Model' : 'Hãng Xe / Model'}</th>
+                <th className="p-3">{isEn ? 'Unit' : 'Căn Hộ'}</th>
+                <th className="p-3">{isEn ? 'Owner' : 'Chủ Sở Hữu'}</th>
+                <th className="p-3">{isEn ? 'RFID Pass ID' : 'Mã Thẻ RFID'}</th>
+                <th className="p-3">{isEn ? 'Allocated Slot' : 'Vị Trí Ô Đỗ'}</th>
+                <th className="p-3">{isEn ? 'Monthly Fee' : 'Phí Tháng'}</th>
+                <th className="p-3 text-right">{isEn ? 'Action' : 'Thao Tác'}</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-[#1C2533]">
+              {filteredVehicles.length === 0 ? (
                 <tr>
-                  <th className="p-3">{isEn ? 'Log ID & Time' : 'Mã & Thời Gian'}</th>
-                  <th className="p-3">{isEn ? 'Lane' : 'Làn Kiểm Soát'}</th>
-                  <th className="p-3">{isEn ? 'Plate Number' : 'Biển Số Xe'}</th>
-                  <th className="p-3">{isEn ? 'Type' : 'Phân Loại'}</th>
-                  <th className="p-3">{isEn ? 'Unit / Target' : 'Căn Hộ / Đối Tượng'}</th>
-                  <th className="p-3">{isEn ? 'LPR Match Result' : 'Kết Quả Quét AI'}</th>
-                  <th className="p-3 text-right">{isEn ? 'Barrier Action' : 'Trạng Thái Barrier'}</th>
+                  <td colSpan={9} className="p-8 text-center text-gray-500 font-mono space-y-2">
+                    <Car className="w-8 h-8 text-gray-600 mx-auto" />
+                    <div>
+                      {searchPlate.trim() 
+                        ? (isEn ? 'No vehicles match your search query.' : 'Không tìm thấy phương tiện nào phù hợp với từ khóa tìm kiếm.')
+                        : (isEn ? 'No vehicles registered in the building yet. Click "+ Register New Vehicle" to add.' : 'Chưa có phương tiện nào được cấp quyền trong tòa nhà. Hãy nhấn "+ Cấp Thẻ & Đăng Ký Xe Mới" để đăng ký.')}
+                    </div>
+                  </td>
                 </tr>
-              </thead>
-              <tbody className="divide-y divide-[#1C2533]">
-                {lprLogs.length === 0 ? (
-                  <tr>
-                    <td colSpan={7} className="p-8 text-center text-gray-500 font-mono space-y-2">
-                      <History className="w-8 h-8 text-gray-600 mx-auto" />
-                      <div>
-                        {isEn 
-                          ? 'No LPR scan records recorded yet. Scan a vehicle above to generate real-time audit logs.' 
-                          : 'Chưa có nhật ký quét LPR nào được ghi nhận. Hãy quét biển số ở trên để tạo bản ghi thời gian thực.'}
+              ) : (
+                filteredVehicles.map((veh) => (
+                  <tr key={veh.id} className="hover:bg-[#161F2E]/60 transition-colors">
+                    <td className="p-3 font-mono font-bold text-[#C5A880]">
+                      {veh.plate}
+                    </td>
+                    <td className="p-3">
+                      <span className={`px-2 py-0.5 text-[10px] font-semibold uppercase font-mono ${
+                        veh.type === 'CAR'
+                          ? 'bg-amber-950/60 text-amber-300 border border-amber-500/40'
+                          : 'bg-cyan-950/60 text-cyan-300 border border-cyan-500/40'
+                      }`}>
+                        {veh.type === 'CAR' ? (isEn ? 'CAR (B2)' : 'Ô Tô (B2)') : (isEn ? 'MOTO (B1)' : 'Xe Máy (B1)')}
+                      </span>
+                    </td>
+                    <td className="p-3 text-gray-300">
+                      {veh.brand || '---'}
+                    </td>
+                    <td className="p-3 font-mono font-semibold text-white">
+                      {isEn ? `Unit ${veh.aptCode} (Fl ${veh.floor})` : `Căn ${veh.aptCode} (Tầng ${veh.floor})`}
+                    </td>
+                    <td className="p-3 text-gray-300">
+                      {veh.ownerName}
+                    </td>
+                    <td className="p-3 font-mono text-gray-400">
+                      {veh.cardNo || `RFID-${veh.aptCode}`}
+                    </td>
+                    <td className="p-3 font-mono text-[#C5A880] font-bold">
+                      {veh.slot || (veh.type === 'CAR' ? 'B2-A01' : 'B1-M01')}
+                    </td>
+                    <td className="p-3 font-mono text-emerald-400 font-semibold">
+                      {veh.type === 'CAR' ? '1.200.000 đ' : '120.000 đ'}
+                    </td>
+                    <td className="p-3 text-right">
+                      <div className="flex items-center justify-end gap-1.5">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            if (veh.slot) {
+                              setSelectedFloorMap(veh.type === 'CAR' ? 'B2_CAR' : 'B1_MOTO');
+                              setSelectedSlotCode(veh.slot);
+                            }
+                          }}
+                          className="px-2.5 py-1 bg-[#1C2533] hover:bg-[#C5A880] hover:text-black text-gray-300 border border-gray-700 text-[11px] font-semibold transition-all rounded-none"
+                          title={isEn ? 'View Slot' : 'Xem Ô Đỗ'}
+                        >
+                          {isEn ? 'Locate' : 'Vị Trí'}
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleRevokeVehicle(veh.aptCode, veh.id, veh.plate)}
+                          className="p-1 text-gray-400 hover:text-rose-400 hover:bg-rose-950/40 border border-transparent hover:border-rose-500/50 transition-colors rounded-none"
+                          title={isEn ? 'Revoke Vehicle' : 'Thu Hồi / Xóa Thẻ Xe'}
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
                       </div>
                     </td>
                   </tr>
-                ) : (
-                  lprLogs.map((log) => (
-                    <tr key={log.id} className="hover:bg-[#161F2E]/60 transition-colors">
-                      <td className="p-3 font-mono">
-                        <span className="text-gray-300 font-bold">{log.id}</span>
-                        <span className="text-gray-500 ml-2">{log.timestamp}</span>
-                      </td>
-                      <td className="p-3 font-mono text-[11px]">
-                        {log.lane === 'INBOUND_01' ? (
-                          <span className="text-emerald-400">LPR-01 (Vào)</span>
-                        ) : (
-                          <span className="text-cyan-400">LPR-02 (Ra)</span>
-                        )}
-                      </td>
-                      <td className="p-3 font-mono font-bold text-white">
-                        {log.plate}
-                      </td>
-                      <td className="p-3 font-mono text-gray-300">
-                        {log.vehicleType === 'CAR' ? (isEn ? 'Car' : 'Ô tô') : (isEn ? 'Motorbike' : 'Xe máy')}
-                      </td>
-                      <td className="p-3 text-gray-300">
-                        {log.aptCode ? (
-                          <span>Căn {log.aptCode} - {log.ownerName}</span>
-                        ) : (
-                          <span className="text-amber-400 italic">{isEn ? 'Guest / Visitor' : 'Khách Vãng Lai'}</span>
-                        )}
-                      </td>
-                      <td className="p-3">
-                        <span className={`px-2 py-0.5 text-[10px] font-mono font-semibold border ${
-                          log.result === 'MATCHED'
-                            ? 'bg-emerald-950/50 text-emerald-300 border-emerald-500/40'
-                            : 'bg-rose-950/50 text-rose-300 border-rose-500/40'
-                        }`}>
-                          {log.result === 'MATCHED' ? (isEn ? 'MATCHED' : 'HỢP LỆ') : (isEn ? 'UNREGISTERED' : 'KHÔNG KHỚP')}
-                        </span>
-                      </td>
-                      <td className="p-3 text-right font-mono">
-                        <span className={`font-semibold ${
-                          log.barrierAction === 'OPENED'
-                            ? 'text-emerald-400'
-                            : log.barrierAction === 'DENIED'
-                            ? 'text-rose-400'
-                            : 'text-amber-400'
-                        }`}>
-                          {log.barrierAction === 'OPENED' ? 'OPENED ✓' : log.barrierAction === 'DENIED' ? 'DENIED ✕' : 'OVERRIDE'}
-                        </span>
-                      </td>
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
-          </div>
-        )}
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       {/* 5. Modal: Cấp Thẻ & Đăng Ký Phương Tiện Mới */}
@@ -978,7 +795,7 @@ export default function SmartParking() {
                   {isEn ? 'SMART PARKING REGISTRATION' : 'QUY TRÌNH CẤP THẺ BÃI ĐỖ XE'}
                 </div>
                 <h3 className="font-serif text-lg font-bold text-white mt-0.5">
-                  {isEn ? 'Register Resident Vehicle' : 'Đăng Ký Định Danh Phương Tiện Mới'}
+                  {isEn ? 'Register Resident Vehicle & Issue RFID' : 'Đăng Ký Phương Tiện & Cấp Thẻ RFID'}
                 </h3>
               </div>
               <button
@@ -1030,7 +847,10 @@ export default function SmartParking() {
                 <div className="grid grid-cols-2 gap-3">
                   <button
                     type="button"
-                    onClick={() => setRegType('CAR')}
+                    onClick={() => {
+                      setRegType('CAR');
+                      if (regCustomSlot.startsWith('B1')) setRegCustomSlot('');
+                    }}
                     className={`py-2 px-3 border text-left flex items-center gap-2 transition-all rounded-none ${
                       regType === 'CAR'
                         ? 'border-[#C5A880] bg-[#C5A880]/10 text-white'
@@ -1039,14 +859,17 @@ export default function SmartParking() {
                   >
                     <Car className="w-4 h-4 text-[#C5A880]" />
                     <div>
-                      <div className="font-bold">{isEn ? 'Car (Hầm B2)' : 'Ô Tô (Hầm B2)'}</div>
+                      <div className="font-bold">{isEn ? 'Car (Basement B2)' : 'Ô Tô (Hầm B2)'}</div>
                       <div className="text-[10px] text-gray-400 font-mono">1.200.000 đ/tháng</div>
                     </div>
                   </button>
 
                   <button
                     type="button"
-                    onClick={() => setRegType('MOTORBIKE')}
+                    onClick={() => {
+                      setRegType('MOTORBIKE');
+                      if (regCustomSlot.startsWith('B2')) setRegCustomSlot('');
+                    }}
                     className={`py-2 px-3 border text-left flex items-center gap-2 transition-all rounded-none ${
                       regType === 'MOTORBIKE'
                         ? 'border-cyan-400 bg-cyan-950/20 text-white'
@@ -1055,7 +878,7 @@ export default function SmartParking() {
                   >
                     <Bike className="w-4 h-4 text-cyan-400" />
                     <div>
-                      <div className="font-bold">{isEn ? 'Motorbike (Hầm B1)' : 'Xe Máy (Hầm B1)'}</div>
+                      <div className="font-bold">{isEn ? 'Motorbike (Basement B1)' : 'Xe Máy (Hầm B1)'}</div>
                       <div className="text-[10px] text-gray-400 font-mono">120.000 đ/tháng</div>
                     </div>
                   </button>
@@ -1091,11 +914,25 @@ export default function SmartParking() {
                 />
               </div>
 
+              {/* Allocated Slot (Optional or auto) */}
+              <div>
+                <label className="block text-gray-400 uppercase tracking-wider font-semibold mb-1.5">
+                  {isEn ? 'Allocated Slot (Leave empty for auto-assign)' : 'Vị Trí Ô Đỗ Chỉ Định (Để trống để tự động gán)'}
+                </label>
+                <input
+                  type="text"
+                  placeholder={regType === 'CAR' ? 'Ví dụ: B2-A05 hoặc B2-B12' : 'Ví dụ: B1-M08'}
+                  value={regCustomSlot}
+                  onChange={(e) => setRegCustomSlot(e.target.value.toUpperCase())}
+                  className="w-full px-3 py-2 bg-[#161B22] border border-[#2D3748] text-white font-mono focus:outline-none focus:border-[#C5A880] rounded-none"
+                />
+              </div>
+
               {/* Automated Provisioning Info */}
               <div className="p-3 bg-[#121820] border border-[#222B35] space-y-1.5 text-[11px] text-gray-400 font-mono">
                 <div className="text-gray-300 font-semibold">{isEn ? 'System Allocation Notice:' : 'Thông Tin Cấp Phát Tự Động:'}</div>
-                <div>• {isEn ? 'Automated RFID card ID generation linked to unit quota' : 'Hệ thống tự động cấp mã thẻ RFID liên kết với hạn mức căn'}</div>
-                <div>• {regType === 'CAR' ? 'Ô đỗ cố định phân bổ tại Hầm B2 (Khu VIP/Standard)' : 'Vị trí đỗ xe máy phân bổ tự do tại Hầm B1'}</div>
+                <div>• {isEn ? 'Automated RFID card ID generation linked to unit quota' : 'Hệ thống tự động cấp mã thẻ RFID liên kết với hạn mức căn hộ'}</div>
+                <div>• {regType === 'CAR' ? 'Định mức: 1.200.000 đ/tháng (Hầm B2)' : 'Định mức: 120.000 đ/tháng (Hầm B1)'}</div>
                 <div>• {isEn ? 'Billing automatically added to monthly apartment utilities' : 'Cước phí gửi xe tự động ghi nợ vào sổ cái hàng tháng của căn hộ'}</div>
               </div>
 
