@@ -392,9 +392,22 @@ export default function KanbanBoard() {
     return true;
   });
 
-  const openTickets = filteredTickets.filter(t => t.status === 'Open');
-  const inProgressTickets = filteredTickets.filter(t => t.status === 'In_Progress' || t.status === 'Assigned');
-  const resolvedTickets = filteredTickets.filter(t => t.status === 'Resolved');
+  const openTickets = filteredTickets
+    .filter(t => t.status === 'Open')
+    .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+
+  // Priority for In-Progress: Urgent repairs (REPAIR) first, then by latest updates
+  const inProgressTickets = filteredTickets
+    .filter(t => t.status === 'In_Progress' || t.status === 'Assigned')
+    .sort((a, b) => {
+      if (a.ticket_type === 'REPAIR' && b.ticket_type !== 'REPAIR') return -1;
+      if (a.ticket_type !== 'REPAIR' && b.ticket_type === 'REPAIR') return 1;
+      return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+    });
+
+  const resolvedTickets = filteredTickets
+    .filter(t => t.status === 'Resolved')
+    .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
 
   // Handle BQL official response to resident feedback / inquiry & update engineer
   const handleConfirmAdminReply = (e: React.FormEvent) => {
@@ -749,7 +762,7 @@ export default function KanbanBoard() {
           {viewMode === 'KANBAN' ? (
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Column 1: Chờ tiếp nhận */}
-            <div className="bg-[#121820] border border-[#222B35] flex flex-col justify-between shadow-xl">
+            <div className="bg-[#121820] border border-[#222B35] flex flex-col shadow-xl">
               <div className="p-3.5 border-b border-[#222B35] flex items-center justify-between bg-[#161B22]">
                 <div className="flex items-center gap-2 min-w-0">
                   <span className="w-2.5 h-2.5 bg-blue-500 shrink-0"></span>
@@ -767,7 +780,7 @@ export default function KanbanBoard() {
                 </span>
               </div>
 
-              <div className="p-4 space-y-4 min-h-[420px] overflow-y-auto">
+              <div className="p-4 space-y-3.5 flex-1 min-h-[420px] overflow-y-auto flex flex-col justify-start">
                 {openTickets.length === 0 ? (
                   <div className="text-xs text-gray-500 italic text-center py-16">
                     Không có phiếu nào đang chờ tiếp nhận.
@@ -916,11 +929,11 @@ export default function KanbanBoard() {
             </div>
 
             {/* Column 2: Đang xử lý */}
-            <div className="bg-[#121820] border border-[#222B35] flex flex-col justify-between shadow-xl">
+            <div className="bg-[#121820] border border-[#222B35] flex flex-col shadow-xl">
               <div className="p-3.5 border-b border-[#222B35] flex items-center justify-between bg-[#161B22]">
                 <div className="flex items-center gap-2 min-w-0">
-                  <span className="w-2.5 h-2.5 bg-amber-500 rounded-none animate-pulse shrink-0"></span>
-                  <span className="text-xs uppercase tracking-wider font-semibold text-gray-200 whitespace-nowrap">
+                  <span className="w-2.5 h-2.5 bg-amber-400 rounded-none animate-pulse shrink-0"></span>
+                  <span className="text-xs uppercase tracking-wider font-semibold text-white whitespace-nowrap">
                     {t('2. Đang Xử Lý', '2. In Progress')}
                   </span>
                   <span className="px-1.5 py-0.5 bg-amber-950/80 border border-amber-500/40 text-amber-300 font-mono text-[10px] font-bold shrink-0">
@@ -934,7 +947,7 @@ export default function KanbanBoard() {
                 </span>
               </div>
 
-              <div className="p-4 space-y-4 min-h-[420px] overflow-y-auto">
+              <div className="p-4 space-y-3.5 flex-1 min-h-[420px] overflow-y-auto flex flex-col justify-start">
                 {inProgressTickets.length === 0 ? (
                   <div className="text-xs text-gray-500 italic text-center py-16">
                     Không có phiếu nào đang xử lý.
@@ -1009,8 +1022,9 @@ export default function KanbanBoard() {
 
                         {/* Card Actions */}
                         <div className="pt-2 border-t border-[#1E2630] flex items-center justify-between flex-wrap gap-2">
-                          <span className="text-[10px] text-amber-400/90 font-mono flex items-center gap-1">
-                            <Clock className="w-3 h-3 text-amber-400" />
+                          <span className="text-[10px] text-amber-400 font-mono flex items-center gap-1.5 px-2 py-0.5 bg-amber-950/40 border border-amber-500/30">
+                            <span className="w-1.5 h-1.5 bg-amber-400 rounded-full animate-pulse shrink-0"></span>
+                            <Clock className="w-3 h-3 text-amber-400 shrink-0" />
                             <span>{isFeedback ? t('24h') : t('SLA 45p')}</span>
                           </span>
 
@@ -1077,7 +1091,7 @@ export default function KanbanBoard() {
             </div>
 
             {/* Column 3: Đã nghiệm thu / Đã đóng */}
-            <div className="bg-[#121820] border border-[#222B35] flex flex-col justify-between shadow-xl">
+            <div className="bg-[#121820] border border-[#222B35] flex flex-col shadow-xl">
               <div className="p-3.5 border-b border-[#222B35] flex items-center justify-between bg-[#161B22]">
                 <div className="flex items-center gap-2 min-w-0">
                   <span className="w-2.5 h-2.5 bg-emerald-500 rounded-none shrink-0"></span>
@@ -1094,7 +1108,7 @@ export default function KanbanBoard() {
                 </span>
               </div>
 
-              <div className="p-4 space-y-4 min-h-[420px] overflow-y-auto">
+              <div className="p-4 space-y-3.5 flex-1 min-h-[420px] overflow-y-auto flex flex-col justify-start">
                 {resolvedTickets.length === 0 ? (
                   <div className="text-xs text-gray-500 italic text-center py-16">
                     Chưa có phiếu hoàn thành.
