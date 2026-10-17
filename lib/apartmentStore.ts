@@ -285,6 +285,27 @@ export function updateApartmentUnit(code: string, patch: Partial<ApartmentUnit>)
 }
 
 /**
+ * Ghi nhận một bản ghi sửa chữa / bảo trì vào lý lịch kỹ thuật căn hộ
+ */
+export function addApartmentMaintenanceRecord(code: string, record: ApartmentMaintenanceRecord): boolean {
+  const units = getApartmentUnits();
+  const index = units.findIndex(u => u.code.toLowerCase() === code.toLowerCase().trim());
+  if (index === -1) return false;
+
+  const current = units[index];
+  const history = current.maintenanceHistory || [];
+  const updatedHistory = [record, ...history.filter(h => h.id !== record.id)];
+
+  units[index] = {
+    ...current,
+    maintenanceHistory: updatedHistory,
+    updatedAt: new Date().toISOString()
+  };
+
+  return saveApartmentsList(units);
+}
+
+/**
  * Xóa một căn hộ khỏi hệ thống
  */
 export function deleteApartmentUnit(code: string): boolean {

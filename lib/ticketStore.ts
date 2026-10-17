@@ -8,6 +8,7 @@
  */
 
 import { ServiceRequest } from './dataStore';
+import { addApartmentMaintenanceRecord } from './apartmentStore';
 import { 
   TicketCategoryType, 
   TicketHandlerRole, 
@@ -677,6 +678,24 @@ export function resolveTicket(
       if (!remainingBusy) {
         const techs = getTechnicians();
         saveTechnicians(techs.map(k => k.id === assignedTechId ? { ...k, status: 'AVAILABLE' } : k));
+      }
+    }
+
+    // Ghi nhận trực tiếp vào lý lịch bảo trì của căn hộ
+    const resolvedObj = targetTicket as ExtendedServiceRequest;
+    if (resolvedObj.apt_code) {
+      try {
+        addApartmentMaintenanceRecord(resolvedObj.apt_code, {
+          id: resolvedObj.id,
+          date: new Date().toLocaleDateString('vi-VN'),
+          title: resolvedObj.content.slice(0, 80),
+          technician: resolvedObj.assigned_technician || 'Kỹ thuật viên Skyline',
+          status: 'COMPLETED',
+          cost: 150000,
+          note: resolvedObj.resolution_notes || 'Nghiệm thu đạt chuẩn kỹ thuật.'
+        });
+      } catch (err) {
+        console.warn('Lỗi ghi nhận lý lịch bảo trì căn hộ:', err);
       }
     }
 
