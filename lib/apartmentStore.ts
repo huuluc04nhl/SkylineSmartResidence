@@ -387,7 +387,18 @@ export function addApartmentVehicle(code: string, vehicle: ApartmentVehicle): bo
   if (!unit) return false;
 
   const vehicles = unit.vehicles || [];
-  const updatedVehicles = [...vehicles, vehicle];
+  const cleanPlate = vehicle.plate.trim().toUpperCase().replace(/[-.\s]/g, '');
+  const existingIdx = vehicles.findIndex(
+    v => v.plate.trim().toUpperCase().replace(/[-.\s]/g, '') === cleanPlate
+  );
+
+  let updatedVehicles: ApartmentVehicle[];
+  if (existingIdx >= 0) {
+    updatedVehicles = [...vehicles];
+    updatedVehicles[existingIdx] = { ...vehicles[existingIdx], ...vehicle };
+  } else {
+    updatedVehicles = [...vehicles, vehicle];
+  }
   return updateApartmentUnit(code, { vehicles: updatedVehicles });
 }
 
