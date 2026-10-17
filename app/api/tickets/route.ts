@@ -239,9 +239,10 @@ export async function POST(req: Request) {
 
       const newId = nksResult.success && nksResult.id ? String(nksResult.id) : (t.id || `TICK-${Math.floor(100 + Math.random() * 900)}`);
 
-      let assignedTech = undefined;
-      let scheduledTime = undefined;
-      let aiReason = undefined;
+      let suggestedTech: TechnicianProfile | undefined = undefined;
+      let suggestedScore: number | undefined = undefined;
+      let scheduledTime: string | undefined = undefined;
+      let aiReason: string | undefined = undefined;
       let ticketStatus: 'Open' | 'In_Progress' | 'Resolved' = 'Open';
       let aiReplyText: string | undefined = undefined;
       let aiRepliedAt: string | undefined = undefined;
@@ -267,21 +268,19 @@ export async function POST(req: Request) {
       // LUỒNG 2: MỘT SỐ CÁI CẦN THIẾT THÌ MỚI PHÂN BỔ KỸ THUẬT VIÊN (REPAIR)
       // =========================================================================
       else if (finalCategoryType === 'REPAIR') {
-        // Sự cố kỹ thuật hỏng hóc trong căn hộ: Phân bổ KTV có chuyên môn phù hợp
+        // Sự cố kỹ thuật: Đưa về cột "Chờ Tiếp Nhận" (Open) và đính kèm gợi ý AI để BQL phê duyệt
+        ticketStatus = 'Open';
+        actualHandledBy = 'TECHNICIAN';
         if (data.technicians && data.technicians.length > 0) {
           const evalResult = evaluateBestTechnicianWithAI(
             { ...t, id: newId },
             data.technicians,
             data.tickets
           );
-          assignedTech = evalResult.technician;
+          suggestedTech = evalResult.technician;
           scheduledTime = evalResult.scheduledTime;
           aiReason = evalResult.reason;
-          ticketStatus = 'In_Progress'; // KTV đã được phân công tiếp nhận
-          actualHandledBy = 'TECHNICIAN';
-        } else {
-          ticketStatus = 'Open';
-          actualHandledBy = 'MANAGEMENT';
+          suggestedScore = evalResult.matchScore;
         }
       }
       // =========================================================================
@@ -306,11 +305,15 @@ export async function POST(req: Request) {
         ai_reply: aiReplyText,
         ai_replied_at: aiRepliedAt,
         ai_suggested_reply: finalCategoryType === 'INQUIRY' ? aiReplyText : generateSuggestedAdminReply(t.content || body.content || '', t.ai_category || body.ai_category),
-        assigned_technician_id: assignedTech?.id,
-        assigned_technician: assignedTech?.name,
-        assigned_technician_phone: assignedTech?.phone,
+        assigned_technician_id: undefined,
+        assigned_technician: undefined,
+        assigned_technician_phone: undefined,
+        suggested_technician: suggestedTech?.name,
+        suggested_technician_id: suggestedTech?.id,
+        suggested_technician_phone: suggestedTech?.phone,
+        suggested_match_score: suggestedScore,
         scheduled_time: scheduledTime,
-        auto_dispatched: Boolean(assignedTech),
+        auto_dispatched: false,
         ai_dispatch_reason: aiReason,
       };
 
@@ -320,11 +323,6 @@ export async function POST(req: Request) {
         if (aiReplyText && ticketStatus === 'Resolved') {
           await updateNksTicket({ id: nksResult.id, reply: aiReplyText }).catch(e => console.warn('Lỗi sync AI reply lên NKS:', e));
         }
-        // 2. Nếu là phân bổ KTV cho sự cố (REPAIR) -> Đồng bộ trực tiếp engineername lên NKS
-        else if (assignedTech?.name && ticketStatus === 'In_Progress') {
-          await updateNksTicket({ id: nksResult.id, engineername: assignedTech.name }).catch(e => console.warn('Lỗi sync KTV lên NKS:', e));
-        }
-        // 3. Nếu là Chờ BQL xác nhận (FEEDBACK) -> Giữ nguyên, khi BQL bấm gửi phản hồi mới đồng bộ
       }
 
       // Thêm vào danh sách local

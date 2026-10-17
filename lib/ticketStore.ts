@@ -329,6 +329,21 @@ export async function createTicketAsync(payload: {
   const ticketType = payload.ticket_type || classification.type;
   const handler = ticketType === 'INQUIRY' ? 'AI' : ticketType === 'REPAIR' ? 'TECHNICIAN' : 'MANAGEMENT';
 
+  // Gợi ý KTV tối ưu cho trường hợp REPAIR
+  let suggestedTech: TechnicianProfile | undefined = undefined;
+  if (ticketType === 'REPAIR') {
+    const techs = getTechnicians();
+    if (techs.length > 0) {
+      if (cat === 'Điện' || cat === 'Nước') {
+        suggestedTech = techs.find(t => t.specialty.includes('Cơ Điện') || t.specialty.includes('Điện')) || techs[0];
+      } else if (cat === 'Vệ sinh') {
+        suggestedTech = techs.find(t => t.specialty.includes('Vệ Sinh')) || techs[0];
+      } else {
+        suggestedTech = techs.find(t => t.specialty.includes('Đa Năng')) || techs[0];
+      }
+    }
+  }
+
   const optimisticTicket: ExtendedServiceRequest = {
     id: `TICK-${Math.floor(100 + Math.random() * 900)}`,
     apartment_id: payload.apartment_id || `apt-${payload.apt_code.toLowerCase()}`,
@@ -344,12 +359,18 @@ export async function createTicketAsync(payload: {
     priority_color: isUrgent ? '#DC2626' : '#D97706',
     sla_deadline: new Date(Date.now() + (isUrgent ? 45 : 120) * 60000).toISOString(),
     sla_minutes_left: isUrgent ? 45 : 120,
-    status: ticketType === 'INQUIRY' ? 'Resolved' : ticketType === 'REPAIR' ? 'In_Progress' : 'Open',
+    status: ticketType === 'INQUIRY' ? 'Resolved' : 'Open',
     // 1. Nếu là Hỏi Đáp: AI tự động phản hồi ngay 24/7
     ai_reply: ticketType === 'INQUIRY' ? (classification.suggestedAiReply || findInquiryAnswer(payload.content)) : undefined,
     ai_replied_at: ticketType === 'INQUIRY' ? new Date().toISOString() : undefined,
     // 2. Nếu là Góp Ý / Khiếu Nại: AI gợi ý câu trả lời để BQL duyệt
     ai_suggested_reply: ticketType === 'INQUIRY' ? (classification.suggestedAiReply || findInquiryAnswer(payload.content)) : undefined,
+    suggested_technician: suggestedTech?.name,
+    suggested_technician_id: suggestedTech?.id,
+    suggested_technician_phone: suggestedTech?.phone,
+    suggested_match_score: suggestedTech ? 95 : undefined,
+    ai_dispatch_reason: suggestedTech ? `Kỹ thuật viên chuyên trách ${cat} phù hợp nhất.` : undefined,
+    scheduled_time: isUrgent ? 'Có mặt trong vòng 30 phút' : 'Có mặt trong vòng 45 phút',
     before_image: payload.before_image || '',
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
@@ -415,6 +436,20 @@ export function createTicket(payload: {
   const ticketType = payload.ticket_type || classification.type;
   const handler = ticketType === 'INQUIRY' ? 'AI' : ticketType === 'REPAIR' ? 'TECHNICIAN' : 'MANAGEMENT';
 
+  let suggestedTech: TechnicianProfile | undefined = undefined;
+  if (ticketType === 'REPAIR') {
+    const techs = getTechnicians();
+    if (techs.length > 0) {
+      if (cat === 'Điện' || cat === 'Nước') {
+        suggestedTech = techs.find(t => t.specialty.includes('Cơ Điện') || t.specialty.includes('Điện')) || techs[0];
+      } else if (cat === 'Vệ sinh') {
+        suggestedTech = techs.find(t => t.specialty.includes('Vệ Sinh')) || techs[0];
+      } else {
+        suggestedTech = techs.find(t => t.specialty.includes('Đa Năng')) || techs[0];
+      }
+    }
+  }
+
   const newTicket: ExtendedServiceRequest = {
     id: `TICK-${Math.floor(100 + Math.random() * 900)}`,
     apartment_id: payload.apartment_id || `apt-${payload.apt_code.toLowerCase()}`,
@@ -430,10 +465,16 @@ export function createTicket(payload: {
     priority_color: isUrgent ? '#DC2626' : '#D97706',
     sla_deadline: new Date(Date.now() + (isUrgent ? 45 : 120) * 60000).toISOString(),
     sla_minutes_left: isUrgent ? 45 : 120,
-    status: ticketType === 'INQUIRY' ? 'Resolved' : ticketType === 'REPAIR' ? 'In_Progress' : 'Open',
+    status: ticketType === 'INQUIRY' ? 'Resolved' : 'Open',
     ai_reply: ticketType === 'INQUIRY' ? (classification.suggestedAiReply || findInquiryAnswer(payload.content)) : undefined,
     ai_replied_at: ticketType === 'INQUIRY' ? new Date().toISOString() : undefined,
     ai_suggested_reply: ticketType === 'INQUIRY' ? (classification.suggestedAiReply || findInquiryAnswer(payload.content)) : undefined,
+    suggested_technician: suggestedTech?.name,
+    suggested_technician_id: suggestedTech?.id,
+    suggested_technician_phone: suggestedTech?.phone,
+    suggested_match_score: suggestedTech ? 95 : undefined,
+    ai_dispatch_reason: suggestedTech ? `Kỹ thuật viên chuyên trách ${cat} phù hợp nhất.` : undefined,
+    scheduled_time: isUrgent ? 'Có mặt trong vòng 30 phút' : 'Có mặt trong vòng 45 phút',
     before_image: payload.before_image || '',
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),

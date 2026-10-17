@@ -35,13 +35,16 @@ import {
   MessageSquare,
   HelpCircle,
   Send,
-  MessageCircle
+  MessageCircle,
+  Plus,
+  Search
 } from 'lucide-react';
 import { 
   getTickets, 
   getTechnicians, 
   syncTicketsWithServer,
   deleteTicketAsync,
+  createTicketAsync,
   assignTechnicianToTicket, 
   resolveTicket, 
   adminRespondToTicket,
@@ -51,6 +54,7 @@ import {
   TechnicianProfile,
   TechnicianPayrollSummary 
 } from '@/lib/ticketStore';
+import { getApartmentUnits, ApartmentUnit } from '@/lib/apartmentStore';
 import { 
   isAutoDispatchEnabled, 
   autoDispatchSingleTicket, 
@@ -76,6 +80,18 @@ export default function KanbanBoard() {
 
   // Category Filter: ALL | REPAIR | FEEDBACK | INQUIRY
   const [categoryFilter, setCategoryFilter] = useState<'ALL' | 'REPAIR' | 'FEEDBACK' | 'INQUIRY'>('ALL');
+  const [searchQuery, setSearchQuery] = useState<string>('');
+
+  // BQL Direct Ticket Intake Modal States (Hotline 1900 8899)
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState<boolean>(false);
+  const [apartmentUnits, setApartmentUnits] = useState<ApartmentUnit[]>([]);
+  const [newAptCode, setNewAptCode] = useState<string>('CH-06');
+  const [newResidentName, setNewResidentName] = useState<string>('');
+  const [newResidentPhone, setNewResidentPhone] = useState<string>('');
+  const [newCategory, setNewCategory] = useState<'Điện' | 'Nước' | 'Vệ sinh' | 'An ninh' | 'Khác'>('Điện');
+  const [newTicketType, setNewTicketType] = useState<'REPAIR' | 'FEEDBACK' | 'INQUIRY'>('REPAIR');
+  const [newContent, setNewContent] = useState<string>('');
+  const [isSubmittingNewTicket, setIsSubmittingNewTicket] = useState<boolean>(false);
 
   // AI Auto-Dispatch States
   const [isAutoDispatching, setIsAutoDispatching] = useState<boolean>(false);
@@ -280,6 +296,19 @@ export default function KanbanBoard() {
   useEffect(() => {
     refreshAllData();
 
+    // Nạp danh sách căn hộ thực tế của tòa nhà để phục vụ BQL tiếp nhận sự cố
+    try {
+      const units = getApartmentUnits();
+      if (units && units.length > 0) {
+        setApartmentUnits(units);
+        setNewAptCode(units[0].code);
+        setNewResidentName(units[0].owner?.name || '');
+        setNewResidentPhone(units[0].owner?.phone || '');
+      }
+    } catch (e) {
+      console.warn('Lỗi load danh sách căn hộ:', e);
+    }
+
     // Tự động đồng bộ live dữ liệu từ máy chủ & NKS API (Tuyệt đối không tự ý chuyển trạng thái vé)
     syncTicketsWithServer().then(() => {
       refreshAllData();
@@ -292,16 +321,72 @@ export default function KanbanBoard() {
     return () => window.removeEventListener('skyline_tickets_updated', handleUpdate);
   }, []);
 
+  const handleAptCodeChange = (code: string) => {
+    setNewAptCode(code);
+    const unit = apartmentUnits.find(u => u.code === code);
+    if (unit?.owner) {
+      setNewResidentName(unit.owner.name || '');
+      setNewResidentPhone(unit.owner.phone || '');
+    }
+  };
+
+  const handleCreateTicketSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newContent.trim()) {
+      alert('Vui lòng nhập mô tả sự cố hoặc yêu cầu!');
+      return;
+    }
+    setIsSubmittingNewTicket(true);
+    try {
+      const res = await createTicketAsync({
+        apt_code: newAptCode || 'CH-06',
+        resident_name: newResidentName || 'Cư dân Skyline',
+        resident_phone: newResidentPhone || '1900 8899',
+        content: newContent.trim(),
+        ticket_type: newTicketType,
+        ai_category: newCategory,
+      });
+      refreshAllData();
+      setIsCreateModalOpen(false);
+      setNewContent('');
+      setActionSuccessMsg(`Đã tiếp nhận sự cố thành công! Phiếu #${res.nks_id || res.id} đã được đưa vào hàng đợi.`);
+      setTimeout(() => setActionSuccessMsg(null), 4000);
+    } catch (err) {
+      console.error('Lỗi tiếp nhận sự cố:', err);
+      alert('Có lỗi khi tạo phiếu sự cố. Vui lòng kiểm tra lại.');
+    } finally {
+      setIsSubmittingNewTicket(false);
+    }
+  };
+
   // Counts for Category Badges
   const repairCount = tickets.filter(t => (t.ticket_type || 'REPAIR') === 'REPAIR').length;
   const feedbackCount = tickets.filter(t => t.ticket_type === 'FEEDBACK').length;
   const inquiryCount = tickets.filter(t => t.ticket_type === 'INQUIRY').length;
 
-  // Filter lists for 3 Kanban columns based on active category filter
+  // Filter lists for 3 Kanban columns based on active category filter AND keyword search
   const filteredTickets = tickets.filter(t => {
-    if (categoryFilter === 'ALL') return true;
-    const cat = t.ticket_type || 'REPAIR';
-    return cat === categoryFilter;
+    if (categoryFilter !== 'ALL') {
+      const cat = t.ticket_type || 'REPAIR';
+      if (cat !== categoryFilter) return false;
+    }
+
+    if (searchQuery.trim()) {
+      const q = searchQuery.toLowerCase().trim();
+      const matchApt = (t.apt_code || '').toLowerCase().includes(q);
+      const matchName = (t.resident_name || '').toLowerCase().includes(q);
+      const matchPhone = (t.resident_phone || '').toLowerCase().includes(q);
+      const matchContent = (t.content || '').toLowerCase().includes(q);
+      const matchId = (t.id || '').toLowerCase().includes(q);
+      const matchNks = t.nks_id ? String(t.nks_id).includes(q) : false;
+      const matchTech = (t.assigned_technician || '').toLowerCase().includes(q);
+      const matchCat = (t.ai_category || '').toLowerCase().includes(q);
+      if (!matchApt && !matchName && !matchPhone && !matchContent && !matchId && !matchNks && !matchTech && !matchCat) {
+        return false;
+      }
+    }
+
+    return true;
   });
 
   const openTickets = filteredTickets.filter(t => t.status === 'Open');
@@ -449,6 +534,16 @@ export default function KanbanBoard() {
 
         {/* Unified Static Toolbar */}
         <div className="flex items-center gap-2.5 flex-wrap sm:flex-nowrap">
+          {/* Nút BQL Tiếp Nhận Sự Cố Trực Tiếp (Hotline 1900 8899) */}
+          <button
+            onClick={() => setIsCreateModalOpen(true)}
+            className="px-3.5 py-1.5 bg-[#C5A880] hover:bg-[#E2C9A5] text-[#0A0E14] text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 transition-colors shadow-md rounded-none"
+            title={t('Ban Quản Lý trực tiếp tiếp nhận sự cố kỹ thuật từ Hotline 1900 8899 hoặc cư dân báo trực tiếp')}
+          >
+            <Plus className="w-3.5 h-3.5 text-[#0A0E14] stroke-[2.5]" />
+            <span>{t('Tiếp Nhận Sự Cố', 'New Incident Intake')}</span>
+          </button>
+
           {/* Nút Làm Mới Dữ Liệu */}
           <button
             onClick={handleSyncNks}
@@ -508,73 +603,97 @@ export default function KanbanBoard() {
 
       {/* TAB 1: KANBAN BOARD */}
       {activeTab === 'KANBAN' && (
-        <div className="space-y-6">
-          {/* Category Filter Pills */}
-          <div className="flex items-center gap-2 overflow-x-auto no-scrollbar whitespace-nowrap pb-1 text-xs">
-            <span className="text-gray-400 text-[11px] font-semibold whitespace-nowrap shrink-0">{t('Bộ lọc:', 'Filters:')}</span>
-            
-            <button
-              onClick={() => setCategoryFilter('ALL')}
-              className={`px-3 py-1.5 font-semibold text-xs transition-all flex items-center gap-1.5 shrink-0 active:scale-95 ${
-                categoryFilter === 'ALL'
-                  ? 'bg-white text-[#0D1117] font-bold shadow'
-                  : 'bg-[#121820] text-gray-400 hover:text-white border border-[#222B35]'
-              }`}
-            >
-              <span>{t('Tất Cả', 'All')}</span>
-              <span className="text-[10px] px-1.5 py-0.2 bg-black/20 font-mono font-bold">
-                {tickets.length}
-              </span>
-            </button>
+        <div className="space-y-5">
+          {/* Search & Category Filter Toolbar */}
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 bg-[#0E131B] p-2.5 border border-[#222B35]">
+            {/* Category Filter Pills */}
+            <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar whitespace-nowrap text-xs">
+              <span className="text-gray-400 text-[11px] font-semibold whitespace-nowrap shrink-0 pr-1">{t('Bộ lọc:', 'Filters:')}</span>
+              
+              <button
+                onClick={() => setCategoryFilter('ALL')}
+                className={`px-2.5 py-1.5 font-semibold text-xs transition-all flex items-center gap-1.5 shrink-0 rounded-none active:scale-95 ${
+                  categoryFilter === 'ALL'
+                    ? 'bg-[#C5A880] text-[#0D1117] font-bold shadow'
+                    : 'bg-[#141B24] text-gray-400 hover:text-white border border-[#222B35]'
+                }`}
+              >
+                <span>{t('Tất Cả', 'All')}</span>
+                <span className="text-[10px] px-1.5 py-0.2 bg-black/20 font-mono font-bold">
+                  {tickets.length}
+                </span>
+              </button>
 
-            <button
-              onClick={() => setCategoryFilter('REPAIR')}
-              className={`px-3 py-1.5 font-semibold text-xs transition-all flex items-center gap-1.5 shrink-0 active:scale-95 ${
-                categoryFilter === 'REPAIR'
-                  ? 'bg-amber-500 text-black font-bold shadow'
-                  : 'bg-[#121820] text-amber-300 hover:text-white border border-[#222B35]'
-              }`}
-            >
-              <Wrench className="w-3.5 h-3.5" />
-              <span>{t('Sự Cố Kỹ Thuật (KTV)', 'Technical Issue (Technician)')}</span>
-              <span className="text-[10px] px-1.5 py-0.2 bg-black/20 font-mono font-bold">
-                {repairCount}
-              </span>
-            </button>
+              <button
+                onClick={() => setCategoryFilter('REPAIR')}
+                className={`px-2.5 py-1.5 font-semibold text-xs transition-all flex items-center gap-1.5 shrink-0 rounded-none active:scale-95 ${
+                  categoryFilter === 'REPAIR'
+                    ? 'bg-amber-500 text-black font-bold shadow'
+                    : 'bg-[#141B24] text-amber-300 hover:text-white border border-[#222B35]'
+                }`}
+              >
+                <Wrench className="w-3.5 h-3.5" />
+                <span>{t('Sự Cố Kỹ Thuật (KTV)', 'Technical Issue (Technician)')}</span>
+                <span className="text-[10px] px-1.5 py-0.2 bg-black/20 font-mono font-bold">
+                  {repairCount}
+                </span>
+              </button>
 
-            <button
-              onClick={() => setCategoryFilter('FEEDBACK')}
-              className={`px-3 py-1.5 font-semibold text-xs transition-all flex items-center gap-1.5 shrink-0 active:scale-95 ${
-                categoryFilter === 'FEEDBACK'
-                  ? 'bg-rose-500 text-white font-bold shadow'
-                  : 'bg-[#121820] text-rose-300 hover:text-white border border-[#222B35]'
-              }`}
-            >
-              <MessageSquare className="w-3.5 h-3.5" />
-              <span>{t('Phản Ánh Cư Dân (BQL)', 'Resident Feedback (Management)')}</span>
-              <span className="text-[10px] px-1.5 py-0.2 bg-black/20 font-mono font-bold">
-                {feedbackCount}
-              </span>
-            </button>
+              <button
+                onClick={() => setCategoryFilter('FEEDBACK')}
+                className={`px-2.5 py-1.5 font-semibold text-xs transition-all flex items-center gap-1.5 shrink-0 rounded-none active:scale-95 ${
+                  categoryFilter === 'FEEDBACK'
+                    ? 'bg-rose-500 text-white font-bold shadow'
+                    : 'bg-[#141B24] text-rose-300 hover:text-white border border-[#222B35]'
+                }`}
+              >
+                <MessageSquare className="w-3.5 h-3.5" />
+                <span>{t('Phản Ánh Cư Dân (BQL)', 'Resident Feedback (Management)')}</span>
+                <span className="text-[10px] px-1.5 py-0.2 bg-black/20 font-mono font-bold">
+                  {feedbackCount}
+                </span>
+              </button>
 
-            <button
-              onClick={() => setCategoryFilter('INQUIRY')}
-              className={`px-3 py-1.5 font-semibold text-xs transition-all flex items-center gap-1.5 shrink-0 active:scale-95 ${
-                categoryFilter === 'INQUIRY'
-                  ? 'bg-sky-500 text-black font-bold shadow'
-                  : 'bg-[#121820] text-sky-300 hover:text-white border border-[#222B35]'
-              }`}
-            >
-              <Sparkles className="w-3.5 h-3.5" />
-              <span>{t('Hỏi Đáp Tiện Ích (AI 24/7)', 'Amenity Q&A (AI 24/7)')}</span>
-              <span className="text-[10px] px-1.5 py-0.2 bg-black/20 font-mono font-bold">
-                {inquiryCount}
-              </span>
-            </button>
+              <button
+                onClick={() => setCategoryFilter('INQUIRY')}
+                className={`px-2.5 py-1.5 font-semibold text-xs transition-all flex items-center gap-1.5 shrink-0 rounded-none active:scale-95 ${
+                  categoryFilter === 'INQUIRY'
+                    ? 'bg-sky-500 text-black font-bold shadow'
+                    : 'bg-[#141B24] text-sky-300 hover:text-white border border-[#222B35]'
+                }`}
+              >
+                <Sparkles className="w-3.5 h-3.5" />
+                <span>{t('Hỏi Đáp Tiện Ích (AI 24/7)', 'Amenity Q&A (AI 24/7)')}</span>
+                <span className="text-[10px] px-1.5 py-0.2 bg-black/20 font-mono font-bold">
+                  {inquiryCount}
+                </span>
+              </button>
+            </div>
+
+            {/* Keyword Search Input */}
+            <div className="relative min-w-[260px] md:w-72">
+              <Search className="w-3.5 h-3.5 text-[#C5A880] absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder={t('Tìm căn hộ, cư dân, KTV, mã vé...', 'Search apt, resident, tech, id...')}
+                className="w-full pl-8 pr-7 py-1.5 bg-[#141B24] border border-[#222B35] focus:border-[#C5A880] text-xs text-white placeholder-gray-500 rounded-none outline-none transition-colors"
+              />
+              {searchQuery && (
+                <button
+                  onClick={() => setSearchQuery('')}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white text-xs"
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              )}
+            </div>
           </div>
+
           {/* Quick Metrics Bar */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <div className="p-4 bg-[#121820] border border-blue-500/40 flex items-center justify-between">
+            <div className="p-4 bg-[#0E131B] border border-[#222B35] hover:border-blue-500/40 flex items-center justify-between transition-colors">
               <div>
                 <div className="text-gray-400 text-xs">{t('Chờ Tiếp Nhận', 'Pending Assignment')}</div>
                 <div className="text-2xl font-bold font-mono text-blue-400 mt-0.5">{openTickets.length}</div>
@@ -584,7 +703,7 @@ export default function KanbanBoard() {
               </div>
             </div>
 
-            <div className="p-4 bg-[#121820] border border-amber-500/40 flex items-center justify-between">
+            <div className="p-4 bg-[#0E131B] border border-[#222B35] hover:border-amber-500/40 flex items-center justify-between transition-colors">
               <div>
                 <div className="text-gray-400 text-xs">{t('KTV Đang Xử Lý', 'In Progress')}</div>
                 <div className="text-2xl font-bold font-mono text-amber-400 mt-0.5">{inProgressTickets.length}</div>
@@ -594,7 +713,7 @@ export default function KanbanBoard() {
               </div>
             </div>
 
-            <div className="p-4 bg-[#121820] border border-emerald-500/40 flex items-center justify-between">
+            <div className="p-4 bg-[#0E131B] border border-[#222B35] hover:border-emerald-500/40 flex items-center justify-between transition-colors">
               <div>
                 <div className="text-gray-400 text-xs">{t('Đã Nghiệm Thu Xong', 'Audited & Closed')}</div>
                 <div className="text-2xl font-bold font-mono text-emerald-400 mt-0.5">{resolvedTickets.length}</div>
@@ -620,8 +739,8 @@ export default function KanbanBoard() {
                   </span>
                 </div>
 
-                <span className="text-[10px] font-mono text-purple-300 bg-purple-950/60 border border-purple-500/40 px-2 py-0.5 flex items-center gap-1.5 shrink-0 whitespace-nowrap">
-                  <span className="w-1.5 h-1.5 bg-purple-400 rounded-full animate-ping shrink-0"></span>
+                <span className="text-[10px] font-mono text-[#C5A880] bg-[#141B24] border border-[#C5A880]/30 px-2 py-0.5 flex items-center gap-1.5 shrink-0 whitespace-nowrap">
+                  <span className="w-1.5 h-1.5 bg-[#C5A880] rounded-none animate-ping shrink-0"></span>
                   <span>{t('AI Phân Công 24/7', 'AI Auto-Dispatch 24/7')}</span>
                 </span>
               </div>
@@ -706,17 +825,17 @@ export default function KanbanBoard() {
 
                         {/* HỘP MINH BẠCH: ĐỀ XUẤT CỦA AI (Chờ BQL phê duyệt) */}
                         {isRepair && ticket.suggested_technician && (
-                          <div className="p-2.5 bg-gradient-to-r from-purple-950/40 to-[#1A2332] border border-purple-500/40 text-[11px] space-y-1">
+                          <div className="p-2.5 bg-[#0E131B] border border-[#C5A880]/40 text-[11px] space-y-1">
                             <div className="flex items-center justify-between">
-                              <span className="text-purple-300 font-semibold flex items-center gap-1">
-                                <Sparkles className="w-3.5 h-3.5 text-purple-400" /> AI Đề Xuất KTV:
+                              <span className="text-[#C5A880] font-semibold flex items-center gap-1">
+                                <Sparkles className="w-3.5 h-3.5 text-[#C5A880]" /> AI Đề Xuất KTV:
                               </span>
                               <span className="text-white font-bold font-mono">
                                 {ticket.suggested_technician} {ticket.suggested_match_score ? `(${ticket.suggested_match_score}%)` : ''}
                               </span>
                             </div>
                             {ticket.ai_dispatch_reason && (
-                              <div className="text-gray-400 text-[10px] leading-tight line-clamp-2">
+                              <div className="text-gray-300 text-[10px] leading-tight line-clamp-2">
                                 Lý do: {ticket.ai_dispatch_reason}
                               </div>
                             )}
@@ -907,10 +1026,10 @@ export default function KanbanBoard() {
 
                         {/* AI Dispatch Detail Box (Chỉ cho sửa chữa) */}
                         {!isFeedback && ticket.ai_dispatch_reason && (
-                          <div className="p-2 bg-purple-950/40 border border-purple-500/30 text-[11px] text-purple-200 flex items-start gap-1.5">
-                            <Sparkles className="w-3.5 h-3.5 text-purple-400 flex-shrink-0 mt-0.5" />
+                          <div className="p-2 bg-[#0E131B] border border-[#C5A880]/30 text-[11px] text-gray-200 flex items-start gap-1.5">
+                            <Sparkles className="w-3.5 h-3.5 text-[#C5A880] flex-shrink-0 mt-0.5" />
                             <div>
-                              <span className="font-semibold text-purple-300">{t('AI Tự Động Phân Công:')}</span>{' '}
+                              <span className="font-semibold text-[#C5A880]">{t('AI Tự Động Phân Công:')}</span>{' '}
                               <span>{t(ticket.ai_dispatch_reason)}</span>
                             </div>
                           </div>
@@ -935,9 +1054,9 @@ export default function KanbanBoard() {
                                   setFeedbackReplyContent(ticket.admin_reply || generateSuggestedAdminReply(ticket.content, ticket.ai_category));
                                   setReplyEngineerName(ticket.assigned_technician || '');
                                 }}
-                                className="col-span-3 h-8 px-2.5 bg-rose-600 hover:bg-rose-500 text-white text-xs font-semibold rounded-none transition-colors flex items-center justify-center gap-1.5 shadow"
+                                className="col-span-3 h-8 px-2.5 bg-rose-950/70 hover:bg-rose-900 border border-rose-500/70 text-rose-200 text-xs font-semibold rounded-none transition-colors flex items-center justify-center gap-1.5 shadow"
                               >
-                                <Send className="w-3 h-3" />
+                                <Send className="w-3 h-3 text-rose-400" />
                                 <span>{t('BQL Phản Hồi')}</span>
                               </button>
                             ) : (
@@ -1348,6 +1467,150 @@ export default function KanbanBoard() {
       )}
 
       {/* ========================================================================= */}
+      {/* MODAL 0: BQL TIẾP NHẬN SỰ CỐ MỚI (HOTLINE 1900 8899)                      */}
+      {/* ========================================================================= */}
+      {isCreateModalOpen && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4">
+          <form onSubmit={handleCreateTicketSubmit} className="bg-[#0E131B] border border-[#C5A880]/60 max-w-xl w-full p-6 space-y-4 shadow-2xl rounded-none animate-fadeIn">
+            <div className="flex items-center justify-between border-b border-[#222B35] pb-3">
+              <div>
+                <div className="text-[10px] uppercase tracking-wider text-[#C5A880] font-semibold flex items-center gap-1.5">
+                  <PhoneCall className="w-3.5 h-3.5" /> Hotline 1900 8899 • Trực Ban Kỹ Thuật
+                </div>
+                <h3 className="font-serif text-lg font-bold text-white mt-0.5">
+                  {t('Tiếp Nhận Sự Cố & Yêu Cầu Kỹ Thuật', 'Incident Intake & Maintenance Request')}
+                </h3>
+              </div>
+              <button 
+                type="button"
+                onClick={() => setIsCreateModalOpen(false)}
+                className="text-gray-400 hover:text-white p-1"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Căn hộ */}
+            <div className="space-y-1.5">
+              <label className="text-xs text-gray-300 font-semibold flex items-center justify-between">
+                <span>{t('Căn Hộ Báo Sự Cố:', 'Apartment Unit:')}</span>
+                <span className="text-[10px] text-[#C5A880] font-mono">* Tự động nhận diện hồ sơ cư dân</span>
+              </label>
+              <select
+                value={newAptCode}
+                onChange={(e) => handleAptCodeChange(e.target.value)}
+                className="w-full bg-[#141B24] border border-[#222B35] focus:border-[#C5A880] text-xs text-white p-2.5 rounded-none outline-none font-mono"
+              >
+                {apartmentUnits.length > 0 ? (
+                  apartmentUnits.map((u) => (
+                    <option key={u.code} value={u.code}>
+                      Căn {u.code} — Tòa {u.towerName} {u.owner?.name ? `(${u.owner.name})` : ''}
+                    </option>
+                  ))
+                ) : (
+                  <option value="CH-06">Căn CH-06 — Tòa BS-07</option>
+                )}
+              </select>
+            </div>
+
+            {/* Thông tin người báo */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div className="space-y-1">
+                <label className="text-xs text-gray-400">{t('Họ Tên Cư Dân / Người Báo:', 'Resident Name:')}</label>
+                <input
+                  type="text"
+                  value={newResidentName}
+                  onChange={(e) => setNewResidentName(e.target.value)}
+                  placeholder="Nguyễn Văn A"
+                  className="w-full bg-[#141B24] border border-[#222B35] focus:border-[#C5A880] text-xs text-white p-2 rounded-none outline-none"
+                />
+              </div>
+              <div className="space-y-1">
+                <label className="text-xs text-gray-400">{t('Số Điện Thoại Liên Hệ:', 'Phone Number:')}</label>
+                <input
+                  type="text"
+                  value={newResidentPhone}
+                  onChange={(e) => setNewResidentPhone(e.target.value)}
+                  placeholder="0912 345 678"
+                  className="w-full bg-[#141B24] border border-[#222B35] focus:border-[#C5A880] text-xs text-white p-2 rounded-none outline-none font-mono"
+                />
+              </div>
+            </div>
+
+            {/* Mục đích & Hạng mục */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div className="space-y-1">
+                <label className="text-xs text-gray-400">{t('Mục Đích Yêu Cầu:', 'Request Purpose:')}</label>
+                <select
+                  value={newTicketType}
+                  onChange={(e) => setNewTicketType(e.target.value as any)}
+                  className="w-full bg-[#141B24] border border-[#222B35] focus:border-[#C5A880] text-xs text-white p-2 rounded-none outline-none"
+                >
+                  <option value="REPAIR">🔧 {t('Sự Cố Kỹ Thuật (KTV)', 'Technical Repair')}</option>
+                  <option value="FEEDBACK">📢 {t('Phản Ánh Cư Dân (BQL)', 'Resident Feedback')}</option>
+                  <option value="INQUIRY">💬 {t('Hỏi Đáp Tiện Ích (AI 24/7)', 'Amenity Inquiry')}</option>
+                </select>
+              </div>
+              <div className="space-y-1">
+                <label className="text-xs text-gray-400">{t('Hạng Mục Kỹ Thuật:', 'Category:')}</label>
+                <select
+                  value={newCategory}
+                  onChange={(e) => setNewCategory(e.target.value as any)}
+                  className="w-full bg-[#141B24] border border-[#222B35] focus:border-[#C5A880] text-xs text-white p-2 rounded-none outline-none"
+                >
+                  <option value="Điện">⚡ Điện dân dụng / Thiết bị</option>
+                  <option value="Nước">💧 Cấp thoát nước / Thiết bị vệ sinh</option>
+                  <option value="Vệ sinh">🧹 Vệ sinh hành lang / Môi trường</option>
+                  <option value="An ninh">🛡️ An ninh / Thẻ từ ra vào</option>
+                  <option value="Khác">📦 Khác / Cơ sở hạ tầng</option>
+                </select>
+              </div>
+            </div>
+
+            {/* Nội dung chi tiết */}
+            <div className="space-y-1">
+              <label className="text-xs text-gray-300 font-semibold">{t('Nội Dung Mô Tả Sự Cố / Hiện Trường:', 'Incident Description:')}</label>
+              <textarea
+                rows={3}
+                value={newContent}
+                onChange={(e) => setNewContent(e.target.value)}
+                placeholder={t('Ví dụ: Cư dân báo rò rỉ van cấp nước máy giặt tràn ra sàn ban công, cần thợ kiểm tra gấp...', 'e.g., Water valve leaking, urgent check needed...')}
+                className="w-full bg-[#141B24] border border-[#222B35] focus:border-[#C5A880] text-xs text-white p-2.5 rounded-none outline-none leading-relaxed"
+                required
+              />
+            </div>
+
+            {/* AI Assistant Info */}
+            <div className="p-3 bg-[#141B24] border border-[#C5A880]/30 text-xs flex items-start gap-2.5">
+              <Sparkles className="w-4 h-4 text-[#C5A880] shrink-0 mt-0.5" />
+              <div className="text-[11px] text-gray-300 leading-relaxed">
+                <span className="font-semibold text-[#C5A880]">{t('Cơ Chế Phân Bổ AI Tự Động:')}</span>{' '}
+                {t('Phiếu sẽ tức thì được đưa vào cột "1. Chờ Tiếp Nhận" kèm phân tích chấm điểm KTV tối ưu. Ban Quản Lý chỉ cần 1 chạm duyệt đề xuất hoặc linh hoạt chỉ định thợ khác.')}
+              </div>
+            </div>
+
+            <div className="flex justify-end gap-3 pt-3 border-t border-[#222B35]">
+              <button
+                type="button"
+                onClick={() => setIsCreateModalOpen(false)}
+                className="px-4 py-2 border border-gray-700 text-xs text-gray-300 hover:text-white rounded-none"
+              >
+                {t('Hủy', 'Cancel')}
+              </button>
+              <button
+                type="submit"
+                disabled={isSubmittingNewTicket}
+                className="px-5 py-2 bg-[#C5A880] hover:bg-[#E2C9A5] text-[#0A0E14] text-xs font-bold uppercase tracking-wider transition-colors shadow-lg flex items-center gap-1.5 rounded-none disabled:opacity-50"
+              >
+                <Plus className="w-4 h-4 text-[#0A0E14] stroke-[2.5]" />
+                <span>{isSubmittingNewTicket ? t('Đang Tiếp Nhận...', 'Submitting...') : t('Tiếp Nhận & Đưa Vào Hàng Đợi', 'Confirm & Queue Incident')}</span>
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
+
+      {/* ========================================================================= */}
       {/* MODAL 1: PHÂN CÔNG KỸ THUẬT VIÊN                                         */}
       {/* ========================================================================= */}
       {assigningTicket && (
@@ -1542,10 +1805,10 @@ export default function KanbanBoard() {
 
             {/* AI Resolution Image Verification Status */}
             {isVerifyingAfterImage && (
-              <div className="p-3 bg-purple-950/40 border border-purple-500/40 text-xs flex items-center gap-2.5 text-purple-200">
-                <RefreshCw className="w-4 h-4 text-purple-400 animate-spin flex-shrink-0" />
+              <div className="p-3 bg-[#0E131B] border border-[#C5A880]/40 text-xs flex items-center gap-2.5 text-[#C5A880]">
+                <RefreshCw className="w-4 h-4 text-[#C5A880] animate-spin flex-shrink-0" />
                 <div>
-                  <div className="font-semibold text-purple-300">AI Đang Thẩm Định Ảnh Nghiệm Thu...</div>
+                  <div className="font-semibold text-[#C5A880]">AI Đang Thẩm Định Ảnh Nghiệm Thu...</div>
                   <div className="text-[10px] text-gray-400">Đối chiếu hiện trường trước &amp; sau sửa, ngăn ngừa ảnh giả hoặc ảnh sai vị trí</div>
                 </div>
               </div>
@@ -1845,13 +2108,13 @@ export default function KanbanBoard() {
                 type="button"
                 onClick={handleGenerateAiAdminReply}
                 disabled={isGeneratingAiReply}
-                className="text-[11px] px-2.5 py-1 bg-purple-950/70 border border-purple-500/50 hover:border-purple-400 text-purple-300 flex items-center gap-1.5 transition-colors disabled:opacity-60 disabled:cursor-not-allowed flex-shrink-0"
+                className="text-[11px] px-2.5 py-1 bg-[#141B24] border border-[#C5A880]/40 hover:border-[#C5A880] text-[#C5A880] hover:text-white flex items-center gap-1.5 transition-colors disabled:opacity-60 disabled:cursor-not-allowed flex-shrink-0 rounded-none"
                 title="AI Gemini soạn thảo phản hồi thông minh, phù hợp ngữ cảnh từng yêu cầu cụ thể"
               >
                 {isGeneratingAiReply ? (
-                  <><RefreshCw className="w-3.5 h-3.5 text-purple-400 animate-spin" /><span>Đang soạn...</span></>
+                  <><RefreshCw className="w-3.5 h-3.5 text-[#C5A880] animate-spin" /><span>Đang soạn...</span></>
                 ) : (
-                  <><Sparkles className="w-3.5 h-3.5 text-purple-400" /><span>AI Soạn Thảo Thông Minh</span></>
+                  <><Sparkles className="w-3.5 h-3.5 text-[#C5A880]" /><span>AI Soạn Thảo Thông Minh</span></>
                 )}
               </button>
             </div>
@@ -1862,7 +2125,7 @@ export default function KanbanBoard() {
                 value={feedbackReplyContent}
                 onChange={(e) => setFeedbackReplyContent(e.target.value)}
                 placeholder="Nhập nội dung phản hồi, xin lỗi hoặc giải pháp xử lý từ BQL..."
-                className="w-full bg-[#161B22] border border-[#2D3748] text-xs text-white p-3 focus:outline-none focus:border-[#C5A880] leading-relaxed"
+                className="w-full bg-[#161B22] border border-[#2D3748] text-xs text-white p-3 focus:outline-none focus:border-[#C5A880] leading-relaxed rounded-none"
                 required
               />
 
@@ -1878,7 +2141,7 @@ export default function KanbanBoard() {
                     <select
                       value={replyEngineerName}
                       onChange={(e) => setReplyEngineerName(e.target.value)}
-                      className="bg-[#161B22] border border-[#2D3748] text-xs text-gray-300 px-2 py-2 focus:outline-none focus:border-[#C5A880] min-w-0 w-[160px] flex-shrink-0"
+                      className="bg-[#161B22] border border-[#2D3748] text-xs text-gray-300 px-2 py-2 focus:outline-none focus:border-[#C5A880] min-w-0 w-[160px] flex-shrink-0 rounded-none"
                     >
                       <option value="">-- Chọn KTV --</option>
                       {technicians.map(k => (
@@ -1891,7 +2154,7 @@ export default function KanbanBoard() {
                     value={replyEngineerName}
                     onChange={(e) => setReplyEngineerName(e.target.value)}
                     placeholder="Hoặc nhập tên KTV thủ công..."
-                    className="flex-1 min-w-0 bg-[#161B22] border border-[#2D3748] text-xs text-white px-3 py-2 focus:outline-none focus:border-[#C5A880]"
+                    className="flex-1 min-w-0 bg-[#161B22] border border-[#2D3748] text-xs text-white px-3 py-2 focus:outline-none focus:border-[#C5A880] rounded-none"
                   />
                 </div>
               </div>
@@ -1899,7 +2162,7 @@ export default function KanbanBoard() {
               <div className="flex flex-col gap-1.5 text-xs text-gray-400 pt-1">
                 <div className="flex items-center gap-2 flex-wrap">
                   <span className="flex-shrink-0">Đơn vị ký duyệt:</span>
-                  <div className="px-2.5 py-1 bg-[#161B22] border border-[#2D3748] text-white font-medium flex items-center gap-1.5 select-none flex-shrink-0">
+                  <div className="px-2.5 py-1 bg-[#161B22] border border-[#2D3748] text-white font-medium flex items-center gap-1.5 select-none flex-shrink-0 rounded-none">
                     <ShieldCheck className="w-3.5 h-3.5 text-[#C5A880]" />
                     <span className="whitespace-nowrap">Ban Quản Lý Chung Cư Skyline</span>
                     <span className="text-[10px] text-emerald-400 font-mono font-bold whitespace-nowrap">(Chính thức)</span>
@@ -1912,15 +2175,15 @@ export default function KanbanBoard() {
                 <button
                   type="button"
                   onClick={() => setFeedbackReplyTicket(null)}
-                  className="px-4 py-2 border border-gray-700 text-xs text-gray-300 hover:text-white"
+                  className="px-4 py-2 border border-gray-700 text-xs text-gray-300 hover:text-white rounded-none"
                 >
                   Hủy
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold uppercase tracking-wider transition-colors shadow-lg flex items-center gap-1.5"
+                  className="px-5 py-2 bg-rose-950/80 hover:bg-rose-900 border border-rose-500/70 text-rose-200 text-xs font-bold uppercase tracking-wider transition-colors shadow-lg flex items-center gap-1.5 rounded-none"
                 >
-                  <Send className="w-3.5 h-3.5" />
+                  <Send className="w-3.5 h-3.5 text-rose-400" />
                   <span>Gửi Phản Hồi Cho Cư Dân</span>
                 </button>
               </div>
