@@ -364,8 +364,8 @@ export async function createTicketAsync(payload: {
     // 1. Nếu là Hỏi Đáp: AI tự động phản hồi ngay 24/7
     ai_reply: ticketType === 'INQUIRY' ? (classification.suggestedAiReply || findInquiryAnswer(payload.content)) : undefined,
     ai_replied_at: ticketType === 'INQUIRY' ? new Date().toISOString() : undefined,
-    // 2. Nếu là Góp Ý / Khiếu Nại: AI gợi ý câu trả lời để BQL duyệt
-    ai_suggested_reply: ticketType === 'INQUIRY' ? (classification.suggestedAiReply || findInquiryAnswer(payload.content)) : undefined,
+    // 2. Nếu là Góp Ý / Khiếu Nại: AI gợi ý dự thảo câu trả lời để BQL duyệt
+    ai_suggested_reply: ticketType === 'FEEDBACK' ? classification.suggestedAdminReply : (ticketType === 'INQUIRY' ? classification.suggestedAiReply : undefined),
     suggested_technician: suggestedTech?.name,
     suggested_technician_id: suggestedTech?.id,
     suggested_technician_phone: suggestedTech?.phone,

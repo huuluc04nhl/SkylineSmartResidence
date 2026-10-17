@@ -23,40 +23,41 @@ export interface TicketClassificationResult {
   actionHint: string;
 }
 
-/**
- * Kho tri thức RAG xử lý tự động cho các câu hỏi cư dân thường gặp
- */
 const INQUIRY_KNOWLEDGE_BASE: Array<{
   keywords: string[];
   reply: string;
 }> = [
   {
-    keywords: ['hồ bơi', 'bể bơi', 'bơi', 'chất lượng nước', 'mở cửa', 'clo'],
-    reply: 'Hồ bơi vô cực (Tầng 4) mở cửa từ 06:00 đến 21:00 hàng ngày (nghỉ bảo trì vệ sinh lúc 11:30 - 13:30). Nước hồ bơi được lọc tuần hoàn điện phân muối, kiểm tra độ pH tự động (chuẩn 7.2 - 7.6) và clo dư an toàn 1.5 ppm. Cư dân quét mã QR hoặc thẻ cư dân điện tử tại cổng vào để sử dụng miễn phí.',
+    keywords: ['giờ mở', 'mấy giờ', 'giờ đóng', 'quy định hồ bơi', 'bơi mấy giờ'],
+    reply: 'Hồ bơi vô cực (Tầng 4) mở cửa từ 06:00 đến 21:00 hàng ngày (nghỉ bảo trì lúc 11:30 - 13:30). Cư dân quét mã QR hoặc FaceID tại cổng vào để sử dụng miễn phí.',
+  },
+  {
+    keywords: ['chất lượng nước hồ bơi', 'nước hồ bơi', 'clo', 'độ ph hồ bơi'],
+    reply: 'Nước hồ bơi vô cực được lọc tuần hoàn điện phân muối, tự động duy trì pH (7.2 - 7.6) và clo dư an toàn 1.5 ppm, kiểm định an toàn sinh hoạt hàng ngày.',
   },
   {
     keywords: ['gym', 'phòng gym', 'tập gym', 'technogym', 'huấn luyện viên', 'pt'],
-    reply: 'Phòng Gym Technogym mở cửa từ 05:30 đến 22:00 hàng ngày tại Tầng 4. Quý cư dân vào cửa bằng thẻ cư dân hoặc FaceID. Cư dân có thể đặt lịch Huấn luyện viên cá nhân (PT) tại mục Dịch Vụ Căn Hộ trên Cổng Cư Dân.',
+    reply: 'Phòng Gym Technogym mở cửa từ 05:30 đến 22:00 hàng ngày tại Tầng 4. Quý cư dân vào cửa bằng thẻ cư dân hoặc FaceID. Đăng ký PT tại mục Dịch Vụ Căn Hộ trên Cổng Cư Dân.',
   },
   {
     keywords: ['gửi xe', 'bãi đỗ xe', 'biển số', 'xe máy', 'ô tô', 'hầm b1', 'hầm b2', 'đỗ xe'],
-    reply: 'Bãi đỗ xe gồm Hầm B1 (dành cho xe máy) và Hầm B2 (dành cho ô tô), tích hợp nhận diện biển số tự động LPR. Định mức: mỗi căn hộ được đăng ký tối đa 01 ô tô và 02 xe máy. Quý cư dân vui lòng tải ảnh cà vẹt xe lên Cổng Cư Dân hoặc nộp tại Bàn lễ tân sảnh L1 để kích hoạt trong vòng 24h.',
+    reply: 'Bãi đỗ xe gồm Hầm B1 (xe máy) và Hầm B2 (ô tô), nhận diện biển số tự động LPR. Định mức: tối đa 01 ô tô và 02 xe máy/căn. Đăng ký cà vẹt trên Cổng Cư Dân hoặc Lễ tân Sảnh L1.',
   },
   {
     keywords: ['hóa đơn', 'tiền điện', 'tiền nước', 'phí quản lý', 'thanh toán', 'vnpay', 'momo'],
-    reply: 'Hóa đơn dịch vụ được phát hành vào ngày 05 hàng tháng và hạn nộp đến ngày 20. Quý cư dân có thể thanh toán trực tuyến 24/7 qua VietQR, VNPAY hoặc MoMo tại mục Hóa Đơn trên Cổng Cư Dân. Hệ thống sẽ tự động gạch nợ tức thì.',
+    reply: 'Hóa đơn dịch vụ phát hành ngày 05 và hạn nộp ngày 20 hàng tháng. Thanh toán trực tuyến 24/7 qua VietQR hoặc VNPAY tại mục Hóa Đơn trên Cổng Cư Dân.',
   },
   {
     keywords: ['rác', 'vứt rác', 'gom rác', 'phòng rác', 'giờ rác'],
-    reply: 'Phòng thu gom rác bố trí tại sảnh phụ mỗi tầng, mở cửa 24/7 và có hệ thống hút mùi tự động. Nhân viên vệ sinh thu gom rác vào 3 khung giờ: 08:00, 14:00 và 20:00 hàng ngày. Quý cư dân vui lòng buộc kín miệng túi rác trước khi bỏ vào thùng.',
+    reply: 'Phòng rác mở 24/7 tại sảnh phụ mỗi tầng với hệ thống hút mùi tự động. Thu gom vào 3 khung giờ: 08:00, 14:00 và 20:00 hàng ngày. Vui lòng buộc kín miệng túi trước khi bỏ vào thùng.',
   },
   {
     keywords: ['chuyển đồ', 'chuyển nhà', 'thang máy hàng', 'hàng cồng kềnh', 'nội thất'],
-    reply: 'Quy định vận chuyển hàng hóa cồng kềnh và chuyển nhà: Thời gian cho phép từ 08:30 - 11:30 và 13:30 - 17:00 (từ Thứ 2 đến Thứ 7, không chuyển vào Chủ nhật). Quý cư dân vui lòng đăng ký trước 24h để BQL bọc đệm bảo vệ thang máy hàng.',
+    reply: 'Khung giờ chuyển đồ cồng kềnh: 08:30 - 11:30 và 13:30 - 17:00 (Thứ 2 - Thứ 7, trừ Chủ nhật). Quý cư dân vui lòng đăng ký trước 24h để BQL bọc đệm bảo vệ thang máy.',
   },
   {
     keywords: ['tiệc', 'bbq', 'nướng', 'sân vườn', 'đặt chỗ'],
-    reply: 'Khu tiệc nướng BBQ ngoài trời tại Sảnh vườn Malibu mở cửa từ 17:00 - 21:30. Mỗi căn hộ được miễn phí 02 lượt đặt/tháng (đã bao gồm bếp nướng điện, bàn ghế và vệ sinh). Quý cư dân vui lòng đặt trước trên Cổng Cư Dân tối thiểu 6 tiếng.',
+    reply: 'Khu tiệc nướng BBQ ngoài trời tại Vườn Malibu mở cửa 17:00 - 21:30. Miễn phí 02 lượt/tháng/căn. Quý cư dân vui lòng đặt trước trên Cổng Cư Dân tối thiểu 6 tiếng.',
   },
 ];
 
@@ -70,8 +71,19 @@ export function classifyTicket(
 ): TicketClassificationResult {
   const text = `${service || ''} ${subject || ''} ${content || ''}`.toLowerCase();
 
-  // 1. Dấu hiệu PHẢN ÁNH / KHIẾU NẠI (FEEDBACK)
-  const isFeedback = (
+  // 1. Dấu hiệu CÔNG VIỆC VẬN HÀNH / BẢO TRÌ / KIỂM TRA ĐỊNH KỲ (TASK / INSPECTION)
+  const isMaintenanceTask = (
+    text.includes('kiểm tra') ||
+    text.includes('định kỳ') ||
+    text.includes('bảo trì') ||
+    text.includes('bảo dưỡng') ||
+    text.includes('khảo sát hiện trường') ||
+    text.includes('đo đạc') ||
+    text.includes('xử lý xong')
+  );
+
+  // 2. Dấu hiệu PHẢN ÁNH / KHIẾU NẠI (FEEDBACK)
+  const isFeedback = !isMaintenanceTask && (
     text.includes('chưa thực hiện') ||
     text.includes('chưa dọn') ||
     text.includes('chưa làm') ||
@@ -89,32 +101,12 @@ export function classifyTicket(
     text.includes('đỗ xe sai') ||
     text.includes('chắn lối') ||
     text.includes('vệ sinh bàn ghế') ||
-    text.includes('nhà hàng') && text.includes('vệ sinh') ||
+    (text.includes('nhà hàng') && text.includes('vệ sinh')) ||
     text.includes('dịch vụ vệ sinh chung cư')
   );
 
-  // 2. Dấu hiệu HỎI ĐÁP / TRỢ GIÚP THÔNG TIN (INQUIRY)
-  const isInquiry = (
-    text.includes('hỏi') ||
-    text.includes('mấy giờ') ||
-    text.includes('giờ mở') ||
-    text.includes('giờ giấc') ||
-    text.includes('thời gian') ||
-    text.includes('thủ tục') ||
-    text.includes('làm sao') ||
-    text.includes('ở đâu') ||
-    text.includes('bao nhiêu') ||
-    text.includes('biểu phí') ||
-    text.includes('hướng dẫn') ||
-    text.includes('chất lượng nước') ||
-    text.includes('có được') ||
-    text.includes('quy định') ||
-    text.includes('cho phép') ||
-    text.includes('đăng ký thẻ')
-  );
-
-  // 3. Dấu hiệu SỰ CỐ KỸ THUẬT & SỬA CHỮA (REPAIR)
-  const isRepair = (
+  // 3. Dấu hiệu SỰ CỐ KỸ THUẬT & SỬA CHỮA / BẢO TRÌ (REPAIR)
+  const isRepair = isMaintenanceTask || (
     text.includes('hỏng') ||
     text.includes('hư') ||
     text.includes('rò rỉ') ||
@@ -131,7 +123,29 @@ export function classifyTicket(
     text.includes('chuông cửa hỏng') ||
     text.includes('vòi sen') ||
     text.includes('aptomat') ||
-    text.includes('thang máy kẹt')
+    text.includes('thang máy kẹt') ||
+    text.includes('chất lượng nước')
+  );
+
+  // 4. Dấu hiệu HỎI ĐÁP / TRA CỨU TIỆN ÍCH (INQUIRY - Chỉ khi có ý định hỏi thực sự)
+  const isInquiry = !isMaintenanceTask && !isRepair && (
+    text.includes('?') ||
+    text.includes('mấy giờ') ||
+    text.includes('giờ mở') ||
+    text.includes('giờ đóng') ||
+    text.includes('giờ giấc') ||
+    text.includes('thời gian hoạt động') ||
+    text.includes('thủ tục') ||
+    text.includes('làm sao để') ||
+    text.includes('ở đâu') ||
+    text.includes('bao nhiêu tiền') ||
+    text.includes('biểu phí') ||
+    text.includes('hướng dẫn cách') ||
+    text.includes('có được phép') ||
+    text.includes('quy định như thế nào') ||
+    text.includes('cho phép không') ||
+    text.includes('đăng ký thẻ') ||
+    text.includes('sử dụng ra sao')
   );
 
   // --- TRƯỜNG HỢP 1: PHẢN ÁNH / KHIẾU NẠI (FEEDBACK) -> CHỜ BQL TRỰC TIẾP XÁC NHẬN ---
@@ -149,22 +163,7 @@ export function classifyTicket(
     };
   }
 
-  // --- TRƯỜNG HỢP 2: HỎI ĐÁP / TRA CỨU TIỆN ÍCH (INQUIRY) -> AI TỰ ĐỘNG PHẢN HỒI (KHÔNG CẦN QUA BQL) ---
-  if (isInquiry && !isRepair) {
-    const aiKnowledge = findInquiryAnswer(text);
-    return {
-      type: 'INQUIRY',
-      typeLabel: 'Hỏi Đáp & Trợ Giúp',
-      handledBy: 'AI',
-      handledByLabel: 'Trợ Lý AI Tự Động Phản Hồi 24/7',
-      urgent: false,
-      priority: 2,
-      suggestedAiReply: aiKnowledge,
-      actionHint: 'AI tự động tra cứu nội quy và phản hồi tức thì 24/7 cho cư dân mà không cần thông qua BQL.',
-    };
-  }
-
-  // --- TRƯỜNG HỢP 3: SỰ CỐ KỸ THUẬT (REPAIR) -> CẦN THIẾT PHÂN BỔ KỸ THUẬT VIÊN ---
+  // --- TRƯỜNG HỢP 2: SỰ CỐ KỸ THUẬT / BẢO TRÌ HIỆN TRƯỜNG (REPAIR) -> KTV XỬ LÝ ---
   if (isRepair) {
     const isUrgent = text.includes('tràn nước') || text.includes('chập điện') || text.includes('vỡ ống') || text.includes('thang máy');
     return {
@@ -176,7 +175,24 @@ export function classifyTicket(
       priority: isUrgent ? 1 : 2,
       actionHint: isUrgent 
         ? 'Sự cố cấp bách: AI tự động phân bổ KTV chuyên môn có mặt trong 15 - 30 phút.' 
-        : 'Sự cố kỹ thuật: AI phân tích và phân bổ KTV phù hợp theo ca trực.',
+        : (isMaintenanceTask 
+            ? 'Công việc kiểm tra / bảo trì hiện trường: Cần KTV chuyên môn khảo sát thực địa.' 
+            : 'Sự cố kỹ thuật: AI phân tích và phân bổ KTV phù hợp theo ca trực.'),
+    };
+  }
+
+  // --- TRƯỜNG HỢP 3: HỎI ĐÁP / TRA CỨU TIỆN ÍCH (INQUIRY) -> AI TỰ ĐỘNG PHẢN HỒI 24/7 ---
+  if (isInquiry) {
+    const aiKnowledge = findInquiryAnswer(text);
+    return {
+      type: 'INQUIRY',
+      typeLabel: 'Hỏi Đáp & Trợ Giúp',
+      handledBy: 'AI',
+      handledByLabel: 'Trợ Lý AI Tự Động Phản Hồi 24/7',
+      urgent: false,
+      priority: 2,
+      suggestedAiReply: aiKnowledge,
+      actionHint: 'AI tự động tra cứu nội quy và phản hồi tức thì 24/7 cho cư dân mà không cần thông qua BQL.',
     };
   }
 
