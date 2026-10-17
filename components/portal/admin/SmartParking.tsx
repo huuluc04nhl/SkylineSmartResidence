@@ -58,7 +58,7 @@ const WAITLIST_STORAGE_KEY = 'skyline_parking_waitlist_v4';
 
 
 export default function SmartParking() {
-  const { isEn } = useLanguage();
+  const { t, isEn } = useLanguage();
 
   // Apartment Data & Registered Vehicles
   const [apartments, setApartments] = useState<ApartmentUnit[]>([]);
@@ -585,7 +585,7 @@ export default function SmartParking() {
           <div className="flex items-center justify-between text-xs gap-2">
             <span className="uppercase tracking-wider font-semibold flex items-center gap-1.5 text-gray-300 truncate">
               <Car className="w-4 h-4 text-[#C5A880] shrink-0" />
-              <span className="truncate">Hầm B2 Ô Tô (Nội Khu)</span>
+              <span className="truncate">{t('Hầm B2 Ô Tô (Nội Khu)', 'Basement B2 Car (Internal)')}</span>
             </span>
             <span className="font-mono text-xs font-bold text-emerald-400 shrink-0 whitespace-nowrap px-1.5 py-0.5 bg-[#161B22] border border-[#2D3748]">
               {carOccupancyPct}%
@@ -594,10 +594,10 @@ export default function SmartParking() {
 
           <div className="flex items-baseline justify-between gap-2">
             <div className="font-mono text-xl font-bold text-white">
-              {registeredCars} <span className="text-xs text-gray-500 font-normal">/ {TOTAL_B2_CAR_SLOTS} chỗ</span>
+              {registeredCars} <span className="text-xs text-gray-500 font-normal">/ {TOTAL_B2_CAR_SLOTS} {t('chỗ', 'slots')}</span>
             </div>
             <span className="text-[11px] font-mono text-gray-400 shrink-0">
-              Trống: <strong className="text-white">{Math.max(0, TOTAL_B2_CAR_SLOTS - registeredCars)}</strong>
+              {t('Trống:', 'Available:')} <strong className="text-white">{Math.max(0, TOTAL_B2_CAR_SLOTS - registeredCars)}</strong>
             </span>
           </div>
 
@@ -611,8 +611,8 @@ export default function SmartParking() {
           </div>
 
           <div className="text-[10px] text-gray-400 font-mono flex justify-between items-center gap-2 border-t border-[#1C2533] pt-2">
-            <span className="truncate">60 VIP Cố Định</span>
-            <span className="truncate shrink-0 text-right">90 Đỗ Tự Do</span>
+            <span className="truncate">{t('60 VIP Cố Định', '60 Fixed VIP')}</span>
+            <span className="truncate shrink-0 text-right">{t('90 Đỗ Tự Do', '90 Floating Slots')}</span>
           </div>
         </div>
 
@@ -621,19 +621,19 @@ export default function SmartParking() {
           <div className="flex items-center justify-between text-xs gap-2">
             <span className="uppercase tracking-wider font-semibold flex items-center gap-1.5 text-gray-300 truncate">
               <Warehouse className="w-4 h-4 text-amber-400 shrink-0" />
-              <span className="truncate">Nhà Xe Solari Hub</span>
+              <span className="truncate">{t('Nhà Xe Solari Hub', 'Solari Hub Garage')}</span>
             </span>
             <span className="font-mono text-xs font-bold text-amber-300 shrink-0 whitespace-nowrap px-1.5 py-0.5 bg-amber-950/40 border border-amber-500/40">
-              MỞ RỘNG
+              {t('MỞ RỘNG', 'EXPANDED')}
             </span>
           </div>
 
           <div className="flex items-baseline justify-between gap-2">
             <div className="font-mono text-xl font-bold text-white">
-              {SOLARI_HUB_CAR_SLOTS} <span className="text-xs text-gray-500 font-normal">chỗ bổ sung</span>
+              {SOLARI_HUB_CAR_SLOTS} <span className="text-xs text-gray-500 font-normal">{t('chỗ bổ sung', 'extra slots')}</span>
             </div>
             <span className="text-[11px] font-mono text-emerald-400 shrink-0">
-              Toàn khu: <strong className="text-white">{TOTAL_EXPANDED_CAR_CAPACITY} ô</strong>
+              {t('Toàn khu:', 'Whole area:')} <strong className="text-white">{TOTAL_EXPANDED_CAR_CAPACITY} {t('ô', 'slots')}</strong>
             </span>
           </div>
 
@@ -645,8 +645,8 @@ export default function SmartParking() {
           </div>
 
           <div className="text-[10px] text-gray-400 font-mono flex justify-between items-center gap-2 border-t border-[#1C2533] pt-2">
-            <span className="truncate">Nhà xe cao tầng liên tòa</span>
-            <span className="truncate shrink-0 text-emerald-400 text-right">Sẵn sàng điều phối</span>
+            <span className="truncate">{t('Nhà xe cao tầng liên tòa', 'Multi-tower parking structure')}</span>
+            <span className="truncate shrink-0 text-emerald-400 text-right">{t('Sẵn sàng điều phối', 'Ready for dispatch')}</span>
           </div>
         </div>
 
@@ -655,7 +655,7 @@ export default function SmartParking() {
           <div className="flex items-center justify-between text-xs gap-2">
             <span className="uppercase tracking-wider font-semibold flex items-center gap-1.5 text-gray-300 truncate">
               <Bike className="w-4 h-4 text-cyan-400 shrink-0" />
-              <span className="truncate">Xe Máy (Hầm B1)</span>
+              <span className="truncate">{t('Xe Máy (Hầm B1)', 'Motorbikes (Basement B1)')}</span>
             </span>
             <span className="font-mono text-xs font-bold text-cyan-400 shrink-0 whitespace-nowrap px-1.5 py-0.5 bg-[#161B22] border border-[#2D3748]">
               {motoOccupancyPct}%
@@ -664,10 +664,10 @@ export default function SmartParking() {
 
           <div className="flex items-baseline justify-between gap-2">
             <div className="font-mono text-xl font-bold text-white">
-              {registeredMotos} <span className="text-xs text-gray-500 font-normal">/ {MAX_MOTO_SLOTS} xe</span>
+              {registeredMotos} <span className="text-xs text-gray-500 font-normal">/ {MAX_MOTO_SLOTS} {t('xe', 'bikes')}</span>
             </div>
             <span className="text-[11px] font-mono text-gray-400 shrink-0">
-              Còn nhận: <strong className="text-white">{MAX_MOTO_SLOTS - registeredMotos}</strong>
+              {t('Còn nhận:', 'Remaining:')} <strong className="text-white">{MAX_MOTO_SLOTS - registeredMotos}</strong>
             </span>
           </div>
 
@@ -681,8 +681,8 @@ export default function SmartParking() {
           </div>
 
           <div className="text-[10px] text-gray-400 font-mono flex justify-between items-center gap-2 border-t border-[#1C2533] pt-2">
-            <span className="truncate">120.000 đ/tháng/xe</span>
-            <span className="truncate shrink-0 text-right">Định mức: 1.2 xe/căn</span>
+            <span className="truncate">{t('120.000 đ/tháng/xe', '120,000 VND/mo/bike')}</span>
+            <span className="truncate shrink-0 text-right">{t('Định mức: 1.2 xe/căn', 'Quota: 1.2 bikes/unit')}</span>
           </div>
         </div>
 
@@ -691,19 +691,19 @@ export default function SmartParking() {
           <div className="flex items-center justify-between text-xs gap-2">
             <span className="uppercase tracking-wider font-semibold flex items-center gap-1.5 text-gray-300 truncate">
               <Clock className="w-4 h-4 text-[#C5A880] shrink-0" />
-              <span className="truncate">Hàng Đợi Xét Duyệt</span>
+              <span className="truncate">{t('Hàng Đợi Xét Duyệt', 'Review Waitlist')}</span>
             </span>
             <span className="font-mono text-xs font-bold text-emerald-400 shrink-0 whitespace-nowrap px-1.5 py-0.5 bg-emerald-950/40 border border-emerald-500/40">
-              {waitlist.length} HỒ SƠ
+              {waitlist.length} {t('HỒ SƠ', 'PROFILES')}
             </span>
           </div>
 
           <div className="flex items-baseline justify-between gap-2">
             <div className="font-mono text-xl font-bold text-white">
-              {totalMonthlyRevenue.toLocaleString('vi-VN')} <span className="text-xs text-gray-500 font-normal">đ</span>
+              {totalMonthlyRevenue.toLocaleString(isEn ? 'en-US' : 'vi-VN')} <span className="text-xs text-gray-500 font-normal">đ</span>
             </div>
             <span className="text-[11px] font-mono text-gray-400 shrink-0">
-              Thu tháng này
+              {t('Thu tháng này', 'Revenue this month')}
             </span>
           </div>
 
@@ -715,13 +715,13 @@ export default function SmartParking() {
           </div>
 
           <div className="text-[10px] text-gray-400 font-mono flex justify-between items-center gap-2 border-t border-[#1C2533] pt-2">
-            <span className="truncate">AI Tự Động Nâng Hạng</span>
+            <span className="truncate">{t('AI Tự Động Nâng Hạng', 'AI Auto Priority Elevation')}</span>
             <button
               type="button"
               onClick={() => setActiveMainTab('WAITLIST')}
               className="truncate shrink-0 text-[#C5A880] hover:underline text-right"
             >
-              Xem hàng đợi →
+              {t('Xem hàng đợi →', 'View waitlist →')}
             </button>
           </div>
         </div>
@@ -739,7 +739,7 @@ export default function SmartParking() {
           }`}
         >
           <LayoutGrid className="w-3.5 h-3.5 text-[#C5A880]" />
-          Sơ Đồ Phân Bổ Không Gian Ô Đỗ
+          {t('Sơ Đồ Phân Bổ Không Gian Ô Đỗ', 'Parking Slot Matrix Map')}
         </button>
 
         <button
@@ -752,7 +752,7 @@ export default function SmartParking() {
           }`}
         >
           <Car className="w-3.5 h-3.5 text-[#C5A880]" />
-          Danh Sách Xe Đã Cấp Thẻ ({filteredVehicles.length})
+          {t('Danh Sách Xe Đã Cấp Thẻ', 'Registered Vehicle Pass List')} ({filteredVehicles.length})
         </button>
 
         <button
@@ -765,7 +765,7 @@ export default function SmartParking() {
           }`}
         >
           <Clock className="w-3.5 h-3.5 text-amber-400" />
-          Hàng Đợi Waitlist ({waitlist.length})
+          {t('Hàng Đợi Waitlist', 'Waitlist Queue')} ({waitlist.length})
         </button>
       </div>
 
@@ -776,10 +776,10 @@ export default function SmartParking() {
             <div>
               <div className="text-[10px] uppercase tracking-wider text-[#C5A880] font-semibold flex items-center gap-1.5">
                 <Layers className="w-3.5 h-3.5" />
-                HỆ THỐNG PHÂN KHU HẦM B1/B2 & NHÀ XE THÔNG MINH LIÊN TÒA
+                {t('HỆ THỐNG PHÂN KHU HẦM B1/B2 & NHÀ XE THÔNG MINH LIÊN TÒA', 'BASEMENT B1/B2 & SMART MULTI-TOWER GARAGE ZONING')}
               </div>
               <h3 className="font-serif text-base sm:text-lg font-bold text-white mt-0.5">
-                Chọn Phân Khu Để Giám Sát Không Gian Ô Đỗ
+                {t('Chọn Phân Khu Để Giám Sát Không Gian Ô Đỗ', 'Select Zone to Monitor Parking Space')}
               </h3>
             </div>
 
@@ -794,7 +794,7 @@ export default function SmartParking() {
                 }`}
               >
                 <Car className="w-3.5 h-3.5" />
-                B2: Ô Cố Định VIP
+                {t('B2: Ô Cố Định VIP', 'B2: Fixed VIP')}
               </button>
               <button
                 type="button"
@@ -806,7 +806,7 @@ export default function SmartParking() {
                 }`}
               >
                 <Car className="w-3.5 h-3.5" />
-                B2: Đỗ Tự Do
+                {t('B2: Đỗ Tự Do', 'B2: Floating')}
               </button>
               <button
                 type="button"
@@ -818,7 +818,7 @@ export default function SmartParking() {
                 }`}
               >
                 <Warehouse className="w-3.5 h-3.5" />
-                Nhà Xe Solari Hub
+                {t('Nhà Xe Solari Hub', 'Solari Hub Garage')}
               </button>
               <button
                 type="button"
@@ -830,7 +830,7 @@ export default function SmartParking() {
                 }`}
               >
                 <Bike className="w-3.5 h-3.5" />
-                Hầm B1: Xe Máy
+                {t('Hầm B1: Xe Máy', 'Basement B1: Motorbikes')}
               </button>
             </div>
           </div>
@@ -842,14 +842,14 @@ export default function SmartParking() {
               <div className="text-[11px] font-mono text-gray-400 mb-3 flex justify-between items-center border-b border-[#222B35] pb-2">
                 <span className="text-gray-300 font-semibold uppercase">
                   {selectedFloorMap === 'B2_FIXED'
-                    ? 'HẦM B2 ZONE A: Ô CỐ ĐỊNH ĐỊNH DANH VIP'
+                    ? t('HẦM B2 ZONE A: Ô CỐ ĐỊNH ĐỊNH DANH VIP', 'BASEMENT B2 ZONE A: DEDICATED VIP FIXED SLOTS')
                     : selectedFloorMap === 'B2_FLOATING'
-                    ? 'HẦM B2 ZONE B: KHU ĐỖ TỰ DO CHIA SẺ'
+                    ? t('HẦM B2 ZONE B: KHU ĐỖ TỰ DO CHIA SẺ', 'BASEMENT B2 ZONE B: SHARED FLOATING SLOTS')
                     : selectedFloorMap === 'SOLARI_HUB'
-                    ? 'NHÀ XE CAO TẦNG BEVERLY SOLARI HUB (ĐIỀU PHỐI MỞ RỘNG)'
-                    : 'HẦM B1: XE MÁY CƯ DÂN TOÀN TÒA BS-07'}
+                    ? t('NHÀ XE CAO TẦNG BEVERLY SOLARI HUB (ĐIỀU PHỐI MỞ RỘNG)', 'BEVERLY SOLARI MULTI-STOREY GARAGE (EXPANDED DISPATCH)')
+                    : t('HẦM B1: XE MÁY CƯ DÂN TOÀN TÒA BS-07', 'BASEMENT B1: RESIDENT MOTORBIKES FOR BS-07')}
                 </span>
-                <span className="text-[#C5A880]">24 - 32 Ô ĐẠI DIỆN</span>
+                <span className="text-[#C5A880]">{t('24 - 32 Ô ĐẠI DIỆN', '24 - 32 SAMPLE SLOTS')}</span>
               </div>
 
               <div className="grid grid-cols-4 sm:grid-cols-8 gap-2.5">
@@ -894,12 +894,12 @@ export default function SmartParking() {
                               {slot.assigned?.plate}
                             </div>
                             <div className="text-[9px] text-gray-400 font-mono truncate">
-                              Căn {slot.assigned?.aptCode}
+                              {t('Căn', 'Unit')} {slot.assigned?.aptCode}
                             </div>
                           </div>
                         ) : (
                           <div className="text-[10px] text-gray-500 font-mono uppercase tracking-wider">
-                            TRỐNG
+                            {t('TRỐNG', 'VACANT')}
                           </div>
                         )}
                       </div>
@@ -920,7 +920,7 @@ export default function SmartParking() {
                   <div className="flex items-center justify-between border-b border-[#222B35] pb-2">
                     <div className="text-xs uppercase tracking-wider font-semibold text-[#C5A880] flex items-center gap-1.5">
                       <Hash className="w-3.5 h-3.5" />
-                      Chi Tiết Ô Đỗ Đang Chọn
+                      {t('Chi Tiết Ô Đỗ Đang Chọn', 'Selected Slot Details')}
                     </div>
                     <button
                       type="button"
@@ -933,25 +933,25 @@ export default function SmartParking() {
 
                   <div className="p-3 bg-[#121820] border border-[#222B35] space-y-2">
                     <div className="flex justify-between items-center text-xs">
-                      <span className="text-gray-400">Mã Vị Trí:</span>
+                      <span className="text-gray-400">{t('Mã Vị Trí:', 'Slot Code:')}</span>
                       <span className="font-mono font-bold text-white text-sm bg-[#161B22] px-2 py-0.5 border border-gray-700">
                         {currentSlotDetail.code}
                       </span>
                     </div>
                     <div className="flex justify-between items-center text-xs">
-                      <span className="text-gray-400">Phân Khu:</span>
+                      <span className="text-gray-400">{t('Phân Khu:', 'Zone:')}</span>
                       <span className="font-mono text-gray-300 text-xs">
                         {currentSlotDetail.zone}
                       </span>
                     </div>
                     <div className="flex justify-between items-center text-xs">
-                      <span className="text-gray-400">Trạng Thái:</span>
+                      <span className="text-gray-400">{t('Trạng Thái:', 'Status:')}</span>
                       <span className={`font-mono text-xs font-semibold px-2 py-0.5 border ${
                         currentSlotDetail.assigned
                           ? 'bg-emerald-950/40 text-emerald-300 border-emerald-500/50'
                           : 'bg-gray-900 text-gray-400 border-gray-700'
                       }`}>
-                        {currentSlotDetail.assigned ? 'ĐÃ ĐƯỢC CẤP' : 'CÒN TRỐNG'}
+                        {currentSlotDetail.assigned ? t('ĐÃ ĐƯỢC CẤP', 'ASSIGNED') : t('CÒN TRỐNG', 'VACANT')}
                       </span>
                     </div>
                   </div>
@@ -959,28 +959,28 @@ export default function SmartParking() {
                   {currentSlotDetail.assigned ? (
                     <div className="p-3.5 bg-[#161B22] border border-[#222B35] space-y-2.5 text-xs">
                       <div className="text-[11px] font-semibold text-gray-300 uppercase tracking-wider border-b border-[#222B35] pb-1.5">
-                        Thông Tin Phương Tiện Cư Dân
+                        {t('Thông Tin Phương Tiện Cư Dân', 'Resident Vehicle Info')}
                       </div>
                       <div className="flex justify-between items-center">
-                        <span className="text-gray-400">Biển số:</span>
+                        <span className="text-gray-400">{t('Biển số:', 'Plate:')}</span>
                         <span className="font-mono font-bold text-[#C5A880] text-sm">
                           {currentSlotDetail.assigned.plate}
                         </span>
                       </div>
                       <div className="flex justify-between items-center">
-                        <span className="text-gray-400">Chủ sở hữu:</span>
+                        <span className="text-gray-400">{t('Chủ sở hữu:', 'Owner:')}</span>
                         <span className="text-white font-semibold">
                           {currentSlotDetail.assigned.ownerName}
                         </span>
                       </div>
                       <div className="flex justify-between items-center">
-                        <span className="text-gray-400">Căn hộ:</span>
+                        <span className="text-gray-400">{t('Căn hộ:', 'Apartment:')}</span>
                         <span className="text-gray-200 font-mono">
-                          Căn {currentSlotDetail.assigned.aptCode} (Tầng {currentSlotDetail.assigned.floor})
+                          {t('Căn', 'Unit')} {currentSlotDetail.assigned.aptCode} ({t('Tầng', 'Floor')} {currentSlotDetail.assigned.floor})
                         </span>
                       </div>
                       <div className="flex justify-between items-center">
-                        <span className="text-gray-400">Mã thẻ RFID:</span>
+                        <span className="text-gray-400">{t('Mã thẻ RFID:', 'RFID Card:')}</span>
                         <span className="text-gray-300 font-mono">
                           {currentSlotDetail.assigned.cardNo}
                         </span>
@@ -997,14 +997,17 @@ export default function SmartParking() {
                           className="w-full py-1.5 px-3 bg-rose-950/40 hover:bg-rose-900 border border-rose-500/50 text-rose-300 text-xs font-mono font-semibold transition-colors rounded-none flex items-center justify-center gap-1.5"
                         >
                           <Trash2 className="w-3.5 h-3.5" />
-                          Thu Hồi / Giải Phóng Ô Này
+                          {t('Thu Hồi / Giải Phóng Ô Này', 'Revoke / Release Slot')}
                         </button>
                       </div>
                     </div>
                   ) : (
                     <div className="p-4 bg-[#121820] border border-[#222B35] text-center space-y-3">
                       <div className="text-xs text-gray-400">
-                        Ô đỗ này hiện đang trống. BQL có thể cấp trực tiếp hoặc duyệt từ hồ sơ khai báo cư dân.
+                        {t(
+                          'Ô đỗ này hiện đang trống. BQL có thể cấp trực tiếp hoặc duyệt từ hồ sơ khai báo cư dân.',
+                          'This slot is currently vacant. Management can issue directly or approve from resident declarations.'
+                        )}
                       </div>
                       <button
                         type="button"
@@ -1017,7 +1020,7 @@ export default function SmartParking() {
                         className="w-full py-2 bg-[#C5A880] hover:bg-[#E2C9A5] text-black text-xs font-semibold uppercase tracking-wider transition-colors rounded-none flex items-center justify-center gap-1.5"
                       >
                         <Plus className="w-3.5 h-3.5" />
-                        Cấp Xe Vào Ô {currentSlotDetail.code}
+                        {t('Cấp Xe Vào Ô', 'Assign Vehicle to Slot')} {currentSlotDetail.code}
                       </button>
                     </div>
                   )}
@@ -1026,13 +1029,19 @@ export default function SmartParking() {
                 <div className="h-full flex flex-col items-center justify-center p-6 text-center space-y-2 text-gray-500">
                   <LayoutGrid className="w-8 h-8 text-gray-600" />
                   <div className="text-xs font-mono">
-                    Nhấp vào một ô trên ma trận bên trái để xem chi tiết.
+                    {t(
+                      'Nhấp vào một ô trên ma trận bên trái để xem chi tiết.',
+                      'Click any slot on the left matrix to inspect details.'
+                    )}
                   </div>
                 </div>
               )}
 
               <div className="text-[10px] text-gray-500 font-mono text-center pt-3 border-t border-[#222B35] mt-4">
-                Dữ liệu phân bổ liên kết thời gian thực với CSDL căn hộ
+                {t(
+                  'Dữ liệu phân bổ liên kết thời gian thực với CSDL căn hộ',
+                  'Real-time allocation data synchronized with apartment database'
+                )}
               </div>
             </div>
           </div>
@@ -1046,10 +1055,13 @@ export default function SmartParking() {
             <div>
               <h3 className="font-serif text-lg font-bold text-white flex items-center gap-2">
                 <Car className="w-4 h-4 text-[#C5A880]" />
-                Danh Sách Phương Tiện Đã Cấp Thẻ ({filteredVehicles.length} xe)
+                {t('Danh Sách Phương Tiện Đã Cấp Thẻ', 'Active Issued Vehicle Registry')} ({filteredVehicles.length} {t('xe', 'vehicles')})
               </h3>
               <p className="text-xs text-gray-400 mt-0.5">
-                Toàn bộ phương tiện chính thức được cấp quyền sử dụng hầm nội khu hoặc nhà xe liên khu
+                {t(
+                  'Toàn bộ phương tiện chính thức được cấp quyền sử dụng hầm nội khu hoặc nhà xe liên khu',
+                  'All official vehicles authorized to use basement or multi-storey parking facilities'
+                )}
               </p>
             </div>
 
@@ -1058,7 +1070,7 @@ export default function SmartParking() {
                 <Search className="w-3.5 h-3.5 text-gray-400 absolute left-2.5 top-1/2 -translate-y-1/2" />
                 <input
                   type="text"
-                  placeholder="Tìm biển số, căn hộ, chủ xe..."
+                  placeholder={t('Tìm biển số, căn hộ, chủ xe...', 'Search plate, apartment, owner...')}
                   value={searchPlate}
                   onChange={(e) => setSearchPlate(e.target.value)}
                   className="pl-8 pr-3 py-1.5 bg-[#161B22] border border-[#2D3748] text-xs text-white placeholder-gray-500 focus:outline-none focus:border-[#C5A880] w-48 sm:w-60 rounded-none"
@@ -1071,21 +1083,21 @@ export default function SmartParking() {
                   onClick={() => setTypeFilter('ALL')}
                   className={`px-2.5 py-1 ${typeFilter === 'ALL' ? 'bg-[#C5A880] text-black font-bold' : 'text-gray-400 hover:text-white'}`}
                 >
-                  Tất cả
+                  {t('Tất cả', 'All')}
                 </button>
                 <button
                   type="button"
                   onClick={() => setTypeFilter('CAR')}
                   className={`px-2.5 py-1 ${typeFilter === 'CAR' ? 'bg-[#C5A880] text-black font-bold' : 'text-gray-400 hover:text-white'}`}
                 >
-                  Ô tô
+                  {t('Ô tô', 'Cars')}
                 </button>
                 <button
                   type="button"
                   onClick={() => setTypeFilter('MOTORBIKE')}
                   className={`px-2.5 py-1 ${typeFilter === 'MOTORBIKE' ? 'bg-[#C5A880] text-black font-bold' : 'text-gray-400 hover:text-white'}`}
                 >
-                  Xe máy
+                  {t('Xe máy', 'Bikes')}
                 </button>
               </div>
             </div>
@@ -1095,15 +1107,15 @@ export default function SmartParking() {
             <table className="w-full text-left text-xs border border-[#222B35]">
               <thead className="bg-[#161B22] text-gray-400 font-semibold uppercase tracking-wider text-[10px] border-b border-[#222B35]">
                 <tr>
-                  <th className="p-3">Biển Số Xe</th>
-                  <th className="p-3">Phân Loại</th>
-                  <th className="p-3">Hãng Xe / Model</th>
-                  <th className="p-3">Căn Hộ</th>
-                  <th className="p-3">Chủ Sở Hữu</th>
-                  <th className="p-3">Mã Thẻ RFID</th>
-                  <th className="p-3">Vị Trí Ô Đỗ</th>
-                  <th className="p-3">Phí Tháng</th>
-                  <th className="p-3 text-right">Thao Tác</th>
+                  <th className="p-3">{t('Biển Số Xe', 'Plate Number')}</th>
+                  <th className="p-3">{t('Phân Loại', 'Category')}</th>
+                  <th className="p-3">{t('Hãng Xe / Model', 'Make / Model')}</th>
+                  <th className="p-3">{t('Căn Hộ', 'Apartment')}</th>
+                  <th className="p-3">{t('Chủ Sở Hữu', 'Owner')}</th>
+                  <th className="p-3">{t('Mã Thẻ RFID', 'RFID Card')}</th>
+                  <th className="p-3">{t('Vị Trí Ô Đỗ', 'Assigned Slot')}</th>
+                  <th className="p-3">{t('Phí Tháng', 'Monthly Fee')}</th>
+                  <th className="p-3 text-right">{t('Thao Tác', 'Actions')}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#1C2533]">
@@ -1113,8 +1125,8 @@ export default function SmartParking() {
                       <Car className="w-8 h-8 text-gray-600 mx-auto" />
                       <div>
                         {searchPlate.trim() 
-                          ? 'Không tìm thấy phương tiện nào phù hợp với từ khóa tìm kiếm.'
-                          : 'Chưa có phương tiện nào được cấp quyền trong tòa nhà. Hãy nhấn "+ Cấp Thẻ / Đăng Ký Ô Đỗ" để đăng ký.'}
+                          ? t('Không tìm thấy phương tiện nào phù hợp với từ khóa tìm kiếm.', 'No vehicles matched your search filter.')
+                          : t('Chưa có phương tiện nào được cấp quyền trong tòa nhà. Hãy nhấn "+ Cấp Thẻ / Đăng Ký Ô Đỗ" để đăng ký.', 'No authorized vehicles found. Click "+ Issue Pass / Assign Slot" to register.')}
                       </div>
                     </td>
                   </tr>
@@ -1130,14 +1142,14 @@ export default function SmartParking() {
                             ? 'bg-amber-950/60 text-amber-300 border border-amber-500/40'
                             : 'bg-cyan-950/60 text-cyan-300 border border-cyan-500/40'
                         }`}>
-                          {veh.type === 'CAR' ? 'Ô Tô' : 'Xe Máy'}
+                          {veh.type === 'CAR' ? t('Ô Tô', 'Car') : t('Xe Máy', 'Motorbike')}
                         </span>
                       </td>
                       <td className="p-3 text-gray-300">
                         {veh.brand || '---'}
                       </td>
                       <td className="p-3 font-mono font-semibold text-white">
-                        Căn {veh.aptCode} (Tầng {veh.floor})
+                        {t('Căn', 'Unit')} {veh.aptCode} ({t('Tầng', 'Floor')} {veh.floor})
                       </td>
                       <td className="p-3 text-gray-300">
                         {veh.ownerName}
@@ -1162,15 +1174,15 @@ export default function SmartParking() {
                               }
                             }}
                             className="px-2.5 py-1 bg-[#1C2533] hover:bg-[#C5A880] hover:text-black text-gray-300 border border-gray-700 text-[11px] font-semibold transition-all rounded-none"
-                            title="Xem Ô Đỗ"
+                            title={t('Xem Ô Đỗ', 'View Slot')}
                           >
-                            Vị Trí
+                            {t('Vị Trí', 'View Slot')}
                           </button>
                           <button
                             type="button"
                             onClick={() => handleRevokeVehicle(veh.aptCode, veh.id, veh.plate)}
                             className="p-1 text-gray-400 hover:text-rose-400 hover:bg-rose-950/40 border border-transparent hover:border-rose-500/50 transition-colors rounded-none"
-                            title="Thu Hồi / Xóa Thẻ Xe"
+                            title={t('Thu Hồi / Xóa Thẻ Xe', 'Revoke / Remove Pass')}
                           >
                             <Trash2 className="w-3.5 h-3.5" />
                           </button>
@@ -1192,10 +1204,13 @@ export default function SmartParking() {
             <div>
               <h3 className="font-serif text-lg font-bold text-white flex items-center gap-2">
                 <Clock className="w-4 h-4 text-amber-400" />
-                Hàng Đợi Danh Sách Chờ Xét Duyệt Ô Đỗ ({waitlist.length} hồ sơ)
+                {t('Hàng Đợi Danh Sách Chờ Xét Duyệt Ô Đỗ', 'Parking Waitlist & Overflow Queue')} ({waitlist.length} {t('hồ sơ', 'requests')})
               </h3>
               <p className="text-xs text-gray-400 mt-0.5">
-                Cơ chế điều phối xếp hàng thông minh: Tự động nâng thứ tự ưu tiên khi có căn hộ trả chỗ hoặc điều phối sang nhà xe liên khu
+                {t(
+                  'Cơ chế điều phối xếp hàng thông minh: Tự động nâng thứ tự ưu tiên khi có căn hộ trả chỗ hoặc điều phối sang nhà xe liên khu',
+                  'Smart priority queue: Automatically promotes order when a unit surrenders a slot or re-routes to Solari Hub'
+                )}
               </p>
             </div>
 
@@ -1208,7 +1223,7 @@ export default function SmartParking() {
               className="px-3.5 py-1.5 bg-[#161B22] border border-amber-500/50 hover:border-amber-400 text-amber-300 text-xs font-mono font-semibold uppercase tracking-wider flex items-center gap-1.5 transition-colors rounded-none"
             >
               <Plus className="w-3.5 h-3.5" />
-              + Thêm Đơn Vào Hàng Đợi
+              + {t('Thêm Đơn Vào Hàng Đợi', 'Enqueue New Request')}
             </button>
           </div>
 
@@ -1216,14 +1231,14 @@ export default function SmartParking() {
             <table className="w-full text-left text-xs border border-[#222B35]">
               <thead className="bg-[#161B22] text-gray-400 font-semibold uppercase tracking-wider text-[10px] border-b border-[#222B35]">
                 <tr>
-                  <th className="p-3">Hạng Ưu Tiên</th>
-                  <th className="p-3">Căn Hộ</th>
-                  <th className="p-3">Chủ Sở Hữu</th>
-                  <th className="p-3">Biển Số Xe</th>
-                  <th className="p-3">Dòng Xe</th>
-                  <th className="p-3">Nhu Cầu Đỗ</th>
-                  <th className="p-3">Ngày Nộp Đơn</th>
-                  <th className="p-3 text-right">Điều Phối / Duyệt Cấp</th>
+                  <th className="p-3">{t('Hạng Ưu Tiên', 'Priority')}</th>
+                  <th className="p-3">{t('Căn Hộ', 'Apartment')}</th>
+                  <th className="p-3">{t('Chủ Sở Hữu', 'Owner')}</th>
+                  <th className="p-3">{t('Biển Số Xe', 'Plate Number')}</th>
+                  <th className="p-3">{t('Dòng Xe', 'Vehicle Model')}</th>
+                  <th className="p-3">{t('Nhu Cầu Đỗ', 'Desired Zone')}</th>
+                  <th className="p-3">{t('Ngày Nộp Đơn', 'Applied Date')}</th>
+                  <th className="p-3 text-right">{t('Điều Phối / Duyệt Cấp', 'Dispatch / Approve')}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#1C2533]">
@@ -1232,7 +1247,10 @@ export default function SmartParking() {
                     <td colSpan={8} className="p-8 text-center text-gray-500 font-mono space-y-2">
                       <Clock className="w-8 h-8 text-gray-600 mx-auto" />
                       <div>
-                        Hiện không có hồ sơ nào trong danh sách chờ. Sức chứa tầng hầm và bãi xe liên tòa đang đáp ứng tốt nhu cầu cư dân.
+                        {t(
+                          'Hiện không có hồ sơ nào trong danh sách chờ. Sức chứa tầng hầm và bãi xe liên tòa đang đáp ứng tốt nhu cầu cư dân.',
+                          'No applications currently in the waitlist. Capacity is fully meeting resident demands.'
+                        )}
                       </div>
                     </td>
                   </tr>
@@ -1245,7 +1263,7 @@ export default function SmartParking() {
                         </span>
                       </td>
                       <td className="p-3 font-mono font-bold text-white">
-                        Căn {item.aptCode} (Tầng {item.floor})
+                        {t('Căn', 'Unit')} {item.aptCode} ({t('Tầng', 'Floor')} {item.floor})
                       </td>
                       <td className="p-3 text-gray-300">
                         {item.ownerName}
@@ -1258,11 +1276,11 @@ export default function SmartParking() {
                       </td>
                       <td className="p-3 font-mono text-[11px] text-gray-300">
                         {item.requestedZone === 'FIXED_B2' ? (
-                          <span className="text-[#C5A880]">Ô Cố Định Hầm B2</span>
+                          <span className="text-[#C5A880]">{t('Ô Cố Định Hầm B2', 'Fixed B2 Slot')}</span>
                         ) : item.requestedZone === 'FLOATING_B2' ? (
-                          <span className="text-cyan-300">Ô Tự Do Hầm B2</span>
+                          <span className="text-cyan-300">{t('Ô Tự Do Hầm B2', 'Floating B2 Slot')}</span>
                         ) : (
-                          <span className="text-amber-300">Nhà Xe Solari Hub</span>
+                          <span className="text-amber-300">{t('Nhà Xe Solari Hub', 'Solari Hub Garage')}</span>
                         )}
                       </td>
                       <td className="p-3 font-mono text-gray-400">
@@ -1279,13 +1297,13 @@ export default function SmartParking() {
                             className="px-2.5 py-1 bg-emerald-950/50 hover:bg-emerald-900 border border-emerald-500/60 text-emerald-300 text-[11px] font-mono font-semibold transition-colors rounded-none flex items-center gap-1"
                           >
                             <Check className="w-3 h-3" />
-                            Duyệt Cấp Slot
+                            {t('Duyệt Cấp Slot', 'Approve Slot')}
                           </button>
                           <button
                             type="button"
                             onClick={() => handleRemoveWaitlistEntry(item.id)}
                             className="p-1 text-gray-400 hover:text-rose-400 transition-colors"
-                            title="Xóa khỏi hàng đợi"
+                            title={t('Xóa khỏi hàng đợi', 'Remove from queue')}
                           >
                             <X className="w-3.5 h-3.5" />
                           </button>
@@ -1352,7 +1370,7 @@ export default function SmartParking() {
                 >
                   {apartments.map((apt) => (
                     <option key={apt.code} value={apt.code}>
-                      Căn {apt.code} - Tầng {apt.floor} {apt.owner?.name ? `(${apt.owner.name})` : '(Đang trống)'}
+                      {t('Căn', 'Unit')} {apt.code} - {t('Tầng', 'Floor')} {apt.floor} {apt.owner?.name ? `(${apt.owner.name})` : `(${t('Đang trống', 'Vacant')})`}
                     </option>
                   ))}
                 </select>
@@ -1406,7 +1424,7 @@ export default function SmartParking() {
                           <span className="text-gray-400 font-sans text-[11px]">({veh.brand})</span>
                         </div>
                         <span className="text-[10px] text-gray-400">
-                          {veh.cardNo ? `Thẻ: ${veh.cardNo} (Ô ${veh.slot || 'N/A'})` : veh.source}
+                          {veh.cardNo ? `${t('Thẻ', 'Card')}: ${veh.cardNo} (${t('Ô', 'Slot')} ${veh.slot || 'N/A'})` : veh.source}
                         </span>
                       </button>
                     ))}
@@ -1432,7 +1450,7 @@ export default function SmartParking() {
                     <Car className="w-4 h-4 text-[#C5A880]" />
                     <div>
                       <div className="font-bold">{isEn ? 'Car' : 'Ô Tô'}</div>
-                      <div className="text-[10px] text-gray-400 font-mono">1.200.000 đ/tháng</div>
+                      <div className="text-[10px] text-gray-400 font-mono">1.200.000 đ/{t('tháng', 'mo')}</div>
                     </div>
                   </button>
 
@@ -1448,7 +1466,7 @@ export default function SmartParking() {
                     <Bike className="w-4 h-4 text-cyan-400" />
                     <div>
                       <div className="font-bold">{isEn ? 'Motorbike (B1)' : 'Xe Máy (Hầm B1)'}</div>
-                      <div className="text-[10px] text-gray-400 font-mono">120.000 đ/tháng</div>
+                      <div className="text-[10px] text-gray-400 font-mono">120.000 đ/{t('tháng', 'mo')}</div>
                     </div>
                   </button>
                 </div>
@@ -1470,8 +1488,8 @@ export default function SmartParking() {
                           : 'border-[#2D3748] bg-[#161B22] text-gray-400 hover:text-white'
                       }`}
                     >
-                      <div className="font-bold">Hầm B2 Cố Định</div>
-                      <div className="text-[9px] text-gray-400">Zone A VIP</div>
+                      <div className="font-bold">{t('Hầm B2 Cố Định', 'Fixed B2')}</div>
+                      <div className="text-[9px] text-gray-400">{t('Zone A VIP', 'Zone A VIP')}</div>
                     </button>
                     <button
                       type="button"
@@ -1482,8 +1500,8 @@ export default function SmartParking() {
                           : 'border-[#2D3748] bg-[#161B22] text-gray-400 hover:text-white'
                       }`}
                     >
-                      <div className="font-bold">Hầm B2 Tự Do</div>
-                      <div className="text-[9px] text-gray-400">Zone B Luân Phiên</div>
+                      <div className="font-bold">{t('Hầm B2 Tự Do', 'Floating B2')}</div>
+                      <div className="text-[9px] text-gray-400">{t('Zone B Luân Phiên', 'Zone B Rotating')}</div>
                     </button>
                     <button
                       type="button"
@@ -1494,8 +1512,8 @@ export default function SmartParking() {
                           : 'border-[#2D3748] bg-[#161B22] text-gray-400 hover:text-white'
                       }`}
                     >
-                      <div className="font-bold">Solari Hub</div>
-                      <div className="text-[9px] text-amber-400">Nhà Xe Liên Tòa</div>
+                      <div className="font-bold">{t('Solari Hub', 'Solari Hub')}</div>
+                      <div className="text-[9px] text-amber-400">{t('Nhà Xe Liên Tòa', 'Hub Garage')}</div>
                     </button>
                   </div>
                 </div>

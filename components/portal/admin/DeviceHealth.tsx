@@ -36,6 +36,7 @@ import {
   Layers
 } from 'lucide-react';
 import { exportMaintenanceTicketPdf } from '@/lib/pdfExport';
+import { useLanguage } from '@/lib/languageContext';
 
 const STORAGE_KEY = 'skyline_bms_devices';
 
@@ -63,6 +64,7 @@ function saveStoredDevices(devices: Device[]) {
 }
 
 export default function DeviceHealth() {
+  const { t, isEn } = useLanguage();
   const [devices, setDevices] = useState<Device[]>([]);
   const [technicians, setTechnicians] = useState<TechnicianProfile[]>([]);
   
@@ -127,7 +129,11 @@ export default function DeviceHealth() {
     setSelectedDeviceForMaintenance(device);
     setScheduledDate(device.predict_date);
     setPriority(device.health_score < 70 ? 'Cấp bách' : device.health_score < 85 ? 'Cao' : 'Bình thường');
-    setNotes(`Bảo dưỡng dự phòng theo khuyến nghị AI: Căn chỉnh thông số kỹ thuật, vệ sinh buồng máy và kiểm tra an toàn hệ thống ${device.name}.`);
+    setNotes(
+      isEn
+        ? `Preventive maintenance based on AI recommendations: Calibrate technical parameters, clean machine room and check safety of ${device.name}.`
+        : `Bảo dưỡng dự phòng theo khuyến nghị AI: Căn chỉnh thông số kỹ thuật, vệ sinh buồng máy và kiểm tra an toàn hệ thống ${device.name}.`
+    );
   };
 
   // Xuất phiếu PDF từ modal
@@ -144,11 +150,11 @@ export default function DeviceHealth() {
 
     if (success) {
       showToast(
-        'Xuất File PDF Thành Công!',
-        `Đã xuất Lệnh Bảo Trì Kỹ Thuật cho hệ thống ${device.name} ra file PDF.`
+        t('Xuất File PDF Thành Công!', 'PDF Exported Successfully!'),
+        t(`Đã xuất Lệnh Bảo Trì Kỹ Thuật cho hệ thống ${device.name} ra file PDF.`, `Technical Maintenance Work Order for ${device.name} has been exported to PDF.`)
       );
     } else {
-      showToast('Lỗi Xuất File', 'Không thể tạo file PDF. Vui lòng thử lại.', 'info');
+      showToast(t('Lỗi Xuất File', 'Export Error'), t('Không thể tạo file PDF. Vui lòng thử lại.', 'Unable to generate PDF file. Please try again.'), 'info');
     }
   };
 
@@ -158,11 +164,11 @@ export default function DeviceHealth() {
       try {
         await createTicketAsync({
           apt_code: device.location.includes('BS-') ? device.location.split(' ')[0] : 'Kỹ Thuật BMS',
-          resident_name: 'Ban Quản Lý Tòa Nhà',
+          resident_name: t('Ban Quản Lý Tòa Nhà', 'Property Management Board'),
           resident_phone: '1900 8899',
-          content: `[LẬP LỆNH BẢO TRÌ BMS] ${device.name} tại ${device.location}. Kế hoạch: ${notes}`,
+          content: `[BMS PREVENTIVE WORK ORDER] ${device.name} (${device.location}). Scope: ${notes}`,
           ticket_type: 'REPAIR',
-          ticket_type_label: 'Bảo Trì Định Kỳ Thiết Bị',
+          ticket_type_label: t('Bảo Trì Định Kỳ Thiết Bị', 'Preventive Equipment Maintenance'),
           ai_category: device.category === 'Máy bơm' ? 'Nước' : device.category === 'Trạm biến áp' ? 'Điện' : 'Khác',
         });
       } catch (e) {
@@ -171,8 +177,11 @@ export default function DeviceHealth() {
     }
 
     showToast(
-      'Khởi Tạo Phiếu Bảo Trì Thành Công!',
-      `Đã phân công "${techName}" xử lý bảo trì cho thiết bị ${device.name} vào ngày ${scheduledDate || device.predict_date}${syncToKanban ? ' (Đã đồng bộ lên Kanban điều phối)' : ''}.`
+      t('Khởi Tạo Phiếu Bảo Trì Thành Công!', 'Maintenance Ticket Created!'),
+      t(
+        `Đã phân công "${techName}" xử lý bảo trì cho thiết bị ${device.name} vào ngày ${scheduledDate || device.predict_date}${syncToKanban ? ' (Đã đồng bộ lên Kanban điều phối)' : ''}.`,
+        `Assigned "${techName}" to maintain ${device.name} on ${scheduledDate || device.predict_date}${syncToKanban ? ' (Synced to Dispatch Kanban)' : ''}.`
+      )
     );
     setSelectedDeviceForMaintenance(null);
   };
@@ -181,7 +190,6 @@ export default function DeviceHealth() {
   const handleScanAll = () => {
     setIsScanning(true);
     setTimeout(() => {
-      // Cập nhật ngẫu nhiên điểm sức khỏe nhẹ nhàng giả lập radar IoT
       const updated = devices.map(d => {
         const delta = (Math.random() * 2 - 1) * 0.5;
         const newScore = Math.min(100, Math.max(50, +(d.health_score + delta).toFixed(1)));
@@ -196,8 +204,8 @@ export default function DeviceHealth() {
       saveStoredDevices(updated);
       setIsScanning(false);
       showToast(
-        'Hoàn Tất Quét Chẩn Đoán BMS IoT',
-        `Đã đồng bộ dữ liệu telemetrics thời gian thực cho ${devices.length} trạm thiết bị. Hệ thống vận hành ổn định.`
+        t('Hoàn Tất Quét Chẩn Đoán BMS IoT', 'IoT BMS Diagnostic Completed'),
+        t(`Đã đồng bộ dữ liệu telemetrics thời gian thực cho ${devices.length} trạm thiết bị. Hệ thống vận hành ổn định.`, `Synchronized real-time telemetrics for ${devices.length} equipment stations. All systems normal.`)
       );
     }, 1200);
   };
@@ -230,7 +238,7 @@ export default function DeviceHealth() {
   const handleSaveAddDevice = (e: React.FormEvent) => {
     e.preventDefault();
     if (!formName.trim()) {
-      alert('Vui lòng nhập tên thiết bị!');
+      alert(t('Vui lòng nhập tên thiết bị!', 'Please enter equipment name!'));
       return;
     }
     const newDev: Device = {
@@ -247,7 +255,7 @@ export default function DeviceHealth() {
     setDevices(nextList);
     saveStoredDevices(nextList);
     setIsAddModalOpen(false);
-    showToast('Đã Thêm Thiết Bị!', `Thiết bị "${newDev.name}" đã được ghi nhận vào hệ thống quản lý hạ tầng.`);
+    showToast(t('Đã Thêm Thiết Bị!', 'Equipment Added!'), t(`Thiết bị "${newDev.name}" đã được ghi nhận vào hệ thống quản lý hạ tầng.`, `Equipment "${newDev.name}" has been recorded into the BMS system.`));
   };
 
   // Lưu Chỉnh Sửa
@@ -274,26 +282,26 @@ export default function DeviceHealth() {
     setDevices(updatedList);
     saveStoredDevices(updatedList);
     setEditingDevice(null);
-    showToast('Cập Nhật Thành Công!', `Đã lưu các thay đổi cho thiết bị #${editingDevice.id.toUpperCase()}.`);
+    showToast(t('Cập Nhật Thành Công!', 'Updated Successfully!'), t(`Đã lưu các thay đổi cho thiết bị #${editingDevice.id.toUpperCase()}.`, `Saved changes for equipment #${editingDevice.id.toUpperCase()}.`));
   };
 
   // Xóa Thiết Bị
   const handleDeleteDevice = (device: Device) => {
-    if (!window.confirm(`Xác nhận xóa hoặc thanh lý thiết bị "${device.name}" khỏi hệ thống BMS?`)) {
+    if (!window.confirm(t(`Xác nhận xóa hoặc thanh lý thiết bị "${device.name}" khỏi hệ thống BMS?`, `Confirm deleting equipment "${device.name}" from BMS registry?`))) {
       return;
     }
     const filtered = devices.filter(d => d.id !== device.id);
     setDevices(filtered);
     saveStoredDevices(filtered);
-    showToast('Đã Xóa Thiết Bị', `Thiết bị #${device.id.toUpperCase()} đã được gỡ khỏi danh sách quản lý.`, 'info');
+    showToast(t('Đã Xóa Thiết Bị', 'Equipment Deleted'), t(`Thiết bị #${device.id.toUpperCase()} đã được gỡ khỏi danh sách quản lý.`, `Equipment #${device.id.toUpperCase()} removed from registry.`), 'info');
   };
 
   // Reset về demo ban đầu nếu cần
   const handleResetDemo = () => {
-    if (!window.confirm('Khôi phục danh sách thiết bị về mặc định ban đầu của tòa nhà?')) return;
+    if (!window.confirm(t('Khôi phục danh sách thiết bị về mặc định ban đầu của tòa nhà?', 'Restore equipment registry to default Tropical specifications?'))) return;
     setDevices(DEMO_DEVICES);
     saveStoredDevices(DEMO_DEVICES);
-    showToast('Đã Khôi Phục', 'Đã tải lại cấu hình thiết bị chuẩn hạ tầng The Tropical.');
+    showToast(t('Đã Khôi Phục', 'Restored'), t('Đã tải lại cấu hình thiết bị chuẩn hạ tầng The Tropical.', 'Reloaded standard The Tropical facility specifications.'));
   };
 
   // Filtered devices
@@ -319,14 +327,32 @@ export default function DeviceHealth() {
   const avgHealth = totalCount > 0 ? (devices.reduce((acc, d) => acc + d.health_score, 0) / totalCount).toFixed(1) : '100';
 
   const categories = [
-    'ALL',
-    'Thang máy',
-    'Máy bơm',
-    'Hệ thống PCCC',
-    'Trạm biến áp',
-    'Barrier',
-    'Thông gió & Hút khói'
+    { key: 'ALL', label: t('Tất Cả Danh Mục', 'All Categories') },
+    { key: 'Thang máy', label: t('Thang máy', 'Elevator') },
+    { key: 'Máy bơm', label: t('Máy bơm', 'Water Pump') },
+    { key: 'Hệ thống PCCC', label: t('Hệ thống PCCC', 'Fire Safety') },
+    { key: 'Trạm biến áp', label: t('Trạm biến áp', 'Transformer & Gen') },
+    { key: 'Barrier', label: t('Barrier & An ninh', 'Barrier & Security') },
+    { key: 'Thông gió & Hút khói', label: t('Thông gió & Hút khói', 'Ventilation & Smoke') }
   ];
+
+  const getStatusBadge = (status: Device['status'], isDanger: boolean, isWarning: boolean) => {
+    const label = status === 'Hoạt động tốt' 
+      ? t('Hoạt động tốt', 'Normal') 
+      : status === 'Cần kiểm tra' 
+      ? t('Cần kiểm tra', 'Inspect') 
+      : t('Cảnh báo hỏng', 'Warning');
+
+    return (
+      <span className={`px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wider shrink-0 rounded-none ${
+        isDanger ? 'bg-red-950 text-red-400 border border-red-500' :
+        isWarning ? 'bg-amber-950 text-amber-400 border border-amber-500' :
+        'bg-emerald-950 text-emerald-400 border border-emerald-500'
+      }`}>
+        {label}
+      </span>
+    );
+  };
 
   return (
     <div className="space-y-6 relative animate-fadeIn">
@@ -355,10 +381,10 @@ export default function DeviceHealth() {
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-[#222B35] pb-4">
         <div>
           <div className="text-[10px] uppercase tracking-[0.25em] text-[#C5A880] font-semibold flex items-center gap-1.5">
-            <Radio className="w-3.5 h-3.5 animate-pulse text-emerald-400" /> Hạ Tầng Kỹ Thuật • BMS IoT Toàn Tòa
+            <Radio className="w-3.5 h-3.5 animate-pulse text-emerald-400" /> {t('Hạ Tầng Kỹ Thuật • BMS IoT Toàn Tòa', 'Technical Infrastructure • Facility BMS IoT')}
           </div>
           <h2 className="font-serif text-2xl text-white font-bold mt-1">
-            Quản Lý Thiết Bị & Sức Khỏe BMS
+            {t('Quản Lý Thiết Bị & Sức Khỏe BMS', 'Equipment Management & BMS Health')}
           </h2>
         </div>
 
@@ -367,14 +393,14 @@ export default function DeviceHealth() {
             onClick={handleScanAll}
             disabled={isScanning}
             className="px-3.5 py-2 bg-[#161B22] border border-[#2D3748] hover:border-[#C5A880] text-gray-200 text-xs font-semibold uppercase tracking-wider transition-all flex items-center gap-1.5 rounded-none"
-            title="Quét dữ liệu cảm biến IoT thời gian thực"
+            title={t('Quét dữ liệu cảm biến IoT thời gian thực', 'Scan real-time IoT sensor telemetry')}
           >
             {isScanning ? (
               <RefreshCw className="w-3.5 h-3.5 text-[#C5A880] animate-spin" />
             ) : (
               <Cpu className="w-3.5 h-3.5 text-[#C5A880]" />
             )}
-            <span>{isScanning ? 'Đang Chẩn Đoán...' : 'Chẩn Đoán Radar IoT'}</span>
+            <span>{isScanning ? t('Đang Chẩn Đoán...', 'Diagnosing...') : t('Chẩn Đoán Radar IoT', 'IoT Radar Diagnosis')}</span>
           </button>
 
           <button
@@ -382,7 +408,7 @@ export default function DeviceHealth() {
             className="px-3.5 py-2 bg-[#C5A880] hover:bg-white text-[#0D1117] text-xs font-bold uppercase tracking-wider transition-colors flex items-center gap-1.5 rounded-none shadow"
           >
             <Plus className="w-4 h-4" />
-            <span>Thêm Thiết Bị</span>
+            <span>{t('Thêm Thiết Bị', 'Add Equipment')}</span>
           </button>
         </div>
       </div>
@@ -391,46 +417,46 @@ export default function DeviceHealth() {
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         <div className="p-4 bg-[#121820] border border-[#222B35] space-y-1 rounded-none">
           <div className="flex items-center justify-between text-xs text-gray-400">
-            <span>Tổng Trạm Thiết Bị</span>
+            <span>{t('Tổng Trạm Thiết Bị', 'Total Equipment')}</span>
             <Server className="w-4 h-4 text-[#C5A880]" />
           </div>
           <div className="font-serif text-2xl font-bold text-white mt-1">
-            {totalCount} <span className="text-xs font-sans text-gray-500 font-normal">cụm</span>
+            {totalCount} <span className="text-xs font-sans text-gray-500 font-normal">{t('cụm', 'units')}</span>
           </div>
-          <div className="text-[10px] text-gray-400 font-mono">Bao gồm 4 tòa BS-07 - BS-10</div>
+          <div className="text-[10px] text-gray-400 font-mono">{t('Bao gồm 4 tòa BS-07 - BS-10', 'Covering 4 towers BS-07 - BS-10')}</div>
         </div>
 
         <div className="p-4 bg-[#121820] border border-emerald-500/30 space-y-1 rounded-none">
           <div className="flex items-center justify-between text-xs text-emerald-400">
-            <span>Vận Hành Ổn Định</span>
+            <span>{t('Vận Hành Ổn Định', 'Operating Normally')}</span>
             <CheckCircle2 className="w-4 h-4 text-emerald-400" />
           </div>
           <div className="font-serif text-2xl font-bold text-emerald-400 mt-1">
-            {healthyCount} <span className="text-xs font-sans text-emerald-500/80 font-normal">trạm</span>
+            {healthyCount} <span className="text-xs font-sans text-emerald-500/80 font-normal">{t('trạm', 'units')}</span>
           </div>
-          <div className="text-[10px] text-emerald-500 font-mono">Điểm sức khỏe AI ≥ 80%</div>
+          <div className="text-[10px] text-emerald-500 font-mono">{t('Điểm sức khỏe AI ≥ 80%', 'AI Health Score ≥ 80%')}</div>
         </div>
 
         <div className="p-4 bg-[#121820] border border-amber-500/30 space-y-1 rounded-none">
           <div className="flex items-center justify-between text-xs text-amber-400">
-            <span>Cần Bảo Dưỡng / Cảnh Báo</span>
+            <span>{t('Cần Bảo Dưỡng / Cảnh Báo', 'Maintenance / Warning')}</span>
             <AlertTriangle className="w-4 h-4 text-amber-400" />
           </div>
           <div className="font-serif text-2xl font-bold text-amber-400 mt-1">
-            {warningCount} <span className="text-xs font-sans text-amber-500/80 font-normal">trạm</span>
+            {warningCount} <span className="text-xs font-sans text-amber-500/80 font-normal">{t('trạm', 'units')}</span>
           </div>
-          <div className="text-[10px] text-amber-500 font-mono">Khuyến nghị lập lịch bảo trì</div>
+          <div className="text-[10px] text-amber-500 font-mono">{t('Khuyến nghị lập lịch bảo trì', 'Maintenance recommended')}</div>
         </div>
 
         <div className="p-4 bg-[#121820] border border-[#222B35] space-y-1 rounded-none">
           <div className="flex items-center justify-between text-xs text-gray-400">
-            <span>Chỉ Số Sức Khỏe AI Toàn Khu</span>
+            <span>{t('Chỉ Số Sức Khỏe AI Toàn Khu', 'System-wide AI Health Score')}</span>
             <Activity className="w-4 h-4 text-[#C5A880]" />
           </div>
           <div className="font-serif text-2xl font-bold text-[#C5A880] mt-1 font-mono">
             {avgHealth} <span className="text-xs font-sans text-gray-400 font-normal">/ 100</span>
           </div>
-          <div className="text-[10px] text-gray-400 font-mono">Đánh giá theo chuẩn BMS Otis & Schneider</div>
+          <div className="text-[10px] text-gray-400 font-mono">{t('Đánh giá theo chuẩn BMS Otis & Schneider', 'Rated by Otis & Schneider standards')}</div>
         </div>
       </div>
 
@@ -441,7 +467,7 @@ export default function DeviceHealth() {
           <Search className="w-4 h-4 text-gray-400 absolute left-3 top-2.5" />
           <input
             type="text"
-            placeholder="Tìm theo tên thiết bị, mã thiết bị (#DEV-01), vị trí..."
+            placeholder={t('Tìm theo tên thiết bị, mã thiết bị (#DEV-01), vị trí...', 'Search by equipment name, ID (#DEV-01), location...')}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="w-full bg-[#161B22] border border-[#2D3748] text-xs text-white pl-9 pr-3 py-2 focus:outline-none focus:border-[#C5A880] rounded-none"
@@ -455,9 +481,9 @@ export default function DeviceHealth() {
             onChange={(e: any) => setHealthFilter(e.target.value)}
             className="bg-[#161B22] border border-[#2D3748] text-xs text-gray-300 py-2 px-2.5 focus:outline-none focus:border-[#C5A880] rounded-none"
           >
-            <option value="ALL">Mọi trạng thái sức khỏe</option>
-            <option value="HEALTHY">Hoạt động tốt (≥ 80%)</option>
-            <option value="WARNING">Cần bảo dưỡng (&lt; 80%)</option>
+            <option value="ALL">{t('Mọi trạng thái sức khỏe', 'All Health Statuses')}</option>
+            <option value="HEALTHY">{t('Hoạt động tốt (≥ 80%)', 'Operating Well (≥ 80%)')}</option>
+            <option value="WARNING">{t('Cần bảo dưỡng (< 80%)', 'Maintenance Needed (< 80%)')}</option>
           </select>
 
           {/* View Toggle */}
@@ -465,14 +491,14 @@ export default function DeviceHealth() {
             <button
               onClick={() => setViewMode('GRID')}
               className={`p-2 transition-colors ${viewMode === 'GRID' ? 'bg-[#C5A880] text-[#0D1117]' : 'text-gray-400 hover:text-white'}`}
-              title="Dạng Lưới Thẻ IoT"
+              title={t('Dạng Lưới Thẻ IoT', 'IoT Grid View')}
             >
               <LayoutGrid className="w-3.5 h-3.5" />
             </button>
             <button
               onClick={() => setViewMode('TABLE')}
               className={`p-2 transition-colors ${viewMode === 'TABLE' ? 'bg-[#C5A880] text-[#0D1117]' : 'text-gray-400 hover:text-white'}`}
-              title="Dạng Bảng Kiểm Kê"
+              title={t('Dạng Bảng Kiểm Kê', 'Inventory Table View')}
             >
               <List className="w-3.5 h-3.5" />
             </button>
@@ -484,15 +510,15 @@ export default function DeviceHealth() {
       <div className="flex items-center gap-1.5 overflow-x-auto pb-1 text-xs">
         {categories.map((cat) => (
           <button
-            key={cat}
-            onClick={() => setCategoryFilter(cat)}
+            key={cat.key}
+            onClick={() => setCategoryFilter(cat.key)}
             className={`px-3 py-1.5 border whitespace-nowrap text-xs transition-colors rounded-none ${
-              categoryFilter === cat
+              categoryFilter === cat.key
                 ? 'bg-[#C5A880] text-[#0D1117] border-[#C5A880] font-bold'
                 : 'bg-[#121820] border-[#222B35] text-gray-300 hover:border-gray-500'
             }`}
           >
-            {cat === 'ALL' ? 'Tất Cả Danh Mục' : cat}
+            {cat.label}
           </button>
         ))}
       </div>
@@ -524,25 +550,19 @@ export default function DeviceHealth() {
                       {device.name}
                     </h3>
                     <div className="text-[11px] text-gray-400 mt-0.5 flex items-center gap-1 truncate">
-                      <span>Vị trí:</span>
+                      <span>{t('Vị trí:', 'Location:')}</span>
                       <span className="text-gray-300">{device.location}</span>
                     </div>
                   </div>
 
-                  <span className={`px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wider shrink-0 rounded-none ${
-                    isDanger ? 'bg-red-950 text-red-400 border border-red-500' :
-                    isWarning ? 'bg-amber-950 text-amber-400 border border-amber-500' :
-                    'bg-emerald-950 text-emerald-400 border border-emerald-500'
-                  }`}>
-                    {device.status}
-                  </span>
+                  {getStatusBadge(device.status, isDanger, isWarning)}
                 </div>
 
                 {/* AI Health Score Bar */}
                 <div className="space-y-1">
                   <div className="flex justify-between text-xs">
                     <span className="text-gray-400 flex items-center gap-1">
-                      <Activity className="w-3.5 h-3.5 text-[#C5A880]" /> Sức khỏe AI:
+                      <Activity className="w-3.5 h-3.5 text-[#C5A880]" /> {t('Sức khỏe AI:', 'AI Health:')}
                     </span>
                     <strong className={`font-mono text-sm ${
                       isDanger ? 'text-red-400' : isWarning ? 'text-amber-400' : 'text-emerald-400'
@@ -564,15 +584,15 @@ export default function DeviceHealth() {
                 {/* Live Telemetrics mini strip */}
                 <div className="grid grid-cols-3 gap-1.5 p-2 bg-[#0E131B] border border-[#222B35] font-mono text-center text-[10px]">
                   <div>
-                    <span className="text-gray-500 block text-[9px]">RUNG ĐỘNG</span>
+                    <span className="text-gray-500 block text-[9px]">{t('RUNG ĐỘNG', 'VIBRATION')}</span>
                     <span className="text-emerald-400 font-bold">1.2 mm/s</span>
                   </div>
                   <div className="border-x border-[#222B35]">
-                    <span className="text-gray-500 block text-[9px]">NHIỆT ĐỘ</span>
+                    <span className="text-gray-500 block text-[9px]">{t('NHIỆT ĐỘ', 'TEMP')}</span>
                     <span className="text-amber-400 font-bold">42.5 °C</span>
                   </div>
                   <div>
-                    <span className="text-gray-500 block text-[9px]">DÒNG TẢI</span>
+                    <span className="text-gray-500 block text-[9px]">{t('DÒNG TẢI', 'CURRENT')}</span>
                     <span className="text-white font-bold">18.6 A</span>
                   </div>
                 </div>
@@ -581,12 +601,12 @@ export default function DeviceHealth() {
                 <div className="p-2.5 bg-[#161B22] border border-[#222B35] space-y-1 text-xs">
                   <div className="flex justify-between">
                     <span className="text-gray-400 flex items-center gap-1">
-                      <Sparkles className="w-3.5 h-3.5 text-[#C5A880]" /> Dự báo bảo dưỡng:
+                      <Sparkles className="w-3.5 h-3.5 text-[#C5A880]" /> {t('Dự báo bảo dưỡng:', 'Forecasted Maint:')}
                     </span>
                     <strong className="text-[#C5A880] font-mono">{device.predict_date}</strong>
                   </div>
                   <div className="flex justify-between text-gray-400 text-[11px]">
-                    <span>Bảo trì gần nhất:</span>
+                    <span>{t('Bảo trì gần nhất:', 'Last Maint:')}</span>
                     <span className="font-mono text-gray-300">{device.last_maintenance}</span>
                   </div>
                 </div>
@@ -597,14 +617,14 @@ export default function DeviceHealth() {
                     <button
                       onClick={() => handleOpenEditModal(device)}
                       className="p-1.5 text-gray-400 hover:text-white border border-[#222B35] hover:border-[#C5A880] rounded-none transition-colors"
-                      title="Sửa thông số thiết bị"
+                      title={t('Sửa thông số thiết bị', 'Edit equipment details')}
                     >
                       <Edit className="w-3.5 h-3.5" />
                     </button>
                     <button
                       onClick={() => handleDeleteDevice(device)}
                       className="p-1.5 text-gray-400 hover:text-rose-400 border border-[#222B35] hover:border-rose-500 rounded-none transition-colors"
-                      title="Xóa thiết bị"
+                      title={t('Xóa thiết bị', 'Delete equipment')}
                     >
                       <Trash2 className="w-3.5 h-3.5" />
                     </button>
@@ -616,14 +636,14 @@ export default function DeviceHealth() {
                       className="px-2.5 py-1.5 bg-[#1C2533] border border-gray-700 hover:border-gray-400 text-xs text-gray-200 transition-colors flex items-center gap-1 rounded-none"
                     >
                       <FileText className="w-3 h-3 text-[#C5A880]" />
-                      <span>Lý Lịch</span>
+                      <span>{t('Lý Lịch', 'Dossier')}</span>
                     </button>
                     <button 
                       onClick={() => handleOpenMaintenanceModal(device)}
                       className="px-3 py-1.5 bg-[#C5A880] text-[#0D1117] text-xs font-bold uppercase tracking-wider hover:bg-white transition-colors flex items-center gap-1 rounded-none shadow"
                     >
                       <Wrench className="w-3 h-3" />
-                      <span>Lập Phiếu Bảo Trì</span>
+                      <span>{t('Lập Phiếu Bảo Trì', 'Issue Ticket')}</span>
                     </button>
                   </div>
                 </div>
@@ -639,13 +659,13 @@ export default function DeviceHealth() {
           <table className="w-full text-left text-xs text-gray-300">
             <thead className="bg-[#0E131B] text-[10px] uppercase font-mono tracking-wider text-gray-400 border-b border-[#222B35]">
               <tr>
-                <th className="p-3">Mã</th>
-                <th className="p-3">Tên Thiết Bị & Vị Trí</th>
-                <th className="p-3">Danh Mục</th>
-                <th className="p-3">Sức Khỏe AI</th>
-                <th className="p-3">Dự Báo Bảo Dưỡng</th>
-                <th className="p-3">Trạng Thái</th>
-                <th className="p-3 text-right">Thao Tác</th>
+                <th className="p-3">{t('Mã', 'ID')}</th>
+                <th className="p-3">{t('Tên Thiết Bị & Vị Trí', 'Equipment & Location')}</th>
+                <th className="p-3">{t('Danh Mục', 'Category')}</th>
+                <th className="p-3">{t('Sức Khỏe AI', 'AI Health')}</th>
+                <th className="p-3">{t('Dự Báo Bảo Dưỡng', 'Maintenance Due')}</th>
+                <th className="p-3">{t('Trạng Thái', 'Status')}</th>
+                <th className="p-3 text-right">{t('Thao Tác', 'Actions')}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-[#1E2630]">
@@ -676,40 +696,34 @@ export default function DeviceHealth() {
                       {device.predict_date}
                     </td>
                     <td className="p-3">
-                      <span className={`px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider rounded-none ${
-                        isDanger ? 'bg-red-950 text-red-400 border border-red-500' :
-                        isWarning ? 'bg-amber-950 text-amber-400 border border-amber-500' :
-                        'bg-emerald-950 text-emerald-400 border border-emerald-500'
-                      }`}>
-                        {device.status}
-                      </span>
+                      {getStatusBadge(device.status, isDanger, isWarning)}
                     </td>
                     <td className="p-3 text-right space-x-1">
                       <button
                         onClick={() => setSelectedDeviceForHistory(device)}
                         className="px-2 py-1 bg-[#1C2533] hover:bg-[#2D3748] text-[11px] text-gray-300 rounded-none border border-gray-700"
-                        title="Xem lý lịch"
+                        title={t('Xem lý lịch', 'View dossier')}
                       >
-                        Lý Lịch
+                        {t('Lý Lịch', 'Dossier')}
                       </button>
                       <button
                         onClick={() => handleOpenMaintenanceModal(device)}
                         className="px-2 py-1 bg-[#C5A880] hover:bg-white text-[11px] text-[#0D1117] font-bold rounded-none"
-                        title="Lập phiếu bảo trì"
+                        title={t('Lập phiếu bảo trì', 'Issue ticket')}
                       >
-                        Bảo Trì
+                        {t('Bảo Trì', 'Ticket')}
                       </button>
                       <button
                         onClick={() => handleOpenEditModal(device)}
                         className="px-2 py-1 bg-transparent hover:bg-[#1E2630] text-[11px] text-gray-400 hover:text-white rounded-none border border-transparent hover:border-gray-700"
                       >
-                        Sửa
+                        {t('Sửa', 'Edit')}
                       </button>
                       <button
                         onClick={() => handleDeleteDevice(device)}
                         className="px-2 py-1 bg-transparent hover:bg-rose-950 text-[11px] text-gray-400 hover:text-rose-400 rounded-none border border-transparent hover:border-rose-700"
                       >
-                        Xóa
+                        {t('Xóa', 'Delete')}
                       </button>
                     </td>
                   </tr>
@@ -724,13 +738,13 @@ export default function DeviceHealth() {
       {filteredDevices.length === 0 && (
         <div className="p-12 text-center bg-[#121820] border border-[#222B35] space-y-3 rounded-none">
           <Server className="w-10 h-10 text-gray-500 mx-auto" />
-          <div className="text-white font-semibold">Không tìm thấy thiết bị phù hợp</div>
-          <p className="text-xs text-gray-400">Hãy thử tìm kiếm từ khóa khác hoặc bấm khôi phục danh sách mặc định.</p>
+          <div className="text-white font-semibold">{t('Không tìm thấy thiết bị phù hợp', 'No matching equipment found')}</div>
+          <p className="text-xs text-gray-400">{t('Hãy thử tìm kiếm từ khóa khác hoặc bấm khôi phục danh sách mặc định.', 'Try another keyword or restore default equipment list.')}</p>
           <button
             onClick={handleResetDemo}
             className="px-3.5 py-1.5 bg-[#161B22] border border-[#C5A880] text-[#C5A880] text-xs font-semibold rounded-none hover:bg-[#C5A880] hover:text-[#0D1117] transition-colors"
           >
-            Khôi Phục Danh Mục Chuẩn The Tropical
+            {t('Khôi Phục Danh Mục Chuẩn The Tropical', 'Restore The Tropical Standard Registry')}
           </button>
         </div>
       )}
@@ -745,7 +759,7 @@ export default function DeviceHealth() {
               <div className="flex items-center gap-2">
                 <ShieldCheck className="w-5 h-5 text-[#C5A880]" />
                 <h3 className="font-serif text-lg font-bold text-white">
-                  Hồ Sơ Lý Lịch Kỹ Thuật • {selectedDeviceForHistory.category}
+                  {t('Hồ Sơ Lý Lịch Kỹ Thuật', 'Technical Dossier')} • {selectedDeviceForHistory.category}
                 </h3>
               </div>
               <button 
@@ -761,12 +775,12 @@ export default function DeviceHealth() {
               <div className="p-3.5 bg-[#161B22] border border-[#2D3748] space-y-2 rounded-none">
                 <div className="font-bold text-sm text-[#C5A880]">{selectedDeviceForHistory.name}</div>
                 <div className="grid grid-cols-2 gap-2 text-gray-300">
-                  <div>Mã thiết bị: <span className="font-mono text-white">#{selectedDeviceForHistory.id.toUpperCase()}</span></div>
-                  <div>Vị trí: <span className="text-white">{selectedDeviceForHistory.location}</span></div>
-                  <div>Năm đưa vào vận hành: <span className="text-white">2024</span></div>
-                  <div>Tiêu chuẩn kỹ thuật: <span className="text-emerald-400 font-mono">ISO 9001:2015 / TCVN</span></div>
-                  <div>Trạng thái hiện tại: <span className="text-emerald-400 font-bold">{selectedDeviceForHistory.status}</span></div>
-                  <div>Chu kỳ kiểm định: <span className="text-white font-mono">03 tháng/lần</span></div>
+                  <div>{t('Mã thiết bị:', 'Equipment ID:')} <span className="font-mono text-white">#{selectedDeviceForHistory.id.toUpperCase()}</span></div>
+                  <div>{t('Vị trí:', 'Location:')} <span className="text-white">{selectedDeviceForHistory.location}</span></div>
+                  <div>{t('Năm đưa vào vận hành:', 'Commissioning Year:')} <span className="text-white">2024</span></div>
+                  <div>{t('Tiêu chuẩn kỹ thuật:', 'Technical Standard:')} <span className="text-emerald-400 font-mono">ISO 9001:2015 / TCVN</span></div>
+                  <div>{t('Trạng thái hiện tại:', 'Current Status:')} <span className="text-emerald-400 font-bold">{selectedDeviceForHistory.status}</span></div>
+                  <div>{t('Chu kỳ kiểm định:', 'Inspection Interval:')} <span className="text-white font-mono">{t('03 tháng/lần', 'Every 3 months')}</span></div>
                 </div>
               </div>
 
@@ -774,28 +788,28 @@ export default function DeviceHealth() {
               <div className="space-y-2">
                 <div className="font-bold text-white uppercase tracking-wider flex items-center gap-1.5">
                   <Gauge className="w-4 h-4 text-cyan-400" />
-                  <span>Dữ Liệu Cảm Biến IoT Trực Tuyến (Telemetrics)</span>
+                  <span>{t('Dữ Liệu Cảm Biến IoT Trực Tuyến (Telemetrics)', 'Real-time IoT Telemetrics')}</span>
                 </div>
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 font-mono">
                   <div className="p-2.5 bg-[#0D1520] border border-[#222B35] text-center rounded-none">
-                    <div className="text-[10px] text-gray-400 font-sans">Độ Rung Động</div>
+                    <div className="text-[10px] text-gray-400 font-sans">{t('Độ Rung Động', 'Vibration')}</div>
                     <div className="font-bold text-emerald-400 text-sm mt-0.5">1.3 mm/s</div>
-                    <div className="text-[9px] text-gray-500 font-sans">Tiêu chuẩn &lt; 2.8</div>
+                    <div className="text-[9px] text-gray-500 font-sans">{t('Tiêu chuẩn < 2.8', 'Standard < 2.8')}</div>
                   </div>
                   <div className="p-2.5 bg-[#0D1520] border border-[#222B35] text-center rounded-none">
-                    <div className="text-[10px] text-gray-400 font-sans">Nhiệt Độ Cuộn Dây</div>
+                    <div className="text-[10px] text-gray-400 font-sans">{t('Nhiệt Độ Cuộn Dây', 'Coil Temp')}</div>
                     <div className="font-bold text-amber-400 text-sm mt-0.5">43.8 °C</div>
-                    <div className="text-[9px] text-gray-500 font-sans">Ngưỡng &lt; 65°C</div>
+                    <div className="text-[9px] text-gray-500 font-sans">{t('Ngưỡng < 65°C', 'Threshold < 65°C')}</div>
                   </div>
                   <div className="p-2.5 bg-[#0D1520] border border-[#222B35] text-center rounded-none">
-                    <div className="text-[10px] text-gray-400 font-sans">Dòng Tải 3 Pha</div>
+                    <div className="text-[10px] text-gray-400 font-sans">{t('Dòng Tải 3 Pha', '3-Phase Current')}</div>
                     <div className="font-bold text-white text-sm mt-0.5">18.2 A</div>
-                    <div className="text-[9px] text-gray-500 font-sans">Định mức 25A</div>
+                    <div className="text-[9px] text-gray-500 font-sans">{t('Định mức 25A', 'Rated 25A')}</div>
                   </div>
                   <div className="p-2.5 bg-[#0D1520] border border-[#222B35] text-center rounded-none">
-                    <div className="text-[10px] text-gray-400 font-sans">Điểm Sức Khỏe AI</div>
+                    <div className="text-[10px] text-gray-400 font-sans">{t('Điểm Sức Khỏe AI', 'AI Health Score')}</div>
                     <div className="font-bold text-[#C5A880] text-sm mt-0.5">{selectedDeviceForHistory.health_score.toFixed(1)}/100</div>
-                    <div className="text-[9px] text-emerald-400 font-sans">Vận hành tốt</div>
+                    <div className="text-[9px] text-emerald-400 font-sans">{t('Vận hành tốt', 'Normal')}</div>
                   </div>
                 </div>
               </div>
@@ -804,25 +818,25 @@ export default function DeviceHealth() {
               <div className="space-y-2">
                 <div className="font-bold text-white uppercase tracking-wider flex items-center gap-1.5">
                   <Clock className="w-4 h-4 text-amber-400" />
-                  <span>Nhật Ký Các Đợt Bảo Trì Gần Nhất</span>
+                  <span>{t('Nhật Ký Các Đợt Bảo Trì Gần Nhất', 'Recent Maintenance Logs')}</span>
                 </div>
                 <div className="space-y-1.5">
                   <div className="p-2.5 bg-[#161B22] border border-[#222B35] flex items-center justify-between rounded-none">
                     <div>
-                      <div className="font-semibold text-white">{selectedDeviceForHistory.last_maintenance} • Bảo dưỡng định kỳ Q3/2026</div>
-                      <div className="text-[11px] text-gray-400">Siết ốc bu lông chân đế, bổ sung mỡ bôi trơn bạc đạn, kiểm tra dây curoa.</div>
+                      <div className="font-semibold text-white">{selectedDeviceForHistory.last_maintenance} • {t('Bảo dưỡng định kỳ Q3/2026', 'Routine Maintenance Q3/2026')}</div>
+                      <div className="text-[11px] text-gray-400">{t('Siết ốc bu lông chân đế, bổ sung mỡ bôi trơn bạc đạn, kiểm tra dây curoa.', 'Tightened base bolts, relubricated bearings, inspected drive belt.')}</div>
                     </div>
                     <span className="px-2 py-0.5 bg-emerald-950 border border-emerald-500 text-emerald-400 text-[10px] font-bold rounded-none">
-                      HOÀN TẤT
+                      {t('HOÀN TẤT', 'COMPLETED')}
                     </span>
                   </div>
                   <div className="p-2.5 bg-[#161B22] border border-[#222B35] flex items-center justify-between rounded-none">
                     <div>
-                      <div className="font-semibold text-white">2026-05-18 • Kiểm tra an toàn điện & PCCC định kỳ Q2/2026</div>
-                      <div className="text-[11px] text-gray-400">Đo điện trở tiếp địa rò & thử tải chuyển mạch tự động ATS.</div>
+                      <div className="font-semibold text-white">2026-05-18 • {t('Kiểm tra an toàn điện & PCCC định kỳ Q2/2026', 'Electrical & Fire Safety Check Q2/2026')}</div>
+                      <div className="text-[11px] text-gray-400">{t('Đo điện trở tiếp địa rò & thử tải chuyển mạch tự động ATS.', 'Measured ground resistance and tested ATS automatic transfer switch load.')}</div>
                     </div>
                     <span className="px-2 py-0.5 bg-emerald-950 border border-emerald-500 text-emerald-400 text-[10px] font-bold rounded-none">
-                      HOÀN TẤT
+                      {t('HOÀN TẤT', 'COMPLETED')}
                     </span>
                   </div>
                 </div>
@@ -838,7 +852,7 @@ export default function DeviceHealth() {
                 className="px-4 py-2 bg-[#1C2533] border border-[#2D3748] hover:border-[#C5A880] text-gray-200 text-xs font-semibold uppercase tracking-wider transition-all flex items-center gap-1.5 rounded-none"
               >
                 {isExportingPdf ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Download className="w-3.5 h-3.5 text-[#C5A880]" />}
-                <span>{isExportingPdf ? 'Đang Xuất PDF...' : 'Xuất Hồ Sơ Kỹ Thuật PDF'}</span>
+                <span>{isExportingPdf ? t('Đang Xuất PDF...', 'Exporting PDF...') : t('Xuất Hồ Sơ Kỹ Thuật PDF', 'Export Technical Dossier PDF')}</span>
               </button>
 
               <button
@@ -846,7 +860,7 @@ export default function DeviceHealth() {
                 onClick={() => setSelectedDeviceForHistory(null)}
                 className="px-5 py-2 bg-[#C5A880] hover:bg-white text-[#0D1117] text-xs font-bold uppercase tracking-wider transition-colors shadow rounded-none"
               >
-                Đóng
+                {t('Đóng', 'Close')}
               </button>
             </div>
           </div>
@@ -863,7 +877,7 @@ export default function DeviceHealth() {
               <div className="flex items-center gap-2">
                 <Wrench className="w-5 h-5 text-[#C5A880]" />
                 <h3 className="font-serif text-lg font-bold text-white">
-                  Lập Phiếu Bảo Trì Dự Phòng
+                  {t('Lập Phiếu Bảo Trì Dự Phòng', 'Issue Preventive Maintenance Ticket')}
                 </h3>
               </div>
               <button 
@@ -875,12 +889,12 @@ export default function DeviceHealth() {
             </div>
 
             <div className="p-3 bg-[#161B22] border border-[#2D3748] text-xs space-y-1 rounded-none">
-              <div>Thiết bị chỉ định: <strong className="text-white text-sm">{selectedDeviceForMaintenance.name}</strong></div>
-              <div>Vị trí: <span className="text-gray-300">{selectedDeviceForMaintenance.location}</span></div>
+              <div>{t('Thiết bị chỉ định:', 'Target Equipment:')} <strong className="text-white text-sm">{selectedDeviceForMaintenance.name}</strong></div>
+              <div>{t('Vị trí:', 'Location:')} <span className="text-gray-300">{selectedDeviceForMaintenance.location}</span></div>
               <div className="flex items-center gap-2 pt-1 flex-wrap">
-                <span className="text-gray-400">Điểm sức khỏe:</span>
+                <span className="text-gray-400">{t('Điểm sức khỏe:', 'Health Score:')}</span>
                 <strong className="text-emerald-400 font-mono">{selectedDeviceForMaintenance.health_score.toFixed(1)}/100</strong>
-                <span className="text-gray-400 ml-2">AI đề xuất:</span>
+                <span className="text-gray-400 ml-2">{t('AI đề xuất:', 'AI Recommendation:')}</span>
                 <strong className="text-[#C5A880] font-mono">{selectedDeviceForMaintenance.predict_date}</strong>
               </div>
             </div>
@@ -888,7 +902,7 @@ export default function DeviceHealth() {
             {/* Form Fields */}
             <div className="space-y-3 text-xs">
               <div>
-                <label className="block text-gray-400 mb-1">Kỹ thuật viên phụ trách:</label>
+                <label className="block text-gray-400 mb-1">{t('Kỹ thuật viên phụ trách:', 'Assigned Technician:')}</label>
                 {technicians.length > 0 ? (
                   <select
                     value={selectedTechId}
@@ -899,9 +913,9 @@ export default function DeviceHealth() {
                     }}
                     className="w-full bg-[#161B22] border border-[#2D3748] p-2 text-white focus:outline-none focus:border-[#C5A880] rounded-none"
                   >
-                    {technicians.map((t) => (
-                      <option key={t.id} value={t.id}>
-                        {t.name} • {t.specialty} ({t.phone})
+                    {technicians.map((tItem) => (
+                      <option key={tItem.id} value={tItem.id}>
+                        {tItem.name} • {tItem.specialty} ({tItem.phone})
                       </option>
                     ))}
                   </select>
@@ -917,20 +931,20 @@ export default function DeviceHealth() {
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-gray-400 mb-1">Mức độ ưu tiên:</label>
+                  <label className="block text-gray-400 mb-1">{t('Mức độ ưu tiên:', 'Priority Level:')}</label>
                   <select
                     value={priority}
                     onChange={(e: any) => setPriority(e.target.value)}
                     className="w-full bg-[#161B22] border border-[#2D3748] p-2 text-white focus:outline-none focus:border-[#C5A880] rounded-none"
                   >
-                    <option value="Bình thường">Bình thường (Định kỳ)</option>
-                    <option value="Cao">Cao (Khuyến nghị AI)</option>
-                    <option value="Cấp bách">Cấp bách (Cảnh báo rung/nhiệt)</option>
+                    <option value="Bình thường">{t('Bình thường (Định kỳ)', 'Normal (Routine)')}</option>
+                    <option value="Cao">{t('Cao (Khuyến nghị AI)', 'High (AI Suggested)')}</option>
+                    <option value="Cấp bách">{t('Cấp bách (Cảnh báo rung/nhiệt)', 'Urgent (Temp/Vibration Alert)')}</option>
                   </select>
                 </div>
 
                 <div>
-                  <label className="block text-gray-400 mb-1">Ngày dự kiến thực hiện:</label>
+                  <label className="block text-gray-400 mb-1">{t('Ngày dự kiến thực hiện:', 'Scheduled Date:')}</label>
                   <input
                     type="date"
                     value={scheduledDate}
@@ -941,7 +955,7 @@ export default function DeviceHealth() {
               </div>
 
               <div>
-                <label className="block text-gray-400 mb-1">Nội dung chỉ đạo & Checklist kỹ thuật:</label>
+                <label className="block text-gray-400 mb-1">{t('Nội dung chỉ đạo & Checklist kỹ thuật:', 'Technical Scope & Checklist:')}</label>
                 <textarea
                   rows={3}
                   value={notes}
@@ -958,7 +972,7 @@ export default function DeviceHealth() {
                   onChange={(e) => setSyncToKanban(e.target.checked)}
                   className="rounded-none bg-[#0E131B] border-gray-600 text-[#C5A880] focus:ring-0 w-3.5 h-3.5"
                 />
-                <span>Đồng bộ tạo lệnh vào Trung Tâm Điều Phối Kỹ Thuật (Kanban BQL)</span>
+                <span>{t('Đồng bộ tạo lệnh vào Trung Tâm Điều Phối Kỹ Thuật (Kanban BQL)', 'Sync ticket to Management Technical Kanban')}</span>
               </label>
             </div>
 
@@ -971,7 +985,7 @@ export default function DeviceHealth() {
                 className="px-3.5 py-2 bg-[#1C2533] border border-[#2D3748] hover:border-[#C5A880] text-gray-200 text-xs font-semibold uppercase tracking-wider transition-all flex items-center gap-1.5 rounded-none"
               >
                 {isExportingPdf ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Download className="w-3.5 h-3.5 text-[#C5A880]" />}
-                <span>{isExportingPdf ? 'Đang Xuất...' : 'Tải File PDF'}</span>
+                <span>{isExportingPdf ? t('Đang Xuất...', 'Exporting...') : t('Tải File PDF', 'Download PDF')}</span>
               </button>
 
               <div className="flex gap-2">
@@ -980,14 +994,14 @@ export default function DeviceHealth() {
                   onClick={() => setSelectedDeviceForMaintenance(null)}
                   className="px-3 py-2 border border-gray-700 text-xs text-gray-400 hover:text-white rounded-none"
                 >
-                  Hủy
+                  {t('Hủy', 'Cancel')}
                 </button>
                 <button
                   type="button"
                   onClick={() => handleSaveMaintenanceTicket(selectedDeviceForMaintenance)}
                   className="px-5 py-2 bg-[#C5A880] hover:bg-white text-[#0D1117] text-xs font-bold uppercase tracking-wider transition-colors shadow flex items-center gap-1.5 rounded-none"
                 >
-                  <Check className="w-4 h-4" /> Xác Nhận Lưu Phiếu
+                  <Check className="w-4 h-4" /> {t('Xác Nhận Lưu Phiếu', 'Confirm & Save Ticket')}
                 </button>
               </div>
             </div>
@@ -1008,7 +1022,7 @@ export default function DeviceHealth() {
               <div className="flex items-center gap-2">
                 <Plus className="w-5 h-5 text-[#C5A880]" />
                 <h3 className="font-serif text-lg font-bold text-white">
-                  Thêm Thiết Bị Hạ Tầng BMS Mới
+                  {t('Thêm Thiết Bị Hạ Tầng BMS Mới', 'Add New BMS Infrastructure Equipment')}
                 </h3>
               </div>
               <button 
@@ -1022,10 +1036,10 @@ export default function DeviceHealth() {
 
             <div className="space-y-3 text-xs">
               <div>
-                <label className="block text-gray-400 mb-1 font-semibold">Tên thiết bị / Hệ thống:</label>
+                <label className="block text-gray-400 mb-1 font-semibold">{t('Tên thiết bị / Hệ thống:', 'Equipment / System Name:')}</label>
                 <input
                   type="text"
-                  placeholder="VD: Cụm Máy Bơm Nước Thải Wilo Hầm B2"
+                  placeholder={t('VD: Cụm Máy Bơm Nước Thải Wilo Hầm B2', 'e.g. Wilo Sewage Pump Submersible Station B2')}
                   value={formName}
                   onChange={(e) => setFormName(e.target.value)}
                   className="w-full bg-[#161B22] border border-[#2D3748] p-2 text-white focus:outline-none focus:border-[#C5A880] rounded-none"
@@ -1035,40 +1049,40 @@ export default function DeviceHealth() {
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-gray-400 mb-1 font-semibold">Phân loại:</label>
+                  <label className="block text-gray-400 mb-1 font-semibold">{t('Phân loại:', 'Category:')}</label>
                   <select
                     value={formCategory}
                     onChange={(e: any) => setFormCategory(e.target.value)}
                     className="w-full bg-[#161B22] border border-[#2D3748] p-2 text-white focus:outline-none focus:border-[#C5A880] rounded-none"
                   >
-                    <option value="Thang máy">Thang máy</option>
-                    <option value="Máy bơm">Máy bơm</option>
-                    <option value="Hệ thống PCCC">Hệ thống PCCC</option>
-                    <option value="Trạm biến áp">Trạm biến áp</option>
-                    <option value="Barrier">Barrier & An ninh</option>
-                    <option value="Thông gió & Hút khói">Thông gió & Hút khói</option>
+                    <option value="Thang máy">{t('Thang máy', 'Elevator')}</option>
+                    <option value="Máy bơm">{t('Máy bơm', 'Water Pump')}</option>
+                    <option value="Hệ thống PCCC">{t('Hệ thống PCCC', 'Fire Safety')}</option>
+                    <option value="Trạm biến áp">{t('Trạm biến áp', 'Transformer & Gen')}</option>
+                    <option value="Barrier">{t('Barrier & An ninh', 'Barrier & Security')}</option>
+                    <option value="Thông gió & Hút khói">{t('Thông gió & Hút khói', 'Ventilation & Smoke')}</option>
                   </select>
                 </div>
 
                 <div>
-                  <label className="block text-gray-400 mb-1 font-semibold">Trạng thái ban đầu:</label>
+                  <label className="block text-gray-400 mb-1 font-semibold">{t('Trạng thái ban đầu:', 'Initial Status:')}</label>
                   <select
                     value={formStatus}
                     onChange={(e: any) => setFormStatus(e.target.value)}
                     className="w-full bg-[#161B22] border border-[#2D3748] p-2 text-white focus:outline-none focus:border-[#C5A880] rounded-none"
                   >
-                    <option value="Hoạt động tốt">Hoạt động tốt</option>
-                    <option value="Cần kiểm tra">Cần kiểm tra</option>
-                    <option value="Cảnh báo hỏng">Cảnh báo hỏng</option>
+                    <option value="Hoạt động tốt">{t('Hoạt động tốt', 'Normal Operation')}</option>
+                    <option value="Cần kiểm tra">{t('Cần kiểm tra', 'Inspection Needed')}</option>
+                    <option value="Cảnh báo hỏng">{t('Cảnh báo hỏng', 'Warning / Fault')}</option>
                   </select>
                 </div>
               </div>
 
               <div>
-                <label className="block text-gray-400 mb-1 font-semibold">Vị trí lắp đặt:</label>
+                <label className="block text-gray-400 mb-1 font-semibold">{t('Vị trí lắp đặt:', 'Installation Location:')}</label>
                 <input
                   type="text"
-                  placeholder="VD: Tòa BS-08 (Tầng B2 -> Tầng 30)"
+                  placeholder={t('VD: Tòa BS-08 (Tầng B2 -> Tầng 30)', 'e.g. Tower BS-08 (Basement B2 to Floor 30)')}
                   value={formLocation}
                   onChange={(e) => setFormLocation(e.target.value)}
                   className="w-full bg-[#161B22] border border-[#2D3748] p-2 text-white focus:outline-none focus:border-[#C5A880] rounded-none"
@@ -1078,7 +1092,7 @@ export default function DeviceHealth() {
 
               <div className="grid grid-cols-3 gap-3">
                 <div>
-                  <label className="block text-gray-400 mb-1 font-semibold">Điểm sức khỏe (0-100):</label>
+                  <label className="block text-gray-400 mb-1 font-semibold">{t('Điểm sức khỏe (0-100):', 'Health Score (0-100):')}</label>
                   <input
                     type="number"
                     min={10}
@@ -1090,7 +1104,7 @@ export default function DeviceHealth() {
                 </div>
 
                 <div>
-                  <label className="block text-gray-400 mb-1 font-semibold">Bảo trì gần nhất:</label>
+                  <label className="block text-gray-400 mb-1 font-semibold">{t('Bảo trì gần nhất:', 'Last Maintenance:')}</label>
                   <input
                     type="date"
                     value={formLastMaintenance}
@@ -1100,7 +1114,7 @@ export default function DeviceHealth() {
                 </div>
 
                 <div>
-                  <label className="block text-gray-400 mb-1 font-semibold">Dự báo bảo dưỡng:</label>
+                  <label className="block text-gray-400 mb-1 font-semibold">{t('Dự báo bảo dưỡng:', 'Forecasted Maint:')}</label>
                   <input
                     type="date"
                     value={formPredictDate}
@@ -1117,13 +1131,13 @@ export default function DeviceHealth() {
                 onClick={() => setIsAddModalOpen(false)}
                 className="px-4 py-2 border border-gray-700 text-xs text-gray-300 hover:text-white rounded-none"
               >
-                Hủy
+                {t('Hủy', 'Cancel')}
               </button>
               <button
                 type="submit"
                 className="px-5 py-2 bg-[#C5A880] hover:bg-white text-[#0D1117] text-xs font-bold uppercase tracking-wider transition-colors rounded-none shadow"
               >
-                Lưu Thiết Bị
+                {t('Lưu Thiết Bị', 'Save Equipment')}
               </button>
             </div>
           </form>
@@ -1143,7 +1157,7 @@ export default function DeviceHealth() {
               <div className="flex items-center gap-2">
                 <Edit className="w-5 h-5 text-[#C5A880]" />
                 <h3 className="font-serif text-lg font-bold text-white">
-                  Chỉnh Sửa Thiết Bị #{editingDevice.id.toUpperCase()}
+                  {t('Chỉnh Sửa Thiết Bị', 'Edit Equipment')} #{editingDevice.id.toUpperCase()}
                 </h3>
               </div>
               <button 
@@ -1157,7 +1171,7 @@ export default function DeviceHealth() {
 
             <div className="space-y-3 text-xs">
               <div>
-                <label className="block text-gray-400 mb-1 font-semibold">Tên thiết bị:</label>
+                <label className="block text-gray-400 mb-1 font-semibold">{t('Tên thiết bị:', 'Equipment Name:')}</label>
                 <input
                   type="text"
                   value={formName}
@@ -1169,37 +1183,37 @@ export default function DeviceHealth() {
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-gray-400 mb-1 font-semibold">Phân loại:</label>
+                  <label className="block text-gray-400 mb-1 font-semibold">{t('Phân loại:', 'Category:')}</label>
                   <select
                     value={formCategory}
                     onChange={(e: any) => setFormCategory(e.target.value)}
                     className="w-full bg-[#161B22] border border-[#2D3748] p-2 text-white focus:outline-none focus:border-[#C5A880] rounded-none"
                   >
-                    <option value="Thang máy">Thang máy</option>
-                    <option value="Máy bơm">Máy bơm</option>
-                    <option value="Hệ thống PCCC">Hệ thống PCCC</option>
-                    <option value="Trạm biến áp">Trạm biến áp</option>
-                    <option value="Barrier">Barrier & An ninh</option>
-                    <option value="Thông gió & Hút khói">Thông gió & Hút khói</option>
+                    <option value="Thang máy">{t('Thang máy', 'Elevator')}</option>
+                    <option value="Máy bơm">{t('Máy bơm', 'Water Pump')}</option>
+                    <option value="Hệ thống PCCC">{t('Hệ thống PCCC', 'Fire Safety')}</option>
+                    <option value="Trạm biến áp">{t('Trạm biến áp', 'Transformer & Gen')}</option>
+                    <option value="Barrier">{t('Barrier & An ninh', 'Barrier & Security')}</option>
+                    <option value="Thông gió & Hút khói">{t('Thông gió & Hút khói', 'Ventilation & Smoke')}</option>
                   </select>
                 </div>
 
                 <div>
-                  <label className="block text-gray-400 mb-1 font-semibold">Trạng thái:</label>
+                  <label className="block text-gray-400 mb-1 font-semibold">{t('Trạng thái:', 'Status:')}</label>
                   <select
                     value={formStatus}
                     onChange={(e: any) => setFormStatus(e.target.value)}
                     className="w-full bg-[#161B22] border border-[#2D3748] p-2 text-white focus:outline-none focus:border-[#C5A880] rounded-none"
                   >
-                    <option value="Hoạt động tốt">Hoạt động tốt</option>
-                    <option value="Cần kiểm tra">Cần kiểm tra</option>
-                    <option value="Cảnh báo hỏng">Cảnh báo hỏng</option>
+                    <option value="Hoạt động tốt">{t('Hoạt động tốt', 'Normal Operation')}</option>
+                    <option value="Cần kiểm tra">{t('Cần kiểm tra', 'Inspection Needed')}</option>
+                    <option value="Cảnh báo hỏng">{t('Cảnh báo hỏng', 'Warning / Fault')}</option>
                   </select>
                 </div>
               </div>
 
               <div>
-                <label className="block text-gray-400 mb-1 font-semibold">Vị trí lắp đặt:</label>
+                <label className="block text-gray-400 mb-1 font-semibold">{t('Vị trí lắp đặt:', 'Installation Location:')}</label>
                 <input
                   type="text"
                   value={formLocation}
@@ -1211,7 +1225,7 @@ export default function DeviceHealth() {
 
               <div className="grid grid-cols-3 gap-3">
                 <div>
-                  <label className="block text-gray-400 mb-1 font-semibold">Điểm sức khỏe:</label>
+                  <label className="block text-gray-400 mb-1 font-semibold">{t('Điểm sức khỏe:', 'Health Score:')}</label>
                   <input
                     type="number"
                     min={10}
@@ -1223,7 +1237,7 @@ export default function DeviceHealth() {
                 </div>
 
                 <div>
-                  <label className="block text-gray-400 mb-1 font-semibold">Bảo trì gần nhất:</label>
+                  <label className="block text-gray-400 mb-1 font-semibold">{t('Bảo trì gần nhất:', 'Last Maintenance:')}</label>
                   <input
                     type="date"
                     value={formLastMaintenance}
@@ -1233,7 +1247,7 @@ export default function DeviceHealth() {
                 </div>
 
                 <div>
-                  <label className="block text-gray-400 mb-1 font-semibold">Dự báo bảo dưỡng:</label>
+                  <label className="block text-gray-400 mb-1 font-semibold">{t('Dự báo bảo dưỡng:', 'Forecasted Maint:')}</label>
                   <input
                     type="date"
                     value={formPredictDate}
@@ -1250,13 +1264,13 @@ export default function DeviceHealth() {
                 onClick={() => setEditingDevice(null)}
                 className="px-4 py-2 border border-gray-700 text-xs text-gray-300 hover:text-white rounded-none"
               >
-                Hủy
+                {t('Hủy', 'Cancel')}
               </button>
               <button
                 type="submit"
                 className="px-5 py-2 bg-[#C5A880] hover:bg-white text-[#0D1117] text-xs font-bold uppercase tracking-wider transition-colors rounded-none shadow"
               >
-                Cập Nhật
+                {t('Cập Nhật', 'Update')}
               </button>
             </div>
           </form>
