@@ -392,6 +392,17 @@ export function addApartmentVehicle(code: string, vehicle: ApartmentVehicle): bo
 }
 
 /**
+ * Hủy / Thu hồi phương tiện đã đăng ký của căn hộ
+ */
+export function removeApartmentVehicle(code: string, vehicleId: string): boolean {
+  const unit = getApartmentByCode(code);
+  if (!unit || !unit.vehicles) return false;
+
+  const updatedVehicles = unit.vehicles.filter(v => v.id !== vehicleId);
+  return updateApartmentUnit(code, { vehicles: updatedVehicles });
+}
+
+/**
  * Khôi phục danh sách căn hộ về mặc định
  */
 export function resetApartmentsToDefault(): void {
