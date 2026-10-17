@@ -56,21 +56,7 @@ export interface ParkingWaitlistEntry {
 
 const WAITLIST_STORAGE_KEY = 'skyline_parking_waitlist_v4';
 
-// Resident declared vehicle dictionary by unit code (from Resident Portal / eKYC)
-const KNOWN_RESIDENT_PROFILES: Record<string, { plate: string; brand: string; type: 'CAR' | 'MOTORBIKE' }> = {
-  'CH-06': { plate: '51K-889.99', brand: 'Mercedes-Benz C300 AMG', type: 'CAR' },
-  '30-CH-06': { plate: '51K-889.99', brand: 'Mercedes-Benz C300 AMG', type: 'CAR' },
-  'CH-08': { plate: '59F2-688.88', brand: 'Honda SH 150i ABS', type: 'MOTORBIKE' },
-  '30-CH-08': { plate: '59F2-688.88', brand: 'Honda SH 150i ABS', type: 'MOTORBIKE' },
-  'CH-02': { plate: '30H-992.34', brand: 'Mazda CX-5 2.5 AWD', type: 'CAR' },
-  '20-CH-02': { plate: '30H-992.34', brand: 'Mazda CX-5 2.5 AWD', type: 'CAR' },
-  'CH-04': { plate: '51G-771.88', brand: 'Toyota Camry 2.5Q', type: 'CAR' },
-  '15-CH-04': { plate: '51G-771.88', brand: 'Toyota Camry 2.5Q', type: 'CAR' },
-  'CH-01': { plate: '59P1-889.12', brand: 'Yamaha Grande Hybrid', type: 'MOTORBIKE' },
-  'CH-05': { plate: '51H-665.23', brand: 'Hyundai Santa Fe 2.2D', type: 'CAR' },
-  'CH-07': { plate: '59V3-552.19', brand: 'Honda Air Blade 160', type: 'MOTORBIKE' },
-  'CH-10': { plate: '51A-981.45', brand: 'VinFast VF8 Plus', type: 'CAR' },
-};
+
 
 export default function SmartParking() {
   const { isEn } = useLanguage();
@@ -235,7 +221,7 @@ export default function SmartParking() {
     );
   }, [activeApartmentUnit]);
 
-  // Genuinely declared resident vehicles for the selected apartment
+  // Genuinely declared resident vehicles from NKS API / Apartment Store
   const detectedResidentVehicles = useMemo(() => {
     if (!regAptCode || !activeApartmentUnit || !hasResident) return [];
 
@@ -250,7 +236,7 @@ export default function SmartParking() {
 
     const seenPlates = new Set<string>();
 
-    // 1. Existing vehicles on the apartment unit
+    // 1. Existing vehicles on the apartment unit (from NKS API / Apartment Store)
     if (activeApartmentUnit.vehicles && activeApartmentUnit.vehicles.length > 0) {
       activeApartmentUnit.vehicles.forEach(v => {
         const clean = v.plate.trim().toUpperCase();
@@ -262,48 +248,13 @@ export default function SmartParking() {
             type: v.type === 'CAR' ? 'CAR' : 'MOTORBIKE',
             cardNo: v.cardNo,
             slot: v.slot,
-            source: isEn ? 'Registered in unit' : 'Hồ sơ xe căn hộ',
+            source: isEn ? 'Registered Vehicle' : 'Hồ sơ xe căn hộ',
           });
         }
       });
     }
 
-    // 2. Demo users matching apartment code
-    const normalizedCode = regAptCode.replace(/^.*-(\d{2,})$/, '$1');
-    DEMO_USERS.forEach(u => {
-      const userApt = (u.apartment_code || '').toUpperCase();
-      if (userApt && (userApt === regAptCode.toUpperCase() || userApt === `CH-${normalizedCode}` || userApt.includes(regAptCode))) {
-        if (u.license_plate) {
-          const clean = u.license_plate.trim().toUpperCase();
-          if (clean && !seenPlates.has(clean)) {
-            seenPlates.add(clean);
-            list.push({
-              plate: clean,
-              brand: clean.includes('51K-889.99') ? 'Mercedes-Benz C300 AMG' : (u.relationship === 'Owner' ? 'Ô tô chủ hộ' : 'Ô tô cư dân'),
-              type: 'CAR',
-              source: `${isEn ? 'Resident Profile' : 'Hồ sơ'}: ${u.full_name}`,
-            });
-          }
-        }
-      }
-    });
-
-    // 3. Known verified resident profiles (demo test data)
-    const known = KNOWN_RESIDENT_PROFILES[regAptCode] || KNOWN_RESIDENT_PROFILES[`CH-${normalizedCode}`];
-    if (known) {
-      const clean = known.plate.trim().toUpperCase();
-      if (clean && !seenPlates.has(clean)) {
-        seenPlates.add(clean);
-        list.push({
-          plate: clean,
-          brand: known.brand,
-          type: known.type,
-          source: isEn ? 'Declared Profile' : 'Khai báo cư dân',
-        });
-      }
-    }
-
-    // 4. Family members with license plate
+    // 2. Family members with declared license plate (from NKS API / Apartment Store)
     if (activeApartmentUnit.members && activeApartmentUnit.members.length > 0) {
       activeApartmentUnit.members.forEach(m => {
         if (m.licensePlate) {
@@ -312,7 +263,7 @@ export default function SmartParking() {
             seenPlates.add(clean);
             list.push({
               plate: clean,
-              brand: 'Xe máy cá nhân',
+              brand: isEn ? 'Member Vehicle' : 'Xe thành viên',
               type: 'MOTORBIKE',
               source: `${isEn ? 'Member' : 'Thành viên'}: ${m.fullName}`,
             });
