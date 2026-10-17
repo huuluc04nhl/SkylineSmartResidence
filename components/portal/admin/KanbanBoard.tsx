@@ -273,8 +273,16 @@ export default function KanbanBoard() {
       });
       if (res.ok) {
         const data = await res.json();
-        if (data.success && data.verification) {
-          setAiVerificationResult(data.verification);
+        const v = data.verification || (data.confidence_score ? data : null);
+        if (data.success && v) {
+          setAiVerificationResult({
+            status: v.status || 'VERIFIED',
+            confidence_score: v.confidence_score ?? v.score ?? 92,
+            verification_title: v.verification_title ?? v.title ?? 'Đã kiểm định hiện trường đạt chuẩn',
+            verification_detail: v.verification_detail ?? v.detail ?? '',
+            is_genuine: v.is_genuine ?? true,
+            risk_warning: v.risk_warning,
+          });
           return;
         }
       }

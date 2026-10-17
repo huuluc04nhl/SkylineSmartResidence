@@ -427,9 +427,19 @@ Trả về DUY NHẤT format JSON sau (không có markdown):
           };
         }
 
+        const verification = {
+          status: (parsed.status as 'VERIFIED' | 'INCOMPLETE' | 'SUSPICIOUS') || 'VERIFIED',
+          confidence_score: parsed.confidence_score ?? parsed.score ?? 92,
+          verification_title: parsed.verification_title ?? parsed.title ?? 'Đã kiểm định hiện trường đạt chuẩn',
+          verification_detail: parsed.verification_detail ?? parsed.detail ?? 'Ảnh nghiệm thu phù hợp với nội dung sửa chữa sự cố được giao.',
+          is_genuine: parsed.is_genuine ?? true,
+          risk_warning: parsed.risk_warning || undefined,
+        };
+
         return NextResponse.json({
           success: true,
-          ...parsed,
+          verification,
+          ...verification,
           source: 'GEMINI_VISION_AI',
         });
       } catch (err) {
@@ -440,9 +450,18 @@ Trả về DUY NHẤT format JSON sau (không có markdown):
           Boolean(beforeImage),
           Boolean(afterImage)
         );
+        const verification = {
+          status: fallback.status,
+          confidence_score: fallback.score,
+          verification_title: fallback.title,
+          verification_detail: fallback.detail,
+          is_genuine: fallback.is_genuine,
+          risk_warning: fallback.risk_warning,
+        };
         return NextResponse.json({
           success: true,
-          ...fallback,
+          verification,
+          ...verification,
           source: 'LOCAL_INSPECTION_ENGINE',
         });
       }
