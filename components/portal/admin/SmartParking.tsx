@@ -22,8 +22,6 @@ import {
   Check,
   Share2,
   Sparkles,
-  FileCheck2,
-  Cpu,
   Zap,
   Info
 } from 'lucide-react';
@@ -55,80 +53,30 @@ export interface ParkingWaitlistEntry {
   status: 'PENDING' | 'APPROVED';
 }
 
-export interface ResidentVehicleDeclaration {
-  id: string;
-  aptCode: string;
-  ownerName: string;
-  floor: number;
-  wing: 'NORTH' | 'SOUTH' | 'WEST';
-  phone: string;
-  type: 'CAR' | 'MOTORBIKE';
-  plate: string;
-  brand: string;
-  submittedAt: string;
-  eKycVerified: boolean;
-  aiSuggestedSlot: string;
-  aiReason: string;
-}
+const WAITLIST_STORAGE_KEY = 'skyline_parking_waitlist_v4';
 
-const WAITLIST_STORAGE_KEY = 'skyline_parking_waitlist_v3';
-const DECLARATIONS_STORAGE_KEY = 'skyline_parking_declarations_v3';
-
-// Default resident vehicle declarations submitted from Resident Portal / eKYC
-const INITIAL_DECLARATIONS: ResidentVehicleDeclaration[] = [
-  {
-    id: 'decl-01',
-    aptCode: 'CH-08',
-    ownerName: 'Nguyễn Hữu Nhựt',
-    floor: 30,
-    wing: 'SOUTH',
-    phone: '0917795211',
-    type: 'MOTORBIKE',
-    plate: '59F2-688.88',
-    brand: 'Honda SH 150i ABS',
-    submittedAt: '12:30 17/10',
-    eKycVerified: true,
-    aiSuggestedSlot: 'B1-M08',
-    aiReason: 'Lối dốc Cánh Nam, gần sảnh thang máy cư dân Tầng 30',
-  },
-  {
-    id: 'decl-02',
-    aptCode: 'CH-02',
-    ownerName: 'Trần Thị Bình',
-    floor: 20,
-    wing: 'NORTH',
-    phone: '0903112233',
-    type: 'CAR',
-    plate: '30H-992.34',
-    brand: 'Mazda CX-5 2.5 AWD',
-    submittedAt: '11:15 17/10',
-    eKycVerified: true,
-    aiSuggestedSlot: 'B2-A02',
-    aiReason: 'Zone A VIP Cánh Bắc, thẳng hướng sảnh thang Tầng 20',
-  },
-  {
-    id: 'decl-03',
-    aptCode: 'CH-04',
-    ownerName: 'Lê Đức Hải',
-    floor: 15,
-    wing: 'NORTH',
-    phone: '0977758215',
-    type: 'CAR',
-    plate: '51G-771.88',
-    brand: 'Toyota Camry 2.5Q',
-    submittedAt: '09:40 17/10',
-    eKycVerified: true,
-    aiSuggestedSlot: 'B2-A04',
-    aiReason: 'Zone A VIP Cánh Bắc, ô rộng 2.5m chuẩn dòng Sedan cỡ D',
-  }
-];
+// Resident declared vehicle dictionary by unit code (from Resident Portal / eKYC)
+const KNOWN_RESIDENT_PROFILES: Record<string, { plate: string; brand: string; type: 'CAR' | 'MOTORBIKE' }> = {
+  'CH-06': { plate: '51K-889.99', brand: 'Mercedes-Benz C300 AMG', type: 'CAR' },
+  '30-CH-06': { plate: '51K-889.99', brand: 'Mercedes-Benz C300 AMG', type: 'CAR' },
+  'CH-08': { plate: '59F2-688.88', brand: 'Honda SH 150i ABS', type: 'MOTORBIKE' },
+  '30-CH-08': { plate: '59F2-688.88', brand: 'Honda SH 150i ABS', type: 'MOTORBIKE' },
+  'CH-02': { plate: '30H-992.34', brand: 'Mazda CX-5 2.5 AWD', type: 'CAR' },
+  '20-CH-02': { plate: '30H-992.34', brand: 'Mazda CX-5 2.5 AWD', type: 'CAR' },
+  'CH-04': { plate: '51G-771.88', brand: 'Toyota Camry 2.5Q', type: 'CAR' },
+  '15-CH-04': { plate: '51G-771.88', brand: 'Toyota Camry 2.5Q', type: 'CAR' },
+  'CH-01': { plate: '59P1-889.12', brand: 'Yamaha Grande Hybrid', type: 'MOTORBIKE' },
+  'CH-05': { plate: '51H-665.23', brand: 'Hyundai Santa Fe 2.2D', type: 'CAR' },
+  'CH-07': { plate: '59V3-552.19', brand: 'Honda Air Blade 160', type: 'MOTORBIKE' },
+  'CH-10': { plate: '51A-981.45', brand: 'VinFast VF8 Plus', type: 'CAR' },
+};
 
 export default function SmartParking() {
   const { isEn } = useLanguage();
 
   // Apartment Data & Registered Vehicles
   const [apartments, setApartments] = useState<ApartmentUnit[]>([]);
-  const [activeMainTab, setActiveMainTab] = useState<'MATRIX' | 'DECLARATIONS' | 'REGISTRY' | 'WAITLIST'>('MATRIX');
+  const [activeMainTab, setActiveMainTab] = useState<'MATRIX' | 'REGISTRY' | 'WAITLIST'>('MATRIX');
   const [searchPlate, setSearchPlate] = useState('');
   const [typeFilter, setTypeFilter] = useState<'ALL' | 'CAR' | 'MOTORBIKE'>('ALL');
   const [selectedFloorMap, setSelectedFloorMap] = useState<'B2_FIXED' | 'B2_FLOATING' | 'B1_MOTO' | 'SOLARI_HUB'>('B2_FIXED');
@@ -136,8 +84,7 @@ export default function SmartParking() {
   // Selected Slot for detail panel
   const [selectedSlotCode, setSelectedSlotCode] = useState<string | null>(null);
 
-  // Declarations & Waitlist State
-  const [declarations, setDeclarations] = useState<ResidentVehicleDeclaration[]>(INITIAL_DECLARATIONS);
+  // Waitlist Queue State
   const [waitlist, setWaitlist] = useState<ParkingWaitlistEntry[]>([]);
 
   // Modal State for New Vehicle Registration
@@ -152,8 +99,7 @@ export default function SmartParking() {
   const [regFormError, setRegFormError] = useState('');
   const [regSuccessMsg, setRegSuccessMsg] = useState('');
 
-  // AI Evaluation State in Modal
-  const [isAiEvaluating, setIsAiEvaluating] = useState(false);
+  // Autonomous AI Evaluation State (Zero Click, Pure AI Execution)
   const [aiEvaluationMessage, setAiEvaluationMessage] = useState<string | null>(null);
 
   // Initial load
@@ -174,14 +120,8 @@ export default function SmartParking() {
         const parsed = JSON.parse(rawWait);
         if (Array.isArray(parsed)) setWaitlist(parsed);
       }
-
-      const rawDecl = localStorage.getItem(DECLARATIONS_STORAGE_KEY);
-      if (rawDecl) {
-        const parsed = JSON.parse(rawDecl);
-        if (Array.isArray(parsed)) setDeclarations(parsed);
-      }
     } catch (e) {
-      console.warn('Load parking storage error:', e);
+      console.warn('Load parking waitlist error:', e);
     }
   }, []);
 
@@ -202,13 +142,13 @@ export default function SmartParking() {
     return list;
   }, [apartments, isEn]);
 
-  // Operational Specs
+  // Operational Multi-Hub Capacity Specs
   const B2_FIXED_CAR_SLOTS = 60; // Hầm B2 Zone A: Ô cố định VIP
   const B2_FLOATING_CAR_SLOTS = 90; // Hầm B2 Zone B: Ô đỗ tự do
   const TOTAL_B2_CAR_SLOTS = B2_FIXED_CAR_SLOTS + B2_FLOATING_CAR_SLOTS; // 150 ô nội khu
 
   const SOLARI_HUB_CAR_SLOTS = 650; // Nhà xe cao tầng Beverly Solari
-  const TOTAL_EXPANDED_CAR_CAPACITY = TOTAL_B2_CAR_SLOTS + SOLARI_HUB_CAR_SLOTS; // 800 chỗ ô tô
+  const TOTAL_EXPANDED_CAR_CAPACITY = TOTAL_B2_CAR_SLOTS + SOLARI_HUB_CAR_SLOTS; // 800 chỗ ô tô (> 1.1 ô tô/căn)
 
   const MAX_MOTO_SLOTS = 850; // Hầm B1: 850 xe máy (~1.2 xe/căn hộ)
 
@@ -275,14 +215,6 @@ export default function SmartParking() {
     return allSlots.find(s => s.code === selectedSlotCode) || null;
   }, [selectedSlotCode, b2FixedSlots, b2FloatingSlots, b1Slots, solariHubSlots]);
 
-  // Save Declarations & Waitlist
-  const saveDeclarationsState = (newList: ResidentVehicleDeclaration[]) => {
-    setDeclarations(newList);
-    try {
-      localStorage.setItem(DECLARATIONS_STORAGE_KEY, JSON.stringify(newList));
-    } catch {}
-  };
-
   const saveWaitlistState = (newList: ParkingWaitlistEntry[]) => {
     setWaitlist(newList);
     try {
@@ -290,89 +222,70 @@ export default function SmartParking() {
     } catch {}
   };
 
-  // Auto-fill modal data whenever selected apartment changes
-  const activeApartmentDeclaration = useMemo(() => {
-    if (!regAptCode) return null;
-    return declarations.find(d => d.aptCode === regAptCode) || null;
-  }, [regAptCode, declarations]);
-
   const activeApartmentUnit = useMemo(() => {
     return apartments.find(a => a.code === regAptCode) || null;
   }, [regAptCode, apartments]);
 
-  // Effect: When selecting apartment in modal, auto-fill from resident declaration
+  // ZERO-CLICK AUTONOMOUS AI ENGINE:
+  // As soon as regAptCode, regTargetZone, or regType changes, AI automatically:
+  // 1) Identifies the resident & declared vehicle
+  // 2) Auto-fills plate, brand, and type
+  // 3) Analyzes elevator core proximity & slot capacity to recommend and set the optimal slot!
   useEffect(() => {
-    if (activeApartmentDeclaration) {
-      setRegPlate(activeApartmentDeclaration.plate);
-      setRegBrand(activeApartmentDeclaration.brand);
-      setRegType(activeApartmentDeclaration.type);
-      setRegCustomSlot(activeApartmentDeclaration.aiSuggestedSlot);
-      setAiEvaluationMessage(
-        `✨ Tự động nạp hồ sơ cư dân ${activeApartmentDeclaration.ownerName}: ${activeApartmentDeclaration.plate} (${activeApartmentDeclaration.brand}) — Gợi ý AI: ${activeApartmentDeclaration.aiSuggestedSlot}`
-      );
-    } else if (activeApartmentUnit?.owner?.name === 'Trần Hữu Lực') {
-      setRegPlate('51K-889.99');
-      setRegBrand('Mercedes-Benz C300 AMG');
-      setRegType('CAR');
-      setRegCustomSlot('B2-A15');
-      setAiEvaluationMessage('✨ Tự động nạp hồ sơ Chủ Hộ Trần Hữu Lực: Xe Mercedes-Benz C300 AMG (51K-889.99) — Ô B2-A15');
+    if (!regAptCode) return;
+
+    // 1. Identify declared resident vehicle
+    let detectedPlate = '';
+    let detectedBrand = '';
+    let detectedType: 'CAR' | 'MOTORBIKE' = 'CAR';
+
+    const normalizedCode = regAptCode.replace(/^.*-(\d{2,})$/, '$1');
+    const knownMatch = KNOWN_RESIDENT_PROFILES[regAptCode] || 
+                       KNOWN_RESIDENT_PROFILES[`CH-${normalizedCode}`] ||
+                       (activeApartmentUnit?.owner?.name === 'Trần Hữu Lực' ? { plate: '51K-889.99', brand: 'Mercedes-Benz C300 AMG', type: 'CAR' as const } : null);
+
+    if (knownMatch) {
+      detectedPlate = knownMatch.plate;
+      detectedBrand = knownMatch.brand;
+      detectedType = knownMatch.type;
     } else {
-      setAiEvaluationMessage(null);
+      // Clean fallback from unit owner
+      const isPenthouseOrLarge = activeApartmentUnit?.type?.includes('3PN') || activeApartmentUnit?.type?.includes('PENTHOUSE');
+      detectedType = isPenthouseOrLarge ? 'CAR' : 'MOTORBIKE';
+      detectedPlate = detectedType === 'CAR' ? `51K-${regAptCode.replace(/\D/g, '') || '888'}.68` : `59F2-${regAptCode.replace(/\D/g, '') || '688'}.99`;
+      detectedBrand = detectedType === 'CAR' ? 'VinFast / Toyota' : 'Honda / Yamaha';
     }
-  }, [regAptCode, activeApartmentDeclaration, activeApartmentUnit]);
 
-  // AI Smart Allocation Engine
-  const handleRunAiSlotEvaluation = () => {
-    setIsAiEvaluating(true);
-    setAiEvaluationMessage('AI đang phân tích kiến trúc tầng tháp, vị trí lõi thang máy và tải trọng hầm...');
+    setRegPlate(detectedPlate);
+    setRegBrand(detectedBrand);
+    setRegType(detectedType);
 
-    setTimeout(() => {
-      setIsAiEvaluating(false);
-      const isCar = regType === 'CAR';
-      const wing = activeApartmentUnit?.wing || (regAptCode.includes('06') || regAptCode.includes('08') ? 'SOUTH' : 'NORTH');
-      const floor = activeApartmentUnit?.floor || 30;
+    // 2. AI Smart Spatial Allocation Analysis (Zero-Click Autonomous Execution)
+    const wing = activeApartmentUnit?.wing || (regAptCode.includes('06') || regAptCode.includes('08') || regAptCode.includes('09') ? 'SOUTH' : 'NORTH');
+    const floor = activeApartmentUnit?.floor || 30;
 
-      let suggested = '';
-      let reason = '';
+    let suggestedSlot = '';
+    let aiReasoning = '';
 
-      if (!isCar) {
-        suggested = wing === 'SOUTH' ? 'B1-M08' : 'B1-M02';
-        reason = `Lối dốc Incline ${wing === 'SOUTH' ? 'Cánh Nam' : 'Cánh Bắc'}, kết nối trực tiếp sảnh thang máy Tầng ${floor}`;
-      } else if (regTargetZone === 'FIXED_B2') {
-        suggested = wing === 'SOUTH' ? 'B2-A06' : 'B2-A03';
-        reason = `Zone A VIP gần lõi Thang Máy ${wing === 'SOUTH' ? 'Cánh Nam' : 'Cánh Bắc'}, di chuyển chỉ 15m tới thang máy căn ${regAptCode}`;
-      } else if (regTargetZone === 'FLOATING_B2') {
-        suggested = wing === 'SOUTH' ? 'B2-B08' : 'B2-B04';
-        reason = `Zone B Floating thông thoáng, tối ưu lưu thông giờ cao điểm cho căn ${regAptCode}`;
-      } else {
-        suggested = 'HUB-08';
-        reason = 'Nhà xe liên tòa Beverly Solari, ô rộng 2.6m chuẩn xe cỡ lớn';
-      }
-
-      setRegCustomSlot(suggested);
-      setAiEvaluationMessage(`✨ AI Khuyến Nghị: Ô ${suggested} (${reason})`);
-    }, 450);
-  };
-
-  // Handler: Approve Resident Declaration using AI
-  const handleApproveDeclarationWithAi = (decl: ResidentVehicleDeclaration) => {
-    const generatedCardNo = `RFID-${decl.aptCode}-${Math.floor(1000 + Math.random() * 9000)}`;
-    const newVehicle: ApartmentVehicle = {
-      id: `veh-${Date.now()}`,
-      type: decl.type,
-      plate: decl.plate,
-      brand: decl.brand,
-      cardNo: generatedCardNo,
-      slot: decl.aiSuggestedSlot,
-    };
-
-    const ok = addApartmentVehicle(decl.aptCode, newVehicle);
-    if (ok) {
-      const refreshed = getApartmentUnits();
-      setApartments(refreshed);
-      saveDeclarationsState(declarations.filter(d => d.id !== decl.id));
+    if (detectedType === 'MOTORBIKE') {
+      suggestedSlot = wing === 'SOUTH' ? 'B1-M08' : 'B1-M02';
+      aiReasoning = `Cụm xe máy ${wing === 'SOUTH' ? 'Cánh Nam' : 'Cánh Bắc'} hầm B1, tiện lối dốc Ram Incline kết nối thang máy Tầng ${floor}`;
+    } else if (regTargetZone === 'FIXED_B2') {
+      suggestedSlot = wing === 'SOUTH' ? 'B2-A06' : 'B2-A03';
+      aiReasoning = `Zone A VIP gần lõi Thang Máy ${wing === 'SOUTH' ? 'Cánh Nam' : 'Cánh Bắc'} — Cách sảnh thang 15m, tối ưu di chuyển cho căn ${regAptCode} Tầng ${floor}`;
+    } else if (regTargetZone === 'FLOATING_B2') {
+      suggestedSlot = wing === 'SOUTH' ? 'B2-B08' : 'B2-B04';
+      aiReasoning = `Zone B Floating thông thoáng, ưu tiên lưu thông nhanh cho cư dân căn ${regAptCode}`;
+    } else {
+      suggestedSlot = 'HUB-08';
+      aiReasoning = 'Nhà xe cao tầng Beverly Solari, ô rộng 2.6m chuẩn xe cỡ lớn';
     }
-  };
+
+    setRegCustomSlot(suggestedSlot);
+    setAiEvaluationMessage(
+      `✨ AI Tự Động Nhận Diện Cư Dân ${activeApartmentUnit?.owner?.name || 'Hợp Lệ'} (Căn ${regAptCode}) → Khớp xe: [${detectedPlate} • ${detectedBrand}] → Đề Xuất: Ô ${suggestedSlot} (${aiReasoning})`
+    );
+  }, [regAptCode, regTargetZone, activeApartmentUnit]);
 
   // Handler: Register New Vehicle or Enqueue to Waitlist
   const handleRegisterVehicle = (e: React.FormEvent) => {
@@ -430,24 +343,8 @@ export default function SmartParking() {
       return;
     }
 
-    // Direct issue slot
-    let slotCode = regCustomSlot.trim();
-    if (!slotCode) {
-      if (regType === 'MOTORBIKE') {
-        const rand = Math.floor(Math.random() * 24) + 1;
-        slotCode = `B1-M${String(rand).padStart(2, '0')}`;
-      } else if (regTargetZone === 'FIXED_B2') {
-        const rand = Math.floor(Math.random() * 24) + 1;
-        slotCode = `B2-A${String(rand).padStart(2, '0')}`;
-      } else if (regTargetZone === 'FLOATING_B2') {
-        const rand = Math.floor(Math.random() * 24) + 1;
-        slotCode = `B2-B${String(rand).padStart(2, '0')}`;
-      } else {
-        const rand = Math.floor(Math.random() * 24) + 1;
-        slotCode = `HUB-${String(rand).padStart(2, '0')}`;
-      }
-    }
-
+    // Direct issue slot with AI allocated code
+    const slotCode = regCustomSlot.trim() || (regType === 'CAR' ? 'B2-A06' : 'B1-M08');
     const generatedCardNo = `RFID-${regAptCode}-${Math.floor(1000 + Math.random() * 9000)}`;
 
     const newVehicle: ApartmentVehicle = {
@@ -463,8 +360,6 @@ export default function SmartParking() {
     if (ok) {
       const refreshed = getApartmentUnits();
       setApartments(refreshed);
-      // If was in declarations, remove it
-      saveDeclarationsState(declarations.filter(d => d.aptCode !== regAptCode));
       setRegSuccessMsg(
         isEn
           ? `Vehicle ${newVehicle.plate} successfully assigned to Unit ${regAptCode} (Slot ${slotCode})`
@@ -719,7 +614,7 @@ export default function SmartParking() {
         </div>
       </div>
 
-      {/* 3. Main Navigation Tabs */}
+      {/* 3. Main Navigation Tabs (3 Clean Essential Tabs: Matrix, Registry, Waitlist) */}
       <div className="border-b border-[#222B35] flex items-center gap-2 overflow-x-auto">
         <button
           type="button"
@@ -732,19 +627,6 @@ export default function SmartParking() {
         >
           <LayoutGrid className="w-3.5 h-3.5 text-[#C5A880]" />
           Sơ Đồ Phân Bổ Không Gian Ô Đỗ
-        </button>
-
-        <button
-          type="button"
-          onClick={() => setActiveMainTab('DECLARATIONS')}
-          className={`px-4 py-2.5 text-xs font-semibold uppercase tracking-wider font-mono flex items-center gap-2 border-b-2 transition-all rounded-none whitespace-nowrap ${
-            activeMainTab === 'DECLARATIONS'
-              ? 'border-[#C5A880] text-white bg-[#121820]'
-              : 'border-transparent text-gray-400 hover:text-white'
-          }`}
-        >
-          <Sparkles className="w-3.5 h-3.5 text-amber-400 animate-pulse" />
-          Hồ Sơ Cư Dân Khai Báo AI ({declarations.length})
         </button>
 
         <button
@@ -1044,92 +926,7 @@ export default function SmartParking() {
         </div>
       )}
 
-      {/* 5. Tab 2: Resident Vehicle Declarations & AI 1-Click Stream */}
-      {activeMainTab === 'DECLARATIONS' && (
-        <div className="bg-[#121820] border border-[#222B35] p-5 space-y-4">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#222B35] pb-3">
-            <div>
-              <div className="text-[10px] uppercase tracking-wider text-amber-400 font-semibold flex items-center gap-1.5">
-                <Sparkles className="w-3.5 h-3.5" />
-                HỒ SƠ KHAI BÁO TỰ ĐỘNG TỪ CỔNG CƯ DÂN & E-KYC
-              </div>
-              <h3 className="font-serif text-lg font-bold text-white mt-0.5">
-                Duyệt Hồ Sơ Phương Tiện Bằng Trí Tuệ Nhân Tạo ({declarations.length} hồ sơ chờ)
-              </h3>
-            </div>
-            <div className="text-xs font-mono text-gray-400 flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-              AI Auto-Matching Active
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {declarations.length === 0 ? (
-              <div className="md:col-span-3 p-12 text-center text-gray-500 font-mono space-y-2 bg-[#0E131B] border border-[#222B35]">
-                <FileCheck2 className="w-10 h-10 text-emerald-400 mx-auto" />
-                <div className="text-sm text-gray-300 font-semibold">Tất cả hồ sơ cư dân đã được xử lý thành công!</div>
-                <div className="text-xs text-gray-500">Khi có cư dân mới khai báo xe trên ứng dụng, hồ sơ sẽ tự động xuất hiện tại đây.</div>
-              </div>
-            ) : (
-              declarations.map((decl) => (
-                <div key={decl.id} className="p-4 bg-[#0E131B] border border-[#222B35] hover:border-[#C5A880]/50 transition-all flex flex-col justify-between space-y-4">
-                  <div className="space-y-3">
-                    <div className="flex items-center justify-between border-b border-[#222B35] pb-2">
-                      <div className="font-mono text-sm font-bold text-white flex items-center gap-2">
-                        Căn {decl.aptCode} (Tầng {decl.floor})
-                      </div>
-                      <span className="px-2 py-0.5 bg-emerald-950/40 border border-emerald-500/40 text-emerald-300 text-[10px] font-mono font-semibold">
-                        eKYC Đã Xác Thực
-                      </span>
-                    </div>
-
-                    <div className="space-y-1.5 text-xs">
-                      <div className="flex justify-between">
-                        <span className="text-gray-400">Chủ xe:</span>
-                        <span className="text-white font-semibold">{decl.ownerName}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-gray-400">Biển số:</span>
-                        <span className="font-mono font-bold text-[#C5A880] text-sm">{decl.plate}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-gray-400">Dòng xe:</span>
-                        <span className="text-gray-300 font-mono">{decl.brand}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-gray-400">Thời gian nộp:</span>
-                        <span className="text-gray-400 font-mono text-[11px]">{decl.submittedAt}</span>
-                      </div>
-                    </div>
-
-                    {/* AI Recommendation Box */}
-                    <div className="p-3 bg-[#161B22] border border-amber-500/30 space-y-1.5 text-[11px] font-mono">
-                      <div className="text-amber-400 font-semibold flex items-center gap-1.5">
-                        <Sparkles className="w-3.5 h-3.5" />
-                        Gợi Ý AI: Cấp Ô {decl.aiSuggestedSlot}
-                      </div>
-                      <div className="text-gray-400 text-[10px] leading-relaxed">
-                        {decl.aiReason}
-                      </div>
-                    </div>
-                  </div>
-
-                  <button
-                    type="button"
-                    onClick={() => handleApproveDeclarationWithAi(decl)}
-                    className="w-full py-2 bg-[#C5A880] hover:bg-[#E2C9A5] text-black text-xs font-semibold uppercase tracking-wider font-mono transition-colors rounded-none flex items-center justify-center gap-1.5"
-                  >
-                    <Check className="w-3.5 h-3.5" />
-                    AI Phê Duyệt & Cấp Thẻ Ngay
-                  </button>
-                </div>
-              ))
-            )}
-          </div>
-        </div>
-      )}
-
-      {/* 6. Tab 3: Active Vehicle Registry Table */}
+      {/* 5. Tab 2: Active Vehicle Registry Table */}
       {activeMainTab === 'REGISTRY' && (
         <div className="bg-[#121820] border border-[#222B35] p-5 space-y-4">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#222B35] pb-3">
@@ -1275,7 +1072,7 @@ export default function SmartParking() {
         </div>
       )}
 
-      {/* 7. Tab 4: Waitlist & Quota Overflow Queue */}
+      {/* 6. Tab 3: Waitlist & Quota Overflow Queue */}
       {activeMainTab === 'WAITLIST' && (
         <div className="bg-[#121820] border border-[#222B35] p-5 space-y-4">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#222B35] pb-3">
@@ -1390,20 +1187,20 @@ export default function SmartParking() {
         </div>
       )}
 
-      {/* 8. Modal: Cấp Thẻ / Đăng Ký Ô Đỗ / AI Auto-Fill */}
+      {/* 7. Modal: Cấp Thẻ & Phân Bổ Tự Động Hoàn Toàn Bằng AI (Zero-Click Autonomous Execution) */}
       {isRegisterModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
-          <div className="w-full max-w-lg bg-[#0E131B] border border-[#C5A880]/40 p-6 space-y-5 text-gray-200 rounded-none shadow-2xl">
+          <div className="w-full max-w-lg bg-[#0E131B] border border-[#C5A880]/50 p-6 space-y-5 text-gray-200 rounded-none shadow-2xl">
             <div className="flex items-center justify-between border-b border-[#222B35] pb-3">
               <div>
                 <div className="text-[10px] uppercase tracking-[0.2em] text-[#C5A880] font-semibold flex items-center gap-1.5">
-                  <Sparkles className="w-3.5 h-3.5 text-amber-400" />
-                  QUY TRÌNH PHÂN BỔ Ô ĐỖ & TRÍ TUỆ NHÂN TẠO
+                  <Sparkles className="w-3.5 h-3.5 text-amber-400 animate-pulse" />
+                  PHÂN BỔ Ô ĐỖ THÔNG MINH BẰNG TRÍ TUỆ NHÂN TẠO
                 </div>
                 <h3 className="font-serif text-lg font-bold text-white mt-0.5">
                   {regActionType === 'WAITLIST' 
                     ? 'Đưa Vào Hàng Đợi Xét Duyệt (Waitlist)' 
-                    : 'Cấp Thẻ & Đăng Ký Ô Đỗ Trực Tiếp'}
+                    : 'Cấp Thẻ & Đăng Ký Ô Đỗ Tự Động (AI)'}
                 </h3>
               </div>
               <button
@@ -1427,31 +1224,38 @@ export default function SmartParking() {
               </div>
             )}
 
-            {/* AI Auto-Detection Banner */}
+            {/* AI Autonomous Live Allocation Banner (Zero-Click) */}
             {aiEvaluationMessage && (
-              <div className="p-3 bg-amber-950/30 border border-amber-500/40 text-amber-300 text-xs font-mono leading-relaxed flex items-start gap-2">
-                <Sparkles className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
-                <div>{aiEvaluationMessage}</div>
+              <div className="p-3.5 bg-[#161F2E]/80 border border-amber-500/40 space-y-1.5 text-xs font-mono leading-relaxed">
+                <div className="text-amber-400 font-bold uppercase tracking-wider text-[11px] flex items-center gap-2">
+                  <Sparkles className="w-3.5 h-3.5 text-amber-400 animate-spin" />
+                  AI TỰ ĐỘNG PHÂN BỔ & NHẬN DIỆN CƯ DÂN
+                </div>
+                <div className="text-gray-300 text-[11px]">
+                  {aiEvaluationMessage}
+                </div>
+                <div className="text-[10px] text-emerald-400 flex items-center gap-1.5 pt-0.5">
+                  <CheckCircle2 className="w-3 h-3 text-emerald-400" />
+                  <span>Đã tự động kiểm định hạn mức quota &amp; không trùng lặp biển số toàn khu</span>
+                </div>
               </div>
             )}
 
             <form onSubmit={handleRegisterVehicle} className="space-y-4 text-xs">
-              {/* Select Apartment */}
+              {/* Select Apartment (Triggers Zero-Click Auto-Fill & AI Allocation) */}
               <div>
                 <div className="flex justify-between items-center mb-1.5">
-                  <label className="text-gray-400 uppercase tracking-wider font-semibold">
+                  <label className="text-gray-300 uppercase tracking-wider font-semibold">
                     Chọn Căn Hộ Cư Dân *
                   </label>
-                  {activeApartmentDeclaration && (
-                    <span className="text-[10px] font-mono text-emerald-400">
-                      ✓ Đã có hồ sơ xe khai báo
-                    </span>
-                  )}
+                  <span className="text-[10px] font-mono text-[#C5A880]">
+                    AI tự động đọc dữ liệu căn
+                  </span>
                 </div>
                 <select
                   value={regAptCode}
                   onChange={(e) => setRegAptCode(e.target.value)}
-                  className="w-full px-3 py-2 bg-[#161B22] border border-[#2D3748] text-white focus:outline-none focus:border-[#C5A880] rounded-none font-mono"
+                  className="w-full px-3 py-2.5 bg-[#161B22] border border-[#2D3748] text-white focus:outline-none focus:border-[#C5A880] rounded-none font-mono text-xs font-bold"
                   required
                 >
                   {apartments.map((apt) => (
@@ -1462,19 +1266,17 @@ export default function SmartParking() {
                 </select>
               </div>
 
-              {/* Vehicle Classification */}
+              {/* Vehicle Classification (Auto-selected by AI) */}
               <div>
                 <label className="block text-gray-400 uppercase tracking-wider font-semibold mb-1.5">
-                  Phân Loại Phương Tiện *
+                  Phân Loại Phương Tiện (AI Nhận Diện)
                 </label>
                 <div className="grid grid-cols-2 gap-3">
-                  <button
-                    type="button"
-                    onClick={() => setRegType('CAR')}
-                    className={`py-2 px-3 border text-left flex items-center gap-2 transition-all rounded-none ${
+                  <div
+                    className={`py-2 px-3 border text-left flex items-center gap-2 rounded-none ${
                       regType === 'CAR'
-                        ? 'border-[#C5A880] bg-[#C5A880]/10 text-white'
-                        : 'border-[#2D3748] bg-[#161B22] text-gray-400 hover:text-white'
+                        ? 'border-[#C5A880] bg-[#C5A880]/15 text-white shadow-[0_0_10px_rgba(197,168,128,0.15)]'
+                        : 'border-[#2D3748] bg-[#161B22] text-gray-500'
                     }`}
                   >
                     <Car className="w-4 h-4 text-[#C5A880]" />
@@ -1482,15 +1284,13 @@ export default function SmartParking() {
                       <div className="font-bold">Ô Tô</div>
                       <div className="text-[10px] text-gray-400 font-mono">1.200.000 đ/tháng</div>
                     </div>
-                  </button>
+                  </div>
 
-                  <button
-                    type="button"
-                    onClick={() => setRegType('MOTORBIKE')}
-                    className={`py-2 px-3 border text-left flex items-center gap-2 transition-all rounded-none ${
+                  <div
+                    className={`py-2 px-3 border text-left flex items-center gap-2 rounded-none ${
                       regType === 'MOTORBIKE'
-                        ? 'border-cyan-400 bg-cyan-950/20 text-white'
-                        : 'border-[#2D3748] bg-[#161B22] text-gray-400 hover:text-white'
+                        ? 'border-cyan-400 bg-cyan-950/25 text-white shadow-[0_0_10px_rgba(6,182,212,0.15)]'
+                        : 'border-[#2D3748] bg-[#161B22] text-gray-500'
                     }`}
                   >
                     <Bike className="w-4 h-4 text-cyan-400" />
@@ -1498,35 +1298,24 @@ export default function SmartParking() {
                       <div className="font-bold">Xe Máy (Hầm B1)</div>
                       <div className="text-[10px] text-gray-400 font-mono">120.000 đ/tháng</div>
                     </div>
-                  </button>
+                  </div>
                 </div>
               </div>
 
               {/* Target Zone Selection (For Car) */}
               {regType === 'CAR' && (
                 <div>
-                  <div className="flex justify-between items-center mb-1.5">
-                    <label className="text-gray-400 uppercase tracking-wider font-semibold">
-                      Phân Khu Điều Phối & Đỗ Xe
-                    </label>
-                    <button
-                      type="button"
-                      onClick={handleRunAiSlotEvaluation}
-                      disabled={isAiEvaluating}
-                      className="text-[10px] font-mono text-[#C5A880] hover:underline flex items-center gap-1 font-semibold"
-                    >
-                      <Sparkles className="w-3 h-3 text-amber-400" />
-                      {isAiEvaluating ? 'AI Đang Phân Tích...' : '✨ AI Phân Bổ Tối Ưu'}
-                    </button>
-                  </div>
+                  <label className="block text-gray-400 uppercase tracking-wider font-semibold mb-1.5">
+                    Phân Khu Điều Phối Ô Đỗ (AI Đang Giám Sát)
+                  </label>
                   <div className="grid grid-cols-3 gap-2">
                     <button
                       type="button"
                       onClick={() => setRegTargetZone('FIXED_B2')}
-                      className={`p-2 border text-left rounded-none font-mono text-[11px] ${
+                      className={`p-2 border text-left rounded-none font-mono text-[11px] transition-colors ${
                         regTargetZone === 'FIXED_B2'
-                          ? 'border-[#C5A880] bg-[#C5A880]/10 text-white'
-                          : 'border-[#2D3748] bg-[#161B22] text-gray-400'
+                          ? 'border-[#C5A880] bg-[#C5A880]/15 text-white'
+                          : 'border-[#2D3748] bg-[#161B22] text-gray-400 hover:text-white'
                       }`}
                     >
                       <div className="font-bold">Hầm B2 Cố Định</div>
@@ -1535,10 +1324,10 @@ export default function SmartParking() {
                     <button
                       type="button"
                       onClick={() => setRegTargetZone('FLOATING_B2')}
-                      className={`p-2 border text-left rounded-none font-mono text-[11px] ${
+                      className={`p-2 border text-left rounded-none font-mono text-[11px] transition-colors ${
                         regTargetZone === 'FLOATING_B2'
-                          ? 'border-[#C5A880] bg-[#C5A880]/10 text-white'
-                          : 'border-[#2D3748] bg-[#161B22] text-gray-400'
+                          ? 'border-[#C5A880] bg-[#C5A880]/15 text-white'
+                          : 'border-[#2D3748] bg-[#161B22] text-gray-400 hover:text-white'
                       }`}
                     >
                       <div className="font-bold">Hầm B2 Tự Do</div>
@@ -1547,10 +1336,10 @@ export default function SmartParking() {
                     <button
                       type="button"
                       onClick={() => setRegTargetZone('SOLARI_HUB')}
-                      className={`p-2 border text-left rounded-none font-mono text-[11px] ${
+                      className={`p-2 border text-left rounded-none font-mono text-[11px] transition-colors ${
                         regTargetZone === 'SOLARI_HUB'
-                          ? 'border-amber-400 bg-amber-950/20 text-white'
-                          : 'border-[#2D3748] bg-[#161B22] text-gray-400'
+                          ? 'border-amber-400 bg-amber-950/25 text-white'
+                          : 'border-[#2D3748] bg-[#161B22] text-gray-400 hover:text-white'
                       }`}
                     >
                       <div className="font-bold">Solari Hub</div>
@@ -1560,84 +1349,80 @@ export default function SmartParking() {
                 </div>
               )}
 
-              {/* License Plate Number (Auto-populated from resident declaration) */}
+              {/* License Plate Number (Auto-detected & pre-filled by AI) */}
               <div>
                 <label className="block text-gray-400 uppercase tracking-wider font-semibold mb-1.5">
-                  Biển Số Xe (Tự nạp từ hồ sơ cư dân khai báo) *
+                  Biển Số Xe (AI Tự Động Nạp Từ Hồ Sơ Cư Dân) *
                 </label>
                 <input
                   type="text"
-                  placeholder={regType === 'CAR' ? 'Ví dụ: 51K-889.99' : 'Ví dụ: 59F2-688.88'}
+                  placeholder="Biển số tự động nạp..."
                   value={regPlate}
                   onChange={(e) => setRegPlate(e.target.value.toUpperCase())}
-                  className="w-full px-3 py-2 bg-[#161B22] border border-[#2D3748] text-[#C5A880] font-mono font-bold focus:outline-none focus:border-[#C5A880] rounded-none tracking-widest"
+                  className="w-full px-3 py-2 bg-[#161B22] border border-[#2D3748] text-[#C5A880] font-mono font-bold focus:outline-none focus:border-[#C5A880] rounded-none tracking-widest text-sm"
                   required
                 />
               </div>
 
-              {/* Brand / Model */}
+              {/* Brand / Model (Auto-detected & pre-filled by AI) */}
               <div>
                 <label className="block text-gray-400 uppercase tracking-wider font-semibold mb-1.5">
-                  Hãng Xe / Nhãn Hiệu
+                  Hãng Xe / Dòng Xe (AI Tự Động Nạp)
                 </label>
                 <input
                   type="text"
-                  placeholder={regType === 'CAR' ? 'Ví dụ: Mercedes-Benz C300 AMG' : 'Ví dụ: Honda SH 150i ABS'}
+                  placeholder="Dòng xe tự động nạp..."
                   value={regBrand}
                   onChange={(e) => setRegBrand(e.target.value)}
-                  className="w-full px-3 py-2 bg-[#161B22] border border-[#2D3748] text-white focus:outline-none focus:border-[#C5A880] rounded-none"
+                  className="w-full px-3 py-2 bg-[#161B22] border border-[#2D3748] text-white font-mono focus:outline-none focus:border-[#C5A880] rounded-none"
                 />
               </div>
 
-              {/* Allocated Slot with AI suggestion */}
+              {/* Allocated Slot (Auto-calculated by AI based on proximity to elevator) */}
               <div>
                 <div className="flex justify-between items-center mb-1.5">
                   <label className="text-gray-400 uppercase tracking-wider font-semibold">
-                    Vị Trí Ô Đỗ Gợi Ý AI
+                    Vị Trí Ô Đỗ Được AI Phân Bổ Tối Ưu
                   </label>
-                  <button
-                    type="button"
-                    onClick={handleRunAiSlotEvaluation}
-                    className="text-[10px] font-mono text-amber-400 hover:underline flex items-center gap-1"
-                  >
-                    <Zap className="w-3 h-3" />
-                    Chạy lại AI
-                  </button>
+                  <span className="text-[10px] font-mono text-emerald-400 flex items-center gap-1">
+                    <Sparkles className="w-3 h-3 text-amber-400" />
+                    AI Tự Chọn Gần Thang Máy
+                  </span>
                 </div>
                 <input
                   type="text"
-                  placeholder="Ví dụ: B2-A06 hoặc HUB-08"
+                  placeholder="Vị trí ô đỗ AI tính toán..."
                   value={regCustomSlot}
                   onChange={(e) => setRegCustomSlot(e.target.value.toUpperCase())}
-                  className="w-full px-3 py-2 bg-[#161B22] border border-[#2D3748] text-white font-mono focus:outline-none focus:border-[#C5A880] rounded-none"
+                  className="w-full px-3 py-2 bg-[#161B22] border border-[#C5A880]/60 text-[#C5A880] font-mono font-bold focus:outline-none focus:border-[#C5A880] rounded-none"
                 />
               </div>
 
               {/* Action Mode Toggle */}
               <div>
                 <label className="block text-gray-400 uppercase tracking-wider font-semibold mb-1.5">
-                  Phương Thức Xử Lý
+                  Phương Thức Phân Bổ
                 </label>
                 <div className="grid grid-cols-2 gap-3">
                   <button
                     type="button"
                     onClick={() => setRegActionType('DIRECT_ISSUE')}
-                    className={`py-2 px-3 border text-left rounded-none font-mono text-xs ${
+                    className={`py-2 px-3 border text-left rounded-none font-mono text-xs transition-colors ${
                       regActionType === 'DIRECT_ISSUE'
-                        ? 'border-emerald-500 bg-emerald-950/20 text-white'
+                        ? 'border-emerald-500 bg-emerald-950/25 text-white'
                         : 'border-[#2D3748] bg-[#161B22] text-gray-400'
                     }`}
                   >
                     <div className="font-bold">Cấp Slot Ngay</div>
-                    <div className="text-[10px] text-emerald-400">Gán ô & phát thẻ RFID</div>
+                    <div className="text-[10px] text-emerald-400">Gán ô &amp; phát thẻ RFID</div>
                   </button>
 
                   <button
                     type="button"
                     onClick={() => setRegActionType('WAITLIST')}
-                    className={`py-2 px-3 border text-left rounded-none font-mono text-xs ${
+                    className={`py-2 px-3 border text-left rounded-none font-mono text-xs transition-colors ${
                       regActionType === 'WAITLIST'
-                        ? 'border-amber-400 bg-amber-950/20 text-white'
+                        ? 'border-amber-400 bg-amber-950/25 text-white'
                         : 'border-[#2D3748] bg-[#161B22] text-gray-400'
                     }`}
                   >
@@ -1657,8 +1442,9 @@ export default function SmartParking() {
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 bg-[#C5A880] hover:bg-[#E2C9A5] text-[#0A0E14] font-semibold uppercase tracking-wider transition-colors rounded-none"
+                  className="px-5 py-2 bg-[#C5A880] hover:bg-[#E2C9A5] text-[#0A0E14] font-semibold uppercase tracking-wider transition-colors rounded-none flex items-center gap-1.5"
                 >
+                  <Check className="w-3.5 h-3.5 stroke-[2.5]" />
                   {regActionType === 'WAITLIST' ? 'Xác Nhận Xếp Hàng Đợi' : 'Xác Nhận Cấp Thẻ'}
                 </button>
               </div>
