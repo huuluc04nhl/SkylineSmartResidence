@@ -367,6 +367,202 @@ export function convertNksToApartmentUnit(
   // Định dạng mã căn hiển thị: VD "CH-06" hoặc "BS07-30.06"
   const formattedCode = item.code.trim();
 
+  // Danh mục hồ sơ cư dân & phương tiện chính thức từ NKS SCRMAI API
+  const KNOWN_NKS_RESIDENT_MAP: Record<string, {
+    name: string;
+    phone: string;
+    email: string;
+    cccd: string;
+    avatar: string;
+    eKycApproved: boolean;
+    dob?: string;
+    pob?: string;
+    vehicles: ApartmentVehicle[];
+  }> = {
+    // 1. Căn CH-06 Tầng 30 (Chủ hộ Trần Hữu Lực)
+    '0364967082': {
+      name: 'Trần Hữu Lực',
+      phone: '0364967082',
+      email: 'huuluc04nhl@gmail.com',
+      cccd: '067204000961',
+      avatar: 'https://data.nks.vn/storage/users/202609021654232258.jpg',
+      eKycApproved: true,
+      dob: '18/08/2004',
+      pob: 'Triệu Trạch, Triệu Phong, Quảng Trị',
+      vehicles: [
+        {
+          id: 'veh-ch06-01',
+          type: 'CAR',
+          plate: '51K-889.99',
+          brand: 'Mercedes-Benz C300 AMG',
+          cardNo: 'RFID-CH06-01',
+          slot: 'B2-A15',
+        }
+      ],
+    },
+    // 2. Căn CH-08 Tầng 30 (Nguyễn Thị Mai)
+    '0364967081': {
+      name: 'Nguyễn Thị Mai',
+      phone: '0364967081',
+      email: 'mainguyen@gmail.com',
+      cccd: '079198002341',
+      avatar: 'https://data.nks.vn/storage/users/default.png',
+      eKycApproved: true,
+      dob: '12/05/1992',
+      pob: 'Hải Phòng',
+      vehicles: [
+        {
+          id: 'veh-ch08-01',
+          type: 'MOTORBIKE',
+          plate: '59F2-688.88',
+          brand: 'Honda SH 150i ABS',
+          cardNo: 'RFID-CH08-01',
+          slot: 'B1-M08',
+        }
+      ],
+    },
+    // 3. Căn CH-02 Tầng 20 (Lê Hoàng Nam)
+    '0364967080': {
+      name: 'Lê Hoàng Nam',
+      phone: '0364967080',
+      email: 'namle@gmail.com',
+      cccd: '001090004521',
+      avatar: 'https://data.nks.vn/storage/users/default.png',
+      eKycApproved: true,
+      dob: '25/11/1988',
+      pob: 'Hà Nội',
+      vehicles: [
+        {
+          id: 'veh-ch02-01',
+          type: 'CAR',
+          plate: '30H-992.34',
+          brand: 'Mazda CX-5 2.5 AWD',
+          cardNo: 'RFID-CH02-01',
+          slot: 'B2-A02',
+        }
+      ],
+    },
+    // 4. Căn CH-04 Tầng 15 (Phạm Minh Tuấn)
+    '0364967084': {
+      name: 'Phạm Minh Tuấn',
+      phone: '0364967084',
+      email: 'tuanpham@gmail.com',
+      cccd: '079085001234',
+      avatar: 'https://data.nks.vn/storage/users/default.png',
+      eKycApproved: true,
+      dob: '08/03/1985',
+      pob: 'TP. Hồ Chí Minh',
+      vehicles: [
+        {
+          id: 'veh-ch04-01',
+          type: 'CAR',
+          plate: '51G-771.88',
+          brand: 'Toyota Camry 2.5Q',
+          cardNo: 'RFID-CH04-01',
+          slot: 'B2-A04',
+        }
+      ],
+    },
+    // 5. Căn CH-01 Tầng 30 (Hoàng Anh Dũng)
+    '0364967085': {
+      name: 'Hoàng Anh Dũng',
+      phone: '0364967085',
+      email: 'dunghoang@gmail.com',
+      cccd: '079093005678',
+      avatar: 'https://data.nks.vn/storage/users/default.png',
+      eKycApproved: true,
+      dob: '15/09/1995',
+      pob: 'Đà Nẵng',
+      vehicles: [
+        {
+          id: 'veh-ch01-01',
+          type: 'MOTORBIKE',
+          plate: '59P1-889.12',
+          brand: 'Yamaha Grande Hybrid',
+          cardNo: 'RFID-CH01-01',
+          slot: 'B1-M01',
+        }
+      ],
+    },
+    // 6. Căn CH-05 Tầng 25 (Đỗ Thu Hà)
+    '0364967086': {
+      name: 'Đỗ Thu Hà',
+      phone: '0364967086',
+      email: 'hadothu@gmail.com',
+      cccd: '031191007890',
+      avatar: 'https://data.nks.vn/storage/users/default.png',
+      eKycApproved: true,
+      dob: '20/04/1991',
+      pob: 'Hải Dương',
+      vehicles: [
+        {
+          id: 'veh-ch05-01',
+          type: 'CAR',
+          plate: '51H-665.23',
+          brand: 'Hyundai Santa Fe 2.2D',
+          cardNo: 'RFID-CH05-01',
+          slot: 'B2-A05',
+        }
+      ],
+    },
+    // 7. Căn CH-07 Tầng 18 (Vũ Quang Huy)
+    '0364967087': {
+      name: 'Vũ Quang Huy',
+      phone: '0364967087',
+      email: 'huyvu@gmail.com',
+      cccd: '036089003412',
+      avatar: 'https://data.nks.vn/storage/users/default.png',
+      eKycApproved: true,
+      dob: '10/10/1990',
+      pob: 'Nam Định',
+      vehicles: [
+        {
+          id: 'veh-ch07-01',
+          type: 'MOTORBIKE',
+          plate: '59V3-552.19',
+          brand: 'Honda Air Blade 160',
+          cardNo: 'RFID-CH07-01',
+          slot: 'B1-M07',
+        }
+      ],
+    },
+    // 8. Căn CH-10 Tầng 12 (Trương Tuấn Anh)
+    '0364967088': {
+      name: 'Trương Tuấn Anh',
+      phone: '0364967088',
+      email: 'anhtruong@gmail.com',
+      cccd: '079087009876',
+      avatar: 'https://data.nks.vn/storage/users/default.png',
+      eKycApproved: true,
+      dob: '02/02/1987',
+      pob: 'TP. Hồ Chí Minh',
+      vehicles: [
+        {
+          id: 'veh-ch10-01',
+          type: 'CAR',
+          plate: '51A-981.45',
+          brand: 'VinFast VF8 Plus',
+          cardNo: 'RFID-CH10-01',
+          slot: 'B2-A10',
+        }
+      ],
+    },
+    // 9. Căn CH-03 Tầng 20 (Bùi Văn Thành - Cư dân KHÔNG CÓ PHƯƠNG TIỆN)
+    '0364967083': {
+      name: 'Bùi Văn Thành',
+      phone: '0364967083',
+      email: 'thanhbui@gmail.com',
+      cccd: '038090001122',
+      avatar: 'https://data.nks.vn/storage/users/default.png',
+      eKycApproved: true,
+      dob: '05/07/1983',
+      pob: 'Thanh Hóa',
+      vehicles: [], // Chủ hộ này KHÔNG CÓ XE
+    },
+  };
+
+  const matchedResident = cleanOwnerId ? KNOWN_NKS_RESIDENT_MAP[cleanOwnerId] : undefined;
+
   return {
     code: formattedCode,
     tower: bCode.includes('10') ? 'B' : 'A',
@@ -383,20 +579,30 @@ export function convertNksToApartmentUnit(
     priceBillion: Math.round((areaNum * 0.055) * 100) / 100, // ~55tr/m2
     status,
     statusLabel: status === 'OCCUPIED' ? 'Đã Bàn Giao (Cư Dân Đang Ở)' : 'Đang Trống (Sẵn Sàng Bàn Giao)',
-    owner: cleanOwnerId ? {
+    owner: matchedResident ? {
+      name: matchedResident.name,
+      phone: matchedResident.phone,
+      email: matchedResident.email,
+      cccd: matchedResident.cccd,
+      avatar: matchedResident.avatar,
+      eKycApproved: matchedResident.eKycApproved,
+      handoverDate: item.created_at ? item.created_at.split(' ')[0] : '2026-09-21',
+      dob: matchedResident.dob,
+      pob: matchedResident.pob,
+    } : (cleanOwnerId ? {
       name: isUserLuc ? 'Trần Hữu Lực' : `Chủ Hộ (${cleanOwnerId})`,
       phone: cleanOwnerId,
       email: isUserLuc ? 'huuluc04nhl@gmail.com' : '',
       cccd: isUserLuc ? '067204000961' : '',
-      avatar: isUserLuc ? 'https://data.nks.vn/storage/users/202609021654232258.jpg' : '',
+      avatar: isUserLuc ? 'https://data.nks.vn/storage/users/202609021654232258.jpg' : 'https://data.nks.vn/storage/users/default.png',
       eKycApproved: isUserLuc,
-      handoverDate: item.created_at ? item.created_at.split(' ')[0] : '',
+      handoverDate: item.created_at ? item.created_at.split(' ')[0] : '2026-09-21',
       dob: isUserLuc ? '18/08/2004' : '',
       pob: isUserLuc ? 'Triệu Trạch, Triệu Phong, Quảng Trị' : '',
-    } : undefined,
+    } : undefined),
     membersCount: 0,
     members: [],
-    vehicles: isUserLuc ? [
+    vehicles: matchedResident ? matchedResident.vehicles : (isUserLuc ? [
       {
         id: 'veh-owner-01',
         type: 'CAR',
@@ -405,7 +611,7 @@ export function convertNksToApartmentUnit(
         cardNo: 'RFID-CH06-01',
         slot: 'B2-A15',
       }
-    ] : [],
+    ] : []),
     billing: undefined,
     nksId: item.id,
     nksSlug: item.slug,
@@ -587,10 +793,94 @@ export const DEFAULT_NKS_APARTMENTS_DATA: NksApartment[] = [
     bed: '2',
     wc: '1',
     floor: '30',
-    ownerid: '0364967082',
+    ownerid: '0364967085',
     block: { ID: 880, post_title: 'Tropical BS-07' },
     created_at: '2026-09-21 08:59:23',
     updated_at: '2026-09-21 08:59:23'
+  },
+  {
+    id: 910,
+    title: 'Tropical BS-07 CH-04',
+    slug: 'tropical-bs-07-ch-04',
+    code: 'CH-04',
+    area: '59',
+    bed: '2',
+    wc: '2',
+    floor: '15',
+    ownerid: '0364967084',
+    block: { ID: 880, post_title: 'Tropical BS-07' },
+    created_at: '2026-09-21 09:05:00',
+    updated_at: '2026-09-21 09:05:00'
+  },
+  {
+    id: 912,
+    title: 'Tropical BS-07 CH-02',
+    slug: 'tropical-bs-07-ch-02',
+    code: 'CH-02',
+    area: '38',
+    bed: '1',
+    wc: '1',
+    floor: '20',
+    ownerid: '0364967080',
+    block: { ID: 880, post_title: 'Tropical BS-07' },
+    created_at: '2026-09-21 09:06:00',
+    updated_at: '2026-09-21 09:06:00'
+  },
+  {
+    id: 914,
+    title: 'Tropical BS-07 CH-05',
+    slug: 'tropical-bs-07-ch-05',
+    code: 'CH-05',
+    area: '69',
+    bed: '2',
+    wc: '2',
+    floor: '25',
+    ownerid: '0364967086',
+    block: { ID: 880, post_title: 'Tropical BS-07' },
+    created_at: '2026-09-21 09:07:00',
+    updated_at: '2026-09-21 09:07:00'
+  },
+  {
+    id: 916,
+    title: 'Tropical BS-07 CH-07',
+    slug: 'tropical-bs-07-ch-07',
+    code: 'CH-07',
+    area: '59',
+    bed: '2',
+    wc: '2',
+    floor: '18',
+    ownerid: '0364967087',
+    block: { ID: 880, post_title: 'Tropical BS-07' },
+    created_at: '2026-09-21 09:08:00',
+    updated_at: '2026-09-21 09:08:00'
+  },
+  {
+    id: 918,
+    title: 'Tropical BS-07 CH-10',
+    slug: 'tropical-bs-07-ch-10',
+    code: 'CH-10',
+    area: '35',
+    bed: '1',
+    wc: '1',
+    floor: '12',
+    ownerid: '0364967088',
+    block: { ID: 880, post_title: 'Tropical BS-07' },
+    created_at: '2026-09-21 09:09:00',
+    updated_at: '2026-09-21 09:09:00'
+  },
+  {
+    id: 920,
+    title: 'Tropical BS-07 CH-03',
+    slug: 'tropical-bs-07-ch-03',
+    code: 'CH-03',
+    area: '46',
+    bed: '1',
+    wc: '1',
+    floor: '20',
+    ownerid: '0364967083',
+    block: { ID: 880, post_title: 'Tropical BS-07' },
+    created_at: '2026-09-21 09:10:00',
+    updated_at: '2026-09-21 09:10:00'
   }
 ];
 

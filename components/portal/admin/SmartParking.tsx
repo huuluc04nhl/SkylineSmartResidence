@@ -275,17 +275,96 @@ export default function SmartParking() {
     return list;
   }, [regAptCode, activeApartmentUnit, hasResident, isEn]);
 
-  // ZERO-CLICK AUTO-DETECTION:
-  // When apartment changes, auto-load genuinely declared vehicle (if any).
-  // If apartment is vacant or resident has no vehicle, clear inputs and DO NOT invent fake plates!
-  useEffect(() => {
-    if (!regAptCode) return;
+  // AI Spatial Slot Routing Function
+  const computeOptimalSlot = (
+    type: 'CAR' | 'MOTORBIKE',
+    targetZone: 'FIXED_B2' | 'FLOATING_B2' | 'SOLARI_HUB',
+    wing: string
+  ) => {
+    if (type === 'MOTORBIKE') {
+      const free = b1Slots.find(s => !s.assigned);
+      return free ? free.code : (wing === 'SOUTH' ? 'B1-M08' : 'B1-M02');
+    }
+    if (targetZone === 'FIXED_B2') {
+      const preferred = wing === 'SOUTH' 
+        ? ['B2-A06', 'B2-A07', 'B2-A08', 'B2-A05', 'B2-A09'] 
+        : ['B2-A03', 'B2-A02', 'B2-A04', 'B2-A01'];
+      const preferredFree = b2FixedSlots.find(s => !s.assigned && preferred.includes(s.code));
+      if (preferredFree) return preferredFree.code;
+      const anyFree = b2FixedSlots.find(s => !s.assigned);
+      return anyFree ? anyFree.code : (wing === 'SOUTH' ? 'B2-A06' : 'B2-A03');
+    }
+    if (targetZone === 'FLOATING_B2') {
+      const preferred = wing === 'SOUTH' 
+        ? ['B2-B08', 'B2-B07', 'B2-B09', 'B2-B06'] 
+        : ['B2-B04', 'B2-B03', 'B2-B05', 'B2-B02'];
+      const preferredFree = b2FloatingSlots.find(s => !s.assigned && preferred.includes(s.code));
+      if (preferredFree) return preferredFree.code;
+      const anyFree = b2FloatingSlots.find(s => !s.assigned);
+      return anyFree ? anyFree.code : (wing === 'SOUTH' ? 'B2-B08' : 'B2-B04');
+    }
+    const anyFree = solariHubSlots.find(s => !s.assigned);
+    return anyFree ? anyFree.code : 'HUB-08';
+  };
 
-    if (!hasResident) {
+  // ZERO-CLICK AUTO-DETECTION & AUTO-FILL HANDLER:
+  // Directly and synchronously auto-fills license plate, brand, and slot when an apartment is selected.
+  const handleApartmentSelect = (targetCode: string) => {
+    setRegAptCode(targetCode);
+    setSelectedVehicleIdx(0);
+
+    const targetUnit = apartments.find(a => a.code === targetCode);
+    const hasRes = Boolean(targetUnit?.owner?.name || targetUnit?.status === 'OCCUPIED' || (targetUnit?.members && targetUnit.members.length > 0));
+
+    if (!targetUnit || !hasRes) {
       setRegPlate('');
       setRegBrand('');
       setRegCustomSlot('');
-      setSelectedVehicleIdx(0);
+      return;
+    }
+
+    const unitVehicles = targetUnit.vehicles || [];
+    const memberVehicles = (targetUnit.members || [])
+      .filter(m => m.licensePlate)
+      .map(m => ({
+        plate: m.licensePlate!.trim().toUpperCase(),
+        brand: isEn ? 'Member Vehicle' : 'Xe thành viên',
+        type: 'MOTORBIKE' as const,
+      }));
+
+    const allVehs = [
+      ...unitVehicles.map(v => ({
+        plate: v.plate.trim().toUpperCase(),
+        brand: v.brand || (v.type === 'CAR' ? 'Sedan / SUV' : 'Xe máy'),
+        type: (v.type === 'CAR' ? 'CAR' : 'MOTORBIKE') as 'CAR' | 'MOTORBIKE',
+      })),
+      ...memberVehicles,
+    ];
+
+    if (allVehs.length > 0) {
+      const v = allVehs[0];
+      setRegPlate(v.plate);
+      setRegBrand(v.brand);
+      setRegType(v.type);
+
+      const wing = targetUnit.wing || (targetCode.includes('06') || targetCode.includes('08') || targetCode.includes('09') ? 'SOUTH' : 'NORTH');
+      const slot = computeOptimalSlot(v.type, regTargetZone, wing);
+      setRegCustomSlot(slot);
+    } else {
+      // Resident exists but has no vehicles declared in profile
+      setRegPlate('');
+      setRegBrand('');
+      setRegCustomSlot('');
+    }
+  };
+
+  // REACTIVE AUTO-FILL SYNCHRONIZATION:
+  // Guarantees inputs are filled on initial modal open or whenever apartment/vehicle selection updates
+  useEffect(() => {
+    if (!activeApartmentUnit || !hasResident) {
+      setRegPlate('');
+      setRegBrand('');
+      setRegCustomSlot('');
       return;
     }
 
@@ -294,59 +373,14 @@ export default function SmartParking() {
       setRegPlate(target.plate);
       setRegBrand(target.brand);
       setRegType(target.type);
+      const wing = activeApartmentUnit.wing || (regAptCode.includes('06') || regAptCode.includes('08') || regAptCode.includes('09') ? 'SOUTH' : 'NORTH');
+      setRegCustomSlot(computeOptimalSlot(target.type, regTargetZone, wing));
     } else {
-      // Resident has no vehicle declared! DO NOT make up fake plates!
       setRegPlate('');
       setRegBrand('');
       setRegCustomSlot('');
-      setSelectedVehicleIdx(0);
     }
-  }, [regAptCode, hasResident, detectedResidentVehicles, selectedVehicleIdx]);
-
-  // AI SPATIAL AUTO-ALLOCATION (Zero-Click):
-  // When a valid plate is present, AI instantly finds the closest free slot near elevator core.
-  useEffect(() => {
-    if (!regPlate.trim() || !hasResident) {
-      setRegCustomSlot('');
-      return;
-    }
-
-    const wing = activeApartmentUnit?.wing || (regAptCode.includes('06') || regAptCode.includes('08') || regAptCode.includes('09') ? 'SOUTH' : 'NORTH');
-
-    let suggestedSlot = '';
-
-    if (regType === 'MOTORBIKE') {
-      const free = b1Slots.find(s => !s.assigned);
-      suggestedSlot = free ? free.code : (wing === 'SOUTH' ? 'B1-M08' : 'B1-M02');
-    } else if (regTargetZone === 'FIXED_B2') {
-      const preferred = wing === 'SOUTH' 
-        ? ['B2-A06', 'B2-A07', 'B2-A08', 'B2-A05', 'B2-A09'] 
-        : ['B2-A03', 'B2-A02', 'B2-A04', 'B2-A01'];
-      const preferredFree = b2FixedSlots.find(s => !s.assigned && preferred.includes(s.code));
-      if (preferredFree) {
-        suggestedSlot = preferredFree.code;
-      } else {
-        const anyFree = b2FixedSlots.find(s => !s.assigned);
-        suggestedSlot = anyFree ? anyFree.code : (wing === 'SOUTH' ? 'B2-A06' : 'B2-A03');
-      }
-    } else if (regTargetZone === 'FLOATING_B2') {
-      const preferred = wing === 'SOUTH' 
-        ? ['B2-B08', 'B2-B07', 'B2-B09', 'B2-B06'] 
-        : ['B2-B04', 'B2-B03', 'B2-B05', 'B2-B02'];
-      const preferredFree = b2FloatingSlots.find(s => !s.assigned && preferred.includes(s.code));
-      if (preferredFree) {
-        suggestedSlot = preferredFree.code;
-      } else {
-        const anyFree = b2FloatingSlots.find(s => !s.assigned);
-        suggestedSlot = anyFree ? anyFree.code : (wing === 'SOUTH' ? 'B2-B08' : 'B2-B04');
-      }
-    } else {
-      const anyFree = solariHubSlots.find(s => !s.assigned);
-      suggestedSlot = anyFree ? anyFree.code : 'HUB-08';
-    }
-
-    setRegCustomSlot(suggestedSlot);
-  }, [regPlate, regType, regTargetZone, activeApartmentUnit, regAptCode, hasResident, b1Slots, b2FixedSlots, b2FloatingSlots, solariHubSlots]);
+  }, [regAptCode, activeApartmentUnit, hasResident, detectedResidentVehicles, selectedVehicleIdx, regTargetZone]);
 
   // Handler: Register New Vehicle or Enqueue to Waitlist
   const handleRegisterVehicle = (e: React.FormEvent) => {
@@ -528,7 +562,13 @@ export default function SmartParking() {
           <button
             type="button"
             onClick={() => {
-              setRegCustomSlot('');
+              const defaultUnit = apartments.find(a => a.code === 'CH-06') || 
+                                  apartments.find(a => a.vehicles && a.vehicles.length > 0) || 
+                                  apartments.find(a => a.owner?.name) || 
+                                  apartments[0];
+              if (defaultUnit) {
+                handleApartmentSelect(defaultUnit.code);
+              }
               setRegActionType('DIRECT_ISSUE');
               setIsRegisterModalOpen(true);
             }}
@@ -1308,10 +1348,7 @@ export default function SmartParking() {
                 </label>
                 <select
                   value={regAptCode}
-                  onChange={(e) => {
-                    setRegAptCode(e.target.value);
-                    setSelectedVehicleIdx(0);
-                  }}
+                  onChange={(e) => handleApartmentSelect(e.target.value)}
                   className="w-full px-3 py-2.5 bg-[#161B22] border border-[#2D3748] text-white focus:outline-none focus:border-[#C5A880] rounded-none font-mono text-xs font-bold"
                   required
                 >
@@ -1356,6 +1393,8 @@ export default function SmartParking() {
                           setRegPlate(veh.plate);
                           setRegBrand(veh.brand);
                           setRegType(veh.type);
+                          const wing = activeApartmentUnit?.wing || 'SOUTH';
+                          setRegCustomSlot(computeOptimalSlot(veh.type, regTargetZone, wing));
                         }}
                         className={`w-full p-2 text-left border flex items-center justify-between font-mono text-xs transition-colors rounded-none ${
                           selectedVehicleIdx === idx
