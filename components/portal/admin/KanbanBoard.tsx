@@ -1884,193 +1884,204 @@ export default function KanbanBoard() {
       {/* MODAL 2: NGHIỆM THU & TẢI ẢNH HOÀN TẤT                                    */}
       {/* ========================================================================= */}
       {resolvingTicket && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <form onSubmit={handleConfirmResolve} className="bg-[#121820] border border-[#C5A880] max-w-lg w-full p-6 space-y-4 shadow-2xl animate-fadeIn">
-            <div className="flex items-center justify-between border-b border-[#222B35] pb-3">
-              <h3 className="font-serif text-lg font-bold text-white flex items-center gap-2">
-                <CheckCircle2 className="w-5 h-5 text-emerald-400" />
-                Nghiệm Thu & Đóng Phiếu #{resolvingTicket.id}
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-3 sm:p-4">
+          <form 
+            onSubmit={handleConfirmResolve} 
+            className="bg-[#121820] border border-[#C5A880] max-w-lg w-full max-h-[90vh] flex flex-col shadow-2xl animate-fadeIn rounded-none"
+          >
+            {/* Modal Header (Fixed) */}
+            <div className="flex items-center justify-between border-b border-[#222B35] px-5 py-3.5 shrink-0 bg-[#0E131B]">
+              <h3 className="font-serif text-base sm:text-lg font-bold text-white flex items-center gap-2">
+                <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0" />
+                <span>Nghiệm Thu & Đóng Phiếu #{resolvingTicket.id}</span>
               </h3>
               <button 
                 type="button"
-                onClick={() => setResolvingTicket(null)}
-                className="text-gray-400 hover:text-white"
+                onClick={() => {
+                  setResolvingTicket(null);
+                  setAllowOverrideVerification(false);
+                }}
+                className="text-gray-400 hover:text-white p-1"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
-            <div className="p-3 bg-[#161B22] border border-[#222B35] text-xs space-y-1">
-              <div>Căn hộ: <strong className="text-white">Căn {resolvingTicket.apt_code} ({resolvingTicket.resident_name})</strong></div>
-              <div>KTV phụ trách: <strong className="text-[#C5A880]">{resolvingTicket.assigned_technician}</strong></div>
-              <div>Nội dung báo: <span className="text-gray-300">{resolvingTicket.content}</span></div>
-            </div>
-
-            {/* AI Assistant Quick Fill in Modal */}
-            <div className="p-3 bg-emerald-950/40 border border-emerald-500/30 flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Sparkles className="w-4 h-4 text-emerald-400 flex-shrink-0" />
-                <div>
-                  <div className="text-xs text-white font-semibold">Trợ Lý AI Kiểm Định Hiện Trường</div>
-                  <div className="text-[10px] text-gray-400">Tự động sinh biên bản kỹ thuật &amp; ảnh kiểm định đạt chuẩn</div>
+            {/* Modal Scrollable Body */}
+            <div className="overflow-y-auto px-5 py-3.5 space-y-3 flex-1 text-xs">
+              {/* Ticket Info Compact */}
+              <div className="p-2.5 bg-[#161B22] border border-[#222B35] space-y-1 text-xs leading-relaxed rounded-none">
+                <div className="flex items-center justify-between flex-wrap gap-1">
+                  <span>Căn hộ: <strong className="text-white">Căn {resolvingTicket.apt_code} ({resolvingTicket.resident_name})</strong></span>
+                  <span className="text-gray-400 font-mono text-[11px]">KTV: <strong className="text-[#C5A880]">{resolvingTicket.assigned_technician}</strong></span>
+                </div>
+                <div className="text-gray-400 line-clamp-2">
+                  <span className="text-gray-500">Nội dung:</span> {resolvingTicket.content}
                 </div>
               </div>
-              <button
-                type="button"
-                onClick={handleAutoFillAiInspection}
-                className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-1 shadow flex-shrink-0"
-              >
-                <span>AI Điền Sẵn</span>
-              </button>
-            </div>
 
-            {/* Upload After Image */}
-            <div className="space-y-2">
-              <label className="text-xs text-gray-300 font-semibold flex items-center justify-between">
-                <span>Tải Ảnh Nghiệm Thu Sau Khi Sửa Xong:</span>
-                <span className="text-[11px] text-gray-400 font-mono">* Ảnh được lưu và gửi trực tiếp đến cư dân</span>
-              </label>
-
-              <input
-                type="file"
-                ref={afterFileInputRef}
-                onChange={handleAfterFileChange}
-                accept="image/*"
-                className="hidden"
-              />
-
-              <div className="flex items-center gap-3">
+              {/* AI Assistant Quick Fill */}
+              <div className="p-2.5 bg-emerald-950/30 border border-emerald-500/30 flex items-center justify-between gap-2 rounded-none">
+                <div className="flex items-center gap-2 min-w-0">
+                  <Sparkles className="w-4 h-4 text-emerald-400 shrink-0" />
+                  <div className="min-w-0">
+                    <div className="text-xs text-white font-semibold truncate">Trợ Lý AI Kiểm Định Hiện Trường</div>
+                    <div className="text-[10px] text-gray-400 truncate">Sinh biên bản kỹ thuật &amp; ảnh kiểm định đạt chuẩn</div>
+                  </div>
+                </div>
                 <button
                   type="button"
-                  onClick={() => afterFileInputRef.current?.click()}
-                  disabled={isReadingAfterImage}
-                  className="px-3.5 py-2 bg-[#161B22] border border-[#2D3748] hover:border-[#C5A880] text-gray-300 hover:text-white text-xs flex items-center gap-2 transition-colors"
+                  onClick={handleAutoFillAiInspection}
+                  className="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-500 text-white text-[11px] font-bold uppercase tracking-wider transition-all flex items-center gap-1 shadow shrink-0 rounded-none"
                 >
-                  <Camera className="w-3.5 h-3.5 text-[#C5A880]" />
-                  {isReadingAfterImage ? 'Đang nạp ảnh...' : afterImageBase64 ? 'Đổi Ảnh Nghiệm Thu' : 'Chụp / Chọn Ảnh Sửa Xong'}
+                  AI Điền Sẵn
                 </button>
-
-                {afterImageBase64 ? (
-                  <div className="flex items-center gap-2">
-                    <img 
-                      src={afterImageBase64} 
-                      alt="After Preview" 
-                      className="w-10 h-10 object-cover border border-emerald-500"
-                    />
-                    <span className="text-xs text-emerald-400 font-medium">Đã tải ảnh nghiệm thu ✓</span>
-                  </div>
-                ) : (
-                  <span className="text-[11px] text-amber-400 font-medium">* Cần đính kèm ảnh chụp sau khi sửa.</span>
-                )}
               </div>
-            </div>
 
-            <div className="space-y-1.5">
-              <label className="text-xs text-gray-300 font-semibold">Ghi Chú Kỹ Thuật Khi Bàn Giao:</label>
-              <textarea
-                rows={2}
-                value={resolutionNotes}
-                onChange={(e) => setResolutionNotes(e.target.value)}
-                placeholder="VD: Đã thay gioăng cao su van xả, kiểm tra áp lực nước 2.5 bar ổn định..."
-                className="w-full bg-[#161B22] border border-[#2D3748] text-xs text-white p-2.5 focus:outline-none focus:border-[#C5A880]"
-                required
-              />
-            </div>
+              {/* Upload After Image */}
+              <div className="space-y-1.5">
+                <label className="text-xs text-gray-300 font-semibold flex items-center justify-between">
+                  <span>Tải Ảnh Nghiệm Thu:</span>
+                  <span className="text-[10px] text-gray-500 font-mono">* Gửi cư dân</span>
+                </label>
 
-            {/* AI Resolution Image Verification Status */}
-            {isVerifyingAfterImage && (
-              <div className="p-3 bg-[#0E131B] border border-[#C5A880]/40 text-xs flex items-center gap-2.5 text-[#C5A880]">
-                <RefreshCw className="w-4 h-4 text-[#C5A880] animate-spin flex-shrink-0" />
-                <div>
-                  <div className="font-semibold text-[#C5A880]">AI Đang Thẩm Định Ảnh Nghiệm Thu...</div>
-                  <div className="text-[10px] text-gray-400">Đối chiếu hiện trường trước &amp; sau sửa, ngăn ngừa ảnh giả hoặc ảnh sai vị trí</div>
-                </div>
-              </div>
-            )}
+                <input
+                  type="file"
+                  ref={afterFileInputRef}
+                  onChange={handleAfterFileChange}
+                  accept="image/*"
+                  className="hidden"
+                />
 
-            {!isVerifyingAfterImage && aiVerificationResult && (
-              <div className={`p-3 border text-xs space-y-1.5 ${
-                aiVerificationResult.status === 'VERIFIED'
-                  ? 'bg-emerald-950/40 border-emerald-500/60 text-emerald-200'
-                  : aiVerificationResult.status === 'SUSPICIOUS'
-                    ? 'bg-rose-950/40 border-rose-500/60 text-rose-200'
-                    : 'bg-amber-950/40 border-amber-500/60 text-amber-200'
-              }`}>
-                <div className="flex items-center justify-between font-bold">
-                  <span className="flex items-center gap-1.5">
-                    {aiVerificationResult.status === 'VERIFIED' ? (
-                      <>
-                        <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
-                        <span className="text-emerald-300">✓ AI Thẩm Định: Ảnh Đạt Chuẩn ({aiVerificationResult.confidence_score}%)</span>
-                      </>
-                    ) : aiVerificationResult.status === 'SUSPICIOUS' ? (
-                      <>
-                        <AlertTriangle className="w-4 h-4 text-rose-400 shrink-0" />
-                        <span className="text-rose-300">⚠️ CẢNH BÁO AI: Ảnh Nghi Ngờ Không Khớp ({aiVerificationResult.confidence_score}%)</span>
-                      </>
-                    ) : (
-                      <>
-                        <AlertCircle className="w-4 h-4 text-amber-400 shrink-0" />
-                        <span className="text-amber-300">⏳ AI Nhận Định: Chưa Khắc Phục Triệt Để ({aiVerificationResult.confidence_score}%)</span>
-                      </>
-                    )}
-                  </span>
-                  {afterImageBase64 && (
-                    <button
-                      type="button"
-                      onClick={() => handleVerifyResolutionImage(afterImageBase64, resolvingTicket, resolutionNotes)}
-                      className="text-[10px] text-gray-400 hover:text-white underline"
-                    >
-                      Thẩm định lại
-                    </button>
+                <div className="flex items-center gap-3">
+                  <button
+                    type="button"
+                    onClick={() => afterFileInputRef.current?.click()}
+                    disabled={isReadingAfterImage}
+                    className="px-3 py-1.5 bg-[#161B22] border border-[#2D3748] hover:border-[#C5A880] text-gray-300 hover:text-white text-xs flex items-center gap-2 transition-colors rounded-none"
+                  >
+                    <Camera className="w-3.5 h-3.5 text-[#C5A880]" />
+                    {isReadingAfterImage ? 'Đang nạp ảnh...' : afterImageBase64 ? 'Đổi Ảnh Nghiệm Thu' : 'Chụp / Chọn Ảnh Sửa Xong'}
+                  </button>
+
+                  {afterImageBase64 ? (
+                    <div className="flex items-center gap-2">
+                      <img 
+                        src={afterImageBase64} 
+                        alt="After Preview" 
+                        className="w-8 h-8 object-cover border border-emerald-500"
+                      />
+                      <span className="text-xs text-emerald-400 font-medium">Đã nạp ảnh ✓</span>
+                    </div>
+                  ) : (
+                    <span className="text-[11px] text-amber-400 font-medium">* Cần ảnh chụp sau sửa</span>
                   )}
                 </div>
-
-                <div className="text-[11px] font-medium leading-relaxed">
-                  {aiVerificationResult.verification_title}
-                </div>
-                {aiVerificationResult.verification_detail && (
-                  <div className="text-[10px] text-gray-300 leading-relaxed">
-                    {aiVerificationResult.verification_detail}
-                  </div>
-                )}
-                {aiVerificationResult.risk_warning && (
-                  <div className="text-[10px] bg-rose-950/80 border border-rose-500/50 p-2 text-rose-200 font-semibold">
-                    Cảnh báo rủi ro: {aiVerificationResult.risk_warning}
-                  </div>
-                )}
               </div>
-            )}
 
-            {/* AI Warning & Manual Override option if suspicious/incomplete */}
-            {aiVerificationResult && (aiVerificationResult.status === 'SUSPICIOUS' || aiVerificationResult.status === 'INCOMPLETE') && (
-              <div className="bg-[#141B24] border border-rose-500/40 p-3 space-y-2 rounded-none">
-                <div className="text-xs font-semibold text-rose-300 flex items-center gap-1.5">
-                  <AlertTriangle className="w-4 h-4 text-rose-400 shrink-0" />
-                  <span>Chất lượng ảnh nghiệm thu chưa đạt chuẩn</span>
-                </div>
-                <p className="text-[11px] text-gray-400 leading-relaxed">
-                  Hệ thống tạm khóa nghiệm thu để tránh gian lận hoặc hoàn tất sai sót. BQL nên bấm <strong className="text-rose-300">Từ Chối & Yêu Cầu Sửa Lại</strong> để chuyển ticket về trạng thái đang làm và yêu cầu KTV xử lý lại hiện trường.
-                </p>
-                <label className="flex items-center gap-2 cursor-pointer pt-1 text-xs text-amber-300/90 hover:text-amber-200 select-none">
-                  <input
-                    type="checkbox"
-                    checked={allowOverrideVerification}
-                    onChange={(e) => setAllowOverrideVerification(e.target.checked)}
-                    className="rounded-none bg-[#0E131B] border-gray-600 text-[#C5A880] focus:ring-0 w-3.5 h-3.5"
-                  />
-                  <span>Tôi đã kiểm tra thực tế tại căn hộ và chịu trách nhiệm duyệt ngoại lệ</span>
-                </label>
+              {/* Resolution Notes */}
+              <div className="space-y-1">
+                <label className="text-xs text-gray-300 font-semibold">Ghi Chú Kỹ Thuật:</label>
+                <textarea
+                  rows={2}
+                  value={resolutionNotes}
+                  onChange={(e) => setResolutionNotes(e.target.value)}
+                  placeholder="VD: Đã thay gioăng cao su van xả, kiểm tra áp lực nước 2.5 bar ổn định..."
+                  className="w-full bg-[#161B22] border border-[#2D3748] text-xs text-white p-2 focus:outline-none focus:border-[#C5A880] rounded-none resize-none"
+                  required
+                />
               </div>
-            )}
 
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-3 border-t border-[#222B35]">
+              {/* AI Verification Loading */}
+              {isVerifyingAfterImage && (
+                <div className="p-2.5 bg-[#0E131B] border border-[#C5A880]/40 text-xs flex items-center gap-2.5 text-[#C5A880] rounded-none">
+                  <RefreshCw className="w-4 h-4 text-[#C5A880] animate-spin shrink-0" />
+                  <div>
+                    <div className="font-semibold text-[#C5A880]">AI Đang Thẩm Định Ảnh Nghiệm Thu...</div>
+                    <div className="text-[10px] text-gray-400">Đối chiếu hiện trường trước &amp; sau sửa</div>
+                  </div>
+                </div>
+              )}
+
+              {/* AI Verification Status Card (Unified Anti-Slop, No Nested Duplicate Boxes) */}
+              {!isVerifyingAfterImage && aiVerificationResult && (
+                <div className={`p-2.5 border text-xs space-y-1.5 rounded-none ${
+                  aiVerificationResult.status === 'VERIFIED'
+                    ? 'bg-emerald-950/30 border-emerald-500/50 text-emerald-200'
+                    : aiVerificationResult.status === 'SUSPICIOUS'
+                      ? 'bg-rose-950/30 border-rose-500/50 text-rose-200'
+                      : 'bg-amber-950/30 border-amber-500/50 text-amber-200'
+                }`}>
+                  <div className="flex items-center justify-between font-bold">
+                    <span className="flex items-center gap-1.5">
+                      {aiVerificationResult.status === 'VERIFIED' ? (
+                        <>
+                          <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                          <span className="text-emerald-300">✓ AI Thẩm Định: Ảnh Đạt Chuẩn ({aiVerificationResult.confidence_score}%)</span>
+                        </>
+                      ) : aiVerificationResult.status === 'SUSPICIOUS' ? (
+                        <>
+                          <AlertTriangle className="w-4 h-4 text-rose-400 shrink-0" />
+                          <span className="text-rose-300">⚠️ Cảnh Báo AI: Ảnh Không Khớp ({aiVerificationResult.confidence_score}%)</span>
+                        </>
+                      ) : (
+                        <>
+                          <AlertCircle className="w-4 h-4 text-amber-400 shrink-0" />
+                          <span className="text-amber-300">⏳ AI: Chưa Khắc Phục Triệt Để ({aiVerificationResult.confidence_score}%)</span>
+                        </>
+                      )}
+                    </span>
+                    {afterImageBase64 && (
+                      <button
+                        type="button"
+                        onClick={() => handleVerifyResolutionImage(afterImageBase64, resolvingTicket, resolutionNotes)}
+                        className="text-[10px] text-gray-400 hover:text-white underline"
+                      >
+                        Thẩm định lại
+                      </button>
+                    )}
+                  </div>
+
+                  <div className="text-[11px] font-medium leading-relaxed">
+                    {aiVerificationResult.verification_title}
+                  </div>
+                  {aiVerificationResult.verification_detail && (
+                    <div className="text-[10px] text-gray-300 leading-relaxed">
+                      {aiVerificationResult.verification_detail}
+                    </div>
+                  )}
+                  {aiVerificationResult.risk_warning && (
+                    <div className="text-[10px] bg-rose-950/70 border border-rose-500/40 p-1.5 text-rose-200 font-medium rounded-none">
+                      Rủi ro: {aiVerificationResult.risk_warning}
+                    </div>
+                  )}
+
+                  {/* Manual Override Option inside AI Card */}
+                  {(aiVerificationResult.status === 'SUSPICIOUS' || aiVerificationResult.status === 'INCOMPLETE') && (
+                    <div className="pt-2 border-t border-rose-500/30 flex items-center justify-between gap-2">
+                      <label className="flex items-center gap-2 cursor-pointer text-[11px] text-amber-300 hover:text-amber-200 select-none">
+                        <input
+                          type="checkbox"
+                          checked={allowOverrideVerification}
+                          onChange={(e) => setAllowOverrideVerification(e.target.checked)}
+                          className="rounded-none bg-[#0E131B] border-gray-600 text-[#C5A880] focus:ring-0 w-3.5 h-3.5"
+                        />
+                        <span>Tôi đã kiểm tra thực tế, chịu trách nhiệm duyệt ngoại lệ</span>
+                      </label>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+
+            {/* Modal Footer (Sticky Bottom, Never Cut Off) */}
+            <div className="border-t border-[#222B35] px-5 py-3 bg-[#0E131B] shrink-0 flex items-center justify-between gap-2">
               <div>
                 {aiVerificationResult && (aiVerificationResult.status === 'SUSPICIOUS' || aiVerificationResult.status === 'INCOMPLETE') && (
                   <button
                     type="button"
                     onClick={handleRejectResolution}
-                    className="px-3.5 py-2 bg-rose-950/80 hover:bg-rose-900 border border-rose-500/60 text-rose-200 text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 rounded-none transition-colors shadow-lg"
+                    className="px-3 py-1.5 bg-rose-950 hover:bg-rose-900 border border-rose-500/60 text-rose-200 text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 rounded-none transition-colors"
                   >
                     <X className="w-3.5 h-3.5 text-rose-400" />
                     <span>Từ Chối & Yêu Cầu Sửa Lại</span>
@@ -2078,14 +2089,14 @@ export default function KanbanBoard() {
                 )}
               </div>
 
-              <div className="flex items-center justify-end gap-3">
+              <div className="flex items-center gap-2">
                 <button
                   type="button"
                   onClick={() => {
                     setResolvingTicket(null);
                     setAllowOverrideVerification(false);
                   }}
-                  className="px-4 py-2 border border-gray-700 text-xs text-gray-300 hover:text-white rounded-none"
+                  className="px-3.5 py-1.5 border border-gray-700 text-xs text-gray-300 hover:text-white rounded-none transition-colors"
                 >
                   Hủy
                 </button>
@@ -2096,7 +2107,7 @@ export default function KanbanBoard() {
                     !afterImageBase64 ||
                     (aiVerificationResult && (aiVerificationResult.status === 'SUSPICIOUS' || aiVerificationResult.status === 'INCOMPLETE') && !allowOverrideVerification)
                   )}
-                  className={`px-5 py-2 text-white text-xs font-bold uppercase tracking-wider rounded-none transition-colors shadow-lg ${
+                  className={`px-4 py-1.5 text-xs font-bold uppercase tracking-wider rounded-none transition-colors shadow ${
                     (aiVerificationResult && (aiVerificationResult.status === 'SUSPICIOUS' || aiVerificationResult.status === 'INCOMPLETE') && !allowOverrideVerification) || isVerifyingAfterImage || !afterImageBase64
                       ? 'bg-emerald-950/40 border border-emerald-800/40 text-emerald-400/40 cursor-not-allowed'
                       : 'bg-emerald-600 hover:bg-emerald-500 text-white'
