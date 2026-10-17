@@ -22,7 +22,8 @@ import {
   Unlock,
   Radio,
   ArrowRight,
-  Filter
+  Filter,
+  Play
 } from 'lucide-react';
 import { 
   getApartmentUnits, 
@@ -51,6 +52,8 @@ interface LprLogEntry {
   barrierAction: 'OPENED' | 'DENIED' | 'MANUAL_OVERRIDE';
 }
 
+const LPR_LOGS_STORAGE_KEY = 'skyline_parking_lpr_logs_v1';
+
 export default function SmartParking() {
   const { isEn } = useLanguage();
 
@@ -64,6 +67,7 @@ export default function SmartParking() {
   const [manualOverride, setManualOverride] = useState(false);
   const [searchPlate, setSearchPlate] = useState('');
   const [typeFilter, setTypeFilter] = useState<'ALL' | 'CAR' | 'MOTORBIKE'>('ALL');
+  const [customScanPlate, setCustomScanPlate] = useState('');
 
   // Modal State for New Vehicle Registration
   const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
@@ -74,7 +78,15 @@ export default function SmartParking() {
   const [regFormError, setRegFormError] = useState('');
   const [regSuccessMsg, setRegSuccessMsg] = useState('');
 
-  // Initial load
+  // Initial Real State: No fake plates by default
+  const [lastScannedPlate, setLastScannedPlate] = useState('');
+  const [matchedVehicle, setMatchedVehicle] = useState<RegisteredVehicleWithUnit | null>(null);
+  const [scanResult, setScanResult] = useState<'IDLE' | 'MATCHED' | 'UNREGISTERED'>('IDLE');
+
+  // Real LPR Logs loaded from storage
+  const [lprLogs, setLprLogs] = useState<LprLogEntry[]>([]);
+
+  // Initial load: Fetch real apartments and real logs
   useEffect(() => {
     try {
       const data = getApartmentUnits();
@@ -84,6 +96,18 @@ export default function SmartParking() {
       }
     } catch {
       setApartments([]);
+    }
+
+    try {
+      const storedLogs = localStorage.getItem(LPR_LOGS_STORAGE_KEY);
+      if (storedLogs) {
+        const parsed = JSON.parse(storedLogs);
+        if (Array.isArray(parsed)) {
+          setLprLogs(parsed);
+        }
+      }
+    } catch (e) {
+      console.warn('Error reading LPR logs storage:', e);
     }
   }, []);
 
@@ -104,48 +128,7 @@ export default function SmartParking() {
     return list;
   }, [apartments, isEn]);
 
-  // Initial test vehicle
-  const firstCar = registeredVehicles.find(v => v.type === 'CAR') || registeredVehicles[0];
-  const [lastScannedPlate, setLastScannedPlate] = useState(firstCar?.plate || '51K-889.99');
-  const [matchedVehicle, setMatchedVehicle] = useState<RegisteredVehicleWithUnit | null>(firstCar || null);
-  const [scanResult, setScanResult] = useState<'MATCHED' | 'UNREGISTERED'>('MATCHED');
-
-  // LPR Audit Logs State
-  const [lprLogs, setLprLogs] = useState<LprLogEntry[]>([
-    {
-      id: 'LOG-001',
-      timestamp: '13:18:22 17/10',
-      lane: 'INBOUND_01',
-      plate: '51K-889.99',
-      vehicleType: 'CAR',
-      aptCode: '0602',
-      ownerName: 'Nguyễn Văn An',
-      result: 'MATCHED',
-      barrierAction: 'OPENED',
-    },
-    {
-      id: 'LOG-002',
-      timestamp: '13:05:40 17/10',
-      lane: 'INBOUND_01',
-      plate: '59F2-688.88',
-      vehicleType: 'MOTORBIKE',
-      aptCode: '0805',
-      ownerName: 'Trần Thị Bình',
-      result: 'MATCHED',
-      barrierAction: 'OPENED',
-    },
-    {
-      id: 'LOG-003',
-      timestamp: '12:49:15 17/10',
-      lane: 'OUTBOUND_02',
-      plate: '29A-999.88',
-      vehicleType: 'CAR',
-      result: 'UNREGISTERED',
-      barrierAction: 'DENIED',
-    }
-  ]);
-
-  // Parking capacity specs for Chung Cư BS-07 (The Tropical)
+  // Real Infrastructure capacity specs for Chung Cư BS-07 (The Tropical)
   const MAX_CAR_SLOTS = 120; // Hầm B2
   const MAX_MOTO_SLOTS = 350; // Hầm B1
   const registeredCars = registeredVehicles.filter(v => v.type === 'CAR').length;
@@ -154,14 +137,18 @@ export default function SmartParking() {
   const carOccupancyPct = Math.min(100, Math.round((registeredCars / MAX_CAR_SLOTS) * 100));
   const motoOccupancyPct = Math.min(100, Math.round((registeredMotos / MAX_MOTO_SLOTS) * 100));
 
-  // Handler: Simulate LPR Camera OCR Scan
+  // Handler: Real LPR Camera OCR Scan Simulation
   const handleSimulateScan = (plateNumber: string) => {
-    const cleanPlate = plateNumber.trim().toUpperCase().replace(/[-.\s]/g, '');
+    if (!plateNumber.trim()) return;
+
+    const formattedPlate = plateNumber.trim().toUpperCase();
+    const cleanPlate = formattedPlate.replace(/[-.\s]/g, '');
+
     const found = registeredVehicles.find(v => 
       v.plate.toUpperCase().replace(/[-.\s]/g, '') === cleanPlate
     );
 
-    setLastScannedPlate(plateNumber);
+    setLastScannedPlate(formattedPlate);
 
     const now = new Date();
     const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')} ${String(now.getDate()).padStart(2, '0')}/${String(now.getMonth() + 1).padStart(2, '0')}`;
@@ -171,19 +158,25 @@ export default function SmartParking() {
       setScanResult('MATCHED');
       setBarrierOpen(true);
 
-      // Log success event
       const newLog: LprLogEntry = {
         id: `LOG-${Date.now().toString().slice(-4)}`,
         timestamp: timeStr,
         lane: activeLane,
-        plate: plateNumber,
+        plate: formattedPlate,
         vehicleType: found.type === 'CAR' ? 'CAR' : 'MOTORBIKE',
         aptCode: found.aptCode,
         ownerName: found.ownerName,
         result: 'MATCHED',
         barrierAction: 'OPENED',
       };
-      setLprLogs(prev => [newLog, ...prev.slice(0, 19)]);
+
+      setLprLogs(prev => {
+        const updated = [newLog, ...prev.slice(0, 49)];
+        try {
+          localStorage.setItem(LPR_LOGS_STORAGE_KEY, JSON.stringify(updated));
+        } catch {}
+        return updated;
+      });
 
       setTimeout(() => {
         if (!manualOverride) {
@@ -195,18 +188,37 @@ export default function SmartParking() {
       setScanResult('UNREGISTERED');
       setBarrierOpen(false);
 
-      // Log denied event
       const newLog: LprLogEntry = {
         id: `LOG-${Date.now().toString().slice(-4)}`,
         timestamp: timeStr,
         lane: activeLane,
-        plate: plateNumber,
-        vehicleType: plateNumber.includes('F') || plateNumber.includes('M') ? 'MOTORBIKE' : 'CAR',
+        plate: formattedPlate,
+        vehicleType: formattedPlate.includes('F') || formattedPlate.includes('M') ? 'MOTORBIKE' : 'CAR',
         result: 'UNREGISTERED',
         barrierAction: 'DENIED',
       };
-      setLprLogs(prev => [newLog, ...prev.slice(0, 19)]);
+
+      setLprLogs(prev => {
+        const updated = [newLog, ...prev.slice(0, 49)];
+        try {
+          localStorage.setItem(LPR_LOGS_STORAGE_KEY, JSON.stringify(updated));
+        } catch {}
+        return updated;
+      });
     }
+  };
+
+  // Clear all recorded LPR logs
+  const handleClearLogs = () => {
+    const confirmMsg = isEn 
+      ? 'Are you sure you want to clear all real-time LPR audit logs?' 
+      : 'Bạn có chắc chắn muốn xóa toàn bộ lịch sử quét LPR thời gian thực?';
+    if (!window.confirm(confirmMsg)) return;
+
+    setLprLogs([]);
+    try {
+      localStorage.removeItem(LPR_LOGS_STORAGE_KEY);
+    } catch {}
   };
 
   // Toggle Manual BMS Override
@@ -235,7 +247,6 @@ export default function SmartParking() {
       return;
     }
 
-    // Check duplicate plate
     const cleanNew = regPlate.trim().toUpperCase().replace(/[-.\s]/g, '');
     const exists = registeredVehicles.some(
       v => v.plate.toUpperCase().replace(/[-.\s]/g, '') === cleanNew
@@ -255,7 +266,7 @@ export default function SmartParking() {
       id: `veh-${Date.now()}`,
       type: regType,
       plate: regPlate.trim().toUpperCase(),
-      brand: regBrand.trim() || (regType === 'CAR' ? 'Toyota / Mazda' : 'Honda / Yamaha'),
+      brand: regBrand.trim() || (regType === 'CAR' ? 'Sedan / SUV' : 'Xe máy'),
       cardNo: generatedCardNo,
       slot: generatedSlot,
     };
@@ -291,6 +302,13 @@ export default function SmartParking() {
     if (ok) {
       const refreshed = getApartmentUnits();
       setApartments(refreshed);
+      // Reset scanner if current plate was revoked
+      if (lastScannedPlate === plate) {
+        setLastScannedPlate('');
+        setMatchedVehicle(null);
+        setScanResult('IDLE');
+        setBarrierOpen(false);
+      }
     }
   };
 
@@ -358,7 +376,7 @@ export default function SmartParking() {
               className={`h-full transition-all duration-500 ${
                 carOccupancyPct >= 90 ? 'bg-rose-500' : carOccupancyPct >= 70 ? 'bg-amber-500' : 'bg-emerald-500'
               }`}
-              style={{ width: `${Math.max(4, carOccupancyPct)}%` }}
+              style={{ width: `${Math.max(registeredCars > 0 ? 4 : 0, carOccupancyPct)}%` }}
             />
           </div>
 
@@ -390,7 +408,7 @@ export default function SmartParking() {
               className={`h-full transition-all duration-500 ${
                 motoOccupancyPct >= 90 ? 'bg-rose-500' : 'bg-cyan-500'
               }`}
-              style={{ width: `${Math.max(4, motoOccupancyPct)}%` }}
+              style={{ width: `${Math.max(registeredMotos > 0 ? 4 : 0, motoOccupancyPct)}%` }}
             />
           </div>
 
@@ -408,7 +426,7 @@ export default function SmartParking() {
 
       {/* 3. AI LPR Terminal & BMS Barrier HUD */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        {/* Left (7 cols): Camera Feed & AI Recognition Box */}
+        {/* Left (7 cols): Camera Feed & Dynamic Scanner */}
         <div className="lg:col-span-7 bg-[#121820] border border-[#222B35] p-5 space-y-4">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#222B35] pb-3 text-xs">
             <div className="flex items-center gap-2 font-mono">
@@ -460,72 +478,123 @@ export default function SmartParking() {
               <span className="text-[#C5A880] font-bold">
                 {activeLane === 'INBOUND_01' ? 'GATE 01 - CỔNG BẮC (VÀO)' : 'GATE 02 - CỔNG NAM (RA)'}
               </span>
-              <span className="text-emerald-400">IR ILLUMINATOR ACTIVE</span>
+              <span className="text-emerald-400">IR SENSOR ACTIVE</span>
             </div>
 
             {/* AI Bounding Box Overlay */}
-            <div className={`absolute inset-x-6 bottom-4 border-2 p-2.5 bg-black/85 backdrop-blur-md flex flex-col sm:flex-row sm:items-center justify-between gap-2 ${
-              scanResult === 'MATCHED' ? 'border-emerald-500 shadow-[0_0_15px_rgba(16,185,129,0.3)]' : 'border-rose-500 shadow-[0_0_15px_rgba(244,63,94,0.3)]'
-            }`}>
-              <div className="flex items-center gap-3">
-                <div className={`font-mono text-lg font-bold tracking-widest px-2 py-0.5 border ${
-                  scanResult === 'MATCHED' 
-                    ? 'text-emerald-400 border-emerald-500/40 bg-emerald-950/40' 
-                    : 'text-rose-400 border-rose-500/40 bg-rose-950/40'
-                }`}>
-                  [ {lastScannedPlate} ]
+            {scanResult === 'IDLE' ? (
+              <div className="absolute inset-x-6 bottom-4 border p-2.5 bg-black/85 backdrop-blur-md flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-gray-700">
+                <div className="flex items-center gap-3">
+                  <div className="font-mono text-xs sm:text-sm font-bold tracking-widest px-2 py-0.5 border text-gray-400 border-gray-700 bg-gray-900/60">
+                    [ {isEn ? 'SENSOR STANDBY' : 'CHỜ XE TIẾN VÀO'} ]
+                  </div>
+                  <div className="text-[11px] font-mono text-gray-400">
+                    {isEn ? 'Induction loop ready • Enter plate to test' : 'Vòng lặp từ tính sẵn sàng • Quét biển số bên dưới'}
+                  </div>
                 </div>
-                <div className="text-[11px] font-mono text-gray-300">
-                  {matchedVehicle ? `${matchedVehicle.brand || 'Vehicle'} • Căn ${matchedVehicle.aptCode}` : (isEn ? 'Unregistered Guest' : 'Xe Vãng Lai Chưa Đăng Ký')}
-                </div>
+                <span className="text-[10px] font-mono px-2 py-1 uppercase font-semibold border text-gray-400 bg-gray-900 border-gray-700">
+                  STANDBY
+                </span>
               </div>
-
-              <span className={`text-[10px] font-mono px-2 py-1 uppercase font-semibold border ${
-                scanResult === 'MATCHED'
-                  ? 'text-emerald-300 bg-emerald-950/70 border-emerald-500'
-                  : 'text-rose-300 bg-rose-950/70 border-rose-500'
+            ) : (
+              <div className={`absolute inset-x-6 bottom-4 border-2 p-2.5 bg-black/85 backdrop-blur-md flex flex-col sm:flex-row sm:items-center justify-between gap-2 ${
+                scanResult === 'MATCHED' ? 'border-emerald-500 shadow-[0_0_15px_rgba(16,185,129,0.3)]' : 'border-rose-500 shadow-[0_0_15px_rgba(244,63,94,0.3)]'
               }`}>
-                {scanResult === 'MATCHED' ? (isEn ? 'VERIFIED MATCH' : 'HỢP LỆ • VÉ THÁNG') : (isEn ? 'UNREGISTERED' : 'CHƯA ĐĂNG KÝ')}
-              </span>
-            </div>
+                <div className="flex items-center gap-3">
+                  <div className={`font-mono text-lg font-bold tracking-widest px-2 py-0.5 border ${
+                    scanResult === 'MATCHED' 
+                      ? 'text-emerald-400 border-emerald-500/40 bg-emerald-950/40' 
+                      : 'text-rose-400 border-rose-500/40 bg-rose-950/40'
+                  }`}>
+                    [ {lastScannedPlate} ]
+                  </div>
+                  <div className="text-[11px] font-mono text-gray-300">
+                    {matchedVehicle 
+                      ? `${matchedVehicle.brand || 'Vehicle'} • Căn ${matchedVehicle.aptCode}` 
+                      : (isEn ? 'Unregistered Guest' : 'Xe Vãng Lai Chưa Đăng Ký')}
+                  </div>
+                </div>
+
+                <span className={`text-[10px] font-mono px-2 py-1 uppercase font-semibold border ${
+                  scanResult === 'MATCHED'
+                    ? 'text-emerald-300 bg-emerald-950/70 border-emerald-500'
+                    : 'text-rose-300 bg-rose-950/70 border-rose-500'
+                }`}>
+                  {scanResult === 'MATCHED' ? (isEn ? 'VERIFIED MATCH' : 'HỢP LỆ • CƯ DÂN') : (isEn ? 'UNREGISTERED' : 'CHƯA ĐĂNG KÝ')}
+                </span>
+              </div>
+            )}
           </div>
 
-          {/* Quick Simulation Row */}
-          <div className="space-y-2 pt-1">
-            <div className="text-[11px] text-gray-400 font-semibold uppercase tracking-wider flex items-center justify-between">
-              <span>{isEn ? 'Simulate Real Plate Recognition:' : 'Mô Phỏng Quét Biển Số Thực Tế:'}</span>
-              <span className="text-[#C5A880] text-[10px] font-mono">BMS LOOP SENSOR</span>
-            </div>
-
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-              {registeredVehicles.slice(0, 3).map((v) => (
-                <button
-                  key={v.id}
-                  type="button"
-                  onClick={() => handleSimulateScan(v.plate)}
-                  className="p-2 bg-[#161B22] border border-[#2D3748] hover:border-[#C5A880] text-left transition-all group rounded-none"
-                >
-                  <div className="text-[11px] font-mono font-bold text-[#C5A880] group-hover:text-white">
-                    {v.plate}
-                  </div>
-                  <div className="text-[10px] text-gray-400 truncate mt-0.5">
-                    Căn {v.aptCode} • {v.type === 'CAR' ? 'Ô tô' : 'Xe máy'}
-                  </div>
-                </button>
-              ))}
-
+          {/* Dynamic License Plate Scanner Bar */}
+          <div className="space-y-3 pt-1">
+            <form 
+              onSubmit={(e) => {
+                e.preventDefault();
+                if (customScanPlate.trim()) {
+                  handleSimulateScan(customScanPlate);
+                  setCustomScanPlate('');
+                }
+              }}
+              className="flex gap-2"
+            >
+              <div className="relative flex-1">
+                <Camera className="w-3.5 h-3.5 text-gray-400 absolute left-2.5 top-1/2 -translate-y-1/2" />
+                <input
+                  type="text"
+                  placeholder={isEn ? "Enter license plate to scan (e.g. 51K-889.99)..." : "Nhập biển số xe bất kỳ để quét kiểm tra..."}
+                  value={customScanPlate}
+                  onChange={(e) => setCustomScanPlate(e.target.value.toUpperCase())}
+                  className="w-full pl-8 pr-3 py-2 bg-[#161B22] border border-[#2D3748] text-xs font-mono font-bold text-white uppercase focus:outline-none focus:border-[#C5A880] rounded-none tracking-wider"
+                />
+              </div>
               <button
-                type="button"
-                onClick={() => handleSimulateScan('29A-999.88')}
-                className="p-2 bg-rose-950/30 border border-rose-500/40 hover:border-rose-400 text-left transition-all rounded-none"
+                type="submit"
+                disabled={!customScanPlate.trim()}
+                className="px-4 py-2 bg-[#C5A880] hover:bg-[#E2C9A5] disabled:bg-gray-800 disabled:text-gray-500 text-black text-xs font-semibold uppercase tracking-wider font-mono transition-colors rounded-none flex items-center gap-1.5"
               >
-                <div className="text-[11px] font-mono font-bold text-rose-300">
-                  29A-999.88
-                </div>
-                <div className="text-[10px] text-rose-400/80 truncate mt-0.5">
-                  {isEn ? 'Guest Vehicle' : 'Khách Vãng Lai'}
-                </div>
+                <Play className="w-3 h-3 fill-current" />
+                {isEn ? "Scan Plate" : "Quét Ngay"}
               </button>
+            </form>
+
+            {/* Quick Simulation Buttons from REAL Registered Vehicles */}
+            <div className="space-y-1.5">
+              <div className="text-[11px] text-gray-400 font-semibold uppercase tracking-wider flex items-center justify-between">
+                <span>{isEn ? 'Quick Scan Registered Resident Vehicles:' : 'Xe Cư Dân Thực Tế Trong Tòa Nhà:'}</span>
+                <span className="text-[#C5A880] text-[10px] font-mono">{registeredVehicles.length} {isEn ? 'registered' : 'phương tiện'}</span>
+              </div>
+
+              {registeredVehicles.length > 0 ? (
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                  {registeredVehicles.slice(0, 4).map((v) => (
+                    <button
+                      key={v.id}
+                      type="button"
+                      onClick={() => handleSimulateScan(v.plate)}
+                      className="p-2 bg-[#161B22] border border-[#2D3748] hover:border-[#C5A880] text-left transition-all group rounded-none"
+                    >
+                      <div className="text-[11px] font-mono font-bold text-[#C5A880] group-hover:text-white">
+                        {v.plate}
+                      </div>
+                      <div className="text-[10px] text-gray-400 truncate mt-0.5">
+                        Căn {v.aptCode} • {v.type === 'CAR' ? 'Ô tô' : 'Xe máy'}
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              ) : (
+                <div className="p-3 bg-[#161B22] border border-[#222B35] text-gray-400 text-xs font-mono flex items-center justify-between">
+                  <span>{isEn ? 'No vehicles registered in building yet.' : 'Chưa có phương tiện nào đăng ký trong tòa nhà.'}</span>
+                  <button
+                    type="button"
+                    onClick={() => setIsRegisterModalOpen(true)}
+                    className="text-[#C5A880] hover:underline font-semibold"
+                  >
+                    + {isEn ? 'Register Now' : 'Đăng Ký Ngay'}
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -543,31 +612,53 @@ export default function SmartParking() {
               <div className="flex justify-between items-center">
                 <span className="text-gray-400">{isEn ? 'License Plate:' : 'Biển số nhận diện:'}</span>
                 <span className="font-mono font-bold text-white bg-[#0A0E14] px-2 py-0.5 border border-gray-700">
-                  {lastScannedPlate}
+                  {lastScannedPlate || '---'}
                 </span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-gray-400">{isEn ? 'Resident / Unit:' : 'Chủ xe & Căn hộ:'}</span>
                 <span className="text-gray-200 font-semibold truncate max-w-[200px]">
-                  {matchedVehicle ? `${matchedVehicle.ownerName} (Căn ${matchedVehicle.aptCode})` : (isEn ? 'Guest (Ticket required)' : 'Khách Vãng Lai (Vé lượt)')}
+                  {scanResult === 'IDLE' 
+                    ? '---' 
+                    : matchedVehicle 
+                    ? `${matchedVehicle.ownerName} (Căn ${matchedVehicle.aptCode})` 
+                    : (isEn ? 'Guest (Ticket required)' : 'Khách Vãng Lai (Vé lượt)')}
                 </span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-gray-400">{isEn ? 'Vehicle Spec:' : 'Dòng xe & Nhãn hiệu:'}</span>
                 <span className="text-gray-300 font-mono">
-                  {matchedVehicle ? `${matchedVehicle.type === 'CAR' ? 'Ô tô' : 'Xe máy'} • ${matchedVehicle.brand || '---'}` : 'Chưa định danh'}
+                  {scanResult === 'IDLE' 
+                    ? '---' 
+                    : matchedVehicle 
+                    ? `${matchedVehicle.type === 'CAR' ? 'Ô tô' : 'Xe máy'} • ${matchedVehicle.brand || '---'}` 
+                    : (isEn ? 'Unregistered' : 'Chưa định danh')}
                 </span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-gray-400">{isEn ? 'RFID Card & Slot:' : 'Mã thẻ & Vị trí đỗ:'}</span>
                 <span className="text-[#C5A880] font-mono font-bold">
-                  {matchedVehicle ? `${matchedVehicle.cardNo} • Ô ${matchedVehicle.slot || 'B2-A01'}` : 'VÉ LƯỢT BMS'}
+                  {scanResult === 'IDLE' 
+                    ? '---' 
+                    : matchedVehicle 
+                    ? `${matchedVehicle.cardNo} • Ô ${matchedVehicle.slot || 'B2-A01'}` 
+                    : 'VÉ LƯỢT BMS'}
                 </span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-gray-400">{isEn ? 'Monthly Billing:' : 'Phí đỗ tháng:'}</span>
-                <span className={`font-mono text-[11px] font-semibold ${matchedVehicle ? 'text-emerald-400' : 'text-amber-400'}`}>
-                  {matchedVehicle ? (isEn ? 'PAID / ACTIVE' : 'ĐÃ ĐÓNG ĐẦY ĐỦ ✓') : (isEn ? 'GUEST HOURLY' : 'TÍNH THEO GIỜ')}
+                <span className={`font-mono text-[11px] font-semibold ${
+                  scanResult === 'IDLE' 
+                    ? 'text-gray-500' 
+                    : matchedVehicle 
+                    ? 'text-emerald-400' 
+                    : 'text-amber-400'
+                }`}>
+                  {scanResult === 'IDLE' 
+                    ? '---' 
+                    : matchedVehicle 
+                    ? (isEn ? 'PAID / ACTIVE ✓' : 'ĐÃ ĐÓNG ĐẦY ĐỦ ✓') 
+                    : (isEn ? 'GUEST HOURLY' : 'TÍNH THEO GIỜ')}
                 </span>
               </div>
             </div>
@@ -657,7 +748,7 @@ export default function SmartParking() {
             </button>
           </div>
 
-          {activeTab === 'REGISTRY' && (
+          {activeTab === 'REGISTRY' ? (
             <div className="flex items-center gap-2 flex-wrap">
               <div className="relative">
                 <Search className="w-3.5 h-3.5 text-gray-400 absolute left-2.5 top-1/2 -translate-y-1/2" />
@@ -694,6 +785,17 @@ export default function SmartParking() {
                 </button>
               </div>
             </div>
+          ) : (
+            lprLogs.length > 0 && (
+              <button
+                type="button"
+                onClick={handleClearLogs}
+                className="px-3 py-1 bg-rose-950/30 border border-rose-500/40 hover:border-rose-400 text-rose-300 text-xs font-mono flex items-center gap-1.5 transition-colors rounded-none"
+              >
+                <Trash2 className="w-3 h-3" />
+                {isEn ? 'Clear Logs' : 'Xóa Nhật Ký'}
+              </button>
+            )
           )}
         </div>
 
@@ -716,8 +818,13 @@ export default function SmartParking() {
               <tbody className="divide-y divide-[#1C2533]">
                 {filteredVehicles.length === 0 ? (
                   <tr>
-                    <td colSpan={8} className="p-6 text-center text-gray-500 font-mono">
-                      {isEn ? 'No vehicles found matching the search criteria.' : 'Không tìm thấy phương tiện nào phù hợp với bộ lọc tìm kiếm.'}
+                    <td colSpan={8} className="p-8 text-center text-gray-500 font-mono space-y-2">
+                      <Car className="w-8 h-8 text-gray-600 mx-auto" />
+                      <div>
+                        {searchPlate.trim() 
+                          ? (isEn ? 'No vehicles match your search query.' : 'Không tìm thấy phương tiện nào phù hợp với từ khóa tìm kiếm.')
+                          : (isEn ? 'No vehicles registered in the building yet. Click "+ Register New Vehicle" to add.' : 'Chưa có phương tiện nào được cấp quyền trong tòa nhà. Hãy nhấn "+ Cấp Thẻ & Đăng Ký Xe" để đăng ký.')}
+                      </div>
                     </td>
                   </tr>
                 ) : (
@@ -794,54 +901,67 @@ export default function SmartParking() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#1C2533]">
-                {lprLogs.map((log) => (
-                  <tr key={log.id} className="hover:bg-[#161F2E]/60 transition-colors">
-                    <td className="p-3 font-mono">
-                      <span className="text-gray-300 font-bold">{log.id}</span>
-                      <span className="text-gray-500 ml-2">{log.timestamp}</span>
-                    </td>
-                    <td className="p-3 font-mono text-[11px]">
-                      {log.lane === 'INBOUND_01' ? (
-                        <span className="text-emerald-400">LPR-01 (Vào)</span>
-                      ) : (
-                        <span className="text-cyan-400">LPR-02 (Ra)</span>
-                      )}
-                    </td>
-                    <td className="p-3 font-mono font-bold text-white">
-                      {log.plate}
-                    </td>
-                    <td className="p-3 font-mono text-gray-300">
-                      {log.vehicleType === 'CAR' ? (isEn ? 'Car' : 'Ô tô') : (isEn ? 'Motorbike' : 'Xe máy')}
-                    </td>
-                    <td className="p-3 text-gray-300">
-                      {log.aptCode ? (
-                        <span>Căn {log.aptCode} - {log.ownerName}</span>
-                      ) : (
-                        <span className="text-amber-400 italic">{isEn ? 'Guest / Visitor' : 'Khách Vãng Lai'}</span>
-                      )}
-                    </td>
-                    <td className="p-3">
-                      <span className={`px-2 py-0.5 text-[10px] font-mono font-semibold border ${
-                        log.result === 'MATCHED'
-                          ? 'bg-emerald-950/50 text-emerald-300 border-emerald-500/40'
-                          : 'bg-rose-950/50 text-rose-300 border-rose-500/40'
-                      }`}>
-                        {log.result === 'MATCHED' ? (isEn ? 'MATCHED' : 'HỢP LỆ') : (isEn ? 'UNREGISTERED' : 'KHÔNG KHỚP')}
-                      </span>
-                    </td>
-                    <td className="p-3 text-right font-mono">
-                      <span className={`font-semibold ${
-                        log.barrierAction === 'OPENED'
-                          ? 'text-emerald-400'
-                          : log.barrierAction === 'DENIED'
-                          ? 'text-rose-400'
-                          : 'text-amber-400'
-                      }`}>
-                        {log.barrierAction === 'OPENED' ? 'OPENED ✓' : log.barrierAction === 'DENIED' ? 'DENIED ✕' : 'OVERRIDE'}
-                      </span>
+                {lprLogs.length === 0 ? (
+                  <tr>
+                    <td colSpan={7} className="p-8 text-center text-gray-500 font-mono space-y-2">
+                      <History className="w-8 h-8 text-gray-600 mx-auto" />
+                      <div>
+                        {isEn 
+                          ? 'No LPR scan records recorded yet. Scan a vehicle above to generate real-time audit logs.' 
+                          : 'Chưa có nhật ký quét LPR nào được ghi nhận. Hãy quét biển số ở trên để tạo bản ghi thời gian thực.'}
+                      </div>
                     </td>
                   </tr>
-                ))}
+                ) : (
+                  lprLogs.map((log) => (
+                    <tr key={log.id} className="hover:bg-[#161F2E]/60 transition-colors">
+                      <td className="p-3 font-mono">
+                        <span className="text-gray-300 font-bold">{log.id}</span>
+                        <span className="text-gray-500 ml-2">{log.timestamp}</span>
+                      </td>
+                      <td className="p-3 font-mono text-[11px]">
+                        {log.lane === 'INBOUND_01' ? (
+                          <span className="text-emerald-400">LPR-01 (Vào)</span>
+                        ) : (
+                          <span className="text-cyan-400">LPR-02 (Ra)</span>
+                        )}
+                      </td>
+                      <td className="p-3 font-mono font-bold text-white">
+                        {log.plate}
+                      </td>
+                      <td className="p-3 font-mono text-gray-300">
+                        {log.vehicleType === 'CAR' ? (isEn ? 'Car' : 'Ô tô') : (isEn ? 'Motorbike' : 'Xe máy')}
+                      </td>
+                      <td className="p-3 text-gray-300">
+                        {log.aptCode ? (
+                          <span>Căn {log.aptCode} - {log.ownerName}</span>
+                        ) : (
+                          <span className="text-amber-400 italic">{isEn ? 'Guest / Visitor' : 'Khách Vãng Lai'}</span>
+                        )}
+                      </td>
+                      <td className="p-3">
+                        <span className={`px-2 py-0.5 text-[10px] font-mono font-semibold border ${
+                          log.result === 'MATCHED'
+                            ? 'bg-emerald-950/50 text-emerald-300 border-emerald-500/40'
+                            : 'bg-rose-950/50 text-rose-300 border-rose-500/40'
+                        }`}>
+                          {log.result === 'MATCHED' ? (isEn ? 'MATCHED' : 'HỢP LỆ') : (isEn ? 'UNREGISTERED' : 'KHÔNG KHỚP')}
+                        </span>
+                      </td>
+                      <td className="p-3 text-right font-mono">
+                        <span className={`font-semibold ${
+                          log.barrierAction === 'OPENED'
+                            ? 'text-emerald-400'
+                            : log.barrierAction === 'DENIED'
+                            ? 'text-rose-400'
+                            : 'text-amber-400'
+                        }`}>
+                          {log.barrierAction === 'OPENED' ? 'OPENED ✓' : log.barrierAction === 'DENIED' ? 'DENIED ✕' : 'OVERRIDE'}
+                        </span>
+                      </td>
+                    </tr>
+                  ))
+                )}
               </tbody>
             </table>
           </div>

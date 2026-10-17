@@ -396,7 +396,16 @@ export function convertNksToApartmentUnit(
     } : undefined,
     membersCount: 0,
     members: [],
-    vehicles: [],
+    vehicles: isUserLuc ? [
+      {
+        id: 'veh-owner-01',
+        type: 'CAR',
+        plate: '51K-889.99',
+        brand: 'Mercedes-Benz C300 AMG',
+        cardNo: 'RFID-CH06-01',
+        slot: 'B2-A15',
+      }
+    ] : [],
     billing: undefined,
     nksId: item.id,
     nksSlug: item.slug,
