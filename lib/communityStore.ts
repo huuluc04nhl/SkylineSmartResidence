@@ -44,6 +44,7 @@ export interface CommunityPost {
   avatarUrl?: string;
   title: string;
   content: string;
+  images?: string[]; // Danh sách hình ảnh đính kèm (cho Rao vặt, chia sẻ ảnh)
   tags: string[];
   isPinned?: boolean;
   createdAt: string;

@@ -35,9 +35,12 @@ import {
   RefreshCw,
   Loader2,
   Eye,
-  EyeOff
+  EyeOff,
+  Camera,
+  Image as ImageIcon
 } from 'lucide-react';
 import { User } from '@/lib/dataStore';
+import { compressImageFile } from '@/lib/imageUtils';
 import { 
   CommunityPost, 
   PostCategory, 
@@ -87,6 +90,11 @@ export default function SurveysVoting({ currentUser }: SurveysVotingProps) {
   const [createTags, setCreateTags] = useState('');
   const [createIsPinned, setCreateIsPinned] = useState(false);
   const [isSubmittingWithAi, setIsSubmittingWithAi] = useState(false);
+
+  // Modal: Image Attachments & Lightbox Zoom
+  const [createImages, setCreateImages] = useState<string[]>([]);
+  const [isCompressingImage, setIsCompressingImage] = useState(false);
+  const [previewZoomImage, setPreviewZoomImage] = useState<string | null>(null);
 
   // Modal: AI Community Sentiment Report
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
@@ -221,6 +229,39 @@ export default function SurveysVoting({ currentUser }: SurveysVotingProps) {
     }
   };
 
+  // Handle Image Upload with Canvas compression
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+
+    if (createImages.length + files.length > 4) {
+      showToast('Tối đa 4 hình ảnh cho mỗi bài viết.', 'error');
+      return;
+    }
+
+    setIsCompressingImage(true);
+    try {
+      const newImages: string[] = [];
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        if (!file.type.startsWith('image/')) continue;
+        const compressed = await compressImageFile(file, 1000, 1000, 0.75);
+        newImages.push(compressed);
+      }
+      setCreateImages(prev => [...prev, ...newImages].slice(0, 4));
+      showToast(`Đã tải lên ${newImages.length} hình ảnh.`);
+    } catch {
+      showToast('Lỗi khi nén và tải hình ảnh.', 'error');
+    } finally {
+      setIsCompressingImage(false);
+      e.target.value = '';
+    }
+  };
+
+  const handleRemoveImage = (indexToRemove: number) => {
+    setCreateImages(prev => prev.filter((_, idx) => idx !== indexToRemove));
+  };
+
   // Handle Create Post with AI Auto-Moderation & Sentiment
   const handleCreatePost = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -238,8 +279,9 @@ export default function SurveysVoting({ currentUser }: SurveysVotingProps) {
       .map(t => t.trim())
       .filter(t => t.length > 0);
 
+    const isPollActive = createCategory === 'VOTING' || attachPoll;
     let pollData = undefined;
-    if (attachPoll || createCategory === 'VOTING') {
+    if (isPollActive) {
       const validOptions = pollOptions.filter(o => o.trim().length > 0);
       if (validOptions.length < 2) {
         showToast('Cuộc biểu quyết cần ít nhất 2 phương án bình chọn.', 'error');
@@ -270,6 +312,7 @@ export default function SurveysVoting({ currentUser }: SurveysVotingProps) {
         avatarUrl: userAvatar,
         title: createTitle.trim(),
         content: createContent.trim(),
+        images: createImages.length > 0 ? createImages : undefined,
         tags: tagsArray.length > 0 ? tagsArray : ['Cộng đồng', 'Skyline'],
         isPinned: isAdmin && createIsPinned,
         poll: pollData,
@@ -279,6 +322,7 @@ export default function SurveysVoting({ currentUser }: SurveysVotingProps) {
       setCreateTitle('');
       setCreateContent('');
       setCreateTags('');
+      setCreateImages([]);
       setAttachPoll(false);
       showToast('AI đã hoàn tất kiểm duyệt và đăng bài thành công lên Diễn đàn!');
     } catch {
@@ -638,9 +682,38 @@ export default function SurveysVoting({ currentUser }: SurveysVotingProps) {
                         </button>
                       </div>
                     ) : (
-                      <p className="text-xs text-gray-300 leading-relaxed whitespace-pre-line">
-                        {post.content}
-                      </p>
+                      <div className="space-y-3">
+                        <p className="text-xs text-gray-300 leading-relaxed whitespace-pre-line">
+                          {post.content}
+                        </p>
+
+                        {/* Attached Images */}
+                        {post.images && post.images.length > 0 && (
+                          <div className={`grid gap-2 pt-1 ${
+                            post.images.length === 1 ? 'grid-cols-1 max-w-sm' :
+                            post.images.length === 2 ? 'grid-cols-2 max-w-md' :
+                            'grid-cols-2 sm:grid-cols-3 max-w-lg'
+                          }`}>
+                            {post.images.map((img, imgIdx) => (
+                              <div 
+                                key={imgIdx} 
+                                onClick={() => setPreviewZoomImage(img)}
+                                className="relative aspect-video sm:aspect-square bg-[#141B24] border border-[#C5A880]/30 overflow-hidden cursor-pointer group"
+                              >
+                                <img 
+                                  src={img} 
+                                  alt={`Ảnh đính kèm ${imgIdx + 1}`} 
+                                  className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                                />
+                                <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white text-[11px] gap-1 font-mono">
+                                  <Eye className="w-3.5 h-3.5 text-[#C5A880]" />
+                                  <span>Xem ảnh</span>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
                     )}
                   </div>
 
@@ -921,7 +994,11 @@ export default function SurveysVoting({ currentUser }: SurveysVotingProps) {
                         type="button"
                         onClick={() => {
                           setCreateCategory(cat.id as any);
-                          if (cat.id === 'VOTING') setAttachPoll(true);
+                          if (cat.id === 'VOTING') {
+                            setAttachPoll(true);
+                          } else {
+                            setAttachPoll(false);
+                          }
                         }}
                         className={`p-2.5 text-xs font-semibold border flex items-center justify-center gap-1.5 transition-all ${
                           isSelected
@@ -988,25 +1065,152 @@ export default function SurveysVoting({ currentUser }: SurveysVotingProps) {
                 </label>
               )}
 
-              {/* Poll toggle */}
-              <div className="pt-2 border-t border-white/5 space-y-3">
-                <label className="flex items-center justify-between cursor-pointer text-xs text-gray-200">
-                  <span className="flex items-center gap-2 font-semibold">
-                    <Vote className="w-4 h-4 text-[#C5A880]" />
-                    Đính kèm cuộc thăm dò ý kiến / Biểu quyết (Interactive Poll)
-                  </span>
-                  <input
-                    type="checkbox"
-                    checked={attachPoll || createCategory === 'VOTING'}
-                    onChange={e => setAttachPoll(e.target.checked)}
-                    className="accent-[#C5A880]"
-                  />
-                </label>
+              {/* Image attachment input */}
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <label className="text-xs font-semibold text-gray-300 flex items-center gap-1.5">
+                    <Camera className="w-3.5 h-3.5 text-[#C5A880]" />
+                    <span>Hình Ảnh Đính Kèm (Đặc biệt cho Rao Vặt / Minh Họa)</span>
+                  </label>
+                  <span className="text-[11px] text-gray-500 font-mono">{createImages.length}/4 ảnh</span>
+                </div>
 
-                {(attachPoll || createCategory === 'VOTING') && (
+                <div className="flex items-center gap-2 flex-wrap">
+                  {createImages.map((img, idx) => (
+                    <div key={idx} className="relative w-16 h-16 bg-[#141B24] border border-[#C5A880]/50 overflow-hidden group">
+                      <img src={img} alt="Ảnh xem trước" className="w-full h-full object-cover" />
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveImage(idx)}
+                        className="absolute top-0 right-0 p-1 bg-black/80 text-white hover:text-rose-400 transition-colors"
+                        title="Xóa ảnh này"
+                      >
+                        <X className="w-3 h-3" />
+                      </button>
+                    </div>
+                  ))}
+
+                  {createImages.length < 4 && (
+                    <label className="w-16 h-16 border border-dashed border-[#C5A880]/40 hover:border-[#C5A880] bg-[#141B24]/60 hover:bg-[#141B24] flex flex-col items-center justify-center cursor-pointer transition-colors text-gray-400 hover:text-[#C5A880]">
+                      {isCompressingImage ? (
+                        <Loader2 className="w-4 h-4 animate-spin text-[#C5A880]" />
+                      ) : (
+                        <>
+                          <Plus className="w-4 h-4" />
+                          <span className="text-[9px] mt-0.5 font-medium">Thêm ảnh</span>
+                        </>
+                      )}
+                      <input
+                        type="file"
+                        accept="image/*"
+                        multiple
+                        disabled={isCompressingImage}
+                        onChange={handleImageUpload}
+                        className="hidden"
+                      />
+                    </label>
+                  )}
+                </div>
+              </div>
+
+              {/* Poll toggle */}
+              {createCategory !== 'VOTING' ? (
+                <div className="pt-2 border-t border-white/5 space-y-3">
+                  <label className="flex items-center justify-between cursor-pointer text-xs text-gray-200">
+                    <span className="flex items-center gap-2 font-semibold">
+                      <Vote className="w-4 h-4 text-[#C5A880]" />
+                      Đính kèm cuộc thăm dò ý kiến / Biểu quyết (Interactive Poll)
+                    </span>
+                    <input
+                      type="checkbox"
+                      checked={attachPoll}
+                      onChange={e => setAttachPoll(e.target.checked)}
+                      className="accent-[#C5A880]"
+                    />
+                  </label>
+
+                  {attachPoll && (
+                    <div className="p-3.5 bg-[#141B24] border border-[#C5A880]/30 space-y-3 animate-fadeIn">
+                      <div className="text-[11px] text-[#C5A880] font-bold uppercase tracking-wider">
+                        Cấu Hình Các Phương Án Bình Chọn
+                      </div>
+
+                      <div className="space-y-2">
+                        {pollOptions.map((opt, idx) => (
+                          <div key={idx} className="flex gap-2">
+                            <input
+                              type="text"
+                              value={opt}
+                              onChange={e => {
+                                const newOpts = [...pollOptions];
+                                newOpts[idx] = e.target.value;
+                                setPollOptions(newOpts);
+                              }}
+                              placeholder={`Phương án ${idx + 1}...`}
+                              className="flex-1 bg-[#0E131B] border border-[#222B35] text-white px-3 py-1.5 text-xs focus:outline-none focus:border-[#C5A880]"
+                            />
+                            {pollOptions.length > 2 && (
+                              <button
+                                type="button"
+                                onClick={() => setPollOptions(pollOptions.filter((_, i) => i !== idx))}
+                                className="px-2.5 text-gray-400 hover:text-rose-400"
+                              >
+                                <X className="w-4 h-4" />
+                              </button>
+                            )}
+                          </div>
+                        ))}
+
+                        {pollOptions.length < 5 && (
+                          <button
+                            type="button"
+                            onClick={() => setPollOptions([...pollOptions, ''])}
+                            className="text-xs text-[#C5A880] hover:underline flex items-center gap-1 pt-1"
+                          >
+                            <Plus className="w-3 h-3" /> Thêm phương án lựa chọn
+                          </button>
+                        )}
+                      </div>
+
+                      {/* Poll constraints */}
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+                        <div>
+                          <label className="text-[10px] text-gray-400 block mb-1">Thời Hạn Biểu Quyết Đến</label>
+                          <input
+                            type="datetime-local"
+                            value={pollDeadline}
+                            onChange={e => setPollDeadline(e.target.value)}
+                            className="w-full bg-[#0E131B] border border-[#222B35] text-white px-3 py-1.5 text-xs focus:outline-none focus:border-[#C5A880]"
+                          />
+                        </div>
+
+                        {isAdmin && (
+                          <div className="flex items-center gap-2 pt-4">
+                            <input
+                              type="checkbox"
+                              id="pollOwnerOnly"
+                              checked={pollIsOwnerOnly}
+                              onChange={e => setPollIsOwnerOnly(e.target.checked)}
+                              className="accent-[#C5A880]"
+                            />
+                            <label htmlFor="pollOwnerOnly" className="text-xs text-gray-300 cursor-pointer">
+                              Chỉ Chủ Hộ mới được biểu quyết (Biểu quyết pháp lý)
+                            </label>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div className="pt-2 border-t border-white/5 space-y-3">
                   <div className="p-3.5 bg-[#141B24] border border-[#C5A880]/30 space-y-3 animate-fadeIn">
-                    <div className="text-[11px] text-[#C5A880] font-bold uppercase tracking-wider">
-                      Cấu Hình Các Phương Án Bình Chọn
+                    <div className="flex items-center justify-between">
+                      <div className="text-[11px] text-[#C5A880] font-bold uppercase tracking-wider flex items-center gap-1.5">
+                        <Vote className="w-4 h-4 text-[#C5A880]" />
+                        <span>Cấu Hình Biểu Quyết Cư Dân (Bắt Buộc)</span>
+                      </div>
+                      <span className="text-[10px] text-emerald-400 font-mono">Tự động kích hoạt</span>
                     </div>
 
                     <div className="space-y-2">
@@ -1062,20 +1266,20 @@ export default function SurveysVoting({ currentUser }: SurveysVotingProps) {
                         <div className="flex items-center gap-2 pt-4">
                           <input
                             type="checkbox"
-                            id="pollOwnerOnly"
+                            id="pollOwnerOnly2"
                             checked={pollIsOwnerOnly}
                             onChange={e => setPollIsOwnerOnly(e.target.checked)}
                             className="accent-[#C5A880]"
                           />
-                          <label htmlFor="pollOwnerOnly" className="text-xs text-gray-300 cursor-pointer">
+                          <label htmlFor="pollOwnerOnly2" className="text-xs text-gray-300 cursor-pointer">
                             Chỉ Chủ Hộ mới được biểu quyết (Biểu quyết pháp lý)
                           </label>
                         </div>
                       )}
                     </div>
                   </div>
-                )}
-              </div>
+                </div>
+              )}
 
               {/* LIVE AI PREVIEW BAR */}
               {liveAiPreview && (
@@ -1218,6 +1422,30 @@ export default function SurveysVoting({ currentUser }: SurveysVotingProps) {
                 </div>
               </div>
             ) : null}
+          </div>
+        </div>
+      )}
+      {/* LIGHTBOX MODAL: FULL VIEW ATTACHED IMAGE */}
+      {previewZoomImage && (
+        <div 
+          className="fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-center justify-center p-4 cursor-pointer animate-fadeIn"
+          onClick={() => setPreviewZoomImage(null)}
+        >
+          <div 
+            className="relative max-w-4xl max-h-[90vh] border border-[#C5A880] bg-[#0E131B] p-2 shadow-2xl" 
+            onClick={e => e.stopPropagation()}
+          >
+            <button 
+              onClick={() => setPreviewZoomImage(null)}
+              className="absolute -top-9 right-0 text-white hover:text-[#C5A880] p-1 flex items-center gap-1 text-xs font-mono"
+            >
+              <X className="w-4 h-4" /> Đóng
+            </button>
+            <img 
+              src={previewZoomImage} 
+              alt="Hình ảnh đính kèm" 
+              className="max-w-full max-h-[82vh] object-contain mx-auto"
+            />
           </div>
         </div>
       )}
