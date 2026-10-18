@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { 
   getApartmentUnits, 
@@ -44,7 +44,8 @@ import {
   GraduationCap,
   ShoppingBag,
   Bus,
-  HeartPulse
+  HeartPulse,
+  Hand
 } from 'lucide-react';
 import { fetchNksApartments } from '@/lib/nksProjectService';
 import AssignResidentModal from '@/components/portal/admin/AssignResidentModal';
@@ -408,6 +409,126 @@ export default function AdminBuildingApartmentManager() {
   const [hoveredFloor, setHoveredFloor] = useState<number | null>(null);
   const [buildingTheme, setBuildingTheme] = useState<'NIGHT' | 'DAY'>('NIGHT');
   const [building3dZoom, setBuilding3dZoom] = useState<number>(1);
+  const [building3dPan, setBuilding3dPan] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
+  const [building3dRotate, setBuilding3dRotate] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
+  const [isGesturing, setIsGesturing] = useState<boolean>(false);
+
+  const gestureRef = useRef<{
+    startX: number;
+    startY: number;
+    startPan: { x: number; y: number };
+    startRotate: { x: number; y: number };
+    startDist: number;
+    startZoom: number;
+    lastTap: number;
+    mode: 'NONE' | 'PAN_OR_TILT' | 'PINCH';
+  }>({
+    startX: 0,
+    startY: 0,
+    startPan: { x: 0, y: 0 },
+    startRotate: { x: 0, y: 0 },
+    startDist: 0,
+    startZoom: 1,
+    lastTap: 0,
+    mode: 'NONE'
+  });
+
+  // Reset 3D transform về trạng thái chuẩn
+  const reset3dTransform = useCallback(() => {
+    setBuilding3dZoom(1);
+    setBuilding3dPan({ x: 0, y: 0 });
+    setBuilding3dRotate({ x: 0, y: 0 });
+  }, []);
+
+  // Touch gesture handlers for mobile / tablet
+  const handle3dTouchStart = (e: React.TouchEvent) => {
+    const now = Date.now();
+    if (now - gestureRef.current.lastTap < 280) {
+      reset3dTransform();
+      gestureRef.current.lastTap = 0;
+      return;
+    }
+    gestureRef.current.lastTap = now;
+
+    if (e.touches.length === 1) {
+      gestureRef.current.mode = 'PAN_OR_TILT';
+      gestureRef.current.startX = e.touches[0].clientX;
+      gestureRef.current.startY = e.touches[0].clientY;
+      gestureRef.current.startPan = { ...building3dPan };
+      gestureRef.current.startRotate = { ...building3dRotate };
+      setIsGesturing(true);
+    } else if (e.touches.length >= 2) {
+      gestureRef.current.mode = 'PINCH';
+      gestureRef.current.startDist = Math.hypot(
+        e.touches[0].clientX - e.touches[1].clientX,
+        e.touches[0].clientY - e.touches[1].clientY
+      );
+      gestureRef.current.startZoom = building3dZoom;
+      setIsGesturing(true);
+    }
+  };
+
+  const handle3dTouchMove = (e: React.TouchEvent) => {
+    if (gestureRef.current.mode === 'PAN_OR_TILT' && e.touches.length === 1) {
+      const dx = e.touches[0].clientX - gestureRef.current.startX;
+      const dy = e.touches[0].clientY - gestureRef.current.startY;
+      setBuilding3dPan({
+        x: gestureRef.current.startPan.x + dx * 0.7,
+        y: gestureRef.current.startPan.y + dy * 0.7,
+      });
+      setBuilding3dRotate({
+        x: Math.max(-18, Math.min(18, gestureRef.current.startRotate.x - dy * 0.08)),
+        y: Math.max(-25, Math.min(25, gestureRef.current.startRotate.y + dx * 0.1)),
+      });
+    } else if (gestureRef.current.mode === 'PINCH' && e.touches.length >= 2) {
+      const currentDist = Math.hypot(
+        e.touches[0].clientX - e.touches[1].clientX,
+        e.touches[0].clientY - e.touches[1].clientY
+      );
+      if (gestureRef.current.startDist > 0) {
+        const factor = currentDist / gestureRef.current.startDist;
+        const newZoom = Math.max(0.75, Math.min(2.8, Number((gestureRef.current.startZoom * factor).toFixed(2))));
+        setBuilding3dZoom(newZoom);
+      }
+    }
+  };
+
+  const handle3dTouchEnd = () => {
+    gestureRef.current.mode = 'NONE';
+    setIsGesturing(false);
+  };
+
+  // Mouse gesture handlers for desktop
+  const handle3dMouseDown = (e: React.MouseEvent) => {
+    if (e.button !== 0) return;
+    gestureRef.current.mode = 'PAN_OR_TILT';
+    gestureRef.current.startX = e.clientX;
+    gestureRef.current.startY = e.clientY;
+    gestureRef.current.startPan = { ...building3dPan };
+    gestureRef.current.startRotate = { ...building3dRotate };
+    setIsGesturing(true);
+  };
+
+  const handle3dMouseMove = (e: React.MouseEvent) => {
+    if (gestureRef.current.mode === 'PAN_OR_TILT') {
+      const dx = e.clientX - gestureRef.current.startX;
+      const dy = e.clientY - gestureRef.current.startY;
+      setBuilding3dPan({
+        x: gestureRef.current.startPan.x + dx * 0.7,
+        y: gestureRef.current.startPan.y + dy * 0.7,
+      });
+      setBuilding3dRotate({
+        x: Math.max(-18, Math.min(18, gestureRef.current.startRotate.x - dy * 0.08)),
+        y: Math.max(-25, Math.min(25, gestureRef.current.startRotate.y + dx * 0.1)),
+      });
+    }
+  };
+
+  const handle3dMouseUp = () => {
+    gestureRef.current.mode = 'NONE';
+    setIsGesturing(false);
+  };
+
   const [isFloorPlanExpanded, setIsFloorPlanExpanded] = useState<boolean>(false);
   const [floorFilterStatus, setFloorFilterStatus] = useState<'ALL' | 'OCCUPIED' | 'VACANT' | 'MAINTENANCE'>('ALL');
   const [unitSearchQuery, setUnitSearchQuery] = useState<string>('');
@@ -1177,7 +1298,7 @@ export default function AdminBuildingApartmentManager() {
                   <div className="pointer-events-auto flex items-center gap-1 bg-[#090E17]/90 p-1 border border-[#222E3E] text-xs font-mono shadow-lg backdrop-blur-sm">
                     <button
                       type="button"
-                      onClick={() => setBuilding3dZoom(z => Math.max(0.85, Number((z - 0.15).toFixed(2))))}
+                      onClick={() => setBuilding3dZoom(z => Math.max(0.75, Number((z - 0.15).toFixed(2))))}
                       className="w-6 h-6 flex items-center justify-center bg-[#141E2B] hover:bg-[#C5A880] text-gray-300 hover:text-black font-bold transition-all"
                       title="Thu nhỏ mô hình"
                     >
@@ -1188,7 +1309,7 @@ export default function AdminBuildingApartmentManager() {
                     </span>
                     <button
                       type="button"
-                      onClick={() => setBuilding3dZoom(z => Math.min(2.2, Number((z + 0.15).toFixed(2))))}
+                      onClick={() => setBuilding3dZoom(z => Math.min(2.8, Number((z + 0.15).toFixed(2))))}
                       className="w-6 h-6 flex items-center justify-center bg-[#141E2B] hover:bg-[#C5A880] text-gray-300 hover:text-black font-bold transition-all"
                       title="Phóng to mô hình"
                     >
@@ -1196,26 +1317,43 @@ export default function AdminBuildingApartmentManager() {
                     </button>
                     <button
                       type="button"
-                      onClick={() => setBuilding3dZoom(1)}
+                      onClick={reset3dTransform}
                       className="px-1.5 h-6 flex items-center justify-center bg-[#141E2B] hover:bg-[#1E2E40] text-gray-400 hover:text-white text-[10px] transition-all ml-0.5"
-                      title="Đặt lại kích thước chuẩn"
+                      title="Đặt lại kích thước và góc nhìn chuẩn (hoặc chạm đúp 2 lần)"
                     >
                       100%
                     </button>
                   </div>
                 </div>
 
-                {/* BẢN VẼ PHỐI CẢNH 3D CHUNG CƯ ISOMETRIC MỞ RỘNG TOÀN DIỆN KHUNG HÌNH */}
-                <div className="relative flex-1 w-full h-full flex items-center justify-center overflow-hidden">
+                {/* BẢN VẼ PHỐI CẢNH 3D CHUNG CƯ ISOMETRIC MỞ RỘNG TOÀN DIỆN KHUNG HÌNH (HỖ TRỢ CHẠM / VUỐT / PINCH ZOOM / XOAY 3D) */}
+                <div 
+                  className={`relative flex-1 w-full h-full flex items-center justify-center overflow-hidden touch-none select-none ${
+                    isGesturing ? 'cursor-grabbing' : 'cursor-grab'
+                  }`}
+                  onTouchStart={handle3dTouchStart}
+                  onTouchMove={handle3dTouchMove}
+                  onTouchEnd={handle3dTouchEnd}
+                  onMouseDown={handle3dMouseDown}
+                  onMouseMove={handle3dMouseMove}
+                  onMouseUp={handle3dMouseUp}
+                  onMouseLeave={handle3dMouseUp}
+                  onWheel={(e) => {
+                    e.preventDefault();
+                    setBuilding3dZoom(z => Math.max(0.75, Math.min(2.8, Number((z - e.deltaY * 0.0015).toFixed(2)))));
+                  }}
+                  onDoubleClick={reset3dTransform}
+                >
                   <div 
-                    className="w-full h-full flex items-center justify-center transition-transform duration-300 ease-out"
+                    className="w-full h-full flex items-center justify-center transition-transform ease-out"
                     style={{
-                      transform: `scale(${building3dZoom})`,
-                      transformOrigin: 'center center'
+                      transform: `perspective(1000px) translate3d(${building3dPan.x}px, ${building3dPan.y}px, 0px) scale(${building3dZoom}) rotateX(${building3dRotate.x}deg) rotateY(${building3dRotate.y}deg)`,
+                      transformOrigin: 'center center',
+                      transitionDuration: isGesturing ? '0ms' : '220ms'
                     }}
                   >
                     <svg
-                      viewBox="10 -20 960 1100"
+                      viewBox="10 -20 960 970"
                       preserveAspectRatio="xMidYMid meet"
                       className="w-full h-full cursor-default drop-shadow-[0_30px_60px_rgba(0,0,0,0.95)]"
                     >
@@ -1890,6 +2028,27 @@ export default function AdminBuildingApartmentManager() {
                         </g>
                       )}
                     </svg>
+                  </div>
+                </div>
+
+                {/* Floating Touch & Gesture Tip for Mobile / Desktop */}
+                <div className="absolute bottom-2.5 left-3 z-10 pointer-events-none flex items-center gap-2">
+                  <div className="px-2.5 py-1 bg-[#090E17]/85 border border-[#222E3E]/70 text-[10.5px] font-mono text-gray-400 backdrop-blur-sm shadow flex items-center gap-1.5">
+                    <Hand className="w-3 h-3 text-[#C5A880]" />
+                    <span className="hidden sm:inline">Chạm 2 ngón để zoom/xoay • Vuốt xoay 3D • Nhấp đúp đặt lại</span>
+                    <span className="sm:hidden">2 ngón để zoom/xoay • Nhấp đúp đặt lại</span>
+                    {(building3dZoom !== 1 || building3dRotate.x !== 0 || building3dRotate.y !== 0 || building3dPan.x !== 0 || building3dPan.y !== 0) && (
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          reset3dTransform();
+                        }}
+                        className="pointer-events-auto ml-1 text-[#C5A880] hover:text-white underline font-bold"
+                      >
+                        Đặt lại
+                      </button>
+                    )}
                   </div>
                 </div>
 
