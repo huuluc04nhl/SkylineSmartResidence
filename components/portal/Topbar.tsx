@@ -135,7 +135,7 @@ export default function Topbar({
     <header className="h-16 bg-[#0D1117] border-b border-[#222B35] px-3 sm:px-6 flex items-center justify-between text-white fixed top-0 left-0 right-0 z-40 select-none shadow-md">
       {/* Left: Mobile Menu Trigger + Brand / Home Link */}
       <div className="flex items-center gap-2 sm:gap-4 flex-shrink-0">
-        {onToggleMobileSidebar && (
+        {onToggleMobileSidebar && (currentUser.role === 'ADMIN' || currentUser.role === 'TECHNICIAN') && (
           <button
             onClick={onToggleMobileSidebar}
             className="md:hidden p-2 -ml-1 text-gray-300 hover:text-[#C5A880] focus:outline-none flex items-center justify-center active:scale-95"

@@ -189,13 +189,11 @@ function PortalContent() {
       <Topbar
         currentUser={currentUser}
         onSemanticSearchSelect={handleSemanticSearchSelect}
-        onToggleMobileSidebar={() => {
-          if (currentUser.role === 'OWNER' || currentUser.role === 'TENANT') {
-            setIsAllServicesOpen(true);
-          } else {
-            setIsMobileSidebarOpen(!isMobileSidebarOpen);
-          }
-        }}
+        onToggleMobileSidebar={
+          (currentUser.role === 'ADMIN' || currentUser.role === 'TECHNICIAN')
+            ? () => setIsMobileSidebarOpen(!isMobileSidebarOpen)
+            : undefined
+        }
       />
 
       {/* Main Container: Fixed Left Sidebar + Responsive Margin Content */}
