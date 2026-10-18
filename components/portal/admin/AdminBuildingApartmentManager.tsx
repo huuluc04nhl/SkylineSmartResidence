@@ -1298,8 +1298,8 @@ export default function AdminBuildingApartmentManager() {
                   <div 
                     className="w-full h-full flex items-center justify-center transition-transform ease-out"
                     style={{
-                      transform: `translate3d(${building3dPan.x - Math.max(0, (building3dZoom - 1) * 75)}px, ${building3dPan.y}px, 0px) scale(${building3dZoom})`,
-                      transformOrigin: '38% center',
+                      transform: `translate3d(${building3dPan.x}px, ${building3dPan.y}px, 0px) scale(${building3dZoom})`,
+                      transformOrigin: 'center center',
                       transitionDuration: isGesturing ? '0ms' : '200ms'
                     }}
                   >
@@ -1789,20 +1789,40 @@ export default function AdminBuildingApartmentManager() {
                           const wallX = isPodium ? 680 : 660;
                           const wallY = isPodium ? 785 : Number((curYBase - 40 - (curH / 2)).toFixed(1));
 
-                          // Thẻ Callout Tầng - Tinh gọn, thanh thoát, định vị cao độ kiến trúc (Không tràn khung)
-                          const cardX = 680;
-                          const cardW = 280;
-                          const cardH = 92;
-                          const targetCardY = Math.max(30, Math.min(840, Math.round(wallY - cardH / 2)));
-                          const dockX = cardX;
-                          const dockY = Math.max(targetCardY + 20, Math.min(targetCardY + cardH - 20, wallY));
+                          // Thẻ Callout Tầng - Auto-dock góc trên bên phải khi zoom, giữ kích thước hiển thị chuẩn và không bị che khuất
+                          const isZoomed = building3dZoom > 1.05;
+                          const baseW = 280;
+                          const baseH = 88;
+                          const invZoom = 1 / building3dZoom;
 
-                          // Đường dẫn laze chuẩn xác không bị gập ziczac hay ngược chiều
-                          const isDirectHorizontal = Math.abs(dockY - wallY) < 3;
-                          const midX = Math.round((wallX + dockX) / 2);
-                          const laserPath = isDirectHorizontal
-                            ? `M ${pinX} ${pinY} L ${wallX} ${wallY} L ${dockX} ${dockY}`
-                            : `M ${pinX} ${pinY} L ${wallX} ${wallY} L ${midX} ${wallY} L ${midX} ${dockY} L ${dockX} ${dockY}`;
+                          // Khi Zoom <= 100%: Box nằm cạnh tầng, tia laze ngang
+                          // Khi Phóng to (Zoom > 100%): Box tự động dock cố định vào góc trên phải (Top-Right HUD), kích thước hiển thị luôn 100% sắc nét và laze chỉa chéo từ tầng lên box
+                          const cardX = isZoomed
+                            ? 500 + 195 * invZoom - (building3dPan.x * 1.3 * invZoom)
+                            : 680;
+
+                          const targetCardY = isZoomed
+                            ? 465 - 395 * invZoom - (building3dPan.y * 1.3 * invZoom)
+                            : Math.max(30, Math.min(840, Math.round(wallY - baseH / 2)));
+
+                          const dockX = cardX;
+                          const dockY = isZoomed
+                            ? targetCardY + 44 * invZoom
+                            : Math.max(targetCardY + 20, Math.min(targetCardY + baseH - 20, wallY));
+
+                          let laserPath = '';
+                          if (!isZoomed) {
+                            const isDirectHorizontal = Math.abs(dockY - wallY) < 3;
+                            const midX = Math.round((wallX + dockX) / 2);
+                            laserPath = isDirectHorizontal
+                              ? `M ${pinX} ${pinY} L ${wallX} ${wallY} L ${dockX} ${dockY}`
+                              : `M ${pinX} ${pinY} L ${wallX} ${wallY} L ${midX} ${wallY} L ${midX} ${dockY} L ${dockX} ${dockY}`;
+                          } else {
+                            const elbowX = Math.min(dockX - 15 * invZoom, wallX + 25 * invZoom);
+                            laserPath = elbowX > wallX
+                              ? `M ${pinX} ${pinY} L ${wallX} ${wallY} L ${elbowX} ${wallY} L ${dockX} ${dockY}`
+                              : `M ${pinX} ${pinY} L ${wallX} ${wallY} L ${dockX} ${dockY}`;
+                          }
 
                           const curFloorStats = floorStatsList.find(f => f.floor === curFloor);
                           const occCount = curFloorStats?.occupied || floorOccupiedCount;
@@ -1845,22 +1865,25 @@ export default function AdminBuildingApartmentManager() {
                                 d={laserPath}
                                 fill="none"
                                 stroke={themeNeon}
-                                strokeWidth="2"
+                                strokeWidth={isZoomed ? Math.max(1.2, 2 * invZoom) : 2}
                                 strokeLinecap="round"
                                 strokeLinejoin="round"
                                 className="anim-laser-line"
                                 filter="url(#unitGlow)"
                               />
                               <circle cx={wallX} cy={wallY} r="3" fill={themeNeon} />
-                              <circle cx={dockX} cy={dockY} r="3.5" fill={themeBorder} />
+                              <circle cx={dockX} cy={dockY} r={isZoomed ? 3.5 * invZoom : 3.5} fill={themeBorder} />
 
-                              {/* Thẻ Callout Tầng Tinh Gọn - Zero Border-Radius Luxury */}
-                              <g className="anim-callout-card">
+                              {/* Thẻ Callout Tầng Tinh Gọn - Zero Border-Radius Luxury (Tự scale 1/zoom giữ độ nét 100%) */}
+                              <g 
+                                className="anim-callout-card"
+                                transform={isZoomed ? `translate(${cardX}, ${targetCardY}) scale(${invZoom})` : `translate(${cardX}, ${targetCardY})`}
+                              >
                                 <rect
-                                  x={cardX}
-                                  y={targetCardY}
-                                  width={cardW}
-                                  height={cardH}
+                                  x="0"
+                                  y="0"
+                                  width={baseW}
+                                  height={baseH}
                                   fill={themeBg}
                                   fillOpacity="0.96"
                                   stroke={themeBorder}
@@ -1870,18 +1893,18 @@ export default function AdminBuildingApartmentManager() {
 
                                 {/* Dải viền vàng bên trái */}
                                 <rect
-                                  x={cardX}
-                                  y={targetCardY}
+                                  x="0"
+                                  y="0"
                                   width="3.5"
-                                  height={cardH}
+                                  height={baseH}
                                   fill="#C5A880"
                                 />
 
                                 {/* Dòng 1: Tiêu đề tầng & Phân khu kiến trúc */}
-                                <circle cx={cardX + 16} cy={targetCardY + 20} r="3" fill={themeNeon} />
+                                <circle cx="16" cy="20" r="3" fill={themeNeon} />
                                 <text
-                                  x={cardX + 24}
-                                  y={targetCardY + 24}
+                                  x="24"
+                                  y="24"
                                   fill="#FFFFFF"
                                   fontSize="12"
                                   fontWeight="900"
@@ -1891,8 +1914,8 @@ export default function AdminBuildingApartmentManager() {
                                 </text>
 
                                 <text
-                                  x={cardX + (isPodium ? 116 : 88)}
-                                  y={targetCardY + 24}
+                                  x={isPodium ? 116 : 88}
+                                  y="24"
                                   fill="#C5A880"
                                   fontSize="9.5"
                                   fontWeight="bold"
@@ -1903,16 +1926,16 @@ export default function AdminBuildingApartmentManager() {
 
                                 {/* Huy hiệu tỷ lệ ở ngắn gọn góc phải */}
                                 <rect
-                                  x={cardX + cardW - 78}
-                                  y={targetCardY + 11}
+                                  x={baseW - 78}
+                                  y="11"
                                   width="70"
                                   height="18"
                                   fill="#141E2B"
                                   stroke="#26374D"
                                 />
                                 <text
-                                  x={cardX + cardW - 43}
-                                  y={targetCardY + 23.5}
+                                  x={baseW - 43}
+                                  y="23.5"
                                   fill={hasOcc ? '#34D399' : '#94A3B8'}
                                   fontSize="8.5"
                                   fontWeight="bold"
@@ -1924,18 +1947,18 @@ export default function AdminBuildingApartmentManager() {
 
                                 {/* Đường kẻ phân cách sang trọng */}
                                 <line
-                                  x1={cardX + 14}
-                                  y1={targetCardY + 36}
-                                  x2={cardX + cardW - 14}
-                                  y2={targetCardY + 36}
+                                  x1="14"
+                                  y1="36"
+                                  x2={baseW - 14}
+                                  y2="36"
                                   stroke="#1C2737"
                                   strokeWidth="0.8"
                                 />
 
                                 {/* Dòng 2: Cao độ tĩnh không & Trục giao thông đứng */}
                                 <text
-                                  x={cardX + 16}
-                                  y={targetCardY + 53}
+                                  x="16"
+                                  y="53"
                                   fill="#94A3B8"
                                   fontSize="9.5"
                                   fontFamily="sans-serif"
@@ -1945,8 +1968,8 @@ export default function AdminBuildingApartmentManager() {
 
                                 {/* Dòng 3: Tầm nhìn kiến trúc & Hướng cảnh quan */}
                                 <text
-                                  x={cardX + 16}
-                                  y={targetCardY + 73}
+                                  x="16"
+                                  y="73"
                                   fill="#CBD5E1"
                                   fontSize="9.5"
                                   fontFamily="sans-serif"
