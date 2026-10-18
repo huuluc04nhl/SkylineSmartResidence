@@ -111,11 +111,29 @@ export default function SurveysVoting({ currentUser }: SurveysVotingProps) {
     return d.toISOString().split('T')[0] + 'T23:59:59';
   });
   const [pollIsOwnerOnly, setPollIsOwnerOnly] = useState(true);
-  const [pollOptions, setPollOptions] = useState<string[]>([
+  const [pollOptions, setPollOptions] = useState<string[]>(() => isEn ? [
+    'Approve proposal',
+    'Reject proposal, keep current state',
+    'Other opinion'
+  ] : [
     'Đồng ý thông qua phương án',
     'Không đồng ý, giữ nguyên hiện trạng',
     'Ý kiến khác'
   ]);
+
+  useEffect(() => {
+    setPollOptions(prev => {
+      const isDefaultVn = prev.length === 3 && prev[0] === 'Đồng ý thông qua phương án';
+      const isDefaultEn = prev.length === 3 && prev[0] === 'Approve proposal';
+      if (isEn && isDefaultVn) {
+        return ['Approve proposal', 'Reject proposal, keep current state', 'Other opinion'];
+      }
+      if (!isEn && isDefaultEn) {
+        return ['Đồng ý thông qua phương án', 'Không đồng ý, giữ nguyên hiện trạng', 'Ý kiến khác'];
+      }
+      return prev;
+    });
+  }, [isEn]);
 
   const showToast = (text: string, type: 'success' | 'error' = 'success') => {
     setToastMsg({ text, type });
@@ -976,21 +994,31 @@ export default function SurveysVoting({ currentUser }: SurveysVotingProps) {
             </button>
 
             <div className="space-y-1">
-              <div className="text-[10px] text-[#C5A880] uppercase tracking-widest font-mono">Diễn Đàn SKYLINE Community AI</div>
-              <h3 className="text-xl font-serif font-bold text-white">Đăng Bài Viết & Tạo Khảo Sát Cư Dân</h3>
-              <p className="text-xs text-gray-400">Hệ thống AI tự động phân tích kiểm duyệt văn minh và phản hồi nhanh các thắc mắc chung cư.</p>
+              <div className="text-[10px] text-[#C5A880] uppercase tracking-widest font-mono">
+                {isEn ? 'SKYLINE RESIDENT FORUM & AI COMMUNITY' : 'Diễn Đàn SKYLINE Community AI'}
+              </div>
+              <h3 className="text-xl font-serif font-bold text-white">
+                {isEn ? 'Create Post & Resident Survey' : 'Đăng Bài Viết & Tạo Khảo Sát Cư Dân'}
+              </h3>
+              <p className="text-xs text-gray-400">
+                {isEn 
+                  ? 'AI automatically moderates civil discourse and promptly addresses apartment queries.'
+                  : 'Hệ thống AI tự động phân tích kiểm duyệt văn minh và phản hồi nhanh các thắc mắc chung cư.'}
+              </p>
             </div>
 
             <form onSubmit={handleCreatePost} className="space-y-4">
               {/* Category picker */}
               <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-gray-300">Chuyên Mục Bài Đăng</label>
+                <label className="text-xs font-semibold text-gray-300">
+                  {isEn ? 'Post Category' : 'Chuyên Mục Bài Đăng'}
+                </label>
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                   {[
-                    { id: 'DISCUSSION', label: 'Thảo Luận', icon: Users },
-                    { id: 'MARKETPLACE', label: 'Rao Vặt', icon: ShoppingBag },
-                    { id: 'VOTING', label: 'Biểu Quyết', icon: Vote },
-                    ...(isAdmin ? [{ id: 'ANNOUNCEMENT', label: 'Thông Báo BQL', icon: Megaphone }] : []),
+                    { id: 'DISCUSSION', label: isEn ? 'Discuss' : 'Thảo Luận', icon: Users },
+                    { id: 'MARKETPLACE', label: isEn ? 'Classifieds' : 'Rao Vặt', icon: ShoppingBag },
+                    { id: 'VOTING', label: isEn ? 'Voting & Surveys' : 'Biểu Quyết', icon: Vote },
+                    ...(isAdmin ? [{ id: 'ANNOUNCEMENT', label: isEn ? 'Management Notice' : 'Thông Báo BQL', icon: Megaphone }] : []),
                   ].map(cat => {
                     const Icon = cat.icon;
                     const isSelected = createCategory === cat.id;
@@ -1022,38 +1050,44 @@ export default function SurveysVoting({ currentUser }: SurveysVotingProps) {
 
               {/* Title input */}
               <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-gray-300">Tiêu Đề Bài Viết *</label>
+                <label className="text-xs font-semibold text-gray-300">
+                  {isEn ? 'Post Title *' : 'Tiêu Đề Bài Viết *'}
+                </label>
                 <input
                   type="text"
                   required
                   value={createTitle}
                   onChange={e => setCreateTitle(e.target.value)}
-                  placeholder="Ví dụ: Hồ bơi vô cực mở cửa đến mấy giờ? / Rao lại bàn làm việc..."
+                  placeholder={isEn ? "e.g. What time does the infinity pool close? / Reselling study desk..." : "Ví dụ: Hồ bơi vô cực mở cửa đến mấy giờ? / Rao lại bàn làm việc..."}
                   className="w-full bg-[#141B24] border border-[#C5A880]/30 text-white px-3 py-2 text-xs placeholder-gray-500 focus:outline-none focus:border-[#C5A880]"
                 />
               </div>
 
               {/* Content input */}
               <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-gray-300">Nội Dung Chi Tiết *</label>
+                <label className="text-xs font-semibold text-gray-300">
+                  {isEn ? 'Detailed Content *' : 'Nội Dung Chi Tiết *'}
+                </label>
                 <textarea
                   required
                   rows={4}
                   value={createContent}
                   onChange={e => setCreateContent(e.target.value)}
-                  placeholder="Mô tả cụ thể thông tin, thắc mắc để cư dân và BQL cùng trao đổi..."
+                  placeholder={isEn ? "Describe specific details or questions for residents and management to discuss..." : "Mô tả cụ thể thông tin, thắc mắc để cư dân và BQL cùng trao đổi..."}
                   className="w-full bg-[#141B24] border border-[#C5A880]/30 text-white p-3 text-xs placeholder-gray-500 focus:outline-none focus:border-[#C5A880] resize-none"
                 />
               </div>
 
               {/* Tags input */}
               <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-gray-300">Thẻ Phân Loại (Tags, cách nhau bằng dấu phẩy)</label>
+                <label className="text-xs font-semibold text-gray-300">
+                  {isEn ? 'Tags (comma-separated)' : 'Thẻ Phân Loại (Tags, cách nhau bằng dấu phẩy)'}
+                </label>
                 <input
                   type="text"
                   value={createTags}
                   onChange={e => setCreateTags(e.target.value)}
-                  placeholder="Tiện ích, Hồ bơi, Rao vặt, Sổ tay..."
+                  placeholder={isEn ? "Amenities, Pool, Classifieds, Handbook..." : "Tiện ích, Hồ bơi, Rao vặt, Sổ tay..."}
                   className="w-full bg-[#141B24] border border-[#222B35] text-white px-3 py-2 text-xs placeholder-gray-500 focus:outline-none focus:border-[#C5A880]"
                 />
               </div>
@@ -1067,7 +1101,7 @@ export default function SurveysVoting({ currentUser }: SurveysVotingProps) {
                     onChange={e => setCreateIsPinned(e.target.checked)}
                     className="accent-[#C5A880]"
                   />
-                  <span>Ghim bài viết này lên đầu bảng tin diễn đàn</span>
+                  <span>{isEn ? 'Pin this post to top of community bulletin' : 'Ghim bài viết này lên đầu bảng tin diễn đàn'}</span>
                 </label>
               )}
 
@@ -1076,9 +1110,9 @@ export default function SurveysVoting({ currentUser }: SurveysVotingProps) {
                 <div className="flex items-center justify-between">
                   <label className="text-xs font-semibold text-gray-300 flex items-center gap-1.5">
                     <Camera className="w-3.5 h-3.5 text-[#C5A880]" />
-                    <span>Hình Ảnh Đính Kèm (Đặc biệt cho Rao Vặt / Minh Họa)</span>
+                    <span>{isEn ? 'Attach Photos (Especially for Classifieds / Illustrations)' : 'Hình Ảnh Đính Kèm (Đặc biệt cho Rao Vặt / Minh Họa)'}</span>
                   </label>
-                  <span className="text-[11px] text-gray-500 font-mono">{createImages.length}/4 ảnh</span>
+                  <span className="text-[11px] text-gray-500 font-mono">{createImages.length}/4 {isEn ? 'photos' : 'ảnh'}</span>
                 </div>
 
                 <div className="flex items-center gap-2 flex-wrap">
@@ -1089,7 +1123,7 @@ export default function SurveysVoting({ currentUser }: SurveysVotingProps) {
                         type="button"
                         onClick={() => handleRemoveImage(idx)}
                         className="absolute top-0 right-0 p-1 bg-black/80 text-white hover:text-rose-400 transition-colors"
-                        title="Xóa ảnh này"
+                        title={isEn ? "Remove photo" : "Xóa ảnh này"}
                       >
                         <X className="w-3 h-3" />
                       </button>
@@ -1103,7 +1137,7 @@ export default function SurveysVoting({ currentUser }: SurveysVotingProps) {
                       ) : (
                         <>
                           <Plus className="w-4 h-4" />
-                          <span className="text-[9px] mt-0.5 font-medium">Thêm ảnh</span>
+                          <span className="text-[9px] mt-0.5 font-medium">{isEn ? 'Add photo' : 'Thêm ảnh'}</span>
                         </>
                       )}
                       <input
@@ -1125,7 +1159,7 @@ export default function SurveysVoting({ currentUser }: SurveysVotingProps) {
                   <label className="flex items-center justify-between cursor-pointer text-xs text-gray-200">
                     <span className="flex items-center gap-2 font-semibold">
                       <Vote className="w-4 h-4 text-[#C5A880]" />
-                      Đính kèm cuộc thăm dò ý kiến / Biểu quyết (Interactive Poll)
+                      {isEn ? 'Attach resident opinion poll / vote (Interactive Poll)' : 'Đính kèm cuộc thăm dò ý kiến / Biểu quyết (Interactive Poll)'}
                     </span>
                     <input
                       type="checkbox"
@@ -1138,7 +1172,7 @@ export default function SurveysVoting({ currentUser }: SurveysVotingProps) {
                   {attachPoll && (
                     <div className="p-3.5 bg-[#141B24] border border-[#C5A880]/30 space-y-3 animate-fadeIn">
                       <div className="text-[11px] text-[#C5A880] font-bold uppercase tracking-wider">
-                        Cấu Hình Các Phương Án Bình Chọn
+                        {isEn ? 'Configure Voting Options' : 'Cấu Hình Các Phương Án Bình Chọn'}
                       </div>
 
                       <div className="space-y-2">
@@ -1152,7 +1186,7 @@ export default function SurveysVoting({ currentUser }: SurveysVotingProps) {
                                 newOpts[idx] = e.target.value;
                                 setPollOptions(newOpts);
                               }}
-                              placeholder={`Phương án ${idx + 1}...`}
+                              placeholder={isEn ? `Option ${idx + 1}...` : `Phương án ${idx + 1}...`}
                               className="flex-1 bg-[#0E131B] border border-[#222B35] text-white px-3 py-1.5 text-xs focus:outline-none focus:border-[#C5A880]"
                             />
                             {pollOptions.length > 2 && (
@@ -1173,7 +1207,7 @@ export default function SurveysVoting({ currentUser }: SurveysVotingProps) {
                             onClick={() => setPollOptions([...pollOptions, ''])}
                             className="text-xs text-[#C5A880] hover:underline flex items-center gap-1 pt-1"
                           >
-                            <Plus className="w-3 h-3" /> Thêm phương án lựa chọn
+                            <Plus className="w-3 h-3" /> {isEn ? 'Add option' : 'Thêm phương án lựa chọn'}
                           </button>
                         )}
                       </div>
@@ -1181,7 +1215,9 @@ export default function SurveysVoting({ currentUser }: SurveysVotingProps) {
                       {/* Poll constraints */}
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
                         <div>
-                          <label className="text-[10px] text-gray-400 block mb-1">Thời Hạn Biểu Quyết Đến</label>
+                          <label className="text-[10px] text-gray-400 block mb-1">
+                            {isEn ? 'Voting Deadline' : 'Thời Hạn Biểu Quyết Đến'}
+                          </label>
                           <input
                             type="datetime-local"
                             value={pollDeadline}
@@ -1200,7 +1236,7 @@ export default function SurveysVoting({ currentUser }: SurveysVotingProps) {
                               className="accent-[#C5A880]"
                             />
                             <label htmlFor="pollOwnerOnly" className="text-xs text-gray-300 cursor-pointer">
-                              Chỉ Chủ Hộ mới được biểu quyết (Biểu quyết pháp lý)
+                              {isEn ? 'Apartment Owners only (Legal Poll)' : 'Chỉ Chủ Hộ mới được biểu quyết (Biểu quyết pháp lý)'}
                             </label>
                           </div>
                         )}
@@ -1214,9 +1250,11 @@ export default function SurveysVoting({ currentUser }: SurveysVotingProps) {
                     <div className="flex items-center justify-between">
                       <div className="text-[11px] text-[#C5A880] font-bold uppercase tracking-wider flex items-center gap-1.5">
                         <Vote className="w-4 h-4 text-[#C5A880]" />
-                        <span>Cấu Hình Biểu Quyết Cư Dân (Bắt Buộc)</span>
+                        <span>{isEn ? 'Resident Poll Configuration (Required)' : 'Cấu Hình Biểu Quyết Cư Dân (Bắt Buộc)'}</span>
                       </div>
-                      <span className="text-[10px] text-emerald-400 font-mono">Tự động kích hoạt</span>
+                      <span className="text-[10px] text-emerald-400 font-mono">
+                        {isEn ? 'Auto Activated' : 'Tự động kích hoạt'}
+                      </span>
                     </div>
 
                     <div className="space-y-2">
@@ -1230,7 +1268,7 @@ export default function SurveysVoting({ currentUser }: SurveysVotingProps) {
                               newOpts[idx] = e.target.value;
                               setPollOptions(newOpts);
                             }}
-                            placeholder={`Phương án ${idx + 1}...`}
+                            placeholder={isEn ? `Option ${idx + 1}...` : `Phương án ${idx + 1}...`}
                             className="flex-1 bg-[#0E131B] border border-[#222B35] text-white px-3 py-1.5 text-xs focus:outline-none focus:border-[#C5A880]"
                           />
                           {pollOptions.length > 2 && (
@@ -1251,7 +1289,7 @@ export default function SurveysVoting({ currentUser }: SurveysVotingProps) {
                           onClick={() => setPollOptions([...pollOptions, ''])}
                           className="text-xs text-[#C5A880] hover:underline flex items-center gap-1 pt-1"
                         >
-                          <Plus className="w-3 h-3" /> Thêm phương án lựa chọn
+                          <Plus className="w-3 h-3" /> {isEn ? 'Add option' : 'Thêm phương án lựa chọn'}
                         </button>
                       )}
                     </div>
@@ -1259,7 +1297,9 @@ export default function SurveysVoting({ currentUser }: SurveysVotingProps) {
                     {/* Poll constraints */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
                       <div>
-                        <label className="text-[10px] text-gray-400 block mb-1">Thời Hạn Biểu Quyết Đến</label>
+                        <label className="text-[10px] text-gray-400 block mb-1">
+                          {isEn ? 'Voting Deadline' : 'Thời Hạn Biểu Quyết Đến'}
+                        </label>
                         <input
                           type="datetime-local"
                           value={pollDeadline}
@@ -1278,7 +1318,7 @@ export default function SurveysVoting({ currentUser }: SurveysVotingProps) {
                             className="accent-[#C5A880]"
                           />
                           <label htmlFor="pollOwnerOnly2" className="text-xs text-gray-300 cursor-pointer">
-                            Chỉ Chủ Hộ mới được biểu quyết (Biểu quyết pháp lý)
+                            {isEn ? 'Apartment Owners only (Legal Poll)' : 'Chỉ Chủ Hộ mới được biểu quyết (Biểu quyết pháp lý)'}
                           </label>
                         </div>
                       )}
@@ -1292,10 +1332,10 @@ export default function SurveysVoting({ currentUser }: SurveysVotingProps) {
                 <div className="p-3 bg-[#141B24]/90 border border-emerald-500/30 text-xs flex items-center justify-between text-gray-300 font-mono">
                   <span className="flex items-center gap-1.5 text-emerald-400">
                     <ShieldCheck className="w-4 h-4" />
-                    AI Kiểm duyệt: {liveAiPreview.moderation === 'Clean' ? 'Văn minh ✓' : liveAiPreview.moderation === 'Warning' ? 'Cần lưu tâm ⚠️' : 'Vi phạm ❌'}
+                    {isEn ? 'AI Moderation: ' : 'AI Kiểm duyệt: '}{liveAiPreview.moderation === 'Clean' ? (isEn ? 'Civil ✓' : 'Văn minh ✓') : liveAiPreview.moderation === 'Warning' ? (isEn ? 'Review ⚠️' : 'Cần lưu tâm ⚠️') : (isEn ? 'Violation ❌' : 'Vi phạm ❌')}
                   </span>
                   <span>
-                    Cảm xúc: <strong>{liveAiPreview.sentimentLabel}</strong> ({liveAiPreview.sentiment > 0 ? `+${liveAiPreview.sentiment.toFixed(2)}` : liveAiPreview.sentiment.toFixed(2)})
+                    {isEn ? 'Sentiment:' : 'Cảm xúc:'} <strong>{liveAiPreview.sentimentLabel}</strong> ({liveAiPreview.sentiment > 0 ? `+${liveAiPreview.sentiment.toFixed(2)}` : liveAiPreview.sentiment.toFixed(2)})
                   </span>
                 </div>
               )}
@@ -1308,7 +1348,7 @@ export default function SurveysVoting({ currentUser }: SurveysVotingProps) {
                   onClick={() => setIsCreateModalOpen(false)}
                   className="w-full sm:w-auto px-4 py-2.5 text-xs text-gray-400 hover:text-white uppercase tracking-wider font-semibold disabled:opacity-50 text-center"
                 >
-                  Hủy Bỏ
+                  {isEn ? 'Cancel' : 'Hủy Bỏ'}
                 </button>
                 <button
                   type="submit"
@@ -1318,10 +1358,10 @@ export default function SurveysVoting({ currentUser }: SurveysVotingProps) {
                   {isSubmittingWithAi ? (
                     <>
                       <Loader2 className="w-4 h-4 animate-spin text-[#0A0E14]" />
-                      <span>AI Đang Phân Tích...</span>
+                      <span>{isEn ? 'AI Analyzing...' : 'AI Đang Phân Tích...'}</span>
                     </>
                   ) : (
-                    <span>Đăng Lên Diễn Đàn</span>
+                    <span>{isEn ? 'Publish to Forum' : 'Đăng Lên Diễn Đàn'}</span>
                   )}
                 </button>
               </div>

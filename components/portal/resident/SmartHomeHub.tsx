@@ -369,14 +369,71 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
     showToast(`📸 Đã lưu ảnh khách viếng thăm #${snapshotCount + 1} vào bộ nhớ an toàn.`);
   };
 
+  // Dịch kịch bản tự động hóa sang tiếng Anh khi isEn = true
+  const localizeRule = (rule: AutomationRule): AutomationRule => {
+    if (!isEn) return rule;
+    switch (rule.id) {
+      case 'rule_morning':
+        return {
+          ...rule,
+          title: 'Sunrise & Morning Sunshine',
+          triggerLabel: 'Timer: 06:30 AM',
+          description: 'Automatically opens balcony curtains for natural light, turns off AC and bedroom lights.',
+          actionSummary: 'Curtains 100% • Bed Light OFF • AC OFF',
+          repeatDays: 'Daily'
+        };
+      case 'rule_sunset':
+        return {
+          ...rule,
+          title: 'Sunset & Welcome Lighting',
+          triggerLabel: 'Timer: 06:30 PM',
+          description: 'Automatically turns on living room and kitchen lights to welcome family members home.',
+          actionSummary: 'Living Light 100% • Kitchen ON • AC 24°C',
+          repeatDays: 'Daily'
+        };
+      case 'rule_night_secure':
+        return {
+          ...rule,
+          title: 'Night Lock Security & Sleep Mode',
+          triggerLabel: 'Timer: 11:00 PM',
+          description: 'Automatically checks main door FaceID deadbolt, closes curtains and switches AC to 26°C.',
+          actionSummary: 'FaceID Deadbolt Locked • Curtains Closed • AC 26°C (Sleep) • Living Light OFF',
+          repeatDays: 'Daily'
+        };
+      case 'rule_water_guard':
+        return {
+          ...rule,
+          title: 'AI Nighttime Water Leak Detection',
+          triggerLabel: 'AI Nighttime Flow Sensor',
+          description: 'Automatically monitors water supply valve flow. Emergency alert if faucet or pipe leak is detected.',
+          actionSummary: 'Scan 0.00 L/h • Hub & App Speaker Alert',
+          repeatDays: 'Deep Sleep Window (02:00 - 04:00)'
+        };
+      case 'rule_air_clean':
+        return {
+          ...rule,
+          title: 'Auto Daikin Air Purification on High PM2.5',
+          triggerLabel: 'AQI Air Quality Sensor',
+          description: 'When indoor fine dust exceeds AQI 50, automatically activate Daikin Streamer ion purification.',
+          actionSummary: 'Boost Fan Speed • Daikin Streamer Ion ON',
+          repeatDays: 'Auto 24/7'
+        };
+      default:
+        return rule;
+    }
+  };
+
   // Toggle Quy tắc tự động hóa
   const handleToggleRule = (ruleId: string) => {
     const nextRules = toggleAutomationRule(aptCode, ruleId);
     setAutomationRules(nextRules);
     const target = nextRules.find(r => r.id === ruleId);
-    showToast(target?.enabled 
-      ? `✓ Đã kích hoạt: "${target.title}"` 
-      : `⏸️ Đã tạm dừng: "${target?.title}"`);
+    if (target) {
+      const locTarget = localizeRule(target);
+      showToast(target.enabled 
+        ? (isEn ? `✓ Activated: "${locTarget.title}"` : `✓ Đã kích hoạt: "${target.title}"`)
+        : (isEn ? `⏸️ Paused: "${locTarget.title}"` : `⏸️ Đã tạm dừng: "${target.title}"`));
+    }
   };
 
   // Lọc log ra vào
@@ -545,8 +602,8 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
           }`}
         >
           <Cpu className="w-4 h-4 text-[#C5A880] shrink-0" />
-          <span className="hidden sm:inline">{t('Thiết Bị & Phòng')}</span>
-          <span className="sm:hidden">{t('Thiết Bị')}</span>
+          <span className="hidden sm:inline">{isEn ? 'Devices & Rooms' : 'Thiết Bị & Phòng'}</span>
+          <span className="sm:hidden">{isEn ? 'Devices' : 'Thiết Bị'}</span>
         </button>
 
         <button
@@ -559,8 +616,8 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
           }`}
         >
           <DoorClosed className="w-4 h-4 text-cyan-400 shrink-0" />
-          <span className="hidden sm:inline">{t('Cửa & Chuông Hình')}</span>
-          <span className="sm:hidden">{t('Khóa Cửa')}</span>
+          <span className="hidden sm:inline">{isEn ? 'Doors & Intercom' : 'Cửa & Chuông Hình'}</span>
+          <span className="sm:hidden">{isEn ? 'Locks' : 'Khóa Cửa'}</span>
           {!masterDoorLocked && <span className="w-2 h-2 rounded-none bg-amber-400 animate-ping ml-1" />}
         </button>
 
@@ -574,8 +631,8 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
           }`}
         >
           <Clock className="w-4 h-4 text-emerald-400 shrink-0" />
-          <span className="hidden sm:inline">{t('Tự Động Hóa & An Toàn')}</span>
-          <span className="sm:hidden">{t('Tự Động')}</span>
+          <span className="hidden sm:inline">{isEn ? 'Automations & Safety' : 'Tự Động Hóa & An Toàn'}</span>
+          <span className="sm:hidden">{isEn ? 'Automations' : 'Tự Động'}</span>
           <span className="text-[10px] font-mono px-1.5 py-0.2 bg-emerald-950 text-emerald-300">
             {automationRules.filter(r => r.enabled).length}/{automationRules.length}
           </span>
@@ -1064,35 +1121,38 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
         <div className="space-y-4">
           {/* Danh Sách Kịch Bản Tự Động Hóa 24/7 (Sử dụng LuxurySwitch thống nhất) */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-            {automationRules.map(rule => (
-              <div 
-                key={rule.id}
-                className={`p-3.5 border transition-all flex flex-col justify-between gap-2.5 ${
-                  rule.enabled ? 'bg-[#121820] border-[#2A374A]' : 'bg-[#0E131A] border-[#1C2533] opacity-60'
-                }`}
-              >
-                <div className="space-y-1">
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs font-bold text-white">{rule.title}</span>
-                    <LuxurySwitch
-                      checked={rule.enabled}
-                      onChange={() => handleToggleRule(rule.id)}
-                      activeColor="bg-emerald-600"
-                      ariaLabel={`Bật tắt kịch bản ${rule.title}`}
-                    />
+            {automationRules.map(rawRule => {
+              const rule = localizeRule(rawRule);
+              return (
+                <div 
+                  key={rule.id}
+                  className={`p-3.5 border transition-all flex flex-col justify-between gap-2.5 ${
+                    rule.enabled ? 'bg-[#121820] border-[#2A374A]' : 'bg-[#0E131A] border-[#1C2533] opacity-60'
+                  }`}
+                >
+                  <div className="space-y-1">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-bold text-white">{rule.title}</span>
+                      <LuxurySwitch
+                        checked={rule.enabled}
+                        onChange={() => handleToggleRule(rule.id)}
+                        activeColor="bg-emerald-600"
+                        ariaLabel={isEn ? `Toggle automation rule ${rule.title}` : `Bật tắt kịch bản ${rule.title}`}
+                      />
+                    </div>
+                    <div className="text-[10px] text-[#C5A880] font-mono">{rule.triggerLabel}</div>
+                    <p className="text-[11px] text-gray-400 line-clamp-2">{rule.description}</p>
                   </div>
-                  <div className="text-[10px] text-[#C5A880] font-mono">{rule.triggerLabel}</div>
-                  <p className="text-[11px] text-gray-400 line-clamp-2">{rule.description}</p>
-                </div>
 
-                <div className="pt-2 border-t border-[#1C2533] flex items-center justify-between text-[10px] font-mono text-gray-400">
-                  <span className="truncate max-w-[170px]">{rule.actionSummary}</span>
-                  <span className={rule.enabled ? 'text-emerald-400 font-bold' : 'text-gray-500'}>
-                    {rule.enabled ? 'BẬT' : 'TẮT'}
-                  </span>
+                  <div className="pt-2 border-t border-[#1C2533] flex items-center justify-between text-[10px] font-mono text-gray-400">
+                    <span className="truncate max-w-[170px]">{rule.actionSummary}</span>
+                    <span className={rule.enabled ? 'text-emerald-400 font-bold' : 'text-gray-500'}>
+                      {rule.enabled ? (isEn ? 'ON' : 'BẬT') : (isEn ? 'OFF' : 'TẮT')}
+                    </span>
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
 
           {/* Cảm Biến An Toàn & Ngắt Van Nước Tự Động */}
@@ -1100,28 +1160,36 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
             <div className="p-4 bg-[#121820] border border-[#222B35] space-y-2">
               <h4 className="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-2 text-sky-400">
                 <Droplets className="w-4 h-4 text-sky-400" />
-                Cảm Biến Tràn Nước & Van Điện Từ
+                {isEn ? 'Water Overflow Sensor & Solenoid Valve' : 'Cảm Biến Tràn Nước & Van Điện Từ'}
               </h4>
               <p className="text-xs text-gray-300 font-light leading-relaxed">
-                Được lắp đặt tại sàn bếp và phòng tắm căn hộ CH-06. Khi phát hiện rò rỉ nước, hệ thống tự động phát còi báo và đóng van cấp nước tổng hành lang trong 3 giây.
+                {isEn
+                  ? 'Installed on kitchen and bathroom floors in unit CH-06. Upon detecting water leakage, the system sounds an alarm and automatically shuts off the hallway main water supply valve within 3 seconds.'
+                  : 'Được lắp đặt tại sàn bếp và phòng tắm căn hộ CH-06. Khi phát hiện rò rỉ nước, hệ thống tự động phát còi báo và đóng van cấp nước tổng hành lang trong 3 giây.'}
               </p>
               <div className="pt-2 flex items-center justify-between text-xs font-mono">
-                <span className="text-emerald-400 font-bold">✓ Van Nước: Đang Mở Bình Thường</span>
-                <span className="text-gray-500">Cảm biến AI 24/7</span>
+                <span className="text-emerald-400 font-bold">
+                  {isEn ? '✓ Water Valve: Normal / Open' : '✓ Van Nước: Đang Mở Bình Thường'}
+                </span>
+                <span className="text-gray-500">{isEn ? '24/7 AI Sensor' : 'Cảm biến AI 24/7'}</span>
               </div>
             </div>
 
             <div className="p-4 bg-[#121820] border border-[#222B35] space-y-2">
               <h4 className="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-2 text-amber-400">
                 <Flame className="w-4 h-4 text-amber-400" />
-                Đầu Báo Khói & Báo Cháy PCCC
+                {isEn ? 'Smoke Detector & Fire Safety System' : 'Đầu Báo Khói & Báo Cháy PCCC'}
               </h4>
               <p className="text-xs text-gray-300 font-light leading-relaxed">
-                Kết nối trực tiếp với Trung tâm Điều hành An Ninh PCCC chung cư The Tropical. Khi có báo động, còi báo tầng 30 sẽ kích hoạt và chỉ dẫn cư dân ra thang bộ thoát hiểm.
+                {isEn
+                  ? 'Directly connected to The Tropical Fire Safety Command Center. In case of alarm, 30th-floor siren triggers and guides residents to emergency stairs.'
+                  : 'Kết nối trực tiếp với Trung tâm Điều hành An Ninh PCCC chung cư The Tropical. Khi có báo động, còi báo tầng 30 sẽ kích hoạt và chỉ dẫn cư dân ra thang bộ thoát hiểm.'}
               </p>
               <div className="pt-2 flex items-center justify-between text-xs font-mono">
-                <span className="text-emerald-400 font-bold">✓ PCCC: Kết Nối BQL Chuẩn 100%</span>
-                <span className="text-gray-500">Thang bộ tầng 30</span>
+                <span className="text-emerald-400 font-bold">
+                  {isEn ? '✓ Fire Safety: 100% Management Connected' : '✓ PCCC: Kết Nối BQL Chuẩn 100%'}
+                </span>
+                <span className="text-gray-500">{isEn ? '30th-floor Staircase' : 'Thang bộ tầng 30'}</span>
               </div>
             </div>
           </div>

@@ -873,13 +873,13 @@ export default function SmartFacilityPass({ currentUser, onNavigateModule }: Sma
               {/* Chi phí & Chính sách */}
               <div className="p-3 bg-[#0D1117] border border-[#222B35] rounded-none space-y-2 text-xs">
                 <div className="flex items-center justify-between">
-                  <span className="text-gray-400 font-medium">Chi phí đặt giữ chỗ:</span>
+                  <span className="text-gray-400 font-medium">{isEn ? 'Reservation Fee:' : 'Chi phí đặt giữ chỗ:'}</span>
                   <span className="text-[#C5A880] font-bold text-sm font-mono">
                     {bookingFacilityId === 'fac-sauna'
-                      ? `${(bookingDurationHours * 500000).toLocaleString('vi-VN')} đ (${bookingDurationHours} tiếng phòng VIP)`
+                      ? `${(bookingDurationHours * 500000).toLocaleString('vi-VN')} ${isEn ? `VND (${bookingDurationHours} hours VIP room)` : `đ (${bookingDurationHours} tiếng phòng VIP)`}`
                       : bookingFacilityId === 'fac-bbq'
-                      ? '600.000 đ / ca tiệc (Set bếp Weber & dọn sau tiệc)'
-                      : '0 đ (Miễn phí theo Thẻ Cư Dân Skyline)'}
+                      ? (isEn ? '600,000 VND / slot (Weber grill set & cleanup)' : '600.000 đ / ca tiệc (Set bếp Weber & dọn sau tiệc)')
+                      : (isEn ? '0 VND (Free with Skyline Resident Pass)' : '0 đ (Miễn phí theo Thẻ Cư Dân Skyline)')}
                   </span>
                 </div>
 
@@ -887,20 +887,20 @@ export default function SmartFacilityPass({ currentUser, onNavigateModule }: Sma
                   <div className="pt-2 border-t border-[#1F2937] space-y-1 text-[11px] leading-relaxed">
                     <div className="text-[#C5A880] font-bold flex items-center gap-1.5">
                       <RotateCcw className="w-3.5 h-3.5" />
-                      <span>Chính sách hoàn tiền khi có việc bận đột xuất:</span>
+                      <span>{isEn ? 'Refund Policy for Unforeseen Circumstances:' : 'Chính sách hoàn tiền khi có việc bận đột xuất:'}</span>
                     </div>
                     <div className="space-y-0.5 text-gray-300">
                       <div className="flex items-start gap-1.5 text-emerald-400">
                         <span className="font-bold">✓</span>
-                        <span><strong>Trước giờ hẹn &gt; 30 phút:</strong> Hoàn trả <strong>100%</strong> tiền giữ chỗ.</span>
+                        <span><strong>{isEn ? '> 30 mins before appointment:' : 'Trước giờ hẹn > 30 phút:'}</strong>{isEn ? <> REFUND <strong>100%</strong> slot deposit.</> : <> Hoàn trả <strong>100%</strong> tiền giữ chỗ.</>}</span>
                       </div>
                       <div className="flex items-start gap-1.5 text-amber-300">
                         <span className="font-bold">⚡</span>
-                        <span><strong>Cận giờ (trong 30 phút):</strong> Hoàn trả <strong>50%</strong> (50% bù đắp chi phí chuẩn bị).</span>
+                        <span><strong>{isEn ? 'Upcoming (within 30 mins):' : 'Cận giờ (trong 30 phút):'}</strong>{isEn ? <> REFUND <strong>50%</strong> (50% compensation for preparation costs).</> : <> Hoàn trả <strong>50%</strong> (50% bù đắp chi phí chuẩn bị).</>}</span>
                       </div>
                       <div className="flex items-start gap-1.5 text-gray-400">
                         <span className="font-bold">✕</span>
-                        <span><strong>Quá giờ hẹn bắt đầu:</strong> Không hoàn tiền do tiện ích đã khóa giữ chỗ.</span>
+                        <span><strong>{isEn ? 'Appointment overtime starts:' : 'Quá giờ hẹn bắt đầu:'}</strong>{isEn ? ' No refund; amenity is reserved.' : ' Không hoàn tiền do tiện ích đã khóa giữ chỗ.'}</span>
                       </div>
                     </div>
                   </div>

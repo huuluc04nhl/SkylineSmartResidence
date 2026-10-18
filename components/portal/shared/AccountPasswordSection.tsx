@@ -22,6 +22,7 @@ import {
 import { User } from '@/lib/dataStore';
 import { getUserApiAvatar } from '@/lib/avatarHelper';
 import { nksUpdatePassword } from '@/lib/nksApiClient';
+import { useLanguage } from '@/lib/languageContext';
 
 interface AccountPasswordSectionProps {
   currentUser: User;
@@ -34,6 +35,7 @@ export default function AccountPasswordSection({
   onSuccess,
   isModal = false,
 }: AccountPasswordSectionProps) {
+  const { t, isEn } = useLanguage();
   const aptCode = currentUser.apartment_code || 'CH-06';
   const isAdmin = currentUser.role === 'ADMIN';
   const isOwner = currentUser.role === 'OWNER';
@@ -231,11 +233,13 @@ export default function AccountPasswordSection({
           <div className="space-y-0.5 min-w-0">
             <div className="flex items-center gap-2">
               <span className="text-[10px] text-[#C5A880] font-mono uppercase tracking-wider font-bold truncate">
-                Tài Khoản Tự Chủ • <span className="hidden sm:inline">Quyền Đổi Mật Khẩu Cá Nhân</span>
+                {isEn 
+                  ? <>AUTONOMOUS ACCOUNT • <span className="hidden sm:inline">PERSONAL PASSWORD MANAGEMENT</span></>
+                  : <>Tài Khoản Tự Chủ • <span className="hidden sm:inline">Quyền Đổi Mật Khẩu Cá Nhân</span></>}
               </span>
             </div>
             <h2 className="font-serif text-base sm:text-xl font-bold text-white tracking-wide truncate">
-              {currentUser.full_name || currentUser.username || 'Người Dùng Skyline'}
+              {currentUser.full_name || currentUser.username || (isEn ? 'Skyline User' : 'Người Dùng Skyline')}
             </h2>
             <div className="flex flex-wrap items-center gap-2 text-xs text-gray-400">
               <span className="font-mono text-gray-300 truncate max-w-[160px] sm:max-w-none">
@@ -244,10 +248,10 @@ export default function AccountPasswordSection({
               <span>•</span>
               <span className="text-[#C5A880] font-medium truncate">
                 {isAdmin 
-                  ? 'Ban Quản Lý' 
+                  ? (isEn ? 'Management Board' : 'Ban Quản Lý') 
                   : isOwner 
-                  ? `Chủ Hộ (Căn ${aptCode})` 
-                  : `Cư Dân (Căn ${aptCode})`}
+                  ? (isEn ? `Apartment Owner (Unit ${aptCode})` : `Chủ Hộ (Căn ${aptCode})`) 
+                  : (isEn ? `Resident (Unit ${aptCode})` : `Cư Dân (Căn ${aptCode})`)}
               </span>
             </div>
           </div>
@@ -255,7 +259,7 @@ export default function AccountPasswordSection({
 
         <div className="flex items-center gap-2 flex-shrink-0">
           <span className="px-3 py-1.5 bg-[#161D26] border border-emerald-500/50 text-emerald-300 text-xs font-semibold rounded-none flex items-center gap-2">
-            <ShieldCheck className="w-4 h-4 text-emerald-400" /> Mã Hóa NKS 256-bit
+            <ShieldCheck className="w-4 h-4 text-emerald-400" /> {isEn ? 'AES 256-bit Encryption' : 'Mã Hóa NKS 256-bit'}
           </span>
         </div>
       </div>
@@ -311,7 +315,7 @@ export default function AccountPasswordSection({
           <div className="space-y-2">
             <label className="text-xs font-semibold text-gray-300 uppercase tracking-wider flex items-center justify-between">
               <span className="flex items-center gap-1.5">
-                <Lock className="w-3.5 h-3.5 text-gray-400" /> Mật Khẩu Hiện Tại <span className="text-rose-400">*</span>
+                <Lock className="w-3.5 h-3.5 text-gray-400" /> {isEn ? 'Current Password' : 'Mật Khẩu Hiện Tại'} <span className="text-rose-400">*</span>
               </span>
             </label>
             <div className="relative">
@@ -319,7 +323,7 @@ export default function AccountPasswordSection({
                 type={showOldPassword ? 'text' : 'password'}
                 value={oldPassword}
                 onChange={(e) => setOldPassword(e.target.value)}
-                placeholder="Nhập mật khẩu hiện tại của bạn..."
+                placeholder={isEn ? "Enter your current password..." : "Nhập mật khẩu hiện tại của bạn..."}
                 required
                 className="w-full bg-[#161B22] border border-[#2D3748] p-3 pr-10 text-white text-xs focus:outline-none focus:border-[#C5A880] transition-colors rounded-none font-mono"
               />
@@ -333,7 +337,7 @@ export default function AccountPasswordSection({
               </button>
             </div>
             <div className="text-[11px] text-gray-500 hidden sm:block">
-              Xác thực quyền sở hữu tài khoản trước khi thực hiện đổi mật khẩu mới.
+              {isEn ? 'Authenticate account ownership before proceeding with a new password change.' : 'Xác thực quyền sở hữu tài khoản trước khi thực hiện đổi mật khẩu mới.'}
             </div>
           </div>
 
@@ -341,7 +345,7 @@ export default function AccountPasswordSection({
           <div className="space-y-2.5">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <label className="text-xs font-semibold text-gray-300 uppercase tracking-wider flex items-center gap-1.5">
-                <KeyRound className="w-3.5 h-3.5 text-[#C5A880]" /> Mật Khẩu Mới <span className="text-rose-400">*</span>
+                <KeyRound className="w-3.5 h-3.5 text-[#C5A880]" /> {isEn ? 'New Password' : 'Mật Khẩu Mới'} <span className="text-rose-400">*</span>
               </label>
 
               {/* Generator Actions Integrated in Field Header */}
@@ -357,13 +361,13 @@ export default function AccountPasswordSection({
                   onClick={() => handleGenerate()}
                   className="h-8 sm:h-7 px-2.5 bg-[#1C2533] hover:bg-[#C5A880] text-[#C5A880] hover:text-[#0D1117] border border-[#C5A880]/60 hover:border-[#C5A880] text-[11px] font-bold uppercase tracking-wider rounded-none flex items-center gap-1.5 transition-all shadow active:scale-95"
                 >
-                  <Sparkles className="w-3.5 h-3.5" /> <span>Tạo Mật Khẩu <span className="hidden sm:inline">Tự Động</span></span>
+                  <Sparkles className="w-3.5 h-3.5" /> <span>{isEn ? <>Auto-Generate <span className="hidden sm:inline">Password</span></> : <>Tạo Mật Khẩu <span className="hidden sm:inline">Tự Động</span></>}</span>
                 </button>
 
                 <button
                   type="button"
                   onClick={() => setShowGenOptions(!showGenOptions)}
-                  title="Tùy chỉnh độ dài và các bộ ký tự sinh ngẫu nhiên"
+                  title={isEn ? "Customize password length and character sets" : "Tùy chỉnh độ dài và các bộ ký tự sinh ngẫu nhiên"}
                   className={`h-8 sm:h-7 px-2 border text-[11px] font-semibold rounded-none flex items-center gap-1 transition-colors ${
                     showGenOptions
                       ? 'bg-[#C5A880] text-[#0D1117] border-[#C5A880]'
@@ -371,7 +375,7 @@ export default function AccountPasswordSection({
                   }`}
                 >
                   <SlidersHorizontal className="w-3.5 h-3.5" />
-                  <span className="hidden sm:inline">Tùy Chọn</span>
+                  <span className="hidden sm:inline">{isEn ? 'Options' : 'Tùy Chọn'}</span>
                 </button>
               </div>
             </div>
@@ -381,7 +385,7 @@ export default function AccountPasswordSection({
                 type={showNewPassword ? 'text' : 'password'}
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
-                placeholder="Nhập mật khẩu mới hoặc bấm [Tạo Mật Khẩu Tự Động]..."
+                placeholder={isEn ? "Enter new password or click [Auto-Generate Password]..." : "Nhập mật khẩu mới hoặc bấm [Tạo Mật Khẩu Tự Động]..."}
                 required
                 minLength={6}
                 className="w-full bg-[#161B22] border border-[#2D3748] p-3 pr-10 text-white text-xs focus:outline-none focus:border-[#C5A880] transition-colors rounded-none font-mono"

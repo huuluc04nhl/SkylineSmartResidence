@@ -577,7 +577,7 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
             {ekycStatus === 'VERIFIED' && (
               <span className="px-2.5 sm:px-3 py-1 bg-emerald-950/80 border border-emerald-500 text-emerald-300 text-[11px] sm:text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 rounded-none">
                 <ShieldCheck className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-400 shrink-0" />
-                <span><span className="hidden sm:inline">{t('Đã Xác Thực')} </span>{t('Căn Cước ✓')}</span>
+                <span>{isEn ? 'VERIFIED ID CARD ✓' : 'ĐÃ XÁC THỰC CĂN CƯỚC ✓'}</span>
               </span>
             )}
 
@@ -654,7 +654,7 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
           }`}
         >
           <UserIcon className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
-          <span>1. <span className="hidden sm:inline">{t('Thông Tin')} </span>{t('Cá Nhân')}</span>
+          <span>{isEn ? '1. Personal Contacts' : '1. Thông Tin Cá Nhân'}</span>
         </button>
 
         <button
@@ -667,7 +667,7 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
           }`}
         >
           <ScanFace className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
-          <span>2. <span className="hidden sm:inline">{t('Căn Cước')} & </span>FaceID</span>
+          <span>{isEn ? '2. Identity Card & FaceID' : '2. Căn Cước & FaceID'}</span>
         </button>
 
         <button
@@ -680,7 +680,7 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
           }`}
         >
           <KeyRound className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
-          <span>3. <span className="hidden sm:inline">{t('Đổi')} </span>{t('Mật Khẩu')}</span>
+          <span>{isEn ? '3. Change Password' : '3. Đổi Mật Khẩu'}</span>
         </button>
       </div>
 
