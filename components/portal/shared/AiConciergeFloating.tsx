@@ -67,15 +67,20 @@ function parseSuggestionsFromReply(rawReply: string): { cleanText: string; sugge
   return { cleanText: rawReply.trim(), suggestions: [] };
 }
 
-function getDynamicSuggestions(userQuestion: string, aiResponse: string): string[] {
+function getDynamicSuggestions(userQuestion: string, aiResponse: string, isEnglish?: boolean): string[] {
   const combined = (userQuestion + ' ' + aiResponse).toLowerCase();
 
   // 1. Facilities requiring reservation / booking
   if (
-    (combined.includes('tiện ích') || combined.includes('dịch vụ')) &&
-    (combined.includes('đặt trước') || combined.includes('hẹn trước') || combined.includes('đăng ký') || combined.includes('giữ chỗ') || combined.includes('tính phí'))
+    (combined.includes('tiện ích') || combined.includes('dịch vụ') || combined.includes('amenit') || combined.includes('facilit')) &&
+    (combined.includes('đặt trước') || combined.includes('hẹn trước') || combined.includes('đăng ký') || combined.includes('giữ chỗ') || combined.includes('tính phí') || combined.includes('book') || combined.includes('reserve'))
   ) {
-    return [
+    return isEnglish ? [
+      '🧖 VIP Sauna Tier 3 price list',
+      '🍖 Book panoramic BBQ party on 25th floor',
+      '💳 Cancellation policy & 100% refund',
+      '🏊 Which amenities are completely free?'
+    ] : [
       '🧖 Bảng giá phòng xông hơi VIP Tầng 3',
       '🍖 Đặt tiệc nướng BBQ panoramic Tầng 25',
       '💳 Chính sách hủy vé & hoàn tiền 100%',
@@ -87,9 +92,16 @@ function getDynamicSuggestions(userQuestion: string, aiResponse: string): string
   if (
     combined.includes('miễn phí') || 
     combined.includes('tự do') || 
-    combined.includes('không cần đặt')
+    combined.includes('không cần đặt') ||
+    combined.includes('free') ||
+    combined.includes('open access')
   ) {
-    return [
+    return isEnglish ? [
+      '⏰ Infinity Pool 25th Floor opening hours',
+      '🏋️ Is Technogym Gym open 24/7?',
+      '🧖 Which amenities need advance booking?',
+      '🛝 Sky Kids play area guidelines'
+    ] : [
       '⏰ Giờ mở cửa Hồ bơi vô cực Tầng 25',
       '🏋️ Phòng Gym Technogym có mở 24/7 không?',
       '🧖 Tiện ích nào cần đăng ký lịch hẹn trước?',
@@ -108,9 +120,17 @@ function getDynamicSuggestions(userQuestion: string, aiResponse: string): string
     combined.includes('block') ||
     combined.includes('beverly solari') ||
     combined.includes('tropical') ||
-    combined.includes('tầng hầm')
+    combined.includes('tầng hầm') ||
+    combined.includes('tower') ||
+    combined.includes('scale') ||
+    combined.includes('floor')
   ) {
-    return [
+    return isEnglish ? [
+      '🏢 How many floors do BS-07, BS-08, BS-09, BS-10 have?',
+      '🏠 Floor area of CH-06 and CH-01 in m²?',
+      '🍽️ Restaurant opening hours on 1st floor?',
+      '🏊 Does tropical resort pool need booking?'
+    ] : [
       '🏢 Tòa BS-07, BS-08, BS-09, BS-10 có bao nhiêu tầng?',
       '🏠 Căn hộ CH-06 và CH-01 diện tích bao nhiêu m²?',
       '🍽️ Dịch vụ nhà hàng tầng 1 mở cửa lúc mấy giờ?',
@@ -129,7 +149,12 @@ function getDynamicSuggestions(userQuestion: string, aiResponse: string): string
     combined.includes('sauna') || 
     combined.includes('bbq')
   ) {
-    return [
+    return isEnglish ? [
+      '🧖 Which amenities need advance reservation?',
+      '⏰ Pool & Gym opening hours',
+      '🍖 BBQ Garden pricing 25th floor',
+      '🎫 Check my booked amenity tickets'
+    ] : [
       '🧖 Tiện ích nào cần đăng ký lịch hẹn trước?',
       '⏰ Giờ mở cửa Hồ bơi & Phòng gym',
       '🍖 Bảng giá đặt vườn BBQ Tầng 25',
@@ -143,9 +168,15 @@ function getDynamicSuggestions(userQuestion: string, aiResponse: string): string
     combined.includes('đã đặt') || 
     combined.includes('vé') || 
     combined.includes('mã vé') || 
-    combined.includes('booking')
+    combined.includes('booking') ||
+    combined.includes('ticket')
   ) {
-    return [
+    return isEnglish ? [
+      '🔄 How to cancel booking & get 100% refund',
+      '🍖 Book additional BBQ slot on 25th floor',
+      '🎟️ Check visitor guest passes for today',
+      '🏊 Cloud pool operating schedule'
+    ] : [
       '🔄 Hướng dẫn hủy vé & hoàn 100% tiền giữ chỗ',
       '🍖 Đặt thêm ca nướng BBQ tầng 25',
       '🎟️ Kiểm tra thẻ khách thăm hôm nay',
@@ -159,9 +190,15 @@ function getDynamicSuggestions(userQuestion: string, aiResponse: string): string
     combined.includes('visitor') || 
     combined.includes('thăm') || 
     combined.includes('mã pin') || 
-    combined.includes('thẻ khách')
+    combined.includes('thẻ khách') ||
+    combined.includes('guest')
   ) {
-    return [
+    return isEnglish ? [
+      '📱 How to generate QR code & PIN for guests',
+      '🚗 Where can visitors park their cars?',
+      '🚪 Remote door unlocking via video intercom',
+      '🔑 Generate guest OTP door unlock code'
+    ] : [
       '📱 Cách tạo mã QR & PIN gửi cho khách',
       '🚗 Khách thăm đỗ xe ở đâu?',
       '🚪 Mở cửa căn hộ từ xa qua chuông hình',
@@ -177,9 +214,17 @@ function getDynamicSuggestions(userQuestion: string, aiResponse: string): string
     combined.includes('thanh toán') || 
     combined.includes('nước') || 
     combined.includes('điện') || 
-    combined.includes('nợ')
+    combined.includes('nợ') ||
+    combined.includes('bill') ||
+    combined.includes('utility') ||
+    combined.includes('payment')
   ) {
-    return [
+    return isEnglish ? [
+      '💧 What is my electricity and water bill this month?',
+      '🔧 Progress of apartment maintenance tickets',
+      '🚗 Monthly parking fee for cars & motorbikes',
+      '💳 How to pay via Management VietQR'
+    ] : [
       '💧 Tiền điện nước tháng này của căn hộ là bao nhiêu?',
       '🔧 Tiến độ các phiếu sửa chữa kỹ thuật của căn hộ',
       '🚗 Biểu phí gửi xe ô tô & xe máy',
@@ -195,9 +240,17 @@ function getDynamicSuggestions(userQuestion: string, aiResponse: string): string
     combined.includes('kỹ thuật') || 
     combined.includes('sự cố') || 
     combined.includes('thợ') || 
-    combined.includes('phiếu')
+    combined.includes('phiếu') ||
+    combined.includes('repair') ||
+    combined.includes('fix') ||
+    combined.includes('leak')
   ) {
-    return [
+    return isEnglish ? [
+      '⏱️ When will technician arrive at my unit?',
+      '📞 Emergency technical hotline 1900 8899',
+      '🔧 Status of current repair request',
+      '🔊 Allowed hours for drilling and construction'
+    ] : [
       '⏱️ Kỹ thuật viên khi nào có mặt tại căn hộ?',
       '📞 Hotline kỹ thuật khẩn cấp 1900 8899',
       '🔧 Phiếu sửa chữa của căn hộ xử lý tới đâu rồi?',
@@ -211,9 +264,16 @@ function getDynamicSuggestions(userQuestion: string, aiResponse: string): string
     combined.includes('khóa') || 
     combined.includes('faceid') || 
     combined.includes('thẻ') || 
-    combined.includes('chuông')
+    combined.includes('chuông') ||
+    combined.includes('lock') ||
+    combined.includes('door')
   ) {
-    return [
+    return isEnglish ? [
+      '📷 FaceID registration instructions',
+      '🔑 Create temporary passcodes for guests',
+      '💳 Register or report lost resident card',
+      '🛡️ Smart anti-tamper security alert'
+    ] : [
       '📷 Hướng dẫn cài FaceID cho người nhà',
       '🔑 Tạo mã số tạm thời cho khách đến chơi',
       '💳 Đăng ký hoặc báo mất thẻ cư dân',
@@ -227,9 +287,17 @@ function getDynamicSuggestions(userQuestion: string, aiResponse: string): string
     combined.includes('thành viên') || 
     combined.includes('chủ hộ') || 
     combined.includes('xe') || 
-    combined.includes('biển số')
+    combined.includes('biển số') ||
+    combined.includes('member') ||
+    combined.includes('family') ||
+    combined.includes('parking')
   ) {
-    return [
+    return isEnglish ? [
+      '➕ How to add family members to unit',
+      '🚗 Where is assigned parking slot in basement?',
+      '📷 FaceID setup for resident entry',
+      '💳 Monthly vehicle parking rates'
+    ] : [
       '➕ Cách đăng ký thêm thành viên căn hộ',
       '🚗 Vị trí đỗ xe ô tô cố định ở hầm nào?',
       '📷 Cài đặt nhận diện khuôn mặt FaceID',
@@ -238,7 +306,12 @@ function getDynamicSuggestions(userQuestion: string, aiResponse: string): string
   }
 
   // Default fallback suggestions
-  return [
+  return isEnglish ? [
+    '🏢 Overview of The Tropical & Beverly Solari towers',
+    '🏠 Which tower, floor & area is my apartment?',
+    '🍽️ How do restaurant, pool & cleaning services work?',
+    '💳 View this month’s utility bill'
+  ] : [
     '🏢 Quy mô các tòa The Tropical & Beverly Solari',
     '🏠 Căn hộ của tôi ở tòa nào, tầng mấy, diện tích bao nhiêu?',
     '🍽️ Dịch vụ nhà hàng, hồ bơi & vệ sinh hoạt động thế nào?',
@@ -440,7 +513,7 @@ export default function AiConciergeFloating({
       if (suggestions.length === 0) {
         const parsed = parseSuggestionsFromReply(aiReply);
         aiReply = parsed.cleanText;
-        suggestions = parsed.suggestions.length > 0 ? parsed.suggestions : getDynamicSuggestions(text, aiReply);
+        suggestions = parsed.suggestions.length > 0 ? parsed.suggestions : getDynamicSuggestions(text, aiReply, isEn);
       }
 
       // Contextual action link & smart dynamic suggestions (Messenger style)
@@ -516,7 +589,7 @@ export default function AiConciergeFloating({
             <div className="absolute -inset-1 bg-gradient-to-r from-[#C5A880]/10 via-transparent to-[#C5A880]/10 blur-sm pointer-events-none group-hover:opacity-100 opacity-50 transition-opacity" />
 
             <span className="w-2 h-2 rounded-none bg-emerald-400 animate-pulse relative z-10"></span>
-            <span className="transition-colors relative z-10 tracking-wide">Hỏi Skyline AI 24/7</span>
+            <span className="transition-colors relative z-10 tracking-wide">{isEn ? 'Ask Skyline AI 24/7' : 'Hỏi Skyline AI 24/7'}</span>
             <span className="px-1.5 py-0.5 bg-emerald-950/60 backdrop-blur-md text-emerald-400 text-[9px] font-mono font-bold rounded-none border border-emerald-500/40 relative z-10">
               24/7
             </span>
@@ -661,7 +734,7 @@ export default function AiConciergeFloating({
                 type="button"
                 onClick={() => setIsExpanded(!isExpanded)}
                 className="hidden sm:block p-1.5 sm:p-2 hover:bg-white/10 text-gray-400 hover:text-white rounded-none transition-colors border-0"
-                title={isExpanded ? 'Thu nhỏ kích thước' : 'Mở rộng kích thước'}
+                title={isExpanded ? (isEn ? 'Minimize size' : 'Thu nhỏ kích thước') : (isEn ? 'Expand size' : 'Mở rộng kích thước')}
               >
                 {isExpanded ? <Minimize2 className="w-3.5 h-3.5" /> : <Maximize2 className="w-3.5 h-3.5" />}
               </button>
@@ -671,7 +744,7 @@ export default function AiConciergeFloating({
                 type="button"
                 onClick={onToggle}
                 className="p-1.5 sm:p-2 hover:bg-rose-500/20 text-gray-400 hover:text-rose-400 rounded-none transition-colors border-0"
-                title="Đóng cửa sổ chat"
+                title={isEn ? "Close chat window" : "Đóng cửa sổ chat"}
               >
                 <X className="w-4 h-4" />
               </button>
@@ -715,23 +788,23 @@ export default function AiConciergeFloating({
                   {m.sender === 'ai' && (
                     <div className="pt-1.5 border-t border-white/5 flex items-center justify-between text-[10px] text-gray-400">
                       <span className="font-mono text-[9px] text-gray-500">
-                        {m.timestamp} • Trợ lý Skyline
+                        {m.timestamp} • {isEn ? 'Skyline Assistant' : 'Trợ lý Skyline'}
                       </span>
                       <button
                         type="button"
                         onClick={() => handleCopyMessage(m.id, m.text)}
                         className="hover:text-white flex items-center gap-1 px-1.5 py-0.5 hover:bg-white/5 rounded-none transition-colors text-gray-400 border-0"
-                        title="Sao chép nội dung câu trả lời"
+                        title={isEn ? "Copy reply" : "Sao chép nội dung câu trả lời"}
                       >
                         {copiedMessageId === m.id ? (
                           <>
                             <Check className="w-3 h-3 text-emerald-400" />
-                            <span className="text-emerald-400 text-[9px]">Đã chép</span>
+                            <span className="text-emerald-400 text-[9px]">{isEn ? 'Copied' : 'Đã chép'}</span>
                           </>
                         ) : (
                           <>
                             <Copy className="w-3 h-3" />
-                            <span className="text-[9px]">Sao chép</span>
+                            <span className="text-[9px]">{isEn ? 'Copy' : 'Sao chép'}</span>
                           </>
                         )}
                       </button>

@@ -57,7 +57,7 @@ export default function ResidentAllServicesModal({
   onOpenVisitorModal,
   onLogout
 }: ResidentAllServicesModalProps) {
-  const { t } = useLanguage();
+  const { t, isEn } = useLanguage();
   const [searchQuery, setSearchQuery] = useState('');
 
   const isOwner = currentUser.role === 'OWNER';
@@ -309,7 +309,7 @@ export default function ResidentAllServicesModal({
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder={t('Tìm kiếm tiện ích, dịch vụ, sửa chữa...')}
+              placeholder={isEn ? 'Search amenities, services, repairs...' : 'Tìm kiếm tiện ích, dịch vụ, sửa chữa...'}
               className="w-full h-10 pl-9 pr-8 bg-[#121820] border border-[#2A374A] focus:border-[#C5A880] text-xs text-white placeholder-gray-500 focus:outline-none transition-colors rounded-none"
             />
             {searchQuery && (
@@ -329,7 +329,7 @@ export default function ResidentAllServicesModal({
           {filteredCategories.length === 0 ? (
             <div className="p-8 text-center text-gray-400 text-xs space-y-2">
               <Search className="w-8 h-8 text-gray-600 mx-auto" />
-              <p>{t('Không tìm thấy tính năng phù hợp với từ khóa')} "{searchQuery}"</p>
+              <p>{isEn ? 'No features found matching keyword' : 'Không tìm thấy tính năng phù hợp với từ khóa'} "{searchQuery}"</p>
             </div>
           ) : (
             filteredCategories.map((cat, catIdx) => (

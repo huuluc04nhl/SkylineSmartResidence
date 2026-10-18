@@ -2,6 +2,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { Bot, X, Send, Sparkles, UserCheck, PhoneCall, ChevronDown, Zap, ShieldCheck } from 'lucide-react';
+import { useLanguage } from '@/lib/languageContext';
 
 interface ChatMessageItem {
   id: string;
@@ -12,17 +13,30 @@ interface ChatMessageItem {
 }
 
 export default function AiConcierge() {
+  const { isEn } = useLanguage();
   const [isOpen, setIsOpen] = useState(false);
   const [inputMsg, setInputMsg] = useState('');
   const [isTyping, setIsTyping] = useState(false);
-  const [messages, setMessages] = useState<ChatMessageItem[]>([
-    {
-      id: '1',
-      sender: 'ai',
-      text: 'Kính chào Quý cư dân! Tôi là Trợ lý ảo Skyline AI Concierge 24/7 (vận hành bởi Google Gemini). Tôi sẵn sàng giải đáp thông tin 4 chung cư The Tropical (BS-07, BS-08, BS-09, BS-10), dịch vụ nhà hàng tầng 1, cụm hồ bơi resort, biểu phí sinh hoạt và tiếp nhận sự cố kỹ thuật!',
-      time: new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }),
-    },
-  ]);
+
+  const getInitialMessage = (english: boolean): ChatMessageItem => ({
+    id: '1',
+    sender: 'ai',
+    text: english
+      ? 'Greetings Resident! I am Skyline AI Concierge 24/7 (powered by Google Gemini). I am ready to answer questions about the 4 The Tropical towers (BS-07, BS-08, BS-09, BS-10), 1st floor restaurant, resort pool complex, utility bills, and submit technical maintenance tickets!'
+      : 'Kính chào Quý cư dân! Tôi là Trợ lý ảo Skyline AI Concierge 24/7 (vận hành bởi Google Gemini). Tôi sẵn sàng giải đáp thông tin 4 chung cư The Tropical (BS-07, BS-08, BS-09, BS-10), dịch vụ nhà hàng tầng 1, cụm hồ bơi resort, biểu phí sinh hoạt và tiếp nhận sự cố kỹ thuật!',
+    time: new Date().toLocaleTimeString(english ? 'en-US' : 'vi-VN', { hour: '2-digit', minute: '2-digit' }),
+  });
+
+  const [messages, setMessages] = useState<ChatMessageItem[]>([getInitialMessage(isEn)]);
+
+  useEffect(() => {
+    setMessages((prev) => {
+      if (prev.length === 1 && prev[0].id === '1') {
+        return [getInitialMessage(isEn)];
+      }
+      return prev;
+    });
+  }, [isEn]);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -36,7 +50,13 @@ export default function AiConcierge() {
     }
   }, [messages, isTyping, isOpen]);
 
-  const quickPrompts = [
+  const quickPrompts = isEn ? [
+    'Scale of The Tropical & Beverly Solari buildings',
+    'What are the areas and floors of units CH-06 & CH-01?',
+    'What time does 1st-fl. restaurant & resort pool open?',
+    'Utility bills & management fee for this month',
+    'Management emergency hotline 1900 8899',
+  ] : [
     'Quy mô các tòa The Tropical & Beverly Solari',
     'Căn hộ CH-06 và CH-01 diện tích bao nhiêu, ở tầng mấy?',
     'Dịch vụ nhà hàng & cụm hồ bơi resort mở cửa mấy giờ?',
@@ -48,7 +68,7 @@ export default function AiConcierge() {
     const text = (textToSend || inputMsg).trim();
     if (!text || isTyping) return;
 
-    const userMsgTime = new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
+    const userMsgTime = new Date().toLocaleTimeString(isEn ? 'en-US' : 'vi-VN', { hour: '2-digit', minute: '2-digit' });
     const userMsg: ChatMessageItem = {
       id: String(Date.now()),
       sender: 'user',
@@ -80,6 +100,7 @@ export default function AiConcierge() {
           aptCode: 'CH-06',
           userName: 'Trần Hữu Lực',
           userRole: 'OWNER',
+          language: isEn ? 'en' : 'vi',
         }),
       });
 
@@ -91,7 +112,7 @@ export default function AiConcierge() {
       if (response.ok && data.success && data.reply) {
         replyText = data.reply;
       } else {
-        replyText = data.fallbackReply || data.error || 'Hệ thống đang bận, Quý cư dân vui lòng thử lại sau giây lát.';
+        replyText = data.fallbackReply || data.error || (isEn ? 'The system is currently busy, please try again in a moment.' : 'Hệ thống đang bận, Quý cư dân vui lòng thử lại sau giây lát.');
         isError = !data.success;
       }
 
@@ -101,7 +122,7 @@ export default function AiConcierge() {
           id: String(Date.now() + 1),
           sender: 'ai',
           text: replyText,
-          time: new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }),
+          time: new Date().toLocaleTimeString(isEn ? 'en-US' : 'vi-VN', { hour: '2-digit', minute: '2-digit' }),
           isError,
         },
       ]);
@@ -112,8 +133,10 @@ export default function AiConcierge() {
         {
           id: String(Date.now() + 1),
           sender: 'ai',
-          text: 'Không thể kết nối đến máy chủ AI. Quý cư dân vui lòng kiểm tra kết nối mạng hoặc liên hệ Hotline BQL 1900 8899.',
-          time: new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }),
+          text: isEn
+            ? 'Unable to connect to AI server. Please check your connection or contact Management Hotline 1900 8899.'
+            : 'Không thể kết nối đến máy chủ AI. Quý cư dân vui lòng kiểm tra kết nối mạng hoặc liên hệ Hotline BQL 1900 8899.',
+          time: new Date().toLocaleTimeString(isEn ? 'en-US' : 'vi-VN', { hour: '2-digit', minute: '2-digit' }),
           isError: true,
         },
       ]);
@@ -157,12 +180,12 @@ export default function AiConcierge() {
                   Skyline AI Concierge
                   <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-none bg-emerald-950/80 text-[9px] text-emerald-400 font-sans font-medium border-0">
                     <Sparkles className="w-2.5 h-2.5 text-emerald-400" />
-                    Trực Tuyến
+                    {isEn ? 'Online' : 'Trực Tuyến'}
                   </span>
                 </div>
                 <div className="text-[10px] text-gray-400 flex items-center gap-1.5">
                   <span className="w-1.5 h-1.5 rounded-none bg-emerald-400 animate-pulse"></span>
-                  Trợ lý thông minh căn hộ 24/7
+                  {isEn ? '24/7 Smart Apartment Assistant' : 'Trợ lý thông minh căn hộ 24/7'}
                 </div>
               </div>
             </div>
@@ -171,7 +194,7 @@ export default function AiConcierge() {
               <button
                 onClick={() => setIsOpen(false)}
                 className="p-1.5 text-gray-400 hover:text-white transition-colors rounded-none border-0"
-                title="Đóng cửa sổ"
+                title={isEn ? "Close window" : "Đóng cửa sổ"}
               >
                 <X className="w-4 h-4" />
               </button>
@@ -210,7 +233,7 @@ export default function AiConcierge() {
               <div className="flex justify-start">
                 <div className="p-3 bg-[#161E28] text-gray-300 text-[11px] flex items-center gap-2.5 rounded-none border-0 shadow">
                   <Sparkles className="w-4 h-4 text-[#C5A880] animate-spin" />
-                  <span>Trợ lý Skyline đang tra cứu dữ liệu cư dân...</span>
+                  <span>{isEn ? 'Skyline Assistant is querying data...' : 'Trợ lý Skyline đang tra cứu dữ liệu cư dân...'}</span>
                 </div>
               </div>
             )}
@@ -241,7 +264,7 @@ export default function AiConcierge() {
           >
             <input
               type="text"
-              placeholder="Nhập câu hỏi của Quý cư dân..."
+              placeholder={isEn ? "Enter resident question..." : "Nhập câu hỏi của Quý cư dân..."}
               value={inputMsg}
               onChange={(e) => setInputMsg(e.target.value)}
               disabled={isTyping}
@@ -251,7 +274,7 @@ export default function AiConcierge() {
               type="submit"
               disabled={!inputMsg.trim() || isTyping}
               className="p-2.5 bg-[#C5A880] text-[#0D1117] hover:bg-white transition-colors disabled:opacity-40 font-bold rounded-none border-0"
-              title="Gửi câu hỏi"
+              title={isEn ? "Send inquiry" : "Gửi câu hỏi"}
             >
               <Send className="w-4 h-4" />
             </button>

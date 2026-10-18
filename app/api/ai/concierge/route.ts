@@ -34,6 +34,7 @@ export async function POST(req: NextRequest) {
       tickets,
       bills,
       members,
+      language,
     } = body;
 
     userMessage = message || '';
@@ -92,6 +93,7 @@ export async function POST(req: NextRequest) {
       visitors: actualVisitors,
       bills: actualBills,
       members: actualMembers,
+      language: language === 'en' ? 'en' : 'vi',
     };
 
     fallbackContext = context;

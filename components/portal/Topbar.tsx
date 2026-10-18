@@ -45,7 +45,7 @@ export default function Topbar({
 }: TopbarProps) {
   const router = useRouter();
   const { logout } = useAuth();
-  const { t, language } = useLanguage();
+  const { t, language, isEn } = useLanguage();
 
   const [searchQuery, setSearchQuery] = useState('');
   const [showSearchSuggestions, setShowSearchSuggestions] = useState(false);
@@ -168,7 +168,7 @@ export default function Topbar({
           <Search className="w-4 h-4 text-gray-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
           <input
             type="text"
-            placeholder={t("Tìm nhanh dịch vụ (VD: 'sửa nước', 'hóa đơn', 'hồ bơi')...")}
+            placeholder={isEn ? "Quick search services (e.g. 'water repair', 'billing', 'pool')..." : "Tìm nhanh dịch vụ (VD: 'sửa nước', 'hóa đơn', 'hồ bơi')..."}
             value={searchQuery}
             onChange={(e) => {
               setSearchQuery(e.target.value);
@@ -178,7 +178,7 @@ export default function Topbar({
             className="w-full bg-[#161B22] border border-[#2D3748] text-xs text-white pl-10 pr-16 py-2 focus:outline-none focus:border-[#C5A880] transition-colors placeholder-gray-500"
           />
           <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[9px] font-mono text-gray-400 bg-[#222B35] px-1.5 py-0.5 border border-gray-600">
-            {t('TÌM NHANH')}
+            {isEn ? 'SEARCH' : 'TÌM NHANH'}
           </span>
         </div>
 
@@ -187,7 +187,7 @@ export default function Topbar({
           <div className="absolute top-full left-0 right-0 mt-1 bg-[#121820] border border-[#C5A880]/60 p-2 shadow-2xl z-50">
             <div className="flex items-center justify-between px-2 py-1 text-[10px] uppercase tracking-wider text-[#C5A880] font-semibold border-b border-[#222B35]">
               <span className="flex items-center gap-1">
-                <Sparkles className="w-3 h-3" /> {t('Gợi ý tìm kiếm')}
+                <Sparkles className="w-3 h-3" /> {isEn ? 'Search Suggestions' : 'Gợi ý tìm kiếm'}
               </span>
               <button
                 onClick={() => setShowSearchSuggestions(false)}

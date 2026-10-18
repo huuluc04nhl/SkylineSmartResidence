@@ -915,7 +915,7 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
                 type="text"
                 value={memberSearchTerm}
                 onChange={(e) => setMemberSearchTerm(e.target.value)}
-                placeholder="Tìm kiếm..."
+                placeholder={isEn ? "Search member, phone..." : "Tìm kiếm thành viên, SĐT..."}
                 className="bg-[#161B22] border border-[#2D3748] pl-8 pr-7 py-1.5 text-white text-xs rounded-none focus:border-[#C5A880] outline-none w-36 sm:w-44 font-sans"
               />
               {memberSearchTerm && (
@@ -935,10 +935,10 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
               onChange={(e) => setMemberFilterStatus(e.target.value as any)}
               className="bg-[#161B22] border border-[#2D3748] px-2 py-1.5 text-xs text-gray-200 rounded-none focus:border-[#C5A880] outline-none cursor-pointer"
             >
-              <option value="ALL">Tất cả ({members.length})</option>
-              <option value="APPROVED">Đã FaceID ({totalApproved})</option>
-              <option value="PENDING">Chờ duyệt ({totalPendingOwner + totalPendingBql})</option>
-              <option value="NO_FACE">Chưa FaceID</option>
+              <option value="ALL">{isEn ? `All (${members.length})` : `Tất cả (${members.length})`}</option>
+              <option value="APPROVED">{isEn ? `FaceID Active (${totalApproved})` : `Đã FaceID (${totalApproved})`}</option>
+              <option value="PENDING">{isEn ? `Pending (${totalPendingOwner + totalPendingBql})` : `Chờ duyệt (${totalPendingOwner + totalPendingBql})`}</option>
+              <option value="NO_FACE">{isEn ? 'No FaceID' : 'Chưa FaceID'}</option>
             </select>
 
             <button
@@ -946,7 +946,7 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
               disabled={isLoading}
               className="text-xs text-gray-300 hover:text-[#C5A880] flex items-center gap-1.5 transition-colors cursor-pointer px-2 py-1.5 bg-[#161B22] border border-[#2D3748]"
             >
-              <RefreshCw className={`w-3.5 h-3.5 ${isLoading ? 'animate-spin' : ''}`} /> Làm mới
+              <RefreshCw className={`w-3.5 h-3.5 ${isLoading ? 'animate-spin' : ''}`} /> {isEn ? 'Refresh' : 'Làm mới'}
             </button>
           </div>
         </div>

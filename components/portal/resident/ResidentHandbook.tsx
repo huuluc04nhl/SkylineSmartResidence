@@ -26,6 +26,7 @@ import {
   Building
 } from 'lucide-react';
 import { User as UserType } from '@/lib/dataStore';
+import { useLanguage } from '@/lib/languageContext';
 
 interface ResidentHandbookProps {
   currentUser: UserType;
@@ -251,6 +252,7 @@ const HANDBOOK_SECTIONS: HandbookSection[] = [
 ];
 
 export default function ResidentHandbook({ currentUser, onNavigate }: ResidentHandbookProps) {
+  const { isEn } = useLanguage();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedSectionId, setSelectedSectionId] = useState<string>('noise');
   
@@ -285,19 +287,22 @@ export default function ResidentHandbook({ currentUser, onNavigate }: ResidentHa
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          message: `Cư dân hỏi về nội quy hoặc sổ tay chung cư: "${q}". Hãy giải đáp ngắn gọn, chuẩn xác, văn phong lễ tân 5 sao, dựa trên quy chế chung cư The Tropical (4 chung cư BS-07, BS-08, BS-09, BS-10) và căn hộ ${currentUser.apartment_code || 'CH-06'} tầng 30. Nêu rõ khung giờ hoặc điều cấm cụ thể nếu có.`,
+          message: isEn
+            ? `Resident inquiries regarding building regulations or resident handbook: "${q}". Please provide a concise, accurate, 5-star concierge-style answer in English based on The Tropical condominium regulations (Towers BS-07, BS-08, BS-09, BS-10) and apartment ${currentUser.apartment_code || 'CH-06'}. State specific hours or prohibitions.`
+            : `Cư dân hỏi về nội quy hoặc sổ tay chung cư: "${q}". Hãy giải đáp ngắn gọn, chuẩn xác, văn phong lễ tân 5 sao, dựa trên quy chế chung cư The Tropical (4 chung cư BS-07, BS-08, BS-09, BS-10) và căn hộ ${currentUser.apartment_code || 'CH-06'} tầng 30. Nêu rõ khung giờ hoặc điều cấm cụ thể nếu có.`,
           aptCode: currentUser.apartment_code || 'CH-06',
-          userName: currentUser.full_name || (currentUser as any)?.fullname || 'Cư Dân'
+          userName: currentUser.full_name || (currentUser as any)?.fullname || 'Cư Dân',
+          language: isEn ? 'en' : 'vi',
         })
       });
       const data = await res.json();
       if (data.reply) {
         setAiAnswer(data.reply);
       } else {
-        setAiAnswer('Dạ hiện tại hệ thống kết nối AI đang bận. Quý cư dân có thể tra cứu nhanh các thẻ bên dưới hoặc gọi hotline Ban Quản Lý 1900 8899 ạ!');
+        setAiAnswer(isEn ? 'The AI system is currently busy. Please check the regulation cards below or call Management Hotline 1900 8899.' : 'Dạ hiện tại hệ thống kết nối AI đang bận. Quý cư dân có thể tra cứu nhanh các thẻ bên dưới hoặc gọi hotline Ban Quản Lý 1900 8899 ạ!');
       }
     } catch (e) {
-      setAiAnswer('Dạ hiện tại hệ thống kết nối AI đang bận. Quý cư dân có thể tra cứu nhanh các thẻ bên dưới hoặc gọi hotline Ban Quản Lý 1900 8899 ạ!');
+      setAiAnswer(isEn ? 'The AI system is currently busy. Please check the regulation cards below or call Management Hotline 1900 8899.' : 'Dạ hiện tại hệ thống kết nối AI đang bận. Quý cư dân có thể tra cứu nhanh các thẻ bên dưới hoặc gọi hotline Ban Quản Lý 1900 8899 ạ!');
     } finally {
       setIsAiLoading(false);
     }
@@ -353,7 +358,7 @@ export default function ResidentHandbook({ currentUser, onNavigate }: ResidentHa
           type="text"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          placeholder="Tìm nhanh nội quy hoặc thủ tục (ví dụ: 'khoan đục', 'thú cưng', 'gửi xe', 'chuyển đồ', 'van nước')..."
+          placeholder={isEn ? "Search rules and procedures (e.g. 'drilling', 'pets', 'parking', 'moving', 'water valve')..." : "Tìm nhanh nội quy hoặc thủ tục (ví dụ: 'khoan đục', 'thú cưng', 'gửi xe', 'chuyển đồ', 'van nước')..."}
           className="w-full pl-10 pr-4 py-3 bg-[#121820] border border-[#2A374A] focus:border-[#C5A880] text-white text-xs sm:text-sm placeholder-gray-500 focus:outline-none transition-colors shadow-inner"
         />
         {searchQuery && (
@@ -362,7 +367,7 @@ export default function ResidentHandbook({ currentUser, onNavigate }: ResidentHa
             onClick={() => setSearchQuery('')}
             className="absolute inset-y-0 right-0 pr-3 flex items-center text-xs text-gray-400 hover:text-white"
           >
-            Xóa tìm kiếm
+            {isEn ? 'Clear search' : 'Xóa tìm kiếm'}
           </button>
         )}
       </div>
@@ -508,10 +513,10 @@ export default function ResidentHandbook({ currentUser, onNavigate }: ResidentHa
             <Bot className="w-5 h-5 text-[#C5A880]" />
             <div>
               <h3 className="text-sm font-bold text-white uppercase tracking-wider">
-                Skyline AI Concierge • Giải Đáp Nội Quy & Sổ Tay Cư Dân
+                {isEn ? 'Skyline AI Concierge • Regulations & Resident Handbook' : 'Skyline AI Concierge • Giải Đáp Nội Quy & Sổ Tay Cư Dân'}
               </h3>
               <p className="text-[11px] text-gray-400">
-                Gõ câu hỏi bất kỳ, Skyline AI Concierge sẽ trích dẫn điều khoản chính xác theo quy chuẩn chung cư The Tropical.
+                {isEn ? 'Type any inquiry, Skyline AI Concierge will cite exact condominium clauses for The Tropical.' : 'Gõ câu hỏi bất kỳ, Skyline AI Concierge sẽ trích dẫn điều khoản chính xác theo quy chuẩn chung cư The Tropical.'}
               </p>
             </div>
           </div>
@@ -519,13 +524,18 @@ export default function ResidentHandbook({ currentUser, onNavigate }: ResidentHa
 
         {/* Các câu hỏi gợi ý nhanh 1-chạm */}
         <div className="flex flex-wrap items-center gap-2">
-          <span className="text-[10px] text-gray-400 font-mono">Gợi ý câu hỏi:</span>
-          {[
+          <span className="text-[10px] text-gray-400 font-mono">{isEn ? 'Suggested questions:' : 'Gợi ý câu hỏi:'}</span>
+          {(isEn ? [
+            'Is wall drilling allowed on Saturday?',
+            'Parking fees for cars in B1 BS-07 tower?',
+            'Which elevator can pets use?',
+            'Where is main water shutoff valve in unit?'
+          ] : [
             'Hôm nay thứ 7 có được khoan tường không?',
             'Biểu phí gửi xe ô tô hầm B1 chung cư BS-07?',
             'Thú cưng đi thang máy nào?',
             'Vị trí van khóa nước căn CH-06 ở đâu?'
-          ].map((promptText, pIdx) => (
+          ]).map((promptText, pIdx) => (
             <button
               key={pIdx}
               type="button"
@@ -547,7 +557,7 @@ export default function ResidentHandbook({ currentUser, onNavigate }: ResidentHa
             value={aiQuestion}
             onChange={(e) => setAiQuestion(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && handleAskAi()}
-            placeholder="Hỏi bất kỳ quy định nào của chung cư (ví dụ: 'Giờ mở cửa hồ bơi', 'Quy định phơi đồ ban công')..."
+            placeholder={isEn ? "Ask any condominium regulation (e.g. 'Pool opening hours', 'Balcony drying rules')..." : "Hỏi bất kỳ quy định nào của chung cư (ví dụ: 'Giờ mở cửa hồ bơi', 'Quy định phơi đồ ban công')..."}
             className="flex-1 px-3.5 py-2.5 bg-[#0D1117] border border-[#2A374A] focus:border-[#C5A880] text-white text-xs placeholder-gray-500 focus:outline-none"
           />
           <button
@@ -559,12 +569,12 @@ export default function ResidentHandbook({ currentUser, onNavigate }: ResidentHa
             {isAiLoading ? (
               <>
                 <Sparkles className="w-3.5 h-3.5 animate-spin" />
-                <span>Đang tra cứu...</span>
+                <span>{isEn ? 'Searching...' : 'Đang tra cứu...'}</span>
               </>
             ) : (
               <>
                 <Bot className="w-3.5 h-3.5" />
-                <span>Hỏi AI</span>
+                <span>{isEn ? 'Ask AI' : 'Hỏi AI'}</span>
               </>
             )}
           </button>

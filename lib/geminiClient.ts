@@ -112,6 +112,7 @@ export interface ConciergeContext {
   visitors?: any[];
   bills?: any[];
   members?: any[];
+  language?: 'en' | 'vi';
 }
 
 const DEFAULT_BOOKINGS_CH06: ConciergeBookingItem[] = [
@@ -405,6 +406,17 @@ Ví dụ:
 + Nếu vừa trả lời về tiện ích cần đặt trước -> [SUGGESTIONS: Bảng giá phòng xông hơi VIP Tầng 3 | Cách đặt chỗ vườn tiệc BBQ Tầng 25 | Chính sách hoàn tiền khi hủy lịch hẹn]
 + Nếu vừa trả lời về hóa đơn tiền nước -> [SUGGESTIONS: Chi tiết lượng nước dùng các tháng qua | Hướng dẫn quét mã QR thanh toán tiền nước | Đặt thợ kỹ thuật kiểm tra van nước rò rỉ]
 + Nếu vừa trả lời về quy mô tòa nhà -> [SUGGESTIONS: Tầng 1 đến 4 có những tiện ích gì? | Diện tích căn hộ CH-06 là bao nhiêu? | Hồ bơi vô cực nằm ở tầng mấy?]
+${typeof contextOrAptCode === 'object' && contextOrAptCode?.language === 'en' ? `
+================================================================================
+CRITICAL MULTI-LINGUAL DIRECTIVE (ENGLISH MODE ACTIVE):
+- The resident has set their active language to ENGLISH (language='en').
+- You MUST reply ENTIRELY in professional, natural, polite, 5-star English.
+- Do NOT output Vietnamese unless specifically requested by the resident.
+- All numbers, apartment units (CH-06, Tower The Tropical BS-07), fees, rules, and guidance must be in English.
+- The suggestions on the very last line MUST strictly be in English, formatted as:
+  [SUGGESTIONS: English question 1 | English question 2 | English question 3]
+================================================================================
+` : ''}
 `;
 }
 

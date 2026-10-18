@@ -803,13 +803,13 @@ export default function TicketService({ currentUser }: TicketServiceProps) {
               {/* SĐT liên hệ */}
               <div className="space-y-1">
                 <label className="text-[11px] text-gray-300 font-medium flex items-center gap-1">
-                  <Phone className="w-3 h-3 text-[#C5A880]" /> SĐT người ở nhà:
+                  <Phone className="w-3 h-3 text-[#C5A880]" /> {isEn ? 'On-site contact phone:' : 'SĐT người ở nhà:'}
                 </label>
                 <input
                   type="tel"
                   value={contactPhone}
                   onChange={(e) => setContactPhone(e.target.value)}
-                  placeholder="Nhập SĐT tiếp thợ..."
+                  placeholder={isEn ? "Enter contact phone for technician..." : "Nhập SĐT tiếp thợ..."}
                   className="w-full bg-[#161B22] border border-[#2D3748] text-xs text-white p-1.5 focus:outline-none focus:border-[#C5A880]"
                 />
               </div>
@@ -821,14 +821,14 @@ export default function TicketService({ currentUser }: TicketServiceProps) {
             <div className="flex items-center justify-between flex-wrap gap-1">
               <label className="text-xs text-gray-300 font-medium flex items-center gap-1.5">
                 {ticketPurpose === 'FEEDBACK'
-                  ? 'Nội dung góp ý / phản ánh gửi Ban Quản Lý:'
-                  : 'Mô tả hiện tượng hư hỏng sự cố:'}
+                  ? (isEn ? 'Feedback / Report content to Management:' : 'Nội dung góp ý / phản ánh gửi Ban Quản Lý:')
+                  : (isEn ? 'Describe the issue or damage:' : 'Mô tả hiện tượng hư hỏng sự cố:')}
               </label>
 
               {/* Tự động phân loại ngầm của hệ thống */}
               {ticketPurpose === 'REPAIR' && content.trim() && (
                 <span className="text-[10px] text-amber-300/90 font-mono bg-[#161F2B] px-2 py-0.5 border border-amber-500/30">
-                  Hạng mục: <strong>{aiDetectedCat}</strong> • Ưu tiên: <strong>{urgencyLevel === 'HIGH' ? 'Khẩn cấp (< 45p)' : 'Tiêu chuẩn'}</strong>
+                  {isEn ? 'Category: ' : 'Hạng mục: '}<strong>{aiDetectedCat}</strong> • {isEn ? 'Priority: ' : 'Ưu tiên: '}<strong>{urgencyLevel === 'HIGH' ? (isEn ? 'Urgent (< 45m)' : 'Khẩn cấp (< 45p)') : (isEn ? 'Standard' : 'Tiêu chuẩn')}</strong>
                 </span>
               )}
             </div>
@@ -837,8 +837,12 @@ export default function TicketService({ currentUser }: TicketServiceProps) {
               rows={2}
               placeholder={
                 ticketPurpose === 'FEEDBACK'
-                  ? 'VD: Phản ánh vệ sinh khu vực sảnh / hành lang, tiếng ồn giờ nghỉ ngơi, ý kiến xây dựng cảnh quan...'
-                  : 'VD: Vòi nước bồn rửa chén rò rỉ dưới gầm tủ, nhảy aptomat khi bật lò vi sóng...'
+                  ? (isEn
+                      ? 'E.g.: Cleanliness of lobby/corridor, quiet hours noise, landscaping suggestions...'
+                      : 'VD: Phản ánh vệ sinh khu vực sảnh / hành lang, tiếng ồn giờ nghỉ ngơi, ý kiến xây dựng cảnh quan...')
+                  : (isEn
+                      ? 'E.g.: Kitchen sink faucet leaking under cabinet, main breaker tripping when microwave is turned on...'
+                      : 'VD: Vòi nước bồn rửa chén rò rỉ dưới gầm tủ, nhảy aptomat khi bật lò vi sóng...')
               }
               value={content}
               onChange={(e) => handleContentChange(e.target.value)}
