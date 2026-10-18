@@ -136,6 +136,12 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
           setIntro(apiUser.intro || '');
           setLicensePlate(apiUser.license_plate || '');
           setAvatarUrl(apiUser.avatar_url || apiUser.avatar || '');
+          if ((apiUser as any).cccd_front_url) {
+            setCccdImage((apiUser as any).cccd_front_url);
+          }
+          if ((apiUser as any).cccd_back_url) {
+            setCccdBackImage((apiUser as any).cccd_back_url);
+          }
         } else {
           // Fallback to currentUser if offline
           setFullName(currentUser.full_name || '');
@@ -145,6 +151,8 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
           setBirthday(currentUser.dob ? formatToDateInput(currentUser.dob) : '');
           setPob(currentUser.pob || '');
           setAvatarUrl(currentUser.avatar_url || '');
+          if ((currentUser as any).cccd_front_url) setCccdImage((currentUser as any).cccd_front_url);
+          if ((currentUser as any).cccd_back_url) setCccdBackImage((currentUser as any).cccd_back_url);
         }
       } catch (err) {
         console.warn('Failed to fetch live API user info:', err);
@@ -628,7 +636,7 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
       {!isLoadingApi && activeTab === 'INFO' && (
         <form onSubmit={handleSaveInfo} className="p-4 sm:p-8 bg-[#121820] border border-[#222B35] space-y-4 sm:space-y-6 shadow-2xl rounded-none">
           {/* Avatar & Fast Profile Header */}
-          <div className="flex flex-col sm:flex-row items-center gap-6 p-4 bg-[#161D26] border border-[#222B35] rounded-none">
+          <div className="flex flex-row items-center gap-3.5 sm:gap-6 p-3 sm:p-4 bg-[#161D26] border border-[#222B35] rounded-none">
             {/* Clickable Avatar Circle */}
             <div
               onClick={() => setIsAvatarModalOpen(true)}
@@ -638,7 +646,7 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
               <img
                 src={avatarUrl || currentUser.avatar_url || 'https://data.nks.vn/storage/users/default.png'}
                 alt="Avatar"
-                className="w-20 h-20 rounded-full object-cover border-2 border-[#C5A880] group-hover:border-white shadow-lg transition-all group-hover:brightness-90"
+                className="w-14 h-14 sm:w-20 sm:h-20 rounded-full object-cover border-2 border-[#C5A880] group-hover:border-white shadow-lg transition-all group-hover:brightness-90"
               />
               {/* Desktop Hover Overlay */}
               <div
@@ -648,24 +656,25 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
                 Đổi Ảnh
               </div>
               {/* Mobile Persistent Touch Indicator Badge */}
-              <div className="sm:hidden absolute -bottom-1 -right-1 w-6 h-6 bg-[#C5A880] text-[#0D1117] rounded-full flex items-center justify-center shadow-lg border-2 border-[#161D26]">
-                <Camera className="w-3.5 h-3.5 text-[#0D1117]" />
+              <div className="sm:hidden absolute -bottom-0.5 -right-0.5 w-5 h-5 bg-[#C5A880] text-[#0D1117] rounded-full flex items-center justify-center shadow-lg border-2 border-[#161D26]">
+                <Camera className="w-3 h-3 text-[#0D1117]" />
               </div>
             </div>
 
-            <div className="space-y-1 text-center sm:text-left flex-1">
-              <div className="text-white font-bold text-lg flex items-center justify-center sm:justify-start gap-2">
-                <span>{fullName || 'Chưa cập nhật họ tên'}</span>
-                <span className="px-2 py-0.5 text-[10px] bg-[#C5A880] text-[#0D1117] font-bold uppercase rounded-none">
+            <div className="space-y-0.5 sm:space-y-1 text-left flex-1 min-w-0">
+              <div className="text-white font-bold text-sm sm:text-lg flex items-center gap-1.5 sm:gap-2 truncate">
+                <span className="truncate">{fullName || 'Chưa cập nhật họ tên'}</span>
+                <span className="px-1.5 py-0.5 text-[9px] sm:text-[10px] bg-[#C5A880] text-[#0D1117] font-bold uppercase rounded-none shrink-0">
                   {currentUser.role}
                 </span>
               </div>
-              <div className="text-xs text-gray-400 font-mono">
-                Căn hộ: <strong className="text-white">{aptCode}</strong> • SĐT: <strong className="text-gray-300">{phone || 'Chưa có'}</strong> • Biển số: <strong className="text-[#C5A880]">{licensePlate || 'Chưa đăng ký'}</strong>
+              <div className="text-[11px] sm:text-xs text-gray-400 font-mono truncate">
+                Căn <strong className="text-white">{aptCode}</strong> • SĐT: <strong className="text-gray-300">{phone || 'Chưa có'}</strong> • Biển: <strong className="text-[#C5A880]">{licensePlate || 'Chưa có'}</strong>
               </div>
-              <div className="text-[11px] text-[#C5A880]/90 flex items-center justify-center sm:justify-start gap-1 pt-0.5">
-                <Camera className="w-3 h-3 text-[#C5A880]" />
-                <span>Nhấp trực tiếp vào ảnh đại diện để đổi ảnh hoặc chỉnh sửa</span>
+              <div className="text-[10px] text-[#C5A880]/90 flex items-center gap-1 pt-0.5">
+                <Camera className="w-3 h-3 text-[#C5A880] shrink-0" />
+                <span className="hidden sm:inline">Chạm ảnh để đổi ảnh đại diện cá nhân • Mở cửa sảnh dùng FaceID ở Tab 2</span>
+                <span className="sm:hidden truncate">Chạm ảnh để đổi avatar cá nhân</span>
               </div>
             </div>
           </div>
@@ -1003,7 +1012,7 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
                 <button
                   type="button"
                   onClick={() => setIsOcrModalOpen(true)}
-                  className="w-full sm:w-auto h-9 sm:h-8 px-3.5 bg-[#1E2631] hover:bg-[#C5A880] hover:text-[#0D1117] border border-[#C5A880] text-[#C5A880] text-xs font-bold uppercase tracking-wider rounded-none flex items-center justify-center gap-1.5 transition-all shadow cursor-pointer"
+                  className="flex-1 sm:flex-initial h-8 px-3 bg-[#1E2631] hover:bg-[#C5A880] hover:text-[#0D1117] border border-[#C5A880] text-[#C5A880] text-[11px] sm:text-xs font-bold uppercase tracking-wider rounded-none flex items-center justify-center gap-1.5 transition-all shadow cursor-pointer"
                 >
                   <Scan className="w-3.5 h-3.5 shrink-0" />
                   <span>{cccdImage ? 'Quét Lại CCCD' : 'Quét Thẻ CCCD'}</span>
@@ -1013,7 +1022,7 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
                   <button
                     type="button"
                     onClick={() => setIsCardViewerOpen(true)}
-                    className="w-full sm:w-auto h-9 sm:h-8 px-3 bg-[#161B22] hover:bg-[#1C2533] border border-gray-700 text-gray-300 hover:text-white text-xs font-medium rounded-none flex items-center justify-center gap-1.5 transition-colors cursor-pointer shrink-0"
+                    className="flex-1 sm:flex-initial h-8 px-3 bg-[#161B22] hover:bg-[#1C2533] border border-gray-700 text-gray-300 hover:text-white text-[11px] sm:text-xs font-medium rounded-none flex items-center justify-center gap-1.5 transition-colors cursor-pointer shrink-0"
                   >
                     <Eye className="w-3.5 h-3.5 text-[#C5A880] shrink-0" />
                     <span>Xem Thẻ</span>
@@ -1022,38 +1031,48 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
               </div>
             </div>
 
-            {/* Thông tin pháp lý trích xuất */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 sm:gap-3 text-xs">
-              <div className="p-2.5 sm:p-3 bg-[#161B22] border border-[#263140] space-y-1">
-                <span className="text-gray-400 block text-[11px]">Số CCCD (12 số):</span>
+            {/* Thông tin pháp lý trích xuất chuẩn API */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-2.5 text-xs">
+              <div className="p-2 sm:p-2.5 bg-[#161B22] border border-[#263140] space-y-1">
+                <span className="text-gray-400 block text-[10px] sm:text-[11px] font-semibold">1. Số CCCD (12 số):</span>
                 <input
                   type="text"
                   value={idCardNumber}
                   onChange={(e) => setIdCardNumber(e.target.value)}
-                  placeholder="Chưa quét số CCCD"
-                  className="w-full bg-transparent text-emerald-300 font-mono font-bold focus:outline-none"
+                  placeholder="Chưa quét CCCD"
+                  className="w-full bg-transparent text-emerald-300 font-mono font-bold focus:outline-none text-xs sm:text-sm"
                 />
               </div>
 
-              <div className="p-2.5 sm:p-3 bg-[#161B22] border border-[#263140] space-y-1">
-                <span className="text-gray-400 block text-[11px]">Nơi Cấp & Ngày Cấp:</span>
+              <div className="p-2 sm:p-2.5 bg-[#161B22] border border-[#263140] space-y-1">
+                <span className="text-gray-400 block text-[10px] sm:text-[11px] font-semibold">2. Ngày Cấp (API):</span>
+                <input
+                  type="date"
+                  value={formatToApiDate(idDate)}
+                  onChange={(e) => setIdDate(e.target.value)}
+                  className="w-full bg-transparent text-gray-200 font-mono focus:outline-none text-xs"
+                />
+              </div>
+
+              <div className="p-2 sm:p-2.5 bg-[#161B22] border border-[#263140] space-y-1">
+                <span className="text-gray-400 block text-[10px] sm:text-[11px] font-semibold">3. Nơi Cấp (API):</span>
                 <input
                   type="text"
-                  value={`${idPlace || ''} ${idDate ? `• ${idDate}` : ''}`.trim() || 'Chưa cập nhật'}
+                  value={idPlace}
                   onChange={(e) => setIdPlace(e.target.value)}
-                  placeholder="Nơi cấp / ngày cấp"
-                  className="w-full bg-transparent text-gray-200 focus:outline-none"
+                  placeholder="Cục CS QLHC về TTXH"
+                  className="w-full bg-transparent text-gray-200 focus:outline-none text-xs truncate"
                 />
               </div>
 
-              <div className="p-2.5 sm:p-3 bg-[#161B22] border border-[#263140] space-y-1">
-                <span className="text-gray-400 block text-[11px]">Quê Quán / Nơi Sinh:</span>
+              <div className="p-2 sm:p-2.5 bg-[#161B22] border border-[#263140] space-y-1">
+                <span className="text-gray-400 block text-[10px] sm:text-[11px] font-semibold">4. Quê Quán (API):</span>
                 <input
                   type="text"
-                  value={pob || 'Chưa cập nhật'}
+                  value={pob}
                   onChange={(e) => setPob(e.target.value)}
                   placeholder="Quê quán"
-                  className="w-full bg-transparent text-gray-200 focus:outline-none"
+                  className="w-full bg-transparent text-gray-200 focus:outline-none text-xs truncate"
                 />
               </div>
             </div>
@@ -1108,20 +1127,23 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
           {/* e-KYC Visual Matcher & Smart Pass Cards */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
             {/* Biometric FaceID Bank-Grade 4-Step Card */}
-            <div className="p-4 sm:p-5 bg-[#121820] border border-[#222B35] space-y-3 sm:space-y-4 rounded-none flex flex-col justify-between">
+            <div className="p-3.5 sm:p-5 bg-[#121820] border border-[#222B35] space-y-2.5 sm:space-y-4 rounded-none flex flex-col justify-between">
               <div>
-                <div className="flex items-center justify-between border-b border-[#222B35] pb-2 mb-3 sm:mb-4">
-                  <span className="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-2">
-                    <ScanFace className="w-4 h-4 text-[#C5A880]" /> Sinh Trắc Học FaceID (4 Bước)
+                <div className="flex items-center justify-between border-b border-[#222B35] pb-2 mb-2 sm:mb-4">
+                  <span className="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-1.5 sm:gap-2">
+                    <ScanFace className="w-4 h-4 text-[#C5A880] shrink-0" /> <span className="truncate">Sinh Trắc FaceID (4 Bước)</span>
                   </span>
                   <button
                     type="button"
                     onClick={() => setIsBankEnrollOpen(true)}
-                    className="h-8 sm:h-7 px-3 bg-[#C5A880] hover:bg-white text-[#0D1117] text-xs font-bold uppercase tracking-wider rounded-none flex items-center gap-1.5 transition-all shadow"
+                    className="h-8 sm:h-7 px-2.5 sm:px-3 bg-[#C5A880] hover:bg-white text-[#0D1117] text-[11px] sm:text-xs font-bold uppercase tracking-wider rounded-none flex items-center gap-1.5 transition-all shadow shrink-0"
                   >
                     <Camera className="w-3.5 h-3.5" />
                     <span>{enrolledFaceProfile ? 'Quét Lại' : 'Quét FaceID'}</span>
                   </button>
+                </div>
+                <div className="text-[10px] text-[#C5A880]/80 font-mono mb-2 hidden sm:block">
+                  ✦ Bộ 4 vector sinh trắc học mở cổng tòa nhà • Độc lập hoàn toàn với ảnh đại diện (avatar)
                 </div>
 
                 {enrolledFaceProfile ? (

@@ -93,12 +93,10 @@ export default function Topbar({
 
     window.addEventListener('skyline_avatar_updated', handleAvatarUpdate);
     window.addEventListener('skyline_user_updated', handleAvatarUpdate);
-    window.addEventListener('skyline_faceid_enrolled', handleAvatarUpdate);
 
     return () => {
       window.removeEventListener('skyline_avatar_updated', handleAvatarUpdate);
       window.removeEventListener('skyline_user_updated', handleAvatarUpdate);
-      window.removeEventListener('skyline_faceid_enrolled', handleAvatarUpdate);
     };
   }, [currentUser]);
 

@@ -1363,11 +1363,11 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
                 </div>
               </div>
 
-              {/* SECTION 2: ẢNH CHÂN DUNG FACEID & CCCD 2 MẶT */}
+              {/* SECTION 2: ẢNH ĐẠI DIỆN HỒ SƠ & CCCD 2 MẶT */}
               <div className="space-y-4 p-4 bg-[#121820] border border-[#222B35] rounded-none">
                 <div className="text-[11px] font-bold uppercase tracking-wider text-[#C5A880] flex items-center justify-between border-b border-[#222B35] pb-2.5">
                   <span className="flex items-center gap-2">
-                    <ScanFace className="w-4 h-4" /> 2. Ảnh Chân Dung FaceID & CCCD 2 Mặt Gửi BQL
+                    <User className="w-4 h-4" /> 2. Ảnh Đại Diện (Avatar) & CCCD 2 Mặt Gửi BQL
                   </span>
                   <span className="text-[10px] text-emerald-400 font-mono">
                     Độ khớp AI: 98.6% (Đạt)
@@ -1375,15 +1375,15 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  {/* Photo 1: Chân Dung FaceID */}
-                  <div className="p-3 bg-[#161D26] border border-[#2D3748] rounded-none space-y-2.5 flex flex-col justify-between">
+                  {/* Photo 1: Ảnh Đại Diện Hồ Sơ */}
+                  <div className="p-3 bg-[#161B22] border border-[#2D3748] rounded-none space-y-2.5 flex flex-col justify-between">
                     <div>
                       <div className="font-bold text-white flex items-center justify-between">
-                        <span>Chân Dung FaceID</span>
-                        <span className="text-[10px] text-[#C5A880]">Khuôn mặt</span>
+                        <span>Ảnh Đại Diện (Avatar)</span>
+                        <span className="text-[10px] text-[#C5A880]">Hồ sơ cá nhân</span>
                       </div>
                       <p className="text-[10.5px] text-gray-400 mt-0.5">
-                        Chụp thẳng mặt, rõ nét, không đeo kính râm hay khẩu trang.
+                        Ảnh chân dung hiển thị trang cá nhân. Mở cửa dùng tính năng Quét FaceID 4 mẫu độc lập.
                       </p>
                     </div>
 
@@ -1400,18 +1400,18 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
                         <>
                           <img
                             src={ekycAvatarUrl || 'https://data.nks.vn/storage/users/default.png'}
-                            alt="FaceID Avatar"
+                            alt="Resident Avatar"
                             onError={(e) => {
                               e.currentTarget.src = 'https://data.nks.vn/storage/users/default.png';
                             }}
                             className="w-full h-full object-cover group-hover:scale-105 transition-transform"
                           />
                           <div className="absolute top-2 left-2 px-2 py-0.5 bg-black/75 backdrop-blur rounded-none text-[9.5px] font-mono text-[#C5A880] border border-[#C5A880]/30">
-                            ẢNH CHÂN DUNG • FACEID
+                            ẢNH ĐẠI DIỆN • AVATAR
                           </div>
                           {ekycAvatarUrl && !ekycAvatarUrl.includes('default.png') && (
                             <div className="absolute bottom-2 right-2 px-2 py-0.5 bg-emerald-950/90 text-emerald-300 border border-emerald-500 text-[9px] font-mono font-bold rounded-none">
-                              ✓ Đã Có Chân Dung
+                              ✓ Đã Có Avatar
                             </div>
                           )}
                         </>

@@ -704,9 +704,9 @@ export default function EkycApproval() {
                       </div>
                       
                       <div className="w-36 h-44 sm:w-40 sm:h-48 mx-auto rounded-none overflow-hidden border-2 border-[#C5A880] shadow-lg bg-[#0A0E14] relative group cursor-pointer"
-                           onClick={() => setZoomImage({ url: inspectingRequest.avatarUrl || samples?.front || '', title: `${t('Chân dung FaceID', 'FaceID Portrait')} - ${inspectingRequest.fullName}` })}>
+                           onClick={() => setZoomImage({ url: samples?.front || inspectingRequest.avatarUrl || '', title: `${t('Chân dung FaceID (Mặt trước)', 'FaceID Front Portrait')} - ${inspectingRequest.fullName}` })}>
                         <img
-                          src={inspectingRequest.avatarUrl || samples?.front || 'https://data.nks.vn/storage/users/default.png'}
+                          src={samples?.front || inspectingRequest.avatarUrl || 'https://data.nks.vn/storage/users/default.png'}
                           alt="FaceID Portrait"
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform"
                         />
@@ -714,7 +714,7 @@ export default function EkycApproval() {
                           <ZoomIn className="w-6 h-6 text-white" />
                         </div>
                         <div className="absolute bottom-2 inset-x-2 bg-black/70 backdrop-blur text-[9px] font-mono text-[#C5A880] py-0.5 rounded-none">
-                          {t('CHÂN DUNG CHÍNH DIỆN', 'FRONT FACIAL PORTRAIT')}
+                          {samples?.front ? t('MẪU FACEID CHÍNH DIỆN', 'FRONT BIOMETRIC FACEID') : t('ẢNH ĐẠI DIỆN HỒ SƠ', 'PROFILE AVATAR')}
                         </div>
                       </div>
 
@@ -854,7 +854,8 @@ export default function EkycApproval() {
 
             {/* AI Biometric & CCCD Card Health Analysis Badge */}
             {(() => {
-              const bio = verifyFaceWithCccd(inspectingRequest.avatarUrl, inspectingRequest.idCardFrontUrl);
+              const faceSource = inspectingRequest.faceSamples?.front || inspectingRequest.avatarUrl;
+              const bio = verifyFaceWithCccd(faceSource, inspectingRequest.idCardFrontUrl);
               const card = validateCccdCard(inspectingRequest.idCardFrontUrl, 'Mặt trước CCCD');
               const displayScore = inspectingRequest.faceScore || bio.similarity;
               const isEligible = displayScore >= 85.0 && card.isValid;

@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
+import { getUserStore } from '@/lib/userStore';
 
 function formatToDateInput(d?: string): string {
   if (!d) return '';
@@ -65,30 +66,36 @@ export async function POST(req: Request) {
           ? 'TENANT'
           : 'OWNER';
 
+        const userKey = apiUser.phone || apiUser.email || String(apiUser.id) || '';
+        const storedUser = getUserStore(userKey);
+
         const formatted = {
-          id: String(apiUser.id || 'usr-120'),
-          username: apiUser.email || '',
-          firstname: apiUser.firstname || '',
-          lastname: apiUser.lastname || '',
-          fullname: apiUser.name || `${apiUser.lastname || ''} ${apiUser.firstname || ''}`.trim() || 'Cư Dân SKYLINE',
-          full_name: apiUser.name || `${apiUser.lastname || ''} ${apiUser.firstname || ''}`.trim() || 'Cư Dân SKYLINE',
-          email: apiUser.email || '',
-          phone: apiUser.phone || '',
+          id: String(apiUser.id || storedUser?.id || 'usr-120'),
+          username: apiUser.email || storedUser?.username || '',
+          firstname: apiUser.firstname || storedUser?.firstname || '',
+          lastname: apiUser.lastname || storedUser?.lastname || '',
+          fullname: apiUser.name || `${apiUser.lastname || ''} ${apiUser.firstname || ''}`.trim() || storedUser?.fullname || 'Cư Dân SKYLINE',
+          full_name: apiUser.name || `${apiUser.lastname || ''} ${apiUser.firstname || ''}`.trim() || storedUser?.full_name || 'Cư Dân SKYLINE',
+          email: apiUser.email || storedUser?.email || '',
+          phone: apiUser.phone || storedUser?.phone || '',
           role: role,
           apartment_code: (role === 'ADMIN' ? 'BQL_OFFICE' : role === 'TECHNICIAN' ? 'TECH_ROOM' : 'CH-06'),
           relationship: (role === 'ADMIN' || role === 'TECHNICIAN') ? 'Staff' : role === 'OWNER' ? 'Owner' : 'Family',
-          avatar_url: apiUser.avatar ? (apiUser.avatar.startsWith('http') ? apiUser.avatar : `https://data.nks.vn/${apiUser.avatar}`) : undefined,
-          avatar: apiUser.avatar ? (apiUser.avatar.startsWith('http') ? apiUser.avatar : `https://data.nks.vn/${apiUser.avatar}`) : undefined,
-          id_number: apiUser.id_number || '',
-          id_card_no: apiUser.id_number || '',
-          id_card_number: apiUser.id_number || '',
-          id_date: formatToDateInput(apiUser.id_date || apiUser.formatedCccdDate || ''),
-          id_place: apiUser.id_place || '',
-          province: apiUser.province || 'Thành phố Hồ Chí Minh',
-          gender: apiUser.gender ?? 1,
-          dob: formatToDateInput(apiUser.dob || apiUser.formatedDob || ''),
-          pob: apiUser.pob || '',
-          intro: apiUser.intro || '',
+          avatar_url: apiUser.avatar ? (apiUser.avatar.startsWith('http') ? apiUser.avatar : `https://data.nks.vn/${apiUser.avatar}`) : storedUser?.avatar_url,
+          avatar: apiUser.avatar ? (apiUser.avatar.startsWith('http') ? apiUser.avatar : `https://data.nks.vn/${apiUser.avatar}`) : storedUser?.avatar_url,
+          id_number: apiUser.id_number || storedUser?.id_number || '',
+          id_card_no: apiUser.id_number || storedUser?.id_card_no || '',
+          id_card_number: apiUser.id_number || storedUser?.id_card_no || '',
+          id_date: formatToDateInput(apiUser.id_date || apiUser.formatedCccdDate || storedUser?.id_date || ''),
+          id_place: apiUser.id_place || storedUser?.id_place || '',
+          province: apiUser.province || storedUser?.province || 'Thành phố Hồ Chí Minh',
+          gender: apiUser.gender ?? storedUser?.gender ?? 1,
+          dob: formatToDateInput(apiUser.dob || apiUser.formatedDob || storedUser?.dob || ''),
+          pob: apiUser.pob || storedUser?.pob || '',
+          intro: apiUser.intro || storedUser?.intro || '',
+          license_plate: apiUser.license_plate || storedUser?.license_plate || '',
+          cccd_front_url: (apiUser as any).cccd_front_url || storedUser?.cccd_front_url || '',
+          cccd_back_url: (apiUser as any).cccd_back_url || storedUser?.cccd_back_url || '',
         };
         return NextResponse.json({ success: true, user: formatted });
       }
@@ -136,30 +143,36 @@ export async function GET() {
           ? 'TENANT'
           : 'OWNER';
 
+        const userKey = apiUser.phone || apiUser.email || String(apiUser.id) || '';
+        const storedUser = getUserStore(userKey);
+
         const formatted = {
-          id: String(apiUser.id || 'usr-120'),
-          username: apiUser.email || '',
-          firstname: apiUser.firstname || '',
-          lastname: apiUser.lastname || '',
-          fullname: apiUser.name || `${apiUser.lastname || ''} ${apiUser.firstname || ''}`.trim() || 'Cư Dân SKYLINE',
-          full_name: apiUser.name || `${apiUser.lastname || ''} ${apiUser.firstname || ''}`.trim() || 'Cư Dân SKYLINE',
-          email: apiUser.email || '',
-          phone: apiUser.phone || '',
+          id: String(apiUser.id || storedUser?.id || 'usr-120'),
+          username: apiUser.email || storedUser?.username || '',
+          firstname: apiUser.firstname || storedUser?.firstname || '',
+          lastname: apiUser.lastname || storedUser?.lastname || '',
+          fullname: apiUser.name || `${apiUser.lastname || ''} ${apiUser.firstname || ''}`.trim() || storedUser?.fullname || 'Cư Dân SKYLINE',
+          full_name: apiUser.name || `${apiUser.lastname || ''} ${apiUser.firstname || ''}`.trim() || storedUser?.full_name || 'Cư Dân SKYLINE',
+          email: apiUser.email || storedUser?.email || '',
+          phone: apiUser.phone || storedUser?.phone || '',
           role: role,
           apartment_code: (role === 'ADMIN' ? 'BQL_OFFICE' : role === 'TECHNICIAN' ? 'TECH_ROOM' : 'CH-06'),
           relationship: (role === 'ADMIN' || role === 'TECHNICIAN') ? 'Staff' : role === 'OWNER' ? 'Owner' : 'Family',
-          avatar_url: apiUser.avatar ? (apiUser.avatar.startsWith('http') ? apiUser.avatar : `https://data.nks.vn/${apiUser.avatar}`) : undefined,
-          avatar: apiUser.avatar ? (apiUser.avatar.startsWith('http') ? apiUser.avatar : `https://data.nks.vn/${apiUser.avatar}`) : undefined,
-          id_number: apiUser.id_number || '',
-          id_card_no: apiUser.id_number || '',
-          id_card_number: apiUser.id_number || '',
-          id_date: formatToDateInput(apiUser.id_date || apiUser.formatedCccdDate || ''),
-          id_place: apiUser.id_place || '',
-          province: apiUser.province || 'Thành phố Hồ Chí Minh',
-          gender: apiUser.gender ?? 1,
-          dob: formatToDateInput(apiUser.dob || apiUser.formatedDob || ''),
-          pob: apiUser.pob || '',
-          intro: apiUser.intro || '',
+          avatar_url: apiUser.avatar ? (apiUser.avatar.startsWith('http') ? apiUser.avatar : `https://data.nks.vn/${apiUser.avatar}`) : storedUser?.avatar_url,
+          avatar: apiUser.avatar ? (apiUser.avatar.startsWith('http') ? apiUser.avatar : `https://data.nks.vn/${apiUser.avatar}`) : storedUser?.avatar_url,
+          id_number: apiUser.id_number || storedUser?.id_number || '',
+          id_card_no: apiUser.id_number || storedUser?.id_card_no || '',
+          id_card_number: apiUser.id_number || storedUser?.id_card_no || '',
+          id_date: formatToDateInput(apiUser.id_date || apiUser.formatedCccdDate || storedUser?.id_date || ''),
+          id_place: apiUser.id_place || storedUser?.id_place || '',
+          province: apiUser.province || storedUser?.province || 'Thành phố Hồ Chí Minh',
+          gender: apiUser.gender ?? storedUser?.gender ?? 1,
+          dob: formatToDateInput(apiUser.dob || apiUser.formatedDob || storedUser?.dob || ''),
+          pob: apiUser.pob || storedUser?.pob || '',
+          intro: apiUser.intro || storedUser?.intro || '',
+          license_plate: apiUser.license_plate || storedUser?.license_plate || '',
+          cccd_front_url: (apiUser as any).cccd_front_url || storedUser?.cccd_front_url || '',
+          cccd_back_url: (apiUser as any).cccd_back_url || storedUser?.cccd_back_url || '',
         };
         return NextResponse.json({ success: true, user: formatted });
       }
