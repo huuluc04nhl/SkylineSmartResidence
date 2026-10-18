@@ -15,7 +15,6 @@ import {
   Smile,
   UserCheck,
   Lock,
-  Upload,
   Sun,
   Moon,
   SunMedium
@@ -29,7 +28,6 @@ import {
   LightingAnalysisResult
 } from '@/lib/biometricFaceEngine';
 import {
-  fileToBase64,
   canvasToBase64,
   normalizeBiometricSamplesToBase64
 } from '@/lib/imageUtils';
@@ -151,7 +149,7 @@ export default function BankFaceEnrollModal({
 
   const currentStep = STEPS[currentStepIndex] || STEPS[0];
 
-  // 1. Initialize Camera Stream with multi-level hardware fallback
+  // 1. Initialize Camera Stream with multi-level hardware fallback (Desktop & Mobile optimized)
   const startCamera = useCallback(async () => {
     setCameraError(null);
 
@@ -166,24 +164,40 @@ export default function BankFaceEnrollModal({
         streamRef.current = null;
       }
 
-      let stream: MediaStream;
-      try {
-        // Thử cấu hình phân giải chuẩn cho camera trước
-        stream = await navigator.mediaDevices.getUserMedia({
+      // Multi-tier constraints: không đặt giới hạn min cố định để tránh OverconstrainedError khi quay dọc trên mobile
+      const constraintsList: MediaStreamConstraints[] = [
+        {
           video: {
-            width: { ideal: 1280, min: 480 },
-            height: { ideal: 720, min: 360 },
             facingMode: 'user',
+            width: { ideal: 1280 },
+            height: { ideal: 720 },
           },
           audio: false,
-        });
-      } catch (firstErr) {
-        console.warn('High-res camera stream failed, falling back to basic camera constraint:', firstErr);
-        // Fallback linh hoạt cho webcam laptop / driver tích hợp
-        stream = await navigator.mediaDevices.getUserMedia({
+        },
+        {
+          video: { facingMode: 'user' },
+          audio: false,
+        },
+        {
           video: true,
           audio: false,
-        });
+        },
+      ];
+
+      let stream: MediaStream | null = null;
+      let lastError: any = null;
+
+      for (const constraints of constraintsList) {
+        try {
+          stream = await navigator.mediaDevices.getUserMedia(constraints);
+          if (stream) break;
+        } catch (e) {
+          lastError = e;
+        }
+      }
+
+      if (!stream) {
+        throw lastError || new Error('Không thể khởi tạo luồng camera.');
       }
 
       streamRef.current = stream;
@@ -199,7 +213,6 @@ export default function BankFaceEnrollModal({
           setIsCameraActive(true);
         }
       } else {
-        // Ngay cả khi ref chưa sẵn sàng, stream đã có sẵn để useEffect gắn
         setIsCameraActive(true);
       }
     } catch (err: any) {
@@ -208,13 +221,13 @@ export default function BankFaceEnrollModal({
       setCameraStream(null);
 
       if (err?.name === 'NotAllowedError' || err?.name === 'PermissionDeniedError') {
-        setCameraError('Quyền truy cập Camera bị từ chối trên trình duyệt. Vui lòng bấm vào biểu tượng ổ khóa cạnh URL để Cấp quyền Camera (Allow) và bấm "Thử Lại".');
+        setCameraError('Quyền truy cập Camera bị từ chối trên trình duyệt. Vui lòng bấm vào biểu tượng ổ khóa cạnh URL hoặc Cài đặt quyền riêng tư để Cho Phép (Allow) Camera và bấm "Thử Lại".');
       } else if (err?.name === 'NotFoundError' || err?.name === 'DevicesNotFoundError') {
-        setCameraError('Không tìm thấy thiết bị webcam trên máy tính của bạn.');
+        setCameraError('Không tìm thấy thiết bị camera trên máy tính / điện thoại của bạn.');
       } else if (err?.name === 'NotReadableError' || err?.name === 'TrackStartError') {
-        setCameraError('Camera đang bị ứng dụng khác (Zoom, Teams, Google Meet...) chiếm dụng. Vui lòng tắt các ứng dụng đó rồi thử lại.');
+        setCameraError('Camera đang bị ứng dụng khác (Zoom, Teams, Zalo...) chiếm dụng. Vui lòng tắt các ứng dụng đó rồi thử lại.');
       } else {
-        setCameraError(err?.message || 'Không thể kích hoạt webcam laptop. Vui lòng thử lại hoặc tải ảnh trực tiếp.');
+        setCameraError(err?.message || 'Không thể kích hoạt camera. Vui lòng cấp quyền camera trong cài đặt trình duyệt.');
       }
     }
   }, []);
@@ -251,7 +264,7 @@ export default function BankFaceEnrollModal({
       // Gọi mở camera với độ trễ nhỏ để DOM modal render hoàn tất
       const timer = setTimeout(() => {
         startCamera();
-      }, 80);
+      }, 100);
       return () => clearTimeout(timer);
     } else {
       stopCamera();
@@ -283,47 +296,13 @@ export default function BankFaceEnrollModal({
     return () => clearInterval(interval);
   }, [isCameraActive, isReviewMode, isOpen]);
 
-  // Xử lý tải ảnh thay thế cho bước hiện tại (chuyển đổi Image -> Base64 theo đặc tả NKS)
-  const handleFileUploadCurrentStep = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    if (!file.type.startsWith('image/')) {
-      setErrorMessage('Vui lòng chọn tệp hình ảnh hợp lệ (JPG, PNG, WebP).');
-      return;
-    }
-
-    try {
-      const base64 = await fileToBase64(file);
-      setIsShutterFlash(true);
-      setTimeout(() => setIsShutterFlash(false), 200);
-
-      const stepKey = currentStep.key;
-      const newSamples = { ...samples };
-
-      if (stepKey === 'FRONT') newSamples.front = base64;
-      if (stepKey === 'LEFT') newSamples.left = base64;
-      if (stepKey === 'RIGHT') newSamples.right = base64;
-      if (stepKey === 'SMILE') newSamples.smile = base64;
-
-      setSamples(newSamples);
-
-      if (currentStepIndex < STEPS.length - 1) {
-        setCurrentStepIndex((prev) => prev + 1);
-      } else {
-        stopCamera();
-        setIsReviewMode(true);
-      }
-    } catch (err: any) {
-      setErrorMessage('Lỗi chuyển đổi hình ảnh sang Base64: ' + (err?.message || ''));
-    }
-    e.target.value = '';
-  };
-
-  // 2. Capture Frame from Video (Image -> Base64 Data URL)
+  // 2. Capture Frame from Video (Live Camera only, strictly prevents uploading fake static photos)
   const captureFrame = useCallback((): string | null => {
     if (!videoRef.current || !canvasRef.current) return null;
     const video = videoRef.current;
+    if (video.readyState < 2 || !video.videoWidth || !video.videoHeight) {
+      return null;
+    }
     const canvas = canvasRef.current;
 
     const width = video.videoWidth || 640;
@@ -347,15 +326,15 @@ export default function BankFaceEnrollModal({
   const handleCaptureCurrentStep = () => {
     if (isProcessing) return;
 
+    const photo = captureFrame();
+    if (!photo) {
+      setErrorMessage('Camera đang khởi động hoặc chưa ổn định khung hình. Vui lòng giữ yên khuôn mặt và bấm chụp lại.');
+      return;
+    }
+
     // Trigger visual shutter flash
     setIsShutterFlash(true);
     setTimeout(() => setIsShutterFlash(false), 200);
-
-    const photo = captureFrame();
-    if (!photo) {
-      setErrorMessage('Không thể chụp hình từ video. Vui lòng kiểm tra lại camera.');
-      return;
-    }
 
     const stepKey = currentStep.key;
     const newSamples = { ...samples };
@@ -649,27 +628,21 @@ export default function BankFaceEnrollModal({
               {!isCameraActive && (
                 <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-4 space-y-3 bg-[#0D1117] text-gray-400 z-10">
                   <Camera className="w-10 h-10 text-[#C5A880] animate-bounce" />
-                  <div className="text-xs max-w-xs leading-relaxed">
-                    {cameraError || t('Đang kết nối camera...')}
+                  <div className="text-xs max-w-xs leading-relaxed text-gray-300">
+                    {cameraError || t('Đang kết nối camera sinh trắc học...')}
                   </div>
                   <div className="flex flex-col gap-2 pt-1 w-full max-w-[200px]">
                     <button
                       type="button"
                       onClick={() => startCamera()}
-                      className="px-3 py-1.5 bg-[#C5A880] hover:bg-white text-[#0D1117] text-xs font-bold uppercase tracking-wider transition-colors shadow"
+                      className="px-3 py-2 bg-[#C5A880] hover:bg-white text-[#0D1117] text-xs font-bold uppercase tracking-wider transition-colors shadow"
                     >
-                      {t('Kết Nối Lại Camera')}
+                      {t('Thử Lại Kết Nối Camera')}
                     </button>
-                    <label className="px-3 py-1.5 bg-[#161B22] hover:bg-[#202936] text-gray-300 hover:text-white border border-[#2D3748] text-[11px] font-semibold text-center cursor-pointer transition-colors">
-                      {t('Tải Ảnh Góc Này')}
-                      <input
-                        type="file"
-                        accept="image/*"
-                        onChange={handleFileUploadCurrentStep}
-                        className="hidden"
-                      />
-                    </label>
                   </div>
+                  <p className="text-[10px] text-gray-500 max-w-xs leading-relaxed">
+                    * Tiêu chuẩn an ninh FaceID: Chỉ chấp nhận quét khuôn mặt trực tiếp qua camera thời gian thực, không hỗ trợ tải ảnh tĩnh.
+                  </p>
                 </div>
               )}
 
@@ -720,7 +693,6 @@ export default function BankFaceEnrollModal({
                     </div>
                   )}
 
-                  {/* Countdown Big Display */}
                   {countdown !== null && (
                     <div className="text-6xl font-extrabold text-[#C5A880] drop-shadow-[0_0_15px_rgba(0,0,0,0.9)] animate-ping">
                       {countdown}
@@ -782,25 +754,15 @@ export default function BankFaceEnrollModal({
               </button>
             </div>
 
-            {/* Helper links */}
-            <div className="flex items-center justify-between w-full max-w-md text-[11px] text-gray-400 px-1">
+            {/* Helper link */}
+            <div className="flex items-center justify-center w-full max-w-md text-[11px] text-gray-400 px-1">
               <button
                 type="button"
                 onClick={() => startCamera()}
-                className="hover:text-[#C5A880] flex items-center gap-1 transition-colors"
+                className="hover:text-[#C5A880] flex items-center gap-1.5 transition-colors py-1"
               >
-                <RefreshCw className="w-3 h-3" /> {t('Kết nối lại camera')}
+                <RefreshCw className="w-3.5 h-3.5" /> {t('Khởi động lại camera')}
               </button>
-
-              <label className="hover:text-[#C5A880] flex items-center gap-1 cursor-pointer transition-colors">
-                <Upload className="w-3 h-3" /> {t('Tải ảnh góc này từ máy')}
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleFileUploadCurrentStep}
-                  className="hidden"
-                />
-              </label>
             </div>
 
             {/* --------------------------------------------------------- */}

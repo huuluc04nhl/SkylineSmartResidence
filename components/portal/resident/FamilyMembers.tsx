@@ -390,15 +390,13 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
     setEkycIdPlace(existing?.idPlace || 'Cục Cảnh sát QLHC về TTXH');
     setEkycLicensePlate(member.licensePlate || '');
 
-    // Ưu tiên hiển thị chân dung chuẩn xác nhất của người nhà
+    // Ưu tiên hiển thị chân dung chuẩn của người nhà (tuyệt đối không lấy ảnh mẫu FaceID ghi đè chân dung)
     let resolvedAvatar = '';
-    if (existing?.avatarUrl && !existing.avatarUrl.includes('default.png')) {
+    if (existing?.avatarUrl && !existing.avatarUrl.includes('default.png') && !existing.avatarUrl.startsWith('data:image/')) {
       resolvedAvatar = existing.avatarUrl;
-    } else if (profile?.samples?.front) {
-      resolvedAvatar = profile.samples.front;
-    } else if (member.avatarUrl && !member.avatarUrl.includes('default.png')) {
+    } else if (member.avatarUrl && !member.avatarUrl.includes('default.png') && !member.avatarUrl.startsWith('data:image/')) {
       resolvedAvatar = member.avatarUrl.replace('data.nks.vn//', 'data.nks.vn/');
-    } else if (profile?.avatarUrl && !profile.avatarUrl.includes('default.png')) {
+    } else if (profile?.avatarUrl && !profile.avatarUrl.includes('default.png') && !profile.avatarUrl.startsWith('data:image/')) {
       resolvedAvatar = profile.avatarUrl;
     } else {
       resolvedAvatar = 'https://data.nks.vn/storage/users/default.png';
@@ -984,10 +982,11 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
               const ekycStatus = getMemberStatus(m);
 
               const avatarSrc =
-                ekyc?.avatarUrl ||
-                (m.avatarUrl
-                  ? m.avatarUrl.replace('data.nks.vn//', 'data.nks.vn/')
-                  : 'https://data.nks.vn/storage/users/default.png');
+                (ekyc?.avatarUrl && !ekyc.avatarUrl.startsWith('data:image/'))
+                  ? ekyc.avatarUrl
+                  : (m.avatarUrl && !m.avatarUrl.startsWith('data:image/'))
+                    ? m.avatarUrl.replace('data.nks.vn//', 'data.nks.vn/')
+                    : 'https://data.nks.vn/storage/users/default.png';
 
               return (
                 <div
@@ -1462,23 +1461,6 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
                               onChange={(e) => handleFileUpload(e, setEkycAvatarUrl)}
                             />
                           </div>
-
-                          {/* Quick use FaceID sample button if available */}
-                          {(() => {
-                            const p = getEnrolledFaceProfile(ekycTargetMember?.phone || ekycTargetMember?.id || ekycTargetMember?.username || '');
-                            if (p?.samples?.front && ekycAvatarUrl !== p.samples.front) {
-                              return (
-                                <button
-                                  type="button"
-                                  onClick={() => setEkycAvatarUrl(p.samples.front)}
-                                  className="w-full py-1.5 bg-[#121820] hover:bg-[#1E2631] border border-cyan-500/70 text-cyan-300 text-[10.5px] font-semibold flex items-center justify-center gap-1 cursor-pointer transition-colors"
-                                >
-                                  <Sparkles className="w-3 h-3 text-cyan-400" /> Dùng Mẫu Ảnh FaceID Đã Quét
-                                </button>
-                              );
-                            }
-                            return null;
-                          })()}
                         </div>
                       )}
                     </div>
@@ -2094,6 +2076,17 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
           isFamilyMemberSelfEnroll={!isOwner}
           submittedByRole={currentUser.role}
           onEnrollSuccess={() => {
+            setMembers((prev) =>
+              prev.map((m) => {
+                if (m.id === bankEnrollTarget.id || m.phone === bankEnrollTarget.phone) {
+                  return {
+                    ...m,
+                    faceStatus: !isOwner ? 'Chờ Chủ Hộ Xác Nhận' : 'Đang Chờ BQL Phê Duyệt',
+                  };
+                }
+                return m;
+              })
+            );
             fetchMembers();
             setActionSuccess(
               !isOwner

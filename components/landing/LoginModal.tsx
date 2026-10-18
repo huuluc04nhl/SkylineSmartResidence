@@ -260,23 +260,29 @@ export default function LoginModal({ isOpen, onClose, defaultAccount = '' }: Log
         streamRef.current = null;
       }
 
-      const isMob = deviceType === 'MOBILE';
       let stream: MediaStream;
       try {
         stream = await navigator.mediaDevices.getUserMedia({
           video: { 
-            width: { ideal: isMob ? 480 : 1280, min: 480 }, 
-            height: { ideal: isMob ? 640 : 720, min: 360 }, 
-            facingMode: 'user' 
+            facingMode: 'user',
+            width: { ideal: 1280 }, 
+            height: { ideal: 720 }, 
           },
           audio: false,
         });
       } catch (firstErr) {
         console.warn('High-res camera constraints failed, falling back to basic camera:', firstErr);
-        stream = await navigator.mediaDevices.getUserMedia({
-          video: true,
-          audio: false,
-        });
+        try {
+          stream = await navigator.mediaDevices.getUserMedia({
+            video: { facingMode: 'user' },
+            audio: false,
+          });
+        } catch {
+          stream = await navigator.mediaDevices.getUserMedia({
+            video: true,
+            audio: false,
+          });
+        }
       }
 
       streamRef.current = stream;
@@ -856,50 +862,16 @@ export default function LoginModal({ isOpen, onClose, defaultAccount = '' }: Log
               className="hidden"
             />
 
-            {/* Mode Toggle: Camera Laptop/Mobile vs Tải Ảnh */}
-            <div className="grid grid-cols-2 gap-1.5 p-1 bg-[#121820] border border-[#222B35] rounded-none text-xs select-none">
-              <button
-                type="button"
-                onClick={() => {
-                  setFaceInputMode('CAMERA');
-                  setUploadedFaceImage(null);
-                  setFaceScanStatus('IDLE');
-                  setErrorMessage(null);
-                  startCamera();
-                }}
-                className={`py-2 px-3 rounded-none font-semibold transition-all flex items-center justify-center gap-2 ${
-                  faceInputMode === 'CAMERA'
-                    ? 'bg-[#C5A880] text-[#0D1117] shadow'
-                    : 'text-gray-400 hover:text-white hover:bg-[#1A2330]'
-                }`}
-              >
-                {deviceType === 'MOBILE' ? <Smartphone className="w-3.5 h-3.5" /> : <Camera className="w-3.5 h-3.5" />}
-                <span>{t('Camera')} {deviceType === 'MOBILE' ? t('Điện thoại') : t('Laptop')}</span>
-                {isCameraActive && (
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                )}
-              </button>
-
-              <button
-                type="button"
-                onClick={() => {
-                  setFaceInputMode('UPLOAD');
-                  stopCamera();
-                  setFaceScanStatus('IDLE');
-                  setErrorMessage(null);
-                  if (!uploadedFaceImage) {
-                    fileUploadInputRef.current?.click();
-                  }
-                }}
-                className={`py-2 px-3 rounded-none font-semibold transition-all flex items-center justify-center gap-2 ${
-                  faceInputMode === 'UPLOAD'
-                    ? 'bg-[#C5A880] text-[#0D1117] shadow'
-                    : 'text-gray-400 hover:text-white hover:bg-[#1A2330]'
-                }`}
-              >
-                <Upload className="w-3.5 h-3.5" />
-                <span>{t('Tải Ảnh Chân Dung')}</span>
-              </button>
+            {/* Mode Indicator: Sinh Trắc Học Trực Tiếp Qua Camera (Bảo Mật Cao) */}
+            <div className="p-2.5 bg-[#121820] border border-[#222B35] rounded-none text-xs flex items-center justify-between select-none">
+              <div className="flex items-center gap-2 text-[#C5A880] font-semibold text-[11px]">
+                {deviceType === 'MOBILE' ? <Smartphone className="w-3.5 h-3.5 text-[#C5A880]" /> : <Camera className="w-3.5 h-3.5 text-[#C5A880]" />}
+                <span>{t('Xác Thực Sinh Trắc Học Trực Tiếp')}</span>
+              </div>
+              <div className="flex items-center gap-1.5 text-[10px] font-mono text-emerald-400">
+                <span className={`w-2 h-2 rounded-none ${isCameraActive ? 'bg-emerald-400 animate-pulse' : 'bg-amber-400'}`} />
+                <span>{isCameraActive ? t('Camera Sẵn Sàng') : t('Đang Kết Nối')}</span>
+              </div>
             </div>
 
             {/* Central Biometric Viewport - Always Keeps Video Mounted to Avoid Black Screen */}
