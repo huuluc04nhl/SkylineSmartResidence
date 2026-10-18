@@ -1567,8 +1567,8 @@ export default function FinanceBilling({ currentUser }: FinanceBillingProps) {
       {/* MODAL THANH TOÁN CHÍNH: VNPAY & MOMO GATEWAY                              */}
       {/* ========================================================================= */}
       {showPaymentModal && currentBill && (
-        <div className="fixed inset-0 bg-black/85 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-[#121820] border border-[#C5A880] max-w-lg w-full p-6 space-y-4 shadow-2xl animate-fadeIn text-white">
+        <div className="fixed inset-0 bg-black/85 backdrop-blur-sm z-50 flex items-center justify-center p-3 sm:p-4">
+          <div className="bg-[#121820] border border-[#C5A880] max-w-lg w-full max-h-[90dvh] overflow-y-auto p-4 sm:p-6 space-y-4 shadow-2xl animate-fadeIn text-white rounded-none">
             <div className="flex items-center justify-between border-b border-[#222B35] pb-3">
               <div className="flex items-center gap-2">
                 <CreditCard className="w-5 h-5 text-[#C5A880]" />

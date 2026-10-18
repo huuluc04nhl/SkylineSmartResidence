@@ -480,7 +480,7 @@ Quý cư dân có thể chọn câu hỏi gợi ý bên dưới hoặc nhập c�
       {/* 1. FLOATING LUXURY TRIGGER BUTTON (When Closed)               */}
       {/* ------------------------------------------------------------- */}
       {!isOpen && (
-        <div className="pointer-events-auto fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50 flex items-center gap-2.5 transition-all duration-300">
+        <div className="pointer-events-auto fixed bottom-20 right-4 sm:bottom-6 sm:right-6 z-50 flex items-center gap-2.5 transition-all duration-300">
           {/* Ambient Tooltip Pill (Desktop/Tablet) with Frosted Glass Blur & Gentle Translucency */}
           <button
             type="button"
@@ -517,7 +517,7 @@ Quý cư dân có thể chọn câu hỏi gợi ý bên dưới hoặc nhập c�
       {/* 2. MINIMIZED FLOATING DOCK BAR (Compact Non-Obtrusive Pill)   */}
       {/* ------------------------------------------------------------- */}
       {isOpen && isMinimized && (
-        <div className="pointer-events-auto fixed bottom-3 right-3 left-3 sm:left-auto sm:bottom-5 sm:right-5 z-50 flex items-center justify-between gap-3 px-3 py-2 sm:px-4 sm:py-2.5 bg-[#0E131B]/75 hover:bg-[#0E131B]/90 text-white border border-[#C5A880]/40 shadow-[0_15px_40px_rgba(0,0,0,0.75)] backdrop-blur-xl rounded-none transition-all duration-300 animate-in fade-in slide-in-from-bottom-2 sm:w-auto sm:min-w-[280px] max-w-full">
+        <div className="pointer-events-auto fixed bottom-20 right-3 left-3 sm:left-auto sm:bottom-5 sm:right-5 z-50 flex items-center justify-between gap-3 px-3 py-2 sm:px-4 sm:py-2.5 bg-[#0E131B]/75 hover:bg-[#0E131B]/90 text-white border border-[#C5A880]/40 shadow-[0_15px_40px_rgba(0,0,0,0.75)] backdrop-blur-xl rounded-none transition-all duration-300 animate-in fade-in slide-in-from-bottom-2 sm:w-auto sm:min-w-[280px] max-w-full">
           <button
             type="button"
             onClick={() => setIsMinimized(false)}

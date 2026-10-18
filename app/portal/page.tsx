@@ -17,6 +17,7 @@ import { UserRole } from '@/lib/dataStore';
 // Shell & Nav
 import Topbar from '@/components/portal/Topbar';
 import Sidebar from '@/components/portal/Sidebar';
+import BottomNav from '@/components/portal/BottomNav';
 import LoginModal from '@/components/landing/LoginModal';
 
 // Admin Core Modules (Includes Tech Desk)
@@ -199,7 +200,7 @@ function PortalContent() {
         {/* Right Main Content Viewport with Dynamic Margin for Fixed Sidebar */}
         <main
           key={`${language}-${activeModule}`}
-          className={`flex-1 min-w-0 p-3 sm:p-5 lg:p-8 overflow-y-auto overflow-x-hidden bg-[#0A0E14] text-white transition-all duration-300 ease-in-out ${
+          className={`flex-1 min-w-0 p-3 sm:p-5 lg:p-8 pb-24 md:pb-8 overflow-y-auto overflow-x-hidden bg-[#0A0E14] text-white transition-all duration-300 ease-in-out ${
             isSidebarCollapsed ? 'md:ml-20' : 'md:ml-64'
           }`}
         >
@@ -315,6 +316,15 @@ function PortalContent() {
         onClose={() => setIsVisitorModalOpen(false)}
         apartmentCode={currentUser.apartment_code || 'CH-06'}
         currentUser={currentUser}
+      />
+
+      {/* Native App-Style Mobile Bottom Navigation Bar */}
+      <BottomNav
+        currentUser={currentUser}
+        activeModule={activeModule}
+        onSelectModule={handleSelectModule}
+        onOpenAiChat={() => setIsAiChatOpen(true)}
+        onOpenMenu={() => setIsMobileSidebarOpen(true)}
       />
     </div>
   );

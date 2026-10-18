@@ -11,11 +11,20 @@ export const viewport: Viewport = {
   maximumScale: 5,
   userScalable: true,
   themeColor: '#0A0E17',
+  viewportFit: 'cover',
 };
 
 export const metadata: Metadata = {
   title: 'SKYLINE Smart Residence | Luxury AI-Powered Living',
   description: 'Website Quản lý Chung cư Cao cấp Tích hợp AI Tự động hóa Vận hành & Trải nghiệm Cư dân Thượng lưu',
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'black-translucent',
+    title: 'SKYLINE Residence',
+  },
+  formatDetection: {
+    telephone: false,
+  },
 };
 
 export default function RootLayout({
