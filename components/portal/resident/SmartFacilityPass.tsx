@@ -39,6 +39,7 @@ import {
 import { User } from '@/lib/dataStore';
 import SkylineLogo from '@/components/shared/SkylineLogo';
 import ResidentSmartCard from './ResidentSmartCard';
+import { useLanguage } from '@/lib/languageContext';
 import { 
   getFacilityCheckinLogs, 
   addFacilityCheckinLog, 
@@ -59,6 +60,7 @@ interface SmartFacilityPassProps {
 }
 
 export default function SmartFacilityPass({ currentUser, onNavigateModule }: SmartFacilityPassProps) {
+  const { t, isEn } = useLanguage();
   const aptCode = currentUser.apartment_code || 'CH-06';
   const isOwner = currentUser.role === 'OWNER';
   const userName = currentUser?.full_name || (currentUser as any)?.fullname || 'Cư Dân';

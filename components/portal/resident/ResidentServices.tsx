@@ -44,6 +44,7 @@ import {
   UtensilsCrossed,
   Bus
 } from 'lucide-react';
+import { useLanguage } from '@/lib/languageContext';
 
 interface ResidentServicesProps {
   currentUser: User;
@@ -51,6 +52,7 @@ interface ResidentServicesProps {
 }
 
 export default function ResidentServices({ currentUser, onNavigateModule }: ResidentServicesProps) {
+  const { t, isEn } = useLanguage();
   const aptCode = currentUser.apartment_code || 'CH-06';
   const userName = currentUser.full_name || (currentUser as any)?.fullname || 'Cư Dân';
   const userPhone = currentUser.phone || '0901234567';

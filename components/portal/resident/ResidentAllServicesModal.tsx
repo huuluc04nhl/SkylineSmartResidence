@@ -22,6 +22,7 @@ import {
 } from 'lucide-react';
 import { User as UserType } from '@/lib/dataStore';
 import { useLanguage } from '@/lib/languageContext';
+import LanguageSwitcher from '@/components/shared/LanguageSwitcher';
 
 interface ResidentAllServicesModalProps {
   isOpen: boolean;
@@ -389,8 +390,15 @@ export default function ResidentAllServicesModal({
             ))
           )}
 
-          {/* Quick Logout Button at the bottom */}
-          <div className="pt-3 border-t border-[#222B35]">
+          {/* Quick Language Switcher & Logout at the bottom */}
+          <div className="pt-3 border-t border-[#222B35] space-y-2.5">
+            <div className="flex items-center justify-between p-2.5 bg-[#121820] border border-[#222B35]">
+              <span className="text-xs text-gray-300 font-medium">
+                {t('Ngôn ngữ hiển thị:')}
+              </span>
+              <LanguageSwitcher variant="inline" />
+            </div>
+
             <button
               type="button"
               onClick={() => {

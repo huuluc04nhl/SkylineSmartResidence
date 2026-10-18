@@ -67,6 +67,7 @@ import {
   markCardUsed, 
   CardState 
 } from '@/lib/facilityStore';
+import { useLanguage } from '@/lib/languageContext';
 
 interface SmartHomeHubProps {
   currentUser: User;
@@ -111,6 +112,7 @@ function LuxurySwitch({
 }
 
 export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
+  const { t, isEn } = useLanguage();
   const isOwner = currentUser.role === 'OWNER';
   const aptCode = currentUser.apartment_code || 'CH-06';
   const aptUnit = getApartmentByCode(aptCode);

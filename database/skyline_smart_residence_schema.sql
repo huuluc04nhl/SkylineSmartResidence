@@ -609,10 +609,10 @@ INSERT INTO condominiums (
     id, condo_code, condo_name, address, total_floors, basement_floors, total_apartments, investor, management_company, hotline, handover_year, description
 ) VALUES (
     1, 'SKYLINE_RESIDENCE', 'Chung Cư Cao Cấp Skyline Smart Residence',
-    'Số 12A Nguyễn Thị Thập, Phường Tân Phú, Quận 7, TP. Hồ Chí Minh',
-    25, 2, 240, 'Skyline Group Corporation', 'Skyline Property Management Services',
+    'Phân khu The Tropical (BS-07 đến BS-10), Beverly Solari, Vinhomes Grand Park, TP. Thủ Đức, TP. Hồ Chí Minh',
+    39, 2, 850, 'Skyline Group Corporation', 'Skyline Property Management Services',
     '1900 8899', 2026,
-    'Tổ hợp chung cư thông minh 5 sao cao 25 tầng hiện đại bậc nhất Quận 7 với hệ thống Smart Home, nhận diện FaceID và 5 đại tiện ích đặc quyền.'
+    'Tổ hợp chung cư thông minh 5 sao The Tropical (BS-07 đến BS-10) phân khu Beverly Solari cao 34-39 tầng với hệ thống Smart Home, nhận diện FaceID và tiện ích đặc quyền.'
 );
 
 -- 2. Nạp Danh Sách Khối Nhà (Blocks) - The Tropical (Beverly Solari) khớp NKS API

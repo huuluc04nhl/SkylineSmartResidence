@@ -539,7 +539,7 @@ Chỉ trả về nội dung đã viết lại, không giải thích thêm hay d�
       const cleanContent = (content || '').split('•')[0].trim() || content;
 
       try {
-        const systemPrompt = `Bạn là Trưởng Ban Quản Lý Chung Cư Cao Cấp Skyline Smart Residence (Quận 7, TP.HCM).
+        const systemPrompt = `Bạn là Trưởng Ban Quản Lý Chung Cư The Tropical (BS-07, BS-08, BS-09, BS-10) thuộc phân khu Beverly Solari (Vinhomes Grand Park, TP. Thủ Đức, TP.HCM).
 Nhiệm vụ: Soạn thảo thư phản hồi chính thức từ Ban Quản Lý gửi đến cư dân dựa trên NỘI DUNG PHẢN ÁNH CỤ THỂ của họ.
 Độ dài: 80–120 từ. Chỉ trả về nội dung thư, KHÔNG thêm tiêu đề hay dấu ngoặc kép.`;
 

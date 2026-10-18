@@ -59,13 +59,13 @@ export async function exportInvoicePdf({ bill, residentName, aptCode }: InvoiceP
             SKYLINE SMART RESIDENCE
           </div>
           <div style="font-size: 11px; color: #6B7280; margin-top: 4px;">
-            Ban Quản Lý Tòa Nhà Chung Cư Cao Cấp Skyline
+            Ban Quản Lý Tòa Nhà Chung Cư The Tropical (BS-07, BS-08, BS-09, BS-10)
           </div>
           <div style="font-size: 11px; color: #6B7280;">
-            Đường Nguyễn Hữu Thọ, Phường Tân Hưng, Quận 7, TP. Hồ Chí Minh
+            Phân khu Beverly Solari, Vinhomes Grand Park, TP. Thủ Đức, TP. Hồ Chí Minh
           </div>
           <div style="font-size: 11px; color: #6B7280;">
-            Hotline: 1900 8888 • Email: bql@skyline.residence.vn
+            Hotline Kỹ Thuật 24/7: 1900 8899 • Email: bql@skyline.residence.vn
           </div>
         </div>
         <div style="text-align: right;">

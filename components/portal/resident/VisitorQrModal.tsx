@@ -42,6 +42,7 @@ import {
   VerificationScanResult
 } from '@/lib/visitorStore';
 import { User as UserType } from '@/lib/dataStore';
+import { useLanguage } from '@/lib/languageContext';
 
 // Custom Zalo Brand Icon
 const ZaloIcon = ({ className = "w-4 h-4" }: { className?: string }) => (
@@ -89,6 +90,7 @@ export default function VisitorQrModal({
   apartmentCode = 'CH-06',
   currentUser,
 }: VisitorQrModalProps) {
+  const { t, isEn } = useLanguage();
 
   // Form State (Đã lược bỏ hoàn toàn hình thức mã theo yêu cầu)
   const [visitorName, setVisitorName] = useState('');
