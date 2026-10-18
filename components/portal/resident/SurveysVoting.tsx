@@ -31,14 +31,20 @@ import {
   HelpCircle,
   ThumbsUp,
   Flame,
-  Tag
+  Tag,
+  RefreshCw,
+  Loader2,
+  Eye,
+  EyeOff
 } from 'lucide-react';
 import { User } from '@/lib/dataStore';
 import { 
   CommunityPost, 
   PostCategory, 
   getCommunityPosts, 
-  createCommunityPost, 
+  createCommunityPostWithAi,
+  fetchCommunitySentimentReport,
+  CommunitySentimentReport,
   toggleLikeCommunityPost, 
   addCommentToPost, 
   castCommunityPollVote, 
@@ -67,6 +73,8 @@ export default function SurveysVoting({ currentUser }: SurveysVotingProps) {
   const [expandedComments, setExpandedComments] = useState<Record<string, boolean>>({});
   // Comment draft input map: postId -> string
   const [commentDrafts, setCommentDrafts] = useState<Record<string, string>>({});
+  // Unblurred toxic posts map: postId -> boolean
+  const [unblurredPosts, setUnblurredPosts] = useState<Record<string, boolean>>({});
 
   // Notification message
   const [toastMsg, setToastMsg] = useState<{ text: string; type: 'success' | 'error' } | null>(null);
@@ -78,6 +86,12 @@ export default function SurveysVoting({ currentUser }: SurveysVotingProps) {
   const [createContent, setCreateContent] = useState('');
   const [createTags, setCreateTags] = useState('');
   const [createIsPinned, setCreateIsPinned] = useState(false);
+  const [isSubmittingWithAi, setIsSubmittingWithAi] = useState(false);
+
+  // Modal: AI Community Sentiment Report
+  const [isReportModalOpen, setIsReportModalOpen] = useState(false);
+  const [sentimentReport, setSentimentReport] = useState<CommunitySentimentReport | null>(null);
+  const [isLoadingReport, setIsLoadingReport] = useState(false);
   
   // Modal: Attach Poll
   const [attachPoll, setAttachPoll] = useState(false);
@@ -136,8 +150,9 @@ export default function SurveysVoting({ currentUser }: SurveysVotingProps) {
     const activePolls = posts.filter(p => p.poll && p.poll.status === 'OPEN').length;
     const totalComments = posts.reduce((acc, p) => acc + p.comments.length, 0);
     const positiveCount = posts.filter(p => p.aiSentimentLabel === 'Tích cực').length;
-    const positiveRate = totalPosts > 0 ? Math.round((positiveCount / totalPosts) * 100) : 95;
-    return { totalPosts, activePolls, totalComments, positiveRate };
+    const positiveRate = totalPosts > 0 ? Math.round((positiveCount / totalPosts) * 100) : 100;
+    const hotspotCount = posts.filter(p => p.isHotspot).length;
+    return { totalPosts, activePolls, totalComments, positiveRate, hotspotCount };
   }, [posts]);
 
   // Handle Like
@@ -192,8 +207,22 @@ export default function SurveysVoting({ currentUser }: SurveysVotingProps) {
     }
   };
 
-  // Handle Create Post
-  const handleCreatePost = (e: React.FormEvent) => {
+  // Handle Open AI Sentiment Report Modal
+  const handleOpenReportModal = async () => {
+    setIsReportModalOpen(true);
+    setIsLoadingReport(true);
+    try {
+      const rep = await fetchCommunitySentimentReport();
+      setSentimentReport(rep);
+    } catch {
+      showToast('Lỗi khi tải báo cáo cảm xúc AI', 'error');
+    } finally {
+      setIsLoadingReport(false);
+    }
+  };
+
+  // Handle Create Post with AI Auto-Moderation & Sentiment
+  const handleCreatePost = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!createTitle.trim()) {
       showToast('Vui lòng nhập tiêu đề bài viết.', 'error');
@@ -230,26 +259,33 @@ export default function SurveysVoting({ currentUser }: SurveysVotingProps) {
       };
     }
 
-    createCommunityPost({
-      category: createCategory,
-      code: createCategory === 'VOTING' ? `BQ-${new Date().getFullYear()}-${Math.floor(100 + Math.random() * 900)}` : undefined,
-      authorName: userName,
-      authorRole: currentUser?.role || 'OWNER',
-      aptCode,
-      avatarUrl: userAvatar,
-      title: createTitle.trim(),
-      content: createContent.trim(),
-      tags: tagsArray.length > 0 ? tagsArray : ['Cộng đồng', 'Skyline'],
-      isPinned: isAdmin && createIsPinned,
-      poll: pollData,
-    });
+    setIsSubmittingWithAi(true);
+    try {
+      await createCommunityPostWithAi({
+        category: createCategory,
+        code: createCategory === 'VOTING' ? `BQ-${new Date().getFullYear()}-${Math.floor(100 + Math.random() * 900)}` : undefined,
+        authorName: userName,
+        authorRole: currentUser?.role || 'OWNER',
+        aptCode,
+        avatarUrl: userAvatar,
+        title: createTitle.trim(),
+        content: createContent.trim(),
+        tags: tagsArray.length > 0 ? tagsArray : ['Cộng đồng', 'Skyline'],
+        isPinned: isAdmin && createIsPinned,
+        poll: pollData,
+      });
 
-    setIsCreateModalOpen(false);
-    setCreateTitle('');
-    setCreateContent('');
-    setCreateTags('');
-    setAttachPoll(false);
-    showToast('Bài viết đã được đăng lên Diễn đàn Cư Dân SKYLINE!');
+      setIsCreateModalOpen(false);
+      setCreateTitle('');
+      setCreateContent('');
+      setCreateTags('');
+      setAttachPoll(false);
+      showToast('AI đã hoàn tất kiểm duyệt và đăng bài thành công lên Diễn đàn!');
+    } catch {
+      showToast('Lỗi khi đăng bài viết.', 'error');
+    } finally {
+      setIsSubmittingWithAi(false);
+    }
   };
 
   // Preview AI analysis in real-time
@@ -286,11 +322,21 @@ export default function SurveysVoting({ currentUser }: SurveysVotingProps) {
               Diễn Đàn & Biểu Quyết Cư Dân SKYLINE
             </h1>
             <p className="text-xs text-gray-400 max-w-2xl leading-relaxed">
-              Không gian tương tác trực tuyến 24/7: Thảo luận nội bộ, thông báo chính thức từ Ban Quản Lý, rao vặt đồ cũ và tham gia biểu quyết các vấn đề pháp lý của tòa nhà.
+              Không gian tương tác trực tuyến 24/7 tích hợp AI: Kiểm duyệt tự động, phân tích cảm xúc cư dân, phản hồi nhanh nội quy và biểu quyết minh bạch.
             </p>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2.5 flex-wrap">
+            {/* AI Sentiment Report Button */}
+            <button
+              onClick={handleOpenReportModal}
+              className="px-4 py-3 bg-[#141B24] hover:bg-[#1E293B] border border-[#C5A880]/40 text-[#C5A880] hover:text-white font-bold text-xs uppercase tracking-wider transition-all duration-200 flex items-center gap-2 shadow-md"
+            >
+              <BarChart3 className="w-4 h-4 text-[#C5A880]" />
+              <span>Báo Cáo Cảm Xúc AI</span>
+            </button>
+
+            {/* Create Post Button */}
             <button
               onClick={() => setIsCreateModalOpen(true)}
               className="px-5 py-3 bg-[#C5A880] hover:bg-white text-[#0A0E14] font-bold text-xs uppercase tracking-wider transition-all duration-200 flex items-center gap-2 shadow-lg hover:shadow-[#C5A880]/30 transform active:scale-95"
@@ -338,7 +384,7 @@ export default function SurveysVoting({ currentUser }: SurveysVotingProps) {
               <ShieldCheck className="w-4 h-4" />
             </div>
             <div>
-              <div className="text-[10px] text-gray-400 uppercase tracking-wider">AI Cảm Xúc Tích Cực</div>
+              <div className="text-[10px] text-gray-400 uppercase tracking-wider">AI Cảm Xúc Hài Lòng</div>
               <div className="text-lg font-serif font-bold text-emerald-400 font-mono">{stats.positiveRate}%</div>
             </div>
           </div>
@@ -453,6 +499,8 @@ export default function SurveysVoting({ currentUser }: SurveysVotingProps) {
             const hasLiked = post.likes.some(c => c.toUpperCase() === aptCode.toUpperCase());
             const isCommentsOpen = !!expandedComments[post.id];
             const isBql = post.authorRole === 'ADMIN' || post.authorRole === 'STAFF';
+            const isToxic = post.aiModeration === 'Toxic';
+            const isUnblurred = !!unblurredPosts[post.id];
 
             // Poll calculations
             const userVote = post.poll?.voters.find(v => v.aptCode.toUpperCase() === aptCode.toUpperCase());
@@ -466,6 +514,8 @@ export default function SurveysVoting({ currentUser }: SurveysVotingProps) {
                 className={`bg-[#0E131B] border transition-all duration-200 ${
                   post.isPinned
                     ? 'border-[#C5A880] shadow-[0_4px_20px_rgba(197,168,128,0.12)]'
+                    : post.isHotspot
+                    ? 'border-rose-500/60 shadow-[0_2px_15px_rgba(244,63,94,0.15)]'
                     : 'border-[#222B35] hover:border-[#C5A880]/50'
                 }`}
               >
@@ -502,6 +552,13 @@ export default function SurveysVoting({ currentUser }: SurveysVotingProps) {
                             Ghim Quan Trọng
                           </span>
                         )}
+
+                        {post.isHotspot && (
+                          <span className="inline-flex items-center gap-1 text-[10px] bg-rose-500/15 border border-rose-500/40 text-rose-400 px-2 py-0.5 font-bold uppercase tracking-wider animate-pulse">
+                            <Flame className="w-3 h-3 text-rose-400" />
+                            Điểm Nóng BQL
+                          </span>
+                        )}
                       </div>
 
                       <div className="text-[11px] text-gray-500 flex items-center gap-2 mt-0.5 font-mono">
@@ -512,12 +569,24 @@ export default function SurveysVoting({ currentUser }: SurveysVotingProps) {
                     </div>
                   </div>
 
-                  {/* AI MODERATION & SENTIMENT PILL */}
+                  {/* AI MODERATION & SENTIMENT BADGES */}
                   <div className="flex items-center gap-2 flex-wrap">
-                    <span className="px-2 py-0.5 bg-[#141B24] border border-[#10B981]/40 text-[#10B981] text-[10px] font-mono flex items-center gap-1">
-                      <ShieldCheck className="w-3 h-3" />
-                      AI: Đã Duyệt
-                    </span>
+                    {post.aiModeration === 'Toxic' ? (
+                      <span className="px-2 py-0.5 bg-rose-500/20 border border-rose-500 text-rose-400 text-[10px] font-mono flex items-center gap-1">
+                        <AlertTriangle className="w-3 h-3 text-rose-400" />
+                        AI: Vi Phạm Tiêu Chuẩn
+                      </span>
+                    ) : post.aiModeration === 'Warning' ? (
+                      <span className="px-2 py-0.5 bg-amber-500/20 border border-amber-500/40 text-amber-400 text-[10px] font-mono flex items-center gap-1">
+                        <AlertTriangle className="w-3 h-3 text-amber-400" />
+                        AI: Cần Lưu Tâm
+                      </span>
+                    ) : (
+                      <span className="px-2 py-0.5 bg-[#141B24] border border-[#10B981]/40 text-[#10B981] text-[10px] font-mono flex items-center gap-1">
+                        <ShieldCheck className="w-3 h-3" />
+                        AI: Chuẩn Văn Minh
+                      </span>
+                    )}
 
                     <span className={`px-2 py-0.5 text-[10px] font-mono border ${
                       post.aiSentimentLabel === 'Tích cực' 
@@ -549,10 +618,44 @@ export default function SurveysVoting({ currentUser }: SurveysVotingProps) {
                     <h2 className="text-lg font-serif font-bold text-white tracking-wide">
                       {post.title}
                     </h2>
-                    <p className="text-xs text-gray-300 leading-relaxed whitespace-pre-line">
-                      {post.content}
-                    </p>
+
+                    {/* Auto-Moderation Blur if content is toxic */}
+                    {isToxic && !isUnblurred ? (
+                      <div className="p-4 bg-rose-950/20 border border-rose-500/40 space-y-2 text-center my-2">
+                        <div className="flex items-center justify-center gap-2 text-rose-400 text-xs font-semibold">
+                          <AlertTriangle className="w-4 h-4 text-rose-400 flex-shrink-0" />
+                          <span>Nội dung đã bị AI tự động làm mờ do chứa từ ngữ nhạy cảm / công kích.</span>
+                        </div>
+                        <p className="text-[11px] text-gray-400">
+                          {post.aiModerationReason || 'Vi phạm bộ quy tắc ứng xử văn minh trong cộng đồng cư dân SKYLINE.'}
+                        </p>
+                        <button
+                          onClick={() => setUnblurredPosts(prev => ({ ...prev, [post.id]: true }))}
+                          className="text-[11px] text-[#C5A880] hover:underline flex items-center justify-center gap-1 mx-auto pt-1"
+                        >
+                          <Eye className="w-3.5 h-3.5" />
+                          <span>Tôi vẫn muốn xem nội dung gốc</span>
+                        </button>
+                      </div>
+                    ) : (
+                      <p className="text-xs text-gray-300 leading-relaxed whitespace-pre-line">
+                        {post.content}
+                      </p>
+                    )}
                   </div>
+
+                  {/* AI CONCIERGE QUICK REPLY BOX (If inquiry detected) */}
+                  {post.aiQuickReply && (
+                    <div className="p-3.5 bg-[#141B24] border border-[#C5A880]/30 border-l-4 border-l-[#C5A880] space-y-1.5 shadow-md my-2">
+                      <div className="flex items-center gap-1.5 text-[10px] text-[#C5A880] font-mono font-bold uppercase tracking-wider">
+                        <Sparkles className="w-3.5 h-3.5 text-[#C5A880]" />
+                        <span>Trợ Lý Ảo SKYLINE AI Phản Hồi Tức Thì (Theo Sổ Tay Tòa Nhà):</span>
+                      </div>
+                      <p className="text-xs text-gray-200 leading-relaxed italic">
+                        "{post.aiQuickReply}"
+                      </p>
+                    </div>
+                  )}
 
                   {/* POST TAGS */}
                   {post.tags && post.tags.length > 0 && (
@@ -734,6 +837,9 @@ export default function SurveysVoting({ currentUser }: SurveysVotingProps) {
                                   ) : (
                                     <span className="text-gray-400 font-mono">({cmt.aptCode || 'Căn Hộ'})</span>
                                   )}
+                                  {cmt.aiModeration === 'Toxic' && (
+                                    <span className="px-1.5 py-0.2 bg-rose-500/20 text-rose-400 border border-rose-500/30 text-[8px]">Đã lọc từ ngữ</span>
+                                  )}
                                 </div>
                                 <span className="text-gray-500 font-mono text-[10px]">
                                   {new Date(cmt.createdAt).toLocaleDateString('vi-VN', { hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit' })}
@@ -779,7 +885,7 @@ export default function SurveysVoting({ currentUser }: SurveysVotingProps) {
         )}
       </div>
 
-      {/* CREATE POST MODAL */}
+      {/* CREATE POST MODAL WITH AI PREVIEW */}
       {isCreateModalOpen && (
         <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
           <div className="bg-[#0E131B] border border-[#C5A880] max-w-2xl w-full p-6 space-y-5 shadow-2xl relative my-8">
@@ -791,9 +897,9 @@ export default function SurveysVoting({ currentUser }: SurveysVotingProps) {
             </button>
 
             <div className="space-y-1">
-              <div className="text-[10px] text-[#C5A880] uppercase tracking-widest font-mono">Diễn Đàn SKYLINE Community</div>
+              <div className="text-[10px] text-[#C5A880] uppercase tracking-widest font-mono">Diễn Đàn SKYLINE Community AI</div>
               <h3 className="text-xl font-serif font-bold text-white">Đăng Bài Viết & Tạo Khảo Sát Cư Dân</h3>
-              <p className="text-xs text-gray-400">Chia sẻ thông tin, rao vặt nội bộ hoặc mở cuộc thăm dò ý kiến toàn khu chung cư.</p>
+              <p className="text-xs text-gray-400">Hệ thống AI tự động phân tích kiểm duyệt văn minh và phản hồi nhanh các thắc mắc chung cư.</p>
             </div>
 
             <form onSubmit={handleCreatePost} className="space-y-4">
@@ -839,7 +945,7 @@ export default function SurveysVoting({ currentUser }: SurveysVotingProps) {
                   required
                   value={createTitle}
                   onChange={e => setCreateTitle(e.target.value)}
-                  placeholder="Ví dụ: Trao đổi bộ bàn ghế sồi ban công / Đề xuất thêm thùng rác phân loại..."
+                  placeholder="Ví dụ: Hồ bơi vô cực mở cửa đến mấy giờ? / Rao lại bàn làm việc..."
                   className="w-full bg-[#141B24] border border-[#C5A880]/30 text-white px-3 py-2 text-xs placeholder-gray-500 focus:outline-none focus:border-[#C5A880]"
                 />
               </div>
@@ -852,7 +958,7 @@ export default function SurveysVoting({ currentUser }: SurveysVotingProps) {
                   rows={4}
                   value={createContent}
                   onChange={e => setCreateContent(e.target.value)}
-                  placeholder="Mô tả cụ thể thông tin, tình trạng, lý do để cư dân và BQL nắm rõ..."
+                  placeholder="Mô tả cụ thể thông tin, thắc mắc để cư dân và BQL cùng trao đổi..."
                   className="w-full bg-[#141B24] border border-[#C5A880]/30 text-white p-3 text-xs placeholder-gray-500 focus:outline-none focus:border-[#C5A880] resize-none"
                 />
               </div>
@@ -864,7 +970,7 @@ export default function SurveysVoting({ currentUser }: SurveysVotingProps) {
                   type="text"
                   value={createTags}
                   onChange={e => setCreateTags(e.target.value)}
-                  placeholder="Rao vặt, Tiện ích, Thang máy, Hồ bơi..."
+                  placeholder="Tiện ích, Hồ bơi, Rao vặt, Sổ tay..."
                   className="w-full bg-[#141B24] border border-[#222B35] text-white px-3 py-2 text-xs placeholder-gray-500 focus:outline-none focus:border-[#C5A880]"
                 />
               </div>
@@ -976,10 +1082,10 @@ export default function SurveysVoting({ currentUser }: SurveysVotingProps) {
                 <div className="p-3 bg-[#141B24]/90 border border-emerald-500/30 text-xs flex items-center justify-between text-gray-300 font-mono">
                   <span className="flex items-center gap-1.5 text-emerald-400">
                     <ShieldCheck className="w-4 h-4" />
-                    AI Kiểm duyệt: {liveAiPreview.moderation === 'Clean' ? 'Hợp lệ ✓' : 'Cần rà soát ⚠️'}
+                    AI Kiểm duyệt: {liveAiPreview.moderation === 'Clean' ? 'Văn minh ✓' : liveAiPreview.moderation === 'Warning' ? 'Cần lưu tâm ⚠️' : 'Vi phạm ❌'}
                   </span>
                   <span>
-                    Chỉ số cảm xúc: <strong>{liveAiPreview.sentimentLabel}</strong> ({liveAiPreview.sentiment > 0 ? `+${liveAiPreview.sentiment.toFixed(2)}` : liveAiPreview.sentiment.toFixed(2)})
+                    Cảm xúc: <strong>{liveAiPreview.sentimentLabel}</strong> ({liveAiPreview.sentiment > 0 ? `+${liveAiPreview.sentiment.toFixed(2)}` : liveAiPreview.sentiment.toFixed(2)})
                   </span>
                 </div>
               )}
@@ -988,19 +1094,130 @@ export default function SurveysVoting({ currentUser }: SurveysVotingProps) {
               <div className="flex items-center justify-end gap-3 pt-3 border-t border-[#1A222D]">
                 <button
                   type="button"
+                  disabled={isSubmittingWithAi}
                   onClick={() => setIsCreateModalOpen(false)}
-                  className="px-4 py-2.5 text-xs text-gray-400 hover:text-white uppercase tracking-wider font-semibold"
+                  className="px-4 py-2.5 text-xs text-gray-400 hover:text-white uppercase tracking-wider font-semibold disabled:opacity-50"
                 >
                   Hủy Bỏ
                 </button>
                 <button
                   type="submit"
-                  className="px-6 py-2.5 bg-[#C5A880] hover:bg-white text-[#0A0E14] font-bold text-xs uppercase tracking-wider transition-colors shadow-lg"
+                  disabled={isSubmittingWithAi}
+                  className="px-6 py-2.5 bg-[#C5A880] hover:bg-white text-[#0A0E14] font-bold text-xs uppercase tracking-wider transition-colors shadow-lg flex items-center gap-2 disabled:opacity-50"
                 >
-                  Đăng Lên Diễn Đàn
+                  {isSubmittingWithAi ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin text-[#0A0E14]" />
+                      <span>AI Đang Phân Tích...</span>
+                    </>
+                  ) : (
+                    <span>Đăng Lên Diễn Đàn</span>
+                  )}
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL: AI COMMUNITY SENTIMENT REPORT */}
+      {isReportModalOpen && (
+        <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
+          <div className="bg-[#0E131B] border border-[#C5A880] max-w-2xl w-full p-6 space-y-5 shadow-2xl relative my-8">
+            <button
+              onClick={() => setIsReportModalOpen(false)}
+              className="absolute top-4 right-4 text-gray-400 hover:text-white p-1"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            <div className="space-y-1">
+              <div className="text-[10px] text-[#C5A880] uppercase tracking-widest font-mono flex items-center gap-1.5">
+                <Sparkles className="w-3.5 h-3.5 text-[#C5A880]" />
+                <span>Google Gemini AI Analytics • Phân Tích Diễn Đàn</span>
+              </div>
+              <h3 className="text-xl font-serif font-bold text-white">Báo Cáo Cảm Xúc & Khuyến Nghị Vận Hành</h3>
+              <p className="text-xs text-gray-400">Trí tuệ nhân tạo khai phá dữ liệu từ các luồng thảo luận, đo lường độ hài lòng và đề xuất chiến lược.</p>
+            </div>
+
+            {isLoadingReport ? (
+              <div className="p-12 text-center space-y-3">
+                <Loader2 className="w-8 h-8 text-[#C5A880] animate-spin mx-auto" />
+                <div className="text-xs font-mono text-[#C5A880]">Google Gemini AI đang tổng hợp insight từ cộng đồng cư dân...</div>
+              </div>
+            ) : sentimentReport ? (
+              <div className="space-y-4">
+                {/* Score Banner */}
+                <div className="p-4 bg-[#141B24] border border-[#C5A880]/30 flex items-center justify-between">
+                  <div>
+                    <div className="text-[10px] text-gray-400 uppercase tracking-wider">Chỉ Số Hài Lòng Cư Dân (AI Satisfaction Score)</div>
+                    <div className="text-2xl font-serif font-bold text-[#10B981] font-mono mt-0.5">
+                      {sentimentReport.overallSatisfactionScore}/100
+                    </div>
+                  </div>
+                  <div className="text-right text-[11px] text-gray-500 font-mono">
+                    Cập nhật: {new Date(sentimentReport.analyzedAt).toLocaleTimeString('vi-VN')}
+                  </div>
+                </div>
+
+                {/* Summary */}
+                <div className="space-y-1.5">
+                  <div className="text-xs font-bold text-[#C5A880] uppercase tracking-wider">Tóm Tắt Tâm Lý Cư Dân</div>
+                  <p className="text-xs text-gray-300 leading-relaxed p-3.5 bg-[#121820] border border-[#222B35]">
+                    {sentimentReport.summary}
+                  </p>
+                </div>
+
+                {/* Hotspots */}
+                <div className="space-y-1.5">
+                  <div className="text-xs font-bold text-rose-400 uppercase tracking-wider flex items-center gap-1.5">
+                    <Flame className="w-3.5 h-3.5 text-rose-400" />
+                    <span>Các Điểm Nóng Cần BQL Lưu Tâm ({sentimentReport.hotspots.length})</span>
+                  </div>
+                  {sentimentReport.hotspots.length === 0 ? (
+                    <div className="text-xs text-emerald-400 p-3 bg-emerald-500/10 border border-emerald-500/30">
+                      ✓ Không ghi nhận điểm nóng bức xúc nào. Tình hình trật tự chung cư đạt chuẩn xuất sắc.
+                    </div>
+                  ) : (
+                    <ul className="space-y-1.5">
+                      {sentimentReport.hotspots.map((hs, idx) => (
+                        <li key={idx} className="text-xs text-rose-300 p-2.5 bg-rose-500/10 border border-rose-500/30 flex items-center gap-2">
+                          <AlertTriangle className="w-3.5 h-3.5 text-rose-400 flex-shrink-0" />
+                          <span>{hs}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+
+                {/* Actionable Recommendations */}
+                <div className="space-y-1.5">
+                  <div className="text-xs font-bold text-[#C5A880] uppercase tracking-wider flex items-center gap-1.5">
+                    <Sparkles className="w-3.5 h-3.5 text-[#C5A880]" />
+                    <span>Đề Xuất Hành Động Cho Ban Quản Lý (Actionable Recommendations)</span>
+                  </div>
+                  <div className="space-y-2">
+                    {sentimentReport.actionableRecommendations.map((rec, idx) => (
+                      <div key={idx} className="text-xs text-gray-200 p-3 bg-[#141B24] border border-[#C5A880]/20 flex items-start gap-2.5">
+                        <span className="w-5 h-5 bg-[#C5A880]/20 border border-[#C5A880]/40 text-[#C5A880] text-[10px] font-mono font-bold flex items-center justify-center flex-shrink-0 mt-0.5">
+                          {idx + 1}
+                        </span>
+                        <span className="leading-relaxed">{rec}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="pt-2 flex justify-end">
+                  <button
+                    onClick={() => setIsReportModalOpen(false)}
+                    className="px-5 py-2.5 bg-[#C5A880] hover:bg-white text-[#0A0E14] font-bold text-xs uppercase tracking-wider transition-colors shadow"
+                  >
+                    Đóng Báo Cáo
+                  </button>
+                </div>
+              </div>
+            ) : null}
           </div>
         </div>
       )}
