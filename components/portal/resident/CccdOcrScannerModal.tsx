@@ -347,29 +347,29 @@ export default function CccdOcrScannerModal({
   const hasBothImages = Boolean(frontImage && backImage);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md animate-fadeIn select-none">
-      <div className="bg-[#0D1117] border border-[#C5A880] max-w-3xl w-full p-6 sm:p-8 text-white space-y-6 shadow-2xl overflow-y-auto max-h-[92vh] rounded-none">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/85 backdrop-blur-md animate-fadeIn select-none">
+      <div className="bg-[#0D1117] border border-[#C5A880] max-w-3xl w-full p-4 sm:p-8 text-white space-y-5 sm:space-y-6 shadow-2xl overflow-y-auto max-h-[94vh] rounded-none">
         {/* Modal Header */}
-        <div className="flex items-center justify-between border-b border-[#222B35] pb-4">
-          <div className="space-y-1">
-            <div className="text-[10px] uppercase tracking-[0.2em] text-[#C5A880] font-bold flex items-center gap-2">
-              <Sparkles className="w-3.5 h-3.5" /> 
-              <span>{t('Xác Thực Căn Cước Công Dân')}</span>
-              <span className="px-2 py-0.5 bg-emerald-950/80 border border-emerald-500/50 text-emerald-400 text-[9px] font-mono tracking-normal font-semibold rounded-none inline-flex items-center gap-1">
-                <Sparkles className="w-2.5 h-2.5 text-emerald-400" /> {t('Tự Động Nhận Diện Thông Minh')}
+        <div className="flex items-center justify-between border-b border-[#222B35] pb-3 sm:pb-4">
+          <div className="space-y-1 min-w-0 pr-2">
+            <div className="text-[10px] uppercase tracking-[0.2em] text-[#C5A880] font-bold flex flex-wrap items-center gap-1.5 sm:gap-2">
+              <Sparkles className="w-3.5 h-3.5 flex-shrink-0" /> 
+              <span className="truncate">{t('Xác Thực Căn Cước')}</span>
+              <span className="px-1.5 sm:px-2 py-0.5 bg-emerald-950/80 border border-emerald-500/50 text-emerald-400 text-[9px] font-mono tracking-normal font-semibold rounded-none inline-flex items-center gap-1">
+                <Sparkles className="w-2.5 h-2.5 text-emerald-400" /> {t('Tự Động')}
               </span>
             </div>
-            <h3 className="font-serif text-xl sm:text-2xl font-bold text-white flex items-center gap-2">
-              <Scan className="w-5 h-5 text-[#C5A880]" /> {t('Quét Căn Cước Công Dân (2 Mặt)')}
+            <h3 className="font-serif text-base sm:text-2xl font-bold text-white flex items-center gap-2 truncate">
+              <Scan className="w-4 h-4 sm:w-5 sm:h-5 text-[#C5A880] flex-shrink-0" /> <span>{t('Quét Căn Cước Công Dân (2 Mặt)')}</span>
             </h3>
-            <p className="text-xs text-gray-400">
+            <p className="text-xs text-gray-400 hidden sm:block">
               {t('Hệ thống tự động đọc và điền nhanh thông tin từ 2 mặt thẻ Căn cước công dân của Quý cư dân một cách chuẩn xác và an toàn.')}
             </p>
           </div>
 
           <button
             onClick={onClose}
-            className="p-2 text-gray-400 hover:text-white hover:bg-[#161B22] rounded-none transition-colors"
+            className="p-2 text-gray-400 hover:text-white hover:bg-[#161B22] rounded-none transition-colors flex-shrink-0"
           >
             <X className="w-5 h-5" />
           </button>
@@ -388,9 +388,9 @@ export default function CccdOcrScannerModal({
         {/* ------------------------------------------------------------- */}
         <div className="space-y-4">
           {/* Card Face Status Switcher Bar */}
-          <div className="flex items-center justify-between bg-[#121820] p-2.5 px-4 border border-[#222B35] rounded-none">
+          <div className="flex items-center justify-between bg-[#121820] p-2.5 px-3 sm:px-4 border border-[#222B35] rounded-none">
             <div className="flex items-center gap-2 text-xs">
-              <span className="text-gray-400">{t('Đang hiển thị:')}</span>
+              <span className="text-gray-400 hidden sm:inline">{t('Đang hiển thị:')}</span>
               <span className={`font-bold uppercase tracking-wider px-2 py-0.5 rounded-none text-[11px] font-mono ${
                 !isFlipped 
                   ? 'bg-amber-950/80 text-[#C5A880] border border-[#C5A880]' 
@@ -405,7 +405,7 @@ export default function CccdOcrScannerModal({
               type="button"
               onClick={() => setIsFlipped(!isFlipped)}
               disabled={isScanning}
-              className="px-3.5 py-1.5 bg-[#1C2533] hover:bg-[#C5A880] hover:text-[#0D1117] text-[#C5A880] border border-[#C5A880] text-xs font-bold uppercase tracking-wider rounded-none transition-all flex items-center gap-1.5 shadow"
+              className="px-3 py-1.5 bg-[#1C2533] hover:bg-[#C5A880] hover:text-[#0D1117] text-[#C5A880] border border-[#C5A880] text-xs font-bold uppercase tracking-wider rounded-none transition-all flex items-center gap-1.5 shadow"
             >
               <RotateCw className={`w-3.5 h-3.5 transition-transform duration-500 ${isFlipped ? 'rotate-180' : ''}`} />
               <span>{t('Lật Mặt Thẻ 3D')}</span>
@@ -413,7 +413,7 @@ export default function CccdOcrScannerModal({
           </div>
 
           {/* 3D Perspective Flip Box */}
-          <div className="relative w-full max-w-lg mx-auto h-64 sm:h-72 [perspective:1400px]">
+          <div className="relative w-full max-w-lg mx-auto h-52 sm:h-72 [perspective:1400px]">
             <div
               className={`w-full h-full relative transition-transform duration-700 [transform-style:preserve-3d] ${
                 isFlipped ? '[transform:rotateY(180deg)]' : '[transform:rotateY(0deg)]'
@@ -723,11 +723,11 @@ export default function CccdOcrScannerModal({
         )}
 
         {/* Modal Actions */}
-        <div className="flex justify-end gap-3 pt-4 border-t border-[#222B35]">
+        <div className="flex flex-col-reverse sm:flex-row justify-end gap-2.5 sm:gap-3 pt-4 border-t border-[#222B35]">
           <button
             type="button"
             onClick={onClose}
-            className="px-5 py-2.5 bg-gray-800 text-gray-300 hover:text-white text-xs font-semibold rounded-none"
+            className="w-full sm:w-auto px-5 py-3 sm:py-2.5 bg-gray-800 text-gray-300 hover:text-white text-xs font-semibold rounded-none text-center"
           >
             {t('Đóng')}
           </button>
@@ -736,7 +736,7 @@ export default function CccdOcrScannerModal({
             type="button"
             onClick={handleApply}
             disabled={!ocrResult}
-            className={`px-6 py-2.5 text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-2 rounded-none shadow-xl ${
+            className={`w-full sm:w-auto px-6 py-3 sm:py-2.5 text-xs font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-2 rounded-none shadow-xl ${
               !ocrResult
                 ? 'bg-gray-800 text-gray-500 cursor-not-allowed'
                 : 'bg-[#C5A880] hover:bg-white text-[#0D1117]'

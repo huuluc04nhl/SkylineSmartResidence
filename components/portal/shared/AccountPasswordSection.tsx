@@ -216,9 +216,9 @@ export default function AccountPasswordSection({
   return (
     <div className={`space-y-6 animate-fadeIn ${isModal ? '' : 'w-full'}`}>
       {/* Top Banner: Sovereign Account Identification */}
-      <div className="p-5 sm:p-6 bg-[#121820] border border-[#222B35] flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-2xl rounded-none">
-        <div className="flex items-center gap-4">
-          <div className="w-14 h-14 rounded-none overflow-hidden border-2 border-[#C5A880] flex-shrink-0 bg-[#0E131A] shadow-md">
+      <div className="p-4 sm:p-6 bg-[#121820] border border-[#222B35] flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-2xl rounded-none">
+        <div className="flex items-center gap-3 sm:gap-4">
+          <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-none overflow-hidden border-2 border-[#C5A880] flex-shrink-0 bg-[#0E131A] shadow-md">
             <img
               src={getUserApiAvatar(currentUser)}
               alt={currentUser.full_name || currentUser.username}
@@ -230,24 +230,24 @@ export default function AccountPasswordSection({
           </div>
           <div className="space-y-0.5 min-w-0">
             <div className="flex items-center gap-2">
-              <span className="text-[10px] text-[#C5A880] font-mono uppercase tracking-wider font-bold">
-                Tài Khoản Tự Chủ • Quyền Đổi Mật Khẩu Cá Nhân
+              <span className="text-[10px] text-[#C5A880] font-mono uppercase tracking-wider font-bold truncate">
+                Tài Khoản Tự Chủ • <span className="hidden sm:inline">Quyền Đổi Mật Khẩu Cá Nhân</span>
               </span>
             </div>
-            <h2 className="font-serif text-lg sm:text-xl font-bold text-white tracking-wide truncate">
+            <h2 className="font-serif text-base sm:text-xl font-bold text-white tracking-wide truncate">
               {currentUser.full_name || currentUser.username || 'Người Dùng Skyline'}
             </h2>
             <div className="flex flex-wrap items-center gap-2 text-xs text-gray-400">
-              <span className="font-mono text-gray-300">
+              <span className="font-mono text-gray-300 truncate max-w-[160px] sm:max-w-none">
                 {currentUser.email || currentUser.phone || currentUser.username}
               </span>
               <span>•</span>
-              <span className="text-[#C5A880] font-medium">
+              <span className="text-[#C5A880] font-medium truncate">
                 {isAdmin 
-                  ? 'Ban Quản Lý Chung Cư' 
+                  ? 'Ban Quản Lý' 
                   : isOwner 
-                  ? `Chủ Hộ Căn Hộ (Căn ${aptCode})` 
-                  : `Cư Dân Thành Viên (Căn ${aptCode})`}
+                  ? `Chủ Hộ (Căn ${aptCode})` 
+                  : `Cư Dân (Căn ${aptCode})`}
               </span>
             </div>
           </div>
@@ -296,13 +296,13 @@ export default function AccountPasswordSection({
       {/* Main Form & Policy Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Left: Input Form */}
-        <form onSubmit={handleSubmit} className="lg:col-span-7 p-6 sm:p-8 bg-[#121820] border border-[#222B35] space-y-6 shadow-2xl rounded-none">
+        <form onSubmit={handleSubmit} className="lg:col-span-7 p-4 sm:p-8 bg-[#121820] border border-[#222B35] space-y-5 sm:space-y-6 shadow-2xl rounded-none">
           {/* Section Subheading */}
           <div className="border-b border-[#222B35] pb-3">
             <h3 className="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
               <Lock className="w-4 h-4 text-[#C5A880]" /> Biểu Mẫu Thay Đổi Mật Khẩu
             </h3>
-            <p className="text-xs text-gray-400 mt-1">
+            <p className="text-xs text-gray-400 mt-1 line-clamp-2 sm:line-clamp-none">
               Bạn có thể tự đặt mật khẩu mới hoặc sử dụng tính năng tạo mật khẩu ngẫu nhiên an toàn ngay bên dưới.
             </p>
           </div>
@@ -332,7 +332,7 @@ export default function AccountPasswordSection({
                 {showOldPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
               </button>
             </div>
-            <div className="text-[11px] text-gray-500">
+            <div className="text-[11px] text-gray-500 hidden sm:block">
               Xác thực quyền sở hữu tài khoản trước khi thực hiện đổi mật khẩu mới.
             </div>
           </div>
@@ -355,16 +355,16 @@ export default function AccountPasswordSection({
                 <button
                   type="button"
                   onClick={() => handleGenerate()}
-                  className="h-7 px-2.5 bg-[#1C2533] hover:bg-[#C5A880] text-[#C5A880] hover:text-[#0D1117] border border-[#C5A880]/60 hover:border-[#C5A880] text-[11px] font-bold uppercase tracking-wider rounded-none flex items-center gap-1.5 transition-all shadow active:scale-95"
+                  className="h-8 sm:h-7 px-2.5 bg-[#1C2533] hover:bg-[#C5A880] text-[#C5A880] hover:text-[#0D1117] border border-[#C5A880]/60 hover:border-[#C5A880] text-[11px] font-bold uppercase tracking-wider rounded-none flex items-center gap-1.5 transition-all shadow active:scale-95"
                 >
-                  <Sparkles className="w-3.5 h-3.5" /> Tạo Mật Khẩu Tự Động
+                  <Sparkles className="w-3.5 h-3.5" /> <span>Tạo Mật Khẩu <span className="hidden sm:inline">Tự Động</span></span>
                 </button>
 
                 <button
                   type="button"
                   onClick={() => setShowGenOptions(!showGenOptions)}
                   title="Tùy chỉnh độ dài và các bộ ký tự sinh ngẫu nhiên"
-                  className={`h-7 px-2 border text-[11px] font-semibold rounded-none flex items-center gap-1 transition-colors ${
+                  className={`h-8 sm:h-7 px-2 border text-[11px] font-semibold rounded-none flex items-center gap-1 transition-colors ${
                     showGenOptions
                       ? 'bg-[#C5A880] text-[#0D1117] border-[#C5A880]'
                       : 'bg-[#161B22] text-gray-400 hover:text-white border-[#2D3748]'
@@ -573,7 +573,7 @@ export default function AccountPasswordSection({
                 setErrorMessage(null);
                 setSuccessMessage(null);
               }}
-              className="w-full sm:w-auto px-5 py-2.5 bg-[#161B22] hover:bg-[#1E2631] text-gray-300 hover:text-white text-xs font-semibold rounded-none border border-[#2D3748] transition-colors"
+              className="w-full sm:w-auto px-5 py-3 sm:py-2.5 bg-[#161B22] hover:bg-[#1E2631] text-gray-300 hover:text-white text-xs font-semibold rounded-none border border-[#2D3748] transition-colors text-center"
             >
               Xóa Nhập Lại
             </button>
@@ -581,7 +581,7 @@ export default function AccountPasswordSection({
             <button
               type="submit"
               disabled={isSubmitting}
-              className="w-full sm:w-auto px-8 py-3 bg-[#C5A880] hover:bg-white text-[#0D1117] text-xs font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-2 shadow-xl rounded-none active:scale-[0.99] disabled:opacity-50"
+              className="w-full sm:w-auto px-8 py-3.5 sm:py-3 bg-[#C5A880] hover:bg-white text-[#0D1117] text-xs font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-2 shadow-xl rounded-none active:scale-[0.99] disabled:opacity-50"
             >
               {isSubmitting ? (
                 <>
@@ -597,13 +597,13 @@ export default function AccountPasswordSection({
         </form>
 
         {/* Right: Security Guidelines & Sync Status */}
-        <div className="lg:col-span-5 space-y-6">
+        <div className="lg:col-span-5 space-y-4 sm:space-y-6">
           {/* Policy Checklist Card */}
-          <div className="p-6 bg-[#121820] border border-[#222B35] space-y-4 shadow-xl rounded-none">
+          <div className="p-4 sm:p-6 bg-[#121820] border border-[#222B35] space-y-3 sm:space-y-4 shadow-xl rounded-none">
             <div className="flex items-center gap-2 text-white font-bold text-xs uppercase tracking-wider border-b border-[#222B35] pb-3">
               <ShieldCheck className="w-4 h-4 text-[#C5A880]" /> Tiêu Chuẩn Bảo Mật Khuyến Nghị
             </div>
-            <div className="space-y-3 text-xs">
+            <div className="space-y-2.5 sm:space-y-3 text-xs">
               <div className={`flex items-center gap-2.5 ${newPassword.length >= 8 ? 'text-emerald-400' : 'text-gray-400'}`}>
                 <Check className={`w-3.5 h-3.5 ${newPassword.length >= 8 ? 'text-emerald-400' : 'text-gray-500'}`} />
                 <span>Độ dài từ 8 ký tự trở lên (tối thiểu 6 ký tự)</span>
@@ -623,8 +623,8 @@ export default function AccountPasswordSection({
             </div>
           </div>
 
-          {/* Sync Notice */}
-          <div className="p-5 bg-[#161D26] border border-[#222B35] space-y-3 text-xs rounded-none">
+          {/* Sync Notice (Desktop only to prevent mobile clutter) */}
+          <div className="hidden sm:block p-5 bg-[#161D26] border border-[#222B35] space-y-3 text-xs rounded-none">
             <div className="flex items-center gap-2 text-[#C5A880] font-semibold text-[11px] uppercase tracking-wider">
               <Sparkles className="w-3.5 h-3.5 text-[#C5A880]" /> Tự Động Đồng Bộ Hệ Thống
             </div>
