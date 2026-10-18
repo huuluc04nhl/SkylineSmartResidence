@@ -333,6 +333,7 @@ export async function createTicketAsync(payload: {
   const classification = classifyTicket(payload.content, payload.ai_category);
   const ticketType = payload.ticket_type || classification.type;
   const handler = ticketType === 'REPAIR' ? 'TECHNICIAN' : 'MANAGEMENT';
+  const isAutoResolved = ticketType === 'FEEDBACK' && Boolean(classification.canAutoResolve && classification.autoReplyText);
 
   // Gợi ý KTV tối ưu cho trường hợp REPAIR
   let suggestedTech: TechnicianProfile | undefined = undefined;
@@ -364,9 +365,11 @@ export async function createTicketAsync(payload: {
     priority_color: isUrgent ? '#DC2626' : '#D97706',
     sla_deadline: new Date(Date.now() + (isUrgent ? 45 : 120) * 60000).toISOString(),
     sla_minutes_left: isUrgent ? 45 : 120,
-    status: 'Open',
-    // Dự thảo câu trả lời để BQL tham khảo đáp lại cư dân
-    ai_suggested_reply: classification.suggestedAdminReply,
+    status: isAutoResolved ? 'Resolved' : 'Open',
+    admin_reply: isAutoResolved ? classification.autoReplyText : undefined,
+    admin_replied_at: isAutoResolved ? new Date().toISOString() : undefined,
+    admin_replied_by: isAutoResolved ? 'Hệ Thống Quản Lý Skyline (AI Tự Động)' : undefined,
+    ai_suggested_reply: classification.suggestedAdminReply || classification.autoReplyText,
     suggested_technician: suggestedTech?.name,
     suggested_technician_id: suggestedTech?.id,
     suggested_technician_phone: suggestedTech?.phone,
@@ -437,6 +440,7 @@ export function createTicket(payload: {
   const classification = classifyTicket(payload.content, payload.ai_category);
   const ticketType = payload.ticket_type || classification.type;
   const handler = ticketType === 'REPAIR' ? 'TECHNICIAN' : 'MANAGEMENT';
+  const isAutoResolved = ticketType === 'FEEDBACK' && Boolean(classification.canAutoResolve && classification.autoReplyText);
 
   let suggestedTech: TechnicianProfile | undefined = undefined;
   if (ticketType === 'REPAIR') {
@@ -467,8 +471,11 @@ export function createTicket(payload: {
     priority_color: isUrgent ? '#DC2626' : '#D97706',
     sla_deadline: new Date(Date.now() + (isUrgent ? 45 : 120) * 60000).toISOString(),
     sla_minutes_left: isUrgent ? 45 : 120,
-    status: 'Open',
-    ai_suggested_reply: classification.suggestedAdminReply,
+    status: isAutoResolved ? 'Resolved' : 'Open',
+    admin_reply: isAutoResolved ? classification.autoReplyText : undefined,
+    admin_replied_at: isAutoResolved ? new Date().toISOString() : undefined,
+    admin_replied_by: isAutoResolved ? 'Hệ Thống Quản Lý Skyline (AI Tự Động)' : undefined,
+    ai_suggested_reply: classification.suggestedAdminReply || classification.autoReplyText,
     suggested_technician: suggestedTech?.name,
     suggested_technician_id: suggestedTech?.id,
     suggested_technician_phone: suggestedTech?.phone,

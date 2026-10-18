@@ -1196,10 +1196,25 @@ export default function TicketService({ currentUser }: TicketServiceProps) {
                   {/* PHẢN HỒI TỪ BQL NẾU CÓ HOẶC LÀ FEEDBACK */}
                   {(isFeedback || t.admin_reply) && (
                     t.admin_reply ? (
-                      <div className="p-3 bg-rose-950/40 border border-rose-500/40 space-y-1">
-                        <div className="text-[11px] font-bold text-rose-300 flex items-center gap-1.5">
-                          <BadgeCheck className="w-3.5 h-3.5 text-rose-400" />
-                          Phản hồi chính thức từ {t.admin_replied_by || 'Ban Quản Lý Skyline'}:
+                      <div className={`p-3 space-y-1 ${
+                        t.admin_replied_by?.includes('AI')
+                          ? 'bg-[#141B24] border border-[#C5A880]/40'
+                          : 'bg-rose-950/40 border border-rose-500/40'
+                      }`}>
+                        <div className={`text-[11px] font-bold flex items-center gap-1.5 ${
+                          t.admin_replied_by?.includes('AI') ? 'text-[#C5A880]' : 'text-rose-300'
+                        }`}>
+                          {t.admin_replied_by?.includes('AI') ? (
+                            <>
+                              <Sparkles className="w-3.5 h-3.5 text-[#C5A880]" />
+                              Phản hồi tự động từ Hệ thống Quản Lý Skyline:
+                            </>
+                          ) : (
+                            <>
+                              <BadgeCheck className="w-3.5 h-3.5 text-rose-400" />
+                              Phản hồi chính thức từ {t.admin_replied_by || 'Ban Quản Lý Skyline'}:
+                            </>
+                          )}
                         </div>
                         <p className="text-gray-200 text-xs italic leading-relaxed">
                           "{t.admin_reply}"

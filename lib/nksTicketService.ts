@@ -342,12 +342,16 @@ export function nksTicketToServiceRequest(
   const ticketType = classification.type;
   const handlerRole = classification.handledBy;
 
+  const canAutoResolveFeedback = ticketType === 'FEEDBACK' && Boolean(classification.canAutoResolve && classification.autoReplyText);
+
   let status: 'Open' | 'In_Progress' | 'Resolved' | 'Assigned' | 'Cancelled' = 'Open';
   if (remoteReply && remoteReply.trim()) {
     status = 'Resolved';
   } else if (existingLocalTicket && existingLocalTicket.status === 'Resolved' && (existingLocalTicket.resolution_notes || existingLocalTicket.after_image || existingLocalTicket.admin_reply)) {
     status = 'Resolved';
   } else if (nks.status === 'resolved' || nks.status === 'closed') {
+    status = 'Resolved';
+  } else if (canAutoResolveFeedback) {
     status = 'Resolved';
   } else if (ticketType === 'REPAIR' && (existingLocalTicket?.assigned_technician_id || remoteEngineer)) {
     status = 'In_Progress';
@@ -357,6 +361,7 @@ export function nksTicketToServiceRequest(
 
   const actualName = nks.fullname?.trim() || existingLocalTicket?.resident_name || 'Cư dân';
   const actualPhone = nks.phone?.trim() || existingLocalTicket?.resident_phone || '';
+  const resolvedReply = existingLocalTicket?.admin_reply || remoteReply || (canAutoResolveFeedback ? classification.autoReplyText : undefined);
 
   return {
     id: String(nks.id),
@@ -375,11 +380,11 @@ export function nksTicketToServiceRequest(
     sla_deadline: new Date(Date.now() + (isUrgent ? 45 : 120) * 60000).toISOString(),
     sla_minutes_left: isUrgent ? 45 : 120,
     status: status,
-    ai_suggested_reply: existingLocalTicket?.ai_suggested_reply || classification.suggestedAdminReply,
-    // Phản hồi chính thức từ BQL / Hệ thống NKS
-    admin_reply: existingLocalTicket?.admin_reply || remoteReply,
-    admin_replied_at: existingLocalTicket?.admin_replied_at || (remoteReply ? nks.updated_at || nks.created_at : undefined),
-    admin_replied_by: existingLocalTicket?.admin_replied_by || (remoteReply ? 'Ban Quản Lý Skyline' : undefined),
+    ai_suggested_reply: existingLocalTicket?.ai_suggested_reply || classification.suggestedAdminReply || classification.autoReplyText,
+    // Phản hồi chính thức từ BQL / Hệ thống NKS / AI Auto-Reply
+    admin_reply: resolvedReply,
+    admin_replied_at: existingLocalTicket?.admin_replied_at || (remoteReply ? (nks.updated_at || nks.created_at) : (canAutoResolveFeedback ? new Date().toISOString() : undefined)),
+    admin_replied_by: existingLocalTicket?.admin_replied_by || (remoteReply ? 'Ban Quản Lý Skyline' : (canAutoResolveFeedback ? 'Hệ Thống Quản Lý Skyline (AI Tự Động)' : undefined)),
     before_image: img || existingLocalTicket?.before_image || '',
     created_at: nks.created_at || existingLocalTicket?.created_at || new Date().toISOString(),
     updated_at: nks.updated_at || existingLocalTicket?.updated_at || new Date().toISOString(),

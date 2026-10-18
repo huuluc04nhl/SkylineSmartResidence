@@ -18,6 +18,9 @@ export interface TicketClassificationResult {
   handledByLabel: string;
   urgent: boolean;
   priority: 1 | 2;
+  isSerious?: boolean;
+  canAutoResolve?: boolean;
+  autoReplyText?: string;
   suggestedAiReply?: string;
   suggestedAdminReply?: string;
   actionHint: string;
@@ -109,17 +112,59 @@ export function classifyTicket(
     };
   }
 
-  // --- TRƯỜNG HỢP 2: PHẢN ÁNH / Ý KIẾN / THẮC MẮC CƯ DÂN (FEEDBACK) -> BQL ĐÁP LẠI (KHÔNG CẦN CỬ KTV ĐẾN NGAY) ---
-  const isUrgentFeedback = text.includes('tràn rác') || text.includes('chắn lối') || text.includes('cháy');
+  // --- TRƯỜNG HỢP 2: PHẢN ÁNH / Ý KIẾN / THẮC MẮC CƯ DÂN (FEEDBACK) ---
+  // Phân tích ngầm mức độ nghiêm trọng:
+  // NGHIÊM TRỌNG THẬT SỰ (cần Ban Quản Lý trực tiếp thụ lý & kiểm tra hiện trường):
+  // - Mất an ninh, trộm cắp, kẻ gian đột nhập
+  // - Nguy cơ cháy nổ, mùi khét, khí gas, tai nạn khẩn cấp
+  // - Thái độ nhân viên xúc phạm, xô xát, đe dọa, kiện tụng, tranh chấp gay gắt
+  // - Ô nhiễm nghiêm trọng: tràn rác diện rộng, ngập hôi thối, xác động vật
+  const isSerious = (
+    text.includes('trộm') ||
+    text.includes('mất cắp') ||
+    text.includes('mất đồ') ||
+    text.includes('kẻ gian') ||
+    text.includes('đột nhập') ||
+    text.includes('an ninh') ||
+    text.includes('camera an ninh') ||
+    text.includes('cháy') ||
+    text.includes('khói') ||
+    text.includes('mùi khét') ||
+    text.includes('cháy nổ') ||
+    text.includes('khí gas') ||
+    text.includes('tai nạn') ||
+    text.includes('thái độ') ||
+    text.includes('xúc phạm') ||
+    text.includes('đe dọa') ||
+    text.includes('đánh nhau') ||
+    text.includes('chửi') ||
+    text.includes('khiếu nại bql') ||
+    text.includes('kiện') ||
+    text.includes('công an') ||
+    text.includes('bồi thường') ||
+    text.includes('tràn rác') ||
+    text.includes('hôi thối nồng nặc') ||
+    text.includes('ngập hành lang')
+  );
+
+  const smartReply = generateSuggestedAdminReply(content, service);
+  // Nếu không nghiêm trọng (nội quy, chất lượng nước hồ bơi, giờ gym, gửi xe, lịch rác, BBQ, hóa đơn...): AI tự động hoàn tất ticket
+  const canAutoResolve = !isSerious;
+
   return {
     type: 'FEEDBACK',
     typeLabel: 'Phản Ánh & Ý Kiến',
     handledBy: 'MANAGEMENT',
-    handledByLabel: 'Ban Quản Lý Phản Hồi',
-    urgent: isUrgentFeedback,
-    priority: isUrgentFeedback ? 1 : 2,
-    suggestedAdminReply: generateSuggestedAdminReply(content, service),
-    actionHint: 'Vấn đề phản ánh cư dân: Ban Quản Lý chỉ cần phản hồi / đáp lại cho cư dân, không nhất thiết phải cử KTV đến có mặt ngay.',
+    handledByLabel: isSerious ? 'Ban Quản Lý Trực Tiếp Thụ Lý' : 'AI Tự Động Phân Tích & Hoàn Tất',
+    urgent: isSerious,
+    priority: isSerious ? 1 : 2,
+    isSerious,
+    canAutoResolve,
+    autoReplyText: canAutoResolve ? smartReply : undefined,
+    suggestedAdminReply: smartReply,
+    actionHint: isSerious
+      ? 'Vấn đề nghiêm trọng: Chuyển Ban Quản Lý trực tiếp kiểm tra hiện trường và gửi văn bản xử lý.'
+      : 'Vấn đề thông thường: AI đã ngầm phân tích và gửi phản hồi tự động hoàn thiện ticket cho cư dân.',
   };
 }
 

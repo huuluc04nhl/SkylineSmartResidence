@@ -265,15 +265,28 @@ export async function POST(req: Request) {
         }
       } 
       // =========================================================================
-      // LUỒNG 2: PHẢN ÁNH / Ý KIẾN / THẮC MẮC (FEEDBACK - BQL ĐÁP LẠI, KHÔNG CẦN CỬ KTV ĐẾN NGAY)
+      // LUỒNG 2: PHẢN ÁNH / Ý KIẾN / THẮC MẮC (FEEDBACK)
       // =========================================================================
       else {
-        ticketStatus = 'Open'; // Chờ Ban Quản Lý phản hồi / đáp lại
-        actualHandledBy = 'MANAGEMENT';
+        // Tùy theo mức độ nghiêm trọng:
+        // - Nghiêm trọng thật sự (an ninh, trộm cắp, hỏa hoạn, thái độ, xô xát...): Giữ 'Open' để BQL trực tiếp thụ lý
+        // - Thông thường (nội quy, chất lượng nước hồ bơi, giờ gym, gửi xe, lịch rác, BBQ, hóa đơn...):
+        //   AI tự động phân tích và đưa ra phản hồi hoàn thiện ticket luôn ('Resolved')
+        if (classification.canAutoResolve && classification.autoReplyText) {
+          ticketStatus = 'Resolved';
+          actualHandledBy = 'MANAGEMENT';
+        } else {
+          ticketStatus = 'Open';
+          actualHandledBy = 'MANAGEMENT';
+        }
         suggestedTech = undefined;
         scheduledTime = undefined;
         aiReason = undefined;
       }
+
+      const autoReplyText = (ticketStatus === 'Resolved' && classification.autoReplyText)
+        ? classification.autoReplyText
+        : undefined;
 
       const newTicket: ExtendedServiceRequest = {
         ...t,
@@ -285,12 +298,10 @@ export async function POST(req: Request) {
         ticket_type: finalCategoryType === 'REPAIR' ? 'REPAIR' : 'FEEDBACK',
         ticket_type_label: finalCategoryType === 'REPAIR' ? 'Sự Cố Kỹ Thuật' : 'Phản Ánh & Ý Kiến',
         handled_by: actualHandledBy,
-        ai_suggested_reply: generateSuggestedAdminReply(
-          t.content || body.content || '', 
-          t.ai_category || body.ai_category,
-          residentFullName,
-          apt
-        ),
+        admin_reply: autoReplyText,
+        admin_replied_at: autoReplyText ? new Date().toISOString() : undefined,
+        admin_replied_by: autoReplyText ? 'Hệ Thống Quản Lý Skyline (AI Tự Động)' : undefined,
+        ai_suggested_reply: classification.suggestedAdminReply || autoReplyText,
         assigned_technician_id: undefined,
         assigned_technician: undefined,
         assigned_technician_phone: undefined,
@@ -302,6 +313,14 @@ export async function POST(req: Request) {
         auto_dispatched: false,
         ai_dispatch_reason: aiReason,
       };
+
+      // Tự động đồng bộ câu trả lời hoàn thiện lên NKS SCRMAI API
+      if (nksResult.id && autoReplyText) {
+        await updateNksTicket({
+          id: nksResult.id,
+          reply: autoReplyText,
+        }).catch(e => console.warn('Lỗi sync AI auto-reply lên NKS:', e));
+      }
 
 
 

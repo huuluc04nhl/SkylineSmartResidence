@@ -843,6 +843,14 @@ export default function KanbanBoard() {
                           )}
                         </div>
 
+                        {/* Cảnh báo sự vụ nghiêm trọng nếu là Feedback cần BQL trực tiếp */}
+                        {isFeedback && (
+                          <div className="flex items-center gap-1.5 text-[10px] font-bold text-rose-300 bg-rose-950/50 border border-rose-500/40 px-2 py-1">
+                            <AlertTriangle className="w-3.5 h-3.5 text-rose-400 shrink-0" />
+                            <span>{t('Sự vụ nghiêm trọng - Cần Ban Quản Lý thụ lý trực tiếp')}</span>
+                          </div>
+                        )}
+
                         {/* Issue Content & Inline Photo */}
                         <p className="text-xs text-gray-400 line-clamp-2 leading-relaxed">
                           {ticket.content}
@@ -881,7 +889,7 @@ export default function KanbanBoard() {
                         <div className="pt-2 border-t border-[#1E2630] flex items-center justify-between flex-wrap gap-2">
                           <span className="text-[10px] text-gray-500 font-mono flex items-center gap-1">
                             <Clock className="w-3 h-3 text-blue-400/80" />
-                            <span>{t('Chờ phân công')}</span>
+                            <span>{isFeedback ? t('BQL cần thụ lý') : t('Chờ phân công')}</span>
                           </span>
 
                           <div className="flex items-center gap-1.5">
@@ -1177,8 +1185,19 @@ export default function KanbanBoard() {
 
                         {/* Feedback Response Summary (Subtle Line, No Boxes) */}
                         {isFeedback && ticket.admin_reply && (
-                          <div className="text-[11px] text-gray-400 italic line-clamp-1 pt-0.5">
-                            <span className="text-gray-300 not-italic font-medium">{t('BQL: ')}</span>"{ticket.admin_reply}"
+                          <div className="text-[11px] text-gray-400 italic line-clamp-2 pt-0.5 space-y-0.5">
+                            <div className="flex items-center gap-1.5 not-italic font-medium text-xs">
+                              {ticket.admin_replied_by?.includes('AI') ? (
+                                <span className="text-[#C5A880] flex items-center gap-1 text-[10px] font-mono px-1.5 py-0.5 bg-[#C5A880]/10 border border-[#C5A880]/30">
+                                  <Sparkles className="w-2.5 h-2.5" /> AI Tự Động Giải Quyết
+                                </span>
+                              ) : (
+                                <span className="text-emerald-400 text-[10px] font-mono flex items-center gap-1">
+                                  <Check className="w-3 h-3" /> BQL Đã Phản Hồi
+                                </span>
+                              )}
+                            </div>
+                            <div>"{ticket.admin_reply}"</div>
                           </div>
                         )}
 
