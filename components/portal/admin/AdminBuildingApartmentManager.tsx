@@ -467,9 +467,10 @@ export default function AdminBuildingApartmentManager() {
     if (gestureRef.current.mode === 'PAN' && e.touches.length === 1) {
       const dx = e.touches[0].clientX - gestureRef.current.startX;
       const dy = e.touches[0].clientY - gestureRef.current.startY;
-      // Giới hạn biên độ kéo an toàn: tối đa -55px đến 55px (không cho trôi khỏi khung hình)
-      const boundedX = Math.max(-55, Math.min(55, gestureRef.current.startPan.x + dx * 0.45));
-      const boundedY = Math.max(-45, Math.min(45, gestureRef.current.startPan.y + dy * 0.45));
+      const maxPanX = Math.max(70, Math.round((building3dZoom - 1) * 220 + 70));
+      const maxPanY = Math.max(50, Math.round((building3dZoom - 1) * 180 + 50));
+      const boundedX = Math.max(-maxPanX, Math.min(maxPanX, gestureRef.current.startPan.x + dx * 0.6));
+      const boundedY = Math.max(-maxPanY, Math.min(maxPanY, gestureRef.current.startPan.y + dy * 0.6));
       setBuilding3dPan({ x: boundedX, y: boundedY });
     } else if (gestureRef.current.mode === 'PINCH' && e.touches.length >= 2) {
       const currentDist = Math.hypot(
@@ -478,8 +479,7 @@ export default function AdminBuildingApartmentManager() {
       );
       if (gestureRef.current.startDist > 0) {
         const factor = currentDist / gestureRef.current.startDist;
-        // Giới hạn zoom an toàn: từ 0.9x đến 1.5x (không bị phóng to quá đà hay vỡ hình isometric)
-        const newZoom = Math.max(0.9, Math.min(1.5, Number((gestureRef.current.startZoom * factor).toFixed(2))));
+        const newZoom = Math.max(0.75, Math.min(2.5, Number((gestureRef.current.startZoom * factor).toFixed(2))));
         setBuilding3dZoom(newZoom);
       }
     }
@@ -488,6 +488,34 @@ export default function AdminBuildingApartmentManager() {
   const handle3dTouchEnd = () => {
     gestureRef.current.mode = 'NONE';
     setIsGesturing(false);
+  };
+
+  // Kéo chuột tự do (Mouse Drag Pan) trên Desktop
+  const handle3dMouseDown = (e: React.MouseEvent) => {
+    if (e.button !== 0) return;
+    gestureRef.current.mode = 'PAN';
+    gestureRef.current.startX = e.clientX;
+    gestureRef.current.startY = e.clientY;
+    gestureRef.current.startPan = { ...building3dPan };
+    setIsGesturing(true);
+  };
+
+  const handle3dMouseMove = (e: React.MouseEvent) => {
+    if (gestureRef.current.mode !== 'PAN' || !isGesturing) return;
+    const dx = e.clientX - gestureRef.current.startX;
+    const dy = e.clientY - gestureRef.current.startY;
+    const maxPanX = Math.max(90, Math.round((building3dZoom - 1) * 260 + 100));
+    const maxPanY = Math.max(70, Math.round((building3dZoom - 1) * 200 + 80));
+    const boundedX = Math.max(-maxPanX, Math.min(maxPanX, gestureRef.current.startPan.x + dx));
+    const boundedY = Math.max(-maxPanY, Math.min(maxPanY, gestureRef.current.startPan.y + dy));
+    setBuilding3dPan({ x: boundedX, y: boundedY });
+  };
+
+  const handle3dMouseUp = () => {
+    if (gestureRef.current.mode === 'PAN') {
+      gestureRef.current.mode = 'NONE';
+      setIsGesturing(false);
+    }
   };
 
   const [isFloorPlanExpanded, setIsFloorPlanExpanded] = useState<boolean>(false);
@@ -1289,17 +1317,21 @@ export default function AdminBuildingApartmentManager() {
 
                 {/* BẢN VẼ PHỐI CẢNH 3D CHUNG CƯ ISOMETRIC MỞ RỘNG TOÀN DIỆN KHUNG HÌNH (MOBILE TOUCH PINCH & PAN) */}
                 <div 
-                  className="relative flex-1 w-full h-full flex items-center justify-center overflow-hidden touch-none select-none"
+                  className="relative flex-1 w-full h-full flex items-center justify-center overflow-hidden touch-none select-none cursor-grab active:cursor-grabbing"
                   onTouchStart={handle3dTouchStart}
                   onTouchMove={handle3dTouchMove}
                   onTouchEnd={handle3dTouchEnd}
+                  onMouseDown={handle3dMouseDown}
+                  onMouseMove={handle3dMouseMove}
+                  onMouseUp={handle3dMouseUp}
+                  onMouseLeave={handle3dMouseUp}
                   onDoubleClick={reset3dTransform}
                 >
                   <div 
                     className="w-full h-full flex items-center justify-center transition-transform ease-out"
                     style={{
-                      transform: `translate3d(${building3dPan.x - Math.max(0, (building3dZoom - 1) * 75)}px, ${building3dPan.y}px, 0px) scale(${building3dZoom})`,
-                      transformOrigin: '38% center',
+                      transform: `translate3d(${building3dPan.x - Math.max(0, (building3dZoom - 1) * 145)}px, ${building3dPan.y}px, 0px) scale(${building3dZoom})`,
+                      transformOrigin: '42% center',
                       transitionDuration: isGesturing ? '0ms' : '200ms'
                     }}
                   >
@@ -1790,9 +1822,9 @@ export default function AdminBuildingApartmentManager() {
                           const wallY = isPodium ? 785 : Number((curYBase - 40 - (curH / 2)).toFixed(1));
 
                           // Thẻ Callout Tầng - Tinh gọn, thanh thoát, định vị cao độ kiến trúc (Không tràn khung)
-                          const cardX = 680;
-                          const cardW = 280;
-                          const cardH = 92;
+                          const cardX = 675;
+                          const cardW = 275;
+                          const cardH = 90;
                           const targetCardY = Math.max(30, Math.min(840, Math.round(wallY - cardH / 2)));
                           const dockX = cardX;
                           const dockY = Math.max(targetCardY + 20, Math.min(targetCardY + cardH - 20, wallY));
