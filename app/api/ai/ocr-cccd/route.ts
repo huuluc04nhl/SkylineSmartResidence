@@ -6,22 +6,26 @@ import { createWorker } from 'tesseract.js';
 
 export const dynamic = 'force-dynamic';
 
+function cleanBase64(base64Data: string): Buffer | null {
+  try {
+    const raw = base64Data.replace(/^data:.*?;base64,/i, '').replace(/\s+/g, '');
+    return Buffer.from(raw, 'base64');
+  } catch {
+    return null;
+  }
+}
+
 function decodeQrFromBase64(base64Data: string): string | null {
   try {
-    const raw = base64Data.replace(/^data:image\/\w+;base64,/, '');
-    const buf = Buffer.from(raw, 'base64');
+    const buf = cleanBase64(base64Data);
+    if (!buf) return null;
     const decoded = jpeg.decode(buf, { useTArray: true });
     if (!decoded || !decoded.data) return null;
 
-    // 1. Scan full image
-    const fullClamped = new Uint8ClampedArray(decoded.data);
-    let code = jsQR(fullClamped, decoded.width, decoded.height, { inversionAttempts: 'attemptBoth' });
-    if (code && code.data) return code.data;
-
-    // 2. Scan top-right quadrant (where the CCCD QR code is located)
-    const cropX = Math.round(decoded.width * 0.40);
-    const cropW = Math.round(decoded.width * 0.60);
-    const cropH = Math.round(decoded.height * 0.60);
+    // 1. Scan tight top-right quadrant (where the CCCD QR code is located)
+    const cropX = Math.round(decoded.width * 0.50);
+    const cropW = Math.round(decoded.width * 0.50);
+    const cropH = Math.round(decoded.height * 0.50);
 
     const cropped = new Uint8ClampedArray(cropW * cropH * 4);
     for (let y = 0; y < cropH; y++) {
@@ -34,7 +38,12 @@ function decodeQrFromBase64(base64Data: string): string | null {
         cropped[dstIdx + 3] = decoded.data[srcIdx + 3];
       }
     }
-    code = jsQR(cropped, cropW, cropH, { inversionAttempts: 'attemptBoth' });
+    let code = jsQR(cropped, cropW, cropH, { inversionAttempts: 'attemptBoth' });
+    if (code && code.data) return code.data;
+
+    // 2. Scan full image
+    const fullClamped = new Uint8ClampedArray(decoded.data);
+    code = jsQR(fullClamped, decoded.width, decoded.height, { inversionAttempts: 'attemptBoth' });
     if (code && code.data) return code.data;
 
     return null;
@@ -75,23 +84,33 @@ export async function POST(req: NextRequest) {
       console.warn('QR parse on server failed:', qrErr);
     }
 
-    // 2. Nhận diện chữ trực tiếp trên ảnh thẻ qua Tesseract OCR đa luồng Node.js
+    // 2. Nhận diện chữ trực tiếp trên ảnh thẻ qua Tesseract OCR
     try {
-      const worker = await createWorker(['vie', 'eng']);
+      let worker;
+      try {
+        worker = await createWorker(['vie', 'eng']);
+      } catch {
+        worker = await createWorker('eng');
+      }
 
-      const frontClean = frontImage.replace(/^data:image\/\w+;base64,/, '');
-      const frontBuf = Buffer.from(frontClean, 'base64');
-      const frontRet = await worker.recognize(frontBuf);
-      const parsedFront = parseCccdText(frontRet.data.text, false);
+      let parsedFront: any = {};
+      let frontConfidence = 90;
+      const frontBuf = cleanBase64(frontImage);
+      if (frontBuf) {
+        const frontRet = await worker.recognize(frontBuf);
+        parsedFront = parseCccdText(frontRet.data.text, false);
+        frontConfidence = frontRet.data.confidence || 90;
+      }
 
       let parsedBack: any = {};
       let backConfidence = 90;
       if (backImage) {
-        const backClean = backImage.replace(/^data:image\/\w+;base64,/, '');
-        const backBuf = Buffer.from(backClean, 'base64');
-        const backRet = await worker.recognize(backBuf);
-        parsedBack = parseCccdText(backRet.data.text, true);
-        backConfidence = backRet.data.confidence || 90;
+        const backBuf = cleanBase64(backImage);
+        if (backBuf) {
+          const backRet = await worker.recognize(backBuf);
+          parsedBack = parseCccdText(backRet.data.text, true);
+          backConfidence = backRet.data.confidence || 90;
+        }
       }
 
       await worker.terminate();
@@ -106,7 +125,7 @@ export async function POST(req: NextRequest) {
         province: parsedFront.province || 'TP. Hồ Chí Minh',
         idDate: parsedBack.idDate || parsedFront.idDate || '',
         idPlace: parsedBack.idPlace || parsedFront.idPlace || 'Cục Cảnh sát QLHC về TTXH',
-        confidence: Math.round(((frontRet.data.confidence || 90) + backConfidence) / 2),
+        confidence: Math.round((frontConfidence + backConfidence) / 2),
       };
 
       if (merged.idNumber || merged.fullName) {

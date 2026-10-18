@@ -104,17 +104,15 @@ export default function CccdOcrScannerModal({
         const dataUrl = reader.result;
         const img = new Image();
         img.onload = async () => {
-          let workingDataUrl = dataUrl;
-          // Nếu ảnh chụp thẳng đứng trên điện thoại di động, tự động xoay ngang để vừa khung thẻ CCCD
+          let finalDataUrl = dataUrl;
           if (img.height > img.width) {
-            workingDataUrl = await rotateImageDataUrl(dataUrl, 90);
+            finalDataUrl = await rotateImageDataUrl(dataUrl, 90, 1200);
+          } else {
+            finalDataUrl = await compressImageDataUrl(dataUrl, 1200);
           }
-
-          const compressed = await compressImageDataUrl(workingDataUrl);
-          setFrontImage(compressed);
+          setFrontImage(finalDataUrl);
           setOcrResult(null);
           setErrorMessage(null);
-          // Gợi ý xem mặt sau nếu chưa tải mặt sau
           if (!backImage) {
             setTimeout(() => {
               setIsFlipped(true);
@@ -147,14 +145,13 @@ export default function CccdOcrScannerModal({
         const dataUrl = reader.result;
         const img = new Image();
         img.onload = async () => {
-          let workingDataUrl = dataUrl;
-          // Nếu ảnh chụp thẳng đứng trên điện thoại di động, tự động xoay ngang
+          let finalDataUrl = dataUrl;
           if (img.height > img.width) {
-            workingDataUrl = await rotateImageDataUrl(dataUrl, 90);
+            finalDataUrl = await rotateImageDataUrl(dataUrl, 90, 1200);
+          } else {
+            finalDataUrl = await compressImageDataUrl(dataUrl, 1200);
           }
-
-          const compressed = await compressImageDataUrl(workingDataUrl);
-          setBackImage(compressed);
+          setBackImage(finalDataUrl);
           setOcrResult(null);
           setErrorMessage(null);
         };
@@ -200,7 +197,7 @@ export default function CccdOcrScannerModal({
           setScanProgress(60);
           setScanStatusText('✨ Đã tìm thấy thông tin trên thẻ! Đang kiểm tra mặt sau...');
           setIsFlipped(true);
-          await new Promise((r) => setTimeout(r, 600));
+          await new Promise((r) => setTimeout(r, 400));
 
           setScanProgress(100);
           setScanStatusText('✨ Hoàn tất nhận diện! Đang tự động điền vào hồ sơ...');
@@ -219,39 +216,14 @@ export default function CccdOcrScannerModal({
           };
 
           setOcrResult(finalResult);
-          setEditIdNumber(finalResult.idNumber);
-          setEditFullName(finalResult.fullName);
-          setEditDob(finalResult.dob);
-          setEditGender(finalResult.gender);
-          setEditPob(finalResult.pob);
-          setEditIdDate(finalResult.idDate);
-          setEditIdPlace(finalResult.idPlace);
           ocrSucceeded = true;
 
-          // Tự động đồng bộ API và điền vào hồ sơ
-          setIsSyncingApi(true);
-          try {
-            await nksUpdateCccd({
-              number: finalResult.idNumber,
-              date: finalResult.idDate,
-              place: finalResult.idPlace,
-              front: frontImage,
-              back: backImage,
-              fullName: finalResult.fullName,
-              dob: finalResult.dob,
-              pob: finalResult.pob,
-              gender: finalResult.gender === '1' ? 1 : 0,
-            });
-          } catch (e) {
-            console.warn('Auto sync API error:', e);
-          } finally {
-            setIsSyncingApi(false);
-          }
-
+          // Tự động điền thẳng thông tin vào hồ sơ và đóng modal
+          onApplyOcrData(finalResult, frontImage, backImage);
           setTimeout(() => {
-            onApplyOcrData(finalResult, frontImage, backImage);
             onClose();
-          }, 700);
+          }, 500);
+          return;
         }
       } catch (qrErr) {
         console.warn('Client QR scan attempt:', qrErr);
@@ -268,7 +240,7 @@ export default function CccdOcrScannerModal({
         ]);
 
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 15000);
+        const timeoutId = setTimeout(() => controller.abort(), 12000);
 
         try {
           const aiRes = await fetch('/api/ai/ocr-cccd', {
@@ -280,11 +252,11 @@ export default function CccdOcrScannerModal({
           clearTimeout(timeoutId);
 
           const aiData = await aiRes.json();
-          if (aiRes.ok && aiData.success && aiData.data?.idNumber) {
+          if (aiRes.ok && aiData.success && (aiData.data?.idNumber || aiData.data?.fullName)) {
             setScanProgress(60);
             setScanStatusText('✨ Đã nhận diện thông tin mặt trước! Đang kiểm tra mặt sau...');
             setIsFlipped(true);
-            await new Promise((r) => setTimeout(r, 600));
+            await new Promise((r) => setTimeout(r, 400));
 
             setScanProgress(100);
             setScanStatusText('✨ Hoàn tất nhận diện! Đang tự động điền vào hồ sơ...');
@@ -298,7 +270,7 @@ export default function CccdOcrScannerModal({
               gender: (d.gender === '0' || d.gender === 0 ? '0' : '1') as '1' | '0',
               pob: d.pob || '',
               residence: d.residence || d.pob || '',
-              province: d.province || '',
+              province: d.province || 'TP. Hồ Chí Minh',
               idDate: formatToDateInput(d.idDate || ''),
               idPlace: d.idPlace || 'Cục Cảnh sát QLHC về TTXH',
               confidence: d.confidence || 95,
@@ -306,67 +278,38 @@ export default function CccdOcrScannerModal({
             };
 
             setOcrResult(finalResult);
-            setEditIdNumber(finalResult.idNumber);
-            setEditFullName(finalResult.fullName);
-            setEditDob(finalResult.dob);
-            setEditGender(finalResult.gender);
-            setEditPob(finalResult.pob);
-            setEditIdDate(finalResult.idDate);
-            setEditIdPlace(finalResult.idPlace);
             ocrSucceeded = true;
 
-            setIsSyncingApi(true);
-            try {
-              await nksUpdateCccd({
-                number: finalResult.idNumber,
-                date: finalResult.idDate,
-                place: finalResult.idPlace,
-                front: frontImage,
-                back: backImage,
-                fullName: finalResult.fullName,
-                dob: finalResult.dob,
-                pob: finalResult.pob,
-                gender: finalResult.gender === '1' ? 1 : 0,
-              });
-            } catch (e) {
-              console.warn('Auto sync API error:', e);
-            } finally {
-              setIsSyncingApi(false);
-            }
-
+            // Tự động điền thẳng thông tin vào hồ sơ và đóng modal
+            onApplyOcrData(finalResult, frontImage, backImage);
             setTimeout(() => {
-              onApplyOcrData(finalResult, frontImage, backImage);
               onClose();
-            }, 700);
+            }, 500);
+            return;
           } else {
-            // Trường hợp ảnh chụp bị mờ/lóa sáng, vẫn mở form để cư dân tự bổ sung dễ dàng
-            const emptyCard: OcrCccdResult = {
-              idNumber: (aiData.data?.idNumber || '').replace(/\D/g, '').slice(0, 12),
-              fullName: (aiData.data?.fullName || '').toUpperCase().trim(),
-              dob: formatToDateInput(aiData.data?.dob || ''),
-              gender: (aiData.data?.gender === '0' ? '0' : '1'),
-              pob: aiData.data?.pob || '',
-              residence: aiData.data?.residence || aiData.data?.pob || '',
-              province: aiData.data?.province || 'TP. Hồ Chí Minh',
-              idDate: formatToDateInput(aiData.data?.idDate || ''),
-              idPlace: aiData.data?.idPlace || 'Cục Cảnh sát QLHC về TTXH',
+            // Ảnh chụp bị mờ/lóa: Vẫn tự động lưu ảnh và điền vào form hồ sơ để cư dân kiểm tra trực tiếp
+            const fallbackCard: OcrCccdResult = {
+              idNumber: (aiData?.data?.idNumber || '').replace(/\D/g, '').slice(0, 12),
+              fullName: (aiData?.data?.fullName || '').toUpperCase().trim(),
+              dob: formatToDateInput(aiData?.data?.dob || ''),
+              gender: (aiData?.data?.gender === '0' ? '0' : '1'),
+              pob: aiData?.data?.pob || '',
+              residence: aiData?.data?.residence || aiData?.data?.pob || '',
+              province: aiData?.data?.province || 'TP. Hồ Chí Minh',
+              idDate: formatToDateInput(aiData?.data?.idDate || ''),
+              idPlace: aiData?.data?.idPlace || 'Cục Cảnh sát QLHC về TTXH',
               confidence: 60,
               rawText: '',
             };
-            setOcrResult(emptyCard);
-            setEditIdNumber(emptyCard.idNumber);
-            setEditFullName(emptyCard.fullName);
-            setEditDob(emptyCard.dob);
-            setEditGender(emptyCard.gender);
-            setEditPob(emptyCard.pob);
-            setEditIdDate(emptyCard.idDate);
-            setEditIdPlace(emptyCard.idPlace);
             setScanProgress(100);
-            setScanStatusText('✨ Đã lưu 2 mặt ảnh thẻ! Quý cư dân vui lòng kiểm tra và điền thông tin bên dưới:');
+            setScanStatusText('✨ Đã lưu ảnh thẻ! Đang điền vào hồ sơ...');
             setScanStage('COMPLETE');
-            setIsFlipped(false);
-            setErrorMessage(aiData.message || 'Ảnh chụp thẻ đã được lưu. Do ảnh chụp có thể bị lóa sáng, Quý cư dân vui lòng hỗ trợ kiểm tra hoặc điền thông tin vào các ô bên dưới.');
-            ocrSucceeded = true;
+
+            onApplyOcrData(fallbackCard, frontImage, backImage);
+            setTimeout(() => {
+              onClose();
+            }, 500);
+            return;
           }
         } catch (fetchErr: any) {
           const emptyCard: OcrCccdResult = {

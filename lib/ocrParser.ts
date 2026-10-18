@@ -85,9 +85,9 @@ export function parseVietnameseCccdQr(qrText: string): OcrCccdResult | null {
 }
 
 /**
- * Rotates an image Data URL by a specified angle (90, 180, 270 deg)
+ * Rotates an image Data URL by a specified angle (90, 180, 270 deg) with memory-safe mobile downscaling
  */
-export function rotateImageDataUrl(dataUrl: string, degrees: number = 90): Promise<string> {
+export function rotateImageDataUrl(dataUrl: string, degrees: number = 90, maxDim = 1200): Promise<string> {
   return new Promise((resolve) => {
     if (typeof window === 'undefined' || !dataUrl || !dataUrl.startsWith('data:image')) {
       return resolve(dataUrl);
@@ -95,8 +95,21 @@ export function rotateImageDataUrl(dataUrl: string, degrees: number = 90): Promi
     const img = new Image();
     img.onload = () => {
       const isSideways = degrees === 90 || degrees === 270;
-      const w = isSideways ? img.height : img.width;
-      const h = isSideways ? img.width : img.height;
+      let rawW = isSideways ? img.height : img.width;
+      let rawH = isSideways ? img.width : img.height;
+
+      let w = rawW;
+      let h = rawH;
+      if (w > maxDim || h > maxDim) {
+        if (w > h) {
+          h = Math.round((h * maxDim) / w);
+          w = maxDim;
+        } else {
+          w = Math.round((w * maxDim) / h);
+          h = maxDim;
+        }
+      }
+
       const canvas = document.createElement('canvas');
       canvas.width = w;
       canvas.height = h;
@@ -105,16 +118,35 @@ export function rotateImageDataUrl(dataUrl: string, degrees: number = 90): Promi
 
       ctx.translate(w / 2, h / 2);
       ctx.rotate((degrees * Math.PI) / 180);
-      if (isSideways) {
-        ctx.drawImage(img, -h / 2, -w / 2, h, w);
-      } else {
-        ctx.drawImage(img, -w / 2, -h / 2, w, h);
-      }
-      resolve(canvas.toDataURL('image/jpeg', 0.88));
+      const drawW = isSideways ? h : w;
+      const drawH = isSideways ? w : h;
+      ctx.drawImage(img, -drawW / 2, -drawH / 2, drawW, drawH);
+      resolve(canvas.toDataURL('image/jpeg', 0.85));
     };
     img.onerror = () => resolve(dataUrl);
     img.src = dataUrl;
   });
+}
+
+function contrastBoost(data: Uint8ClampedArray): Uint8ClampedArray {
+  const out = new Uint8ClampedArray(data.length);
+  let min = 255;
+  let max = 0;
+  for (let i = 0; i < data.length; i += 4) {
+    const gray = (data[i] * 299 + data[i + 1] * 587 + data[i + 2] * 114) / 1000;
+    if (gray < min) min = gray;
+    if (gray > max) max = gray;
+  }
+  const range = max - min || 1;
+  for (let i = 0; i < data.length; i += 4) {
+    const gray = (data[i] * 299 + data[i + 1] * 587 + data[i + 2] * 114) / 1000;
+    const v = Math.round(((gray - min) * 255) / range);
+    out[i] = v;
+    out[i + 1] = v;
+    out[i + 2] = v;
+    out[i + 3] = 255;
+  }
+  return out;
 }
 
 /**
@@ -155,15 +187,21 @@ export function extractCccdFromClientQr(dataUrl: string): Promise<OcrCccdResult 
           ctx.save();
           ctx.translate(w / 2, h / 2);
           ctx.rotate((angle * Math.PI) / 180);
-          if (isSideways) {
-            ctx.drawImage(img, -h / 2, -w / 2, h, w);
-          } else {
-            ctx.drawImage(img, -w / 2, -h / 2, w, h);
-          }
+          const drawW = isSideways ? h : w;
+          const drawH = isSideways ? w : h;
+          ctx.drawImage(img, -drawW / 2, -drawH / 2, drawW, drawH);
           ctx.restore();
 
           const tryDecode = (imageData: ImageData): OcrCccdResult | null => {
-            const code = jsQR(imageData.data, imageData.width, imageData.height, {
+            let code = jsQR(imageData.data, imageData.width, imageData.height, {
+              inversionAttempts: 'attemptBoth',
+            });
+            if (code && code.data) {
+              return parseVietnameseCccdQr(code.data);
+            }
+            // Fallback: boost contrast
+            const boosted = contrastBoost(imageData.data);
+            code = jsQR(boosted, imageData.width, imageData.height, {
               inversionAttempts: 'attemptBoth',
             });
             if (code && code.data) {
@@ -172,28 +210,28 @@ export function extractCccdFromClientQr(dataUrl: string): Promise<OcrCccdResult 
             return null;
           };
 
-          // 1. Scan full image
-          let res = tryDecode(ctx.getImageData(0, 0, w, h));
+          // 1. Scan tight top-right corner (Vietnamese CCCD QR location)
+          const trTightX = Math.round(w * 0.55);
+          const trTightW = Math.round(w * 0.45);
+          const trTightH = Math.round(h * 0.50);
+          let res = tryDecode(ctx.getImageData(trTightX, 0, trTightW, trTightH));
           if (res) return resolve(res);
 
-          // 2. Scan top-right quadrant (standard card orientation)
-          const trW = Math.round(w * 0.55);
-          const trH = Math.round(h * 0.55);
-          const trX = Math.round(w * 0.45);
-          res = tryDecode(ctx.getImageData(trX, 0, trW, trH));
+          // 2. Scan full image
+          res = tryDecode(ctx.getImageData(0, 0, w, h));
           if (res) return resolve(res);
 
-          // 3. Scan top-left quadrant (if mirrored or rotated)
-          res = tryDecode(ctx.getImageData(0, 0, trW, trH));
+          // 3. Scan top-left quadrant (if mirrored)
+          res = tryDecode(ctx.getImageData(0, 0, trTightW, trTightH));
           if (res) return resolve(res);
 
           // 4. Scan bottom-right quadrant (if upside down)
           const brY = Math.round(h * 0.45);
-          res = tryDecode(ctx.getImageData(trX, brY, trW, trH));
+          res = tryDecode(ctx.getImageData(trTightX, brY, trTightW, trTightH));
           if (res) return resolve(res);
 
           // 5. Scan bottom-left quadrant
-          res = tryDecode(ctx.getImageData(0, brY, trW, trH));
+          res = tryDecode(ctx.getImageData(0, brY, trTightW, trTightH));
           if (res) return resolve(res);
         }
 
