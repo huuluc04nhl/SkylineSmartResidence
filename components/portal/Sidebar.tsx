@@ -163,7 +163,7 @@ export default function Sidebar({
           { id: 'resident-finance', label: 'Hóa Đơn', shortLabel: 'Hóa Đơn', icon: CreditCard },
           { id: 'resident-tickets', label: 'Báo Hỏng', shortLabel: 'Báo Hỏng', icon: Wrench },
           { id: 'resident-surveys', label: 'Diễn Đàn & Biểu Quyết', shortLabel: 'Diễn Đàn', icon: MessageSquareQuote },
-          { id: 'resident-ai-assistant', label: 'Trợ Lý AI', shortLabel: 'Trợ Lý AI', icon: Bot },
+          { id: 'resident-ai-assistant', label: 'AI Concierge', shortLabel: 'AI Concierge', icon: Bot },
         ];
 
       case 'TENANT':
@@ -176,7 +176,7 @@ export default function Sidebar({
           { id: 'resident-services', label: 'Dịch Vụ', shortLabel: 'Dịch Vụ', icon: Sparkles },
           { id: 'resident-tickets', label: 'Báo Hỏng', shortLabel: 'Báo Hỏng', icon: Wrench },
           { id: 'resident-surveys', label: 'Diễn Đàn Cư Dân', shortLabel: 'Diễn Đàn', icon: MessageSquareQuote },
-          { id: 'resident-ai-assistant', label: 'Trợ Lý AI', shortLabel: 'Trợ Lý AI', icon: Bot },
+          { id: 'resident-ai-assistant', label: 'AI Concierge', shortLabel: 'AI Concierge', icon: Bot },
         ];
 
       case 'TECHNICIAN':

@@ -420,7 +420,7 @@ export default function ResidentHome({ currentUser, onNavigate, onOpenVisitorMod
                 <div className="w-10 h-10 bg-[#1C2533] text-purple-400 flex items-center justify-center border border-[#2E3D52]">
                   <Sparkles className="w-5 h-5" />
                 </div>
-                <span className="text-[10.5px] font-medium text-gray-200 truncate w-full">{t('Trợ Lý AI')}</span>
+                <span className="text-[10.5px] font-medium text-gray-200 truncate w-full">{t('AI Concierge')}</span>
               </button>
             )}
 

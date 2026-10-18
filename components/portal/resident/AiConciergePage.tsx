@@ -288,7 +288,7 @@ export default function AiConciergePage({ currentUser, onNavigateModule }: AiCon
       sender: 'ai',
       text: `Kính chào Quý cư dân **${residentName}** (Căn **${aptCode}** - Tòa The Tropical BS-07, Tầng 30)! 
 
-Tôi là **Trợ lý ảo Skyline**, luôn sẵn sàng hỗ trợ Quý vị tra cứu thông tin 4 tòa chung cư The Tropical (BS-07 34 tầng, BS-08 39 tầng, BS-09, BS-10), dịch vụ nhà hàng tầng 1, cụm hồ bơi nhiệt đới resort, giải đáp hóa đơn sinh hoạt và tiếp nhận hỗ trợ kỹ thuật NKS 24/7!`,
+Tôi là **Skyline AI Concierge**, luôn sẵn sàng hỗ trợ Quý vị tra cứu thông tin 4 tòa chung cư The Tropical (BS-07 34 tầng, BS-08 39 tầng, BS-09, BS-10), dịch vụ nhà hàng tầng 1, cụm hồ bơi nhiệt đới resort, giải đáp hóa đơn sinh hoạt và tiếp nhận hỗ trợ kỹ thuật NKS 24/7!`,
       timestamp: '08:00',
       ragSource: 'Dữ liệu chuẩn NKS SCRMAI & Quy hoạch The Tropical (Beverly Solari)',
       suggestions: [
@@ -450,13 +450,13 @@ Tôi là **Trợ lý ảo Skyline**, luôn sẵn sàng hỗ trợ Quý vị tra 
             <Bot className="w-4 h-4 text-[#C5A880]" /> Trợ Lý Ảo Thông Minh • Phục Vụ Cư Dân 24/7
           </div>
           <h2 className="font-serif text-2xl text-white font-bold mt-1 flex items-center gap-2.5">
-            Hỏi Đáp Trực Tuyến Cùng Skyline AI 24/7
-            <span className="px-2 py-0.5 bg-[#C5A880] text-[#0D1117] text-[10px] font-mono font-bold uppercase rounded">
-              AI Assistant
+            Skyline AI Concierge 24/7
+            <span className="px-2 py-0.5 bg-[#C5A880] text-[#0D1117] text-[10px] font-mono font-bold uppercase rounded-none">
+              AI Concierge
             </span>
           </h2>
           <p className="text-xs text-gray-400 mt-0.5">
-            Hỗ trợ tra cứu quy định chung cư, phân tích rò rỉ hóa đơn, đặt lịch tiện ích và giải đáp thắc mắc cho Căn <strong className="text-white font-mono">{aptCode}</strong>
+            Trợ lý số giải đáp quy chuẩn chung cư The Tropical, biểu phí sinh hoạt, lịch tiện ích và tiếp nhận sự cố kỹ thuật cho Căn <strong className="text-white font-mono">{aptCode}</strong>
           </p>
         </div>
 
@@ -528,7 +528,7 @@ Tôi là **Trợ lý ảo Skyline**, luôn sẵn sàng hỗ trợ Quý vị tra 
               </div>
               <div>
                 <div className="text-xs font-bold text-white flex items-center gap-2">
-                  <span>Skyline AI Assistant</span>
+                  <span>Skyline AI Concierge</span>
                   <span className="px-2 py-0.5 bg-emerald-950/80 text-emerald-400 text-[9px] font-mono font-bold uppercase rounded-none border-0">
                     Live
                   </span>

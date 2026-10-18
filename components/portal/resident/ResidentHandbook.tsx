@@ -508,10 +508,10 @@ export default function ResidentHandbook({ currentUser, onNavigate }: ResidentHa
             <Bot className="w-5 h-5 text-[#C5A880]" />
             <div>
               <h3 className="text-sm font-bold text-white uppercase tracking-wider">
-                Trợ Lý AI Skyline Concierge • Giải Đáp Nội Quy & Sổ Tay Cư Dân
+                Skyline AI Concierge • Giải Đáp Nội Quy & Sổ Tay Cư Dân
               </h3>
               <p className="text-[11px] text-gray-400">
-                Gõ câu hỏi bất kỳ, Trợ lý AI sẽ trích dẫn điều khoản chính xác theo quy chuẩn chung cư The Tropical.
+                Gõ câu hỏi bất kỳ, Skyline AI Concierge sẽ trích dẫn điều khoản chính xác theo quy chuẩn chung cư The Tropical.
               </p>
             </div>
           </div>

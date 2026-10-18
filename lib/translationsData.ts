@@ -21070,7 +21070,11 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
   ],
   [
     "Trợ Lý AI",
-    "AI Assistant"
+    "AI Concierge"
+  ],
+  [
+    "AI Concierge",
+    "AI Concierge"
   ],
   [
     "Bãi Đỗ Xe",
