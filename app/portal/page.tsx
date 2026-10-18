@@ -50,6 +50,7 @@ import VisitorQrModal from '@/components/portal/resident/VisitorQrModal';
 import AiConciergePage from '@/components/portal/resident/AiConciergePage';
 import ResidentServices from '@/components/portal/resident/ResidentServices';
 import ResidentHandbook from '@/components/portal/resident/ResidentHandbook';
+import ResidentAllServicesModal from '@/components/portal/resident/ResidentAllServicesModal';
 
 // Floating Luxury AI Concierge Widget
 import AiConciergeFloating from '@/components/portal/shared/AiConciergeFloating';
@@ -66,6 +67,7 @@ function PortalContent() {
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [isAiChatOpen, setIsAiChatOpen] = useState(false);
+  const [isAllServicesOpen, setIsAllServicesOpen] = useState(false);
 
   // Auto-route to the appropriate screen according to role
   useEffect(() => {
@@ -187,7 +189,13 @@ function PortalContent() {
       <Topbar
         currentUser={currentUser}
         onSemanticSearchSelect={handleSemanticSearchSelect}
-        onToggleMobileSidebar={() => setIsMobileSidebarOpen(!isMobileSidebarOpen)}
+        onToggleMobileSidebar={() => {
+          if (currentUser.role === 'OWNER' || currentUser.role === 'TENANT') {
+            setIsAllServicesOpen(true);
+          } else {
+            setIsMobileSidebarOpen(!isMobileSidebarOpen);
+          }
+        }}
       />
 
       {/* Main Container: Fixed Left Sidebar + Responsive Margin Content */}
@@ -238,6 +246,7 @@ function PortalContent() {
                     currentUser={currentUser}
                     onNavigate={(modId) => handleSelectModule(modId)}
                     onOpenVisitorModal={() => setIsVisitorModalOpen(true)}
+                    onOpenAllServices={() => setIsAllServicesOpen(true)}
                   />
                 )}
                 {activeModule === 'resident-profile' && <ProfileEkyc currentUser={currentUser} />}
@@ -374,11 +383,13 @@ function PortalContent() {
             )}
           </button>
 
-          {/* Tab 5: Menu Mở Rộng Tất Cả Tính Năng */}
+          {/* Tab 5: Menu Mở Rộng Tất Cả Tính Năng (Mobile App Bottom Sheet) */}
           <button
             type="button"
-            onClick={() => setIsMobileSidebarOpen(true)}
-            className="flex flex-col items-center justify-center py-1 px-2 text-gray-400 hover:text-white transition-all active:scale-95"
+            onClick={() => setIsAllServicesOpen(true)}
+            className={`flex flex-col items-center justify-center py-1 px-2 transition-all active:scale-95 ${
+              isAllServicesOpen ? 'text-[#C5A880]' : 'text-gray-400 hover:text-white'
+            }`}
           >
             <SlidersHorizontal className="w-5 h-5 mb-0.5" />
             <span className="text-[10px] font-medium leading-tight">{t('Tất Cả')}</span>
@@ -401,6 +412,18 @@ function PortalContent() {
         apartmentCode={currentUser.apartment_code || 'CH-06'}
         currentUser={currentUser}
       />
+
+      {/* Native Mobile App "Tất Cả Dịch Vụ" Bottom Sheet */}
+      {(currentUser.role === 'OWNER' || currentUser.role === 'TENANT') && (
+        <ResidentAllServicesModal
+          isOpen={isAllServicesOpen}
+          onClose={() => setIsAllServicesOpen(false)}
+          currentUser={currentUser}
+          onNavigate={(modId) => handleSelectModule(modId)}
+          onOpenVisitorModal={() => setIsVisitorModalOpen(true)}
+          onLogout={handleLogout}
+        />
+      )}
     </div>
   );
 }

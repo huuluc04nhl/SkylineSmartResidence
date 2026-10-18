@@ -30,7 +30,8 @@ import {
   ScanFace,
   Camera,
   AlertCircle,
-  BookOpen
+  BookOpen,
+  SlidersHorizontal
 } from 'lucide-react';
 import { getApartmentByCode } from '@/lib/apartmentStore';
 import { applyScene, getSmartHomeState, SceneType } from '@/lib/smartHomeStore';
@@ -42,9 +43,10 @@ interface ResidentHomeProps {
   currentUser: UserType;
   onNavigate: (moduleId: string) => void;
   onOpenVisitorModal: () => void;
+  onOpenAllServices?: () => void;
 }
 
-export default function ResidentHome({ currentUser, onNavigate, onOpenVisitorModal }: ResidentHomeProps) {
+export default function ResidentHome({ currentUser, onNavigate, onOpenVisitorModal, onOpenAllServices }: ResidentHomeProps) {
   const { t, isEn } = useLanguage();
   const isOwner = currentUser.role === 'OWNER';
   const aptCode = currentUser.apartment_code || 'CH-06';
@@ -472,16 +474,16 @@ export default function ResidentHome({ currentUser, onNavigate, onOpenVisitorMod
               <span className="text-[10.5px] font-medium text-gray-200 truncate w-full">{t('Sổ Tay')}</span>
             </button>
 
-            {/* 8. Gia Đình / Hồ Sơ */}
+            {/* 8. Tất Cả Tính Năng (Mobile App Sheet) */}
             <button
               type="button"
-              onClick={() => onNavigate(isOwner ? 'resident-family' : 'resident-profile')}
-              className="flex flex-col items-center gap-1.5 p-2 bg-[#161B22] border border-[#263548] active:border-rose-400 active:scale-95 transition-all text-center rounded-none"
+              onClick={onOpenAllServices ? onOpenAllServices : () => onNavigate('resident-family')}
+              className="flex flex-col items-center gap-1.5 p-2 bg-[#161B22] border border-[#263548] active:border-[#C5A880] active:scale-95 transition-all text-center rounded-none group"
             >
-              <div className="w-10 h-10 bg-[#1C2533] text-rose-400 flex items-center justify-center border border-[#2E3D52]">
-                <Users className="w-5 h-5" />
+              <div className="w-10 h-10 bg-[#1C2533] text-[#C5A880] group-hover:bg-[#C5A880] group-hover:text-[#0D1117] flex items-center justify-center border border-[#2E3D52] transition-colors">
+                <SlidersHorizontal className="w-5 h-5" />
               </div>
-              <span className="text-[10.5px] font-medium text-gray-200 truncate w-full">{isOwner ? t('Gia Đình') : t('Hồ Sơ')}</span>
+              <span className="text-[10.5px] font-bold text-[#C5A880] truncate w-full">{t('Tất Cả')}</span>
             </button>
           </div>
 
