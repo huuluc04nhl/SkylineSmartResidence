@@ -31,6 +31,7 @@ import { getBills } from '@/lib/billingStore';
 import { getTickets } from '@/lib/ticketStore';
 import { getAllVisitorPasses } from '@/lib/visitorStore';
 import { getApartmentMembers } from '@/lib/userStore';
+import { useLanguage } from '@/lib/languageContext';
 import AiMessageFormatter from './AiMessageFormatter';
 
 interface Message {
@@ -251,6 +252,7 @@ export default function AiConciergeFloating({
   onToggle,
   onNavigateModule,
 }: AiConciergeFloatingProps) {
+  const { t, isEn, language } = useLanguage();
   const aptCode = currentUser.apartment_code || 'CH-06';
   const residentName = currentUser.full_name || (currentUser as any)?.fullname || 'Trần Hữu Lực';
 
@@ -266,28 +268,39 @@ export default function AiConciergeFloating({
     }
   }, [isOpen]);
 
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: 'm-initial',
-      sender: 'ai',
-      text: `Kính chào Quý cư dân **${residentName}** (Căn **${aptCode}** - Tòa The Tropical BS-07, Tầng 30)! 
+  const getInitialAiMessage = (english: boolean): Message => ({
+    id: 'm-initial',
+    sender: 'ai',
+    text: english
+      ? `Greetings Resident **${residentName}** (Unit **${aptCode}** - Tower The Tropical BS-07, 30th Floor)!\n\nI am **Skyline AI Concierge**, dedicated to supporting you 24/7 at The Tropical Complex (Beverly Solari):\n* 🏢 **Apartment & Tower Scale:** Details on 4 towers BS-07 (34 fl.), BS-08 (39 fl.), BS-09 (34 fl.), BS-10 (34 fl.).\n* 🍽️ **5-Star Amenities:** Resort Pool hours, 1st Fl. Restaurant, 24/7 Gym & VIP Sauna.\n* 💳 **Bills & Rates:** Inquire electricity, water, management fees & periodic vehicle parking.\n* 🛠️ **NKS Technical Support:** Prompt issue reception with on-duty technicians arriving within 15 - 60 minutes.\n\nFeel free to tap a suggestion below or type your question directly!`
+      : `Kính chào Quý cư dân **${residentName}** (Căn **${aptCode}** - Tòa The Tropical BS-07, Tầng 30)!\n\nTôi là **Skyline AI Concierge**, luôn đồng hành và hỗ trợ Quý vị 24/7 tại Khu Phức Hợp The Tropical (Beverly Solari):\n* 🏢 **Tra cứu căn hộ & quy mô tòa nhà:** Thông tin 4 chung cư BS-07 (34 tầng), BS-08 (39 tầng), BS-09 (34 tầng), BS-10 (34 tầng).\n* 🍽️ **Dịch vụ tiện ích 5 sao:** Giờ mở cửa Cụm Bể bơi Resort, Nhà hàng ẩm thực tầng 1, Gym 24/7 & Phòng xông hơi VIP.\n* 💳 **Hóa đơn & Biểu phí:** Tra cứu tiền điện, nước, phí quản lý & tiền gửi xe định kỳ.\n* 🛠️ **Hỗ trợ kỹ thuật NKS:** Tiếp nhận sự cố với KTV túc trực có mặt trong 15 - 60 phút.\n\nQuý cư dân có thể chọn câu hỏi gợi ý bên dưới hoặc nhập câu hỏi trực tiếp nhé!`,
+    timestamp: '08:00',
+    suggestions: english
+      ? [
+          '🏢 Overview of The Tropical & Beverly Solari towers',
+          '🏠 Which tower, floor & area is my apartment?',
+          '🍽️ How do restaurant, pool & cleaning services work?',
+          '💳 View this month’s utility bill'
+        ]
+      : [
+          '🏢 Quy mô các tòa The Tropical & Beverly Solari',
+          '🏠 Căn hộ của tôi ở tòa nào, tầng mấy, diện tích bao nhiêu?',
+          '🍽️ Dịch vụ nhà hàng, hồ bơi & vệ sinh hoạt động thế nào?',
+          '💳 Xem hóa đơn sinh hoạt tháng này'
+        ]
+  });
 
-Tôi là **Skyline AI Concierge**, luôn đồng hành và hỗ trợ Quý vị 24/7 tại Khu Phức Hợp The Tropical (Beverly Solari):
-* 🏢 **Tra cứu căn hộ & quy mô tòa nhà:** Thông tin 4 chung cư BS-07 (34 tầng), BS-08 (39 tầng), BS-09 (34 tầng), BS-10 (34 tầng).
-* 🍽️ **Dịch vụ tiện ích 5 sao:** Giờ mở cửa Cụm Bể bơi Resort, Nhà hàng ẩm thực tầng 1, Gym 24/7 & Phòng xông hơi VIP.
-* 💳 **Hóa đơn & Biểu phí:** Tra cứu tiền điện, nước, phí quản lý & tiền gửi xe định kỳ.
-* 🛠️ **Hỗ trợ kỹ thuật NKS:** Tiếp nhận sự cố với KTV túc trực có mặt trong 15 - 60 phút.
+  const [messages, setMessages] = useState<Message[]>([getInitialAiMessage(isEn)]);
 
-Quý cư dân có thể chọn câu hỏi gợi ý bên dưới hoặc nhập câu hỏi trực tiếp nhé!`,
-      timestamp: '08:00',
-      suggestions: [
-        '🏢 Quy mô các tòa The Tropical & Beverly Solari',
-        '🏠 Căn hộ của tôi ở tòa nào, tầng mấy, diện tích bao nhiêu?',
-        '🍽️ Dịch vụ nhà hàng, hồ bơi & vệ sinh hoạt động thế nào?',
-        '💳 Xem hóa đơn sinh hoạt tháng này'
-      ]
-    },
-  ]);
+  // Synchronize initial greeting when language toggles
+  useEffect(() => {
+    setMessages((prev) => {
+      if (prev.length === 1 && prev[0].id === 'm-initial') {
+        return [getInitialAiMessage(isEn)];
+      }
+      return prev;
+    });
+  }, [isEn, residentName, aptCode]);
 
   // Contextual Messenger-style Quick Replies from the latest AI response
   const latestAiMessage = [...messages].reverse().find((m) => m.sender === 'ai');
@@ -339,14 +352,23 @@ Quý cư dân có thể chọn câu hỏi gợi ý bên dưới hoặc nhập c�
       {
         id: 'm-initial',
         sender: 'ai',
-        text: `Đoạn hội thoại đã được làm mới! Tôi sẵn sàng lắng nghe mọi yêu cầu tra cứu từ Quý cư dân ${residentName} (Căn ${aptCode} - Tòa BS-07, Tầng 30).`,
-        timestamp: new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }),
-        suggestions: [
-          '🏢 Quy mô các tòa The Tropical & Beverly Solari',
-          '🏠 Căn hộ của tôi ở tòa nào, tầng mấy, diện tích bao nhiêu?',
-          '🍽️ Dịch vụ nhà hàng, hồ bơi & vệ sinh hoạt động thế nào?',
-          '💳 Xem hóa đơn sinh hoạt tháng này'
-        ]
+        text: isEn
+          ? `Conversation has been refreshed! Ready to assist resident **${residentName}** (Unit **${aptCode}** - Tower BS-07, 30th Floor).`
+          : `Đoạn hội thoại đã được làm mới! Tôi sẵn sàng lắng nghe mọi yêu cầu tra cứu từ Quý cư dân **${residentName}** (Căn **${aptCode}** - Tòa BS-07, Tầng 30).`,
+        timestamp: new Date().toLocaleTimeString(isEn ? 'en-US' : 'vi-VN', { hour: '2-digit', minute: '2-digit' }),
+        suggestions: isEn
+          ? [
+              '🏢 Overview of The Tropical & Beverly Solari towers',
+              '🏠 Which tower, floor & area is my apartment?',
+              '🍽️ How do restaurant, pool & cleaning services work?',
+              '💳 View this month’s utility bill'
+            ]
+          : [
+              '🏢 Quy mô các tòa The Tropical & Beverly Solari',
+              '🏠 Căn hộ của tôi ở tòa nào, tầng mấy, diện tích bao nhiêu?',
+              '🍽️ Dịch vụ nhà hàng, hồ bơi & vệ sinh hoạt động thế nào?',
+              '💳 Xem hóa đơn sinh hoạt tháng này'
+            ]
       }
     ]);
   };
@@ -397,6 +419,7 @@ Quý cư dân có thể chọn câu hỏi gợi ý bên dưới hoặc nhập c�
           tickets,
           visitors,
           members,
+          language: isEn ? 'en' : 'vi',
         }),
       });
 
@@ -410,7 +433,7 @@ Quý cư dân có thể chọn câu hỏi gợi ý bên dưới hoặc nhập c�
           suggestions = data.suggestions;
         }
       } else {
-        aiReply = data.fallbackReply || data.error || 'Dạ, hệ thống đang bận. Quý cư dân vui lòng thử lại sau giây lát hoặc liên hệ Hotline BQL 1900 8899.';
+        aiReply = data.fallbackReply || data.error || (isEn ? 'The system is currently busy. Please try again in a moment or contact Management Hotline 1900 8899.' : 'Dạ, hệ thống đang bận. Quý cư dân vui lòng thử lại sau giây lát hoặc liên hệ Hotline BQL 1900 8899.');
       }
 
       // If suggestions weren't supplied directly in data.suggestions, parse from text
@@ -425,20 +448,20 @@ Quý cư dân có thể chọn câu hỏi gợi ý bên dưới hoặc nhập c�
       const lower = (text + ' ' + aiReply).toLowerCase();
 
       if (lower.includes('hồ bơi') || lower.includes('pool') || lower.includes('gym') || lower.includes('tiện ích') || lower.includes('tennis') || lower.includes('pickleball') || lower.includes('xông hơi') || lower.includes('sauna') || lower.includes('bbq') || lower.includes('vé')) {
-        actionLink = { label: 'Mở Thẻ & Đặt Tiện Ích', moduleId: 'resident-facilities' };
-      } else if (lower.includes('hóa đơn') || lower.includes('tiền') || lower.includes('nợ') || lower.includes('thanh toán') || lower.includes('phí')) {
-        actionLink = { label: 'Xem & Thanh Toán Hóa Đơn', moduleId: 'resident-finance' };
-      } else if (lower.includes('sửa') || lower.includes('rò rỉ') || lower.includes('hỏng') || lower.includes('ống nước') || lower.includes('sự cố') || lower.includes('kỹ thuật')) {
-        actionLink = { label: 'Yêu Cầu Sửa Chữa (Hỗ Trợ Trong 60 Phút)', moduleId: 'resident-tickets' };
-      } else if (lower.includes('faceid') || lower.includes('người nhà') || lower.includes('cửa') || lower.includes('khóa') || lower.includes('thẻ')) {
-        actionLink = { label: 'Quản Lý Khóa Cửa & Thẻ Cư Dân', moduleId: 'resident-smarthome' };
+        actionLink = { label: isEn ? 'Open Pass & Book Amenities' : 'Mở Thẻ & Đặt Tiện Ích', moduleId: 'resident-facilities' };
+      } else if (lower.includes('hóa đơn') || lower.includes('tiền') || lower.includes('nợ') || lower.includes('thanh toán') || lower.includes('phí') || lower.includes('bill') || lower.includes('invoice')) {
+        actionLink = { label: isEn ? 'View & Pay Bills' : 'Xem & Thanh Toán Hóa Đơn', moduleId: 'resident-finance' };
+      } else if (lower.includes('sửa') || lower.includes('rò rỉ') || lower.includes('hỏng') || lower.includes('ống nước') || lower.includes('sự cố') || lower.includes('kỹ thuật') || lower.includes('repair') || lower.includes('leak')) {
+        actionLink = { label: isEn ? 'Request Maintenance (Help in 60 Mins)' : 'Yêu Cầu Sửa Chữa (Hỗ Trợ Trong 60 Phút)', moduleId: 'resident-tickets' };
+      } else if (lower.includes('faceid') || lower.includes('người nhà') || lower.includes('cửa') || lower.includes('khóa') || lower.includes('thẻ') || lower.includes('lock') || lower.includes('card')) {
+        actionLink = { label: isEn ? 'Manage Door Locks & Resident Pass' : 'Quản Lý Khóa Cửa & Thẻ Cư Dân', moduleId: 'resident-smarthome' };
       }
 
       const aiMsg: Message = {
         id: `ai-${Date.now()}`,
         sender: 'ai',
         text: aiReply,
-        timestamp: new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }),
+        timestamp: new Date().toLocaleTimeString(isEn ? 'en-US' : 'vi-VN', { hour: '2-digit', minute: '2-digit' }),
         suggestions,
         actionLink,
       };
@@ -451,8 +474,10 @@ Quý cư dân có thể chọn câu hỏi gợi ý bên dưới hoặc nhập c�
         {
           id: `ai-${Date.now()}`,
           sender: 'ai',
-          text: 'Không thể kết nối đến máy chủ AI. Quý cư dân vui lòng thử lại hoặc liên hệ Hotline BQL **1900 8899**.',
-          timestamp: new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }),
+          text: isEn
+            ? 'Unable to connect to AI server. Please try again later or contact Management Hotline **1900 8899**.'
+            : 'Không thể kết nối đến máy chủ AI. Quý cư dân vui lòng thử lại hoặc liên hệ Hotline BQL **1900 8899**.',
+          timestamp: new Date().toLocaleTimeString(isEn ? 'en-US' : 'vi-VN', { hour: '2-digit', minute: '2-digit' }),
         },
       ]);
     } finally {
@@ -501,7 +526,7 @@ Quý cư dân có thể chọn câu hỏi gợi ý bên dưới hoặc nhập c�
           <button
             type="button"
             onClick={onToggle}
-            aria-label="Mở Trợ Lý Ảo Skyline AI"
+            aria-label={isEn ? "Open Skyline AI Assistant" : "Mở Trợ Lý Ảo Skyline AI"}
             className="group relative w-12 h-12 sm:w-13 sm:h-13 bg-gradient-to-br from-[#222C3A]/80 via-[#141B24]/80 to-[#0A0E14]/80 backdrop-blur-xl text-[#C5A880] hover:text-white rounded-none flex items-center justify-center transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-[0_10px_35px_rgba(0,0,0,0.7),0_0_20px_rgba(197,168,128,0.2)] border border-[#C5A880]/40 hover:border-[#C5A880]/70 opacity-90 hover:opacity-100"
           >
             <Bot className="w-5 h-5 sm:w-6 sm:h-6 relative z-10 transition-transform group-hover:rotate-12 duration-200" />
@@ -522,7 +547,7 @@ Quý cư dân có thể chọn câu hỏi gợi ý bên dưới hoặc nhập c�
             type="button"
             onClick={() => setIsMinimized(false)}
             className="flex items-center gap-2.5 text-left flex-1 min-w-0 group"
-            title="Nhấn để mở lại cửa sổ chat"
+            title={isEn ? "Click to reopen chat window" : "Nhấn để mở lại cửa sổ chat"}
           >
             <div className="relative flex-shrink-0">
               <div className="w-7 h-7 bg-[#1C2533] text-[#C5A880] flex items-center justify-center rounded-none border border-[#C5A880]/30 group-hover:bg-[#C5A880] group-hover:text-[#0A0E14] transition-colors">
@@ -539,7 +564,7 @@ Quý cư dân có thể chọn câu hỏi gợi ý bên dưới hoặc nhập c�
               </div>
               <div className="text-[10px] text-gray-400 truncate flex items-center gap-1">
                 <span className="w-1.5 h-1.5 rounded-none bg-emerald-400"></span>
-                <span>Đang trực tuyến • Nhấn mở lại</span>
+                <span>{isEn ? 'Online • Click to reopen' : 'Đang trực tuyến • Nhấn mở lại'}</span>
               </div>
             </div>
           </button>
@@ -549,7 +574,7 @@ Quý cư dân có thể chọn câu hỏi gợi ý bên dưới hoặc nhập c�
               type="button"
               onClick={() => setIsMinimized(false)}
               className="p-1.5 text-[#C5A880] hover:text-white hover:bg-white/10 rounded-none transition-colors border-0"
-              title="Mở lại cửa sổ chat"
+              title={isEn ? "Restore chat window" : "Mở lại cửa sổ chat"}
             >
               <ChevronUp className="w-4 h-4" />
             </button>
@@ -557,7 +582,7 @@ Quý cư dân có thể chọn câu hỏi gợi ý bên dưới hoặc nhập c�
               type="button"
               onClick={onToggle}
               className="p-1.5 text-gray-400 hover:text-rose-400 hover:bg-rose-500/10 rounded-none transition-colors border-0"
-              title="Đóng hoàn toàn"
+              title={isEn ? "Close completely" : "Đóng hoàn toàn"}
             >
               <X className="w-4 h-4" />
             </button>
@@ -584,7 +609,7 @@ Quý cư dân có thể chọn câu hỏi gợi ý bên dưới hoặc nhập c�
                 type="button"
                 onClick={() => setIsMinimized(true)}
                 className="sm:hidden p-1.5 text-gray-400 hover:text-white hover:bg-white/10 rounded-none border-0"
-                title="Thu nhỏ xuống đáy màn hình"
+                title={isEn ? "Minimize to screen bottom" : "Thu nhỏ xuống đáy màn hình"}
               >
                 <ChevronDown className="w-5 h-5" />
               </button>
@@ -605,7 +630,7 @@ Quý cư dân có thể chọn câu hỏi gợi ý bên dưới hoặc nhập c�
                 </div>
                 <div className="text-[10px] sm:text-[11px] text-gray-400 font-light flex items-center gap-1.5 mt-0.5 truncate">
                   <span className="w-1.5 h-1.5 rounded-none bg-emerald-400 animate-pulse flex-shrink-0"></span>
-                  <span className="truncate">Căn <strong className="text-white font-mono">{aptCode}</strong> • Tòa BS-07</span>
+                  <span className="truncate">{isEn ? <>Unit <strong className="text-white font-mono">{aptCode}</strong> • Tower BS-07</> : <>Căn <strong className="text-white font-mono">{aptCode}</strong> • Tòa BS-07</>}</span>
                 </div>
               </div>
             </div>
@@ -616,7 +641,7 @@ Quý cư dân có thể chọn câu hỏi gợi ý bên dưới hoặc nhập c�
                 type="button"
                 onClick={handleResetChat}
                 className="p-1.5 sm:p-2 hover:bg-white/10 text-gray-400 hover:text-white rounded-none transition-colors border-0"
-                title="Làm mới cuộc trò chuyện"
+                title={isEn ? "Refresh conversation" : "Làm mới cuộc trò chuyện"}
               >
                 <RefreshCw className="w-3.5 h-3.5" />
               </button>
@@ -626,7 +651,7 @@ Quý cư dân có thể chọn câu hỏi gợi ý bên dưới hoặc nhập c�
                 type="button"
                 onClick={() => setIsMinimized(true)}
                 className="hidden sm:block p-1.5 sm:p-2 hover:bg-white/10 text-gray-400 hover:text-white rounded-none transition-colors border-0"
-                title="Thu nhỏ thanh dock (không che màn hình)"
+                title={isEn ? "Minimize dock bar (unobtrusive)" : "Thu nhỏ thanh dock (không che màn hình)"}
               >
                 <Minus className="w-3.5 h-3.5" />
               </button>
@@ -725,7 +750,7 @@ Quý cư dân có thể chọn câu hỏi gợi ý bên dưới hoặc nhập c�
                   <div className="flex flex-col gap-1.5 pt-1 max-w-full animate-in fade-in duration-200">
                     <div className="flex items-center gap-1.5 text-[11px] text-[#C5A880] font-medium px-0.5">
                       <Sparkles className="w-3 h-3 text-[#C5A880] flex-shrink-0" />
-                      <span>Gợi ý câu hỏi tiếp theo:</span>
+                      <span>{isEn ? 'Suggested Next Questions:' : 'Gợi ý câu hỏi tiếp theo:'}</span>
                     </div>
                     <div className="flex flex-wrap gap-1.5">
                       {m.suggestions.map((sug, idx) => (
@@ -755,7 +780,7 @@ Quý cư dân có thể chọn câu hỏi gợi ý bên dưới hoặc nhập c�
                   <span className="w-1.5 h-1.5 rounded-none bg-emerald-400 animate-typing-dot-3"></span>
                 </div>
                 <span className="text-[11px] sm:text-xs text-gray-300 font-mono">
-                  Trợ lý Skyline đang tra cứu thông tin...
+                  {isEn ? 'Skyline Assistant is looking up information...' : 'Trợ lý Skyline đang tra cứu thông tin...'}
                 </span>
               </div>
             )}
@@ -771,7 +796,7 @@ Quý cư dân có thể chọn câu hỏi gợi ý bên dưới hoặc nhập c�
               className="absolute bottom-20 right-4 sm:right-6 z-10 px-3 py-1.5 bg-[#1C2533] hover:bg-[#C5A880] hover:text-[#0D1117] text-white text-[11px] sm:text-xs font-semibold rounded-none shadow-2xl flex items-center gap-1.5 transition-all transform hover:scale-105 border border-[#C5A880]/30"
             >
               <ArrowDown className="w-3 h-3" />
-              <span>Tin nhắn mới</span>
+              <span>{isEn ? 'New messages' : 'Tin nhắn mới'}</span>
             </button>
           )}
 
@@ -790,7 +815,7 @@ Quý cư dân có thể chọn câu hỏi gợi ý bên dưới hoặc nhập c�
                 value={inputText}
                 onChange={(e) => setInputText(e.target.value)}
                 onKeyDown={handleKeyDown}
-                placeholder="Nhập câu hỏi (Enter để gửi)..."
+                placeholder={isEn ? "Enter question (Enter to submit)..." : "Nhập câu hỏi (Enter để gửi)..."}
                 disabled={isTyping}
                 className="flex-1 bg-transparent text-xs text-white placeholder-gray-500 focus:outline-none resize-none max-h-24 leading-relaxed py-1 sm:py-1.5 rounded-none"
               />
@@ -800,7 +825,7 @@ Quý cư dân có thể chọn câu hỏi gợi ý bên dưới hoặc nhập c�
                   type="button"
                   onClick={() => setInputText('')}
                   className="text-gray-500 hover:text-white p-1 mb-1 border-0 rounded-none"
-                  title="Xóa chữ"
+                  title={isEn ? "Clear text" : "Xóa chữ"}
                 >
                   <X className="w-3.5 h-3.5" />
                 </button>
@@ -814,7 +839,7 @@ Quý cư dân có thể chọn câu hỏi gợi ý bên dưới hoặc nhập c�
                     ? 'bg-[#C5A880] text-[#0D1117] hover:bg-white shadow transform active:scale-95'
                     : 'bg-[#1A222F] text-gray-500 cursor-not-allowed'
                 }`}
-                title="Gửi tin nhắn"
+                title={isEn ? "Send message" : "Gửi tin nhắn"}
               >
                 <Send className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
               </button>
@@ -824,9 +849,9 @@ Quý cư dân có thể chọn câu hỏi gợi ý bên dưới hoặc nhập c�
             <div className="flex items-center justify-between text-[10px] text-gray-500 px-1">
               <span className="flex items-center gap-1.5 truncate">
                 <ShieldCheck className="w-3 h-3 text-emerald-500 flex-shrink-0" />
-                <span className="truncate">Bảo mật riêng tư • Quy chế vận hành Skyline</span>
+                <span className="truncate">{isEn ? 'Privacy Policy • Skyline Operating Regulations' : 'Bảo mật riêng tư • Quy chế vận hành Skyline'}</span>
               </span>
-              <span className="hidden sm:inline text-[9px] font-mono text-gray-500 flex-shrink-0">Enter ↵ gửi</span>
+              <span className="hidden sm:inline text-[9px] font-mono text-gray-500 flex-shrink-0">{isEn ? 'Enter ↵ to Send' : 'Enter ↵ gửi'}</span>
             </div>
           </form>
         </div>
