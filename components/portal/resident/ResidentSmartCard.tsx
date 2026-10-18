@@ -76,8 +76,8 @@ export default function ResidentSmartCard({
 
   return (
     <div className={`space-y-4 ${className}`}>
-      {/* 3D Perspective Card Container */}
-      <div className="relative mx-auto max-w-sm sm:max-w-md w-full h-56 sm:h-64 [perspective:1000px] select-none group">
+      {/* 3D Perspective Card Container - Exact Physical Card Aspect Ratio 85.6mm x 54mm */}
+      <div className="relative mx-auto max-w-sm sm:max-w-md w-full aspect-[85.6/54] [perspective:1000px] select-none group">
         <div
           onClick={() => setIsFlipped(!isFlipped)}
           className={`relative w-full h-full duration-700 [transform-style:preserve-3d] cursor-pointer transition-transform ${
@@ -87,7 +87,7 @@ export default function ResidentSmartCard({
           {/* ----------------------------------------------------------- */}
           {/* MẶT TRƯỚC: THẺ KIM LOẠI ĐEN - VÀNG ÁNH KIM VIP (FRONT)      */}
           {/* ----------------------------------------------------------- */}
-          <div className="absolute inset-0 w-full h-full [backface-visibility:hidden] rounded-none border border-[#C5A880] bg-gradient-to-br from-[#161B22] via-[#0D1117] to-[#080B10] p-5 sm:p-6 text-white shadow-2xl flex flex-col justify-between overflow-hidden">
+          <div className="absolute inset-0 w-full h-full [backface-visibility:hidden] [-webkit-backface-visibility:hidden] rounded-none border border-[#C5A880] bg-gradient-to-br from-[#161B22] via-[#0D1117] to-[#080B10] p-3.5 sm:p-5 text-white shadow-2xl flex flex-col justify-between overflow-hidden">
             {/* Hologram metallic sheen effect */}
             <div className="absolute -top-24 -left-24 w-48 h-48 bg-[#C5A880]/10 rounded-full blur-2xl pointer-events-none"></div>
             <div className="absolute -bottom-24 -right-24 w-48 h-48 bg-[#C5A880]/15 rounded-full blur-2xl pointer-events-none"></div>
@@ -116,38 +116,38 @@ export default function ResidentSmartCard({
             </div>
 
             {/* Middle Bar: Gold EMV Chip & Biometric FaceID badge */}
-            <div className="flex items-center justify-between relative z-10 my-1">
+            <div className="flex items-center justify-between relative z-10 my-0.5 sm:my-1">
               {/* Metallic Gold EMV Chip */}
-              <div className="w-11 h-8 bg-gradient-to-tr from-amber-600 via-yellow-400 to-amber-300 rounded-none border border-amber-300 p-1 flex flex-col justify-between shadow-md">
+              <div className="w-9 h-6 sm:w-11 sm:h-8 bg-gradient-to-tr from-amber-600 via-yellow-400 to-amber-300 rounded-none border border-amber-300 p-1 flex flex-col justify-between shadow-md">
                 <div className="h-[1px] bg-amber-800/60 w-full"></div>
                 <div className="h-[1px] bg-amber-800/60 w-full"></div>
                 <div className="h-[1px] bg-amber-800/60 w-full"></div>
               </div>
 
               <div className="text-right">
-                <div className="text-[9px] text-gray-400 font-mono uppercase">{t('Căn Hộ Định Danh')}</div>
-                <div className="font-serif text-lg sm:text-xl font-bold text-white tracking-wider">
+                <div className="text-[8.5px] sm:text-[9px] text-gray-400 font-mono uppercase">{t('Căn Hộ Định Danh')}</div>
+                <div className="font-serif text-base sm:text-xl font-bold text-white tracking-wider">
                   {t('Căn')} {aptCode}
                 </div>
               </div>
             </div>
 
             {/* Card Number */}
-            <div className="font-mono text-sm sm:text-base font-bold tracking-[0.25em] text-[#C5A880] relative z-10 drop-shadow">
+            <div className="font-mono text-xs sm:text-base font-bold tracking-[0.18em] sm:tracking-[0.25em] text-[#C5A880] relative z-10 drop-shadow truncate">
               {cardNumber}
             </div>
 
             {/* Bottom Bar: Resident Name + Expiry + Flip Hint */}
-            <div className="flex items-end justify-between border-t border-[#222B35] pt-2 relative z-10 text-[10px] font-mono">
+            <div className="flex items-end justify-between border-t border-[#222B35] pt-1.5 sm:pt-2 relative z-10 text-[9.5px] sm:text-[10px] font-mono">
               <div>
-                <div className="text-gray-400 text-[8px] uppercase">{t('Chủ Thẻ')}</div>
-                <div className="font-bold text-white tracking-wider text-xs truncate max-w-[170px]">
+                <div className="text-gray-400 text-[7.5px] sm:text-[8px] uppercase">{t('Chủ Thẻ')}</div>
+                <div className="font-bold text-white tracking-wider text-[11px] sm:text-xs truncate max-w-[150px] sm:max-w-[180px]">
                   {cardHolder}
                 </div>
               </div>
 
               <div className="text-right">
-                <div className="text-gray-400 text-[8px] uppercase">{t('Thời Hạn Sử Dụng')}</div>
+                <div className="text-gray-400 text-[7.5px] sm:text-[8px] uppercase">{t('Thời Hạn Sử Dụng')}</div>
                 <div className="text-gray-200 font-semibold">{expiryDate}</div>
               </div>
             </div>
@@ -156,13 +156,13 @@ export default function ResidentSmartCard({
           {/* ----------------------------------------------------------- */}
           {/* MẶT SAU: DẢI TỪ TÍNH + MÃ QR SINH TRẮC HỌC (BACK)          */}
           {/* ----------------------------------------------------------- */}
-          <div className="absolute inset-0 w-full h-full [backface-visibility:hidden] [transform:rotateY(180deg)] rounded-none border border-[#C5A880] bg-[#0A0E14] text-white shadow-2xl flex flex-col justify-between overflow-hidden">
-            {/* Magnetic Stripe */}
-            <div className="w-full h-10 sm:h-12 bg-[#000000] border-t border-b border-[#222B35] mt-3"></div>
+          <div className="absolute inset-0 w-full h-full [backface-visibility:hidden] [-webkit-backface-visibility:hidden] [transform:rotateY(180deg)] rounded-none border border-[#C5A880] bg-[#0A0E14] text-white shadow-2xl flex flex-col justify-between overflow-hidden">
+            {/* Magnetic Stripe - Obsidian gradient */}
+            <div className="w-full h-8 sm:h-10 bg-gradient-to-r from-[#141A22] via-[#080B10] to-[#141A22] border-t border-b border-[#222B35] mt-2 sm:mt-3"></div>
 
             {/* Back Content */}
-            <div className="px-5 pb-4 space-y-2 text-xs flex-1 flex flex-col justify-between">
-              <div className="flex items-center justify-between gap-4 pt-1">
+            <div className="px-3.5 sm:px-5 pb-3 sm:pb-4 space-y-1.5 sm:space-y-2 text-xs flex-1 flex flex-col justify-between">
+              <div className="flex items-center justify-between gap-3 sm:gap-4 pt-1">
                 {/* Dynamic QR Code for Turnstiles */}
                 <div className="p-1.5 bg-white border border-gray-400 flex-shrink-0">
                   <img
@@ -199,7 +199,7 @@ export default function ResidentSmartCard({
           <button
             type="button"
             onClick={() => setIsFlipped(!isFlipped)}
-            className="flex-1 py-2 bg-[#121820] hover:bg-[#1C2533] border border-[#222B35] hover:border-[#C5A880] text-gray-300 hover:text-white text-xs font-semibold uppercase tracking-wider transition-colors flex items-center justify-center gap-1.5"
+            className="flex-1 h-10 bg-[#121820] hover:bg-[#1C2533] border border-[#222B35] hover:border-[#C5A880] text-gray-300 hover:text-white text-xs font-semibold uppercase tracking-wider transition-colors flex items-center justify-center gap-1.5 rounded-none"
           >
             <RotateCw className="w-3.5 h-3.5 text-[#C5A880]" />
             {t('Lật Thẻ')}
@@ -210,7 +210,7 @@ export default function ResidentSmartCard({
             type="button"
             onClick={handleSimulateTap}
             disabled={isTapping}
-            className="flex-1 py-2 bg-[#C5A880] hover:bg-white text-[#0D1117] text-xs font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-1.5 shadow-lg"
+            className="flex-1 h-10 bg-[#C5A880] hover:bg-white text-[#0D1117] text-xs font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-1.5 shadow-lg rounded-none"
           >
             <Wifi className="w-3.5 h-3.5 rotate-90" />
             {isTapping ? t('Đang Quẹt...') : t('Quẹt Thẻ NFC')}

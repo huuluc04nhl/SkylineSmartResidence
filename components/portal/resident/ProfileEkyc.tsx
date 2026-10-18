@@ -1140,42 +1140,66 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
             {/* 2 Vị trí ảnh CCCD: Tỉ lệ chuẩn 85.6mm x 54mm, không bị méo lệch trên mobile */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 pt-1">
               {/* Mặt trước */}
-              <div className="p-2.5 sm:p-3 bg-[#0E131B] border border-[#263140] rounded-none space-y-2">
+              <div 
+                onClick={() => {
+                  if (cccdImage) setIsCardViewerOpen(true);
+                  else setIsOcrModalOpen(true);
+                }}
+                className="p-2.5 sm:p-3 bg-[#0E131B] border border-[#263140] hover:border-[#C5A880]/60 transition-all rounded-none space-y-2 cursor-pointer group select-none"
+                title={cccdImage ? 'Bấm để phóng to xem thẻ' : 'Bấm để chụp / tải ảnh thẻ'}
+              >
                 <div className="flex items-center justify-between text-xs">
                   <span className="font-semibold text-white flex items-center gap-1.5">
                     <span className="w-2 h-2 rounded-full bg-cyan-400"></span> Mặt Trước (Ảnh Chân Dung)
                   </span>
                   <span className="text-[10px] text-cyan-300 font-mono">Vị Trí 1</span>
                 </div>
-                <div className="relative w-full aspect-[85.6/54] rounded-none overflow-hidden border border-gray-800 bg-[#0A0E14] flex items-center justify-center">
+                <div className="relative w-full aspect-[85.6/54] rounded-none overflow-hidden border border-gray-800 group-hover:border-[#C5A880]/40 transition-colors bg-[#0A0E14] flex items-center justify-center">
                   {cccdImage ? (
-                    <img src={cccdImage} alt="CCCD Mặt Trước" className="w-full h-full object-contain sm:object-cover" />
+                    <>
+                      <img src={cccdImage} alt="CCCD Mặt Trước" className="w-full h-full object-contain group-hover:scale-[1.02] transition-transform" />
+                      <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-1.5 text-xs text-[#C5A880] font-bold">
+                        <Eye className="w-4 h-4" /> Bấm Xem Chi Tiết
+                      </div>
+                    </>
                   ) : (
                     <div className="flex flex-col items-center justify-center text-center p-3 text-gray-500 space-y-1">
-                      <CreditCard className="w-6 h-6 text-cyan-500/50" />
+                      <CreditCard className="w-6 h-6 text-cyan-500/50 group-hover:text-cyan-400 transition-colors" />
                       <span className="text-xs text-gray-400">Chưa có ảnh mặt trước</span>
-                      <span className="text-[10px] text-gray-600 hidden sm:inline">Bấm &quot;Quét Thẻ CCCD&quot; ở trên</span>
+                      <span className="text-[10px] text-[#C5A880] font-medium group-hover:underline">Bấm để quét / tải lên ngay</span>
                     </div>
                   )}
                 </div>
               </div>
 
               {/* Mặt sau */}
-              <div className="p-2.5 sm:p-3 bg-[#0E131B] border border-[#263140] rounded-none space-y-2">
+              <div 
+                onClick={() => {
+                  if (cccdBackImage) setIsCardViewerOpen(true);
+                  else setIsOcrModalOpen(true);
+                }}
+                className="p-2.5 sm:p-3 bg-[#0E131B] border border-[#263140] hover:border-[#C5A880]/60 transition-all rounded-none space-y-2 cursor-pointer group select-none"
+                title={cccdBackImage ? 'Bấm để phóng to xem thẻ' : 'Bấm để chụp / tải ảnh thẻ'}
+              >
                 <div className="flex items-center justify-between text-xs">
                   <span className="font-semibold text-white flex items-center gap-1.5">
                     <span className="w-2 h-2 rounded-full bg-amber-400"></span> Mặt Sau (Chip Điện Tử)
                   </span>
                   <span className="text-[10px] text-amber-300 font-mono">Vị Trí 2</span>
                 </div>
-                <div className="relative w-full aspect-[85.6/54] rounded-none overflow-hidden border border-gray-800 bg-[#0A0E14] flex items-center justify-center">
+                <div className="relative w-full aspect-[85.6/54] rounded-none overflow-hidden border border-gray-800 group-hover:border-[#C5A880]/40 transition-colors bg-[#0A0E14] flex items-center justify-center">
                   {cccdBackImage ? (
-                    <img src={cccdBackImage} alt="CCCD Mặt Sau" className="w-full h-full object-contain sm:object-cover" />
+                    <>
+                      <img src={cccdBackImage} alt="CCCD Mặt Sau" className="w-full h-full object-contain group-hover:scale-[1.02] transition-transform" />
+                      <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-1.5 text-xs text-[#C5A880] font-bold">
+                        <Eye className="w-4 h-4" /> Bấm Xem Chi Tiết
+                      </div>
+                    </>
                   ) : (
                     <div className="flex flex-col items-center justify-center text-center p-3 text-gray-500 space-y-1">
-                      <CreditCard className="w-6 h-6 text-amber-500/50" />
+                      <CreditCard className="w-6 h-6 text-amber-500/50 group-hover:text-amber-400 transition-colors" />
                       <span className="text-xs text-gray-400">Chưa có ảnh mặt sau</span>
-                      <span className="text-[10px] text-gray-600 hidden sm:inline">Bấm &quot;Quét Thẻ CCCD&quot; ở trên</span>
+                      <span className="text-[10px] text-[#C5A880] font-medium group-hover:underline">Bấm để quét / tải lên ngay</span>
                     </div>
                   )}
                 </div>
@@ -1328,7 +1352,7 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
                     <button
                       type="button"
                       onClick={() => setIsBankEnrollOpen(true)}
-                      className="w-full py-2.5 sm:py-2.5 bg-gradient-to-r from-[#C5A880] to-[#E2C799] hover:brightness-110 text-[#0D1117] text-xs font-bold uppercase tracking-wider rounded-none flex items-center justify-center gap-2 transition-all shadow"
+                      className="w-full h-10 bg-[#C5A880] hover:bg-white text-[#0D1117] text-xs font-bold uppercase tracking-wider rounded-none flex items-center justify-center gap-2 transition-all shadow"
                     >
                       <Camera className="w-4 h-4 text-[#0D1117]" /> Bắt Đầu Quét Mặt 4 Bước
                     </button>
