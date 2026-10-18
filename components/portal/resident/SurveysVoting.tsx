@@ -368,7 +368,9 @@ export default function SurveysVoting({ currentUser }: SurveysVotingProps) {
               {t('Diễn Đàn & Biểu Quyết Cư Dân SKYLINE')}
             </h1>
             <p className="text-xs text-gray-400 max-w-2xl leading-relaxed">
-              {t('Không gian tương tác trực tuyến 24/7 tích hợp AI: Kiểm duyệt tự động, phân tích cảm xúc cư dân, phản hồi nhanh nội quy và biểu quyết minh bạch.')}
+              {isEn
+                ? '24/7 online interactive space powered by AI: automated moderation, resident sentiment analysis, instant regulation lookup, and transparent voting.'
+                : 'Không gian tương tác trực tuyến 24/7 tích hợp AI: Kiểm duyệt tự động, phân tích cảm xúc cư dân, phản hồi nhanh nội quy và biểu quyết minh bạch.'}
             </p>
           </div>
 
@@ -475,7 +477,7 @@ export default function SurveysVoting({ currentUser }: SurveysVotingProps) {
               type="text"
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
-              placeholder="Tìm bài viết, tiêu đề, mã căn..."
+              placeholder={isEn ? "Search posts, titles, apartment code..." : "Tìm bài viết, tiêu đề, mã căn..."}
               className="w-full bg-[#141B24] border border-[#C5A880]/30 text-white pl-9 pr-3 py-2 text-xs placeholder-gray-500 focus:outline-none focus:border-[#C5A880]"
             />
             {searchQuery && (
@@ -498,7 +500,7 @@ export default function SurveysVoting({ currentUser }: SurveysVotingProps) {
               onChange={e => setOnlyPinned(e.target.checked)}
               className="accent-[#C5A880] rounded-none"
             />
-            <span>Chỉ xem Thông báo Ghim quan trọng</span>
+            <span>{isEn ? 'Pinned Notices only' : 'Chỉ xem Thông báo Ghim quan trọng'}</span>
           </label>
 
           <label className="flex items-center gap-2 cursor-pointer hover:text-white">
@@ -508,7 +510,7 @@ export default function SurveysVoting({ currentUser }: SurveysVotingProps) {
               onChange={e => setOnlyVoted(e.target.checked)}
               className="accent-[#C5A880] rounded-none"
             />
-            <span>Bài viết có Biểu quyết căn hộ đã tham gia</span>
+            <span>{isEn ? 'Surveys apartment participated in' : 'Bài viết có Biểu quyết căn hộ đã tham gia'}</span>
           </label>
         </div>
       </div>
@@ -522,12 +524,14 @@ export default function SurveysVoting({ currentUser }: SurveysVotingProps) {
             </div>
             <div className="space-y-1">
               <div className="text-base font-serif font-bold text-white">
-                {posts.length === 0 ? 'Chưa Có Bài Viết Nào Trên Diễn Đàn' : 'Không Tìm Thấy Bài Viết Phù Hợp'}
+                {posts.length === 0 
+                  ? (isEn ? 'No Community Posts Yet' : 'Chưa Có Bài Viết Nào Trên Diễn Đàn') 
+                  : (isEn ? 'No Matching Posts Found' : 'Không Tìm Thấy Bài Viết Phù Hợp')}
               </div>
               <p className="text-xs text-gray-400 max-w-md mx-auto">
                 {posts.length === 0 
-                  ? 'Diễn đàn hiện tại hoàn toàn sạch dữ liệu. Hãy là người đầu tiên đăng bài chia sẻ, rao vặt hoặc tạo cuộc thăm dò ý kiến cho cộng đồng cư dân!'
-                  : 'Không có bài viết nào khớp với tiêu chí tìm kiếm hoặc bộ lọc hiện tại của bạn.'}
+                  ? (isEn ? 'The community forum is currently clean. Be the first to share, post classifieds, or launch a poll for residents!' : 'Diễn đàn hiện tại hoàn toàn sạch dữ liệu. Hãy là người đầu tiên đăng bài chia sẻ, rao vặt hoặc tạo cuộc thăm dò ý kiến cho cộng đồng cư dân!')
+                  : (isEn ? 'No posts match your search query or active filter criteria.' : 'Không có bài viết nào khớp với tiêu chí tìm kiếm hoặc bộ lọc hiện tại của bạn.')}
               </p>
             </div>
             {posts.length === 0 && (
@@ -536,7 +540,7 @@ export default function SurveysVoting({ currentUser }: SurveysVotingProps) {
                 className="px-5 py-2.5 bg-[#C5A880] hover:bg-white text-[#0A0E14] font-bold text-xs uppercase tracking-wider transition-colors inline-flex items-center gap-2 shadow"
               >
                 <Plus className="w-4 h-4" />
-                <span>Đăng Bài Viết Đầu Tiên</span>
+                <span>{isEn ? 'Create First Post' : 'Đăng Bài Viết Đầu Tiên'}</span>
               </button>
             )}
           </div>

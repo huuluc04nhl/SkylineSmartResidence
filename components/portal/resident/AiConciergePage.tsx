@@ -32,6 +32,7 @@ import { getTickets } from '@/lib/ticketStore';
 import { getAllVisitorPasses } from '@/lib/visitorStore';
 import { getApartmentMembers } from '@/lib/userStore';
 import AiMessageFormatter from '@/components/portal/shared/AiMessageFormatter';
+import { useLanguage } from '@/lib/languageContext';
 
 interface AiMessage {
   id: string;
@@ -47,6 +48,41 @@ interface AiConciergePageProps {
   currentUser: UserType;
   onNavigateModule?: (moduleId: string) => void;
 }
+
+const KNOWLEDGE_CATEGORIES_EN = [
+  {
+    category: '🏢 Building & Unit Scale',
+    prompts: [
+      'Scale of the 4 The Tropical & Beverly Solari buildings',
+      'What are the area and floors of units CH-06 and CH-01?',
+      'How many floors do towers BS-07, BS-08, BS-09, and BS-10 have?',
+    ]
+  },
+  {
+    category: '🏊 Amenities & NKS Services',
+    prompts: [
+      'What time does the 1st-floor restaurant open?',
+      'Opening hours of the resort pool & sky pool',
+      'Pricing for VIP salt-stone sauna on the 3rd floor',
+    ]
+  },
+  {
+    category: '💳 Utility Bills & Living Expenses',
+    prompts: [
+      'View this month\'s utility bill for my apartment',
+      'Details of electricity, water and management fees',
+      'Skyline Management BIDV bank transfer account info',
+    ]
+  },
+  {
+    category: '🔧 Maintenance & NKS Tech Services',
+    prompts: [
+      'Progress on my technical maintenance requests',
+      'Cleaning schedule & trash disposal for Block 07',
+      'How long does a technician take to arrive at the unit?',
+    ]
+  }
+];
 
 const KNOWLEDGE_CATEGORIES = [
   {
@@ -278,31 +314,48 @@ function getDynamicSuggestions(userQuestion: string, aiResponse: string): string
   ];
 }
 
+const getInitialAiMessage = (isEn: boolean, name: string, code: string): AiMessage => ({
+  id: 'm-0',
+  sender: 'ai',
+  text: isEn
+    ? `Greetings Resident **${name}** (Apt **${code}** - Tower The Tropical BS-07, 30th Floor)!\n\nI am **Skyline AI Concierge**, always ready to assist you with inquiries about the 4 The Tropical towers (BS-07 34 fl., BS-08 39 fl., BS-09, BS-10), 1st floor restaurant services, resort pool complex, utility bills, and 24/7 NKS technical service!`
+    : `Kính chào Quý cư dân **${name}** (Căn **${code}** - Tòa The Tropical BS-07, Tầng 30)!\n\nTôi là **Skyline AI Concierge**, luôn sẵn sàng hỗ trợ Quý vị tra cứu thông tin 4 tòa chung cư The Tropical (BS-07 34 tầng, BS-08 39 tầng, BS-09, BS-10), dịch vụ nhà hàng tầng 1, cụm hồ bơi nhiệt đới resort, giải đáp hóa đơn sinh hoạt và tiếp nhận hỗ trợ kỹ thuật NKS 24/7!`,
+  timestamp: '08:00',
+  ragSource: isEn ? 'NKS SCRMAI Standard Data & The Tropical Plan (Beverly Solari)' : 'Dữ liệu chuẩn NKS SCRMAI & Quy hoạch The Tropical (Beverly Solari)',
+  suggestions: isEn ? [
+    '🏢 Scale of The Tropical & Beverly Solari towers',
+    '🏠 Which tower and floor is my apartment on?',
+    '🍽️ Restaurant, pool & cleaning service schedule',
+    '💳 View this month\'s utility bills',
+  ] : [
+    '🏢 Quy mô các tòa The Tropical & Beverly Solari',
+    '🏠 Căn hộ của tôi ở tòa nào, tầng mấy, diện tích bao nhiêu?',
+    '🍽️ Dịch vụ nhà hàng, hồ bơi & vệ sinh hoạt động thế nào?',
+    '💳 Xem hóa đơn sinh hoạt tháng này',
+  ],
+  actionButton: {
+    label: isEn ? 'View Features' : 'Xem Tiện Ích',
+    moduleId: 'resident-facilities'
+  }
+});
+
 export default function AiConciergePage({ currentUser, onNavigateModule }: AiConciergePageProps) {
+  const { t, isEn } = useLanguage();
   const aptCode = currentUser.apartment_code || 'CH-06';
   const residentName = currentUser.full_name || (currentUser as any)?.fullname || 'Trần Hữu Lực';
 
   const [messages, setMessages] = useState<AiMessage[]>([
-    {
-      id: 'm-0',
-      sender: 'ai',
-      text: `Kính chào Quý cư dân **${residentName}** (Căn **${aptCode}** - Tòa The Tropical BS-07, Tầng 30)! 
-
-Tôi là **Skyline AI Concierge**, luôn sẵn sàng hỗ trợ Quý vị tra cứu thông tin 4 tòa chung cư The Tropical (BS-07 34 tầng, BS-08 39 tầng, BS-09, BS-10), dịch vụ nhà hàng tầng 1, cụm hồ bơi nhiệt đới resort, giải đáp hóa đơn sinh hoạt và tiếp nhận hỗ trợ kỹ thuật NKS 24/7!`,
-      timestamp: '08:00',
-      ragSource: 'Dữ liệu chuẩn NKS SCRMAI & Quy hoạch The Tropical (Beverly Solari)',
-      suggestions: [
-        '🏢 Quy mô các tòa The Tropical & Beverly Solari',
-        '🏠 Căn hộ của tôi ở tòa nào, tầng mấy, diện tích bao nhiêu?',
-        '🍽️ Dịch vụ nhà hàng, hồ bơi & vệ sinh hoạt động thế nào?',
-        '💳 Xem hóa đơn sinh hoạt tháng này',
-      ],
-      actionButton: {
-        label: 'Xem Tiện Ích',
-        moduleId: 'resident-facilities'
-      }
-    }
+    getInitialAiMessage(isEn, residentName, aptCode)
   ]);
+
+  useEffect(() => {
+    setMessages(prev => {
+      if (prev.length === 1 && prev[0].id === 'm-0') {
+        return [getInitialAiMessage(isEn, residentName, aptCode)];
+      }
+      return prev;
+    });
+  }, [isEn, residentName, aptCode]);
 
   const [inputText, setInputText] = useState('');
   const [isTyping, setIsTyping] = useState(false);
@@ -447,7 +500,7 @@ Tôi là **Skyline AI Concierge**, luôn sẵn sàng hỗ trợ Quý vị tra c�
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#222B35] pb-4">
         <div>
           <div className="text-[10px] uppercase tracking-[0.25em] text-[#C5A880] font-semibold flex items-center gap-1.5">
-            <Bot className="w-4 h-4 text-[#C5A880]" /> Trợ Lý Ảo Thông Minh • Phục Vụ Cư Dân 24/7
+            <Bot className="w-4 h-4 text-[#C5A880]" /> {isEn ? 'Smart Virtual Assistant • Resident 24/7 Concierge' : 'Trợ Lý Ảo Thông Minh • Phục Vụ Cư Dân 24/7'}
           </div>
           <h2 className="font-serif text-2xl text-white font-bold mt-1 flex items-center gap-2.5">
             Skyline AI Concierge 24/7
@@ -456,14 +509,18 @@ Tôi là **Skyline AI Concierge**, luôn sẵn sàng hỗ trợ Quý vị tra c�
             </span>
           </h2>
           <p className="text-xs text-gray-400 mt-0.5">
-            Trợ lý số giải đáp quy chuẩn chung cư The Tropical, biểu phí sinh hoạt, lịch tiện ích và tiếp nhận sự cố kỹ thuật cho Căn <strong className="text-white font-mono">{aptCode}</strong>
+            {isEn ? (
+              <>Digital concierge for The Tropical regulations, utility bills, amenity schedules, and technical service for Unit <strong className="text-white font-mono">{aptCode}</strong></>
+            ) : (
+              <>Trợ lý số giải đáp quy chuẩn chung cư The Tropical, biểu phí sinh hoạt, lịch tiện ích và tiếp nhận sự cố kỹ thuật cho Căn <strong className="text-white font-mono">{aptCode}</strong></>
+            )}
           </p>
         </div>
 
         <div className="flex items-center gap-2">
           <span className="px-3 py-1 bg-[#121820] border border-emerald-500/80 text-emerald-300 text-xs font-mono font-bold flex items-center gap-1.5 shadow">
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-            Hệ Thống Trực Tuyến 24/7
+            {isEn ? 'System Online 24/7' : 'Hệ Thống Trực Tuyến 24/7'}
           </span>
         </div>
       </div>
@@ -474,14 +531,14 @@ Tôi là **Skyline AI Concierge**, luôn sẵn sàng hỗ trợ Quý vị tra c�
         <div className="lg:col-span-4 space-y-4">
           <div className="p-4 bg-[#121820] border border-[#222B35] space-y-3">
             <div className="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-2">
-              <Sparkles className="w-4 h-4 text-[#C5A880]" /> Danh Mục Tri Thức Thường Gặp:
+              <Sparkles className="w-4 h-4 text-[#C5A880]" /> {isEn ? 'Common Knowledge Topics:' : 'Danh Mục Tri Thức Thường Gặp:'}
             </div>
             <p className="text-[11px] text-gray-400 leading-relaxed">
-              Bấm vào bất kỳ câu hỏi nào dưới đây để AI tự động tra cứu trong sổ tay vận hành:
+              {isEn ? 'Click any prompt below for AI automated handbook search:' : 'Bấm vào bất kỳ câu hỏi nào dưới đây để AI tự động tra cứu trong sổ tay vận hành:'}
             </p>
 
             <div className="space-y-3 pt-1">
-              {KNOWLEDGE_CATEGORIES.map((cat, catIdx) => (
+              {(isEn ? KNOWLEDGE_CATEGORIES_EN : KNOWLEDGE_CATEGORIES).map((cat, catIdx) => (
                 <div key={catIdx} className="space-y-1.5">
                   <div className="text-[11px] font-bold text-[#C5A880]">
                     {cat.category}
@@ -507,10 +564,12 @@ Tôi là **Skyline AI Concierge**, luôn sẵn sàng hỗ trợ Quý vị tra c�
           {/* AI Security & Accuracy Card */}
           <div className="p-4 bg-[#161B22] border border-[#222B35] text-[11px] text-gray-400 space-y-2 rounded-none">
             <div className="text-white font-bold flex items-center gap-1.5">
-              <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" /> Bảo Mật & Thông Tin Chính Xác
+              <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" /> {isEn ? 'Privacy & Accuracy Assured' : 'Bảo Mật & Thông Tin Chính Xác'}
             </div>
             <p className="leading-relaxed">
-              Mọi cuộc trò chuyện đều được bảo mật an toàn riêng tư. Nội dung giải đáp được đối soát và cập nhật liên tục theo quy chế mới nhất từ Ban Quản Lý Chung Cư.
+              {isEn 
+                ? 'All resident conversations are strictly private and secured. Responses are checked and aligned with the latest building regulations.'
+                : 'Mọi cuộc trò chuyện đều được bảo mật an toàn riêng tư. Nội dung giải đáp được đối soát và cập nhật liên tục theo quy chế mới nhất từ Ban Quản Lý Chung Cư.'}
             </p>
           </div>
         </div>
@@ -534,7 +593,7 @@ Tôi là **Skyline AI Concierge**, luôn sẵn sàng hỗ trợ Quý vị tra c�
                   </span>
                 </div>
                 <div className="text-[11px] text-gray-400">
-                  Căn hộ {aptCode} • Chủ hộ: {residentName}
+                  {isEn ? `Apartment ${aptCode} • Owner: ${residentName}` : `Căn hộ ${aptCode} • Chủ hộ: ${residentName}`}
                 </div>
               </div>
             </div>
@@ -545,9 +604,9 @@ Tôi là **Skyline AI Concierge**, luôn sẵn sàng hỗ trợ Quý vị tra c�
                 setMessages([messages[0]]);
               }}
               className="p-2 hover:bg-white/10 text-gray-400 hover:text-white rounded-none transition-colors text-xs flex items-center gap-1.5 border-0"
-              title="Làm mới đoạn hội thoại"
+              title={isEn ? "Reset conversation" : "Làm mới đoạn hội thoại"}
             >
-              <RefreshCw className="w-3.5 h-3.5" /> Làm mới
+              <RefreshCw className="w-3.5 h-3.5" /> {isEn ? 'Refresh' : 'Làm mới'}
             </button>
           </div>
 
@@ -583,17 +642,17 @@ Tôi là **Skyline AI Concierge**, luôn sẵn sàng hỗ trợ Quý vị tra c�
                         type="button"
                         onClick={() => handleCopy(m.id, m.text)}
                         className="hover:text-white flex items-center gap-1 px-2 py-0.5 hover:bg-white/5 transition-colors text-gray-400 ml-2 flex-shrink-0 rounded-none border-0"
-                        title="Sao chép nội dung câu trả lời"
+                        title={isEn ? "Copy reply" : "Sao chép nội dung câu trả lời"}
                       >
                         {copiedId === m.id ? (
                           <>
                             <Check className="w-3 h-3 text-emerald-400" />
-                            <span className="text-emerald-400 text-[9px]">Đã chép</span>
+                            <span className="text-emerald-400 text-[9px]">{isEn ? 'Copied' : 'Đã chép'}</span>
                           </>
                         ) : (
                           <>
                             <Copy className="w-3 h-3" />
-                            <span className="text-[9px]">Sao chép</span>
+                            <span className="text-[9px]">{isEn ? 'Copy' : 'Sao chép'}</span>
                           </>
                         )}
                       </button>
@@ -607,7 +666,7 @@ Tôi là **Skyline AI Concierge**, luôn sẵn sàng hỗ trợ Quý vị tra c�
                       onClick={() => handleAction(m.actionButton!.moduleId)}
                       className="mt-2.5 w-full py-2.5 px-4 bg-gradient-to-r from-[#C5A880] to-[#B59569] hover:from-white hover:to-white text-[#0B0F15] font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition-all rounded-none shadow border-0"
                     >
-                      <Zap className="w-3.5 h-3.5" /> {m.actionButton.label} →
+                      <Zap className="w-3.5 h-3.5" /> {isEn ? (m.actionButton.label.toLowerCase().includes('xem') ? 'View Feature' : m.actionButton.label) : m.actionButton.label} →
                     </button>
                   )}
                 </div>
@@ -621,7 +680,7 @@ Tôi là **Skyline AI Concierge**, luôn sẵn sàng hỗ trợ Quý vị tra c�
                   <div className="flex flex-col gap-1.5 pt-1.5 max-w-[95%] animate-in fade-in duration-200">
                     <div className="flex items-center gap-1.5 text-[11px] text-[#C5A880] font-medium px-0.5">
                       <Sparkles className="w-3 h-3 text-[#C5A880]" />
-                      <span>Gợi ý câu hỏi tiếp theo:</span>
+                      <span>{isEn ? 'Suggested follow-up questions:' : 'Gợi ý câu hỏi tiếp theo:'}</span>
                     </div>
                     <div className="flex flex-wrap gap-1.5">
                       {m.suggestions.map((sug, idx) => (
@@ -651,7 +710,7 @@ Tôi là **Skyline AI Concierge**, luôn sẵn sàng hỗ trợ Quý vị tra c�
                   <span className="w-2 h-2 rounded-none bg-emerald-400 animate-typing-dot-3"></span>
                 </div>
                 <span className="text-xs text-gray-300 font-mono">
-                  Trợ lý Skyline đang tra cứu Sổ tay Cư dân...
+                  {isEn ? 'Skyline AI is querying Resident Handbook...' : 'Trợ lý Skyline đang tra cứu Sổ tay Cư dân...'}
                 </span>
               </div>
             )}
@@ -671,7 +730,7 @@ Tôi là **Skyline AI Concierge**, luôn sẵn sàng hỗ trợ Quý vị tra c�
               type="text"
               value={inputText}
               onChange={(e) => setInputText(e.target.value)}
-              placeholder="Nhập câu hỏi (VD: 'hồ bơi', 'tiền nước rò rỉ', 'sửa ống nước', 'faceid')..."
+              placeholder={isEn ? "Ask a question (e.g. 'swimming pool', 'water leak bill', 'plumbing repair', 'faceid')..." : "Nhập câu hỏi (VD: 'hồ bơi', 'tiền nước rò rỉ', 'sửa ống nước', 'faceid')..."}
               className="flex-1 bg-[#141B24] p-3 text-xs text-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-[#C5A880]/40 transition-colors rounded-none border-0"
             />
 
@@ -684,7 +743,7 @@ Tôi là **Skyline AI Concierge**, luôn sẵn sàng hỗ trợ Quý vị tra c�
                   : 'bg-[#1A222F] text-gray-500 cursor-not-allowed'
               }`}
             >
-              <span>Gửi</span>
+              <span>{isEn ? 'Send' : 'Gửi'}</span>
               <Send className="w-3.5 h-3.5" />
             </button>
           </form>

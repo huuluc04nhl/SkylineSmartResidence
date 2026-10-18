@@ -1071,12 +1071,16 @@ export default function FinanceBilling({ currentUser }: FinanceBillingProps) {
                 <div className="p-3.5 bg-[#0D1117] border border-[#2D3748] flex items-center justify-between text-xs">
                   <div className="space-y-0.5">
                     <span className="font-bold uppercase tracking-wider text-white">
-                      Tổng Cộng Thanh Toán:
+                      {isEn ? 'Total Payment:' : 'Tổng Cộng Thanh Toán:'}
                     </span>
                     <div className="text-[11px] text-gray-400">
                       {serviceItems.length > 0 
-                        ? `${utilityItems.length} mục định kỳ + ${serviceItems.length} dịch vụ (Đã gồm 10% VAT)`
-                        : `${utilityItems.length} mục định kỳ (Đã gồm 10% VAT)`}
+                        ? (isEn
+                            ? `${utilityItems.length} recurring items + ${serviceItems.length} services (Incl. 10% VAT)`
+                            : `${utilityItems.length} mục định kỳ + ${serviceItems.length} dịch vụ (Đã gồm 10% VAT)`)
+                        : (isEn
+                            ? `${utilityItems.length} recurring items (Incl. 10% VAT)`
+                            : `${utilityItems.length} mục định kỳ (Đã gồm 10% VAT)`)}
                     </div>
                   </div>
                   <div className="font-serif text-xl font-bold text-[#C5A880] font-mono">
@@ -1092,14 +1096,14 @@ export default function FinanceBilling({ currentUser }: FinanceBillingProps) {
             <div className="space-y-1">
               <div className="font-bold text-white flex items-center gap-2">
                 <CreditCard className="w-4 h-4 text-[#C5A880]" /> 
-                <span>Cổng Thanh Toán Trực Tuyến 24/7:</span>
+                <span>{isEn ? '24/7 Online Payment Gateway:' : 'Cổng Thanh Toán Trực Tuyến 24/7:'}</span>
               </div>
               <div className="text-gray-400 flex items-center gap-3 pt-0.5">
                 <span className="px-2 py-0.5 bg-[#005BAA]/20 border border-[#005BAA]/50 text-[#005BAA] font-bold text-[10px]">
-                  Cổng VNPAY (ATM / Visa / QR)
+                  {isEn ? 'VNPAY Gateway (ATM / Visa / QR)' : 'Cổng VNPAY (ATM / Visa / QR)'}
                 </span>
                 <span className="px-2 py-0.5 bg-[#A50064]/20 border border-[#A50064]/50 text-[#D82D8B] font-bold text-[10px]">
-                  Ví Điện Tử MoMo
+                  {isEn ? 'MoMo E-Wallet' : 'Ví Điện Tử MoMo'}
                 </span>
               </div>
             </div>
@@ -1517,7 +1521,7 @@ export default function FinanceBilling({ currentUser }: FinanceBillingProps) {
                       {totalSpendAll.toLocaleString('vi-VN')} đ
                     </td>
                     <td className="p-3 text-right font-mono text-emerald-400">100%</td>
-                    <td className="p-3 text-gray-400 text-[11px]">Đã bao gồm 10% VAT</td>
+                    <td className="p-3 text-gray-400 text-[11px]">{isEn ? 'Incl. 10% VAT' : 'Đã bao gồm 10% VAT'}</td>
                   </tr>
                 </tfoot>
               </table>
