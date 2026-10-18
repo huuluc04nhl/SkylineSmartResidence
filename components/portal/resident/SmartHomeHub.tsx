@@ -391,18 +391,18 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
       <div className="p-4 sm:p-5 bg-gradient-to-r from-[#161F2C] via-[#121820] to-[#0D1117] border border-[#C5A880]/70 flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-xl">
         <div>
           <div className="text-[10px] uppercase tracking-[0.25em] text-[#C5A880] font-bold flex items-center gap-1.5">
-            <Cpu className="w-3.5 h-3.5 text-[#C5A880]" /> Nhà Thông Minh • App Cư Dân
+            <Cpu className="w-3.5 h-3.5 text-[#C5A880]" /> {t('Nhà Thông Minh • App Cư Dân')}
           </div>
           <h2 className="font-serif text-xl sm:text-2xl text-white font-bold mt-1 tracking-wide">
-            Căn Hộ {aptCode} • Chung Cư BS-07
+            {t('Căn Hộ')} {aptCode} • {t('Chung Cư BS-07')}
           </h2>
           <p className="text-xs text-gray-300 mt-1 flex flex-wrap items-center gap-2 font-mono">
-            <span>Tầng 30</span>
+            <span>{t('Tầng 30')}</span>
             <span className="text-gray-500">•</span>
-            <span>{aptArea} m² ({aptType})</span>
+            <span>{aptArea} m² ({t(aptType)})</span>
             <span className="text-gray-500">•</span>
             <span className="text-emerald-400 font-bold flex items-center gap-1">
-              <CheckCircle2 className="w-3 h-3" /> Trực Tuyến 24/7
+              <CheckCircle2 className="w-3 h-3" /> {t('Trực Tuyến 24/7')}
             </span>
           </p>
         </div>
@@ -412,7 +412,7 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
           <div className="px-3 py-2 bg-[#0D1117] border border-[#222B35] flex items-center gap-2">
             <Thermometer className="w-4 h-4 text-[#C5A880] shrink-0" />
             <div>
-              <div className="text-[9px] uppercase text-gray-400">Nhiệt Độ</div>
+              <div className="text-[9px] uppercase text-gray-400">{t('Nhiệt Độ')}</div>
               <div className="text-xs font-mono font-bold text-white">{acTemp}.5 °C</div>
             </div>
           </div>
@@ -420,17 +420,17 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
           <div className="px-3 py-2 bg-[#0D1117] border border-[#222B35] flex items-center gap-2">
             <Wind className="w-4 h-4 text-emerald-400 shrink-0" />
             <div>
-              <div className="text-[9px] uppercase text-gray-400">Chất Lượng AQI</div>
-              <div className="text-xs font-mono font-bold text-emerald-400">18 (Tốt)</div>
+              <div className="text-[9px] uppercase text-gray-400">{t('Chất Lượng AQI')}</div>
+              <div className="text-xs font-mono font-bold text-emerald-400">{t('18 (Tốt)')}</div>
             </div>
           </div>
 
           <div className="px-3 py-2 bg-[#0D1117] border border-[#222B35] flex items-center gap-2">
             <Lock className={`w-4 h-4 shrink-0 ${masterDoorLocked ? 'text-emerald-400' : 'text-amber-400 animate-pulse'}`} />
             <div>
-              <div className="text-[9px] uppercase text-gray-400">Khóa Cửa</div>
+              <div className="text-[9px] uppercase text-gray-400">{t('Khóa Cửa')}</div>
               <div className={`text-xs font-mono font-bold ${masterDoorLocked ? 'text-emerald-400' : 'text-amber-400'}`}>
-                {masterDoorLocked ? 'An Toàn' : 'Đang Mở'}
+                {masterDoorLocked ? t('An Toàn') : t('Đang Mở')}
               </div>
             </div>
           </div>
@@ -438,7 +438,7 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
           <div className="px-3 py-2 bg-[#0D1117] border border-[#222B35] flex items-center gap-2">
             <Zap className="w-4 h-4 text-[#C5A880] shrink-0" />
             <div>
-              <div className="text-[9px] uppercase text-gray-400">Điện Năng</div>
+              <div className="text-[9px] uppercase text-gray-400">{t('Điện Năng')}</div>
               <div className="text-xs font-mono font-bold text-[#C5A880]">1.38 kW/h</div>
             </div>
           </div>
@@ -457,9 +457,9 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
       <div className="p-3.5 bg-[#121820] border border-[#222B35] shadow-lg">
         <div className="text-[10px] uppercase tracking-wider text-gray-400 font-mono mb-2 flex items-center justify-between">
           <span className="flex items-center gap-1.5 text-[#C5A880] font-bold">
-            <Sparkles className="w-3.5 h-3.5" /> Ngữ Cảnh 1-Chạm
+            <Sparkles className="w-3.5 h-3.5" /> {t('Ngữ Cảnh 1-Chạm')}
           </span>
-          <span>Chạm để kích hoạt tức thì</span>
+          <span>{t('Chạm để kích hoạt tức thì')}</span>
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
@@ -475,8 +475,8 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
           >
             <Sun className="w-4 h-4 text-amber-400 shrink-0" />
             <div className="truncate">
-              <div className="text-xs font-bold text-white">Về Nhà</div>
-              <div className="text-[10px] text-gray-400 truncate hidden sm:block">Đèn bật, AC 24°C, mở rèm</div>
+              <div className="text-xs font-bold text-white">{t('Về Nhà')}</div>
+              <div className="text-[10px] text-gray-400 truncate hidden sm:block">{t('Đèn bật, AC 24°C, mở rèm')}</div>
             </div>
           </button>
 
@@ -492,8 +492,8 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
           >
             <Moon className="w-4 h-4 text-indigo-400 shrink-0" />
             <div className="truncate">
-              <div className="text-xs font-bold text-white">Đi Ngủ</div>
-              <div className="text-[10px] text-gray-400 truncate hidden sm:block">AC 26°C, rèm đóng, khóa</div>
+              <div className="text-xs font-bold text-white">{t('Đi Ngủ')}</div>
+              <div className="text-[10px] text-gray-400 truncate hidden sm:block">{t('AC 26°C, rèm đóng, khóa')}</div>
             </div>
           </button>
 
@@ -509,8 +509,8 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
           >
             <Power className="w-4 h-4 text-red-400 shrink-0" />
             <div className="truncate">
-              <div className="text-xs font-bold text-white">Đi Vắng</div>
-              <div className="text-[10px] text-gray-400 truncate hidden sm:block">Ngắt điện, khóa 2 lớp</div>
+              <div className="text-xs font-bold text-white">{t('Đi Vắng')}</div>
+              <div className="text-[10px] text-gray-400 truncate hidden sm:block">{t('Ngắt điện, khóa 2 lớp')}</div>
             </div>
           </button>
 
@@ -526,8 +526,8 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
           >
             <Tv className="w-4 h-4 text-purple-400 shrink-0" />
             <div className="truncate">
-              <div className="text-xs font-bold text-white">Xem Phim</div>
-              <div className="text-[10px] text-gray-400 truncate hidden sm:block">Đèn vàng dịu, rèm kín</div>
+              <div className="text-xs font-bold text-white">{t('Xem Phim')}</div>
+              <div className="text-[10px] text-gray-400 truncate hidden sm:block">{t('Đèn vàng dịu, rèm kín')}</div>
             </div>
           </button>
         </div>
@@ -545,8 +545,8 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
           }`}
         >
           <Cpu className="w-4 h-4 text-[#C5A880] shrink-0" />
-          <span className="hidden sm:inline">Thiết Bị &amp; Phòng</span>
-          <span className="sm:hidden">Thiết Bị</span>
+          <span className="hidden sm:inline">{t('Thiết Bị & Phòng')}</span>
+          <span className="sm:hidden">{t('Thiết Bị')}</span>
         </button>
 
         <button
@@ -559,8 +559,8 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
           }`}
         >
           <DoorClosed className="w-4 h-4 text-cyan-400 shrink-0" />
-          <span className="hidden sm:inline">Cửa &amp; Chuông Hình</span>
-          <span className="sm:hidden">Khóa Cửa</span>
+          <span className="hidden sm:inline">{t('Cửa & Chuông Hình')}</span>
+          <span className="sm:hidden">{t('Khóa Cửa')}</span>
           {!masterDoorLocked && <span className="w-2 h-2 rounded-none bg-amber-400 animate-ping ml-1" />}
         </button>
 
@@ -574,8 +574,8 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
           }`}
         >
           <Clock className="w-4 h-4 text-emerald-400 shrink-0" />
-          <span className="hidden sm:inline">Tự Động Hóa &amp; An Toàn</span>
-          <span className="sm:hidden">Tự Động</span>
+          <span className="hidden sm:inline">{t('Tự Động Hóa & An Toàn')}</span>
+          <span className="sm:hidden">{t('Tự Động')}</span>
           <span className="text-[10px] font-mono px-1.5 py-0.2 bg-emerald-950 text-emerald-300">
             {automationRules.filter(r => r.enabled).length}/{automationRules.length}
           </span>

@@ -66,12 +66,14 @@ import { validateCccdCard, verifyFaceWithCccd } from '@/lib/ekycValidator';
 import BankFaceEnrollModal from './BankFaceEnrollModal';
 import { getEnrolledFaceProfile, EnrolledFaceProfile } from '@/lib/faceEnrollStore';
 import AccountPasswordSection from '@/components/portal/shared/AccountPasswordSection';
+import { useLanguage } from '@/lib/languageContext';
 
 interface ProfileEkycProps {
   currentUser: User;
 }
 
 export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
+  const { t, isEn } = useLanguage();
   const { updateUserInfo, refreshUser } = useAuth();
   const isOwner = currentUser.role === 'OWNER';
   const aptCode = currentUser.apartment_code || 'CH-06';
@@ -559,13 +561,13 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 border-b border-[#222B35] pb-3 sm:pb-4">
         <div>
           <div className="text-[10px] uppercase tracking-[0.2em] sm:tracking-[0.25em] text-[#C5A880] font-semibold flex items-center gap-1.5 truncate">
-            <ScanFace className="w-3.5 h-3.5 shrink-0" /> Skyline Smart Residence • {isOwner ? 'Chủ Hộ' : 'Thành Viên'}
+            <ScanFace className="w-3.5 h-3.5 shrink-0" /> Skyline Smart Residence • {isOwner ? t('Chủ Hộ') : t('Thành Viên')}
           </div>
           <h2 className="font-serif text-lg sm:text-2xl text-white font-bold mt-0.5 sm:mt-1 truncate">
-            Thông Tin Cá Nhân & Định Danh
+            {t('Thông Tin Cá Nhân & Định Danh')}
           </h2>
           <p className="text-xs text-gray-400 mt-0.5 line-clamp-1 sm:line-clamp-none">
-            Căn hộ: <strong className="text-white font-mono">{aptCode}</strong> • Hồ sơ định danh pháp lý và bảo mật tài khoản
+            {t('Căn hộ')}: <strong className="text-white font-mono">{aptCode}</strong> • {t('Hồ sơ định danh pháp lý và bảo mật tài khoản')}
           </p>
         </div>
 
@@ -575,52 +577,52 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
             {ekycStatus === 'VERIFIED' && (
               <span className="px-2.5 sm:px-3 py-1 bg-emerald-950/80 border border-emerald-500 text-emerald-300 text-[11px] sm:text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 rounded-none">
                 <ShieldCheck className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-400 shrink-0" />
-                <span><span className="hidden sm:inline">Đã Xác Thực </span>Căn Cước ✓</span>
+                <span><span className="hidden sm:inline">{t('Đã Xác Thực')} </span>{t('Căn Cước ✓')}</span>
               </span>
             )}
 
             {ekycStatus === 'PENDING' && (
               <span className="px-2.5 sm:px-3 py-1 bg-amber-950/80 border border-amber-500 text-amber-300 text-[11px] sm:text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 rounded-none animate-pulse">
                 <Clock className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-400 shrink-0" />
-                <span>Chờ BQL Duyệt</span>
+                <span>{t('Chờ BQL Duyệt')}</span>
               </span>
             )}
 
             {ekycStatus === 'REJECTED' && (
               <span className="px-2.5 sm:px-3 py-1 bg-rose-950/80 border border-rose-500 text-rose-300 text-[11px] sm:text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 rounded-none">
                 <XCircle className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-rose-400 shrink-0" />
-                <span>Yêu Cầu Chụp Lại</span>
+                <span>{t('Yêu Cầu Chụp Lại')}</span>
               </span>
             )}
 
             {ekycStatus === 'DRAFT' && (
               <span className="px-2.5 sm:px-3 py-1 bg-[#161D26] border border-gray-600 text-gray-300 text-[11px] sm:text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 rounded-none">
                 <AlertCircle className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#C5A880] shrink-0" />
-                <span>Chưa Gửi Hồ Sơ</span>
+                <span>{t('Chưa Gửi Hồ Sơ')}</span>
               </span>
             )}
           </div>
         ) : (
           <div className="flex flex-wrap items-center gap-2 flex-shrink-0">
             <span className="px-2.5 sm:px-3 py-1 bg-[#161D26] border border-purple-500/50 text-purple-300 text-[11px] sm:text-xs font-semibold rounded-none flex items-center gap-1.5">
-              <Users className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-purple-400 shrink-0" /> Thành Viên
+              <Users className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-purple-400 shrink-0" /> {t('Thành Viên')}
             </span>
 
             {enrolledFaceProfile?.status === 'ACTIVE' && (
               <span className="px-2.5 sm:px-3 py-1 bg-emerald-950/80 border border-emerald-500 text-emerald-300 text-[11px] sm:text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 rounded-none">
-                <CheckCircle2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-400 shrink-0" /> FaceID Kích Hoạt
+                <CheckCircle2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-400 shrink-0" /> {t('FaceID Kích Hoạt')}
               </span>
             )}
 
             {enrolledFaceProfile?.status === 'PENDING_OWNER' && (
               <span className="px-2.5 sm:px-3 py-1 bg-amber-950/80 border border-amber-500 text-amber-300 text-[11px] sm:text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 rounded-none animate-pulse">
-                <Clock className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-400 shrink-0" /> Chờ Chủ Hộ Duyệt
+                <Clock className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-400 shrink-0" /> {t('Chờ Chủ Hộ Duyệt')}
               </span>
             )}
 
             {enrolledFaceProfile?.status === 'PENDING' && (
               <span className="px-2.5 sm:px-3 py-1 bg-cyan-950/80 border border-cyan-500 text-cyan-300 text-[11px] sm:text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 rounded-none animate-pulse">
-                <Clock className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-cyan-400 shrink-0" /> Chờ BQL Duyệt
+                <Clock className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-cyan-400 shrink-0" /> {t('Chờ BQL Duyệt')}
               </span>
             )}
 
@@ -633,7 +635,7 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
                 }}
                 className="px-3 py-1.5 bg-[#C5A880] hover:bg-white text-[#0D1117] text-[11px] sm:text-xs font-bold uppercase tracking-wider rounded-none flex items-center gap-1.5 transition-all shadow"
               >
-                <Camera className="w-3.5 h-3.5" /> Đăng Ký FaceID
+                <Camera className="w-3.5 h-3.5" /> {t('Đăng Ký FaceID')}
               </button>
             )}
           </div>
@@ -652,7 +654,7 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
           }`}
         >
           <UserIcon className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
-          <span>1. <span className="hidden sm:inline">Thông Tin </span>Cá Nhân</span>
+          <span>1. <span className="hidden sm:inline">{t('Thông Tin')} </span>{t('Cá Nhân')}</span>
         </button>
 
         <button
@@ -665,7 +667,7 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
           }`}
         >
           <ScanFace className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
-          <span>2. <span className="hidden sm:inline">Căn Cước & </span>FaceID</span>
+          <span>2. <span className="hidden sm:inline">{t('Căn Cước')} & </span>FaceID</span>
         </button>
 
         <button
@@ -678,7 +680,7 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
           }`}
         >
           <KeyRound className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
-          <span>3. <span className="hidden sm:inline">Đổi </span>Mật Khẩu</span>
+          <span>3. <span className="hidden sm:inline">{t('Đổi')} </span>{t('Mật Khẩu')}</span>
         </button>
       </div>
 
@@ -686,7 +688,7 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
       {isLoadingApi && (
         <div className="p-8 bg-[#121820] border border-[#222B35] flex items-center justify-center gap-3 text-xs text-[#C5A880] font-mono rounded-none">
           <RefreshCw className="w-5 h-5 animate-spin text-[#C5A880]" />
-          <span>Đang tải thông tin hồ sơ...</span>
+          <span>{t('Đang tải thông tin hồ sơ...')}</span>
         </div>
       )}
 
@@ -713,7 +715,7 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
                 className="hidden sm:flex absolute inset-0 bg-black/60 rounded-full flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-white text-[10px] font-bold"
               >
                 <Camera className="w-4 h-4 mb-0.5 text-[#C5A880]" />
-                Đổi Ảnh
+                {t('Đổi Ảnh')}
               </div>
               {/* Mobile Persistent Touch Indicator Badge */}
               <div className="sm:hidden absolute -bottom-0.5 -right-0.5 w-5 h-5 bg-[#C5A880] text-[#0D1117] rounded-full flex items-center justify-center shadow-lg border-2 border-[#161D26]">
@@ -723,18 +725,18 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
 
             <div className="space-y-0.5 sm:space-y-1 text-left flex-1 min-w-0">
               <div className="text-white font-bold text-sm sm:text-lg flex items-center gap-1.5 sm:gap-2 truncate">
-                <span className="truncate">{fullName || 'Chưa cập nhật họ tên'}</span>
+                <span className="truncate">{fullName || t('Chưa cập nhật họ tên')}</span>
                 <span className="px-1.5 py-0.5 text-[9px] sm:text-[10px] bg-[#C5A880] text-[#0D1117] font-bold uppercase rounded-none shrink-0">
-                  {currentUser.role}
+                  {t(currentUser.role)}
                 </span>
               </div>
               <div className="text-[11px] sm:text-xs text-gray-400 font-mono truncate">
-                Căn <strong className="text-white">{aptCode}</strong> • SĐT: <strong className="text-gray-300">{phone || 'Chưa có'}</strong> • Biển: <strong className="text-[#C5A880]">{licensePlate || 'Chưa có'}</strong>
+                {t('Căn')} <strong className="text-white">{aptCode}</strong> • {t('SĐT')}: <strong className="text-gray-300">{phone || t('Chưa có')}</strong> • {t('Biển')}: <strong className="text-[#C5A880]">{licensePlate || t('Chưa có')}</strong>
               </div>
               <div className="text-[10px] text-[#C5A880]/90 flex items-center gap-1 pt-0.5">
                 <Camera className="w-3 h-3 text-[#C5A880] shrink-0" />
-                <span className="hidden sm:inline">Chạm ảnh để đổi ảnh đại diện cá nhân • Mở cửa sảnh dùng FaceID ở Tab 2</span>
-                <span className="sm:hidden truncate">Chạm ảnh để đổi avatar cá nhân</span>
+                <span className="hidden sm:inline">{t('Chạm ảnh để đổi ảnh đại diện cá nhân • Mở cửa sảnh dùng FaceID ở Tab 2')}</span>
+                <span className="sm:hidden truncate">{t('Chạm ảnh để đổi avatar cá nhân')}</span>
               </div>
             </div>
           </div>

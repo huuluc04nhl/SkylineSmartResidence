@@ -54,12 +54,14 @@ import {
   deleteCommunityPost,
   analyzePostWithAi
 } from '@/lib/communityStore';
+import { useLanguage } from '@/lib/languageContext';
 
 interface SurveysVotingProps {
   currentUser?: User;
 }
 
 export default function SurveysVoting({ currentUser }: SurveysVotingProps) {
+  const { t, isEn } = useLanguage();
   const isAdmin = currentUser?.role === 'ADMIN';
   const isOwner = currentUser?.role === 'OWNER';
   const aptCode = currentUser?.apartment_code || (isAdmin ? 'BQL_OFFICE' : 'CH-06');
@@ -360,13 +362,13 @@ export default function SurveysVoting({ currentUser }: SurveysVotingProps) {
           <div className="space-y-2">
             <div className="inline-flex items-center gap-2 px-3 py-1 bg-[#C5A880]/15 border border-[#C5A880]/40 text-[#C5A880] text-[10px] uppercase tracking-widest font-mono">
               <Sparkles className="w-3 h-3" />
-              <span>Cộng Đồng Cư Dân 5 Sao • The Tropical Beverly Solari</span>
+              <span>{t('Cộng Đồng Cư Dân 5 Sao • The Tropical Beverly Solari')}</span>
             </div>
             <h1 className="text-2xl lg:text-3xl font-serif font-bold text-white tracking-wide">
-              Diễn Đàn & Biểu Quyết Cư Dân SKYLINE
+              {t('Diễn Đàn & Biểu Quyết Cư Dân SKYLINE')}
             </h1>
             <p className="text-xs text-gray-400 max-w-2xl leading-relaxed">
-              Không gian tương tác trực tuyến 24/7 tích hợp AI: Kiểm duyệt tự động, phân tích cảm xúc cư dân, phản hồi nhanh nội quy và biểu quyết minh bạch.
+              {t('Không gian tương tác trực tuyến 24/7 tích hợp AI: Kiểm duyệt tự động, phân tích cảm xúc cư dân, phản hồi nhanh nội quy và biểu quyết minh bạch.')}
             </p>
           </div>
 
@@ -377,7 +379,7 @@ export default function SurveysVoting({ currentUser }: SurveysVotingProps) {
               className="px-4 py-3 bg-[#141B24] hover:bg-[#1E293B] border border-[#C5A880]/40 text-[#C5A880] hover:text-white font-bold text-xs uppercase tracking-wider transition-all duration-200 flex items-center gap-2 shadow-md"
             >
               <BarChart3 className="w-4 h-4 text-[#C5A880]" />
-              <span>Báo Cáo Cảm Xúc AI</span>
+              <span>{t('Báo Cáo Cảm Xúc AI')}</span>
             </button>
 
             {/* Create Post Button */}
@@ -386,7 +388,7 @@ export default function SurveysVoting({ currentUser }: SurveysVotingProps) {
               className="px-5 py-3 bg-[#C5A880] hover:bg-white text-[#0A0E14] font-bold text-xs uppercase tracking-wider transition-all duration-200 flex items-center gap-2 shadow-lg hover:shadow-[#C5A880]/30 transform active:scale-95"
             >
               <Plus className="w-4 h-4" />
-              <span>Đăng Bài / Tạo Thăm Dò</span>
+              <span>{t('Đăng Bài / Tạo Thăm Dò')}</span>
             </button>
           </div>
         </div>
@@ -398,7 +400,7 @@ export default function SurveysVoting({ currentUser }: SurveysVotingProps) {
               <MessageSquareQuote className="w-4 h-4" />
             </div>
             <div>
-              <div className="text-[10px] text-gray-400 uppercase tracking-wider">Tổng Bài Viết</div>
+              <div className="text-[10px] text-gray-400 uppercase tracking-wider">{t('Tổng Bài Viết')}</div>
               <div className="text-lg font-serif font-bold text-white font-mono">{stats.totalPosts}</div>
             </div>
           </div>
@@ -408,7 +410,7 @@ export default function SurveysVoting({ currentUser }: SurveysVotingProps) {
               <Vote className="w-4 h-4" />
             </div>
             <div>
-              <div className="text-[10px] text-gray-400 uppercase tracking-wider">Biểu Quyết Đang Mở</div>
+              <div className="text-[10px] text-gray-400 uppercase tracking-wider">{t('Biểu Quyết Đang Mở')}</div>
               <div className="text-lg font-serif font-bold text-[#10B981] font-mono">{stats.activePolls}</div>
             </div>
           </div>
@@ -418,7 +420,7 @@ export default function SurveysVoting({ currentUser }: SurveysVotingProps) {
               <MessageSquare className="w-4 h-4" />
             </div>
             <div>
-              <div className="text-[10px] text-gray-400 uppercase tracking-wider">Lượt Thảo Luận</div>
+              <div className="text-[10px] text-gray-400 uppercase tracking-wider">{t('Lượt Thảo Luận')}</div>
               <div className="text-lg font-serif font-bold text-white font-mono">{stats.totalComments}</div>
             </div>
           </div>
@@ -428,7 +430,7 @@ export default function SurveysVoting({ currentUser }: SurveysVotingProps) {
               <ShieldCheck className="w-4 h-4" />
             </div>
             <div>
-              <div className="text-[10px] text-gray-400 uppercase tracking-wider">AI Cảm Xúc Hài Lòng</div>
+              <div className="text-[10px] text-gray-400 uppercase tracking-wider">{t('AI Cảm Xúc Hài Lòng')}</div>
               <div className="text-lg font-serif font-bold text-emerald-400 font-mono">{stats.positiveRate}%</div>
             </div>
           </div>
@@ -442,7 +444,7 @@ export default function SurveysVoting({ currentUser }: SurveysVotingProps) {
           <div className="flex flex-wrap items-center gap-2">
             {[
               { id: 'ALL', label: 'Tất Cả Bài Viết', icon: MessageSquareQuote },
-              { id: 'VOTING', label: 'Biểu Quyết & Poll', icon: Vote },
+              { id: 'VOTING', label: 'Biểu Quyết & Khảo Sát', icon: Vote },
               { id: 'ANNOUNCEMENT', label: 'Thông Báo BQL', icon: Megaphone },
               { id: 'MARKETPLACE', label: 'Rao Vặt & Đồ Cũ', icon: ShoppingBag },
               { id: 'DISCUSSION', label: 'Thảo Luận Cư Dân', icon: Users },
@@ -460,7 +462,7 @@ export default function SurveysVoting({ currentUser }: SurveysVotingProps) {
                   }`}
                 >
                   <Icon className="w-3.5 h-3.5" />
-                  <span>{tab.label}</span>
+                  <span>{t(tab.label)}</span>
                 </button>
               );
             })}
@@ -578,37 +580,37 @@ export default function SurveysVoting({ currentUser }: SurveysVotingProps) {
                         <span className="text-sm font-bold text-white tracking-wide">{post.authorName}</span>
                         {isBql ? (
                           <span className="px-2 py-0.5 bg-[#C5A880] text-[#0A0E14] text-[9px] font-bold uppercase tracking-wider">
-                            Ban Quản Lý
+                            {t('Ban Quản Lý')}
                           </span>
                         ) : post.authorRole === 'OWNER' ? (
                           <span className="px-2 py-0.5 bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 text-[9px] font-semibold uppercase tracking-wider">
-                            Chủ Hộ ({post.aptCode || 'CH-06'})
+                            {t('Chủ Hộ')} ({post.aptCode || 'CH-06'})
                           </span>
                         ) : (
                           <span className="px-2 py-0.5 bg-gray-700/40 text-gray-300 border border-gray-600 text-[9px] font-semibold uppercase tracking-wider">
-                            Cư Dân ({post.aptCode || 'Căn Hộ'})
+                            {t('Cư Dân')} ({post.aptCode || t('Căn Hộ')})
                           </span>
                         )}
 
                         {post.isPinned && (
                           <span className="inline-flex items-center gap-1 text-[10px] text-[#C5A880] font-bold uppercase tracking-wider">
                             <Pin className="w-3 h-3 fill-[#C5A880]" />
-                            Ghim Quan Trọng
+                            {t('Ghim Quan Trọng')}
                           </span>
                         )}
 
                         {post.isHotspot && (
                           <span className="inline-flex items-center gap-1 text-[10px] bg-rose-500/15 border border-rose-500/40 text-rose-400 px-2 py-0.5 font-bold uppercase tracking-wider animate-pulse">
                             <Flame className="w-3 h-3 text-rose-400" />
-                            Điểm Nóng BQL
+                            {t('Điểm Nóng BQL')}
                           </span>
                         )}
                       </div>
 
                       <div className="text-[11px] text-gray-500 flex items-center gap-2 mt-0.5 font-mono">
                         <Clock className="w-3 h-3" />
-                        <span>{new Date(post.createdAt).toLocaleDateString('vi-VN', { hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit', year: 'numeric' })}</span>
-                        {post.code && <span>• Mã: <strong className="text-[#C5A880]">{post.code}</strong></span>}
+                        <span>{new Date(post.createdAt).toLocaleDateString(isEn ? 'en-US' : 'vi-VN', { hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit', year: 'numeric' })}</span>
+                        {post.code && <span>• {t('Mã')}: <strong className="text-[#C5A880]">{post.code}</strong></span>}
                       </div>
                     </div>
                   </div>
@@ -618,17 +620,17 @@ export default function SurveysVoting({ currentUser }: SurveysVotingProps) {
                     {post.aiModeration === 'Toxic' ? (
                       <span className="px-2 py-0.5 bg-rose-500/20 border border-rose-500 text-rose-400 text-[10px] font-mono flex items-center gap-1">
                         <AlertTriangle className="w-3 h-3 text-rose-400" />
-                        AI: Vi Phạm Tiêu Chuẩn
+                        {t('AI: Vi Phạm Tiêu Chuẩn')}
                       </span>
                     ) : post.aiModeration === 'Warning' ? (
                       <span className="px-2 py-0.5 bg-amber-500/20 border border-amber-500/40 text-amber-400 text-[10px] font-mono flex items-center gap-1">
                         <AlertTriangle className="w-3 h-3 text-amber-400" />
-                        AI: Cần Lưu Tâm
+                        {t('AI: Cần Lưu Tâm')}
                       </span>
                     ) : (
                       <span className="px-2 py-0.5 bg-[#141B24] border border-[#10B981]/40 text-[#10B981] text-[10px] font-mono flex items-center gap-1">
                         <ShieldCheck className="w-3 h-3" />
-                        AI: Chuẩn Văn Minh
+                        {t('AI: Chuẩn Văn Minh')}
                       </span>
                     )}
 
@@ -640,7 +642,7 @@ export default function SurveysVoting({ currentUser }: SurveysVotingProps) {
                         : 'bg-rose-500/10 text-rose-400 border-rose-500/30'
                     }`}>
                       {post.aiSentimentLabel === 'Tích cực' ? '🌱 ' : post.aiSentimentLabel === 'Góp ý' ? '💡 ' : '⚠️ '}
-                      Cảm xúc: {post.aiSentimentLabel} ({post.aiSentiment > 0 ? `+${post.aiSentiment.toFixed(2)}` : post.aiSentiment.toFixed(2)})
+                      {t('Cảm xúc')}: {t(post.aiSentimentLabel)} ({post.aiSentiment > 0 ? `+${post.aiSentiment.toFixed(2)}` : post.aiSentiment.toFixed(2)})
                     </span>
 
                     {/* Delete post button (Admin or Author) */}
@@ -753,22 +755,22 @@ export default function SurveysVoting({ currentUser }: SurveysVotingProps) {
                         <div className="flex items-center gap-2">
                           <Vote className="w-4 h-4 text-[#C5A880]" />
                           <span className="text-xs font-bold uppercase tracking-wider text-white">
-                            Cuộc Thăm Dò & Biểu Quyết Tòa Nhà
+                            {t('Cuộc Thăm Dò & Biểu Quyết Tòa Nhà')}
                           </span>
                           {post.poll.isOwnerOnly ? (
                             <span className="px-2 py-0.5 bg-amber-500/15 border border-amber-500/40 text-amber-400 text-[9px] font-semibold uppercase tracking-wider">
-                              Chủ Hộ (Owner Only)
+                              {t('Chủ Hộ (Owner Only)')}
                             </span>
                           ) : (
                             <span className="px-2 py-0.5 bg-blue-500/15 border border-blue-500/40 text-blue-400 text-[9px] font-semibold uppercase tracking-wider">
-                              Toàn Thể Cư Dân
+                              {t('Toàn Thể Cư Dân')}
                             </span>
                           )}
                         </div>
 
                         <div className="text-[11px] text-gray-400 font-mono flex items-center gap-2">
-                          <span>Đã biểu quyết: <strong className="text-white">{totalPollVotes}</strong>/{eligibleCount} căn ({participationRate}%)</span>
-                          <span>• Hạn: {new Date(post.poll.deadline).toLocaleDateString('vi-VN')}</span>
+                          <span>{t('Đã biểu quyết')}: <strong className="text-white">{totalPollVotes}</strong>/{eligibleCount} {t('căn')} ({participationRate}%)</span>
+                          <span>• {t('Hạn')}: {new Date(post.poll.deadline).toLocaleDateString(isEn ? 'en-US' : 'vi-VN')}</span>
                         </div>
                       </div>
 
@@ -823,7 +825,7 @@ export default function SurveysVoting({ currentUser }: SurveysVotingProps) {
                                 </div>
 
                                 <div className="flex items-center gap-3 font-mono flex-shrink-0 text-[11px]">
-                                  <span className="text-gray-400">{option.votes} phiếu</span>
+                                  <span className="text-gray-400">{option.votes} {t('phiếu')}</span>
                                   <span className={`font-bold ${isUserSelected ? 'text-[#10B981]' : 'text-[#C5A880]'}`}>
                                     {percentage}%
                                   </span>
@@ -839,10 +841,10 @@ export default function SurveysVoting({ currentUser }: SurveysVotingProps) {
                         <div className="text-[11px] text-[#10B981] flex items-center justify-between pt-1 font-mono">
                           <span className="flex items-center gap-1.5">
                             <CheckCircle2 className="w-3.5 h-3.5" />
-                            Căn hộ {aptCode} đã bỏ phiếu thành công (bấm phương án khác để đổi ý kiến).
+                            {t('Căn hộ')} {aptCode} {t('đã bỏ phiếu thành công (bấm phương án khác để đổi ý kiến).')}
                           </span>
                           <span className="text-gray-500">
-                            Lúc: {new Date(userVote.votedAt).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })}
+                            {t('Lúc')}: {new Date(userVote.votedAt).toLocaleTimeString(isEn ? 'en-US' : 'vi-VN', { hour: '2-digit', minute: '2-digit' })}
                           </span>
                         </div>
                       )}
@@ -864,7 +866,7 @@ export default function SurveysVoting({ currentUser }: SurveysVotingProps) {
                     >
                       <Heart className={`w-3.5 h-3.5 ${hasLiked ? 'fill-[#F43F5E]' : ''}`} />
                       <span>{post.likes.length}</span>
-                      <span className="hidden sm:inline">{hasLiked ? 'Đã Thích' : 'Thích'}</span>
+                      <span className="hidden sm:inline">{hasLiked ? t('Đã Thích') : t('Thích')}</span>
                     </button>
 
                     {/* Comment button */}
@@ -874,7 +876,7 @@ export default function SurveysVoting({ currentUser }: SurveysVotingProps) {
                     >
                       <MessageSquare className="w-3.5 h-3.5" />
                       <span>{post.comments.length}</span>
-                      <span className="hidden sm:inline">Thảo luận</span>
+                      <span className="hidden sm:inline">{t('Thảo luận')}</span>
                     </button>
                   </div>
 

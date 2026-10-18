@@ -57,6 +57,7 @@ import CccdOcrScannerModal from './CccdOcrScannerModal';
 import { OcrCccdResult, formatToDateInput } from '@/lib/ocrParser';
 import BankFaceEnrollModal from './BankFaceEnrollModal';
 import { getEnrolledFaceProfile } from '@/lib/faceEnrollStore';
+import { useLanguage } from '@/lib/languageContext';
 
 export interface FamilyMemberItem {
   id: string;
@@ -91,6 +92,7 @@ interface FamilyMembersProps {
 }
 
 export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
+  const { t, isEn } = useLanguage();
   const aptCode = currentUser.apartment_code || 'CH-06';
   const isOwner = currentUser.role === 'OWNER';
   const ownerName = currentUser.full_name || (currentUser as any)?.fullname || 'Trần Hữu Lực';
@@ -746,13 +748,13 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#222B35] pb-4">
         <div>
           <div className="text-[10px] uppercase tracking-[0.2em] text-[#C5A880] font-semibold flex items-center gap-1.5">
-            <Users className="w-3.5 h-3.5" /> Quản Trị Căn Hộ
+            <Users className="w-3.5 h-3.5" /> {t('Quản Trị Căn Hộ')}
           </div>
           <h2 className="font-serif text-2xl text-white font-bold mt-1">
-            Nhân Khẩu • Căn {aptCode}
+            {t('Nhân Khẩu')} • {t('Căn')} {aptCode}
           </h2>
           <p className="text-xs text-gray-400 mt-0.5">
-            Chủ hộ: <strong className="text-[#C5A880]">{ownerName}</strong> • Căn <strong className="text-white font-mono">{aptCode}</strong>
+            {t('Chủ hộ:')} <strong className="text-[#C5A880]">{ownerName}</strong> • {t('Căn')} <strong className="text-white font-mono">{aptCode}</strong>
           </p>
         </div>
 
@@ -774,7 +776,7 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
               title="Quét lại FaceID Chủ Hộ"
             >
               <Camera className="w-3.5 h-3.5 text-[#C5A880]" />
-              <span>Quét FaceID</span>
+              <span>{t('Quét FaceID')}</span>
             </button>
             <button
               type="button"
@@ -786,7 +788,7 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
               }}
               className="px-4 py-2 bg-[#C5A880] hover:bg-white text-[#0D1117] text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-2 rounded-none shadow flex-shrink-0 cursor-pointer active:scale-95"
             >
-              <UserPlus className="w-4 h-4" /> Thêm Thành Viên
+              <UserPlus className="w-4 h-4" /> {t('Thêm Thành Viên')}
             </button>
           </div>
         )}

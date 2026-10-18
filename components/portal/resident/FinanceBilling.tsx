@@ -432,19 +432,19 @@ export default function FinanceBilling({ currentUser }: FinanceBillingProps) {
 
   // Hàm lấy tên dịch vụ chuẩn
   const getItemName = (item: BillDetail) => {
-    if (item.service_name) return item.service_name;
+    if (item.service_name) return t(item.service_name);
     switch (item.service_type) {
-      case 'Electricity': return 'Tiền Điện Sinh Hoạt';
-      case 'Water': return 'Tiền Nước Sinh Hoạt';
-      case 'Management_Fee': return 'Phí Quản Lý Vận Hành';
-      case 'Parking': return 'Phí Gửi Xe Căn Hộ';
-      case 'Internet': return 'Cáp Quang Internet VNPT Fiber 300Mbps';
-      case 'Facility': return 'Phí Sử Dụng Tiện Ích Đặt Trước';
-      case 'Laundry': return 'Giặt Ủi & Giặt Hấp Cao Cấp';
-      case 'Housekeeping': return 'Giúp Việc & Dọn Dẹp Căn Hộ';
-      case 'Personal_Trainer': return 'Thuê Huấn Luyện Viên PT Bơi/Gym';
-      case 'Car_Care': return 'Chăm Sóc & Rửa Xe Hầm B2';
-      default: return 'Phí Dịch Vụ Cư Dân';
+      case 'Electricity': return t('Tiền Điện Sinh Hoạt');
+      case 'Water': return t('Tiền Nước Sinh Hoạt');
+      case 'Management_Fee': return t('Phí Quản Lý Vận Hành');
+      case 'Parking': return t('Phí Gửi Xe Căn Hộ');
+      case 'Internet': return t('Cáp Quang Internet VNPT Fiber 300Mbps');
+      case 'Facility': return t('Phí Sử Dụng Tiện Ích Đặt Trước');
+      case 'Laundry': return t('Giặt Ủi & Giặt Hấp Cao Cấp');
+      case 'Housekeeping': return t('Giúp Việc & Dọn Dẹp Căn Hộ');
+      case 'Personal_Trainer': return t('Thuê Huấn Luyện Viên PT Bơi/Gym');
+      case 'Car_Care': return t('Chăm Sóc & Rửa Xe Hầm B2');
+      default: return t('Phí Dịch Vụ Cư Dân');
     }
   };
 
@@ -788,8 +788,8 @@ export default function FinanceBilling({ currentUser }: FinanceBillingProps) {
                   ) : (
                     <Download className="w-4 h-4 text-[#C5A880] shrink-0" />
                   )}
-                  <span className="hidden sm:inline">{isExportingInvoicePdf ? 'Đang Xuất PDF...' : 'Xuất Hóa Đơn PDF'}</span>
-                  <span className="sm:hidden">{isExportingInvoicePdf ? 'Đang xuất...' : 'Xuất PDF'}</span>
+                  <span className="hidden sm:inline">{isExportingInvoicePdf ? t('Đang Xuất PDF...') : t('Xuất Hóa Đơn PDF')}</span>
+                  <span className="sm:hidden">{isExportingInvoicePdf ? t('Đang xuất...') : t('Xuất PDF')}</span>
                 </button>
               )}
 
@@ -799,8 +799,8 @@ export default function FinanceBilling({ currentUser }: FinanceBillingProps) {
                   className="px-3 sm:px-4 py-2 bg-[#161B22] border border-[#2D3748] hover:border-[#C5A880] text-gray-200 text-xs font-semibold uppercase tracking-wider transition-all flex items-center gap-1.5"
                 >
                   <Receipt className="w-4 h-4 text-[#C5A880] shrink-0" />
-                  <span className="hidden sm:inline">In Hóa Đơn</span>
-                  <span className="sm:hidden">In</span>
+                  <span className="hidden sm:inline">{t('In Hóa Đơn')}</span>
+                  <span className="sm:hidden">{t('In')}</span>
                 </button>
               )}
             </>
@@ -812,7 +812,7 @@ export default function FinanceBilling({ currentUser }: FinanceBillingProps) {
                 title="Tải bảng tính CSV chi tiết từng hạng mục chi phí"
               >
                 <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-                <span className="hidden sm:inline">Xuất CSV</span>
+                <span className="hidden sm:inline">{t('Xuất CSV')}</span>
                 <span className="sm:hidden">CSV</span>
               </button>
               <button
@@ -820,8 +820,8 @@ export default function FinanceBilling({ currentUser }: FinanceBillingProps) {
                 className="px-2.5 sm:px-3.5 py-2 bg-[#161B22] border border-[#2D3748] hover:border-[#C5A880] text-gray-200 text-xs font-semibold uppercase tracking-wider transition-all flex items-center gap-1.5"
               >
                 <Download className="w-3.5 h-3.5 text-[#C5A880] shrink-0" />
-                <span className="hidden sm:inline">In Báo Cáo</span>
-                <span className="sm:hidden">In</span>
+                <span className="hidden sm:inline">{t('In Báo Cáo')}</span>
+                <span className="sm:hidden">{t('In')}</span>
               </button>
             </>
           )}
@@ -840,12 +840,12 @@ export default function FinanceBilling({ currentUser }: FinanceBillingProps) {
             }`}
           >
             <Receipt className="w-3.5 h-3.5 shrink-0" />
-            <span>Hóa Đơn</span>
+            <span>{t('Hóa Đơn')}</span>
             {bills.some(b => b.status === 'Unpaid') && (
               <span className={`px-1.5 py-0.2 text-[9px] font-mono font-bold rounded-none ${
                 activeTab === 'BILLING' ? 'bg-[#0D1117] text-[#C5A880]' : 'bg-amber-500 text-black'
               }`}>
-                1 chưa nộp
+                {bills.filter(b => b.status === 'Unpaid').length} {t('chưa nộp')}
               </span>
             )}
           </button>
@@ -859,15 +859,15 @@ export default function FinanceBilling({ currentUser }: FinanceBillingProps) {
             }`}
           >
             <BarChart3 className="w-3.5 h-3.5 shrink-0" />
-            <span className="hidden sm:inline">Thống Kê Chi Tiêu</span>
-            <span className="sm:hidden">Thống Kê</span>
+            <span className="hidden sm:inline">{t('Thống Kê Chi Tiêu')}</span>
+            <span className="sm:hidden">{t('Thống Kê')}</span>
           </button>
         </div>
 
         <div className="text-xs text-gray-400 flex items-center gap-2 font-mono">
-          <span>Căn: <strong className="text-white">{aptCode}</strong></span>
+          <span>{t('Căn:')} <strong className="text-white">{aptCode}</strong></span>
           <span>•</span>
-          <span>Chủ hộ: <strong className="text-[#C5A880]">{residentName}</strong></span>
+          <span>{t('Chủ hộ:')} <strong className="text-[#C5A880]">{residentName}</strong></span>
         </div>
       </div>
 
@@ -894,7 +894,7 @@ export default function FinanceBilling({ currentUser }: FinanceBillingProps) {
       {/* Selector nếu có nhiều kỳ hóa đơn */}
       {bills.length > 1 && (
         <div className="flex items-center gap-2 text-xs">
-          <span className="text-gray-400">Chọn kỳ thanh toán:</span>
+          <span className="text-gray-400">{t('Chọn kỳ thanh toán:')}</span>
           <div className="flex items-center gap-2">
             {bills.map(b => (
               <button
@@ -906,7 +906,7 @@ export default function FinanceBilling({ currentUser }: FinanceBillingProps) {
                     : 'bg-[#161B22] border border-[#2D3748] text-gray-300 hover:text-white'
                 }`}
               >
-                {b.billing_month} ({b.status === 'Paid' ? 'Đã thanh toán ✓' : 'Chưa thanh toán'})
+                {t(b.billing_month)} ({b.status === 'Paid' ? t('Đã thanh toán ✓') : t('Chưa thanh toán')})
               </button>
             ))}
           </div>
@@ -918,19 +918,19 @@ export default function FinanceBilling({ currentUser }: FinanceBillingProps) {
         <div className="p-6 bg-[#121820] border border-[#222B35] space-y-6 shadow-xl">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#222B35] pb-4">
             <div>
-              <div className="text-xs text-gray-400">Kỳ thu phí: <strong className="text-white">{currentBill.billing_month}</strong></div>
+              <div className="text-xs text-gray-400">{t('Kỳ thu phí:')} <strong className="text-white">{t(currentBill.billing_month)}</strong></div>
               <div className="text-xs text-gray-400 mt-0.5">
-                Hạn chót thanh toán: <strong className="text-amber-400 font-mono">
-                  {new Date(currentBill.due_date).toLocaleDateString('vi-VN')}
+                {t('Hạn chót thanh toán:')} <strong className="text-amber-400 font-mono">
+                  {new Date(currentBill.due_date).toLocaleDateString(isEn ? 'en-US' : 'vi-VN')}
                 </strong>
               </div>
               <div className="text-[11px] text-gray-400 mt-0.5">
-                Đơn vị quản lý thu: <strong className="text-gray-200">Ban Quản Lý Chung Cư Skyline Smart Residence</strong>
+                {t('Đơn vị quản lý thu:')} <strong className="text-gray-200">{t('Ban Quản Lý Chung Cư Skyline Smart Residence')}</strong>
               </div>
             </div>
 
             <div className="text-left sm:text-right">
-              <div className="text-xs uppercase tracking-wider text-gray-400">Tổng Số Tiền Cần Thanh Toán</div>
+              <div className="text-xs uppercase tracking-wider text-gray-400">{t('Tổng Số Tiền Cần Thanh Toán')}</div>
               <div className="font-serif text-3xl font-bold text-[#C5A880]">
                 {billAmountFormatted} đ
               </div>
@@ -940,7 +940,7 @@ export default function FinanceBilling({ currentUser }: FinanceBillingProps) {
                     ? 'bg-emerald-950 text-emerald-300 border border-emerald-500'
                     : 'bg-amber-950 text-amber-300 border border-amber-600'
                 }`}>
-                  {currentBill.status === 'Paid' ? '✓ Đã Thanh Toán Hoàn Tất' : 'Chờ Thanh Toán'}
+                  {currentBill.status === 'Paid' ? t('✓ Đã Thanh Toán Hoàn Tất') : t('Chờ Thanh Toán')}
                 </span>
 
                 {currentBill.payment_method && (
@@ -951,7 +951,7 @@ export default function FinanceBilling({ currentUser }: FinanceBillingProps) {
                         ? 'bg-[#A50064]/20 text-[#D82D8B] border border-[#A50064]/50'
                         : 'bg-gray-800 text-gray-300 border border-gray-600'
                   }`}>
-                    Qua {currentBill.payment_method}
+                    {t('Qua')} {currentBill.payment_method}
                   </span>
                 )}
               </div>
@@ -972,10 +972,10 @@ export default function FinanceBilling({ currentUser }: FinanceBillingProps) {
                 <div className="space-y-2">
                   <div className="flex items-center justify-between text-xs text-gray-300 font-semibold border-b border-[#222B35] pb-1">
                     <span className="uppercase tracking-wider text-[#C5A880] flex items-center gap-1.5">
-                      <Building className="w-3.5 h-3.5" /> 1. Chi Phí Định Kỳ & Chỉ Số ({utilityItems.length})
+                      <Building className="w-3.5 h-3.5" /> 1. {t('Chi Phí Định Kỳ & Chỉ Số')} ({utilityItems.length})
                     </span>
                     <span className="font-mono text-gray-300">
-                      Tạm tính: {utilitySubtotal.toLocaleString('vi-VN')} đ
+                      {t('Tạm tính')}: {utilitySubtotal.toLocaleString('vi-VN')} đ
                     </span>
                   </div>
 
@@ -988,12 +988,12 @@ export default function FinanceBilling({ currentUser }: FinanceBillingProps) {
                             <span>{getItemName(item)}</span>
                             {item.ai_anomaly && (
                               <span className="px-2 py-0.5 bg-red-950 border border-red-500 text-red-300 text-[10px] font-mono font-bold">
-                                Biến động bất thường
+                                {t('Biến động bất thường')}
                               </span>
                             )}
                           </div>
                           <div className="text-[11px] text-gray-400 mt-0.5 pl-5.5">
-                            Chỉ số: <strong>{item.usage}</strong> {item.unit || (item.service_type === 'Electricity' ? 'kWh' : item.service_type === 'Water' ? 'm³' : item.service_type === 'Management_Fee' ? 'm²' : 'xe')} • Đơn giá: {item.unit_price?.toLocaleString('vi-VN')} đ
+                            {t('Chỉ số')}: <strong>{item.usage}</strong> {item.unit || (item.service_type === 'Electricity' ? 'kWh' : item.service_type === 'Water' ? 'm³' : item.service_type === 'Management_Fee' ? 'm²' : t('xe'))} • {t('Đơn giá')}: {item.unit_price?.toLocaleString('vi-VN')} đ
                           </div>
                           {item.anomaly_reason && (
                             <div className="text-[10px] text-amber-400 italic mt-0.5 pl-5.5">
@@ -1014,10 +1014,10 @@ export default function FinanceBilling({ currentUser }: FinanceBillingProps) {
                   <div className="space-y-2">
                     <div className="flex items-center justify-between text-xs text-gray-300 font-semibold border-b border-[#222B35] pb-1">
                       <span className="uppercase tracking-wider text-[#C5A880] flex items-center gap-1.5">
-                        <Sparkles className="w-3.5 h-3.5" /> 2. Dịch Vụ Đời Sống & Tiện Ích ({serviceItems.length})
+                        <Sparkles className="w-3.5 h-3.5" /> 2. {t('Dịch Vụ Đời Sống & Tiện Ích')} ({serviceItems.length})
                       </span>
                       <span className="font-mono text-gray-300">
-                        Tạm tính: {serviceSubtotal.toLocaleString('vi-VN')} đ
+                        {t('Tạm tính')}: {serviceSubtotal.toLocaleString('vi-VN')} đ
                       </span>
                     </div>
 
@@ -1029,13 +1029,13 @@ export default function FinanceBilling({ currentUser }: FinanceBillingProps) {
                               {getItemIcon(item.service_type)}
                               <span>{getItemName(item)}</span>
                               <span className="px-1.5 py-0.5 bg-purple-950/80 border border-purple-500/60 text-purple-300 text-[10px] font-mono">
-                                Dịch Vụ Cư Dân
+                                {t('Dịch Vụ Cư Dân')}
                               </span>
                             </div>
                             <div className="text-[11px] text-gray-400 mt-0.5 pl-5.5 flex flex-wrap items-center gap-2">
-                              <span>Số lượng: <strong>{item.usage}</strong> {item.unit || 'gói'}</span>
+                              <span>{t('Số lượng')}: <strong>{item.usage}</strong> {t(item.unit || 'gói')}</span>
                               <span>•</span>
-                              <span>Đơn giá: {item.unit_price?.toLocaleString('vi-VN')} đ</span>
+                              <span>{t('Đơn giá')}: {item.unit_price?.toLocaleString('vi-VN')} đ</span>
                               {item.booking_ref && (
                                 <>
                                   <span>•</span>
@@ -1045,7 +1045,7 @@ export default function FinanceBilling({ currentUser }: FinanceBillingProps) {
                               {item.order_date && (
                                 <>
                                   <span>•</span>
-                                  <span className="text-gray-400 font-mono">Ngày: {item.order_date}</span>
+                                  <span className="text-gray-400 font-mono">{t('Ngày')}: {item.order_date}</span>
                                 </>
                               )}
                             </div>
