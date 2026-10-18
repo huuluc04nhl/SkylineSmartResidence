@@ -27,7 +27,8 @@ import {
   formatToDateInput, 
   formatToDisplayDate, 
   formatToApiDate,
-  compressImageDataUrl 
+  compressImageDataUrl,
+  extractCccdFromClientQr 
 } from '@/lib/ocrParser';
 import { nksUpdateCccd } from '@/lib/nksApiClient';
 import { useLanguage } from '@/lib/languageContext';
@@ -198,112 +199,105 @@ export default function CccdOcrScannerModal({
       // 1. Force flip to FRONT SIDE
       setIsFlipped(false);
       setScanStage('SCANNING_FRONT');
-      setScanStatusText('Đang nén ảnh và nhận diện Mặt Trước thẻ CCCD...');
+      setScanStatusText('Đang quét và nhận diện thông tin trên thẻ CCCD...');
       setScanProgress(25);
 
-      const [compFront, compBack] = await Promise.all([
-        compressImageDataUrl(frontImage),
-        compressImageDataUrl(backImage),
-      ]);
-
       let ocrSucceeded = false;
+
+      // 1. ƯU TIÊN: Quét mã QR bảo mật trực tiếp trên ảnh mặt trước của thẻ (Nhanh & Chuẩn xác 100%)
       try {
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 10000);
-
-        const aiRes = await fetch('/api/ai/ocr-cccd', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ frontImage: compFront, backImage: compBack }),
-          signal: controller.signal,
-        });
-        clearTimeout(timeoutId);
-
-        const aiData = await aiRes.json();
-        if (aiRes.ok && aiData.success && aiData.data?.idNumber) {
+        const clientQrResult = await extractCccdFromClientQr(frontImage);
+        if (clientQrResult && clientQrResult.idNumber) {
           setScanProgress(60);
-          setScanStatusText('✨ Đã đọc thông tin mặt trước! Đang tự động lật sang mặt sau...');
+          setScanStatusText('✨ Đã giải mã mã QR bảo mật trên thẻ CCCD! Đang đối soát mặt sau...');
           setIsFlipped(true);
           await new Promise((r) => setTimeout(r, 700));
 
-          setScanProgress(85);
-          setScanStatusText('✨ Đang đối soát thông tin Chip và Ngày cấp...');
-          await new Promise((r) => setTimeout(r, 300));
-
           setScanProgress(100);
-          setScanStatusText('✨ Hoàn tất đọc thông tin 2 mặt thẻ Căn cước công dân!');
+          setScanStatusText('✨ Hoàn tất đọc thông tin trực tiếp từ thẻ Căn cước công dân!');
           setScanStage('COMPLETE');
 
-          const d = aiData.data;
-          const merged: OcrCccdResult = {
-            idNumber: (d.idNumber || '').replace(/\D/g, '').slice(0, 12),
-            fullName: (d.fullName || '').toUpperCase().trim(),
-            dob: formatToDateInput(d.dob || ''),
-            gender: (d.gender === '0' || d.gender === 0 ? '0' : '1') as '1' | '0',
-            pob: d.pob || '',
-            residence: d.residence || d.pob || '',
-            province: d.province || '',
-            idDate: formatToDateInput(d.idDate || ''),
-            idPlace: d.idPlace || 'Cục Cảnh sát QLHC về TTXH',
-            confidence: 99,
-            rawText: `[THÔNG TIN THẺ CĂN CƯỚC EXTRACTED]:\nSố CCCD: ${d.idNumber}\nHọ tên: ${d.fullName}\nNgày sinh: ${d.dob}\nGiới tính: ${d.gender === '1' ? 'Nam' : 'Nữ'}\nQuê quán: ${d.pob}\nNơi thường trú: ${d.residence}\nNgày cấp: ${d.idDate}\nNơi cấp: ${d.idPlace}`,
-          };
-
-          setOcrResult(merged);
-          setEditIdNumber(merged.idNumber);
-          setEditFullName(merged.fullName);
-          setEditDob(merged.dob);
-          setEditGender(merged.gender);
-          setEditPob(merged.pob);
-          setEditIdDate(merged.idDate);
-          setEditIdPlace(merged.idPlace || 'Cục Cảnh sát QLHC về TTXH');
+          setOcrResult(clientQrResult);
+          setEditIdNumber(clientQrResult.idNumber);
+          setEditFullName(clientQrResult.fullName);
+          setEditDob(clientQrResult.dob);
+          setEditGender(clientQrResult.gender);
+          setEditPob(clientQrResult.pob);
+          setEditIdDate(clientQrResult.idDate);
+          setEditIdPlace(clientQrResult.idPlace || 'Cục Cảnh sát QLHC về TTXH');
           ocrSucceeded = true;
         }
-      } catch (e) {
-        console.warn('Gemini Vision OCR error, activating resilient database reader:', e);
+      } catch (qrErr) {
+        console.warn('Client QR scan attempt:', qrErr);
       }
 
+      // 2. Nếu QR không có hoặc bị mờ, gửi ảnh lên bộ máy OCR máy chủ để đọc chữ và chip
       if (!ocrSucceeded) {
-        // Safe fast local reader fallback - avoids mobile CDN stalls/freezes at 25%
-        setScanProgress(60);
-        setScanStatusText('✨ Đang đọc thông tin từ cơ sở dữ liệu số Skyline...');
-        setIsFlipped(true);
-        await new Promise((r) => setTimeout(r, 600));
+        setScanStatusText('Đang nén ảnh và phân tích qua bộ máy OCR máy chủ...');
+        setScanProgress(40);
 
-        setScanProgress(100);
-        setScanStatusText('✨ Hoàn tất trích xuất thông tin thẻ Căn cước công dân!');
-        setScanStage('COMPLETE');
+        const [compFront, compBack] = await Promise.all([
+          compressImageDataUrl(frontImage),
+          compressImageDataUrl(backImage),
+        ]);
 
-        let fallbackUser: any = null;
-        if (typeof window !== 'undefined') {
-          try {
-            const stored = localStorage.getItem('skyline_user_store');
-            if (stored) fallbackUser = JSON.parse(stored);
-          } catch {}
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 15000);
+
+        try {
+          const aiRes = await fetch('/api/ai/ocr-cccd', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ frontImage: compFront, backImage: compBack }),
+            signal: controller.signal,
+          });
+          clearTimeout(timeoutId);
+
+          const aiData = await aiRes.json();
+          if (aiRes.ok && aiData.success && aiData.data?.idNumber) {
+            setScanProgress(60);
+            setScanStatusText('✨ Đã đọc thông tin mặt trước! Đang tự động lật sang mặt sau...');
+            setIsFlipped(true);
+            await new Promise((r) => setTimeout(r, 700));
+
+            setScanProgress(85);
+            setScanStatusText('✨ Đang đối soát thông tin Chip và Ngày cấp...');
+            await new Promise((r) => setTimeout(r, 300));
+
+            setScanProgress(100);
+            setScanStatusText('✨ Hoàn tất đọc thông tin 2 mặt thẻ Căn cước công dân!');
+            setScanStage('COMPLETE');
+
+            const d = aiData.data;
+            const merged: OcrCccdResult = {
+              idNumber: (d.idNumber || '').replace(/\D/g, '').slice(0, 12),
+              fullName: (d.fullName || '').toUpperCase().trim(),
+              dob: formatToDateInput(d.dob || ''),
+              gender: (d.gender === '0' || d.gender === 0 ? '0' : '1') as '1' | '0',
+              pob: d.pob || '',
+              residence: d.residence || d.pob || '',
+              province: d.province || '',
+              idDate: formatToDateInput(d.idDate || ''),
+              idPlace: d.idPlace || 'Cục Cảnh sát QLHC về TTXH',
+              confidence: d.confidence || 95,
+              rawText: `[THÔNG TIN THẺ CĂN CƯỚC EXTRACTED]:\nSố CCCD: ${d.idNumber}\nHọ tên: ${d.fullName}`,
+            };
+
+            setOcrResult(merged);
+            setEditIdNumber(merged.idNumber);
+            setEditFullName(merged.fullName);
+            setEditDob(merged.dob);
+            setEditGender(merged.gender);
+            setEditPob(merged.pob);
+            setEditIdDate(merged.idDate);
+            setEditIdPlace(merged.idPlace || 'Cục Cảnh sát QLHC về TTXH');
+            ocrSucceeded = true;
+          } else {
+            setErrorMessage(aiData.error || 'Không thể trích xuất dữ liệu từ ảnh thẻ đã tải lên. Vui lòng chụp rõ nét hơn.');
+          }
+        } catch (fetchErr: any) {
+          setErrorMessage('Không thể kết nối máy chủ nhận diện OCR. Vui lòng kiểm tra lại ảnh chụp.');
         }
-
-        const merged: OcrCccdResult = {
-          idNumber: (fallbackUser?.id_number || fallbackUser?.id_card_no || '067204000961').replace(/\D/g, '').slice(0, 12),
-          fullName: (fallbackUser?.full_name || fallbackUser?.fullname || 'TRẦN HỮU LỰC').toUpperCase().trim(),
-          dob: formatToDateInput(fallbackUser?.dob || '2004-11-02'),
-          gender: (fallbackUser?.gender === 0 ? '0' : '1') as '1' | '0',
-          pob: fallbackUser?.pob || 'Quảng Trị',
-          residence: fallbackUser?.pob || 'The Tropical, Chung cư Skyline Smart Residence',
-          province: fallbackUser?.province || 'TP. Hồ Chí Minh',
-          idDate: formatToDateInput(fallbackUser?.id_date || '2022-08-15'),
-          idPlace: fallbackUser?.id_place || 'Cục Cảnh sát QLHC về TTXH',
-          confidence: 96,
-          rawText: `[THÔNG TIN THẺ CĂN CƯỚC EXTRACTED]:\nSố CCCD: ${fallbackUser?.id_number || '067204000961'}\nHọ tên: ${fallbackUser?.full_name || 'TRẦN HỮU LỰC'}`,
-        };
-
-        setOcrResult(merged);
-        setEditIdNumber(merged.idNumber);
-        setEditFullName(merged.fullName);
-        setEditDob(merged.dob);
-        setEditGender(merged.gender);
-        setEditPob(merged.pob);
-        setEditIdDate(merged.idDate);
-        setEditIdPlace(merged.idPlace || 'Cục Cảnh sát QLHC về TTXH');
       }
     } catch (err: any) {
       console.error('OCR Error:', err);

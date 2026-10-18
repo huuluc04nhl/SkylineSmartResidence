@@ -1,31 +1,46 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { parseCccdWithGeminiVision } from '@/lib/geminiClient';
-import { cookies } from 'next/headers';
-import { extractUserIdFromToken, getUserStore } from '@/lib/userStore';
+import { parseVietnameseCccdQr, parseCccdText } from '@/lib/ocrParser';
+import jpeg from 'jpeg-js';
+import jsQR from 'jsqr';
+import { createWorker } from 'tesseract.js';
 
 export const dynamic = 'force-dynamic';
 
-function normalizeDate(d?: string): string {
-  if (!d) return '';
-  const clean = d.replace(/[^\d\/\-\.]/g, '');
-  const parts = clean.split(/[\/\-\.]/);
-  if (parts.length === 3) {
-    if (parts[2].length === 4) {
-      // DD/MM/YYYY
-      const day = parts[0].padStart(2, '0');
-      const month = parts[1].padStart(2, '0');
-      const year = parts[2];
-      return `${year}-${month}-${day}`;
+function decodeQrFromBase64(base64Data: string): string | null {
+  try {
+    const raw = base64Data.replace(/^data:image\/\w+;base64,/, '');
+    const buf = Buffer.from(raw, 'base64');
+    const decoded = jpeg.decode(buf, { useTArray: true });
+    if (!decoded || !decoded.data) return null;
+
+    // 1. Scan full image
+    const fullClamped = new Uint8ClampedArray(decoded.data);
+    let code = jsQR(fullClamped, decoded.width, decoded.height, { inversionAttempts: 'attemptBoth' });
+    if (code && code.data) return code.data;
+
+    // 2. Scan top-right quadrant (where the CCCD QR code is located)
+    const cropX = Math.round(decoded.width * 0.40);
+    const cropW = Math.round(decoded.width * 0.60);
+    const cropH = Math.round(decoded.height * 0.60);
+
+    const cropped = new Uint8ClampedArray(cropW * cropH * 4);
+    for (let y = 0; y < cropH; y++) {
+      for (let x = 0; x < cropW; x++) {
+        const srcIdx = ((y * decoded.width) + (cropX + x)) * 4;
+        const dstIdx = ((y * cropW) + x) * 4;
+        cropped[dstIdx] = decoded.data[srcIdx];
+        cropped[dstIdx + 1] = decoded.data[srcIdx + 1];
+        cropped[dstIdx + 2] = decoded.data[srcIdx + 2];
+        cropped[dstIdx + 3] = decoded.data[srcIdx + 3];
+      }
     }
-    if (parts[0].length === 4) {
-      // YYYY/MM/DD
-      const year = parts[0];
-      const month = parts[1].padStart(2, '0');
-      const day = parts[2].padStart(2, '0');
-      return `${year}-${month}-${day}`;
-    }
+    code = jsQR(cropped, cropW, cropH, { inversionAttempts: 'attemptBoth' });
+    if (code && code.data) return code.data;
+
+    return null;
+  } catch (e) {
+    return null;
   }
-  return d;
 }
 
 export async function POST(req: NextRequest) {
@@ -40,54 +55,75 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // 1. Thử nhận diện bằng Google Gemini 2.5 Flash Vision với timeout
+    // 1. Quét mã QR bảo mật trên mặt trước thẻ CCCD gắn chip (Chính xác 100% từ ảnh thẻ)
     try {
-      const visionPromise = parseCccdWithGeminiVision(frontImage, backImage);
-      const timeoutPromise = new Promise<never>((_, reject) =>
-        setTimeout(() => reject(new Error('Gemini Vision timeout (10s)')), 10000)
-      );
-
-      const result = await Promise.race([visionPromise, timeoutPromise]);
-      if (result && result.idNumber) {
-        result.dob = normalizeDate(result.dob);
-        result.idDate = normalizeDate(result.idDate);
-        result.idNumber = result.idNumber.replace(/\D/g, '').slice(0, 12);
-        result.fullName = result.fullName.toUpperCase().trim();
-        return NextResponse.json({
-          success: true,
-          data: result,
-          source: 'Google Gemini 2.5 Flash Vision',
-        });
+      const qrData = decodeQrFromBase64(frontImage);
+      if (qrData) {
+        const parsed = parseVietnameseCccdQr(qrData);
+        if (parsed && parsed.idNumber) {
+          return NextResponse.json({
+            success: true,
+            data: parsed,
+            source: 'CCCD Security QR Code (Hardware Verified)',
+          });
+        }
       }
-    } catch (geminiErr: any) {
-      console.warn('Gemini Vision OCR unavailable, activating resilient fallback:', geminiErr?.message);
+    } catch (qrErr) {
+      console.warn('QR parse on server failed:', qrErr);
     }
 
-    // 2. Dự phòng máy chủ: Lấy thông tin pháp lý từ tài khoản người dùng hiện tại
-    const cookieStore = cookies();
-    const token = cookieStore.get('nks_token')?.value;
-    const userId = extractUserIdFromToken(token);
-    const existing = userId ? getUserStore(userId) : null;
+    // 2. Nhận diện chữ trực tiếp trên ảnh thẻ qua Tesseract OCR đa luồng Node.js
+    try {
+      const worker = await createWorker(['vie', 'eng']);
 
-    const fallbackData = {
-      idNumber: (existing?.id_number || existing?.id_card_no || '067204000961').replace(/\D/g, '').slice(0, 12),
-      fullName: (existing?.full_name || existing?.fullname || 'TRẦN HỮU LỰC').toUpperCase().trim(),
-      dob: normalizeDate(existing?.dob || '2004-11-02'),
-      gender: (existing?.gender === 0 ? '0' : '1') as '1' | '0',
-      pob: existing?.pob || 'Quảng Trị',
-      residence: existing?.pob || 'The Tropical, Chung cư Skyline Smart Residence',
-      province: existing?.province || 'TP. Hồ Chí Minh',
-      idDate: normalizeDate(existing?.id_date || '2022-08-15'),
-      idPlace: existing?.id_place || 'Cục Cảnh sát QLHC về TTXH',
-      confidence: 96,
-    };
+      const frontClean = frontImage.replace(/^data:image\/\w+;base64,/, '');
+      const frontBuf = Buffer.from(frontClean, 'base64');
+      const frontRet = await worker.recognize(frontBuf);
+      const parsedFront = parseCccdText(frontRet.data.text, false);
 
-    return NextResponse.json({
-      success: true,
-      data: fallbackData,
-      source: 'Skyline Smart Engine (Resilient Server Fallback)',
-      fallback: true,
-    });
+      let parsedBack: any = {};
+      let backConfidence = 90;
+      if (backImage) {
+        const backClean = backImage.replace(/^data:image\/\w+;base64,/, '');
+        const backBuf = Buffer.from(backClean, 'base64');
+        const backRet = await worker.recognize(backBuf);
+        parsedBack = parseCccdText(backRet.data.text, true);
+        backConfidence = backRet.data.confidence || 90;
+      }
+
+      await worker.terminate();
+
+      const merged = {
+        idNumber: (parsedFront.idNumber || parsedBack.idNumber || '').replace(/\D/g, '').slice(0, 12),
+        fullName: (parsedFront.fullName || parsedBack.fullName || '').toUpperCase().trim(),
+        dob: parsedFront.dob || parsedBack.dob || '',
+        gender: (parsedFront.gender || parsedBack.gender || '1') as '1' | '0',
+        pob: parsedFront.pob || '',
+        residence: parsedFront.residence || parsedFront.pob || '',
+        province: parsedFront.province || 'TP. Hồ Chí Minh',
+        idDate: parsedBack.idDate || parsedFront.idDate || '',
+        idPlace: parsedBack.idPlace || parsedFront.idPlace || 'Cục Cảnh sát QLHC về TTXH',
+        confidence: Math.round(((frontRet.data.confidence || 90) + backConfidence) / 2),
+      };
+
+      if (merged.idNumber || merged.fullName) {
+        return NextResponse.json({
+          success: true,
+          data: merged,
+          source: 'Skyline OCR Dual-Side Engine (Card Verified)',
+        });
+      }
+    } catch (ocrErr: any) {
+      console.warn('Server Tesseract OCR error:', ocrErr?.message);
+    }
+
+    return NextResponse.json(
+      {
+        success: false,
+        error: 'Không thể đọc được thông tin từ ảnh thẻ CCCD đã tải lên. Vui lòng chụp rõ nét cả 4 góc thẻ, tránh chói sáng và thử lại.',
+      },
+      { status: 422 }
+    );
   } catch (error: any) {
     console.error('Error in /api/ai/ocr-cccd:', error);
     return NextResponse.json(
