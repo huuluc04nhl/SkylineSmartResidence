@@ -26,13 +26,14 @@ import {
   ChevronDown
 } from 'lucide-react';
 import { User as UserType } from '@/lib/dataStore';
-import { getFacilityBookings } from '@/lib/facilityStore';
 import { getBills } from '@/lib/billingStore';
 import { getTickets } from '@/lib/ticketStore';
 import { getAllVisitorPasses } from '@/lib/visitorStore';
 import { getApartmentMembers } from '@/lib/userStore';
+import { getFacilityBookings, createFacilityBooking, cancelFacilityBookingWithRefund, FacilityBooking } from '@/lib/facilityStore';
 import { useLanguage } from '@/lib/languageContext';
 import AiMessageFormatter from './AiMessageFormatter';
+import FacilityPassCard from './FacilityPassCard';
 
 interface Message {
   id: string;
@@ -42,6 +43,14 @@ interface Message {
   suggestions?: string[];
   actionLink?: { label: string; moduleId: string };
   isCopied?: boolean;
+  facilityBooking?: FacilityBooking;
+  cancelledBooking?: {
+    bookingId: string;
+    ticketCode?: string;
+    facilityName?: string;
+    refundAmount: number;
+    refundRate: number;
+  };
 }
 
 interface AiConciergeFloatingProps {
@@ -530,6 +539,50 @@ export default function AiConciergeFloating({
         actionLink = { label: isEn ? 'Manage Door Locks & Resident Pass' : 'Quản Lý Khóa Cửa & Thẻ Cư Dân', moduleId: 'resident-smarthome' };
       }
 
+      // Automated Action Execution (Facility Booking & Cancellation)
+      let facilityBooking: FacilityBooking | undefined = undefined;
+      let cancelledBooking: { bookingId: string; ticketCode?: string; facilityName?: string; refundAmount: number; refundRate: number } | undefined = undefined;
+
+      if (data.action && data.action.type === 'BOOK_FACILITY') {
+        try {
+          const booked = createFacilityBooking(
+            aptCode,
+            data.action.facilityId || 'bbq',
+            data.action.facilityName || 'Vườn Tiệc Nướng BBQ Panoramic Tầng 25',
+            data.action.bookingDate || new Date().toISOString().split('T')[0],
+            data.action.timeSlot || '18:00 - 21:00',
+            residentName,
+            data.action.pricing || '600.000 đ/ca',
+            data.action.guestCount || 4,
+            data.action.notes || 'Đặt tự động qua AI Concierge',
+            1,
+            data.action.depositAmount || 600000,
+            data.action.facilityId === 'sauna'
+          );
+          facilityBooking = booked.newBooking;
+        } catch (err) {
+          console.error('Failed to auto-create facility booking:', err);
+        }
+      } else if (data.action && data.action.type === 'CANCEL_BOOKING') {
+        try {
+          const allB = getFacilityBookings(aptCode);
+          const reqId = data.action.bookingId;
+          const target = allB.find(b => b.id === reqId || b.ticketCode === reqId || b.status === 'CONFIRMED') || allB[0];
+          if (target) {
+            const cancelRes = cancelFacilityBookingWithRefund(aptCode, target.id, data.action.reason || 'Cư dân hủy qua AI');
+            cancelledBooking = {
+              bookingId: target.id,
+              ticketCode: target.ticketCode,
+              facilityName: target.facilityName,
+              refundAmount: cancelRes.refundAmount,
+              refundRate: cancelRes.refundRate,
+            };
+          }
+        } catch (err) {
+          console.error('Failed to auto-cancel booking:', err);
+        }
+      }
+
       const aiMsg: Message = {
         id: `ai-${Date.now()}`,
         sender: 'ai',
@@ -537,6 +590,8 @@ export default function AiConciergeFloating({
         timestamp: new Date().toLocaleTimeString(isEn ? 'en-US' : 'vi-VN', { hour: '2-digit', minute: '2-digit' }),
         suggestions,
         actionLink,
+        facilityBooking,
+        cancelledBooking,
       };
 
       setMessages((prev) => [...prev, aiMsg]);
@@ -772,6 +827,16 @@ export default function AiConciergeFloating({
                 >
                   {/* Message Content */}
                   <AiMessageFormatter content={m.text} isUser={m.sender === 'user'} />
+
+                  {/* Automated Facility Booking Pass Card (If Action Triggered) */}
+                  {(m.facilityBooking || m.cancelledBooking) && (
+                    <FacilityPassCard
+                      booking={m.facilityBooking}
+                      cancelled={m.cancelledBooking}
+                      isEn={isEn}
+                      onOpenDetails={() => handleActionClick('resident-facilities')}
+                    />
+                  )}
 
                   {/* Context Action Link (If Present) */}
                   {m.actionLink && (

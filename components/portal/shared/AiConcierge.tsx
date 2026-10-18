@@ -3,6 +3,8 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Bot, X, Send, Sparkles, UserCheck, PhoneCall, ChevronDown, Zap, ShieldCheck } from 'lucide-react';
 import { useLanguage } from '@/lib/languageContext';
+import { createFacilityBooking, cancelFacilityBookingWithRefund, getFacilityBookings, FacilityBooking } from '@/lib/facilityStore';
+import FacilityPassCard from './FacilityPassCard';
 
 interface ChatMessageItem {
   id: string;
@@ -10,6 +12,14 @@ interface ChatMessageItem {
   text: string;
   time: string;
   isError?: boolean;
+  facilityBooking?: FacilityBooking;
+  cancelledBooking?: {
+    bookingId: string;
+    ticketCode?: string;
+    facilityName?: string;
+    refundAmount: number;
+    refundRate: number;
+  };
 }
 
 export default function AiConcierge() {
@@ -108,12 +118,55 @@ export default function AiConcierge() {
 
       let replyText = '';
       let isError = false;
+      let facilityBooking: FacilityBooking | undefined = undefined;
+      let cancelledBooking: { bookingId: string; ticketCode?: string; facilityName?: string; refundAmount: number; refundRate: number } | undefined = undefined;
 
       if (response.ok && data.success && data.reply) {
         replyText = data.reply;
       } else {
         replyText = data.fallbackReply || data.error || (isEn ? 'The system is currently busy, please try again in a moment.' : 'Hệ thống đang bận, Quý cư dân vui lòng thử lại sau giây lát.');
         isError = !data.success;
+      }
+
+      // Execute AI action on facilityStore if present
+      if (data.action) {
+        try {
+          if (data.action.type === 'BOOK_FACILITY') {
+            const booked = createFacilityBooking(
+              'CH-06',
+              data.action.facilityId || 'bbq-garden',
+              data.action.facilityName || 'Vườn Nướng BBQ Chòi 02',
+              data.action.bookingDate || new Date().toISOString().split('T')[0],
+              data.action.timeSlot || '18:00 - 20:00',
+              'Trần Hữu Lực',
+              data.action.pricing || '100.000 VNĐ / giờ',
+              data.action.guestCount || 4,
+              data.action.notes || (isEn ? 'Booked via AI Concierge' : 'Đặt qua Skyline AI Concierge'),
+              2,
+              data.action.depositAmount || 200000,
+              false,
+              'VNPAY_QR'
+            );
+            facilityBooking = booked.newBooking;
+          } else if (data.action.type === 'CANCEL_BOOKING') {
+            const currentBookings = getFacilityBookings('CH-06');
+            const targetId = data.action.bookingId || (currentBookings.find(b => b.status === 'CONFIRMED')?.id);
+            if (targetId) {
+              const res = cancelFacilityBookingWithRefund('CH-06', targetId, data.action.reason || 'Resident requested via AI Chat');
+              if (res.cancelledBooking) {
+                cancelledBooking = {
+                  bookingId: res.cancelledBooking.id,
+                  ticketCode: res.cancelledBooking.ticketCode,
+                  facilityName: res.cancelledBooking.facilityName,
+                  refundAmount: res.refundAmount,
+                  refundRate: res.refundRate,
+                };
+              }
+            }
+          }
+        } catch (actionErr) {
+          console.error('Failed executing AI action:', actionErr);
+        }
       }
 
       setMessages((prev) => [
@@ -124,6 +177,8 @@ export default function AiConcierge() {
           text: replyText,
           time: new Date().toLocaleTimeString(isEn ? 'en-US' : 'vi-VN', { hour: '2-digit', minute: '2-digit' }),
           isError,
+          facilityBooking,
+          cancelledBooking,
         },
       ]);
     } catch (err: any) {
@@ -218,6 +273,15 @@ export default function AiConcierge() {
                   }`}
                 >
                   <p className="leading-relaxed whitespace-pre-wrap">{m.text}</p>
+                  {(m.facilityBooking || m.cancelledBooking) && (
+                    <div className="pt-2">
+                      <FacilityPassCard
+                        booking={m.facilityBooking}
+                        cancelled={m.cancelledBooking}
+                        isEn={isEn}
+                      />
+                    </div>
+                  )}
                   <div
                     className={`text-[9px] text-right pt-1 ${
                       m.sender === 'user' ? 'text-[#0D1117]/70 font-semibold' : 'text-gray-500'

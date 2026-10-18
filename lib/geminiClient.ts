@@ -74,6 +74,77 @@ export interface ConciergeTicketItem {
   created_at?: string;
 }
 
+export interface AiConciergeAction {
+  type: 'BOOK_FACILITY' | 'CANCEL_BOOKING';
+  facilityId?: string;
+  facilityName?: string;
+  bookingDate?: string;
+  timeSlot?: string;
+  guestCount?: number;
+  pricing?: string;
+  depositAmount?: number;
+  notes?: string;
+  bookingId?: string;
+  ticketCode?: string;
+  reason?: string;
+}
+
+/**
+ * Extracts automated action commands from AI reply formatted as:
+ * [ACTION:BOOK_FACILITY|facilityId|bookingDate|timeSlot|guestCount|pricing|depositAmount|notes]
+ * or [ACTION:CANCEL_BOOKING|bookingId|reason]
+ */
+export function extractAiAction(rawReply: string): { cleanText: string; action?: AiConciergeAction } {
+  if (!rawReply) return { cleanText: '' };
+  const actionRegex = /\[ACTION:(BOOK_FACILITY|CANCEL_BOOKING)\|([^\]]+)\]/i;
+  const match = rawReply.match(actionRegex);
+  if (!match) return { cleanText: rawReply };
+
+  const actionType = match[1].toUpperCase() as 'BOOK_FACILITY' | 'CANCEL_BOOKING';
+  const parts = match[2].split('|').map((s) => s.trim());
+  let action: AiConciergeAction;
+
+  if (actionType === 'BOOK_FACILITY') {
+    const rawFac = parts[0]?.toLowerCase() || '';
+    const facilityId = rawFac.includes('sauna') || rawFac.includes('xông') ? 'sauna' : 'bbq';
+    const facilityName = facilityId === 'sauna'
+      ? 'Phòng Xông Hơi Đá Muối Himalaya VIP Tầng 3'
+      : 'Vườn Tiệc Nướng BBQ Panoramic Tầng 25';
+
+    let bookingDate = parts[1] || '';
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(bookingDate)) {
+      bookingDate = new Date().toISOString().split('T')[0];
+    }
+
+    const timeSlot = parts[2] || (facilityId === 'sauna' ? '09:00 - 10:00' : '18:00 - 21:00');
+    const guestCount = parseInt(parts[3] || (facilityId === 'sauna' ? '2' : '4'), 10) || 2;
+    const pricing = parts[4] || (facilityId === 'sauna' ? '500.000 đ/giờ' : '600.000 đ/ca');
+    const depositAmount = parseInt(parts[5] || (facilityId === 'sauna' ? '500000' : '600000'), 10) || (facilityId === 'sauna' ? 500000 : 600000);
+    const notes = parts[6] || 'Đặt tự động qua Skyline AI Concierge';
+
+    action = {
+      type: 'BOOK_FACILITY',
+      facilityId,
+      facilityName,
+      bookingDate,
+      timeSlot,
+      guestCount,
+      pricing,
+      depositAmount,
+      notes,
+    };
+  } else {
+    action = {
+      type: 'CANCEL_BOOKING',
+      bookingId: parts[0] || '',
+      reason: parts[1] || 'Cư dân yêu cầu hủy qua AI Concierge',
+    };
+  }
+
+  const cleanText = rawReply.replace(actionRegex, '').trim();
+  return { cleanText, action };
+}
+
 /**
  * Extracts follow-up suggestions from AI reply formatted as:
  * [SUGGESTIONS: question 1 | question 2 | question 3]
@@ -397,6 +468,22 @@ NGUYÊN TẮC GIAO TIẾP VÀ DẠNG TỪ BẮT BUỘC:
 - Nếu hỏi tiện ích cần đặt trước -> chỉ nêu 2 tiện ích: Phòng Xông Hơi VIP Tầng 3 và Vườn Nướng BBQ Tầng 25.
 - Nếu hỏi tiền nước -> chỉ giải thích chi tiết tiền nước và lưu ý AI rò rỉ nếu có.
 - Nếu hỏi giờ mở cửa hồ bơi -> chỉ nêu giờ mở cửa hồ bơi (06:00 - 22:00 tại Tầng 25, miễn phí, vào bằng FaceID/Thẻ).
+
+⚡ ACTION EXECUTION DIRECTIVE (TỰ ĐỘNG HÓA THAO TÁC ĐẶT / HỦY TIỆN ÍCH TRỰC TIẾP):
+Khi cư dân có yêu cầu ĐẶT CHỖ hoặc HỦY VÉ tiện ích (Vườn nướng BBQ hoặc Phòng xông hơi VIP):
+1. Yêu cầu Đặt chỗ:
+   - Nếu cư dân muốn đặt (ví dụ: "Đặt bàn BBQ tối nay lúc 18h", "Đặt phòng xông hơi mai 9h", "Book BBQ party tonight at 18:00"):
+     BẮT BUỘC chèn lệnh hành động ở dòng trên [SUGGESTIONS]:
+     [ACTION:BOOK_FACILITY|facilityId|bookingDate|timeSlot|guestCount|pricing|depositAmount|notes]
+     (facilityId: 'bbq' hoặc 'sauna'; bookingDate định dạng YYYY-MM-DD; pricing: 600.000 đ/ca với bbq, 500.000 đ/giờ với sauna; depositAmount: 600000 hoặc 500000).
+     Ví dụ: [ACTION:BOOK_FACILITY|bbq|2026-10-19|18:00 - 21:00|4|600.000 đ/ca|600000|Đặt tự động qua AI Concierge]
+     Nội dung trả lời: Xác nhận đã hoàn tất thủ tục đặt chỗ, thông báo thẻ vé điện tử QR đang được xuất tự động ngay bên dưới.
+2. Yêu cầu Hủy vé:
+   - Nếu cư dân muốn hủy vé (ví dụ: "Hủy vé xông hơi", "Hủy vé BBQ", "Cancel booking #BK-..."):
+     BẮT BUỘC chèn lệnh hành động:
+     [ACTION:CANCEL_BOOKING|bookingIdOrTicketCode|reason]
+     Ví dụ: [ACTION:CANCEL_BOOKING|BK-SAUNA-9821|Cư dân yêu cầu hủy qua AI Concierge]
+     Nội dung trả lời: Nêu rõ chính sách hoàn tiền 100% vào hóa đơn sinh hoạt tháng tới và xác nhận thẻ vé đã được hủy trên hệ thống.
 
 🎯 GỢI Ý CÂU HỎI TIẾP THEO (BẮT BUỘC Ở CUỐI MỖI CÂU TRẢ LỜI):
 - Ở cuối cùng của MỌI câu trả lời, hãy tự động phân tích câu hỏi vừa rồi của cư dân và đưa ra 2 đến 4 gợi ý câu hỏi kế tiếp thông minh, liên quan mật thiết và hữu ích nhất cho cư dân.
@@ -793,6 +880,128 @@ Quý vị có thể vào mục **Thành Viên Căn Hộ** để đăng ký thêm
 *Biểu phí gửi xe hàng tháng:* Ô tô: 1.200.000 đ/tháng | Xe máy: 120.000 đ/tháng (được tính gộp vào hóa đơn quản lý định kỳ).
 
 [SUGGESTIONS: Phí gửi xe đóng chung hóa đơn không? | Vị trí đỗ xe máy ở hầm nào? | Thêm phương tiện mới cho người nhà]`;
+  }
+
+  // =========================================================================
+  // 4a. ACTION EXECUTION: ĐẶT CHỖ TIỆN ÍCH TỰ ĐỘNG QUA CHATBOX (BBQ / SAUNA)
+  // =========================================================================
+  const isEn = typeof contextOrAptCode === 'object' && contextOrAptCode?.language === 'en';
+  const todayStr = new Date().toISOString().split('T')[0];
+  const tomorrow = new Date();
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  const tomorrowStr = tomorrow.toISOString().split('T')[0];
+
+  const wantsBooking = text.includes('đặt') || text.includes('book') || text.includes('giữ chỗ') || text.includes('reserve');
+  const wantsCancel = text.includes('hủy') || text.includes('cancel') || text.includes('trả vé');
+
+  if (wantsBooking && (text.includes('bbq') || text.includes('nướng') || text.includes('tiệc'))) {
+    const isTomorrow = text.includes('mai') || text.includes('tomorrow');
+    const targetDate = isTomorrow ? tomorrowStr : todayStr;
+    const timeMatch = text.match(/(\d{1,2})(?:h|:)(\d{2})?/i);
+    const startHour = timeMatch ? parseInt(timeMatch[1], 10) : 18;
+    const startHourFormatted = String(startHour).padStart(2, '0');
+    const endHourFormatted = String(Math.min(startHour + 3, 23)).padStart(2, '0');
+    const timeSlot = `${startHourFormatted}:00 - ${endHourFormatted}:00`;
+
+    if (isEn) {
+      return `Certainly, Resident ${residentName}! I have **automatically booked the Panoramic BBQ Garden on the 25th Floor** for unit ${targetAptCode}:
+
+* 🍖 **Facility:** Panoramic BBQ Garden (25th Fl. - River View)
+* 📅 **Date:** ${targetDate}
+* ⏰ **Time Slot:** ${timeSlot}
+* 👥 **Expected Guests:** 4 persons
+* 💳 **Deposit:** 600,000 VND/slot (Billed to next month's utility statement)
+
+[ACTION:BOOK_FACILITY|bbq|${targetDate}|${timeSlot}|4|600.000 đ/ca|600000|Booked automatically via Skyline AI Concierge]
+🎫 Your **Electronic QR Facility Pass** has been generated and activated directly below. Simply tap or scan at the turnstile gate when attending!
+
+[SUGGESTIONS: Check my booked tickets | Cancellation & refund policy | Panoramic BBQ Garden opening hours]`;
+    }
+
+    return `Dạ thưa Quý cư dân ${residentName}, tôi đã tiếp nhận yêu cầu và **tự động hoàn tất đặt chỗ Vườn Tiệc Nướng BBQ Panoramic Tầng 25** cho căn hộ ${targetAptCode}:
+
+* 🍖 **Tiện ích:** Vườn Tiệc Nướng BBQ Panoramic (Tầng 25 - Sân Thượng View Sông)
+* 📅 **Ngày đặt:** ${targetDate}
+* ⏰ **Khung giờ:** ${timeSlot}
+* 👥 **Số khách dự kiến:** 4 người
+* 💳 **Chi phí giữ chỗ:** 600.000 đ/ca (Được trừ vào hóa đơn sinh hoạt tháng tới)
+
+[ACTION:BOOK_FACILITY|bbq|${targetDate}|${timeSlot}|4|600.000 đ/ca|600000|Đặt tự động qua Skyline AI Concierge]
+🎫 **Thẻ Vé Điện Tử QR Thông Hành** đã được kích hoạt tự động ngay bên dưới. Quý vị chỉ việc quẹt mã tại cổng khi lên dự tiệc nhé!
+
+[SUGGESTIONS: Kiểm tra vé tiện ích đã đặt của tôi | Chính sách hủy vé & hoàn tiền 100% | Giờ mở cửa vườn BBQ]`;
+  }
+
+  if (wantsBooking && (text.includes('xông hơi') || text.includes('sauna') || text.includes('đá muối'))) {
+    const isTomorrow = text.includes('mai') || text.includes('tomorrow');
+    const targetDate = isTomorrow ? tomorrowStr : todayStr;
+    const timeMatch = text.match(/(\d{1,2})(?:h|:)(\d{2})?/i);
+    const startHour = timeMatch ? parseInt(timeMatch[1], 10) : 9;
+    const startHourFormatted = String(startHour).padStart(2, '0');
+    const endHourFormatted = String(startHour + 1).padStart(2, '0');
+    const timeSlot = `${startHourFormatted}:00 - ${endHourFormatted}:00`;
+
+    if (isEn) {
+      return `Certainly, Resident ${residentName}! I have **automatically reserved the Private VIP Salt-Stone Sauna on the 3rd Floor** for unit ${targetAptCode}:
+
+* 🧖 **Facility:** Private VIP Salt-Stone Sauna (Tier 3)
+* 📅 **Date:** ${targetDate}
+* ⏰ **Time Slot:** ${timeSlot}
+* 👥 **Expected Guests:** 2 persons
+* 💳 **Deposit:** 500,000 VND/hour (Billed to next month's utility statement)
+
+[ACTION:BOOK_FACILITY|sauna|${targetDate}|${timeSlot}|2|500.000 đ/giờ|500000|Booked automatically via Skyline AI Concierge]
+♨️ The Himalayan salt heater and natural essential oils will be preheated 15 minutes before your arrival. Your **Electronic Boarding Pass** has been created below!
+
+[SUGGESTIONS: Check my booked tickets | Cancellation & refund policy | Sauna VIP opening hours]`;
+    }
+
+    return `Dạ thưa Quý cư dân ${residentName}, tôi đã tiếp nhận và **tự động hoàn tất đặt lịch Phòng Xông Hơi Đá Muối Himalaya VIP Tầng 3** cho căn hộ ${targetAptCode}:
+
+* 🧖 **Tiện ích:** Phòng Xông Hơi Đá Muối VIP Tầng 3 (Phòng riêng tư gia đình)
+* 📅 **Ngày đặt:** ${targetDate}
+* ⏰ **Khung giờ:** ${timeSlot}
+* 👥 **Số người:** 2 người
+* 💳 **Chi phí giữ chỗ:** 500.000 đ/giờ (Trừ vào hóa đơn tháng tới)
+
+[ACTION:BOOK_FACILITY|sauna|${targetDate}|${timeSlot}|2|500.000 đ/giờ|500000|Đặt tự động qua Skyline AI Concierge]
+♨️ Lò sưởi đá muối và tinh dầu thảo mộc thiên nhiên sẽ được bật sẵn trước 15 phút. **Thẻ Vé Điện Tử QR** đã được xuất tự động ngay bên dưới để Quý vị sử dụng ạ!
+
+[SUGGESTIONS: Kiểm tra vé tiện ích của tôi | Chính sách hủy vé & hoàn tiền 100% | Giờ mở cửa phòng xông hơi]`;
+  }
+
+  // =========================================================================
+  // 4b. ACTION EXECUTION: HỦY VÉ TIỆN ÍCH TỰ ĐỘNG & HOÀN TIỀN
+  // =========================================================================
+  if (wantsCancel && (text.includes('vé') || text.includes('lịch') || text.includes('ticket') || text.includes('booking') || text.includes('bk-') || text.includes('xông hơi') || text.includes('bbq') || text.includes('sauna'))) {
+    const targetBooking = activeBookings.find(b => b.status === 'CONFIRMED') || activeBookings[0];
+    const bookingId = targetBooking?.id || 'BK-SAUNA-9821';
+    const facName = targetBooking?.facilityName || 'Tiện Ích Đã Đặt';
+    const refundAmt = targetBooking?.depositAmount || 500000;
+
+    if (isEn) {
+      return `Certainly, Resident ${residentName}! I have **automatically processed the cancellation and 100% refund** for booking **${facName}** [Ticket: ${targetBooking?.ticketCode || bookingId}]:
+
+* 🔄 **Cancellation Status:** CANCELLED & REFUNDED (100%)
+* 💳 **Refund Amount:** +${refundAmt.toLocaleString('vi-VN')} VND
+* 📝 **Refund Method:** Automatically credited to next month's utility statement for unit ${targetAptCode}.
+
+[ACTION:CANCEL_BOOKING|${bookingId}|Resident requested cancellation via AI Concierge]
+The facility pass has been revoked across the building gates. Thank you for notifying us in advance!
+
+[SUGGESTIONS: Book panoramic BBQ party on 25th floor | View utility bill for this month | Which amenities are free?]`;
+    }
+
+    return `Dạ thưa Quý cư dân ${residentName}, tôi đã **tự động xử lý hủy vé và hoàn tiền 100%** cho lịch đặt **${facName}** [Mã vé: ${targetBooking?.ticketCode || bookingId}] thành công:
+
+* 🔄 **Trạng thái hủy:** ĐÃ HỦY VÉ & HOÀN TIỀN 100%
+* 💳 **Số tiền hoàn trả:** **+${refundAmt.toLocaleString('vi-VN')} đ**
+* 📝 **Hình thức hoàn:** Được trừ trực tiếp vào kỳ hóa đơn sinh hoạt tiếp theo của căn hộ ${targetAptCode}.
+
+[ACTION:CANCEL_BOOKING|${bookingId}|Cư dân yêu cầu hủy qua AI Concierge]
+Thẻ vé đã được cập nhật trạng thái ĐÃ HỦY trên toàn bộ cổng kiểm soát của tòa nhà. Cảm ơn Quý cư dân đã thông báo sớm trước giờ hẹn ạ!
+
+[SUGGESTIONS: Đặt tiệc nướng BBQ tầng 25 | Xem hóa đơn sinh hoạt tháng này | Tiện ích nào hoàn toàn miễn phí?]`;
   }
 
   // 6b. Inquiries about Facilities requiring Booking / Reservation (Tiện ích cần đặt trước / đăng ký trước)
