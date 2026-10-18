@@ -389,11 +389,11 @@ export function parseCccdText(rawText: string, isBackSide: boolean = false): Par
     // -------------------------------------------------------------
     // 1. EXTRACT 12-DIGIT CCCD ID NUMBER (Mặt trước)
     // -------------------------------------------------------------
-    const idMatch = rawText.match(/(?:Số|No|CCCD|SỐ)\.?[:\s]*([0-9]{12})/i) || 
-                    rawText.match(/\b(0[0-9]{11})\b/) || 
+    const idMatch = rawText.match(/(?:Số|No|CCCD|SỐ)\.?[:\s]*([0-9\s]{12,18})/i) || 
+                    rawText.match(/\b(0\d{2}[\s\.\-]?\d{3}[\s\.\-]?\d{3}[\s\.\-]?\d{3}|0\d{11})\b/) ||
                     rawText.match(/\b([0-9]{12})\b/);
     if (idMatch && idMatch[1]) {
-      result.idNumber = idMatch[1].trim();
+      result.idNumber = idMatch[1].replace(/\D/g, '').slice(0, 12);
     }
 
     // -------------------------------------------------------------
@@ -626,8 +626,33 @@ export function parseCccdText(rawText: string, isBackSide: boolean = false): Par
   }
 
   // -------------------------------------------------------------
-  // 6. EXTRACT ISSUE DATE & ISSUE PLACE (MẶT SAU)
+  // 6. EXTRACT MRZ, ISSUE DATE & ISSUE PLACE (MẶT SAU)
   // -------------------------------------------------------------
+  if (isBackSide) {
+    // 6.1 MRZ Line 1: IDVNM + 12 digits ID
+    const mrzId = rawText.match(/IDVNM(\d{9,12})/i) || rawText.match(/I<VNM(\d{9,12})/i);
+    if (mrzId && mrzId[1]) {
+      result.idNumber = mrzId[1].slice(0, 12);
+    }
+
+    // 6.2 MRZ Line 2: YYMMDD + Gender (M/F)
+    const mrzDate = rawText.match(/(\d{6})\d([MF])(\d{6})/i);
+    if (mrzDate) {
+      const rawDob = mrzDate[1];
+      const genderChar = mrzDate[2].toUpperCase();
+      result.gender = genderChar === 'F' ? '0' : '1';
+      const yr = parseInt(rawDob.slice(0, 2), 10);
+      const century = yr > 40 ? '19' : '20';
+      result.dob = `${century}${rawDob.slice(0, 2)}-${rawDob.slice(2, 4)}-${rawDob.slice(4, 6)}`;
+    }
+
+    // 6.3 MRZ Line 3: Full Name (SURNAME<<NAME)
+    const mrzName = rawText.match(/([A-Z]{2,}(?:<<[A-Z]+)+)/);
+    if (mrzName && mrzName[1]) {
+      result.fullName = mrzName[1].replace(/<+/g, ' ').trim();
+    }
+  }
+
   const dateMatch = rawText.match(/(?:Ngày,\s*tháng,\s*năm|Ngày cấp|Date of issue|Issued on)[:\s]+(\d{1,2}[\/\-\.]\d{1,2}[\/\-\.]\d{4})/i) ||
                     rawText.match(/(?:ngày|ngày\s+)(\d{1,2})\s+tháng\s+(\d{1,2})\s+năm\s+(\d{4})/i) ||
                     rawText.match(/\b(\d{2}[\/\-\.]\d{2}[\/\-\.]\d{4})\b/);

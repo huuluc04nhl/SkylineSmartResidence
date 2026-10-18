@@ -55,9 +55,12 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // 1. Quét mã QR bảo mật trên mặt trước thẻ CCCD gắn chip (Chính xác 100% từ ảnh thẻ)
+    // 1. Quét mã QR bảo mật trên mặt trước hoặc mặt sau thẻ CCCD gắn chip (Chính xác 100% từ ảnh thẻ)
     try {
-      const qrData = decodeQrFromBase64(frontImage);
+      let qrData = decodeQrFromBase64(frontImage);
+      if (!qrData && backImage) {
+        qrData = decodeQrFromBase64(backImage);
+      }
       if (qrData) {
         const parsed = parseVietnameseCccdQr(qrData);
         if (parsed && parsed.idNumber) {
