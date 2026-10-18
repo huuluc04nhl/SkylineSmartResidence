@@ -484,42 +484,42 @@ export default function SmartFacilityPass({ currentUser, onNavigateModule }: Sma
         <button
           type="button"
           onClick={() => setActiveTab('DISCOVER')}
-          className={`px-3.5 sm:px-4 py-2.5 text-xs font-bold uppercase tracking-wider rounded-none transition-all flex items-center gap-2 shrink-0 active:scale-95 ${
+          className={`px-3 sm:px-4 py-2 text-xs font-bold uppercase tracking-wider rounded-none transition-all flex items-center gap-1.5 shrink-0 active:scale-95 ${
             activeTab === 'DISCOVER'
               ? 'bg-[#C5A880] text-[#0D1117] shadow-lg'
               : 'bg-[#121820] text-gray-400 hover:text-white border border-[#222B35]'
           }`}
         >
           <DoorOpen className="w-4 h-4" />
-          <span>1. Danh Mục Tiện Ích ({amenitiesList.length})</span>
+          <span><span className="sm:hidden">Tiện Ích</span><span className="hidden sm:inline">1. Danh Mục Tiện Ích</span> ({amenitiesList.length})</span>
         </button>
 
         {/* Chức năng 2 */}
         <button
           type="button"
           onClick={() => setActiveTab('BOOKING')}
-          className={`px-3.5 sm:px-4 py-2.5 text-xs font-bold uppercase tracking-wider rounded-none transition-all flex items-center gap-2 shrink-0 active:scale-95 ${
+          className={`px-3 sm:px-4 py-2 text-xs font-bold uppercase tracking-wider rounded-none transition-all flex items-center gap-1.5 shrink-0 active:scale-95 ${
             activeTab === 'BOOKING'
               ? 'bg-[#C5A880] text-[#0D1117] shadow-lg'
               : 'bg-[#121820] text-gray-400 hover:text-white border border-[#222B35]'
           }`}
         >
           <CalendarCheck className="w-4 h-4" />
-          <span>2. Đặt Chỗ & Vé Vào ({bookings.filter(b => b.status === 'CONFIRMED').length})</span>
+          <span><span className="sm:hidden">Đặt Chỗ</span><span className="hidden sm:inline">2. Đặt Chỗ & Vé Vào</span> ({bookings.filter(b => b.status === 'CONFIRMED').length})</span>
         </button>
 
         {/* Chức năng 3 */}
         <button
           type="button"
           onClick={() => setActiveTab('LOGS')}
-          className={`px-3.5 sm:px-4 py-2.5 text-xs font-bold uppercase tracking-wider rounded-none transition-all flex items-center gap-2 shrink-0 active:scale-95 ${
+          className={`px-3 sm:px-4 py-2 text-xs font-bold uppercase tracking-wider rounded-none transition-all flex items-center gap-1.5 shrink-0 active:scale-95 ${
             activeTab === 'LOGS'
               ? 'bg-[#C5A880] text-[#0D1117] shadow-lg'
               : 'bg-[#121820] text-gray-400 hover:text-white border border-[#222B35]'
           }`}
         >
           <History className="w-4 h-4" />
-          <span>3. Nhật Ký Ra Vào ({accessLogs.length})</span>
+          <span><span className="sm:hidden">Lịch Sử</span><span className="hidden sm:inline">3. Nhật Ký Ra Vào</span> ({accessLogs.length})</span>
         </button>
       </div>
 
@@ -529,58 +529,52 @@ export default function SmartFacilityPass({ currentUser, onNavigateModule }: Sma
       {activeTab === 'DISCOVER' && (
         <div className="space-y-4">
           {/* Bộ lọc loại tiện ích */}
-          <div className="flex flex-wrap items-center justify-between gap-3 bg-[#121820] p-3 border border-[#222B35] rounded-none">
-            <div className="flex items-center gap-1.5 overflow-x-auto">
-              <button
-                type="button"
-                onClick={() => setFilterCategory('ALL')}
-                className={`px-3 py-1.5 text-xs font-bold rounded-none transition-colors ${
-                  filterCategory === 'ALL' ? 'bg-[#C5A880] text-[#0D1117]' : 'bg-[#161D26] text-gray-400 hover:text-white'
-                }`}
-              >
-                Tất Cả ({amenitiesList.length})
-              </button>
-              <button
-                type="button"
-                onClick={() => setFilterCategory('SPORTS')}
-                className={`px-3 py-1.5 text-xs font-bold rounded-none transition-colors ${
-                  filterCategory === 'SPORTS' ? 'bg-[#C5A880] text-[#0D1117]' : 'bg-[#161D26] text-gray-400 hover:text-white'
-                }`}
-              >
-                Thể Thao & Hồ Bơi ({amenitiesList.filter(a => a.category === 'SPORTS').length})
-              </button>
-              <button
-                type="button"
-                onClick={() => setFilterCategory('WELLNESS')}
-                className={`px-3 py-1.5 text-xs font-bold rounded-none transition-colors ${
-                  filterCategory === 'WELLNESS' ? 'bg-[#C5A880] text-[#0D1117]' : 'bg-[#161D26] text-gray-400 hover:text-white'
-                }`}
-              >
-                Sức Khỏe & Trẻ Em ({amenitiesList.filter(a => a.category === 'WELLNESS').length})
-              </button>
-              <button
-                type="button"
-                onClick={() => setFilterCategory('PARK')}
-                className={`px-3 py-1.5 text-xs font-bold rounded-none transition-colors ${
-                  filterCategory === 'PARK' ? 'bg-[#C5A880] text-[#0D1117]' : 'bg-[#161D26] text-gray-400 hover:text-white'
-                }`}
-              >
-                Công Viên & Cảnh Quan ({amenitiesList.filter(a => a.category === 'PARK').length})
-              </button>
-              <button
-                type="button"
-                onClick={() => setFilterCategory('PARTY')}
-                className={`px-3 py-1.5 text-xs font-bold rounded-none transition-colors ${
-                  filterCategory === 'PARTY' ? 'bg-[#C5A880] text-[#0D1117]' : 'bg-[#161D26] text-gray-400 hover:text-white'
-                }`}
-              >
-                Tiệc BBQ & Sân Nhóm ({amenitiesList.filter(a => a.category === 'PARTY').length})
-              </button>
-            </div>
-
-            <div className="text-[11px] text-gray-400 font-mono hidden sm:block">
-              * Quẹt thẻ hoặc nhìn vào camera nhận diện để mở cửa
-            </div>
+          <div className="flex items-center gap-1.5 bg-[#121820] p-2 border border-[#222B35] rounded-none overflow-x-auto no-scrollbar whitespace-nowrap">
+            <button
+              type="button"
+              onClick={() => setFilterCategory('ALL')}
+              className={`px-2.5 py-1.5 text-xs font-bold rounded-none transition-colors shrink-0 ${
+                filterCategory === 'ALL' ? 'bg-[#C5A880] text-[#0D1117]' : 'bg-[#161D26] text-gray-400 hover:text-white'
+              }`}
+            >
+              Tất Cả ({amenitiesList.length})
+            </button>
+            <button
+              type="button"
+              onClick={() => setFilterCategory('SPORTS')}
+              className={`px-2.5 py-1.5 text-xs font-bold rounded-none transition-colors shrink-0 ${
+                filterCategory === 'SPORTS' ? 'bg-[#C5A880] text-[#0D1117]' : 'bg-[#161D26] text-gray-400 hover:text-white'
+              }`}
+            >
+              <span className="sm:hidden">Thể Thao</span><span className="hidden sm:inline">Thể Thao & Hồ Bơi</span> ({amenitiesList.filter(a => a.category === 'SPORTS').length})
+            </button>
+            <button
+              type="button"
+              onClick={() => setFilterCategory('WELLNESS')}
+              className={`px-2.5 py-1.5 text-xs font-bold rounded-none transition-colors shrink-0 ${
+                filterCategory === 'WELLNESS' ? 'bg-[#C5A880] text-[#0D1117]' : 'bg-[#161D26] text-gray-400 hover:text-white'
+              }`}
+            >
+              <span className="sm:hidden">Sức Khỏe</span><span className="hidden sm:inline">Sức Khỏe & Trẻ Em</span> ({amenitiesList.filter(a => a.category === 'WELLNESS').length})
+            </button>
+            <button
+              type="button"
+              onClick={() => setFilterCategory('PARK')}
+              className={`px-2.5 py-1.5 text-xs font-bold rounded-none transition-colors shrink-0 ${
+                filterCategory === 'PARK' ? 'bg-[#C5A880] text-[#0D1117]' : 'bg-[#161D26] text-gray-400 hover:text-white'
+              }`}
+            >
+              <span className="sm:hidden">Công Viên</span><span className="hidden sm:inline">Công Viên & Cảnh Quan</span> ({amenitiesList.filter(a => a.category === 'PARK').length})
+            </button>
+            <button
+              type="button"
+              onClick={() => setFilterCategory('PARTY')}
+              className={`px-2.5 py-1.5 text-xs font-bold rounded-none transition-colors shrink-0 ${
+                filterCategory === 'PARTY' ? 'bg-[#C5A880] text-[#0D1117]' : 'bg-[#161D26] text-gray-400 hover:text-white'
+              }`}
+            >
+              <span className="sm:hidden">Tiệc BBQ</span><span className="hidden sm:inline">Tiệc BBQ & Sân Nhóm</span> ({amenitiesList.filter(a => a.category === 'PARTY').length})
+            </button>
           </div>
 
           {/* Lưới hiển thị các tiện ích */}

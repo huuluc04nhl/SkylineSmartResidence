@@ -147,9 +147,14 @@ export default function Topbar({
           </button>
         )}
 
-        <Link href="/" className="group flex-shrink-0">
+        <Link href="/" className="group flex-shrink-0 flex items-center gap-2">
           <SkylineLogo variant="full" size="sm" theme="dark" className="hidden sm:inline-flex" />
           <SkylineLogo variant="icon-only" size="sm" theme="dark" className="sm:hidden" />
+          {currentUser?.apartment_code && (
+            <span className="sm:hidden text-[10px] font-mono px-1.5 py-0.5 bg-[#C5A880]/15 text-[#C5A880] border border-[#C5A880]/40 font-bold tracking-wider">
+              {currentUser.apartment_code}
+            </span>
+          )}
         </Link>
 
         {/* Live System Time */}

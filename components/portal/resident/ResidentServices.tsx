@@ -153,27 +153,31 @@ export default function ResidentServices({ currentUser, onNavigateModule }: Resi
         </div>
 
         {/* Tab Switcher */}
-        <div className="flex items-center gap-2 bg-[#121820] p-1 border border-[#222B35] flex-shrink-0">
+        <div className="flex items-center gap-1.5 sm:gap-2 bg-[#121820] p-1 border border-[#222B35] flex-shrink-0">
           <button
             onClick={() => setActiveTab('CATALOG')}
-            className={`px-4 py-2 text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 ${
+            className={`px-2.5 sm:px-4 py-2 text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 ${
               activeTab === 'CATALOG'
                 ? 'bg-[#C5A880] text-[#0D1117] shadow-lg'
                 : 'text-gray-300 hover:text-white'
             }`}
           >
-            <Sparkles className="w-3.5 h-3.5" /> Danh Mục Dịch Vụ (7)
+            <Sparkles className="w-3.5 h-3.5 shrink-0" />
+            <span className="hidden sm:inline">Danh Mục Dịch Vụ</span>
+            <span className="sm:hidden">Dịch Vụ</span> (7)
           </button>
 
           <button
             onClick={() => setActiveTab('HISTORY')}
-            className={`px-4 py-2 text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 ${
+            className={`px-2.5 sm:px-4 py-2 text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 ${
               activeTab === 'HISTORY'
                 ? 'bg-[#C5A880] text-[#0D1117] shadow-lg'
                 : 'text-gray-300 hover:text-white'
             }`}
           >
-            <History className="w-3.5 h-3.5" /> Lịch Sử & Đơn Hàng ({bookings.length})
+            <History className="w-3.5 h-3.5 shrink-0" />
+            <span className="hidden sm:inline">Lịch Sử &amp; Đơn Hàng</span>
+            <span className="sm:hidden">Lịch Sử</span> ({bookings.length})
           </button>
         </div>
       </div>
@@ -188,7 +192,7 @@ export default function ResidentServices({ currentUser, onNavigateModule }: Resi
           {onNavigateModule && (
             <button
               onClick={() => onNavigateModule('resident-finance')}
-              className="px-3 py-1 bg-emerald-700 hover:bg-emerald-600 text-white font-bold rounded text-[11px] whitespace-nowrap transition-colors"
+              className="px-3 py-1 bg-emerald-700 hover:bg-emerald-600 text-white font-bold rounded-none text-[11px] whitespace-nowrap transition-colors"
             >
               Xem Hóa Đơn Ngay →
             </button>

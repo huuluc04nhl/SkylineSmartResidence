@@ -443,11 +443,11 @@ export default function VisitorQrModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/85 backdrop-blur-sm animate-fadeIn">
-      <div className="bg-[#0D1117] border border-[#C5A880]/80 max-w-3xl w-full p-4 sm:p-6 text-white space-y-5 shadow-2xl rounded-none max-h-[92dvh] overflow-y-auto relative">
+      <div className="bg-[#0D1117] border border-[#C5A880]/80 max-w-3xl w-full p-5 sm:p-6 text-white space-y-5 shadow-2xl rounded-2xl max-h-[92vh] overflow-y-auto relative">
         
         {/* Toast Notification */}
         {toastMessage && (
-          <div className="fixed top-6 left-1/2 -translate-x-1/2 z-[60] px-4 py-2.5 bg-[#161D26] border border-[#C5A880] text-[#C5A880] text-xs font-bold rounded-none shadow-2xl flex items-center gap-2 animate-fadeIn">
+          <div className="fixed top-6 left-1/2 -translate-x-1/2 z-[60] px-4 py-2.5 bg-[#161D26] border border-[#C5A880] text-[#C5A880] text-xs font-bold rounded-xl shadow-2xl flex items-center gap-2 animate-fadeIn">
             <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
             <span>{toastMessage}</span>
           </div>
@@ -466,7 +466,7 @@ export default function VisitorQrModal({
 
           <button
             onClick={onClose}
-            className="p-1.5 rounded-none text-gray-400 hover:text-white hover:bg-[#161B22] transition-colors cursor-pointer"
+            className="p-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-[#161B22] transition-colors cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
@@ -474,9 +474,9 @@ export default function VisitorQrModal({
 
         {/* Resident Pass Creation & Sharing */}
         <div className="space-y-4">
-          {/* Building Policy & Privacy Guarantee Banner */}
-          <div className="p-3 bg-[#121E2A] border border-[#1E3A5F] rounded-none flex items-start gap-2.5 text-xs text-cyan-200">
-            <Info className="w-4 h-4 text-cyan-400 flex-shrink-0 mt-0.5" />
+            {/* Building Policy & Privacy Guarantee Banner */}
+            <div className="p-3 bg-[#121E2A] border border-[#1E3A5F] rounded-xl flex items-start gap-2.5 text-xs text-cyan-200">
+              <Info className="w-4 h-4 text-cyan-400 flex-shrink-0 mt-0.5" />
               <div>
                 Mã QR dùng để khách quét qua sảnh lễ tân và thang máy lên căn hộ. Hàng shipper vui lòng gửi tại sảnh lễ tân.
               </div>

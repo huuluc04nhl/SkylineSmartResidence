@@ -209,29 +209,3 @@ h1, h2, h3, .font-editorial {
   animation: pulse-aura 3s ease-in-out infinite;
 }
 
-/* ------------------------------------------------------------- */
-/* NATIVE MOBILE WEB APP ERGONOMICS & SAFE-AREA INSETS          */
-/* ------------------------------------------------------------- */
-.pb-safe {
-  padding-bottom: env(safe-area-inset-bottom, 0px);
-}
-.pt-safe {
-  padding-top: env(safe-area-inset-top, 0px);
-}
-.h-screen-dvh {
-  height: 100dvh;
-}
-.min-h-screen-dvh {
-  min-height: 100dvh;
-}
-
-@media (max-width: 768px) {
-  html {
-    -webkit-text-size-adjust: 100%;
-    -webkit-tap-highlight-color: transparent;
-  }
-  body {
-    overscroll-behavior-y: contain;
-  }
-}
-

@@ -266,7 +266,7 @@ export default function ResidentHome({ currentUser, onNavigate, onOpenVisitorMod
               <div className="font-bold text-[11px] text-white flex items-center gap-1.5">
                 <SunMedium className="w-3.5 h-3.5 text-amber-400" /> {t('Về Nhà')}
               </div>
-              <div className="text-[10px] text-gray-400">{t('Bật đèn • ĐH 24°C • Mở rèm')}</div>
+              <div className="hidden sm:block text-[10px] text-gray-400">{t('Bật đèn • ĐH 24°C • Mở rèm')}</div>
             </div>
             {activeScene === 'WELCOME' && <span className="w-2 h-2 rounded-full bg-[#C5A880]"></span>}
           </button>
@@ -284,7 +284,7 @@ export default function ResidentHome({ currentUser, onNavigate, onOpenVisitorMod
               <div className="font-bold text-[11px] text-white flex items-center gap-1.5">
                 <Home className="w-3.5 h-3.5 text-blue-400" /> {t('Ra Ngoài')}
               </div>
-              <div className="text-[10px] text-gray-400">{t('Tắt điện • Khóa cửa • Đóng rèm')}</div>
+              <div className="hidden sm:block text-[10px] text-gray-400">{t('Tắt điện • Khóa cửa • Đóng rèm')}</div>
             </div>
             {activeScene === 'AWAY' && <span className="w-2 h-2 rounded-full bg-[#C5A880]"></span>}
           </button>
@@ -302,7 +302,7 @@ export default function ResidentHome({ currentUser, onNavigate, onOpenVisitorMod
               <div className="font-bold text-[11px] text-white flex items-center gap-1.5">
                 <Moon className="w-3.5 h-3.5 text-indigo-400" /> {t('Đi Ngủ')}
               </div>
-              <div className="text-[10px] text-gray-400">{t('ĐH 26°C • Khóa cửa • Đóng rèm')}</div>
+              <div className="hidden sm:block text-[10px] text-gray-400">{t('ĐH 26°C • Khóa cửa • Đóng rèm')}</div>
             </div>
             {activeScene === 'SLEEP' && <span className="w-2 h-2 rounded-full bg-[#C5A880]"></span>}
           </button>
@@ -320,7 +320,7 @@ export default function ResidentHome({ currentUser, onNavigate, onOpenVisitorMod
               <div className="font-bold text-[11px] text-white flex items-center gap-1.5">
                 <Tv className="w-3.5 h-3.5 text-rose-400" /> {t('Xem Phim')}
               </div>
-              <div className="text-[10px] text-gray-400">{t('ĐH 23°C • Đèn 15% • Đóng rèm')}</div>
+              <div className="hidden sm:block text-[10px] text-gray-400">{t('ĐH 23°C • Đèn 15% • Đóng rèm')}</div>
             </div>
             {activeScene === 'CINEMA' && <span className="w-2 h-2 rounded-full bg-[#C5A880]"></span>}
           </button>
@@ -338,7 +338,7 @@ export default function ResidentHome({ currentUser, onNavigate, onOpenVisitorMod
               <div className="font-bold text-[11px] text-white flex items-center gap-1.5">
                 <Sparkles className="w-3.5 h-3.5 text-emerald-400" /> {t('Ăn Tối')}
               </div>
-              <div className="text-[10px] text-gray-400">{t('Bật đèn bếp • View phố')}</div>
+              <div className="hidden sm:block text-[10px] text-gray-400">{t('Bật đèn bếp • View phố')}</div>
             </div>
             {activeScene === 'DINING' && <span className="w-2 h-2 rounded-full bg-[#C5A880]"></span>}
           </button>
@@ -365,8 +365,121 @@ export default function ResidentHome({ currentUser, onNavigate, onOpenVisitorMod
 
         {/* Right Column: Quick Action Grid & Notification Snippets */}
         <div className={`${isOwner ? 'lg:col-span-7' : 'lg:col-span-12'} space-y-6`}>
-          {/* Quick Actions 4-Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {/* 1. MOBILE NATIVE APP LAUNCHER (Chỉ hiển thị trên điện thoại - Icon ngắn gọn, trực quan như App Native) */}
+          <div className="sm:hidden grid grid-cols-4 gap-2 p-3 bg-[#121820] border border-[#222B35] shadow-lg">
+            {/* 1. QR Đón Khách */}
+            <button
+              type="button"
+              onClick={onOpenVisitorModal}
+              className="flex flex-col items-center gap-1.5 p-2 bg-[#161B22] border border-[#263548] active:border-[#C5A880] active:scale-95 transition-all text-center rounded-none"
+            >
+              <div className="w-10 h-10 bg-[#1C2533] text-[#C5A880] flex items-center justify-center border border-[#2E3D52]">
+                <QrCode className="w-5 h-5" />
+              </div>
+              <span className="text-[10.5px] font-medium text-gray-200 truncate w-full">{t('Mã QR')}</span>
+            </button>
+
+            {/* 2. Báo Hỏng */}
+            <button
+              type="button"
+              onClick={() => onNavigate('resident-tickets')}
+              className="flex flex-col items-center gap-1.5 p-2 bg-[#161B22] border border-[#263548] active:border-amber-400 active:scale-95 transition-all text-center rounded-none"
+            >
+              <div className="w-10 h-10 bg-[#1C2533] text-amber-400 flex items-center justify-center border border-[#2E3D52]">
+                <Wrench className="w-5 h-5" />
+              </div>
+              <span className="text-[10.5px] font-medium text-gray-200 truncate w-full">{t('Báo Hỏng')}</span>
+            </button>
+
+            {/* 3. Hóa Đơn (Chủ Hộ) hoặc Trợ Lý AI (Thành Viên) */}
+            {isOwner ? (
+              <button
+                type="button"
+                onClick={() => onNavigate('resident-finance')}
+                className="flex flex-col items-center gap-1.5 p-2 bg-[#161B22] border border-[#263548] active:border-emerald-400 active:scale-95 transition-all text-center relative rounded-none"
+              >
+                <div className="w-10 h-10 bg-[#1C2533] text-emerald-400 flex items-center justify-center border border-[#2E3D52]">
+                  <CreditCard className="w-5 h-5" />
+                </div>
+                <span className="text-[10.5px] font-medium text-gray-200 truncate w-full">{t('Hóa Đơn')}</span>
+                <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={() => onNavigate('resident-ai-assistant')}
+                className="flex flex-col items-center gap-1.5 p-2 bg-[#161B22] border border-[#263548] active:border-purple-400 active:scale-95 transition-all text-center rounded-none"
+              >
+                <div className="w-10 h-10 bg-[#1C2533] text-purple-400 flex items-center justify-center border border-[#2E3D52]">
+                  <Sparkles className="w-5 h-5" />
+                </div>
+                <span className="text-[10.5px] font-medium text-gray-200 truncate w-full">{t('Trợ Lý AI')}</span>
+              </button>
+            )}
+
+            {/* 4. Tiện Ích */}
+            <button
+              type="button"
+              onClick={() => onNavigate('resident-facilities')}
+              className="flex flex-col items-center gap-1.5 p-2 bg-[#161B22] border border-[#263548] active:border-blue-400 active:scale-95 transition-all text-center rounded-none"
+            >
+              <div className="w-10 h-10 bg-[#1C2533] text-blue-400 flex items-center justify-center border border-[#2E3D52]">
+                <CalendarCheck className="w-5 h-5" />
+              </div>
+              <span className="text-[10.5px] font-medium text-gray-200 truncate w-full">{t('Tiện Ích')}</span>
+            </button>
+
+            {/* 5. Dịch Vụ Căn Hộ */}
+            <button
+              type="button"
+              onClick={() => onNavigate('resident-services')}
+              className="flex flex-col items-center gap-1.5 p-2 bg-[#161B22] border border-[#263548] active:border-amber-400 active:scale-95 transition-all text-center rounded-none"
+            >
+              <div className="w-10 h-10 bg-[#1C2533] text-amber-400 flex items-center justify-center border border-[#2E3D52]">
+                <Sparkles className="w-5 h-5" />
+              </div>
+              <span className="text-[10.5px] font-medium text-gray-200 truncate w-full">{t('Dịch Vụ')}</span>
+            </button>
+
+            {/* 6. Smart Home */}
+            <button
+              type="button"
+              onClick={() => onNavigate('resident-smarthome')}
+              className="flex flex-col items-center gap-1.5 p-2 bg-[#161B22] border border-[#263548] active:border-cyan-400 active:scale-95 transition-all text-center rounded-none"
+            >
+              <div className="w-10 h-10 bg-[#1C2533] text-cyan-400 flex items-center justify-center border border-[#2E3D52]">
+                <Home className="w-5 h-5" />
+              </div>
+              <span className="text-[10.5px] font-medium text-gray-200 truncate w-full">{t('Smart Home')}</span>
+            </button>
+
+            {/* 7. Sổ Tay Cư Dân */}
+            <button
+              type="button"
+              onClick={() => onNavigate('resident-handbook')}
+              className="flex flex-col items-center gap-1.5 p-2 bg-[#161B22] border border-[#263548] active:border-emerald-400 active:scale-95 transition-all text-center rounded-none"
+            >
+              <div className="w-10 h-10 bg-[#1C2533] text-emerald-400 flex items-center justify-center border border-[#2E3D52]">
+                <BookOpen className="w-5 h-5" />
+              </div>
+              <span className="text-[10.5px] font-medium text-gray-200 truncate w-full">{t('Sổ Tay')}</span>
+            </button>
+
+            {/* 8. Gia Đình / Hồ Sơ */}
+            <button
+              type="button"
+              onClick={() => onNavigate(isOwner ? 'resident-family' : 'resident-profile')}
+              className="flex flex-col items-center gap-1.5 p-2 bg-[#161B22] border border-[#263548] active:border-rose-400 active:scale-95 transition-all text-center rounded-none"
+            >
+              <div className="w-10 h-10 bg-[#1C2533] text-rose-400 flex items-center justify-center border border-[#2E3D52]">
+                <Users className="w-5 h-5" />
+              </div>
+              <span className="text-[10.5px] font-medium text-gray-200 truncate w-full">{isOwner ? t('Gia Đình') : t('Hồ Sơ')}</span>
+            </button>
+          </div>
+
+          {/* 2. DESKTOP / TABLET QUICK ACTIONS CARDS (Chi tiết khi màn hình lớn) */}
+          <div className="hidden sm:grid sm:grid-cols-2 gap-4">
             {/* Action 1: QR Đón Khách */}
             <div
               onClick={onOpenVisitorModal}

@@ -8,7 +8,15 @@ import {
   ArrowLeft, 
   Lock, 
   RefreshCw,
-  SlidersHorizontal 
+  SlidersHorizontal,
+  Home,
+  KeyRound,
+  QrCode,
+  CreditCard,
+  Wrench,
+  Building,
+  LayoutDashboard,
+  KanbanSquare
 } from 'lucide-react';
 import { useAuth } from '@/lib/authContext';
 import { useLanguage } from '@/lib/languageContext';
@@ -17,7 +25,6 @@ import { UserRole } from '@/lib/dataStore';
 // Shell & Nav
 import Topbar from '@/components/portal/Topbar';
 import Sidebar from '@/components/portal/Sidebar';
-import BottomNav from '@/components/portal/BottomNav';
 import LoginModal from '@/components/landing/LoginModal';
 
 // Admin Core Modules (Includes Tech Desk)
@@ -302,6 +309,83 @@ function PortalContent() {
         </main>
       </div>
 
+      {/* ------------------------------------------------------------- */}
+      {/* NATIVE MOBILE BOTTOM APP BAR (DÀNH CHO ĐIỆN THOẠI & TABLET)  */}
+      {/* ------------------------------------------------------------- */}
+      {(currentUser.role === 'OWNER' || currentUser.role === 'TENANT') && (
+        <nav 
+          aria-label="Mobile Navigation"
+          className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-[#0E131B]/95 border-t border-[#C5A880]/30 backdrop-blur-xl px-2 py-1 flex items-center justify-around shadow-[0_-8px_25px_rgba(0,0,0,0.85)] select-none"
+        >
+          {/* Tab 1: Trang chủ */}
+          <button
+            type="button"
+            onClick={() => handleSelectModule('resident-home')}
+            className={`flex flex-col items-center justify-center py-1 px-2 transition-all active:scale-95 ${
+              activeModule === 'resident-home' ? 'text-[#C5A880]' : 'text-gray-400 hover:text-white'
+            }`}
+          >
+            <Home className="w-5 h-5 mb-0.5" />
+            <span className="text-[10px] font-medium leading-tight">{t('Trang Chủ')}</span>
+          </button>
+
+          {/* Tab 2: Tiện ích / Thẻ */}
+          <button
+            type="button"
+            onClick={() => handleSelectModule('resident-facilities')}
+            className={`flex flex-col items-center justify-center py-1 px-2 transition-all active:scale-95 ${
+              activeModule === 'resident-facilities' ? 'text-[#C5A880]' : 'text-gray-400 hover:text-white'
+            }`}
+          >
+            <KeyRound className="w-5 h-5 mb-0.5" />
+            <span className="text-[10px] font-medium leading-tight">{t('Tiện Ích')}</span>
+          </button>
+
+          {/* Tab 3: CENTER GOLD ACTION - MÃ QR KHÁCH (RA VÀO SẢNH & THANG MÁY) */}
+          <button
+            type="button"
+            onClick={() => setIsVisitorModalOpen(true)}
+            className="flex flex-col items-center justify-center -mt-5 group active:scale-90 transition-transform"
+          >
+            <div className="w-12 h-12 bg-[#C5A880] group-hover:bg-white text-[#0D1117] flex items-center justify-center shadow-xl shadow-[#C5A880]/30 border-2 border-[#0A0E14] transition-all">
+              <QrCode className="w-6 h-6 text-[#0D1117]" />
+            </div>
+            <span className="text-[9.5px] font-bold text-[#C5A880] mt-0.5 leading-tight">{t('Mã QR')}</span>
+          </button>
+
+          {/* Tab 4: Hóa Đơn (Chủ Hộ) hoặc Báo Hỏng (Người Nhà) */}
+          <button
+            type="button"
+            onClick={() => handleSelectModule(currentUser.role === 'OWNER' ? 'resident-finance' : 'resident-tickets')}
+            className={`flex flex-col items-center justify-center py-1 px-2 transition-all active:scale-95 ${
+              (activeModule === 'resident-finance' || activeModule === 'resident-tickets') ? 'text-[#C5A880]' : 'text-gray-400 hover:text-white'
+            }`}
+          >
+            {currentUser.role === 'OWNER' ? (
+              <>
+                <CreditCard className="w-5 h-5 mb-0.5" />
+                <span className="text-[10px] font-medium leading-tight">{t('Hóa Đơn')}</span>
+              </>
+            ) : (
+              <>
+                <Wrench className="w-5 h-5 mb-0.5" />
+                <span className="text-[10px] font-medium leading-tight">{t('Báo Hỏng')}</span>
+              </>
+            )}
+          </button>
+
+          {/* Tab 5: Menu Mở Rộng Tất Cả Tính Năng */}
+          <button
+            type="button"
+            onClick={() => setIsMobileSidebarOpen(true)}
+            className="flex flex-col items-center justify-center py-1 px-2 text-gray-400 hover:text-white transition-all active:scale-95"
+          >
+            <SlidersHorizontal className="w-5 h-5 mb-0.5" />
+            <span className="text-[10px] font-medium leading-tight">{t('Tất Cả')}</span>
+          </button>
+        </nav>
+      )}
+
       {/* Floating High-Tech AI Concierge Chatbot Widget (Always on Top with Expanding Animation) */}
       <AiConciergeFloating
         currentUser={currentUser}
@@ -316,15 +400,6 @@ function PortalContent() {
         onClose={() => setIsVisitorModalOpen(false)}
         apartmentCode={currentUser.apartment_code || 'CH-06'}
         currentUser={currentUser}
-      />
-
-      {/* Native App-Style Mobile Bottom Navigation Bar */}
-      <BottomNav
-        currentUser={currentUser}
-        activeModule={activeModule}
-        onSelectModule={handleSelectModule}
-        onOpenAiChat={() => setIsAiChatOpen(true)}
-        onOpenMenu={() => setIsMobileSidebarOpen(true)}
       />
     </div>
   );

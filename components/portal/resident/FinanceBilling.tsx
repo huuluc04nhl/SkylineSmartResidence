@@ -759,7 +759,7 @@ export default function FinanceBilling({ currentUser }: FinanceBillingProps) {
           </h2>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
           {activeTab === 'BILLING' ? (
             <>
               {currentBill && currentBill.status === 'Unpaid' && (
@@ -768,9 +768,11 @@ export default function FinanceBilling({ currentUser }: FinanceBillingProps) {
                     setLastPaymentResult(null);
                     setShowPaymentModal(true);
                   }}
-                  className="px-4 py-2 bg-[#C5A880] hover:bg-white text-[#0D1117] text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 shadow"
+                  className="px-3 sm:px-4 py-2 bg-[#C5A880] hover:bg-white text-[#0D1117] text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 shadow"
                 >
-                  <CreditCard className="w-4 h-4" /> {t('Thanh Toán', 'Pay Bill')}
+                  <CreditCard className="w-4 h-4 shrink-0" />
+                  <span className="hidden sm:inline">{t('Thanh Toán', 'Pay Bill')}</span>
+                  <span className="sm:hidden">{t('Thanh Toán', 'Pay')}</span>
                 </button>
               )}
 
@@ -778,24 +780,27 @@ export default function FinanceBilling({ currentUser }: FinanceBillingProps) {
                 <button
                   onClick={() => handleExportInvoicePdf(currentBill)}
                   disabled={isExportingInvoicePdf}
-                  className="px-3.5 py-2 bg-[#161B22] border border-[#2D3748] hover:border-[#C5A880] text-gray-200 text-xs font-semibold uppercase tracking-wider transition-all flex items-center gap-1.5"
+                  className="px-2.5 sm:px-3.5 py-2 bg-[#161B22] border border-[#2D3748] hover:border-[#C5A880] text-gray-200 text-xs font-semibold uppercase tracking-wider transition-all flex items-center gap-1.5"
                   title="Xuất Hóa Đơn Ra File PDF Chuẩn A4"
                 >
                   {isExportingInvoicePdf ? (
-                    <RefreshCw className="w-4 h-4 animate-spin text-[#C5A880]" />
+                    <RefreshCw className="w-4 h-4 animate-spin text-[#C5A880] shrink-0" />
                   ) : (
-                    <Download className="w-4 h-4 text-[#C5A880]" />
+                    <Download className="w-4 h-4 text-[#C5A880] shrink-0" />
                   )}
-                  <span>{isExportingInvoicePdf ? 'Đang Xuất PDF...' : 'Xuất Hóa Đơn PDF'}</span>
+                  <span className="hidden sm:inline">{isExportingInvoicePdf ? 'Đang Xuất PDF...' : 'Xuất Hóa Đơn PDF'}</span>
+                  <span className="sm:hidden">{isExportingInvoicePdf ? 'Đang xuất...' : 'Xuất PDF'}</span>
                 </button>
               )}
 
               {currentBill && currentBill.status === 'Paid' && (
                 <button
                   onClick={() => window.print()}
-                  className="px-4 py-2 bg-[#161B22] border border-[#2D3748] hover:border-[#C5A880] text-gray-200 text-xs font-semibold uppercase tracking-wider transition-all flex items-center gap-1.5"
+                  className="px-3 sm:px-4 py-2 bg-[#161B22] border border-[#2D3748] hover:border-[#C5A880] text-gray-200 text-xs font-semibold uppercase tracking-wider transition-all flex items-center gap-1.5"
                 >
-                  <Receipt className="w-4 h-4 text-[#C5A880]" /> In Hóa Đơn
+                  <Receipt className="w-4 h-4 text-[#C5A880] shrink-0" />
+                  <span className="hidden sm:inline">In Hóa Đơn</span>
+                  <span className="sm:hidden">In</span>
                 </button>
               )}
             </>
@@ -803,18 +808,20 @@ export default function FinanceBilling({ currentUser }: FinanceBillingProps) {
             <>
               <button
                 onClick={handleExportExpenseCsv}
-                className="px-3.5 py-2 bg-[#161B22] border border-[#2D3748] hover:border-[#C5A880] text-gray-200 text-xs font-semibold uppercase tracking-wider transition-all flex items-center gap-1.5"
+                className="px-2.5 sm:px-3.5 py-2 bg-[#161B22] border border-[#2D3748] hover:border-[#C5A880] text-gray-200 text-xs font-semibold uppercase tracking-wider transition-all flex items-center gap-1.5"
                 title="Tải bảng tính CSV chi tiết từng hạng mục chi phí"
               >
-                <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-400" />
-                <span>Xuất CSV</span>
+                <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                <span className="hidden sm:inline">Xuất CSV</span>
+                <span className="sm:hidden">CSV</span>
               </button>
               <button
                 onClick={() => window.print()}
-                className="px-3.5 py-2 bg-[#161B22] border border-[#2D3748] hover:border-[#C5A880] text-gray-200 text-xs font-semibold uppercase tracking-wider transition-all flex items-center gap-1.5"
+                className="px-2.5 sm:px-3.5 py-2 bg-[#161B22] border border-[#2D3748] hover:border-[#C5A880] text-gray-200 text-xs font-semibold uppercase tracking-wider transition-all flex items-center gap-1.5"
               >
-                <Download className="w-3.5 h-3.5 text-[#C5A880]" />
-                <span>In Báo Cáo</span>
+                <Download className="w-3.5 h-3.5 text-[#C5A880] shrink-0" />
+                <span className="hidden sm:inline">In Báo Cáo</span>
+                <span className="sm:hidden">In</span>
               </button>
             </>
           )}
@@ -832,10 +839,10 @@ export default function FinanceBilling({ currentUser }: FinanceBillingProps) {
                 : 'text-gray-400 hover:text-white hover:bg-[#161B22]'
             }`}
           >
-            <Receipt className="w-3.5 h-3.5" />
+            <Receipt className="w-3.5 h-3.5 shrink-0" />
             <span>Hóa Đơn</span>
             {bills.some(b => b.status === 'Unpaid') && (
-              <span className={`px-1.5 py-0.2 text-[9px] font-mono font-bold rounded ${
+              <span className={`px-1.5 py-0.2 text-[9px] font-mono font-bold rounded-none ${
                 activeTab === 'BILLING' ? 'bg-[#0D1117] text-[#C5A880]' : 'bg-amber-500 text-black'
               }`}>
                 1 chưa nộp
@@ -851,8 +858,9 @@ export default function FinanceBilling({ currentUser }: FinanceBillingProps) {
                 : 'text-gray-400 hover:text-white hover:bg-[#161B22]'
             }`}
           >
-            <BarChart3 className="w-3.5 h-3.5" />
-            <span>Thống Kê Chi Tiêu</span>
+            <BarChart3 className="w-3.5 h-3.5 shrink-0" />
+            <span className="hidden sm:inline">Thống Kê Chi Tiêu</span>
+            <span className="sm:hidden">Thống Kê</span>
           </button>
         </div>
 
@@ -921,12 +929,12 @@ export default function FinanceBilling({ currentUser }: FinanceBillingProps) {
               </div>
             </div>
 
-            <div className="text-right">
+            <div className="text-left sm:text-right">
               <div className="text-xs uppercase tracking-wider text-gray-400">Tổng Số Tiền Cần Thanh Toán</div>
               <div className="font-serif text-3xl font-bold text-[#C5A880]">
                 {billAmountFormatted} đ
               </div>
-              <div className="mt-1 flex items-center justify-end gap-2">
+              <div className="mt-1 flex items-center justify-start sm:justify-end gap-2">
                 <span className={`px-2.5 py-0.5 text-[10px] uppercase font-bold font-mono ${
                   currentBill.status === 'Paid'
                     ? 'bg-emerald-950 text-emerald-300 border border-emerald-500'
@@ -1567,8 +1575,8 @@ export default function FinanceBilling({ currentUser }: FinanceBillingProps) {
       {/* MODAL THANH TOÁN CHÍNH: VNPAY & MOMO GATEWAY                              */}
       {/* ========================================================================= */}
       {showPaymentModal && currentBill && (
-        <div className="fixed inset-0 bg-black/85 backdrop-blur-sm z-50 flex items-center justify-center p-3 sm:p-4">
-          <div className="bg-[#121820] border border-[#C5A880] max-w-lg w-full max-h-[90dvh] overflow-y-auto p-4 sm:p-6 space-y-4 shadow-2xl animate-fadeIn text-white rounded-none">
+        <div className="fixed inset-0 bg-black/85 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-[#121820] border border-[#C5A880] max-w-lg w-full p-6 space-y-4 shadow-2xl animate-fadeIn text-white">
             <div className="flex items-center justify-between border-b border-[#222B35] pb-3">
               <div className="flex items-center gap-2">
                 <CreditCard className="w-5 h-5 text-[#C5A880]" />

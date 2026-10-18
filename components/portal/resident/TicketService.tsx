@@ -585,24 +585,28 @@ export default function TicketService({ currentUser }: TicketServiceProps) {
             <button
               type="button"
               onClick={() => { setTicketPurpose('REPAIR'); setContent(''); setSelectedPresetId(null); setAiImageAnalysis(null); }}
-              className={`py-2.5 px-3 text-center text-xs transition-all flex items-center justify-center gap-2 ${
+              className={`py-2.5 px-2 sm:px-3 text-center text-xs transition-all flex items-center justify-center gap-1.5 sm:gap-2 ${
                 ticketPurpose === 'REPAIR'
                   ? 'bg-[#C5A880] text-[#0D1117] font-bold shadow'
                   : 'text-gray-400 hover:text-white hover:bg-[#161B22]'
               }`}
             >
-              <Wrench className="w-4 h-4" /> Báo Hỏng Sửa Chữa (Kỹ Thuật)
+              <Wrench className="w-4 h-4 shrink-0" />
+              <span className="hidden sm:inline">Báo Hỏng Sửa Chữa (Kỹ Thuật)</span>
+              <span className="sm:hidden">Báo Hỏng KTV</span>
             </button>
             <button
               type="button"
               onClick={() => { setTicketPurpose('FEEDBACK'); setContent(''); setSelectedPresetId(null); setAiImageAnalysis(null); }}
-              className={`py-2.5 px-3 text-center text-xs transition-all flex items-center justify-center gap-2 ${
+              className={`py-2.5 px-2 sm:px-3 text-center text-xs transition-all flex items-center justify-center gap-1.5 sm:gap-2 ${
                 ticketPurpose === 'FEEDBACK'
                   ? 'bg-rose-600 text-white font-bold shadow'
                   : 'text-gray-400 hover:text-white hover:bg-[#161B22]'
               }`}
             >
-              <MessageSquare className="w-4 h-4" /> Góp Ý &amp; Khiếu Nại (BQL)
+              <MessageSquare className="w-4 h-4 shrink-0" />
+              <span className="hidden sm:inline">Góp Ý &amp; Khiếu Nại (BQL)</span>
+              <span className="sm:hidden">Góp Ý BQL</span>
             </button>
           </div>
 
@@ -1050,10 +1054,10 @@ export default function TicketService({ currentUser }: TicketServiceProps) {
         {tickets.length > 0 && (
           <div className="flex overflow-x-auto no-scrollbar items-center gap-1.5 pt-0.5 whitespace-nowrap pb-1">
             {[
-              { key: 'ALL', label: `Tất Cả (${tickets.length})` },
-              { key: 'REPAIR', label: `🔧 KTV Sửa Chữa (${tickets.filter(t => t.ticket_type === 'REPAIR' || (!t.ticket_type && t.status !== 'Resolved')).length})` },
-              { key: 'FEEDBACK', label: `📢 Phản Ánh & Ý Kiến (${tickets.filter(t => t.ticket_type !== 'REPAIR').length})` },
-              { key: 'RESOLVED', label: `✓ Đã Hoàn Tất (${tickets.filter(t => t.status === 'Resolved').length})` },
+              { key: 'ALL', fullLabel: `Tất Cả (${tickets.length})`, shortLabel: `Tất cả (${tickets.length})` },
+              { key: 'REPAIR', fullLabel: `🔧 KTV Sửa Chữa (${tickets.filter(t => t.ticket_type === 'REPAIR' || (!t.ticket_type && t.status !== 'Resolved')).length})`, shortLabel: `🔧 Sửa chữa (${tickets.filter(t => t.ticket_type === 'REPAIR' || (!t.ticket_type && t.status !== 'Resolved')).length})` },
+              { key: 'FEEDBACK', fullLabel: `📢 Phản Ánh & Ý Kiến (${tickets.filter(t => t.ticket_type !== 'REPAIR').length})`, shortLabel: `📢 Phản ánh (${tickets.filter(t => t.ticket_type !== 'REPAIR').length})` },
+              { key: 'RESOLVED', fullLabel: `✓ Đã Hoàn Tất (${tickets.filter(t => t.status === 'Resolved').length})`, shortLabel: `✓ Xong (${tickets.filter(t => t.status === 'Resolved').length})` },
             ].map((tab) => (
               <button
                 key={tab.key}
@@ -1065,7 +1069,8 @@ export default function TicketService({ currentUser }: TicketServiceProps) {
                     : 'bg-[#161B22] text-gray-400 border-[#2D3748] hover:text-white hover:border-gray-600'
                 }`}
               >
-                {tab.label}
+                <span className="hidden sm:inline">{tab.fullLabel}</span>
+                <span className="sm:hidden">{tab.shortLabel}</span>
               </button>
             ))}
           </div>

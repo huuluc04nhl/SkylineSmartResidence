@@ -474,7 +474,7 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
             <Sun className="w-4 h-4 text-amber-400 shrink-0" />
             <div className="truncate">
               <div className="text-xs font-bold text-white">Về Nhà</div>
-              <div className="text-[10px] text-gray-400 truncate">Đèn bật, AC 24°C, mở rèm</div>
+              <div className="text-[10px] text-gray-400 truncate hidden sm:block">Đèn bật, AC 24°C, mở rèm</div>
             </div>
           </button>
 
@@ -491,7 +491,7 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
             <Moon className="w-4 h-4 text-indigo-400 shrink-0" />
             <div className="truncate">
               <div className="text-xs font-bold text-white">Đi Ngủ</div>
-              <div className="text-[10px] text-gray-400 truncate">AC 26°C, rèm đóng, khóa an toàn</div>
+              <div className="text-[10px] text-gray-400 truncate hidden sm:block">AC 26°C, rèm đóng, khóa</div>
             </div>
           </button>
 
@@ -508,7 +508,7 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
             <Power className="w-4 h-4 text-red-400 shrink-0" />
             <div className="truncate">
               <div className="text-xs font-bold text-white">Đi Vắng</div>
-              <div className="text-[10px] text-gray-400 truncate">Ngắt điện, khóa cửa 2 lớp</div>
+              <div className="text-[10px] text-gray-400 truncate hidden sm:block">Ngắt điện, khóa 2 lớp</div>
             </div>
           </button>
 
@@ -525,7 +525,7 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
             <Tv className="w-4 h-4 text-purple-400 shrink-0" />
             <div className="truncate">
               <div className="text-xs font-bold text-white">Xem Phim</div>
-              <div className="text-[10px] text-gray-400 truncate">Đèn vàng dịu, rèm đóng kín</div>
+              <div className="text-[10px] text-gray-400 truncate hidden sm:block">Đèn vàng dịu, rèm kín</div>
             </div>
           </button>
         </div>
@@ -536,41 +536,44 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
         <button
           type="button"
           onClick={() => setActiveTab('DEVICES')}
-          className={`h-10 px-3.5 sm:px-4 text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-2 border-b-2 shrink-0 active:scale-95 ${
+          className={`h-10 px-3 sm:px-4 text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 sm:gap-2 border-b-2 shrink-0 active:scale-95 ${
             activeTab === 'DEVICES'
               ? 'border-[#C5A880] text-[#C5A880] bg-[#161D26]'
               : 'border-transparent text-gray-400 hover:text-white hover:bg-[#121820]'
           }`}
         >
-          <Cpu className="w-4 h-4 text-[#C5A880]" />
-          <span>Thiết Bị & Phòng</span>
+          <Cpu className="w-4 h-4 text-[#C5A880] shrink-0" />
+          <span className="hidden sm:inline">Thiết Bị &amp; Phòng</span>
+          <span className="sm:hidden">Thiết Bị</span>
         </button>
 
         <button
           type="button"
           onClick={() => setActiveTab('DOOR_ACCESS')}
-          className={`h-10 px-3.5 sm:px-4 text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-2 border-b-2 shrink-0 active:scale-95 ${
+          className={`h-10 px-3 sm:px-4 text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 sm:gap-2 border-b-2 shrink-0 active:scale-95 ${
             activeTab === 'DOOR_ACCESS'
               ? 'border-[#C5A880] text-[#C5A880] bg-[#161D26]'
               : 'border-transparent text-gray-400 hover:text-white hover:bg-[#121820]'
           }`}
         >
-          <DoorClosed className="w-4 h-4 text-cyan-400" />
-          <span>Cửa & Chuông Hình</span>
+          <DoorClosed className="w-4 h-4 text-cyan-400 shrink-0" />
+          <span className="hidden sm:inline">Cửa &amp; Chuông Hình</span>
+          <span className="sm:hidden">Khóa Cửa</span>
           {!masterDoorLocked && <span className="w-2 h-2 rounded-none bg-amber-400 animate-ping ml-1" />}
         </button>
 
         <button
           type="button"
           onClick={() => setActiveTab('AUTOMATION')}
-          className={`h-10 px-3.5 sm:px-4 text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-2 border-b-2 shrink-0 active:scale-95 ${
+          className={`h-10 px-3 sm:px-4 text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 sm:gap-2 border-b-2 shrink-0 active:scale-95 ${
             activeTab === 'AUTOMATION'
               ? 'border-[#C5A880] text-[#C5A880] bg-[#161D26]'
               : 'border-transparent text-gray-400 hover:text-white hover:bg-[#121820]'
           }`}
         >
-          <Clock className="w-4 h-4 text-emerald-400" />
-          <span>Tự Động Hóa & An Toàn</span>
+          <Clock className="w-4 h-4 text-emerald-400 shrink-0" />
+          <span className="hidden sm:inline">Tự Động Hóa &amp; An Toàn</span>
+          <span className="sm:hidden">Tự Động</span>
           <span className="text-[10px] font-mono px-1.5 py-0.2 bg-emerald-950 text-emerald-300">
             {automationRules.filter(r => r.enabled).length}/{automationRules.length}
           </span>
