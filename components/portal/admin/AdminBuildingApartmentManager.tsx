@@ -1298,13 +1298,13 @@ export default function AdminBuildingApartmentManager() {
                   <div 
                     className="w-full h-full flex items-center justify-center transition-transform ease-out"
                     style={{
-                      transform: `translate3d(${building3dPan.x}px, ${building3dPan.y}px, 0px) scale(${building3dZoom})`,
-                      transformOrigin: 'center center',
+                      transform: `translate3d(${building3dPan.x - Math.max(0, (building3dZoom - 1) * 75)}px, ${building3dPan.y}px, 0px) scale(${building3dZoom})`,
+                      transformOrigin: '38% center',
                       transitionDuration: isGesturing ? '0ms' : '200ms'
                     }}
                   >
                     <svg
-                      viewBox="10 -20 960 970"
+                      viewBox="0 -20 1000 970"
                       preserveAspectRatio="xMidYMid meet"
                       className="w-full h-full cursor-default drop-shadow-[0_30px_60px_rgba(0,0,0,0.95)]"
                     >
@@ -1786,19 +1786,19 @@ export default function AdminBuildingApartmentManager() {
                           const pinX = isPodium ? 560 : 550;
                           const pinY = isPodium ? 806 : Number((curYBase - 20 - (curH / 2)).toFixed(1));
 
-                          const wallX = isPodium ? 680 : 658;
+                          const wallX = isPodium ? 680 : 660;
                           const wallY = isPodium ? 785 : Number((curYBase - 40 - (curH / 2)).toFixed(1));
 
                           // Thẻ Callout Tầng - Tinh gọn, thanh thoát, định vị cao độ kiến trúc (Không tràn khung)
-                          const cardX = 664;
-                          const cardW = 296;
+                          const cardX = 680;
+                          const cardW = 280;
                           const cardH = 92;
-                          const targetCardY = Math.max(25, Math.min(780, Math.round(wallY - cardH / 2)));
+                          const targetCardY = Math.max(30, Math.min(840, Math.round(wallY - cardH / 2)));
                           const dockX = cardX;
-                          const dockY = Math.max(targetCardY + 18, Math.min(targetCardY + cardH - 18, wallY));
+                          const dockY = Math.max(targetCardY + 20, Math.min(targetCardY + cardH - 20, wallY));
 
                           // Đường dẫn laze chuẩn xác không bị gập ziczac hay ngược chiều
-                          const isDirectHorizontal = Math.abs(dockY - wallY) < 2;
+                          const isDirectHorizontal = Math.abs(dockY - wallY) < 3;
                           const midX = Math.round((wallX + dockX) / 2);
                           const laserPath = isDirectHorizontal
                             ? `M ${pinX} ${pinY} L ${wallX} ${wallY} L ${dockX} ${dockY}`
@@ -1820,14 +1820,14 @@ export default function AdminBuildingApartmentManager() {
                             : 'PHÂN KHU TẦNG THẤP';
 
                           const elevationM = isPodium ? '0m' : `~${(curFloor * 3.2).toFixed(0)}m`;
-                          const elevatorAccess = isPodium ? 'Trục thang máy sảnh' : '4 Thang khách + 1 Thang PCCC';
+                          const elevatorAccess = isPodium ? 'Thang sảnh' : '5 Thang tốc độ cao (3.5m/s)';
                           const viewOrientation = isPodium
-                            ? 'Sảnh đón tiếp tân & Kiểm soát FaceID'
+                            ? 'Tiếp tân & FaceID an ninh 24/7'
                             : curFloor >= 21
-                            ? 'Tầm nhìn: View Sông & Panorama thoáng đãng'
+                            ? 'Tầm nhìn: View Sông & Panorama đỉnh'
                             : curFloor >= 11
-                            ? 'Tầm nhìn: View Toàn cảnh nội khu & Hồ bơi'
-                            : 'Tầm nhìn: View Mảng xanh & Tiện ích tầng thấp';
+                            ? 'Tầm nhìn: View Toàn cảnh hồ bơi nội khu'
+                            : 'Tầm nhìn: View Mảng xanh & tiện ích';
 
                           const themeNeon = '#C5A880';
                           const themeBg = '#0B121D';
@@ -1891,30 +1891,30 @@ export default function AdminBuildingApartmentManager() {
                                 </text>
 
                                 <text
-                                  x={cardX + (isPodium ? 122 : 92)}
+                                  x={cardX + (isPodium ? 116 : 88)}
                                   y={targetCardY + 24}
                                   fill="#C5A880"
                                   fontSize="9.5"
                                   fontWeight="bold"
                                   fontFamily="monospace"
                                 >
-                                  • {floorZone}
+                                  • {floorZone.replace('PHÂN KHU ', '')}
                                 </text>
 
                                 {/* Huy hiệu tỷ lệ ở ngắn gọn góc phải */}
                                 <rect
-                                  x={cardX + cardW - 86}
+                                  x={cardX + cardW - 78}
                                   y={targetCardY + 11}
-                                  width="78"
+                                  width="70"
                                   height="18"
                                   fill="#141E2B"
                                   stroke="#26374D"
                                 />
                                 <text
-                                  x={cardX + cardW - 47}
+                                  x={cardX + cardW - 43}
                                   y={targetCardY + 23.5}
                                   fill={hasOcc ? '#34D399' : '#94A3B8'}
-                                  fontSize="9"
+                                  fontSize="8.5"
                                   fontWeight="bold"
                                   textAnchor="middle"
                                   fontFamily="monospace"
