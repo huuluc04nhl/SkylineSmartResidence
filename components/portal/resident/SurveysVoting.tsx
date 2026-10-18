@@ -31,7 +31,8 @@ import {
   HelpCircle,
   ThumbsUp,
   Flame,
-  Tag
+  Tag,
+  RefreshCw
 } from 'lucide-react';
 import { User } from '@/lib/dataStore';
 import { 
@@ -43,7 +44,8 @@ import {
   addCommentToPost, 
   castCommunityPollVote, 
   deleteCommunityPost,
-  analyzePostWithAi
+  analyzePostWithAi,
+  resetCommunityToCleanData
 } from '@/lib/communityStore';
 
 interface SurveysVotingProps {
@@ -288,9 +290,27 @@ export default function SurveysVoting({ currentUser }: SurveysVotingProps) {
             <p className="text-xs text-gray-400 max-w-2xl leading-relaxed">
               Không gian tương tác trực tuyến 24/7: Thảo luận nội bộ, thông báo chính thức từ Ban Quản Lý, rao vặt đồ cũ và tham gia biểu quyết các vấn đề pháp lý của tòa nhà.
             </p>
+            <div className="flex items-center gap-2 text-[10px] text-emerald-400 font-mono pt-1">
+              <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></span>
+              <span>100% Dữ Liệu Thực Tế • Không Số Liệu Ảo • Minh Bạch Từng Lá Phiếu</span>
+            </div>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2.5 flex-wrap">
+            <button
+              onClick={() => {
+                if (confirm('Làm mới và dọn dẹp sạch toàn bộ dữ liệu mẫu/ảo về dữ liệu gốc Ban Quản Lý?')) {
+                  resetCommunityToCleanData();
+                  showToast('Đã dọn dẹp sạch dữ liệu ảo. Toàn bộ diễn đàn chuyển về dữ liệu thực tế 100%!');
+                }
+              }}
+              title="Dọn dẹp và reset về dữ liệu thực tế không ảo"
+              className="px-3.5 py-3 bg-[#141B24] hover:bg-[#1E293B] border border-[#C5A880]/30 text-gray-300 hover:text-white text-xs uppercase tracking-wider font-semibold transition-all flex items-center gap-2"
+            >
+              <RefreshCw className="w-3.5 h-3.5 text-[#C5A880]" />
+              <span className="hidden sm:inline">Dọn Dẹp Dữ Liệu Ảo</span>
+            </button>
+
             <button
               onClick={() => setIsCreateModalOpen(true)}
               className="px-5 py-3 bg-[#C5A880] hover:bg-white text-[#0A0E14] font-bold text-xs uppercase tracking-wider transition-all duration-200 flex items-center gap-2 shadow-lg hover:shadow-[#C5A880]/30 transform active:scale-95"
