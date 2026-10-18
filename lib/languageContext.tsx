@@ -32,10 +32,39 @@ export const KEY_DICTIONARY: Record<string, Record<Language, string>> = {
   'FAMILY': { vi: 'Người Nhà', en: 'Family Member' },
   'TECHNICIAN': { vi: 'Kỹ Thuật Viên', en: 'Technician' },
   'Chủ Hộ': { vi: 'Chủ Hộ', en: 'Apartment Owner' },
+  'Chủ Hộ Căn Hộ': { vi: 'Chủ Hộ Căn Hộ', en: 'Apartment Owner' },
+  'Chủ Hộ (Master)': { vi: 'Chủ Hộ (Master)', en: 'Apartment Owner (Master)' },
   'Người Nhà': { vi: 'Người Nhà', en: 'Family Member' },
+  'Người Nhà Căn Hộ': { vi: 'Người Nhà Căn Hộ', en: 'Family Member' },
+  'Thành Viên': { vi: 'Thành Viên', en: 'Family Member' },
   'Khách Thuê': { vi: 'Khách Thuê', en: 'Tenant' },
   'Ban Quản Lý': { vi: 'Ban Quản Lý', en: 'Management Board' },
   'Kỹ Thuật Viên': { vi: 'Kỹ Thuật Viên', en: 'Technician' },
+  'Cư Dân': { vi: 'Cư Dân', en: 'Resident' },
+  'Diễn Đàn & Biểu Quyết': { vi: 'Diễn Đàn & Biểu Quyết', en: 'Forum & Voting' },
+  'Diễn Đàn Cư Dân': { vi: 'Diễn Đàn Cư Dân', en: 'Resident Forum' },
+  'Diễn Đàn': { vi: 'Diễn Đàn', en: 'Community Forum' },
+  'Biểu Quyết': { vi: 'Biểu Quyết', en: 'Voting & Surveys' },
+  'Phân Hệ Cư Dân': { vi: 'Phân Hệ Cư Dân', en: 'Resident Portal' },
+  'Đổi Mật Khẩu': { vi: 'Đổi Mật Khẩu', en: 'Change Password' },
+  'Đổi Mật Khẩu Cá Nhân': { vi: 'Đổi Mật Khẩu Cá Nhân', en: 'Change Personal Password' },
+  'Hồ Sơ Cư Dân': { vi: 'Hồ Sơ Cư Dân', en: 'Resident Profile' },
+  'Hồ Sơ Cá Nhân & e-KYC': { vi: 'Hồ Sơ Cá Nhân & e-KYC', en: 'Personal Profile & e-KYC' },
+  'Đăng Xuất Tài Khoản': { vi: 'Đăng Xuất Tài Khoản', en: 'Sign Out Account' },
+  'Đăng Xuất': { vi: 'Đăng Xuất', en: 'Sign Out' },
+  '1PN': { vi: '1 Phòng Ngủ', en: '1 Bedroom' },
+  '2PN': { vi: '2 Phòng Ngủ', en: '2 Bedrooms' },
+  '3PN': { vi: '3 Phòng Ngủ', en: '3 Bedrooms' },
+  'DUPLEX': { vi: 'Duplex Thông Tầng', en: 'Duplex Penthouse' },
+  'Studio': { vi: 'Căn Hộ Studio', en: 'Studio Apartment' },
+  'CỔNG TỰ ĐỘNG': { vi: 'CỔNG TỰ ĐỘNG', en: 'AUTOMATED TURNSTILE' },
+  'CẦN ĐẶT LỊCH': { vi: 'CẦN ĐẶT LỊCH', en: 'BOOKING REQUIRED' },
+  'Mật độ hiện tại:': { vi: 'Mật độ hiện tại:', en: 'Current Density:' },
+  'Môi trường:': { vi: 'Môi trường:', en: 'Environment:' },
+  'Biểu phí:': { vi: 'Biểu phí:', en: 'Fee Schedule:' },
+  'Xem thông số căn hộ': { vi: 'Xem thông số căn hộ', en: 'View Apartment Specs' },
+  'Mở Chi Tiết Căn Hộ': { vi: 'Mở Chi Tiết Căn Hộ', en: 'Open Apartment Details' },
+  'Chi Tiết': { vi: 'Chi Tiết', en: 'Details' },
   'Căn Trống': { vi: 'Căn Trống', en: 'Vacant' },
   'Đã Ở': { vi: 'Đã Ở', en: 'Occupied' },
   'Bảo Trì': { vi: 'Bảo Trì', en: 'Maintenance' },
@@ -297,7 +326,6 @@ export const KEY_DICTIONARY: Record<string, Record<Language, string>> = {
   'Hỏi đáp quy chế tòa nhà, thủ tục & tư vấn 24/7': { vi: 'Hỏi đáp quy chế tòa nhà, thủ tục & tư vấn 24/7', en: '24/7 guidance on building regulations & procedures' },
   'Tìm kiếm tiện ích, dịch vụ, sửa chữa...': { vi: 'Tìm kiếm tiện ích, dịch vụ, sửa chữa...', en: 'Search amenities, services, maintenance...' },
   'Không tìm thấy tính năng phù hợp với từ khóa': { vi: 'Không tìm thấy tính năng phù hợp với từ khóa', en: 'No features matching keyword' },
-  'Đăng Xuất Tài Khoản': { vi: 'Đăng Xuất Tài Khoản', en: 'Sign Out Account' },
   'Chế độ hiển thị không gian:': { vi: 'Chế độ hiển thị không gian:', en: 'Space display mode:' },
   'Chế độ hiển thị không gian': { vi: 'Chế độ hiển thị không gian', en: 'Space display mode' },
   'Bảng Thẻ Nhanh': { vi: 'Bảng Thẻ Nhanh', en: 'Quick Cards Board' },
@@ -771,6 +799,8 @@ for (const [key, obj] of Object.entries(KEY_DICTIONARY)) {
   if (cleanVi && cleanEn) {
     VI_TO_EN_MAP.set(cleanVi.toLowerCase(), cleanEn);
     EN_TO_VI_MAP.set(cleanEn.toLowerCase(), cleanVi);
+    VI_TO_EN_MAP.set(key.toLowerCase(), cleanEn);
+    EN_TO_VI_MAP.set(key.toLowerCase(), cleanVi);
     if (cleanVi.includes('&amp;')) {
       VI_TO_EN_MAP.set(cleanVi.replace(/&amp;/g, '&').toLowerCase(), cleanEn.replace(/&amp;/g, '&'));
       EN_TO_VI_MAP.set(cleanEn.replace(/&amp;/g, '&').toLowerCase(), cleanVi.replace(/&amp;/g, '&'));
@@ -812,8 +842,8 @@ export function translateString(text: string, targetLang: Language): string {
     return preserveWhitespace(text, matchCase(trimmed, translated));
   }
 
-  // 1b. Multi-part Delimiters: " • ", " | ", " - ", "\n"
-  for (const sep of [' • ', ' | ', ' - ', '\n']) {
+  // 1b. Multi-part Delimiters: " • ", " | ", " - ", " & ", " &amp; ", " và ", "\n"
+  for (const sep of [' • ', ' | ', ' - ', ' & ', ' &amp; ', ' và ', '\n']) {
     if (trimmed.includes(sep)) {
       const parts = trimmed.split(sep);
       let changed = false;
@@ -867,14 +897,17 @@ export function translateString(text: string, targetLang: Language): string {
     }
   }
 
-  // Trailing count in parentheses: "Cư Dân & Nhân Khẩu (1)", "Xe Cộ & Thẻ Hầm (0)", "Có Sẵn (3)", "Tất Cả (21)"
-  const trailingCount = trimmed.match(/^(.+?)\s*(\(\d+\))$/);
-  if (trailingCount) {
-    const mainPhrase = trailingCount[1].trim();
-    const countPart = trailingCount[2];
-    const transMain = translateString(mainPhrase, targetLang);
-    if (transMain !== mainPhrase) {
-      return preserveWhitespace(text, `${transMain} ${countPart}`);
+  // Universal trailing parentheses: "Unit CH-06 (Chủ Hộ)", "Căn CH-06 (Chủ Hộ)", "Nguyễn Văn A (Chủ Hộ)", "Có Sẵn (3)", "Hồ Bơi (Miễn phí)"
+  const trailingParen = trimmed.match(/^(.*?)\s*\(([^)]+)\)$/);
+  if (trailingParen && !trimmed.startsWith('(')) {
+    const mainPhrase = trailingParen[1].trim();
+    const parenContent = trailingParen[2].trim();
+    if (mainPhrase.length > 0 && parenContent.length > 0) {
+      const transMain = translateString(mainPhrase, targetLang);
+      const transParen = translateString(parenContent, targetLang);
+      if (transMain !== mainPhrase || transParen !== parenContent) {
+        return preserveWhitespace(text, `${transMain} (${transParen})`);
+      }
     }
   }
 
@@ -948,6 +981,27 @@ export function translateString(text: string, targetLang: Language): string {
       const code = m[1];
       const rest = m[2] ? ' ' + translateString(m[2].trim(), 'en') : '';
       return preserveWhitespace(text, `Apartment ${code}${rest}`.trim());
+    }
+
+    m = trimmed.match(/^(?:Chủ Hộ Căn|Chủ Hộ)\s+([A-Za-z0-9\.\-_]+)(.*)$/i);
+    if (m && (/\d/.test(m[1]) || /^[A-Z]{1,3}-\d+/i.test(m[1]))) {
+      const code = m[1];
+      const rest = m[2] ? ' ' + translateString(m[2].trim(), 'en') : '';
+      return preserveWhitespace(text, `Apartment Owner ${code}${rest}`.trim());
+    }
+
+    m = trimmed.match(/^(?:Người Nhà Căn)\s+([A-Za-z0-9\.\-_]+)(.*)$/i);
+    if (m && (/\d/.test(m[1]) || /^[A-Z]{1,3}-\d+/i.test(m[1]))) {
+      const code = m[1];
+      const rest = m[2] ? ' ' + translateString(m[2].trim(), 'en') : '';
+      return preserveWhitespace(text, `Family Member ${code}${rest}`.trim());
+    }
+
+    m = trimmed.match(/^(?:Khách Thuê Căn)\s+([A-Za-z0-9\.\-_]+)(.*)$/i);
+    if (m && (/\d/.test(m[1]) || /^[A-Z]{1,3}-\d+/i.test(m[1]))) {
+      const code = m[1];
+      const rest = m[2] ? ' ' + translateString(m[2].trim(), 'en') : '';
+      return preserveWhitespace(text, `Tenant ${code}${rest}`.trim());
     }
 
     m = trimmed.match(/^Tòa\s+([A-Za-z0-9\.\-_]+)(.*)$/i);
@@ -1374,23 +1428,33 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
       return withColon.endsWith(':') ? withColon.slice(0, -1).trim() : withColon;
     }
 
+    const vnCharRegex = /[àáạảãâầấậẩẫăằắặẳẵèéẹẻẽêềếệểễìíịỉĩòóọỏõôồốộổỗơờớợởỡùúụủũưừứựửữỳýỵỷỹđ]/i;
+
     // 2. Target English
     if (language === 'en') {
-      if (fallback && !fallback.includes('.') && fallback !== trimmed) {
+      // If fallback is explicitly provided in English (no Vietnamese diacritics), use it
+      if (fallback && !vnCharRegex.test(fallback) && !fallback.includes('.') && fallback !== trimmed) {
         return fallback;
       }
       const trans = translateString(trimmed, 'en');
-      if (trans !== trimmed) return trans;
-      return fallback || keyOrText;
+      if (trans !== trimmed && !vnCharRegex.test(trans)) return trans;
+      if (fallback && fallback !== trimmed) {
+        const transFallback = translateString(fallback, 'en');
+        if (transFallback !== fallback && !vnCharRegex.test(transFallback)) return transFallback;
+      }
+      return trans || fallback || keyOrText;
     }
 
     // 3. Target Vietnamese
+    if (fallback && vnCharRegex.test(fallback) && (trimmed.includes('.') || trimmed.includes('_') || /^[a-z]+$/.test(trimmed))) {
+      return fallback;
+    }
     if (trimmed.includes('.') || trimmed.includes('_') || /^[a-z]+$/.test(trimmed)) {
       return fallback || keyOrText;
     }
 
     const viTrans = translateString(trimmed, 'vi');
-    return viTrans || keyOrText;
+    return viTrans || fallback || keyOrText;
   };
 
   // ===========================================================================

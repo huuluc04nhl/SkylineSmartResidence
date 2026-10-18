@@ -612,7 +612,7 @@ export default function SmartFacilityPass({ currentUser, onNavigateModule }: Sma
                           ? 'bg-emerald-950/90 text-emerald-300 border-emerald-500/50' 
                           : 'bg-amber-950/90 text-amber-300 border-amber-500/50'
                       }`}>
-                        {isFreeEntry ? 'CỔNG TỰ ĐỘNG' : 'CẦN ĐẶT LỊCH'}
+                        {isFreeEntry ? t('CỔNG TỰ ĐỘNG') : t('CẦN ĐẶT LỊCH')}
                       </span>
                     </div>
 
@@ -620,10 +620,10 @@ export default function SmartFacilityPass({ currentUser, onNavigateModule }: Sma
                     <div className="absolute bottom-2.5 left-3.5 right-3 text-white">
                       <div className="text-sm font-bold font-serif flex items-center gap-1.5">
                         <Icon className="w-4 h-4 text-[#C5A880] shrink-0" />
-                        <span className="line-clamp-1">{fac.name}</span>
+                        <span className="line-clamp-1">{t(fac.name)}</span>
                       </div>
                       <div className="text-[10.5px] text-gray-300 font-mono mt-0.5">
-                        {fac.location}
+                        {t(fac.location)}
                       </div>
                     </div>
                   </div>
@@ -633,20 +633,20 @@ export default function SmartFacilityPass({ currentUser, onNavigateModule }: Sma
                     <div className="space-y-2">
                       <div className="grid grid-cols-2 gap-2 text-[11px] bg-[#0D1117] p-2.5 rounded-none border border-[#1F2937]">
                         <div>
-                          <div className="text-[9.5px] text-gray-400 uppercase">Mật độ hiện tại:</div>
+                          <div className="text-[9.5px] text-gray-400 uppercase">{t('Mật độ hiện tại:')}</div>
                           <div className="font-semibold text-emerald-400 mt-0.5 flex items-center gap-1">
-                            <Users className="w-3 h-3" /> {fac.density}
+                            <Users className="w-3 h-3" /> {t(fac.density)}
                           </div>
                         </div>
                         <div>
-                          <div className="text-[9.5px] text-gray-400 uppercase">Môi trường:</div>
-                          <div className="font-semibold text-gray-200 mt-0.5">{fac.temp}</div>
+                          <div className="text-[9.5px] text-gray-400 uppercase">{t('Môi trường:')}</div>
+                          <div className="font-semibold text-gray-200 mt-0.5">{t(fac.temp)}</div>
                         </div>
                       </div>
 
                       <div className="text-[11px] text-gray-400 flex items-center justify-between pt-1">
-                        <span>Biểu phí:</span>
-                        <strong className="text-[#C5A880]">{fac.price}</strong>
+                        <span>{t('Biểu phí:')}</span>
+                        <strong className="text-[#C5A880]">{t(fac.price)}</strong>
                       </div>
                     </div>
 

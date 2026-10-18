@@ -249,8 +249,8 @@ export default function Sidebar({
                   <div className="text-xs font-semibold text-white truncate max-w-[170px] leading-tight" title={currentUser.full_name || (currentUser as any)?.fullname || 'Cư Dân SKYLINE'}>
                     {currentUser.full_name || (currentUser as any)?.fullname || 'Cư Dân SKYLINE'}
                   </div>
-                  <div className="text-[10px] text-[#C5A880] font-mono uppercase font-bold tracking-wider mt-0.5 truncate" title={role === 'ADMIN' ? t('role.admin', 'Ban Quản Lý') : role === 'OWNER' ? `${t('Căn')} ${currentUser.apartment_code || 'CH-06'} (${t('role.owner', 'Chủ Hộ')})` : `${t('Căn')} ${currentUser.apartment_code || 'CH-06'} (${t('role.family', 'Người Nhà')})`}>
-                    {role === 'ADMIN' ? t('role.admin', 'Ban Quản Lý') : role === 'OWNER' ? `${t('Căn')} ${currentUser.apartment_code || 'CH-06'} (${t('role.owner', 'Chủ Hộ')})` : `${t('Căn')} ${currentUser.apartment_code || 'CH-06'} (${t('role.family', 'Người Nhà')})`}
+                  <div className="text-[10px] text-[#C5A880] font-mono uppercase font-bold tracking-wider mt-0.5 truncate" title={role === 'ADMIN' ? t('role.admin', 'Ban Quản Lý') : `${t('Căn')} ${currentUser.apartment_code || 'CH-06'} (${t(role)})`}>
+                    {role === 'ADMIN' ? t('role.admin', 'Ban Quản Lý') : `${t('Căn')} ${currentUser.apartment_code || 'CH-06'} (${t(role)})`}
                   </div>
                 </div>
               </div>

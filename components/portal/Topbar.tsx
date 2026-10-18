@@ -283,7 +283,7 @@ export default function Topbar({
                 {userName}
               </div>
               <div className="text-[9px] text-[#C5A880] font-mono uppercase font-bold tracking-wider">
-                {isAdmin ? t('role.admin', 'Ban Quản Lý') : isOwner ? `${t('Căn')} ${currentUser.apartment_code || 'CH-06'} (${t('role.owner', 'Chủ Hộ')})` : `${t('Căn')} ${currentUser.apartment_code || 'CH-06'} (${t('role.family', 'Người Nhà')})`}
+                {isAdmin ? t('role.admin', 'Ban Quản Lý') : `${t('Căn')} ${currentUser.apartment_code || 'CH-06'} (${t(currentUser.role)})`}
               </div>
             </div>
             <ChevronDown className="w-3.5 h-3.5 text-gray-400 ml-1" />

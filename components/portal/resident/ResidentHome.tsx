@@ -146,7 +146,7 @@ export default function ResidentHome({ currentUser, onNavigate, onOpenVisitorMod
             {/* Vai Trò */}
             <div className="h-8 flex items-center gap-1.5 px-2.5 bg-[#C5A880]/15 border border-[#C5A880]/50 text-[#C5A880] text-[11px] font-semibold shadow-sm">
               <Crown className="w-3.5 h-3.5 text-[#C5A880]" />
-              <span>{isOwner ? t('role.owner', 'Chủ Hộ') : t('role.family', 'Thành Viên')}</span>
+              <span>{t(currentUser.role)}</span>
             </div>
 
             {/* Trạng Thái e-KYC (Chủ Hộ) */}
