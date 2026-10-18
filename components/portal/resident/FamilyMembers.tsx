@@ -161,17 +161,24 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
   const [isMemberOcrModalOpen, setIsMemberOcrModalOpen] = useState<boolean>(false);
 
   const handleApplyMemberOcrData = (ocrData: OcrCccdResult, frontSrc: string, backSrc: string) => {
-    if (ocrData.fullName) setEkycFullName(ocrData.fullName);
-    if (ocrData.idNumber) setEkycIdCard(ocrData.idNumber);
-    if (ocrData.dob) setEkycDob(formatToDateInput(ocrData.dob));
-    if (ocrData.pob) setEkycPob(ocrData.pob);
-    if (ocrData.idDate) setEkycIdDate(formatToDateInput(ocrData.idDate));
-    if (ocrData.idPlace) setEkycIdPlace(ocrData.idPlace);
+    const stdIdNumber = (ocrData.idNumber || '').replace(/\D/g, '').slice(0, 12);
+    const stdFullName = (ocrData.fullName || '').toUpperCase().trim();
+    const stdDob = formatToDateInput(ocrData.dob || '');
+    const stdPob = (ocrData.pob || '').trim();
+    const stdIdDate = formatToDateInput(ocrData.idDate || '');
+    const stdIdPlace = (ocrData.idPlace || 'Cục Cảnh sát QLHC về TTXH').trim();
+
+    if (stdFullName) setEkycFullName(stdFullName);
+    if (stdIdNumber) setEkycIdCard(stdIdNumber);
+    if (stdDob) setEkycDob(stdDob);
+    if (stdPob) setEkycPob(stdPob);
+    if (stdIdDate) setEkycIdDate(stdIdDate);
+    if (stdIdPlace) setEkycIdPlace(stdIdPlace);
     if (frontSrc) setEkycFrontImage(frontSrc);
     if (backSrc) setEkycBackImage(backSrc);
     setIsMemberOcrModalOpen(false);
     setEkycModalError(null);
-    setActionSuccess(`✨ Đã đọc thông tin CCCD thành công cho "${ocrData.fullName || 'thành viên'}"! Toàn bộ thông tin đã được tự động điền vào hồ sơ.`);
+    setActionSuccess(`✨ Đã đọc thông tin CCCD thành công cho "${stdFullName || 'thành viên'}"! Toàn bộ thông tin đã được chuẩn hóa và tự động điền vào hồ sơ.`);
     setTimeout(() => setActionSuccess(null), 5000);
   };
 

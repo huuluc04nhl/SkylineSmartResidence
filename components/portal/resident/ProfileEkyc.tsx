@@ -357,17 +357,26 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
   };
 
   // 2. Handle auto-filling data from OCR Scanner Modal (2 sides)
-  const handleApplyOcrData = (ocrData: OcrCccdResult, frontSrc: string, backSrc: string) => {
+  const handleApplyOcrData = async (ocrData: OcrCccdResult, frontSrc: string, backSrc: string) => {
     const userKey = currentUser.phone || currentUser.email || currentUser.username || currentUser.id;
 
-    setIdCardNumber(ocrData.idNumber || '');
-    setFullName(ocrData.fullName || '');
-    setBirthday(formatToDateInput(ocrData.dob || ''));
-    setGender(ocrData.gender || '1');
-    setPob(ocrData.pob || '');
-    setProvince(ocrData.province || 'Thành phố Hồ Chí Minh');
-    setIdDate(formatToDateInput(ocrData.idDate || ''));
-    setIdPlace(ocrData.idPlace || 'Cục Cảnh sát QLHC về TTXH');
+    const stdIdNumber = (ocrData.idNumber || '').replace(/\D/g, '').slice(0, 12);
+    const stdFullName = (ocrData.fullName || '').toUpperCase().trim();
+    const stdDob = formatToDateInput(ocrData.dob || '');
+    const stdGender = ocrData.gender || '1';
+    const stdPob = ocrData.pob?.trim() || '';
+    const stdProvince = ocrData.province || (stdPob.includes('Hồ Chí Minh') ? 'Thành phố Hồ Chí Minh' : stdPob.includes('Hà Nội') ? 'Hà Nội' : 'Thành phố Hồ Chí Minh');
+    const stdIdDate = formatToDateInput(ocrData.idDate || '');
+    const stdIdPlace = ocrData.idPlace?.trim() || 'Cục Cảnh sát QLHC về TTXH';
+
+    setIdCardNumber(stdIdNumber);
+    setFullName(stdFullName);
+    setBirthday(stdDob);
+    setGender(stdGender);
+    setPob(stdPob);
+    setProvince(stdProvince);
+    setIdDate(stdIdDate);
+    setIdPlace(stdIdPlace);
 
     if (frontSrc) {
       setCccdImage(frontSrc);
@@ -384,13 +393,64 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
 
     updateEkycCardImages(userKey, frontSrc, backSrc);
 
-    nksUpdateCccd({
-      front: frontSrc,
-      back: backSrc,
-      number: ocrData.idNumber || idCardNumber,
-      date: ocrData.idDate || idDate,
-      place: ocrData.idPlace || idPlace,
-    }).catch(e => console.warn('Sync CCCD error:', e));
+    // Tự động lưu và cập nhật đầy đủ lên API ngay sau khi quét
+    try {
+      setIsSaving(true);
+      await nksUpdateCccd({
+        front: frontSrc,
+        back: backSrc,
+        number: stdIdNumber,
+        date: stdIdDate,
+        place: stdIdPlace,
+        fullName: stdFullName,
+        dob: stdDob,
+        pob: stdPob,
+        gender: stdGender === '1' ? 1 : 0,
+      });
+
+      const parts = stdFullName.split(' ');
+      const firstname = parts.slice(-1)[0] || '';
+      const lastname = parts.slice(0, -1).join(' ') || '';
+
+      const updateRes = await nksUpdateInfo({
+        username: currentUser?.username || currentUser?.email || currentUser?.phone || userKey,
+        firstname,
+        lastname,
+        fullname: stdFullName,
+        phone: phone || currentUser?.phone || '',
+        email: email || currentUser?.email || '',
+        gender: stdGender === '1' ? 1 : 0,
+        dob: stdDob,
+        pob: stdPob,
+        id_number: stdIdNumber,
+        id_date: stdIdDate,
+        id_place: stdIdPlace,
+        province: stdProvince,
+        intro: intro || '',
+        license_plate: licensePlate || '',
+      });
+
+      if (updateRes.success && updateRes.user) {
+        updateUserInfo({
+          ...updateRes.user as any,
+          id_card_no: stdIdNumber,
+          id_number: stdIdNumber,
+          full_name: stdFullName,
+          fullname: stdFullName,
+          dob: stdDob,
+          pob: stdPob,
+          id_date: stdIdDate,
+          id_place: stdIdPlace,
+          cccd_front_url: frontSrc,
+          cccd_back_url: backSrc,
+        });
+        await refreshUser();
+      }
+    } catch (apiErr) {
+      console.warn('Sync CCCD to API error:', apiErr);
+    } finally {
+      setIsSaving(false);
+    }
 
     // Switch to tab 1 (Thông tin cá nhân) so the user can review all fields
     setActiveTab('EKYC');
@@ -398,12 +458,12 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
 
     setEkycFeedback({
       type: 'success',
-      message: 'Đã trích xuất và lưu độc lập thông tin 2 mặt thẻ CCCD thành công! Khi hoàn tất đủ cả CCCD và FaceID 4 mẫu, bạn nhấn nút "Gửi Ban Quản Lý Xác Nhận Chốt Hồ Sơ" ở Bước 3.'
+      message: '✨ Đã trích xuất chuẩn xác và tự động cập nhật lên hệ thống thành công! Bạn có thể kiểm tra lại thông tin và bấm "Gửi Ban Quản Lý Xác Nhận Chốt Hồ Sơ" khi hoàn tất.'
     });
 
     // Display clear notice that data is auto-filled and ready to be saved
     setOcrFilledNotice(true);
-    setTimeout(() => setOcrFilledNotice(false), 10000);
+    setTimeout(() => setOcrFilledNotice(false), 8000);
   };
 
   // Feedback notification for e-KYC

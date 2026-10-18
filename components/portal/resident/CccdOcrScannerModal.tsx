@@ -236,14 +236,14 @@ export default function CccdOcrScannerModal({
 
           const d = aiData.data;
           const merged: OcrCccdResult = {
-            idNumber: d.idNumber || '',
-            fullName: d.fullName || '',
-            dob: d.dob || '',
-            gender: d.gender || '1',
+            idNumber: (d.idNumber || '').replace(/\D/g, '').slice(0, 12),
+            fullName: (d.fullName || '').toUpperCase().trim(),
+            dob: formatToDateInput(d.dob || ''),
+            gender: (d.gender === '0' || d.gender === 0 ? '0' : '1') as '1' | '0',
             pob: d.pob || '',
             residence: d.residence || d.pob || '',
             province: d.province || '',
-            idDate: d.idDate || '',
+            idDate: formatToDateInput(d.idDate || ''),
             idPlace: d.idPlace || 'Cục Cảnh sát QLHC về TTXH',
             confidence: 99,
             rawText: `[THÔNG TIN THẺ CĂN CƯỚC EXTRACTED]:\nSố CCCD: ${d.idNumber}\nHọ tên: ${d.fullName}\nNgày sinh: ${d.dob}\nGiới tính: ${d.gender === '1' ? 'Nam' : 'Nữ'}\nQuê quán: ${d.pob}\nNơi thường trú: ${d.residence}\nNgày cấp: ${d.idDate}\nNơi cấp: ${d.idPlace}`,
@@ -283,14 +283,14 @@ export default function CccdOcrScannerModal({
         }
 
         const merged: OcrCccdResult = {
-          idNumber: fallbackUser?.id_number || fallbackUser?.id_card_no || '067204000961',
-          fullName: fallbackUser?.full_name || fallbackUser?.fullname || 'TRẦN HỮU LỰC',
-          dob: fallbackUser?.dob || '2004-11-02',
+          idNumber: (fallbackUser?.id_number || fallbackUser?.id_card_no || '067204000961').replace(/\D/g, '').slice(0, 12),
+          fullName: (fallbackUser?.full_name || fallbackUser?.fullname || 'TRẦN HỮU LỰC').toUpperCase().trim(),
+          dob: formatToDateInput(fallbackUser?.dob || '2004-11-02'),
           gender: (fallbackUser?.gender === 0 ? '0' : '1') as '1' | '0',
           pob: fallbackUser?.pob || 'Quảng Trị',
           residence: fallbackUser?.pob || 'The Tropical, Chung cư Skyline Smart Residence',
           province: fallbackUser?.province || 'TP. Hồ Chí Minh',
-          idDate: fallbackUser?.id_date || '2022-08-15',
+          idDate: formatToDateInput(fallbackUser?.id_date || '2022-08-15'),
           idPlace: fallbackUser?.id_place || 'Cục Cảnh sát QLHC về TTXH',
           confidence: 96,
           rawText: `[THÔNG TIN THẺ CĂN CƯỚC EXTRACTED]:\nSố CCCD: ${fallbackUser?.id_number || '067204000961'}\nHọ tên: ${fallbackUser?.full_name || 'TRẦN HỮU LỰC'}`,
@@ -313,22 +313,41 @@ export default function CccdOcrScannerModal({
     }
   };
 
-  const handleApply = () => {
+  const handleApply = async () => {
     if (!ocrResult) return;
 
+    setIsSyncingApi(true);
     const finalResult: OcrCccdResult = {
       ...ocrResult,
-      idNumber: editIdNumber.trim(),
-      fullName: editFullName.trim(),
-      dob: editDob,
+      idNumber: editIdNumber.trim().replace(/\D/g, '').slice(0, 12),
+      fullName: editFullName.trim().toUpperCase(),
+      dob: formatToDateInput(editDob),
       gender: editGender,
       pob: editPob.trim(),
       province: editPob.trim().includes('Hồ Chí Minh') ? 'TP. Hồ Chí Minh' : editPob.trim().includes('Hà Nội') ? 'Hà Nội' : (ocrResult.province || 'TP. Hồ Chí Minh'),
-      idDate: editIdDate,
+      idDate: formatToDateInput(editIdDate),
       idPlace: editIdPlace.trim(),
     };
 
-    // Auto-fill into parent form fields only - user will review and click Save to update API
+    // Tự động đồng bộ ngay lên API
+    try {
+      await nksUpdateCccd({
+        number: finalResult.idNumber,
+        date: finalResult.idDate,
+        place: finalResult.idPlace,
+        front: frontImage,
+        back: backImage,
+        fullName: finalResult.fullName,
+        dob: finalResult.dob,
+        pob: finalResult.pob,
+        gender: finalResult.gender === '1' ? 1 : 0,
+      });
+    } catch (apiErr) {
+      console.warn('API sync in modal warning:', apiErr);
+    } finally {
+      setIsSyncingApi(false);
+    }
+
     onApplyOcrData(finalResult, frontImage, backImage);
     onClose();
   };
@@ -724,15 +743,24 @@ export default function CccdOcrScannerModal({
           <button
             type="button"
             onClick={handleApply}
-            disabled={!ocrResult}
+            disabled={!ocrResult || isSyncingApi}
             className={`w-full sm:w-auto px-6 py-3 sm:py-2.5 text-xs font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-2 rounded-none shadow-xl ${
-              !ocrResult
+              !ocrResult || isSyncingApi
                 ? 'bg-gray-800 text-gray-500 cursor-not-allowed'
                 : 'bg-[#C5A880] hover:bg-white text-[#0D1117]'
             }`}
           >
-            <CheckCircle2 className="w-4 h-4" />
-            <span>{t('Lưu & Điền Vào Hồ Sơ')}</span>
+            {isSyncingApi ? (
+              <>
+                <RefreshCw className="w-4 h-4 animate-spin text-[#0D1117]" />
+                <span>{t('Đang Cập Nhật Lên API...')}</span>
+              </>
+            ) : (
+              <>
+                <CheckCircle2 className="w-4 h-4" />
+                <span>{t('Lưu & Điền Vào Hồ Sơ')}</span>
+              </>
+            )}
           </button>
         </div>
       </div>

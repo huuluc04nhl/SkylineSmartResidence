@@ -176,7 +176,12 @@ export async function skylineUpdateCccd(payload: {
   number: string;
   date?: string;
   place?: string;
-}): Promise<{ success: boolean; message: string }> {
+  fullName?: string;
+  fullname?: string;
+  dob?: string;
+  pob?: string;
+  gender?: number | string;
+}): Promise<{ success: boolean; message: string; user?: any; cccd?: any }> {
   const res = await fetch('/api/user/updateCccd', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },

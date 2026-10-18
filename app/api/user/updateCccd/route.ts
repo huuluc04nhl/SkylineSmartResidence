@@ -2,13 +2,40 @@ import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import { updateUserStore, extractUserIdFromToken } from '@/lib/userStore';
 
+function normalizeDate(d?: string): string {
+  if (!d) return '';
+  const clean = d.replace(/[^\d\/\-\.]/g, '');
+  const parts = clean.split(/[\/\-\.]/);
+  if (parts.length === 3) {
+    if (parts[2].length === 4) {
+      const day = parts[0].padStart(2, '0');
+      const month = parts[1].padStart(2, '0');
+      const year = parts[2];
+      return `${year}-${month}-${day}`;
+    }
+    if (parts[0].length === 4) {
+      const year = parts[0];
+      const month = parts[1].padStart(2, '0');
+      const day = parts[2].padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    }
+  }
+  return d;
+}
+
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const { front, back, number, date, place, access_token } = body;
+    const { front, back, number, date, place, fullName, fullname, dob, gender, pob, access_token } = body;
 
     const cookieStore = cookies();
     const token = access_token || cookieStore.get('nks_token')?.value || '';
+
+    const cleanNumber = (number || '').replace(/\D/g, '').slice(0, 12);
+    const cleanDate = normalizeDate(date);
+    const cleanPlace = (place || 'Cục Cảnh sát QLHC về TTXH').trim();
+    const resolvedName = (fullName || fullname || '').toUpperCase().trim();
+    const cleanDob = normalizeDate(dob);
 
     // 1. Forward directly to live official NKS API (https://account.nks.vn/api/nks/user/updateCccd)
     try {
@@ -17,9 +44,9 @@ export async function POST(req: Request) {
         formData.append('access_token', token);
         if (front) formData.append('front', front);
         if (back) formData.append('back', back);
-        if (number) formData.append('number', number);
-        if (date) formData.append('date', date);
-        if (place) formData.append('place', place);
+        if (cleanNumber) formData.append('number', cleanNumber);
+        if (cleanDate) formData.append('date', cleanDate);
+        if (cleanPlace) formData.append('place', cleanPlace);
 
         await fetch('https://account.nks.vn/api/nks/user/updateCccd', {
           method: 'POST',
@@ -33,14 +60,24 @@ export async function POST(req: Request) {
 
     const targetUserId = extractUserIdFromToken(token) || body.username || body.phone || 'user-owner-1';
 
-    const updated = updateUserStore(targetUserId, {
-      id_number: number || '079095001234',
-      id_card_no: number || '079095001234',
-      id_date: date || '2022-08-15',
-      id_place: place || 'Cục Cảnh sát QLHC về TTXH',
+    const updates: any = {
+      id_number: cleanNumber || '067204000961',
+      id_card_no: cleanNumber || '067204000961',
+      id_date: cleanDate || '2022-08-15',
+      id_place: cleanPlace,
       cccd_front_url: front || undefined,
       cccd_back_url: back || undefined,
-    });
+    };
+
+    if (resolvedName) {
+      updates.fullname = resolvedName;
+      updates.full_name = resolvedName;
+    }
+    if (cleanDob) updates.dob = cleanDob;
+    if (gender !== undefined) updates.gender = Number(gender) === 0 ? 0 : 1;
+    if (pob) updates.pob = pob.trim();
+
+    const updated = updateUserStore(targetUserId, updates);
 
     return NextResponse.json({
       success: true,
