@@ -2427,6 +2427,40 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
         </div>
       )}
 
+      {/* =================================================================== */}
+      {/* MODAL: QUÉT CCCD TỰ ĐỘNG CHO NGƯỜI NHÀ (TESSERACT OCR)              */}
+      {/* =================================================================== */}
+      <CccdOcrScannerModal
+        isOpen={isMemberOcrModalOpen}
+        onClose={() => setIsMemberOcrModalOpen(false)}
+        onApplyOcrData={handleApplyMemberOcrData}
+        initialFrontImage={ekycFrontImage}
+        initialBackImage={ekycBackImage}
+      />
+
+      {/* =================================================================== */}
+      {/* MODAL: SINH TRẮC HỌC FACEID 4 BƯỚC CHO THÀNH VIÊN                   */}
+      {/* =================================================================== */}
+      {bankEnrollTarget && (
+        <BankFaceEnrollModal
+          isOpen={Boolean(bankEnrollTarget)}
+          onClose={() => setBankEnrollTarget(null)}
+          userId={bankEnrollTarget.phone || bankEnrollTarget.id || bankEnrollTarget.username || ''}
+          fullName={bankEnrollTarget.fullName || ''}
+          apartmentCode={aptCode}
+          phone={bankEnrollTarget.phone || ''}
+          email={bankEnrollTarget.email || ''}
+          isFamilyMemberSelfEnroll={bankEnrollTarget.id !== currentUser.id && bankEnrollTarget.phone !== currentUser.phone}
+          submittedByRole={currentUser.role}
+          onEnrollSuccess={(profile) => {
+            setActionSuccess(`✓ Đã thu thập và lưu thành công 4 mẫu FaceID cho "${bankEnrollTarget.fullName}"!`);
+            setTimeout(() => setActionSuccess(null), 5000);
+            setBankEnrollTarget(null);
+            fetchMembers();
+          }}
+        />
+      )}
+
     </div>
   );
 }

@@ -640,11 +640,16 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
                 alt="Avatar"
                 className="w-20 h-20 rounded-full object-cover border-2 border-[#C5A880] group-hover:border-white shadow-lg transition-all group-hover:brightness-90"
               />
+              {/* Desktop Hover Overlay */}
               <div
-                className="absolute inset-0 bg-black/60 rounded-full flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-white text-[10px] font-bold"
+                className="hidden sm:flex absolute inset-0 bg-black/60 rounded-full flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-white text-[10px] font-bold"
               >
                 <Camera className="w-4 h-4 mb-0.5 text-[#C5A880]" />
                 Đổi Ảnh
+              </div>
+              {/* Mobile Persistent Touch Indicator Badge */}
+              <div className="sm:hidden absolute -bottom-1 -right-1 w-6 h-6 bg-[#C5A880] text-[#0D1117] rounded-full flex items-center justify-center shadow-lg border-2 border-[#161D26]">
+                <Camera className="w-3.5 h-3.5 text-[#0D1117]" />
               </div>
             </div>
 

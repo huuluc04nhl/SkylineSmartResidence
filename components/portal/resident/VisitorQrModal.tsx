@@ -443,30 +443,30 @@ export default function VisitorQrModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/85 backdrop-blur-sm animate-fadeIn">
-      <div className="bg-[#0D1117] border border-[#C5A880]/80 max-w-3xl w-full p-5 sm:p-6 text-white space-y-5 shadow-2xl rounded-2xl max-h-[92vh] overflow-y-auto relative">
+      <div className="bg-[#0D1117] border border-[#C5A880]/80 max-w-3xl w-full p-4 sm:p-6 text-white space-y-4 sm:space-y-5 shadow-2xl rounded-none max-h-[94vh] overflow-y-auto relative">
         
         {/* Toast Notification */}
         {toastMessage && (
-          <div className="fixed top-6 left-1/2 -translate-x-1/2 z-[60] px-4 py-2.5 bg-[#161D26] border border-[#C5A880] text-[#C5A880] text-xs font-bold rounded-xl shadow-2xl flex items-center gap-2 animate-fadeIn">
+          <div className="fixed top-6 left-1/2 -translate-x-1/2 z-[60] px-4 py-2.5 bg-[#161D26] border border-[#C5A880] text-[#C5A880] text-xs font-bold rounded-none shadow-2xl flex items-center gap-2 animate-fadeIn">
             <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
             <span>{toastMessage}</span>
           </div>
         )}
 
         {/* Modal Header */}
-        <div className="flex items-center justify-between border-b border-[#222B35] pb-4">
+        <div className="flex items-center justify-between border-b border-[#222B35] pb-3 sm:pb-4">
           <div>
-            <div className="text-[10px] uppercase tracking-[0.25em] text-[#C5A880] font-semibold flex items-center gap-1.5">
+            <div className="text-[10px] uppercase tracking-[0.25em] text-[#C5A880] font-semibold flex items-center gap-1.5 font-mono">
               <QrCode className="w-3.5 h-3.5" /> Đón Khách • Căn {apartmentCode}
             </div>
-            <h2 className="font-serif text-xl sm:text-2xl font-bold text-white mt-0.5">
+            <h2 className="font-serif text-lg sm:text-2xl font-bold text-white mt-0.5">
               Mã QR Đón Khách
             </h2>
           </div>
 
           <button
             onClick={onClose}
-            className="p-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-[#161B22] transition-colors cursor-pointer"
+            className="p-1.5 rounded-none text-gray-400 hover:text-white hover:bg-[#161B22] transition-colors cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
@@ -475,17 +475,17 @@ export default function VisitorQrModal({
         {/* Resident Pass Creation & Sharing */}
         <div className="space-y-4">
             {/* Building Policy & Privacy Guarantee Banner */}
-            <div className="p-3 bg-[#121E2A] border border-[#1E3A5F] rounded-xl flex items-start gap-2.5 text-xs text-cyan-200">
+            <div className="p-3 bg-[#121E2A] border border-[#1E3A5F] rounded-none flex items-start gap-2.5 text-xs text-cyan-200">
               <Info className="w-4 h-4 text-cyan-400 flex-shrink-0 mt-0.5" />
-              <div>
+              <div className="line-clamp-2 sm:line-clamp-none">
                 Mã QR dùng để khách quét qua sảnh lễ tân và thang máy lên căn hộ. Hàng shipper vui lòng gửi tại sảnh lễ tân.
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-5 items-start">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5 items-start">
               
-              {/* Form tạo mã thông tin khách (ĐÃ LƯỢC BỎ HOÀN TOÀN HÌNH THỨC MÃ) */}
-              <form onSubmit={handleGeneratePass} className="space-y-3.5 bg-[#121820] border border-[#222B35] p-4 sm:p-5 rounded-xl text-xs">
+              {/* Form tạo mã thông tin khách */}
+              <form onSubmit={handleGeneratePass} className="space-y-3.5 bg-[#121820] border border-[#222B35] p-3.5 sm:p-5 rounded-none text-xs">
                 <div className="text-xs font-bold uppercase tracking-wider text-[#C5A880] flex items-center gap-1.5 pb-2 border-b border-[#222B35]">
                   <UserCheck className="w-3.5 h-3.5" /> Thông Tin Khách Thăm
                 </div>
@@ -500,7 +500,7 @@ export default function VisitorQrModal({
                     value={visitorName}
                     onChange={(e) => setVisitorName(e.target.value)}
                     placeholder="VD: Anh Minh, Chị Lan..."
-                    className="w-full bg-[#161B22] border border-[#2D3748] p-2.5 text-white rounded-lg focus:border-[#C5A880] outline-none"
+                    className="w-full bg-[#161B22] border border-[#2D3748] p-2.5 text-white rounded-none focus:border-[#C5A880] outline-none font-sans"
                     required
                   />
                 </div>
@@ -516,14 +516,14 @@ export default function VisitorQrModal({
                       value={visitorPhone}
                       onChange={(e) => setVisitorPhone(e.target.value)}
                       placeholder="VD: 0912 345 678 (Dùng liên hệ khi cần)"
-                      className="w-full bg-[#161B22] border border-[#2D3748] p-2.5 pl-8 text-white rounded-lg focus:border-[#C5A880] outline-none"
+                      className="w-full bg-[#161B22] border border-[#2D3748] p-2.5 pl-8 text-white rounded-none focus:border-[#C5A880] outline-none font-mono"
                     />
                     <Phone className="w-3.5 h-3.5 text-gray-500 absolute left-2.5 top-3" />
                   </div>
                 </div>
 
                 {/* 3. Biển số xe & Thời gian hiệu lực */}
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
                     <label className="text-gray-300 font-medium block mb-1">
                       Biển Số Xe (Nếu Có):
@@ -534,7 +534,7 @@ export default function VisitorQrModal({
                         value={licensePlate}
                         onChange={(e) => setLicensePlate(e.target.value)}
                         placeholder="51F-123.45"
-                        className="w-full bg-[#161B22] border border-[#2D3748] p-2.5 pl-8 text-white font-mono uppercase rounded-lg focus:border-[#C5A880] outline-none"
+                        className="w-full bg-[#161B22] border border-[#2D3748] p-2.5 pl-8 text-white font-mono uppercase rounded-none focus:border-[#C5A880] outline-none"
                       />
                       <Car className="w-3.5 h-3.5 text-gray-500 absolute left-2.5 top-3" />
                     </div>
@@ -547,7 +547,7 @@ export default function VisitorQrModal({
                     <select
                       value={validHours}
                       onChange={(e) => setValidHours(e.target.value)}
-                      className="w-full bg-[#161B22] border border-[#2D3748] p-2.5 text-white rounded-lg focus:border-[#C5A880] outline-none cursor-pointer"
+                      className="w-full bg-[#161B22] border border-[#2D3748] p-2.5 text-white rounded-none focus:border-[#C5A880] outline-none cursor-pointer"
                     >
                       <option value="1">1 Giờ (Gặp nhanh)</option>
                       <option value="2">2 Giờ (Tiếp khách)</option>
@@ -562,7 +562,7 @@ export default function VisitorQrModal({
                 <button
                   type="submit"
                   disabled={isGenerating}
-                  className="w-full py-2.5 bg-[#C5A880] hover:bg-white text-[#0D1117] font-bold text-xs uppercase tracking-wider rounded-lg shadow-lg transition-all flex items-center justify-center gap-2 mt-2 cursor-pointer active:scale-98"
+                  className="w-full py-3 bg-[#C5A880] hover:bg-white text-[#0D1117] font-bold text-xs uppercase tracking-wider rounded-none shadow-lg transition-all flex items-center justify-center gap-2 mt-2 cursor-pointer active:scale-98"
                 >
                   {isGenerating ? (
                     <>
@@ -578,9 +578,9 @@ export default function VisitorQrModal({
 
               {/* Thẻ hiển thị mã QR & Bộ công cụ chia sẻ VIP */}
               {!activePass ? (
-                <div className="bg-[#121820] border-2 border-dashed border-[#2D3748] p-6 rounded-xl flex flex-col items-center justify-center text-center h-full min-h-[360px] space-y-3.5 shadow-inner">
-                  <div className="w-16 h-16 rounded-2xl bg-[#161D26] border border-[#2D3748] flex items-center justify-center text-[#C5A880]/70">
-                    <QrCode className="w-8 h-8" />
+                <div className="bg-[#121820] border-2 border-dashed border-[#2D3748] p-5 sm:p-6 rounded-none flex flex-col items-center justify-center text-center h-full min-h-[300px] sm:min-h-[360px] space-y-3.5 shadow-inner">
+                  <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-none bg-[#161D26] border border-[#2D3748] flex items-center justify-center text-[#C5A880]/70">
+                    <QrCode className="w-7 h-7 sm:w-8 sm:h-8" />
                   </div>
                   <div className="space-y-1">
                     <div className="font-serif font-bold text-white text-base">Chưa Tạo Thẻ Đón Khách</div>
@@ -593,7 +593,7 @@ export default function VisitorQrModal({
                   </div>
                 </div>
               ) : (
-                <div className="bg-gradient-to-b from-[#161D26] to-[#0E131A] border-2 border-[#C5A880] p-4 sm:p-5 rounded-xl space-y-3.5 shadow-2xl flex flex-col justify-between">
+                <div className="bg-gradient-to-b from-[#161D26] to-[#0E131A] border-2 border-[#C5A880] p-4 sm:p-5 rounded-none space-y-3.5 shadow-2xl flex flex-col justify-between">
                   
                   {/* Card Header */}
                   <div className="flex items-center justify-between border-b border-[#222B35] pb-2.5">
@@ -610,7 +610,7 @@ export default function VisitorQrModal({
                       </div>
                     </div>
                     <div className="flex flex-col items-end shrink-0 ml-2">
-                      <span className="px-2 py-0.5 text-[9.5px] font-bold uppercase rounded border bg-emerald-950/80 text-emerald-300 border-emerald-500/60 font-mono">
+                      <span className="px-2 py-0.5 text-[9.5px] font-bold uppercase rounded-none border bg-emerald-950/80 text-emerald-300 border-emerald-500/60 font-mono">
                         VIP PASS
                       </span>
                       <span className="text-[9px] text-emerald-400 font-mono mt-0.5">Hiệu Lực Ngay</span>
@@ -618,20 +618,20 @@ export default function VisitorQrModal({
                   </div>
 
                   {/* QR Image Container */}
-                  <div className="flex flex-col sm:flex-row items-center gap-3.5 bg-[#0A0E14] p-3.5 rounded-xl border border-[#222B35]">
-                    <div className="bg-white p-2 rounded-lg shadow-inner flex-shrink-0 group relative cursor-pointer" onClick={handleDownloadCardImage} title="Nhấn để lưu ảnh">
+                  <div className="flex flex-col sm:flex-row items-center gap-3.5 bg-[#0A0E14] p-3.5 rounded-none border border-[#222B35]">
+                    <div className="bg-white p-2 rounded-none shadow-inner flex-shrink-0 group relative cursor-pointer" onClick={handleDownloadCardImage} title="Nhấn để lưu ảnh">
                       <img
                         src={qrDataUrl || `https://api.qrserver.com/v1/create-qr-code/?size=140x140&data=${encodeURIComponent(activePass.qrData)}`}
                         alt="QR Mời Khách"
                         className="w-28 h-28 object-contain"
                       />
-                      <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center text-white text-[10px] font-bold gap-1">
+                      <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity rounded-none flex items-center justify-center text-white text-[10px] font-bold gap-1">
                         <Download className="w-3.5 h-3.5" /> Lưu ảnh
                       </div>
                     </div>
 
                     <div className="space-y-2 text-xs flex-1 w-full sm:w-auto">
-                      <div className="p-2 bg-[#121820] border border-[#222B35] rounded flex items-center justify-between">
+                      <div className="p-2 bg-[#121820] border border-[#222B35] rounded-none flex items-center justify-between">
                         <div>
                           <div className="text-gray-400 text-[10px]">Mã PIN Nhập Cổng:</div>
                           <div className="font-mono text-xl font-bold text-[#C5A880] tracking-wider">
@@ -641,7 +641,7 @@ export default function VisitorQrModal({
                         <button
                           type="button"
                           onClick={handleCopyPin}
-                          className="px-2 py-1 bg-[#1C2533] hover:bg-[#2A374A] text-gray-300 hover:text-white rounded text-[10px] flex items-center gap-1 border border-gray-700 transition-colors cursor-pointer"
+                          className="px-2.5 py-1 bg-[#1C2533] hover:bg-[#2A374A] text-gray-300 hover:text-white rounded-none text-[10px] flex items-center gap-1 border border-gray-700 transition-colors cursor-pointer"
                           title="Sao chép mã PIN"
                         >
                           <Copy className="w-3 h-3 text-[#C5A880]" /> Chép PIN
@@ -677,10 +677,10 @@ export default function VisitorQrModal({
                       <button
                         type="button"
                         onClick={handleShareZalo}
-                        className="py-2 px-2 bg-[#0068FF]/15 hover:bg-[#0068FF] text-[#60A5FA] hover:text-white border border-[#0068FF]/50 rounded-lg text-xs font-semibold flex items-center justify-center gap-1.5 transition-all shadow-sm cursor-pointer group"
+                        className="py-2.5 px-2 bg-[#0068FF]/15 hover:bg-[#0068FF] text-[#60A5FA] hover:text-white border border-[#0068FF]/50 rounded-none text-xs font-semibold flex items-center justify-center gap-1.5 transition-all shadow-sm cursor-pointer group"
                         title="Sao chép lời mời và mở Zalo để gửi"
                       >
-                        <ZaloIcon className="w-4 h-4 shrink-0 rounded" />
+                        <ZaloIcon className="w-4 h-4 shrink-0" />
                         <span className="truncate">Gửi Zalo</span>
                       </button>
 
@@ -688,7 +688,7 @@ export default function VisitorQrModal({
                       <button
                         type="button"
                         onClick={handleShareMessenger}
-                        className="py-2 px-2 bg-[#0084FF]/15 hover:bg-[#0084FF] text-[#38BDF8] hover:text-white border border-[#0084FF]/50 rounded-lg text-xs font-semibold flex items-center justify-center gap-1.5 transition-all shadow-sm cursor-pointer group"
+                        className="py-2.5 px-2 bg-[#0084FF]/15 hover:bg-[#0084FF] text-[#38BDF8] hover:text-white border border-[#0084FF]/50 rounded-none text-xs font-semibold flex items-center justify-center gap-1.5 transition-all shadow-sm cursor-pointer group"
                         title="Sao chép lời mời và mở Messenger"
                       >
                         <MessengerIcon className="w-4 h-4 shrink-0" />
@@ -700,7 +700,7 @@ export default function VisitorQrModal({
                         type="button"
                         onClick={handleDownloadCardImage}
                         disabled={isDownloading}
-                        className="py-2 px-2 bg-[#C5A880]/20 hover:bg-[#C5A880] text-[#C5A880] hover:text-[#0D1117] border border-[#C5A880] rounded-lg text-xs font-bold flex items-center justify-center gap-1.5 transition-all shadow-sm cursor-pointer"
+                        className="py-2.5 px-2 bg-[#C5A880]/20 hover:bg-[#C5A880] text-[#C5A880] hover:text-[#0D1117] border border-[#C5A880] rounded-none text-xs font-bold flex items-center justify-center gap-1.5 transition-all shadow-sm cursor-pointer"
                         title="Tải ảnh thẻ mời VIP định dạng PNG về máy"
                       >
                         {isDownloading ? (
@@ -713,12 +713,12 @@ export default function VisitorQrModal({
                     </div>
 
                     {/* HÀNG 2: TIỆN ÍCH LIÊN KẾT & CHIA SẺ HỆ THỐNG */}
-                    <div className="grid grid-cols-2 gap-2">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                       {/* Sao chép link */}
                       <button
                         type="button"
                         onClick={handleCopyLink}
-                        className="py-2 px-3 bg-[#161B22] hover:bg-[#1E2530] text-gray-300 hover:text-white border border-[#2D3748] rounded-lg text-xs font-medium flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                        className="py-2.5 px-3 bg-[#161B22] hover:bg-[#1E2530] text-gray-300 hover:text-white border border-[#2D3748] rounded-none text-xs font-medium flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
                       >
                         {copiedLink ? (
                           <>
@@ -737,7 +737,7 @@ export default function VisitorQrModal({
                       <button
                         type="button"
                         onClick={handleNativeShare}
-                        className="py-2 px-3 bg-[#161B22] hover:bg-[#1E2530] text-gray-300 hover:text-white border border-[#2D3748] rounded-lg text-xs font-medium flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                        className="py-2.5 px-3 bg-[#161B22] hover:bg-[#1E2530] text-gray-300 hover:text-white border border-[#2D3748] rounded-none text-xs font-medium flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
                       >
                         <Share2 className="w-3.5 h-3.5 text-[#C5A880]" />
                         <span className="truncate">Chia Sẻ Khác</span>

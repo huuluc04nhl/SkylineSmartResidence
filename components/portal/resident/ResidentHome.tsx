@@ -120,17 +120,24 @@ export default function ResidentHome({ currentUser, onNavigate, onOpenVisitorMod
             {t('Xin Chào')}, {userName}
           </h2>
           <div className="text-xs text-gray-300 mt-2.5 flex flex-wrap items-center gap-2">
-            {/* Căn Hộ & Nút Sổ Tay Cư Dân */}
+            {/* Căn Hộ & Nút Chi Tiết / Sổ Tay Cư Dân */}
             <div className="h-8 flex items-center gap-1.5 bg-[#161B22] border border-[#2D3748] px-2.5 shadow-sm">
               <span className="text-gray-400 text-[11px]">{t('Căn:')}</span>
-              <strong className="text-white font-mono text-xs">{aptCode}</strong>
               <button
                 type="button"
-                onClick={() => onNavigate('resident-handbook')}
-                className="ml-1 h-5 px-2 bg-[#0D1117] hover:bg-[#C5A880] hover:text-[#0D1117] text-[#C5A880] border border-[#C5A880]/50 text-[10.5px] font-semibold transition-all flex items-center gap-1 shadow-sm"
-                title={t('Mở Sổ Tay Cư Dân Điện Tử')}
+                onClick={() => setIsAptDetailOpen(true)}
+                className="text-white font-mono text-xs hover:text-[#C5A880] underline underline-offset-2 cursor-pointer font-bold"
+                title={t('Xem thông số căn hộ')}
               >
-                <BookOpen className="w-3 h-3" /> {t('Sổ Tay Cư Dân')}
+                {aptCode}
+              </button>
+              <button
+                type="button"
+                onClick={() => setIsAptDetailOpen(true)}
+                className="ml-1 h-5 px-2 bg-[#0D1117] hover:bg-[#C5A880] hover:text-[#0D1117] text-[#C5A880] border border-[#C5A880]/50 text-[10.5px] font-semibold transition-all flex items-center gap-1 shadow-sm"
+                title={t('Mở Chi Tiết Căn Hộ')}
+              >
+                <Building className="w-3 h-3" /> <span className="hidden sm:inline">{t('Chi Tiết')}</span>
               </button>
             </div>
 
