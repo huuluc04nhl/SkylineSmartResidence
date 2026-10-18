@@ -390,7 +390,7 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
 
     setEkycFeedback({
       type: 'success',
-      message: 'Đã trích xuất thông tin 2 mặt thẻ CCCD thành công! Bạn có thể kiểm tra dữ liệu, thu thập FaceID (nếu chưa có) và bấm "Gửi Ban Quản Lý Duyệt Hồ Sơ" ở cuối trang.'
+      message: 'Đã trích xuất và lưu độc lập thông tin 2 mặt thẻ CCCD thành công! Khi hoàn tất đủ cả CCCD và FaceID 4 mẫu, bạn nhấn nút "Gửi Ban Quản Lý Xác Nhận Chốt Hồ Sơ" ở Bước 3.'
     });
 
     // Display clear notice that data is auto-filled and ready to be saved
@@ -404,40 +404,26 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
   const handleSubmitEkycToBql = async () => {
     setEkycFeedback(null);
 
-    if (!idCardNumber.trim()) {
+    // 1. Kiểm tra điều kiện Căn cước công dân (Đã lưu riêng)
+    if (!idCardNumber.trim() || !cccdImage || !cccdBackImage) {
       setEkycFeedback({
         type: 'warning',
-        message: 'Vui lòng quét thẻ CCCD hoặc nhập số Căn cước công dân trước khi gửi hồ sơ duyệt.'
+        message: 'Vui lòng hoàn tất quét thẻ Căn cước công dân (đủ 2 mặt trước/sau và 12 số CCCD) trước khi chốt hồ sơ gửi Ban Quản Lý.'
       });
       return;
     }
-    if (!cccdImage) {
+
+    // 2. Kiểm tra điều kiện FaceID 4 mẫu (Đã lưu riêng)
+    if (!enrolledFaceProfile || !enrolledFaceProfile.samples?.front) {
       setEkycFeedback({
         type: 'warning',
-        message: 'Vui lòng quét hoặc tải lên ảnh Mặt Trước của thẻ Căn cước công dân.'
-      });
-      return;
-    }
-    if (!cccdBackImage) {
-      setEkycFeedback({
-        type: 'warning',
-        message: 'Vui lòng quét hoặc tải lên ảnh Mặt Sau thẻ CCCD (có chip điện tử) để Ban Quản Lý đối chiếu.'
+        message: 'Vui lòng hoàn tất thu thập đủ 4 góc mẫu FaceID (chuẩn e-KYC ngân hàng) trước khi chốt hồ sơ gửi Ban Quản Lý.'
       });
       return;
     }
 
     const currentAvatar = avatarUrl || currentUser.avatar_url || '';
-    if (!currentAvatar && !enrolledFaceProfile) {
-      setEkycFeedback({
-        type: 'warning',
-        message: 'Vui lòng tải ảnh chân dung hoặc thu thập FaceID 4 mẫu trước khi gửi hồ sơ duyệt.'
-      });
-      return;
-    }
-
-    const faceSamples = enrolledFaceProfile?.samples || {
-      front: currentAvatar,
-    };
+    const faceSamples = enrolledFaceProfile.samples;
 
     setIsScanningOcr(true);
     try {
@@ -457,7 +443,7 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
         idCardFrontUrl: cccdImage,
         idCardBackUrl: cccdBackImage || '',
         faceSamples,
-        faceScore: enrolledFaceProfile?.faceScore || 98.6,
+        faceScore: enrolledFaceProfile?.faceScore || 99.4,
       };
 
       const req = submitEkycRequest(reqPayload);
@@ -465,7 +451,7 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
       setEkycStatus('PENDING');
       setIsEditingLegal(false);
 
-      // Synchronize to server API endpoint for real-time BQL processing
+      // Đồng bộ tới máy chủ cho Ban Quản Lý thẩm định tức thì
       try {
         const res = await fetch('/api/ekyc', {
           method: 'POST',
@@ -483,9 +469,15 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
         console.warn('Sync ekyc submit API error:', apiErr);
       }
 
+      // Phát sự kiện đồng bộ thời gian thực cho BQL
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new CustomEvent('skyline_ekyc_updated', { detail: req }));
+        window.dispatchEvent(new CustomEvent('skyline_faceid_enrolled', { detail: enrolledFaceProfile }));
+      }
+
       setEkycFeedback({
         type: 'success',
-        message: 'Hồ sơ định danh kèm ảnh CCCD 2 mặt và mẫu FaceID đã được gửi tới Ban Quản Lý thành công! Ban Quản Lý sẽ thẩm định và kích hoạt quyền ra vào sớm nhất.'
+        message: 'Đã gửi toàn bộ hồ sơ (Căn cước công dân 2 mặt & 4 mẫu FaceID) tới Ban Quản Lý thành công! Ban Quản Lý sẽ tiến hành đối soát và phê duyệt kích hoạt quyền ra vào chung cư.'
       });
     } finally {
       setIsScanningOcr(false);
@@ -508,17 +500,9 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
           </p>
         </div>
 
-        {/* Cụm Nút Căn Cước & Trạng Thái */}
+        {/* Cụm Trạng Thái Căn Cước & e-KYC */}
         {isOwner ? (
           <div className="flex items-center gap-2.5 flex-shrink-0">
-            <button
-              type="button"
-              onClick={() => setIsOcrModalOpen(true)}
-              className="px-4 py-2 bg-gradient-to-r from-[#1E2631] to-[#121820] border border-[#C5A880] text-[#C5A880] hover:text-white hover:border-white text-xs font-bold uppercase tracking-wider flex items-center gap-2 transition-all shadow rounded-none"
-            >
-              <Scan className="w-4 h-4 text-[#C5A880]" /> Quét Thẻ Căn Cước
-            </button>
-
             {ekycStatus === 'VERIFIED' && (
               <span className="px-3 py-1 bg-emerald-950/80 border border-emerald-500 text-emerald-300 text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 rounded-none">
                 <ShieldCheck className="w-4 h-4 text-emerald-400" /> Đã Xác Thực Căn Cước
@@ -637,22 +621,23 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
         <form onSubmit={handleSaveInfo} className="p-6 sm:p-8 bg-[#121820] border border-[#222B35] space-y-6 shadow-2xl rounded-none">
           {/* Avatar & Fast Profile Header */}
           <div className="flex flex-col sm:flex-row items-center gap-6 p-4 bg-[#161D26] border border-[#222B35] rounded-none">
-            {/* Avatar with Upload Trigger */}
-            <div className="relative group">
+            {/* Clickable Avatar Circle */}
+            <div
+              onClick={() => setIsAvatarModalOpen(true)}
+              className="relative group cursor-pointer shrink-0"
+              title="Nhấp vào đây để đổi ảnh đại diện hoặc tùy chỉnh ảnh"
+            >
               <img
                 src={avatarUrl || currentUser.avatar_url || 'https://data.nks.vn/storage/users/default.png'}
                 alt="Avatar"
-                className="w-20 h-20 rounded-full object-cover border-2 border-[#C5A880] shadow-lg"
+                className="w-20 h-20 rounded-full object-cover border-2 border-[#C5A880] group-hover:border-white shadow-lg transition-all group-hover:brightness-90"
               />
-              <button
-                type="button"
-                onClick={() => setIsAvatarModalOpen(true)}
-                className="absolute inset-0 bg-black/60 rounded-full flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-white text-[10px] font-bold cursor-pointer"
-                title="Chỉnh sửa & Cắt ảnh tự do"
+              <div
+                className="absolute inset-0 bg-black/60 rounded-full flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-white text-[10px] font-bold"
               >
-                <Camera className="w-4 h-4 mb-0.5" />
+                <Camera className="w-4 h-4 mb-0.5 text-[#C5A880]" />
                 Đổi Ảnh
-              </button>
+              </div>
             </div>
 
             <div className="space-y-1 text-center sm:text-left flex-1">
@@ -665,15 +650,11 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
               <div className="text-xs text-gray-400 font-mono">
                 Căn hộ: <strong className="text-white">{aptCode}</strong> • SĐT: <strong className="text-gray-300">{phone || 'Chưa có'}</strong> • Biển số: <strong className="text-[#C5A880]">{licensePlate || 'Chưa đăng ký'}</strong>
               </div>
+              <div className="text-[11px] text-[#C5A880]/90 flex items-center justify-center sm:justify-start gap-1 pt-0.5">
+                <Camera className="w-3 h-3 text-[#C5A880]" />
+                <span>Nhấp trực tiếp vào ảnh đại diện để đổi ảnh hoặc chỉnh sửa</span>
+              </div>
             </div>
-
-            <button
-              type="button"
-              onClick={() => setIsAvatarModalOpen(true)}
-              className="px-4 py-2.5 bg-[#1C2533] hover:bg-[#C5A880] hover:text-[#0D1117] border border-gray-700 hover:border-[#C5A880] text-xs font-bold uppercase tracking-wider text-white transition-all rounded-none flex items-center gap-2 shadow"
-            >
-              <Upload className="w-3.5 h-3.5 text-[#C5A880]" /> Tùy Chỉnh & Đổi Avatar
-            </button>
           </div>
 
           {/* Feedback Alerts */}
@@ -1108,31 +1089,6 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
             </div>
           </div>
 
-          {/* Thông báo hướng dẫn dành riêng cho Người Nhà tự cập nhật FaceID */}
-          {!isOwner && (
-            <div className="p-5 bg-gradient-to-r from-[#161D26] via-[#121820] to-[#0D1117] border border-[#C5A880]/70 flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-xl">
-              <div className="space-y-1">
-                <div className="text-[10px] uppercase tracking-wider text-[#C5A880] font-bold flex items-center gap-1.5 font-mono">
-                  <ScanFace className="w-3.5 h-3.5" /> Thành Viên Gia Đình • Căn Hộ {aptCode}
-                </div>
-                <h3 className="font-serif text-lg font-bold text-white">
-                  Tự Cập Nhật Dữ Liệu Khuôn Mặt (FaceID)
-                </h3>
-                <p className="text-xs text-gray-300 max-w-2xl leading-relaxed">
-                  Hệ thống cho phép thành viên gia đình tự thu thập 4 góc khuôn mặt (chuẩn e-KYC ngân hàng) để mở cửa sảnh đón và thang máy. Sau khi quét xong, hồ sơ sẽ được chuyển tới <strong>Chủ Hộ (Chính chủ căn hộ)</strong> xác nhận bảo lãnh trước khi Ban Quản Lý phê duyệt kích hoạt.
-                </p>
-              </div>
-
-              <button
-                type="button"
-                onClick={() => setIsBankEnrollOpen(true)}
-                className="h-9 px-4 bg-[#C5A880] hover:bg-white text-[#0D1117] text-xs font-bold uppercase tracking-wider flex items-center gap-2 transition-all shadow flex-shrink-0 rounded-none cursor-pointer"
-              >
-                <Camera className="w-4 h-4" />
-                {enrolledFaceProfile ? 'Quét Lại 4 Mẫu' : 'Quét Mẫu FaceID Ngay'}
-              </button>
-            </div>
-          )}
 
           {/* e-KYC Visual Matcher & Smart Pass Cards */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -1326,15 +1282,6 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
                   <span className="text-xs font-bold text-[#C5A880] uppercase tracking-wider flex items-center gap-2">
                     <CreditCard className="w-4 h-4 text-[#C5A880]" /> Thẻ Cư Dân Điện Tử Skyline
                   </span>
-                  {cccdImage && (
-                    <button
-                      type="button"
-                      onClick={() => setIsCardViewerOpen(true)}
-                      className="h-7 px-2.5 bg-[#161B22] hover:bg-[#1C2533] border border-gray-700 hover:border-[#C5A880] text-gray-300 hover:text-white text-[11px] font-medium transition-colors flex items-center gap-1.5 rounded-none"
-                    >
-                      <Eye className="w-3.5 h-3.5 text-[#C5A880]" /> Xem Thẻ CCCD
-                    </button>
-                  )}
                 </div>
                 <ResidentSmartCard currentUser={currentUser} />
               </div>
@@ -1347,36 +1294,133 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
               </div>
             </div>
           </div>
+
           {/* =================================================================== */}
-          {/* KHỐI DUYỆT ĐỒNG BỘ: GỬI BAN QUẢN LÝ DUYỆT CẢ CCCD VÀ FACEID CÙNG LÚC */}
+          {/* BƯỚC 3: XÁC NHẬN CHỐT 2 THÔNG TIN (CCCD & FACEID) GỬI BAN QUẢN LÝ    */}
           {/* =================================================================== */}
-          <div className="p-5 bg-gradient-to-r from-[#161D26] via-[#121820] to-[#0D1117] border border-[#C5A880]/80 rounded-none flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-2xl">
-            <div className="space-y-1">
-              <div className="text-white text-xs font-bold flex items-center gap-2">
-                <ShieldCheck className="w-4 h-4 text-[#C5A880]" /> Gửi Ban Quản Lý Phê Duyệt Đồng Bộ (CCCD & FaceID)
+          <div className="p-5 sm:p-6 bg-gradient-to-r from-[#161D26] via-[#121820] to-[#0D1117] border border-[#C5A880] rounded-none space-y-4 shadow-2xl">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#222B35] pb-4">
+              <div className="space-y-1">
+                <div className="text-[10px] uppercase tracking-wider text-[#C5A880] font-bold flex items-center gap-1.5 font-mono">
+                  <ShieldCheck className="w-3.5 h-3.5" /> Bước 3: Đồng Bộ & Chốt Hồ Sơ e-KYC
+                </div>
+                <h3 className="font-serif text-base sm:text-lg font-bold text-white">
+                  Xác Nhận & Gửi Ban Quản Lý Phê Duyệt Đồng Thời (CCCD & FaceID)
+                </h3>
+                <p className="text-xs text-gray-400 max-w-2xl leading-relaxed">
+                  Khi bạn quét CCCD hoặc FaceID, mỗi thông tin đã được tự động lưu độc lập. Sau khi hoàn tất cả 2 mục, nhấn nút bên dưới để chốt hồ sơ gửi Ban Quản Lý thẩm định và kích hoạt quyền ra vào chung cư.
+                </p>
               </div>
-              <div className="text-[11px] text-gray-400 leading-relaxed max-w-xl">
-                Chỉ cần nhấn 1 lần, toàn bộ hồ sơ Căn cước công dân (2 mặt) và 4 góc sinh trắc học FaceID sẽ được gửi đến Ban Quản Lý để kích hoạt quyền ra vào chung cư cùng lúc mà không cần thao tác lặp lại.
+
+              {/* Status Indicator */}
+              <div className="flex items-center gap-2 flex-shrink-0">
+                {ekycStatus === 'VERIFIED' ? (
+                  <span className="px-3 py-1.5 bg-emerald-950/80 border border-emerald-500 text-emerald-300 text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 rounded-none shadow-sm">
+                    <ShieldCheck className="w-4 h-4 text-emerald-400" /> BQL Đã Phê Duyệt Hồ Sơ
+                  </span>
+                ) : ekycStatus === 'PENDING' ? (
+                  <span className="px-3 py-1.5 bg-amber-950/80 border border-amber-500 text-amber-300 text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 rounded-none animate-pulse">
+                    <Clock className="w-4 h-4 text-amber-400" /> Đang Chờ BQL Phê Duyệt
+                  </span>
+                ) : ekycStatus === 'REJECTED' ? (
+                  <span className="px-3 py-1.5 bg-rose-950/80 border border-rose-500 text-rose-300 text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 rounded-none">
+                    <XCircle className="w-4 h-4 text-rose-400" /> Yêu Cầu Cập Nhật Lại
+                  </span>
+                ) : (
+                  <span className="px-3 py-1.5 bg-[#161B22] border border-gray-600 text-gray-300 text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 rounded-none">
+                    <AlertCircle className="w-4 h-4 text-[#C5A880]" /> Chưa Chốt Gửi BQL
+                  </span>
+                )}
               </div>
             </div>
 
-            <button
-              type="button"
-              onClick={handleSubmitEkycToBql}
-              disabled={isScanningOcr}
-              className="px-7 py-3 bg-[#C5A880] hover:bg-white text-[#0D1117] text-xs font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-2 shadow-xl rounded-none active:scale-[0.99] flex-shrink-0 cursor-pointer"
-            >
-              {isScanningOcr ? <RefreshCw className="w-4 h-4 animate-spin" /> : <ShieldCheck className="w-4 h-4" />}
-              {isScanningOcr
-                ? 'Đang Gửi Hồ Sơ...'
-                : ekycStatus === 'VERIFIED'
-                ? 'Gửi Cập Nhật Cho Ban Quản Lý'
-                : ekycStatus === 'REJECTED'
-                ? 'Gửi Lại Ban Quản Lý Duyệt'
-                : ekycStatus === 'PENDING'
-                ? 'Gửi Lại / Cập Nhật Hồ Sơ'
-                : 'Gửi Ban Quản Lý Duyệt Hồ Sơ'}
-            </button>
+            {/* Checklist 2 điều kiện độc lập cần có */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+              {/* Check 1: Thẻ CCCD */}
+              <div className={`p-3 border flex items-center justify-between gap-2 rounded-none transition-colors ${
+                idCardNumber.trim() && cccdImage && cccdBackImage
+                  ? 'bg-emerald-950/30 border-emerald-500/50 text-emerald-200'
+                  : 'bg-[#161B22] border-amber-500/50 text-amber-200'
+              }`}>
+                <div className="flex items-center gap-2">
+                  {idCardNumber.trim() && cccdImage && cccdBackImage ? (
+                    <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                  ) : (
+                    <AlertCircle className="w-4 h-4 text-amber-400 shrink-0" />
+                  )}
+                  <div>
+                    <span className="font-bold block text-white">1. Căn Cước Công Dân (CCCD)</span>
+                    <span className="text-[10.5px] text-gray-400">
+                      {idCardNumber.trim() && cccdImage && cccdBackImage
+                        ? `Đã lưu độc lập (${idCardNumber.slice(0, 4)}...${idCardNumber.slice(-3)}) • 2 mặt ảnh`
+                        : 'Chưa đủ 2 mặt thẻ hoặc thiếu số CCCD'}
+                    </span>
+                  </div>
+                </div>
+                <span className={`text-[10px] font-mono px-2 py-0.5 uppercase font-bold rounded-none ${
+                  idCardNumber.trim() && cccdImage && cccdBackImage
+                    ? 'bg-emerald-900/60 text-emerald-300'
+                    : 'bg-amber-900/60 text-amber-300'
+                }`}>
+                  {idCardNumber.trim() && cccdImage && cccdBackImage ? 'Sẵn sàng ✓' : 'Cần quét thẻ'}
+                </span>
+              </div>
+
+              {/* Check 2: FaceID */}
+              <div className={`p-3 border flex items-center justify-between gap-2 rounded-none transition-colors ${
+                enrolledFaceProfile?.samples?.front
+                  ? 'bg-emerald-950/30 border-emerald-500/50 text-emerald-200'
+                  : 'bg-[#161B22] border-amber-500/50 text-amber-200'
+              }`}>
+                <div className="flex items-center gap-2">
+                  {enrolledFaceProfile?.samples?.front ? (
+                    <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                  ) : (
+                    <AlertCircle className="w-4 h-4 text-amber-400 shrink-0" />
+                  )}
+                  <div>
+                    <span className="font-bold block text-white">2. Sinh Trắc Học FaceID</span>
+                    <span className="text-[10.5px] text-gray-400">
+                      {enrolledFaceProfile?.samples?.front
+                        ? 'Đã lưu độc lập bộ 4 góc mẫu khuôn mặt e-KYC'
+                        : 'Chưa thu thập đủ 4 góc mẫu FaceID'}
+                    </span>
+                  </div>
+                </div>
+                <span className={`text-[10px] font-mono px-2 py-0.5 uppercase font-bold rounded-none ${
+                  enrolledFaceProfile?.samples?.front
+                    ? 'bg-emerald-900/60 text-emerald-300'
+                    : 'bg-amber-900/60 text-amber-300'
+                }`}>
+                  {enrolledFaceProfile?.samples?.front ? 'Sẵn sàng ✓' : 'Cần quét FaceID'}
+                </span>
+              </div>
+            </div>
+
+            {/* Chốt hồ sơ Button */}
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-2">
+              <div className="text-[11px] text-gray-400">
+                Ban Quản Lý sẽ nhận được thông báo ngay lập tức để thẩm định đối soát hình ảnh.
+              </div>
+
+              <button
+                type="button"
+                onClick={handleSubmitEkycToBql}
+                disabled={isScanningOcr}
+                className="w-full sm:w-auto px-8 py-3 bg-[#C5A880] hover:bg-white text-[#0D1117] text-xs font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-2 shadow-xl rounded-none active:scale-[0.99] flex-shrink-0 cursor-pointer"
+              >
+                {isScanningOcr ? <RefreshCw className="w-4 h-4 animate-spin" /> : <ShieldCheck className="w-4 h-4" />}
+                {isScanningOcr
+                  ? 'Đang Gửi Chốt Hồ Sơ...'
+                  : ekycStatus === 'VERIFIED'
+                  ? 'Gửi Cập Nhật Lại Cho Ban Quản Lý'
+                  : ekycStatus === 'REJECTED'
+                  ? 'Gửi Lại Ban Quản Lý Thẩm Định'
+                  : ekycStatus === 'PENDING'
+                  ? 'Gửi Lại / Cập Nhật Chốt Hồ Sơ'
+                  : 'Gửi Ban Quản Lý Xác Nhận Chốt Hồ Sơ'}
+              </button>
+            </div>
           </div>
         </div>
       )}
@@ -1475,7 +1519,7 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
           setIsEditingLegal(true);
           setEkycFeedback({
             type: 'success',
-            message: 'Dữ liệu khuôn mặt FaceID 4 góc độ đã được cập nhật thành công! Vui lòng nhấn "Gửi Ban Quản Lý Duyệt Lại" để hoàn tất.',
+            message: 'Đã lưu độc lập 4 góc mẫu FaceID vào thiết bị và hệ thống! Khi đã có đủ cả CCCD và FaceID, vui lòng nhấn "Gửi Ban Quản Lý Xác Nhận Chốt Hồ Sơ" ở Bước 3.',
           });
           // TUYỆT ĐỐI KHÔNG cập nhật / ghi đè ảnh chân dung cá nhân (avatar) từ mẫu FaceID
           // Ảnh chân dung cư dân được giữ nguyên vẹn từ thẻ CCCD hoặc mục Đổi Avatar riêng biệt.
