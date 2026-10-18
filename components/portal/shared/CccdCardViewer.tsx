@@ -146,46 +146,46 @@ export default function CccdCardViewer({
         </div>
 
         {/* Toolbar & Side Switcher */}
-        <div className="flex flex-wrap items-center justify-between gap-2.5 bg-[#121820] p-2.5 sm:p-3 border border-[#222B35] rounded-none text-xs">
-          {/* Side Tabs */}
-          <div className="flex items-center gap-2 w-full sm:w-auto">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5 bg-[#121820] p-2.5 sm:p-3 border border-[#222B35] rounded-none text-xs">
+          {/* Side Tabs: 50-50 Equal Grid on Mobile, Flex on Desktop */}
+          <div className="grid grid-cols-2 gap-2 w-full sm:w-auto sm:flex">
             <button
               type="button"
               onClick={() => { setActiveSide('FRONT'); handleReset(); }}
-              className={`flex-1 sm:flex-initial px-3.5 py-2 rounded-none font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-1.5 cursor-pointer text-xs ${
+              className={`w-full sm:w-auto h-10 px-3.5 rounded-none font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-1.5 cursor-pointer text-xs border ${
                 activeSide === 'FRONT'
-                  ? 'bg-[#C5A880] text-[#0D1117] shadow-lg'
-                  : 'bg-[#161B22] text-gray-300 hover:text-white border border-[#2D3748]'
+                  ? 'bg-[#C5A880] text-[#0D1117] border-[#C5A880] shadow-lg'
+                  : 'bg-[#161B22] text-gray-300 hover:text-white border-[#2D3748]'
               }`}
             >
               <span>{t('Mặt Trước', 'Front Side')}</span>
               {currentFront ? (
-                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
               ) : (
-                <span className="text-[10px] text-gray-500">({t('Chưa có', 'None')})</span>
+                <span className="text-[10px] text-gray-500 shrink-0">({t('Chưa có', 'None')})</span>
               )}
             </button>
 
             <button
               type="button"
               onClick={() => { setActiveSide('BACK'); handleReset(); }}
-              className={`flex-1 sm:flex-initial px-3.5 py-2 rounded-none font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-1.5 cursor-pointer text-xs ${
+              className={`w-full sm:w-auto h-10 px-3.5 rounded-none font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-1.5 cursor-pointer text-xs border ${
                 activeSide === 'BACK'
-                  ? 'bg-[#C5A880] text-[#0D1117] shadow-lg'
-                  : 'bg-[#161B22] text-gray-300 hover:text-white border border-[#2D3748]'
+                  ? 'bg-[#C5A880] text-[#0D1117] border-[#C5A880] shadow-lg'
+                  : 'bg-[#161B22] text-gray-300 hover:text-white border-[#2D3748]'
               }`}
             >
               <span>{t('Mặt Sau', 'Back Side')}</span>
               {currentBack ? (
-                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
               ) : (
-                <span className="text-[10px] text-gray-500">({t('Chưa có', 'None')})</span>
+                <span className="text-[10px] text-gray-500 shrink-0">({t('Chưa có', 'None')})</span>
               )}
             </button>
           </div>
 
           {/* Inspection Tools */}
-          <div className="flex items-center justify-between sm:justify-end gap-2 w-full sm:w-auto">
+          <div className="flex items-center justify-between sm:justify-end gap-2 w-full sm:w-auto pt-2 sm:pt-0 border-t sm:border-t-0 border-[#222B35]">
             <div className="flex items-center gap-1.5">
               <button
                 type="button"

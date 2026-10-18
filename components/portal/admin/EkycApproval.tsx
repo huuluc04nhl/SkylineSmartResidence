@@ -757,18 +757,18 @@ export default function EkycApproval() {
                     {/* 2. CCCD Card (Interactive Front/Back & Both views) */}
                     <div className="p-4 bg-[#161D26] border border-[#2D3748] rounded-none space-y-3 text-center flex flex-col justify-between">
                       <div>
-                        <div className="flex items-center justify-between text-xs text-gray-300 font-semibold border-b border-[#222B35] pb-2">
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs text-gray-300 font-semibold border-b border-[#222B35] pb-2">
                           <span className="flex items-center gap-1.5">
                             <CreditCard className="w-3.5 h-3.5 text-[#C5A880]" /> {t('Thẻ Căn Cước Công Dân:', 'Citizen ID Card:')}
                           </span>
                           
                           {/* Side Switcher */}
-                          <div className="flex gap-1 bg-[#0D1117] p-0.5 rounded-none border border-gray-700 text-[10px]">
+                          <div className="grid grid-cols-2 gap-1.5 w-full sm:w-auto bg-[#0D1117] p-1 rounded-none border border-gray-700 text-xs">
                             <button
                               type="button"
                               onClick={() => setInspectingSide('FRONT')}
-                              className={`px-2.5 py-1 rounded-none font-bold transition-all ${
-                                inspectingSide === 'FRONT' ? 'bg-[#C5A880] text-[#0D1117]' : 'text-gray-400 hover:text-white'
+                              className={`h-8 px-3 rounded-none font-bold transition-all flex items-center justify-center gap-1 border ${
+                                inspectingSide === 'FRONT' ? 'bg-[#C5A880] text-[#0D1117] border-[#C5A880]' : 'text-gray-400 hover:text-white border-transparent'
                               }`}
                             >
                               {t('Mặt Trước', 'Front Side')}
@@ -776,8 +776,8 @@ export default function EkycApproval() {
                             <button
                               type="button"
                               onClick={() => setInspectingSide('BACK')}
-                              className={`px-2.5 py-1 rounded-none font-bold transition-all ${
-                                inspectingSide === 'BACK' ? 'bg-[#C5A880] text-[#0D1117]' : 'text-gray-400 hover:text-white'
+                              className={`h-8 px-3 rounded-none font-bold transition-all flex items-center justify-center gap-1 border ${
+                                inspectingSide === 'BACK' ? 'bg-[#C5A880] text-[#0D1117] border-[#C5A880]' : 'text-gray-400 hover:text-white border-transparent'
                               }`}
                             >
                               {t('Mặt Sau', 'Back Side')}
