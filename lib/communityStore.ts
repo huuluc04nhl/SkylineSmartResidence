@@ -1,8 +1,8 @@
 /**
  * SKYLINE SMART RESIDENCE — COMMUNITY FORUM & POLLING STORE
  * Architecture: Ponytail Minimalist + Graphify Data Store
- * 100% DỮ LIỆU THỰC TẾ — KHÔNG DỮ LIỆU ẢO / KHÔNG ẢNH UNSPLASH
- * Mọi số lượng like, comment, và lá phiếu đều được tính toán trực tiếp từ thao tác người dùng.
+ * 100% DỮ LIỆU THỰC TẾ — KHÔNG DỮ LIỆU ẢO / KHÔNG BÀI VIẾT MOCK
+ * Toàn bộ bài đăng, bình luận, lượt thích và lá phiếu đều xuất phát từ người dùng thực tế.
  */
 
 import { UserRole } from './dataStore';
@@ -34,7 +34,7 @@ export interface PostComment {
 
 export interface CommunityPost {
   id: string;
-  code?: string; // e.g. BQ-2026-01 for voting
+  code?: string; // VD: BQ-2026-01 cho biểu quyết
   category: PostCategory;
   authorName: string;
   authorRole: UserRole | 'STAFF' | string;
@@ -45,110 +45,28 @@ export interface CommunityPost {
   tags: string[];
   isPinned?: boolean;
   createdAt: string;
-  likes: string[]; // Danh sách mã căn hộ hoặc User ID thực tế đã bấm thích (100% không like ảo)
-  comments: PostComment[]; // Danh sách bình luận thực tế (100% không bình luận ảo)
+  likes: string[]; // Danh sách mã căn hộ thực tế đã bấm thích
+  comments: PostComment[]; // Danh sách bình luận thực tế
   // AI Attributes
   aiModeration: 'Clean' | 'Flagged';
   aiSentiment: number; // -1.0 to 1.0
   aiSentimentLabel: 'Tích cực' | 'Trung lập' | 'Góp ý' | 'Bức xúc';
   // Poll / Voting attributes
   poll?: {
-    deadline: string; // ISO date
+    deadline: string;
     isOwnerOnly: boolean;
     status: 'OPEN' | 'CLOSED';
     totalEligibleApartments: number;
     options: PollOption[];
-    voters: PollVoter[]; // Danh sách cử tri đã bỏ phiếu thực tế (100% không vote ảo)
+    voters: PollVoter[];
   };
 }
 
-const STORAGE_KEY = 'skyline_community_posts_clean_v3';
+const STORAGE_KEY = 'skyline_community_posts_real_v4';
 const EVENT_NAME = 'skyline_community_updated';
 
-// Default Official Building Announcements & Legal Polls (Sạch 100%, không like/vote/comment ảo)
-export const OFFICIAL_COMMUNITY_TOPICS: CommunityPost[] = [
-  {
-    id: 'post-bql-01',
-    code: 'TB-BQL-0826',
-    category: 'ANNOUNCEMENT',
-    authorName: 'Ban Quản Lý Chung Cư SKYLINE',
-    authorRole: 'ADMIN',
-    aptCode: 'BQL_OFFICE',
-    avatarUrl: 'https://data.nks.vn/storage/users/default.png',
-    title: 'Thông báo lịch bảo dưỡng định kỳ hệ thống thang máy Chung Cư BS-08',
-    content: 'Ban Quản lý xin thông báo kế hoạch kiểm tra kỹ thuật định kỳ thang máy số 02 tại sảnh BS-08 vào ngày 28/08/2026 từ 09:00 - 11:30. Kính mong Quý cư dân ưu tiên sử dụng thang máy số 01 và 03 trong thời gian bảo trì.',
-    tags: ['Thông báo BQL', 'Bảo trì', 'Thang máy', 'Tòa BS-08'],
-    isPinned: true,
-    createdAt: '2026-08-25T08:30:00',
-    likes: [],
-    comments: [],
-    aiModeration: 'Clean',
-    aiSentiment: 0.85,
-    aiSentimentLabel: 'Tích cực',
-  },
-  {
-    id: 'post-vote-01',
-    code: 'BQ-2026-01',
-    category: 'VOTING',
-    authorName: 'Ban Quản Trị & Kỹ Thuật Tòa Nhà',
-    authorRole: 'ADMIN',
-    aptCode: 'BQL_OFFICE',
-    avatarUrl: 'https://data.nks.vn/storage/users/default.png',
-    title: 'Biểu quyết Thông qua Phương án Nâng cấp Hệ thống Camera AI Đọc Biển Số Hầm B1 - B2',
-    content: 'Chiến dịch lấy ý kiến hợp pháp của các Chủ sở hữu căn hộ về việc trích Quỹ Bảo trì để trang bị camera AI LPR đọc biển số tự động tốc độ cao và mở rộng làn xe máy giờ cao điểm tại Hầm B1/B2 Tòa BS-07. Dự toán thực hiện: 150.000.000 VNĐ theo báo giá cạnh tranh minh bạch.',
-    tags: ['Biểu quyết', 'Quỹ bảo trì', 'Camera AI', 'Hầm xe B1/B2'],
-    isPinned: true,
-    createdAt: '2026-08-20T08:00:00',
-    likes: [],
-    comments: [],
-    aiModeration: 'Clean',
-    aiSentiment: 0.82,
-    aiSentimentLabel: 'Tích cực',
-    poll: {
-      deadline: '2026-10-30T23:59:59',
-      isOwnerOnly: true,
-      status: 'OPEN',
-      totalEligibleApartments: 250,
-      options: [
-        { id: 'opt-1', text: 'Đồng ý thông qua phương án nâng cấp (Dự toán 150 triệu VNĐ từ Quỹ Bảo trì)', votes: 0 },
-        { id: 'opt-2', text: 'Không đồng ý, giữ nguyên hiện trạng kiểm soát thẻ từ thủ công', votes: 0 },
-        { id: 'opt-3', text: 'Đồng ý nhưng yêu cầu điều chỉnh giảm dự toán xuống dưới 120 triệu VNĐ', votes: 0 },
-      ],
-      voters: [],
-    },
-  },
-  {
-    id: 'post-vote-02',
-    code: 'BQ-2026-02',
-    category: 'VOTING',
-    authorName: 'Bộ Phận Vận Hành Ban Quản Lý',
-    authorRole: 'ADMIN',
-    aptCode: 'BQL_OFFICE',
-    avatarUrl: 'https://data.nks.vn/storage/users/default.png',
-    title: 'Lấy ý kiến Điều chỉnh Giờ giấc Hoạt động Hồ Bơi Vô Cực & Phòng Gym đến 22:30',
-    content: 'Theo đề xuất của cư dân về việc tăng thời gian tập luyện và thư giãn buổi tối sau giờ làm việc, Ban Quản Lý xin ý kiến biểu quyết kéo dài giờ hoạt động tiện ích nội khu đến 22:30 hàng ngày. Chi phí chiếu sáng và vệ sinh đã được cân đối trong ngân sách dịch vụ.',
-    tags: ['Quy chế', 'Tiện ích', 'Hồ bơi', 'Gym'],
-    isPinned: false,
-    createdAt: '2026-09-01T08:00:00',
-    likes: [],
-    comments: [],
-    aiModeration: 'Clean',
-    aiSentiment: 0.78,
-    aiSentimentLabel: 'Tích cực',
-    poll: {
-      deadline: '2026-10-25T23:59:59',
-      isOwnerOnly: false,
-      status: 'OPEN',
-      totalEligibleApartments: 250,
-      options: [
-        { id: 'opt-2-1', text: 'Nhất trí kéo dài mở cửa đến 22:30 tất cả các ngày trong tuần', votes: 0 },
-        { id: 'opt-2-2', text: 'Chỉ kéo dài đến 22:30 vào các ngày cuối tuần (Thứ Sáu, Thứ Bảy, Chủ Nhật)', votes: 0 },
-        { id: 'opt-2-3', text: 'Giữ nguyên khung giờ đóng cửa lúc 22:00 để đảm bảo yên tĩnh cho cư dân các tầng thấp', votes: 0 },
-      ],
-      voters: [],
-    },
-  },
-];
+// Mặc định hoàn toàn sạch — 0 bài viết ảo, 0 bình luận ảo, 0 vote ảo
+export const OFFICIAL_COMMUNITY_TOPICS: CommunityPost[] = [];
 
 // Phân tích từ ngữ kiểm duyệt & cảm xúc cục bộ bằng AI
 export function analyzePostWithAi(text: string): {
@@ -183,20 +101,20 @@ export function analyzePostWithAi(text: string): {
 }
 
 /**
- * Lấy toàn bộ danh sách bài viết diễn đàn & biểu quyết
- * 100% dữ liệu thực tế: số vote luôn bằng số voter thực tế đã bầu.
+ * Lấy toàn bộ danh sách bài viết diễn đàn thực tế
+ * Không bao giờ tự động tạo bài viết giả / mock
  */
 export function getCommunityPosts(): CommunityPost[] {
-  if (typeof window === 'undefined') return OFFICIAL_COMMUNITY_TOPICS;
+  if (typeof window === 'undefined') return [];
   try {
-    // Tự động dọn dẹp các cache chứa dữ liệu ảo / mock cũ
+    // Dọn dẹp sạch toàn bộ các key cache mock dữ liệu cũ
     localStorage.removeItem('skyline_community_posts_v1');
     localStorage.removeItem('skyline_community_posts_v2');
+    localStorage.removeItem('skyline_community_posts_clean_v3');
 
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(OFFICIAL_COMMUNITY_TOPICS));
-      return OFFICIAL_COMMUNITY_TOPICS;
+      return [];
     }
 
     const parsed = JSON.parse(raw);
@@ -217,9 +135,9 @@ export function getCommunityPosts(): CommunityPost[] {
         };
       });
     }
-    return OFFICIAL_COMMUNITY_TOPICS;
+    return [];
   } catch {
-    return OFFICIAL_COMMUNITY_TOPICS;
+    return [];
   }
 }
 
@@ -377,13 +295,4 @@ export function deleteCommunityPost(postId: string): boolean {
   if (filtered.length === posts.length) return false;
   saveCommunityPosts(filtered);
   return true;
-}
-
-/**
- * Reset sạch toàn bộ diễn đàn về dữ liệu gốc Ban Quản Lý (Xóa toàn bộ bài rác/dữ liệu ảo)
- */
-export function resetCommunityToCleanData(): void {
-  if (typeof window === 'undefined') return;
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(OFFICIAL_COMMUNITY_TOPICS));
-  window.dispatchEvent(new CustomEvent(EVENT_NAME, { detail: OFFICIAL_COMMUNITY_TOPICS }));
 }

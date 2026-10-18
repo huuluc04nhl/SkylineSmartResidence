@@ -424,10 +424,29 @@ export default function SurveysVoting({ currentUser }: SurveysVotingProps) {
       {/* FEED LIST */}
       <div className="space-y-5">
         {filteredPosts.length === 0 ? (
-          <div className="p-12 text-center bg-[#0E131B] border border-[#C5A880]/20 space-y-3">
-            <HelpCircle className="w-10 h-10 text-gray-500 mx-auto" />
-            <div className="text-sm font-semibold text-gray-300">Không tìm thấy bài viết nào phù hợp</div>
-            <p className="text-xs text-gray-500">Hãy thử đổi bộ lọc hoặc bấm Đăng bài để chia sẻ câu chuyện đầu tiên với cư dân.</p>
+          <div className="p-12 text-center bg-[#0E131B] border border-[#C5A880]/20 space-y-4">
+            <div className="w-12 h-12 bg-[#141B24] border border-[#C5A880]/30 flex items-center justify-center mx-auto text-[#C5A880]">
+              <MessageSquareQuote className="w-6 h-6" />
+            </div>
+            <div className="space-y-1">
+              <div className="text-base font-serif font-bold text-white">
+                {posts.length === 0 ? 'Chưa Có Bài Viết Nào Trên Diễn Đàn' : 'Không Tìm Thấy Bài Viết Phù Hợp'}
+              </div>
+              <p className="text-xs text-gray-400 max-w-md mx-auto">
+                {posts.length === 0 
+                  ? 'Diễn đàn hiện tại hoàn toàn sạch dữ liệu. Hãy là người đầu tiên đăng bài chia sẻ, rao vặt hoặc tạo cuộc thăm dò ý kiến cho cộng đồng cư dân!'
+                  : 'Không có bài viết nào khớp với tiêu chí tìm kiếm hoặc bộ lọc hiện tại của bạn.'}
+              </p>
+            </div>
+            {posts.length === 0 && (
+              <button
+                onClick={() => setIsCreateModalOpen(true)}
+                className="px-5 py-2.5 bg-[#C5A880] hover:bg-white text-[#0A0E14] font-bold text-xs uppercase tracking-wider transition-colors inline-flex items-center gap-2 shadow"
+              >
+                <Plus className="w-4 h-4" />
+                <span>Đăng Bài Viết Đầu Tiên</span>
+              </button>
+            )}
           </div>
         ) : (
           filteredPosts.map(post => {
