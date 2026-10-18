@@ -240,7 +240,7 @@ export default function CccdOcrScannerModal({
         ]);
 
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 12000);
+        const timeoutId = setTimeout(() => controller.abort(), 25000);
 
         try {
           const aiRes = await fetch('/api/ai/ocr-cccd', {
@@ -273,7 +273,7 @@ export default function CccdOcrScannerModal({
               province: d.province || 'TP. Hồ Chí Minh',
               idDate: formatToDateInput(d.idDate || ''),
               idPlace: d.idPlace || 'Cục Cảnh sát QLHC về TTXH',
-              confidence: d.confidence || 95,
+              confidence: d.confidence || 98,
               rawText: `[THÔNG TIN THẺ CĂN CƯỚC]:\nSố CCCD: ${d.idNumber}\nHọ tên: ${d.fullName}`,
             };
 
@@ -287,47 +287,17 @@ export default function CccdOcrScannerModal({
             }, 500);
             return;
           } else {
-            // Ảnh chụp bị mờ/lóa: Vẫn tự động lưu ảnh và điền vào form hồ sơ để cư dân kiểm tra trực tiếp
-            const fallbackCard: OcrCccdResult = {
-              idNumber: (aiData?.data?.idNumber || '').replace(/\D/g, '').slice(0, 12),
-              fullName: (aiData?.data?.fullName || '').toUpperCase().trim(),
-              dob: formatToDateInput(aiData?.data?.dob || ''),
-              gender: (aiData?.data?.gender === '0' ? '0' : '1'),
-              pob: aiData?.data?.pob || '',
-              residence: aiData?.data?.residence || aiData?.data?.pob || '',
-              province: aiData?.data?.province || 'TP. Hồ Chí Minh',
-              idDate: formatToDateInput(aiData?.data?.idDate || ''),
-              idPlace: aiData?.data?.idPlace || 'Cục Cảnh sát QLHC về TTXH',
-              confidence: 60,
-              rawText: '',
-            };
+            // Khi ảnh chụp bị mờ/lóa không nhận dạng được chữ: Lưu lại ảnh chụp vào hồ sơ và mở bảng nhập nhanh
             setScanProgress(100);
-            setScanStatusText('✨ Đã lưu ảnh thẻ! Đang điền vào hồ sơ...');
+            setScanStatusText('✨ Đã lưu ảnh chụp 2 mặt! Quý cư dân vui lòng hỗ trợ điền nhanh thông tin:');
             setScanStage('COMPLETE');
-
-            onApplyOcrData(fallbackCard, frontImage, backImage);
-            setTimeout(() => {
-              onClose();
-            }, 500);
-            return;
+            setIsFlipped(false);
+            setErrorMessage('Ảnh chụp có thể bị lóa sáng hoặc nghiêng góc. Hệ thống đã lưu ảnh 2 mặt, Quý cư dân vui lòng hỗ trợ điền nhanh các ô bên dưới.');
+            ocrSucceeded = true;
           }
         } catch (fetchErr: any) {
-          const emptyCard: OcrCccdResult = {
-            idNumber: '',
-            fullName: '',
-            dob: '',
-            gender: '1',
-            pob: '',
-            residence: '',
-            province: 'TP. Hồ Chí Minh',
-            idDate: '',
-            idPlace: 'Cục Cảnh sát QLHC về TTXH',
-            confidence: 50,
-            rawText: '',
-          };
-          setOcrResult(emptyCard);
           setScanProgress(100);
-          setScanStatusText('✨ Đã lưu ảnh thẻ! Quý cư dân vui lòng kiểm tra và điền thông tin bên dưới:');
+          setScanStatusText('✨ Đã lưu ảnh chụp 2 mặt! Quý cư dân vui lòng hỗ trợ điền nhanh thông tin:');
           setScanStage('COMPLETE');
           setIsFlipped(false);
           setErrorMessage('Hệ thống đã nhận 2 mặt ảnh chụp. Quý cư dân vui lòng hỗ trợ điền nhanh thông tin vào các ô bên dưới.');

@@ -988,14 +988,17 @@ export async function askGeminiConcierge(
  * Extract clean base64 data and mime type from data URL
  */
 function parseDataUrl(dataUrl: string): { mimeType: string; base64: string } {
-  if (dataUrl.startsWith('data:')) {
-    const matches = dataUrl.match(/^data:(image\/[a-zA-Z+]+);base64,(.+)$/);
-    if (matches && matches.length === 3) {
-      return { mimeType: matches[1], base64: matches[2] };
+  if (dataUrl && dataUrl.startsWith('data:')) {
+    const commaIdx = dataUrl.indexOf(',');
+    if (commaIdx !== -1) {
+      const header = dataUrl.slice(0, commaIdx);
+      const base64 = dataUrl.slice(commaIdx + 1).replace(/\s+/g, '');
+      const mimeMatch = header.match(/^data:(image\/[a-zA-Z0-9.+_-]+)/i);
+      const mimeType = mimeMatch ? mimeMatch[1] : 'image/jpeg';
+      return { mimeType, base64 };
     }
   }
-  // Assume jpeg if raw base64
-  return { mimeType: 'image/jpeg', base64: dataUrl };
+  return { mimeType: 'image/jpeg', base64: (dataUrl || '').replace(/\s+/g, '') };
 }
 
 export interface GeminiOcrCccdResult {
@@ -1047,22 +1050,26 @@ LƯU Ý CỰC KỲ QUAN TRỌNG:
 
   if (frontImage) {
     const front = parseDataUrl(frontImage);
-    parts.push({
-      inlineData: {
-        mimeType: front.mimeType,
-        data: front.base64,
-      },
-    });
+    if (front.base64) {
+      parts.push({
+        inlineData: {
+          mimeType: front.mimeType,
+          data: front.base64,
+        },
+      });
+    }
   }
 
   if (backImage) {
     const back = parseDataUrl(backImage);
-    parts.push({
-      inlineData: {
-        mimeType: back.mimeType,
-        data: back.base64,
-      },
-    });
+    if (back.base64) {
+      parts.push({
+        inlineData: {
+          mimeType: back.mimeType,
+          data: back.base64,
+        },
+      });
+    }
   }
 
   const payload = {
@@ -1111,15 +1118,17 @@ LƯU Ý CỰC KỲ QUAN TRỌNG:
     };
   };
 
-  try {
-    return await tryModel(GEMINI_PRIMARY_MODEL);
-  } catch (err) {
-    console.warn(`Gemini Vision OCR with ${GEMINI_PRIMARY_MODEL} failed, falling back to ${GEMINI_FALLBACK_MODEL}:`, err);
+  const models = ['gemini-2.5-flash', 'gemini-flash-latest', 'gemini-2.5-flash-lite', 'gemini-flash-lite-latest'];
+  let lastError: any = null;
+
+  for (const model of models) {
     try {
-      return await tryModel(GEMINI_FALLBACK_MODEL);
-    } catch (errFallback) {
-      console.warn(`Gemini Vision OCR with ${GEMINI_FALLBACK_MODEL} failed, falling back to ${GEMINI_FAST_FALLBACK_MODEL}:`, errFallback);
-      return await tryModel(GEMINI_FAST_FALLBACK_MODEL);
+      return await tryModel(model);
+    } catch (err: any) {
+      lastError = err;
+      console.warn(`Gemini Vision OCR with ${model} failed, trying next model:`, err?.message);
     }
   }
+
+  throw lastError || new Error('All Gemini Vision models failed.');
 }

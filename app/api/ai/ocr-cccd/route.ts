@@ -84,7 +84,22 @@ export async function POST(req: NextRequest) {
       console.warn('QR parse on server failed:', qrErr);
     }
 
-    // 2. Nhận diện chữ trực tiếp trên ảnh thẻ qua Tesseract OCR
+    // 2. Nhận diện hình ảnh thẻ siêu chính xác qua Google Gemini Vision AI
+    try {
+      const { parseCccdWithGeminiVision } = await import('@/lib/geminiClient');
+      const visionResult = await parseCccdWithGeminiVision(frontImage, backImage);
+      if (visionResult && (visionResult.idNumber || visionResult.fullName)) {
+        return NextResponse.json({
+          success: true,
+          data: visionResult,
+          source: 'Google Gemini Vision AI (Dual-Side Verified)',
+        });
+      }
+    } catch (visionErr: any) {
+      console.warn('Gemini Vision OCR attempt failed, checking fallback:', visionErr?.message);
+    }
+
+    // 3. Fallback: Nhận diện chữ trực tiếp trên ảnh thẻ qua OCR dự phòng
     try {
       let worker;
       try {

@@ -369,14 +369,14 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
     const stdIdDate = formatToDateInput(ocrData.idDate || '');
     const stdIdPlace = ocrData.idPlace?.trim() || 'Cục Cảnh sát QLHC về TTXH';
 
-    setIdCardNumber(stdIdNumber);
-    setFullName(stdFullName);
-    setBirthday(stdDob);
-    setGender(stdGender);
-    setPob(stdPob);
-    setProvince(stdProvince);
-    setIdDate(stdIdDate);
-    setIdPlace(stdIdPlace);
+    if (stdIdNumber) setIdCardNumber(stdIdNumber);
+    if (stdFullName) setFullName(stdFullName);
+    if (stdDob) setBirthday(stdDob);
+    if (stdGender) setGender(stdGender);
+    if (stdPob) setPob(stdPob);
+    if (stdProvince) setProvince(stdProvince);
+    if (stdIdDate) setIdDate(stdIdDate);
+    if (stdIdPlace) setIdPlace(stdIdPlace);
 
     if (frontSrc) {
       setCccdImage(frontSrc);
