@@ -2033,11 +2033,11 @@ export default function FinanceBilling({ currentUser }: FinanceBillingProps) {
                         </div>
 
                         {/* Action buttons */}
-                        <div className="flex gap-2 justify-between pt-1 border-t border-[#222B35]">
+                        <div className="flex flex-col-reverse sm:flex-row gap-2 justify-between pt-1 border-t border-[#222B35]">
                           <button
                             type="button"
                             onClick={() => setVnpFlowStep('ATM_FORM')}
-                            className="px-3.5 py-2 border border-gray-700 text-gray-400 hover:text-white text-xs"
+                            className="w-full sm:w-auto px-4 py-2.5 border border-gray-700 text-gray-400 hover:text-white text-xs text-center font-semibold"
                           >
                             Quay Lại Sửa Thẻ
                           </button>
@@ -2045,7 +2045,7 @@ export default function FinanceBilling({ currentUser }: FinanceBillingProps) {
                           <button
                             type="button"
                             onClick={handleVerifyAtmOtp}
-                            className="px-6 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold uppercase tracking-wider transition-colors flex items-center gap-1.5 shadow-lg"
+                            className="w-full sm:w-auto px-6 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold uppercase tracking-wider transition-colors flex items-center justify-center gap-1.5 shadow-lg"
                           >
                             <Check className="w-4 h-4" /> Xác Nhận Trừ Tiền & Thanh Toán
                           </button>
@@ -2300,11 +2300,11 @@ export default function FinanceBilling({ currentUser }: FinanceBillingProps) {
                               className="w-48 mx-auto bg-[#161B22] border-2 border-[#A50064] p-2.5 text-center text-white text-base font-mono tracking-widest focus:outline-none"
                             />
 
-                            <div className="flex gap-2 justify-center pt-2">
+                            <div className="flex flex-col-reverse sm:flex-row gap-2 justify-center pt-2">
                               <button
                                 type="button"
                                 onClick={() => setMomoStep('PHONE')}
-                                className="px-3 py-1.5 border border-gray-700 text-xs text-gray-400"
+                                className="w-full sm:w-auto px-4 py-2.5 border border-gray-700 text-xs text-gray-400 hover:text-white text-center font-semibold"
                               >
                                 Quay Lại
                               </button>
@@ -2313,7 +2313,7 @@ export default function FinanceBilling({ currentUser }: FinanceBillingProps) {
                                 type="button"
                                 onClick={() => handlePayMomo('WALLET')}
                                 disabled={isProcessing}
-                                className="px-5 py-2 bg-[#A50064] hover:bg-[#850050] text-white text-xs font-bold uppercase tracking-wider transition-colors shadow flex items-center gap-1.5"
+                                className="w-full sm:w-auto px-5 py-2.5 bg-[#A50064] hover:bg-[#850050] text-white text-xs font-bold uppercase tracking-wider transition-colors shadow flex items-center justify-center gap-1.5"
                               >
                                 {isProcessing ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Check className="w-3.5 h-3.5" />}
                                 Xác Nhận Trừ Tiền Ví MoMo

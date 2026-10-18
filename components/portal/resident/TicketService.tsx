@@ -1417,20 +1417,14 @@ export default function TicketService({ currentUser }: TicketServiceProps) {
               />
             </div>
 
-            <div className="flex justify-end gap-3 pt-2">
-              <button
-                type="button"
-                onClick={() => setRatingModalTicket(null)}
-                className="px-4 py-2 border border-gray-700 text-xs text-gray-300"
-              >
-                Đóng
-              </button>
+            <div className="pt-2">
               <button
                 type="button"
                 onClick={handleSubmitRating}
-                className="px-5 py-2 bg-[#C5A880] hover:bg-white text-[#0D1117] text-xs font-bold uppercase tracking-wider transition-colors shadow-lg"
+                className="w-full py-3 bg-[#C5A880] hover:bg-white text-[#0D1117] text-xs font-bold uppercase tracking-wider transition-colors shadow-lg rounded-none cursor-pointer flex items-center justify-center gap-2 active:scale-95"
               >
-                Gửi Đánh Giá
+                <Star className="w-4 h-4 fill-current" />
+                <span>Gửi Đánh Giá Dịch Vụ</span>
               </button>
             </div>
           </div>

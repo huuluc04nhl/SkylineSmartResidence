@@ -675,17 +675,13 @@ export default function ApartmentDetailModal({
         {/* ============================================================= */}
         {/* 4. MODAL FOOTER                                               */}
         {/* ============================================================= */}
-        <div className="p-4 bg-[#121820] border-t border-[#222B35] flex items-center justify-between select-none">
+        <div className="p-3 sm:p-4 bg-[#121820] border-t border-[#222B35] flex items-center justify-between select-none">
           <div className="text-xs text-gray-400 font-mono">
             {t('Mã định danh:', 'ID Code:')} <strong className="text-white">SKYLINE-{unit.tower}-{unit.code}</strong>
           </div>
-          <button
-            type="button"
-            onClick={onClose}
-            className="px-5 py-2 bg-[#161B22] hover:bg-[#202936] text-gray-200 hover:text-white border border-[#2D3748] text-xs font-semibold uppercase tracking-wider transition-colors rounded-none"
-          >
-            {t('Đóng Hồ Sơ', 'Close Dossier')}
-          </button>
+          <div className="text-[11px] text-[#C5A880]/80 font-mono tracking-wider hidden sm:block">
+            {t('HỆ THỐNG QUẢN LÝ DÂN CƯ', 'RESIDENT MANAGEMENT SYSTEM')}
+          </div>
         </div>
 
       </div>

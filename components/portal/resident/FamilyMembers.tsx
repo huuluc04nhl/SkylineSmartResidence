@@ -1589,31 +1589,21 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
                   Hồ sơ sẽ được chuyển tới Ban Quản Lý để xác nhận ngay lập tức.
                 </div>
 
-                <div className="flex items-center gap-2.5 justify-end">
-                  <button
-                    type="button"
-                    onClick={handleCloseEkycModal}
-                    className="px-4 py-2.5 bg-transparent hover:bg-[#161D26] text-gray-400 hover:text-white rounded-none transition-colors cursor-pointer"
-                  >
-                    Đóng
-                  </button>
-
-                  <button
-                    type="submit"
-                    disabled={isSubmittingEkyc}
-                    className="px-5 py-2 bg-[#C5A880] hover:bg-white text-[#0D1117] font-bold text-xs uppercase tracking-wider rounded-none shadow transition-all flex items-center gap-1.5 cursor-pointer active:scale-95"
-                  >
-                    {isSubmittingEkyc ? (
-                      <>
-                        <RefreshCw className="w-4 h-4 animate-spin" /> Đang Gửi...
-                      </>
-                    ) : (
-                      <>
-                        <Check className="w-4 h-4" /> Gửi BQL Duyệt
-                      </>
-                    )}
-                  </button>
-                </div>
+                <button
+                  type="submit"
+                  disabled={isSubmittingEkyc}
+                  className="w-full sm:w-auto px-7 py-3 bg-[#C5A880] hover:bg-white text-[#0D1117] font-bold text-xs uppercase tracking-wider rounded-none shadow transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-95"
+                >
+                  {isSubmittingEkyc ? (
+                    <>
+                      <RefreshCw className="w-4 h-4 animate-spin" /> Đang Gửi...
+                    </>
+                  ) : (
+                    <>
+                      <Check className="w-4 h-4" /> Gửi BQL Duyệt Hồ Sơ
+                    </>
+                  )}
+                </button>
               </div>
 
             </form>
@@ -1957,26 +1947,26 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
                   </div>
                 </div>
 
-                <div className="pt-2 flex items-center justify-end gap-2 border-t border-[#222B35]">
+                <div className="pt-3 flex flex-col-reverse sm:flex-row items-center justify-end gap-2.5 sm:gap-3 border-t border-[#222B35]">
                   <button
                     type="button"
                     onClick={() => setShowAddModal(false)}
-                    className="px-3 py-1.5 bg-transparent hover:bg-gray-800 text-gray-300 text-xs font-semibold rounded-none cursor-pointer"
+                    className="w-full sm:w-auto px-4 py-2.5 bg-transparent hover:bg-gray-800 text-gray-300 text-xs font-semibold rounded-none cursor-pointer text-center"
                   >
                     Hủy
                   </button>
                   <button
                     type="submit"
                     disabled={isSubmitting || !directFullName.trim() || !directPhone.trim()}
-                    className="px-4 py-1.5 bg-[#C5A880] hover:bg-white text-[#0D1117] font-bold text-xs uppercase tracking-wider rounded-none shadow transition-colors flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+                    className="w-full sm:w-auto px-6 py-3 bg-[#C5A880] hover:bg-white text-[#0D1117] font-bold text-xs uppercase tracking-wider rounded-none shadow transition-colors flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 active:scale-95"
                   >
                     {isSubmitting ? (
                       <>
-                        <RefreshCw className="w-3.5 h-3.5 animate-spin" /> Đang Thêm...
+                        <RefreshCw className="w-4 h-4 animate-spin" /> Đang Thêm...
                       </>
                     ) : (
                       <>
-                        <Check className="w-3.5 h-3.5" /> Thêm Thành Viên
+                        <Check className="w-4 h-4" /> Thêm Thành Viên
                       </>
                     )}
                   </button>
@@ -2030,26 +2020,26 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
                   </div>
                 </div>
 
-                <div className="pt-2 flex justify-end gap-2 border-t border-[#222B35]">
+                <div className="pt-3 flex flex-col-reverse sm:flex-row items-center justify-end gap-2.5 sm:gap-3 border-t border-[#222B35]">
                   <button
                     type="button"
                     onClick={() => setShowAddModal(false)}
-                    className="px-3 py-1.5 bg-transparent hover:bg-[#161D26] text-gray-400 hover:text-white rounded-none transition-colors cursor-pointer"
+                    className="w-full sm:w-auto px-4 py-2.5 bg-transparent hover:bg-[#161D26] text-gray-400 hover:text-white rounded-none transition-colors cursor-pointer text-center text-xs"
                   >
                     Hủy
                   </button>
                   <button
                     type="submit"
                     disabled={isSubmitting}
-                    className="px-4 py-1.5 bg-[#C5A880] hover:bg-white text-[#0D1117] font-bold text-xs uppercase tracking-wider rounded-none shadow transition-colors flex items-center gap-1.5 cursor-pointer active:scale-95"
+                    className="w-full sm:w-auto px-6 py-3 bg-[#C5A880] hover:bg-white text-[#0D1117] font-bold text-xs uppercase tracking-wider rounded-none shadow transition-colors flex items-center justify-center gap-2 cursor-pointer active:scale-95"
                   >
                     {isSubmitting ? (
                       <>
-                        <RefreshCw className="w-3.5 h-3.5 animate-spin" /> Đang Xử Lý...
+                        <RefreshCw className="w-4 h-4 animate-spin" /> Đang Xử Lý...
                       </>
                     ) : (
                       <>
-                        <Check className="w-3.5 h-3.5" /> Thêm Thành Viên
+                        <Check className="w-4 h-4" /> Thêm Thành Viên
                       </>
                     )}
                   </button>

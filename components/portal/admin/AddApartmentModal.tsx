@@ -732,25 +732,25 @@ export default function AddApartmentModal({
           {/* ============================================================= */}
           {/* 4. CHÂN FORM & NÚT LƯU                                       */}
           {/* ============================================================= */}
-          <div className="pt-3 border-t border-[#222B35] flex items-center justify-between gap-3">
-            <div className="text-gray-400 text-[11px]">
+          <div className="pt-3 border-t border-[#222B35] flex flex-col-reverse sm:flex-row sm:items-center justify-between gap-3">
+            <div className="text-gray-400 text-[11px] text-center sm:text-left">
               Đang xem mục: <span className="text-[#C5A880] font-bold">
                 {activeTab === 'ARCHITECTURE' ? '1. Kiến Trúc & Vị Trí' : activeTab === 'IOT_TECHNICAL' ? '2. Hạ Tầng IoT & PCCC' : '3. Tài Chính & Pháp Lý'}
               </span>
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center gap-2">
               <button
                 type="button"
                 onClick={onClose}
-                className="px-4 py-2 bg-[#161F2C] hover:bg-[#222E3E] text-gray-300 hover:text-white border border-[#2D3748] font-semibold transition-colors"
+                className="w-full sm:w-auto px-4 py-2.5 bg-[#161F2C] hover:bg-[#222E3E] text-gray-300 hover:text-white border border-[#2D3748] font-semibold transition-colors text-center"
               >
                 Hủy Bỏ
               </button>
 
               <button
                 type="submit"
-                className="px-6 py-2 bg-[#C5A880] hover:bg-white text-[#0D1117] font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 shadow-lg"
+                className="w-full sm:w-auto px-6 py-2.5 bg-[#C5A880] hover:bg-white text-[#0D1117] font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-1.5 shadow-lg"
               >
                 <Plus className="w-4 h-4" />
                 <span>Lưu Căn Hộ Mới</span>

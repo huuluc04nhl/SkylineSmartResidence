@@ -1072,7 +1072,7 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
                 <button
                   type="button"
                   onClick={() => setIsOcrModalOpen(true)}
-                  className="flex-1 sm:flex-initial h-8 px-3 bg-[#1E2631] hover:bg-[#C5A880] hover:text-[#0D1117] border border-[#C5A880] text-[#C5A880] text-[11px] sm:text-xs font-bold uppercase tracking-wider rounded-none flex items-center justify-center gap-1.5 transition-all shadow cursor-pointer"
+                  className="flex-1 sm:flex-initial h-9 px-3.5 bg-[#1E2631] hover:bg-[#C5A880] hover:text-[#0D1117] border border-[#C5A880] text-[#C5A880] text-[11px] sm:text-xs font-bold uppercase tracking-wider rounded-none flex items-center justify-center gap-1.5 transition-all shadow cursor-pointer active:scale-95"
                 >
                   <Scan className="w-3.5 h-3.5 shrink-0" />
                   <span>{cccdImage ? 'Đổi Ảnh Thẻ' : 'Chụp / Tải Ảnh Thẻ'}</span>
@@ -1082,7 +1082,7 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
                   <button
                     type="button"
                     onClick={() => setIsCardViewerOpen(true)}
-                    className="flex-1 sm:flex-initial h-8 px-3 bg-[#161B22] hover:bg-[#1C2533] border border-gray-700 text-gray-300 hover:text-white text-[11px] sm:text-xs font-medium rounded-none flex items-center justify-center gap-1.5 transition-colors cursor-pointer shrink-0"
+                    className="flex-1 sm:flex-initial h-9 px-3.5 bg-[#161B22] hover:bg-[#1C2533] border border-gray-700 text-gray-300 hover:text-white text-[11px] sm:text-xs font-medium rounded-none flex items-center justify-center gap-1.5 transition-colors cursor-pointer shrink-0 active:scale-95"
                   >
                     <Eye className="w-3.5 h-3.5 text-[#C5A880] shrink-0" />
                     <span>Xem Thẻ</span>
@@ -1137,7 +1137,7 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
               </div>
             </div>
 
-            {/* 2 Vị trí ảnh CCCD */}
+            {/* 2 Vị trí ảnh CCCD: Tỉ lệ chuẩn 85.6mm x 54mm, không bị méo lệch trên mobile */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 pt-1">
               {/* Mặt trước */}
               <div className="p-2.5 sm:p-3 bg-[#0E131B] border border-[#263140] rounded-none space-y-2">
@@ -1147,9 +1147,9 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
                   </span>
                   <span className="text-[10px] text-cyan-300 font-mono">Vị Trí 1</span>
                 </div>
-                <div className="relative w-full h-32 sm:h-40 rounded-none overflow-hidden border border-gray-800 bg-[#0A0E14] flex items-center justify-center">
+                <div className="relative w-full aspect-[85.6/54] rounded-none overflow-hidden border border-gray-800 bg-[#0A0E14] flex items-center justify-center">
                   {cccdImage ? (
-                    <img src={cccdImage} alt="CCCD Mặt Trước" className="w-full h-full object-cover" />
+                    <img src={cccdImage} alt="CCCD Mặt Trước" className="w-full h-full object-contain sm:object-cover" />
                   ) : (
                     <div className="flex flex-col items-center justify-center text-center p-3 text-gray-500 space-y-1">
                       <CreditCard className="w-6 h-6 text-cyan-500/50" />
@@ -1168,9 +1168,9 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
                   </span>
                   <span className="text-[10px] text-amber-300 font-mono">Vị Trí 2</span>
                 </div>
-                <div className="relative w-full h-32 sm:h-40 rounded-none overflow-hidden border border-gray-800 bg-[#0A0E14] flex items-center justify-center">
+                <div className="relative w-full aspect-[85.6/54] rounded-none overflow-hidden border border-gray-800 bg-[#0A0E14] flex items-center justify-center">
                   {cccdBackImage ? (
-                    <img src={cccdBackImage} alt="CCCD Mặt Sau" className="w-full h-full object-cover" />
+                    <img src={cccdBackImage} alt="CCCD Mặt Sau" className="w-full h-full object-contain sm:object-cover" />
                   ) : (
                     <div className="flex flex-col items-center justify-center text-center p-3 text-gray-500 space-y-1">
                       <CreditCard className="w-6 h-6 text-amber-500/50" />

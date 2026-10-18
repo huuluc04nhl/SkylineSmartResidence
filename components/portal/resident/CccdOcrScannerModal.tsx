@@ -419,8 +419,8 @@ export default function CccdOcrScannerModal({
             </button>
           </div>
 
-          {/* 3D Perspective Flip Box */}
-          <div className="relative w-full max-w-lg mx-auto h-52 sm:h-72 [perspective:1400px]">
+          {/* 3D Perspective Flip Box - Exact Physical Card Aspect Ratio 85.6mm x 54mm */}
+          <div className="relative w-full max-w-sm sm:max-w-md mx-auto aspect-[85.6/54] [perspective:1400px]">
             <div
               className={`w-full h-full relative transition-transform duration-700 [transform-style:preserve-3d] ${
                 isFlipped ? '[transform:rotateY(180deg)]' : '[transform:rotateY(0deg)]'
@@ -429,12 +429,12 @@ export default function CccdOcrScannerModal({
               {/* ========================================================= */}
               {/* FACE 1: FRONT SIDE (MẶT TRƯỚC)                            */}
               {/* ========================================================= */}
-              <div className="absolute inset-0 w-full h-full [backface-visibility:hidden] rounded-none overflow-hidden border-2 border-[#C5A880]/80 bg-gradient-to-br from-[#1A232E] via-[#121820] to-[#0A0E14] shadow-2xl p-4 flex flex-col justify-between">
+              <div className="absolute inset-0 w-full h-full [backface-visibility:hidden] [-webkit-backface-visibility:hidden] rounded-none overflow-hidden border-2 border-[#C5A880]/80 bg-gradient-to-br from-[#1A232E] via-[#121820] to-[#0A0E14] shadow-2xl p-2.5 sm:p-4 flex flex-col justify-between">
                 {/* Decorative chip header */}
-                <div className="flex items-center justify-between text-xs border-b border-gray-800 pb-2">
-                  <div className="flex items-center gap-2">
-                    <CreditCard className="w-4 h-4 text-[#C5A880]" />
-                    <span className="text-[#C5A880] font-bold uppercase tracking-wider text-[11px]">
+                <div className="flex items-center justify-between text-xs border-b border-gray-800 pb-1.5">
+                  <div className="flex items-center gap-1.5 sm:gap-2">
+                    <CreditCard className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#C5A880]" />
+                    <span className="text-[#C5A880] font-bold uppercase tracking-wider text-[10px] sm:text-[11px]">
                       {t('Mặt Trước • Căn Cước Công Dân')}
                     </span>
                   </div>
@@ -448,14 +448,14 @@ export default function CccdOcrScannerModal({
                 {/* Front Image Content */}
                 <div 
                   onClick={() => frontInputRef.current?.click()}
-                  className="flex-1 my-2 bg-black/50 border border-dashed border-gray-700 hover:border-[#C5A880] rounded-none overflow-hidden relative group cursor-pointer flex items-center justify-center"
+                  className="flex-1 my-1 sm:my-2 bg-black/60 border border-dashed border-gray-700 hover:border-[#C5A880] rounded-none overflow-hidden relative group cursor-pointer flex items-center justify-center"
                 >
                   {frontImage ? (
                     <>
                       <img
                         src={frontImage}
                         alt="CCCD Front"
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                        className="w-full h-full object-contain sm:object-cover group-hover:scale-105 transition-transform"
                       />
                       {/* Laser scanning beam */}
                       {isScanning && scanStage === 'SCANNING_FRONT' && (
@@ -466,16 +466,16 @@ export default function CccdOcrScannerModal({
                       </div>
                     </>
                   ) : (
-                    <div className="text-center space-y-2 text-gray-400 p-4">
-                      <Camera className="w-10 h-10 mx-auto text-gray-500 group-hover:text-[#C5A880] transition-colors" />
-                      <div className="text-xs font-semibold text-white">{t('Bấm để tải lên Mặt Trước CCCD')}</div>
-                      <div className="text-[10px] text-gray-500">{t('Chứa ảnh chân dung, 12 số CCCD, Họ tên, Ngày sinh')}</div>
+                    <div className="text-center space-y-1.5 text-gray-400 p-2 sm:p-4">
+                      <Camera className="w-7 h-7 sm:w-10 sm:h-10 mx-auto text-gray-500 group-hover:text-[#C5A880] transition-colors" />
+                      <div className="text-[11px] sm:text-xs font-semibold text-white">{t('Bấm để tải lên Mặt Trước CCCD')}</div>
+                      <div className="text-[9px] sm:text-[10px] text-gray-500">{t('Chứa ảnh chân dung, 12 số CCCD, Họ tên, Ngày sinh')}</div>
                     </div>
                   )}
                 </div>
 
                 {/* Bottom Bar on Front Face */}
-                <div className="flex items-center justify-between text-[11px]">
+                <div className="flex items-center justify-between text-[10px] sm:text-[11px]">
                   <button
                     type="button"
                     onClick={() => frontInputRef.current?.click()}
@@ -498,12 +498,12 @@ export default function CccdOcrScannerModal({
               {/* ========================================================= */}
               {/* FACE 2: BACK SIDE (MẶT SAU)                              */}
               {/* ========================================================= */}
-              <div className="absolute inset-0 w-full h-full [backface-visibility:hidden] [transform:rotateY(180deg)] rounded-none overflow-hidden border-2 border-cyan-500/80 bg-gradient-to-br from-[#121E2A] via-[#101820] to-[#091018] shadow-2xl p-4 flex flex-col justify-between">
+              <div className="absolute inset-0 w-full h-full [backface-visibility:hidden] [-webkit-backface-visibility:hidden] [transform:rotateY(180deg)] rounded-none overflow-hidden border-2 border-cyan-500/80 bg-gradient-to-br from-[#121E2A] via-[#101820] to-[#091018] shadow-2xl p-2.5 sm:p-4 flex flex-col justify-between">
                 {/* Decorative chip header */}
-                <div className="flex items-center justify-between text-xs border-b border-gray-800 pb-2">
-                  <div className="flex items-center gap-2">
-                    <Layers className="w-4 h-4 text-cyan-400" />
-                    <span className="text-cyan-400 font-bold uppercase tracking-wider text-[11px]">
+                <div className="flex items-center justify-between text-xs border-b border-gray-800 pb-1.5">
+                  <div className="flex items-center gap-1.5 sm:gap-2">
+                    <Layers className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-cyan-400" />
+                    <span className="text-cyan-400 font-bold uppercase tracking-wider text-[10px] sm:text-[11px]">
                       {t('Mặt Sau • Ngày Cấp & Nơi Cấp')}
                     </span>
                   </div>
@@ -517,14 +517,14 @@ export default function CccdOcrScannerModal({
                 {/* Back Image Content */}
                 <div 
                   onClick={() => backInputRef.current?.click()}
-                  className="flex-1 my-2 bg-black/50 border border-dashed border-gray-700 hover:border-cyan-400 rounded-none overflow-hidden relative group cursor-pointer flex items-center justify-center"
+                  className="flex-1 my-1 sm:my-2 bg-black/60 border border-dashed border-gray-700 hover:border-cyan-400 rounded-none overflow-hidden relative group cursor-pointer flex items-center justify-center"
                 >
                   {backImage ? (
                     <>
                       <img
                         src={backImage}
                         alt="CCCD Back"
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                        className="w-full h-full object-contain sm:object-cover group-hover:scale-105 transition-transform"
                       />
                       {/* Laser scanning beam */}
                       {isScanning && scanStage === 'SCANNING_BACK' && (
@@ -535,16 +535,16 @@ export default function CccdOcrScannerModal({
                       </div>
                     </>
                   ) : (
-                    <div className="text-center space-y-2 text-gray-400 p-4">
-                      <Camera className="w-10 h-10 mx-auto text-gray-500 group-hover:text-cyan-400 transition-colors" />
-                      <div className="text-xs font-semibold text-white">{t('Bấm để tải lên Mặt Sau CCCD')}</div>
-                      <div className="text-[10px] text-gray-500">{t('Bao gồm Ngày cấp và Nơi cấp thẻ')}</div>
+                    <div className="text-center space-y-1.5 text-gray-400 p-2 sm:p-4">
+                      <Camera className="w-7 h-7 sm:w-10 sm:h-10 mx-auto text-gray-500 group-hover:text-cyan-400 transition-colors" />
+                      <div className="text-[11px] sm:text-xs font-semibold text-white">{t('Bấm để tải lên Mặt Sau CCCD')}</div>
+                      <div className="text-[9px] sm:text-[10px] text-gray-500">{t('Bao gồm Ngày cấp và Nơi cấp thẻ')}</div>
                     </div>
                   )}
                 </div>
 
                 {/* Bottom Bar on Back Face */}
-                <div className="flex items-center justify-between text-[11px]">
+                <div className="flex items-center justify-between text-[10px] sm:text-[11px]">
                   <button
                     type="button"
                     onClick={() => backInputRef.current?.click()}
@@ -603,10 +603,10 @@ export default function CccdOcrScannerModal({
               type="button"
               onClick={handleStartAutoFlipOcr}
               disabled={isScanning || !hasBothImages}
-              className={`px-6 py-2.5 text-xs font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-2 rounded-none shadow-lg ${
+              className={`w-full sm:w-auto px-6 py-3 text-xs font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-2 rounded-none shadow-lg ${
                 isScanning || !hasBothImages
                   ? 'bg-gray-800 text-gray-500 cursor-not-allowed'
-                  : 'bg-gradient-to-r from-[#C5A880] to-amber-400 hover:from-white hover:to-white text-[#0D1117]'
+                  : 'bg-gradient-to-r from-[#C5A880] to-amber-400 hover:from-white hover:to-white text-[#0D1117] cursor-pointer'
               }`}
             >
               {isScanning ? (
@@ -639,7 +639,7 @@ export default function CccdOcrScannerModal({
         {/* EXTRACTED REAL DATA TABLE (EDITABLE BEFORE APPLYING)          */}
         {/* ------------------------------------------------------------- */}
         {ocrResult && (
-          <div className="p-5 bg-gradient-to-r from-[#121820] to-[#161D26] border border-emerald-500/80 space-y-4 rounded-none animate-fadeIn shadow-2xl">
+          <div className="p-4 sm:p-5 bg-gradient-to-r from-[#121820] to-[#161D26] border border-emerald-500/80 space-y-4 rounded-none animate-fadeIn shadow-2xl">
             <div className="flex items-center justify-between border-b border-emerald-500/30 pb-3">
               <div className="flex items-center gap-2 text-emerald-400 font-bold text-xs uppercase tracking-wider">
                 <CheckCircle2 className="w-4 h-4" /> {t('Thông Tin Đọc Được Từ Thẻ Căn Cước')}
@@ -726,42 +726,34 @@ export default function CccdOcrScannerModal({
                 />
               </div>
             </div>
+
+            {/* Action Bar when data is ready */}
+            <div className="flex justify-end pt-2">
+              <button
+                type="button"
+                onClick={handleApply}
+                disabled={isSyncingApi}
+                className={`w-full sm:w-auto px-8 py-3 text-xs font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-2 rounded-none shadow-xl cursor-pointer ${
+                  isSyncingApi
+                    ? 'bg-gray-800 text-gray-500 cursor-not-allowed'
+                    : 'bg-[#C5A880] hover:bg-white text-[#0D1117]'
+                }`}
+              >
+                {isSyncingApi ? (
+                  <>
+                    <RefreshCw className="w-4 h-4 animate-spin text-[#0D1117]" />
+                    <span>{t('Đang Lưu Thông Tin...')}</span>
+                  </>
+                ) : (
+                  <>
+                    <CheckCircle2 className="w-4 h-4" />
+                    <span>{t('Xác Nhận & Lưu Vào Hồ Sơ')}</span>
+                  </>
+                )}
+              </button>
+            </div>
           </div>
         )}
-
-        {/* Modal Actions */}
-        <div className="flex flex-col-reverse sm:flex-row justify-end gap-2.5 sm:gap-3 pt-4 border-t border-[#222B35]">
-          <button
-            type="button"
-            onClick={onClose}
-            className="w-full sm:w-auto px-5 py-3 sm:py-2.5 bg-gray-800 text-gray-300 hover:text-white text-xs font-semibold rounded-none text-center"
-          >
-            {t('Đóng')}
-          </button>
-
-          <button
-            type="button"
-            onClick={handleApply}
-            disabled={!ocrResult || isSyncingApi}
-            className={`w-full sm:w-auto px-6 py-3 sm:py-2.5 text-xs font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-2 rounded-none shadow-xl ${
-              !ocrResult || isSyncingApi
-                ? 'bg-gray-800 text-gray-500 cursor-not-allowed'
-                : 'bg-[#C5A880] hover:bg-white text-[#0D1117]'
-            }`}
-          >
-            {isSyncingApi ? (
-              <>
-                <RefreshCw className="w-4 h-4 animate-spin text-[#0D1117]" />
-                <span>{t('Đang Lưu Thông Tin...')}</span>
-              </>
-            ) : (
-              <>
-                <CheckCircle2 className="w-4 h-4" />
-                <span>{t('Xác Nhận & Lưu Vào Hồ Sơ')}</span>
-              </>
-            )}
-          </button>
-        </div>
       </div>
     </div>
   );

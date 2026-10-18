@@ -679,31 +679,21 @@ export default function AvatarEditorModal({
         </div>
 
         {/* Modal Footer */}
-        <div className="px-6 py-4 bg-[#161D26] border-t border-[#222B35] flex items-center justify-between">
+        <div className="px-4 sm:px-6 py-3.5 bg-[#161D26] border-t border-[#222B35] flex flex-col sm:flex-row items-center justify-between gap-3">
           <div className="flex items-center gap-2 text-[11px] text-gray-400">
-            <ShieldCheck className="w-4 h-4 text-emerald-400" />
-            <span>Đồng bộ tức thì với Cổng ra vào tự động, Cổng bảo vệ & Căn hộ thông minh</span>
+            <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />
+            <span className="truncate">Đồng bộ tức thì với Cổng ra vào tự động & Căn hộ thông minh</span>
           </div>
 
-          <div className="flex items-center gap-3">
-            <button
-              type="button"
-              onClick={onClose}
-              className="px-5 py-2.5 bg-[#1C2533] hover:bg-[#222B35] text-gray-300 text-xs font-bold rounded-lg border border-gray-700 transition-colors"
-            >
-              Đóng
-            </button>
-
-            <button
-              type="button"
-              disabled={isSaving || !sourceImage}
-              onClick={handleApplyAndSave}
-              className="px-6 py-2.5 bg-[#C5A880] hover:bg-white text-[#0D1117] text-xs font-bold uppercase tracking-wider rounded-lg shadow-xl flex items-center gap-2 transition-all disabled:opacity-50"
-            >
-              {isSaving ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4 stroke-[3]" />}
-              {isSaving ? 'Đang Lưu...' : 'Cắt & Lưu Ảnh Đại Diện'}
-            </button>
-          </div>
+          <button
+            type="button"
+            disabled={isSaving || !sourceImage}
+            onClick={handleApplyAndSave}
+            className="w-full sm:w-auto px-7 py-3 bg-[#C5A880] hover:bg-white text-[#0D1117] text-xs font-bold uppercase tracking-wider rounded-none shadow-xl flex items-center justify-center gap-2 transition-all disabled:opacity-50 cursor-pointer active:scale-95"
+          >
+            {isSaving ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4 stroke-[3]" />}
+            <span>{isSaving ? 'Đang Lưu...' : 'Cắt & Lưu Ảnh Đại Diện'}</span>
+          </button>
         </div>
       </div>
     </div>

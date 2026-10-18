@@ -146,13 +146,13 @@ export default function CccdCardViewer({
         </div>
 
         {/* Toolbar & Side Switcher */}
-        <div className="flex flex-wrap items-center justify-between gap-3 bg-[#121820] p-3 border border-[#222B35] rounded-none text-xs">
+        <div className="flex flex-wrap items-center justify-between gap-2.5 bg-[#121820] p-2.5 sm:p-3 border border-[#222B35] rounded-none text-xs">
           {/* Side Tabs */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 w-full sm:w-auto">
             <button
               type="button"
               onClick={() => { setActiveSide('FRONT'); handleReset(); }}
-              className={`px-4 py-2 rounded-none font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 ${
+              className={`flex-1 sm:flex-initial px-3.5 py-2 rounded-none font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-1.5 cursor-pointer text-xs ${
                 activeSide === 'FRONT'
                   ? 'bg-[#C5A880] text-[#0D1117] shadow-lg'
                   : 'bg-[#161B22] text-gray-300 hover:text-white border border-[#2D3748]'
@@ -169,7 +169,7 @@ export default function CccdCardViewer({
             <button
               type="button"
               onClick={() => { setActiveSide('BACK'); handleReset(); }}
-              className={`px-4 py-2 rounded-none font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 ${
+              className={`flex-1 sm:flex-initial px-3.5 py-2 rounded-none font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-1.5 cursor-pointer text-xs ${
                 activeSide === 'BACK'
                   ? 'bg-[#C5A880] text-[#0D1117] shadow-lg'
                   : 'bg-[#161B22] text-gray-300 hover:text-white border border-[#2D3748]'
@@ -185,40 +185,42 @@ export default function CccdCardViewer({
           </div>
 
           {/* Inspection Tools */}
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              onClick={handleZoomOut}
-              disabled={!hasImage}
-              className="p-2 bg-[#161B22] hover:bg-[#1C2533] border border-[#2D3748] rounded-none text-gray-300 hover:text-white disabled:opacity-40 disabled:cursor-not-allowed"
-              title={t('Thu nhỏ', 'Zoom out')}
-            >
-              <ZoomOut className="w-4 h-4" />
-            </button>
+          <div className="flex items-center justify-between sm:justify-end gap-2 w-full sm:w-auto">
+            <div className="flex items-center gap-1.5">
+              <button
+                type="button"
+                onClick={handleZoomOut}
+                disabled={!hasImage}
+                className="p-2 bg-[#161B22] hover:bg-[#1C2533] border border-[#2D3748] rounded-none text-gray-300 hover:text-white disabled:opacity-40 disabled:cursor-not-allowed"
+                title={t('Thu nhỏ', 'Zoom out')}
+              >
+                <ZoomOut className="w-4 h-4" />
+              </button>
 
-            <span className="font-mono text-gray-400 text-xs px-1">
-              {Math.round(zoomLevel * 100)}%
-            </span>
+              <span className="font-mono text-gray-400 text-xs px-1 min-w-[42px] text-center">
+                {Math.round(zoomLevel * 100)}%
+              </span>
 
-            <button
-              type="button"
-              onClick={handleZoomIn}
-              disabled={!hasImage}
-              className="p-2 bg-[#161B22] hover:bg-[#1C2533] border border-[#2D3748] rounded-none text-gray-300 hover:text-white disabled:opacity-40 disabled:cursor-not-allowed"
-              title={t('Phóng to', 'Zoom in')}
-            >
-              <ZoomIn className="w-4 h-4" />
-            </button>
+              <button
+                type="button"
+                onClick={handleZoomIn}
+                disabled={!hasImage}
+                className="p-2 bg-[#161B22] hover:bg-[#1C2533] border border-[#2D3748] rounded-none text-gray-300 hover:text-white disabled:opacity-40 disabled:cursor-not-allowed"
+                title={t('Phóng to', 'Zoom in')}
+              >
+                <ZoomIn className="w-4 h-4" />
+              </button>
 
-            <button
-              type="button"
-              onClick={handleRotate}
-              disabled={!hasImage}
-              className="p-2 bg-[#161B22] hover:bg-[#1C2533] border border-[#2D3748] rounded-none text-gray-300 hover:text-white disabled:opacity-40 disabled:cursor-not-allowed"
-              title={t('Xoay 90 độ', 'Rotate 90°')}
-            >
-              <RotateCw className="w-4 h-4" />
-            </button>
+              <button
+                type="button"
+                onClick={handleRotate}
+                disabled={!hasImage}
+                className="p-2 bg-[#161B22] hover:bg-[#1C2533] border border-[#2D3748] rounded-none text-gray-300 hover:text-white disabled:opacity-40 disabled:cursor-not-allowed"
+                title={t('Xoay 90 độ', 'Rotate 90°')}
+              >
+                <RotateCw className="w-4 h-4" />
+              </button>
+            </div>
 
             {allowUpload && (
               <button
@@ -227,10 +229,10 @@ export default function CccdCardViewer({
                   if (activeSide === 'FRONT') frontInputRef.current?.click();
                   else backInputRef.current?.click();
                 }}
-                className="px-3 py-2 bg-[#1C2533] hover:bg-[#C5A880] hover:text-[#0D1117] text-[#C5A880] border border-[#C5A880] rounded-none font-bold flex items-center gap-1.5 transition-all shadow"
+                className="px-3 py-2 bg-[#1C2533] hover:bg-[#C5A880] hover:text-[#0D1117] text-[#C5A880] border border-[#C5A880] rounded-none font-bold flex items-center gap-1.5 transition-all shadow text-xs"
               >
                 <Upload className="w-3.5 h-3.5" />
-                <span>{t('Tải Ảnh Chụp Thật', 'Upload Actual Photo')}</span>
+                <span>{t('Tải Ảnh Thật', 'Upload Photo')}</span>
               </button>
             )}
 
@@ -252,11 +254,11 @@ export default function CccdCardViewer({
           </div>
         </div>
 
-        {/* Viewport Area: Strictly Displaying Actual Photo File */}
-        <div className="relative w-full h-80 sm:h-96 bg-[#070A0E] border border-[#222B35] rounded-none flex items-center justify-center overflow-hidden shadow-inner">
+        {/* Viewport Area: Exact Card Proportions (85.6mm x 54mm) */}
+        <div className="relative w-full aspect-[85.6/54] max-h-[50vh] sm:max-h-none sm:h-96 bg-[#070A0E] border border-[#222B35] rounded-none flex items-center justify-center overflow-hidden shadow-inner mx-auto">
           {hasImage ? (
             <div 
-              className="transition-transform duration-200 ease-out max-w-full max-h-full flex items-center justify-center p-3"
+              className="transition-transform duration-200 ease-out max-w-full max-h-full flex items-center justify-center p-2 sm:p-3"
               style={{
                 transform: `scale(${zoomLevel}) rotate(${rotation}deg)`,
               }}
@@ -264,21 +266,21 @@ export default function CccdCardViewer({
               <img
                 src={activeImage}
                 alt={t('Ảnh chụp thật CCCD', 'Actual ID Card Photo')}
-                className="max-h-72 sm:max-h-84 w-auto max-w-full object-contain rounded-none shadow-2xl border border-gray-700"
+                className="max-h-64 sm:max-h-84 w-auto max-w-full object-contain rounded-none shadow-2xl border border-gray-700"
               />
             </div>
           ) : (
             /* Honest State: No Photo Uploaded Yet */
-            <div className="text-center p-8 space-y-3">
-              <div className="w-16 h-16 rounded-none bg-[#121820] border border-gray-700 flex items-center justify-center mx-auto text-gray-500">
-                <CreditCard className="w-8 h-8 text-gray-600" />
+            <div className="text-center p-4 sm:p-8 space-y-2.5">
+              <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-none bg-[#121820] border border-gray-700 flex items-center justify-center mx-auto text-gray-500">
+                <CreditCard className="w-6 h-6 sm:w-8 sm:h-8 text-gray-600" />
               </div>
               <div className="space-y-1">
-                <h4 className="text-white font-bold text-sm">
+                <h4 className="text-white font-bold text-xs sm:text-sm">
                   {t('Chưa Có Ảnh Chụp', 'No Photo Uploaded Yet')} ({activeSide === 'FRONT' ? t('Mặt Trước', 'Front Side') : t('Mặt Sau', 'Back Side')})
                 </h4>
-                <p className="text-xs text-gray-400 max-w-md mx-auto">
-                  {t('Cư dân chưa tải lên ảnh chụp thật cho mặt này của thẻ Căn cước công dân. Hệ thống tuyệt đối không tự tạo ảnh giả mạo.', 'Resident has not uploaded the actual photo for this side of the ID card. The system strictly does not synthesize fake images.')}
+                <p className="text-[11px] sm:text-xs text-gray-400 max-w-md mx-auto line-clamp-2 sm:line-clamp-none">
+                  {t('Cư dân chưa tải lên ảnh chụp thật cho mặt này của thẻ Căn cước công dân.', 'Resident has not uploaded the actual photo for this side of the ID card.')}
                 </p>
               </div>
               {allowUpload && (
@@ -290,27 +292,22 @@ export default function CccdCardViewer({
                   }}
                   className="px-4 py-2 bg-[#C5A880] hover:bg-white text-[#0D1117] font-bold text-xs uppercase tracking-wider rounded-none transition-all shadow"
                 >
-                  {t('Tải Ảnh Chụp Thật', 'Upload Actual Photo')} ({activeSide === 'FRONT' ? t('Mặt Trước', 'Front Side') : t('Mặt Sau', 'Back Side')})
+                  {t('Tải Ảnh Chụp Thật', 'Upload Actual Photo')}
                 </button>
               )}
             </div>
           )}
         </div>
 
-        {/* Footer Info & Actions */}
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-2 border-t border-[#222B35] text-xs">
-          <div className="flex items-center gap-2 text-gray-400">
+        {/* Footer Info: Clean security badge without redundant duplicate close button */}
+        <div className="flex items-center justify-between gap-3 pt-2.5 border-t border-[#222B35] text-[11px] sm:text-xs text-gray-400">
+          <div className="flex items-center gap-2">
             <ShieldCheck className="w-4 h-4 text-emerald-400 flex-shrink-0" />
-            <span>{t('Chỉ hiển thị bản gốc ảnh chụp thật do cư dân cung cấp khi đăng ký e-KYC.', 'Only original photo files uploaded by resident during e-KYC registration are shown.')}</span>
+            <span className="truncate">{t('Bản gốc ảnh chụp thật do cư dân tải lên khi làm thủ tục hồ sơ.', 'Original photo files uploaded by resident during registration.')}</span>
           </div>
-
-          <button
-            type="button"
-            onClick={onClose}
-            className="px-5 py-2 bg-[#C5A880] hover:bg-white text-[#0D1117] font-bold text-xs uppercase tracking-wider rounded-none transition-all shadow"
-          >
-            {t('Đóng Cửa Sổ', 'Close Window')}
-          </button>
+          <span className="font-mono text-[10px] text-[#C5A880] shrink-0 font-bold hidden sm:inline">
+            SKYLINE ENCRYPTED
+          </span>
         </div>
 
       </div>

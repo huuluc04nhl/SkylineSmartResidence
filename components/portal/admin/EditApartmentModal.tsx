@@ -294,17 +294,17 @@ export default function EditApartmentModal({
           )}
 
           {/* Action buttons */}
-          <div className="flex items-center justify-end gap-3 pt-3 border-t border-[#222B35]">
+          <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-end gap-2.5 pt-3 border-t border-[#222B35]">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 bg-[#161B22] hover:bg-[#202936] text-gray-300 hover:text-white border border-[#2D3748] font-semibold transition-colors"
+              className="w-full sm:w-auto px-4 py-2.5 bg-[#161B22] hover:bg-[#202936] text-gray-300 hover:text-white border border-[#2D3748] font-semibold transition-colors text-center"
             >
               {t('Hủy', 'Cancel')}
             </button>
             <button
               type="submit"
-              className="px-5 py-2 bg-[#C5A880] hover:bg-white text-[#0D1117] font-bold uppercase tracking-wider transition-colors shadow flex items-center gap-1.5"
+              className="w-full sm:w-auto px-5 py-2.5 bg-[#C5A880] hover:bg-white text-[#0D1117] font-bold uppercase tracking-wider transition-colors shadow flex items-center justify-center gap-1.5"
             >
               <Save className="w-4 h-4" /> {t('Lưu Thay Đổi', 'Save Changes')}
             </button>

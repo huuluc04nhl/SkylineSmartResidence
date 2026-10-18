@@ -1295,19 +1295,19 @@ export default function SurveysVoting({ currentUser }: SurveysVotingProps) {
               )}
 
               {/* Action buttons */}
-              <div className="flex items-center justify-end gap-3 pt-3 border-t border-[#1A222D]">
+              <div className="flex flex-col-reverse sm:flex-row items-center justify-end gap-2.5 sm:gap-3 pt-3 border-t border-[#1A222D]">
                 <button
                   type="button"
                   disabled={isSubmittingWithAi}
                   onClick={() => setIsCreateModalOpen(false)}
-                  className="px-4 py-2.5 text-xs text-gray-400 hover:text-white uppercase tracking-wider font-semibold disabled:opacity-50"
+                  className="w-full sm:w-auto px-4 py-2.5 text-xs text-gray-400 hover:text-white uppercase tracking-wider font-semibold disabled:opacity-50 text-center"
                 >
                   Hủy Bỏ
                 </button>
                 <button
                   type="submit"
                   disabled={isSubmittingWithAi}
-                  className="px-6 py-2.5 bg-[#C5A880] hover:bg-white text-[#0A0E14] font-bold text-xs uppercase tracking-wider transition-colors shadow-lg flex items-center gap-2 disabled:opacity-50"
+                  className="w-full sm:w-auto px-7 py-3 bg-[#C5A880] hover:bg-white text-[#0A0E14] font-bold text-xs uppercase tracking-wider transition-colors shadow-lg flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer active:scale-95"
                 >
                   {isSubmittingWithAi ? (
                     <>
@@ -1437,9 +1437,10 @@ export default function SurveysVoting({ currentUser }: SurveysVotingProps) {
           >
             <button 
               onClick={() => setPreviewZoomImage(null)}
-              className="absolute -top-9 right-0 text-white hover:text-[#C5A880] p-1 flex items-center gap-1 text-xs font-mono"
+              className="absolute -top-10 right-0 text-gray-300 hover:text-white p-2 flex items-center justify-center rounded-none bg-black/60 border border-gray-700"
+              title="Đóng hình ảnh"
             >
-              <X className="w-4 h-4" /> Đóng
+              <X className="w-5 h-5" />
             </button>
             <img 
               src={previewZoomImage} 

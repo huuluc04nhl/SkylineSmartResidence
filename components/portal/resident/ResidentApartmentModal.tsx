@@ -457,14 +457,9 @@ export default function ResidentApartmentModal({
           <span className="font-mono text-[11px] text-gray-400">
             Mã định danh sổ số: <strong className="text-white">SKYLINE-CH06-TITLED</strong>
           </span>
-
-          <button
-            type="button"
-            onClick={onClose}
-            className="px-4 py-1.5 bg-[#161B22] hover:bg-[#C5A880] hover:text-[#0D1117] text-[#C5A880] border border-[#C5A880]/50 font-bold text-xs uppercase tracking-wider transition-all"
-          >
-            Đóng Sổ Tay
-          </button>
+          <span className="text-[10px] text-[#C5A880] font-mono font-bold tracking-wider">
+            BẢN QUYỀN SỐ SKYLINE RESIDENCE
+          </span>
         </div>
 
       </div>
