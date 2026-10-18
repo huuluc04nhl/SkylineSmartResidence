@@ -456,22 +456,22 @@ export default function SmartFacilityPass({ currentUser, onNavigateModule }: Sma
         </div>
 
         {/* Quick Actions & Metrics */}
-        <div className="flex flex-wrap items-center gap-2.5">
-          <div className="h-11 px-3.5 bg-[#0D1117] border border-[#2A374A] rounded-none text-xs flex items-center gap-2.5">
+        <div className="grid grid-cols-2 sm:flex items-center gap-2 sm:gap-2.5 w-full sm:w-auto">
+          <div className="h-11 px-3 bg-[#0D1117] border border-[#2A374A] rounded-none text-xs flex items-center justify-center gap-2 sm:gap-2.5 truncate">
             <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />
-            <div className="leading-tight">
-              <div className="text-[9px] uppercase tracking-wider text-gray-400 font-mono">Hạn Mức BBQ Tháng</div>
-              <div className="font-mono font-bold text-[#C5A880] text-xs">{quota.remaining} / {quota.max} lượt</div>
+            <div className="leading-tight truncate">
+              <div className="text-[9px] uppercase tracking-wider text-gray-400 font-mono truncate">Hạn Mức BBQ Tháng</div>
+              <div className="font-mono font-bold text-[#C5A880] text-xs truncate">{quota.remaining} / {quota.max} lượt</div>
             </div>
           </div>
 
           <button
             type="button"
             onClick={() => setShowSmartCardModal(true)}
-            className="h-11 px-4 bg-[#1A2332] hover:bg-[#253247] border border-[#C5A880]/50 hover:border-[#C5A880] text-white text-xs font-bold uppercase rounded-none transition-all flex items-center gap-2 shadow-md"
+            className="h-11 px-3 sm:px-4 bg-[#1A2332] hover:bg-[#253247] border border-[#C5A880]/50 hover:border-[#C5A880] text-white text-xs font-bold uppercase rounded-none transition-all flex items-center justify-center gap-2 shadow-md active:scale-95 truncate"
           >
             <CreditCard className="w-4 h-4 text-[#C5A880] shrink-0" />
-            <span>Thẻ Cư Dân 3D</span>
+            <span className="truncate">Thẻ Cư Dân 3D</span>
           </button>
         </div>
       </div>
@@ -657,10 +657,10 @@ export default function SmartFacilityPass({ currentUser, onNavigateModule }: Sma
                             setTurnstileModalFac(fac);
                             setTurnstileSuccessMsg(null);
                           }}
-                          className="w-full py-2.5 px-3 bg-gradient-to-r from-[#C5A880] to-[#E2D4BF] hover:from-[#d5b991] hover:to-white text-[#0D1117] text-xs font-bold uppercase rounded-none transition-all flex items-center justify-center gap-2 shadow-md"
+                          className="w-full h-10 px-3 bg-gradient-to-r from-[#C5A880] to-[#E2D4BF] hover:from-[#d5b991] hover:to-white text-[#0D1117] text-xs font-bold uppercase rounded-none transition-all flex items-center justify-center gap-2 shadow-md active:scale-95"
                         >
-                          <DoorOpen className="w-4 h-4" />
-                          <span>Vào Cửa Tiện Ích (Check-in)</span>
+                          <DoorOpen className="w-4 h-4 shrink-0" />
+                          <span className="truncate">Vào Cửa Tiện Ích (Check-in)</span>
                         </button>
                       ) : (
                         <button
@@ -669,10 +669,10 @@ export default function SmartFacilityPass({ currentUser, onNavigateModule }: Sma
                             setBookingFacilityId(fac.id);
                             setActiveTab('BOOKING');
                           }}
-                          className="w-full py-2.5 px-3 bg-[#1A2332] hover:bg-[#253247] border border-amber-500/50 hover:border-amber-400 text-amber-300 text-xs font-bold uppercase rounded-none transition-all flex items-center justify-center gap-2 shadow-md"
+                          className="w-full h-10 px-3 bg-[#1A2332] hover:bg-[#253247] border border-amber-500/50 hover:border-amber-400 text-amber-300 text-xs font-bold uppercase rounded-none transition-all flex items-center justify-center gap-2 shadow-md active:scale-95"
                         >
-                          <CalendarCheck className="w-4 h-4 text-amber-400" />
-                          <span>Đăng Ký Đặt Lịch Giữ Chỗ</span>
+                          <CalendarCheck className="w-4 h-4 text-amber-400 shrink-0" />
+                          <span className="truncate">Đăng Ký Đặt Lịch Giữ Chỗ</span>
                         </button>
                       )}
                     </div>
@@ -915,10 +915,10 @@ export default function SmartFacilityPass({ currentUser, onNavigateModule }: Sma
 
               <button
                 type="submit"
-                className="w-full py-2.5 bg-[#C5A880] hover:bg-[#d5b991] text-[#0D1117] text-xs font-bold uppercase rounded-none transition-colors flex items-center justify-center gap-2 shadow-lg"
+                className="w-full h-11 px-3 bg-[#C5A880] hover:bg-[#d5b991] text-[#0D1117] text-xs font-bold uppercase rounded-none transition-colors flex items-center justify-center gap-2 shadow-lg active:scale-95 truncate"
               >
-                <Check className="w-4 h-4" />
-                <span>Xác Nhận Đặt Giữ Chỗ & Tạo Vé QR</span>
+                <Check className="w-4 h-4 shrink-0" />
+                <span className="truncate">Xác Nhận Đặt Giữ Chỗ & Tạo Vé QR</span>
               </button>
             </form>
           </div>
@@ -1066,24 +1066,25 @@ export default function SmartFacilityPass({ currentUser, onNavigateModule }: Sma
                         )}
 
                         {/* Action buttons */}
-                        <div className="flex items-center justify-between pt-1">
+                        <div className="flex flex-col-reverse sm:flex-row sm:items-center justify-between gap-2 pt-1">
                           {isConfirmed ? (
                             <>
                               <button
                                 type="button"
                                 onClick={() => handleOpenRefundModal(b)}
-                                className="px-2.5 py-1.5 bg-red-950/40 hover:bg-red-900/60 border border-red-500/40 text-red-300 text-xs font-semibold rounded-none transition-colors flex items-center gap-1.5 shadow-sm"
+                                className="w-full sm:w-auto h-9 px-3 bg-red-950/40 hover:bg-red-900/60 border border-red-500/40 text-red-300 text-xs font-semibold rounded-none transition-colors flex items-center justify-center gap-1.5 shadow-sm active:scale-95 truncate"
                               >
-                                <RotateCcw className="w-3.5 h-3.5 text-red-400" />
-                                <span>Hủy Lịch & Hoàn Tiền (Bận Đột Xuất)</span>
+                                <RotateCcw className="w-3.5 h-3.5 text-red-400 shrink-0" />
+                                <span className="truncate">Hủy Lịch &amp; Hoàn Tiền</span>
                               </button>
 
                               <button
                                 type="button"
                                 onClick={() => handleCheckinTicket(b.ticketCode)}
-                                className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-none transition-colors flex items-center gap-1.5 shadow"
+                                className="w-full sm:w-auto h-9 px-3.5 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-none transition-colors flex items-center justify-center gap-1.5 shadow active:scale-95 truncate"
                               >
-                                <DoorOpen className="w-3.5 h-3.5" /> Quẹt Vé Vào Cổng Ngay
+                                <DoorOpen className="w-3.5 h-3.5 shrink-0" /> 
+                                <span className="truncate">Quẹt Vé Vào Cổng Ngay</span>
                               </button>
                             </>
                           ) : (
@@ -1437,31 +1438,31 @@ export default function SmartFacilityPass({ currentUser, onNavigateModule }: Sma
                 </div>
 
                 {/* Buttons */}
-                <div className="grid grid-cols-2 gap-3 pt-2">
+                <div className="flex flex-col-reverse sm:grid sm:grid-cols-2 gap-2.5 pt-2">
                   <button
                     type="button"
                     onClick={() => setRefundModalBooking(null)}
                     disabled={isProcessingRefund}
-                    className="py-2.5 px-3 bg-[#161D26] hover:bg-[#1E2633] text-gray-300 text-xs font-bold rounded-none border border-[#2A374A] transition-colors"
+                    className="h-10 px-3 bg-[#161D26] hover:bg-[#1E2633] text-gray-300 text-xs font-bold rounded-none border border-[#2A374A] transition-colors flex items-center justify-center active:scale-95"
                   >
-                    Giữ Lại Lịch Đặt
+                    <span>Giữ Lại Lịch Đặt</span>
                   </button>
 
                   <button
                     type="button"
                     onClick={handleConfirmRefund}
                     disabled={isProcessingRefund}
-                    className="py-2.5 px-3 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white text-xs font-bold rounded-none transition-all flex items-center justify-center gap-1.5 shadow-lg"
+                    className="h-10 px-3 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white text-xs font-bold rounded-none transition-all flex items-center justify-center gap-1.5 shadow-lg active:scale-95"
                   >
                     {isProcessingRefund ? (
                       <>
-                        <Wifi className="w-3.5 h-3.5 animate-spin rotate-90" />
-                        <span>Đang Xử Lý Hoàn Tiền...</span>
+                        <Wifi className="w-3.5 h-3.5 animate-spin rotate-90 shrink-0" />
+                        <span className="truncate">Đang Xử Lý Hoàn Tiền...</span>
                       </>
                     ) : (
                       <>
-                        <RotateCcw className="w-3.5 h-3.5" />
-                        <span>Xác Nhận Hủy & Hoàn Tiền</span>
+                        <RotateCcw className="w-3.5 h-3.5 shrink-0" />
+                        <span className="truncate">Xác Nhận Hủy &amp; Hoàn Tiền</span>
                       </>
                     )}
                   </button>

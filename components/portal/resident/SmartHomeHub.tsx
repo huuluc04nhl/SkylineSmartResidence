@@ -586,33 +586,34 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
       {activeTab === 'DEVICES' && (
         <div className="space-y-4">
           {/* Nút Toggle Bật/Tắt Chế Độ 3D Xoay Lật (Thống nhất Button Style) */}
-          <div className="flex items-center justify-between p-3 bg-[#121820] border border-[#222B35]">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3 bg-[#121820] border border-[#222B35]">
             <div className="text-xs text-gray-300 flex items-center gap-2">
-              <Layers className="w-4 h-4 text-[#C5A880]" />
-              <span>Chế độ hiển thị không gian căn hộ:</span>
+              <Layers className="w-4 h-4 text-[#C5A880] shrink-0" />
+              <span>Chế độ hiển thị không gian:</span>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="grid grid-cols-2 gap-2 w-full sm:w-auto">
               <button
                 type="button"
                 onClick={() => setIs3dMode(false)}
-                className={`h-8 px-3.5 text-xs font-bold transition-all flex items-center gap-1.5 active:scale-95 ${
+                className={`h-9 sm:h-8 px-3 text-xs font-bold transition-all flex items-center justify-center gap-1.5 active:scale-95 truncate ${
                   !is3dMode 
                     ? 'bg-[#C5A880] text-[#0D1117] shadow-sm' 
                     : 'bg-[#161D26] hover:bg-[#1C2533] border border-[#2D3A4B] text-gray-300 hover:text-white'
                 }`}
               >
-                Bảng Thẻ Nhanh
+                <span>Bảng Thẻ Nhanh</span>
               </button>
               <button
                 type="button"
                 onClick={() => setIs3dMode(true)}
-                className={`h-8 px-3.5 text-xs font-bold transition-all flex items-center gap-1.5 active:scale-95 ${
+                className={`h-9 sm:h-8 px-3 text-xs font-bold transition-all flex items-center justify-center gap-1.5 active:scale-95 truncate ${
                   is3dMode 
                     ? 'bg-[#C5A880] text-[#0D1117] shadow-sm' 
                     : 'bg-[#161D26] hover:bg-[#1C2533] border border-[#2D3A4B] text-gray-300 hover:text-white'
                 }`}
               >
-                <Maximize2 className="w-3.5 h-3.5" /> Mô Hình 3D Xoay Lật
+                <Maximize2 className="w-3.5 h-3.5 shrink-0" /> 
+                <span className="truncate">Mô Hình 3D<span className="hidden sm:inline"> Xoay Lật</span></span>
               </button>
             </div>
           </div>
@@ -822,23 +823,23 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
                     <button
                       type="button"
                       onClick={handleToggleIntercom}
-                      className={`h-8 px-3.5 text-xs font-semibold transition-all flex items-center gap-1.5 shadow-sm active:scale-95 ${
+                      className={`flex-1 sm:flex-initial h-9 sm:h-8 px-3.5 text-xs font-semibold transition-all flex items-center justify-center gap-1.5 shadow-sm active:scale-95 truncate ${
                         isIntercomActive 
                           ? 'bg-red-600 hover:bg-red-700 text-white animate-pulse' 
                           : 'bg-[#161D26] hover:bg-[#C5A880] hover:text-[#0D1117] border border-[#2D3A4B] text-gray-200'
                       }`}
                     >
-                      {isIntercomActive ? <MicOff className="w-3.5 h-3.5" /> : <Mic className="w-3.5 h-3.5" />}
-                      <span>{isIntercomActive ? 'Ngắt Mic' : 'Đàm Thoại'}</span>
+                      {isIntercomActive ? <MicOff className="w-3.5 h-3.5 shrink-0" /> : <Mic className="w-3.5 h-3.5 shrink-0" />}
+                      <span className="truncate">{isIntercomActive ? 'Ngắt Mic' : 'Đàm Thoại'}</span>
                     </button>
 
                     <button
                       type="button"
                       onClick={handleSnapshot}
-                      className="h-8 px-3.5 bg-[#161D26] hover:bg-[#C5A880] hover:text-[#0D1117] border border-[#2D3A4B] text-gray-200 text-xs font-semibold transition-all flex items-center gap-1.5 shadow-sm active:scale-95"
+                      className="flex-1 sm:flex-initial h-9 sm:h-8 px-3.5 bg-[#161D26] hover:bg-[#C5A880] hover:text-[#0D1117] border border-[#2D3A4B] text-gray-200 text-xs font-semibold transition-all flex items-center justify-center gap-1.5 shadow-sm active:scale-95 truncate"
                     >
-                      <Camera className="w-3.5 h-3.5 text-[#C5A880]" />
-                      <span>Chụp Ảnh ({snapshotCount})</span>
+                      <Camera className="w-3.5 h-3.5 text-[#C5A880] shrink-0" />
+                      <span className="truncate">Chụp Ảnh ({snapshotCount})</span>
                     </button>
                   </div>
                 </div>
@@ -1005,22 +1006,22 @@ export default function SmartHomeHub({ currentUser }: SmartHomeHubProps) {
 
           {/* Lịch Sử Ra Vào (Door Access Log Feed) */}
           <div className="p-4 bg-[#121820] border border-[#222B35] space-y-3">
-            <div className="flex items-center justify-between border-b border-[#1C2533] pb-2">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 border-b border-[#1C2533] pb-2">
               <div className="flex items-center gap-2">
-                <History className="w-4 h-4 text-[#C5A880]" />
+                <History className="w-4 h-4 text-[#C5A880] shrink-0" />
                 <h3 className="font-bold text-xs uppercase tracking-wider text-white">
-                  Nhật Ký Mở Cửa Căn Hộ Gần Đây
+                  Nhật Ký Mở Cửa Căn Hộ
                 </h3>
               </div>
 
               {/* Lọc phương thức (Thống nhất Segmented Pill Style) */}
-              <div className="flex items-center gap-1">
+              <div className="grid grid-cols-4 sm:flex items-center gap-1 w-full sm:w-auto">
                 {(['ALL', 'FACE_ID', 'NFC_CARD', 'PIN_OTP'] as const).map(flt => (
                   <button
                     key={flt}
                     type="button"
                     onClick={() => setActiveLogFilter(flt)}
-                    className={`h-6 px-2.5 text-[10px] font-mono transition-all flex items-center justify-center ${
+                    className={`h-7 sm:h-6 px-1.5 sm:px-2.5 text-[10px] font-mono transition-all flex items-center justify-center truncate ${
                       activeLogFilter === flt 
                         ? 'bg-[#C5A880] text-[#0D1117] font-bold shadow-sm' 
                         : 'bg-[#0D1117] hover:bg-[#1C2533] border border-[#222B35] text-gray-400 hover:text-white'
