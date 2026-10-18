@@ -2,42 +2,49 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
 import { 
+  MessageSquareQuote,
   Vote, 
   CheckCircle2, 
   ShieldCheck, 
   Lock, 
   Clock, 
-  Calendar, 
   Users, 
   Building, 
   Sparkles, 
   Filter, 
   Search, 
   Plus, 
-  AlertCircle, 
   ChevronRight, 
   BarChart3, 
-  FileText, 
   X, 
   Check, 
   AlertTriangle, 
   Info,
-  ShieldAlert,
   Send,
-  Eye,
-  RefreshCw,
-  Archive
+  Heart,
+  MessageSquare,
+  Share2,
+  Trash2,
+  Pin,
+  ShoppingBag,
+  Megaphone,
+  HelpCircle,
+  ThumbsUp,
+  Flame,
+  Tag
 } from 'lucide-react';
 import { User } from '@/lib/dataStore';
 import { 
-  VotingTopic, 
-  VotingOption, 
-  VotingLegalType, 
-  getVotingTopics, 
-  castVote, 
-  createVotingTopic, 
-  toggleVotingTopicStatus 
-} from '@/lib/votingStore';
+  CommunityPost, 
+  PostCategory, 
+  getCommunityPosts, 
+  createCommunityPost, 
+  toggleLikeCommunityPost, 
+  addCommentToPost, 
+  castCommunityPollVote, 
+  deleteCommunityPost,
+  analyzePostWithAi
+} from '@/lib/communityStore';
 
 interface SurveysVotingProps {
   currentUser?: User;
@@ -46,804 +53,932 @@ interface SurveysVotingProps {
 export default function SurveysVoting({ currentUser }: SurveysVotingProps) {
   const isAdmin = currentUser?.role === 'ADMIN';
   const isOwner = currentUser?.role === 'OWNER';
-  const aptCode = currentUser?.apartment_code || 'CH-06';
-  const userName = currentUser?.full_name || (currentUser as any)?.fullname || 'Cư Dân Skyline';
+  const aptCode = currentUser?.apartment_code || (isAdmin ? 'BQL_OFFICE' : 'CH-06');
+  const userName = currentUser?.full_name || (currentUser as any)?.fullname || 'Cư Dân SKYLINE';
+  const userAvatar = currentUser?.avatar_url || 'https://data.nks.vn/storage/users/default.png';
 
-  const [topics, setTopics] = useState<VotingTopic[]>([]);
-  const [selectedTopicId, setSelectedTopicId] = useState<string>('');
-  const [selectedOptionId, setSelectedOptionId] = useState<string>('');
-  const [statusFilter, setStatusFilter] = useState<'ALL' | 'OPEN' | 'VOTED' | 'CLOSED'>('ALL');
-  const [legalTypeFilter, setLegalTypeFilter] = useState<'ALL' | VotingLegalType>('ALL');
-  const [searchQuery, setSearchQuery] = useState<string>('');
-  const [votedSuccessMsg, setVotedSuccessMsg] = useState<string | null>(null);
+  const [posts, setPosts] = useState<CommunityPost[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState<'ALL' | PostCategory>('ALL');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [onlyPinned, setOnlyPinned] = useState(false);
+  const [onlyVoted, setOnlyVoted] = useState(false);
 
-  // Admin Modal: Create New Voting Topic
+  // Expanded comment sections map: postId -> boolean
+  const [expandedComments, setExpandedComments] = useState<Record<string, boolean>>({});
+  // Comment draft input map: postId -> string
+  const [commentDrafts, setCommentDrafts] = useState<Record<string, string>>({});
+
+  // Notification message
+  const [toastMsg, setToastMsg] = useState<{ text: string; type: 'success' | 'error' } | null>(null);
+
+  // Modal: Create Post
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const [newTitle, setNewTitle] = useState('');
-  const [newDescription, setNewDescription] = useState('');
-  const [newLegalType, setNewLegalType] = useState<VotingLegalType>('Đóng góp Quỹ Bảo trì');
-  const [newDeadline, setNewDeadline] = useState(() => {
+  const [createCategory, setCreateCategory] = useState<PostCategory>(isAdmin ? 'ANNOUNCEMENT' : 'DISCUSSION');
+  const [createTitle, setCreateTitle] = useState('');
+  const [createContent, setCreateContent] = useState('');
+  const [createTags, setCreateTags] = useState('');
+  const [createIsPinned, setCreateIsPinned] = useState(false);
+  
+  // Modal: Attach Poll
+  const [attachPoll, setAttachPoll] = useState(false);
+  const [pollDeadline, setPollDeadline] = useState(() => {
     const d = new Date();
     d.setDate(d.getDate() + 14);
     return d.toISOString().split('T')[0] + 'T23:59:59';
   });
-  const [newIsOwnerOnly, setNewIsOwnerOnly] = useState(true);
-  const [newOptions, setNewOptions] = useState<string[]>([
-    'Đồng ý thông qua phương án đề xuất',
+  const [pollIsOwnerOnly, setPollIsOwnerOnly] = useState(true);
+  const [pollOptions, setPollOptions] = useState<string[]>([
+    'Đồng ý thông qua phương án',
     'Không đồng ý, giữ nguyên hiện trạng',
     'Ý kiến khác'
   ]);
-  const [newSummaryReport, setNewSummaryReport] = useState('');
 
-  const refreshTopics = () => {
-    const list = getVotingTopics();
-    setTopics(list);
-    if (!selectedTopicId && list.length > 0) {
-      setSelectedTopicId(list[0].id);
-    }
+  const showToast = (text: string, type: 'success' | 'error' = 'success') => {
+    setToastMsg({ text, type });
+    setTimeout(() => setToastMsg(null), 4500);
+  };
+
+  const loadPosts = () => {
+    setPosts(getCommunityPosts());
   };
 
   useEffect(() => {
-    refreshTopics();
-    const handleUpdate = () => refreshTopics();
-    window.addEventListener('skyline_voting_updated', handleUpdate);
-    return () => window.removeEventListener('skyline_voting_updated', handleUpdate);
+    loadPosts();
+    const handleUpdate = () => loadPosts();
+    window.addEventListener('skyline_community_updated', handleUpdate);
+    return () => window.removeEventListener('skyline_community_updated', handleUpdate);
   }, []);
 
-  // Currently selected topic
-  const activeTopic = useMemo(() => {
-    return topics.find(t => t.id === selectedTopicId) || topics[0];
-  }, [topics, selectedTopicId]);
-
-  // Check if current user / apartment has voted in active topic
-  const userVotedRecord = useMemo(() => {
-    if (!activeTopic) return null;
-    return activeTopic.voters.find(v => v.aptCode.trim().toUpperCase() === aptCode.trim().toUpperCase());
-  }, [activeTopic, aptCode]);
-
-  useEffect(() => {
-    if (userVotedRecord) {
-      setSelectedOptionId(userVotedRecord.optionId);
-    } else if (activeTopic && activeTopic.options.length > 0) {
-      setSelectedOptionId(activeTopic.options[0].id);
-    }
-  }, [activeTopic, userVotedRecord]);
-
-  // Filtered topics
-  const filteredTopics = useMemo(() => {
-    return topics.filter(t => {
-      // Status filter
-      if (statusFilter === 'OPEN' && t.status !== 'OPEN') return false;
-      if (statusFilter === 'CLOSED' && t.status !== 'CLOSED') return false;
-      if (statusFilter === 'VOTED') {
-        const hasVoted = t.voters.some(v => v.aptCode.trim().toUpperCase() === aptCode.trim().toUpperCase());
-        if (!hasVoted) return false;
+  // Filtered posts
+  const filteredPosts = useMemo(() => {
+    return posts.filter(post => {
+      if (selectedCategory !== 'ALL' && post.category !== selectedCategory) return false;
+      if (onlyPinned && !post.isPinned) return false;
+      if (onlyVoted && (!post.poll || !post.poll.voters.some(v => v.aptCode.toUpperCase() === aptCode.toUpperCase()))) {
+        return false;
       }
-
-      // Legal type filter
-      if (legalTypeFilter !== 'ALL' && t.legalType !== legalTypeFilter) return false;
-
-      // Search query
       if (searchQuery.trim()) {
         const q = searchQuery.toLowerCase();
-        return t.title.toLowerCase().includes(q) || t.code.toLowerCase().includes(q) || t.description.toLowerCase().includes(q);
+        const matchesTitle = post.title.toLowerCase().includes(q);
+        const matchesContent = post.content.toLowerCase().includes(q);
+        const matchesAuthor = post.authorName.toLowerCase().includes(q);
+        const matchesApt = (post.aptCode || '').toLowerCase().includes(q);
+        const matchesTags = post.tags.some(t => t.toLowerCase().includes(q));
+        if (!matchesTitle && !matchesContent && !matchesAuthor && !matchesApt && !matchesTags) return false;
       }
-
       return true;
     });
-  }, [topics, statusFilter, legalTypeFilter, searchQuery, aptCode]);
+  }, [posts, selectedCategory, onlyPinned, onlyVoted, searchQuery, aptCode]);
 
-  // KPI calculations
+  // Statistics
   const stats = useMemo(() => {
-    const total = topics.length;
-    const openCount = topics.filter(t => t.status === 'OPEN').length;
-    const votedCount = topics.filter(t => t.voters.some(v => v.aptCode.trim().toUpperCase() === aptCode.trim().toUpperCase())).length;
-    const avgParticipation = total > 0 
-      ? (topics.reduce((acc, t) => acc + (t.totalVotes / (t.totalEligibleApartments || 250)), 0) / total * 100).toFixed(1)
-      : '0.0';
+    const totalPosts = posts.length;
+    const activePolls = posts.filter(p => p.poll && p.poll.status === 'OPEN').length;
+    const totalComments = posts.reduce((acc, p) => acc + p.comments.length, 0);
+    const positiveCount = posts.filter(p => p.aiSentimentLabel === 'Tích cực').length;
+    const positiveRate = totalPosts > 0 ? Math.round((positiveCount / totalPosts) * 100) : 95;
+    return { totalPosts, activePolls, totalComments, positiveRate };
+  }, [posts]);
 
-    return { total, openCount, votedCount, avgParticipation };
-  }, [topics, aptCode]);
+  // Handle Like
+  const handleLike = (postId: string) => {
+    toggleLikeCommunityPost(postId, aptCode);
+  };
 
-  // Handle Voting Submission
-  const handleSubmitVote = () => {
-    if (!activeTopic || !selectedOptionId) return;
+  // Handle Comment Submit
+  const handleCommentSubmit = (postId: string) => {
+    const content = (commentDrafts[postId] || '').trim();
+    if (!content) return;
 
-    const res = castVote({
-      topicId: activeTopic.id,
+    addCommentToPost(postId, {
+      authorName: userName,
+      authorRole: currentUser?.role || 'OWNER',
       aptCode,
-      optionId: selectedOptionId,
+      avatarUrl: userAvatar,
+      content,
+    });
+
+    setCommentDrafts(prev => ({ ...prev, [postId]: '' }));
+    setExpandedComments(prev => ({ ...prev, [postId]: true }));
+    showToast('Đã gửi bình luận của bạn thành công!');
+  };
+
+  // Handle Vote in Poll
+  const handleVote = (postId: string, optionId: string) => {
+    const res = castCommunityPollVote({
+      postId,
+      optionId,
+      aptCode,
       voterName: userName,
+      isOwner,
     });
 
     if (res.success) {
-      setVotedSuccessMsg(res.message);
-      refreshTopics();
-      setTimeout(() => setVotedSuccessMsg(null), 5000);
+      showToast(res.message, 'success');
     } else {
-      alert(res.message);
+      showToast(res.message, 'error');
     }
   };
 
-  // Admin Handle Create Topic
-  const handleCreateTopic = (e: React.FormEvent) => {
+  // Handle Delete Post
+  const handleDeletePost = (postId: string, authorApt?: string) => {
+    if (!isAdmin && authorApt?.toUpperCase() !== aptCode.toUpperCase()) {
+      showToast('Bạn chỉ có thể xóa bài viết do chính bạn đăng.', 'error');
+      return;
+    }
+    if (confirm('Bạn có chắc chắn muốn gỡ bài viết này khỏi diễn đàn chung cư?')) {
+      deleteCommunityPost(postId);
+      showToast('Đã gỡ bài viết thành công.');
+    }
+  };
+
+  // Handle Create Post
+  const handleCreatePost = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newTitle.trim()) {
-      alert('Vui lòng nhập tiêu đề cuộc biểu quyết.');
+    if (!createTitle.trim()) {
+      showToast('Vui lòng nhập tiêu đề bài viết.', 'error');
+      return;
+    }
+    if (!createContent.trim()) {
+      showToast('Vui lòng nhập nội dung chia sẻ.', 'error');
       return;
     }
 
-    const validOptions = newOptions.filter(o => o.trim().length > 0);
-    if (validOptions.length < 2) {
-      alert('Vui lòng cung cấp ít nhất 2 phương án bình chọn.');
-      return;
+    const tagsArray = createTags
+      .split(',')
+      .map(t => t.trim())
+      .filter(t => t.length > 0);
+
+    let pollData = undefined;
+    if (attachPoll || createCategory === 'VOTING') {
+      const validOptions = pollOptions.filter(o => o.trim().length > 0);
+      if (validOptions.length < 2) {
+        showToast('Cuộc biểu quyết cần ít nhất 2 phương án bình chọn.', 'error');
+        return;
+      }
+      pollData = {
+        deadline: pollDeadline,
+        isOwnerOnly: isAdmin ? pollIsOwnerOnly : false,
+        status: 'OPEN' as const,
+        totalEligibleApartments: 250,
+        options: validOptions.map((opt, idx) => ({
+          id: `opt-${idx + 1}`,
+          text: opt,
+          votes: 0,
+        })),
+        voters: [],
+      };
     }
 
-    const created = createVotingTopic({
-      title: newTitle,
-      description: newDescription,
-      legalType: newLegalType,
-      deadline: newDeadline,
-      isOwnerOnly: newIsOwnerOnly,
-      options: validOptions,
-      summaryReport: newSummaryReport,
+    createCommunityPost({
+      category: createCategory,
+      code: createCategory === 'VOTING' ? `BQ-${new Date().getFullYear()}-${Math.floor(100 + Math.random() * 900)}` : undefined,
+      authorName: userName,
+      authorRole: currentUser?.role || 'OWNER',
+      aptCode,
+      avatarUrl: userAvatar,
+      title: createTitle.trim(),
+      content: createContent.trim(),
+      tags: tagsArray.length > 0 ? tagsArray : ['Cộng đồng', 'Skyline'],
+      isPinned: isAdmin && createIsPinned,
+      poll: pollData,
     });
 
     setIsCreateModalOpen(false);
-    setNewTitle('');
-    setNewDescription('');
-    setNewSummaryReport('');
-    refreshTopics();
-    setSelectedTopicId(created.id);
+    setCreateTitle('');
+    setCreateContent('');
+    setCreateTags('');
+    setAttachPoll(false);
+    showToast('Bài viết đã được đăng lên Diễn đàn Cư Dân SKYLINE!');
   };
 
-  // Admin Toggle Status
-  const handleToggleStatus = (topicId: string) => {
-    toggleVotingTopicStatus(topicId);
-    refreshTopics();
-  };
+  // Preview AI analysis in real-time
+  const liveAiPreview = useMemo(() => {
+    if (!createTitle && !createContent) return null;
+    return analyzePostWithAi(`${createTitle} ${createContent}`);
+  }, [createTitle, createContent]);
 
   return (
-    <div className="space-y-6 w-full animate-fadeIn select-none">
-      {/* ------------------------------------------------------------- */}
-      {/* 1. HEADER CHÍNH                                               */}
-      {/* ------------------------------------------------------------- */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#222B35] pb-4">
-        <div>
-          <div className="text-[10px] uppercase tracking-[0.25em] text-[#C5A880] font-semibold flex items-center gap-1.5">
-            <Vote className="w-3.5 h-3.5 text-[#C5A880]" /> Biểu Quyết • Căn {aptCode}
-          </div>
-          <h2 className="font-serif text-2xl sm:text-3xl text-white font-bold mt-1 tracking-wide">
-            Biểu Quyết Cư Dân
-          </h2>
-          <p className="text-xs text-gray-400 mt-1">
-            Lấy ý kiến biểu quyết về bảo trì, nâng cấp cơ sở vật chất và nội quy chung cư.
-          </p>
-        </div>
-
-        <div className="flex items-center gap-2.5 flex-wrap">
-          {isAdmin ? (
-            <button
-              onClick={() => setIsCreateModalOpen(true)}
-              className="px-4 py-2 bg-[#C5A880] hover:bg-white text-[#0D1117] text-xs font-bold uppercase tracking-wider transition-colors shadow-lg flex items-center gap-1.5"
-            >
-              <Plus className="w-4 h-4" /> Tạo Cuộc Biểu Quyết
-            </button>
-          ) : isOwner ? (
-            <span className="px-3 py-1.5 bg-[#161B22] border border-[#C5A880] text-[#C5A880] text-xs font-semibold flex items-center gap-1.5 shadow">
-              <ShieldCheck className="w-4 h-4 text-[#C5A880]" /> Chủ Hộ (Căn {aptCode})
-            </span>
-          ) : (
-            <span className="px-3 py-1.5 bg-[#161B22] border border-[#2D3748] text-gray-300 text-xs font-semibold flex items-center gap-1.5 shadow">
-              <Users className="w-4 h-4 text-gray-400" /> Cư Dân Căn {aptCode}
-            </span>
-          )}
-        </div>
-      </div>
-
-      {/* Thông báo biểu quyết thành công */}
-      {votedSuccessMsg && (
-        <div className="p-4 bg-emerald-950/90 border border-emerald-500 text-emerald-200 text-xs flex items-center gap-3 animate-fadeIn shadow-lg">
-          <CheckCircle2 className="w-5 h-5 text-emerald-400 flex-shrink-0" />
-          <div>
-            <div className="font-bold uppercase tracking-wider text-emerald-300">Biểu Quyết Thành Công</div>
-            <div className="text-[11px] mt-0.5">{votedSuccessMsg}</div>
-          </div>
+    <div className="space-y-6 select-none animate-fadeIn pb-16">
+      {/* Toast Notification */}
+      {toastMsg && (
+        <div className={`fixed top-6 right-6 z-50 flex items-center gap-3 px-5 py-3 border shadow-2xl backdrop-blur-xl animate-slideDown ${
+          toastMsg.type === 'success' 
+            ? 'bg-[#10B981]/20 border-[#10B981] text-[#10B981]' 
+            : 'bg-[#F43F5E]/20 border-[#F43F5E] text-[#F43F5E]'
+        }`}>
+          {toastMsg.type === 'success' ? <CheckCircle2 className="w-5 h-5 flex-shrink-0" /> : <AlertTriangle className="w-5 h-5 flex-shrink-0" />}
+          <span className="text-xs font-semibold tracking-wide">{toastMsg.text}</span>
         </div>
       )}
 
-      {/* ------------------------------------------------------------- */}
-      {/* 2. THẺ CHỈ SỐ TỔNG QUAN                                        */}
-      {/* ------------------------------------------------------------- */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5">
-        <div className="p-4 bg-[#121820] border border-[#222B35] space-y-1">
-          <div className="text-xs text-gray-400 font-medium">Tổng Số Cuộc Biểu Quyết</div>
-          <div className="font-serif text-2xl font-bold text-white">{stats.total}</div>
-          <div className="text-[10px] text-[#C5A880] font-mono">Toàn bộ chiến dịch chung cư</div>
+      {/* TOP HEADER: BRAND HERO */}
+      <div className="relative border border-[#C5A880]/30 bg-gradient-to-r from-[#0E131B] via-[#141B24] to-[#0E131B] p-6 shadow-2xl overflow-hidden">
+        <div className="absolute top-0 right-0 w-80 h-80 bg-[#C5A880]/5 rounded-full blur-3xl pointer-events-none -mr-20 -mt-20"></div>
+
+        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+          <div className="space-y-2">
+            <div className="inline-flex items-center gap-2 px-3 py-1 bg-[#C5A880]/15 border border-[#C5A880]/40 text-[#C5A880] text-[10px] uppercase tracking-widest font-mono">
+              <Sparkles className="w-3 h-3" />
+              <span>Cộng Đồng Cư Dân 5 Sao • The Tropical Beverly Solari</span>
+            </div>
+            <h1 className="text-2xl lg:text-3xl font-serif font-bold text-white tracking-wide">
+              Diễn Đàn & Biểu Quyết Cư Dân SKYLINE
+            </h1>
+            <p className="text-xs text-gray-400 max-w-2xl leading-relaxed">
+              Không gian tương tác trực tuyến 24/7: Thảo luận nội bộ, thông báo chính thức từ Ban Quản Lý, rao vặt đồ cũ và tham gia biểu quyết các vấn đề pháp lý của tòa nhà.
+            </p>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => setIsCreateModalOpen(true)}
+              className="px-5 py-3 bg-[#C5A880] hover:bg-white text-[#0A0E14] font-bold text-xs uppercase tracking-wider transition-all duration-200 flex items-center gap-2 shadow-lg hover:shadow-[#C5A880]/30 transform active:scale-95"
+            >
+              <Plus className="w-4 h-4" />
+              <span>Đăng Bài / Tạo Thăm Dò</span>
+            </button>
+          </div>
         </div>
 
-        <div className="p-4 bg-[#121820] border border-[#222B35] space-y-1">
-          <div className="text-xs text-gray-400 font-medium">Đang Mở Bình Chọn</div>
-          <div className="font-serif text-2xl font-bold text-emerald-400">{stats.openCount}</div>
-          <div className="text-[10px] text-emerald-500/80 font-mono">Đang tiếp nhận phiếu bầu</div>
-        </div>
+        {/* METRICS KPI BAR */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-6 pt-6 border-t border-[#C5A880]/20">
+          <div className="p-3 bg-[#0A0E14]/80 border border-[#C5A880]/20 flex items-center gap-3">
+            <div className="w-9 h-9 bg-[#C5A880]/10 border border-[#C5A880]/30 flex items-center justify-center text-[#C5A880]">
+              <MessageSquareQuote className="w-4 h-4" />
+            </div>
+            <div>
+              <div className="text-[10px] text-gray-400 uppercase tracking-wider">Tổng Bài Viết</div>
+              <div className="text-lg font-serif font-bold text-white font-mono">{stats.totalPosts}</div>
+            </div>
+          </div>
 
-        <div className="p-4 bg-[#121820] border border-[#222B35] space-y-1">
-          <div className="text-xs text-gray-400 font-medium">Căn Hộ Đã Tham Gia</div>
-          <div className="font-serif text-2xl font-bold text-[#C5A880]">{stats.votedCount} / {stats.total}</div>
-          <div className="text-[10px] text-gray-400 font-mono">Lá phiếu của Căn {aptCode}</div>
-        </div>
+          <div className="p-3 bg-[#0A0E14]/80 border border-[#C5A880]/20 flex items-center gap-3">
+            <div className="w-9 h-9 bg-[#10B981]/10 border border-[#10B981]/30 flex items-center justify-center text-[#10B981]">
+              <Vote className="w-4 h-4" />
+            </div>
+            <div>
+              <div className="text-[10px] text-gray-400 uppercase tracking-wider">Biểu Quyết Đang Mở</div>
+              <div className="text-lg font-serif font-bold text-[#10B981] font-mono">{stats.activePolls}</div>
+            </div>
+          </div>
 
-        <div className="p-4 bg-[#121820] border border-[#222B35] space-y-1">
-          <div className="text-xs text-gray-400 font-medium">Tỷ Lệ Cử Tri Toàn Chung Cư</div>
-          <div className="font-serif text-2xl font-bold text-cyan-400">{stats.avgParticipation}%</div>
-          <div className="text-[10px] text-cyan-500/80 font-mono">250 căn hộ sở hữu hợp pháp</div>
+          <div className="p-3 bg-[#0A0E14]/80 border border-[#C5A880]/20 flex items-center gap-3">
+            <div className="w-9 h-9 bg-[#F59E0B]/10 border border-[#F59E0B]/30 flex items-center justify-center text-[#F59E0B]">
+              <MessageSquare className="w-4 h-4" />
+            </div>
+            <div>
+              <div className="text-[10px] text-gray-400 uppercase tracking-wider">Lượt Thảo Luận</div>
+              <div className="text-lg font-serif font-bold text-white font-mono">{stats.totalComments}</div>
+            </div>
+          </div>
+
+          <div className="p-3 bg-[#0A0E14]/80 border border-[#C5A880]/20 flex items-center gap-3">
+            <div className="w-9 h-9 bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
+              <ShieldCheck className="w-4 h-4" />
+            </div>
+            <div>
+              <div className="text-[10px] text-gray-400 uppercase tracking-wider">AI Cảm Xúc Tích Cực</div>
+              <div className="text-lg font-serif font-bold text-emerald-400 font-mono">{stats.positiveRate}%</div>
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* ------------------------------------------------------------- */}
-      {/* 3. BỘ LỌC & TÌM KIẾM BIỂU QUYẾT                                */}
-      {/* ------------------------------------------------------------- */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 bg-[#121820] p-3 border border-[#222B35]">
-        {/* Status Filter Tabs */}
-        <div className="flex items-center gap-1.5 overflow-x-auto text-xs pb-1 md:pb-0">
-          <button
-            onClick={() => setStatusFilter('ALL')}
-            className={`px-3 py-1.5 font-semibold transition-all border whitespace-nowrap ${
-              statusFilter === 'ALL'
-                ? 'bg-[#C5A880] text-[#0D1117] border-[#C5A880] font-bold'
-                : 'bg-[#161B22] border-[#2D3748] text-gray-300 hover:text-white'
-            }`}
-          >
-            Tất Cả ({topics.length})
-          </button>
+      {/* FILTER TABS & TOOLBAR */}
+      <div className="p-4 bg-[#0E131B] border border-[#C5A880]/30 space-y-4">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+          {/* Category Tabs */}
+          <div className="flex flex-wrap items-center gap-2">
+            {[
+              { id: 'ALL', label: 'Tất Cả Bài Viết', icon: MessageSquareQuote },
+              { id: 'VOTING', label: 'Biểu Quyết & Poll', icon: Vote },
+              { id: 'ANNOUNCEMENT', label: 'Thông Báo BQL', icon: Megaphone },
+              { id: 'MARKETPLACE', label: 'Rao Vặt & Đồ Cũ', icon: ShoppingBag },
+              { id: 'DISCUSSION', label: 'Thảo Luận Cư Dân', icon: Users },
+            ].map(tab => {
+              const Icon = tab.icon;
+              const isActive = selectedCategory === tab.id;
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => setSelectedCategory(tab.id as any)}
+                  className={`px-3.5 py-2 text-xs uppercase tracking-wider font-semibold transition-all duration-200 flex items-center gap-2 ${
+                    isActive
+                      ? 'bg-[#C5A880] text-[#0A0E14] shadow-md font-bold'
+                      : 'bg-[#141B24] text-gray-300 hover:text-white hover:bg-[#1C2633] border border-white/5'
+                  }`}
+                >
+                  <Icon className="w-3.5 h-3.5" />
+                  <span>{tab.label}</span>
+                </button>
+              );
+            })}
+          </div>
 
-          <button
-            onClick={() => setStatusFilter('OPEN')}
-            className={`px-3 py-1.5 font-semibold transition-all border whitespace-nowrap ${
-              statusFilter === 'OPEN'
-                ? 'bg-emerald-600 text-white border-emerald-600 font-bold'
-                : 'bg-[#161B22] border-[#2D3748] text-emerald-400 hover:border-emerald-400'
-            }`}
-          >
-            Đang Diễn Ra ({topics.filter(t => t.status === 'OPEN').length})
-          </button>
-
-          <button
-            onClick={() => setStatusFilter('VOTED')}
-            className={`px-3 py-1.5 font-semibold transition-all border whitespace-nowrap ${
-              statusFilter === 'VOTED'
-                ? 'bg-[#C5A880] text-[#0D1117] border-[#C5A880] font-bold'
-                : 'bg-[#161B22] border-[#2D3748] text-amber-400 hover:border-amber-400'
-            }`}
-          >
-            Đã Biểu Quyết ({topics.filter(t => t.voters.some(v => v.aptCode.trim().toUpperCase() === aptCode.trim().toUpperCase())).length})
-          </button>
-
-          <button
-            onClick={() => setStatusFilter('CLOSED')}
-            className={`px-3 py-1.5 font-semibold transition-all border whitespace-nowrap ${
-              statusFilter === 'CLOSED'
-                ? 'bg-gray-700 text-white border-gray-600 font-bold'
-                : 'bg-[#161B22] border-[#2D3748] text-gray-400 hover:text-white'
-            }`}
-          >
-            Đã Kết Thúc ({topics.filter(t => t.status === 'CLOSED').length})
-          </button>
-        </div>
-
-        {/* Search & Legal Category Filter */}
-        <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap">
-          <select
-            value={legalTypeFilter}
-            onChange={(e) => setLegalTypeFilter(e.target.value as any)}
-            className="bg-[#161B22] border border-[#2D3748] text-gray-300 text-xs px-2.5 py-1.5 focus:outline-none focus:border-[#C5A880]"
-          >
-            <option value="ALL">Mọi Loại Biểu Quyết</option>
-            <option value="Đóng góp Quỹ Bảo trì">Quỹ Bảo Trì</option>
-            <option value="Quy Chế Chung Cư">Quy Chế Chung Cư</option>
-            <option value="Bầu Ban Quản Trị">Bầu Ban Quản Trị</option>
-            <option value="Ý kiến Cải tạo">Ý Kiến Cải Tạo</option>
-            <option value="Tiện Ích & Dịch Vụ">Tiện Ích & Dịch Vụ</option>
-          </select>
-
-          <div className="relative w-full sm:w-56">
+          {/* Search Box */}
+          <div className="relative min-w-[260px]">
+            <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
             <input
               type="text"
-              placeholder="Tìm kiếm biểu quyết..."
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-[#161B22] border border-[#2D3748] text-white text-xs px-3 py-1.5 pr-8 focus:outline-none focus:border-[#C5A880]"
+              onChange={e => setSearchQuery(e.target.value)}
+              placeholder="Tìm bài viết, tiêu đề, mã căn..."
+              className="w-full bg-[#141B24] border border-[#C5A880]/30 text-white pl-9 pr-3 py-2 text-xs placeholder-gray-500 focus:outline-none focus:border-[#C5A880]"
             />
-            <Search className="w-3.5 h-3.5 text-gray-400 absolute right-2.5 top-2.5 pointer-events-none" />
+            {searchQuery && (
+              <button 
+                onClick={() => setSearchQuery('')}
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            )}
           </div>
+        </div>
+
+        {/* Secondary Toggles */}
+        <div className="flex flex-wrap items-center gap-4 pt-3 border-t border-white/5 text-xs text-gray-400">
+          <label className="flex items-center gap-2 cursor-pointer hover:text-white">
+            <input
+              type="checkbox"
+              checked={onlyPinned}
+              onChange={e => setOnlyPinned(e.target.checked)}
+              className="accent-[#C5A880] rounded-none"
+            />
+            <span>Chỉ xem Thông báo Ghim quan trọng</span>
+          </label>
+
+          <label className="flex items-center gap-2 cursor-pointer hover:text-white">
+            <input
+              type="checkbox"
+              checked={onlyVoted}
+              onChange={e => setOnlyVoted(e.target.checked)}
+              className="accent-[#C5A880] rounded-none"
+            />
+            <span>Bài viết có Biểu quyết căn hộ đã tham gia</span>
+          </label>
         </div>
       </div>
 
-      {/* ------------------------------------------------------------- */}
-      {/* 4. MASTER-DETAIL VIEW: DANH SÁCH & CHI TIẾT BIỂU QUYẾT         */}
-      {/* ------------------------------------------------------------- */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        {/* CỘT TRÁI: DANH SÁCH CÁC CUỘC BIỂU QUYẾT (5 cols) */}
-        <div className="lg:col-span-5 space-y-3">
-          <div className="flex items-center justify-between text-xs text-gray-400 font-semibold px-1">
-            <span>Danh Sách Chiến Dịch ({filteredTopics.length})</span>
-            <span className="text-[11px] font-mono text-[#C5A880]">Bấm để xem chi tiết</span>
+      {/* FEED LIST */}
+      <div className="space-y-5">
+        {filteredPosts.length === 0 ? (
+          <div className="p-12 text-center bg-[#0E131B] border border-[#C5A880]/20 space-y-3">
+            <HelpCircle className="w-10 h-10 text-gray-500 mx-auto" />
+            <div className="text-sm font-semibold text-gray-300">Không tìm thấy bài viết nào phù hợp</div>
+            <p className="text-xs text-gray-500">Hãy thử đổi bộ lọc hoặc bấm Đăng bài để chia sẻ câu chuyện đầu tiên với cư dân.</p>
           </div>
+        ) : (
+          filteredPosts.map(post => {
+            const hasLiked = post.likes.some(c => c.toUpperCase() === aptCode.toUpperCase());
+            const isCommentsOpen = !!expandedComments[post.id];
+            const isBql = post.authorRole === 'ADMIN' || post.authorRole === 'STAFF';
 
-          {filteredTopics.length === 0 ? (
-            <div className="p-8 text-center bg-[#121820] border border-[#222B35] text-xs text-gray-400">
-              Không tìm thấy cuộc biểu quyết nào phù hợp với bộ lọc hiện tại.
-            </div>
-          ) : (
-            <div className="space-y-2.5 max-h-[750px] overflow-y-auto pr-1">
-              {filteredTopics.map((topic) => {
-                const isSelected = activeTopic?.id === topic.id;
-                const hasVoted = topic.voters.some(v => v.aptCode.trim().toUpperCase() === aptCode.trim().toUpperCase());
-                const voterRecord = topic.voters.find(v => v.aptCode.trim().toUpperCase() === aptCode.trim().toUpperCase());
-                const votedOption = voterRecord ? topic.options.find(o => o.id === voterRecord.optionId) : null;
-                const participationRate = ((topic.totalVotes / (topic.totalEligibleApartments || 250)) * 100).toFixed(1);
+            // Poll calculations
+            const userVote = post.poll?.voters.find(v => v.aptCode.toUpperCase() === aptCode.toUpperCase());
+            const totalPollVotes = post.poll ? post.poll.options.reduce((acc, o) => acc + o.votes, 0) : 0;
+            const eligibleCount = post.poll?.totalEligibleApartments || 250;
+            const participationRate = post.poll ? Math.round((totalPollVotes / eligibleCount) * 100) : 0;
 
-                return (
-                  <div
-                    key={topic.id}
-                    onClick={() => setSelectedTopicId(topic.id)}
-                    className={`p-4 border cursor-pointer transition-all space-y-2.5 relative ${
-                      isSelected
-                        ? 'bg-[#18212D] border-[#C5A880] shadow-xl'
-                        : 'bg-[#121820] border-[#222B35] hover:border-[#2D3748] hover:bg-[#151D27]'
-                    }`}
-                  >
-                    {/* Top Badges */}
-                    <div className="flex items-center justify-between gap-2 text-[10px]">
-                      <div className="flex items-center gap-1.5">
-                        <span className="px-2 py-0.5 bg-[#0D1117] border border-[#C5A880]/50 text-[#C5A880] font-mono font-bold">
-                          #{topic.code}
-                        </span>
-                        <span className="px-2 py-0.5 bg-[#161B22] border border-gray-700 text-gray-300 font-medium truncate max-w-[140px]">
-                          {topic.legalType}
-                        </span>
-                      </div>
+            return (
+              <article
+                key={post.id}
+                className={`bg-[#0E131B] border transition-all duration-200 ${
+                  post.isPinned
+                    ? 'border-[#C5A880] shadow-[0_4px_20px_rgba(197,168,128,0.12)]'
+                    : 'border-[#222B35] hover:border-[#C5A880]/50'
+                }`}
+              >
+                {/* POST HEADER */}
+                <div className="p-5 border-b border-[#1A222D] flex flex-col md:flex-row md:items-center justify-between gap-4">
+                  <div className="flex items-center gap-3">
+                    <img
+                      src={post.avatarUrl || 'https://data.nks.vn/storage/users/default.png'}
+                      alt={post.authorName}
+                      onError={e => { e.currentTarget.src = 'https://data.nks.vn/storage/users/default.png'; }}
+                      className="w-10 h-10 object-cover border border-[#C5A880]/50 rounded-none flex-shrink-0"
+                    />
 
-                      <div className="flex items-center gap-1.5">
-                        {topic.status === 'OPEN' ? (
-                          <span className="px-2 py-0.5 bg-emerald-950 text-emerald-300 border border-emerald-500 font-mono font-bold flex items-center gap-1">
-                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
-                            Đang Mở
+                    <div>
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className="text-sm font-bold text-white tracking-wide">{post.authorName}</span>
+                        {isBql ? (
+                          <span className="px-2 py-0.5 bg-[#C5A880] text-[#0A0E14] text-[9px] font-bold uppercase tracking-wider">
+                            Ban Quản Lý
+                          </span>
+                        ) : post.authorRole === 'OWNER' ? (
+                          <span className="px-2 py-0.5 bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 text-[9px] font-semibold uppercase tracking-wider">
+                            Chủ Hộ ({post.aptCode || 'CH-06'})
                           </span>
                         ) : (
-                          <span className="px-2 py-0.5 bg-gray-800 text-gray-400 border border-gray-600 font-mono font-bold">
-                            Đã Kết Thúc
+                          <span className="px-2 py-0.5 bg-gray-700/40 text-gray-300 border border-gray-600 text-[9px] font-semibold uppercase tracking-wider">
+                            Cư Dân ({post.aptCode || 'Căn Hộ'})
+                          </span>
+                        )}
+
+                        {post.isPinned && (
+                          <span className="inline-flex items-center gap-1 text-[10px] text-[#C5A880] font-bold uppercase tracking-wider">
+                            <Pin className="w-3 h-3 fill-[#C5A880]" />
+                            Ghim Quan Trọng
                           </span>
                         )}
                       </div>
-                    </div>
 
-                    {/* Title */}
-                    <h3 className={`text-sm font-bold line-clamp-2 transition-colors ${
-                      isSelected ? 'text-white' : 'text-gray-200'
-                    }`}>
-                      {topic.title}
-                    </h3>
-
-                    {/* Voter status pill */}
-                    {hasVoted ? (
-                      <div className="p-2 bg-emerald-950/40 border border-emerald-500/40 text-[11px] text-emerald-300 flex items-center justify-between gap-2">
-                        <span className="flex items-center gap-1 truncate">
-                          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 flex-shrink-0" />
-                          <span className="truncate">Đã bầu: <strong>{votedOption?.text || 'Đã chọn'}</strong></span>
-                        </span>
-                        <span className="font-mono text-[10px] text-emerald-400 flex-shrink-0">Hợp lệ ✓</span>
-                      </div>
-                    ) : (
-                      <div className="p-1.5 bg-amber-950/20 border border-amber-600/30 text-[11px] text-amber-300 flex items-center justify-between">
-                        <span className="flex items-center gap-1">
-                          <AlertCircle className="w-3 h-3 text-amber-400" />
-                          <span>Căn {aptCode} chưa gửi biểu quyết</span>
-                        </span>
-                        <span className="font-bold text-[10px] text-amber-400 uppercase">Chờ bầu →</span>
-                      </div>
-                    )}
-
-                    {/* Progress Bar & Deadline */}
-                    <div className="pt-1 border-t border-[#222B35] space-y-1 text-[10px] text-gray-400">
-                      <div className="flex items-center justify-between">
-                        <span>Tham gia: <strong>{topic.totalVotes} / {topic.totalEligibleApartments}</strong> căn ({participationRate}%)</span>
-                        <span className="font-mono text-gray-400 flex items-center gap-1">
-                          <Clock className="w-3 h-3" /> Hạn: {new Date(topic.deadline).toLocaleDateString('vi-VN')}
-                        </span>
-                      </div>
-                      <div className="w-full h-1 bg-[#0D1117] overflow-hidden">
-                        <div 
-                          className="h-full bg-[#C5A880] transition-all"
-                          style={{ width: `${Math.min(100, parseFloat(participationRate))}%` }}
-                        />
+                      <div className="text-[11px] text-gray-500 flex items-center gap-2 mt-0.5 font-mono">
+                        <Clock className="w-3 h-3" />
+                        <span>{new Date(post.createdAt).toLocaleDateString('vi-VN', { hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit', year: 'numeric' })}</span>
+                        {post.code && <span>• Mã: <strong className="text-[#C5A880]">{post.code}</strong></span>}
                       </div>
                     </div>
                   </div>
-                );
-              })}
-            </div>
-          )}
-        </div>
 
-        {/* CỘT PHẢI: CHI TIẾT BIỂU QUYẾT & LÁ PHIẾU BẦU (7 cols) */}
-        <div className="lg:col-span-7">
-          {activeTopic ? (
-            <div className="bg-[#121820] border border-[#222B35] p-5 sm:p-6 space-y-6 shadow-2xl">
-              {/* Topic Detail Header */}
-              <div className="space-y-3 border-b border-[#222B35] pb-4">
-                <div className="flex flex-wrap items-center justify-between gap-2 text-xs">
-                  <div className="flex items-center gap-2">
-                    <span className="px-2.5 py-0.5 bg-[#C5A880]/15 border border-[#C5A880]/50 text-[#C5A880] font-mono font-bold">
-                      {activeTopic.code}
+                  {/* AI MODERATION & SENTIMENT PILL */}
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="px-2 py-0.5 bg-[#141B24] border border-[#10B981]/40 text-[#10B981] text-[10px] font-mono flex items-center gap-1">
+                      <ShieldCheck className="w-3 h-3" />
+                      AI: Đã Duyệt
                     </span>
-                    <span className="px-2.5 py-0.5 bg-[#161B22] border border-gray-700 text-gray-300 font-semibold">
-                      {activeTopic.legalType}
-                    </span>
-                    {activeTopic.isOwnerOnly && (
-                      <span className="px-2 py-0.5 bg-[#1F1924] border border-purple-500/50 text-purple-300 text-[10px] font-bold uppercase">
-                        Chủ Hộ
-                      </span>
-                    )}
-                  </div>
 
-                  <div className="flex items-center gap-2">
-                    <span className={`px-2.5 py-0.5 text-xs font-mono font-bold ${
-                      activeTopic.status === 'OPEN' 
-                        ? 'bg-emerald-950 text-emerald-300 border border-emerald-500' 
-                        : 'bg-gray-800 text-gray-400 border border-gray-600'
+                    <span className={`px-2 py-0.5 text-[10px] font-mono border ${
+                      post.aiSentimentLabel === 'Tích cực' 
+                        ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30' 
+                        : post.aiSentimentLabel === 'Góp ý'
+                        ? 'bg-[#C5A880]/10 text-[#C5A880] border-[#C5A880]/30'
+                        : 'bg-rose-500/10 text-rose-400 border-rose-500/30'
                     }`}>
-                      {activeTopic.status === 'OPEN' ? '● Đang Mở Tiếp Nhận' : 'Đã Khóa Sổ Biểu Quyết'}
+                      {post.aiSentimentLabel === 'Tích cực' ? '🌱 ' : post.aiSentimentLabel === 'Góp ý' ? '💡 ' : '⚠️ '}
+                      Cảm xúc: {post.aiSentimentLabel} ({post.aiSentiment > 0 ? `+${post.aiSentiment.toFixed(2)}` : post.aiSentiment.toFixed(2)})
                     </span>
 
-                    {/* Admin Action to close/re-open */}
-                    {isAdmin && (
+                    {/* Delete post button (Admin or Author) */}
+                    {(isAdmin || post.aptCode?.toUpperCase() === aptCode.toUpperCase()) && (
                       <button
-                        onClick={() => handleToggleStatus(activeTopic.id)}
-                        className="px-2.5 py-0.5 bg-[#161B22] hover:bg-[#222B35] border border-gray-600 text-gray-300 text-[11px] font-mono transition-colors"
+                        onClick={() => handleDeletePost(post.id, post.aptCode)}
+                        className="p-1.5 text-gray-500 hover:text-rose-400 hover:bg-rose-500/10 transition-colors ml-1"
+                        title="Gỡ bài viết này"
                       >
-                        {activeTopic.status === 'OPEN' ? 'Đóng Biểu Quyết' : 'Mở Lại'}
+                        <Trash2 className="w-3.5 h-3.5" />
                       </button>
                     )}
                   </div>
                 </div>
 
-                <h3 className="font-serif text-xl sm:text-2xl text-white font-bold leading-snug">
-                  {activeTopic.title}
-                </h3>
-
-                <div className="flex flex-wrap items-center gap-4 text-xs text-gray-400 font-mono">
-                  <span>Khởi tạo: <strong className="text-gray-300">{activeTopic.createdBy}</strong></span>
-                  <span>•</span>
-                  <span>Hạn chót: <strong className="text-amber-400">{new Date(activeTopic.deadline).toLocaleDateString('vi-VN')}</strong></span>
-                  <span>•</span>
-                  <span>Tiến độ: <strong className="text-[#C5A880]">{activeTopic.totalVotes} / {activeTopic.totalEligibleApartments} phiếu</strong></span>
-                </div>
-
-                <p className="text-xs text-gray-300 leading-relaxed font-light pt-1">
-                  {activeTopic.description}
-                </p>
-
-                {activeTopic.summaryReport && (
-                  <div className="p-3 bg-[#161B22] border-l-2 border-[#C5A880] text-xs text-gray-300 space-y-1">
-                    <div className="text-[10px] text-[#C5A880] font-bold uppercase tracking-wider flex items-center gap-1">
-                      <FileText className="w-3 h-3" /> Căn Cứ & Báo Cáo Kỹ Thuật Đính Kèm:
-                    </div>
-                    <p className="text-gray-300 text-[11.5px] leading-relaxed">
-                      {activeTopic.summaryReport}
+                {/* POST BODY */}
+                <div className="p-5 space-y-4">
+                  <div className="space-y-2">
+                    <h2 className="text-lg font-serif font-bold text-white tracking-wide">
+                      {post.title}
+                    </h2>
+                    <p className="text-xs text-gray-300 leading-relaxed whitespace-pre-line">
+                      {post.content}
                     </p>
                   </div>
-                )}
-              </div>
 
-              {/* Voting Form / Options */}
-              <div className="space-y-4">
-                <div className="flex items-center justify-between text-xs font-semibold text-gray-300">
-                  <span className="uppercase tracking-wider text-[#C5A880] flex items-center gap-1.5">
-                    <BarChart3 className="w-3.5 h-3.5" /> Các Phương Án Bình Chọn:
-                  </span>
-                  <span className="text-gray-400 text-[11px]">
-                    {userVotedRecord ? '✓ Bạn đã bỏ phiếu cho cuộc này' : 'Chưa có phiếu từ căn hộ của bạn'}
-                  </span>
-                </div>
+                  {/* POST TAGS */}
+                  {post.tags && post.tags.length > 0 && (
+                    <div className="flex flex-wrap gap-1.5 pt-1">
+                      {post.tags.map(tag => (
+                        <span 
+                          key={tag}
+                          className="px-2 py-0.5 bg-[#141B24] border border-[#C5A880]/20 text-gray-400 text-[10px] flex items-center gap-1 font-mono"
+                        >
+                          <Tag className="w-2.5 h-2.5 text-[#C5A880]" />
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                  )}
 
-                {/* Options List */}
-                <div className="space-y-3">
-                  {activeTopic.options.map((option) => {
-                    const isSelected = selectedOptionId === option.id;
-                    const isUserChoice = userVotedRecord?.optionId === option.id;
-                    const percentage = activeTopic.totalVotes > 0
-                      ? ((option.votes / activeTopic.totalVotes) * 100).toFixed(1)
-                      : '0.0';
-
-                    const canVote = (isOwner || isAdmin) && activeTopic.status === 'OPEN';
-
-                    return (
-                      <div
-                        key={option.id}
-                        onClick={() => {
-                          if (canVote) setSelectedOptionId(option.id);
-                        }}
-                        className={`p-4 border transition-all space-y-2.5 ${
-                          canVote ? 'cursor-pointer' : 'cursor-default'
-                        } ${
-                          isSelected
-                            ? 'bg-[#1A2330] border-[#C5A880] shadow-md'
-                            : 'bg-[#161B22]/70 border-[#222B35] hover:border-gray-600'
-                        }`}
-                      >
-                        <div className="flex items-center justify-between gap-3 text-xs">
-                          <div className="flex items-center gap-2.5">
-                            {canVote && (
-                              <span className={`w-4 h-4 rounded-full border flex items-center justify-center flex-shrink-0 ${
-                                isSelected ? 'border-[#C5A880] bg-[#C5A880]' : 'border-gray-500'
-                              }`}>
-                                {isSelected && <span className="w-1.5 h-1.5 rounded-full bg-[#0D1117]"></span>}
-                              </span>
-                            )}
-                            <span className="font-medium text-white text-[12.5px] leading-snug">
-                              {option.text}
+                  {/* INTERACTIVE POLL / VOTING SECTION */}
+                  {post.poll && (
+                    <div className="mt-4 p-4 bg-[#141B24] border border-[#C5A880]/30 space-y-4">
+                      {/* Poll Header */}
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-white/5">
+                        <div className="flex items-center gap-2">
+                          <Vote className="w-4 h-4 text-[#C5A880]" />
+                          <span className="text-xs font-bold uppercase tracking-wider text-white">
+                            Cuộc Thăm Dò & Biểu Quyết Tòa Nhà
+                          </span>
+                          {post.poll.isOwnerOnly ? (
+                            <span className="px-2 py-0.5 bg-amber-500/15 border border-amber-500/40 text-amber-400 text-[9px] font-semibold uppercase tracking-wider">
+                              Chủ Hộ (Owner Only)
                             </span>
-                          </div>
-
-                          <div className="flex items-center gap-2 flex-shrink-0">
-                            {isUserChoice && (
-                              <span className="px-2 py-0.5 bg-emerald-950 text-emerald-300 border border-emerald-500 text-[10px] font-bold font-mono">
-                                Lựa Chọn Của Bạn ✓
-                              </span>
-                            )}
-                            <span className="font-mono font-bold text-sm text-[#C5A880]">
-                              {percentage}%
+                          ) : (
+                            <span className="px-2 py-0.5 bg-blue-500/15 border border-blue-500/40 text-blue-400 text-[9px] font-semibold uppercase tracking-wider">
+                              Toàn Thể Cư Dân
                             </span>
-                            <span className="text-[10px] text-gray-400 font-mono">
-                              ({option.votes} phiếu)
-                            </span>
-                          </div>
+                          )}
                         </div>
 
-                        {/* Progress bar */}
-                        <div className="w-full h-2 bg-[#0D1117] overflow-hidden">
-                          <div
-                            className={`h-full transition-all duration-500 ${
-                              isUserChoice ? 'bg-emerald-500' : isSelected ? 'bg-[#C5A880]' : 'bg-gray-600'
-                            }`}
-                            style={{ width: `${percentage}%` }}
-                          />
+                        <div className="text-[11px] text-gray-400 font-mono flex items-center gap-2">
+                          <span>Đã biểu quyết: <strong className="text-white">{totalPollVotes}</strong>/{eligibleCount} căn ({participationRate}%)</span>
+                          <span>• Hạn: {new Date(post.poll.deadline).toLocaleDateString('vi-VN')}</span>
                         </div>
                       </div>
+
+                      {/* Notice if user cannot vote */}
+                      {post.poll.isOwnerOnly && !isOwner && !isAdmin && (
+                        <div className="p-2.5 bg-amber-500/10 border border-amber-500/30 text-amber-400 text-[11px] flex items-center gap-2">
+                          <Lock className="w-3.5 h-3.5 flex-shrink-0" />
+                          <span>Quyền hạn: Cuộc biểu quyết pháp lý này yêu cầu tài khoản <strong>Chủ Hộ</strong>. Bạn đang xem với quyền tham khảo.</span>
+                        </div>
+                      )}
+
+                      {/* Options List */}
+                      <div className="space-y-2.5 pt-1">
+                        {post.poll.options.map(option => {
+                          const isUserSelected = userVote?.optionId === option.id;
+                          const percentage = totalPollVotes > 0 ? Math.round((option.votes / totalPollVotes) * 100) : 0;
+                          const canVote = !post.poll?.isOwnerOnly || isOwner;
+
+                          return (
+                            <div
+                              key={option.id}
+                              onClick={() => canVote && handleVote(post.id, option.id)}
+                              className={`relative p-3 border transition-all duration-200 select-none ${
+                                canVote ? 'cursor-pointer hover:border-[#C5A880]' : 'cursor-default'
+                              } ${
+                                isUserSelected
+                                  ? 'bg-[#10B981]/10 border-[#10B981]'
+                                  : 'bg-[#0E131B] border-[#222B35]'
+                              }`}
+                            >
+                              {/* Background percentage progress bar */}
+                              <div
+                                className={`absolute left-0 top-0 bottom-0 transition-all duration-500 ${
+                                  isUserSelected ? 'bg-[#10B981]/15' : 'bg-[#C5A880]/10'
+                                }`}
+                                style={{ width: `${percentage}%` }}
+                              />
+
+                              {/* Foreground content */}
+                              <div className="relative z-10 flex items-center justify-between gap-3 text-xs">
+                                <div className="flex items-center gap-2.5">
+                                  <div className={`w-4 h-4 border flex items-center justify-center flex-shrink-0 ${
+                                    isUserSelected 
+                                      ? 'border-[#10B981] bg-[#10B981] text-[#0A0E14]' 
+                                      : 'border-gray-500 bg-[#16202D]'
+                                  }`}>
+                                    {isUserSelected && <Check className="w-3 h-3 stroke-[3]" />}
+                                  </div>
+                                  <span className={`font-medium ${isUserSelected ? 'text-[#10B981] font-bold' : 'text-gray-200'}`}>
+                                    {option.text}
+                                  </span>
+                                </div>
+
+                                <div className="flex items-center gap-3 font-mono flex-shrink-0 text-[11px]">
+                                  <span className="text-gray-400">{option.votes} phiếu</span>
+                                  <span className={`font-bold ${isUserSelected ? 'text-[#10B981]' : 'text-[#C5A880]'}`}>
+                                    {percentage}%
+                                  </span>
+                                </div>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+
+                      {/* User voted status footer */}
+                      {userVote && (
+                        <div className="text-[11px] text-[#10B981] flex items-center justify-between pt-1 font-mono">
+                          <span className="flex items-center gap-1.5">
+                            <CheckCircle2 className="w-3.5 h-3.5" />
+                            Căn hộ {aptCode} đã bỏ phiếu thành công (bấm phương án khác để đổi ý kiến).
+                          </span>
+                          <span className="text-gray-500">
+                            Lúc: {new Date(userVote.votedAt).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+
+                {/* POST FOOTER: ACTIONS */}
+                <div className="px-5 py-3 bg-[#0A0E14] border-t border-[#1A222D] flex items-center justify-between text-xs">
+                  <div className="flex items-center gap-4">
+                    {/* Like button */}
+                    <button
+                      onClick={() => handleLike(post.id)}
+                      className={`flex items-center gap-1.5 px-3 py-1.5 transition-all duration-150 ${
+                        hasLiked 
+                          ? 'text-[#F43F5E] bg-[#F43F5E]/10 border border-[#F43F5E]/30 font-bold' 
+                          : 'text-gray-400 hover:text-white hover:bg-white/5 border border-transparent'
+                      }`}
+                    >
+                      <Heart className={`w-3.5 h-3.5 ${hasLiked ? 'fill-[#F43F5E]' : ''}`} />
+                      <span>{post.likes.length}</span>
+                      <span className="hidden sm:inline">{hasLiked ? 'Đã Thích' : 'Thích'}</span>
+                    </button>
+
+                    {/* Comment button */}
+                    <button
+                      onClick={() => setExpandedComments(prev => ({ ...prev, [post.id]: !prev[post.id] }))}
+                      className="flex items-center gap-1.5 px-3 py-1.5 text-gray-400 hover:text-white hover:bg-white/5 transition-all"
+                    >
+                      <MessageSquare className="w-3.5 h-3.5" />
+                      <span>{post.comments.length}</span>
+                      <span className="hidden sm:inline">Thảo luận</span>
+                    </button>
+                  </div>
+
+                  <div className="text-[11px] text-gray-500 font-mono">
+                    Khu Dân Cư The Tropical BS-07 - BS-10
+                  </div>
+                </div>
+
+                {/* EXPANDABLE COMMENTS SECTION */}
+                {isCommentsOpen && (
+                  <div className="p-5 bg-[#0C1017] border-t border-[#1A222D] space-y-4 animate-fadeIn">
+                    <div className="text-xs font-serif font-bold text-[#C5A880] uppercase tracking-wider flex items-center gap-2">
+                      <MessageSquare className="w-3.5 h-3.5" />
+                      <span>Bình luận & Ý kiến trao đổi ({post.comments.length})</span>
+                    </div>
+
+                    {/* Comments list */}
+                    {post.comments.length === 0 ? (
+                      <p className="text-xs text-gray-500 italic py-2">
+                        Chưa có bình luận nào. Hãy là người đầu tiên trao đổi với cư dân căn hộ này!
+                      </p>
+                    ) : (
+                      <div className="space-y-3">
+                        {post.comments.map(cmt => {
+                          const isCmtBql = cmt.authorRole === 'ADMIN' || cmt.authorRole === 'STAFF';
+                          return (
+                            <div key={cmt.id} className="p-3 bg-[#121820] border border-[#222B35] space-y-1.5">
+                              <div className="flex items-center justify-between text-[11px]">
+                                <div className="flex items-center gap-2">
+                                  <span className="font-bold text-white">{cmt.authorName}</span>
+                                  {isCmtBql ? (
+                                    <span className="px-1.5 py-0.2 bg-[#C5A880] text-[#0A0E14] text-[8px] font-bold uppercase">BQL</span>
+                                  ) : (
+                                    <span className="text-gray-400 font-mono">({cmt.aptCode || 'Căn Hộ'})</span>
+                                  )}
+                                </div>
+                                <span className="text-gray-500 font-mono text-[10px]">
+                                  {new Date(cmt.createdAt).toLocaleDateString('vi-VN', { hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit' })}
+                                </span>
+                              </div>
+                              <p className="text-xs text-gray-300 leading-relaxed">
+                                {cmt.content}
+                              </p>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
+
+                    {/* New comment input */}
+                    <div className="flex gap-2 pt-2">
+                      <input
+                        type="text"
+                        value={commentDrafts[post.id] || ''}
+                        onChange={e => setCommentDrafts({ ...commentDrafts, [post.id]: e.target.value })}
+                        onKeyDown={e => {
+                          if (e.key === 'Enter') {
+                            e.preventDefault();
+                            handleCommentSubmit(post.id);
+                          }
+                        }}
+                        placeholder={`Viết phản hồi với tư cách ${userName} (${aptCode})...`}
+                        className="flex-1 bg-[#141B24] border border-[#C5A880]/30 text-white px-3 py-2 text-xs placeholder-gray-500 focus:outline-none focus:border-[#C5A880]"
+                      />
+                      <button
+                        onClick={() => handleCommentSubmit(post.id)}
+                        className="px-4 py-2 bg-[#C5A880] hover:bg-white text-[#0A0E14] font-bold text-xs uppercase tracking-wider transition-colors flex items-center gap-1.5 shadow"
+                      >
+                        <Send className="w-3.5 h-3.5" />
+                        <span>Gửi</span>
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </article>
+            );
+          })
+        )}
+      </div>
+
+      {/* CREATE POST MODAL */}
+      {isCreateModalOpen && (
+        <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
+          <div className="bg-[#0E131B] border border-[#C5A880] max-w-2xl w-full p-6 space-y-5 shadow-2xl relative my-8">
+            <button
+              onClick={() => setIsCreateModalOpen(false)}
+              className="absolute top-4 right-4 text-gray-400 hover:text-white p-1"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            <div className="space-y-1">
+              <div className="text-[10px] text-[#C5A880] uppercase tracking-widest font-mono">Diễn Đàn SKYLINE Community</div>
+              <h3 className="text-xl font-serif font-bold text-white">Đăng Bài Viết & Tạo Khảo Sát Cư Dân</h3>
+              <p className="text-xs text-gray-400">Chia sẻ thông tin, rao vặt nội bộ hoặc mở cuộc thăm dò ý kiến toàn khu chung cư.</p>
+            </div>
+
+            <form onSubmit={handleCreatePost} className="space-y-4">
+              {/* Category picker */}
+              <div className="space-y-1.5">
+                <label className="text-xs font-semibold text-gray-300">Chuyên Mục Bài Đăng</label>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                  {[
+                    { id: 'DISCUSSION', label: 'Thảo Luận', icon: Users },
+                    { id: 'MARKETPLACE', label: 'Rao Vặt', icon: ShoppingBag },
+                    { id: 'VOTING', label: 'Biểu Quyết', icon: Vote },
+                    ...(isAdmin ? [{ id: 'ANNOUNCEMENT', label: 'Thông Báo BQL', icon: Megaphone }] : []),
+                  ].map(cat => {
+                    const Icon = cat.icon;
+                    const isSelected = createCategory === cat.id;
+                    return (
+                      <button
+                        key={cat.id}
+                        type="button"
+                        onClick={() => {
+                          setCreateCategory(cat.id as any);
+                          if (cat.id === 'VOTING') setAttachPoll(true);
+                        }}
+                        className={`p-2.5 text-xs font-semibold border flex items-center justify-center gap-1.5 transition-all ${
+                          isSelected
+                            ? 'bg-[#C5A880] text-[#0A0E14] border-[#C5A880] font-bold'
+                            : 'bg-[#141B24] text-gray-300 border-[#222B35] hover:border-gray-500'
+                        }`}
+                      >
+                        <Icon className="w-3.5 h-3.5" />
+                        <span>{cat.label}</span>
+                      </button>
                     );
                   })}
                 </div>
               </div>
 
-              {/* Action Footer */}
-              <div className="pt-2 border-t border-[#222B35] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <div>
-                  {userVotedRecord ? (
-                    <div className="text-xs text-gray-300 flex items-center gap-1.5">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                      <span>
-                        Căn <strong className="text-white font-mono">{aptCode}</strong> đã ghi nhận phiếu lúc{' '}
-                        <span className="font-mono text-[#C5A880]">
-                          {new Date(userVotedRecord.votedAt).toLocaleString('vi-VN')}
-                        </span>
-                      </span>
-                    </div>
-                  ) : (
-                    <div className="text-xs text-gray-400">
-                      Mỗi căn hộ tương ứng với 01 lá phiếu hợp lệ có tính pháp lý theo Luật Nhà Ở.
-                    </div>
-                  )}
-                </div>
+              {/* Title input */}
+              <div className="space-y-1.5">
+                <label className="text-xs font-semibold text-gray-300">Tiêu Đề Bài Viết *</label>
+                <input
+                  type="text"
+                  required
+                  value={createTitle}
+                  onChange={e => setCreateTitle(e.target.value)}
+                  placeholder="Ví dụ: Trao đổi bộ bàn ghế sồi ban công / Đề xuất thêm thùng rác phân loại..."
+                  className="w-full bg-[#141B24] border border-[#C5A880]/30 text-white px-3 py-2 text-xs placeholder-gray-500 focus:outline-none focus:border-[#C5A880]"
+                />
+              </div>
 
-                {/* Submit / Update Button */}
-                {activeTopic.status === 'OPEN' && (isOwner || isAdmin) ? (
-                  <button
-                    onClick={handleSubmitVote}
-                    className="px-6 py-2.5 bg-[#C5A880] hover:bg-white text-[#0D1117] text-xs font-bold uppercase tracking-wider transition-colors shadow-lg flex items-center justify-center gap-1.5"
-                  >
-                    <Vote className="w-4 h-4" />
-                    {userVotedRecord ? 'Cập Nhật Lại Phiếu' : 'Xác Nhận Biểu Quyết'}
-                  </button>
-                ) : activeTopic.status === 'CLOSED' ? (
-                  <div className="px-4 py-2 bg-[#161B22] border border-gray-700 text-gray-400 text-xs font-mono">
-                    Cuộc biểu quyết đã kết thúc
-                  </div>
-                ) : (
-                  <div className="text-xs text-amber-400 italic">
-                    * Chỉ Chủ hộ (Owner) được cấp quyền biểu quyết cho căn {aptCode}
+              {/* Content input */}
+              <div className="space-y-1.5">
+                <label className="text-xs font-semibold text-gray-300">Nội Dung Chi Tiết *</label>
+                <textarea
+                  required
+                  rows={4}
+                  value={createContent}
+                  onChange={e => setCreateContent(e.target.value)}
+                  placeholder="Mô tả cụ thể thông tin, tình trạng, lý do để cư dân và BQL nắm rõ..."
+                  className="w-full bg-[#141B24] border border-[#C5A880]/30 text-white p-3 text-xs placeholder-gray-500 focus:outline-none focus:border-[#C5A880] resize-none"
+                />
+              </div>
+
+              {/* Tags input */}
+              <div className="space-y-1.5">
+                <label className="text-xs font-semibold text-gray-300">Thẻ Phân Loại (Tags, cách nhau bằng dấu phẩy)</label>
+                <input
+                  type="text"
+                  value={createTags}
+                  onChange={e => setCreateTags(e.target.value)}
+                  placeholder="Rao vặt, Tiện ích, Thang máy, Hồ bơi..."
+                  className="w-full bg-[#141B24] border border-[#222B35] text-white px-3 py-2 text-xs placeholder-gray-500 focus:outline-none focus:border-[#C5A880]"
+                />
+              </div>
+
+              {/* Admin pinned toggle */}
+              {isAdmin && (
+                <label className="flex items-center gap-2 cursor-pointer text-xs text-[#C5A880]">
+                  <input
+                    type="checkbox"
+                    checked={createIsPinned}
+                    onChange={e => setCreateIsPinned(e.target.checked)}
+                    className="accent-[#C5A880]"
+                  />
+                  <span>Ghim bài viết này lên đầu bảng tin diễn đàn</span>
+                </label>
+              )}
+
+              {/* Poll toggle */}
+              <div className="pt-2 border-t border-white/5 space-y-3">
+                <label className="flex items-center justify-between cursor-pointer text-xs text-gray-200">
+                  <span className="flex items-center gap-2 font-semibold">
+                    <Vote className="w-4 h-4 text-[#C5A880]" />
+                    Đính kèm cuộc thăm dò ý kiến / Biểu quyết (Interactive Poll)
+                  </span>
+                  <input
+                    type="checkbox"
+                    checked={attachPoll || createCategory === 'VOTING'}
+                    onChange={e => setAttachPoll(e.target.checked)}
+                    className="accent-[#C5A880]"
+                  />
+                </label>
+
+                {(attachPoll || createCategory === 'VOTING') && (
+                  <div className="p-3.5 bg-[#141B24] border border-[#C5A880]/30 space-y-3 animate-fadeIn">
+                    <div className="text-[11px] text-[#C5A880] font-bold uppercase tracking-wider">
+                      Cấu Hình Các Phương Án Bình Chọn
+                    </div>
+
+                    <div className="space-y-2">
+                      {pollOptions.map((opt, idx) => (
+                        <div key={idx} className="flex gap-2">
+                          <input
+                            type="text"
+                            value={opt}
+                            onChange={e => {
+                              const newOpts = [...pollOptions];
+                              newOpts[idx] = e.target.value;
+                              setPollOptions(newOpts);
+                            }}
+                            placeholder={`Phương án ${idx + 1}...`}
+                            className="flex-1 bg-[#0E131B] border border-[#222B35] text-white px-3 py-1.5 text-xs focus:outline-none focus:border-[#C5A880]"
+                          />
+                          {pollOptions.length > 2 && (
+                            <button
+                              type="button"
+                              onClick={() => setPollOptions(pollOptions.filter((_, i) => i !== idx))}
+                              className="px-2.5 text-gray-400 hover:text-rose-400"
+                            >
+                              <X className="w-4 h-4" />
+                            </button>
+                          )}
+                        </div>
+                      ))}
+
+                      {pollOptions.length < 5 && (
+                        <button
+                          type="button"
+                          onClick={() => setPollOptions([...pollOptions, ''])}
+                          className="text-xs text-[#C5A880] hover:underline flex items-center gap-1 pt-1"
+                        >
+                          <Plus className="w-3 h-3" /> Thêm phương án lựa chọn
+                        </button>
+                      )}
+                    </div>
+
+                    {/* Poll constraints */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+                      <div>
+                        <label className="text-[10px] text-gray-400 block mb-1">Thời Hạn Biểu Quyết Đến</label>
+                        <input
+                          type="datetime-local"
+                          value={pollDeadline}
+                          onChange={e => setPollDeadline(e.target.value)}
+                          className="w-full bg-[#0E131B] border border-[#222B35] text-white px-3 py-1.5 text-xs focus:outline-none focus:border-[#C5A880]"
+                        />
+                      </div>
+
+                      {isAdmin && (
+                        <div className="flex items-center gap-2 pt-4">
+                          <input
+                            type="checkbox"
+                            id="pollOwnerOnly"
+                            checked={pollIsOwnerOnly}
+                            onChange={e => setPollIsOwnerOnly(e.target.checked)}
+                            className="accent-[#C5A880]"
+                          />
+                          <label htmlFor="pollOwnerOnly" className="text-xs text-gray-300 cursor-pointer">
+                            Chỉ Chủ Hộ mới được biểu quyết (Biểu quyết pháp lý)
+                          </label>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 )}
               </div>
 
-              {/* Admin Audit Log: Danh sách căn hộ đã bỏ phiếu */}
-              {isAdmin && activeTopic.voters.length > 0 && (
-                <div className="pt-4 border-t border-[#222B35] space-y-2">
-                  <div className="text-xs font-bold uppercase tracking-wider text-[#C5A880] flex items-center justify-between">
-                    <span>Nhật Ký Kiểm Toán Phiếu Bầu Thực Tế ({activeTopic.voters.length} căn):</span>
-                    <span className="text-[10px] text-gray-400 font-normal">Minh bạch 100% không dữ liệu ảo</span>
-                  </div>
-
-                  <div className="max-h-40 overflow-y-auto border border-[#222B35] divide-y divide-[#222B35] text-xs">
-                    {activeTopic.voters.map((voter, idx) => {
-                      const opt = activeTopic.options.find(o => o.id === voter.optionId);
-                      return (
-                        <div key={idx} className="p-2.5 flex items-center justify-between bg-[#161B22]/50 hover:bg-[#161B22]">
-                          <div className="flex items-center gap-2">
-                            <span className="font-mono font-bold text-white px-1.5 py-0.5 bg-[#0D1117] border border-[#2D3748]">
-                              {voter.aptCode}
-                            </span>
-                            <span className="text-gray-300">{voter.voterName}</span>
-                          </div>
-
-                          <div className="flex items-center gap-3 font-mono text-[11px]">
-                            <span className="text-[#C5A880] truncate max-w-[200px]" title={opt?.text}>
-                              {opt?.text}
-                            </span>
-                            <span className="text-gray-400">
-                              {new Date(voter.votedAt).toLocaleString('vi-VN')}
-                            </span>
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
+              {/* LIVE AI PREVIEW BAR */}
+              {liveAiPreview && (
+                <div className="p-3 bg-[#141B24]/90 border border-emerald-500/30 text-xs flex items-center justify-between text-gray-300 font-mono">
+                  <span className="flex items-center gap-1.5 text-emerald-400">
+                    <ShieldCheck className="w-4 h-4" />
+                    AI Kiểm duyệt: {liveAiPreview.moderation === 'Clean' ? 'Hợp lệ ✓' : 'Cần rà soát ⚠️'}
+                  </span>
+                  <span>
+                    Chỉ số cảm xúc: <strong>{liveAiPreview.sentimentLabel}</strong> ({liveAiPreview.sentiment > 0 ? `+${liveAiPreview.sentiment.toFixed(2)}` : liveAiPreview.sentiment.toFixed(2)})
+                  </span>
                 </div>
               )}
-            </div>
-          ) : (
-            <div className="p-12 text-center bg-[#121820] border border-[#222B35] text-gray-400 text-xs">
-              Vui lòng chọn một cuộc biểu quyết bên danh sách để xem chi tiết.
-            </div>
-          )}
-        </div>
-      </div>
 
-      {/* ------------------------------------------------------------- */}
-      {/* 5. MODAL TẠO CUỘC BIỂU QUYẾT MỚI (CHO ADMIN)                  */}
-      {/* ------------------------------------------------------------- */}
-      {isCreateModalOpen && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-[#121820] border border-[#C5A880] max-w-2xl w-full p-6 space-y-5 shadow-2xl animate-scaleUp max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between border-b border-[#222B35] pb-3">
-              <div>
-                <div className="text-[10px] uppercase tracking-[0.2em] text-[#C5A880] font-bold flex items-center gap-1.5">
-                  <Vote className="w-3.5 h-3.5 text-[#C5A880]" /> Ban Quản Trị • Khởi Tạo Biểu Quyết
-                </div>
-                <h3 className="font-serif text-xl font-bold text-white mt-0.5">
-                  Khởi Tạo Cuộc Biểu Quyết Toàn Chung Cư
-                </h3>
-              </div>
-
-              <button
-                onClick={() => setIsCreateModalOpen(false)}
-                className="text-gray-400 hover:text-white p-1"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-
-            <form onSubmit={handleCreateTopic} className="space-y-4 text-xs">
-              <div className="space-y-1">
-                <label className="text-gray-300 font-semibold block">Tiêu Đề Cuộc Biểu Quyết:</label>
-                <input
-                  type="text"
-                  required
-                  value={newTitle}
-                  onChange={(e) => setNewTitle(e.target.value)}
-                  placeholder="Ví dụ: Biểu quyết Thông qua Dự toán Bảo trì Định kỳ Hệ thống Thang máy năm 2026..."
-                  className="w-full p-2.5 bg-[#0D1117] border border-[#2D3748] text-white focus:outline-none focus:border-[#C5A880] text-xs"
-                />
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="space-y-1">
-                  <label className="text-gray-300 font-semibold block">Loại Hình Pháp Lý:</label>
-                  <select
-                    value={newLegalType}
-                    onChange={(e) => setNewLegalType(e.target.value as any)}
-                    className="w-full p-2.5 bg-[#0D1117] border border-[#2D3748] text-white focus:outline-none focus:border-[#C5A880] text-xs"
-                  >
-                    <option value="Đóng góp Quỹ Bảo trì">Đóng góp Quỹ Bảo trì</option>
-                    <option value="Quy Chế Chung Cư">Quy Chế Chung Cư</option>
-                    <option value="Bầu Ban Quản Trị">Bầu Ban Quản Trị</option>
-                    <option value="Ý kiến Cải tạo">Ý kiến Cải tạo</option>
-                    <option value="Tiện Ích & Dịch Vụ">Tiện Ích & Dịch Vụ</option>
-                  </select>
-                </div>
-
-                <div className="space-y-1">
-                  <label className="text-gray-300 font-semibold block">Hạn Chót Biểu Quyết:</label>
-                  <input
-                    type="datetime-local"
-                    required
-                    value={newDeadline.slice(0, 16)}
-                    onChange={(e) => setNewDeadline(e.target.value + ':00')}
-                    className="w-full p-2 bg-[#0D1117] border border-[#2D3748] text-white focus:outline-none focus:border-[#C5A880] font-mono text-xs"
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-1">
-                <label className="text-gray-300 font-semibold block">Nội Dung & Căn Cứ Đề Xuất:</label>
-                <textarea
-                  rows={3}
-                  required
-                  value={newDescription}
-                  onChange={(e) => setNewDescription(e.target.value)}
-                  placeholder="Mô tả bối cảnh, lý do cần lấy ý kiến biểu quyết và phạm vi tác động đến cư dân..."
-                  className="w-full p-2.5 bg-[#0D1117] border border-[#2D3748] text-white focus:outline-none focus:border-[#C5A880] text-xs resize-none"
-                />
-              </div>
-
-              {/* Options Builder */}
-              <div className="space-y-2 pt-2 border-t border-[#222B35]">
-                <div className="flex items-center justify-between">
-                  <label className="text-gray-300 font-semibold">Các Phương Án Bình Chọn ({newOptions.length}):</label>
-                  <button
-                    type="button"
-                    onClick={() => setNewOptions([...newOptions, `Phương án ${newOptions.length + 1}`])}
-                    className="text-[11px] text-[#C5A880] hover:underline font-bold flex items-center gap-1"
-                  >
-                    <Plus className="w-3 h-3" /> Thêm Phương Án
-                  </button>
-                </div>
-
-                <div className="space-y-2">
-                  {newOptions.map((opt, idx) => (
-                    <div key={idx} className="flex items-center gap-2">
-                      <span className="font-mono text-gray-500 w-6 text-right text-xs">{idx + 1}.</span>
-                      <input
-                        type="text"
-                        required
-                        value={opt}
-                        onChange={(e) => {
-                          const updated = [...newOptions];
-                          updated[idx] = e.target.value;
-                          setNewOptions(updated);
-                        }}
-                        className="flex-1 p-2 bg-[#0D1117] border border-[#2D3748] text-white focus:outline-none focus:border-[#C5A880] text-xs"
-                      />
-                      {newOptions.length > 2 && (
-                        <button
-                          type="button"
-                          onClick={() => setNewOptions(newOptions.filter((_, i) => i !== idx))}
-                          className="p-2 text-red-400 hover:text-red-300 border border-red-900/50"
-                        >
-                          <X className="w-3.5 h-3.5" />
-                        </button>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              <div className="space-y-1">
-                <label className="text-gray-300 font-semibold block">Tóm Tắt Báo Cáo Kỹ Thuật / Tài Chính (Tùy chọn):</label>
-                <textarea
-                  rows={2}
-                  value={newSummaryReport}
-                  onChange={(e) => setNewSummaryReport(e.target.value)}
-                  placeholder="Ghi chú về dự toán kinh phí, thông số kỹ thuật, hồ sơ báo giá cạnh tranh..."
-                  className="w-full p-2 bg-[#0D1117] border border-[#2D3748] text-white focus:outline-none focus:border-[#C5A880] text-xs resize-none"
-                />
-              </div>
-
-              <div className="flex items-center justify-end gap-3 pt-3 border-t border-[#222B35]">
+              {/* Action buttons */}
+              <div className="flex items-center justify-end gap-3 pt-3 border-t border-[#1A222D]">
                 <button
                   type="button"
                   onClick={() => setIsCreateModalOpen(false)}
-                  className="px-4 py-2 border border-gray-700 text-gray-300 text-xs hover:border-gray-500"
+                  className="px-4 py-2.5 text-xs text-gray-400 hover:text-white uppercase tracking-wider font-semibold"
                 >
                   Hủy Bỏ
                 </button>
-
                 <button
                   type="submit"
-                  className="px-5 py-2 bg-[#C5A880] hover:bg-white text-[#0D1117] text-xs font-bold uppercase tracking-wider transition-colors shadow-lg flex items-center gap-1.5"
+                  className="px-6 py-2.5 bg-[#C5A880] hover:bg-white text-[#0A0E14] font-bold text-xs uppercase tracking-wider transition-colors shadow-lg"
                 >
-                  <Send className="w-4 h-4" /> Phát Hành Biểu Quyết
+                  Đăng Lên Diễn Đàn
                 </button>
               </div>
             </form>

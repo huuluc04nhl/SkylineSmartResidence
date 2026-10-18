@@ -151,7 +151,7 @@ export default function Sidebar({
           { id: 'admin-billing', label: 'Hóa Đơn', shortLabel: 'Hóa Đơn', icon: Receipt },
           { id: 'admin-devices', label: 'Thiết Bị', shortLabel: 'Thiết Bị', icon: Activity },
           { id: 'admin-parking', label: 'Bãi Đỗ Xe', shortLabel: 'Bãi Đỗ Xe', icon: Car },
-          { id: 'admin-community', label: 'Khảo Sát', shortLabel: 'Khảo Sát', icon: MessageSquareQuote },
+          { id: 'admin-community', label: 'Diễn Đàn', shortLabel: 'Diễn Đàn', icon: MessageSquareQuote },
         ];
 
       case 'OWNER':
@@ -164,7 +164,7 @@ export default function Sidebar({
           { id: 'resident-services', label: 'Dịch Vụ', shortLabel: 'Dịch Vụ', icon: Sparkles },
           { id: 'resident-finance', label: 'Hóa Đơn', shortLabel: 'Hóa Đơn', icon: CreditCard },
           { id: 'resident-tickets', label: 'Báo Hỏng', shortLabel: 'Báo Hỏng', icon: Wrench },
-          { id: 'resident-surveys', label: 'Biểu Quyết', shortLabel: 'Biểu Quyết', icon: Vote },
+          { id: 'resident-surveys', label: 'Diễn Đàn & Biểu Quyết', shortLabel: 'Diễn Đàn', icon: MessageSquareQuote },
           { id: 'resident-ai-assistant', label: 'Trợ Lý AI', shortLabel: 'Trợ Lý AI', icon: Bot },
         ];
 
@@ -177,6 +177,7 @@ export default function Sidebar({
           { id: 'resident-facilities', label: 'Tiện Ích', shortLabel: 'Tiện Ích', icon: Waves },
           { id: 'resident-services', label: 'Dịch Vụ', shortLabel: 'Dịch Vụ', icon: Sparkles },
           { id: 'resident-tickets', label: 'Báo Hỏng', shortLabel: 'Báo Hỏng', icon: Wrench },
+          { id: 'resident-surveys', label: 'Diễn Đàn Cư Dân', shortLabel: 'Diễn Đàn', icon: MessageSquareQuote },
           { id: 'resident-ai-assistant', label: 'Trợ Lý AI', shortLabel: 'Trợ Lý AI', icon: Bot },
         ];
 
