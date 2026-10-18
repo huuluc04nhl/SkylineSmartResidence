@@ -1658,30 +1658,6 @@ export default function AdminBuildingApartmentManager() {
                           {/* Đèn rọi lối đón khách */}
                           <ellipse cx="440" cy="872" rx="36" ry="7" fill="#FDE68A" fillOpacity="0.28" filter="url(#unitGlow)" />
 
-                          {/* Chữ biểu hiệu Đại Sảnh */}
-                          <text 
-                            x="440" 
-                            y="845" 
-                            fill={selectedFloor === 0 ? '#0D1117' : '#FFFFFF'} 
-                            fontSize="9.5" 
-                            fontFamily="sans-serif" 
-                            textAnchor="middle" 
-                            fontWeight="900" 
-                            letterSpacing="0.06em"
-                          >
-                            🏛️ ĐẠI SẢNH CHÀO ĐÓN & DỊCH VỤ CƯ DÂN (TẦNG SẢNH / G)
-                          </text>
-                          <text 
-                            x="440" 
-                            y="860" 
-                            fill={selectedFloor === 0 ? '#1E293B' : '#CBD5E1'} 
-                            fontSize="8" 
-                            fontFamily="monospace" 
-                            textAnchor="middle"
-                          >
-                            Lễ Tân 24/7 • Ban Quản Lý • Sảnh Thang Máy • Hầm B1 - B2
-                          </text>
-
                           {selectedFloor === 0 && (
                             <g className="pointer-events-none">
                               <rect
@@ -1689,7 +1665,7 @@ export default function AdminBuildingApartmentManager() {
                                 y="868"
                                 width="110"
                                 height="18"
-                                rx="3"
+                                rx="0"
                                 fill="#C5A880"
                                 stroke="#FFFFFF"
                                 strokeWidth="2"
@@ -1914,21 +1890,6 @@ export default function AdminBuildingApartmentManager() {
                         </g>
                       )}
                     </svg>
-                  </div>
-                </div>
-
-                {/* THANH THÔNG BÁO TRẠNG THÁI HUD DƯỚI ĐÁY */}
-                <div className="absolute bottom-2.5 left-3 right-3 z-10 flex items-center justify-between bg-[#080D16]/90 border border-[#1E2B3C] px-3 py-1.5 text-xs font-mono backdrop-blur-md shadow-lg pointer-events-auto">
-                  <div className="flex items-center gap-2">
-                    <span className="text-gray-400">TÒA {selectedBlock}:</span>
-                    <span className="text-[#C5A880] font-bold">{currentTotalFloors} TẦNG</span>
-                    <span className="text-gray-500">|</span>
-                    <span className="text-gray-300">Đang chọn: <strong className="text-white bg-[#142030] px-1.5 py-0.5 border border-[#23354C]">TẦNG {selectedFloor === 0 ? "SẢNH (G)" : selectedFloor}</strong></span>
-                  </div>
-                  <div className="flex items-center gap-1.5 text-[11px] text-gray-400">
-                    <span className="w-2 h-2 rounded-full bg-[#C5A880] animate-pulse" />
-                    <span className="text-gray-300 hidden sm:inline">Nhấp trực tiếp vào tầng để mở mặt bằng tương ứng bên phải</span>
-                    <span className="text-gray-300 sm:hidden">Nhấp tầng để mở mặt bằng</span>
                   </div>
                 </div>
 
