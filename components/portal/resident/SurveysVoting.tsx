@@ -1397,37 +1397,54 @@ export default function SurveysVoting({ currentUser }: SurveysVotingProps) {
             <div className="space-y-1">
               <div className="text-[10px] text-[#C5A880] uppercase tracking-widest font-mono flex items-center gap-1.5">
                 <Sparkles className="w-3.5 h-3.5 text-[#C5A880]" />
-                <span>Google Gemini AI Analytics • Phân Tích Diễn Đàn</span>
+                <span>{isEn ? 'Google Gemini AI Analytics • Forum Intelligence' : 'Google Gemini AI Analytics • Phân Tích Diễn Đàn'}</span>
               </div>
-              <h3 className="text-xl font-serif font-bold text-white">Báo Cáo Cảm Xúc & Khuyến Nghị Vận Hành</h3>
-              <p className="text-xs text-gray-400">Trí tuệ nhân tạo khai phá dữ liệu từ các luồng thảo luận, đo lường độ hài lòng và đề xuất chiến lược.</p>
+              <h3 className="text-xl font-serif font-bold text-white">
+                {isEn ? 'Sentiment Report & Operational Strategy' : 'Báo Cáo Cảm Xúc & Khuyến Nghị Vận Hành'}
+              </h3>
+              <p className="text-xs text-gray-400">
+                {isEn
+                  ? 'Artificial intelligence synthesizes community discussions, measures satisfaction index, and recommends proactive actions.'
+                  : 'Trí tuệ nhân tạo khai phá dữ liệu từ các luồng thảo luận, đo lường độ hài lòng và đề xuất chiến lược.'}
+              </p>
             </div>
 
             {isLoadingReport ? (
               <div className="p-12 text-center space-y-3">
                 <Loader2 className="w-8 h-8 text-[#C5A880] animate-spin mx-auto" />
-                <div className="text-xs font-mono text-[#C5A880]">Google Gemini AI đang tổng hợp insight từ cộng đồng cư dân...</div>
+                <div className="text-xs font-mono text-[#C5A880]">
+                  {isEn ? 'Google Gemini AI is synthesizing resident sentiment insights...' : 'Google Gemini AI đang tổng hợp insight từ cộng đồng cư dân...'}
+                </div>
               </div>
             ) : sentimentReport ? (
               <div className="space-y-4">
                 {/* Score Banner */}
                 <div className="p-4 bg-[#141B24] border border-[#C5A880]/30 flex items-center justify-between">
                   <div>
-                    <div className="text-[10px] text-gray-400 uppercase tracking-wider">Chỉ Số Hài Lòng Cư Dân (AI Satisfaction Score)</div>
+                    <div className="text-[10px] text-gray-400 uppercase tracking-wider">
+                      {isEn ? 'Resident Satisfaction Index (AI Satisfaction Score)' : 'Chỉ Số Hài Lòng Cư Dân (AI Satisfaction Score)'}
+                    </div>
                     <div className="text-2xl font-serif font-bold text-[#10B981] font-mono mt-0.5">
                       {sentimentReport.overallSatisfactionScore}/100
                     </div>
                   </div>
                   <div className="text-right text-[11px] text-gray-500 font-mono">
-                    Cập nhật: {new Date(sentimentReport.analyzedAt).toLocaleTimeString('vi-VN')}
+                    {isEn ? 'Updated: ' : 'Cập nhật: '}
+                    {new Date(sentimentReport.analyzedAt).toLocaleTimeString(isEn ? 'en-US' : 'vi-VN')}
                   </div>
                 </div>
 
                 {/* Summary */}
                 <div className="space-y-1.5">
-                  <div className="text-xs font-bold text-[#C5A880] uppercase tracking-wider">Tóm Tắt Tâm Lý Cư Dân</div>
+                  <div className="text-xs font-bold text-[#C5A880] uppercase tracking-wider">
+                    {isEn ? 'Resident Sentiment Summary' : 'Tóm Tắt Tâm Lý Cư Dân'}
+                  </div>
                   <p className="text-xs text-gray-300 leading-relaxed p-3.5 bg-[#121820] border border-[#222B35]">
-                    {sentimentReport.summary}
+                    {isEn && sentimentReport.summary === 'Hiện tại diễn đàn chưa có bài viết nào, không gian thảo luận hoàn toàn yên tĩnh và ổn định.'
+                      ? 'The community forum currently has no posts; discussions are quiet and stable.'
+                      : isEn && sentimentReport.summary.startsWith('Chưa ghi nhận phản hồi tiêu cực nào')
+                      ? 'No negative sentiment recorded. Resident discussions remain peaceful and civil.'
+                      : sentimentReport.summary}
                   </p>
                 </div>
 
@@ -1435,11 +1452,17 @@ export default function SurveysVoting({ currentUser }: SurveysVotingProps) {
                 <div className="space-y-1.5">
                   <div className="text-xs font-bold text-rose-400 uppercase tracking-wider flex items-center gap-1.5">
                     <Flame className="w-3.5 h-3.5 text-rose-400" />
-                    <span>Các Điểm Nóng Cần BQL Lưu Tâm ({sentimentReport.hotspots.length})</span>
+                    <span>
+                      {isEn
+                        ? `Operational Hotspots Requiring Attention (${sentimentReport.hotspots.length})`
+                        : `Các Điểm Nóng Cần BQL Lưu Tâm (${sentimentReport.hotspots.length})`}
+                    </span>
                   </div>
                   {sentimentReport.hotspots.length === 0 ? (
                     <div className="text-xs text-emerald-400 p-3 bg-emerald-500/10 border border-emerald-500/30">
-                      ✓ Không ghi nhận điểm nóng bức xúc nào. Tình hình trật tự chung cư đạt chuẩn xuất sắc.
+                      {isEn
+                        ? '✓ No urgent grievances reported. Apartment community order meets 5-star standards.'
+                        : '✓ Không ghi nhận điểm nóng bức xúc nào. Tình hình trật tự chung cư đạt chuẩn xuất sắc.'}
                     </div>
                   ) : (
                     <ul className="space-y-1.5">
@@ -1457,17 +1480,33 @@ export default function SurveysVoting({ currentUser }: SurveysVotingProps) {
                 <div className="space-y-1.5">
                   <div className="text-xs font-bold text-[#C5A880] uppercase tracking-wider flex items-center gap-1.5">
                     <Sparkles className="w-3.5 h-3.5 text-[#C5A880]" />
-                    <span>Đề Xuất Hành Động Cho Ban Quản Lý (Actionable Recommendations)</span>
+                    <span>
+                      {isEn
+                        ? 'Actionable Recommendations for Management'
+                        : 'Đề Xuất Hành Động Cho Ban Quản Lý (Actionable Recommendations)'}
+                    </span>
                   </div>
                   <div className="space-y-2">
-                    {sentimentReport.actionableRecommendations.map((rec, idx) => (
-                      <div key={idx} className="text-xs text-gray-200 p-3 bg-[#141B24] border border-[#C5A880]/20 flex items-start gap-2.5">
-                        <span className="w-5 h-5 bg-[#C5A880]/20 border border-[#C5A880]/40 text-[#C5A880] text-[10px] font-mono font-bold flex items-center justify-center flex-shrink-0 mt-0.5">
-                          {idx + 1}
-                        </span>
-                        <span className="leading-relaxed">{rec}</span>
-                      </div>
-                    ))}
+                    {sentimentReport.actionableRecommendations.map((rec, idx) => {
+                      const localizedRec = isEn
+                        ? rec === 'BQL có thể đăng thông báo định kỳ về kế hoạch bảo trì tháng để tăng kết nối với cư dân.'
+                          ? 'Management may publish periodic maintenance notices to enhance resident engagement.'
+                          : rec === 'Duy trì phản hồi tự động của Trợ lý AI để giải đáp thắc mắc cư dân tức thì.'
+                          ? 'Maintain AI Concierge automated replies to promptly answer resident queries.'
+                          : rec === 'Rà soát các góp ý về thời gian vận hành tiện ích chung để đề xuất biểu quyết hợp pháp.'
+                          ? 'Review resident suggestions regarding facility operating hours for official polling.'
+                          : rec
+                        : rec;
+
+                      return (
+                        <div key={idx} className="text-xs text-gray-200 p-3 bg-[#141B24] border border-[#C5A880]/20 flex items-start gap-2.5">
+                          <span className="w-5 h-5 bg-[#C5A880]/20 border border-[#C5A880]/40 text-[#C5A880] text-[10px] font-mono font-bold flex items-center justify-center flex-shrink-0 mt-0.5">
+                            {idx + 1}
+                          </span>
+                          <span className="leading-relaxed">{localizedRec}</span>
+                        </div>
+                      );
+                    })}
                   </div>
                 </div>
 
@@ -1476,7 +1515,7 @@ export default function SurveysVoting({ currentUser }: SurveysVotingProps) {
                     onClick={() => setIsReportModalOpen(false)}
                     className="px-5 py-2.5 bg-[#C5A880] hover:bg-white text-[#0A0E14] font-bold text-xs uppercase tracking-wider transition-colors shadow"
                   >
-                    Đóng Báo Cáo
+                    {isEn ? 'Close Report' : 'Đóng Báo Cáo'}
                   </button>
                 </div>
               </div>

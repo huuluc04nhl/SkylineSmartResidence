@@ -539,7 +539,7 @@ export default function SmartFacilityPass({ currentUser, onNavigateModule }: Sma
                 filterCategory === 'ALL' ? 'bg-[#C5A880] text-[#0D1117]' : 'bg-[#161D26] text-gray-400 hover:text-white'
               }`}
             >
-              Tất Cả ({amenitiesList.length})
+              {isEn ? `All (${amenitiesList.length})` : `Tất Cả (${amenitiesList.length})`}
             </button>
             <button
               type="button"
@@ -548,7 +548,8 @@ export default function SmartFacilityPass({ currentUser, onNavigateModule }: Sma
                 filterCategory === 'SPORTS' ? 'bg-[#C5A880] text-[#0D1117]' : 'bg-[#161D26] text-gray-400 hover:text-white'
               }`}
             >
-              <span className="sm:hidden">Thể Thao</span><span className="hidden sm:inline">Thể Thao & Hồ Bơi</span> ({amenitiesList.filter(a => a.category === 'SPORTS').length})
+              <span className="sm:hidden">{isEn ? 'Sports' : 'Thể Thao'}</span>
+              <span className="hidden sm:inline">{isEn ? 'Sports & Swimming Pool' : 'Thể Thao & Hồ Bơi'}</span> ({amenitiesList.filter(a => a.category === 'SPORTS').length})
             </button>
             <button
               type="button"
@@ -557,7 +558,8 @@ export default function SmartFacilityPass({ currentUser, onNavigateModule }: Sma
                 filterCategory === 'WELLNESS' ? 'bg-[#C5A880] text-[#0D1117]' : 'bg-[#161D26] text-gray-400 hover:text-white'
               }`}
             >
-              <span className="sm:hidden">Sức Khỏe</span><span className="hidden sm:inline">Sức Khỏe & Trẻ Em</span> ({amenitiesList.filter(a => a.category === 'WELLNESS').length})
+              <span className="sm:hidden">{isEn ? 'Wellness' : 'Sức Khỏe'}</span>
+              <span className="hidden sm:inline">{isEn ? 'Wellness & Children' : 'Sức Khỏe & Trẻ Em'}</span> ({amenitiesList.filter(a => a.category === 'WELLNESS').length})
             </button>
             <button
               type="button"
@@ -566,7 +568,8 @@ export default function SmartFacilityPass({ currentUser, onNavigateModule }: Sma
                 filterCategory === 'PARK' ? 'bg-[#C5A880] text-[#0D1117]' : 'bg-[#161D26] text-gray-400 hover:text-white'
               }`}
             >
-              <span className="sm:hidden">Công Viên</span><span className="hidden sm:inline">Công Viên & Cảnh Quan</span> ({amenitiesList.filter(a => a.category === 'PARK').length})
+              <span className="sm:hidden">{isEn ? 'Parks' : 'Công Viên'}</span>
+              <span className="hidden sm:inline">{isEn ? 'Parks & Landscape' : 'Công Viên & Cảnh Quan'}</span> ({amenitiesList.filter(a => a.category === 'PARK').length})
             </button>
             <button
               type="button"
@@ -575,7 +578,8 @@ export default function SmartFacilityPass({ currentUser, onNavigateModule }: Sma
                 filterCategory === 'PARTY' ? 'bg-[#C5A880] text-[#0D1117]' : 'bg-[#161D26] text-gray-400 hover:text-white'
               }`}
             >
-              <span className="sm:hidden">Tiệc BBQ</span><span className="hidden sm:inline">Tiệc BBQ & Sân Nhóm</span> ({amenitiesList.filter(a => a.category === 'PARTY').length})
+              <span className="sm:hidden">{isEn ? 'BBQ' : 'Tiệc BBQ'}</span>
+              <span className="hidden sm:inline">{isEn ? 'BBQ Party & Social Area' : 'Tiệc BBQ & Sân Nhóm'}</span> ({amenitiesList.filter(a => a.category === 'PARTY').length})
             </button>
           </div>
 

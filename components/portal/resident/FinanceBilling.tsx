@@ -1468,13 +1468,13 @@ export default function FinanceBilling({ currentUser }: FinanceBillingProps) {
               <table className="w-full text-xs text-left">
                 <thead className="bg-[#0D1117] text-gray-400 border-b border-[#222B35] uppercase font-mono text-[10px]">
                   <tr>
-                    <th className="p-3">Hạng Mục</th>
-                    <th className="p-3">Loại Phí</th>
-                    <th className="p-3 text-right">Sản Lượng</th>
-                    <th className="p-3 text-right">Đơn Giá</th>
-                    <th className="p-3 text-right">Tổng Chi</th>
-                    <th className="p-3 text-right">Tỷ Trọng</th>
-                    <th className="p-3">Ghi Chú</th>
+                    <th className="p-3">{isEn ? 'Item' : 'Hạng Mục'}</th>
+                    <th className="p-3">{isEn ? 'Fee Type' : 'Loại Phí'}</th>
+                    <th className="p-3 text-right whitespace-nowrap">{isEn ? 'Usage / Volume' : 'Sản Lượng'}</th>
+                    <th className="p-3 text-right whitespace-nowrap">{isEn ? 'Unit Rate' : 'Đơn Giá'}</th>
+                    <th className="p-3 text-right whitespace-nowrap">{isEn ? 'Total Spend' : 'Tổng Chi'}</th>
+                    <th className="p-3 text-right whitespace-nowrap">{isEn ? 'Ratio' : 'Tỷ Trọng'}</th>
+                    <th className="p-3">{isEn ? 'Note' : 'Ghi Chú'}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-[#222B35]">
@@ -1482,29 +1482,29 @@ export default function FinanceBilling({ currentUser }: FinanceBillingProps) {
                     const Icon = cat.icon;
                     return (
                       <tr key={cat.id} className="hover:bg-[#161B22]/50 transition-colors">
-                        <td className="p-3 font-medium text-white flex items-center gap-2">
+                        <td className="p-3 font-medium text-white flex items-center gap-2 whitespace-nowrap">
                           <Icon className={`w-3.5 h-3.5 ${cat.textColor}`} />
                           <span>{cat.name}</span>
                         </td>
-                        <td className="p-3 text-gray-400">
+                        <td className="p-3 text-gray-400 whitespace-nowrap">
                           {['Electricity', 'Water', 'Management_Fee', 'Parking', 'Internet'].includes(cat.id)
-                            ? <span className="px-1.5 py-0.5 bg-blue-950/70 border border-blue-500/40 text-blue-300 text-[10px] font-mono">Định Kỳ</span>
-                            : <span className="px-1.5 py-0.5 bg-purple-950/70 border border-purple-500/40 text-purple-300 text-[10px] font-mono">Dịch Vụ</span>
+                            ? <span className="px-1.5 py-0.5 bg-blue-950/70 border border-blue-500/40 text-blue-300 text-[10px] font-mono">{isEn ? 'Recurring' : 'Định Kỳ'}</span>
+                            : <span className="px-1.5 py-0.5 bg-purple-950/70 border border-purple-500/40 text-purple-300 text-[10px] font-mono">{isEn ? 'On-Demand' : 'Dịch Vụ'}</span>
                           }
                         </td>
-                        <td className="p-3 text-right font-mono text-gray-200">
-                          {cat.id === 'Electricity' ? `${totalKwh.toLocaleString('vi-VN')} kWh` :
-                           cat.id === 'Water' ? `${totalM3.toLocaleString('vi-VN')} m³` :
-                           cat.id === 'Management_Fee' ? `73.2 m² x ${bills.length} th` :
-                           cat.id === 'Internet' ? `${bills.length} tháng` :
-                           cat.id === 'Parking' ? `${bills.length} kỳ` :
-                           `${serviceDetails.length} đơn`}
+                        <td className="p-3 text-right font-mono text-gray-200 whitespace-nowrap">
+                          {cat.id === 'Electricity' ? `${totalKwh.toLocaleString(isEn ? 'en-US' : 'vi-VN')} kWh` :
+                           cat.id === 'Water' ? `${totalM3.toLocaleString(isEn ? 'en-US' : 'vi-VN')} m³` :
+                           cat.id === 'Management_Fee' ? `73.2 m² x ${bills.length} ${isEn ? 'mos' : 'tháng'}` :
+                           cat.id === 'Internet' ? `${bills.length} ${isEn ? (bills.length > 1 ? 'months' : 'month') : 'tháng'}` :
+                           cat.id === 'Parking' ? `${bills.length} ${isEn ? (bills.length > 1 ? 'cycles' : 'cycle') : 'kỳ'}` :
+                           `${serviceDetails.length} ${isEn ? (serviceDetails.length > 1 ? 'orders' : 'order') : 'đơn'}`}
                         </td>
-                        <td className="p-3 text-right font-mono text-gray-300">{cat.rate}</td>
-                        <td className="p-3 text-right font-mono font-bold text-white">
-                          {cat.amount.toLocaleString('vi-VN')} đ
+                        <td className="p-3 text-right font-mono text-gray-300 whitespace-nowrap">{cat.rate}</td>
+                        <td className="p-3 text-right font-mono font-bold text-white whitespace-nowrap">
+                          {cat.amount.toLocaleString(isEn ? 'en-US' : 'vi-VN')} {isEn ? 'VND' : 'đ'}
                         </td>
-                        <td className="p-3 text-right font-mono font-bold text-[#C5A880]">
+                        <td className="p-3 text-right font-mono font-bold text-[#C5A880] whitespace-nowrap">
                           {cat.percent.toFixed(1)}%
                         </td>
                         <td className="p-3 text-gray-400 text-[11px]">{cat.note}</td>
@@ -1515,10 +1515,10 @@ export default function FinanceBilling({ currentUser }: FinanceBillingProps) {
                 <tfoot className="bg-[#0D1117] border-t-2 border-[#2D3748] font-bold">
                   <tr>
                     <td className="p-3 text-white uppercase tracking-wider" colSpan={4}>
-                      Tổng Chi Tiêu Tích Lũy (T05 - T08):
+                      {isEn ? 'Total Cumulative Spend (May - Aug):' : 'Tổng Chi Tiêu Tích Lũy (T05 - T08):'}
                     </td>
-                    <td className="p-3 text-right font-serif text-sm font-bold text-[#C5A880] font-mono">
-                      {totalSpendAll.toLocaleString('vi-VN')} đ
+                    <td className="p-3 text-right font-serif text-sm font-bold text-[#C5A880] font-mono whitespace-nowrap">
+                      {totalSpendAll.toLocaleString(isEn ? 'en-US' : 'vi-VN')} {isEn ? 'VND' : 'đ'}
                     </td>
                     <td className="p-3 text-right font-mono text-emerald-400">100%</td>
                     <td className="p-3 text-gray-400 text-[11px]">{isEn ? 'Incl. 10% VAT' : 'Đã bao gồm 10% VAT'}</td>
