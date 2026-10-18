@@ -71,101 +71,31 @@ export function classifyTicket(
 ): TicketClassificationResult {
   const text = `${service || ''} ${subject || ''} ${content || ''}`.toLowerCase();
 
-  // 1. Dấu hiệu CÔNG VIỆC VẬN HÀNH / BẢO TRÌ / KIỂM TRA ĐỊNH KỲ (TASK / INSPECTION)
-  const isMaintenanceTask = (
-    text.includes('kiểm tra') ||
-    text.includes('định kỳ') ||
-    text.includes('bảo trì') ||
-    text.includes('bảo dưỡng') ||
-    text.includes('khảo sát hiện trường') ||
-    text.includes('đo đạc') ||
-    text.includes('xử lý xong')
-  );
-
-  // 2. Dấu hiệu PHẢN ÁNH / KHIẾU NẠI (FEEDBACK)
-  const isFeedback = !isMaintenanceTask && (
-    text.includes('chưa thực hiện') ||
-    text.includes('chưa dọn') ||
-    text.includes('chưa làm') ||
-    text.includes('xả đầy') ||
-    text.includes('rác xả') ||
-    text.includes('tràn rác') ||
-    text.includes('mùi hôi') ||
-    text.includes('tiếng ồn') ||
-    text.includes('hát karaoke') ||
-    text.includes('thái độ') ||
-    text.includes('khiếu nại') ||
-    text.includes('phản ánh') ||
-    text.includes('góp ý') ||
-    text.includes('chấn chỉnh') ||
-    text.includes('đỗ xe sai') ||
-    text.includes('chắn lối') ||
-    text.includes('vệ sinh bàn ghế') ||
-    (text.includes('nhà hàng') && text.includes('vệ sinh')) ||
-    text.includes('dịch vụ vệ sinh chung cư')
-  );
-
-  // 3. Dấu hiệu SỰ CỐ KỸ THUẬT & SỬA CHỮA / BẢO TRÌ (REPAIR)
-  const isRepair = isMaintenanceTask || (
+  // 1. Dấu hiệu SỰ CỐ HƯ HỎNG KỸ THUẬT THỰC TẾ (REPAIR - Cần KTV đến căn hộ sửa chữa)
+  const isRepair = (
     text.includes('hỏng') ||
     text.includes('hư') ||
     text.includes('rò rỉ') ||
-    text.includes('chập') ||
+    text.includes('chập điện') ||
     text.includes('cháy bóng') ||
     text.includes('mất điện') ||
     text.includes('mất nước') ||
     text.includes('vỡ ống') ||
-    text.includes('nghẹt') ||
+    text.includes('nghẹt cống') ||
     text.includes('tắc bồn') ||
     text.includes('thấm dột') ||
     text.includes('điều hòa không mát') ||
+    text.includes('điều hòa chảy nước') ||
     text.includes('kẹt khóa') ||
     text.includes('chuông cửa hỏng') ||
-    text.includes('vòi sen') ||
-    text.includes('aptomat') ||
-    text.includes('thang máy kẹt') ||
-    text.includes('chất lượng nước')
+    text.includes('vòi sen gãy') ||
+    text.includes('aptomat nhảy') ||
+    text.includes('thang máy kẹt')
   );
 
-  // 4. Dấu hiệu HỎI ĐÁP / TRA CỨU TIỆN ÍCH (INQUIRY - Chỉ khi có ý định hỏi thực sự)
-  const isInquiry = !isMaintenanceTask && !isRepair && (
-    text.includes('?') ||
-    text.includes('mấy giờ') ||
-    text.includes('giờ mở') ||
-    text.includes('giờ đóng') ||
-    text.includes('giờ giấc') ||
-    text.includes('thời gian hoạt động') ||
-    text.includes('thủ tục') ||
-    text.includes('làm sao để') ||
-    text.includes('ở đâu') ||
-    text.includes('bao nhiêu tiền') ||
-    text.includes('biểu phí') ||
-    text.includes('hướng dẫn cách') ||
-    text.includes('có được phép') ||
-    text.includes('quy định như thế nào') ||
-    text.includes('cho phép không') ||
-    text.includes('đăng ký thẻ') ||
-    text.includes('sử dụng ra sao')
-  );
-
-  // --- TRƯỜNG HỢP 1: PHẢN ÁNH / KHIẾU NẠI (FEEDBACK) -> CHỜ BQL TRỰC TIẾP XÁC NHẬN ---
-  if (isFeedback) {
-    const isUrgent = text.includes('tràn') || text.includes('chắn lối') || text.includes('cháy');
-    return {
-      type: 'FEEDBACK',
-      typeLabel: 'Phản Ánh & Góp Ý',
-      handledBy: 'MANAGEMENT',
-      handledByLabel: 'Ban Quản Lý Trực Tiếp Xác Nhận',
-      urgent: isUrgent,
-      priority: isUrgent ? 1 : 2,
-      suggestedAdminReply: generateSuggestedAdminReply(content, service),
-      actionHint: 'Ý kiến / khiếu nại cư dân: Đang chờ BQL xác nhận, kiểm tra thực địa và phản hồi chính thức.',
-    };
-  }
-
-  // --- TRƯỜNG HỢP 2: SỰ CỐ KỸ THUẬT / BẢO TRÌ HIỆN TRƯỜNG (REPAIR) -> KTV XỬ LÝ ---
+  // --- TRƯỜNG HỢP 1: SỰ CỐ KỸ THUẬT / SỬA CHỮA CĂN HỘ (REPAIR) -> PHÂN BỔ KTV ---
   if (isRepair) {
-    const isUrgent = text.includes('tràn nước') || text.includes('chập điện') || text.includes('vỡ ống') || text.includes('thang máy');
+    const isUrgent = text.includes('tràn nước') || text.includes('chập điện') || text.includes('vỡ ống') || text.includes('thang máy kẹt');
     return {
       type: 'REPAIR',
       typeLabel: 'Sửa Chữa Kỹ Thuật',
@@ -174,43 +104,27 @@ export function classifyTicket(
       urgent: isUrgent,
       priority: isUrgent ? 1 : 2,
       actionHint: isUrgent 
-        ? 'Sự cố cấp bách: AI tự động phân bổ KTV chuyên môn có mặt trong 15 - 30 phút.' 
-        : (isMaintenanceTask 
-            ? 'Công việc kiểm tra / bảo trì hiện trường: Cần KTV chuyên môn khảo sát thực địa.' 
-            : 'Sự cố kỹ thuật: AI phân tích và phân bổ KTV phù hợp theo ca trực.'),
+        ? 'Sự cố cấp bách: Cần phân bổ KTV chuyên môn có mặt kiểm tra trong 15 - 30 phút.' 
+        : 'Sự cố kỹ thuật: BQL tiếp nhận và phân bổ KTV phù hợp theo ca trực.',
     };
   }
 
-  // --- TRƯỜNG HỢP 3: HỎI ĐÁP / TRA CỨU TIỆN ÍCH (INQUIRY) -> AI TỰ ĐỘNG PHẢN HỒI 24/7 ---
-  if (isInquiry) {
-    const aiKnowledge = findInquiryAnswer(text);
-    return {
-      type: 'INQUIRY',
-      typeLabel: 'Hỏi Đáp & Trợ Giúp',
-      handledBy: 'AI',
-      handledByLabel: 'Trợ Lý AI Tự Động Phản Hồi 24/7',
-      urgent: false,
-      priority: 2,
-      suggestedAiReply: aiKnowledge,
-      actionHint: 'AI tự động tra cứu nội quy và phản hồi tức thì 24/7 cho cư dân mà không cần thông qua BQL.',
-    };
-  }
-
-  // --- TRƯỜNG HỢP 4: YÊU CẦU DỊCH VỤ / HÀNH CHÍNH (SERVICE_REQUEST) ---
+  // --- TRƯỜNG HỢP 2: PHẢN ÁNH / Ý KIẾN / THẮC MẮC CƯ DÂN (FEEDBACK) -> BQL ĐÁP LẠI (KHÔNG CẦN CỬ KTV ĐẾN NGAY) ---
+  const isUrgentFeedback = text.includes('tràn rác') || text.includes('chắn lối') || text.includes('cháy');
   return {
-    type: 'SERVICE_REQUEST',
-    typeLabel: 'Yêu Cầu Dịch Vụ',
+    type: 'FEEDBACK',
+    typeLabel: 'Phản Ánh & Ý Kiến',
     handledBy: 'MANAGEMENT',
-    handledByLabel: 'Ban Quản Lý Tiếp Nhận',
-    urgent: false,
-    priority: 2,
-    suggestedAdminReply: 'Ban Quản Lý đã tiếp nhận yêu cầu của Quý cư dân và sẽ liên hệ xác nhận thời gian triển khai sớm nhất.',
-    actionHint: 'BQL tiếp nhận và bố trí nhân sự phục vụ.',
+    handledByLabel: 'Ban Quản Lý Phản Hồi',
+    urgent: isUrgentFeedback,
+    priority: isUrgentFeedback ? 1 : 2,
+    suggestedAdminReply: generateSuggestedAdminReply(content, service),
+    actionHint: 'Vấn đề phản ánh cư dân: Ban Quản Lý chỉ cần phản hồi / đáp lại cho cư dân, không nhất thiết phải cử KTV đến có mặt ngay.',
   };
 }
 
 /**
- * Tìm câu trả lời tốt nhất từ cơ sở tri thức cho câu hỏi cư dân
+ * Tìm câu trả lời tốt nhất từ cơ sở tri thức cho câu hỏi cư dân (tham khảo cho BQL)
  */
 export function findInquiryAnswer(questionText: string): string {
   const lower = questionText.toLowerCase();
@@ -221,7 +135,7 @@ export function findInquiryAnswer(questionText: string): string {
   }
 
   // Câu trả lời thông minh mặc định nếu chưa khớp từ khóa chính xác
-  return 'Cảm ơn Quý cư dân đã gửi câu hỏi. Bộ phận Chăm sóc Cư dân Skyline xin thông tin: Yêu cầu của bạn đã được ghi nhận vào hệ thống. Mọi thủ tục, nội quy sinh hoạt và dịch vụ chung cư đều được cập nhật minh bạch trên Cổng Cư Dân. Nếu cần hỗ trợ trực tiếp, Ban Quản Lý luôn sẵn sàng hỗ trợ tại Sảnh Lễ Tân (08:00 - 20:00).';
+  return 'Cảm ơn Quý cư dân đã gửi thông tin. Ban Quản Lý xin thông tin: Yêu cầu của Quý cư dân đã được ghi nhận. Mọi thủ tục, nội quy sinh hoạt và dịch vụ chung cư đều được cập nhật minh bạch trên Cổng Cư Dân. Ban Quản Lý luôn sẵn sàng hỗ trợ trực tiếp tại Sảnh Lễ Tân (08:00 - 20:00).';
 }
 
 /**
@@ -244,12 +158,17 @@ export function generateSuggestedAdminReply(
   const hi    = `Kính gửi ${name}${apt},`;
   const ktv   = engineerName
     ? ` BQL đã phân công Kỹ thuật viên ${engineerName} trực tiếp phụ trách xử lý.`
-    : ' BQL đã cử kỹ thuật viên chuyên trách đến kiểm tra và xử lý.';
+    : '';
   const close = '\n\nMọi thắc mắc, Quý cư dân vui lòng liên hệ Hotline BQL **1900 8899** hoặc Lễ tân Sảnh L1. Trân trọng!';
 
-  // --- Nước / vòi / rò rỉ / tắc nghẹt / thấm ---
-  if (/nước|vòi|gioăng|rò rỉ|rỉ nước|nghẹt|tắc|thấm|ống nước|bồn|lavabo|toilet|bồn cầu|xả nước/.test(text)) {
-    return `${hi}\n\nBan Quản Lý đã ghi nhận sự cố hệ thống cấp/thoát nước tại căn hộ.${ktv} Kỹ thuật viên sẽ kiểm tra áp lực, gioăng cao su và toàn bộ hệ thống van, khắc phục dứt điểm tình trạng rò rỉ để đảm bảo sinh hoạt bình thường cho gia đình.${close}`;
+  // --- Hồ bơi / chất lượng nước hồ bơi / gym / tiện ích ---
+  if (/hồ bơi|bể bơi|chất lượng nước|clo|độ ph|gym|tiện ích|sân thượng|bbq|sân chơi/.test(text)) {
+    return `${hi}\n\nBan Quản Lý xin cảm ơn phản ánh / ý kiến của Quý cư dân về khu vực tiện ích. Bộ phận quản lý vận hành tòa nhà luôn thực hiện kiểm định chất lượng nước hồ bơi (pH 7.2 - 7.6, clo dư an toàn, điện phân muối) và vệ sinh định kỳ hàng ngày, mọi chỉ số đều đảm bảo an toàn tuyệt đối theo tiêu chuẩn sinh hoạt. BQL đã ghi nhận và tiếp tục tăng cường kiểm tra để phục vụ Quý cư dân tốt nhất.${close}`;
+  }
+
+  // --- Nước / vòi / rò rỉ / tắc nghẹt / thấm trong căn hộ ---
+  if (/vòi|gioăng|rò rỉ|rỉ nước|nghẹt|tắc|thấm|ống nước|lavabo|toilet|bồn cầu|xả nước/.test(text)) {
+    return `${hi}\n\nBan Quản Lý đã ghi nhận sự cố hệ thống cấp/thoát nước tại căn hộ.${ktv ? ktv : ' BQL đã bố trí kỹ thuật viên chuyên trách đến kiểm tra.'} Kỹ thuật viên sẽ kiểm tra áp lực, gioăng cao su và khắc phục dứt điểm để đảm bảo sinh hoạt cho gia đình.${close}`;
   }
 
   // --- Điện / mất điện / chập điện ---

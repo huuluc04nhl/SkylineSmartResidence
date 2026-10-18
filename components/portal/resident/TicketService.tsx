@@ -120,14 +120,6 @@ export const COMMON_REPAIR_PRESETS: RepairPreset[] = [
   },
 ];
 
-export const COMMON_INQUIRY_PRESETS = [
-  { id: 'pool', icon: '🏊', label: 'Hồ bơi vô cực', question: 'Hồ bơi vô cực mở cửa lúc mấy giờ và quy định sử dụng ra sao?' },
-  { id: 'gym', icon: '🏋️', label: 'Phòng Gym Technogym', question: 'Phòng gym Technogym mở cửa khung giờ nào và thủ tục vào cửa thế nào?' },
-  { id: 'parking', icon: '🚗', label: 'Gửi xe & Biển số', question: 'Quy định bãi đỗ xe hầm B1/B2 và thủ tục đăng ký xe ô tô/xe máy ra sao?' },
-  { id: 'trash', icon: '🗑️', label: 'Giờ gom rác', question: 'Thời gian thu gom rác tại các tầng và quy định vứt rác thế nào?' },
-  { id: 'bill', icon: '💳', label: 'Hóa đơn & VietQR', question: 'Hóa đơn dịch vụ hàng tháng phát hành ngày nào và thanh toán qua đâu?' },
-  { id: 'bbq', icon: '🍖', label: 'Vườn tiệc BBQ', question: 'Quy định đặt khu tiệc nướng BBQ ngoài trời tại tòa nhà như thế nào?' },
-];
 
 export const REPAIR_AREAS = [
   'Gian bếp',
@@ -475,7 +467,7 @@ export default function TicketService({ currentUser }: TicketServiceProps) {
             <Wrench className="w-3.5 h-3.5" /> {t('Dịch Vụ Cư Dân', 'Resident Services')} • {aptCode ? `${t('Căn', 'Unit')} ${aptCode}` : residentName}
           </div>
           <h2 className="font-serif text-2xl text-white font-bold mt-1">
-            {t('Yêu Cầu, Hỏi Đáp & Sửa Chữa', 'Requests, Inquiries & Maintenance')}
+            {t('Yêu Cầu & Báo Hỏng Sửa Chữa', 'Requests & Maintenance')}
           </h2>
         </div>
 
@@ -487,24 +479,20 @@ export default function TicketService({ currentUser }: TicketServiceProps) {
         </button>
       </div>
 
-      {/* Thẻ Kết Quả Xử Lý Tinh Gọn (AI Tự Động / KTV Phân Bổ / BQL Xác Nhận) */}
+      {/* Thẻ Kết Quả Xử Lý Tinh Gọn (KTV Phân Bổ / BQL Tiếp Nhận Phản Hồi) */}
       {createdTicketResult && (
         <div className="p-4 bg-[#121A22] border border-[#C5A880] text-white shadow-xl animate-fadeIn space-y-2.5 relative">
           <div className="flex items-center justify-between pb-2 border-b border-[#222B35]">
             <div className="flex items-center gap-2">
               <span className={`w-2.5 h-2.5 rounded-full ${
-                createdTicketResult.ticket_type === 'INQUIRY'
-                  ? 'bg-sky-400 shadow-[0_0_8px_rgba(56,189,248,0.8)]'
-                  : createdTicketResult.ticket_type === 'REPAIR'
-                    ? 'bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)]'
-                    : 'bg-rose-400 shadow-[0_0_8px_rgba(251,113,133,0.8)]'
+                createdTicketResult.ticket_type === 'REPAIR'
+                  ? 'bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)]'
+                  : 'bg-rose-400 shadow-[0_0_8px_rgba(251,113,133,0.8)]'
               }`} />
               <span className="font-bold text-xs uppercase tracking-wider text-white">
-                {createdTicketResult.ticket_type === 'INQUIRY'
-                  ? 'Trợ Lý AI Phản Hồi 24/7'
-                  : createdTicketResult.ticket_type === 'REPAIR'
-                    ? 'Đã Phân Bổ Kỹ Thuật Viên'
-                    : 'Đã Tiếp Nhận Phiếu (Chờ BQL)'}
+                {createdTicketResult.ticket_type === 'REPAIR'
+                  ? 'Đã Phân Bổ Kỹ Thuật Viên'
+                  : 'Đã Tiếp Nhận Phiếu (BQL Phản Hồi)'}
               </span>
               <span className="text-[11px] text-[#C5A880] font-mono">
                 #{createdTicketResult.nks_id || createdTicketResult.id} • Căn {createdTicketResult.apt_code}
@@ -519,17 +507,7 @@ export default function TicketService({ currentUser }: TicketServiceProps) {
           </div>
 
           {/* Nội dung kết quả theo luồng */}
-          {createdTicketResult.ticket_type === 'INQUIRY' ? (
-            <div className="p-3 bg-sky-950/30 border border-sky-500/30 text-xs space-y-1.5">
-              <div className="flex items-center gap-1.5 text-sky-300 font-semibold text-[11px]">
-                <Sparkles className="w-3.5 h-3.5 text-sky-400" />
-                Câu trả lời tự động:
-              </div>
-              <p className="text-gray-200 text-xs whitespace-pre-line leading-relaxed">
-                {createdTicketResult.ai_reply || 'Hệ thống đã ghi nhận và phản hồi câu hỏi của Quý cư dân.'}
-              </p>
-            </div>
-          ) : createdTicketResult.ticket_type === 'REPAIR' ? (
+          {createdTicketResult.ticket_type === 'REPAIR' ? (
             <div className="flex flex-wrap items-center justify-between gap-3 p-3 bg-[#161F2B] border border-[#2D3A4B] text-xs">
               <div className="flex items-center gap-2.5">
                 <Wrench className="w-4 h-4 text-[#C5A880] flex-shrink-0" />
@@ -566,7 +544,7 @@ export default function TicketService({ currentUser }: TicketServiceProps) {
           ) : (
             <div className="p-3 bg-rose-950/20 border border-rose-500/30 text-xs text-gray-300 flex items-start gap-2">
               <Clock className="w-3.5 h-3.5 text-rose-400 flex-shrink-0 mt-0.5" />
-              <span>Phiếu đã được chuyển tới Ban Quản Lý. BQL sẽ xác minh hiện trường và phản hồi trong thời gian sớm nhất.</span>
+              <span>Phiếu phản ánh đã được gửi tới Ban Quản Lý. BQL sẽ xác minh thông tin và gửi phản hồi / đáp lại cho Quý cư dân trong thời gian sớm nhất.</span>
             </div>
           )}
         </div>
@@ -628,15 +606,6 @@ export default function TicketService({ currentUser }: TicketServiceProps) {
             </button>
           </div>
 
-          {/* Gợi ý sử dụng Trợ Lý AI riêng biệt nếu cần hỏi đáp */}
-          <div className="p-2.5 bg-[#0D1520] border border-sky-500/30 flex items-center justify-between gap-3 text-xs text-sky-200">
-            <div className="flex items-center gap-2">
-              <Bot className="w-4 h-4 text-sky-400 flex-shrink-0" />
-              <span className="text-[11px] leading-relaxed">
-                Cần giải đáp nhanh về nội quy, tiện ích hoặc quy chế tòa nhà? Quý cư dân có thể sử dụng mục <strong className="text-white underline">Trợ Lý AI</strong> trên thanh menu để nhận phản hồi tức thì 24/7.
-              </span>
-            </div>
-          </div>
 
           {/* Gợi Ý Nhanh 1 Chạm (Chỉ hiện khi Báo Hỏng) - Căn Chỉnh Grid Đều Đặn Responsive 100% */}
           {ticketPurpose === 'REPAIR' && (
@@ -1083,7 +1052,7 @@ export default function TicketService({ currentUser }: TicketServiceProps) {
             {[
               { key: 'ALL', label: `Tất Cả (${tickets.length})` },
               { key: 'REPAIR', label: `🔧 KTV Sửa Chữa (${tickets.filter(t => t.ticket_type === 'REPAIR' || (!t.ticket_type && t.status !== 'Resolved')).length})` },
-              { key: 'FEEDBACK', label: `📢 Góp Ý & BQL (${tickets.filter(t => t.ticket_type === 'FEEDBACK' || t.ticket_type === 'INQUIRY').length})` },
+              { key: 'FEEDBACK', label: `📢 Phản Ánh & Ý Kiến (${tickets.filter(t => t.ticket_type !== 'REPAIR').length})` },
               { key: 'RESOLVED', label: `✓ Đã Hoàn Tất (${tickets.filter(t => t.status === 'Resolved').length})` },
             ].map((tab) => (
               <button
@@ -1106,7 +1075,7 @@ export default function TicketService({ currentUser }: TicketServiceProps) {
           const filtered = tickets.filter(t => {
             if (activeFilter === 'ALL') return true;
             if (activeFilter === 'REPAIR') return t.ticket_type === 'REPAIR' || (!t.ticket_type && t.status !== 'Resolved');
-            if (activeFilter === 'FEEDBACK') return t.ticket_type === 'FEEDBACK' || t.ticket_type === 'INQUIRY';
+            if (activeFilter === 'FEEDBACK') return t.ticket_type !== 'REPAIR';
             if (activeFilter === 'RESOLVED') return t.status === 'Resolved';
             return true;
           });
@@ -1124,9 +1093,8 @@ export default function TicketService({ currentUser }: TicketServiceProps) {
           return (
             <div className="space-y-3">
               {filtered.map((t) => {
-              const isFeedback = t.ticket_type === 'FEEDBACK';
-              const isInquiry = t.ticket_type === 'INQUIRY';
-              const isRepair = !isFeedback && !isInquiry;
+              const isFeedback = t.ticket_type !== 'REPAIR';
+              const isRepair = !isFeedback;
 
               return (
                 <div 
@@ -1138,9 +1106,7 @@ export default function TicketService({ currentUser }: TicketServiceProps) {
                         ? 'border-amber-500/40 bg-gradient-to-r from-[#121820] to-[#1e1a0f]'
                         : isFeedback
                           ? 'border-rose-500/40'
-                          : isInquiry
-                            ? 'border-sky-500/40'
-                            : 'border-[#222B35]'
+                          : 'border-[#222B35]'
                   }`}
                 >
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
@@ -1151,11 +1117,7 @@ export default function TicketService({ currentUser }: TicketServiceProps) {
                       
                       {isFeedback ? (
                         <span className="px-2 py-0.5 bg-rose-950 text-rose-300 border border-rose-500 text-[10px] font-bold">
-                          📢 Góp Ý & Phản Ánh
-                        </span>
-                      ) : isInquiry ? (
-                        <span className="px-2 py-0.5 bg-sky-950 text-sky-300 border border-sky-500 text-[10px] font-bold">
-                          ❓ Hỏi Đáp Dịch Vụ
+                          📢 Phản Ánh & Ý Kiến
                         </span>
                       ) : (
                         <span className="px-1.5 py-0.5 bg-[#1C2533] border border-gray-700 text-gray-300 text-[10px] font-mono">
@@ -1178,9 +1140,7 @@ export default function TicketService({ currentUser }: TicketServiceProps) {
                               ? 'bg-rose-950 text-rose-400 border border-rose-600'
                               : 'bg-blue-950 text-blue-400 border border-blue-600'
                       }`}>
-                        {isInquiry ? (
-                          t.status === 'Resolved' ? <>✓ Đã Phản Hồi Tự Động</> : <>⏳ Chờ Tiếp Nhận</>
-                        ) : isFeedback ? (
+                        {isFeedback ? (
                           t.status === 'Resolved' ? <>✓ BQL Đã Phản Hồi</> : <>⏳ BQL Đang Thụ Lý</>
                         ) : (
                           t.status === 'Resolved' 
@@ -1232,18 +1192,6 @@ export default function TicketService({ currentUser }: TicketServiceProps) {
                     </div>
                   )}
 
-                  {/* PHẢN HỒI TỰ ĐỘNG TỪ HỆ THỐNG NẾU LÀ CÂU HỎI */}
-                  {isInquiry && (t.ai_reply || t.ai_suggested_reply) && (
-                    <div className="p-3 bg-sky-950/30 border border-sky-500/30 space-y-1">
-                      <div className="text-[11px] font-bold text-sky-300 flex items-center gap-1.5">
-                        <CheckCircle2 className="w-3.5 h-3.5 text-sky-400" />
-                        Phản hồi tự động từ Hệ thống Skyline:
-                      </div>
-                      <p className="text-gray-200 text-xs whitespace-pre-line leading-relaxed">
-                        {t.ai_reply || t.ai_suggested_reply}
-                      </p>
-                    </div>
-                  )}
 
                   {/* PHẢN HỒI TỪ BQL NẾU CÓ HOẶC LÀ FEEDBACK */}
                   {(isFeedback || t.admin_reply) && (
@@ -1346,15 +1294,10 @@ export default function TicketService({ currentUser }: TicketServiceProps) {
 
                   {/* FOOTER BAR: TUỲ THEO LOẠI TICKET */}
                   <div className="pt-2 border-t border-[#222B35] flex flex-wrap items-center justify-between gap-3 text-[11px]">
-                    {isInquiry ? (
-                      <span className="text-sky-300 font-medium flex items-center gap-1.5">
-                        <CheckCircle2 className="w-3 h-3 text-sky-400" />
-                        Phiếu được hệ thống tự động giải đáp • Hotline BQL: 1900 8899
-                      </span>
-                    ) : isFeedback ? (
+                    {isFeedback ? (
                       <span className="text-rose-300 font-medium flex items-center gap-1.5">
                         <MessageSquare className="w-3 h-3 text-rose-400" />
-                        Chuyên viên CSKH & Ban Quản Lý chịu trách nhiệm thụ lý
+                        Chuyên viên CSKH & Ban Quản Lý chịu trách nhiệm thụ lý và phản hồi
                       </span>
                     ) : (
                       <>

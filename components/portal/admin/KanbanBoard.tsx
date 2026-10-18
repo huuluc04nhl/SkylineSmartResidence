@@ -81,8 +81,8 @@ export default function KanbanBoard() {
   const [technicians, setTechnicians] = useState<TechnicianProfile[]>([]);
   const [payrollList, setPayrollList] = useState<TechnicianPayrollSummary[]>([]);
 
-  // Category Filter: ALL | REPAIR | FEEDBACK | INQUIRY
-  const [categoryFilter, setCategoryFilter] = useState<'ALL' | 'REPAIR' | 'FEEDBACK' | 'INQUIRY'>('ALL');
+  // Category Filter: ALL | REPAIR | FEEDBACK
+  const [categoryFilter, setCategoryFilter] = useState<'ALL' | 'REPAIR' | 'FEEDBACK'>('ALL');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [viewMode, setViewMode] = useState<'KANBAN' | 'LIST'>('KANBAN');
 
@@ -93,7 +93,7 @@ export default function KanbanBoard() {
   const [newResidentName, setNewResidentName] = useState<string>('');
   const [newResidentPhone, setNewResidentPhone] = useState<string>('');
   const [newCategory, setNewCategory] = useState<'Điện' | 'Nước' | 'Vệ sinh' | 'An ninh' | 'Khác'>('Điện');
-  const [newTicketType, setNewTicketType] = useState<'REPAIR' | 'FEEDBACK' | 'INQUIRY'>('REPAIR');
+  const [newTicketType, setNewTicketType] = useState<'REPAIR' | 'FEEDBACK'>('REPAIR');
   const [newContent, setNewContent] = useState<string>('');
   const [isSubmittingNewTicket, setIsSubmittingNewTicket] = useState<boolean>(false);
 
@@ -371,14 +371,14 @@ export default function KanbanBoard() {
 
   // Counts for Category Badges
   const repairCount = tickets.filter(t => (t.ticket_type || 'REPAIR') === 'REPAIR').length;
-  const feedbackCount = tickets.filter(t => t.ticket_type === 'FEEDBACK').length;
-  const inquiryCount = tickets.filter(t => t.ticket_type === 'INQUIRY').length;
+  const feedbackCount = tickets.filter(t => t.ticket_type !== 'REPAIR').length;
 
   // Filter lists for 3 Kanban columns based on active category filter AND keyword search
   const filteredTickets = tickets.filter(t => {
     if (categoryFilter !== 'ALL') {
-      const cat = t.ticket_type || 'REPAIR';
-      if (cat !== categoryFilter) return false;
+      const isRep = (t.ticket_type || 'REPAIR') === 'REPAIR';
+      if (categoryFilter === 'REPAIR' && !isRep) return false;
+      if (categoryFilter === 'FEEDBACK' && isRep) return false;
     }
 
     if (searchQuery.trim()) {
@@ -691,21 +691,8 @@ export default function KanbanBoard() {
                 }`}
               >
                 <MessageSquare className="w-3 h-3 opacity-80" />
-                <span>{t('Phản Ánh', 'Feedback')}</span>
+                <span>{t('Phản Ánh & Ý Kiến', 'Feedback & Requests')}</span>
                 <span className="font-mono text-[10px] opacity-75">{feedbackCount}</span>
-              </button>
-
-              <button
-                onClick={() => setCategoryFilter('INQUIRY')}
-                className={`px-3 py-1.5 text-xs transition-colors rounded-none font-medium flex items-center gap-1.5 ${
-                  categoryFilter === 'INQUIRY'
-                    ? 'bg-[#C5A880] text-[#0A0E14] font-semibold'
-                    : 'bg-[#141B24] text-gray-400 hover:text-white border border-[#222B35]'
-                }`}
-              >
-                <Sparkles className="w-3 h-3 opacity-80" />
-                <span>{t('Hỏi Đáp AI', 'Inquiries')}</span>
-                <span className="font-mono text-[10px] opacity-75">{inquiryCount}</span>
               </button>
             </div>
 
@@ -816,9 +803,8 @@ export default function KanbanBoard() {
                   </div>
                 ) : (
                   openTickets.map((ticket) => {
-                    const isFeedback = ticket.ticket_type === 'FEEDBACK';
-                    const isInquiry = ticket.ticket_type === 'INQUIRY';
-                    const isRepair = !isFeedback && !isInquiry;
+                    const isFeedback = ticket.ticket_type !== 'REPAIR';
+                    const isRepair = !isFeedback;
 
                     return (
                       <div 
@@ -885,9 +871,9 @@ export default function KanbanBoard() {
                           </div>
                         )}
 
-                        {isInquiry && ticket.ai_suggested_reply && (
+                        {isFeedback && (ticket.ai_suggested_reply || ticket.admin_reply) && (
                           <div className="text-[11px] text-gray-400 italic line-clamp-1 pt-0.5">
-                            <span className="text-gray-300 not-italic font-medium">{t('Dự thảo:')} </span>"{ticket.ai_suggested_reply}"
+                            <span className="text-gray-300 not-italic font-medium">{t('Dự thảo:')} </span>"{ticket.admin_reply || ticket.ai_suggested_reply}"
                           </div>
                         )}
 
@@ -903,25 +889,13 @@ export default function KanbanBoard() {
                               <button
                                 onClick={() => {
                                   setFeedbackReplyTicket(ticket);
-                                  setFeedbackReplyContent(ticket.admin_reply || generateSuggestedAdminReply(ticket.content, ticket.ai_category));
+                                  setFeedbackReplyContent(ticket.admin_reply || ticket.ai_suggested_reply || generateSuggestedAdminReply(ticket.content, ticket.ai_category, ticket.resident_name, ticket.apt_code));
                                   setReplyEngineerName(ticket.assigned_technician || '');
                                 }}
-                                className="h-7 px-2.5 bg-[#141B24] hover:bg-[#1E2631] border border-[#222B35] text-gray-300 hover:text-white text-xs font-medium rounded-none transition-colors flex items-center gap-1"
+                                className="h-7 px-2.5 bg-[#C5A880] hover:bg-[#E2C9A5] text-[#0A0E14] text-xs font-semibold rounded-none transition-colors flex items-center gap-1 shadow"
                               >
-                                <MessageSquare className="w-3 h-3 text-[#C5A880]" />
-                                <span>{t('BQL Phản Hồi')}</span>
-                              </button>
-                            ) : isInquiry ? (
-                              <button
-                                onClick={() => {
-                                  setFeedbackReplyTicket(ticket);
-                                  setFeedbackReplyContent(ticket.ai_suggested_reply || ticket.admin_reply || generateSuggestedAdminReply(ticket.content, ticket.ai_category));
-                                  setReplyEngineerName('');
-                                }}
-                                className="h-7 px-2.5 bg-[#141B24] hover:bg-[#1E2631] border border-[#222B35] text-gray-300 hover:text-white text-xs font-medium rounded-none transition-colors flex items-center gap-1"
-                              >
-                                <MessageSquare className="w-3 h-3 text-[#C5A880]" />
-                                <span>{t('Duyệt Phản Hồi')}</span>
+                                <MessageSquare className="w-3 h-3 text-[#0A0E14]" />
+                                <span>{t('Phản Hồi / Đáp Lại')}</span>
                               </button>
                             ) : (
                               <div className="flex items-center gap-1.5">
@@ -983,8 +957,7 @@ export default function KanbanBoard() {
                   </div>
                 ) : (
                   inProgressTickets.map((ticket) => {
-                    const isFeedback = ticket.ticket_type === 'FEEDBACK';
-                    const isInquiry = ticket.ticket_type === 'INQUIRY';
+                    const isFeedback = ticket.ticket_type !== 'REPAIR';
 
                     return (
                       <div 
@@ -1150,8 +1123,7 @@ export default function KanbanBoard() {
                   </div>
                 ) : (
                   resolvedTickets.map((ticket) => {
-                    const isFeedback = ticket.ticket_type === 'FEEDBACK';
-                    const isInquiry = ticket.ticket_type === 'INQUIRY';
+                    const isFeedback = ticket.ticket_type !== 'REPAIR';
 
                     return (
                       <div 
@@ -1203,21 +1175,15 @@ export default function KanbanBoard() {
                           {ticket.content}
                         </p>
 
-                        {/* Feedback / Inquiry Response Summary (Subtle Line, No Boxes) */}
+                        {/* Feedback Response Summary (Subtle Line, No Boxes) */}
                         {isFeedback && ticket.admin_reply && (
                           <div className="text-[11px] text-gray-400 italic line-clamp-1 pt-0.5">
                             <span className="text-gray-300 not-italic font-medium">{t('BQL: ')}</span>"{ticket.admin_reply}"
                           </div>
                         )}
 
-                        {isInquiry && ticket.ai_reply && (
-                          <div className="text-[11px] text-gray-400 italic line-clamp-1 pt-0.5">
-                            <span className="text-[#C5A880] not-italic font-medium">{t('AI: ')}</span>"{ticket.ai_reply}"
-                          </div>
-                        )}
-
                         {/* Repair Resolution & Visual Inspection (Clean Inline Preview, Zero Boxes) */}
-                        {!isFeedback && !isInquiry && (ticket.before_image || ticket.after_image || ticket.ai_verification || ticket.resolution_notes) && (
+                        {!isFeedback && (ticket.before_image || ticket.after_image || ticket.ai_verification || ticket.resolution_notes) && (
                           <div className="flex items-center justify-between gap-2 pt-0.5">
                             <div className="flex items-center gap-1.5">
                               {ticket.before_image && (
@@ -1304,8 +1270,7 @@ export default function KanbanBoard() {
                       </tr>
                     ) : (
                       filteredTickets.map((ticket) => {
-                        const isFeedback = ticket.ticket_type === 'FEEDBACK';
-                        const isInquiry = ticket.ticket_type === 'INQUIRY';
+                        const isFeedback = ticket.ticket_type !== 'REPAIR';
 
                         return (
                           <tr key={ticket.id} className="hover:bg-[#161B22]/70 transition-colors">
@@ -1329,10 +1294,6 @@ export default function KanbanBoard() {
                               {isFeedback ? (
                                 <span className="px-2 py-0.5 bg-rose-950/80 text-rose-300 border border-rose-500/60 text-[10px] font-bold">
                                   {t('Phản Ánh')}
-                                </span>
-                              ) : isInquiry ? (
-                                <span className="px-2 py-0.5 bg-sky-950/80 text-sky-300 border border-sky-500/60 text-[10px] font-bold">
-                                  {t('Hỏi Đáp AI')}
                                 </span>
                               ) : (
                                 <span className="px-2 py-0.5 bg-[#0E131B] text-amber-300 border border-amber-500/40 text-[10px] font-mono font-bold">
@@ -1396,25 +1357,41 @@ export default function KanbanBoard() {
                               <div className="flex items-center justify-end gap-1.5">
                                 {ticket.status === 'Open' && (
                                   <>
-                                    {ticket.suggested_technician && (
+                                    {isFeedback ? (
                                       <button
-                                        onClick={() => handleApproveAiRecommendation(ticket)}
-                                        className="h-6 px-2 bg-[#C5A880] hover:bg-[#E2C9A5] text-[#0A0E14] text-[11px] font-semibold rounded-none transition-colors"
-                                        title={t('Duyệt KTV')}
+                                        onClick={() => {
+                                          setFeedbackReplyTicket(ticket);
+                                          setFeedbackReplyContent(ticket.admin_reply || ticket.ai_suggested_reply || generateSuggestedAdminReply(ticket.content, ticket.ai_category, ticket.resident_name, ticket.apt_code));
+                                          setReplyEngineerName(ticket.assigned_technician || '');
+                                        }}
+                                        className="h-6 px-2.5 bg-[#C5A880] hover:bg-[#E2C9A5] text-[#0A0E14] text-[11px] font-semibold rounded-none transition-colors flex items-center gap-1"
                                       >
-                                        <Check className="w-3 h-3 inline mr-1 stroke-[2.5]" />
-                                        {t('Duyệt KTV')}
+                                        <MessageSquare className="w-3 h-3 text-[#0A0E14]" />
+                                        <span>{t('Phản Hồi')}</span>
                                       </button>
+                                    ) : (
+                                      <>
+                                        {ticket.suggested_technician && (
+                                          <button
+                                            onClick={() => handleApproveAiRecommendation(ticket)}
+                                            className="h-6 px-2 bg-[#C5A880] hover:bg-[#E2C9A5] text-[#0A0E14] text-[11px] font-semibold rounded-none transition-colors"
+                                            title={t('Duyệt KTV')}
+                                          >
+                                            <Check className="w-3 h-3 inline mr-1 stroke-[2.5]" />
+                                            {t('Duyệt KTV')}
+                                          </button>
+                                        )}
+                                        <button
+                                          onClick={() => {
+                                            setAssigningTicket(ticket);
+                                            setSelectedTechId(ticket.suggested_technician_id || 'KTV-01');
+                                          }}
+                                          className="h-6 px-2 bg-transparent hover:bg-[#141B24] border border-[#222B35] hover:border-[#C5A880] text-gray-300 hover:text-white text-[11px] rounded-none transition-colors"
+                                        >
+                                          {t('Chỉ Định')}
+                                        </button>
+                                      </>
                                     )}
-                                    <button
-                                      onClick={() => {
-                                        setAssigningTicket(ticket);
-                                        setSelectedTechId(ticket.suggested_technician_id || 'KTV-01');
-                                      }}
-                                      className="h-6 px-2 bg-transparent hover:bg-[#141B24] border border-[#222B35] hover:border-[#C5A880] text-gray-300 hover:text-white text-[11px] rounded-none transition-colors"
-                                    >
-                                      {t('Chỉ Định')}
-                                    </button>
                                   </>
                                 )}
                                 {(ticket.status === 'In_Progress' || ticket.status === 'Assigned') && (
@@ -1706,9 +1683,8 @@ export default function KanbanBoard() {
                   onChange={(e) => setNewTicketType(e.target.value as any)}
                   className="w-full bg-[#141B24] border border-[#222B35] focus:border-[#C5A880] text-xs text-white p-2 rounded-none outline-none"
                 >
-                  <option value="REPAIR">🔧 {t('Sự Cố Kỹ Thuật (KTV)', 'Technical Repair')}</option>
-                  <option value="FEEDBACK">📢 {t('Phản Ánh Cư Dân (BQL)', 'Resident Feedback')}</option>
-                  <option value="INQUIRY">💬 {t('Hỏi Đáp Tiện Ích (AI 24/7)', 'Amenity Inquiry')}</option>
+                  <option value="REPAIR">🔧 {t('Sự Cố Kỹ Thuật (Cần KTV Sửa)', 'Technical Repair')}</option>
+                  <option value="FEEDBACK">📢 {t('Phản Ánh & Ý Kiến (BQL Đáp Lại)', 'Resident Feedback')}</option>
                 </select>
               </div>
               <div className="space-y-1">

@@ -244,31 +244,12 @@ export async function POST(req: Request) {
       let scheduledTime: string | undefined = undefined;
       let aiReason: string | undefined = undefined;
       let ticketStatus: 'Open' | 'In_Progress' | 'Resolved' = 'Open';
-      let aiReplyText: string | undefined = undefined;
-      let aiRepliedAt: string | undefined = undefined;
       let actualHandledBy = classification.handledBy;
 
       // =========================================================================
-      // LUỒNG 1: PHẢN HỒI CỦA AI TỰ ĐỘNG MÀ KHÔNG CẦN THÔNG QUA BQL (INQUIRY)
+      // LUỒNG 1: SỰ CỐ KỸ THUẬT / SỬA CHỮA (REPAIR - CẦN KỸ THUẬT VIÊN)
       // =========================================================================
-      if (finalCategoryType === 'INQUIRY') {
-        const knowledgeAnswer = findInquiryAnswer(t.content || body.content || '');
-        if (knowledgeAnswer) {
-          aiReplyText = knowledgeAnswer;
-          aiRepliedAt = new Date().toISOString();
-          ticketStatus = 'Resolved'; // AI tự động giải đáp xong tức thì 24/7 mà không cần thông qua BQL
-          actualHandledBy = 'AI';
-        } else {
-          // Câu hỏi chuyên biệt chưa có trong cơ sở tri thức -> Chờ BQL xác nhận & hỗ trợ
-          ticketStatus = 'Open';
-          actualHandledBy = 'MANAGEMENT';
-        }
-      } 
-      // =========================================================================
-      // LUỒNG 2: MỘT SỐ CÁI CẦN THIẾT THÌ MỚI PHÂN BỔ KỸ THUẬT VIÊN (REPAIR)
-      // =========================================================================
-      else if (finalCategoryType === 'REPAIR') {
-        // Sự cố kỹ thuật: Đưa về cột "Chờ Tiếp Nhận" (Open) và đính kèm gợi ý AI để BQL phê duyệt
+      if (finalCategoryType === 'REPAIR') {
         ticketStatus = 'Open';
         actualHandledBy = 'TECHNICIAN';
         if (data.technicians && data.technicians.length > 0) {
@@ -282,14 +263,16 @@ export async function POST(req: Request) {
           aiReason = evalResult.reason;
           suggestedScore = evalResult.matchScore;
         }
-      }
+      } 
       // =========================================================================
-      // LUỒNG 3: MỘT SỐ CÁI CHỜ BQL XÁC NHẬN (FEEDBACK, GÓP Ý, KHIẾU NẠI, DỊCH VỤ)
+      // LUỒNG 2: PHẢN ÁNH / Ý KIẾN / THẮC MẮC (FEEDBACK - BQL ĐÁP LẠI, KHÔNG CẦN CỬ KTV ĐẾN NGAY)
       // =========================================================================
       else {
-        // Phản ánh cư dân, khiếu nại, vệ sinh, an ninh: BQL trực tiếp xác minh và giải quyết
-        ticketStatus = 'Open'; // Chờ Ban Quản Lý xác nhận
+        ticketStatus = 'Open'; // Chờ Ban Quản Lý phản hồi / đáp lại
         actualHandledBy = 'MANAGEMENT';
+        suggestedTech = undefined;
+        scheduledTime = undefined;
+        aiReason = undefined;
       }
 
       const newTicket: ExtendedServiceRequest = {
@@ -299,12 +282,15 @@ export async function POST(req: Request) {
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
         status: ticketStatus,
-        ticket_type: finalCategoryType,
-        ticket_type_label: finalCategoryLabel,
+        ticket_type: finalCategoryType === 'REPAIR' ? 'REPAIR' : 'FEEDBACK',
+        ticket_type_label: finalCategoryType === 'REPAIR' ? 'Sự Cố Kỹ Thuật' : 'Phản Ánh & Ý Kiến',
         handled_by: actualHandledBy,
-        ai_reply: aiReplyText,
-        ai_replied_at: aiRepliedAt,
-        ai_suggested_reply: finalCategoryType === 'INQUIRY' ? aiReplyText : generateSuggestedAdminReply(t.content || body.content || '', t.ai_category || body.ai_category),
+        ai_suggested_reply: generateSuggestedAdminReply(
+          t.content || body.content || '', 
+          t.ai_category || body.ai_category,
+          residentFullName,
+          apt
+        ),
         assigned_technician_id: undefined,
         assigned_technician: undefined,
         assigned_technician_phone: undefined,
@@ -317,13 +303,7 @@ export async function POST(req: Request) {
         ai_dispatch_reason: aiReason,
       };
 
-      // Đồng bộ thông minh lên NKS SCRMAI API:
-      if (nksResult.id) {
-        // 1. Nếu là AI tự động phản hồi (INQUIRY) -> Đồng bộ trực tiếp reply lên NKS
-        if (aiReplyText && ticketStatus === 'Resolved') {
-          await updateNksTicket({ id: nksResult.id, reply: aiReplyText }).catch(e => console.warn('Lỗi sync AI reply lên NKS:', e));
-        }
-      }
+
 
       // Thêm vào danh sách local
       data.tickets = [newTicket, ...data.tickets.filter(item => item.id !== newId)];

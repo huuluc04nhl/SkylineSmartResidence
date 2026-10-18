@@ -318,7 +318,8 @@ export function nksTicketToServiceRequest(
   const s = (nks.service || '').toLowerCase();
   const textLower = text.toLowerCase();
   let cat: 'Điện' | 'Nước' | 'Vệ sinh' | 'An ninh' | 'Khác' = 'Khác';
-  if (s.includes('nước') || textLower.includes('nước') || textLower.includes('vòi') || textLower.includes('bồn')) {
+  const isPoolOrFacility = textLower.includes('hồ bơi') || textLower.includes('bể bơi') || textLower.includes('gym');
+  if (!isPoolOrFacility && (s.includes('nước') || textLower.includes('vòi') || textLower.includes('bồn') || textLower.includes('rò rỉ') || textLower.includes('vỡ ống') || textLower.includes('nghẹt'))) {
     cat = 'Nước';
   } else if (s.includes('điện') || textLower.includes('điện') || textLower.includes('đèn') || textLower.includes('chập')) {
     cat = 'Điện';
@@ -328,49 +329,34 @@ export function nksTicketToServiceRequest(
     cat = 'An ninh';
   }
 
-  const isUrgent = classification.urgent || cat === 'Điện' || cat === 'Nước';
+  const isUrgent = classification.urgent || (classification.type === 'REPAIR' && (cat === 'Điện' || cat === 'Nước'));
   const img = typeof nks.image === 'string' && nks.image.trim() ? nks.image : '';
 
   // Đồng bộ hai trường mới từ API NKS: reply và engineername
   const remoteReply = typeof nks.reply === 'string' && nks.reply.trim() ? nks.reply.trim() : undefined;
   const remoteEngineer = typeof nks.engineername === 'string' && nks.engineername.trim() ? nks.engineername.trim() : undefined;
 
-  // Trạng thái đồng bộ từ NKS API theo 3 luồng rõ ràng:
-  // 1. Phản hồi tự động AI (INQUIRY): Resolved tức thì mà không cần qua BQL
-  // 2. Sự cố kỹ thuật (REPAIR): In_Progress khi phân bổ KTV
-  // 3. Phản ánh / Góp ý (FEEDBACK): Open chờ BQL xác nhận & phản hồi
+  // Trạng thái đồng bộ từ NKS API theo 2 luồng rõ ràng:
+  // 1. Sự cố kỹ thuật (REPAIR): In_Progress khi phân bổ KTV, Open khi chờ tiếp nhận
+  // 2. Phản ánh / Góp ý / Thắc mắc (FEEDBACK): Resolved khi BQL đã có reply/đáp lại, Open khi chờ BQL phản hồi
   const ticketType = classification.type;
   const handlerRole = classification.handledBy;
 
-  // Trạng thái đồng bộ từ NKS API theo 3 luồng rõ ràng:
-  // 1. Phản hồi tự động AI (INQUIRY): Resolved tức thì mà không cần qua BQL
-  // 2. Sự cố kỹ thuật (REPAIR): In_Progress khi phân bổ KTV, Open khi chờ KTV
-  // 3. Phản ánh / Góp ý (FEEDBACK): Open chờ BQL xác nhận & phản hồi
   let status: 'Open' | 'In_Progress' | 'Resolved' | 'Assigned' | 'Cancelled' = 'Open';
-  if (existingLocalTicket && existingLocalTicket.status !== 'Resolved') {
-    status = existingLocalTicket.status;
-    if (remoteReply && remoteReply.trim() && status === 'Open') {
-      status = 'Resolved';
-    }
-  } else if (existingLocalTicket && existingLocalTicket.status === 'Resolved' && (existingLocalTicket.resolution_notes || existingLocalTicket.after_image || remoteReply)) {
+  if (remoteReply && remoteReply.trim()) {
     status = 'Resolved';
-  } else if (nks.status === 'resolved' || nks.status === 'closed' || (remoteReply && remoteReply.trim())) {
+  } else if (existingLocalTicket && existingLocalTicket.status === 'Resolved' && (existingLocalTicket.resolution_notes || existingLocalTicket.after_image || existingLocalTicket.admin_reply)) {
     status = 'Resolved';
-  } else if (remoteEngineer && remoteEngineer.trim()) {
+  } else if (nks.status === 'resolved' || nks.status === 'closed') {
+    status = 'Resolved';
+  } else if (ticketType === 'REPAIR' && (existingLocalTicket?.assigned_technician_id || remoteEngineer)) {
     status = 'In_Progress';
-  } else if (ticketType === 'INQUIRY' && classification.suggestedAiReply) {
-    // Luồng 1: Hỏi đáp tra cứu tiện ích thực sự - AI tự động phản hồi không cần qua BQL
-    status = 'Resolved';
   } else {
-    // Luồng 2 & 3: REPAIR / FEEDBACK - Chờ tiếp nhận hoặc đang xử lý
-    status = (existingLocalTicket?.assigned_technician_id || remoteEngineer) ? 'In_Progress' : 'Open';
+    status = existingLocalTicket?.status || 'Open';
   }
 
   const actualName = nks.fullname?.trim() || existingLocalTicket?.resident_name || 'Cư dân';
   const actualPhone = nks.phone?.trim() || existingLocalTicket?.resident_phone || '';
-
-  // Chỉ gắn câu trả lời AI khi ticket thực sự là INQUIRY
-  const resolvedAiReply = ticketType === 'INQUIRY' ? (existingLocalTicket?.ai_reply || classification.suggestedAiReply) : undefined;
 
   return {
     id: String(nks.id),
@@ -389,10 +375,7 @@ export function nksTicketToServiceRequest(
     sla_deadline: new Date(Date.now() + (isUrgent ? 45 : 120) * 60000).toISOString(),
     sla_minutes_left: isUrgent ? 45 : 120,
     status: status,
-    // AI tự động giải đáp nếu là câu hỏi
-    ai_reply: resolvedAiReply,
-    ai_replied_at: existingLocalTicket?.ai_replied_at || (ticketType === 'INQUIRY' ? (nks.created_at || new Date().toISOString()) : undefined),
-    ai_suggested_reply: existingLocalTicket?.ai_suggested_reply || classification.suggestedAiReply,
+    ai_suggested_reply: existingLocalTicket?.ai_suggested_reply || classification.suggestedAdminReply,
     // Phản hồi chính thức từ BQL / Hệ thống NKS
     admin_reply: existingLocalTicket?.admin_reply || remoteReply,
     admin_replied_at: existingLocalTicket?.admin_replied_at || (remoteReply ? nks.updated_at || nks.created_at : undefined),

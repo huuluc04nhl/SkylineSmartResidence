@@ -332,7 +332,7 @@ export async function createTicketAsync(payload: {
   // Tự động phân loại nếu người dùng chưa chọn thủ công
   const classification = classifyTicket(payload.content, payload.ai_category);
   const ticketType = payload.ticket_type || classification.type;
-  const handler = ticketType === 'INQUIRY' ? 'AI' : ticketType === 'REPAIR' ? 'TECHNICIAN' : 'MANAGEMENT';
+  const handler = ticketType === 'REPAIR' ? 'TECHNICIAN' : 'MANAGEMENT';
 
   // Gợi ý KTV tối ưu cho trường hợp REPAIR
   let suggestedTech: TechnicianProfile | undefined = undefined;
@@ -356,20 +356,17 @@ export async function createTicketAsync(payload: {
     resident_name: payload.resident_name,
     resident_phone: payload.resident_phone,
     content: payload.content,
-    ticket_type: ticketType,
-    ticket_type_label: ticketType === 'REPAIR' ? 'Sửa Chữa Kỹ Thuật' : ticketType === 'INQUIRY' ? 'Hỏi Đáp & Hỗ Trợ' : ticketType === 'FEEDBACK' ? 'Phản Ánh & Góp Ý' : 'Yêu Cầu Dịch Vụ',
+    ticket_type: ticketType === 'REPAIR' ? 'REPAIR' : 'FEEDBACK',
+    ticket_type_label: ticketType === 'REPAIR' ? 'Sửa Chữa Kỹ Thuật' : 'Phản Ánh & Ý Kiến',
     handled_by: handler,
     ai_category: cat,
     ai_priority: isUrgent ? 1 : 2,
     priority_color: isUrgent ? '#DC2626' : '#D97706',
     sla_deadline: new Date(Date.now() + (isUrgent ? 45 : 120) * 60000).toISOString(),
     sla_minutes_left: isUrgent ? 45 : 120,
-    status: ticketType === 'INQUIRY' ? 'Resolved' : 'Open',
-    // 1. Nếu là Hỏi Đáp: AI tự động phản hồi ngay 24/7
-    ai_reply: ticketType === 'INQUIRY' ? (classification.suggestedAiReply || findInquiryAnswer(payload.content)) : undefined,
-    ai_replied_at: ticketType === 'INQUIRY' ? new Date().toISOString() : undefined,
-    // 2. Nếu là Góp Ý / Khiếu Nại: AI gợi ý dự thảo câu trả lời để BQL duyệt
-    ai_suggested_reply: ticketType === 'FEEDBACK' ? classification.suggestedAdminReply : (ticketType === 'INQUIRY' ? classification.suggestedAiReply : undefined),
+    status: 'Open',
+    // Dự thảo câu trả lời để BQL tham khảo đáp lại cư dân
+    ai_suggested_reply: classification.suggestedAdminReply,
     suggested_technician: suggestedTech?.name,
     suggested_technician_id: suggestedTech?.id,
     suggested_technician_phone: suggestedTech?.phone,
@@ -439,7 +436,7 @@ export function createTicket(payload: {
 
   const classification = classifyTicket(payload.content, payload.ai_category);
   const ticketType = payload.ticket_type || classification.type;
-  const handler = ticketType === 'INQUIRY' ? 'AI' : ticketType === 'REPAIR' ? 'TECHNICIAN' : 'MANAGEMENT';
+  const handler = ticketType === 'REPAIR' ? 'TECHNICIAN' : 'MANAGEMENT';
 
   let suggestedTech: TechnicianProfile | undefined = undefined;
   if (ticketType === 'REPAIR') {
@@ -462,18 +459,16 @@ export function createTicket(payload: {
     resident_name: payload.resident_name,
     resident_phone: payload.resident_phone,
     content: payload.content,
-    ticket_type: ticketType,
-    ticket_type_label: ticketType === 'REPAIR' ? 'Sửa Chữa Kỹ Thuật' : ticketType === 'INQUIRY' ? 'Hỏi Đáp & Hỗ Trợ' : ticketType === 'FEEDBACK' ? 'Phản Ánh & Góp Ý' : 'Yêu Cầu Dịch Vụ',
+    ticket_type: ticketType === 'REPAIR' ? 'REPAIR' : 'FEEDBACK',
+    ticket_type_label: ticketType === 'REPAIR' ? 'Sửa Chữa Kỹ Thuật' : 'Phản Ánh & Ý Kiến',
     handled_by: handler,
     ai_category: cat,
     ai_priority: isUrgent ? 1 : 2,
     priority_color: isUrgent ? '#DC2626' : '#D97706',
     sla_deadline: new Date(Date.now() + (isUrgent ? 45 : 120) * 60000).toISOString(),
     sla_minutes_left: isUrgent ? 45 : 120,
-    status: ticketType === 'INQUIRY' ? 'Resolved' : 'Open',
-    ai_reply: ticketType === 'INQUIRY' ? (classification.suggestedAiReply || findInquiryAnswer(payload.content)) : undefined,
-    ai_replied_at: ticketType === 'INQUIRY' ? new Date().toISOString() : undefined,
-    ai_suggested_reply: ticketType === 'INQUIRY' ? (classification.suggestedAiReply || findInquiryAnswer(payload.content)) : undefined,
+    status: 'Open',
+    ai_suggested_reply: classification.suggestedAdminReply,
     suggested_technician: suggestedTech?.name,
     suggested_technician_id: suggestedTech?.id,
     suggested_technician_phone: suggestedTech?.phone,

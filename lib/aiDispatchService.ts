@@ -167,46 +167,8 @@ export function autoDispatchSingleTicket(ticketId: string): ExtendedServiceReque
   // Xác định rõ loại phiếu
   const type = targetTicket.ticket_type || classifyTicket(targetTicket.content, targetTicket.ai_category).type;
 
-  // 1. Nếu là Hỏi Đáp (INQUIRY): AI tự động giải đáp ngay lập tức 24/7 mà không cần qua BQL
-  if (type === 'INQUIRY') {
-    const aiAnswer = targetTicket.ai_reply || targetTicket.ai_suggested_reply || findInquiryAnswer(targetTicket.content);
-    let answeredTicket: ExtendedServiceRequest | null = null;
-    const updatedTickets = allTickets.map(t => {
-      if (t.id === targetTicket.id) {
-        answeredTicket = {
-          ...t,
-          ticket_type: 'INQUIRY',
-          ticket_type_label: 'Hỏi Đáp & Trợ Giúp',
-          handled_by: 'AI',
-          ai_reply: aiAnswer,
-          ai_replied_at: t.ai_replied_at || new Date().toISOString(),
-          status: 'Resolved' as const, // Giải đáp tự động thành công
-          updated_at: new Date().toISOString(),
-        };
-        return answeredTicket;
-      }
-      return t;
-    });
-
-    if (answeredTicket) {
-      saveTickets(updatedTickets);
-      if (typeof window !== 'undefined') {
-        fetch('/api/tickets', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            action: 'AI_ANSWER',
-            ticketId: targetTicket.id,
-            customAnswer: aiAnswer,
-          }),
-        }).catch(err => console.warn('Lỗi đồng bộ AI answer:', err));
-      }
-    }
-    return answeredTicket;
-  }
-
-  // 2. Nếu là Phản ánh (FEEDBACK) hoặc Yêu cầu (SERVICE_REQUEST): Giữ nguyên cho Ban Quản Lý, KHÔNG gán KTV sửa chữa
-  if (type === 'FEEDBACK' || type === 'SERVICE_REQUEST') {
+  // 1. Nếu là Phản ánh / Ý kiến (FEEDBACK) hoặc Yêu cầu: Giữ cho Ban Quản Lý phản hồi / đáp lại, KHÔNG cử KTV sửa chữa
+  if (type !== 'REPAIR') {
     return targetTicket;
   }
 
@@ -286,13 +248,7 @@ export function autoDispatchAllPendingTickets(): {
   for (const t of openTickets) {
     const dispatched = autoDispatchSingleTicket(t.id);
     if (dispatched) {
-      if (dispatched.ticket_type === 'INQUIRY' && dispatched.ai_reply) {
-        results.push({
-          ticketId: dispatched.nks_id ? `#${dispatched.nks_id}` : `#${dispatched.id}`,
-          techName: 'AI Tự Động Trả Lời',
-          reason: 'Giải đáp thắc mắc nội quy / tiện ích 24/7',
-        });
-      } else if (dispatched.assigned_technician) {
+      if (dispatched.assigned_technician) {
         results.push({
           ticketId: dispatched.nks_id ? `#${dispatched.nks_id}` : `#${dispatched.id}`,
           techName: dispatched.assigned_technician,
