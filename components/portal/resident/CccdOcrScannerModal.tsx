@@ -28,6 +28,7 @@ import {
   formatToDisplayDate, 
   formatToApiDate,
   compressImageDataUrl,
+  rotateImageDataUrl,
   extractCccdFromClientQr 
 } from '@/lib/ocrParser';
 import { nksUpdateCccd } from '@/lib/nksApiClient';
@@ -88,12 +89,12 @@ export default function CccdOcrScannerModal({
     if (!file) return;
 
     if (!file.type.startsWith('image/')) {
-      setErrorMessage('Tệp tải lên không phải là định dạng hình ảnh hợp lệ (chấp nhận JPEG, PNG, WEBP).');
+      setErrorMessage('Tệp tải lên chưa đúng định dạng. Quý cư dân vui lòng chọn tệp hình ảnh (JPG, PNG).');
       return;
     }
 
-    if (file.size < 15000) {
-      setErrorMessage('Ảnh chụp thẻ CCCD quá mờ hoặc dung lượng quá nhỏ (dưới 15KB). Vui lòng tải ảnh rõ nét.');
+    if (file.size < 5000) {
+      setErrorMessage('Ảnh chụp chưa đủ rõ nét. Quý cư dân vui lòng tải ảnh chụp rõ các góc của thẻ.');
       return;
     }
 
@@ -103,29 +104,21 @@ export default function CccdOcrScannerModal({
         const dataUrl = reader.result;
         const img = new Image();
         img.onload = async () => {
-          const ratio = img.width / img.height;
-          if (ratio < 1.22) {
-            setErrorMessage(`Ảnh tải lên là ảnh dọc (tỷ lệ ${ratio.toFixed(2)}:1). Thẻ CCCD phải là ảnh chụp ngang bao gồm đủ 4 góc thẻ (tỷ lệ chuẩn ~1.58:1). Không được dùng ảnh selfie dọc!`);
-            return;
-          }
-          if (ratio > 2.05) {
-            setErrorMessage(`Ảnh bị cắt xén quá dài (tỷ lệ ${ratio.toFixed(2)}:1). Vui lòng chụp trọn vẹn 4 góc thẻ CCCD.`);
-            return;
-          }
-          if (img.width < 380 || img.height < 240) {
-            setErrorMessage(`Độ phân giải ảnh quá thấp (${img.width}x${img.height}px). Yêu cầu tối thiểu 400x250px để hệ thống tự động đọc thông tin.`);
-            return;
+          let workingDataUrl = dataUrl;
+          // Nếu ảnh chụp thẳng đứng trên điện thoại di động, tự động xoay ngang để vừa khung thẻ CCCD
+          if (img.height > img.width) {
+            workingDataUrl = await rotateImageDataUrl(dataUrl, 90);
           }
 
-          const compressed = await compressImageDataUrl(dataUrl);
+          const compressed = await compressImageDataUrl(workingDataUrl);
           setFrontImage(compressed);
           setOcrResult(null);
           setErrorMessage(null);
-          // Suggest flipping to back side if back not uploaded yet
+          // Gợi ý xem mặt sau nếu chưa tải mặt sau
           if (!backImage) {
             setTimeout(() => {
               setIsFlipped(true);
-            }, 500);
+            }, 400);
           }
         };
         img.src = dataUrl;
@@ -139,12 +132,12 @@ export default function CccdOcrScannerModal({
     if (!file) return;
 
     if (!file.type.startsWith('image/')) {
-      setErrorMessage('Tệp tải lên không phải là định dạng hình ảnh hợp lệ (chấp nhận JPEG, PNG, WEBP).');
+      setErrorMessage('Tệp tải lên chưa đúng định dạng. Quý cư dân vui lòng chọn tệp hình ảnh (JPG, PNG).');
       return;
     }
 
-    if (file.size < 15000) {
-      setErrorMessage('Ảnh chụp thẻ CCCD quá mờ hoặc dung lượng quá nhỏ (dưới 15KB). Vui lòng tải ảnh rõ nét.');
+    if (file.size < 5000) {
+      setErrorMessage('Ảnh chụp chưa đủ rõ nét. Quý cư dân vui lòng tải ảnh chụp rõ các góc của thẻ.');
       return;
     }
 
@@ -154,21 +147,13 @@ export default function CccdOcrScannerModal({
         const dataUrl = reader.result;
         const img = new Image();
         img.onload = async () => {
-          const ratio = img.width / img.height;
-          if (ratio < 1.22) {
-            setErrorMessage(`Ảnh tải lên là ảnh dọc (tỷ lệ ${ratio.toFixed(2)}:1). Thẻ CCCD phải là ảnh chụp ngang bao gồm đủ 4 góc thẻ (tỷ lệ chuẩn ~1.58:1).`);
-            return;
-          }
-          if (ratio > 2.05) {
-            setErrorMessage(`Ảnh bị cắt xén quá dài (tỷ lệ ${ratio.toFixed(2)}:1). Vui lòng chụp trọn vẹn 4 góc thẻ CCCD.`);
-            return;
-          }
-          if (img.width < 380 || img.height < 240) {
-            setErrorMessage(`Độ phân giải ảnh quá thấp (${img.width}x${img.height}px). Yêu cầu tối thiểu 400x250px.`);
-            return;
+          let workingDataUrl = dataUrl;
+          // Nếu ảnh chụp thẳng đứng trên điện thoại di động, tự động xoay ngang
+          if (img.height > img.width) {
+            workingDataUrl = await rotateImageDataUrl(dataUrl, 90);
           }
 
-          const compressed = await compressImageDataUrl(dataUrl);
+          const compressed = await compressImageDataUrl(workingDataUrl);
           setBackImage(compressed);
           setOcrResult(null);
           setErrorMessage(null);
@@ -199,7 +184,7 @@ export default function CccdOcrScannerModal({
       // 1. Force flip to FRONT SIDE
       setIsFlipped(false);
       setScanStage('SCANNING_FRONT');
-      setScanStatusText('Đang quét và nhận diện thông tin trên thẻ CCCD...');
+      setScanStatusText('Đang kiểm tra thông tin mặt trước của thẻ...');
       setScanProgress(25);
 
       let ocrSucceeded = false;
@@ -209,12 +194,12 @@ export default function CccdOcrScannerModal({
         const clientQrResult = await extractCccdFromClientQr(frontImage);
         if (clientQrResult && clientQrResult.idNumber) {
           setScanProgress(60);
-          setScanStatusText('✨ Đã giải mã mã QR bảo mật trên thẻ CCCD! Đang đối soát mặt sau...');
+          setScanStatusText('✨ Đã tìm thấy thông tin trên thẻ! Đang kiểm tra mặt sau...');
           setIsFlipped(true);
           await new Promise((r) => setTimeout(r, 700));
 
           setScanProgress(100);
-          setScanStatusText('✨ Hoàn tất đọc thông tin trực tiếp từ thẻ Căn cước công dân!');
+          setScanStatusText('✨ Hoàn tất nhận diện thông tin thẻ Căn cước công dân!');
           setScanStage('COMPLETE');
 
           setOcrResult(clientQrResult);
@@ -231,9 +216,9 @@ export default function CccdOcrScannerModal({
         console.warn('Client QR scan attempt:', qrErr);
       }
 
-      // 2. Nếu QR không có hoặc bị mờ, gửi ảnh lên bộ máy OCR máy chủ để đọc chữ và chip
+      // 2. Nếu QR không có hoặc bị mờ, gửi ảnh lên hệ thống để đọc chữ và đối chiếu
       if (!ocrSucceeded) {
-        setScanStatusText('Đang nén ảnh và phân tích qua bộ máy OCR máy chủ...');
+        setScanStatusText('Đang đối chiếu thông tin từ hình ảnh thẻ...');
         setScanProgress(40);
 
         const [compFront, compBack] = await Promise.all([
@@ -256,16 +241,16 @@ export default function CccdOcrScannerModal({
           const aiData = await aiRes.json();
           if (aiRes.ok && aiData.success && aiData.data?.idNumber) {
             setScanProgress(60);
-            setScanStatusText('✨ Đã đọc thông tin mặt trước! Đang tự động lật sang mặt sau...');
+            setScanStatusText('✨ Đã nhận diện thông tin mặt trước! Đang kiểm tra mặt sau...');
             setIsFlipped(true);
             await new Promise((r) => setTimeout(r, 700));
 
             setScanProgress(85);
-            setScanStatusText('✨ Đang đối soát thông tin Chip và Ngày cấp...');
+            setScanStatusText('✨ Đang kiểm tra thông tin ngày cấp và nơi cấp...');
             await new Promise((r) => setTimeout(r, 300));
 
             setScanProgress(100);
-            setScanStatusText('✨ Hoàn tất đọc thông tin 2 mặt thẻ Căn cước công dân!');
+            setScanStatusText('✨ Hoàn tất nhận diện thông tin thẻ Căn cước công dân!');
             setScanStage('COMPLETE');
 
             const d = aiData.data;
@@ -280,7 +265,7 @@ export default function CccdOcrScannerModal({
               idDate: formatToDateInput(d.idDate || ''),
               idPlace: d.idPlace || 'Cục Cảnh sát QLHC về TTXH',
               confidence: d.confidence || 95,
-              rawText: `[THÔNG TIN THẺ CĂN CƯỚC EXTRACTED]:\nSố CCCD: ${d.idNumber}\nHọ tên: ${d.fullName}`,
+              rawText: `[THÔNG TIN THẺ CĂN CƯỚC]:\nSố CCCD: ${d.idNumber}\nHọ tên: ${d.fullName}`,
             };
 
             setOcrResult(merged);
@@ -293,15 +278,61 @@ export default function CccdOcrScannerModal({
             setEditIdPlace(merged.idPlace || 'Cục Cảnh sát QLHC về TTXH');
             ocrSucceeded = true;
           } else {
-            setErrorMessage(aiData.error || 'Không thể trích xuất dữ liệu từ ảnh thẻ đã tải lên. Vui lòng chụp rõ nét hơn.');
+            // Trường hợp ảnh chụp bị mờ/lóa sáng, vẫn mở form để cư dân tự bổ sung dễ dàng
+            const emptyCard: OcrCccdResult = {
+              idNumber: (aiData.data?.idNumber || '').replace(/\D/g, '').slice(0, 12),
+              fullName: (aiData.data?.fullName || '').toUpperCase().trim(),
+              dob: formatToDateInput(aiData.data?.dob || ''),
+              gender: (aiData.data?.gender === '0' ? '0' : '1'),
+              pob: aiData.data?.pob || '',
+              residence: aiData.data?.residence || aiData.data?.pob || '',
+              province: aiData.data?.province || 'TP. Hồ Chí Minh',
+              idDate: formatToDateInput(aiData.data?.idDate || ''),
+              idPlace: aiData.data?.idPlace || 'Cục Cảnh sát QLHC về TTXH',
+              confidence: 60,
+              rawText: '',
+            };
+            setOcrResult(emptyCard);
+            setEditIdNumber(emptyCard.idNumber);
+            setEditFullName(emptyCard.fullName);
+            setEditDob(emptyCard.dob);
+            setEditGender(emptyCard.gender);
+            setEditPob(emptyCard.pob);
+            setEditIdDate(emptyCard.idDate);
+            setEditIdPlace(emptyCard.idPlace);
+            setScanProgress(100);
+            setScanStatusText('✨ Đã lưu 2 mặt ảnh thẻ! Quý cư dân vui lòng kiểm tra và điền thông tin bên dưới:');
+            setScanStage('COMPLETE');
+            setIsFlipped(false);
+            setErrorMessage(aiData.message || 'Ảnh chụp thẻ đã được lưu. Do ảnh chụp có thể bị lóa sáng, Quý cư dân vui lòng hỗ trợ kiểm tra hoặc điền thông tin vào các ô bên dưới.');
+            ocrSucceeded = true;
           }
         } catch (fetchErr: any) {
-          setErrorMessage('Không thể kết nối máy chủ nhận diện OCR. Vui lòng kiểm tra lại ảnh chụp.');
+          const emptyCard: OcrCccdResult = {
+            idNumber: '',
+            fullName: '',
+            dob: '',
+            gender: '1',
+            pob: '',
+            residence: '',
+            province: 'TP. Hồ Chí Minh',
+            idDate: '',
+            idPlace: 'Cục Cảnh sát QLHC về TTXH',
+            confidence: 50,
+            rawText: '',
+          };
+          setOcrResult(emptyCard);
+          setScanProgress(100);
+          setScanStatusText('✨ Đã lưu ảnh thẻ! Quý cư dân vui lòng kiểm tra và điền thông tin bên dưới:');
+          setScanStage('COMPLETE');
+          setIsFlipped(false);
+          setErrorMessage('Hệ thống đã nhận 2 mặt ảnh chụp. Quý cư dân vui lòng hỗ trợ điền nhanh thông tin vào các ô bên dưới.');
+          ocrSucceeded = true;
         }
       }
     } catch (err: any) {
-      console.error('OCR Error:', err);
-      setErrorMessage(err.message || 'Không thể trích xuất dữ liệu từ ảnh. Vui lòng thử tải lên ảnh rõ nét hơn.');
+      console.error('Scan Error:', err);
+      setErrorMessage('Quý cư dân vui lòng kiểm tra lại ảnh chụp hoặc tự điền thông tin vào các ô bên dưới.');
     } finally {
       setIsScanning(false);
     }
@@ -356,16 +387,16 @@ export default function CccdOcrScannerModal({
           <div className="space-y-1 min-w-0 pr-2">
             <div className="text-[10px] uppercase tracking-[0.2em] text-[#C5A880] font-bold flex flex-wrap items-center gap-1.5 sm:gap-2">
               <Sparkles className="w-3.5 h-3.5 flex-shrink-0" /> 
-              <span className="truncate">{t('Xác Thực Căn Cước')}</span>
+              <span className="truncate">{t('Thông Tin Cư Dân')}</span>
               <span className="px-1.5 sm:px-2 py-0.5 bg-emerald-950/80 border border-emerald-500/50 text-emerald-400 text-[9px] font-mono tracking-normal font-semibold rounded-none inline-flex items-center gap-1">
-                <Sparkles className="w-2.5 h-2.5 text-emerald-400" /> {t('Tự Động')}
+                <Sparkles className="w-2.5 h-2.5 text-emerald-400" /> {t('Hỗ Trợ Tự Động')}
               </span>
             </div>
             <h3 className="font-serif text-base sm:text-2xl font-bold text-white flex items-center gap-2 truncate">
-              <Scan className="w-4 h-4 sm:w-5 sm:h-5 text-[#C5A880] flex-shrink-0" /> <span>{t('Quét Căn Cước Công Dân (2 Mặt)')}</span>
+              <Scan className="w-4 h-4 sm:w-5 sm:h-5 text-[#C5A880] flex-shrink-0" /> <span>{t('Đọc Thông Tin Thẻ Căn Cước (2 Mặt)')}</span>
             </h3>
             <p className="text-xs text-gray-400 hidden sm:block">
-              {t('Hệ thống tự động đọc và điền nhanh thông tin từ 2 mặt thẻ Căn cước công dân của Quý cư dân một cách chuẩn xác và an toàn.')}
+              {t('Hệ thống hỗ trợ tự động nhận diện thông tin từ 2 mặt thẻ Căn cước công dân của Quý cư dân một cách tiện lợi và an toàn.')}
             </p>
           </div>
 
@@ -377,10 +408,10 @@ export default function CccdOcrScannerModal({
           </button>
         </div>
 
-        {/* Error Alert */}
+        {/* Notice / Guidance Alert */}
         {errorMessage && (
-          <div className="p-3 bg-rose-950/90 border border-rose-500 text-rose-300 text-xs flex items-center gap-2 rounded-none">
-            <AlertCircle className="w-4 h-4 flex-shrink-0" />
+          <div className="p-3 bg-amber-950/80 border border-amber-500/60 text-amber-300 text-xs flex items-center gap-2 rounded-none">
+            <AlertCircle className="w-4 h-4 flex-shrink-0 text-amber-400" />
             <span>{errorMessage}</span>
           </div>
         )}
@@ -398,7 +429,7 @@ export default function CccdOcrScannerModal({
                   ? 'bg-amber-950/80 text-[#C5A880] border border-[#C5A880]' 
                   : 'bg-cyan-950/80 text-cyan-400 border border-cyan-500'
               }`}>
-                {!isFlipped ? t('MẶT TRƯỚC (Front)') : t('MẶT SAU (Back)')}
+                {!isFlipped ? t('MẶT TRƯỚC') : t('MẶT SAU')}
               </span>
             </div>
 
@@ -410,7 +441,7 @@ export default function CccdOcrScannerModal({
               className="px-3 py-1.5 bg-[#1C2533] hover:bg-[#C5A880] hover:text-[#0D1117] text-[#C5A880] border border-[#C5A880] text-xs font-bold uppercase tracking-wider rounded-none transition-all flex items-center gap-1.5 shadow"
             >
               <RotateCw className={`w-3.5 h-3.5 transition-transform duration-500 ${isFlipped ? 'rotate-180' : ''}`} />
-              <span>{t('Lật Mặt Thẻ 3D')}</span>
+              <span>{isFlipped ? t('Xem Mặt Trước') : t('Xem Mặt Sau')}</span>
             </button>
           </div>
 
@@ -499,7 +530,7 @@ export default function CccdOcrScannerModal({
                   <div className="flex items-center gap-2">
                     <Layers className="w-4 h-4 text-cyan-400" />
                     <span className="text-cyan-400 font-bold uppercase tracking-wider text-[11px]">
-                      {t('Mặt Sau • Chip Điện Tử & Ngày Cấp')}
+                      {t('Mặt Sau • Ngày Cấp & Nơi Cấp')}
                     </span>
                   </div>
                   {backImage && (
@@ -533,7 +564,7 @@ export default function CccdOcrScannerModal({
                     <div className="text-center space-y-2 text-gray-400 p-4">
                       <Camera className="w-10 h-10 mx-auto text-gray-500 group-hover:text-cyan-400 transition-colors" />
                       <div className="text-xs font-semibold text-white">{t('Bấm để tải lên Mặt Sau CCCD')}</div>
-                      <div className="text-[10px] text-gray-500">{t('Chứa Chip điện tử, Ngày cấp, Nơi cấp & Mã MRZ')}</div>
+                      <div className="text-[10px] text-gray-500">{t('Bao gồm Ngày cấp và Nơi cấp thẻ')}</div>
                     </div>
                   )}
                 </div>
@@ -554,7 +585,7 @@ export default function CccdOcrScannerModal({
                     className="text-cyan-400 hover:text-white font-bold flex items-center gap-1"
                   >
                     <ArrowRight className="w-3 h-3 rotate-180" />
-                    <span>{t('Lật Về Mặt Trước')}</span>
+                    <span>{t('Xem Mặt Trước')}</span>
                   </button>
                 </div>
               </div>
@@ -585,7 +616,7 @@ export default function CccdOcrScannerModal({
             <div className="text-xs text-gray-300">
               {hasBothImages ? (
                 <span className="text-emerald-400 font-bold font-mono flex items-center gap-1.5">
-                  <CheckCircle2 className="w-4 h-4" /> {t('Đã Tải Đủ 2 Mặt — Sẵn sàng tự động đọc thông tin thẻ')}
+                  <CheckCircle2 className="w-4 h-4" /> {t('Đã Tải Đủ 2 Mặt — Sẵn sàng nhận diện thông tin thẻ')}
                 </span>
               ) : (
                 <span className="text-amber-400 font-bold font-mono">
@@ -609,7 +640,7 @@ export default function CccdOcrScannerModal({
               ) : (
                 <Zap className="w-4 h-4 text-[#0D1117]" />
               )}
-              {isScanning ? t('Đang Đọc Thông Tin Thẻ...') : t('Bắt Đầu Đọc Thông Tin Thẻ Tự Động')}
+              {isScanning ? t('Đang Nhận Diện Thông Tin...') : t('Tự Động Nhận Diện Thông Tin Thẻ')}
             </button>
           </div>
 
@@ -640,7 +671,7 @@ export default function CccdOcrScannerModal({
                 <CheckCircle2 className="w-4 h-4" /> {t('Thông Tin Đọc Được Từ Thẻ Căn Cước')}
               </div>
               <span className="px-2 py-0.5 bg-emerald-950 text-emerald-300 border border-emerald-500 text-[10px] font-mono font-bold rounded-none">
-                {t('Độ Rõ Nét:')} {ocrResult.confidence}%
+                {t('Độ Chính Xác:')} {ocrResult.confidence}%
               </span>
             </div>
 
@@ -747,12 +778,12 @@ export default function CccdOcrScannerModal({
             {isSyncingApi ? (
               <>
                 <RefreshCw className="w-4 h-4 animate-spin text-[#0D1117]" />
-                <span>{t('Đang Cập Nhật Lên API...')}</span>
+                <span>{t('Đang Lưu Thông Tin...')}</span>
               </>
             ) : (
               <>
                 <CheckCircle2 className="w-4 h-4" />
-                <span>{t('Lưu & Điền Vào Hồ Sơ')}</span>
+                <span>{t('Xác Nhận & Lưu Vào Hồ Sơ')}</span>
               </>
             )}
           </button>

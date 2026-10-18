@@ -533,14 +533,14 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
 
       // 4. Feedback
       setActionSuccess(
-        `✓ Đã gửi hồ sơ e-KYC & FaceID của người nhà "${ekycFullName}" lên Ban Quản Lý thành công! Hồ sơ đang chờ BQL thẩm định.`
+        `✓ Đã gửi thông tin căn cước & khuôn mặt của người nhà "${ekycFullName}" lên Ban Quản Lý thành công! Hồ sơ đang chờ Ban Quản Lý phê duyệt.`
       );
       setTimeout(() => setActionSuccess(null), 5000);
 
       handleCloseEkycModal();
       fetchMembers();
     } catch (err: any) {
-      setEkycModalError(err.message || 'Lỗi khi gửi hồ sơ e-KYC lên BQL.');
+      setEkycModalError(err.message || 'Lỗi khi gửi thông tin lên Ban Quản Lý.');
     } finally {
       setIsSubmittingEkyc(false);
     }
@@ -1045,7 +1045,7 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
                         )}
                         {ekycStatus === 'NOT_SUBMITTED' && (
                           <span className="px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider rounded-none border bg-gray-800 text-gray-300 border-gray-600 flex items-center gap-1 flex-shrink-0">
-                            <AlertCircle className="w-3 h-3 text-gray-400" /> Chưa e-KYC
+                            <AlertCircle className="w-3 h-3 text-gray-400" /> Chưa Xác Thực
                           </span>
                         )}
                         {/* 4-Step Banking FaceID Badge */}
@@ -1160,10 +1160,10 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
                             ? 'bg-rose-950 hover:bg-rose-900 border border-rose-500 text-rose-200 animate-pulse'
                             : 'bg-[#1C2533] hover:bg-[#263140] border border-gray-600 text-gray-200'
                         }`}
-                        title="Hồ sơ e-KYC CCCD"
+                        title="Thông tin Căn cước & Khuôn mặt"
                       >
                         <ScanFace className="w-3.5 h-3.5" />
-                        <span>e-KYC CCCD</span>
+                        <span>Xác Thực Cư Dân</span>
                       </button>
                     )}
 
@@ -1205,7 +1205,7 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
                 </div>
                 <div>
                   <h3 className="text-base font-serif font-bold text-white flex items-center gap-2">
-                    Hồ Sơ e-KYC Người Thân
+                    Thông Tin Thẻ & Khuôn Mặt Người Thân
                   </h3>
                   <p className="text-xs text-gray-400">
                     Căn {aptCode} • Chủ hộ {ownerName}
@@ -1219,7 +1219,7 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
                   onClick={() => setIsMemberOcrModalOpen(true)}
                   className="px-3 py-1.5 bg-gradient-to-r from-[#C5A880] to-[#E2C799] hover:brightness-110 text-[#0D1117] text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 transition-all shadow rounded-none active:scale-95"
                 >
-                  <Scan className="w-3.5 h-3.5 text-[#0D1117]" /> Quét CCCD
+                  <Scan className="w-3.5 h-3.5 text-[#0D1117]" /> Tải Ảnh CCCD
                 </button>
                 <button
                   type="button"
@@ -1586,7 +1586,7 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
               {/* Submit Buttons */}
               <div className="pt-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-t border-[#222B35]">
                 <div className="text-[11px] text-gray-400">
-                  Hồ sơ sẽ được chuyển tới Bàn Thẩm Định e-KYC của Ban Quản Lý ngay lập tức.
+                  Hồ sơ sẽ được chuyển tới Ban Quản Lý để xác nhận ngay lập tức.
                 </div>
 
                 <div className="flex items-center gap-2.5 justify-end">

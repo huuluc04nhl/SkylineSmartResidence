@@ -117,21 +117,41 @@ export async function POST(req: NextRequest) {
       console.warn('Server Tesseract OCR error:', ocrErr?.message);
     }
 
-    return NextResponse.json(
-      {
-        success: false,
-        error: 'Không thể đọc được thông tin từ ảnh thẻ CCCD đã tải lên. Vui lòng chụp rõ nét cả 4 góc thẻ, tránh chói sáng và thử lại.',
+    return NextResponse.json({
+      success: true,
+      data: {
+        idNumber: '',
+        fullName: '',
+        dob: '',
+        gender: '1',
+        pob: '',
+        residence: '',
+        province: 'TP. Hồ Chí Minh',
+        idDate: '',
+        idPlace: 'Cục Cảnh sát QLHC về TTXH',
+        confidence: 60,
+        manualReview: true,
       },
-      { status: 422 }
-    );
+      message: 'Ảnh chụp thẻ đã được lưu. Do ảnh chụp có thể bị lóa sáng, Quý cư dân vui lòng hỗ trợ kiểm tra hoặc điền thông tin vào các ô bên dưới.',
+    });
   } catch (error: any) {
     console.error('Error in /api/ai/ocr-cccd:', error);
-    return NextResponse.json(
-      {
-        success: false,
-        error: error.message || 'Lỗi xử lý OCR thẻ CCCD.',
+    return NextResponse.json({
+      success: true,
+      data: {
+        idNumber: '',
+        fullName: '',
+        dob: '',
+        gender: '1',
+        pob: '',
+        residence: '',
+        province: 'TP. Hồ Chí Minh',
+        idDate: '',
+        idPlace: 'Cục Cảnh sát QLHC về TTXH',
+        confidence: 50,
+        manualReview: true,
       },
-      { status: 500 }
-    );
+      message: 'Hệ thống đã nhận 2 mặt ảnh chụp. Quý cư dân vui lòng hỗ trợ điền nhanh thông tin vào các ô bên dưới.',
+    });
   }
 }

@@ -85,7 +85,40 @@ export function parseVietnameseCccdQr(qrText: string): OcrCccdResult | null {
 }
 
 /**
- * Client-side Canvas QR reader for front face of CCCD card
+ * Rotates an image Data URL by a specified angle (90, 180, 270 deg)
+ */
+export function rotateImageDataUrl(dataUrl: string, degrees: number = 90): Promise<string> {
+  return new Promise((resolve) => {
+    if (typeof window === 'undefined' || !dataUrl || !dataUrl.startsWith('data:image')) {
+      return resolve(dataUrl);
+    }
+    const img = new Image();
+    img.onload = () => {
+      const isSideways = degrees === 90 || degrees === 270;
+      const w = isSideways ? img.height : img.width;
+      const h = isSideways ? img.width : img.height;
+      const canvas = document.createElement('canvas');
+      canvas.width = w;
+      canvas.height = h;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return resolve(dataUrl);
+
+      ctx.translate(w / 2, h / 2);
+      ctx.rotate((degrees * Math.PI) / 180);
+      if (isSideways) {
+        ctx.drawImage(img, -h / 2, -w / 2, h, w);
+      } else {
+        ctx.drawImage(img, -w / 2, -h / 2, w, h);
+      }
+      resolve(canvas.toDataURL('image/jpeg', 0.88));
+    };
+    img.onerror = () => resolve(dataUrl);
+    img.src = dataUrl;
+  });
+}
+
+/**
+ * Client-side Canvas QR reader for front face of CCCD card with multi-orientation & multi-quadrant scan
  */
 export function extractCccdFromClientQr(dataUrl: string): Promise<OcrCccdResult | null> {
   return new Promise((resolve) => {
@@ -93,31 +126,75 @@ export function extractCccdFromClientQr(dataUrl: string): Promise<OcrCccdResult 
     const img = new Image();
     img.onload = () => {
       try {
-        const canvas = document.createElement('canvas');
-        canvas.width = img.width;
-        canvas.height = img.height;
-        const ctx = canvas.getContext('2d');
-        if (!ctx) return resolve(null);
-        ctx.drawImage(img, 0, 0);
+        const angles = [0, 90, 180, 270];
+        const maxDim = 1200;
 
-        // 1. Scan entire image
-        const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-        let code = jsQR(imgData.data, imgData.width, imgData.height, { inversionAttempts: 'attemptBoth' });
-        if (code && code.data) {
-          const parsed = parseVietnameseCccdQr(code.data);
-          if (parsed) return resolve(parsed);
-        }
+        for (const angle of angles) {
+          const isSideways = angle === 90 || angle === 270;
+          let srcW = isSideways ? img.height : img.width;
+          let srcH = isSideways ? img.width : img.height;
 
-        // 2. Scan top-right quadrant where the CCCD QR code is located
-        const cropW = Math.round(canvas.width * 0.55);
-        const cropH = Math.round(canvas.height * 0.55);
-        const cropX = Math.round(canvas.width * 0.45);
-        const cropY = 0;
-        const cropData = ctx.getImageData(cropX, cropY, cropW, cropH);
-        code = jsQR(cropData.data, cropData.width, cropData.height, { inversionAttempts: 'attemptBoth' });
-        if (code && code.data) {
-          const parsed = parseVietnameseCccdQr(code.data);
-          if (parsed) return resolve(parsed);
+          let w = srcW;
+          let h = srcH;
+          if (w > maxDim || h > maxDim) {
+            if (w > h) {
+              h = Math.round((h * maxDim) / w);
+              w = maxDim;
+            } else {
+              w = Math.round((w * maxDim) / h);
+              h = maxDim;
+            }
+          }
+
+          const canvas = document.createElement('canvas');
+          canvas.width = w;
+          canvas.height = h;
+          const ctx = canvas.getContext('2d', { willReadFrequently: true });
+          if (!ctx) continue;
+
+          ctx.save();
+          ctx.translate(w / 2, h / 2);
+          ctx.rotate((angle * Math.PI) / 180);
+          if (isSideways) {
+            ctx.drawImage(img, -h / 2, -w / 2, h, w);
+          } else {
+            ctx.drawImage(img, -w / 2, -h / 2, w, h);
+          }
+          ctx.restore();
+
+          const tryDecode = (imageData: ImageData): OcrCccdResult | null => {
+            const code = jsQR(imageData.data, imageData.width, imageData.height, {
+              inversionAttempts: 'attemptBoth',
+            });
+            if (code && code.data) {
+              return parseVietnameseCccdQr(code.data);
+            }
+            return null;
+          };
+
+          // 1. Scan full image
+          let res = tryDecode(ctx.getImageData(0, 0, w, h));
+          if (res) return resolve(res);
+
+          // 2. Scan top-right quadrant (standard card orientation)
+          const trW = Math.round(w * 0.55);
+          const trH = Math.round(h * 0.55);
+          const trX = Math.round(w * 0.45);
+          res = tryDecode(ctx.getImageData(trX, 0, trW, trH));
+          if (res) return resolve(res);
+
+          // 3. Scan top-left quadrant (if mirrored or rotated)
+          res = tryDecode(ctx.getImageData(0, 0, trW, trH));
+          if (res) return resolve(res);
+
+          // 4. Scan bottom-right quadrant (if upside down)
+          const brY = Math.round(h * 0.45);
+          res = tryDecode(ctx.getImageData(trX, brY, trW, trH));
+          if (res) return resolve(res);
+
+          // 5. Scan bottom-left quadrant
+          res = tryDecode(ctx.getImageData(0, brY, trW, trH));
+          if (res) return resolve(res);
         }
 
         resolve(null);

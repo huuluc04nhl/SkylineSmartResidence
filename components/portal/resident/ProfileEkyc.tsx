@@ -485,7 +485,7 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
     if (!enrolledFaceProfile || !enrolledFaceProfile.samples?.front) {
       setEkycFeedback({
         type: 'warning',
-        message: 'Vui lòng hoàn tất thu thập đủ 4 góc mẫu FaceID (chuẩn e-KYC ngân hàng) trước khi chốt hồ sơ gửi Ban Quản Lý.'
+        message: 'Vui lòng chụp đủ 4 góc khuôn mặt trước khi gửi hồ sơ cho Ban Quản Lý.'
       });
       return;
     }
@@ -745,7 +745,7 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
               <div className="flex items-center gap-3">
                 <Sparkles className="w-5 h-5 text-amber-300 flex-shrink-0 animate-pulse" />
                 <div>
-                  <strong className="text-white block text-sm font-semibold">✨ Đã trích xuất thông tin từ CCCD vào biểu mẫu!</strong>
+                  <strong className="text-white block text-sm font-semibold">✨ Đã điền thông tin từ thẻ Căn cước vào biểu mẫu!</strong>
                   <span className="text-gray-300 text-[11px]">Vui lòng kiểm tra lại thông tin và nhấn nút <strong>[Lưu Thay Đổi Thông Tin Liên Hệ]</strong> ở cuối biểu mẫu để lưu dữ liệu.</span>
                 </div>
               </div>
@@ -1022,13 +1022,13 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-3 p-3.5 sm:p-4 bg-[#161D26] border border-[#2D3748] rounded-none shadow">
             <div>
               <div className="text-[10px] uppercase tracking-wider text-[#C5A880] font-bold flex items-center gap-1.5 font-mono">
-                <ShieldCheck className="w-3.5 h-3.5 shrink-0" /> e-KYC • Căn Hộ {aptCode}
+                <ShieldCheck className="w-3.5 h-3.5 shrink-0" /> Xác Thực Cư Dân • Căn Hộ {aptCode}
               </div>
               <h3 className="font-serif text-base sm:text-lg font-bold text-white mt-0.5 truncate">
-                Căn Cước (CCCD) & FaceID
+                Căn Cước (CCCD) & Khuôn Mặt
               </h3>
               <p className="text-xs text-gray-400 line-clamp-1 sm:line-clamp-none mt-0.5">
-                Dữ liệu định danh pháp lý và sinh trắc học cấp quyền mở cửa chung cư.
+                Thông tin căn cước công dân và khuôn mặt để cấp quyền mở cửa sảnh đón.
               </p>
             </div>
 
@@ -1064,7 +1064,7 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
                   <CreditCard className="w-4 h-4 text-[#C5A880]" /> 1. Thẻ Căn Cước Công Dân (CCCD)
                 </span>
                 <span className="text-[11px] text-gray-400 block mt-0.5 hidden sm:block">
-                  Quét camera hoặc tải lên ảnh 2 mặt để hệ thống tự động trích xuất thông tin pháp lý.
+                  Chụp ảnh hoặc tải lên ảnh 2 mặt để hệ thống tự động điền thông tin thẻ.
                 </span>
               </div>
 
@@ -1075,7 +1075,7 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
                   className="flex-1 sm:flex-initial h-8 px-3 bg-[#1E2631] hover:bg-[#C5A880] hover:text-[#0D1117] border border-[#C5A880] text-[#C5A880] text-[11px] sm:text-xs font-bold uppercase tracking-wider rounded-none flex items-center justify-center gap-1.5 transition-all shadow cursor-pointer"
                 >
                   <Scan className="w-3.5 h-3.5 shrink-0" />
-                  <span>{cccdImage ? 'Quét Lại CCCD' : 'Quét Thẻ CCCD'}</span>
+                  <span>{cccdImage ? 'Đổi Ảnh Thẻ' : 'Chụp / Tải Ảnh Thẻ'}</span>
                 </button>
 
                 {cccdImage && (
@@ -1317,7 +1317,7 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
                       <AlertCircle className="w-4 h-4 shrink-0" /> Chưa Thu Thập Mẫu FaceID
                     </div>
                     <p className="text-xs text-gray-300 leading-relaxed hidden sm:block">
-                      Để nhận diện khuôn mặt chính thức khi đăng nhập và mở cửa sảnh đón, hệ thống Skyline yêu cầu thu thập 4 góc chụp chuẩn e-KYC:
+                      Để nhận diện khuôn mặt chính thức khi mở cửa sảnh đón, hệ thống Skyline thu thập 4 góc chụp khuôn mặt của Quý cư dân:
                     </p>
                     <div className="grid grid-cols-2 gap-1.5 sm:gap-2 text-[10.5px] sm:text-[11px] text-gray-300">
                       <div className="p-1.5 sm:p-2 bg-[#0D1117] border border-gray-800">1. Nhìn thẳng</div>
@@ -1401,7 +1401,7 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 border-b border-[#222B35] pb-3 sm:pb-4">
               <div className="space-y-0.5 sm:space-y-1">
                 <div className="text-[10px] uppercase tracking-wider text-[#C5A880] font-bold flex items-center gap-1.5 font-mono">
-                  <ShieldCheck className="w-3.5 h-3.5 shrink-0" /> Bước 3: Đồng Bộ & Chốt Hồ Sơ e-KYC
+                  <ShieldCheck className="w-3.5 h-3.5 shrink-0" /> Bước 3: Xác Nhận & Gửi Hồ Sơ Cho Ban Quản Lý
                 </div>
                 <h3 className="font-serif text-base sm:text-lg font-bold text-white truncate">
                   Xác Nhận & Gửi Ban Quản Lý (CCCD & FaceID)
