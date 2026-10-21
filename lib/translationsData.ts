@@ -3905,8 +3905,8 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
     "Password successfully updated via API system."
   ],
   [
-    "Người Nhà / Khách Thuê (Căn CH-06 - Tòa BS-07)",
-    "House / Tenant (Unit CH-06 - Building BS-07)"
+    "Người Nhà (Căn CH-06 - Tòa BS-07)",
+    "Family Member (Unit CH-06 - Building BS-07)"
   ],
   [
     "Chưa phát sinh bảng kê hóa đơn cho căn hộ này.",
@@ -3953,8 +3953,8 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
     "24/7 Butler & NKS Technical Support Services"
   ],
   [
-    "Hỗ trợ cả cư dân chủ hộ và khách thuê dài hạn",
-    "Support for both homeowners and long-term tenants"
+    "Hỗ trợ cả cư dân chủ hộ và người nhà",
+    "Support for both homeowners and family members"
   ],
   [
     "Tầm nhìn: View Mảng xanh & Tiện ích tầng thấp",
@@ -12841,8 +12841,8 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
     "Sale and Purchase Agreement (SPA)"
   ],
   [
-    "Khách Thuê / Lưu Trú",
-    "Tenant / Occupant"
+    "Người Nhà / Thành Viên",
+    "Family Member"
   ],
   [
     "Không Gian Nghỉ Ngơi",
@@ -15237,8 +15237,8 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
     "Highest Category"
   ],
   [
-    "Khách Thuê Căn Hộ",
-    "Apartment Tenant"
+    "Người Nhà / Thành Viên Khác",
+    "Other Family Member"
   ],
   [
     "Kỳ: Tháng 08/2026",
@@ -20485,8 +20485,8 @@ export const TRANSLATIONS_DATA: Array<[string, string]> = [
     "Resubmission Required"
   ],
   [
-    "KHÁCH THUÊ",
-    "TENANT"
+    "NGƯỜI NHÀ",
+    "FAMILY MEMBER"
   ],
   [
     "Giờ mở cửa",

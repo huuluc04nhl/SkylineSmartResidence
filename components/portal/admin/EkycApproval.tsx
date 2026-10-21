@@ -1135,7 +1135,7 @@ export default function EkycApproval() {
                 onChange={(e) => setRevokeReason(e.target.value)}
                 className="w-full bg-[#161B22] border border-[#2D3748] p-2.5 text-white rounded-none outline-none focus:border-rose-500"
               >
-                <option value="Hết thời hạn hợp đồng thuê / Chuyển nơi cư trú">{t('Hết thời hạn hợp đồng thuê / Chuyển nơi cư trú', 'Lease expired / Relocated')}</option>
+                <option value="Chuyển nơi cư trú / Không còn sinh sống tại căn hộ">{t('Chuyển nơi cư trú / Không còn sinh sống tại căn hộ', 'Relocated / No longer resident in unit')}</option>
                 <option value="Ban Quản Lý tạm thu hồi quyền ra vào FaceID để đối soát lại hồ sơ">{t('Ban Quản Lý tạm thu hồi để đối soát lại hồ sơ', 'Management temporary suspension for auditing')}</option>
                 <option value="Phát hiện thông tin CCCD hoặc ảnh sinh trắc học có sai lệch">{t('Phát hiện thông tin CCCD có sai lệch', 'Discrepancy detected in ID information')}</option>
                 <option value="Vi phạm quy định vận hành an ninh toà nhà">{t('Vi phạm quy định vận hành an ninh toà nhà', 'Violation of building security regulations')}</option>

@@ -1287,7 +1287,7 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
                       <option value="Bố / Mẹ">Bố / Mẹ</option>
                       <option value="Anh / Chị / Em">Anh / Chị / Em</option>
                       <option value="Người Thân Cùng Căn Hộ">Người Thân Cùng Căn Hộ</option>
-                      <option value="Khách Thuê Căn Hộ">Khách Thuê Căn Hộ</option>
+                      <option value="Người Nhà / Thành Viên Khác">Người Nhà / Thành Viên Khác</option>
                     </select>
                   </div>
 
@@ -1917,7 +1917,7 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
                       <option value="Bố / Mẹ">Bố / Mẹ</option>
                       <option value="Anh / Chị / Em">Anh / Chị / Em</option>
                       <option value="Người Thân Cùng Căn Hộ">Người Thân Cùng Căn Hộ</option>
-                      <option value="Khách Thuê / Lưu Trú">Khách Thuê / Lưu Trú</option>
+                      <option value="Người Nhà / Thành Viên">Người Nhà / Thành Viên</option>
                       <option value="Người Giúp Việc">Người Giúp Việc</option>
                     </select>
                   </div>

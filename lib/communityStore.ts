@@ -393,7 +393,7 @@ export function castCommunityPollVote(params: {
   if (post.poll.isOwnerOnly && !params.isOwner) {
     return {
       success: false,
-      message: 'Cuộc biểu quyết pháp lý này yêu cầu quyền Chủ Hộ căn hộ (Owner). Tài khoản Người nhà / Khách thuê không được quyền bỏ phiếu.',
+      message: 'Cuộc biểu quyết pháp lý này yêu cầu quyền Chủ Hộ căn hộ (Owner). Tài khoản Người nhà không được quyền bỏ phiếu.',
     };
   }
 

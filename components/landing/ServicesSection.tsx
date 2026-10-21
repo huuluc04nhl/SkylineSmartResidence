@@ -355,7 +355,7 @@ export default function ServicesSection() {
                 </Link>
 
                 <p className="text-[10px] text-gray-400 font-mono">
-                  {t('Hỗ trợ cả cư dân chủ hộ và khách thuê dài hạn', 'Support for both resident owners and long-term tenants')}
+                  {t('Hỗ trợ cả cư dân chủ hộ và người nhà', 'Support for both resident owners and family members')}
                 </p>
               </div>
             </div>

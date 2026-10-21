@@ -21,14 +21,14 @@ export const KEY_DICTIONARY: Record<string, Record<Language, string>> = {
   'nav.dashboard': { vi: 'Vào Bảng Điều Khiển', en: 'Go to Dashboard' },
   'role.admin': { vi: 'Ban Quản Lý', en: 'Management Board' },
   'role.owner': { vi: 'Chủ Hộ Căn Hộ', en: 'Apartment Owner' },
-  'role.tenant': { vi: 'Khách Thuê', en: 'Tenant' },
+  'role.tenant': { vi: 'Người Nhà', en: 'Family Member' },
   'role.family': { vi: 'Người Nhà Căn Hộ', en: 'Family Member' },
   'role.technician': { vi: 'Kỹ Thuật Viên', en: 'Technician' },
   'role.staff': { vi: 'Nhân Sự Ban Quản Lý', en: 'Staff' },
   'role.resident': { vi: 'Cư Dân', en: 'Resident' },
   'ADMIN': { vi: 'Ban Quản Lý', en: 'Management Board' },
   'OWNER': { vi: 'Chủ Hộ', en: 'Apartment Owner' },
-  'TENANT': { vi: 'Khách Thuê', en: 'Tenant' },
+  'TENANT': { vi: 'Người Nhà', en: 'Family Member' },
   'FAMILY': { vi: 'Người Nhà', en: 'Family Member' },
   'TECHNICIAN': { vi: 'Kỹ Thuật Viên', en: 'Technician' },
   'Chủ Hộ': { vi: 'Chủ Hộ', en: 'Apartment Owner' },
@@ -36,8 +36,8 @@ export const KEY_DICTIONARY: Record<string, Record<Language, string>> = {
   'Chủ Hộ (Master)': { vi: 'Chủ Hộ (Master)', en: 'Apartment Owner (Master)' },
   'Người Nhà': { vi: 'Người Nhà', en: 'Family Member' },
   'Người Nhà Căn Hộ': { vi: 'Người Nhà Căn Hộ', en: 'Family Member' },
-  'Thành Viên': { vi: 'Thành Viên', en: 'Family Member' },
-  'Khách Thuê': { vi: 'Khách Thuê', en: 'Tenant' },
+  'Thành Viên': { vi: 'Người Nhà', en: 'Family Member' },
+  'Khách Thuê': { vi: 'Người Nhà', en: 'Family Member' },
   'Ban Quản Lý': { vi: 'Ban Quản Lý', en: 'Management Board' },
   'Kỹ Thuật Viên': { vi: 'Kỹ Thuật Viên', en: 'Technician' },
   'Cư Dân': { vi: 'Cư Dân', en: 'Resident' },
@@ -1053,7 +1053,7 @@ export function translateString(text: string, targetLang: Language): string {
     const parenMap: Record<string, string> = {
       'chủ hộ': 'Owner',
       'người nhà': 'Family Member',
-      'khách thuê': 'Tenant',
+      'khách thuê': 'Family Member',
       'cư dân': 'Resident',
       'ban quản lý': 'Management Board',
       'kỹ thuật viên': 'Technician',
@@ -1128,7 +1128,7 @@ export function translateString(text: string, targetLang: Language): string {
     if (m && (/\d/.test(m[1]) || /^[A-Z]{1,3}-\d+/i.test(m[1]))) {
       const code = m[1];
       const rest = m[2] ? ' ' + translateString(m[2].trim(), 'en') : '';
-      return preserveWhitespace(text, `Tenant ${code}${rest}`.trim());
+      return preserveWhitespace(text, `Family Member ${code}${rest}`.trim());
     }
 
     m = trimmed.match(/^Tòa\s+([A-Za-z0-9\.\-_]+)(.*)$/i);

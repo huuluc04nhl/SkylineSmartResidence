@@ -292,7 +292,7 @@ export const DEMO_USERS: User[] = [
     password: '12345678',
   },
 
-  // 4. Family Member 1 (Tài khoản mẫu người thuê độc lập)
+  // 4. Family Member 1 (Tài khoản mẫu Người Nhà trong căn hộ)
   {
     id: 'user-tenant-1',
     role: 'TENANT',
@@ -310,7 +310,7 @@ export const DEMO_USERS: User[] = [
     password: '12345678',
   },
 
-  // 5. Family Member 2 (Tài khoản mẫu người thuê độc lập)
+  // 5. Family Member 2 (Tài khoản mẫu Người Nhà trong căn hộ)
   {
     id: 'user-member-1',
     role: 'TENANT',
@@ -327,7 +327,7 @@ export const DEMO_USERS: User[] = [
     password: '12345678',
   },
 
-  // 6. Family Member 3 (Tài khoản mẫu người thuê độc lập)
+  // 6. Family Member 3 (Tài khoản mẫu Người Nhà trong căn hộ)
   {
     id: 'user-member-2',
     role: 'TENANT',
@@ -344,7 +344,7 @@ export const DEMO_USERS: User[] = [
     password: '12345678',
   },
 
-  // 7. Family Member 4 (Tài khoản mẫu người thuê độc lập)
+  // 7. Family Member 4 (Tài khoản mẫu Người Nhà trong căn hộ)
   {
     id: 'user-member-3',
     role: 'TENANT',

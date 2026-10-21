@@ -704,7 +704,7 @@ INSERT INTO users (
 -- 5. Lễ Tân Tòa Nhà: Trần Thị Thu Thảo
 ('user-recep-1', '0901234567', 'RECEPTIONIST', 'Trần Thị Thu Thảo', '0901234567', 'reception.skyline@gmail.com', '12345678', '079302008877', '2022-11-10', 'Cục Cảnh sát QLHC về TTXH', '1998-09-18', 'Đà Nẵng', 0, NULL, 'Staff', NULL),
 
--- 6. Cư Dân Người Thuê / Thành Viên: Nguyễn Hữu Nhựt
+-- 6. Cư Dân Người Nhà / Thành Viên: Nguyễn Hữu Nhựt
 ('user-tenant-1', '0917795211', 'TENANT', 'Nguyễn Hữu Nhựt', '0917795211', 'nguyenhuunhut1309@gmail.com', '12345678', '079198005678', '2022-09-02', 'Cục Cảnh sát QLHC về TTXH', '2004-09-02', 'TP. Hồ Chí Minh', 1, '12A05', 'Family', '59P1-886.79');
 
 -- Cập nhật chủ sở hữu căn hộ 12A05 và CH-06
