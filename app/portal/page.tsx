@@ -176,7 +176,7 @@ function PortalContent() {
 
   const handleSemanticSearchSelect = (targetModuleId: string) => {
     // Check permission boundary before switching
-    if (currentUser.role === 'TENANT' && (targetModuleId === 'resident-finance' || targetModuleId === 'resident-surveys' || targetModuleId === 'resident-family')) {
+    if (currentUser.role === 'TENANT' && (targetModuleId === 'resident-finance' || targetModuleId === 'resident-family')) {
       setActiveModule(targetModuleId); // Will render Access Denied Screen inside viewport
       return;
     }
@@ -280,12 +280,16 @@ function PortalContent() {
                 {currentUser.role === 'OWNER' && (
                   <>
                     {activeModule === 'resident-finance' && <FinanceBilling currentUser={currentUser} />}
-                    {activeModule === 'resident-surveys' && <SurveysVoting currentUser={currentUser} />}
                   </>
                 )}
 
+                {/* Community Forum & Voting: Accessible by both Owner and Family Members (Tenant) */}
+                {activeModule === 'resident-surveys' && (
+                  <SurveysVoting currentUser={currentUser} />
+                )}
+
                 {/* Resident Member Limited Warning if attempting to access Owner-only features */}
-                {currentUser.role === 'TENANT' && (activeModule === 'resident-finance' || activeModule === 'resident-surveys') && (
+                {currentUser.role === 'TENANT' && activeModule === 'resident-finance' && (
                   <div className="p-10 bg-[#121820] border border-[#C5A880]/80 text-center space-y-4 max-w-2xl mx-auto my-12 shadow-2xl animate-fadeIn">
                     <ShieldAlert className="w-12 h-12 text-[#C5A880] mx-auto" />
                     <h3 className="font-serif text-xl font-bold text-white">

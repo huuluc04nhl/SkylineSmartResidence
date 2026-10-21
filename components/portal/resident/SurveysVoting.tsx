@@ -95,6 +95,7 @@ export default function SurveysVoting({ currentUser }: SurveysVotingProps) {
   const { t, isEn } = useLanguage();
   const isAdmin = currentUser?.role === 'ADMIN';
   const isOwner = currentUser?.role === 'OWNER';
+  const isTenant = currentUser?.role === 'TENANT';
   const aptCode = currentUser?.apartment_code || (isAdmin ? 'BQL_OFFICE' : 'CH-06');
   const userName = currentUser?.full_name || (currentUser as any)?.fullname || 'Cư Dân SKYLINE';
   const userAvatar = currentUser?.avatar_url || 'https://data.nks.vn/storage/users/default.png';
@@ -244,6 +245,16 @@ export default function SurveysVoting({ currentUser }: SurveysVotingProps) {
 
   // Handle Vote in Poll
   const handleVote = (postId: string, optionId: string) => {
+    if (isTenant) {
+      showToast(
+        isEn
+          ? 'Family members have view access to the forum. Official voting is reserved for Apartment Owners.'
+          : 'Tài khoản Người nhà có quyền theo dõi diễn đàn. Quyền biểu quyết đại diện căn hộ thuộc độc quyền của Chủ Hộ.',
+        'error'
+      );
+      return;
+    }
+
     const res = castCommunityPollVote({
       postId,
       optionId,
@@ -431,6 +442,16 @@ export default function SurveysVoting({ currentUser }: SurveysVotingProps) {
                 ? 'Official resident community space: discuss building amenities, share classifieds, and vote transparently.'
                 : 'Không gian tương tác cộng đồng cư dân Skyline: trao đổi tiện ích tòa nhà, thông báo ban quản lý và biểu quyết minh bạch.'}
             </p>
+            {isTenant && (
+              <div className="inline-flex items-center gap-2 px-3 py-1 bg-[#141B24] border border-[#C5A880]/40 text-gray-300 text-[11px]">
+                <Users className="w-3.5 h-3.5 text-[#C5A880]" />
+                <span>
+                  {isEn
+                    ? 'Role: Family Member • Community Forum Viewing Mode (Voting reserved for Owner)'
+                    : 'Vai trò: Thành viên gia đình • Chế độ xem diễn đàn cư dân (Quyền biểu quyết thuộc Chủ Hộ)'}
+                </span>
+              </div>
+            )}
           </div>
 
           <div className="flex items-center gap-2.5 flex-wrap">
@@ -860,15 +881,24 @@ export default function SurveysVoting({ currentUser }: SurveysVotingProps) {
                       </div>
 
                       {/* Notice if user cannot vote */}
-                      {post.poll.isOwnerOnly && !isOwner && !isAdmin && (
+                      {isTenant ? (
+                        <div className="p-2.5 bg-[#141B24] border border-[#C5A880]/30 text-gray-300 text-[11px] flex items-center gap-2">
+                          <Info className="w-3.5 h-3.5 flex-shrink-0 text-[#C5A880]" />
+                          <span>
+                            {isEn
+                              ? 'Family Member Mode: You have viewing access to the forum and poll statistics. Official voting is reserved for Apartment Owners.'
+                              : 'Chế độ Người nhà: Quý cư dân có quyền theo dõi thảo luận và thống kê biểu quyết. Quyền bỏ phiếu đại diện căn hộ thuộc về Chủ Hộ.'}
+                          </span>
+                        </div>
+                      ) : post.poll.isOwnerOnly && !isOwner && !isAdmin ? (
                         <div className="p-2.5 bg-amber-500/10 border border-amber-500/30 text-amber-400 text-[11px] flex items-center gap-2">
                           <Lock className="w-3.5 h-3.5 flex-shrink-0" />
                           <span>Quyền hạn: Cuộc biểu quyết pháp lý này yêu cầu tài khoản <strong>Chủ Hộ</strong>. Bạn đang xem với quyền tham khảo.</span>
                         </div>
-                      )}
+                      ) : null}
 
                       {/* Notice if results hidden before vote */}
-                      {post.poll.hideResultsBeforeVote && !userVote && (
+                      {post.poll.hideResultsBeforeVote && !userVote && !isTenant && (
                         <div className="p-2 bg-[#C5A880]/10 border border-[#C5A880]/30 text-[#C5A880] text-[11px] flex items-center gap-2">
                           <EyeOff className="w-3.5 h-3.5 flex-shrink-0 text-[#C5A880]" />
                           <span>{isEn ? 'Results are hidden until you cast your vote.' : 'Kết quả đang ẩn, Quý cư dân vui lòng bình chọn để xem tỉ lệ phiếu.'}</span>
@@ -879,16 +909,16 @@ export default function SurveysVoting({ currentUser }: SurveysVotingProps) {
                       <div className="space-y-2.5 pt-1">
                         {post.poll.options.map(option => {
                           const isUserSelected = userVote?.optionId === option.id;
-                          const showResults = !post.poll?.hideResultsBeforeVote || !!userVote;
+                          const showResults = !post.poll?.hideResultsBeforeVote || !!userVote || isTenant || isAdmin;
                           const percentage = totalPollVotes > 0 ? Math.round((option.votes / totalPollVotes) * 100) : 0;
-                          const canVote = !post.poll?.isOwnerOnly || isOwner;
+                          const canVote = (!post.poll?.isOwnerOnly || isOwner) && !isTenant;
 
                           return (
                             <div
                               key={option.id}
-                              onClick={() => canVote && handleVote(post.id, option.id)}
+                              onClick={() => handleVote(post.id, option.id)}
                               className={`relative p-3 border transition-all duration-200 select-none ${
-                                canVote ? 'cursor-pointer hover:border-[#C5A880]' : 'cursor-default'
+                                canVote ? 'cursor-pointer hover:border-[#C5A880]' : isTenant ? 'cursor-not-allowed hover:border-amber-500/40' : 'cursor-default'
                               } ${
                                 isUserSelected
                                   ? 'bg-[#10B981]/10 border-[#10B981]'
@@ -1093,7 +1123,7 @@ export default function SurveysVoting({ currentUser }: SurveysVotingProps) {
             {/* 2. CATEGORY TABS BAR (Instant lag-free tab switching) */}
             <div className="px-5 py-2.5 bg-[#0A0E14] border-b border-[#1E2733] flex items-center gap-1.5 overflow-x-auto no-scrollbar shrink-0">
               {[
-                { id: 'VOTING', label: isEn ? 'Create Poll' : 'Tạo bình chọn', icon: Vote },
+                ...(!isTenant ? [{ id: 'VOTING', label: isEn ? 'Create Poll' : 'Tạo bình chọn', icon: Vote }] : []),
                 { id: 'DISCUSSION', label: isEn ? 'Discussion' : 'Thảo luận', icon: Users },
                 { id: 'MARKETPLACE', label: isEn ? 'Classifieds' : 'Rao vặt', icon: ShoppingBag },
                 ...(isAdmin ? [{ id: 'ANNOUNCEMENT', label: isEn ? 'Notice BQL' : 'Thông báo BQL', icon: Megaphone }] : []),
