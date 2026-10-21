@@ -38,7 +38,7 @@ import {
   Crown,
   Filter
 } from 'lucide-react';
-import { User as UserType } from '@/lib/dataStore';
+import { User as UserType, DEMO_USERS } from '@/lib/dataStore';
 import { 
   nksGetFamilyMembers, 
   nksAddFamilyMember, 
@@ -78,6 +78,7 @@ export interface BqlEligibleAccount {
   id: string;
   username: string;
   fullName: string;
+  email?: string;
   phone: string;
   idCard: string;
   licensePlate?: string;
@@ -132,7 +133,9 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [isSearchingApi, setIsSearchingApi] = useState<boolean>(false);
   const [searchResult, setSearchResult] = useState<BqlEligibleAccount | null>(null);
+  const [searchResults, setSearchResults] = useState<BqlEligibleAccount[]>([]);
   const [searchNotFound, setSearchNotFound] = useState<string | null>(null);
+  const [preApprovedFilter, setPreApprovedFilter] = useState<string>('');
 
   // Custom Remove Member Confirmation State
   const [removeTargetMember, setRemoveTargetMember] = useState<FamilyMemberItem | null>(null);
@@ -222,13 +225,29 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
   const fetchMembers = async () => {
     setIsLoading(true);
     try {
-      const res = await nksGetFamilyMembers(aptCode);
+      const res = await nksGetFamilyMembers();
       if (res.success) {
         if (res.members) {
           setMembers(res.members);
         }
-        if (res.bqlAccounts) {
+        if (res.bqlAccounts && res.bqlAccounts.length > 0) {
           setBqlAccounts(res.bqlAccounts);
+        } else {
+          // Fallback to available demo family accounts
+          const fallback: BqlEligibleAccount[] = DEMO_USERS.filter((u) => u.role === 'TENANT').map((u) => ({
+            id: u.id,
+            username: u.username,
+            fullName: u.full_name,
+            email: u.email || `${u.username}@skyline.vn`,
+            phone: u.phone || u.username || '',
+            idCard: u.id_card_no || '',
+            avatarUrl: u.avatar_url || 'https://data.nks.vn/storage/users/default.png',
+            licensePlate: u.license_plate || '',
+            role: 'Family',
+            relationship: u.relationship || 'Người Nhà',
+            isAdded: false,
+          }));
+          setBqlAccounts(fallback);
         }
         if (res.owner) {
           setOwnerData(res.owner);
@@ -236,6 +255,21 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
       }
     } catch (err) {
       console.warn('Load family API error:', err);
+      // Client-side fallback if API unreachable
+      const fallback: BqlEligibleAccount[] = DEMO_USERS.filter((u) => u.role === 'TENANT').map((u) => ({
+        id: u.id,
+        username: u.username,
+        fullName: u.full_name,
+        email: u.email || `${u.username}@skyline.vn`,
+        phone: u.phone || u.username || '',
+        idCard: u.id_card_no || '',
+        avatarUrl: u.avatar_url || 'https://data.nks.vn/storage/users/default.png',
+        licensePlate: u.license_plate || '',
+        role: 'Family',
+        relationship: u.relationship || 'Người Nhà',
+        isAdded: false,
+      }));
+      setBqlAccounts(fallback);
     } finally {
       setIsLoading(false);
     }
@@ -556,28 +590,80 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
     setActionError(null);
   };
 
-  // Search account via live API
-  const handleSearchApi = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!searchQuery.trim()) return;
+  // Search account via live API with client fallback
+  const handleSearchApi = async (e?: React.FormEvent, directQ?: string) => {
+    if (e) e.preventDefault();
+    const query = (directQ !== undefined ? directQ : searchQuery).trim();
+    if (!query) return;
 
     setIsSearchingApi(true);
     setSearchNotFound(null);
     setSearchResult(null);
+    setSearchResults([]);
     setActionError(null);
 
     try {
-      const res = await nksSearchFamilyAccount(searchQuery.trim());
-      if (res.success && res.found && res.account) {
-        setSearchResult(res.account);
+      const res = await nksSearchFamilyAccount(query);
+      if (res.success && res.found) {
+        const list = Array.isArray((res as any).accounts) && (res as any).accounts.length > 0
+          ? (res as any).accounts
+          : res.account ? [res.account] : [];
+        if (list.length > 0) {
+          setSearchResults(list);
+          setSearchResult(list[0]);
+          setSelectedAccount(list[0]);
+          setNewRelationship(list[0].relationship || 'Vợ / Chồng');
+          setNewLicensePlate(list[0].licensePlate || '');
+        } else {
+          setSearchNotFound(`Không tìm thấy tài khoản người nhà nào khớp với "${query}".`);
+        }
       } else {
-        setSearchNotFound(
-          res.message ||
-            `Không tìm thấy tài khoản nào khớp với "${searchQuery}" trên hệ thống API.`
-        );
+        // Fallback: check DEMO_USERS on client side
+        const normalize = (str: string) => (str || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+        const qRaw = query.toLowerCase();
+        const qNorm = normalize(query);
+        const qDigits = query.replace(/\D/g, '');
+
+        const localMatches = DEMO_USERS.filter((u) => {
+          if (u.role === 'ADMIN' || u.role === 'TECHNICIAN' || u.role === 'OWNER') return false;
+          const phoneDigits = (u.phone || '').replace(/\D/g, '');
+          const idCardClean = (u.id_card_no || '').replace(/\s/g, '').toLowerCase();
+          const fullName = (u.full_name || '').toLowerCase();
+          const fullNorm = normalize(u.full_name || '');
+          return (
+            (qDigits.length >= 3 && phoneDigits.includes(qDigits)) ||
+            (qDigits.length >= 3 && idCardClean.includes(qDigits)) ||
+            fullName.includes(qRaw) ||
+            (qNorm.length >= 2 && fullNorm.includes(qNorm))
+          );
+        }).map((u): BqlEligibleAccount => ({
+          id: u.id,
+          username: u.username,
+          fullName: u.full_name,
+          email: u.email || `${u.username}@skyline.vn`,
+          phone: u.phone || u.username || '',
+          idCard: u.id_card_no || '',
+          avatarUrl: u.avatar_url || 'https://data.nks.vn/storage/users/default.png',
+          licensePlate: u.license_plate || '',
+          role: 'Family' as const,
+          relationship: u.relationship || 'Người Nhà',
+          isAdded: members.some((m) => m.id === u.id || m.phone === u.phone),
+        }));
+
+        if (localMatches.length > 0) {
+          setSearchResults(localMatches);
+          setSearchResult(localMatches[0]);
+          setSelectedAccount(localMatches[0]);
+          setNewRelationship(localMatches[0].relationship || 'Vợ / Chồng');
+          setNewLicensePlate(localMatches[0].licensePlate || '');
+        } else {
+          setSearchNotFound(
+            res.message || `Không tìm thấy tài khoản người nhà nào khớp với "${query}" trên hệ thống.`
+          );
+        }
       }
     } catch (err) {
-      setSearchNotFound('Lỗi kết nối khi tra cứu API người dùng.');
+      setSearchNotFound('Lỗi kết nối khi tra cứu người dùng.');
     } finally {
       setIsSearchingApi(false);
     }
@@ -758,7 +844,7 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
           </p>
         </div>
 
-        {isOwner ? (
+        {isOwner && (
           <div className="flex items-center gap-2 flex-wrap">
             <button
               type="button"
@@ -791,41 +877,8 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
               <UserPlus className="w-4 h-4" /> {t('Thêm Thành Viên')}
             </button>
           </div>
-        ) : (
-          <div className="flex items-center gap-2 flex-wrap">
-            <button
-              type="button"
-              onClick={() => {
-                setBankEnrollTarget({
-                  id: currentUser.id,
-                  fullName: currentUser.full_name || 'Người Nhà',
-                  phone: currentUser.phone || '',
-                  email: currentUser.email || '',
-                  role: 'Family',
-                  relationship: currentUser.relationship || 'Người Nhà',
-                });
-              }}
-              className="px-3 py-2 bg-[#161D26] hover:bg-[#1E2631] border border-[#C5A880] text-[#C5A880] hover:text-white text-xs font-bold rounded-none flex items-center gap-1.5 transition-all shadow cursor-pointer active:scale-95"
-              title="Quét lại FaceID cá nhân"
-            >
-              <Camera className="w-3.5 h-3.5 text-[#C5A880]" />
-              <span>{t('Quét FaceID Của Tôi')}</span>
-            </button>
-          </div>
         )}
       </div>
-
-      {/* Info notice for Family Members */}
-      {!isOwner && (
-        <div className="p-3 bg-[#141B24] border border-[#C5A880]/30 text-gray-300 text-xs flex items-center gap-2.5 shadow">
-          <Info className="w-4 h-4 text-[#C5A880] flex-shrink-0" />
-          <span>
-            {isEn
-              ? 'Family Member Mode: You can view registered household members and update your personal FaceID / Citizen ID (Adding or removing members is reserved for the Owner).'
-              : 'Chế độ Người nhà: Quý cư dân có thể theo dõi danh sách thành viên trong căn hộ và quét FaceID cá nhân (Quyền thêm/xóa thành viên thuộc độc quyền của Chủ Hộ).'}
-          </span>
-        </div>
-      )}
 
       {/* Success Alerts */}
       {actionSuccess && (
@@ -1745,97 +1798,150 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
             </div>
 
             {/* ------------------------------------------------------------- */}
+            {/* ------------------------------------------------------------- */}
             {/* MODE 1: CHỌN TỪ DANH SÁCH TÀI KHOẢN KHẢ DỤNG                   */}
             {/* ------------------------------------------------------------- */}
-            {modalMode === 'PRE_APPROVED' && (
-              <div className="space-y-2">
-                <div className="text-[11px] text-gray-400">
-                  Tài khoản BQL đã duyệt trước:
+            {modalMode === 'PRE_APPROVED' && (() => {
+              const filteredBqlAccounts = bqlAccounts.filter((acc) => {
+                if (!preApprovedFilter.trim()) return true;
+                const q = preApprovedFilter.toLowerCase().trim();
+                const qDigits = q.replace(/\D/g, '');
+                return (
+                  acc.fullName.toLowerCase().includes(q) ||
+                  acc.phone.includes(qDigits || q) ||
+                  (acc.idCard && acc.idCard.toLowerCase().includes(q)) ||
+                  (acc.username && acc.username.toLowerCase().includes(q))
+                );
+              });
+
+              return (
+                <div className="space-y-2.5">
+                  <div className="flex items-center justify-between text-[11px] text-gray-400">
+                    <span>Tài khoản người nhà đã đăng ký trong hệ thống:</span>
+                    <span className="text-[#C5A880] font-mono font-bold">
+                      {filteredBqlAccounts.length} / {bqlAccounts.length} tài khoản
+                    </span>
+                  </div>
+
+                  {/* Quick filter search box */}
+                  <div className="relative">
+                    <Search className="w-3.5 h-3.5 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                    <input
+                      type="text"
+                      value={preApprovedFilter}
+                      onChange={(e) => setPreApprovedFilter(e.target.value)}
+                      placeholder="Lọc nhanh theo họ tên, SĐT hoặc CCCD..."
+                      className="w-full bg-[#161B22] border border-[#2D3748] pl-9 pr-8 py-2 text-white text-xs font-mono rounded-none focus:border-[#C5A880] outline-none"
+                    />
+                    {preApprovedFilter && (
+                      <button
+                        type="button"
+                        onClick={() => setPreApprovedFilter('')}
+                        className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white"
+                      >
+                        <X className="w-3.5 h-3.5" />
+                      </button>
+                    )}
+                  </div>
+
+                  {filteredBqlAccounts.length === 0 ? (
+                    <div className="p-5 bg-[#161D26] border border-[#222B35] rounded-none text-center text-xs text-gray-400 space-y-1.5">
+                      <p>Không tìm thấy tài khoản phù hợp với từ khóa "{preApprovedFilter}".</p>
+                      <button
+                        type="button"
+                        onClick={() => setPreApprovedFilter('')}
+                        className="text-[#C5A880] hover:underline text-xs"
+                      >
+                        Hiển thị lại tất cả tài khoản
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="space-y-2 max-h-60 overflow-y-auto pr-1">
+                      {filteredBqlAccounts.map((acc) => {
+                        const isAlreadyInUnit = members.some(
+                          (m) => m.id === acc.id || m.phone === acc.phone || m.username === acc.username
+                        );
+                        const isSelected = selectedAccount?.id === acc.id;
+
+                        return (
+                          <div
+                            key={acc.id}
+                            onClick={() => !isAlreadyInUnit && handleSelectPreApproved(acc)}
+                            className={`p-2.5 rounded-none border transition-all flex items-center justify-between gap-3 ${
+                              isAlreadyInUnit
+                                ? 'bg-[#161D26]/40 border-gray-800 opacity-60 cursor-not-allowed'
+                                : isSelected
+                                ? 'bg-[#1C2533] border-[#C5A880] shadow cursor-pointer'
+                                : 'bg-[#161D26] border-[#222B35] hover:border-[#C5A880]/60 cursor-pointer'
+                            }`}
+                          >
+                            <div className="flex items-center gap-2.5 min-w-0">
+                              <div className="w-9 h-9 min-w-[36px] min-h-[36px] rounded-none overflow-hidden border border-[#C5A880]/60 flex-shrink-0 bg-[#0D1117]">
+                                <img
+                                  src={acc.avatarUrl || 'https://data.nks.vn/storage/users/default.png'}
+                                  alt={acc.fullName}
+                                  onError={(e) => {
+                                    e.currentTarget.src = 'https://data.nks.vn/storage/users/default.png';
+                                  }}
+                                  className="w-full h-full object-cover"
+                                />
+                              </div>
+                              <div className="space-y-0.5 min-w-0">
+                                <div className="font-bold text-white text-xs flex items-center gap-1.5 flex-wrap">
+                                  <span className="truncate">{acc.fullName}</span>
+                                  {isAlreadyInUnit ? (
+                                    <span className="text-[9px] px-1 py-0.5 bg-gray-800 text-gray-400 rounded-none flex-shrink-0">
+                                      Đang ở căn này
+                                    </span>
+                                  ) : (
+                                    <span className="text-[9px] px-1 py-0.5 bg-[#C5A880]/15 border border-[#C5A880]/30 text-[#C5A880] rounded-none flex-shrink-0 font-mono">
+                                      Người Nhà
+                                    </span>
+                                  )}
+                                </div>
+                                <div className="text-[11px] text-gray-400 flex items-center gap-2 font-mono flex-wrap">
+                                  <span className="text-gray-300">SĐT: {acc.phone}</span>
+                                  {acc.idCard && <span>• CCCD: {acc.idCard}</span>}
+                                </div>
+                              </div>
+                            </div>
+
+                            <div className="flex-shrink-0">
+                              {isAlreadyInUnit ? (
+                                <span className="text-[10px] text-gray-500 italic">Đã có</span>
+                              ) : isSelected ? (
+                                <span className="px-2.5 py-1 bg-[#C5A880] text-[#0D1117] text-[10px] font-bold rounded-none flex items-center gap-1">
+                                  <Check className="w-3 h-3 stroke-[3]" /> Đã chọn
+                                </span>
+                              ) : (
+                                <button
+                                  type="button"
+                                  className="px-2.5 py-1 bg-[#141B24] hover:bg-[#C5A880] text-gray-300 hover:text-[#0D1117] border border-[#2D3748] hover:border-[#C5A880] text-[10px] font-semibold rounded-none transition-colors"
+                                >
+                                  Chọn
+                                </button>
+                              )}
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
                 </div>
-
-                {bqlAccounts.length === 0 ? (
-                  <div className="p-5 bg-[#161D26] border border-[#222B35] rounded-none text-center text-xs text-gray-400">
-                    Không có tài khoản chờ thêm. Bạn có thể tra cứu hoặc nhập mới.
-                  </div>
-                ) : (
-                  <div className="space-y-2 max-h-56 overflow-y-auto pr-1">
-                    {bqlAccounts.map((acc) => {
-                      const isAlreadyInUnit = members.some(
-                        (m) => m.id === acc.id || m.phone === acc.phone || m.username === acc.username
-                      );
-                      const isSelected = selectedAccount?.id === acc.id;
-
-                      return (
-                        <div
-                          key={acc.id}
-                          onClick={() => !isAlreadyInUnit && handleSelectPreApproved(acc)}
-                          className={`p-2.5 rounded-none border transition-all flex items-center justify-between gap-3 ${
-                            isAlreadyInUnit
-                              ? 'bg-[#161D26]/40 border-gray-800 opacity-60 cursor-not-allowed'
-                              : isSelected
-                              ? 'bg-[#1C2533] border-[#C5A880] shadow cursor-pointer'
-                              : 'bg-[#161D26] border-[#222B35] hover:border-gray-600 cursor-pointer'
-                          }`}
-                        >
-                          <div className="flex items-center gap-2.5">
-                            <div className="w-9 h-9 min-w-[36px] min-h-[36px] rounded-none overflow-hidden border border-[#C5A880]/60 flex-shrink-0 bg-[#0D1117]">
-                              <img
-                                src={acc.avatarUrl || 'https://data.nks.vn/storage/users/default.png'}
-                                alt={acc.fullName}
-                                onError={(e) => {
-                                  e.currentTarget.src = 'https://data.nks.vn/storage/users/default.png';
-                                }}
-                                className="w-full h-full object-cover"
-                              />
-                            </div>
-                            <div className="space-y-0.5 min-w-0">
-                              <div className="font-bold text-white text-xs flex items-center gap-1.5">
-                                <span className="truncate">{acc.fullName}</span>
-                                {isAlreadyInUnit && (
-                                  <span className="text-[9px] px-1 py-0.5 bg-gray-800 text-gray-400 rounded-none flex-shrink-0">
-                                    Đã có
-                                  </span>
-                                )}
-                              </div>
-                              <div className="text-[11px] text-gray-400 flex items-center gap-2 font-mono">
-                                <span>{acc.phone}</span>
-                                <span>• {acc.idCard}</span>
-                              </div>
-                            </div>
-                          </div>
-
-                          <div className="flex-shrink-0">
-                            {isAlreadyInUnit ? (
-                              <span className="text-[10px] text-gray-500 italic">Đã có</span>
-                            ) : isSelected ? (
-                              <span className="px-2 py-0.5 bg-[#C5A880] text-[#0D1117] text-[10px] font-bold rounded-none flex items-center gap-1">
-                                <Check className="w-3 h-3" /> Đã chọn
-                              </span>
-                            ) : (
-                              <span className="px-2 py-0.5 bg-gray-800 hover:bg-gray-700 text-gray-300 text-[10px] font-semibold rounded-none">
-                                Chọn
-                              </span>
-                            )}
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                )}
-              </div>
-            )}
+              );
+            })()}
 
             {/* ------------------------------------------------------------- */}
             {/* MODE 2: TRA CỨU TÀI KHOẢN QUA API BẰNG SĐT / CCCD             */}
             {/* ------------------------------------------------------------- */}
             {modalMode === 'SEARCH_API' && (
-              <div className="space-y-2.5">
+              <div className="space-y-3">
                 <form onSubmit={handleSearchApi} className="flex gap-2">
                   <input
                     type="text"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="Nhập SĐT hoặc CCCD..."
+                    placeholder="Nhập SĐT, CCCD hoặc họ tên người nhà..."
                     className="flex-1 bg-[#161B22] border border-[#2D3748] p-2 text-white text-xs font-mono rounded-none focus:border-[#C5A880] outline-none"
                   />
                   <button
@@ -1848,54 +1954,112 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
                     ) : (
                       <Search className="w-3.5 h-3.5" />
                     )}
-                    Tìm Kiếm
+                    Tra Cứu
                   </button>
                 </form>
 
+                {/* Quick Suggestion Pills */}
+                <div className="space-y-1">
+                  <div className="text-[10px] text-gray-400 font-mono">Tài khoản mẫu có sẵn trong hệ thống:</div>
+                  <div className="flex flex-wrap gap-1.5">
+                    {[
+                      { name: 'Nguyễn Hữu Nhựt', q: '0917795211' },
+                      { name: 'Nguyễn Văn Cường', q: '0325524482' },
+                      { name: 'Lê Đức Hải', q: '0977758215' },
+                      { name: 'Vũ Cát Thịnh', q: '0909262626' },
+                    ].map((hint) => (
+                      <button
+                        key={hint.q}
+                        type="button"
+                        onClick={() => {
+                          setSearchQuery(hint.q);
+                          handleSearchApi(undefined, hint.q);
+                        }}
+                        className="px-2 py-0.5 bg-[#161D26] hover:bg-[#C5A880] text-gray-300 hover:text-[#0D1117] border border-[#2D3748] hover:border-[#C5A880] text-[10.5px] transition-colors rounded-none font-mono cursor-pointer"
+                      >
+                        {hint.name} ({hint.q})
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
                 {searchNotFound && (
-                  <div className="p-2.5 bg-[#161D26] border border-gray-700 text-gray-300 text-xs rounded-none">
+                  <div className="p-2.5 bg-[#161D26] border border-rose-500/40 text-rose-300 text-xs rounded-none">
                     {searchNotFound}
                   </div>
                 )}
 
-                {searchResult && (
-                  <div className="p-3 bg-[#161D26] border border-emerald-500/60 rounded-none space-y-2.5 animate-fadeIn">
-                    <div className="flex items-center justify-between text-xs text-emerald-400 font-bold border-b border-[#222B35] pb-1.5">
-                      <span className="flex items-center gap-1">
-                        <CheckCircle className="w-3.5 h-3.5" /> Kết Quả Tìm Thấy:
-                      </span>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setSelectedAccount(searchResult);
-                          setNewRelationship(searchResult.relationship || 'Vợ / Chồng');
-                          setNewLicensePlate(searchResult.licensePlate || '');
-                        }}
-                        className="px-2.5 py-1 bg-[#C5A880] text-[#0D1117] font-bold text-[11px] rounded-none hover:bg-white transition-colors cursor-pointer"
-                      >
-                        {selectedAccount?.id === searchResult.id ? 'Đã Chọn ✓' : '+ Chọn'}
-                      </button>
+                {searchResults.length > 0 && (
+                  <div className="space-y-2 animate-fadeIn">
+                    <div className="text-xs text-emerald-400 font-bold flex items-center gap-1 border-b border-[#222B35] pb-1">
+                      <CheckCircle className="w-3.5 h-3.5" /> Kết Quả Tìm Thấy ({searchResults.length}):
                     </div>
 
-                    <div className="flex items-center gap-2.5">
-                      <div className="w-10 h-10 min-w-[40px] min-h-[40px] rounded-none overflow-hidden border border-[#C5A880]/60 flex-shrink-0 bg-[#161D26]">
-                        <img
-                          src={
-                            searchResult.avatarUrl
-                              ? searchResult.avatarUrl.replace('data.nks.vn//', 'data.nks.vn/')
-                              : 'https://data.nks.vn/storage/users/default.png'
-                          }
-                          alt={searchResult.fullName}
-                          onError={(e) => {
-                            e.currentTarget.src = 'https://data.nks.vn/storage/users/default.png';
-                          }}
-                          className="w-full h-full object-cover"
-                        />
-                      </div>
-                      <div className="space-y-0.5 text-xs">
-                        <div className="font-bold text-white">{searchResult.fullName}</div>
-                        <div className="text-gray-300 font-mono text-[11px]">SĐT: {searchResult.phone} • CCCD: {searchResult.idCard}</div>
-                      </div>
+                    <div className="space-y-2 max-h-56 overflow-y-auto pr-1">
+                      {searchResults.map((acc) => {
+                        const isAlreadyInUnit = members.some(
+                          (m) => m.id === acc.id || m.phone === acc.phone || m.username === acc.username
+                        );
+                        const isSelected = selectedAccount?.id === acc.id;
+
+                        return (
+                          <div
+                            key={acc.id}
+                            onClick={() => !isAlreadyInUnit && handleSelectPreApproved(acc)}
+                            className={`p-2.5 rounded-none border transition-all flex items-center justify-between gap-3 ${
+                              isAlreadyInUnit
+                                ? 'bg-[#161D26]/40 border-gray-800 opacity-60 cursor-not-allowed'
+                                : isSelected
+                                ? 'bg-[#1C2533] border-[#C5A880] shadow cursor-pointer'
+                                : 'bg-[#161D26] border-[#222B35] hover:border-[#C5A880]/60 cursor-pointer'
+                            }`}
+                          >
+                            <div className="flex items-center gap-2.5 min-w-0">
+                              <div className="w-9 h-9 min-w-[36px] min-h-[36px] rounded-none overflow-hidden border border-[#C5A880]/60 flex-shrink-0 bg-[#0D1117]">
+                                <img
+                                  src={acc.avatarUrl || 'https://data.nks.vn/storage/users/default.png'}
+                                  alt={acc.fullName}
+                                  onError={(e) => {
+                                    e.currentTarget.src = 'https://data.nks.vn/storage/users/default.png';
+                                  }}
+                                  className="w-full h-full object-cover"
+                                />
+                              </div>
+                              <div className="space-y-0.5 min-w-0">
+                                <div className="font-bold text-white text-xs flex items-center gap-1.5 flex-wrap">
+                                  <span className="truncate">{acc.fullName}</span>
+                                  {isAlreadyInUnit && (
+                                    <span className="text-[9px] px-1 py-0.5 bg-gray-800 text-gray-400 rounded-none flex-shrink-0">
+                                      Đang ở căn này
+                                    </span>
+                                  )}
+                                </div>
+                                <div className="text-[11px] text-gray-400 flex items-center gap-2 font-mono flex-wrap">
+                                  <span>SĐT: {acc.phone}</span>
+                                  {acc.idCard && <span>• CCCD: {acc.idCard}</span>}
+                                </div>
+                              </div>
+                            </div>
+
+                            <div className="flex-shrink-0">
+                              {isAlreadyInUnit ? (
+                                <span className="text-[10px] text-gray-500 italic">Đã có</span>
+                              ) : isSelected ? (
+                                <span className="px-2.5 py-1 bg-[#C5A880] text-[#0D1117] text-[10px] font-bold rounded-none flex items-center gap-1">
+                                  <Check className="w-3 h-3 stroke-[3]" /> Đã chọn
+                                </span>
+                              ) : (
+                                <button
+                                  type="button"
+                                  className="px-2.5 py-1 bg-[#C5A880] text-[#0D1117] font-bold text-[10px] rounded-none hover:bg-white transition-colors"
+                                >
+                                  + Chọn
+                                </button>
+                              )}
+                            </div>
+                          </div>
+                        );
+                      })}
                     </div>
                   </div>
                 )}

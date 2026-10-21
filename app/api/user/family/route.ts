@@ -53,48 +53,79 @@ export async function GET(req: Request) {
     const ownerName = currentApiUser?.name || localUser?.fullname || 'Trần Hữu Lực';
     const searchQuery = url.searchParams.get('search')?.trim().toLowerCase();
 
-    // 1. If searching for an account by Phone / CCCD / Email
+    // 1. If searching for an account by Phone / CCCD / Email / Name
     if (searchQuery) {
-      const matched = DEMO_USERS.find(u => 
-        (u.phone && u.phone.includes(searchQuery)) ||
-        (u.id_card_no && u.id_card_no.includes(searchQuery)) ||
-        (u.username && u.username.toLowerCase().includes(searchQuery)) ||
-        (u.full_name && u.full_name.toLowerCase().includes(searchQuery))
-      );
+      const normalize = (str: string) =>
+        (str || '')
+          .normalize('NFD')
+          .replace(/[\u0300-\u036f]/g, '')
+          .toLowerCase();
 
-      if (matched) {
+      const qRaw = searchQuery.toLowerCase().trim();
+      const qNorm = normalize(searchQuery);
+      const qDigits = searchQuery.replace(/\D/g, '');
+
+      const matchedList = DEMO_USERS.filter((u) => {
+        if (u.role === 'ADMIN' || u.role === 'TECHNICIAN' || u.role === 'OWNER') return false;
+        if (localUser && (u.id === localUser.id || u.phone === localUser.phone)) return false;
+
+        const phoneDigits = (u.phone || '').replace(/\D/g, '');
+        const idCardClean = (u.id_card_no || '').replace(/\s/g, '').toLowerCase();
+        const username = (u.username || '').toLowerCase();
+        const fullName = (u.full_name || '').toLowerCase();
+        const fullNorm = normalize(u.full_name || '');
+
+        return (
+          (qDigits.length >= 3 && phoneDigits.includes(qDigits)) ||
+          (qDigits.length >= 3 && idCardClean.includes(qDigits)) ||
+          username.includes(qRaw) ||
+          fullName.includes(qRaw) ||
+          (qNorm.length >= 2 && fullNorm.includes(qNorm))
+        );
+      }).map((matched) => {
         const userDetails = getUserStore(matched.id);
+        const rawAvatar = userDetails.avatar_url || matched.avatar_url || '';
+        const cleanAvatar = rawAvatar ? rawAvatar.replace('data.nks.vn//', 'data.nks.vn/') : 'https://data.nks.vn/storage/users/default.png';
+        const currentMembers = getApartmentMembers(aptCode);
+        return {
+          id: userDetails.id,
+          username: userDetails.username,
+          fullName: userDetails.fullname || userDetails.full_name,
+          phone: userDetails.phone,
+          idCard: userDetails.id_number || userDetails.id_card_no || '',
+          avatarUrl: cleanAvatar,
+          licensePlate: userDetails.license_plate || '',
+          role: 'Family',
+          relationship: userDetails.relationship || 'Người Nhà',
+          apartmentCode: userDetails.apartment_code || aptCode,
+          isAlreadyInUnit: currentMembers.some(
+            (m) => m.id === userDetails.id || m.phone === userDetails.phone || m.username === userDetails.username
+          ),
+        };
+      });
+
+      if (matchedList.length > 0) {
         return NextResponse.json({
           success: true,
           found: true,
-          account: {
-            id: userDetails.id,
-            username: userDetails.username,
-            fullName: userDetails.fullname || userDetails.full_name,
-            phone: userDetails.phone,
-            idCard: userDetails.id_number || userDetails.id_card_no || '',
-            avatarUrl: (userDetails.avatar_url || '').replace('data.nks.vn//', 'data.nks.vn/') || 'https://data.nks.vn/storage/users/default.png',
-            licensePlate: userDetails.license_plate || '',
-            role: 'Family',
-            relationship: userDetails.relationship || 'Thành viên gia đình',
-            apartmentCode: userDetails.apartment_code || aptCode,
-          }
+          account: matchedList[0],
+          accounts: matchedList,
         });
       }
 
       return NextResponse.json({
         success: true,
         found: false,
-        message: `Không tìm thấy tài khoản cư dân nào khớp với "${searchQuery}" trên hệ thống API.`
+        message: `Không tìm thấy tài khoản người nhà nào khớp với "${searchQuery}" trên hệ thống API.`
       });
     }
 
     // 2. Fetch current registered members for this apartment
     const members = getApartmentMembers(aptCode);
 
-    // 3. Eligible resident accounts registered in API for this apartment
+    // 3. Eligible resident accounts registered in API (All TENANT role family accounts)
     const bqlAccounts = DEMO_USERS
-      .filter((u) => u.apartment_code === aptCode && u.role !== 'OWNER' && u.role !== 'ADMIN' && u.role !== 'TECHNICIAN')
+      .filter((u) => u.role === 'TENANT' && (!localUser || (u.id !== localUser.id && u.phone !== localUser.phone)))
       .map((u) => {
         const liveUser = getUserStore(u.id);
         const rawAvatar = liveUser.avatar_url || u.avatar_url || '';
@@ -109,7 +140,7 @@ export async function GET(req: Request) {
           avatarUrl: cleanAvatar,
           licensePlate: liveUser.license_plate || '',
           role: 'Family',
-          relationship: liveUser.relationship || 'Thành viên gia đình',
+          relationship: liveUser.relationship || 'Người Nhà',
           isAdded: members.some((m) => m.username === liveUser.username || m.phone === liveUser.phone || m.id === liveUser.id),
         };
       });
