@@ -62,7 +62,7 @@ interface SurveysVotingProps {
   currentUser?: User;
 }
 
-function ZaloToggle({ 
+function LuxuryToggle({ 
   checked, 
   onChange, 
   disabled = false 
@@ -78,13 +78,13 @@ function ZaloToggle({
       aria-checked={checked}
       disabled={disabled}
       onClick={() => onChange(!checked)}
-      className={`relative inline-flex h-5 w-10 sm:h-6 sm:w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
-        checked ? 'bg-[#3B82F6]' : 'bg-gray-600'
+      className={`relative inline-flex h-5 w-10 sm:h-5.5 sm:w-11 flex-shrink-0 cursor-pointer rounded-none border transition-colors duration-150 ease-in-out focus:outline-none ${
+        checked ? 'bg-[#C5A880] border-[#C5A880]' : 'bg-[#141B24] border-[#2A3647]'
       } ${disabled ? 'opacity-40 cursor-not-allowed' : ''}`}
     >
       <span
-        className={`pointer-events-none inline-block h-4 w-4 sm:h-5 sm:w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
-          checked ? 'translate-x-5' : 'translate-x-0'
+        className={`pointer-events-none inline-block h-4 w-4 sm:h-4.5 sm:w-4.5 transform rounded-none transition duration-150 ease-in-out shadow-sm ${
+          checked ? 'translate-x-5 bg-[#0A0E14]' : 'translate-x-0.5 bg-gray-400'
         }`}
       />
     </button>
@@ -387,19 +387,13 @@ export default function SurveysVoting({ currentUser }: SurveysVotingProps) {
       setCreateImages([]);
       setAttachPoll(false);
       setPollNoDeadline(false);
-      showToast(isEn ? 'Post & Poll published successfully with AI moderation!' : 'AI đã kiểm duyệt và khởi tạo bài viết / bình chọn thành công!');
+      showToast(isEn ? 'Post & Poll published successfully!' : 'Đã đăng bài viết / tạo cuộc bình chọn thành công!');
     } catch {
       showToast('Lỗi khi đăng bài viết.', 'error');
     } finally {
       setIsSubmittingWithAi(false);
     }
   };
-
-  // Preview AI analysis in real-time
-  const liveAiPreview = useMemo(() => {
-    if (!createTitle && !createContent) return null;
-    return analyzePostWithAi(`${createTitle} ${createContent}`);
-  }, [createTitle, createContent]);
 
   return (
     <div className="space-y-6 select-none animate-fadeIn pb-16">
@@ -430,8 +424,8 @@ export default function SurveysVoting({ currentUser }: SurveysVotingProps) {
             </h1>
             <p className="text-xs text-gray-400 max-w-2xl leading-relaxed">
               {isEn
-                ? '24/7 online interactive space powered by AI: automated moderation, resident sentiment analysis, instant regulation lookup, and transparent voting.'
-                : 'Không gian tương tác trực tuyến 24/7 tích hợp AI: Kiểm duyệt tự động, phân tích cảm xúc cư dân, phản hồi nhanh nội quy và biểu quyết minh bạch.'}
+                ? 'Official resident community space: discuss building amenities, share classifieds, and vote transparently.'
+                : 'Không gian tương tác cộng đồng cư dân Skyline: trao đổi tiện ích tòa nhà, thông báo ban quản lý và biểu quyết minh bạch.'}
             </p>
           </div>
 
@@ -833,7 +827,7 @@ export default function SurveysVoting({ currentUser }: SurveysVotingProps) {
                               {t('Chủ Hộ (Owner Only)')}
                             </span>
                           ) : (
-                            <span className="px-2 py-0.5 bg-blue-500/15 border border-blue-500/40 text-blue-400 text-[9px] font-semibold uppercase tracking-wider">
+                            <span className="px-2 py-0.5 bg-[#C5A880]/15 border border-[#C5A880]/40 text-[#C5A880] text-[9px] font-semibold uppercase tracking-wider">
                               {t('Toàn Thể Cư Dân')}
                             </span>
                           )}
@@ -865,8 +859,8 @@ export default function SurveysVoting({ currentUser }: SurveysVotingProps) {
 
                       {/* Notice if results hidden before vote */}
                       {post.poll.hideResultsBeforeVote && !userVote && (
-                        <div className="p-2 bg-blue-500/10 border border-blue-500/30 text-blue-300 text-[11px] flex items-center gap-2">
-                          <EyeOff className="w-3.5 h-3.5 flex-shrink-0 text-blue-400" />
+                        <div className="p-2 bg-[#C5A880]/10 border border-[#C5A880]/30 text-[#C5A880] text-[11px] flex items-center gap-2">
+                          <EyeOff className="w-3.5 h-3.5 flex-shrink-0 text-[#C5A880]" />
                           <span>{isEn ? 'Results are hidden until you cast your vote.' : 'Kết quả đang ẩn, Quý cư dân vui lòng bình chọn để xem tỉ lệ phiếu.'}</span>
                         </div>
                       )}
@@ -884,7 +878,7 @@ export default function SurveysVoting({ currentUser }: SurveysVotingProps) {
                               key={option.id}
                               onClick={() => canVote && handleVote(post.id, option.id)}
                               className={`relative p-3 border transition-all duration-200 select-none ${
-                                canVote ? 'cursor-pointer hover:border-[#3B82F6]' : 'cursor-default'
+                                canVote ? 'cursor-pointer hover:border-[#C5A880]' : 'cursor-default'
                               } ${
                                 isUserSelected
                                   ? 'bg-[#10B981]/10 border-[#10B981]'
@@ -895,7 +889,7 @@ export default function SurveysVoting({ currentUser }: SurveysVotingProps) {
                               {showResults && (
                                 <div
                                   className={`absolute left-0 top-0 bottom-0 transition-all duration-500 ${
-                                    isUserSelected ? 'bg-[#10B981]/15' : 'bg-[#3B82F6]/10'
+                                    isUserSelected ? 'bg-[#10B981]/15' : 'bg-[#C5A880]/15'
                                   }`}
                                   style={{ width: `${percentage}%` }}
                                 />
@@ -1052,10 +1046,10 @@ export default function SurveysVoting({ currentUser }: SurveysVotingProps) {
         )}
       </div>
 
-      {/* CREATE POST & ZALO-STYLE POLL MODAL */}
+      {/* CREATE POST & RESIDENT POLL MODAL */}
       {isCreateModalOpen && (
-        <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-2 sm:p-4 md:p-6 overflow-hidden animate-fadeIn">
-          <div className="bg-[#0E131B] border border-[#C5A880]/60 max-w-4xl w-full max-h-[92vh] sm:max-h-[88vh] flex flex-col shadow-[0_25px_70px_rgba(0,0,0,0.95)] rounded-none overflow-hidden relative animate-in fade-in zoom-in-95 duration-200">
+        <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-2 sm:p-4 md:p-6 overflow-hidden">
+          <div className="bg-[#0E131B] border border-[#C5A880]/60 max-w-4xl w-full max-h-[92vh] sm:max-h-[88vh] flex flex-col shadow-[0_25px_70px_rgba(0,0,0,0.95)] rounded-none overflow-hidden relative">
             {/* 1. STICKY MODAL HEADER */}
             <div className="px-5 py-3.5 bg-[#121820] border-b border-[#222B35] flex items-center justify-between shrink-0">
               <div className="flex items-center gap-3">
@@ -1065,15 +1059,13 @@ export default function SurveysVoting({ currentUser }: SurveysVotingProps) {
                 <div>
                   <h3 className="text-base sm:text-lg font-serif font-bold text-white flex items-center gap-2">
                     {createCategory === 'VOTING' || attachPoll
-                      ? (isEn ? 'Create Resident Poll' : 'Tạo bình chọn')
-                      : (isEn ? 'Create Community Post' : 'Đăng bài viết')}
+                      ? (isEn ? 'Create Resident Poll' : 'Tạo bình chọn cư dân')
+                      : (isEn ? 'Create Community Post' : 'Đăng bài viết cư dân')}
                   </h3>
                   <div className="text-[10px] text-gray-400 font-mono flex items-center gap-2">
                     <span className="text-[#C5A880]">The Tropical • BS-07</span>
                     <span>•</span>
-                    <span className="text-emerald-400 flex items-center gap-1">
-                      <Sparkles className="w-2.5 h-2.5" /> AI Moderated
-                    </span>
+                    <span className="text-gray-400">Skyline Smart Residence</span>
                   </div>
                 </div>
               </div>
@@ -1088,10 +1080,10 @@ export default function SurveysVoting({ currentUser }: SurveysVotingProps) {
               </button>
             </div>
 
-            {/* 2. CATEGORY TABS BAR */}
+            {/* 2. CATEGORY TABS BAR (Instant lag-free tab switching) */}
             <div className="px-5 py-2.5 bg-[#0A0E14] border-b border-[#1E2733] flex items-center gap-1.5 overflow-x-auto no-scrollbar shrink-0">
               {[
-                { id: 'VOTING', label: isEn ? 'Create Poll (Zalo Style)' : 'Tạo bình chọn', icon: Vote },
+                { id: 'VOTING', label: isEn ? 'Create Poll' : 'Tạo bình chọn', icon: Vote },
                 { id: 'DISCUSSION', label: isEn ? 'Discussion' : 'Thảo luận', icon: Users },
                 { id: 'MARKETPLACE', label: isEn ? 'Classifieds' : 'Rao vặt', icon: ShoppingBag },
                 ...(isAdmin ? [{ id: 'ANNOUNCEMENT', label: isEn ? 'Notice BQL' : 'Thông báo BQL', icon: Megaphone }] : []),
@@ -1104,11 +1096,9 @@ export default function SurveysVoting({ currentUser }: SurveysVotingProps) {
                     type="button"
                     onClick={() => {
                       setCreateCategory(cat.id as any);
-                      if (cat.id === 'VOTING') {
-                        setAttachPoll(true);
-                      }
+                      setAttachPoll(cat.id === 'VOTING');
                     }}
-                    className={`px-3 py-1.5 text-xs font-semibold flex items-center gap-1.5 transition-all select-none whitespace-nowrap ${
+                    className={`px-3.5 py-1.5 text-xs font-semibold flex items-center gap-1.5 select-none whitespace-nowrap transition-colors duration-150 ${
                       isSelected
                         ? 'bg-[#C5A880] text-[#0A0E14] font-bold shadow'
                         : 'bg-[#141B24] text-gray-400 hover:text-white hover:bg-[#1A232F]'
@@ -1123,7 +1113,7 @@ export default function SurveysVoting({ currentUser }: SurveysVotingProps) {
 
             {/* 3. SCROLLABLE MODAL BODY */}
             <form id="create-post-form" onSubmit={handleCreatePost} className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-5 scrollbar-thin">
-              {/* If Zalo-Style Poll Mode */}
+              {/* Poll Layout */}
               {createCategory === 'VOTING' || attachPoll ? (
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 lg:gap-6">
                   {/* LEFT COLUMN: Question & Options */}
@@ -1141,7 +1131,7 @@ export default function SurveysVoting({ currentUser }: SurveysVotingProps) {
                           value={createTitle}
                           onChange={e => setCreateTitle(e.target.value)}
                           placeholder={isEn ? "Ask a question for residents to vote on..." : "Đặt câu hỏi bình chọn"}
-                          className="w-full bg-[#141B24] border border-[#2A3647] focus:border-[#3B82F6] text-white p-3 text-xs placeholder-gray-500 focus:outline-none resize-none transition-colors"
+                          className="w-full bg-[#141B24] border border-[#2A3647] focus:border-[#C5A880] text-white p-3 text-xs placeholder-gray-500 focus:outline-none resize-none transition-colors"
                         />
                         <div className="text-[11px] text-gray-500 font-mono text-right pt-0.5">
                           {createTitle.length}/200
@@ -1166,7 +1156,7 @@ export default function SurveysVoting({ currentUser }: SurveysVotingProps) {
                                 setPollOptions(newOpts);
                               }}
                               placeholder={isEn ? `Option ${idx + 1}` : `Lựa chọn ${idx + 1}`}
-                              className="flex-1 bg-[#141B24] border border-[#2A3647] focus:border-[#3B82F6] text-white px-3.5 py-2 text-xs placeholder-gray-500 focus:outline-none transition-colors"
+                              className="flex-1 bg-[#141B24] border border-[#2A3647] focus:border-[#C5A880] text-white px-3.5 py-2 text-xs placeholder-gray-500 focus:outline-none transition-colors"
                             />
                             {pollOptions.length > 2 && (
                               <button
@@ -1187,7 +1177,7 @@ export default function SurveysVoting({ currentUser }: SurveysVotingProps) {
                         <button
                           type="button"
                           onClick={() => setPollOptions([...pollOptions, ''])}
-                          className="inline-flex items-center gap-1.5 text-xs text-[#3B82F6] hover:text-[#60A5FA] font-medium pt-1 transition-colors select-none"
+                          className="inline-flex items-center gap-1.5 text-xs text-[#C5A880] hover:text-[#E2C9A5] font-semibold pt-1 transition-colors select-none"
                         >
                           <Plus className="w-4 h-4" />
                           <span>{isEn ? 'Add option' : 'Thêm lựa chọn'}</span>
@@ -1232,9 +1222,9 @@ export default function SurveysVoting({ currentUser }: SurveysVotingProps) {
                           </div>
                         ))}
                         {createImages.length < 4 && (
-                          <label className="w-14 h-14 border border-dashed border-[#2A3647] hover:border-[#3B82F6] bg-[#141B24]/60 hover:bg-[#141B24] flex flex-col items-center justify-center cursor-pointer text-gray-400 hover:text-[#3B82F6] transition-colors">
+                          <label className="w-14 h-14 border border-dashed border-[#2A3647] hover:border-[#C5A880] bg-[#141B24]/60 hover:bg-[#141B24] flex flex-col items-center justify-center cursor-pointer text-gray-400 hover:text-[#C5A880] transition-colors">
                             {isCompressingImage ? (
-                              <Loader2 className="w-4 h-4 animate-spin text-[#3B82F6]" />
+                              <Loader2 className="w-4 h-4 animate-spin text-[#C5A880]" />
                             ) : (
                               <>
                                 <Plus className="w-4 h-4" />
@@ -1255,7 +1245,7 @@ export default function SurveysVoting({ currentUser }: SurveysVotingProps) {
                     </div>
                   </div>
 
-                  {/* RIGHT COLUMN: Zalo-Style Advanced Settings */}
+                  {/* RIGHT COLUMN: Advanced Settings */}
                   <div className="lg:col-span-5 space-y-4 lg:border-l lg:border-[#222B35] lg:pl-6">
                     {/* 1. Poll Deadline */}
                     <div className="space-y-2">
@@ -1269,16 +1259,16 @@ export default function SurveysVoting({ currentUser }: SurveysVotingProps) {
                             {pollNoDeadline ? (isEn ? 'No deadline' : 'Không thời hạn') : (isEn ? 'Set deadline' : 'Có thời hạn')}
                           </span>
                         </div>
-                        <ZaloToggle checked={pollNoDeadline} onChange={setPollNoDeadline} />
+                        <LuxuryToggle checked={pollNoDeadline} onChange={setPollNoDeadline} />
                       </div>
 
                       {!pollNoDeadline && (
-                        <div className="pt-1 animate-fadeIn">
+                        <div className="pt-1">
                           <input
                             type="datetime-local"
                             value={pollDeadline}
                             onChange={e => setPollDeadline(e.target.value)}
-                            className="w-full bg-[#141B24] border border-[#2A3647] text-white px-3 py-2 text-xs focus:outline-none focus:border-[#3B82F6] transition-colors"
+                            className="w-full bg-[#141B24] border border-[#2A3647] text-white px-3 py-2 text-xs focus:outline-none focus:border-[#C5A880] transition-colors"
                           />
                         </div>
                       )}
@@ -1294,8 +1284,8 @@ export default function SurveysVoting({ currentUser }: SurveysVotingProps) {
 
                       {/* Pin to top */}
                       <div className="flex items-center justify-between py-1 text-xs text-gray-300">
-                        <span>{isEn ? 'Pin to top of chat/bulletin' : 'Ghim lên đầu trò chuyện'}</span>
-                        <ZaloToggle checked={createIsPinned} onChange={setCreateIsPinned} />
+                        <span>{isEn ? 'Pin to top of bulletin' : 'Ghim lên đầu bảng tin'}</span>
+                        <LuxuryToggle checked={createIsPinned} onChange={setCreateIsPinned} />
                       </div>
 
                       {/* Allow multiple options */}
@@ -1306,7 +1296,7 @@ export default function SurveysVoting({ currentUser }: SurveysVotingProps) {
                             <HelpCircle className="w-3.5 h-3.5 text-gray-500 hover:text-gray-300 cursor-help" />
                           </span>
                         </span>
-                        <ZaloToggle checked={pollAllowMultiple} onChange={setPollAllowMultiple} />
+                        <LuxuryToggle checked={pollAllowMultiple} onChange={setPollAllowMultiple} />
                       </div>
 
                       {/* Allow add options */}
@@ -1317,7 +1307,7 @@ export default function SurveysVoting({ currentUser }: SurveysVotingProps) {
                             <HelpCircle className="w-3.5 h-3.5 text-gray-500 hover:text-gray-300 cursor-help" />
                           </span>
                         </span>
-                        <ZaloToggle checked={pollAllowAddOptions} onChange={setPollAllowAddOptions} />
+                        <LuxuryToggle checked={pollAllowAddOptions} onChange={setPollAllowAddOptions} />
                       </div>
                     </div>
 
@@ -1337,7 +1327,7 @@ export default function SurveysVoting({ currentUser }: SurveysVotingProps) {
                             <HelpCircle className="w-3.5 h-3.5 text-gray-500 hover:text-gray-300 cursor-help" />
                           </span>
                         </span>
-                        <ZaloToggle checked={pollHideResultsBeforeVote} onChange={setPollHideResultsBeforeVote} />
+                        <LuxuryToggle checked={pollHideResultsBeforeVote} onChange={setPollHideResultsBeforeVote} />
                       </div>
 
                       {/* Anonymous voters */}
@@ -1348,7 +1338,7 @@ export default function SurveysVoting({ currentUser }: SurveysVotingProps) {
                             <HelpCircle className="w-3.5 h-3.5 text-gray-500 hover:text-gray-300 cursor-help" />
                           </span>
                         </span>
-                        <ZaloToggle checked={pollIsAnonymous} onChange={setPollIsAnonymous} />
+                        <LuxuryToggle checked={pollIsAnonymous} onChange={setPollIsAnonymous} />
                       </div>
 
                       {/* Owner Only (Legal poll) */}
@@ -1360,7 +1350,7 @@ export default function SurveysVoting({ currentUser }: SurveysVotingProps) {
                               <HelpCircle className="w-3.5 h-3.5 text-[#C5A880]/70 cursor-help" />
                             </span>
                           </span>
-                          <ZaloToggle checked={pollIsOwnerOnly} onChange={setPollIsOwnerOnly} />
+                          <LuxuryToggle checked={pollIsOwnerOnly} onChange={setPollIsOwnerOnly} />
                         </div>
                       )}
                     </div>
@@ -1399,13 +1389,13 @@ export default function SurveysVoting({ currentUser }: SurveysVotingProps) {
                     />
                   </div>
 
-                  {/* Switch to attach Zalo Poll */}
+                  {/* Switch to attach Poll */}
                   <div className="p-3 bg-[#141B24] border border-[#2A3647] flex items-center justify-between">
-                    <div className="flex items-center gap-2 text-xs text-[#3B82F6] font-medium">
-                      <Vote className="w-4 h-4" />
-                      <span>{isEn ? 'Attach Zalo-Style Poll to this post' : 'Đính kèm cuộc bình chọn ý kiến cư dân (Phong cách Zalo)'}</span>
+                    <div className="flex items-center gap-2 text-xs text-[#C5A880] font-medium">
+                      <Vote className="w-4 h-4 text-[#C5A880]" />
+                      <span>{isEn ? 'Attach resident poll to this post' : 'Đính kèm cuộc biểu quyết / bình chọn cư dân'}</span>
                     </div>
-                    <ZaloToggle checked={attachPoll} onChange={setAttachPoll} />
+                    <LuxuryToggle checked={attachPoll} onChange={setAttachPoll} />
                   </div>
 
                   {/* Tags & Images */}
@@ -1462,19 +1452,6 @@ export default function SurveysVoting({ currentUser }: SurveysVotingProps) {
                   </div>
                 </div>
               )}
-
-              {/* LIVE AI PREVIEW BAR */}
-              {liveAiPreview && (
-                <div className="p-3 bg-[#141B24]/90 border border-emerald-500/30 text-xs flex items-center justify-between text-gray-300 font-mono">
-                  <span className="flex items-center gap-1.5 text-emerald-400">
-                    <ShieldCheck className="w-4 h-4" />
-                    {isEn ? 'AI Moderation: ' : 'AI Kiểm duyệt: '}{liveAiPreview.moderation === 'Clean' ? (isEn ? 'Civil ✓' : 'Văn minh ✓') : liveAiPreview.moderation === 'Warning' ? (isEn ? 'Review ⚠️' : 'Cần lưu tâm ⚠️') : (isEn ? 'Violation ❌' : 'Vi phạm ❌')}
-                  </span>
-                  <span>
-                    {isEn ? 'Sentiment:' : 'Cảm xúc:'} <strong>{liveAiPreview.sentimentLabel}</strong> ({liveAiPreview.sentiment > 0 ? `+${liveAiPreview.sentiment.toFixed(2)}` : liveAiPreview.sentiment.toFixed(2)})
-                  </span>
-                </div>
-              )}
             </form>
 
             {/* 4. STICKY MODAL FOOTER (Never Cut Off / Never Overflow) */}
@@ -1491,8 +1468,8 @@ export default function SurveysVoting({ currentUser }: SurveysVotingProps) {
                   setPollOptions(isEn ? ['Approve proposal', 'Reject proposal', 'Other opinion'] : ['Đồng ý thông qua', 'Không đồng ý', 'Ý kiến khác']);
                   showToast(isEn ? 'Restored default poll settings.' : 'Đã khôi phục thiết lập bình chọn mặc định.');
                 }}
-                className="p-2.5 bg-[#161F2C] hover:bg-[#1E2B3E] text-gray-300 hover:text-white border border-[#2A3647] transition-colors"
-                title={isEn ? "Reset poll settings" : "Cài đặt & Khôi phục mặc định"}
+                className="p-2.5 bg-[#161F2C] hover:bg-[#1E2B3E] text-gray-300 hover:text-[#C5A880] border border-[#2A3647] transition-colors"
+                title={isEn ? "Reset poll settings" : "Khôi phục thiết lập mặc định"}
               >
                 <Settings className="w-4 h-4" />
               </button>
@@ -1512,12 +1489,12 @@ export default function SurveysVoting({ currentUser }: SurveysVotingProps) {
                   type="submit"
                   form="create-post-form"
                   disabled={isSubmittingWithAi}
-                  className="px-6 py-2.5 bg-[#3B82F6] hover:bg-[#2563EB] text-white font-bold text-xs uppercase tracking-wider transition-all shadow-lg flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer active:scale-95"
+                  className="px-6 py-2.5 bg-[#C5A880] hover:bg-white text-[#0A0E14] font-bold text-xs uppercase tracking-wider transition-all shadow-[0_4px_20px_rgba(197,168,128,0.25)] flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer active:scale-95"
                 >
                   {isSubmittingWithAi ? (
                     <>
-                      <Loader2 className="w-4 h-4 animate-spin text-white" />
-                      <span>{isEn ? 'AI Processing...' : 'AI Phân Tích...'}</span>
+                      <Loader2 className="w-4 h-4 animate-spin text-[#0A0E14]" />
+                      <span>{isEn ? 'Publishing...' : 'Đang Đăng...'}</span>
                     </>
                   ) : (
                     <span>
