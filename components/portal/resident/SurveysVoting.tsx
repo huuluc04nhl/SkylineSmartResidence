@@ -37,7 +37,9 @@ import {
   Eye,
   EyeOff,
   Camera,
-  Image as ImageIcon
+  Image as ImageIcon,
+  Settings,
+  Calendar
 } from 'lucide-react';
 import { User } from '@/lib/dataStore';
 import { compressImageFile } from '@/lib/imageUtils';
@@ -58,6 +60,35 @@ import { useLanguage } from '@/lib/languageContext';
 
 interface SurveysVotingProps {
   currentUser?: User;
+}
+
+function ZaloToggle({ 
+  checked, 
+  onChange, 
+  disabled = false 
+}: { 
+  checked: boolean; 
+  onChange: (val: boolean) => void; 
+  disabled?: boolean;
+}) {
+  return (
+    <button
+      type="button"
+      role="switch"
+      aria-checked={checked}
+      disabled={disabled}
+      onClick={() => onChange(!checked)}
+      className={`relative inline-flex h-5 w-10 sm:h-6 sm:w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
+        checked ? 'bg-[#3B82F6]' : 'bg-gray-600'
+      } ${disabled ? 'opacity-40 cursor-not-allowed' : ''}`}
+    >
+      <span
+        className={`pointer-events-none inline-block h-4 w-4 sm:h-5 sm:w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
+          checked ? 'translate-x-5' : 'translate-x-0'
+        }`}
+      />
+    </button>
+  );
 }
 
 export default function SurveysVoting({ currentUser }: SurveysVotingProps) {
@@ -110,7 +141,12 @@ export default function SurveysVoting({ currentUser }: SurveysVotingProps) {
     d.setDate(d.getDate() + 14);
     return d.toISOString().split('T')[0] + 'T23:59:59';
   });
-  const [pollIsOwnerOnly, setPollIsOwnerOnly] = useState(true);
+  const [pollIsOwnerOnly, setPollIsOwnerOnly] = useState(false);
+  const [pollNoDeadline, setPollNoDeadline] = useState(false);
+  const [pollAllowMultiple, setPollAllowMultiple] = useState(true);
+  const [pollAllowAddOptions, setPollAllowAddOptions] = useState(true);
+  const [pollHideResultsBeforeVote, setPollHideResultsBeforeVote] = useState(false);
+  const [pollIsAnonymous, setPollIsAnonymous] = useState(false);
   const [pollOptions, setPollOptions] = useState<string[]>(() => isEn ? [
     'Approve proposal',
     'Reject proposal, keep current state',
@@ -285,36 +321,37 @@ export default function SurveysVoting({ currentUser }: SurveysVotingProps) {
   // Handle Create Post with AI Auto-Moderation & Sentiment
   const handleCreatePost = async (e: React.FormEvent) => {
     e.preventDefault();
+    const isPollActive = createCategory === 'VOTING' || attachPoll;
+
     if (!createTitle.trim()) {
-      showToast('Vui lòng nhập tiêu đề bài viết.', 'error');
+      showToast(isPollActive 
+        ? (isEn ? 'Please enter the poll question or topic.' : 'Vui lòng nhập chủ đề / câu hỏi bình chọn.') 
+        : (isEn ? 'Please enter post title.' : 'Vui lòng nhập tiêu đề bài viết.'), 'error');
       return;
     }
-    if (!createContent.trim()) {
-      showToast('Vui lòng nhập nội dung chia sẻ.', 'error');
-      return;
-    }
+
+    const effectiveContent = createContent.trim() || createTitle.trim();
 
     const tagsArray = createTags
       .split(',')
       .map(t => t.trim())
       .filter(t => t.length > 0);
 
-    if (!isAdmin && (createCategory === 'VOTING' || attachPoll)) {
-      showToast(isEn ? 'Only Management Board (Admin) can create surveys and polls.' : 'Chỉ Ban Quản Trị / BQL mới có thẩm quyền tạo khảo sát và biểu quyết cư dân.', 'error');
-      return;
-    }
-
-    const isPollActive = isAdmin && (createCategory === 'VOTING' || attachPoll);
     let pollData = undefined;
     if (isPollActive) {
       const validOptions = pollOptions.filter(o => o.trim().length > 0);
       if (validOptions.length < 2) {
-        showToast(isEn ? 'A poll requires at least 2 voting options.' : 'Cuộc biểu quyết cần ít nhất 2 phương án bình chọn.', 'error');
+        showToast(isEn ? 'A poll requires at least 2 voting options.' : 'Cuộc bình chọn cần ít nhất 2 phương án lựa chọn.', 'error');
         return;
       }
       pollData = {
-        deadline: pollDeadline,
-        isOwnerOnly: pollIsOwnerOnly,
+        deadline: pollNoDeadline ? '' : pollDeadline,
+        noDeadline: pollNoDeadline,
+        isOwnerOnly: isAdmin && pollIsOwnerOnly,
+        allowMultipleAnswers: pollAllowMultiple,
+        allowAddOptions: pollAllowAddOptions,
+        hideResultsBeforeVote: pollHideResultsBeforeVote,
+        isAnonymous: pollIsAnonymous,
         status: 'OPEN' as const,
         totalEligibleApartments: 250,
         options: validOptions.map((opt, idx) => ({
@@ -336,9 +373,9 @@ export default function SurveysVoting({ currentUser }: SurveysVotingProps) {
         aptCode,
         avatarUrl: userAvatar,
         title: createTitle.trim(),
-        content: createContent.trim(),
+        content: effectiveContent,
         images: createImages.length > 0 ? createImages : undefined,
-        tags: tagsArray.length > 0 ? tagsArray : ['Cộng đồng', 'Skyline'],
+        tags: tagsArray.length > 0 ? tagsArray : (isPollActive ? ['Bình chọn', 'Cư dân'] : ['Cộng đồng', 'Skyline']),
         isPinned: isAdmin && createIsPinned,
         poll: pollData,
       });
@@ -349,7 +386,8 @@ export default function SurveysVoting({ currentUser }: SurveysVotingProps) {
       setCreateTags('');
       setCreateImages([]);
       setAttachPoll(false);
-      showToast('AI đã hoàn tất kiểm duyệt và đăng bài thành công lên Diễn đàn!');
+      setPollNoDeadline(false);
+      showToast(isEn ? 'Post & Poll published successfully with AI moderation!' : 'AI đã kiểm duyệt và khởi tạo bài viết / bình chọn thành công!');
     } catch {
       showToast('Lỗi khi đăng bài viết.', 'error');
     } finally {
@@ -785,7 +823,7 @@ export default function SurveysVoting({ currentUser }: SurveysVotingProps) {
                     <div className="mt-4 p-4 bg-[#141B24] border border-[#C5A880]/30 space-y-4">
                       {/* Poll Header */}
                       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-white/5">
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-2 flex-wrap">
                           <Vote className="w-4 h-4 text-[#C5A880]" />
                           <span className="text-xs font-bold uppercase tracking-wider text-white">
                             {t('Cuộc Thăm Dò & Biểu Quyết Tòa Nhà')}
@@ -799,11 +837,21 @@ export default function SurveysVoting({ currentUser }: SurveysVotingProps) {
                               {t('Toàn Thể Cư Dân')}
                             </span>
                           )}
+                          {post.poll.isAnonymous && (
+                            <span className="px-2 py-0.5 bg-purple-500/15 border border-purple-500/40 text-purple-300 text-[9px] font-semibold uppercase tracking-wider">
+                              {isEn ? 'Anonymous' : 'Ẩn danh'}
+                            </span>
+                          )}
+                          {post.poll.allowMultipleAnswers && (
+                            <span className="px-2 py-0.5 bg-emerald-500/15 border border-emerald-500/40 text-emerald-300 text-[9px] font-semibold uppercase tracking-wider">
+                              {isEn ? 'Multiple choice' : 'Chọn nhiều PA'}
+                            </span>
+                          )}
                         </div>
 
                         <div className="text-[11px] text-gray-400 font-mono flex items-center gap-2">
                           <span>{t('Đã biểu quyết')}: <strong className="text-white">{totalPollVotes}</strong>/{eligibleCount} {t('căn')} ({participationRate}%)</span>
-                          <span>• {t('Hạn')}: {new Date(post.poll.deadline).toLocaleDateString(isEn ? 'en-US' : 'vi-VN')}</span>
+                          <span>• {t('Hạn')}: {post.poll.noDeadline ? (isEn ? 'No deadline' : 'Không thời hạn') : (post.poll.deadline ? new Date(post.poll.deadline).toLocaleDateString(isEn ? 'en-US' : 'vi-VN') : '—')}</span>
                         </div>
                       </div>
 
@@ -815,10 +863,19 @@ export default function SurveysVoting({ currentUser }: SurveysVotingProps) {
                         </div>
                       )}
 
+                      {/* Notice if results hidden before vote */}
+                      {post.poll.hideResultsBeforeVote && !userVote && (
+                        <div className="p-2 bg-blue-500/10 border border-blue-500/30 text-blue-300 text-[11px] flex items-center gap-2">
+                          <EyeOff className="w-3.5 h-3.5 flex-shrink-0 text-blue-400" />
+                          <span>{isEn ? 'Results are hidden until you cast your vote.' : 'Kết quả đang ẩn, Quý cư dân vui lòng bình chọn để xem tỉ lệ phiếu.'}</span>
+                        </div>
+                      )}
+
                       {/* Options List */}
                       <div className="space-y-2.5 pt-1">
                         {post.poll.options.map(option => {
                           const isUserSelected = userVote?.optionId === option.id;
+                          const showResults = !post.poll?.hideResultsBeforeVote || !!userVote;
                           const percentage = totalPollVotes > 0 ? Math.round((option.votes / totalPollVotes) * 100) : 0;
                           const canVote = !post.poll?.isOwnerOnly || isOwner;
 
@@ -827,7 +884,7 @@ export default function SurveysVoting({ currentUser }: SurveysVotingProps) {
                               key={option.id}
                               onClick={() => canVote && handleVote(post.id, option.id)}
                               className={`relative p-3 border transition-all duration-200 select-none ${
-                                canVote ? 'cursor-pointer hover:border-[#C5A880]' : 'cursor-default'
+                                canVote ? 'cursor-pointer hover:border-[#3B82F6]' : 'cursor-default'
                               } ${
                                 isUserSelected
                                   ? 'bg-[#10B981]/10 border-[#10B981]'
@@ -835,12 +892,14 @@ export default function SurveysVoting({ currentUser }: SurveysVotingProps) {
                               }`}
                             >
                               {/* Background percentage progress bar */}
-                              <div
-                                className={`absolute left-0 top-0 bottom-0 transition-all duration-500 ${
-                                  isUserSelected ? 'bg-[#10B981]/15' : 'bg-[#C5A880]/10'
-                                }`}
-                                style={{ width: `${percentage}%` }}
-                              />
+                              {showResults && (
+                                <div
+                                  className={`absolute left-0 top-0 bottom-0 transition-all duration-500 ${
+                                    isUserSelected ? 'bg-[#10B981]/15' : 'bg-[#3B82F6]/10'
+                                  }`}
+                                  style={{ width: `${percentage}%` }}
+                                />
+                              )}
 
                               {/* Foreground content */}
                               <div className="relative z-10 flex items-center justify-between gap-3 text-xs">
@@ -993,287 +1052,111 @@ export default function SurveysVoting({ currentUser }: SurveysVotingProps) {
         )}
       </div>
 
-      {/* CREATE POST MODAL WITH AI PREVIEW */}
+      {/* CREATE POST & ZALO-STYLE POLL MODAL */}
       {isCreateModalOpen && (
-        <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
-          <div className="bg-[#0E131B] border border-[#C5A880] max-w-2xl w-full p-6 space-y-5 shadow-2xl relative my-8">
-            <button
-              onClick={() => setIsCreateModalOpen(false)}
-              className="absolute top-4 right-4 text-gray-400 hover:text-white p-1"
-            >
-              <X className="w-5 h-5" />
-            </button>
-
-            <div className="space-y-1">
-              <div className="text-[10px] text-[#C5A880] uppercase tracking-widest font-mono">
-                {isEn ? 'SKYLINE RESIDENT FORUM & AI COMMUNITY' : 'Diễn Đàn SKYLINE Community AI'}
+        <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-2 sm:p-4 md:p-6 overflow-hidden animate-fadeIn">
+          <div className="bg-[#0E131B] border border-[#C5A880]/60 max-w-4xl w-full max-h-[92vh] sm:max-h-[88vh] flex flex-col shadow-[0_25px_70px_rgba(0,0,0,0.95)] rounded-none overflow-hidden relative animate-in fade-in zoom-in-95 duration-200">
+            {/* 1. STICKY MODAL HEADER */}
+            <div className="px-5 py-3.5 bg-[#121820] border-b border-[#222B35] flex items-center justify-between shrink-0">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 bg-[#C5A880]/15 border border-[#C5A880]/40 flex items-center justify-center text-[#C5A880]">
+                  <Vote className="w-4 h-4" />
+                </div>
+                <div>
+                  <h3 className="text-base sm:text-lg font-serif font-bold text-white flex items-center gap-2">
+                    {createCategory === 'VOTING' || attachPoll
+                      ? (isEn ? 'Create Resident Poll' : 'Tạo bình chọn')
+                      : (isEn ? 'Create Community Post' : 'Đăng bài viết')}
+                  </h3>
+                  <div className="text-[10px] text-gray-400 font-mono flex items-center gap-2">
+                    <span className="text-[#C5A880]">The Tropical • BS-07</span>
+                    <span>•</span>
+                    <span className="text-emerald-400 flex items-center gap-1">
+                      <Sparkles className="w-2.5 h-2.5" /> AI Moderated
+                    </span>
+                  </div>
+                </div>
               </div>
-              <h3 className="text-xl font-serif font-bold text-white">
-                {isAdmin
-                  ? (isEn ? 'Create Post & Management Survey' : 'Đăng Bài Viết & Tạo Khảo Sát BQL')
-                  : (isEn ? 'Create Community Post' : 'Đăng Bài Viết Cộng Đồng')}
-              </h3>
-              <p className="text-xs text-gray-400">
-                {isEn 
-                  ? 'AI automatically moderates civil discourse and promptly addresses apartment queries.'
-                  : 'Hệ thống AI tự động phân tích kiểm duyệt văn minh và phản hồi nhanh các thắc mắc chung cư.'}
-              </p>
+
+              <button
+                type="button"
+                onClick={() => setIsCreateModalOpen(false)}
+                className="p-1.5 text-gray-400 hover:text-white hover:bg-white/10 transition-colors"
+                title={isEn ? "Close" : "Đóng"}
+              >
+                <X className="w-5 h-5" />
+              </button>
             </div>
 
-            <form onSubmit={handleCreatePost} className="space-y-4">
-              {/* Category picker */}
-              <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-gray-300">
-                  {isEn ? 'Post Category' : 'Chuyên Mục Bài Đăng'}
-                </label>
-                <div className={`grid gap-2 ${isAdmin ? 'grid-cols-2 sm:grid-cols-4' : 'grid-cols-2'}`}>
-                  {[
-                    { id: 'DISCUSSION', label: isEn ? 'Discuss' : 'Thảo Luận', icon: Users },
-                    { id: 'MARKETPLACE', label: isEn ? 'Classifieds' : 'Rao Vặt', icon: ShoppingBag },
-                    ...(isAdmin ? [
-                      { id: 'VOTING', label: isEn ? 'Voting & Surveys' : 'Biểu Quyết', icon: Vote },
-                      { id: 'ANNOUNCEMENT', label: isEn ? 'Management Notice' : 'Thông Báo BQL', icon: Megaphone }
-                    ] : []),
-                  ].map(cat => {
-                    const Icon = cat.icon;
-                    const isSelected = createCategory === cat.id;
-                    return (
-                      <button
-                        key={cat.id}
-                        type="button"
-                        onClick={() => {
-                          setCreateCategory(cat.id as any);
-                          if (cat.id === 'VOTING') {
-                            setAttachPoll(true);
-                          } else {
-                            setAttachPoll(false);
-                          }
-                        }}
-                        className={`p-2.5 text-xs font-semibold border flex items-center justify-center gap-1.5 transition-all ${
-                          isSelected
-                            ? 'bg-[#C5A880] text-[#0A0E14] border-[#C5A880] font-bold'
-                            : 'bg-[#141B24] text-gray-300 border-[#222B35] hover:border-gray-500'
-                        }`}
-                      >
-                        <Icon className="w-3.5 h-3.5" />
-                        <span>{cat.label}</span>
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
+            {/* 2. CATEGORY TABS BAR */}
+            <div className="px-5 py-2.5 bg-[#0A0E14] border-b border-[#1E2733] flex items-center gap-1.5 overflow-x-auto no-scrollbar shrink-0">
+              {[
+                { id: 'VOTING', label: isEn ? 'Create Poll (Zalo Style)' : 'Tạo bình chọn', icon: Vote },
+                { id: 'DISCUSSION', label: isEn ? 'Discussion' : 'Thảo luận', icon: Users },
+                { id: 'MARKETPLACE', label: isEn ? 'Classifieds' : 'Rao vặt', icon: ShoppingBag },
+                ...(isAdmin ? [{ id: 'ANNOUNCEMENT', label: isEn ? 'Notice BQL' : 'Thông báo BQL', icon: Megaphone }] : []),
+              ].map(cat => {
+                const Icon = cat.icon;
+                const isSelected = createCategory === cat.id;
+                return (
+                  <button
+                    key={cat.id}
+                    type="button"
+                    onClick={() => {
+                      setCreateCategory(cat.id as any);
+                      if (cat.id === 'VOTING') {
+                        setAttachPoll(true);
+                      }
+                    }}
+                    className={`px-3 py-1.5 text-xs font-semibold flex items-center gap-1.5 transition-all select-none whitespace-nowrap ${
+                      isSelected
+                        ? 'bg-[#C5A880] text-[#0A0E14] font-bold shadow'
+                        : 'bg-[#141B24] text-gray-400 hover:text-white hover:bg-[#1A232F]'
+                    }`}
+                  >
+                    <Icon className="w-3.5 h-3.5" />
+                    <span>{cat.label}</span>
+                  </button>
+                );
+              })}
+            </div>
 
-              {/* Title input */}
-              <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-gray-300">
-                  {isEn ? 'Post Title *' : 'Tiêu Đề Bài Viết *'}
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={createTitle}
-                  onChange={e => setCreateTitle(e.target.value)}
-                  placeholder={isEn ? "e.g. What time does the infinity pool close? / Reselling study desk..." : "Ví dụ: Hồ bơi vô cực mở cửa đến mấy giờ? / Rao lại bàn làm việc..."}
-                  className="w-full bg-[#141B24] border border-[#C5A880]/30 text-white px-3 py-2 text-xs placeholder-gray-500 focus:outline-none focus:border-[#C5A880]"
-                />
-              </div>
-
-              {/* Content input */}
-              <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-gray-300">
-                  {isEn ? 'Detailed Content *' : 'Nội Dung Chi Tiết *'}
-                </label>
-                <textarea
-                  required
-                  rows={4}
-                  value={createContent}
-                  onChange={e => setCreateContent(e.target.value)}
-                  placeholder={isEn ? "Describe specific details or questions for residents and management to discuss..." : "Mô tả cụ thể thông tin, thắc mắc để cư dân và BQL cùng trao đổi..."}
-                  className="w-full bg-[#141B24] border border-[#C5A880]/30 text-white p-3 text-xs placeholder-gray-500 focus:outline-none focus:border-[#C5A880] resize-none"
-                />
-              </div>
-
-              {/* Tags input */}
-              <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-gray-300">
-                  {isEn ? 'Tags (comma-separated)' : 'Thẻ Phân Loại (Tags, cách nhau bằng dấu phẩy)'}
-                </label>
-                <input
-                  type="text"
-                  value={createTags}
-                  onChange={e => setCreateTags(e.target.value)}
-                  placeholder={isEn ? "Amenities, Pool, Classifieds, Handbook..." : "Tiện ích, Hồ bơi, Rao vặt, Sổ tay..."}
-                  className="w-full bg-[#141B24] border border-[#222B35] text-white px-3 py-2 text-xs placeholder-gray-500 focus:outline-none focus:border-[#C5A880]"
-                />
-              </div>
-
-              {/* Admin pinned toggle */}
-              {isAdmin && (
-                <label className="flex items-center gap-2 cursor-pointer text-xs text-[#C5A880]">
-                  <input
-                    type="checkbox"
-                    checked={createIsPinned}
-                    onChange={e => setCreateIsPinned(e.target.checked)}
-                    className="accent-[#C5A880]"
-                  />
-                  <span>{isEn ? 'Pin this post to top of community bulletin' : 'Ghim bài viết này lên đầu bảng tin diễn đàn'}</span>
-                </label>
-              )}
-
-              {/* Image attachment input */}
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <label className="text-xs font-semibold text-gray-300 flex items-center gap-1.5">
-                    <Camera className="w-3.5 h-3.5 text-[#C5A880]" />
-                    <span>{isEn ? 'Attach Photos (Especially for Classifieds / Illustrations)' : 'Hình Ảnh Đính Kèm (Đặc biệt cho Rao Vặt / Minh Họa)'}</span>
-                  </label>
-                  <span className="text-[11px] text-gray-500 font-mono">{createImages.length}/4 {isEn ? 'photos' : 'ảnh'}</span>
-                </div>
-
-                <div className="flex items-center gap-2 flex-wrap">
-                  {createImages.map((img, idx) => (
-                    <div key={idx} className="relative w-16 h-16 bg-[#141B24] border border-[#C5A880]/50 overflow-hidden group">
-                      <img src={img} alt="Ảnh xem trước" className="w-full h-full object-cover" />
-                      <button
-                        type="button"
-                        onClick={() => handleRemoveImage(idx)}
-                        className="absolute top-0 right-0 p-1 bg-black/80 text-white hover:text-rose-400 transition-colors"
-                        title={isEn ? "Remove photo" : "Xóa ảnh này"}
-                      >
-                        <X className="w-3 h-3" />
-                      </button>
+            {/* 3. SCROLLABLE MODAL BODY */}
+            <form id="create-post-form" onSubmit={handleCreatePost} className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-5 scrollbar-thin">
+              {/* If Zalo-Style Poll Mode */}
+              {createCategory === 'VOTING' || attachPoll ? (
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 lg:gap-6">
+                  {/* LEFT COLUMN: Question & Options */}
+                  <div className="lg:col-span-7 space-y-4">
+                    {/* Poll Topic / Question */}
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-semibold text-gray-200 uppercase tracking-wider flex items-center justify-between">
+                        <span>{isEn ? 'Poll Topic / Question *' : 'Chủ đề bình chọn *'}</span>
+                      </label>
+                      <div className="relative">
+                        <textarea
+                          required
+                          rows={3}
+                          maxLength={200}
+                          value={createTitle}
+                          onChange={e => setCreateTitle(e.target.value)}
+                          placeholder={isEn ? "Ask a question for residents to vote on..." : "Đặt câu hỏi bình chọn"}
+                          className="w-full bg-[#141B24] border border-[#2A3647] focus:border-[#3B82F6] text-white p-3 text-xs placeholder-gray-500 focus:outline-none resize-none transition-colors"
+                        />
+                        <div className="text-[11px] text-gray-500 font-mono text-right pt-0.5">
+                          {createTitle.length}/200
+                        </div>
+                      </div>
                     </div>
-                  ))}
 
-                  {createImages.length < 4 && (
-                    <label className="w-16 h-16 border border-dashed border-[#C5A880]/40 hover:border-[#C5A880] bg-[#141B24]/60 hover:bg-[#141B24] flex flex-col items-center justify-center cursor-pointer transition-colors text-gray-400 hover:text-[#C5A880]">
-                      {isCompressingImage ? (
-                        <Loader2 className="w-4 h-4 animate-spin text-[#C5A880]" />
-                      ) : (
-                        <>
-                          <Plus className="w-4 h-4" />
-                          <span className="text-[9px] mt-0.5 font-medium">{isEn ? 'Add photo' : 'Thêm ảnh'}</span>
-                        </>
-                      )}
-                      <input
-                        type="file"
-                        accept="image/*"
-                        multiple
-                        disabled={isCompressingImage}
-                        onChange={handleImageUpload}
-                        className="hidden"
-                      />
-                    </label>
-                  )}
-                </div>
-              </div>
-
-              {/* Poll toggle: Exclusively reserved for Management (Admin) */}
-              {isAdmin && (
-                createCategory !== 'VOTING' ? (
-                  <div className="pt-2 border-t border-white/5 space-y-3">
-                    <label className="flex items-center justify-between cursor-pointer text-xs text-gray-200">
-                      <span className="flex items-center gap-2 font-semibold">
-                        <Vote className="w-4 h-4 text-[#C5A880]" />
-                        {isEn ? 'Attach official resident poll (Management Authority)' : 'Đính kèm cuộc biểu quyết cư dân (Thẩm quyền BQL)'}
-                      </span>
-                      <input
-                        type="checkbox"
-                        checked={attachPoll}
-                        onChange={e => setAttachPoll(e.target.checked)}
-                        className="accent-[#C5A880]"
-                      />
-                    </label>
-
-                    {attachPoll && (
-                      <div className="p-3.5 bg-[#141B24] border border-[#C5A880]/30 space-y-3 animate-fadeIn">
-                        <div className="text-[11px] text-[#C5A880] font-bold uppercase tracking-wider">
-                          {isEn ? 'Configure Voting Options' : 'Cấu Hình Các Phương Án Bình Chọn'}
-                        </div>
-
-                        <div className="space-y-2">
-                          {pollOptions.map((opt, idx) => (
-                            <div key={idx} className="flex gap-2">
-                              <input
-                                type="text"
-                                value={opt}
-                                onChange={e => {
-                                  const newOpts = [...pollOptions];
-                                  newOpts[idx] = e.target.value;
-                                  setPollOptions(newOpts);
-                                }}
-                                placeholder={isEn ? `Option ${idx + 1}...` : `Phương án ${idx + 1}...`}
-                                className="flex-1 bg-[#0E131B] border border-[#222B35] text-white px-3 py-1.5 text-xs focus:outline-none focus:border-[#C5A880]"
-                              />
-                              {pollOptions.length > 2 && (
-                                <button
-                                  type="button"
-                                  onClick={() => setPollOptions(pollOptions.filter((_, i) => i !== idx))}
-                                  className="px-2.5 text-gray-400 hover:text-rose-400"
-                                >
-                                  <X className="w-4 h-4" />
-                                </button>
-                              )}
-                            </div>
-                          ))}
-
-                          {pollOptions.length < 5 && (
-                            <button
-                              type="button"
-                              onClick={() => setPollOptions([...pollOptions, ''])}
-                              className="text-xs text-[#C5A880] hover:underline flex items-center gap-1 pt-1"
-                            >
-                              <Plus className="w-3 h-3" /> {isEn ? 'Add option' : 'Thêm phương án lựa chọn'}
-                            </button>
-                          )}
-                        </div>
-
-                        {/* Poll constraints */}
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
-                          <div>
-                            <label className="text-[10px] text-gray-400 block mb-1">
-                              {isEn ? 'Voting Deadline' : 'Thời Hạn Biểu Quyết Đến'}
-                            </label>
-                            <input
-                              type="datetime-local"
-                              value={pollDeadline}
-                              onChange={e => setPollDeadline(e.target.value)}
-                              className="w-full bg-[#0E131B] border border-[#222B35] text-white px-3 py-1.5 text-xs focus:outline-none focus:border-[#C5A880]"
-                            />
-                          </div>
-
-                          <div className="flex items-center gap-2 pt-4">
-                            <input
-                              type="checkbox"
-                              id="pollOwnerOnly"
-                              checked={pollIsOwnerOnly}
-                              onChange={e => setPollIsOwnerOnly(e.target.checked)}
-                              className="accent-[#C5A880]"
-                            />
-                            <label htmlFor="pollOwnerOnly" className="text-xs text-gray-300 cursor-pointer">
-                              {isEn ? 'Apartment Owners only (Legal Poll)' : 'Chỉ Chủ Hộ mới được biểu quyết (Biểu quyết pháp lý)'}
-                            </label>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                ) : (
-                  <div className="pt-2 border-t border-white/5 space-y-3">
-                    <div className="p-3.5 bg-[#141B24] border border-[#C5A880]/30 space-y-3 animate-fadeIn">
-                      <div className="flex items-center justify-between">
-                        <div className="text-[11px] text-[#C5A880] font-bold uppercase tracking-wider flex items-center gap-1.5">
-                          <Vote className="w-4 h-4 text-[#C5A880]" />
-                          <span>{isEn ? 'Resident Poll Configuration (Required)' : 'Cấu Hình Biểu Quyết Cư Dân (Bắt Buộc)'}</span>
-                        </div>
-                        <span className="text-[10px] text-emerald-400 font-mono">
-                          {isEn ? 'Auto Activated' : 'Tự động kích hoạt'}
-                        </span>
-                      </div>
-
+                    {/* Poll Options */}
+                    <div className="space-y-2">
+                      <label className="text-xs font-semibold text-gray-200 uppercase tracking-wider block">
+                        {isEn ? 'Options *' : 'Các lựa chọn *'}
+                      </label>
                       <div className="space-y-2">
                         {pollOptions.map((opt, idx) => (
-                          <div key={idx} className="flex gap-2">
+                          <div key={idx} className="flex items-center gap-2">
                             <input
                               type="text"
                               value={opt}
@@ -1282,62 +1165,302 @@ export default function SurveysVoting({ currentUser }: SurveysVotingProps) {
                                 newOpts[idx] = e.target.value;
                                 setPollOptions(newOpts);
                               }}
-                              placeholder={isEn ? `Option ${idx + 1}...` : `Phương án ${idx + 1}...`}
-                              className="flex-1 bg-[#0E131B] border border-[#222B35] text-white px-3 py-1.5 text-xs focus:outline-none focus:border-[#C5A880]"
+                              placeholder={isEn ? `Option ${idx + 1}` : `Lựa chọn ${idx + 1}`}
+                              className="flex-1 bg-[#141B24] border border-[#2A3647] focus:border-[#3B82F6] text-white px-3.5 py-2 text-xs placeholder-gray-500 focus:outline-none transition-colors"
                             />
                             {pollOptions.length > 2 && (
                               <button
                                 type="button"
                                 onClick={() => setPollOptions(pollOptions.filter((_, i) => i !== idx))}
-                                className="px-2.5 text-gray-400 hover:text-rose-400"
+                                className="p-2 text-gray-400 hover:text-rose-400 transition-colors"
+                                title={isEn ? "Remove option" : "Xóa lựa chọn này"}
                               >
                                 <X className="w-4 h-4" />
                               </button>
                             )}
                           </div>
                         ))}
-
-                        {pollOptions.length < 5 && (
-                          <button
-                            type="button"
-                            onClick={() => setPollOptions([...pollOptions, ''])}
-                            className="text-xs text-[#C5A880] hover:underline flex items-center gap-1 pt-1"
-                          >
-                            <Plus className="w-3 h-3" /> {isEn ? 'Add option' : 'Thêm phương án lựa chọn'}
-                          </button>
-                        )}
                       </div>
 
-                      {/* Poll constraints */}
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
-                        <div>
-                          <label className="text-[10px] text-gray-400 block mb-1">
-                            {isEn ? 'Voting Deadline' : 'Thời Hạn Biểu Quyết Đến'}
+                      {/* Add Option Button */}
+                      {pollOptions.length < 8 && (
+                        <button
+                          type="button"
+                          onClick={() => setPollOptions([...pollOptions, ''])}
+                          className="inline-flex items-center gap-1.5 text-xs text-[#3B82F6] hover:text-[#60A5FA] font-medium pt-1 transition-colors select-none"
+                        >
+                          <Plus className="w-4 h-4" />
+                          <span>{isEn ? 'Add option' : 'Thêm lựa chọn'}</span>
+                        </button>
+                      )}
+                    </div>
+
+                    {/* Optional details note */}
+                    <div className="space-y-1.5 pt-2 border-t border-[#1E2733]">
+                      <label className="text-[11px] text-gray-400 font-medium">
+                        {isEn ? 'Additional Context Note (Optional)' : 'Ghi chú mô tả thêm (Tùy chọn)'}
+                      </label>
+                      <textarea
+                        rows={2}
+                        value={createContent}
+                        onChange={e => setCreateContent(e.target.value)}
+                        placeholder={isEn ? "Add more context or guidelines for neighbors..." : "Mô tả cụ thể thông tin hoặc lý do khảo sát..."}
+                        className="w-full bg-[#141B24] border border-[#222B35] focus:border-[#C5A880] text-white p-2.5 text-xs placeholder-gray-500 focus:outline-none resize-none transition-colors"
+                      />
+                    </div>
+
+                    {/* Optional photos attachment */}
+                    <div className="space-y-2 pt-1">
+                      <div className="flex items-center justify-between text-xs">
+                        <span className="text-gray-400 flex items-center gap-1.5">
+                          <Camera className="w-3.5 h-3.5 text-[#C5A880]" />
+                          <span>{isEn ? 'Attach Illustration Photos' : 'Hình ảnh đính kèm minh họa'}</span>
+                        </span>
+                        <span className="text-[10px] text-gray-500 font-mono">{createImages.length}/4</span>
+                      </div>
+                      <div className="flex items-center gap-2 flex-wrap">
+                        {createImages.map((img, idx) => (
+                          <div key={idx} className="relative w-14 h-14 bg-[#141B24] border border-[#C5A880]/50 overflow-hidden">
+                            <img src={img} alt="Preview" className="w-full h-full object-cover" />
+                            <button
+                              type="button"
+                              onClick={() => handleRemoveImage(idx)}
+                              className="absolute top-0 right-0 p-1 bg-black/80 text-white hover:text-rose-400"
+                            >
+                              <X className="w-3 h-3" />
+                            </button>
+                          </div>
+                        ))}
+                        {createImages.length < 4 && (
+                          <label className="w-14 h-14 border border-dashed border-[#2A3647] hover:border-[#3B82F6] bg-[#141B24]/60 hover:bg-[#141B24] flex flex-col items-center justify-center cursor-pointer text-gray-400 hover:text-[#3B82F6] transition-colors">
+                            {isCompressingImage ? (
+                              <Loader2 className="w-4 h-4 animate-spin text-[#3B82F6]" />
+                            ) : (
+                              <>
+                                <Plus className="w-4 h-4" />
+                                <span className="text-[8px] mt-0.5">{isEn ? 'Photo' : 'Ảnh'}</span>
+                              </>
+                            )}
+                            <input
+                              type="file"
+                              accept="image/*"
+                              multiple
+                              disabled={isCompressingImage}
+                              onChange={handleImageUpload}
+                              className="hidden"
+                            />
                           </label>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* RIGHT COLUMN: Zalo-Style Advanced Settings */}
+                  <div className="lg:col-span-5 space-y-4 lg:border-l lg:border-[#222B35] lg:pl-6">
+                    {/* 1. Poll Deadline */}
+                    <div className="space-y-2">
+                      <div className="text-xs font-semibold text-gray-200 uppercase tracking-wider">
+                        {isEn ? 'Voting Deadline' : 'Thời hạn bình chọn'}
+                      </div>
+                      <div className="p-3 bg-[#141B24] border border-[#2A3647] flex items-center justify-between">
+                        <div className="flex items-center gap-2 text-xs">
+                          <Calendar className="w-4 h-4 text-gray-400" />
+                          <span className={pollNoDeadline ? 'text-white font-medium' : 'text-gray-400'}>
+                            {pollNoDeadline ? (isEn ? 'No deadline' : 'Không thời hạn') : (isEn ? 'Set deadline' : 'Có thời hạn')}
+                          </span>
+                        </div>
+                        <ZaloToggle checked={pollNoDeadline} onChange={setPollNoDeadline} />
+                      </div>
+
+                      {!pollNoDeadline && (
+                        <div className="pt-1 animate-fadeIn">
                           <input
                             type="datetime-local"
                             value={pollDeadline}
                             onChange={e => setPollDeadline(e.target.value)}
-                            className="w-full bg-[#0E131B] border border-[#222B35] text-white px-3 py-1.5 text-xs focus:outline-none focus:border-[#C5A880]"
+                            className="w-full bg-[#141B24] border border-[#2A3647] text-white px-3 py-2 text-xs focus:outline-none focus:border-[#3B82F6] transition-colors"
                           />
                         </div>
+                      )}
+                    </div>
 
-                        <div className="flex items-center gap-2 pt-4">
-                          <input
-                            type="checkbox"
-                            id="pollOwnerOnly2"
-                            checked={pollIsOwnerOnly}
-                            onChange={e => setPollIsOwnerOnly(e.target.checked)}
-                            className="accent-[#C5A880]"
-                          />
-                          <label htmlFor="pollOwnerOnly2" className="text-xs text-gray-300 cursor-pointer">
-                            {isEn ? 'Apartment Owners only (Legal Poll)' : 'Chỉ Chủ Hộ mới được biểu quyết (Biểu quyết pháp lý)'}
-                          </label>
+                    <div className="border-b border-[#222B35] pt-1" />
+
+                    {/* 2. Advanced Settings */}
+                    <div className="space-y-3">
+                      <div className="text-xs font-semibold text-gray-200 uppercase tracking-wider">
+                        {isEn ? 'Advanced Settings' : 'Thiết lập nâng cao'}
+                      </div>
+
+                      {/* Pin to top */}
+                      <div className="flex items-center justify-between py-1 text-xs text-gray-300">
+                        <span>{isEn ? 'Pin to top of chat/bulletin' : 'Ghim lên đầu trò chuyện'}</span>
+                        <ZaloToggle checked={createIsPinned} onChange={setCreateIsPinned} />
+                      </div>
+
+                      {/* Allow multiple options */}
+                      <div className="flex items-center justify-between py-1 text-xs text-gray-300">
+                        <span className="flex items-center gap-1.5">
+                          <span>{isEn ? 'Allow multiple choices' : 'Chọn nhiều phương án'}</span>
+                          <span title={isEn ? "Voters can select more than one option" : "Cư dân có thể tick chọn nhiều phương án cùng lúc"}>
+                            <HelpCircle className="w-3.5 h-3.5 text-gray-500 hover:text-gray-300 cursor-help" />
+                          </span>
+                        </span>
+                        <ZaloToggle checked={pollAllowMultiple} onChange={setPollAllowMultiple} />
+                      </div>
+
+                      {/* Allow add options */}
+                      <div className="flex items-center justify-between py-1 text-xs text-gray-300">
+                        <span className="flex items-center gap-1.5">
+                          <span>{isEn ? 'Allow adding options' : 'Có thể thêm phương án'}</span>
+                          <span title={isEn ? "Voters can contribute new options" : "Cư dân khi tham gia có thể đề xuất thêm phương án mới"}>
+                            <HelpCircle className="w-3.5 h-3.5 text-gray-500 hover:text-gray-300 cursor-help" />
+                          </span>
+                        </span>
+                        <ZaloToggle checked={pollAllowAddOptions} onChange={setPollAllowAddOptions} />
+                      </div>
+                    </div>
+
+                    <div className="border-b border-[#222B35] pt-1" />
+
+                    {/* 3. Anonymous Poll */}
+                    <div className="space-y-3">
+                      <div className="text-xs font-semibold text-gray-200 uppercase tracking-wider">
+                        {isEn ? 'Anonymous Poll' : 'Bình chọn ẩn danh'}
+                      </div>
+
+                      {/* Hide results before voting */}
+                      <div className="flex items-center justify-between py-1 text-xs text-gray-300">
+                        <span className="flex items-center gap-1.5">
+                          <span>{isEn ? 'Hide results before vote' : 'Ẩn kết quả khi chưa bình chọn'}</span>
+                          <span title={isEn ? "Results revealed only after casting vote" : "Cư dân chỉ xem được kết quả sau khi đã tham gia bình chọn"}>
+                            <HelpCircle className="w-3.5 h-3.5 text-gray-500 hover:text-gray-300 cursor-help" />
+                          </span>
+                        </span>
+                        <ZaloToggle checked={pollHideResultsBeforeVote} onChange={setPollHideResultsBeforeVote} />
+                      </div>
+
+                      {/* Anonymous voters */}
+                      <div className="flex items-center justify-between py-1 text-xs text-gray-300">
+                        <span className="flex items-center gap-1.5">
+                          <span>{isEn ? 'Hide voter identities' : 'Ẩn người bình chọn'}</span>
+                          <span title={isEn ? "Voter identity will be kept private" : "Bảo mật thông tin căn hộ và người đã bỏ phiếu"}>
+                            <HelpCircle className="w-3.5 h-3.5 text-gray-500 hover:text-gray-300 cursor-help" />
+                          </span>
+                        </span>
+                        <ZaloToggle checked={pollIsAnonymous} onChange={setPollIsAnonymous} />
+                      </div>
+
+                      {/* Owner Only (Legal poll) */}
+                      {isAdmin && (
+                        <div className="flex items-center justify-between py-1 text-xs text-[#C5A880]">
+                          <span className="flex items-center gap-1.5">
+                            <span>{isEn ? 'Apartment Owners Only (Legal)' : 'Chỉ Chủ Hộ mới được biểu quyết'}</span>
+                            <span title="Cuộc biểu quyết pháp lý giới hạn cho tài khoản Chủ Hộ">
+                              <HelpCircle className="w-3.5 h-3.5 text-[#C5A880]/70 cursor-help" />
+                            </span>
+                          </span>
+                          <ZaloToggle checked={pollIsOwnerOnly} onChange={setPollIsOwnerOnly} />
                         </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                /* Standard Post Layout (Discussion / Marketplace / Announcement) */
+                <div className="space-y-4">
+                  {/* Title input */}
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-semibold text-gray-300">
+                      {isEn ? 'Post Title *' : 'Tiêu Đề Bài Viết *'}
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={createTitle}
+                      onChange={e => setCreateTitle(e.target.value)}
+                      placeholder={isEn ? "e.g. Reselling study desk / Weekend badminton..." : "Ví dụ: Rao lại bàn làm việc gỗ sồi / Nhóm cầu lông cuối tuần..."}
+                      className="w-full bg-[#141B24] border border-[#2A3647] focus:border-[#C5A880] text-white px-3 py-2.5 text-xs placeholder-gray-500 focus:outline-none transition-colors"
+                    />
+                  </div>
+
+                  {/* Content input */}
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-semibold text-gray-300">
+                      {isEn ? 'Detailed Content *' : 'Nội Dung Chi Tiết *'}
+                    </label>
+                    <textarea
+                      required
+                      rows={4}
+                      value={createContent}
+                      onChange={e => setCreateContent(e.target.value)}
+                      placeholder={isEn ? "Share specific information with residents..." : "Mô tả cụ thể thông tin, thắc mắc để cư dân và BQL cùng trao đổi..."}
+                      className="w-full bg-[#141B24] border border-[#2A3647] focus:border-[#C5A880] text-white p-3 text-xs placeholder-gray-500 focus:outline-none resize-none transition-colors"
+                    />
+                  </div>
+
+                  {/* Switch to attach Zalo Poll */}
+                  <div className="p-3 bg-[#141B24] border border-[#2A3647] flex items-center justify-between">
+                    <div className="flex items-center gap-2 text-xs text-[#3B82F6] font-medium">
+                      <Vote className="w-4 h-4" />
+                      <span>{isEn ? 'Attach Zalo-Style Poll to this post' : 'Đính kèm cuộc bình chọn ý kiến cư dân (Phong cách Zalo)'}</span>
+                    </div>
+                    <ZaloToggle checked={attachPoll} onChange={setAttachPoll} />
+                  </div>
+
+                  {/* Tags & Images */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-semibold text-gray-300">
+                        {isEn ? 'Tags (comma-separated)' : 'Thẻ phân loại (Tags)'}
+                      </label>
+                      <input
+                        type="text"
+                        value={createTags}
+                        onChange={e => setCreateTags(e.target.value)}
+                        placeholder="Tiện ích, Rao vặt, Thể thao..."
+                        className="w-full bg-[#141B24] border border-[#2A3647] text-white px-3 py-2 text-xs placeholder-gray-500 focus:outline-none focus:border-[#C5A880]"
+                      />
+                    </div>
+
+                    <div className="space-y-1.5">
+                      <div className="flex items-center justify-between text-xs">
+                        <label className="font-semibold text-gray-300 flex items-center gap-1.5">
+                          <Camera className="w-3.5 h-3.5 text-[#C5A880]" />
+                          <span>{isEn ? 'Attach Photos' : 'Hình ảnh đính kèm'}</span>
+                        </label>
+                        <span className="text-[10px] text-gray-500 font-mono">{createImages.length}/4</span>
+                      </div>
+                      <div className="flex items-center gap-2 flex-wrap">
+                        {createImages.map((img, idx) => (
+                          <div key={idx} className="relative w-12 h-12 bg-[#141B24] border border-[#C5A880]/50 overflow-hidden">
+                            <img src={img} alt="Preview" className="w-full h-full object-cover" />
+                            <button
+                              type="button"
+                              onClick={() => handleRemoveImage(idx)}
+                              className="absolute top-0 right-0 p-0.5 bg-black/80 text-white hover:text-rose-400"
+                            >
+                              <X className="w-3 h-3" />
+                            </button>
+                          </div>
+                        ))}
+                        {createImages.length < 4 && (
+                          <label className="w-12 h-12 border border-dashed border-[#2A3647] hover:border-[#C5A880] bg-[#141B24]/60 hover:bg-[#141B24] flex items-center justify-center cursor-pointer text-gray-400 hover:text-[#C5A880] transition-colors">
+                            <Plus className="w-4 h-4" />
+                            <input
+                              type="file"
+                              accept="image/*"
+                              multiple
+                              disabled={isCompressingImage}
+                              onChange={handleImageUpload}
+                              className="hidden"
+                            />
+                          </label>
+                        )}
                       </div>
                     </div>
                   </div>
-                )
+                </div>
               )}
 
               {/* LIVE AI PREVIEW BAR */}
@@ -1352,33 +1475,60 @@ export default function SurveysVoting({ currentUser }: SurveysVotingProps) {
                   </span>
                 </div>
               )}
+            </form>
 
-              {/* Action buttons */}
-              <div className="flex flex-col-reverse sm:flex-row items-center justify-end gap-2.5 sm:gap-3 pt-3 border-t border-[#1A222D]">
+            {/* 4. STICKY MODAL FOOTER (Never Cut Off / Never Overflow) */}
+            <div className="px-5 py-3.5 bg-[#121820] border-t border-[#222B35] flex items-center justify-between shrink-0">
+              {/* Reset / Settings button on the left */}
+              <button
+                type="button"
+                onClick={() => {
+                  setPollNoDeadline(false);
+                  setPollAllowMultiple(true);
+                  setPollAllowAddOptions(true);
+                  setPollHideResultsBeforeVote(false);
+                  setPollIsAnonymous(false);
+                  setPollOptions(isEn ? ['Approve proposal', 'Reject proposal', 'Other opinion'] : ['Đồng ý thông qua', 'Không đồng ý', 'Ý kiến khác']);
+                  showToast(isEn ? 'Restored default poll settings.' : 'Đã khôi phục thiết lập bình chọn mặc định.');
+                }}
+                className="p-2.5 bg-[#161F2C] hover:bg-[#1E2B3E] text-gray-300 hover:text-white border border-[#2A3647] transition-colors"
+                title={isEn ? "Reset poll settings" : "Cài đặt & Khôi phục mặc định"}
+              >
+                <Settings className="w-4 h-4" />
+              </button>
+
+              {/* Action buttons on the right */}
+              <div className="flex items-center gap-2.5 sm:gap-3">
                 <button
                   type="button"
                   disabled={isSubmittingWithAi}
                   onClick={() => setIsCreateModalOpen(false)}
-                  className="w-full sm:w-auto px-4 py-2.5 text-xs text-gray-400 hover:text-white uppercase tracking-wider font-semibold disabled:opacity-50 text-center"
+                  className="px-4 py-2 text-xs text-gray-300 hover:text-white uppercase tracking-wider font-semibold disabled:opacity-50 transition-colors"
                 >
-                  {isEn ? 'Cancel' : 'Hủy Bỏ'}
+                  {isEn ? 'Cancel' : 'Hủy'}
                 </button>
+
                 <button
                   type="submit"
+                  form="create-post-form"
                   disabled={isSubmittingWithAi}
-                  className="w-full sm:w-auto px-7 py-3 bg-[#C5A880] hover:bg-white text-[#0A0E14] font-bold text-xs uppercase tracking-wider transition-colors shadow-lg flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer active:scale-95"
+                  className="px-6 py-2.5 bg-[#3B82F6] hover:bg-[#2563EB] text-white font-bold text-xs uppercase tracking-wider transition-all shadow-lg flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer active:scale-95"
                 >
                   {isSubmittingWithAi ? (
                     <>
-                      <Loader2 className="w-4 h-4 animate-spin text-[#0A0E14]" />
-                      <span>{isEn ? 'AI Analyzing...' : 'AI Đang Phân Tích...'}</span>
+                      <Loader2 className="w-4 h-4 animate-spin text-white" />
+                      <span>{isEn ? 'AI Processing...' : 'AI Phân Tích...'}</span>
                     </>
                   ) : (
-                    <span>{isEn ? 'Publish to Forum' : 'Đăng Lên Diễn Đàn'}</span>
+                    <span>
+                      {createCategory === 'VOTING' || attachPoll
+                        ? (isEn ? 'Create Poll' : 'Tạo bình chọn')
+                        : (isEn ? 'Publish Post' : 'Đăng bài')}
+                    </span>
                   )}
                 </button>
               </div>
-            </form>
+            </div>
           </div>
         </div>
       )}

@@ -65,6 +65,12 @@ export interface CommunityPost {
     totalEligibleApartments: number;
     options: PollOption[];
     voters: PollVoter[];
+    // Zalo-style interactive options
+    noDeadline?: boolean;            // Không thời hạn
+    allowMultipleAnswers?: boolean; // Chọn nhiều phương án
+    allowAddOptions?: boolean;       // Có thể thêm phương án
+    hideResultsBeforeVote?: boolean; // Ẩn kết quả khi chưa bình chọn
+    isAnonymous?: boolean;           // Bình chọn ẩn danh
   };
 }
 
