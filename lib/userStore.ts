@@ -420,7 +420,34 @@ export function registerNewOwnerUser(data: {
   return newUser;
 }
 
-export const DEFAULT_CH06_MEMBERS: ApartmentMember[] = [];
+export const DEFAULT_CH06_MEMBERS: ApartmentMember[] = [
+  {
+    id: 'user-tenant-1',
+    username: 'nguyenhuunhut1309@gmail.com',
+    fullName: 'Nguyễn Hữu Nhựt',
+    role: 'Family',
+    relationship: 'Con Cái',
+    phone: '0917795211',
+    idCard: '079198005678',
+    licensePlate: '59P1-886.79',
+    faceStatus: 'Đã Kích Hoạt FaceID',
+    avatarUrl: 'https://data.nks.vn/storage/users/202607191405195335.jpg',
+    addedDate: '15/01/2026',
+  },
+  {
+    id: 'user-member-1',
+    username: 'vanncuong1614@gmail.com',
+    fullName: 'Nguyễn Văn Cường',
+    role: 'Family',
+    relationship: 'Anh / Chị / Em',
+    phone: '0325524482',
+    idCard: '074204001708',
+    licensePlate: '51G-772.19',
+    faceStatus: 'Đã Kích Hoạt FaceID',
+    avatarUrl: 'https://data.nks.vn/storage/users/202608301345022366.jpg',
+    addedDate: '20/01/2026',
+  }
+];
 
 export function getApartmentMembers(aptCode: string): ApartmentMember[] {
   if (!globalScope.__NKS_FAMILY_STORE) {
@@ -428,7 +455,7 @@ export function getApartmentMembers(aptCode: string): ApartmentMember[] {
   }
   const normalizedKey = (!aptCode || aptCode === 'CH-06' || aptCode === '12A05' || aptCode === '12A5') ? 'CH-06' : aptCode.toUpperCase().trim();
   if (!globalScope.__NKS_FAMILY_STORE[normalizedKey]) {
-    globalScope.__NKS_FAMILY_STORE[normalizedKey] = [];
+    globalScope.__NKS_FAMILY_STORE[normalizedKey] = normalizedKey === 'CH-06' ? [...DEFAULT_CH06_MEMBERS] : [];
   }
   return globalScope.__NKS_FAMILY_STORE[normalizedKey] || [];
 }

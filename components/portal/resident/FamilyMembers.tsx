@@ -222,7 +222,7 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
   const fetchMembers = async () => {
     setIsLoading(true);
     try {
-      const res = await nksGetFamilyMembers();
+      const res = await nksGetFamilyMembers(aptCode);
       if (res.success) {
         if (res.members) {
           setMembers(res.members);
@@ -758,7 +758,7 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
           </p>
         </div>
 
-        {isOwner && (
+        {isOwner ? (
           <div className="flex items-center gap-2 flex-wrap">
             <button
               type="button"
@@ -791,8 +791,41 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
               <UserPlus className="w-4 h-4" /> {t('Thêm Thành Viên')}
             </button>
           </div>
+        ) : (
+          <div className="flex items-center gap-2 flex-wrap">
+            <button
+              type="button"
+              onClick={() => {
+                setBankEnrollTarget({
+                  id: currentUser.id,
+                  fullName: currentUser.full_name || 'Người Nhà',
+                  phone: currentUser.phone || '',
+                  email: currentUser.email || '',
+                  role: 'Family',
+                  relationship: currentUser.relationship || 'Người Nhà',
+                });
+              }}
+              className="px-3 py-2 bg-[#161D26] hover:bg-[#1E2631] border border-[#C5A880] text-[#C5A880] hover:text-white text-xs font-bold rounded-none flex items-center gap-1.5 transition-all shadow cursor-pointer active:scale-95"
+              title="Quét lại FaceID cá nhân"
+            >
+              <Camera className="w-3.5 h-3.5 text-[#C5A880]" />
+              <span>{t('Quét FaceID Của Tôi')}</span>
+            </button>
+          </div>
         )}
       </div>
+
+      {/* Info notice for Family Members */}
+      {!isOwner && (
+        <div className="p-3 bg-[#141B24] border border-[#C5A880]/30 text-gray-300 text-xs flex items-center gap-2.5 shadow">
+          <Info className="w-4 h-4 text-[#C5A880] flex-shrink-0" />
+          <span>
+            {isEn
+              ? 'Family Member Mode: You can view registered household members and update your personal FaceID / Citizen ID (Adding or removing members is reserved for the Owner).'
+              : 'Chế độ Người nhà: Quý cư dân có thể theo dõi danh sách thành viên trong căn hộ và quét FaceID cá nhân (Quyền thêm/xóa thành viên thuộc độc quyền của Chủ Hộ).'}
+          </span>
+        </div>
+      )}
 
       {/* Success Alerts */}
       {actionSuccess && (

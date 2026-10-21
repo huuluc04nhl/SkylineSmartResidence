@@ -176,7 +176,7 @@ function PortalContent() {
 
   const handleSemanticSearchSelect = (targetModuleId: string) => {
     // Check permission boundary before switching
-    if (currentUser.role === 'TENANT' && (targetModuleId === 'resident-finance' || targetModuleId === 'resident-family')) {
+    if (currentUser.role === 'TENANT' && targetModuleId === 'resident-finance') {
       setActiveModule(targetModuleId); // Will render Access Denied Screen inside viewport
       return;
     }
