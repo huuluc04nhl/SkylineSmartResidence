@@ -29,11 +29,6 @@ export default function Footer() {
             }`}>
               {t('Dự án Chung Cư Cao Cấp Skyline & Hệ thống Quản trị Vận hành Thông minh Tự động hóa.', 'Skyline Luxury Smart Residence & Automated Operations Management System.')}
             </p>
-            <div className={`text-[11px] ${
-              isDark ? 'text-gray-400' : 'text-gray-700'
-            }`}>
-              {t('Phát triển bởi:')} <strong className={isDark ? 'text-white' : 'text-gray-900'}>Trần Hữu Lực</strong>
-            </div>
           </div>
 
           {/* Col 2 */}
