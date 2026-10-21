@@ -271,15 +271,19 @@ export default function SurveysVoting({ currentUser }: SurveysVotingProps) {
     }
   };
 
-  // Handle Open AI Sentiment Report Modal
+  // Handle Open AI Sentiment Report Modal (Admin / Management only)
   const handleOpenReportModal = async () => {
+    if (!isAdmin) {
+      showToast(isEn ? 'This analytics report is reserved for Building Management.' : 'Báo cáo quản trị này dành riêng cho Ban Quản Lý.', 'error');
+      return;
+    }
     setIsReportModalOpen(true);
     setIsLoadingReport(true);
     try {
       const rep = await fetchCommunitySentimentReport();
       setSentimentReport(rep);
     } catch {
-      showToast('Lỗi khi tải báo cáo cảm xúc AI', 'error');
+      showToast('Lỗi khi tải báo cáo.', 'error');
     } finally {
       setIsLoadingReport(false);
     }
@@ -430,14 +434,16 @@ export default function SurveysVoting({ currentUser }: SurveysVotingProps) {
           </div>
 
           <div className="flex items-center gap-2.5 flex-wrap">
-            {/* AI Sentiment Report Button */}
-            <button
-              onClick={handleOpenReportModal}
-              className="px-4 py-3 bg-[#141B24] hover:bg-[#1E293B] border border-[#C5A880]/40 text-[#C5A880] hover:text-white font-bold text-xs uppercase tracking-wider transition-all duration-200 flex items-center gap-2 shadow-md"
-            >
-              <BarChart3 className="w-4 h-4 text-[#C5A880]" />
-              <span>{t('Báo Cáo Cảm Xúc AI')}</span>
-            </button>
+            {/* Management Analytics Report Button (Admin Only) */}
+            {isAdmin && (
+              <button
+                onClick={handleOpenReportModal}
+                className="px-4 py-3 bg-[#141B24] hover:bg-[#1E293B] border border-[#C5A880]/40 text-[#C5A880] hover:text-white font-bold text-xs uppercase tracking-wider transition-all duration-200 flex items-center gap-2 shadow-md"
+              >
+                <BarChart3 className="w-4 h-4 text-[#C5A880]" />
+                <span>{isEn ? 'Management Sentiment Report' : 'Báo Cáo Cảm Xúc BQL'}</span>
+              </button>
+            )}
 
             {/* Create Post Button */}
             <button
@@ -491,8 +497,12 @@ export default function SurveysVoting({ currentUser }: SurveysVotingProps) {
               <ShieldCheck className="w-4 h-4" />
             </div>
             <div>
-              <div className="text-[10px] text-gray-400 uppercase tracking-wider">{t('AI Cảm Xúc Hài Lòng')}</div>
-              <div className="text-lg font-serif font-bold text-emerald-400 font-mono">{stats.positiveRate}%</div>
+              <div className="text-[10px] text-gray-400 uppercase tracking-wider">
+                {isAdmin ? t('Chỉ Số Hài Lòng BQL') : t('Chuẩn Sống Văn Minh')}
+              </div>
+              <div className="text-lg font-serif font-bold text-emerald-400 font-mono">
+                {isAdmin ? `${stats.positiveRate}%` : '100%'}
+              </div>
             </div>
           </div>
         </div>
@@ -1510,8 +1520,8 @@ export default function SurveysVoting({ currentUser }: SurveysVotingProps) {
         </div>
       )}
 
-      {/* MODAL: AI COMMUNITY SENTIMENT REPORT */}
-      {isReportModalOpen && (
+      {/* MODAL: AI COMMUNITY SENTIMENT REPORT (Admin Only) */}
+      {isAdmin && isReportModalOpen && (
         <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
           <div className="bg-[#0E131B] border border-[#C5A880] max-w-2xl w-full p-6 space-y-5 shadow-2xl relative my-8">
             <button
