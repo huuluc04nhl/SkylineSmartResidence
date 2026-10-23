@@ -67,6 +67,14 @@ import BankFaceEnrollModal from './BankFaceEnrollModal';
 import { getEnrolledFaceProfile, EnrolledFaceProfile } from '@/lib/faceEnrollStore';
 import AccountPasswordSection from '@/components/portal/shared/AccountPasswordSection';
 import { useLanguage } from '@/lib/languageContext';
+import { 
+  cleanPhoneNumber, 
+  isValidPhoneNumber, 
+  getPhoneValidationError, 
+  cleanCccdNumber, 
+  isValidCccdNumber, 
+  getCccdValidationError 
+} from '@/lib/validationUtils';
 
 interface ProfileEkycProps {
   currentUser: User;
@@ -253,9 +261,25 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
   // 1. Submit Update Profile Info to NKS API (POST /api/nks/user/updateInfo + updateCccd)
   const handleSaveInfo = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsSaving(true);
     setSaveError(null);
     setSavedSuccess(false);
+
+    // Bẫy dữ liệu số điện thoại & CCCD
+    const phoneErr = getPhoneValidationError(phone);
+    if (phoneErr) {
+      setSaveError(phoneErr);
+      return;
+    }
+
+    if (idCardNumber && idCardNumber.trim()) {
+      const cccdErr = getCccdValidationError(idCardNumber);
+      if (cccdErr) {
+        setSaveError(cccdErr);
+        return;
+      }
+    }
+
+    setIsSaving(true);
 
     try {
       const parts = fullName.trim().split(' ');
@@ -479,6 +503,15 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
       setEkycFeedback({
         type: 'warning',
         message: 'Vui lòng hoàn tất quét thẻ Căn cước công dân (đủ 2 mặt trước/sau và 12 số CCCD) trước khi chốt hồ sơ gửi Ban Quản Lý.'
+      });
+      return;
+    }
+
+    const cccdErr = getCccdValidationError(idCardNumber);
+    if (cccdErr) {
+      setEkycFeedback({
+        type: 'warning',
+        message: cccdErr
       });
       return;
     }
@@ -776,7 +809,7 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
           )}
 
           {/* ========================================================= */}
-          {/* KHỐI 1: THÔNG TIN CĂN HỘ & CƯ DÂN                         */}
+          {/* KHỐI 1: THÔNG TIN CĂN HỘ & CƯ DÂN (CỐ ĐỊNH THEO BQL)       */}
           {/* ========================================================= */}
           <div className="p-4 sm:p-6 bg-[#161D26] border border-[#2D3748] rounded-none space-y-4 sm:space-y-5 shadow-lg">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#222B35] pb-3 sm:pb-4">
@@ -784,13 +817,25 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
                 <div className="text-[10px] uppercase tracking-wider text-[#C5A880] font-bold flex items-center gap-1.5 font-mono">
                   <Building className="w-3.5 h-3.5" /> {t('Không Gian Cư Trú')}
                 </div>
-                <h3 className="font-serif text-base sm:text-lg font-bold text-white mt-0.5">
+                <h3 className="font-serif text-base sm:text-lg font-bold text-white mt-0.5 flex items-center gap-2">
                   1. {t('Thông Tin Căn Hộ & Cư Dân')}
+                  <span className="text-[10px] px-2 py-0.5 bg-[#0D1117] text-[#C5A880] border border-[#C5A880]/30 font-mono font-normal">
+                    {t('Hồ sơ BQL bàn giao')}
+                  </span>
                 </h3>
               </div>
               <span className="px-2.5 py-1 bg-[#121820] text-[#C5A880] border border-[#263140] text-xs font-mono rounded-none">
                 {t('Căn hộ')} {aptCode} • The Tropical
               </span>
+            </div>
+
+            {/* Thông báo khóa hồ sơ bàn giao BQL */}
+            <div className="p-3 bg-[#0D1117] border border-[#C5A880]/30 rounded-none flex items-start gap-2.5 text-xs">
+              <Lock className="w-4 h-4 text-[#C5A880] shrink-0 mt-0.5" />
+              <div className="text-gray-300 leading-relaxed text-[11px] sm:text-xs">
+                <span className="font-semibold text-[#C5A880] block sm:inline">{t('Thông tin pháp lý được khóa cố định:')} </span>
+                {t('Dữ liệu căn hộ và cư dân được Ban Quản Lý thiết lập cố định theo biên bản bàn giao căn hộ. Cư dân không thể tự ý sửa đổi. Nếu cần điều chỉnh hoặc đính chính thông tin nhân khẩu, Quý cư dân vui lòng liên hệ Ban Quản Lý tại Tầng 1 sảnh The Tropical (Hotline: 1900 8899).')}
+              </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4 text-xs">
@@ -830,45 +875,57 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
                 />
               </div>
 
-              {/* Field: Họ và Tên */}
+              {/* Field: Họ và Tên (Khóa cố định theo BQL) */}
               <div className="space-y-1.5">
-                <label className="text-gray-300 flex items-center gap-1.5 font-semibold">
-                  <UserIcon className="w-3.5 h-3.5 text-[#C5A880]" /> {t('Họ và Tên:')}
+                <label className="text-gray-300 flex items-center justify-between font-semibold">
+                  <span className="flex items-center gap-1.5">
+                    <UserIcon className="w-3.5 h-3.5 text-[#C5A880]" /> {t('Họ và Tên:')}
+                  </span>
+                  <span className="text-[10px] text-gray-500 font-mono flex items-center gap-1">
+                    <Lock className="w-2.5 h-2.5" /> {t('Cố định (BQL thiết lập)')}
+                  </span>
                 </label>
                 <input
                   type="text"
                   value={fullName}
-                  onChange={(e) => setFullName(e.target.value)}
-                  className="w-full bg-[#161B22] border border-[#2D3748] p-2.5 sm:p-3 text-white font-semibold focus:outline-none focus:border-[#C5A880] transition-colors rounded-none"
-                  required
+                  readOnly
+                  className="w-full bg-[#0D1117] border border-[#263140] p-2.5 sm:p-3 text-gray-200 font-semibold rounded-none cursor-not-allowed select-all"
                 />
               </div>
 
-              {/* Field: Giới Tính */}
+              {/* Field: Giới Tính (Khóa cố định theo BQL) */}
               <div className="space-y-1.5">
-                <label className="text-gray-300 flex items-center gap-1.5 font-semibold">
-                  <UserIcon className="w-3.5 h-3.5 text-[#C5A880]" /> {t('Giới Tính:')}
-                </label>
-                <select
-                  value={gender}
-                  onChange={(e) => setGender(e.target.value as '1' | '0')}
-                  className="w-full bg-[#161B22] border border-[#2D3748] p-2.5 sm:p-3 text-white focus:outline-none focus:border-[#C5A880] transition-colors rounded-none"
-                >
-                  <option value="1">{t('Nam')}</option>
-                  <option value="0">{t('Nữ')}</option>
-                </select>
-              </div>
-
-              {/* Field: Ngày Sinh */}
-              <div className="space-y-1.5 md:col-span-2">
-                <label className="text-gray-300 flex items-center gap-1.5 font-semibold">
-                  <Calendar className="w-3.5 h-3.5 text-[#C5A880]" /> {t('Ngày Sinh:')}
+                <label className="text-gray-300 flex items-center justify-between font-semibold">
+                  <span className="flex items-center gap-1.5">
+                    <UserIcon className="w-3.5 h-3.5 text-[#C5A880]" /> {t('Giới Tính:')}
+                  </span>
+                  <span className="text-[10px] text-gray-500 font-mono flex items-center gap-1">
+                    <Lock className="w-2.5 h-2.5" /> {t('Cố định (BQL thiết lập)')}
+                  </span>
                 </label>
                 <input
-                  type="date"
-                  value={formatToApiDate(birthday)}
-                  onChange={(e) => setBirthday(e.target.value)}
-                  className="w-full bg-[#161B22] border border-[#2D3748] p-2.5 sm:p-3 font-mono text-white focus:outline-none focus:border-[#C5A880] transition-colors rounded-none"
+                  type="text"
+                  value={gender === '1' ? t('Nam') : t('Nữ')}
+                  readOnly
+                  className="w-full bg-[#0D1117] border border-[#263140] p-2.5 sm:p-3 text-gray-200 font-semibold rounded-none cursor-not-allowed"
+                />
+              </div>
+
+              {/* Field: Ngày Sinh (Khóa cố định theo BQL) */}
+              <div className="space-y-1.5 md:col-span-2">
+                <label className="text-gray-300 flex items-center justify-between font-semibold">
+                  <span className="flex items-center gap-1.5">
+                    <Calendar className="w-3.5 h-3.5 text-[#C5A880]" /> {t('Ngày Sinh:')}
+                  </span>
+                  <span className="text-[10px] text-gray-500 font-mono flex items-center gap-1">
+                    <Lock className="w-2.5 h-2.5" /> {t('Cố định (BQL thiết lập)')}
+                  </span>
+                </label>
+                <input
+                  type="text"
+                  value={formatToDisplayDate(birthday) || birthday || t('Chưa cập nhật')}
+                  readOnly
+                  className="w-full bg-[#0D1117] border border-[#263140] p-2.5 sm:p-3 font-mono text-gray-200 rounded-none cursor-not-allowed"
                 />
               </div>
             </div>
@@ -895,17 +952,30 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-5 text-xs">
               {/* Field: Số Điện Thoại */}
               <div className="space-y-1.5">
-                <label className="text-gray-300 flex items-center gap-1.5 font-semibold">
-                  <Smartphone className="w-3.5 h-3.5 text-[#C5A880]" /> {isEn ? 'Phone Number (Receive OTP):' : <>Số Điện Thoại <span className="hidden sm:inline">Liên Hệ (Nhận OTP)</span>:</>}
+                <label className="text-gray-300 flex items-center justify-between font-semibold">
+                  <span className="flex items-center gap-1.5">
+                    <Smartphone className="w-3.5 h-3.5 text-[#C5A880]" /> {isEn ? 'Phone Number (Receive OTP):' : <>Số Điện Thoại <span className="hidden sm:inline">Liên Hệ (Nhận OTP)</span>:</>}
+                  </span>
+                  <span className="text-[10px] text-gray-400 font-mono">10 số (03/05/07/08/09)</span>
                 </label>
                 <input
                   type="tel"
                   value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                  placeholder={isEn ? 'Enter phone number...' : 'Nhập số điện thoại...'}
-                  className="w-full bg-[#161B22] border border-[#2D3748] p-2.5 sm:p-3 text-white font-mono focus:outline-none focus:border-[#C5A880] transition-colors rounded-none"
+                  onChange={(e) => setPhone(cleanPhoneNumber(e.target.value))}
+                  placeholder={isEn ? 'Enter phone number (10 digits)...' : 'Nhập số điện thoại (10 số)...'}
+                  maxLength={10}
+                  className={`w-full bg-[#161B22] border p-2.5 sm:p-3 text-white font-mono focus:outline-none transition-colors rounded-none ${
+                    phone && !isValidPhoneNumber(phone)
+                      ? 'border-amber-500/70 focus:border-amber-500'
+                      : 'border-[#2D3748] focus:border-[#C5A880]'
+                  }`}
                   required
                 />
+                {phone && !isValidPhoneNumber(phone) && (
+                  <span className="text-[10.5px] text-amber-400 font-mono block">
+                    {getPhoneValidationError(phone)}
+                  </span>
+                )}
               </div>
 
               {/* Field: Email */}
@@ -1100,8 +1170,9 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
                 <input
                   type="text"
                   value={idCardNumber}
-                  onChange={(e) => setIdCardNumber(e.target.value)}
+                  onChange={(e) => setIdCardNumber(cleanCccdNumber(e.target.value))}
                   placeholder={isEn ? 'Not scanned yet' : 'Chưa quét CCCD'}
+                  maxLength={12}
                   className="w-full bg-transparent text-emerald-300 font-mono font-bold focus:outline-none text-xs sm:text-sm"
                 />
               </div>

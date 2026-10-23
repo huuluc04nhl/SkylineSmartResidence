@@ -33,6 +33,7 @@ import {
 } from '@/lib/ocrParser';
 import { nksUpdateCccd } from '@/lib/nksApiClient';
 import { useLanguage } from '@/lib/languageContext';
+import { cleanCccdNumber, isValidCccdNumber, getCccdValidationError } from '@/lib/validationUtils';
 
 interface CccdOcrScannerModalProps {
   isOpen: boolean;
@@ -315,10 +316,16 @@ export default function CccdOcrScannerModal({
   const handleApply = async () => {
     if (!ocrResult) return;
 
+    const cccdErr = getCccdValidationError(editIdNumber);
+    if (cccdErr) {
+      setErrorMessage(cccdErr);
+      return;
+    }
+
     setIsSyncingApi(true);
     const finalResult: OcrCccdResult = {
       ...ocrResult,
-      idNumber: editIdNumber.trim().replace(/\D/g, '').slice(0, 12),
+      idNumber: cleanCccdNumber(editIdNumber),
       fullName: editFullName.trim().toUpperCase(),
       dob: formatToDateInput(editDob),
       gender: editGender,
@@ -654,8 +661,9 @@ export default function CccdOcrScannerModal({
                 <label className="text-[10px] text-gray-400 font-mono font-semibold">{t('1. Số Căn cước công dân:')}</label>
                 <input
                   type="text"
+                  maxLength={12}
                   value={editIdNumber}
-                  onChange={(e) => setEditIdNumber(e.target.value)}
+                  onChange={(e) => setEditIdNumber(cleanCccdNumber(e.target.value))}
                   className="w-full bg-[#0D1117] border border-gray-700 p-2 text-[#C5A880] font-mono font-bold rounded-none focus:border-[#C5A880] outline-none"
                   placeholder="12 số định danh..."
                 />

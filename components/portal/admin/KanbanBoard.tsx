@@ -73,6 +73,7 @@ import {
 } from '@/lib/ticketClassification';
 import { fileToBase64 } from '@/lib/imageUtils';
 import { useLanguage } from '@/lib/languageContext';
+import { cleanPhoneNumber, isValidPhoneNumber, getPhoneValidationError } from '@/lib/validationUtils';
 
 export default function KanbanBoard() {
   const { t, isEn, language } = useLanguage();
@@ -344,6 +345,10 @@ export default function KanbanBoard() {
     e.preventDefault();
     if (!newContent.trim()) {
       alert('Vui lòng nhập mô tả sự cố hoặc yêu cầu!');
+      return;
+    }
+    if (newResidentPhone.trim() && newResidentPhone.trim() !== '1900 8899' && !isValidPhoneNumber(newResidentPhone)) {
+      alert(getPhoneValidationError(newResidentPhone) || 'Số điện thoại liên hệ không hợp lệ!');
       return;
     }
     setIsSubmittingNewTicket(true);
@@ -1682,14 +1687,20 @@ export default function KanbanBoard() {
                 />
               </div>
               <div className="space-y-1">
-                <label className="text-xs text-gray-400">{t('Số Điện Thoại Liên Hệ:', 'Phone Number:')}</label>
+                <label className="text-xs text-gray-400">{t('Số Điện Thoại Liên Hệ (10 số):', 'Phone Number (10 digits):')}</label>
                 <input
-                  type="text"
+                  type="tel"
+                  maxLength={10}
                   value={newResidentPhone}
-                  onChange={(e) => setNewResidentPhone(e.target.value)}
-                  placeholder="0912 345 678"
+                  onChange={(e) => setNewResidentPhone(cleanPhoneNumber(e.target.value))}
+                  placeholder="0912345678"
                   className="w-full bg-[#141B24] border border-[#222B35] focus:border-[#C5A880] text-xs text-white p-2 rounded-none outline-none font-mono"
                 />
+                {newResidentPhone && newResidentPhone !== '1900 8899' && !isValidPhoneNumber(newResidentPhone) && (
+                  <span className="text-[10px] text-amber-400 font-mono block">
+                    {getPhoneValidationError(newResidentPhone)}
+                  </span>
+                )}
               </div>
             </div>
 

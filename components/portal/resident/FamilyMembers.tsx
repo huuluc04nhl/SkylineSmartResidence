@@ -58,6 +58,14 @@ import { OcrCccdResult, formatToDateInput } from '@/lib/ocrParser';
 import BankFaceEnrollModal from './BankFaceEnrollModal';
 import { getEnrolledFaceProfile } from '@/lib/faceEnrollStore';
 import { useLanguage } from '@/lib/languageContext';
+import { 
+  cleanPhoneNumber, 
+  isValidPhoneNumber, 
+  getPhoneValidationError, 
+  cleanCccdNumber, 
+  isValidCccdNumber, 
+  getCccdValidationError 
+} from '@/lib/validationUtils';
 
 export interface FamilyMemberItem {
   id: string;
@@ -470,12 +478,14 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
       setEkycModalError('Vui lòng nhập đầy đủ họ và tên người nhà.');
       return;
     }
-    if (!ekycPhone.trim()) {
-      setEkycModalError('Vui lòng nhập số điện thoại liên hệ của người nhà.');
+    const phoneErr = getPhoneValidationError(ekycPhone);
+    if (phoneErr) {
+      setEkycModalError(phoneErr);
       return;
     }
-    if (!ekycIdCard.trim() || ekycIdCard.trim().length < 9) {
-      setEkycModalError('Số CCCD không hợp lệ (yêu cầu từ 9 đến 12 chữ số).');
+    const cccdErr = getCccdValidationError(ekycIdCard);
+    if (cccdErr) {
+      setEkycModalError(cccdErr);
       return;
     }
 
@@ -751,9 +761,17 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
       setActionError('Vui lòng nhập đầy đủ họ và tên người thân.');
       return;
     }
-    if (!directPhone.trim() || directPhone.trim().length < 9) {
-      setActionError('Vui lòng nhập số điện thoại hợp lệ (tối thiểu 9 chữ số).');
+    const phoneErr = getPhoneValidationError(directPhone);
+    if (phoneErr) {
+      setActionError(phoneErr);
       return;
+    }
+    if (directIdCard && directIdCard.trim()) {
+      const cccdErr = getCccdValidationError(directIdCard);
+      if (cccdErr) {
+        setActionError(cccdErr);
+        return;
+      }
     }
 
     setIsSubmitting(true);
@@ -1379,16 +1397,22 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
 
                   <div>
                     <label className="text-gray-300 font-semibold block mb-1">
-                      Số Điện Thoại Liên Hệ: *
+                      Số Điện Thoại Liên Hệ (10 số): *
                     </label>
                     <input
                       type="tel"
                       required
+                      maxLength={10}
                       value={ekycPhone}
-                      onChange={(e) => setEkycPhone(e.target.value)}
+                      onChange={(e) => setEkycPhone(cleanPhoneNumber(e.target.value))}
                       placeholder="0917795211"
                       className="w-full bg-[#161B22] border border-[#2D3748] p-2.5 text-white font-mono rounded-none focus:border-[#C5A880] outline-none"
                     />
+                    {ekycPhone && !isValidPhoneNumber(ekycPhone) && (
+                      <span className="text-[10px] text-amber-400 font-mono mt-1 block">
+                        {getPhoneValidationError(ekycPhone)}
+                      </span>
+                    )}
                   </div>
 
                   <div>
@@ -1400,10 +1424,15 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
                       required
                       maxLength={12}
                       value={ekycIdCard}
-                      onChange={(e) => setEkycIdCard(e.target.value)}
+                      onChange={(e) => setEkycIdCard(cleanCccdNumber(e.target.value))}
                       placeholder="VD: 079198005678"
                       className="w-full bg-[#161B22] border border-[#2D3748] p-2.5 text-[#C5A880] font-mono font-bold rounded-none focus:border-[#C5A880] outline-none"
                     />
+                    {ekycIdCard && !isValidCccdNumber(ekycIdCard) && (
+                      <span className="text-[10px] text-amber-400 font-mono mt-1 block">
+                        {getCccdValidationError(ekycIdCard)}
+                      </span>
+                    )}
                   </div>
 
                   <div>
@@ -2088,16 +2117,22 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
 
                   <div>
                     <label className="text-gray-300 font-medium block mb-1">
-                      Số Điện Thoại <span className="text-rose-400">*</span>
+                      Số Điện Thoại (10 số) <span className="text-rose-400">*</span>
                     </label>
                     <input
                       type="tel"
                       required
+                      maxLength={10}
                       value={directPhone}
-                      onChange={(e) => setDirectPhone(e.target.value)}
+                      onChange={(e) => setDirectPhone(cleanPhoneNumber(e.target.value))}
                       placeholder="VD: 0912345678"
                       className="w-full bg-[#161B22] border border-[#2D3748] p-2 text-white font-mono rounded-none focus:border-[#C5A880] outline-none"
                     />
+                    {directPhone && !isValidPhoneNumber(directPhone) && (
+                      <span className="text-[10px] text-amber-400 font-mono mt-1 block">
+                        {getPhoneValidationError(directPhone)}
+                      </span>
+                    )}
                   </div>
 
                   <div>
@@ -2121,15 +2156,21 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
 
                   <div>
                     <label className="text-gray-300 font-medium block mb-1">
-                      Số CCCD
+                      Số CCCD (12 số)
                     </label>
                     <input
                       type="text"
+                      maxLength={12}
                       value={directIdCard}
-                      onChange={(e) => setDirectIdCard(e.target.value)}
+                      onChange={(e) => setDirectIdCard(cleanCccdNumber(e.target.value))}
                       placeholder="VD: 079198001234"
                       className="w-full bg-[#161B22] border border-[#2D3748] p-2 text-white font-mono rounded-none focus:border-[#C5A880] outline-none"
                     />
+                    {directIdCard && !isValidCccdNumber(directIdCard) && (
+                      <span className="text-[10px] text-amber-400 font-mono mt-1 block">
+                        {getCccdValidationError(directIdCard)}
+                      </span>
+                    )}
                   </div>
 
                   <div className="sm:col-span-2">

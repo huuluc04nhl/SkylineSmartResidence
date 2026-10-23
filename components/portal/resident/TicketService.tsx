@@ -45,6 +45,7 @@ import {
 import { TicketCategoryType, findInquiryAnswer } from '@/lib/ticketClassification';
 import { fileToBase64, compressImageFile } from '@/lib/imageUtils';
 import { useLanguage } from '@/lib/languageContext';
+import { cleanPhoneNumber, isValidPhoneNumber, getPhoneValidationError } from '@/lib/validationUtils';
 
 export interface RepairPreset {
   id: string;
@@ -415,6 +416,10 @@ export default function TicketService({ currentUser }: TicketServiceProps) {
     e.preventDefault();
     if (!content.trim()) {
       alert('Vui lòng nhập mô tả sự cố hoặc chạm chọn một gợi ý nhanh bên trên.');
+      return;
+    }
+    if (contactPhone.trim() && !isValidPhoneNumber(contactPhone)) {
+      alert(getPhoneValidationError(contactPhone) || 'Số điện thoại liên hệ không hợp lệ!');
       return;
     }
     if (isSubmitting) return;
@@ -802,16 +807,25 @@ export default function TicketService({ currentUser }: TicketServiceProps) {
 
               {/* SĐT liên hệ */}
               <div className="space-y-1">
-                <label className="text-[11px] text-gray-300 font-medium flex items-center gap-1">
-                  <Phone className="w-3 h-3 text-[#C5A880]" /> {isEn ? 'On-site contact phone:' : 'SĐT người ở nhà:'}
+                <label className="text-[11px] text-gray-300 font-medium flex items-center justify-between">
+                  <span className="flex items-center gap-1">
+                    <Phone className="w-3 h-3 text-[#C5A880]" /> {isEn ? 'On-site contact phone:' : 'SĐT người ở nhà:'}
+                  </span>
+                  <span className="text-[10px] text-gray-400 font-mono">10 số</span>
                 </label>
                 <input
                   type="tel"
+                  maxLength={10}
                   value={contactPhone}
-                  onChange={(e) => setContactPhone(e.target.value)}
-                  placeholder={isEn ? "Enter contact phone for technician..." : "Nhập SĐT tiếp thợ..."}
-                  className="w-full bg-[#161B22] border border-[#2D3748] text-xs text-white p-1.5 focus:outline-none focus:border-[#C5A880]"
+                  onChange={(e) => setContactPhone(cleanPhoneNumber(e.target.value))}
+                  placeholder={isEn ? "Enter contact phone for technician (10 digits)..." : "Nhập 10 số SĐT tiếp thợ..."}
+                  className="w-full bg-[#161B22] border border-[#2D3748] text-xs text-white p-1.5 focus:outline-none focus:border-[#C5A880] font-mono"
                 />
+                {contactPhone && !isValidPhoneNumber(contactPhone) && (
+                  <span className="text-[10px] text-amber-400 font-mono block">
+                    {getPhoneValidationError(contactPhone)}
+                  </span>
+                )}
               </div>
             </div>
           )}

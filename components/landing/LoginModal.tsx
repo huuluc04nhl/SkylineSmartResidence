@@ -36,6 +36,7 @@ import { useAuth } from '@/lib/authContext';
 import { useLanguage } from '@/lib/languageContext';
 import LanguageSwitcher from '@/components/shared/LanguageSwitcher';
 import { analyzeVideoLighting, LightingAnalysisResult, extractDescriptorFromPixels } from '@/lib/biometricFaceEngine';
+import { cleanPhoneNumber, isValidPhoneNumber, getPhoneValidationError } from '@/lib/validationUtils';
 
 interface LoginModalProps {
   isOpen: boolean;
@@ -175,9 +176,10 @@ export default function LoginModal({ isOpen, onClose, defaultAccount = '' }: Log
 
   // 2. Handle Send Phone OTP
   const handleSendOtp = () => {
-    const cleanPhone = phone.trim().replace(/\s+/g, '');
-    if (!cleanPhone || cleanPhone.length < 9) {
-      setErrorMessage('Vui lòng nhập chính xác số điện thoại đã đăng ký với Ban Quản Lý!');
+    const cleanPhone = cleanPhoneNumber(phone);
+    const phoneErr = getPhoneValidationError(cleanPhone);
+    if (phoneErr) {
+      setErrorMessage(phoneErr);
       return;
     }
     setErrorMessage(null);
@@ -753,9 +755,10 @@ export default function LoginModal({ isOpen, onClose, defaultAccount = '' }: Log
               <div className="flex gap-2">
                 <input
                   type="tel"
+                  maxLength={10}
                   value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                  placeholder={t('Nhập số điện thoại (VD: 0364967082)')}
+                  onChange={(e) => setPhone(cleanPhoneNumber(e.target.value))}
+                  placeholder={t('Nhập số điện thoại 10 số (VD: 0364967082)')}
                   className="flex-1 bg-[#161B22] border border-[#2D3748] p-2.5 text-white text-xs font-mono rounded-none focus:outline-none focus:border-[#C5A880]"
                   required
                 />

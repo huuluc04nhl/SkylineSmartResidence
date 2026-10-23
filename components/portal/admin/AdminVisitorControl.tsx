@@ -58,6 +58,7 @@ import {
   clearAllVisitorData
 } from '@/lib/visitorStore';
 import { getApartmentUnits } from '@/lib/apartmentStore';
+import { cleanPhoneNumber, isValidPhoneNumber, getPhoneValidationError } from '@/lib/validationUtils';
 
 export type VisitorTab = 'LIST' | 'SCANNER' | 'AUDIT_LOGS';
 
@@ -357,6 +358,10 @@ export default function AdminVisitorControl() {
     e.preventDefault();
     if (!newPassVisitorName.trim()) {
       showFeedback('Vui lòng nhập tên khách thăm!', 'error');
+      return;
+    }
+    if (newPassVisitorPhone.trim() && !isValidPhoneNumber(newPassVisitorPhone)) {
+      showFeedback(getPhoneValidationError(newPassVisitorPhone) || 'Số điện thoại khách không hợp lệ!', 'error');
       return;
     }
 
@@ -1624,15 +1629,21 @@ export default function AdminVisitorControl() {
                   </div>
                   <div>
                     <label className="text-gray-300 font-medium block mb-1">
-                      Số Điện Thoại Khách:
+                      Số Điện Thoại Khách (10 số):
                     </label>
                     <input
-                      type="text"
+                      type="tel"
+                      maxLength={10}
                       value={newPassVisitorPhone}
-                      onChange={(e) => setNewPassVisitorPhone(e.target.value)}
-                      placeholder="VD: 0912.345.678"
-                      className="w-full bg-[#161B22] border border-[#2D3748] text-white p-2.5 outline-none focus:border-[#C5A880]"
+                      onChange={(e) => setNewPassVisitorPhone(cleanPhoneNumber(e.target.value))}
+                      placeholder="VD: 0912345678"
+                      className="w-full bg-[#161B22] border border-[#2D3748] text-white p-2.5 outline-none focus:border-[#C5A880] font-mono"
                     />
+                    {newPassVisitorPhone && !isValidPhoneNumber(newPassVisitorPhone) && (
+                      <span className="text-[10px] text-amber-400 font-mono mt-0.5 block">
+                        {getPhoneValidationError(newPassVisitorPhone)}
+                      </span>
+                    )}
                   </div>
                 </div>
 

@@ -35,6 +35,14 @@ import {
   assignApartmentResident 
 } from '@/lib/apartmentStore';
 import { nksHandoverProvisionAccount } from '@/lib/nksApiClient';
+import { 
+  cleanPhoneNumber, 
+  isValidPhoneNumber, 
+  getPhoneValidationError, 
+  cleanCccdNumber, 
+  isValidCccdNumber, 
+  getCccdValidationError 
+} from '@/lib/validationUtils';
 
 interface AssignResidentModalProps {
   isOpen: boolean;
@@ -141,13 +149,15 @@ export default function AssignResidentModal({
       setActiveFormTab('RESIDENT');
       return;
     }
-    if (!phone.trim()) {
-      setError('Vui lòng nhập số điện thoại liên hệ của chủ hộ.');
+    const phoneErr = getPhoneValidationError(phone);
+    if (phoneErr) {
+      setError(phoneErr);
       setActiveFormTab('RESIDENT');
       return;
     }
-    if (!cccd.trim() || cccd.trim().length < 9) {
-      setError('Vui lòng nhập số thẻ CCCD hợp lệ (9 đến 12 số).');
+    const cccdErr = getCccdValidationError(cccd);
+    if (cccdErr) {
+      setError(cccdErr);
       setActiveFormTab('RESIDENT');
       return;
     }
@@ -330,37 +340,50 @@ export default function AssignResidentModal({
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
                       <label className="block text-gray-300 font-semibold mb-1">
-                        {t('Số điện thoại liên hệ', 'Contact Phone Number')} <span className="text-rose-400">*</span>
+                        {t('Số điện thoại liên hệ (10 số)', 'Contact Phone Number (10 digits)')} <span className="text-rose-400">*</span>
                       </label>
                       <input
-                        type="text"
+                        type="tel"
+                        maxLength={10}
                         value={phone}
-                        onChange={(e) => setPhone(e.target.value)}
+                        onChange={(e) => setPhone(cleanPhoneNumber(e.target.value))}
                         placeholder="VD: 0364967082"
                         className="w-full bg-[#161B22] border border-[#2D3748] px-3 py-2 text-white font-mono rounded-none focus:outline-none focus:border-[#C5A880]"
                         required
                       />
-                      <span className="text-[10.5px] text-gray-400 mt-0.5 block">
-                        {t('Dùng làm tài khoản đăng nhập Cổng Cư Dân', 'Used as Resident Portal login account')}
-                      </span>
+                      {phone && !isValidPhoneNumber(phone) ? (
+                        <span className="text-[10px] text-amber-400 font-mono mt-0.5 block">
+                          {getPhoneValidationError(phone)}
+                        </span>
+                      ) : (
+                        <span className="text-[10.5px] text-gray-400 mt-0.5 block">
+                          {t('Dùng làm tài khoản đăng nhập Cổng Cư Dân', 'Used as Resident Portal login account')}
+                        </span>
+                      )}
                     </div>
 
                     <div>
                       <label className="block text-gray-300 font-semibold mb-1">
-                        {t('Số CCCD / Hộ chiếu (12 số)', 'Citizen ID / Passport No (12 digits)')} <span className="text-rose-400">*</span>
+                        {t('Số CCCD (12 số)', 'Citizen ID No (12 digits)')} <span className="text-rose-400">*</span>
                       </label>
                       <input
                         type="text"
                         value={cccd}
-                        onChange={(e) => setCccd(e.target.value)}
+                        onChange={(e) => setCccd(cleanCccdNumber(e.target.value))}
                         placeholder="VD: 079204001234"
                         maxLength={12}
                         className="w-full bg-[#161B22] border border-[#2D3748] px-3 py-2 text-white font-mono rounded-none focus:outline-none focus:border-[#C5A880]"
                         required
                       />
-                      <span className="text-[10.5px] text-gray-400 mt-0.5 block">
-                        {t('Dùng để xác thực danh tính cư dân', 'Used for resident identity verification')}
-                      </span>
+                      {cccd && !isValidCccdNumber(cccd) ? (
+                        <span className="text-[10px] text-amber-400 font-mono mt-0.5 block">
+                          {getCccdValidationError(cccd)}
+                        </span>
+                      ) : (
+                        <span className="text-[10.5px] text-gray-400 mt-0.5 block">
+                          {t('Dùng để xác thực danh tính cư dân', 'Used for resident identity verification')}
+                        </span>
+                      )}
                     </div>
                   </div>
 

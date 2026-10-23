@@ -43,6 +43,7 @@ import {
 } from '@/lib/visitorStore';
 import { User as UserType } from '@/lib/dataStore';
 import { useLanguage } from '@/lib/languageContext';
+import { cleanPhoneNumber, isValidPhoneNumber, getPhoneValidationError } from '@/lib/validationUtils';
 
 // Custom Zalo Brand Icon
 const ZaloIcon = ({ className = "w-4 h-4" }: { className?: string }) => (
@@ -135,6 +136,10 @@ export default function VisitorQrModal({
     e.preventDefault();
     if (!visitorName.trim()) {
       showToast('Vui lòng nhập họ tên khách thăm!');
+      return;
+    }
+    if (visitorPhone.trim() && !isValidPhoneNumber(visitorPhone)) {
+      showToast(getPhoneValidationError(visitorPhone) || 'Số điện thoại khách không hợp lệ!');
       return;
     }
     setIsGenerating(true);
@@ -510,18 +515,24 @@ export default function VisitorQrModal({
                 {/* 2. Số điện thoại khách */}
                 <div>
                   <label className="text-gray-300 font-medium block mb-1">
-                    Số Điện Thoại Khách:
+                    Số Điện Thoại Khách (10 số):
                   </label>
                   <div className="relative">
                     <input
                       type="tel"
+                      maxLength={10}
                       value={visitorPhone}
-                      onChange={(e) => setVisitorPhone(e.target.value)}
-                      placeholder="VD: 0912 345 678 (Dùng liên hệ khi cần)"
+                      onChange={(e) => setVisitorPhone(cleanPhoneNumber(e.target.value))}
+                      placeholder="VD: 0912345678 (Dùng liên hệ khi cần)"
                       className="w-full bg-[#161B22] border border-[#2D3748] p-2.5 pl-8 text-white rounded-none focus:border-[#C5A880] outline-none font-mono"
                     />
                     <Phone className="w-3.5 h-3.5 text-gray-500 absolute left-2.5 top-3" />
                   </div>
+                  {visitorPhone && !isValidPhoneNumber(visitorPhone) && (
+                    <span className="text-[10px] text-amber-400 font-mono mt-1 block">
+                      {getPhoneValidationError(visitorPhone)}
+                    </span>
+                  )}
                 </div>
 
                 {/* 3. Biển số xe & Thời gian hiệu lực */}
