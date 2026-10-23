@@ -66,7 +66,7 @@ export default function HeaderNav({ onOpenLogin }: HeaderNavProps) {
 
             {/* Khối trượt sắc nét (Thumb) - KHÔNG BORDER-RADIUS */}
             <span
-              className={`absolute top-[2px] bottom-[2px] w-[26px] flex items-center justify-center transition-all duration-300 ease-in-out rounded-none shadow-sm ${
+              className={`absolute top-[2px] bottom-[2px] w-[28px] flex items-center justify-center transition-all duration-300 ease-in-out rounded-none shadow-sm ${
                 isDark
                   ? 'left-[32px] bg-[#C5A880] text-[#0D1117]'
                   : 'left-[2px] bg-white text-amber-600 border border-gray-300'
@@ -141,7 +141,7 @@ export default function HeaderNav({ onOpenLogin }: HeaderNavProps) {
               <Moon className={`w-3 h-3 ${isDark ? 'text-[#C5A880]' : 'text-slate-400'}`} />
             </span>
             <span
-              className={`absolute top-[2px] bottom-[2px] w-[22px] flex items-center justify-center transition-all duration-300 ease-in-out rounded-none ${
+              className={`absolute top-[2px] bottom-[2px] w-[24px] flex items-center justify-center transition-all duration-300 ease-in-out rounded-none ${
                 isDark
                   ? 'left-[26px] bg-[#C5A880] text-[#0D1117]'
                   : 'left-[2px] bg-white text-amber-600 border border-gray-300'
