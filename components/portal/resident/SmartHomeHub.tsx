@@ -96,15 +96,15 @@ function LuxurySwitch({
       aria-checked={checked}
       aria-label={ariaLabel}
       onClick={onChange}
-      className={`relative inline-flex items-center h-6 w-11 border cursor-pointer select-none transition-colors duration-200 rounded-none shrink-0 p-[1px] ${
+      className={`relative inline-flex items-center h-[24px] w-[42px] border cursor-pointer select-none transition-colors duration-200 rounded-none shrink-0 p-[2px] leading-none ${
         checked ? `${activeColor} border-[#C5A880]` : 'bg-[#161D26] border-[#2D3748]'
       }`}
     >
       <span
-        className={`inline-block h-5 transition-all duration-200 ease-in-out rounded-none shadow-md ${
+        className={`pointer-events-none block w-[18px] h-[18px] transition-transform duration-200 ease-in-out rounded-none shadow-sm ${
           checked
-            ? 'w-[22px] translate-x-[18px] bg-white text-[#0D1117]'
-            : 'w-5 translate-x-0 bg-gray-300 text-[#0D1117]'
+            ? 'translate-x-[18px] bg-white'
+            : 'translate-x-0 bg-gray-300'
         }`}
       />
     </button>

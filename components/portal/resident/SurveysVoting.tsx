@@ -78,15 +78,13 @@ function LuxuryToggle({
       aria-checked={checked}
       disabled={disabled}
       onClick={() => onChange(!checked)}
-      className={`relative inline-flex items-center h-6 w-11 flex-shrink-0 cursor-pointer rounded-none border transition-colors duration-200 ease-in-out focus:outline-none p-[1px] ${
+      className={`relative inline-flex items-center h-[24px] w-[42px] flex-shrink-0 cursor-pointer rounded-none border transition-colors duration-200 ease-in-out focus:outline-none p-[2px] leading-none ${
         checked ? 'bg-[#C5A880] border-[#C5A880]' : 'bg-[#141B24] border-[#2A3647]'
       } ${disabled ? 'opacity-40 cursor-not-allowed' : ''}`}
     >
       <span
-        className={`pointer-events-none inline-block h-5 transform rounded-none transition-all duration-200 ease-in-out shadow-md ${
-          checked 
-            ? 'w-[22px] translate-x-[18px] bg-white' 
-            : 'w-5 translate-x-0 bg-gray-300'
+        className={`pointer-events-none block w-[18px] h-[18px] transform rounded-none transition-transform duration-200 ease-in-out shadow-sm ${
+          checked ? 'translate-x-[18px] bg-white' : 'translate-x-0 bg-gray-300'
         }`}
       />
     </button>
