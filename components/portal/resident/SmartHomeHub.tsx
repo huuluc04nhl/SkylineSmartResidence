@@ -96,14 +96,14 @@ function LuxurySwitch({
       aria-checked={checked}
       aria-label={ariaLabel}
       onClick={onChange}
-      className={`relative inline-flex items-center h-[24px] w-[42px] border cursor-pointer select-none transition-colors duration-200 rounded-none shrink-0 p-[2px] leading-none ${
+      className={`relative inline-flex items-center h-[26px] w-[46px] border cursor-pointer select-none transition-colors duration-200 rounded-none shrink-0 p-[1px] leading-none ${
         checked ? `${activeColor} border-[#C5A880]` : 'bg-[#161D26] border-[#2D3748]'
       }`}
     >
       <span
-        className={`pointer-events-none block w-[18px] h-[18px] transition-transform duration-200 ease-in-out rounded-none shadow-sm ${
+        className={`pointer-events-none block w-[22px] h-[22px] transition-transform duration-200 ease-in-out rounded-none shadow-sm ${
           checked
-            ? 'translate-x-[18px] bg-white'
+            ? 'translate-x-[20px] bg-white'
             : 'translate-x-0 bg-gray-300'
         }`}
       />
