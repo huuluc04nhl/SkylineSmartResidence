@@ -285,15 +285,15 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
     setSaveError(null);
     setSavedSuccess(false);
 
-    // Bẫy dữ liệu số điện thoại & CCCD
-    const phoneErr = getPhoneValidationError(phone);
+    // Bẫy dữ liệu số điện thoại & CCCD (Bilingual: VI / EN)
+    const phoneErr = getPhoneValidationError(phone, isEn);
     if (phoneErr) {
       setSaveError(phoneErr);
       return;
     }
 
     if (idCardNumber && idCardNumber.trim()) {
-      const cccdErr = getCccdValidationError(idCardNumber);
+      const cccdErr = getCccdValidationError(idCardNumber, isEn);
       if (cccdErr) {
         setSaveError(cccdErr);
         return;
@@ -528,7 +528,7 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
       return;
     }
 
-    const cccdErr = getCccdValidationError(idCardNumber);
+    const cccdErr = getCccdValidationError(idCardNumber, isEn);
     if (cccdErr) {
       setEkycFeedback({
         type: 'warning',
@@ -796,8 +796,14 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
               <div className="flex items-center gap-3">
                 <Sparkles className="w-5 h-5 text-amber-300 flex-shrink-0 animate-pulse" />
                 <div>
-                  <strong className="text-white block text-sm font-semibold">✨ Đã điền thông tin từ thẻ Căn cước vào biểu mẫu!</strong>
-                  <span className="text-gray-300 text-[11px]">Vui lòng kiểm tra lại thông tin và nhấn nút <strong>[Lưu Thay Đổi Thông Tin Liên Hệ]</strong> ở cuối biểu mẫu để lưu dữ liệu.</span>
+                  <strong className="text-white block text-sm font-semibold">
+                    {isEn ? '✨ Information from Citizen ID filled into form!' : '✨ Đã điền thông tin từ thẻ Căn cước vào biểu mẫu!'}
+                  </strong>
+                  <span className="text-gray-300 text-[11px]">
+                    {isEn
+                      ? <>Please review the information and click <strong>[Save Contact Information Changes]</strong> at the bottom of the form.</>
+                      : <>Vui lòng kiểm tra lại thông tin và nhấn nút <strong>[Lưu Thay Đổi Thông Tin Liên Hệ]</strong> ở cuối biểu mẫu để lưu dữ liệu.</>}
+                  </span>
                 </div>
               </div>
               <button
@@ -805,7 +811,7 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
                 onClick={() => setOcrFilledNotice(false)}
                 className="px-2 py-1 bg-black/40 hover:bg-black/80 text-amber-300 hover:text-white text-[11px] font-bold rounded-none transition-colors"
               >
-                Đã Hiểu
+                {isEn ? 'Got it' : 'Đã Hiểu'}
               </button>
             </div>
           )}
@@ -813,7 +819,7 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
           {savedSuccess && (
             <div className="p-3.5 bg-emerald-950/90 border border-emerald-500 text-emerald-300 text-xs flex items-center gap-2 animate-fadeIn shadow-lg rounded-none">
               <CheckCircle2 className="w-4 h-4 flex-shrink-0" />
-              <span>✓ Đã cập nhật thành công thông tin hồ sơ cá nhân!</span>
+              <span>{isEn ? '✓ Personal profile information updated successfully!' : '✓ Đã cập nhật thành công thông tin hồ sơ cá nhân!'}</span>
             </div>
           )}
 

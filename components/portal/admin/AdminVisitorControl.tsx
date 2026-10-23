@@ -59,10 +59,12 @@ import {
 } from '@/lib/visitorStore';
 import { getApartmentUnits } from '@/lib/apartmentStore';
 import { cleanPhoneNumber, isValidPhoneNumber, getPhoneValidationError } from '@/lib/validationUtils';
+import { useLanguage } from '@/lib/languageContext';
 
 export type VisitorTab = 'LIST' | 'SCANNER' | 'AUDIT_LOGS';
 
 export default function AdminVisitorControl() {
+  const { t, isEn } = useLanguage();
   // 1. Tab chính điều khiển
   const [activeTab, setActiveTabState] = useState<VisitorTab>(() => {
     if (typeof window !== 'undefined') {
@@ -378,11 +380,11 @@ export default function AdminVisitorControl() {
   const handleCreateQuickPass = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newPassVisitorName.trim()) {
-      showFeedback('Vui lòng nhập tên khách thăm!', 'error');
+      showFeedback(isEn ? 'Please enter visitor name!' : 'Vui lòng nhập tên khách thăm!', 'error');
       return;
     }
     if (newPassVisitorPhone.trim() && !isValidPhoneNumber(newPassVisitorPhone)) {
-      showFeedback(getPhoneValidationError(newPassVisitorPhone) || 'Số điện thoại khách không hợp lệ!', 'error');
+      showFeedback(getPhoneValidationError(newPassVisitorPhone, isEn) || (isEn ? 'Invalid visitor phone number!' : 'Số điện thoại khách không hợp lệ!'), 'error');
       return;
     }
 

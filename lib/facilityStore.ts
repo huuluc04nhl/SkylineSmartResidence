@@ -57,60 +57,74 @@ const CARDS_PREFIX = 'skyline_resident_cards_v2_';
 export interface FacilityLimitRule {
   facilityId: string;
   facilityName: string;
+  facilityNameEn: string;
   maxSlotsPerTime: number; // Số lượt đặt tối đa cho 1 khung giờ trong toàn tòa nhà
   maxGuests: number;
   isPrivate: boolean; // Phòng riêng biệt hoàn toàn
   description: string;
+  descriptionEn: string;
 }
 
 export const FACILITY_LIMIT_RULES: Record<string, FacilityLimitRule> = {
   'fac-sauna': {
     facilityId: 'fac-sauna',
     facilityName: 'Phòng Xông Hơi Đá Muối VIP',
+    facilityNameEn: 'VIP Himalayan Rock Salt Sauna',
     maxSlotsPerTime: 1, // 1 phòng VIP gia đình duy nhất / khung giờ
     maxGuests: 6,
     isPrivate: true,
-    description: 'Phòng VIP gia đình riêng tư khép kín (Giới hạn: 1 lượt đặt / khung giờ)'
+    description: 'Phòng VIP gia đình riêng tư khép kín (Giới hạn: 1 lượt đặt / khung giờ)',
+    descriptionEn: 'Enclosed private family VIP suite (Limit: 1 reservation / time slot)'
   },
   'fac-bbq': {
     facilityId: 'fac-bbq',
     facilityName: 'Vườn Tiệc Nướng BBQ Sân Thượng',
+    facilityNameEn: 'Panoramic Rooftop BBQ Garden',
     maxSlotsPerTime: 3, // 3 bếp nướng Weber A, B, C độc lập tại tầng 25
     maxGuests: 20,
     isPrivate: false,
-    description: '3 cụm bếp nướng Weber độc lập (Giới hạn: 3 lượt đặt / ca tiệc)'
+    description: '3 cụm bếp nướng Weber độc lập (Giới hạn: 3 lượt đặt / ca tiệc)',
+    descriptionEn: '3 independent Weber BBQ grill stations (Limit: 3 parties / party session)'
   },
   'fac-sports-malibu': {
     facilityId: 'fac-sports-malibu',
     facilityName: 'Sân Thể Thao Malibu (Tennis & Bóng Rổ)',
+    facilityNameEn: 'Malibu Sports Complex (Tennis & Basketball)',
     maxSlotsPerTime: 2, // 1 sân Tennis + 1 sân Bóng rổ
     maxGuests: 12,
     isPrivate: false,
-    description: '1 Sân Tennis + 1 Sân Bóng Rổ (Giới hạn: 2 lượt đặt / khung giờ)'
+    description: '1 Sân Tennis + 1 Sân Bóng Rổ (Giới hạn: 2 lượt đặt / khung giờ)',
+    descriptionEn: '1 Tennis Court + 1 Basketball Court (Limit: 2 reservations / time slot)'
   },
   'fac-cabana': {
     facilityId: 'fac-cabana',
     facilityName: 'Chòi Nghỉ Cabana Ven Hồ Bơi Resort',
+    facilityNameEn: 'Resort Poolside Cabana Lounges',
     maxSlotsPerTime: 4, // 4 chòi nghỉ 01, 02, 03, 04
     maxGuests: 8,
     isPrivate: false,
-    description: '4 Chòi nghỉ Cabana view hồ (Giới hạn: 4 lượt đặt / khung giờ)'
+    description: '4 Chòi nghỉ Cabana view hồ (Giới hạn: 4 lượt đặt / khung giờ)',
+    descriptionEn: '4 Poolside Cabana rest cabanas (Limit: 4 reservations / time slot)'
   },
   'fac-yoga': {
     facilityId: 'fac-yoga',
     facilityName: 'Sân Yoga Ngoài Trời & Thiền Tĩnh',
+    facilityNameEn: 'Outdoor Yoga & Meditation Lawn',
     maxSlotsPerTime: 6, // 6 thảm thiền
     maxGuests: 6,
     isPrivate: false,
-    description: 'Khuôn viên tĩnh lặng (Giới hạn: 6 lượt đặt / khung giờ)'
+    description: 'Khuôn viên tĩnh lặng (Giới hạn: 6 lượt đặt / khung giờ)',
+    descriptionEn: 'Serene green lawn (Limit: 6 reservations / time slot)'
   },
   'fac-multipurpose-lawn': {
     facilityId: 'fac-multipurpose-lawn',
     facilityName: 'Sân Cỏ Đa Năng Y-01 Malibu',
+    facilityNameEn: 'Multipurpose Lawn Y-01 Malibu',
     maxSlotsPerTime: 1, // Sân bóng đá mini / Pickleball độc quyền 1 nhóm
     maxGuests: 20,
     isPrivate: true,
-    description: 'Sân cỏ bóng đá mini / Pickleball (Giới hạn: 1 lượt đặt / khung giờ)'
+    description: 'Sân cỏ bóng đá mini / Pickleball (Giới hạn: 1 lượt đặt / khung giờ)',
+    descriptionEn: 'Mini-football / Pickleball exclusive lawn (Limit: 1 reservation / time slot)'
   }
 };
 
@@ -250,12 +264,15 @@ export function validateBookingRequest({
   facilityId,
   bookingDate,
   timeSlot,
+  bookerName,
+  isEn = false,
 }: {
   aptCode: string;
   facilityId: string;
   bookingDate: string;
   timeSlot: string;
   bookerName?: string;
+  isEn?: boolean;
 }): {
   valid: boolean;
   error?: string;
@@ -266,10 +283,12 @@ export function validateBookingRequest({
   const limitRule = FACILITY_LIMIT_RULES[facilityId] || {
     facilityId,
     facilityName: 'Tiện ích',
+    facilityNameEn: 'Facility',
     maxSlotsPerTime: 2,
     maxGuests: 10,
     isPrivate: false,
-    description: 'Tiện ích chung cư (Tối đa 2 lượt / khung giờ)'
+    description: 'Tiện ích chung cư (Tối đa 2 lượt / khung giờ)',
+    descriptionEn: 'Apartment facility (Max 2 slots / time slot)'
   };
 
   const now = new Date();
@@ -279,7 +298,7 @@ export function validateBookingRequest({
   if (bookingDate < todayStr) {
     return {
       valid: false,
-      error: 'Không thể đặt lịch cho ngày đã qua trong quá khứ.',
+      error: isEn ? 'Cannot book reservations for past dates.' : 'Không thể đặt lịch cho ngày đã qua trong quá khứ.',
       bookedCount: 0,
       maxSlots: limitRule.maxSlotsPerTime,
       remainingSlots: limitRule.maxSlotsPerTime
@@ -294,7 +313,9 @@ export function validateBookingRequest({
       if (currentMin >= range.startMin) {
         return {
           valid: false,
-          error: `Khung giờ ${timeSlot} hôm nay đã bắt đầu hoặc kết thúc. Quý cư dân vui lòng chọn khung giờ kế tiếp.`,
+          error: isEn
+            ? `Time slot ${timeSlot} has already started or ended today. Please choose a later time slot.`
+            : `Khung giờ ${timeSlot} hôm nay đã bắt đầu hoặc kết thúc. Quý cư dân vui lòng chọn khung giờ kế tiếp.`,
           bookedCount: 0,
           maxSlots: limitRule.maxSlotsPerTime,
           remainingSlots: limitRule.maxSlotsPerTime
@@ -320,7 +341,9 @@ export function validateBookingRequest({
   if (duplicateSame) {
     return {
       valid: false,
-      error: `Căn hộ ${aptCode} đã có phiếu đặt đang có hiệu lực cho [${limitRule.facilityName}] vào khung giờ [${duplicateSame.timeSlot}] ngày ${bookingDate}. Hệ thống không cho phép đặt trùng lặp (duplicate).`,
+      error: isEn
+        ? `Apartment ${aptCode} already has an active reservation for [${limitRule.facilityNameEn || limitRule.facilityName}] in slot [${duplicateSame.timeSlot}] on ${bookingDate}. Duplicate bookings are not allowed.`
+        : `Căn hộ ${aptCode} đã có phiếu đặt đang có hiệu lực cho [${limitRule.facilityName}] vào khung giờ [${duplicateSame.timeSlot}] ngày ${bookingDate}. Hệ thống không cho phép đặt trùng lặp (duplicate).`,
       bookedCount: 1,
       maxSlots: limitRule.maxSlotsPerTime,
       remainingSlots: 0
@@ -334,7 +357,9 @@ export function validateBookingRequest({
   if (conflictOther) {
     return {
       valid: false,
-      error: `Căn hộ ${aptCode} đã có lịch đặt tiện ích khác [${conflictOther.facilityName}] vào khung giờ [${conflictOther.timeSlot}] cùng ngày ${bookingDate}. Mỗi căn hộ chỉ có thể giữ chỗ một tiện ích trong cùng một khung thời gian.`,
+      error: isEn
+        ? `Apartment ${aptCode} already has a reservation for another facility [${conflictOther.facilityName}] in slot [${conflictOther.timeSlot}] on ${bookingDate}. Each apartment can only hold one amenity reservation at the same time.`
+        : `Căn hộ ${aptCode} đã có lịch đặt tiện ích khác [${conflictOther.facilityName}] vào khung giờ [${conflictOther.timeSlot}] cùng ngày ${bookingDate}. Mỗi căn hộ chỉ có thể giữ chỗ một tiện ích trong cùng một khung thời gian.`,
       bookedCount: 1,
       maxSlots: limitRule.maxSlotsPerTime,
       remainingSlots: 0
@@ -355,7 +380,9 @@ export function validateBookingRequest({
   if (bookedCount >= limitRule.maxSlotsPerTime) {
     return {
       valid: false,
-      error: `Tiện ích [${limitRule.facilityName}] đã KÍN CHỖ (đạt giới hạn tối đa ${limitRule.maxSlotsPerTime} lượt đặt của tòa nhà) trong khung giờ [${timeSlot}] ngày ${bookingDate}. Quý cư dân vui lòng chọn khung giờ khác.`,
+      error: isEn
+        ? `Facility [${limitRule.facilityNameEn || limitRule.facilityName}] is FULLY BOOKED (reached building limit of ${limitRule.maxSlotsPerTime} reservations) in slot [${timeSlot}] on ${bookingDate}. Please choose another time slot.`
+        : `Tiện ích [${limitRule.facilityName}] đã KÍN CHỖ (đạt giới hạn tối đa ${limitRule.maxSlotsPerTime} lượt đặt của tòa nhà) trong khung giờ [${timeSlot}] ngày ${bookingDate}. Quý cư dân vui lòng chọn khung giờ khác.`,
       bookedCount,
       maxSlots: limitRule.maxSlotsPerTime,
       remainingSlots: 0
@@ -367,7 +394,9 @@ export function validateBookingRequest({
   if (quota.remaining <= 0) {
     return {
       valid: false,
-      error: `Căn hộ ${aptCode} đã sử dụng hết hạn mức tiện ích tháng này (${quota.max} lượt).`,
+      error: isEn
+        ? `Apartment ${aptCode} has used all available amenity quota for this month (${quota.max} sessions).`
+        : `Căn hộ ${aptCode} đã sử dụng hết hạn mức tiện ích tháng này (${quota.max} lượt).`,
       bookedCount,
       maxSlots: limitRule.maxSlotsPerTime,
       remainingSlots
@@ -389,7 +418,8 @@ export function getFacilitySlotStatus(
   facilityId: string,
   bookingDate: string,
   timeSlot: string,
-  currentAptCode?: string
+  currentAptCode?: string,
+  isEn: boolean = false
 ): {
   bookedCount: number;
   maxSlots: number;
@@ -401,7 +431,10 @@ export function getFacilitySlotStatus(
 } {
   const limitRule = FACILITY_LIMIT_RULES[facilityId] || {
     maxSlotsPerTime: 2,
-    facilityName: 'Tiện ích'
+    facilityName: 'Tiện ích',
+    facilityNameEn: 'Facility',
+    description: 'Tiện ích chung cư (Tối đa 2 lượt / khung giờ)',
+    descriptionEn: 'Apartment facility (Max 2 slots / time slot)'
   };
 
   const now = new Date();
@@ -437,13 +470,13 @@ export function getFacilitySlotStatus(
 
   let statusBadge = '';
   if (isPast) {
-    statusBadge = 'Đã qua giờ';
+    statusBadge = isEn ? 'Time Passed' : 'Đã qua giờ';
   } else if (isUserBooked) {
-    statusBadge = 'Căn của bạn đã đặt';
+    statusBadge = isEn ? 'Booked by Your Apt' : 'Căn của bạn đã đặt';
   } else if (isFull) {
-    statusBadge = `Đã kín chỗ (0/${limitRule.maxSlotsPerTime})`;
+    statusBadge = isEn ? `Fully Booked (0/${limitRule.maxSlotsPerTime})` : `Đã kín chỗ (0/${limitRule.maxSlotsPerTime})`;
   } else {
-    statusBadge = `Còn ${remainingSlots}/${limitRule.maxSlotsPerTime} chỗ`;
+    statusBadge = isEn ? `${remainingSlots}/${limitRule.maxSlotsPerTime} spots left` : `Còn ${remainingSlots}/${limitRule.maxSlotsPerTime} chỗ`;
   }
 
   return {

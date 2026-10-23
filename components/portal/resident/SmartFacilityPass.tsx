@@ -299,16 +299,26 @@ export default function SmartFacilityPass({ currentUser, onNavigateModule }: Sma
   const [bookingSuccessMsg, setBookingSuccessMsg] = useState<string | null>(null);
   const [bookingErrorMsg, setBookingErrorMsg] = useState<string | null>(null);
 
-  // Danh sách khung giờ tối ưu theo từng loại tiện ích
+  // Danh sách khung giờ tối ưu theo từng loại tiện ích (Hỗ trợ chuyển ngữ VI / EN)
   const facilityTimeSlots = useMemo(() => {
     if (bookingFacilityId === 'fac-bbq') {
-      return [
+      return isEn ? [
+        '17:00 - 19:30 (Sunset Rooftop BBQ Session)',
+        '19:30 - 22:00 (Starlight Night BBQ Session)',
+      ] : [
         '17:00 - 19:30 (Ca Tiệc Hoàng Hôn Sân Thượng)',
         '19:30 - 22:00 (Ca Tiệc Đêm Ánh Sao Sân Thượng)',
       ];
     }
     if (bookingFacilityId === 'fac-sauna') {
-      return [
+      return isEn ? [
+        '09:00 - 11:00 (Morning Detox)',
+        '11:00 - 13:00 (Noon Relaxation)',
+        '14:00 - 16:00 (Early Afternoon)',
+        '16:00 - 18:00 (Sunset Recovery)',
+        '18:00 - 20:00 (Evening VIP - Prime Time)',
+        '20:00 - 21:30 (Night Serenity)',
+      ] : [
         '09:00 - 11:00 (Buổi sáng thanh lọc)',
         '11:00 - 13:00 (Trưa thư giãn)',
         '14:00 - 16:00 (Đầu giờ chiều)',
@@ -317,7 +327,15 @@ export default function SmartFacilityPass({ currentUser, onNavigateModule }: Sma
         '20:00 - 21:30 (Đêm thư thái)',
       ];
     }
-    return [
+    return isEn ? [
+      '06:00 - 08:00 (Sunrise Dawn)',
+      '08:00 - 10:00 (Morning Refresh)',
+      '10:00 - 12:00 (Noon Serenity)',
+      '14:00 - 16:00 (Early Afternoon)',
+      '16:00 - 18:00 (Golden Sunset)',
+      '18:00 - 20:00 (Evening Prime Time)',
+      '20:00 - 22:00 (Night Workout & Recovery)',
+    ] : [
       '06:00 - 08:00 (Sáng sớm bình minh)',
       '08:00 - 10:00 (Buổi sáng thư giãn)',
       '10:00 - 12:00 (Trưa thanh tịnh)',
@@ -326,7 +344,7 @@ export default function SmartFacilityPass({ currentUser, onNavigateModule }: Sma
       '18:00 - 20:00 (Buổi tối - Giờ đẹp)',
       '20:00 - 22:00 (Phục hồi thể lực đêm)',
     ];
-  }, [bookingFacilityId]);
+  }, [bookingFacilityId, isEn]);
 
   // Tự động chuyển khung giờ hợp lệ khi đổi tiện ích
   useEffect(() => {
@@ -335,18 +353,20 @@ export default function SmartFacilityPass({ currentUser, onNavigateModule }: Sma
     }
   }, [facilityTimeSlots, bookingTimeSlot]);
 
-  // Tra cứu trạng thái số chỗ khả dụng trong thời gian thực
+  // Tra cứu trạng thái số chỗ khả dụng trong thời gian thực (Bilingual)
   const currentSlotStatus = useMemo(() => {
-    return getFacilitySlotStatus(bookingFacilityId, bookingDate, bookingTimeSlot, aptCode);
-  }, [bookingFacilityId, bookingDate, bookingTimeSlot, aptCode, bookings]);
+    return getFacilitySlotStatus(bookingFacilityId, bookingDate, bookingTimeSlot, aptCode, isEn);
+  }, [bookingFacilityId, bookingDate, bookingTimeSlot, aptCode, bookings, isEn]);
 
   const currentLimitRule = FACILITY_LIMIT_RULES[bookingFacilityId] || {
     facilityId: bookingFacilityId,
     facilityName: 'Tiện ích',
+    facilityNameEn: 'Facility',
     maxSlotsPerTime: 2,
     maxGuests: 10,
     isPrivate: false,
-    description: 'Tiện ích chung cư (Tối đa 2 lượt / khung giờ)'
+    description: 'Tiện ích chung cư (Tối đa 2 lượt / khung giờ)',
+    descriptionEn: 'Apartment facility (Max 2 slots / time slot)'
   };
 
   // State Modal Hoàn Tiền Khi Bận Đột Xuất
@@ -762,10 +782,10 @@ export default function SmartFacilityPass({ currentUser, onNavigateModule }: Sma
             <form onSubmit={handleCreateBooking} className="p-4 sm:p-5 bg-[#121820] border border-[#2A374A] rounded-none space-y-3.5 shadow-xl">
               <div className="border-b border-[#222B35] pb-2.5">
                 <div className="text-[10px] uppercase tracking-[0.2em] text-[#C5A880] font-bold">
-                  Dịch Vụ Tiện Ích Đặt Trước • Căn Hộ {aptCode}
+                  {isEn ? `Advance Amenity Reservation • Apt ${aptCode}` : `Dịch Vụ Tiện Ích Đặt Trước • Căn Hộ ${aptCode}`}
                 </div>
                 <h3 className="font-serif text-lg text-white font-bold">
-                  Đăng Ký Đặt Chỗ Tiện Ích VIP
+                  {isEn ? 'VIP Amenity Reservation Registration' : 'Đăng Ký Đặt Chỗ Tiện Ích VIP'}
                 </h3>
               </div>
 
@@ -779,7 +799,9 @@ export default function SmartFacilityPass({ currentUser, onNavigateModule }: Sma
                 <div className="p-3 bg-rose-950/80 border border-rose-500 text-rose-200 text-xs rounded-none leading-relaxed flex items-start gap-2.5 animate-fadeIn">
                   <AlertTriangle className="w-4 h-4 shrink-0 text-rose-400 mt-0.5" />
                   <div className="space-y-0.5">
-                    <div className="font-bold text-rose-300 uppercase tracking-wide text-[11px]">Không Thể Hoàn Tất Giữ Chỗ:</div>
+                    <div className="font-bold text-rose-300 uppercase tracking-wide text-[11px]">
+                      {isEn ? 'Cannot Complete Reservation:' : 'Không Thể Hoàn Tất Giữ Chỗ:'}
+                    </div>
                     <div>{bookingErrorMsg}</div>
                   </div>
                 </div>
@@ -788,19 +810,31 @@ export default function SmartFacilityPass({ currentUser, onNavigateModule }: Sma
               {/* Bước 1: Tiện ích */}
               <div className="space-y-1">
                 <label className="text-[10.5px] text-gray-300 font-semibold uppercase block">
-                  1. Chọn tiện ích muốn đặt:
+                  {isEn ? '1. Select facility to reserve:' : '1. Chọn tiện ích muốn đặt:'}
                 </label>
                 <select
                   value={bookingFacilityId}
                   onChange={(e) => setBookingFacilityId(e.target.value)}
                   className="w-full bg-[#161D26] border border-[#2A374A] p-2.5 text-white text-xs rounded-none focus:outline-none focus:border-[#C5A880]"
                 >
-                  <option value="fac-bbq">Vườn Tiệc Nướng BBQ Panoramic (Sân Thượng Tầng 25) • 600.000 đ/ca</option>
-                  <option value="fac-sports-malibu">Sân Thể Thao Malibu (Tennis & Bóng Rổ) • Miễn Phí Cư Dân</option>
-                  <option value="fac-yoga">Sân Yoga Ngoài Trời & Thiền Tĩnh BS-07 • Miễn Phí Cư Dân</option>
-                  <option value="fac-cabana">Chòi Nghỉ Cabana Ven Hồ Bơi Resort BS-09 • Miễn Phí Cư Dân</option>
-                  <option value="fac-multipurpose-lawn">Sân Cỏ Đa Năng Y-01 Malibu (Bóng đá/Pickleball) • Miễn Phí Cư Dân</option>
-                  <option value="fac-sauna">Phòng Xông Hơi Đá Muối Himalaya (VIP Tầng 3) • 500.000 đ/giờ</option>
+                  <option value="fac-bbq">
+                    {isEn ? 'Panoramic Rooftop BBQ Garden (25F) • 600,000 VND/slot' : 'Vườn Tiệc Nướng BBQ Panoramic (Sân Thượng Tầng 25) • 600.000 đ/ca'}
+                  </option>
+                  <option value="fac-sports-malibu">
+                    {isEn ? 'Malibu Sports Court (Tennis & Basketball) • Free for Residents' : 'Sân Thể Thao Malibu (Tennis & Bóng Rổ) • Miễn Phí Cư Dân'}
+                  </option>
+                  <option value="fac-yoga">
+                    {isEn ? 'Outdoor Yoga & Meditation Lawn BS-07 • Free for Residents' : 'Sân Yoga Ngoài Trời & Thiền Tĩnh BS-07 • Miễn Phí Cư Dân'}
+                  </option>
+                  <option value="fac-cabana">
+                    {isEn ? 'Cabana Lounge by Resort Pool BS-09 • Free for Residents' : 'Chòi Nghỉ Cabana Ven Hồ Bơi Resort BS-09 • Miễn Phí Cư Dân'}
+                  </option>
+                  <option value="fac-multipurpose-lawn">
+                    {isEn ? 'Multipurpose Lawn Y-01 Malibu (Mini-football/Pickleball) • Free for Residents' : 'Sân Cỏ Đa Năng Y-01 Malibu (Bóng đá/Pickleball) • Miễn Phí Cư Dân'}
+                  </option>
+                  <option value="fac-sauna">
+                    {isEn ? 'Himalayan Rock Salt Sauna (VIP 3F) • 500,000 VND/hr' : 'Phòng Xông Hơi Đá Muối Himalaya (VIP Tầng 3) • 500.000 đ/giờ'}
+                  </option>
                 </select>
               </div>
 
@@ -809,10 +843,12 @@ export default function SmartFacilityPass({ currentUser, onNavigateModule }: Sma
                 <div className="p-2.5 bg-gradient-to-r from-[#C5A880]/15 to-transparent border-l-2 border-[#C5A880] rounded-none space-y-1 text-xs text-gray-200 animate-fadeIn">
                   <div className="font-bold text-[#C5A880] flex items-center gap-1.5">
                     <Sparkles className="w-3.5 h-3.5" />
-                    <span>Dịch Vụ Phòng Riêng Tư Gia Đình VIP</span>
+                    <span>{isEn ? 'VIP Private Family Suite' : 'Dịch Vụ Phòng Riêng Tư Gia Đình VIP'}</span>
                   </div>
                   <div className="text-[11px] text-gray-300 leading-relaxed">
-                    Khép kín 100%, được bật lò gia nhiệt đá muối Himalaya, chuẩn bị khăn bông cao cấp và tinh dầu thảo mộc tự nhiên theo đúng giờ hẹn.
+                    {isEn
+                      ? '100% private, pre-heated Himalayan rock salt sauna, premium plush towels and natural aromatherapy prepared for your appointment.'
+                      : 'Khép kín 100%, được bật lò gia nhiệt đá muối Himalaya, chuẩn bị khăn bông cao cấp và tinh dầu thảo mộc tự nhiên theo đúng giờ hẹn.'}
                   </div>
                 </div>
               )}
@@ -821,7 +857,7 @@ export default function SmartFacilityPass({ currentUser, onNavigateModule }: Sma
               {bookingFacilityId === 'fac-sauna' && (
                 <div className="space-y-1">
                   <label className="text-[10.5px] text-gray-300 font-semibold uppercase block">
-                    Số tiếng đặt phòng VIP:
+                    {isEn ? 'VIP Room Duration:' : 'Số tiếng đặt phòng VIP:'}
                   </label>
                   <div className="grid grid-cols-3 gap-2">
                     {[1, 2, 3].map((h) => (
@@ -835,8 +871,8 @@ export default function SmartFacilityPass({ currentUser, onNavigateModule }: Sma
                             : 'bg-[#161D26] text-gray-300 border-[#2A374A] hover:border-[#C5A880]/60'
                         }`}
                       >
-                        <span>{h} Tiếng</span>
-                        <span className="text-[10px] font-mono font-normal">{(h * 500000).toLocaleString('vi-VN')} đ</span>
+                        <span>{h} {isEn ? (h > 1 ? 'Hours' : 'Hour') : 'Tiếng'}</span>
+                        <span className="text-[10px] font-mono font-normal">{(h * 500000).toLocaleString('vi-VN')} {isEn ? 'VND' : 'đ'}</span>
                       </button>
                     ))}
                   </div>
@@ -847,7 +883,7 @@ export default function SmartFacilityPass({ currentUser, onNavigateModule }: Sma
               <div className="grid grid-cols-2 gap-2.5">
                 <div className="space-y-1">
                   <label className="text-[10.5px] text-gray-300 font-semibold uppercase block">
-                    2. Ngày đặt:
+                    {isEn ? '2. Reservation Date:' : '2. Ngày đặt:'}
                   </label>
                   <input
                     type="date"
@@ -861,7 +897,7 @@ export default function SmartFacilityPass({ currentUser, onNavigateModule }: Sma
 
                 <div className="space-y-1">
                   <label className="text-[10.5px] text-gray-300 font-semibold uppercase block">
-                    Khung giờ:
+                    {isEn ? 'Time Slot:' : 'Khung giờ:'}
                   </label>
                   <select
                     value={bookingTimeSlot}
@@ -869,7 +905,7 @@ export default function SmartFacilityPass({ currentUser, onNavigateModule }: Sma
                     className="w-full bg-[#161D26] border border-[#2A374A] p-2 text-white text-xs rounded-none focus:outline-none focus:border-[#C5A880]"
                   >
                     {facilityTimeSlots.map((slot) => {
-                      const st = getFacilitySlotStatus(bookingFacilityId, bookingDate, slot, aptCode);
+                      const st = getFacilitySlotStatus(bookingFacilityId, bookingDate, slot, aptCode, isEn);
                       return (
                         <option
                           key={slot}
@@ -897,7 +933,7 @@ export default function SmartFacilityPass({ currentUser, onNavigateModule }: Sma
                 <div className="flex items-center justify-between font-bold flex-wrap gap-2">
                   <span className="flex items-center gap-1.5">
                     <ShieldCheck className="w-4 h-4 text-[#C5A880]" />
-                    <span>Trạng Thái Giữ Chỗ Toàn Khu:</span>
+                    <span>{isEn ? 'Building Reservation Status:' : 'Trạng Thái Giữ Chỗ Toàn Khu:'}</span>
                   </span>
                   <span className={`px-2 py-0.5 text-[10px] font-mono font-bold uppercase rounded-none border ${
                     currentSlotStatus.isPast
@@ -913,12 +949,12 @@ export default function SmartFacilityPass({ currentUser, onNavigateModule }: Sma
                 </div>
                 <div className="text-[11px] text-gray-300 leading-relaxed">
                   {currentSlotStatus.isPast
-                    ? 'Khung giờ này đã trôi qua trong ngày hôm nay. Quý cư dân vui lòng chọn khung giờ kế tiếp.'
+                    ? (isEn ? 'This time slot has already passed today. Please select a later time slot.' : 'Khung giờ này đã trôi qua trong ngày hôm nay. Quý cư dân vui lòng chọn khung giờ kế tiếp.')
                     : currentSlotStatus.isUserBooked
-                    ? `Căn hộ ${aptCode} đã có phiếu giữ chỗ đang có hiệu lực trong khung giờ này. Hệ thống không cho phép tạo phiếu trùng lặp.`
+                    ? (isEn ? `Apartment ${aptCode} already has an active reservation in this slot. Duplicate bookings are not allowed.` : `Căn hộ ${aptCode} đã có phiếu giữ chỗ đang có hiệu lực trong khung giờ này. Hệ thống không cho phép tạo phiếu trùng lặp.`)
                     : currentSlotStatus.isFull
-                    ? `Tiện ích đã đạt tối đa sức chứa của toàn tòa nhà (${currentLimitRule.maxSlotsPerTime} lượt) trong khung giờ này. Vui lòng chọn khung giờ khác để giữ chỗ thành công.`
-                    : `${currentLimitRule.description}. Hệ thống lập tức khóa chỗ chống trùng giờ toàn bộ cư dân ngay sau khi xác nhận.`}
+                    ? (isEn ? `This facility has reached maximum building capacity (${currentLimitRule.maxSlotsPerTime} reservations) in this time slot. Please choose another slot.` : `Tiện ích đã đạt tối đa sức chứa của toàn tòa nhà (${currentLimitRule.maxSlotsPerTime} lượt) trong khung giờ này. Vui lòng chọn khung giờ khác để giữ chỗ thành công.`)
+                    : (isEn ? `${currentLimitRule.descriptionEn || currentLimitRule.description}. System instantly locks the slot to prevent conflicts upon confirmation.` : `${currentLimitRule.description}. Hệ thống lập tức khóa chỗ chống trùng giờ toàn bộ cư dân ngay sau khi xác nhận.`)}
                 </div>
               </div>
 
@@ -926,16 +962,22 @@ export default function SmartFacilityPass({ currentUser, onNavigateModule }: Sma
               {(bookingFacilityId === 'fac-sauna' || bookingFacilityId === 'fac-bbq') && (
                 <div className="space-y-1">
                   <label className="text-[10.5px] text-gray-300 font-semibold uppercase block">
-                    Phương thức thanh toán giữ chỗ:
+                    {isEn ? 'Reservation deposit payment method:' : 'Phương thức thanh toán giữ chỗ:'}
                   </label>
                   <select
                     value={bookingPaymentMethod}
                     onChange={(e) => setBookingPaymentMethod(e.target.value)}
                     className="w-full bg-[#161D26] border border-[#2A374A] p-2 text-white text-xs rounded-none focus:outline-none focus:border-[#C5A880]"
                   >
-                    <option value="Trừ vào hóa đơn sinh hoạt tháng tới">Trừ vào hóa đơn sinh hoạt tháng tới của căn hộ</option>
-                    <option value="Quét mã QR chuyển khoản ngân hàng">Quét mã QR chuyển khoản ngân hàng BQL</option>
-                    <option value="Trừ vào số dư ví cư dân">Trừ vào số dư ví cư dân</option>
+                    <option value="Trừ vào hóa đơn sinh hoạt tháng tới">
+                      {isEn ? 'Deduct from next month utility invoice' : 'Trừ vào hóa đơn sinh hoạt tháng tới của căn hộ'}
+                    </option>
+                    <option value="Quét mã QR chuyển khoản ngân hàng">
+                      {isEn ? 'Scan QR code for bank transfer' : 'Quét mã QR chuyển khoản ngân hàng BQL'}
+                    </option>
+                    <option value="Trừ vào số dư ví cư dân">
+                      {isEn ? 'Deduct from resident wallet balance' : 'Trừ vào số dư ví cư dân'}
+                    </option>
                   </select>
                 </div>
               )}
@@ -944,7 +986,7 @@ export default function SmartFacilityPass({ currentUser, onNavigateModule }: Sma
               <div className="grid grid-cols-2 gap-2.5">
                 <div className="space-y-1">
                   <label className="text-[10.5px] text-gray-300 font-semibold uppercase block">
-                    3. Số người tham gia:
+                    {isEn ? '3. Number of participants:' : '3. Số người tham gia:'}
                   </label>
                   <input
                     type="number"
@@ -959,7 +1001,7 @@ export default function SmartFacilityPass({ currentUser, onNavigateModule }: Sma
 
                 <div className="space-y-1">
                   <label className="text-[10.5px] text-gray-300 font-semibold uppercase block">
-                    Người đại diện đặt:
+                    {isEn ? 'Representative booker:' : 'Người đại diện đặt:'}
                   </label>
                   <input
                     type="text"
@@ -972,18 +1014,24 @@ export default function SmartFacilityPass({ currentUser, onNavigateModule }: Sma
 
               <div className="space-y-1">
                 <label className="text-[10.5px] text-gray-300 font-semibold uppercase block">
-                  Ghi chú yêu cầu phục vụ (tùy chọn):
+                  {isEn ? 'Special requests (optional):' : 'Ghi chú yêu cầu phục vụ (tùy chọn):'}
                 </label>
                 <input
                   type="text"
                   value={bookingNotes}
                   onChange={(e) => setBookingNotes(e.target.value)}
                   placeholder={
-                    bookingFacilityId === 'fac-sauna' 
-                      ? 'VD: Cần thêm khăn nhung, tinh dầu sả chanh...' 
-                      : bookingFacilityId === 'fac-bbq'
-                      ? 'VD: Cần 2 bếp nướng Weber, dụng cụ kẹp BBQ...'
-                      : 'VD: Mượn vợt tennis, bóng tập...'
+                    isEn
+                      ? (bookingFacilityId === 'fac-sauna' 
+                          ? 'e.g. Extra towels, lemongrass aromatherapy...' 
+                          : bookingFacilityId === 'fac-bbq'
+                          ? 'e.g. 2 Weber grills, BBQ tongs set...'
+                          : 'e.g. Borrow tennis racquets, training balls...')
+                      : (bookingFacilityId === 'fac-sauna' 
+                          ? 'VD: Cần thêm khăn nhung, tinh dầu sả chanh...' 
+                          : bookingFacilityId === 'fac-bbq'
+                          ? 'VD: Cần 2 bếp nướng Weber, dụng cụ kẹp BBQ...'
+                          : 'VD: Mượn vợt tennis, bóng tập...')
                   }
                   className="w-full bg-[#161D26] border border-[#2A374A] p-2 text-white text-xs rounded-none focus:outline-none focus:border-[#C5A880]"
                 />
@@ -1027,9 +1075,13 @@ export default function SmartFacilityPass({ currentUser, onNavigateModule }: Sma
                   <div className="pt-2 border-t border-[#1F2937] space-y-1 text-[11px] text-gray-400 leading-relaxed">
                     <div className="text-emerald-400 font-semibold flex items-center gap-1">
                       <CheckCircle2 className="w-3.5 h-3.5" />
-                      <span>Đặc quyền tiện ích thể thao miễn phí dành riêng cho Cư Dân</span>
+                      <span>{isEn ? 'Exclusive resident amenity privilege' : 'Đặc quyền tiện ích thể thao miễn phí dành riêng cho Cư Dân'}</span>
                     </div>
-                    <p>Vé điện tử QR sẽ được tạo tự động để quét tại cổng kiểm soát. Nếu có thay đổi lịch, vui lòng bấm hủy vé trong danh sách để nhường khung giờ cho cư dân khác.</p>
+                    <p>
+                      {isEn
+                        ? 'QR electronic pass is generated automatically for turnstile access. If your plans change, please cancel in the pass list to release the slot for other residents.'
+                        : 'Vé điện tử QR sẽ được tạo tự động để quét tại cổng kiểm soát. Nếu có thay đổi lịch, vui lòng bấm hủy vé trong danh sách để nhường khung giờ cho cư dân khác.'}
+                    </p>
                   </div>
                 )}
               </div>
@@ -1046,12 +1098,12 @@ export default function SmartFacilityPass({ currentUser, onNavigateModule }: Sma
                 <Check className="w-4 h-4 shrink-0" />
                 <span className="truncate">
                   {currentSlotStatus.isPast
-                    ? 'Khung Giờ Đã Qua'
+                    ? (isEn ? 'Time Slot Has Passed' : 'Khung Giờ Đã Qua')
                     : currentSlotStatus.isUserBooked
-                    ? 'Căn Hộ Đã Đặt Khung Giờ Này'
+                    ? (isEn ? 'Already Reserved By Your Apt' : 'Căn Hộ Đã Đặt Khung Giờ Này')
                     : currentSlotStatus.isFull
-                    ? 'Khung Giờ Đã Hết Chỗ (Kín Lịch)'
-                    : 'Xác Nhận Đặt Giữ Chỗ & Tạo Vé QR'}
+                    ? (isEn ? 'Time Slot Fully Booked' : 'Khung Giờ Đã Hết Chỗ (Kín Lịch)')
+                    : (isEn ? 'Confirm Reservation & Generate QR Pass' : 'Xác Nhận Đặt Giữ Chỗ & Tạo Vé QR')}
                 </span>
               </button>
             </form>

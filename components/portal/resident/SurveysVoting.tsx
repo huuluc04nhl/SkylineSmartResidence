@@ -893,7 +893,11 @@ export default function SurveysVoting({ currentUser }: SurveysVotingProps) {
                       ) : post.poll.isOwnerOnly && !isOwner && !isAdmin ? (
                         <div className="p-2.5 bg-amber-500/10 border border-amber-500/30 text-amber-400 text-[11px] flex items-center gap-2">
                           <Lock className="w-3.5 h-3.5 flex-shrink-0" />
-                          <span>Quyền hạn: Cuộc biểu quyết pháp lý này yêu cầu tài khoản <strong>Chủ Hộ</strong>. Bạn đang xem với quyền tham khảo.</span>
+                          <span>
+                            {isEn
+                              ? <>Permission: This legal poll requires an <strong>Apartment Owner</strong> account. You are viewing in read-only mode.</>
+                              : <>Quyền hạn: Cuộc biểu quyết pháp lý này yêu cầu tài khoản <strong>Chủ Hộ</strong>. Bạn đang xem với quyền tham khảo.</>}
+                          </span>
                         </div>
                       ) : null}
 
@@ -1386,7 +1390,7 @@ export default function SurveysVoting({ currentUser }: SurveysVotingProps) {
                         <div className="flex items-center justify-between py-1 text-xs text-[#C5A880]">
                           <span className="flex items-center gap-1.5">
                             <span>{isEn ? 'Apartment Owners Only (Legal)' : 'Chỉ Chủ Hộ mới được biểu quyết'}</span>
-                            <span title="Cuộc biểu quyết pháp lý giới hạn cho tài khoản Chủ Hộ">
+                            <span title={isEn ? "Legal voting restricted to Apartment Owner accounts" : "Cuộc biểu quyết pháp lý giới hạn cho tài khoản Chủ Hộ"}>
                               <HelpCircle className="w-3.5 h-3.5 text-[#C5A880]/70 cursor-help" />
                             </span>
                           </span>

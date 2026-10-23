@@ -33,18 +33,22 @@ export function isValidPhoneNumber(value: string): boolean {
 }
 
 /**
- * Returns user-friendly validation error for phone number in Vietnamese.
+ * Returns user-friendly validation error for phone number (bilingual: VI / EN).
  */
-export function getPhoneValidationError(value: string): string | null {
+export function getPhoneValidationError(value: string, isEn: boolean = false): string | null {
   if (!value || !value.trim()) {
-    return 'Vui lòng nhập số điện thoại liên hệ.';
+    return isEn ? 'Please enter a contact phone number.' : 'Vui lòng nhập số điện thoại liên hệ.';
   }
   const cleaned = cleanPhoneNumber(value);
   if (cleaned.length < 10) {
-    return `Số điện thoại phải đủ 10 chữ số (hiện có ${cleaned.length} số).`;
+    return isEn
+      ? `Phone number must be exactly 10 digits (currently ${cleaned.length} digits).`
+      : `Số điện thoại phải đủ 10 chữ số (hiện có ${cleaned.length} số).`;
   }
   if (!isValidPhoneNumber(cleaned)) {
-    return 'Số điện thoại không hợp lệ (phải bắt đầu bằng đầu số 03, 05, 07, 08 hoặc 09).';
+    return isEn
+      ? 'Invalid phone number (must start with prefix 03, 05, 07, 08 or 09).'
+      : 'Số điện thoại không hợp lệ (phải bắt đầu bằng đầu số 03, 05, 07, 08 hoặc 09).';
   }
   return null;
 }
@@ -70,15 +74,17 @@ export function isValidCccdNumber(value: string): boolean {
 }
 
 /**
- * Returns user-friendly validation error for CCCD in Vietnamese.
+ * Returns user-friendly validation error for CCCD (bilingual: VI / EN).
  */
-export function getCccdValidationError(value: string): string | null {
+export function getCccdValidationError(value: string, isEn: boolean = false): string | null {
   if (!value || !value.trim()) {
-    return 'Vui lòng nhập số Căn Cước Công Dân (CCCD).';
+    return isEn ? 'Please enter a 12-digit Citizen Identity Card (CCCD).' : 'Vui lòng nhập số Căn Cước Công Dân (CCCD).';
   }
   const cleaned = cleanCccdNumber(value);
   if (cleaned.length !== 12) {
-    return `Số CCCD phải gồm đúng 12 chữ số theo quy định (hiện có ${cleaned.length} số).`;
+    return isEn
+      ? `Citizen ID number must be exactly 12 digits (currently ${cleaned.length} digits).`
+      : `Số CCCD phải gồm đúng 12 chữ số theo quy định (hiện có ${cleaned.length} số).`;
   }
   return null;
 }

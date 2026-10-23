@@ -191,7 +191,11 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
     if (backSrc) setEkycBackImage(backSrc);
     setIsMemberOcrModalOpen(false);
     setEkycModalError(null);
-    setActionSuccess(`✨ Đã đọc thông tin CCCD thành công cho "${stdFullName || 'thành viên'}"! Toàn bộ thông tin đã được chuẩn hóa và tự động điền vào hồ sơ.`);
+    setActionSuccess(
+      isEn
+        ? `✨ Successfully read Citizen ID for "${stdFullName || 'member'}"! All details verified and populated into the form.`
+        : `✨ Đã đọc thông tin CCCD thành công cho "${stdFullName || 'thành viên'}"! Toàn bộ thông tin đã được chuẩn hóa và tự động điền vào hồ sơ.`
+    );
     setTimeout(() => setActionSuccess(null), 5000);
   };
 
@@ -579,14 +583,16 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
 
       // 4. Feedback
       setActionSuccess(
-        `✓ Đã gửi thông tin căn cước & khuôn mặt của người nhà "${ekycFullName}" lên Ban Quản Lý thành công! Hồ sơ đang chờ Ban Quản Lý phê duyệt.`
+        isEn
+          ? `✓ Identity & biometric face records for family member "${ekycFullName}" successfully submitted to Management Office! Pending review.`
+          : `✓ Đã gửi thông tin căn cước & khuôn mặt của người nhà "${ekycFullName}" lên Ban Quản Lý thành công! Hồ sơ đang chờ Ban Quản Lý phê duyệt.`
       );
       setTimeout(() => setActionSuccess(null), 5000);
 
       handleCloseEkycModal();
       fetchMembers();
     } catch (err: any) {
-      setEkycModalError(err.message || 'Lỗi khi gửi thông tin lên Ban Quản Lý.');
+      setEkycModalError(err.message || (isEn ? 'Error submitting data to Management Office.' : 'Lỗi khi gửi thông tin lên Ban Quản Lý.'));
     } finally {
       setIsSubmittingEkyc(false);
     }
@@ -625,7 +631,7 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
           setNewRelationship(list[0].relationship || 'Vợ / Chồng');
           setNewLicensePlate(list[0].licensePlate || '');
         } else {
-          setSearchNotFound(`Không tìm thấy tài khoản người nhà nào khớp với "${query}".`);
+          setSearchNotFound(isEn ? `No registered family account matching "${query}".` : `Không tìm thấy tài khoản người nhà nào khớp với "${query}".`);
         }
       } else {
         // Fallback: check DEMO_USERS on client side
@@ -668,12 +674,12 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
           setNewLicensePlate(localMatches[0].licensePlate || '');
         } else {
           setSearchNotFound(
-            res.message || `Không tìm thấy tài khoản người nhà nào khớp với "${query}" trên hệ thống.`
+            res.message || (isEn ? `No registered family account matching "${query}" on the system.` : `Không tìm thấy tài khoản người nhà nào khớp với "${query}" trên hệ thống.`)
           );
         }
       }
     } catch (err) {
-      setSearchNotFound('Lỗi kết nối khi tra cứu người dùng.');
+      setSearchNotFound(isEn ? 'Connection error while searching for account.' : 'Lỗi kết nối khi tra cứu người dùng.');
     } finally {
       setIsSearchingApi(false);
     }
@@ -683,7 +689,7 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
   const handleAddMember = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedAccount) {
-      setActionError('Vui lòng chọn hoặc tra cứu một tài khoản hợp lệ từ hệ thống API.');
+      setActionError(isEn ? 'Please select or search a valid account from the API system.' : 'Vui lòng chọn hoặc tra cứu một tài khoản hợp lệ từ hệ thống API.');
       return;
     }
 
@@ -706,7 +712,9 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
         setMembers(res.members);
         setShowAddModal(false);
         setActionSuccess(
-          `✓ Đã thêm thành viên "${selectedAccount.fullName}" vào Căn hộ ${aptCode} theo hồ sơ API thành công!`
+          isEn
+            ? `✓ Added family member "${selectedAccount.fullName}" to Unit ${aptCode} via API profile successfully!`
+            : `✓ Đã thêm thành viên "${selectedAccount.fullName}" vào Căn hộ ${aptCode} theo hồ sơ API thành công!`
         );
         setTimeout(() => setActionSuccess(null), 4000);
 
@@ -718,10 +726,10 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
         setNewLicensePlate('');
         fetchMembers();
       } else {
-        setActionError(res.message || 'Không thể thêm thành viên. Vui lòng thử lại.');
+        setActionError(res.message || (isEn ? 'Failed to add member. Please try again.' : 'Không thể thêm thành viên. Vui lòng thử lại.'));
       }
     } catch (err: any) {
-      setActionError(err.message || 'Lỗi kết nối API khi thêm thành viên.');
+      setActionError(err.message || (isEn ? 'API connection error when adding member.' : 'Lỗi kết nối API khi thêm thành viên.'));
     } finally {
       setIsSubmitting(false);
     }
@@ -740,15 +748,19 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
       const res = await nksRemoveFamilyMember(removeTargetMember.id);
       if (res.success) {
         setMembers((prev) => prev.filter((m) => m.id !== removeTargetMember.id));
-        setActionSuccess(`✓ Đã hủy phân quyền cư trú & thu hồi quyền FaceID của thành viên "${removeTargetMember.fullName}".`);
+        setActionSuccess(
+          isEn
+            ? `✓ Revoked residency authorization & FaceID access for member "${removeTargetMember.fullName}".`
+            : `✓ Đã hủy phân quyền cư trú & thu hồi quyền FaceID của thành viên "${removeTargetMember.fullName}".`
+        );
         setTimeout(() => setActionSuccess(null), 4000);
         setRemoveTargetMember(null);
         fetchMembers();
       } else {
-        setActionError(res.message || 'Không thể xóa thành viên.');
+        setActionError(res.message || (isEn ? 'Could not remove member.' : 'Không thể xóa thành viên.'));
       }
     } catch (err) {
-      setActionError('Lỗi kết nối khi xóa thành viên.');
+      setActionError(isEn ? 'Connection error while removing member.' : 'Lỗi kết nối khi xóa thành viên.');
     } finally {
       setIsRemoving(false);
     }
@@ -758,16 +770,16 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
   const handleDirectAddMember = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!directFullName.trim()) {
-      setActionError('Vui lòng nhập đầy đủ họ và tên người thân.');
+      setActionError(isEn ? 'Please enter member full name.' : 'Vui lòng nhập đầy đủ họ và tên người thân.');
       return;
     }
-    const phoneErr = getPhoneValidationError(directPhone);
+    const phoneErr = getPhoneValidationError(directPhone, isEn);
     if (phoneErr) {
       setActionError(phoneErr);
       return;
     }
     if (directIdCard && directIdCard.trim()) {
-      const cccdErr = getCccdValidationError(directIdCard);
+      const cccdErr = getCccdValidationError(directIdCard, isEn);
       if (cccdErr) {
         setActionError(cccdErr);
         return;
@@ -791,7 +803,9 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
         setMembers(res.members);
         setShowAddModal(false);
         setActionSuccess(
-          `✓ Đã thêm thành viên "${directFullName}" vào Căn hộ ${aptCode}! Bạn có thể tiến hành quét FaceID và chụp CCCD ngay.`
+          isEn
+            ? `✓ Added member "${directFullName}" to Unit ${aptCode}! You can now enroll FaceID and scan Citizen ID.`
+            : `✓ Đã thêm thành viên "${directFullName}" vào Căn hộ ${aptCode}! Bạn có thể tiến hành quét FaceID và chụp CCCD ngay.`
         );
         setTimeout(() => setActionSuccess(null), 5000);
 
@@ -803,10 +817,10 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
         setDirectLicensePlate('');
         fetchMembers();
       } else {
-        setActionError(res.message || 'Không thể thêm thành viên. Vui lòng thử lại.');
+        setActionError(res.message || (isEn ? 'Failed to add member. Please try again.' : 'Không thể thêm thành viên. Vui lòng thử lại.'));
       }
     } catch (err: any) {
-      setActionError(err.message || 'Lỗi kết nối API khi thêm thành viên.');
+      setActionError(err.message || (isEn ? 'API connection error when adding member.' : 'Lỗi kết nối API khi thêm thành viên.'));
     } finally {
       setIsSubmitting(false);
     }
