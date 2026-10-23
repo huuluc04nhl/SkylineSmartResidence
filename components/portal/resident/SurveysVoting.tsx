@@ -83,8 +83,10 @@ function LuxuryToggle({
       } ${disabled ? 'opacity-40 cursor-not-allowed' : ''}`}
     >
       <span
-        className={`pointer-events-none inline-block w-5 h-5 transform rounded-none transition-transform duration-200 ease-in-out shadow-md ${
-          checked ? 'translate-x-5 bg-[#0A0E14]' : 'translate-x-0 bg-gray-300'
+        className={`pointer-events-none inline-block h-5 transform rounded-none transition-all duration-200 ease-in-out shadow-md ${
+          checked 
+            ? 'w-[22px] translate-x-[18px] bg-white' 
+            : 'w-5 translate-x-0 bg-gray-300'
         }`}
       />
     </button>

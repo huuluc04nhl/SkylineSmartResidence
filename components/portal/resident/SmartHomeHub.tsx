@@ -101,10 +101,10 @@ function LuxurySwitch({
       }`}
     >
       <span
-        className={`inline-block w-5 h-5 transition-transform duration-200 ease-in-out rounded-none shadow-md ${
+        className={`inline-block h-5 transition-all duration-200 ease-in-out rounded-none shadow-md ${
           checked
-            ? 'translate-x-5 bg-[#0D1117] text-[#C5A880]'
-            : 'translate-x-0 bg-gray-300 text-[#0D1117]'
+            ? 'w-[22px] translate-x-[18px] bg-white text-[#0D1117]'
+            : 'w-5 translate-x-0 bg-gray-300 text-[#0D1117]'
         }`}
       />
     </button>
