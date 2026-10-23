@@ -366,18 +366,15 @@ export default function CccdOcrScannerModal({
         {/* Modal Header */}
         <div className="flex items-center justify-between border-b border-[#222B35] pb-3 sm:pb-4">
           <div className="space-y-1 min-w-0 pr-2">
-            <div className="text-[10px] uppercase tracking-[0.2em] text-[#C5A880] font-bold flex flex-wrap items-center gap-1.5 sm:gap-2">
+            <div className="text-[10px] uppercase tracking-[0.2em] text-[#C5A880] font-bold flex items-center gap-1.5 font-mono">
               <Sparkles className="w-3.5 h-3.5 flex-shrink-0" /> 
-              <span className="truncate">{t('Thông Tin Cư Dân')}</span>
-              <span className="px-1.5 sm:px-2 py-0.5 bg-emerald-950/80 border border-emerald-500/50 text-emerald-400 text-[9px] font-mono tracking-normal font-semibold rounded-none inline-flex items-center gap-1">
-                <Sparkles className="w-2.5 h-2.5 text-emerald-400" /> {t('Hỗ Trợ Tự Động')}
-              </span>
+              <span>{t('Thông Tin Cư Dân')}</span>
             </div>
             <h3 className="font-serif text-base sm:text-2xl font-bold text-white flex items-center gap-2 truncate">
               <Scan className="w-4 h-4 sm:w-5 sm:h-5 text-[#C5A880] flex-shrink-0" /> <span>{t('Đọc Thông Tin Thẻ Căn Cước (2 Mặt)')}</span>
             </h3>
             <p className="text-xs text-gray-400 hidden sm:block">
-              {t('Hệ thống hỗ trợ tự động nhận diện thông tin từ 2 mặt thẻ Căn cước công dân của Quý cư dân một cách tiện lợi và an toàn.')}
+              {t('Quét thông tin từ 2 mặt thẻ Căn cước công dân để cập nhật hồ sơ.')}
             </p>
           </div>
 
@@ -647,13 +644,10 @@ export default function CccdOcrScannerModal({
         {/* ------------------------------------------------------------- */}
         {ocrResult && (
           <div className="p-4 sm:p-5 bg-gradient-to-r from-[#121820] to-[#161D26] border border-emerald-500/80 space-y-4 rounded-none animate-fadeIn shadow-2xl">
-            <div className="flex items-center justify-between border-b border-emerald-500/30 pb-3">
+            <div className="border-b border-emerald-500/30 pb-3">
               <div className="flex items-center gap-2 text-emerald-400 font-bold text-xs uppercase tracking-wider">
-                <CheckCircle2 className="w-4 h-4" /> {t('Thông Tin Đọc Được Từ Thẻ Căn Cước')}
+                <CheckCircle2 className="w-4 h-4" /> {t('Thông Tin Thẻ Căn Cước')}
               </div>
-              <span className="px-2 py-0.5 bg-emerald-950 text-emerald-300 border border-emerald-500 text-[10px] font-mono font-bold rounded-none">
-                {t('Độ Chính Xác:')} {ocrResult.confidence}%
-              </span>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 text-xs">

@@ -787,11 +787,6 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
               <div className="text-[11px] sm:text-xs text-gray-400 font-mono truncate">
                 {t('Căn')} <strong className="text-white">{aptCode}</strong> • {t('SĐT')}: <strong className="text-gray-300">{phone || t('Chưa có')}</strong> • {t('Biển')}: <strong className="text-[#C5A880]">{licensePlate || t('Chưa có')}</strong>
               </div>
-              <div className="text-[10px] text-[#C5A880]/90 flex items-center gap-1 pt-0.5">
-                <Camera className="w-3 h-3 text-[#C5A880] shrink-0" />
-                <span className="hidden sm:inline">{t('Chạm ảnh để đổi ảnh đại diện cá nhân • Mở cửa sảnh dùng FaceID ở Tab 2')}</span>
-                <span className="sm:hidden truncate">{t('Chạm ảnh để đổi avatar cá nhân')}</span>
-              </div>
             </div>
           </div>
 
@@ -830,7 +825,7 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
           )}
 
           {/* ========================================================= */}
-          {/* KHỐI 1: THÔNG TIN CĂN HỘ & CƯ DÂN (CỐ ĐỊNH THEO BQL)       */}
+          {/* KHỐI 1: THÔNG TIN CĂN HỘ & CƯ DÂN                         */}
           {/* ========================================================= */}
           <div className="p-4 sm:p-6 bg-[#161D26] border border-[#2D3748] rounded-none space-y-4 sm:space-y-5 shadow-lg">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#222B35] pb-3 sm:pb-4">
@@ -838,11 +833,8 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
                 <div className="text-[10px] uppercase tracking-wider text-[#C5A880] font-bold flex items-center gap-1.5 font-mono">
                   <Building className="w-3.5 h-3.5" /> {t('Không Gian Cư Trú')}
                 </div>
-                <h3 className="font-serif text-base sm:text-lg font-bold text-white mt-0.5 flex items-center gap-2">
+                <h3 className="font-serif text-base sm:text-lg font-bold text-white mt-0.5">
                   1. {t('Thông Tin Căn Hộ & Cư Dân')}
-                  <span className="text-[10px] px-2 py-0.5 bg-[#0D1117] text-[#C5A880] border border-[#C5A880]/30 font-mono font-normal">
-                    {t('Hồ sơ BQL bàn giao')}
-                  </span>
                 </h3>
               </div>
               <span className="px-2.5 py-1 bg-[#121820] text-[#C5A880] border border-[#263140] text-xs font-mono rounded-none">
@@ -850,25 +842,11 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
               </span>
             </div>
 
-            {/* Thông báo khóa hồ sơ bàn giao BQL */}
-            <div className="p-3 bg-[#0D1117] border border-[#C5A880]/30 rounded-none flex items-start gap-2.5 text-xs">
-              <Lock className="w-4 h-4 text-[#C5A880] shrink-0 mt-0.5" />
-              <div className="text-gray-300 leading-relaxed text-[11px] sm:text-xs">
-                <span className="font-semibold text-[#C5A880] block sm:inline">{t('Thông tin pháp lý được khóa cố định:')} </span>
-                {t('Dữ liệu căn hộ và cư dân được Ban Quản Lý thiết lập cố định theo biên bản bàn giao căn hộ. Cư dân không thể tự ý sửa đổi. Nếu cần điều chỉnh hoặc đính chính thông tin nhân khẩu, Quý cư dân vui lòng liên hệ Ban Quản Lý tại Tầng 1 sảnh The Tropical (Hotline: 1900 8899).')}
-              </div>
-            </div>
-
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4 text-xs">
               {/* Field: Mã Căn Hộ */}
               <div className="space-y-1.5">
-                <label className="text-gray-300 flex items-center justify-between font-semibold">
-                  <span className="flex items-center gap-1.5">
-                    <Building className="w-3.5 h-3.5 text-[#C5A880]" /> {t('Căn Hộ Cư Trú:')}
-                  </span>
-                  <span className="text-[10px] text-gray-500 font-mono flex items-center gap-1">
-                    <Lock className="w-2.5 h-2.5" /> {t('Cố định')}
-                  </span>
+                <label className="text-gray-300 font-semibold flex items-center gap-1.5">
+                  <Building className="w-3.5 h-3.5 text-[#C5A880]" /> {t('Căn Hộ Cư Trú:')}
                 </label>
                 <input
                   type="text"
@@ -880,13 +858,8 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
 
               {/* Field: Tư Cách Cư Trú */}
               <div className="space-y-1.5">
-                <label className="text-gray-300 flex items-center justify-between font-semibold">
-                  <span className="flex items-center gap-1.5">
-                    <Users className="w-3.5 h-3.5 text-[#C5A880]" /> {t('Tư Cách Cư Trú:')}
-                  </span>
-                  <span className="text-[10px] text-[#C5A880] font-mono flex items-center gap-1">
-                    <ShieldCheck className="w-2.5 h-2.5" /> {t('BQL xác nhận')}
-                  </span>
+                <label className="text-gray-300 font-semibold flex items-center gap-1.5">
+                  <Users className="w-3.5 h-3.5 text-[#C5A880]" /> {t('Tư Cách Cư Trú:')}
                 </label>
                 <input
                   type="text"
@@ -896,15 +869,10 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
                 />
               </div>
 
-              {/* Field: Họ và Tên (Khóa cố định theo BQL) */}
+              {/* Field: Họ và Tên */}
               <div className="space-y-1.5">
-                <label className="text-gray-300 flex items-center justify-between font-semibold">
-                  <span className="flex items-center gap-1.5">
-                    <UserIcon className="w-3.5 h-3.5 text-[#C5A880]" /> {t('Họ và Tên:')}
-                  </span>
-                  <span className="text-[10px] text-gray-500 font-mono flex items-center gap-1">
-                    <Lock className="w-2.5 h-2.5" /> {t('Cố định (BQL thiết lập)')}
-                  </span>
+                <label className="text-gray-300 font-semibold flex items-center gap-1.5">
+                  <UserIcon className="w-3.5 h-3.5 text-[#C5A880]" /> {t('Họ và Tên:')}
                 </label>
                 <input
                   type="text"
@@ -914,15 +882,10 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
                 />
               </div>
 
-              {/* Field: Giới Tính (Khóa cố định theo BQL) */}
+              {/* Field: Giới Tính */}
               <div className="space-y-1.5">
-                <label className="text-gray-300 flex items-center justify-between font-semibold">
-                  <span className="flex items-center gap-1.5">
-                    <UserIcon className="w-3.5 h-3.5 text-[#C5A880]" /> {t('Giới Tính:')}
-                  </span>
-                  <span className="text-[10px] text-gray-500 font-mono flex items-center gap-1">
-                    <Lock className="w-2.5 h-2.5" /> {t('Cố định (BQL thiết lập)')}
-                  </span>
+                <label className="text-gray-300 font-semibold flex items-center gap-1.5">
+                  <UserIcon className="w-3.5 h-3.5 text-[#C5A880]" /> {t('Giới Tính:')}
                 </label>
                 <input
                   type="text"
@@ -932,15 +895,10 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
                 />
               </div>
 
-              {/* Field: Ngày Sinh (Khóa cố định theo BQL) */}
+              {/* Field: Ngày Sinh */}
               <div className="space-y-1.5 md:col-span-2">
-                <label className="text-gray-300 flex items-center justify-between font-semibold">
-                  <span className="flex items-center gap-1.5">
-                    <Calendar className="w-3.5 h-3.5 text-[#C5A880]" /> {t('Ngày Sinh:')}
-                  </span>
-                  <span className="text-[10px] text-gray-500 font-mono flex items-center gap-1">
-                    <Lock className="w-2.5 h-2.5" /> {t('Cố định (BQL thiết lập)')}
-                  </span>
+                <label className="text-gray-300 font-semibold flex items-center gap-1.5">
+                  <Calendar className="w-3.5 h-3.5 text-[#C5A880]" /> {t('Ngày Sinh:')}
                 </label>
                 <input
                   type="text"
@@ -956,18 +914,13 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
           {/* KHỐI 2: THÔNG TIN LIÊN HỆ & PHƯƠNG TIỆN                   */}
           {/* ========================================================= */}
           <div className="p-4 sm:p-6 bg-[#161D26] border border-[#2D3748] rounded-none space-y-4 sm:space-y-5 shadow-lg">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#222B35] pb-3 sm:pb-4">
-              <div>
-                <div className="text-[10px] uppercase tracking-wider text-[#C5A880] font-bold flex items-center gap-1.5 font-mono">
-                  <Smartphone className="w-3.5 h-3.5" /> {t('Liên Hệ & Phương Tiện')}
-                </div>
-                <h3 className="font-serif text-base sm:text-lg font-bold text-white mt-0.5">
-                  2. {t('Thông Tin Liên Hệ & Phương Tiện')}
-                </h3>
+            <div className="border-b border-[#222B35] pb-3 sm:pb-4">
+              <div className="text-[10px] uppercase tracking-wider text-[#C5A880] font-bold flex items-center gap-1.5 font-mono">
+                <Smartphone className="w-3.5 h-3.5" /> {t('Liên Hệ & Phương Tiện')}
               </div>
-              <span className="px-2.5 py-1 bg-[#121820] text-gray-300 border border-[#263140] text-xs font-mono rounded-none">
-                {t('Cập nhật tức thì')}
-              </span>
+              <h3 className="font-serif text-base sm:text-lg font-bold text-white mt-0.5">
+                2. {t('Thông Tin Liên Hệ & Phương Tiện')}
+              </h3>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-5 text-xs">
@@ -1030,11 +983,8 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
 
               {/* Field: Biển Số Xe */}
               <div className="space-y-1.5 md:col-span-2">
-                <label className="text-gray-300 flex items-center justify-between font-semibold">
-                  <span className="flex items-center gap-1.5">
-                    <Car className="w-3.5 h-3.5 text-[#C5A880]" /> {isEn ? 'License Plate (Auto B1 Gate Opening):' : <>Biển Số Xe <span className="hidden sm:inline">Đăng Ký (Tự Động Mở Cổng Hầm B1)</span>:</>}
-                  </span>
-                  <span className="text-[10px] text-[#C5A880] font-mono">{isEn ? 'Automated AI Detection' : 'Nhận diện AI tự động'}</span>
+                <label className="text-gray-300 flex items-center gap-1.5 font-semibold">
+                  <Car className="w-3.5 h-3.5 text-[#C5A880]" /> {isEn ? 'License Plate:' : 'Biển Số Xe Đăng Ký:'}
                 </label>
                 <input
                   type="text"
@@ -1048,7 +998,7 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
               {/* Field: Tiểu Sử / Ghi Chú Căn Hộ */}
               <div className="space-y-1.5 md:col-span-2">
                 <label className="text-gray-300 flex items-center gap-1.5 font-semibold">
-                  <FileText className="w-3.5 h-3.5 text-[#C5A880]" /> {isEn ? 'Apartment Notes & BQL Remarks:' : <>Ghi Chú Căn Hộ <span className="hidden sm:inline">& Lưu Ý Cho BQL</span>:</>}
+                  <FileText className="w-3.5 h-3.5 text-[#C5A880]" /> {isEn ? 'Apartment Notes:' : 'Ghi Chú Căn Hộ:'}
                 </label>
                 <textarea
                   rows={2}
@@ -1061,18 +1011,14 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
             </div>
 
             {/* Submit Button */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-3 sm:pt-4 border-t border-[#222B35]">
-              <div className="text-[11px] text-gray-400 hidden sm:block">
-                {isEn ? 'Click save to synchronize contact info and license plate immediately.' : 'Nhấn lưu để đồng bộ thông tin liên hệ và biển số xe ngay lập tức.'}
-              </div>
-
+            <div className="flex justify-end pt-3 sm:pt-4 border-t border-[#222B35]">
               <button
                 type="submit"
                 disabled={isSaving}
                 className="w-full sm:w-auto px-8 py-3 bg-[#C5A880] hover:bg-white text-[#0D1117] text-xs font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-2 shadow-xl rounded-none active:scale-[0.99] cursor-pointer"
               >
                 {isSaving ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-                {isSaving ? (isEn ? 'Saving Changes...' : 'Đang Lưu...') : (isEn ? 'Save Contact Changes' : 'Lưu Thay Đổi Thông Tin')}
+                {isSaving ? (isEn ? 'Saving Changes...' : 'Đang Lưu...') : (isEn ? 'Save Changes' : 'Lưu Thay Đổi Thông Tin')}
               </button>
             </div>
           </div>
@@ -1319,11 +1265,6 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
                     <Camera className="w-3.5 h-3.5" />
                     <span>{enrolledFaceProfile ? (isEn ? 'Rescan' : 'Quét Lại') : (isEn ? 'Scan FaceID' : 'Quét FaceID')}</span>
                   </button>
-                </div>
-                <div className="text-[10px] text-[#C5A880]/80 font-mono mb-2 hidden sm:block">
-                  {isEn
-                    ? '✦ 4-vector biometric model for building access • Completely independent of profile avatar'
-                    : '✦ Bộ 4 vector sinh trắc học mở cổng tòa nhà • Độc lập hoàn toàn với ảnh đại diện (avatar)'}
                 </div>
 
                 {enrolledFaceProfile ? (
