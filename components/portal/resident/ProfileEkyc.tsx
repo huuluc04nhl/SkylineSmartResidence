@@ -87,7 +87,28 @@ export default function ProfileEkyc({ currentUser }: ProfileEkycProps) {
   const aptCode = currentUser.apartment_code || 'CH-06';
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const [activeTab, setActiveTab] = useState<'INFO' | 'EKYC' | 'PASSWORD'>('INFO');
+  const [activeTab, setActiveTabState] = useState<'INFO' | 'EKYC' | 'PASSWORD'>(() => {
+    if (typeof window !== 'undefined') {
+      const urlParams = new URLSearchParams(window.location.search);
+      const sub = urlParams.get('subtab');
+      if (sub === 'INFO' || sub === 'EKYC' || sub === 'PASSWORD') return sub;
+      const saved = localStorage.getItem('skyline_profile_subtab');
+      if (saved === 'INFO' || saved === 'EKYC' || saved === 'PASSWORD') return saved as 'INFO' | 'EKYC' | 'PASSWORD';
+    }
+    return 'INFO';
+  });
+
+  const setActiveTab = (tab: 'INFO' | 'EKYC' | 'PASSWORD') => {
+    setActiveTabState(tab);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('skyline_profile_subtab', tab);
+      const url = new URL(window.location.href);
+      if (url.searchParams.get('subtab') !== tab) {
+        url.searchParams.set('subtab', tab);
+        window.history.replaceState(null, '', url.pathname + url.search);
+      }
+    }
+  };
   const [isOcrModalOpen, setIsOcrModalOpen] = useState(false);
   const [isAvatarModalOpen, setIsAvatarModalOpen] = useState(false);
   const [isCardViewerOpen, setIsCardViewerOpen] = useState(false);

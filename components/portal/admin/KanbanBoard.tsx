@@ -77,7 +77,28 @@ import { cleanPhoneNumber, isValidPhoneNumber, getPhoneValidationError } from '@
 
 export default function KanbanBoard() {
   const { t, isEn, language } = useLanguage();
-  const [activeTab, setActiveTab] = useState<'KANBAN' | 'PAYROLL'>('KANBAN');
+  const [activeTab, setActiveTabState] = useState<'KANBAN' | 'PAYROLL'>(() => {
+    if (typeof window !== 'undefined') {
+      const urlParams = new URLSearchParams(window.location.search);
+      const sub = urlParams.get('subtab');
+      if (sub === 'KANBAN' || sub === 'PAYROLL') return sub;
+      const saved = localStorage.getItem('skyline_kanban_active_tab');
+      if (saved === 'KANBAN' || saved === 'PAYROLL') return saved as 'KANBAN' | 'PAYROLL';
+    }
+    return 'KANBAN';
+  });
+
+  const setActiveTab = (tab: 'KANBAN' | 'PAYROLL') => {
+    setActiveTabState(tab);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('skyline_kanban_active_tab', tab);
+      const url = new URL(window.location.href);
+      if (url.searchParams.get('subtab') !== tab) {
+        url.searchParams.set('subtab', tab);
+        window.history.replaceState(null, '', url.pathname + url.search);
+      }
+    }
+  };
   const [tickets, setTickets] = useState<ExtendedServiceRequest[]>([]);
   const [technicians, setTechnicians] = useState<TechnicianProfile[]>([]);
   const [payrollList, setPayrollList] = useState<TechnicianPayrollSummary[]>([]);

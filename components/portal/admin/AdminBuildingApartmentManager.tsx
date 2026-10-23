@@ -398,8 +398,29 @@ export default function AdminBuildingApartmentManager() {
   const buildingColorTone: BuildingColorTone = 'GOLD_LUXURY';
 
   const [selectedFloorRange, setSelectedFloorRange] = useState<FloorRangeFilter>('ALL');
-  const [buildingPerspective, setBuildingPerspective] = useState<ViewPerspective>('BUILDING_3D_FLOOR');
-    const [detailTab, setDetailTab] = useState<'OVERVIEW' | 'FINANCIAL' | 'TECHNICAL'>('OVERVIEW');
+  const [buildingPerspective, setBuildingPerspectiveState] = useState<ViewPerspective>(() => {
+    if (typeof window !== 'undefined') {
+      const urlParams = new URLSearchParams(window.location.search);
+      const view = urlParams.get('view');
+      if (view) return view as ViewPerspective;
+      const saved = localStorage.getItem('skyline_building_perspective');
+      if (saved) return saved as ViewPerspective;
+    }
+    return 'BUILDING_3D_FLOOR';
+  });
+
+  const setBuildingPerspective = (view: ViewPerspective) => {
+    setBuildingPerspectiveState(view);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('skyline_building_perspective', view);
+      const url = new URL(window.location.href);
+      if (url.searchParams.get('view') !== view) {
+        url.searchParams.set('view', view);
+        window.history.replaceState(null, '', url.pathname + url.search);
+      }
+    }
+  };
+  const [detailTab, setDetailTab] = useState<'OVERVIEW' | 'FINANCIAL' | 'TECHNICAL'>('OVERVIEW');
 
   // Điều khiển Floor Plan View (Mặt Bằng Tầng & Chế độ Mở Rộng) - Mặc định tầng 30 của chủ hộ
   const [selectedFloor, setSelectedFloor] = useState<number>(30);

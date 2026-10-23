@@ -61,7 +61,31 @@ function PortalContent() {
   const { currentUser, isLoading, login, logout } = useAuth();
   const { language, t } = useLanguage();
 
-  const [activeModule, setActiveModule] = useState<string>('resident-home');
+  const [activeModule, setActiveModuleState] = useState<string>(() => {
+    if (typeof window !== 'undefined') {
+      const urlParams = new URLSearchParams(window.location.search);
+      const tabParam = urlParams.get('tab');
+      if (tabParam) return tabParam;
+      const saved = localStorage.getItem('skyline_portal_active_tab');
+      if (saved) return saved;
+    }
+    return 'resident-home';
+  });
+
+  const setActiveModule = (modId: string) => {
+    setActiveModuleState(modId);
+    if (typeof window !== 'undefined') {
+      const userKey = currentUser?.id || currentUser?.username || 'user';
+      localStorage.setItem('skyline_portal_active_tab', modId);
+      localStorage.setItem(`skyline_portal_active_tab_${userKey}`, modId);
+      const url = new URL(window.location.href);
+      if (url.searchParams.get('tab') !== modId) {
+        url.searchParams.set('tab', modId);
+        window.history.replaceState(null, '', url.pathname + url.search);
+      }
+    }
+  };
+
   const [isVisitorModalOpen, setIsVisitorModalOpen] = useState(false);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
@@ -69,11 +93,28 @@ function PortalContent() {
   const [isAiChatOpen, setIsAiChatOpen] = useState(false);
   const [isAllServicesOpen, setIsAllServicesOpen] = useState(false);
 
-  // Auto-route to the appropriate screen according to role
+  // Auto-route to the appropriate screen according to role, preserving active screen across refreshes
   useEffect(() => {
     if (currentUser) {
+      const userKey = currentUser.id || currentUser.username || 'user';
       let tabParam = searchParams.get('tab');
       const actionParam = searchParams.get('action');
+
+      // Check if visitor pass action is requested
+      if (actionParam === 'visitor' || tabParam === 'resident-visitor') {
+        setIsVisitorModalOpen(true);
+        setActiveModule('resident-home');
+        return;
+      }
+
+      // If no tab in URL query, restore last active tab from localStorage
+      if (!tabParam && typeof window !== 'undefined') {
+        const savedTab = localStorage.getItem(`skyline_portal_active_tab_${userKey}`) 
+          || localStorage.getItem('skyline_portal_active_tab');
+        if (savedTab) {
+          tabParam = savedTab;
+        }
+      }
 
       // Aliases for seamless linking
       if (tabParam === 'finance' || tabParam === 'billing' || tabParam === 'resident-billing') {
@@ -83,33 +124,30 @@ function PortalContent() {
       if (tabParam === 'admin-building') tabParam = 'admin-apartments';
       if (tabParam === 'admin-visitor') tabParam = 'admin-visitors';
 
-      // Check if visitor pass action is requested
-      if (actionParam === 'visitor' || tabParam === 'resident-visitor') {
-        setIsVisitorModalOpen(true);
-        setActiveModule('resident-home');
-        return;
-      }
+      let resolvedModule = 'resident-home';
 
       if (currentUser.role === 'ADMIN') {
         if (tabParam && tabParam.startsWith('admin-')) {
-          setActiveModule(tabParam);
+          resolvedModule = tabParam;
         } else {
-          setActiveModule('admin-dashboard');
+          resolvedModule = 'admin-dashboard';
         }
       } else if (currentUser.role === 'TECHNICIAN') {
         if (tabParam && tabParam.startsWith('admin-')) {
-          setActiveModule(tabParam);
+          resolvedModule = tabParam;
         } else {
-          setActiveModule('admin-kanban');
+          resolvedModule = 'admin-kanban';
         }
       } else {
         // OWNER or TENANT (Family)
         if (tabParam && tabParam.startsWith('resident-')) {
-          setActiveModule(tabParam);
+          resolvedModule = tabParam;
         } else {
-          setActiveModule('resident-home');
+          resolvedModule = 'resident-home';
         }
       }
+
+      setActiveModule(resolvedModule);
     }
   }, [currentUser, searchParams]);
 
@@ -166,6 +204,10 @@ function PortalContent() {
   }
 
   const handleLogout = async () => {
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('skyline_portal_active_tab');
+      localStorage.removeItem('skyline_profile_subtab');
+    }
     await logout();
     router.push('/');
   };

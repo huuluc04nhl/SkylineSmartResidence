@@ -64,7 +64,28 @@ export type VisitorTab = 'LIST' | 'SCANNER' | 'AUDIT_LOGS';
 
 export default function AdminVisitorControl() {
   // 1. Tab chính điều khiển
-  const [activeTab, setActiveTab] = useState<VisitorTab>('LIST');
+  const [activeTab, setActiveTabState] = useState<VisitorTab>(() => {
+    if (typeof window !== 'undefined') {
+      const urlParams = new URLSearchParams(window.location.search);
+      const sub = urlParams.get('subtab');
+      if (sub === 'LIST' || sub === 'SCANNER' || sub === 'AUDIT_LOGS') return sub as VisitorTab;
+      const saved = localStorage.getItem('skyline_visitor_active_tab');
+      if (saved === 'LIST' || saved === 'SCANNER' || saved === 'AUDIT_LOGS') return saved as VisitorTab;
+    }
+    return 'LIST';
+  });
+
+  const setActiveTab = (tab: VisitorTab) => {
+    setActiveTabState(tab);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('skyline_visitor_active_tab', tab);
+      const url = new URL(window.location.href);
+      if (url.searchParams.get('subtab') !== tab) {
+        url.searchParams.set('subtab', tab);
+        window.history.replaceState(null, '', url.pathname + url.search);
+      }
+    }
+  };
 
   // Chốt kiểm soát an ninh
   const [selectedCheckpoint, setSelectedCheckpoint] = useState('Sảnh Tiếp Tân Tầng 1 (Chung Cư Skyline)');
