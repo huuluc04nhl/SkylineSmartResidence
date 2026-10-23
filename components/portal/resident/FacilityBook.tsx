@@ -36,7 +36,7 @@ export default function FacilityBook({ currentUser }: FacilityBookProps) {
       return;
     }
 
-    const { newBooking } = createFacilityBooking(
+    const result = createFacilityBooking(
       aptCode,
       selectedFacility.id,
       selectedFacility.name,
@@ -52,7 +52,12 @@ export default function FacilityBook({ currentUser }: FacilityBookProps) {
       'Miễn phí theo hạn mức sinh hoạt'
     );
 
-    setCreatedTicket(newBooking);
+    if (!result.success || !result.newBooking) {
+      alert(`⚠️ Không thể đặt chỗ: ${result.error || 'Khung giờ này đã kín hoặc bị trùng lịch.'}`);
+      return;
+    }
+
+    setCreatedTicket(result.newBooking);
     setQuota(getFacilityMonthlyQuota(aptCode));
   };
 

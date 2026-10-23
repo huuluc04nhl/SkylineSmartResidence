@@ -51,9 +51,93 @@ export interface CardState {
 
 const FACILITY_LOGS_PREFIX = 'skyline_facility_logs_v2_';
 const FACILITY_BOOKINGS_PREFIX = 'skyline_facility_bookings_v2_';
+const FACILITY_GLOBAL_BOOKINGS_KEY = 'skyline_facility_global_bookings_v3';
 const CARDS_PREFIX = 'skyline_resident_cards_v2_';
 
-const DEFAULT_DEMO_BOOKINGS: Record<string, FacilityBooking[]> = {};
+export interface FacilityLimitRule {
+  facilityId: string;
+  facilityName: string;
+  maxSlotsPerTime: number; // Số lượt đặt tối đa cho 1 khung giờ trong toàn tòa nhà
+  maxGuests: number;
+  isPrivate: boolean; // Phòng riêng biệt hoàn toàn
+  description: string;
+}
+
+export const FACILITY_LIMIT_RULES: Record<string, FacilityLimitRule> = {
+  'fac-sauna': {
+    facilityId: 'fac-sauna',
+    facilityName: 'Phòng Xông Hơi Đá Muối VIP',
+    maxSlotsPerTime: 1, // 1 phòng VIP gia đình duy nhất / khung giờ
+    maxGuests: 6,
+    isPrivate: true,
+    description: 'Phòng VIP gia đình riêng tư khép kín (Giới hạn: 1 lượt đặt / khung giờ)'
+  },
+  'fac-bbq': {
+    facilityId: 'fac-bbq',
+    facilityName: 'Vườn Tiệc Nướng BBQ Sân Thượng',
+    maxSlotsPerTime: 3, // 3 bếp nướng Weber A, B, C độc lập tại tầng 25
+    maxGuests: 20,
+    isPrivate: false,
+    description: '3 cụm bếp nướng Weber độc lập (Giới hạn: 3 lượt đặt / ca tiệc)'
+  },
+  'fac-sports-malibu': {
+    facilityId: 'fac-sports-malibu',
+    facilityName: 'Sân Thể Thao Malibu (Tennis & Bóng Rổ)',
+    maxSlotsPerTime: 2, // 1 sân Tennis + 1 sân Bóng rổ
+    maxGuests: 12,
+    isPrivate: false,
+    description: '1 Sân Tennis + 1 Sân Bóng Rổ (Giới hạn: 2 lượt đặt / khung giờ)'
+  },
+  'fac-cabana': {
+    facilityId: 'fac-cabana',
+    facilityName: 'Chòi Nghỉ Cabana Ven Hồ Bơi Resort',
+    maxSlotsPerTime: 4, // 4 chòi nghỉ 01, 02, 03, 04
+    maxGuests: 8,
+    isPrivate: false,
+    description: '4 Chòi nghỉ Cabana view hồ (Giới hạn: 4 lượt đặt / khung giờ)'
+  },
+  'fac-yoga': {
+    facilityId: 'fac-yoga',
+    facilityName: 'Sân Yoga Ngoài Trời & Thiền Tĩnh',
+    maxSlotsPerTime: 6, // 6 thảm thiền
+    maxGuests: 6,
+    isPrivate: false,
+    description: 'Khuôn viên tĩnh lặng (Giới hạn: 6 lượt đặt / khung giờ)'
+  },
+  'fac-multipurpose-lawn': {
+    facilityId: 'fac-multipurpose-lawn',
+    facilityName: 'Sân Cỏ Đa Năng Y-01 Malibu',
+    maxSlotsPerTime: 1, // Sân bóng đá mini / Pickleball độc quyền 1 nhóm
+    maxGuests: 20,
+    isPrivate: true,
+    description: 'Sân cỏ bóng đá mini / Pickleball (Giới hạn: 1 lượt đặt / khung giờ)'
+  }
+};
+
+/**
+ * Phân tích khoảng thời gian bắt đầu và kết thúc (tính theo phút trong ngày)
+ */
+export function parseTimeSlotRange(slotStr: string): { startMin: number; endMin: number } | null {
+  if (!slotStr) return null;
+  const match = slotStr.match(/(\d{1,2}):(\d{2})\s*-\s*(\d{1,2}):(\d{2})/);
+  if (!match) return null;
+  const startMin = parseInt(match[1], 10) * 60 + parseInt(match[2], 10);
+  const endMin = parseInt(match[3], 10) * 60 + parseInt(match[4], 10);
+  return { startMin, endMin };
+}
+
+/**
+ * Kiểm tra 2 khung giờ có bị giao cắt / trùng lặp thời gian hay không
+ */
+export function isTimeSlotOverlap(slotA: string, slotB: string): boolean {
+  if (!slotA || !slotB) return false;
+  const rangeA = parseTimeSlotRange(slotA);
+  const rangeB = parseTimeSlotRange(slotB);
+  if (!rangeA || !rangeB) {
+    return slotA.trim().slice(0, 13) === slotB.trim().slice(0, 13);
+  }
+  return Math.max(rangeA.startMin, rangeB.startMin) < Math.min(rangeA.endMin, rangeB.endMin);
+}
 
 function getStorageItem<T>(key: string, defaultVal: T): T {
   if (typeof window === 'undefined') return defaultVal;
@@ -73,6 +157,22 @@ function setStorageItem<T>(key: string, val: T): void {
   } catch (err) {
     console.error('Failed to set facility storage:', err);
   }
+}
+
+/**
+ * Lấy toàn bộ danh sách đặt chỗ của toàn bộ tòa nhà (Shared Registry)
+ */
+export function getAllFacilityBookings(): FacilityBooking[] {
+  let list = getStorageItem<FacilityBooking[]>(FACILITY_GLOBAL_BOOKINGS_KEY, []);
+  if (!Array.isArray(list)) list = [];
+  return list;
+}
+
+/**
+ * Lưu toàn bộ danh sách đặt chỗ của tòa nhà
+ */
+export function saveAllFacilityBookings(all: FacilityBooking[]): void {
+  setStorageItem(FACILITY_GLOBAL_BOOKINGS_KEY, all);
 }
 
 /**
@@ -110,19 +210,255 @@ export function addFacilityCheckinLog(
 }
 
 /**
- * Lấy danh sách đặt chỗ tiện ích của căn hộ (Khởi đầu sạch, không nạp phiếu ảo)
+ * Lấy danh sách đặt chỗ tiện ích của căn hộ (Khởi đầu sạch, đồng bộ Shared Registry)
  */
 export function getFacilityBookings(aptCode: string): FacilityBooking[] {
-  const stored = getStorageItem<FacilityBooking[] | null>(`${FACILITY_BOOKINGS_PREFIX}${aptCode}`, null);
-  if (stored && Array.isArray(stored)) return stored;
-  return [];
+  const all = getAllFacilityBookings();
+  const cleanApt = (aptCode || '').trim().toUpperCase();
+  const aptBookings = all.filter(b => (b.aptCode || '').trim().toUpperCase() === cleanApt);
+
+  // Đồng bộ legacy key nếu có
+  const legacy = getStorageItem<FacilityBooking[] | null>(`${FACILITY_BOOKINGS_PREFIX}${aptCode}`, null);
+  if (legacy && Array.isArray(legacy) && legacy.length > 0) {
+    let hasNew = false;
+    const merged = [...all];
+    legacy.forEach(legItem => {
+      if (!merged.some(m => m.id === legItem.id || m.ticketCode === legItem.ticketCode)) {
+        merged.push(legItem);
+        hasNew = true;
+      }
+    });
+    if (hasNew) {
+      saveAllFacilityBookings(merged);
+      return merged.filter(b => (b.aptCode || '').trim().toUpperCase() === cleanApt);
+    }
+  }
+
+  return aptBookings;
+}
+
+/**
+ * BẪY LỖI & KIỂM TRA ĐẶT CHỖ HỢP LỆ (Validation Trap)
+ * 1. Không thể đặt cho ngày trong quá khứ hoặc khung giờ đã qua
+ * 2. 1 Căn hộ KHÔNG THỂ đặt trùng lặp cùng một tiện ích trong cùng khung giờ
+ * 3. 1 Căn hộ KHÔNG THỂ đặt 2 tiện ích khác nhau bị trùng/giao cắt thời gian
+ * 4. Giới hạn sức chứa tiện ích (VIP Sauna max 1, BBQ max 3, Malibu max 2, Cabana max 4,...)
+ * 5. Giới hạn hạn mức quota tháng
+ */
+export function validateBookingRequest({
+  aptCode,
+  facilityId,
+  bookingDate,
+  timeSlot,
+}: {
+  aptCode: string;
+  facilityId: string;
+  bookingDate: string;
+  timeSlot: string;
+  bookerName?: string;
+}): {
+  valid: boolean;
+  error?: string;
+  bookedCount: number;
+  maxSlots: number;
+  remainingSlots: number;
+} {
+  const limitRule = FACILITY_LIMIT_RULES[facilityId] || {
+    facilityId,
+    facilityName: 'Tiện ích',
+    maxSlotsPerTime: 2,
+    maxGuests: 10,
+    isPrivate: false,
+    description: 'Tiện ích chung cư (Tối đa 2 lượt / khung giờ)'
+  };
+
+  const now = new Date();
+  const todayStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+
+  // 1. Kiểm tra ngày đặt
+  if (bookingDate < todayStr) {
+    return {
+      valid: false,
+      error: 'Không thể đặt lịch cho ngày đã qua trong quá khứ.',
+      bookedCount: 0,
+      maxSlots: limitRule.maxSlotsPerTime,
+      remainingSlots: limitRule.maxSlotsPerTime
+    };
+  }
+
+  // Nếu là ngày hôm nay, kiểm tra giờ bắt đầu có qua chưa
+  if (bookingDate === todayStr) {
+    const range = parseTimeSlotRange(timeSlot);
+    if (range) {
+      const currentMin = now.getHours() * 60 + now.getMinutes();
+      if (currentMin >= range.startMin) {
+        return {
+          valid: false,
+          error: `Khung giờ ${timeSlot} hôm nay đã bắt đầu hoặc kết thúc. Quý cư dân vui lòng chọn khung giờ kế tiếp.`,
+          bookedCount: 0,
+          maxSlots: limitRule.maxSlotsPerTime,
+          remainingSlots: limitRule.maxSlotsPerTime
+        };
+      }
+    }
+  }
+
+  const allBuildingBookings = getAllFacilityBookings();
+  const cleanApt = (aptCode || '').trim().toUpperCase();
+
+  // 2. Bẫy lỗi Căn Hộ Đặt Duplicate (Cùng tiện ích hoặc tiện ích khác trong cùng khung giờ)
+  const residentActiveBookings = allBuildingBookings.filter(b => 
+    b.status === 'CONFIRMED' && 
+    (b.aptCode || '').trim().toUpperCase() === cleanApt &&
+    b.bookingDate === bookingDate
+  );
+
+  // a) Trùng chính tiện ích này
+  const duplicateSame = residentActiveBookings.find(b => 
+    b.facilityId === facilityId && isTimeSlotOverlap(b.timeSlot, timeSlot)
+  );
+  if (duplicateSame) {
+    return {
+      valid: false,
+      error: `Căn hộ ${aptCode} đã có phiếu đặt đang có hiệu lực cho [${limitRule.facilityName}] vào khung giờ [${duplicateSame.timeSlot}] ngày ${bookingDate}. Hệ thống không cho phép đặt trùng lặp (duplicate).`,
+      bookedCount: 1,
+      maxSlots: limitRule.maxSlotsPerTime,
+      remainingSlots: 0
+    };
+  }
+
+  // b) Trùng khung giờ với một tiện ích khác (1 cư dân không thể phân thân ở 2 nơi cùng lúc)
+  const conflictOther = residentActiveBookings.find(b => 
+    isTimeSlotOverlap(b.timeSlot, timeSlot)
+  );
+  if (conflictOther) {
+    return {
+      valid: false,
+      error: `Căn hộ ${aptCode} đã có lịch đặt tiện ích khác [${conflictOther.facilityName}] vào khung giờ [${conflictOther.timeSlot}] cùng ngày ${bookingDate}. Mỗi căn hộ chỉ có thể giữ chỗ một tiện ích trong cùng một khung thời gian.`,
+      bookedCount: 1,
+      maxSlots: limitRule.maxSlotsPerTime,
+      remainingSlots: 0
+    };
+  }
+
+  // 3. Bẫy lỗi Giới Hạn Sức Chứa Toàn Tòa Nhà (Kín Chỗ / Overlapping capacity)
+  const activeBookingsForFacility = allBuildingBookings.filter(b =>
+    b.status === 'CONFIRMED' &&
+    b.facilityId === facilityId &&
+    b.bookingDate === bookingDate &&
+    isTimeSlotOverlap(b.timeSlot, timeSlot)
+  );
+
+  const bookedCount = activeBookingsForFacility.length;
+  const remainingSlots = Math.max(0, limitRule.maxSlotsPerTime - bookedCount);
+
+  if (bookedCount >= limitRule.maxSlotsPerTime) {
+    return {
+      valid: false,
+      error: `Tiện ích [${limitRule.facilityName}] đã KÍN CHỖ (đạt giới hạn tối đa ${limitRule.maxSlotsPerTime} lượt đặt của tòa nhà) trong khung giờ [${timeSlot}] ngày ${bookingDate}. Quý cư dân vui lòng chọn khung giờ khác.`,
+      bookedCount,
+      maxSlots: limitRule.maxSlotsPerTime,
+      remainingSlots: 0
+    };
+  }
+
+  // 4. Kiểm tra Hạn mức Quota tháng
+  const quota = getFacilityMonthlyQuota(aptCode);
+  if (quota.remaining <= 0) {
+    return {
+      valid: false,
+      error: `Căn hộ ${aptCode} đã sử dụng hết hạn mức tiện ích tháng này (${quota.max} lượt).`,
+      bookedCount,
+      maxSlots: limitRule.maxSlotsPerTime,
+      remainingSlots
+    };
+  }
+
+  return {
+    valid: true,
+    bookedCount,
+    maxSlots: limitRule.maxSlotsPerTime,
+    remainingSlots
+  };
+}
+
+/**
+ * Tra cứu trạng thái số chỗ còn lại của 1 khung giờ tiện ích (Dùng để hiển thị giao diện)
+ */
+export function getFacilitySlotStatus(
+  facilityId: string,
+  bookingDate: string,
+  timeSlot: string,
+  currentAptCode?: string
+): {
+  bookedCount: number;
+  maxSlots: number;
+  remainingSlots: number;
+  isFull: boolean;
+  isUserBooked: boolean;
+  isPast: boolean;
+  statusBadge: string;
+} {
+  const limitRule = FACILITY_LIMIT_RULES[facilityId] || {
+    maxSlotsPerTime: 2,
+    facilityName: 'Tiện ích'
+  };
+
+  const now = new Date();
+  const todayStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+
+  let isPast = bookingDate < todayStr;
+  if (bookingDate === todayStr) {
+    const range = parseTimeSlotRange(timeSlot);
+    if (range && (now.getHours() * 60 + now.getMinutes()) >= range.startMin) {
+      isPast = true;
+    }
+  }
+
+  const allBookings = getAllFacilityBookings();
+  const activeBookings = allBookings.filter(b =>
+    b.status === 'CONFIRMED' &&
+    b.facilityId === facilityId &&
+    b.bookingDate === bookingDate &&
+    isTimeSlotOverlap(b.timeSlot, timeSlot)
+  );
+
+  const cleanApt = (currentAptCode || '').trim().toUpperCase();
+  const isUserBooked = cleanApt ? allBookings.some(b => 
+    b.status === 'CONFIRMED' &&
+    (b.aptCode || '').trim().toUpperCase() === cleanApt &&
+    b.bookingDate === bookingDate &&
+    isTimeSlotOverlap(b.timeSlot, timeSlot)
+  ) : false;
+
+  const bookedCount = activeBookings.length;
+  const remainingSlots = Math.max(0, limitRule.maxSlotsPerTime - bookedCount);
+  const isFull = bookedCount >= limitRule.maxSlotsPerTime;
+
+  let statusBadge = '';
+  if (isPast) {
+    statusBadge = 'Đã qua giờ';
+  } else if (isUserBooked) {
+    statusBadge = 'Căn của bạn đã đặt';
+  } else if (isFull) {
+    statusBadge = `Đã kín chỗ (0/${limitRule.maxSlotsPerTime})`;
+  } else {
+    statusBadge = `Còn ${remainingSlots}/${limitRule.maxSlotsPerTime} chỗ`;
+  }
+
+  return {
+    bookedCount,
+    maxSlots: limitRule.maxSlotsPerTime,
+    remainingSlots,
+    isFull,
+    isUserBooked,
+    isPast,
+    statusBadge
+  };
 }
 
 /**
  * Tính toán tỷ lệ hoàn tiền và số tiền ước tính theo quy chế minh bạch
- * - Hủy trước giờ hẹn (>= 30 phút): Hoàn trả 100%
- * - Hủy cận giờ (< 30 phút trước giờ hẹn): Hoàn trả 50% (bù đắp chi phí bật lò xông đá muối & tinh dầu thảo mộc)
- * - Quá giờ hẹn: Không hoàn trả (0%) do phòng riêng tư đã được giữ suốt khung giờ
  */
 export function calculateRefundEstimate(booking: FacilityBooking): {
   refundRate: number;
@@ -134,7 +470,6 @@ export function calculateRefundEstimate(booking: FacilityBooking): {
 } {
   const deposit = booking.depositAmount || (booking.pricing.includes('600.000') ? 600000 : booking.pricing.includes('1.000.000') ? 1000000 : booking.pricing.includes('500.000') ? 500000 : 500000);
 
-  // Phân tích thời gian bắt đầu
   let startTime = new Date();
   try {
     const timeMatch = booking.timeSlot.match(/(\d{1,2}):(\d{2})/);
@@ -182,8 +517,15 @@ export function calculateRefundEstimate(booking: FacilityBooking): {
   };
 }
 
+export interface CreateBookingResult {
+  success: boolean;
+  error?: string;
+  bookings: FacilityBooking[];
+  newBooking?: FacilityBooking;
+}
+
 /**
- * Tạo mới đặt chỗ tiện ích thực tế (hỗ trợ phòng riêng tư và tính số giờ)
+ * Tạo mới đặt chỗ tiện ích thực tế - Có bẫy lỗi trùng giờ, duplicate và giới hạn sức chứa
  */
 export function createFacilityBooking(
   aptCode: string,
@@ -199,8 +541,25 @@ export function createFacilityBooking(
   depositAmount: number = 0,
   isPrivate: boolean = false,
   paymentMethod: string = 'Trừ vào hóa đơn sinh hoạt tháng tới'
-): { bookings: FacilityBooking[]; newBooking: FacilityBooking } {
-  const current = getFacilityBookings(aptCode);
+): CreateBookingResult {
+  // 1. Chạy bẫy lỗi (Validation Trap)
+  const validation = validateBookingRequest({
+    aptCode,
+    facilityId,
+    bookingDate,
+    timeSlot,
+    bookerName,
+  });
+
+  if (!validation.valid) {
+    return {
+      success: false,
+      error: validation.error,
+      bookings: getFacilityBookings(aptCode),
+    };
+  }
+
+  const allCurrent = getAllFacilityBookings();
   const ticketNum = Math.floor(1000 + Math.random() * 9000);
   const newBooking: FacilityBooking = {
     id: `BK-${Date.now().toString().slice(-6)}`,
@@ -222,14 +581,18 @@ export function createFacilityBooking(
     createdAt: new Date().toISOString(),
   };
 
-  const updated = [newBooking, ...current];
-  setStorageItem(`${FACILITY_BOOKINGS_PREFIX}${aptCode}`, updated);
+  const updatedAll = [newBooking, ...allCurrent];
+  saveAllFacilityBookings(updatedAll);
+
+  // Cập nhật legacy store cho căn hộ
+  const aptList = updatedAll.filter(b => (b.aptCode || '').trim().toUpperCase() === (aptCode || '').trim().toUpperCase());
+  setStorageItem(`${FACILITY_BOOKINGS_PREFIX}${aptCode}`, aptList);
 
   if (typeof window !== 'undefined') {
     window.dispatchEvent(new CustomEvent('skyline_facility_booked', { detail: newBooking }));
   }
 
-  return { bookings: updated, newBooking };
+  return { success: true, bookings: aptList, newBooking };
 }
 
 /**
@@ -251,6 +614,10 @@ export function checkinWithTicket(aptCode: string, ticketCode: string): { succes
 
   const updated = current.map(b => b.ticketCode === ticketCode ? { ...b, status: 'CHECKED_IN' as const } : b);
   setStorageItem(`${FACILITY_BOOKINGS_PREFIX}${aptCode}`, updated);
+
+  const allCurrent = getAllFacilityBookings();
+  const updatedAll = allCurrent.map(b => b.ticketCode === ticketCode ? { ...b, status: 'CHECKED_IN' as const } : b);
+  saveAllFacilityBookings(updatedAll);
 
   // Ghi log check-in
   addFacilityCheckinLog(aptCode, {
@@ -313,6 +680,20 @@ export function cancelFacilityBookingWithRefund(
   });
 
   setStorageItem(`${FACILITY_BOOKINGS_PREFIX}${aptCode}`, updated);
+
+  const allCurrent = getAllFacilityBookings();
+  const updatedAll = allCurrent.map(b => {
+    if (b.id !== bookingId) return b;
+    return {
+      ...b,
+      status: 'CANCELLED' as const,
+      refundRate: refundCalc.refundRate,
+      refundAmount: refundCalc.refundAmount,
+      refundNote: `${refundCalc.title}: ${refundCalc.reason} (Lý do: ${reason})`,
+      cancelledAt: nowStr,
+    };
+  });
+  saveAllFacilityBookings(updatedAll);
 
   if (typeof window !== 'undefined') {
     window.dispatchEvent(

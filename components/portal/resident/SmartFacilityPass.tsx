@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { 
   CreditCard, 
   QrCode, 
@@ -50,6 +50,8 @@ import {
   calculateRefundEstimate,
   checkinWithTicket,
   getFacilityMonthlyQuota,
+  getFacilitySlotStatus,
+  FACILITY_LIMIT_RULES,
   FacilityCheckinLog,
   FacilityBooking
 } from '@/lib/facilityStore';
@@ -295,6 +297,57 @@ export default function SmartFacilityPass({ currentUser, onNavigateModule }: Sma
   const [bookingPaymentMethod, setBookingPaymentMethod] = useState('Trừ vào hóa đơn sinh hoạt tháng tới');
   const [bookingNotes, setBookingNotes] = useState('');
   const [bookingSuccessMsg, setBookingSuccessMsg] = useState<string | null>(null);
+  const [bookingErrorMsg, setBookingErrorMsg] = useState<string | null>(null);
+
+  // Danh sách khung giờ tối ưu theo từng loại tiện ích
+  const facilityTimeSlots = useMemo(() => {
+    if (bookingFacilityId === 'fac-bbq') {
+      return [
+        '17:00 - 19:30 (Ca Tiệc Hoàng Hôn Sân Thượng)',
+        '19:30 - 22:00 (Ca Tiệc Đêm Ánh Sao Sân Thượng)',
+      ];
+    }
+    if (bookingFacilityId === 'fac-sauna') {
+      return [
+        '09:00 - 11:00 (Buổi sáng thanh lọc)',
+        '11:00 - 13:00 (Trưa thư giãn)',
+        '14:00 - 16:00 (Đầu giờ chiều)',
+        '16:00 - 18:00 (Hoàng hôn phục hồi)',
+        '18:00 - 20:00 (Buổi tối VIP - Giờ đẹp)',
+        '20:00 - 21:30 (Đêm thư thái)',
+      ];
+    }
+    return [
+      '06:00 - 08:00 (Sáng sớm bình minh)',
+      '08:00 - 10:00 (Buổi sáng thư giãn)',
+      '10:00 - 12:00 (Trưa thanh tịnh)',
+      '14:00 - 16:00 (Đầu giờ chiều)',
+      '16:00 - 18:00 (Hoàng hôn)',
+      '18:00 - 20:00 (Buổi tối - Giờ đẹp)',
+      '20:00 - 22:00 (Phục hồi thể lực đêm)',
+    ];
+  }, [bookingFacilityId]);
+
+  // Tự động chuyển khung giờ hợp lệ khi đổi tiện ích
+  useEffect(() => {
+    if (!facilityTimeSlots.includes(bookingTimeSlot)) {
+      setBookingTimeSlot(facilityTimeSlots[0] || '18:00 - 20:00');
+    }
+  }, [facilityTimeSlots, bookingTimeSlot]);
+
+  // Tra cứu trạng thái số chỗ khả dụng trong thời gian thực
+  const currentSlotStatus = useMemo(() => {
+    return getFacilitySlotStatus(bookingFacilityId, bookingDate, bookingTimeSlot, aptCode);
+  }, [bookingFacilityId, bookingDate, bookingTimeSlot, aptCode, bookings]);
+
+  const currentLimitRule = FACILITY_LIMIT_RULES[bookingFacilityId] || {
+    facilityId: bookingFacilityId,
+    facilityName: 'Tiện ích',
+    maxSlotsPerTime: 2,
+    maxGuests: 10,
+    isPrivate: false,
+    description: 'Tiện ích chung cư (Tối đa 2 lượt / khung giờ)'
+  };
 
   // State Modal Hoàn Tiền Khi Bận Đột Xuất
   const [refundModalBooking, setRefundModalBooking] = useState<FacilityBooking | null>(null);
@@ -360,9 +413,12 @@ export default function SmartFacilityPass({ currentUser, onNavigateModule }: Sma
     }
   };
 
-  // Tạo đặt chỗ mới (hỗ trợ phòng xông hơi riêng tư, BBQ sân thượng và đặt sân thể thao miễn phí)
+  // Tạo đặt chỗ mới - Đã tích hợp bẫy lỗi trùng giờ, duplicate và giới hạn sức chứa
   const handleCreateBooking = (e: React.FormEvent) => {
     e.preventDefault();
+    setBookingErrorMsg(null);
+    setBookingSuccessMsg(null);
+
     const fac = amenitiesList.find(f => f.id === bookingFacilityId) || amenitiesList[0];
     const isPrivate = fac.id === 'fac-sauna';
     const isBbq = fac.id === 'fac-bbq';
@@ -371,7 +427,7 @@ export default function SmartFacilityPass({ currentUser, onNavigateModule }: Sma
       ? `${(bookingDurationHours * 500000).toLocaleString('vi-VN')} đ (${bookingDurationHours} tiếng phòng VIP)` 
       : (isBbq ? '600.000 đ / ca tiệc BBQ' : 'Miễn phí theo Thẻ Cư Dân');
 
-    const { bookings: updated, newBooking } = createFacilityBooking(
+    const result = createFacilityBooking(
       aptCode,
       fac.id,
       fac.name,
@@ -386,11 +442,17 @@ export default function SmartFacilityPass({ currentUser, onNavigateModule }: Sma
       isPrivate,
       bookingPaymentMethod
     );
-    setBookings(updated);
+
+    if (!result.success || !result.newBooking) {
+      setBookingErrorMsg(result.error || 'Đặt chỗ không thành công. Vui lòng kiểm tra lại khung giờ và giới hạn sức chứa.');
+      return;
+    }
+
+    setBookings(result.bookings);
     setQuota(getFacilityMonthlyQuota(aptCode));
     setBookingNotes('');
     setBookingSuccessMsg(
-      `🎉 Đặt chỗ thành công! Mã vé điện tử: [${newBooking.ticketCode}]. ` +
+      `🎉 Đặt chỗ thành công! Mã vé điện tử: [${result.newBooking.ticketCode}]. ` +
       (depositAmount > 0 
         ? `Đã xác nhận thanh toán giữ chỗ ${depositAmount.toLocaleString('vi-VN')} đ (${bookingPaymentMethod}). ` 
         : '') +
@@ -713,6 +775,16 @@ export default function SmartFacilityPass({ currentUser, onNavigateModule }: Sma
                 </div>
               )}
 
+              {bookingErrorMsg && (
+                <div className="p-3 bg-rose-950/80 border border-rose-500 text-rose-200 text-xs rounded-none leading-relaxed flex items-start gap-2.5 animate-fadeIn">
+                  <AlertTriangle className="w-4 h-4 shrink-0 text-rose-400 mt-0.5" />
+                  <div className="space-y-0.5">
+                    <div className="font-bold text-rose-300 uppercase tracking-wide text-[11px]">Không Thể Hoàn Tất Giữ Chỗ:</div>
+                    <div>{bookingErrorMsg}</div>
+                  </div>
+                </div>
+              )}
+
               {/* Bước 1: Tiện ích */}
               <div className="space-y-1">
                 <label className="text-[10.5px] text-gray-300 font-semibold uppercase block">
@@ -796,14 +868,57 @@ export default function SmartFacilityPass({ currentUser, onNavigateModule }: Sma
                     onChange={(e) => setBookingTimeSlot(e.target.value)}
                     className="w-full bg-[#161D26] border border-[#2A374A] p-2 text-white text-xs rounded-none focus:outline-none focus:border-[#C5A880]"
                   >
-                    <option>06:00 - 08:00 (Sáng sớm bình minh)</option>
-                    <option>08:00 - 10:00 (Buổi sáng thư giãn)</option>
-                    <option>10:00 - 12:00 (Trưa thanh tịnh)</option>
-                    <option>14:00 - 16:00 (Đầu giờ chiều)</option>
-                    <option>16:00 - 18:00 (Hoàng hôn)</option>
-                    <option>18:00 - 20:00 (Buổi tối - Giờ đẹp)</option>
-                    <option>20:00 - 22:00 (Phục hồi thể lực đêm)</option>
+                    {facilityTimeSlots.map((slot) => {
+                      const st = getFacilitySlotStatus(bookingFacilityId, bookingDate, slot, aptCode);
+                      return (
+                        <option
+                          key={slot}
+                          value={slot}
+                          disabled={st.isFull || st.isUserBooked || st.isPast}
+                        >
+                          {slot} • [{st.statusBadge}]
+                        </option>
+                      );
+                    })}
                   </select>
+                </div>
+              </div>
+
+              {/* HUD Báo Sức Chứa & Tình Trạng Giữ Chỗ Realtime */}
+              <div className={`p-3 border text-xs rounded-none space-y-1.5 transition-all ${
+                currentSlotStatus.isPast
+                  ? 'bg-[#141B24] border-gray-700 text-gray-400'
+                  : currentSlotStatus.isUserBooked
+                  ? 'bg-amber-950/30 border-amber-500/50 text-amber-200'
+                  : currentSlotStatus.isFull
+                  ? 'bg-rose-950/30 border-rose-500/50 text-rose-200'
+                  : 'bg-[#141D29] border-[#C5A880]/40 text-[#C5A880]'
+              }`}>
+                <div className="flex items-center justify-between font-bold flex-wrap gap-2">
+                  <span className="flex items-center gap-1.5">
+                    <ShieldCheck className="w-4 h-4 text-[#C5A880]" />
+                    <span>Trạng Thái Giữ Chỗ Toàn Khu:</span>
+                  </span>
+                  <span className={`px-2 py-0.5 text-[10px] font-mono font-bold uppercase rounded-none border ${
+                    currentSlotStatus.isPast
+                      ? 'bg-gray-800 text-gray-400 border-gray-600'
+                      : currentSlotStatus.isUserBooked
+                      ? 'bg-amber-500/20 text-amber-300 border-amber-500/50'
+                      : currentSlotStatus.isFull
+                      ? 'bg-rose-500/20 text-rose-300 border-rose-500/50'
+                      : 'bg-emerald-500/20 text-emerald-300 border-emerald-500/50'
+                  }`}>
+                    {currentSlotStatus.statusBadge}
+                  </span>
+                </div>
+                <div className="text-[11px] text-gray-300 leading-relaxed">
+                  {currentSlotStatus.isPast
+                    ? 'Khung giờ này đã trôi qua trong ngày hôm nay. Quý cư dân vui lòng chọn khung giờ kế tiếp.'
+                    : currentSlotStatus.isUserBooked
+                    ? `Căn hộ ${aptCode} đã có phiếu giữ chỗ đang có hiệu lực trong khung giờ này. Hệ thống không cho phép tạo phiếu trùng lặp.`
+                    : currentSlotStatus.isFull
+                    ? `Tiện ích đã đạt tối đa sức chứa của toàn tòa nhà (${currentLimitRule.maxSlotsPerTime} lượt) trong khung giờ này. Vui lòng chọn khung giờ khác để giữ chỗ thành công.`
+                    : `${currentLimitRule.description}. Hệ thống lập tức khóa chỗ chống trùng giờ toàn bộ cư dân ngay sau khi xác nhận.`}
                 </div>
               </div>
 
@@ -921,10 +1036,23 @@ export default function SmartFacilityPass({ currentUser, onNavigateModule }: Sma
 
               <button
                 type="submit"
-                className="w-full h-11 px-3 bg-[#C5A880] hover:bg-[#d5b991] text-[#0D1117] text-xs font-bold uppercase rounded-none transition-colors flex items-center justify-center gap-2 shadow-lg active:scale-95 truncate"
+                disabled={currentSlotStatus.isFull || currentSlotStatus.isUserBooked || currentSlotStatus.isPast}
+                className={`w-full h-11 px-3 text-xs font-bold uppercase rounded-none transition-all flex items-center justify-center gap-2 shadow-lg truncate ${
+                  currentSlotStatus.isFull || currentSlotStatus.isUserBooked || currentSlotStatus.isPast
+                    ? 'bg-gray-800 text-gray-500 border border-gray-700 cursor-not-allowed opacity-80'
+                    : 'bg-[#C5A880] hover:bg-[#d5b991] text-[#0D1117] cursor-pointer active:scale-95'
+                }`}
               >
                 <Check className="w-4 h-4 shrink-0" />
-                <span className="truncate">Xác Nhận Đặt Giữ Chỗ & Tạo Vé QR</span>
+                <span className="truncate">
+                  {currentSlotStatus.isPast
+                    ? 'Khung Giờ Đã Qua'
+                    : currentSlotStatus.isUserBooked
+                    ? 'Căn Hộ Đã Đặt Khung Giờ Này'
+                    : currentSlotStatus.isFull
+                    ? 'Khung Giờ Đã Hết Chỗ (Kín Lịch)'
+                    : 'Xác Nhận Đặt Giữ Chỗ & Tạo Vé QR'}
+                </span>
               </button>
             </form>
           </div>
