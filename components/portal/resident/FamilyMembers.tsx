@@ -172,9 +172,9 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
   const [newResidenceType, setNewResidenceType] = useState<string>('Thường trú cùng chủ hộ');
   const [newRelationshipProof, setNewRelationshipProof] = useState<string>('Sổ Hộ Khẩu / Xác nhận CT07');
   const [newTemporaryResidenceStatus, setNewTemporaryResidenceStatus] = useState<string>('Đang Làm Thủ Tục');
-  const [directDob, setDirectDob] = useState<string>('2004-09-02');
+  const [directDob, setDirectDob] = useState<string>('');
   const [directGender, setDirectGender] = useState<string>('Nam');
-  const [directPob, setDirectPob] = useState<string>('TP. Hồ Chí Minh');
+  const [directPob, setDirectPob] = useState<string>('');
   const [directResidenceType, setDirectResidenceType] = useState<string>('Thường trú cùng chủ hộ');
   const [directRelationshipProof, setDirectRelationshipProof] = useState<string>('Sổ Hộ Khẩu / Xác nhận CT07');
   const [directTemporaryResidenceStatus, setDirectTemporaryResidenceStatus] = useState<string>('Đang Làm Thủ Tục');
@@ -214,10 +214,10 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
   const [ekycRelationship, setEkycRelationship] = useState<string>('Vợ / Chồng');
   const [ekycPhone, setEkycPhone] = useState<string>('');
   const [ekycIdCard, setEkycIdCard] = useState<string>('');
-  const [ekycDob, setEkycDob] = useState<string>('2004-09-02');
-  const [ekycPob, setEkycPob] = useState<string>('TP. Hồ Chí Minh');
-  const [ekycIdDate, setEkycIdDate] = useState<string>('2022-08-15');
-  const [ekycIdPlace, setEkycIdPlace] = useState<string>('Cục Cảnh sát QLHC về TTXH');
+  const [ekycDob, setEkycDob] = useState<string>('');
+  const [ekycPob, setEkycPob] = useState<string>('');
+  const [ekycIdDate, setEkycIdDate] = useState<string>('');
+  const [ekycIdPlace, setEkycIdPlace] = useState<string>('');
   const [ekycLicensePlate, setEkycLicensePlate] = useState<string>('');
   const [ekycAvatarUrl, setEkycAvatarUrl] = useState<string>('');
   const [ekycFrontImage, setEkycFrontImage] = useState<string>('');
@@ -464,10 +464,10 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
     setEkycRelationship(member.relationship || 'Vợ / Chồng');
     setEkycPhone(existing?.phone || member.phone || '');
     setEkycIdCard(existing?.idCardNo || member.idCard || '');
-    setEkycDob(existing?.dob || '2004-09-02');
-    setEkycPob(existing?.pob || 'TP. Hồ Chí Minh');
-    setEkycIdDate(existing?.idDate || '2022-08-15');
-    setEkycIdPlace(existing?.idPlace || 'Cục Cảnh sát QLHC về TTXH');
+    setEkycDob(existing?.dob || member.dob || '');
+    setEkycPob(existing?.pob || member.pob || '');
+    setEkycIdDate(existing?.idDate || member.idDate || '');
+    setEkycIdPlace(existing?.idPlace || member.idPlace || '');
     setEkycLicensePlate(member.licensePlate || '');
 
     // Ưu tiên hiển thị chân dung chuẩn của người nhà (tuyệt đối không lấy ảnh mẫu FaceID ghi đè chân dung)
@@ -1370,7 +1370,7 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
                       required
                       value={ekycFullName}
                       onChange={(e) => setEkycFullName(e.target.value)}
-                      placeholder="VD: Nguyễn Hữu Nhựt"
+                      placeholder="Nhập họ và tên theo CCCD"
                       className="w-full bg-[#161B22] border border-[#2D3748] p-2.5 text-white rounded-none focus:border-[#C5A880] outline-none font-medium"
                     />
                   </div>
@@ -1403,7 +1403,7 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
                       maxLength={10}
                       value={ekycPhone}
                       onChange={(e) => setEkycPhone(cleanPhoneNumber(e.target.value))}
-                      placeholder="0917795211"
+                      placeholder="Nhập 10 số điện thoại"
                       className="w-full bg-[#161B22] border border-[#2D3748] p-2.5 text-white font-mono rounded-none focus:border-[#C5A880] outline-none"
                     />
                     {ekycPhone && !isValidPhoneNumber(ekycPhone) && (
@@ -1423,7 +1423,7 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
                       maxLength={12}
                       value={ekycIdCard}
                       onChange={(e) => setEkycIdCard(cleanCccdNumber(e.target.value))}
-                      placeholder="VD: 079198005678"
+                      placeholder="Nhập 12 số CCCD"
                       className="w-full bg-[#161B22] border border-[#2D3748] p-2.5 text-[#C5A880] font-mono font-bold rounded-none focus:border-[#C5A880] outline-none"
                     />
                     {ekycIdCard && !isValidCccdNumber(ekycIdCard) && (
@@ -1453,7 +1453,7 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
                       type="text"
                       value={ekycPob}
                       onChange={(e) => setEkycPob(e.target.value)}
-                      placeholder="TP. Hồ Chí Minh"
+                      placeholder="Nhập quê quán / nơi thường trú"
                       className="w-full bg-[#161B22] border border-[#2D3748] p-2.5 text-white rounded-none focus:border-[#C5A880] outline-none"
                     />
                   </div>
@@ -1478,7 +1478,7 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
                       type="text"
                       value={ekycLicensePlate}
                       onChange={(e) => setEkycLicensePlate(e.target.value)}
-                      placeholder="VD: 59P1-886.79"
+                      placeholder="Nhập biển số xe (nếu có)"
                       className="w-full bg-[#161B22] border border-[#2D3748] p-2.5 text-cyan-300 font-mono rounded-none focus:border-[#C5A880] outline-none"
                     />
                   </div>
@@ -1490,9 +1490,6 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
                 <div className="text-[11px] font-bold uppercase tracking-wider text-[#C5A880] flex items-center justify-between border-b border-[#222B35] pb-2.5">
                   <span className="flex items-center gap-2">
                     <User className="w-4 h-4" /> 2. Ảnh Đại Diện (Avatar) & CCCD 2 Mặt Gửi BQL
-                  </span>
-                  <span className="text-[10px] text-emerald-400 font-mono">
-                    Độ khớp AI: 98.6% (Đạt)
                   </span>
                 </div>
 
@@ -2108,7 +2105,7 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
                       required
                       value={directFullName}
                       onChange={(e) => setDirectFullName(e.target.value)}
-                      placeholder="VD: Nguyễn Thị Mai"
+                      placeholder="Nhập họ và tên..."
                       className="w-full bg-[#161B22] border border-[#2D3748] p-2 text-white rounded-none focus:border-[#C5A880] outline-none"
                     />
                   </div>
@@ -2123,7 +2120,7 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
                       maxLength={10}
                       value={directPhone}
                       onChange={(e) => setDirectPhone(cleanPhoneNumber(e.target.value))}
-                      placeholder="VD: 0912345678"
+                      placeholder="Nhập 10 số điện thoại..."
                       className="w-full bg-[#161B22] border border-[#2D3748] p-2 text-white font-mono rounded-none focus:border-[#C5A880] outline-none"
                     />
                     {directPhone && !isValidPhoneNumber(directPhone) && (
@@ -2164,7 +2161,7 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
                       maxLength={12}
                       value={directIdCard}
                       onChange={(e) => setDirectIdCard(cleanCccdNumber(e.target.value))}
-                      placeholder="VD: 079198001234"
+                      placeholder="Nhập 12 số CCCD..."
                       className="w-full bg-[#161B22] border border-[#2D3748] p-2 text-white font-mono rounded-none focus:border-[#C5A880] outline-none"
                     />
                     {directIdCard && !isValidCccdNumber(directIdCard) && (
@@ -2230,7 +2227,7 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
                       type="text"
                       value={directPob}
                       onChange={(e) => setDirectPob(e.target.value)}
-                      placeholder="VD: TP. Hồ Chí Minh"
+                      placeholder="Nhập nơi sinh / quê quán..."
                       className="w-full bg-[#161B22] border border-[#2D3748] p-2 text-white rounded-none focus:border-[#C5A880] outline-none"
                     />
                   </div>

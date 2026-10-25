@@ -192,8 +192,8 @@ export async function GET(req: Request) {
           email: liveUser.email,
           phone: liveUser.phone,
           idCard: liveUser.id_number || liveUser.id_card_no || '',
-          idDate: liveUser.id_date || '2022-08-15',
-          idPlace: liveUser.id_place || 'Cục Cảnh sát QLHC về TTXH',
+          idDate: liveUser.id_date || '',
+          idPlace: liveUser.id_place || '',
           dob: liveUser.dob || u.dob || '',
           gender: liveUser.gender === 0 ? 'Nữ' : 'Nam',
           pob: liveUser.pob || u.pob || '',
@@ -305,7 +305,7 @@ export async function POST(req: Request) {
     // 2. Build verified member object from API record
     const finalFullName = (resolvedUser?.fullname || resolvedUser?.full_name || fullName || '').trim();
     const finalPhone = (resolvedUser?.phone || phone || '').trim();
-    const finalIdCard = resolvedUser?.id_number || resolvedUser?.id_card_no || idCard || '079' + Math.floor(100000000 + Math.random() * 900000000);
+    const finalIdCard = (resolvedUser?.id_number || resolvedUser?.id_card_no || idCard || '').trim();
     const finalAvatar = (resolvedUser?.avatar_url || avatarUrl || '').replace('data.nks.vn//', 'data.nks.vn/') || 'https://data.nks.vn/storage/users/default.png';
     const finalLicense = (licensePlate || resolvedUser?.license_plate || '').trim();
 
@@ -337,8 +337,8 @@ export async function POST(req: Request) {
       phone: finalPhone,
       email: resolvedUser?.email || body.email || '',
       idCard: finalIdCard,
-      idDate: idDate || resolvedUser?.id_date || '2022-08-15',
-      idPlace: idPlace || resolvedUser?.id_place || 'Cục Cảnh sát QLHC về TTXH',
+      idDate: idDate || resolvedUser?.id_date || '',
+      idPlace: idPlace || resolvedUser?.id_place || '',
       dob: dob || resolvedUser?.dob || '',
       gender: gender || (resolvedUser?.gender === 0 ? 'Nữ' : 'Nam'),
       pob: pob || resolvedUser?.pob || '',
