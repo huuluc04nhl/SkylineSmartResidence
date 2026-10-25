@@ -1128,19 +1128,10 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
             </select>
 
             <button
-              onClick={handleClearLocalData}
-              disabled={isLoading}
-              title={isEn ? "Clear local temporary data and sync strictly with server API" : "Xóa dữ liệu lưu tạm ở local và đồng bộ lại chuẩn từ API"}
-              className="text-xs text-rose-300 hover:text-white flex items-center gap-1.5 transition-colors cursor-pointer px-2.5 py-1.5 bg-rose-950/40 hover:bg-rose-900/60 border border-rose-800/60 font-semibold"
-            >
-              <RotateCcw className="w-3.5 h-3.5" />
-              <span>{isEn ? 'Sync Clean API' : 'Xóa Local / Đồng Bộ API'}</span>
-            </button>
-
-            <button
               onClick={fetchMembers}
               disabled={isLoading}
-              className="text-xs text-gray-300 hover:text-[#C5A880] flex items-center gap-1.5 transition-colors cursor-pointer px-2.5 py-1.5 bg-[#161B22] border border-[#2D3748]"
+              title={isEn ? "Refresh member list" : "Làm mới danh sách thành viên"}
+              className="text-xs text-gray-300 hover:text-[#C5A880] flex items-center gap-1.5 transition-colors cursor-pointer px-3 py-1.5 bg-[#161B22] border border-[#2D3748] rounded-none hover:border-[#C5A880]"
             >
               <RefreshCw className={`w-3.5 h-3.5 ${isLoading ? 'animate-spin' : ''}`} /> {isEn ? 'Refresh' : 'Làm mới'}
             </button>
@@ -1221,39 +1212,30 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
                         </span>
 
                         {/* Status Badges */}
-                        {ekycStatus === 'PENDING_OWNER' && (
-                          <span className="px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded-none border bg-amber-950/90 text-amber-300 border-amber-500/80 flex items-center gap-1 animate-pulse flex-shrink-0">
-                            <Clock className="w-3 h-3 text-amber-400" /> Chờ Chủ Hộ Duyệt
+                        {/* Trạng thái xác thực duy nhất, rõ ràng */}
+                        {ekycStatus === 'APPROVED' && (
+                          <span className="px-2 py-0.5 text-[10.5px] font-bold rounded-none border bg-emerald-950/90 text-emerald-300 border-emerald-500/80 flex items-center gap-1 flex-shrink-0">
+                            <CheckCircle2 className="w-3 h-3 text-emerald-400" /> {t('Đã Kích Hoạt FaceID', 'FaceID Active')}
                           </span>
                         )}
-                        {ekycStatus === 'APPROVED' && (
-                          <span className="px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded-none border bg-emerald-950/90 text-emerald-300 border-emerald-500/80 flex items-center gap-1 flex-shrink-0">
-                            <CheckCircle2 className="w-3 h-3 text-emerald-400" /> Đã FaceID
+                        {ekycStatus === 'PENDING_OWNER' && (
+                          <span className="px-2 py-0.5 text-[10.5px] font-bold rounded-none border bg-amber-950/90 text-amber-300 border-amber-500/80 flex items-center gap-1 animate-pulse flex-shrink-0">
+                            <Clock className="w-3 h-3 text-amber-400" /> {t('Chờ Chủ Hộ Xác Nhận', 'Pending Owner')}
                           </span>
                         )}
                         {ekycStatus === 'PENDING' && (
-                          <span className="px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded-none border bg-cyan-950/90 text-cyan-300 border-cyan-500/80 flex items-center gap-1 animate-pulse flex-shrink-0">
-                            <Clock className="w-3 h-3 text-cyan-400" /> Chờ BQL Duyệt
+                          <span className="px-2 py-0.5 text-[10.5px] font-bold rounded-none border bg-cyan-950/90 text-cyan-300 border-cyan-500/80 flex items-center gap-1 animate-pulse flex-shrink-0">
+                            <Clock className="w-3 h-3 text-cyan-400" /> {t('Chờ Ban Quản Lý Duyệt', 'Pending BQL')}
                           </span>
                         )}
                         {ekycStatus === 'REJECTED' && (
-                          <span className="px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded-none border bg-rose-950/90 text-rose-300 border-rose-500/80 flex items-center gap-1 flex-shrink-0">
-                            <XCircle className="w-3 h-3 text-rose-400" /> Yêu Cầu Chụp Lại
+                          <span className="px-2 py-0.5 text-[10.5px] font-bold rounded-none border bg-rose-950/90 text-rose-300 border-rose-500/80 flex items-center gap-1 flex-shrink-0">
+                            <XCircle className="w-3 h-3 text-rose-400" /> {t('Cần Gửi Lại Ảnh', 'Photo Resubmission Needed')}
                           </span>
                         )}
                         {ekycStatus === 'NOT_SUBMITTED' && (
-                          <span className="px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider rounded-none border bg-gray-800 text-gray-300 border-gray-600 flex items-center gap-1 flex-shrink-0">
-                            <AlertCircle className="w-3 h-3 text-gray-400" /> Chưa Xác Thực
-                          </span>
-                        )}
-                        {/* 4-Step Banking FaceID Badge */}
-                        {getEnrolledFaceProfile(m.phone || m.id || m.username || '') ? (
-                          <span className="px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded-none border bg-[#161D26] text-cyan-300 border-cyan-500/80 flex items-center gap-1 flex-shrink-0">
-                            <ScanFace className="w-3 h-3 text-cyan-400" /> 4/4 Mẫu ✓
-                          </span>
-                        ) : (
-                          <span className="px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider rounded-none border bg-gray-900/90 text-amber-400 border-amber-600/50 flex items-center gap-1 flex-shrink-0">
-                            <AlertCircle className="w-3 h-3 text-amber-400" /> Chưa Quét Mặt
+                          <span className="px-2 py-0.5 text-[10.5px] font-medium rounded-none border bg-gray-900/90 text-gray-300 border-gray-700 flex items-center gap-1 flex-shrink-0">
+                            <AlertCircle className="w-3 h-3 text-gray-400" /> {t('Chưa Đăng Ký FaceID', 'Not Enrolled')}
                           </span>
                         )}
                       </div>
@@ -1274,13 +1256,9 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
                         )}
                       </div>
 
-                      {/* Thông tin bảo lãnh của Chủ Hộ & Định danh cư trú */}
+                      {/* Thông tin cư trú & Pháp lý */}
                       <div className="text-[11px] text-gray-300 flex flex-wrap items-center gap-x-3 gap-y-1 pt-0.5">
-                        <span className="flex items-center gap-1 text-[#C5A880]">
-                          <Crown className="w-3 h-3 text-[#C5A880]" />
-                          <span>{t('Chủ hộ bảo lãnh:', 'Sponsor:')} <strong>{m.sponsorName || ownerName}</strong></span>
-                        </span>
-                        <span>• {t('Hình thức:', 'Type:')} <strong className="text-gray-200">{m.residenceType || 'Thường trú cùng chủ hộ'}</strong></span>
+                        <span>{t('Hình thức:', 'Type:')} <strong className="text-gray-200">{m.residenceType || 'Thường trú cùng chủ hộ'}</strong></span>
                         <span>• {t('Tạm trú:', 'Status:')} <strong className="text-emerald-400">{m.temporaryResidenceStatus || 'Đang làm thủ tục'}</strong></span>
                         {m.dob && <span>• {t('Sinh:', 'DOB:')} <strong className="font-mono text-gray-300">{m.dob}</strong></span>}
                         {m.gender && <span>({m.gender})</span>}
@@ -1308,40 +1286,21 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
                           </span>
                         )}
                       </div>
-
-                      {/* Owner Alert: Member completed 4 samples, waiting for Owner confirmation */}
-                      {isOwner && ekycStatus === 'PENDING_OWNER' && (
-                        <div className="p-2 bg-amber-950/60 border border-amber-500/80 text-xs text-amber-200 flex flex-col sm:flex-row sm:items-center justify-between gap-2 rounded-none animate-fadeIn">
-                          <div className="flex items-center gap-1.5">
-                            <Sparkles className="w-3.5 h-3.5 text-amber-400 flex-shrink-0" />
-                            <span>
-                              <strong>{m.fullName}</strong> đã quét 4 mẫu FaceID • Chờ duyệt gửi BQL.
-                            </span>
-                          </div>
-                          <button
-                            type="button"
-                            onClick={() => setConfirmTargetMember(m)}
-                            className="px-2.5 py-1 bg-[#C5A880] hover:bg-white text-[#0D1117] text-xs font-bold uppercase tracking-wider rounded-none flex items-center gap-1 flex-shrink-0 shadow cursor-pointer transition-all active:scale-95"
-                          >
-                            <ShieldCheck className="w-3.5 h-3.5" /> Duyệt Ngay
-                          </button>
-                        </div>
-                      )}
                     </div>
                   </div>
 
-                  {/* Actions for Owner & Family Member Self-update */}
+                  {/* Actions for Owner & Family Member */}
                   <div className="flex flex-wrap items-center gap-2 w-full md:w-auto justify-start md:justify-end pt-2 md:pt-0 border-t md:border-t-0 border-[#222B35]/60 flex-shrink-0">
                     {/* Owner Confirm Button when Member is PENDING_OWNER */}
                     {isOwner && ekycStatus === 'PENDING_OWNER' && (
                       <button
                         type="button"
                         onClick={() => setConfirmTargetMember(m)}
-                        className="px-3 py-1.5 text-xs font-bold rounded-none flex items-center gap-1.5 transition-all shadow cursor-pointer active:scale-95 bg-gradient-to-r from-amber-600 to-[#C5A880] hover:brightness-110 text-[#0D1117]"
-                        title="Duyệt 4 mẫu FaceID gửi BQL"
+                        className="px-3 py-1.5 text-xs font-bold rounded-none flex items-center gap-1.5 transition-all shadow cursor-pointer active:scale-95 bg-gradient-to-r from-amber-500 to-[#C5A880] hover:brightness-110 text-[#0D1117]"
+                        title={t('Xác nhận 4 mẫu ảnh và chuyển Ban Quản Lý phê duyệt')}
                       >
                         <ShieldCheck className="w-3.5 h-3.5" />
-                        <span>Duyệt FaceID</span>
+                        <span>{t('Xác Nhận Gửi BQL', 'Confirm & Send to BQL')}</span>
                       </button>
                     )}
 
@@ -1350,46 +1309,41 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
                       <button
                         type="button"
                         onClick={() => setBankEnrollTarget(m)}
-                        className={`px-3 py-1.5 text-xs font-bold rounded-none flex items-center gap-1.5 transition-all shadow cursor-pointer active:scale-95 ${
+                        className={`px-3 py-1.5 text-xs font-semibold rounded-none flex items-center gap-1.5 transition-all shadow cursor-pointer active:scale-95 ${
                           getEnrolledFaceProfile(m.phone || m.id || m.username || '')
                             ? 'bg-[#121820] hover:bg-[#1E2631] border border-cyan-500/80 text-cyan-300'
-                            : 'bg-[#C5A880] hover:bg-white text-[#0D1117]'
+                            : 'bg-[#C5A880] hover:bg-white text-[#0D1117] font-bold'
                         }`}
-                        title="Quét mẫu khuôn mặt"
+                        title={t('Quét mẫu khuôn mặt')}
                       >
                         <Camera className="w-3.5 h-3.5" />
-                        <span>Quét FaceID</span>
+                        <span>{t('Quét Khuôn Mặt', 'Scan Face')}</span>
                       </button>
                     )}
 
+                    {/* CCCD & Bio Details */}
                     {isOwner && (
                       <button
                         type="button"
                         onClick={() => handleOpenEkycModal(m)}
-                        className={`px-3 py-1.5 text-xs font-bold rounded-none flex items-center gap-1.5 transition-all shadow cursor-pointer active:scale-95 ${
-                          ekycStatus === 'APPROVED'
-                            ? 'bg-[#161D26] hover:bg-[#1F2937] border border-[#C5A880]/80 text-[#C5A880]'
-                            : ekycStatus === 'PENDING'
-                            ? 'bg-amber-950/80 hover:bg-amber-900 border border-amber-500/80 text-amber-300'
-                            : ekycStatus === 'REJECTED'
-                            ? 'bg-rose-950 hover:bg-rose-900 border border-rose-500 text-rose-200 animate-pulse'
-                            : 'bg-[#1C2533] hover:bg-[#263140] border border-gray-600 text-gray-200'
-                        }`}
-                        title="Thông tin Căn cước & Khuôn mặt"
+                        className="px-3 py-1.5 text-xs font-semibold rounded-none flex items-center gap-1.5 transition-all shadow cursor-pointer active:scale-95 bg-[#161D26] hover:bg-[#1F2937] border border-[#2D3748] hover:border-[#C5A880] text-gray-200"
+                        title={t('Xem và cập nhật ảnh Căn cước công dân')}
                       >
-                        <ScanFace className="w-3.5 h-3.5" />
-                        <span>Xác Thực Cư Dân</span>
+                        <ScanFace className="w-3.5 h-3.5 text-[#C5A880]" />
+                        <span>{t('Hồ Sơ & CCCD', 'Profile & ID')}</span>
                       </button>
                     )}
 
+                    {/* Delete Member */}
                     {isOwner && (
                       <button
                         type="button"
                         onClick={() => handlePromptRemoveMember(m)}
                         className="px-2.5 py-1.5 text-xs text-rose-400 hover:text-white hover:bg-rose-950/60 border border-rose-900/60 rounded-none transition-colors flex items-center gap-1 cursor-pointer"
-                        title="Xóa quyền thành viên"
+                        title={t('Xóa người thân khỏi căn hộ')}
                       >
-                        <Trash2 className="w-3.5 h-3.5" /> Xóa
+                        <Trash2 className="w-3.5 h-3.5" />
+                        <span>{t('Xóa', 'Delete')}</span>
                       </button>
                     )}
                   </div>
@@ -2409,21 +2363,15 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
             {/* ------------------------------------------------------------- */}
             {selectedAccount && modalMode !== 'DIRECT_INPUT' ? (
               <form onSubmit={handleAddMember} className="pt-2.5 border-t border-[#222B35] space-y-2.5 text-xs">
-                <div className="p-2.5 bg-[#161D26] border border-[#C5A880]/60 rounded-none space-y-1.5">
-                  <div className="text-[11px] font-bold uppercase tracking-wider text-[#C5A880] flex items-center justify-between">
-                    <span>Người Nhà Đã Chọn Từ API:</span>
-                    <span className="text-emerald-400 text-[10px] font-mono">Đã Xác Thực</span>
+                <div className="p-2.5 bg-[#161D26] border border-[#C5A880]/60 rounded-none flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Check className="w-4 h-4 text-[#C5A880]" />
+                    <span className="text-white font-bold text-xs">{selectedAccount.fullName}</span>
+                    <span className="text-gray-400 font-mono text-xs">({selectedAccount.phone})</span>
                   </div>
-                  <div className="grid grid-cols-2 gap-2 text-gray-200 text-[11px]">
-                    <div>• Họ tên: <strong className="text-white">{selectedAccount.fullName}</strong></div>
-                    <div>• SĐT: <strong className="font-mono text-white">{selectedAccount.phone}</strong></div>
-                    <div>• CCCD: <strong className="font-mono text-[#C5A880]">{selectedAccount.idCard}</strong></div>
-                    <div>• Quê quán: <strong className="text-gray-300">{selectedAccount.pob || 'Đang cập nhật'}</strong></div>
-                  </div>
-                  <div className="text-[10.5px] text-[#C5A880] flex items-center gap-1.5 pt-1 border-t border-[#222B35]">
-                    <Crown className="w-3.5 h-3.5 text-[#C5A880]" />
-                    <span>Chủ Hộ Bảo Lãnh: <strong>{ownerName}</strong> (Căn {aptCode})</span>
-                  </div>
+                  <span className="text-[11px] text-[#C5A880] font-medium">
+                    {t('Đăng ký vào căn', 'Registering to')} {aptCode}
+                  </span>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
@@ -2791,21 +2739,27 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
               </div>
               <div>
                 <h3 className="text-sm sm:text-base font-serif font-bold text-white">
-                  Xóa Quyền Thành Viên
+                  {t('Xác Nhận Xóa Thành Viên', 'Confirm Remove Member')}
                 </h3>
                 <p className="text-[11px] text-gray-400">
-                  Căn {aptCode} • Chủ hộ {ownerName}
+                  {t('Căn hộ', 'Apartment')} {aptCode} • {t('Chủ hộ', 'Owner')} {ownerName}
                 </p>
               </div>
             </div>
 
             {/* Warning Message */}
-            <div className="p-3 bg-rose-950/40 border border-rose-900 text-rose-200 text-xs space-y-1">
+            <div className="p-3 bg-rose-950/40 border border-rose-900/80 text-rose-200 text-xs space-y-1">
               <p>
-                Xác nhận xóa thành viên <strong className="text-white">{removeTargetMember.fullName}</strong> khỏi căn hộ <strong>{aptCode}</strong>?
+                {t(
+                  `Bạn có chắc chắn muốn xóa thành viên ${removeTargetMember.fullName} khỏi danh sách căn hộ ${aptCode}?`,
+                  `Are you sure you want to remove ${removeTargetMember.fullName} from unit ${aptCode}?`
+                )}
               </p>
-              <p className="text-rose-300/80 text-[11px]">
-                Quyền FaceID sảnh và thang máy sẽ bị thu hồi.
+              <p className="text-gray-300 text-[11px]">
+                {t(
+                  'Quyền ra vào sảnh và thang máy của người thân sẽ tạm ngừng. Bạn có thể thêm lại bất cứ lúc nào.',
+                  'Access privileges will be revoked. You can add this member back at any time.'
+                )}
               </p>
             </div>
 
@@ -2829,9 +2783,9 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
               <button
                 type="button"
                 onClick={() => setRemoveTargetMember(null)}
-                className="px-3 py-1.5 bg-transparent hover:bg-[#161D26] text-gray-400 hover:text-white rounded-none transition-colors cursor-pointer text-xs"
+                className="px-3.5 py-1.5 bg-transparent hover:bg-[#161D26] text-gray-400 hover:text-white rounded-none transition-colors cursor-pointer text-xs"
               >
-                Hủy
+                {t('Giữ Lại', 'Cancel')}
               </button>
 
               <button
@@ -2842,11 +2796,11 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
               >
                 {isRemoving ? (
                   <>
-                    <RefreshCw className="w-3.5 h-3.5 animate-spin" /> Đang Xóa...
+                    <RefreshCw className="w-3.5 h-3.5 animate-spin" /> {t('Đang Xóa...', 'Removing...')}
                   </>
                 ) : (
                   <>
-                    <Trash2 className="w-3.5 h-3.5" /> Xóa Quyền
+                    <Trash2 className="w-3.5 h-3.5" /> {t('Xóa Thành Viên', 'Remove Member')}
                   </>
                 )}
               </button>

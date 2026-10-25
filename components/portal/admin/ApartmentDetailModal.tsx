@@ -640,14 +640,13 @@ export default function ApartmentDetailModal({
                                     <span>{t('SĐT:', 'Tel:')} <strong className="text-gray-200">{member.phone}</strong></span>
                                     {member.idCard && <span>• {t('CCCD:', 'ID:')} <strong className="text-[#C5A880]">{member.idCard}</strong></span>}
                                     {member.licensePlate && <span>• {t('Biển số:', 'Plate:')} <strong className="text-cyan-400">{member.licensePlate}</strong></span>}
-                                    {member.addedDate && <span className="text-[11px] text-gray-500">• {t('Ngày thêm:', 'Added:')} {member.addedDate}</span>}
+                                    {member.dob && <span>• {t('Sinh:', 'DOB:')} <strong className="text-gray-300">{member.dob}</strong></span>}
                                   </div>
 
                                   <div className="text-[11px] text-gray-300 flex flex-wrap items-center gap-x-3 gap-y-0.5 pt-0.5">
-                                    <span className="text-[#C5A880] font-semibold">{t('Chủ hộ bảo lãnh:', 'Sponsor:')} <strong>{member.sponsorName || unit.owner?.name}</strong></span>
-                                    <span>• {t('Hình thức:', 'Type:')} <strong className="text-gray-200">{member.residenceType || 'Thường trú cùng chủ hộ'}</strong></span>
+                                    <span>{t('Cư trú:', 'Residence:')} <strong className="text-gray-200">{member.residenceType || 'Thường trú cùng chủ hộ'}</strong></span>
                                     <span>• {t('Tạm trú:', 'Status:')} <strong className="text-emerald-400">{member.temporaryResidenceStatus || 'Đang làm thủ tục'}</strong></span>
-                                    {member.relationshipProof && <span className="text-[10px] text-gray-400 font-mono">• {member.relationshipProof}</span>}
+                                    {member.addedDate && <span className="text-gray-400 font-mono">• {t('Ngày thêm:', 'Added:')} {member.addedDate}</span>}
                                   </div>
                                 </div>
                               </div>
