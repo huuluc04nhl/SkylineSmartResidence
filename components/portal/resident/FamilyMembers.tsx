@@ -290,15 +290,17 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
   useEffect(() => {
     fetchMembers();
 
-    // Listen to real-time e-KYC & FaceID changes
+    // Listen to real-time e-KYC, FaceID & BQL Family Member changes
     const handleSyncUpdated = () => {
       fetchMembers();
     };
     window.addEventListener('skyline_ekyc_updated', handleSyncUpdated);
     window.addEventListener('skyline_faceid_enrolled', handleSyncUpdated);
+    window.addEventListener('skyline_family_updated', handleSyncUpdated);
     return () => {
       window.removeEventListener('skyline_ekyc_updated', handleSyncUpdated);
       window.removeEventListener('skyline_faceid_enrolled', handleSyncUpdated);
+      window.removeEventListener('skyline_family_updated', handleSyncUpdated);
     };
   }, []);
 

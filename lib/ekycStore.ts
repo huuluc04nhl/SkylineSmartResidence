@@ -37,6 +37,8 @@ export interface EkycRequest {
   rejectionReason?: string;
 }
 
+import { updateApartmentMember } from './userStore';
+
 const STORAGE_KEY = 'skyline_ekyc_requests_v4';
 
 export const INITIAL_EKYC_REQUESTS: EkycRequest[] = [
@@ -308,6 +310,27 @@ export function approveEkycRequest(id: string, approverName: string = 'Ban Quả
   delete req.rejectionReason;
 
   saveEkycRequests(requests);
+
+  // Synchronize family member face status
+  if (req.apartmentCode) {
+    try {
+      updateApartmentMember(req.apartmentCode, req.userId, {
+        faceStatus: 'Đã Kích Hoạt FaceID',
+        avatarUrl: req.avatarUrl,
+        idCard: req.idCardNo,
+      });
+      if (req.phone) {
+        updateApartmentMember(req.apartmentCode, req.phone, {
+          faceStatus: 'Đã Kích Hoạt FaceID',
+          avatarUrl: req.avatarUrl,
+          idCard: req.idCardNo,
+        });
+      }
+    } catch (e) {
+      console.warn('Sync updateApartmentMember in approveEkycRequest:', e);
+    }
+  }
+
   return req;
 }
 
@@ -326,6 +349,23 @@ export function rejectEkycRequest(id: string, reason: string, approverName: stri
   req.rejectionReason = reason || 'Ảnh chụp CCCD hoặc khuôn mặt không đạt tiêu chuẩn độ nét.';
 
   saveEkycRequests(requests);
+
+  // Synchronize family member rejection status
+  if (req.apartmentCode) {
+    try {
+      updateApartmentMember(req.apartmentCode, req.userId, {
+        faceStatus: 'BQL Yêu Cầu Chụp Lại',
+      });
+      if (req.phone) {
+        updateApartmentMember(req.apartmentCode, req.phone, {
+          faceStatus: 'BQL Yêu Cầu Chụp Lại',
+        });
+      }
+    } catch (e) {
+      console.warn('Sync updateApartmentMember in rejectEkycRequest:', e);
+    }
+  }
+
   return req;
 }
 
@@ -340,5 +380,21 @@ export function confirmEkycByOwner(userId: string): EkycRequest | null {
 
   req.status = 'PENDING';
   saveEkycRequests(requests);
+
+  if (req.apartmentCode) {
+    try {
+      updateApartmentMember(req.apartmentCode, req.userId, {
+        faceStatus: 'Đang Chờ BQL Phê Duyệt',
+      });
+      if (req.phone) {
+        updateApartmentMember(req.apartmentCode, req.phone, {
+          faceStatus: 'Đang Chờ BQL Phê Duyệt',
+        });
+      }
+    } catch (e) {
+      console.warn('Sync updateApartmentMember in confirmEkycByOwner:', e);
+    }
+  }
+
   return req;
 }

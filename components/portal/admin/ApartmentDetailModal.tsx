@@ -30,15 +30,25 @@ import {
   AlertTriangle,
   FileCheck2,
   Zap,
-  Droplets
+  Droplets,
+  Trash2,
+  ShieldAlert,
+  ScanFace
 } from 'lucide-react';
 import { useAuth } from '@/lib/authContext';
 import { useLanguage } from '@/lib/languageContext';
 import { 
   ApartmentUnit, 
   updateApartmentBillingStatus, 
-  evictApartmentResident 
+  evictApartmentResident,
+  approveFamilyMemberByBql,
+  rejectFamilyMemberByBql,
+  addFamilyMemberByBql,
+  removeFamilyMemberByBql,
+  getApartmentByCode
 } from '@/lib/apartmentStore';
+import { ApartmentMember, getApartmentMembers } from '@/lib/userStore';
+import { getPhoneValidationError, getCccdValidationError } from '@/lib/validationUtils';
 import ApartmentModel3DViewer from '@/components/portal/shared/ApartmentModel3DViewer';
 
 interface ApartmentDetailModalProps {
@@ -69,11 +79,135 @@ export default function ApartmentDetailModal({
   const [isConfirmingEvict, setIsConfirmingEvict] = useState(false);
   const [successToast, setSuccessToast] = useState<string | null>(null);
 
+  // Realtime Family Members State
+  const [membersList, setMembersList] = useState<ApartmentMember[]>(() => {
+    return unit ? getApartmentMembers(unit.code) : [];
+  });
+
+  // Modal thêm người nhà từ BQL
+  const [showAddMemberModal, setShowAddMemberModal] = useState(false);
+  const [newMemName, setNewMemName] = useState('');
+  const [newMemPhone, setNewMemPhone] = useState('');
+  const [newMemCccd, setNewMemCccd] = useState('');
+  const [newMemRel, setNewMemRel] = useState('Vợ / Chồng');
+  const [newMemPlate, setNewMemPlate] = useState('');
+  const [newMemAutoApprove, setNewMemAutoApprove] = useState(true);
+  const [addMemberError, setAddMemberError] = useState<string | null>(null);
+
+  // Modal từ chối / yêu cầu bổ sung
+  const [rejectingMember, setRejectingMember] = useState<ApartmentMember | null>(null);
+  const [rejectReasonInput, setRejectReasonInput] = useState('Ảnh chụp CCCD bị mờ/lóa sáng, đề nghị quét lại rõ nét');
+
+  // Đồng bộ danh sách người nhà thời gian thực
+  const refreshMembers = () => {
+    if (!unit) return;
+    const currentMems = getApartmentMembers(unit.code);
+    setMembersList(currentMems);
+  };
+
+  React.useEffect(() => {
+    if (!unit) return;
+    refreshMembers();
+
+    const handleSync = () => {
+      refreshMembers();
+    };
+
+    window.addEventListener('skyline_family_updated', handleSync);
+    window.addEventListener('skyline_ekyc_updated', handleSync);
+    window.addEventListener('skyline_apartments_updated', handleSync);
+
+    return () => {
+      window.removeEventListener('skyline_family_updated', handleSync);
+      window.removeEventListener('skyline_ekyc_updated', handleSync);
+      window.removeEventListener('skyline_apartments_updated', handleSync);
+    };
+  }, [unit?.code]);
+
   if (!isOpen || !unit) return null;
 
   const showToast = (msg: string) => {
     setSuccessToast(msg);
-    setTimeout(() => setSuccessToast(null), 3000);
+    setTimeout(() => setSuccessToast(null), 3500);
+  };
+
+  // 1. BQL Duyệt Người Nhà
+  const handleApproveMember = (memberId: string, memberName: string) => {
+    approveFamilyMemberByBql(unit.code, memberId, 'Ban Quản Lý Skyline');
+    refreshMembers();
+    onRefresh();
+    showToast(`✓ Đã phê duyệt và kích hoạt quyền FaceID cho "${memberName}" thành công!`);
+  };
+
+  // 2. BQL Yêu Cầu Chụp Lại / Từ Chối
+  const handleConfirmRejectMember = () => {
+    if (!rejectingMember) return;
+    rejectFamilyMemberByBql(unit.code, rejectingMember.id, rejectReasonInput, 'Ban Quản Lý Skyline');
+    showToast(`✓ Đã gửi yêu cầu bổ sung hồ sơ tới "${rejectingMember.fullName}".`);
+    setRejectingMember(null);
+    refreshMembers();
+    onRefresh();
+  };
+
+  // 3. BQL Thu hồi quyền cư trú / Xóa người nhà
+  const handleRemoveMember = (memberId: string, memberName: string) => {
+    if (confirm(`Xác nhận xóa & thu hồi quyền ra vào của thành viên "${memberName}" khỏi Căn ${unit.code}?`)) {
+      removeFamilyMemberByBql(unit.code, memberId);
+      refreshMembers();
+      onRefresh();
+      showToast(`✓ Đã xóa thành viên "${memberName}" khỏi căn hộ.`);
+    }
+  };
+
+  // 4. BQL Thêm Người Nhà Trực Tiếp
+  const handleAddMemberSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newMemName.trim()) {
+      setAddMemberError('Vui lòng nhập họ và tên thành viên.');
+      return;
+    }
+    const phoneErr = getPhoneValidationError(newMemPhone);
+    if (phoneErr) {
+      setAddMemberError(phoneErr);
+      return;
+    }
+    if (newMemCccd.trim()) {
+      const cccdErr = getCccdValidationError(newMemCccd);
+      if (cccdErr) {
+        setAddMemberError(cccdErr);
+        return;
+      }
+    }
+
+    const newMemberItem: ApartmentMember = {
+      id: `mem-${Date.now()}`,
+      username: newMemPhone.trim(),
+      fullName: newMemName.trim(),
+      role: 'Family',
+      relationship: newMemRel,
+      phone: newMemPhone.trim(),
+      idCard: newMemCccd.trim() || '079' + Math.floor(100000000 + Math.random() * 900000000),
+      licensePlate: newMemPlate.trim(),
+      avatarUrl: 'https://data.nks.vn/storage/users/default.png',
+      faceStatus: newMemAutoApprove ? 'Đã Kích Hoạt FaceID' : 'Đang Chờ BQL Phê Duyệt',
+      addedDate: new Date().toLocaleDateString('vi-VN'),
+    };
+
+    addFamilyMemberByBql(unit.code, newMemberItem, newMemAutoApprove);
+    setShowAddMemberModal(false);
+    setNewMemName('');
+    setNewMemPhone('');
+    setNewMemCccd('');
+    setNewMemRel('Vợ / Chồng');
+    setNewMemPlate('');
+    setAddMemberError(null);
+    refreshMembers();
+    onRefresh();
+    showToast(
+      newMemAutoApprove 
+        ? `✓ Đã thêm "${newMemberItem.fullName}" & cấp quyền FaceID thành công!`
+        : `✓ Đã tiếp nhận hồ sơ "${newMemberItem.fullName}" vào danh sách chờ duyệt.`
+    );
   };
 
   const handleToggleBilling = () => {
@@ -423,49 +557,158 @@ export default function ApartmentDetailModal({
                   )}
 
                   {/* Danh sách thành viên gia đình (nhân khẩu) */}
-                  <div className="space-y-3">
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs font-mono font-bold uppercase tracking-wider text-gray-300 flex items-center gap-1.5">
-                        <Users className="w-4 h-4 text-cyan-400" />
-                        {t('Danh Sách Nhân Khẩu Cùng Cư Trú', 'Co-occupants & Family Members List')} ({unit.members?.length || 0} {t('người thân', 'members')})
-                      </span>
+                  <div className="space-y-3.5">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 pb-2 border-b border-[#222B35]">
+                      <div>
+                        <span className="text-xs font-mono font-bold uppercase tracking-wider text-gray-200 flex items-center gap-1.5">
+                          <Users className="w-4 h-4 text-cyan-400" />
+                          {t('Nhân Khẩu & Người Nhà Cùng Cư Trú', 'Co-occupants & Family Members')} ({membersList.length} {t('người thân', 'members')})
+                        </span>
+                        <div className="flex items-center gap-3 text-[11px] text-gray-400 mt-1 font-mono">
+                          <span>{t('Tổng số:', 'Total:')} <strong className="text-white">{1 + membersList.length}</strong></span>
+                          <span>•</span>
+                          <span className="text-emerald-400">{t('Đã cấp FaceID:', 'FaceID Active:')} <strong>{1 + membersList.filter(m => m.faceStatus.includes('Đã')).length}</strong></span>
+                          <span>•</span>
+                          <span className="text-amber-400">{t('Chờ BQL duyệt:', 'Pending BQL:')} <strong>{membersList.filter(m => m.faceStatus.includes('Chờ BQL') || m.faceStatus.includes('Chờ') || !m.faceStatus.includes('Đã')).length}</strong></span>
+                        </div>
+                      </div>
+
+                      {isAdmin && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setShowAddMemberModal(true);
+                            setAddMemberError(null);
+                          }}
+                          className="px-3 py-1.5 bg-[#C5A880] hover:bg-white text-[#0D1117] font-bold text-xs uppercase tracking-wider rounded-none flex items-center gap-1.5 transition-all shadow active:scale-95 cursor-pointer self-start sm:self-auto"
+                        >
+                          <UserPlus className="w-3.5 h-3.5 text-[#0D1117]" />
+                          <span>{t('Đăng Ký Người Nhà', 'Add Family Member')}</span>
+                        </button>
+                      )}
                     </div>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      {unit.members && unit.members.length > 0 ? (
-                        unit.members.map(member => (
-                          <div key={member.id} className="p-3 bg-[#121820] border border-[#222B35] flex items-center justify-between gap-3">
-                            <div className="flex items-center gap-3 min-w-0">
-                              <img
-                                src={member.avatarUrl?.replace('data.nks.vn//', 'data.nks.vn/') || 'https://data.nks.vn/storage/users/default.png'}
-                                alt={member.fullName}
-                                className="w-10 h-10 object-cover border border-[#2D3748] flex-shrink-0"
-                              />
-                              <div className="min-w-0 space-y-0.5">
-                                <div className="font-bold text-white text-xs truncate">
-                                  {member.fullName}
-                                </div>
-                                <div className="text-[11px] text-gray-400">
-                                  {t(member.relationship)}
-                                </div>
-                                <div className="text-[10px] text-gray-500 font-mono">
-                                  {t('SĐT:', 'Tel:')} {member.phone} • {t('CCCD:', 'ID:')} {member.idCard}
+                    <div className="grid grid-cols-1 gap-3">
+                      {membersList && membersList.length > 0 ? (
+                        membersList.map(member => {
+                          const isApproved = member.faceStatus.includes('Đã');
+                          const isPending = member.faceStatus.includes('Chờ') || !isApproved;
+                          const isRejected = member.faceStatus.includes('Yêu Cầu') || member.faceStatus.includes('Từ Chối');
+
+                          return (
+                            <div key={member.id} className="p-3.5 bg-[#121820] border border-[#222B35] flex flex-col md:flex-row md:items-center justify-between gap-3 hover:border-[#C5A880]/50 transition-colors">
+                              <div className="flex items-start sm:items-center gap-3 min-w-0">
+                                <img
+                                  src={member.avatarUrl?.replace('data.nks.vn//', 'data.nks.vn/') || 'https://data.nks.vn/storage/users/default.png'}
+                                  alt={member.fullName}
+                                  className="w-12 h-12 object-cover border border-[#2D3748] flex-shrink-0"
+                                />
+                                <div className="min-w-0 space-y-1">
+                                  <div className="flex items-center gap-2 flex-wrap">
+                                    <span className="font-bold text-white text-sm">
+                                      {member.fullName}
+                                    </span>
+                                    <span className="text-[10px] px-2 py-0.5 bg-purple-950/80 text-purple-300 border border-purple-600/60 font-semibold uppercase tracking-wider">
+                                      {t(member.relationship)}
+                                    </span>
+                                    
+                                    {/* Status Badge */}
+                                    <span className={`text-[10px] px-2 py-0.5 font-bold uppercase tracking-wider flex items-center gap-1 border ${
+                                      isApproved
+                                        ? 'bg-emerald-950 text-emerald-300 border-emerald-500'
+                                        : isRejected
+                                        ? 'bg-rose-950 text-rose-300 border-rose-500'
+                                        : 'bg-amber-950 text-amber-300 border-amber-500 animate-pulse'
+                                    }`}>
+                                      {isApproved ? <CheckCircle2 className="w-3 h-3 text-emerald-400" /> : <Clock className="w-3 h-3 text-amber-400" />}
+                                      {t(member.faceStatus)}
+                                    </span>
+                                  </div>
+
+                                  <div className="text-xs text-gray-400 flex flex-wrap items-center gap-x-3 gap-y-0.5 font-mono">
+                                    <span>{t('SĐT:', 'Tel:')} <strong className="text-gray-200">{member.phone}</strong></span>
+                                    {member.idCard && <span>• {t('CCCD:', 'ID:')} <strong className="text-[#C5A880]">{member.idCard}</strong></span>}
+                                    {member.licensePlate && <span>• {t('Biển số:', 'Plate:')} <strong className="text-cyan-400">{member.licensePlate}</strong></span>}
+                                    {member.addedDate && <span className="text-[11px] text-gray-500">• {t('Ngày thêm:', 'Added:')} {member.addedDate}</span>}
+                                  </div>
                                 </div>
                               </div>
-                            </div>
 
-                            <span className={`text-[9.5px] px-2 py-0.5 font-bold uppercase whitespace-nowrap border ${
-                              member.faceStatus.includes('Đã')
-                                ? 'bg-emerald-950 text-emerald-300 border-emerald-600'
-                                : 'bg-amber-950 text-amber-300 border-amber-600'
-                            }`}>
-                              {t(member.faceStatus)}
-                            </span>
-                          </div>
-                        ))
+                              {/* BQL Controls */}
+                              {isAdmin && (
+                                <div className="flex items-center gap-2 self-start md:self-center flex-wrap pt-2 md:pt-0 border-t md:border-t-0 border-[#222B35] w-full md:w-auto justify-end">
+                                  {isPending && (
+                                    <>
+                                      <button
+                                        type="button"
+                                        onClick={() => handleApproveMember(member.id, member.fullName)}
+                                        className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs uppercase tracking-wider rounded-none flex items-center gap-1.5 transition-all shadow active:scale-95 cursor-pointer"
+                                      >
+                                        <Check className="w-3.5 h-3.5" />
+                                        <span>{t('Duyệt FaceID', 'Approve FaceID')}</span>
+                                      </button>
+                                      <button
+                                        type="button"
+                                        onClick={() => setRejectingMember(member)}
+                                        className="px-2.5 py-1.5 bg-rose-950/80 hover:bg-rose-900 text-rose-300 border border-rose-700 font-semibold text-xs rounded-none transition-colors cursor-pointer"
+                                        title={t('Yêu cầu chụp lại / Từ chối')}
+                                      >
+                                        <X className="w-3.5 h-3.5" />
+                                        <span>{t('Từ Chối', 'Reject')}</span>
+                                      </button>
+                                    </>
+                                  )}
+
+                                  {isApproved && (
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        setRejectingMember(member);
+                                        setRejectReasonInput('Ban Quản Lý tạm khóa / thu hồi quyền FaceID theo quy định');
+                                      }}
+                                      className="px-2.5 py-1.5 bg-[#161B22] hover:bg-[#1E2631] text-amber-400 border border-amber-600/60 font-semibold text-xs rounded-none transition-colors cursor-pointer"
+                                    >
+                                      {t('Tạm Khóa Quyền', 'Suspend Access')}
+                                    </button>
+                                  )}
+
+                                  {isRejected && (
+                                    <button
+                                      type="button"
+                                      onClick={() => handleApproveMember(member.id, member.fullName)}
+                                      className="px-3 py-1.5 bg-emerald-600/90 hover:bg-emerald-500 text-white font-bold text-xs uppercase tracking-wider rounded-none flex items-center gap-1.5 transition-all cursor-pointer"
+                                    >
+                                      <Check className="w-3.5 h-3.5" />
+                                      <span>{t('Duyệt Lại', 'Re-approve')}</span>
+                                    </button>
+                                  )}
+
+                                  <button
+                                    type="button"
+                                    onClick={() => handleRemoveMember(member.id, member.fullName)}
+                                    className="p-1.5 text-rose-400 hover:text-white hover:bg-rose-950 border border-rose-900/40 rounded-none transition-colors cursor-pointer"
+                                    title={t('Xóa thành viên khỏi căn hộ', 'Remove from apartment')}
+                                  >
+                                    <Trash2 className="w-3.5 h-3.5" />
+                                  </button>
+                                </div>
+                              )}
+                            </div>
+                          );
+                        })
                       ) : (
-                        <div className="col-span-2 p-4 text-center text-gray-500 text-xs bg-[#121820] border border-[#222B35]">
-                          {t('Chưa đăng ký thêm thành viên gia đình.', 'No family members registered yet.')}
+                        <div className="p-6 text-center text-gray-500 text-xs bg-[#121820] border border-[#222B35] space-y-2">
+                          <Users className="w-8 h-8 text-gray-600 mx-auto" />
+                          <p>{t('Chưa đăng ký thêm thành viên gia đình cho căn hộ này.', 'No family members registered for this apartment yet.')}</p>
+                          {isAdmin && (
+                            <button
+                              type="button"
+                              onClick={() => setShowAddMemberModal(true)}
+                              className="text-[#C5A880] underline hover:text-white font-bold cursor-pointer"
+                            >
+                              + {t('Đăng ký người nhà ngay', 'Register family member now')}
+                            </button>
+                          )}
                         </div>
                       )}
                     </div>
@@ -685,6 +928,238 @@ export default function ApartmentDetailModal({
         </div>
 
       </div>
+
+      {/* ============================================================= */}
+      {/* 5. SUB-MODAL: BQL THÊM NGƯỜI NHÀ TRỰC TIẾP                    */}
+      {/* ============================================================= */}
+      {showAddMemberModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fadeIn">
+          <div className="bg-[#0E131B] border border-[#C5A880]/40 w-full max-w-lg shadow-2xl rounded-none overflow-hidden">
+            <div className="p-4 bg-[#161D26] border-b border-[#222B35] flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Users className="w-4 h-4 text-[#C5A880]" />
+                <h3 className="font-bold text-white text-sm">
+                  {t('BQL Đăng Ký Người Nhà Mới', 'BQL Register New Family Member')} - Căn {unit.code}
+                </h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  setShowAddMemberModal(false);
+                  setAddMemberError(null);
+                }}
+                className="text-gray-400 hover:text-white cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form onSubmit={handleAddMemberSubmit} className="p-5 space-y-4">
+              {addMemberError && (
+                <div className="p-3 bg-rose-950/80 border border-rose-600/70 text-rose-200 text-xs flex items-center gap-2">
+                  <AlertCircle className="w-4 h-4 flex-shrink-0 text-rose-400" />
+                  <span>{addMemberError}</span>
+                </div>
+              )}
+
+              <div className="space-y-1">
+                <label className="text-xs font-mono text-gray-300">
+                  {t('Họ và Tên Thành Viên', 'Full Name')} <span className="text-rose-400">*</span>
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={newMemName}
+                  onChange={(e) => setNewMemName(e.target.value)}
+                  placeholder="Ví dụ: Nguyễn Văn An"
+                  className="w-full bg-[#141B24] border border-[#2A3644] focus:border-[#C5A880] px-3 py-2 text-white text-xs rounded-none outline-none"
+                />
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div className="space-y-1">
+                  <label className="text-xs font-mono text-gray-300">
+                    {t('Số Điện Thoại', 'Phone Number')} <span className="text-rose-400">*</span>
+                  </label>
+                  <input
+                    type="tel"
+                    required
+                    value={newMemPhone}
+                    onChange={(e) => setNewMemPhone(e.target.value)}
+                    placeholder="09xx xxx xxx"
+                    className="w-full bg-[#141B24] border border-[#2A3644] focus:border-[#C5A880] px-3 py-2 text-white text-xs rounded-none outline-none font-mono"
+                  />
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-xs font-mono text-gray-300">
+                    {t('Số CCCD / Hộ Chiếu', 'Citizen ID / Passport')}
+                  </label>
+                  <input
+                    type="text"
+                    value={newMemCccd}
+                    onChange={(e) => setNewMemCccd(e.target.value)}
+                    placeholder="12 chữ số CCCD"
+                    className="w-full bg-[#141B24] border border-[#2A3644] focus:border-[#C5A880] px-3 py-2 text-white text-xs rounded-none outline-none font-mono"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div className="space-y-1">
+                  <label className="text-xs font-mono text-gray-300">
+                    {t('Quan Hệ Với Chủ Hộ', 'Relationship')}
+                  </label>
+                  <select
+                    value={newMemRel}
+                    onChange={(e) => setNewMemRel(e.target.value)}
+                    className="w-full bg-[#141B24] border border-[#2A3644] focus:border-[#C5A880] px-3 py-2 text-white text-xs rounded-none outline-none"
+                  >
+                    <option value="Vợ / Chồng">{t('Vợ / Chồng', 'Spouse')}</option>
+                    <option value="Con ruột / Con nuôi">{t('Con ruột / Con nuôi', 'Child')}</option>
+                    <option value="Bố / Mẹ">{t('Bố / Mẹ', 'Parent')}</option>
+                    <option value="Anh / Chị / Em">{t('Anh / Chị / Em', 'Sibling')}</option>
+                    <option value="Người thân khác">{t('Người thân khác', 'Other Relative')}</option>
+                    <option value="Người giúp việc">{t('Người giúp việc', 'Helper / Maid')}</option>
+                  </select>
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-xs font-mono text-gray-300">
+                    {t('Biển Số Xe (Nếu có)', 'License Plate')}
+                  </label>
+                  <input
+                    type="text"
+                    value={newMemPlate}
+                    onChange={(e) => setNewMemPlate(e.target.value)}
+                    placeholder="59A-123.45"
+                    className="w-full bg-[#141B24] border border-[#2A3644] focus:border-[#C5A880] px-3 py-2 text-white text-xs rounded-none outline-none uppercase font-mono"
+                  />
+                </div>
+              </div>
+
+              <div className="p-3 bg-[#141B24] border border-[#222B35] flex items-center gap-2.5">
+                <input
+                  type="checkbox"
+                  id="bqlAutoApprove"
+                  checked={newMemAutoApprove}
+                  onChange={(e) => setNewMemAutoApprove(e.target.checked)}
+                  className="w-4 h-4 accent-[#C5A880] cursor-pointer"
+                />
+                <label htmlFor="bqlAutoApprove" className="text-xs text-gray-300 cursor-pointer select-none">
+                  {t('Phê duyệt & kích hoạt quyền FaceID ngay lập tức (BQL cấp trực tiếp)', 'Approve & activate FaceID access immediately (Direct BQL issue)')}
+                </label>
+              </div>
+
+              <div className="pt-2 flex items-center justify-end gap-2.5 border-t border-[#222B35]">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowAddMemberModal(false);
+                    setAddMemberError(null);
+                  }}
+                  className="px-4 py-2 bg-[#1A232E] hover:bg-[#222D3A] text-gray-300 text-xs font-semibold rounded-none cursor-pointer"
+                >
+                  {t('Hủy Bỏ', 'Cancel')}
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 bg-[#C5A880] hover:bg-white text-[#0A0E14] text-xs font-bold uppercase tracking-wider rounded-none transition-all cursor-pointer shadow active:scale-95"
+                >
+                  {t('Xác Nhận Thêm Người Nhà', 'Confirm Add Member')}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* ============================================================= */}
+      {/* 6. SUB-MODAL: BQL TỪ CHỐI / TẠM KHÓA QUYỀN                    */}
+      {/* ============================================================= */}
+      {rejectingMember && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fadeIn">
+          <div className="bg-[#0E131B] border border-rose-500/40 w-full max-w-md shadow-2xl rounded-none overflow-hidden">
+            <div className="p-4 bg-[#1B1215] border-b border-rose-900/50 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <ShieldAlert className="w-4 h-4 text-rose-400" />
+                <h3 className="font-bold text-rose-300 text-sm">
+                  {t('Từ Chối / Tạm Khóa FaceID', 'Reject / Suspend FaceID')}
+                </h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setRejectingMember(null)}
+                className="text-gray-400 hover:text-white cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="p-5 space-y-4">
+              <div className="text-xs text-gray-300">
+                {t('Thành viên: ', 'Member: ')}
+                <strong className="text-white font-bold">{rejectingMember.fullName}</strong> ({t(rejectingMember.relationship)})
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-xs font-mono text-gray-300">
+                  {t('Lý do yêu cầu bổ sung / từ chối:', 'Reason for rejection/suspension:')}
+                </label>
+                
+                {/* Gợi ý lý do nhanh */}
+                <div className="flex flex-wrap gap-1.5 pb-1">
+                  {[
+                    'Ảnh chụp CCCD bị mờ/lóa sáng, đề nghị quét lại rõ nét',
+                    'Ảnh chân dung nghiêng/không khớp với thẻ CCCD',
+                    'Chưa đủ giấy tờ chứng minh quan hệ cư trú theo quy định',
+                    'Ban Quản Lý tạm khóa / thu hồi quyền FaceID theo quy định'
+                  ].map((preset, idx) => (
+                    <button
+                      key={idx}
+                      type="button"
+                      onClick={() => setRejectReasonInput(preset)}
+                      className={`text-[10px] px-2 py-1 text-left border rounded-none cursor-pointer transition-colors ${
+                        rejectReasonInput === preset
+                          ? 'bg-rose-950 text-rose-200 border-rose-600'
+                          : 'bg-[#141B24] text-gray-400 border-[#222B35] hover:text-gray-200'
+                      }`}
+                    >
+                      {preset}
+                    </button>
+                  ))}
+                </div>
+
+                <textarea
+                  rows={3}
+                  value={rejectReasonInput}
+                  onChange={(e) => setRejectReasonInput(e.target.value)}
+                  placeholder="Nhập lý do chi tiết..."
+                  className="w-full bg-[#141B24] border border-[#2A3644] focus:border-rose-500 p-2.5 text-white text-xs rounded-none outline-none resize-none font-mono"
+                />
+              </div>
+
+              <div className="pt-2 flex items-center justify-end gap-2.5 border-t border-[#222B35]">
+                <button
+                  type="button"
+                  onClick={() => setRejectingMember(null)}
+                  className="px-4 py-2 bg-[#1A232E] hover:bg-[#222D3A] text-gray-300 text-xs font-semibold rounded-none cursor-pointer"
+                >
+                  {t('Hủy', 'Cancel')}
+                </button>
+                <button
+                  type="button"
+                  onClick={handleConfirmRejectMember}
+                  className="px-4 py-2 bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold uppercase tracking-wider rounded-none transition-all cursor-pointer shadow active:scale-95"
+                >
+                  {t('Xác Nhận Quyết Định', 'Confirm Decision')}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }

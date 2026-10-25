@@ -420,55 +420,113 @@ export function registerNewOwnerUser(data: {
   return newUser;
 }
 
-export const DEFAULT_CH06_MEMBERS: ApartmentMember[] = [];
+export const DEFAULT_CH06_MEMBERS: ApartmentMember[] = [
+  {
+    id: 'user-tenant-1',
+    username: 'nguyenhuunhut1309@gmail.com',
+    fullName: 'Nguyễn Hữu Nhựt',
+    role: 'Family',
+    relationship: 'Em Trai (Người Nhà)',
+    phone: '0917795211',
+    idCard: '079198005678',
+    licensePlate: '51H-992.81',
+    faceStatus: 'Đang Chờ BQL Phê Duyệt',
+    avatarUrl: 'https://data.nks.vn/storage/users/202607191405195335.jpg',
+    addedDate: '12/10/2026',
+  },
+  {
+    id: 'user-member-1',
+    username: 'vanncuong1614@gmail.com',
+    fullName: 'Nguyễn Văn Cường',
+    role: 'Family',
+    relationship: 'Em Họ (Người Nhà)',
+    phone: '0325524482',
+    idCard: '074204001708',
+    licensePlate: '59P1-123.45',
+    faceStatus: 'Đang Chờ BQL Phê Duyệt',
+    avatarUrl: 'https://data.nks.vn/storage/users/202608301345022366.jpg',
+    addedDate: '12/10/2026',
+  }
+];
 
 export function getApartmentMembers(aptCode: string): ApartmentMember[] {
+  const normalizedKey = (!aptCode || aptCode === 'CH-06' || aptCode === '12A05' || aptCode === '12A5' || aptCode.endsWith('CH-06')) ? 'CH-06' : aptCode.toUpperCase().trim();
+  
+  if (typeof window !== 'undefined') {
+    try {
+      const stored = localStorage.getItem(`nks_family_members_${normalizedKey}`);
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        if (Array.isArray(parsed)) {
+          return parsed;
+        }
+      }
+      if (normalizedKey === 'CH-06') {
+        localStorage.setItem(`nks_family_members_CH-06`, JSON.stringify(DEFAULT_CH06_MEMBERS));
+        return DEFAULT_CH06_MEMBERS;
+      }
+    } catch (e) {
+      console.warn('Family members localStorage read error', e);
+    }
+  }
+
   if (!globalScope.__NKS_FAMILY_STORE) {
     globalScope.__NKS_FAMILY_STORE = {};
   }
-  const normalizedKey = (!aptCode || aptCode === 'CH-06' || aptCode === '12A05' || aptCode === '12A5') ? 'CH-06' : aptCode.toUpperCase().trim();
   if (!globalScope.__NKS_FAMILY_STORE[normalizedKey]) {
-    globalScope.__NKS_FAMILY_STORE[normalizedKey] = [];
+    globalScope.__NKS_FAMILY_STORE[normalizedKey] = normalizedKey === 'CH-06' ? [...DEFAULT_CH06_MEMBERS] : [];
   }
   return globalScope.__NKS_FAMILY_STORE[normalizedKey] || [];
 }
 
-export function addApartmentMember(aptCode: string, member: ApartmentMember): ApartmentMember[] {
+export function saveApartmentMembersToStorage(aptCode: string, members: ApartmentMember[]): void {
+  const normalizedKey = (!aptCode || aptCode === 'CH-06' || aptCode === '12A05' || aptCode === '12A5' || aptCode.endsWith('CH-06')) ? 'CH-06' : aptCode.toUpperCase().trim();
+  
   if (!globalScope.__NKS_FAMILY_STORE) {
     globalScope.__NKS_FAMILY_STORE = {};
   }
+  globalScope.__NKS_FAMILY_STORE[normalizedKey] = members;
+
+  if (typeof window !== 'undefined') {
+    try {
+      localStorage.setItem(`nks_family_members_${normalizedKey}`, JSON.stringify(members));
+      window.dispatchEvent(new CustomEvent('skyline_family_updated', { detail: { aptCode: normalizedKey, members } }));
+      window.dispatchEvent(new CustomEvent('skyline_apartments_updated', { detail: { aptCode: normalizedKey } }));
+    } catch (e) {
+      console.warn('Family members localStorage write error', e);
+    }
+  }
+}
+
+export function addApartmentMember(aptCode: string, member: ApartmentMember): ApartmentMember[] {
   const normalizedKey = (!aptCode || aptCode === 'CH-06' || aptCode === '12A05' || aptCode === '12A5' || aptCode.endsWith('CH-06')) ? 'CH-06' : aptCode.toUpperCase().trim();
   const current = getApartmentMembers(normalizedKey);
   const updated = [
     ...current.filter(m => m.id !== member.id && m.phone !== member.phone),
     member
   ];
-  globalScope.__NKS_FAMILY_STORE[normalizedKey] = updated;
+  saveApartmentMembersToStorage(normalizedKey, updated);
   return updated;
 }
 
 export function updateApartmentMember(aptCode: string, memberId: string, updates: Partial<ApartmentMember>): ApartmentMember[] {
-  if (!globalScope.__NKS_FAMILY_STORE) {
-    globalScope.__NKS_FAMILY_STORE = {};
-  }
-  const current = getApartmentMembers(aptCode);
+  const normalizedKey = (!aptCode || aptCode === 'CH-06' || aptCode === '12A05' || aptCode === '12A5' || aptCode.endsWith('CH-06')) ? 'CH-06' : aptCode.toUpperCase().trim();
+  const current = getApartmentMembers(normalizedKey);
   const updated = current.map(m => {
-    if (m.id === memberId || m.phone === memberId) {
+    if (m.id === memberId || m.phone === memberId || m.username === memberId || (m.idCard && m.idCard === memberId)) {
       return { ...m, ...updates };
     }
     return m;
   });
-  globalScope.__NKS_FAMILY_STORE[aptCode] = updated;
+  saveApartmentMembersToStorage(normalizedKey, updated);
   return updated;
 }
 
 export function removeApartmentMember(aptCode: string, memberId: string): ApartmentMember[] {
-  if (!globalScope.__NKS_FAMILY_STORE) {
-    globalScope.__NKS_FAMILY_STORE = {};
-  }
-  const current = getApartmentMembers(aptCode);
-  const updated = current.filter(m => m.id !== memberId);
-  globalScope.__NKS_FAMILY_STORE[aptCode] = updated;
+  const normalizedKey = (!aptCode || aptCode === 'CH-06' || aptCode === '12A05' || aptCode === '12A5' || aptCode.endsWith('CH-06')) ? 'CH-06' : aptCode.toUpperCase().trim();
+  const current = getApartmentMembers(normalizedKey);
+  const updated = current.filter(m => m.id !== memberId && m.phone !== memberId && m.username !== memberId);
+  saveApartmentMembersToStorage(normalizedKey, updated);
   return updated;
 }
 

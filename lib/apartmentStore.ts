@@ -3,7 +3,21 @@
  * Quản lý Danh sách Căn Hộ, Chi Tiết Căn Hộ 100% từ NKS SCRMAI API
  */
 
-import { ApartmentMember, registerNewOwnerUser } from './userStore';
+import { 
+  ApartmentMember, 
+  registerNewOwnerUser,
+  getApartmentMembers,
+  addApartmentMember,
+  updateApartmentMember,
+  removeApartmentMember
+} from './userStore';
+import { 
+  getEkycRequests, 
+  approveEkycRequest, 
+  rejectEkycRequest, 
+  submitEkycRequest 
+} from './ekycStore';
+import { updateEnrolledFaceStatus } from './faceEnrollStore';
 import { 
   generateNksBlockUnits, 
   DEFAULT_NKS_APARTMENTS_DATA, 
@@ -119,6 +133,17 @@ export function getApartmentStorageKey(blockCode: string = 'BS-07'): string {
   return `nks_apartments_${blockCode}_v20`;
 }
 
+function attachRealtimeMembers(units: ApartmentUnit[]): ApartmentUnit[] {
+  return units.map(u => {
+    const mems = getApartmentMembers(u.code);
+    return {
+      ...u,
+      members: mems,
+      membersCount: (mems.length || 0) + (u.owner ? 1 : 0),
+    };
+  });
+}
+
 /**
  * Lấy danh sách toàn bộ căn hộ từ bộ nhớ hoặc dữ liệu NKS SCRMAI API theo Chung Cư
  */
@@ -127,7 +152,7 @@ export function getApartmentUnits(blockCode: string = 'BS-07'): ApartmentUnit[] 
   const initial = generateNksBlockUnits(DEFAULT_NKS_APARTMENTS_DATA, blockCode, floors);
 
   if (typeof window === 'undefined') {
-    return initial;
+    return attachRealtimeMembers(initial);
   }
 
   try {
@@ -160,18 +185,18 @@ export function getApartmentUnits(blockCode: string = 'BS-07'): ApartmentUnit[] 
     const raw = localStorage.getItem(blockKey);
     if (!raw) {
       localStorage.setItem(blockKey, JSON.stringify(initial));
-      return initial;
+      return attachRealtimeMembers(initial);
     }
 
     const parsed = JSON.parse(raw);
     if (Array.isArray(parsed) && parsed.length > 0) {
-      return parsed;
+      return attachRealtimeMembers(parsed);
     }
   } catch (e) {
     console.warn('Load apartments storage error:', e);
   }
 
-  return initial;
+  return attachRealtimeMembers(initial);
 }
 
 /**
@@ -442,4 +467,121 @@ export function resetApartmentsToDefault(): void {
     localStorage.removeItem(APARTMENTS_STORAGE_KEY);
     saveApartmentsList(INITIAL_APARTMENTS);
   }
+}
+
+/**
+ * BQL phê duyệt hồ sơ người nhà của căn hộ -> Kích hoạt FaceID & quyền ra vào
+ */
+export function approveFamilyMemberByBql(
+  aptCode: string, 
+  memberId: string, 
+  approverName: string = 'Ban Quản Lý Skyline'
+): boolean {
+  // 1. Cập nhật trạng thái người nhà
+  updateApartmentMember(aptCode, memberId, {
+    faceStatus: 'Đã Kích Hoạt FaceID',
+  });
+  
+  // 2. Đồng bộ sang e-KYC store
+  const ekycList = getEkycRequests();
+  const matched = ekycList.find(r => 
+    r.userId === memberId || 
+    r.phone === memberId || 
+    (r.idCardNo && r.idCardNo === memberId)
+  );
+  if (matched) {
+    approveEkycRequest(matched.id, approverName);
+  }
+
+  // 3. Kích hoạt hồ sơ FaceID
+  updateEnrolledFaceStatus(memberId, 'ACTIVE');
+
+  // 4. Phát sự kiện cập nhật thời gian thực
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(new CustomEvent('skyline_family_updated', { detail: { aptCode, memberId, status: 'APPROVED' } }));
+    window.dispatchEvent(new CustomEvent('skyline_ekyc_updated'));
+    window.dispatchEvent(new CustomEvent('skyline_apartments_updated', { detail: { aptCode } }));
+  }
+  return true;
+}
+
+/**
+ * BQL từ chối / yêu cầu người nhà nộp lại hồ sơ
+ */
+export function rejectFamilyMemberByBql(
+  aptCode: string, 
+  memberId: string, 
+  reason?: string, 
+  approverName: string = 'Ban Quản Lý Skyline'
+): boolean {
+  const finalReason = reason || 'Ban Quản Lý yêu cầu chụp lại ảnh CCCD và các góc FaceID rõ nét hơn.';
+  
+  updateApartmentMember(aptCode, memberId, {
+    faceStatus: 'BQL Yêu Cầu Chụp Lại',
+  });
+  
+  const ekycList = getEkycRequests();
+  const matched = ekycList.find(r => 
+    r.userId === memberId || 
+    r.phone === memberId || 
+    (r.idCardNo && r.idCardNo === memberId)
+  );
+  if (matched) {
+    rejectEkycRequest(matched.id, finalReason, approverName);
+  }
+
+  updateEnrolledFaceStatus(memberId, 'REVOKED');
+
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(new CustomEvent('skyline_family_updated', { detail: { aptCode, memberId, status: 'REJECTED' } }));
+    window.dispatchEvent(new CustomEvent('skyline_ekyc_updated'));
+    window.dispatchEvent(new CustomEvent('skyline_apartments_updated', { detail: { aptCode } }));
+  }
+  return true;
+}
+
+/**
+ * BQL thêm người nhà trực tiếp tại quầy lễ tân / văn phòng ban quản lý
+ */
+export function addFamilyMemberByBql(
+  aptCode: string, 
+  member: ApartmentMember, 
+  autoApprove: boolean = true
+): boolean {
+  const finalMember: ApartmentMember = {
+    ...member,
+    faceStatus: autoApprove ? 'Đã Kích Hoạt FaceID' : 'Đang Chờ BQL Phê Duyệt',
+    addedDate: member.addedDate || new Date().toLocaleDateString('vi-VN'),
+  };
+
+  addApartmentMember(aptCode, finalMember);
+
+  if (autoApprove) {
+    approveFamilyMemberByBql(aptCode, finalMember.id);
+  } else {
+    submitEkycRequest({
+      userId: finalMember.id,
+      fullName: finalMember.fullName,
+      roleLabel: `Người Nhà (${finalMember.relationship} - Căn ${aptCode}) - BQL Tiếp Nhận`,
+      apartmentCode: aptCode,
+      phone: finalMember.phone,
+      idCardNo: finalMember.idCard,
+      avatarUrl: finalMember.avatarUrl || 'https://data.nks.vn/storage/users/default.png',
+      status: 'PENDING',
+    });
+  }
+  return true;
+}
+
+/**
+ * BQL xóa / hủy quyền cư trú của người nhà khỏi căn hộ
+ */
+export function removeFamilyMemberByBql(aptCode: string, memberId: string): boolean {
+  removeApartmentMember(aptCode, memberId);
+  updateEnrolledFaceStatus(memberId, 'REVOKED');
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(new CustomEvent('skyline_family_updated', { detail: { aptCode, memberId, action: 'REMOVED' } }));
+    window.dispatchEvent(new CustomEvent('skyline_apartments_updated', { detail: { aptCode } }));
+  }
+  return true;
 }

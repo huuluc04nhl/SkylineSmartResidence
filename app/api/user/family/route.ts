@@ -11,6 +11,7 @@ import {
   updateUserStore
 } from '@/lib/userStore';
 import { DEMO_USERS } from '@/lib/dataStore';
+import { submitEkycRequest } from '@/lib/ekycStore';
 
 /**
  * GET /api/nks/user/family
@@ -241,7 +242,7 @@ export async function POST(req: Request) {
       });
     }
 
-    // 4. Register in apartment member store
+    // 4. Register in apartment member store (Initial status pending BQL approval)
     const newMember: ApartmentMember = {
       id: resolvedUser?.id || `mem-${Date.now()}`,
       username: resolvedUser?.username || username || finalPhone,
@@ -252,15 +253,31 @@ export async function POST(req: Request) {
       idCard: finalIdCard,
       licensePlate: finalLicense,
       avatarUrl: finalAvatar,
-      faceStatus: 'Đã Kích Hoạt FaceID',
+      faceStatus: 'Đang Chờ BQL Phê Duyệt',
       addedDate: new Date().toLocaleDateString('vi-VN'),
     };
 
     const updated = addApartmentMember(aptCode, newMember);
 
+    // 5. Automatically create/sync e-KYC dossier for BQL to review and approve
+    try {
+      submitEkycRequest({
+        userId: newMember.id,
+        fullName: finalFullName,
+        roleLabel: `Người Nhà (${relationship} - Căn ${aptCode}) - Chủ Hộ Bảo Lãnh`,
+        apartmentCode: aptCode,
+        phone: finalPhone,
+        idCardNo: finalIdCard,
+        avatarUrl: finalAvatar,
+        status: 'PENDING',
+      });
+    } catch (ekycErr) {
+      console.warn('Auto create eKYC request for new member error:', ekycErr);
+    }
+
     return NextResponse.json({
       success: true,
-      message: `Đã liên kết tài khoản API của "${finalFullName}" vào Căn hộ ${aptCode} thành công.`,
+      message: `Đã thêm thành viên "${finalFullName}" vào Căn hộ ${aptCode} thành công. Hồ sơ đang chờ Ban Quản Lý phê duyệt quyền ra vào.`,
       members: updated,
       member: newMember,
     });
