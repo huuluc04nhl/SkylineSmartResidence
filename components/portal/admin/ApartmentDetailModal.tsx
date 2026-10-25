@@ -191,6 +191,17 @@ export default function ApartmentDetailModal({
       avatarUrl: 'https://data.nks.vn/storage/users/default.png',
       faceStatus: newMemAutoApprove ? 'Đã Kích Hoạt FaceID' : 'Đang Chờ BQL Phê Duyệt',
       addedDate: new Date().toLocaleDateString('vi-VN'),
+
+      // Thông tin đồng bộ chuẩn phù hợp với Chủ Hộ bảo lãnh:
+      apartmentCode: unit.code,
+      tower: unit.tower,
+      sponsorName: unit.owner?.name || 'Trần Hữu Lực',
+      sponsorPhone: unit.owner?.phone || '0364967082',
+      residenceType: 'Thường trú cùng chủ hộ',
+      temporaryResidenceStatus: newMemAutoApprove ? 'Đã Đăng Ký Tạm Trú' : 'Đang Làm Thủ Tục',
+      relationshipProof: 'Văn bản bảo lãnh chủ hộ tiếp nhận tại quầy BQL',
+      accessLevel: 'Toàn quyền (Căn hộ + Thang máy + Tiện ích VIP)',
+      startDate: new Date().toLocaleDateString('vi-VN'),
     };
 
     addFamilyMemberByBql(unit.code, newMemberItem, newMemAutoApprove);
@@ -630,6 +641,13 @@ export default function ApartmentDetailModal({
                                     {member.idCard && <span>• {t('CCCD:', 'ID:')} <strong className="text-[#C5A880]">{member.idCard}</strong></span>}
                                     {member.licensePlate && <span>• {t('Biển số:', 'Plate:')} <strong className="text-cyan-400">{member.licensePlate}</strong></span>}
                                     {member.addedDate && <span className="text-[11px] text-gray-500">• {t('Ngày thêm:', 'Added:')} {member.addedDate}</span>}
+                                  </div>
+
+                                  <div className="text-[11px] text-gray-300 flex flex-wrap items-center gap-x-3 gap-y-0.5 pt-0.5">
+                                    <span className="text-[#C5A880] font-semibold">{t('Chủ hộ bảo lãnh:', 'Sponsor:')} <strong>{member.sponsorName || unit.owner?.name}</strong></span>
+                                    <span>• {t('Hình thức:', 'Type:')} <strong className="text-gray-200">{member.residenceType || 'Thường trú cùng chủ hộ'}</strong></span>
+                                    <span>• {t('Tạm trú:', 'Status:')} <strong className="text-emerald-400">{member.temporaryResidenceStatus || 'Đang làm thủ tục'}</strong></span>
+                                    {member.relationshipProof && <span className="text-[10px] text-gray-400 font-mono">• {member.relationshipProof}</span>}
                                   </div>
                                 </div>
                               </div>

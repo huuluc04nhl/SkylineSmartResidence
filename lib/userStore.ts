@@ -38,13 +38,34 @@ export interface ApartmentMember {
   username?: string;
   fullName: string;
   role: 'Family' | 'Tenant';
-  relationship: string;
+  relationship: string; // Vợ / Chồng, Con ruột, Con nuôi, Bố / Mẹ, Anh / Chị / Em, Người thân, Người giúp việc...
   phone: string;
+  email?: string;
   idCard: string;
+  idDate?: string; // Ngày cấp CCCD
+  idPlace?: string; // Nơi cấp CCCD
+  dob?: string; // Ngày sinh
+  gender?: 'Nam' | 'Nữ' | string;
+  pob?: string; // Nơi sinh / Quê quán
   licensePlate?: string;
+  vehicleType?: 'Xe máy' | 'Ô tô' | 'Xe đạp điện' | string;
   faceStatus: string;
   avatarUrl?: string;
   addedDate: string;
+
+  // Trường thông tin đồng bộ phù hợp với Chủ Hộ bảo lãnh:
+  apartmentCode?: string; // Mã căn hộ cư trú (CH-06)
+  tower?: string; // Phân khu The Tropical (BS-07)
+  sponsorName?: string; // Tên Chủ hộ bảo lãnh (Trần Hữu Lực)
+  sponsorPhone?: string; // SĐT Chủ hộ bảo lãnh (0364967082)
+  residenceType?: 'Thường trú cùng chủ hộ' | 'Tạm trú dài hạn' | 'Lưu trú ngắn hạn' | string;
+  temporaryResidenceStatus?: 'Đã Đăng Ký Tạm Trú' | 'Đang Làm Thủ Tục' | 'Chưa Khai Báo' | string;
+  relationshipProof?: string; // Giấy tờ chứng minh quan hệ (Sổ hộ khẩu, Đăng ký kết hôn, Giấy khai sinh, v.v.)
+  accessLevel?: string; // Phân quyền ra vào căn hộ & tiện ích
+  startDate?: string;
+  expiryDate?: string;
+  emergencyContact?: string;
+  note?: string;
 }
 
 // Global server memory store to maintain live user updates
@@ -420,34 +441,26 @@ export function registerNewOwnerUser(data: {
   return newUser;
 }
 
-export const DEFAULT_CH06_MEMBERS: ApartmentMember[] = [
-  {
-    id: 'user-tenant-1',
-    username: 'nguyenhuunhut1309@gmail.com',
-    fullName: 'Nguyễn Hữu Nhựt',
-    role: 'Family',
-    relationship: 'Em Trai (Người Nhà)',
-    phone: '0917795211',
-    idCard: '079198005678',
-    licensePlate: '51H-992.81',
-    faceStatus: 'Đang Chờ BQL Phê Duyệt',
-    avatarUrl: 'https://data.nks.vn/storage/users/202607191405195335.jpg',
-    addedDate: '12/10/2026',
-  },
-  {
-    id: 'user-member-1',
-    username: 'vanncuong1614@gmail.com',
-    fullName: 'Nguyễn Văn Cường',
-    role: 'Family',
-    relationship: 'Em Họ (Người Nhà)',
-    phone: '0325524482',
-    idCard: '074204001708',
-    licensePlate: '59P1-123.45',
-    faceStatus: 'Đang Chờ BQL Phê Duyệt',
-    avatarUrl: 'https://data.nks.vn/storage/users/202608301345022366.jpg',
-    addedDate: '12/10/2026',
+export const DEFAULT_CH06_MEMBERS: ApartmentMember[] = [];
+
+/**
+ * Xóa toàn bộ dữ liệu người nhà lưu tạm ở local để đồng bộ sạch từ API
+ */
+export function clearApartmentMembers(aptCode: string = 'CH-06'): void {
+  const normalizedKey = (!aptCode || aptCode === 'CH-06' || aptCode === '12A05' || aptCode === '12A5' || aptCode.endsWith('CH-06')) ? 'CH-06' : aptCode.toUpperCase().trim();
+  if (globalScope.__NKS_FAMILY_STORE) {
+    globalScope.__NKS_FAMILY_STORE[normalizedKey] = [];
   }
-];
+  if (typeof window !== 'undefined') {
+    try {
+      localStorage.removeItem(`nks_family_members_${normalizedKey}`);
+      window.dispatchEvent(new CustomEvent('skyline_family_updated', { detail: { aptCode: normalizedKey, members: [] } }));
+      window.dispatchEvent(new CustomEvent('skyline_apartments_updated', { detail: { aptCode: normalizedKey } }));
+    } catch (e) {
+      console.warn('Clear family members localStorage error', e);
+    }
+  }
+}
 
 export function getApartmentMembers(aptCode: string): ApartmentMember[] {
   const normalizedKey = (!aptCode || aptCode === 'CH-06' || aptCode === '12A05' || aptCode === '12A5' || aptCode.endsWith('CH-06')) ? 'CH-06' : aptCode.toUpperCase().trim();
@@ -458,12 +471,19 @@ export function getApartmentMembers(aptCode: string): ApartmentMember[] {
       if (stored) {
         const parsed = JSON.parse(stored);
         if (Array.isArray(parsed)) {
+          // Tự động dọn sạch dữ liệu mock cũ nếu còn sót lại trong máy người dùng
+          const hasLegacyMock = parsed.some(
+            (m) => m.id === 'user-tenant-1' || m.id === 'user-member-1' || m.username === 'nguyenhuunhut1309@gmail.com'
+          );
+          if (hasLegacyMock) {
+            localStorage.removeItem(`nks_family_members_${normalizedKey}`);
+            if (globalScope.__NKS_FAMILY_STORE) {
+              delete globalScope.__NKS_FAMILY_STORE[normalizedKey];
+            }
+            return [];
+          }
           return parsed;
         }
-      }
-      if (normalizedKey === 'CH-06') {
-        localStorage.setItem(`nks_family_members_CH-06`, JSON.stringify(DEFAULT_CH06_MEMBERS));
-        return DEFAULT_CH06_MEMBERS;
       }
     } catch (e) {
       console.warn('Family members localStorage read error', e);
@@ -472,9 +492,6 @@ export function getApartmentMembers(aptCode: string): ApartmentMember[] {
 
   if (!globalScope.__NKS_FAMILY_STORE) {
     globalScope.__NKS_FAMILY_STORE = {};
-  }
-  if (!globalScope.__NKS_FAMILY_STORE[normalizedKey]) {
-    globalScope.__NKS_FAMILY_STORE[normalizedKey] = normalizedKey === 'CH-06' ? [...DEFAULT_CH06_MEMBERS] : [];
   }
   return globalScope.__NKS_FAMILY_STORE[normalizedKey] || [];
 }

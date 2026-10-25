@@ -548,8 +548,16 @@ export function addFamilyMemberByBql(
   member: ApartmentMember, 
   autoApprove: boolean = true
 ): boolean {
+  const unit = getApartmentByCode(aptCode);
   const finalMember: ApartmentMember = {
     ...member,
+    sponsorName: member.sponsorName || unit?.owner?.name || 'Trần Hữu Lực',
+    sponsorPhone: member.sponsorPhone || unit?.owner?.phone || '0364967082',
+    apartmentCode: aptCode,
+    tower: unit?.tower || 'The Tropical (BS-07)',
+    residenceType: member.residenceType || 'Thường trú cùng chủ hộ',
+    temporaryResidenceStatus: member.temporaryResidenceStatus || (autoApprove ? 'Đã Đăng Ký Tạm Trú' : 'Đang Làm Thủ Tục'),
+    accessLevel: member.accessLevel || 'Toàn quyền (Căn hộ + Thang máy + Tiện ích VIP)',
     faceStatus: autoApprove ? 'Đã Kích Hoạt FaceID' : 'Đang Chờ BQL Phê Duyệt',
     addedDate: member.addedDate || new Date().toLocaleDateString('vi-VN'),
   };
@@ -562,7 +570,7 @@ export function addFamilyMemberByBql(
     submitEkycRequest({
       userId: finalMember.id,
       fullName: finalMember.fullName,
-      roleLabel: `Người Nhà (${finalMember.relationship} - Căn ${aptCode}) - BQL Tiếp Nhận`,
+      roleLabel: `Người Nhà (${finalMember.relationship} - Căn ${aptCode}) - Chủ Hộ ${finalMember.sponsorName} Bảo Lãnh`,
       apartmentCode: aptCode,
       phone: finalMember.phone,
       idCardNo: finalMember.idCard,

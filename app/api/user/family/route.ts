@@ -5,6 +5,7 @@ import {
   addApartmentMember, 
   updateApartmentMember,
   removeApartmentMember, 
+  clearApartmentMembers,
   ApartmentMember,
   extractUserIdFromToken,
   getUserStore,
@@ -52,7 +53,20 @@ export async function GET(req: Request) {
     const rawApt = paramApt || currentApiUser?.apartment_code || localUser?.apartment_code || 'CH-06';
     const aptCode = (rawApt === '12A05' || rawApt === '12A5') ? 'CH-06' : rawApt;
     const ownerName = currentApiUser?.name || localUser?.fullname || 'Trần Hữu Lực';
+    const ownerPhone = currentApiUser?.phone || localUser?.phone || '0364967082';
     const searchQuery = url.searchParams.get('search')?.trim().toLowerCase();
+    const actionQuery = url.searchParams.get('action');
+
+    // 0. Hỗ trợ xóa sạch dữ liệu người nhà ở local để đồng bộ lại hoàn toàn từ API
+    if (actionQuery === 'CLEAR_LOCAL') {
+      clearApartmentMembers(aptCode);
+      return NextResponse.json({
+        success: true,
+        message: `Đã dọn dẹp sạch dữ liệu lưu tạm của Căn hộ ${aptCode} để đồng bộ mới theo API.`,
+        members: [],
+        bqlAccounts: []
+      });
+    }
 
     // 1. If searching for an account by Phone / CCCD / Email / Name
     if (searchQuery) {
@@ -98,6 +112,9 @@ export async function GET(req: Request) {
           licensePlate: userDetails.license_plate || '',
           role: 'Family',
           relationship: userDetails.relationship || 'Người Nhà',
+          dob: userDetails.dob || matched.dob || '',
+          gender: userDetails.gender === 0 ? 'Nữ' : 'Nam',
+          pob: userDetails.pob || matched.pob || '',
           apartmentCode: userDetails.apartment_code || aptCode,
           isAlreadyInUnit: currentMembers.some(
             (m) => m.id === userDetails.id || m.phone === userDetails.phone || m.username === userDetails.username
@@ -138,6 +155,11 @@ export async function GET(req: Request) {
           email: liveUser.email,
           phone: liveUser.phone,
           idCard: liveUser.id_number || liveUser.id_card_no || '',
+          idDate: liveUser.id_date || '2022-08-15',
+          idPlace: liveUser.id_place || 'Cục Cảnh sát QLHC về TTXH',
+          dob: liveUser.dob || u.dob || '',
+          gender: liveUser.gender === 0 ? 'Nữ' : 'Nam',
+          pob: liveUser.pob || u.pob || '',
           avatarUrl: cleanAvatar,
           licensePlate: liveUser.license_plate || '',
           role: 'Family',
@@ -187,6 +209,8 @@ export async function POST(req: Request) {
     const currentUser = userId ? getUserStore(userId) : getUserStore('user-owner-1');
     const rawApt = currentUser?.apartment_code || 'CH-06';
     const aptCode = (rawApt === '12A05' || rawApt === '12A5') ? 'CH-06' : rawApt;
+    const ownerName = currentUser?.fullname || currentUser?.full_name || 'Trần Hữu Lực';
+    const ownerPhone = currentUser?.phone || '0364967082';
 
     const body = await req.json();
     const { 
@@ -194,10 +218,22 @@ export async function POST(req: Request) {
       username, 
       phone, 
       fullName, 
-      relationship = 'Thành Viên Gia Đình', 
+      relationship = 'Vợ / Chồng', 
       licensePlate,
       idCard,
-      avatarUrl 
+      avatarUrl,
+      dob,
+      gender,
+      pob,
+      idDate,
+      idPlace,
+      residenceType = 'Thường trú cùng chủ hộ',
+      temporaryResidenceStatus = 'Đang Làm Thủ Tục',
+      relationshipProof = 'Giấy xác nhận cư trú / Chủ hộ bảo lãnh',
+      accessLevel = 'Toàn quyền (Căn hộ + Thang máy + Tiện ích VIP)',
+      emergencyContact,
+      vehicleType,
+      note
     } = body;
 
     const identifier = accountId || username || phone;
@@ -239,10 +275,12 @@ export async function POST(req: Request) {
         apartment_code: aptCode,
         relationship: relationship,
         license_plate: finalLicense || resolvedUser.license_plate,
+        dob: dob || resolvedUser.dob,
+        pob: pob || resolvedUser.pob,
       });
     }
 
-    // 4. Register in apartment member store (Initial status pending BQL approval)
+    // 4. Register in apartment member store (Initial status pending BQL approval, populated with rich household sponsor data)
     const newMember: ApartmentMember = {
       id: resolvedUser?.id || `mem-${Date.now()}`,
       username: resolvedUser?.username || username || finalPhone,
@@ -250,11 +288,31 @@ export async function POST(req: Request) {
       role: 'Family',
       relationship: relationship,
       phone: finalPhone,
+      email: resolvedUser?.email || body.email || '',
       idCard: finalIdCard,
+      idDate: idDate || resolvedUser?.id_date || '2022-08-15',
+      idPlace: idPlace || resolvedUser?.id_place || 'Cục Cảnh sát QLHC về TTXH',
+      dob: dob || resolvedUser?.dob || '',
+      gender: gender || (resolvedUser?.gender === 0 ? 'Nữ' : 'Nam'),
+      pob: pob || resolvedUser?.pob || '',
       licensePlate: finalLicense,
-      avatarUrl: finalAvatar,
+      vehicleType: vehicleType || (finalLicense ? 'Xe máy' : 'Không có'),
       faceStatus: 'Đang Chờ BQL Phê Duyệt',
+      avatarUrl: finalAvatar,
       addedDate: new Date().toLocaleDateString('vi-VN'),
+
+      // Thông tin đồng bộ chuẩn phù hợp với Chủ Hộ bảo lãnh:
+      apartmentCode: aptCode,
+      tower: 'The Tropical (BS-07)',
+      sponsorName: ownerName,
+      sponsorPhone: ownerPhone,
+      residenceType: residenceType,
+      temporaryResidenceStatus: temporaryResidenceStatus,
+      relationshipProof: relationshipProof,
+      accessLevel: accessLevel,
+      startDate: new Date().toLocaleDateString('vi-VN'),
+      emergencyContact: emergencyContact || ownerPhone,
+      note: note || '',
     };
 
     const updated = addApartmentMember(aptCode, newMember);
@@ -264,11 +322,15 @@ export async function POST(req: Request) {
       submitEkycRequest({
         userId: newMember.id,
         fullName: finalFullName,
-        roleLabel: `Người Nhà (${relationship} - Căn ${aptCode}) - Chủ Hộ Bảo Lãnh`,
+        roleLabel: `Người Nhà (${relationship} - Căn ${aptCode}) - Chủ Hộ ${ownerName} Bảo Lãnh`,
         apartmentCode: aptCode,
         phone: finalPhone,
         idCardNo: finalIdCard,
         avatarUrl: finalAvatar,
+        dob: newMember.dob,
+        pob: newMember.pob,
+        idDate: newMember.idDate,
+        idPlace: newMember.idPlace,
         status: 'PENDING',
       });
     } catch (ekycErr) {
@@ -277,7 +339,7 @@ export async function POST(req: Request) {
 
     return NextResponse.json({
       success: true,
-      message: `Đã thêm thành viên "${finalFullName}" vào Căn hộ ${aptCode} thành công. Hồ sơ đang chờ Ban Quản Lý phê duyệt quyền ra vào.`,
+      message: `Đã thêm thành viên "${finalFullName}" (${relationship}) vào Căn hộ ${aptCode} thành công. Hồ sơ đang chờ Ban Quản Lý phê duyệt quyền ra vào.`,
       members: updated,
       member: newMember,
     });

@@ -58,6 +58,7 @@ import { OcrCccdResult, formatToDateInput } from '@/lib/ocrParser';
 import BankFaceEnrollModal from './BankFaceEnrollModal';
 import { getEnrolledFaceProfile } from '@/lib/faceEnrollStore';
 import { useLanguage } from '@/lib/languageContext';
+import { clearApartmentMembers } from '@/lib/userStore';
 import { 
   cleanPhoneNumber, 
   isValidPhoneNumber, 
@@ -75,11 +76,28 @@ export interface FamilyMemberItem {
   role: 'Family' | 'Tenant';
   relationship: string;
   idCard?: string;
+  idDate?: string;
+  idPlace?: string;
+  dob?: string;
+  gender?: string;
+  pob?: string;
   licensePlate?: string;
+  vehicleType?: string;
   avatarUrl?: string;
   username?: string;
   faceStatus?: string;
   addedDate?: string;
+
+  // Trường thông tin đồng bộ với Chủ hộ:
+  sponsorName?: string;
+  sponsorPhone?: string;
+  apartmentCode?: string;
+  residenceType?: string;
+  temporaryResidenceStatus?: string;
+  relationshipProof?: string;
+  accessLevel?: string;
+  emergencyContact?: string;
+  note?: string;
 }
 
 export interface BqlEligibleAccount {
@@ -89,6 +107,11 @@ export interface BqlEligibleAccount {
   email?: string;
   phone: string;
   idCard: string;
+  idDate?: string;
+  idPlace?: string;
+  dob?: string;
+  gender?: string;
+  pob?: string;
   licensePlate?: string;
   avatarUrl?: string;
   role: 'Family';
@@ -145,9 +168,39 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
   const [searchNotFound, setSearchNotFound] = useState<string | null>(null);
   const [preApprovedFilter, setPreApprovedFilter] = useState<string>('');
 
+  // New fields suitable for owner-family relationship
+  const [newResidenceType, setNewResidenceType] = useState<string>('Thường trú cùng chủ hộ');
+  const [newRelationshipProof, setNewRelationshipProof] = useState<string>('Sổ Hộ Khẩu / Xác nhận CT07');
+  const [newTemporaryResidenceStatus, setNewTemporaryResidenceStatus] = useState<string>('Đang Làm Thủ Tục');
+  const [directDob, setDirectDob] = useState<string>('2004-09-02');
+  const [directGender, setDirectGender] = useState<string>('Nam');
+  const [directPob, setDirectPob] = useState<string>('TP. Hồ Chí Minh');
+  const [directResidenceType, setDirectResidenceType] = useState<string>('Thường trú cùng chủ hộ');
+  const [directRelationshipProof, setDirectRelationshipProof] = useState<string>('Sổ Hộ Khẩu / Xác nhận CT07');
+  const [directTemporaryResidenceStatus, setDirectTemporaryResidenceStatus] = useState<string>('Đang Làm Thủ Tục');
+  const [directVehicleType, setDirectVehicleType] = useState<string>('Xe máy');
+
   // Custom Remove Member Confirmation State
   const [removeTargetMember, setRemoveTargetMember] = useState<FamilyMemberItem | null>(null);
   const [isRemoving, setIsRemoving] = useState<boolean>(false);
+
+  // Clear local temporary cache and re-sync strictly from API
+  const handleClearLocalData = async () => {
+    if (confirm(isEn ? 'Clear local temporary family cache and reload fresh from server API?' : 'Xác nhận dọn dẹp bộ nhớ tạm local và đồng bộ lại danh sách người nhà từ máy chủ API?')) {
+      setIsLoading(true);
+      try {
+        await fetch(`/api/user/family?aptCode=${encodeURIComponent(aptCode)}&action=CLEAR_LOCAL`);
+        clearApartmentMembers(aptCode);
+        await fetchMembers();
+        setActionSuccess(isEn ? '✓ Cleared local cache and synchronized with API.' : '✓ Đã dọn dẹp dữ liệu lưu tạm ở local và đồng bộ lại từ API thành công.');
+        setTimeout(() => setActionSuccess(null), 3500);
+      } catch (e) {
+        console.warn('Clear local data error', e);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+  };
 
   // Lightbox Zoom for Angle Samples
   const [selectedAnglePreview, setSelectedAnglePreview] = useState<{ title: string; src: string } | null>(null);
@@ -708,7 +761,13 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
         licensePlate: newLicensePlate.trim() || selectedAccount.licensePlate,
         avatarUrl: selectedAccount.avatarUrl,
         relationship: newRelationship,
-      });
+        residenceType: newResidenceType,
+        temporaryResidenceStatus: newTemporaryResidenceStatus,
+        relationshipProof: newRelationshipProof,
+        dob: selectedAccount.dob,
+        gender: selectedAccount.gender,
+        pob: selectedAccount.pob,
+      } as any);
 
       if (res.success && res.members) {
         setMembers(res.members);
@@ -799,7 +858,14 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
         relationship: directRelationship,
         licensePlate: directLicensePlate.trim(),
         avatarUrl: 'https://data.nks.vn/storage/users/default.png',
-      });
+        residenceType: directResidenceType,
+        temporaryResidenceStatus: directTemporaryResidenceStatus,
+        relationshipProof: directRelationshipProof,
+        dob: directDob,
+        gender: directGender,
+        pob: directPob,
+        vehicleType: directVehicleType,
+      } as any);
 
       if (res.success && res.members) {
         setMembers(res.members);
@@ -1062,9 +1128,19 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
             </select>
 
             <button
+              onClick={handleClearLocalData}
+              disabled={isLoading}
+              title={isEn ? "Clear local temporary data and sync strictly with server API" : "Xóa dữ liệu lưu tạm ở local và đồng bộ lại chuẩn từ API"}
+              className="text-xs text-rose-300 hover:text-white flex items-center gap-1.5 transition-colors cursor-pointer px-2.5 py-1.5 bg-rose-950/40 hover:bg-rose-900/60 border border-rose-800/60 font-semibold"
+            >
+              <RotateCcw className="w-3.5 h-3.5" />
+              <span>{isEn ? 'Sync Clean API' : 'Xóa Local / Đồng Bộ API'}</span>
+            </button>
+
+            <button
               onClick={fetchMembers}
               disabled={isLoading}
-              className="text-xs text-gray-300 hover:text-[#C5A880] flex items-center gap-1.5 transition-colors cursor-pointer px-2 py-1.5 bg-[#161B22] border border-[#2D3748]"
+              className="text-xs text-gray-300 hover:text-[#C5A880] flex items-center gap-1.5 transition-colors cursor-pointer px-2.5 py-1.5 bg-[#161B22] border border-[#2D3748]"
             >
               <RefreshCw className={`w-3.5 h-3.5 ${isLoading ? 'animate-spin' : ''}`} /> {isEn ? 'Refresh' : 'Làm mới'}
             </button>
@@ -1193,9 +1269,21 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
                         )}
                         {m.licensePlate && (
                           <span>
-                            • Biển số: <strong className="font-mono text-cyan-400">{m.licensePlate}</strong>
+                            • Biển số: <strong className="font-mono text-cyan-400">{m.licensePlate}</strong> {m.vehicleType ? `(${m.vehicleType})` : ''}
                           </span>
                         )}
+                      </div>
+
+                      {/* Thông tin bảo lãnh của Chủ Hộ & Định danh cư trú */}
+                      <div className="text-[11px] text-gray-300 flex flex-wrap items-center gap-x-3 gap-y-1 pt-0.5">
+                        <span className="flex items-center gap-1 text-[#C5A880]">
+                          <Crown className="w-3 h-3 text-[#C5A880]" />
+                          <span>{t('Chủ hộ bảo lãnh:', 'Sponsor:')} <strong>{m.sponsorName || ownerName}</strong></span>
+                        </span>
+                        <span>• {t('Hình thức:', 'Type:')} <strong className="text-gray-200">{m.residenceType || 'Thường trú cùng chủ hộ'}</strong></span>
+                        <span>• {t('Tạm trú:', 'Status:')} <strong className="text-emerald-400">{m.temporaryResidenceStatus || 'Đang làm thủ tục'}</strong></span>
+                        {m.dob && <span>• {t('Sinh:', 'DOB:')} <strong className="font-mono text-gray-300">{m.dob}</strong></span>}
+                        {m.gender && <span>({m.gender})</span>}
                       </div>
 
                       {/* Rejection Notice if any */}
@@ -1208,12 +1296,17 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
                         </div>
                       )}
 
-                      {/* Privilege description */}
-                      <div className="text-[11px] text-gray-400 flex items-center gap-1.5">
+                      {/* Privilege description & Legal proof */}
+                      <div className="text-[11px] text-gray-400 flex items-center gap-1.5 flex-wrap">
                         <ShieldCheck className="w-3.5 h-3.5 text-[#C5A880] flex-shrink-0" />
                         <span className="truncate">
-                          Sảnh • Thang máy T12 • Hầm B1/B2
+                          {m.accessLevel || 'Sảnh • Thang máy T12 • Hầm B1/B2 • Tiện ích cư dân'}
                         </span>
+                        {m.relationshipProof && (
+                          <span className="text-[10px] text-[#C5A880]/80 font-mono">
+                            • Căn cứ: {m.relationshipProof}
+                          </span>
+                        )}
                       </div>
 
                       {/* Owner Alert: Member completed 4 samples, waiting for Owner confirmation */}
@@ -2153,7 +2246,7 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
 
                   <div>
                     <label className="text-gray-300 font-medium block mb-1">
-                      Mối Quan Hệ <span className="text-rose-400">*</span>
+                      Mối Quan Hệ Với Chủ Hộ <span className="text-rose-400">*</span>
                     </label>
                     <select
                       value={directRelationship}
@@ -2161,18 +2254,21 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
                       className="w-full bg-[#161B22] border border-[#2D3748] p-2 text-white rounded-none focus:border-[#C5A880] outline-none"
                     >
                       <option value="Vợ / Chồng">Vợ / Chồng</option>
-                      <option value="Con Cái">Con Cái</option>
-                      <option value="Bố / Mẹ">Bố / Mẹ</option>
-                      <option value="Anh / Chị / Em">Anh / Chị / Em</option>
-                      <option value="Người Thân Cùng Căn Hộ">Người Thân Cùng Căn Hộ</option>
-                      <option value="Người Nhà / Thành Viên">Người Nhà / Thành Viên</option>
-                      <option value="Người Giúp Việc">Người Giúp Việc</option>
+                      <option value="Con ruột">Con ruột</option>
+                      <option value="Con nuôi">Con nuôi</option>
+                      <option value="Bố / Mẹ ruột">Bố / Mẹ ruột</option>
+                      <option value="Bố / Mẹ vợ / chồng">Bố / Mẹ vợ / chồng</option>
+                      <option value="Anh / Chị / Em ruột">Anh / Chị / Em ruột</option>
+                      <option value="Cháu ruột">Cháu ruột</option>
+                      <option value="Người thân khác">Người thân khác</option>
+                      <option value="Người giúp việc / Bảo mẫu">Người giúp việc / Bảo mẫu</option>
+                      <option value="Lái xe riêng">Lái xe riêng</option>
                     </select>
                   </div>
 
                   <div>
                     <label className="text-gray-300 font-medium block mb-1">
-                      Số CCCD (12 số)
+                      Số CCCD / Định Danh (12 số)
                     </label>
                     <input
                       type="text"
@@ -2189,18 +2285,96 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
                     )}
                   </div>
 
-                  <div className="sm:col-span-2">
-                    <label className="text-gray-300 font-medium block mb-1">
-                      Biển Số Xe (tùy chọn)
-                    </label>
+                  <div>
+                    <label className="text-gray-300 font-medium block mb-1">Hình Thức Cư Trú:</label>
+                    <select
+                      value={directResidenceType}
+                      onChange={(e) => setDirectResidenceType(e.target.value)}
+                      className="w-full bg-[#161B22] border border-[#2D3748] p-2 text-white rounded-none focus:border-[#C5A880] outline-none"
+                    >
+                      <option value="Thường trú cùng chủ hộ">Thường trú cùng chủ hộ</option>
+                      <option value="Tạm trú dài hạn">Tạm trú dài hạn</option>
+                      <option value="Lưu trú có thời hạn">Lưu trú có thời hạn</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="text-gray-300 font-medium block mb-1">Căn Cứ Bảo Lãnh / Chứng Minh:</label>
+                    <select
+                      value={directRelationshipProof}
+                      onChange={(e) => setDirectRelationshipProof(e.target.value)}
+                      className="w-full bg-[#161B22] border border-[#2D3748] p-2 text-white rounded-none focus:border-[#C5A880] outline-none"
+                    >
+                      <option value="Sổ Hộ Khẩu / Xác nhận CT07">Sổ Hộ Khẩu / Xác nhận CT07</option>
+                      <option value="Giấy chứng nhận kết hôn">Giấy chứng nhận kết hôn</option>
+                      <option value="Giấy khai sinh">Giấy khai sinh</option>
+                      <option value="Hợp đồng lao động bảo mẫu / lái xe">Hợp đồng lao động bảo mẫu / lái xe</option>
+                      <option value="Văn bản bảo lãnh của chủ hộ">Văn bản bảo lãnh của chủ hộ</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="text-gray-300 font-medium block mb-1">Ngày Sinh (DOB):</label>
                     <input
-                      type="text"
-                      value={directLicensePlate}
-                      onChange={(e) => setDirectLicensePlate(e.target.value)}
-                      placeholder="VD: 59P1-123.45"
-                      className="w-full bg-[#161B22] border border-[#2D3748] p-2 text-white font-mono rounded-none focus:border-[#C5A880] outline-none uppercase"
+                      type="date"
+                      value={directDob}
+                      onChange={(e) => setDirectDob(e.target.value)}
+                      className="w-full bg-[#161B22] border border-[#2D3748] p-2 text-white font-mono rounded-none focus:border-[#C5A880] outline-none"
                     />
                   </div>
+
+                  <div>
+                    <label className="text-gray-300 font-medium block mb-1">Giới Tính:</label>
+                    <select
+                      value={directGender}
+                      onChange={(e) => setDirectGender(e.target.value)}
+                      className="w-full bg-[#161B22] border border-[#2D3748] p-2 text-white rounded-none focus:border-[#C5A880] outline-none"
+                    >
+                      <option value="Nam">Nam</option>
+                      <option value="Nữ">Nữ</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="text-gray-300 font-medium block mb-1">Nơi Sinh / Quê Quán:</label>
+                    <input
+                      type="text"
+                      value={directPob}
+                      onChange={(e) => setDirectPob(e.target.value)}
+                      placeholder="VD: TP. Hồ Chí Minh"
+                      className="w-full bg-[#161B22] border border-[#2D3748] p-2 text-white rounded-none focus:border-[#C5A880] outline-none"
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-2">
+                    <div>
+                      <label className="text-gray-300 font-medium block mb-1">Biển Số Xe:</label>
+                      <input
+                        type="text"
+                        value={directLicensePlate}
+                        onChange={(e) => setDirectLicensePlate(e.target.value)}
+                        placeholder="VD: 59P1-123.45"
+                        className="w-full bg-[#161B22] border border-[#2D3748] p-2 text-white font-mono rounded-none focus:border-[#C5A880] outline-none uppercase"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-gray-300 font-medium block mb-1">Loại Phương Tiện:</label>
+                      <select
+                        value={directVehicleType}
+                        onChange={(e) => setDirectVehicleType(e.target.value)}
+                        className="w-full bg-[#161B22] border border-[#2D3748] p-2 text-white rounded-none focus:border-[#C5A880] outline-none"
+                      >
+                        <option value="Xe máy">Xe máy</option>
+                        <option value="Ô tô">Ô tô</option>
+                        <option value="Xe đạp điện">Xe đạp điện</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="p-2.5 bg-[#161D26] border border-[#C5A880]/30 text-[11px] text-[#C5A880] flex items-center gap-2">
+                  <Crown className="w-4 h-4 flex-shrink-0 text-[#C5A880]" />
+                  <span>Chủ Hộ Bảo Lãnh: <strong>{ownerName}</strong> (Căn {aptCode} - The Tropical BS-07)</span>
                 </div>
 
                 <div className="pt-3 flex flex-col-reverse sm:flex-row items-center justify-end gap-2.5 sm:gap-3 border-t border-[#222B35]">
@@ -2237,30 +2411,67 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
               <form onSubmit={handleAddMember} className="pt-2.5 border-t border-[#222B35] space-y-2.5 text-xs">
                 <div className="p-2.5 bg-[#161D26] border border-[#C5A880]/60 rounded-none space-y-1.5">
                   <div className="text-[11px] font-bold uppercase tracking-wider text-[#C5A880] flex items-center justify-between">
-                    <span>Người Nhà Đã Chọn:</span>
+                    <span>Người Nhà Đã Chọn Từ API:</span>
                     <span className="text-emerald-400 text-[10px] font-mono">Đã Xác Thực</span>
                   </div>
                   <div className="grid grid-cols-2 gap-2 text-gray-200 text-[11px]">
                     <div>• Họ tên: <strong className="text-white">{selectedAccount.fullName}</strong></div>
                     <div>• SĐT: <strong className="font-mono text-white">{selectedAccount.phone}</strong></div>
                     <div>• CCCD: <strong className="font-mono text-[#C5A880]">{selectedAccount.idCard}</strong></div>
-                    <div>• Vai trò: <strong className="text-purple-300">Người Nhà</strong></div>
+                    <div>• Quê quán: <strong className="text-gray-300">{selectedAccount.pob || 'Đang cập nhật'}</strong></div>
+                  </div>
+                  <div className="text-[10.5px] text-[#C5A880] flex items-center gap-1.5 pt-1 border-t border-[#222B35]">
+                    <Crown className="w-3.5 h-3.5 text-[#C5A880]" />
+                    <span>Chủ Hộ Bảo Lãnh: <strong>{ownerName}</strong> (Căn {aptCode})</span>
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                   <div>
-                    <label className="text-gray-300 font-medium block mb-1">Mối Quan Hệ:</label>
+                    <label className="text-gray-300 font-medium block mb-1">Mối Quan Hệ Với Chủ Hộ:</label>
                     <select
                       value={newRelationship}
                       onChange={(e) => setNewRelationship(e.target.value)}
                       className="w-full bg-[#161B22] border border-[#2D3748] p-2 text-white rounded-none focus:border-[#C5A880] outline-none"
                     >
                       <option value="Vợ / Chồng">Vợ / Chồng</option>
-                      <option value="Con Cái">Con Cái</option>
-                      <option value="Bố / Mẹ">Bố / Mẹ</option>
-                      <option value="Anh / Chị / Em">Anh / Chị / Em</option>
-                      <option value="Người Thân Gia Đình">Người Thân Gia Đình</option>
+                      <option value="Con ruột">Con ruột</option>
+                      <option value="Con nuôi">Con nuôi</option>
+                      <option value="Bố / Mẹ ruột">Bố / Mẹ ruột</option>
+                      <option value="Bố / Mẹ vợ / chồng">Bố / Mẹ vợ / chồng</option>
+                      <option value="Anh / Chị / Em ruột">Anh / Chị / Em ruột</option>
+                      <option value="Cháu ruột">Cháu ruột</option>
+                      <option value="Người thân khác">Người thân khác</option>
+                      <option value="Người giúp việc / Bảo mẫu">Người giúp việc / Bảo mẫu</option>
+                      <option value="Lái xe riêng">Lái xe riêng</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="text-gray-300 font-medium block mb-1">Hình Thức Cư Trú:</label>
+                    <select
+                      value={newResidenceType}
+                      onChange={(e) => setNewResidenceType(e.target.value)}
+                      className="w-full bg-[#161B22] border border-[#2D3748] p-2 text-white rounded-none focus:border-[#C5A880] outline-none"
+                    >
+                      <option value="Thường trú cùng chủ hộ">Thường trú cùng chủ hộ</option>
+                      <option value="Tạm trú dài hạn">Tạm trú dài hạn</option>
+                      <option value="Lưu trú có thời hạn">Lưu trú có thời hạn</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="text-gray-300 font-medium block mb-1">Căn Cứ Bảo Lãnh:</label>
+                    <select
+                      value={newRelationshipProof}
+                      onChange={(e) => setNewRelationshipProof(e.target.value)}
+                      className="w-full bg-[#161B22] border border-[#2D3748] p-2 text-white rounded-none focus:border-[#C5A880] outline-none"
+                    >
+                      <option value="Sổ Hộ Khẩu / Xác nhận CT07">Sổ Hộ Khẩu / Xác nhận CT07</option>
+                      <option value="Giấy chứng nhận kết hôn">Giấy chứng nhận kết hôn</option>
+                      <option value="Giấy khai sinh">Giấy khai sinh</option>
+                      <option value="Hợp đồng lao động bảo mẫu / lái xe">Hợp đồng lao động bảo mẫu / lái xe</option>
+                      <option value="Văn bản bảo lãnh của chủ hộ">Văn bản bảo lãnh của chủ hộ</option>
                     </select>
                   </div>
 
@@ -2271,7 +2482,7 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
                       value={newLicensePlate}
                       onChange={(e) => setNewLicensePlate(e.target.value)}
                       placeholder="VD: 59P1-886.79"
-                      className="w-full bg-[#161B22] border border-[#2D3748] p-2 text-white font-mono rounded-none focus:border-[#C5A880] outline-none"
+                      className="w-full bg-[#161B22] border border-[#2D3748] p-2 text-white font-mono rounded-none focus:border-[#C5A880] outline-none uppercase"
                     />
                   </div>
                 </div>
