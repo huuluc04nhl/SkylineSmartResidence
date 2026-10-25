@@ -344,7 +344,7 @@ export const DEMO_USERS: User[] = [
     password: '12345678',
   },
 
-  // 7. Family Member 4 (Tài khoản mẫu Người Nhà trong căn hộ)
+  // 7. Family Member 4 (Tài khoản Người Nhà trong căn hộ)
   {
     id: 'user-member-3',
     role: 'TENANT',
@@ -356,6 +356,84 @@ export const DEMO_USERS: User[] = [
     avatar_url: 'https://data.nks.vn/storage/users/default.png',
     ui_language: 'vi',
     apartment_code: '',
+    relationship: 'Family',
+    dob: '2001-05-26',
+    pob: 'TP. Hồ Chí Minh',
+    password: '12345678',
+  },
+
+  // 8. Family Member 5 (Vợ / Chồng)
+  {
+    id: 'user-member-4',
+    role: 'TENANT',
+    username: 'mylinh.tran@gmail.com',
+    phone: '0903889911',
+    email: 'mylinh.tran@gmail.com',
+    full_name: 'Trần Thị Mỹ Linh',
+    id_card_no: '079199008822',
+    avatar_url: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=300&auto=format&fit=crop&q=80',
+    ui_language: 'vi',
+    apartment_code: '',
+    relationship: 'Family',
+    dob: '2004-11-20',
+    pob: 'TP. Đà Nẵng',
+    license_plate: '59G2-688.99',
+    password: '12345678',
+  },
+
+  // 9. Family Member 6 (Bố ruột)
+  {
+    id: 'user-member-5',
+    role: 'TENANT',
+    username: 'huuduc.tran@gmail.com',
+    phone: '0908123456',
+    email: 'huuduc.tran@gmail.com',
+    full_name: 'Trần Hữu Đức',
+    id_card_no: '067060001889',
+    avatar_url: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&auto=format&fit=crop&q=80',
+    ui_language: 'vi',
+    apartment_code: '',
+    relationship: 'Family',
+    dob: '1965-04-12',
+    pob: 'Triệu Phong, Quảng Trị',
+    license_plate: '51A-987.65',
+    password: '12345678',
+  },
+
+  // 10. Family Member 7 (Mẹ ruột)
+  {
+    id: 'user-member-6',
+    role: 'TENANT',
+    username: 'thuhuong.le@gmail.com',
+    phone: '0907654321',
+    email: 'thuhuong.le@gmail.com',
+    full_name: 'Lê Thị Thu Hương',
+    id_card_no: '067168002991',
+    avatar_url: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=300&auto=format&fit=crop&q=80',
+    ui_language: 'vi',
+    apartment_code: '',
+    relationship: 'Family',
+    dob: '1968-09-25',
+    pob: 'Triệu Phong, Quảng Trị',
+    password: '12345678',
+  },
+
+  // 11. Family Member 8 (Em trai)
+  {
+    id: 'user-member-7',
+    role: 'TENANT',
+    username: 'huuan.tran@gmail.com',
+    phone: '0938112233',
+    email: 'huuan.tran@gmail.com',
+    full_name: 'Trần Hữu An',
+    id_card_no: '079208003456',
+    avatar_url: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=300&auto=format&fit=crop&q=80',
+    ui_language: 'vi',
+    apartment_code: '',
+    relationship: 'Family',
+    dob: '2008-06-15',
+    pob: 'TP. Hồ Chí Minh',
+    license_plate: '59P1-112.23',
     password: '12345678',
   },
 ];

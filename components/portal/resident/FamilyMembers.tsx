@@ -38,7 +38,7 @@ import {
   Crown,
   Filter
 } from 'lucide-react';
-import { User as UserType, DEMO_USERS } from '@/lib/dataStore';
+import { User as UserType } from '@/lib/dataStore';
 import { 
   nksGetFamilyMembers, 
   nksAddFamilyMember, 
@@ -286,7 +286,7 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
     return 'NOT_SUBMITTED';
   };
 
-  // Load Family Members & Pre-verified API Accounts
+  // Load Family Members & Pre-verified API Accounts (100% qua API)
   const fetchMembers = async () => {
     setIsLoading(true);
     try {
@@ -295,24 +295,8 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
         if (res.members) {
           setMembers(res.members);
         }
-        if (res.bqlAccounts && res.bqlAccounts.length > 0) {
+        if (res.bqlAccounts) {
           setBqlAccounts(res.bqlAccounts);
-        } else {
-          // Fallback to available demo family accounts
-          const fallback: BqlEligibleAccount[] = DEMO_USERS.filter((u) => u.role === 'TENANT').map((u) => ({
-            id: u.id,
-            username: u.username,
-            fullName: u.full_name,
-            email: u.email || `${u.username}@skyline.vn`,
-            phone: u.phone || u.username || '',
-            idCard: u.id_card_no || '',
-            avatarUrl: u.avatar_url || 'https://data.nks.vn/storage/users/default.png',
-            licensePlate: u.license_plate || '',
-            role: 'Family',
-            relationship: u.relationship || 'Người Nhà',
-            isAdded: false,
-          }));
-          setBqlAccounts(fallback);
         }
         if (res.owner) {
           setOwnerData(res.owner);
@@ -320,21 +304,7 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
       }
     } catch (err) {
       console.warn('Load family API error:', err);
-      // Client-side fallback if API unreachable
-      const fallback: BqlEligibleAccount[] = DEMO_USERS.filter((u) => u.role === 'TENANT').map((u) => ({
-        id: u.id,
-        username: u.username,
-        fullName: u.full_name,
-        email: u.email || `${u.username}@skyline.vn`,
-        phone: u.phone || u.username || '',
-        idCard: u.id_card_no || '',
-        avatarUrl: u.avatar_url || 'https://data.nks.vn/storage/users/default.png',
-        licensePlate: u.license_plate || '',
-        role: 'Family',
-        relationship: u.relationship || 'Người Nhà',
-        isAdded: false,
-      }));
-      setBqlAccounts(fallback);
+      setBqlAccounts([]);
     } finally {
       setIsLoading(false);
     }
@@ -689,49 +659,14 @@ export default function FamilyMembers({ currentUser }: FamilyMembersProps) {
           setSearchNotFound(isEn ? `No registered family account matching "${query}".` : `Không tìm thấy tài khoản người nhà nào khớp với "${query}".`);
         }
       } else {
-        // Fallback: check DEMO_USERS on client side
-        const normalize = (str: string) => (str || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
-        const qRaw = query.toLowerCase();
-        const qNorm = normalize(query);
-        const qDigits = query.replace(/\D/g, '');
-
-        const localMatches = DEMO_USERS.filter((u) => {
-          if (u.role === 'ADMIN' || u.role === 'TECHNICIAN' || u.role === 'OWNER') return false;
-          const phoneDigits = (u.phone || '').replace(/\D/g, '');
-          const idCardClean = (u.id_card_no || '').replace(/\s/g, '').toLowerCase();
-          const fullName = (u.full_name || '').toLowerCase();
-          const fullNorm = normalize(u.full_name || '');
-          return (
-            (qDigits.length >= 3 && phoneDigits.includes(qDigits)) ||
-            (qDigits.length >= 3 && idCardClean.includes(qDigits)) ||
-            fullName.includes(qRaw) ||
-            (qNorm.length >= 2 && fullNorm.includes(qNorm))
-          );
-        }).map((u): BqlEligibleAccount => ({
-          id: u.id,
-          username: u.username,
-          fullName: u.full_name,
-          email: u.email || `${u.username}@skyline.vn`,
-          phone: u.phone || u.username || '',
-          idCard: u.id_card_no || '',
-          avatarUrl: u.avatar_url || 'https://data.nks.vn/storage/users/default.png',
-          licensePlate: u.license_plate || '',
-          role: 'Family' as const,
-          relationship: u.relationship || 'Người Nhà',
-          isAdded: members.some((m) => m.id === u.id || m.phone === u.phone),
-        }));
-
-        if (localMatches.length > 0) {
-          setSearchResults(localMatches);
-          setSearchResult(localMatches[0]);
-          setSelectedAccount(localMatches[0]);
-          setNewRelationship(localMatches[0].relationship || 'Vợ / Chồng');
-          setNewLicensePlate(localMatches[0].licensePlate || '');
-        } else {
-          setSearchNotFound(
-            res.message || (isEn ? `No registered family account matching "${query}" on the system.` : `Không tìm thấy tài khoản người nhà nào khớp với "${query}" trên hệ thống.`)
-          );
-        }
+        setSearchResults([]);
+        setSearchResult(null);
+        setSelectedAccount(null);
+        setSearchNotFound(
+          res.message || (isEn 
+            ? `No registered family account matching "${query}" on the system.` 
+            : `Không tìm thấy tài khoản người thân nào khớp với "${query}" trên hệ thống.`)
+        );
       }
     } catch (err) {
       setSearchNotFound(isEn ? 'Connection error while searching for account.' : 'Lỗi kết nối khi tra cứu người dùng.');

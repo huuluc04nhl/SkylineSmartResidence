@@ -15,6 +15,44 @@ import { DEMO_USERS } from '@/lib/dataStore';
 import { submitEkycRequest } from '@/lib/ekycStore';
 
 /**
+ * Lọc tài khoản cư dân hợp lệ để thêm người nhà:
+ * 1. TRỪ TOÀN BỘ tài khoản ban quản lý, kỹ thuật hoặc có tiền tố/tên miền 'nks.'
+ * 2. TRỪ tài khoản của chính Chủ Hộ đang đăng nhập
+ * 3. Chỉ giữ lại các tài khoản cư dân / người nhà phù hợp (TENANT / RESIDENT / USER)
+ */
+function isEligibleFamilyAccount(u: any, hostUser?: any): boolean {
+  if (!u) return false;
+  const username = (u.username || '').toLowerCase().trim();
+  const email = (u.email || '').toLowerCase().trim();
+  const role = (u.role || '').toUpperCase().trim();
+
+  // 1. Loại trừ triệt để toàn bộ tài khoản có tiền tố hoặc chứa "nks."
+  if (
+    username.startsWith('nks.') || 
+    email.startsWith('nks.') || 
+    username.includes('@nks.') || 
+    email.includes('@nks.') ||
+    username.includes('nks.vn') ||
+    email.includes('nks.vn') ||
+    role === 'ADMIN' || 
+    role === 'TECHNICIAN' || 
+    role === 'RECEPTIONIST' || 
+    role === 'STAFF'
+  ) {
+    return false;
+  }
+
+  // 2. Loại trừ chính tài khoản Chủ Hộ đang đăng nhập
+  if (hostUser) {
+    if (u.id && hostUser.id && String(u.id) === String(hostUser.id)) return false;
+    if (u.phone && hostUser.phone && u.phone === hostUser.phone) return false;
+    if (username && hostUser.username && username === hostUser.username.toLowerCase()) return false;
+  }
+
+  return true;
+}
+
+/**
  * GET /api/nks/user/family
  * 1. Returns apartment members list
  * 2. Returns pre-verified family accounts from API for this apartment
@@ -81,8 +119,7 @@ export async function GET(req: Request) {
       const qDigits = searchQuery.replace(/\D/g, '');
 
       const matchedList = DEMO_USERS.filter((u) => {
-        if (u.role === 'ADMIN' || u.role === 'TECHNICIAN' || u.role === 'OWNER') return false;
-        if (localUser && (u.id === localUser.id || u.phone === localUser.phone)) return false;
+        if (!isEligibleFamilyAccount(u, localUser)) return false;
 
         const phoneDigits = (u.phone || '').replace(/\D/g, '');
         const idCardClean = (u.id_card_no || '').replace(/\s/g, '').toLowerCase();
@@ -111,7 +148,7 @@ export async function GET(req: Request) {
           avatarUrl: cleanAvatar,
           licensePlate: userDetails.license_plate || '',
           role: 'Family',
-          relationship: userDetails.relationship || 'Người Nhà',
+          relationship: userDetails.relationship || 'Người Thân',
           dob: userDetails.dob || matched.dob || '',
           gender: userDetails.gender === 0 ? 'Nữ' : 'Nam',
           pob: userDetails.pob || matched.pob || '',
@@ -141,9 +178,9 @@ export async function GET(req: Request) {
     // 2. Fetch current registered members for this apartment
     const members = getApartmentMembers(aptCode);
 
-    // 3. Eligible resident accounts registered in API (All TENANT role family accounts)
+    // 3. Eligible resident accounts registered in API (excluding all nks. and host accounts)
     const bqlAccounts = DEMO_USERS
-      .filter((u) => u.role === 'TENANT' && (!localUser || (u.id !== localUser.id && u.phone !== localUser.phone)))
+      .filter((u) => isEligibleFamilyAccount(u, localUser))
       .map((u) => {
         const liveUser = getUserStore(u.id);
         const rawAvatar = liveUser.avatar_url || u.avatar_url || '';
@@ -163,7 +200,7 @@ export async function GET(req: Request) {
           avatarUrl: cleanAvatar,
           licensePlate: liveUser.license_plate || '',
           role: 'Family',
-          relationship: liveUser.relationship || 'Người Nhà',
+          relationship: liveUser.relationship || 'Người Thân',
           isAdded: members.some((m) => m.username === liveUser.username || m.phone === liveUser.phone || m.id === liveUser.id),
         };
       });
@@ -247,12 +284,22 @@ export async function POST(req: Request) {
     // 1. Resolve user from API userStore
     let resolvedUser = identifier ? getUserStore(identifier) : null;
 
-    // If not found in userStore, lookup from DEMO_USERS
+    // If not found in userStore, lookup from DEMO_USERS (trừ các tài khoản nks. và chủ hộ)
     if (!resolvedUser && identifier) {
-      const demoMatch = DEMO_USERS.find(u => u.id === identifier || u.username === identifier || u.phone === identifier);
+      const demoMatch = DEMO_USERS.find(
+        (u) => (u.id === identifier || u.username === identifier || u.phone === identifier) && isEligibleFamilyAccount(u, currentUser)
+      );
       if (demoMatch) {
         resolvedUser = getUserStore(demoMatch.id);
       }
+    }
+
+    // Kiểm tra tính hợp lệ: Không cho phép thêm tài khoản nks. hoặc chính chủ hộ
+    if (resolvedUser && !isEligibleFamilyAccount(resolvedUser, currentUser)) {
+      return NextResponse.json(
+        { success: false, message: 'Tài khoản Ban Quản Lý / Kỹ Thuật (nks.) hoặc tài khoản Chủ Hộ không thể đăng ký làm người nhà.' },
+        { status: 400 }
+      );
     }
 
     // 2. Build verified member object from API record

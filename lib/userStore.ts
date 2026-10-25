@@ -471,17 +471,6 @@ export function getApartmentMembers(aptCode: string): ApartmentMember[] {
       if (stored) {
         const parsed = JSON.parse(stored);
         if (Array.isArray(parsed)) {
-          // Tự động dọn sạch dữ liệu mock cũ nếu còn sót lại trong máy người dùng
-          const hasLegacyMock = parsed.some(
-            (m) => m.id === 'user-tenant-1' || m.id === 'user-member-1' || m.username === 'nguyenhuunhut1309@gmail.com'
-          );
-          if (hasLegacyMock) {
-            localStorage.removeItem(`nks_family_members_${normalizedKey}`);
-            if (globalScope.__NKS_FAMILY_STORE) {
-              delete globalScope.__NKS_FAMILY_STORE[normalizedKey];
-            }
-            return [];
-          }
           return parsed;
         }
       }
